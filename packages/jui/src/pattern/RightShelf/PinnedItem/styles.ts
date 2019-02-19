@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../../foundation/styled-components';
-import { width, height, spacing } from '../../../foundation/utils';
+import { width, height, spacing, grey } from '../../../foundation/utils';
 
 const IconWrapper = styled.div`
   && {
@@ -16,6 +16,7 @@ const IconWrapper = styled.div`
     min-width: ${width(4)};
     min-height: ${height(4)};
     margin: ${spacing(0, 2, 0, 0)};
+    background: ${grey('100')};
     overflow: hidden;
     font-size: ${({ theme }) => theme.typography.subheading1.fontSize};
   }

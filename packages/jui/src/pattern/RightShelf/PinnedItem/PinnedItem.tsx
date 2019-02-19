@@ -21,7 +21,11 @@ class JuiPinnedItem extends Component<JuiPinnedItemProps> {
     const { icon, text, isFile } = this.props;
     let iconElement = icon;
     if (typeof icon === 'string') {
-      iconElement = <JuiIconography fontSize="inherit">{icon}</JuiIconography>;
+      iconElement = (
+        <JuiIconography fontSize="inherit" color={['grey', '500']}>
+          {icon}
+        </JuiIconography>
+      );
     }
     return (
       <Wrapper>

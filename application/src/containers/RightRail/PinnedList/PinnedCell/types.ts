@@ -4,21 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PostModel from '@/store/models/Post';
-import { JuiPinnedItemProps } from 'jui/pattern/RightShelf/PinnedItem';
+// import { JuiPinnedItemProps } from 'jui/pattern/RightShelf/PinnedItem';
 import { JuiVirtualCellOnLoadFunc } from 'jui/pattern/VirtualList';
 
-type PinnedItemProps = {
+type PinnedCellProps = {
   id: number;
   didLoad: JuiVirtualCellOnLoadFunc;
 };
 
-type PinnedItemViewProps = {
+type PinnedCellViewProps = {
   post: PostModel;
   creatorName: string;
   createTime: string;
   textContent: string;
-  items: JuiPinnedItemProps[];
-  didUpdate: () => void;
+  itemIds: number[];
 };
 
-export { PinnedItemProps, PinnedItemViewProps };
+export { PinnedCellProps, PinnedCellViewProps };

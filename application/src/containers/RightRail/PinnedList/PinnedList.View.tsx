@@ -23,7 +23,7 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import ReactResizeDetector from 'react-resize-detector';
-import { PinnedItem } from '../PinnedItem';
+import { PinnedCell } from './PinnedCell';
 
 const HEADER_HEIGHT = 36;
 @observer
@@ -48,7 +48,7 @@ class PinnedListView
     const id = ids[index];
     let content;
     if (id) {
-      content = <PinnedItem id={id} didLoad={didLoad} />;
+      content = <PinnedCell id={id} didLoad={didLoad} />;
     }
 
     return (

@@ -368,5 +368,6 @@
   "postMessages": "Post messages",
   "pinPosts": "Pin posts",
   "deleteTeam": "Delete team",
-  "deleteTeamToolTip": "Delete a team permanently."
+  "deleteTeamToolTip": "Delete a team permanently.",
+  "pinnedMore": "and {{num}} more"
 }

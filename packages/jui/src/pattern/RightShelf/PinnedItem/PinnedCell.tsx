@@ -15,7 +15,7 @@ import {
   ellipsis,
   lineClamp,
 } from '../../../foundation/utils';
-import { JuiPinnedItem, JuiPinnedItemProps } from './PinnedItem';
+import { JuiPinnedItemProps } from './PinnedItem';
 
 type JuiPinnedCellProps = {
   creator: string;
@@ -71,33 +71,31 @@ const TimeWrapper = styled.div`
   font-size: ${({ theme }) => theme.typography.caption1.fontSize};
 `;
 
-const MoreWrapper = styled.div`
+const JuiPinnedCellMore = styled.div`
   color: ${grey('900')};
   margin-top: ${spacing(1)};
   font-size: ${({ theme }) => theme.typography.button.fontSize};
 `;
 
-const MAX_ITEM_LENGTH = 3;
-
 class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
-  private _renderItems = () => {
-    const { items = [] } = this.props;
+  // private _renderItems = () => {
+  //   const { items = [] } = this.props;
 
-    let array = items;
-    let restCount = 0;
-    if (items.length > MAX_ITEM_LENGTH) {
-      array = items.slice(0, MAX_ITEM_LENGTH);
-      restCount = items.length - array.length;
-    }
-    return (
-      <>
-        {array.map((props: JuiPinnedItemProps, index: number) => (
-          <JuiPinnedItem key={props.id} {...props} />
-        ))}
-        {restCount > 0 && <MoreWrapper>and {restCount} more</MoreWrapper>}
-      </>
-    );
-  }
+  //   let array = items;
+  //   let restCount = 0;
+  //   if (items.length > MAX_ITEM_LENGTH) {
+  //     array = items.slice(0, MAX_ITEM_LENGTH);
+  //     restCount = items.length - array.length;
+  //   }
+  //   return (
+  //     <>
+  //       {array.map((props: JuiPinnedItemProps, index: number) => (
+  //         <JuiPinnedItem key={props.id} {...props} />
+  //       ))}
+  //       {restCount > 0 && <MoreWrapper>and {restCount} more</MoreWrapper>}
+  //     </>
+  //   );
+  // }
   render() {
     const {
       creator,
@@ -111,7 +109,7 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
 
     return (
       <CellWrapper
-        data-postId={postId}
+        data-postid={postId}
         data-test-automation-id="pinned-section"
         onClick={onClick}
       >
@@ -139,11 +137,11 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
               {content}
             </TextWrapper>
           )}
-          {this._renderItems()}
+          {this.props.children}
         </ContentWrapper>
       </CellWrapper>
     );
   }
 }
 
-export { JuiPinnedCell, JuiPinnedCellProps };
+export { JuiPinnedCell, JuiPinnedCellProps, JuiPinnedCellMore };
