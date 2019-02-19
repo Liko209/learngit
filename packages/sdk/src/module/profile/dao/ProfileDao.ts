@@ -1,9 +1,11 @@
 /*
- * @Author: Lip Wang (lip.wangn@ringcentral.com)
- * @Date: 2018-03-01 09:43:38
+ * @Author: Lip Wang (lip.wang@ringcentral.com)
+ * @Date: 2019-02-14 14:09:39
+ * Copyright © RingCentral. All rights reserved.
  */
-import { BaseDao } from '../../framework/dao';
-import { Profile } from '../../module/profile/entity';
+
+import { BaseDao } from '../../../framework/dao';
+import { Profile } from '../entity';
 import { IDatabase } from 'foundation';
 
 class ProfileDao extends BaseDao<Profile> {
@@ -14,4 +16,4 @@ class ProfileDao extends BaseDao<Profile> {
   }
 }
 
-export default ProfileDao;
+export { ProfileDao };

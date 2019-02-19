@@ -11,7 +11,6 @@ import {
   ISortableModel,
 } from '@/store/base/fetch';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
-import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
@@ -30,8 +29,7 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
-
-const { ProfileService } = service;
+import { ProfileService } from 'sdk/module/profile';
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
   const {
@@ -241,7 +239,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _remove(ids: number[], checkLimit: boolean = false) {
     let limit = 0;
     if (checkLimit) {
-      const profileService: service.ProfileService = ProfileService.getInstance();
+      const profileService: ProfileService = ProfileService.getInstance();
       limit = await profileService.getMaxLeftRailGroup();
     }
     const directIdsShouldBeRemoved: number[] = [];
@@ -469,7 +467,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   async removeOverLimitGroupByChangingCurrentGroupId() {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    const profileService = ProfileService.getInstance<service.ProfileService>();
+    const profileService = ProfileService.getInstance<ProfileService>();
     const lastGroupId = this._lastGroupId;
     const limit = await profileService.getMaxLeftRailGroup();
     if (currentId !== lastGroupId) {
@@ -514,7 +512,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (this._lastGroupId === 0) {
       return;
     }
-    const profileService = ProfileService.getInstance<service.ProfileService>();
+    const profileService = ProfileService.getInstance<ProfileService>();
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
     const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
     const limit = await profileService.getMaxLeftRailGroup();
