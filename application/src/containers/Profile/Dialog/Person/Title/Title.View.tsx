@@ -20,7 +20,7 @@ import portalManager from '@/common/PortalManager';
 class ProfileDialogPersonTitleViewComponent extends Component<
   WithNamespaces & ProfileDialogPersonTitleViewProps
 > {
-  onClick = () => portalManager.dismiss();
+  onClick = () => portalManager.dismissLast();
   render() {
     const { id, t } = this.props;
     return (
