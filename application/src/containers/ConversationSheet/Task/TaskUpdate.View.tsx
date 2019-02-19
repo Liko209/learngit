@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { observer } from 'mobx-react';
 import i18next from 'i18next';
 import { JuiConversationItemCard as TaskUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
@@ -18,6 +19,7 @@ import {
 import { AvatarName } from './AvatarName';
 import { TaskUpdateViewProps } from './types';
 
+@observer
 class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
   private _getTaskAvatarNames = (assignedIds: number[]) =>
     assignedIds.map((assignedId: number) => (
