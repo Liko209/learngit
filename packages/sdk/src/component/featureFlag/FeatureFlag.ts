@@ -4,10 +4,14 @@ import IFlagCalculator from './FlagCalculator';
 import { strictDiff } from './utils';
 import dataDispatcher from '../DataDispatcher';
 import { SOCKET } from '../../service';
+import { daoManager } from '../../dao';
+import { RcInfoDao, RC_EXTENSION_INFO } from '../../module/rcInfo/dao';
 import {
-  fetchServicePermission,
-  IServiceFeatures,
-} from '../../api/ringcentral/extensionInfo';
+  RcExtensionInfo,
+  RcServiceFeature,
+} from '../../api/ringcentral/types/RcExtensionInfo';
+import { RcInfoApi } from '../../api/ringcentral/RcInfo';
+
 type IBETA_FLAG_SOURCE = 'Client_Config' | 'RC_PERMISSION' | 'Split.io_Flag';
 class FeatureFlag {
   private _flags: IFlag;
@@ -36,19 +40,21 @@ class FeatureFlag {
   }
 
   async getServicePermission() {
-    const result = await fetchServicePermission();
-    if (result.isOk()) {
-      const {
-        data: { serviceFeatures },
-      } = result;
-      const permissions = {};
-      serviceFeatures.forEach((item: IServiceFeatures) => {
-        permissions[item.featureName] = item.enabled;
-      });
-      this.handleData(permissions, 'RC_PERMISSION');
-    } else {
-      throw result.error;
+    const rcInfoDao = daoManager.getKVDao(RcInfoDao);
+    let rcExtensionInfo: RcExtensionInfo = rcInfoDao.get(RC_EXTENSION_INFO);
+    if (!rcExtensionInfo || !rcExtensionInfo.serviceFeatures) {
+      const result = await RcInfoApi.requestRcExtensionInfo();
+      if (result.isOk()) {
+        rcExtensionInfo = result.data;
+      } else {
+        throw result.error;
+      }
     }
+    const permissions = {};
+    rcExtensionInfo.serviceFeatures!.forEach((item: RcServiceFeature) => {
+      permissions[item.featureName] = item.enabled;
+    });
+    this.handleData(permissions, 'RC_PERMISSION');
   }
 
   getFlagValue(key: string) {
