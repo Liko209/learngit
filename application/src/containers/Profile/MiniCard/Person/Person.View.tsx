@@ -14,15 +14,32 @@ import {
 import { ProfileMiniCardPersonViewProps } from './types';
 import { ProfileMiniCardPersonHeader } from './Header';
 import { ProfileMiniCardPersonFooter } from './Footer';
+import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileMiniCardPersonView extends Component<
   ProfileMiniCardPersonViewProps
 > {
+  private _timer: number;
+
+  onBlurHandler = () => {
+    this._timer = setTimeout(() => {
+      portalManager.dismissLast();
+    });
+  }
+
+  onFocusHandler = () => {
+    clearTimeout(this._timer);
+  }
+
   render() {
     const { id, isMe } = this.props;
     return (
-      <JuiMiniCard data-test-automation-id="profileMiniCard">
+      <JuiMiniCard
+        data-test-automation-id="profileMiniCard"
+        onBlur={this.onBlurHandler}
+        onFocus={this.onFocusHandler}
+      >
         <JuiMiniCardHeader
           emphasize={isMe}
           data-test-automation-id="profileMiniCardHeader"

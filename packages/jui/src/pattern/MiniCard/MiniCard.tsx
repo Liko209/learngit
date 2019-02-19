@@ -5,29 +5,19 @@
  */
 
 import React, { PureComponent } from 'react';
-// import Popper, { PopperProps } from '@material-ui/core/Popper';
-
-// import Typography from '@material-ui/core/Typography';
-// import Paper from '@material-ui/core/Paper';
-// import { JuiPopper, JuiPopperProps } from '../../components/Popper';
-
 import { StyledMiniCard } from './StyledMiniCard';
 
 type JuiMiniCardProps = {
   children: JSX.Element[];
+  onBlur?: () => void;
+  onFocus?: () => void;
 };
 
-type States = {
-  isBlur: boolean;
-};
-
-class JuiMiniCard extends PureComponent<JuiMiniCardProps, States> {
+class JuiMiniCard extends PureComponent<JuiMiniCardProps> {
   private _ref: React.RefObject<any>;
-  private _timer: number;
 
   constructor(props: JuiMiniCardProps) {
     super(props);
-    this.state = { isBlur: false };
     this._ref = React.createRef();
   }
 
@@ -35,32 +25,10 @@ class JuiMiniCard extends PureComponent<JuiMiniCardProps, States> {
     this._ref.current.focus();
   }
 
-  onBlurHandler = () => {
-    this._timer = setTimeout(() => {
-      this.setState({
-        isBlur: true,
-      });
-    });
-  }
-
-  onFocusHandler = () => {
-    clearTimeout(this._timer);
-  }
-
   render() {
-    const { isBlur } = this.state;
-    if (isBlur) {
-      return null;
-    }
     const { children, ...rest } = this.props;
     return (
-      <StyledMiniCard
-        {...rest}
-        tabIndex={0}
-        ref={this._ref}
-        onBlur={this.onBlurHandler}
-        onFocus={this.onFocusHandler}
-      >
+      <StyledMiniCard {...rest} tabIndex={0} ref={this._ref}>
         {children}
       </StyledMiniCard>
     );

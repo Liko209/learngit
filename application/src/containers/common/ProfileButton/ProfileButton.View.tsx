@@ -14,6 +14,7 @@ import {
 } from '@/containers/Profile/Dialog';
 import { JuiButton } from 'jui/components/Buttons';
 import { TypeDictionary } from 'sdk/utils';
+import portalManager from '@/common/PortalManager';
 
 const MappingComponent = {
   [TypeDictionary.TYPE_ID_PERSON]: ProfileDialogPerson,
@@ -25,6 +26,7 @@ class ProfileButton extends Component<WithNamespaces & ProfileButtonViewProps> {
   private _onClickViewProfile = () => {
     const { id, typeId } = this.props;
     const Profile = MappingComponent[typeId];
+    portalManager.dismissLast(); // dismiss mini card
     Dialog.simple(<Profile id={id} />, {
       size: 'medium',
     });

@@ -14,15 +14,32 @@ import {
 } from 'jui/pattern/MiniCard';
 import { ProfileMiniCardGroupHeader } from './Header';
 import { ProfileMiniCardGroupFooter } from './Footer';
+import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileMiniCardGroupView extends Component<
   ProfileMiniCardGroupViewProps
 > {
+  private _timer: number;
+
+  onBlurHandler = () => {
+    this._timer = setTimeout(() => {
+      portalManager.dismissLast();
+    });
+  }
+
+  onFocusHandler = () => {
+    clearTimeout(this._timer);
+  }
+
   render() {
     const { id, group } = this.props;
     return group.displayName ? (
-      <JuiMiniCard data-test-automation-id="profileMiniCard">
+      <JuiMiniCard
+        data-test-automation-id="profileMiniCard"
+        onBlur={this.onBlurHandler}
+        onFocus={this.onFocusHandler}
+      >
         <JuiMiniCardHeader data-test-automation-id="profileMiniCardHeader">
           <ProfileMiniCardGroupHeader id={id} />
         </JuiMiniCardHeader>
