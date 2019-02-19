@@ -165,7 +165,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToTop
+  @onScrollToTop((vm: StreamViewModel) => vm.hasMoreUp)
   @loadingTop
   @action
   async loadPrevPosts() {
@@ -178,7 +178,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToBottom
+  @onScrollToBottom((vm: StreamViewModel) => vm.hasMoreDown)
   @loadingBottom
   @action
   async loadNextPosts() {
