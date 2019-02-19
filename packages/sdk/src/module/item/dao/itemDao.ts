@@ -261,11 +261,7 @@ class ItemDao extends BaseDao<Item> {
       const viewDao = this._getItemViewDaoByTypeId(typeId);
       if (viewDao && (!isSave || viewDao.shouldSaveSubItem(value))) {
         const itemArr = resultMap.get(typeId);
-        if (itemArr) {
-          itemArr.push(value);
-        } else {
-          resultMap.set(typeId, [value]);
-        }
+        itemArr ? itemArr.push(value) : resultMap.set(typeId, [value]);
       }
     });
     return resultMap;
