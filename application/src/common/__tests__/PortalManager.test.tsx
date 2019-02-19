@@ -8,7 +8,7 @@ import portalManager, { EventKey } from '../PortalManager';
 
 describe('portalManager', () => {
   beforeEach(() => {
-    portalManager.portals = [];
+    portalManager.portals = new Map();
     jest.restoreAllMocks();
   });
 
@@ -23,7 +23,7 @@ describe('portalManager', () => {
       'portalsChange',
       portalManager.portals,
     );
-    expect(portalManager.portals.length).toBe(1);
+    expect(portalManager.portals.size).toBe(1);
   });
   it('portalManager unRegister()', async () => {
     jest.spyOn(portalManager, 'emit');
@@ -31,7 +31,7 @@ describe('portalManager', () => {
     const wrapper = portalManager.wrapper(comp);
     wrapper.show();
     wrapper.dismiss();
-    expect(portalManager.portals.length).toBe(0);
+    expect(portalManager.portals.size).toBe(0);
     expect(portalManager.emit).toHaveBeenCalledTimes(2);
   });
   it('portalManager dismissLast()', async () => {
@@ -56,7 +56,7 @@ describe('portalManager', () => {
 });
 describe('portalManager wrapper()', async () => {
   beforeEach(() => {
-    portalManager.portals = [];
+    portalManager.portals = new Map();
     jest.restoreAllMocks();
   });
 
