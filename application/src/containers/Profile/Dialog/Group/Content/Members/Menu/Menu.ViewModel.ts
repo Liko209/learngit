@@ -6,10 +6,10 @@
 
 import { computed, action } from 'mobx';
 import { GroupService } from 'sdk/module/group';
-import { MenuViewModelProps } from './types';
+import { MenuViewModelProps, MenuProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
 
-class MenuViewModel extends StoreViewModel<MenuViewModelProps>
+class MenuViewModel extends StoreViewModel<MenuProps>
   implements MenuViewModelProps {
   private _GroupService: GroupService = GroupService.getInstance();
   @computed
@@ -25,6 +25,15 @@ class MenuViewModel extends StoreViewModel<MenuViewModelProps>
   @action
   removeFromTeam = async () => {
     await this._GroupService.removeTeamMembers([this.personId], this.groupId);
+  }
+  @action
+  toggleTeamAdmin = async () => {
+    const { isThePersonAdmin } = this.props;
+    if (isThePersonAdmin) {
+      await this._GroupService.revokeAdmin(this.groupId, this.personId);
+    } else {
+      await this._GroupService.makeAdmin(this.groupId, this.personId);
+    }
   }
 }
 export { MenuViewModel };
