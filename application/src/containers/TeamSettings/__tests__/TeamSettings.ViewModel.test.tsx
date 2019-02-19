@@ -185,7 +185,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.deleteTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('deleteTeamServerErrorContent'),
+        toastParamsBuilder('people.prompt.deleteTeamServerErrorContent'),
       );
     });
     it('should display error when failed to delete team due to disconnect network [JPT-1118]', async () => {
@@ -197,7 +197,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.deleteTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('deleteTeamNetworkErrorContent'),
+        toastParamsBuilder('people.prompt.deleteTeamNetworkErrorContent'),
       );
     });
     it('should call generalErrorHandler when server error occurs', async () => {

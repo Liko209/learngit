@@ -98,6 +98,6 @@ class GroupItemComponent extends React.Component<
   }
 }
 
-const GroupItemView = translate('translates')(GroupItemComponent);
+const GroupItemView = translate('translations')(GroupItemComponent);
 
 export { GroupItemView };

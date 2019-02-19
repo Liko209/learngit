@@ -50,19 +50,11 @@ class MenuViewComponent extends Component<Props, State> {
       return true;
     } catch (error) {
       if (errorHelper.isNetworkConnectionError(error)) {
-<<<<<<< HEAD
-        this._renderFlashToast('people.prompt.removeMemberNetworkError');
-        return false;
-      }
-      if (errorHelper.isBackEndError(error)) {
-        this._renderFlashToast('people.prompt.removeMemberBackendError');
-=======
         this._renderFlashToast(networkError);
         return false;
       }
       if (errorHelper.isBackEndError(error)) {
         this._renderFlashToast(backendError);
->>>>>>> develop
         return false;
       }
       throw error;
@@ -74,8 +66,8 @@ class MenuViewComponent extends Component<Props, State> {
     const { onMenuClose, removeFromTeam } = this.props;
     onMenuClose();
     this._containErrorHander(removeFromTeam, [
-      'removeMemberNetworkError',
-      'removeMemberBackendError',
+      'people.prompt.removeMemberNetworkError',
+      'people.prompt.removeMemberBackendError',
     ]);
   }
 
@@ -84,8 +76,14 @@ class MenuViewComponent extends Component<Props, State> {
     const { onMenuClose, toggleTeamAdmin, isThePersonAdmin } = this.props;
     onMenuClose();
     const errorList = isThePersonAdmin
-      ? ['revokeTeamAdminNetworkError', 'revokeTeamAdminBackendError']
-      : ['makeTeamAdminNetworkError', 'makeTeamAdminBackendError'];
+      ? [
+        'people.prompt.revokeTeamAdminNetworkError',
+        'people.prompt.revokeTeamAdminBackendError',
+      ]
+      : [
+        'people.prompt.makeTeamAdminNetworkError',
+        'people.prompt.makeTeamAdminBackendError',
+      ];
     this._containErrorHander(toggleTeamAdmin, errorList);
   }
 
@@ -109,8 +107,8 @@ class MenuViewComponent extends Component<Props, State> {
       isThePersonGuest,
     } = this.props;
     const teamAdminToggleButton = isThePersonAdmin
-      ? 'revokeTeamAdmin'
-      : 'makeTeamAdmin';
+      ? 'people.team.revokeTeamAdmin'
+      : 'people.team.makeTeamAdmin';
     return (
       <JuiPopoverMenu
         Anchor={this._Anchor}

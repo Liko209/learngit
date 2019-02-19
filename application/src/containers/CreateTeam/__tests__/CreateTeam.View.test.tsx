@@ -58,12 +58,8 @@ describe('CreateTeamView', () => {
         },
         {
           type: 'canPost',
-<<<<<<< HEAD
           text: 'people.team.MembersMayPostMessages',
 
-=======
-          text: 'MembersMayPostMessages',
->>>>>>> develop
           checked: true,
         },
         {
@@ -73,7 +69,7 @@ describe('CreateTeamView', () => {
         },
         {
           type: 'canPin',
-          text: 'MembersMayPinPosts',
+          text: 'people.team.MembersMayPinPosts',
           checked: true,
         },
       ];

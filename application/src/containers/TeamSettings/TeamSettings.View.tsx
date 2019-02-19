@@ -148,12 +148,12 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       cancelBtnProps: { 'data-test-automation-id': 'deleteTeamCancelButton' },
       size: 'small',
       okType: 'negative',
-      title: t('deleteTeamConfirmTitle'),
-      content: t('deleteTeamConfirmContent', {
+      title: t('people.team.deleteTeamConfirmTitle'),
+      content: t('people.team.deleteTeamConfirmContent', {
         teamName: groupName,
       }),
-      okText: toTitleCase(t('deleteTeamConfirmOk')),
-      cancelText: toTitleCase(t('cancel')),
+      okText: toTitleCase(t('people.team.deleteTeamConfirmOk')),
+      cancelText: toTitleCase(t('common.dialog.cancel')),
       onOK: async () => {
         dialog.startLoading();
         const result = await deleteTeam();
@@ -280,9 +280,12 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           hide={!isAdmin || isCompanyTeam}
         >
           <ButtonListItemText color="semantic.negative">
-            {t('deleteTeam')}
+            {t('people.team.deleteTeam')}
           </ButtonListItemText>
-          <JuiIconButton variant="plain" tooltipTitle={t('deleteTeamToolTip')}>
+          <JuiIconButton
+            variant="plain"
+            tooltipTitle={t('people.team.deleteTeamToolTip')}
+          >
             info
           </JuiIconButton>
         </ButtonListItem>

@@ -105,8 +105,8 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       await groupService.leaveTeam(userId, this.id);
     } catch (e) {
       this._onActionError(e, {
-        backendErrorMessage: 'leaveTeamServerErrorContent',
-        networkErrorMessage: 'leaveTeamNetworkErrorContent',
+        backendErrorMessage: 'people.prompt.leaveTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.leaveTeamNetworkErrorContent',
       });
     }
   }
@@ -121,8 +121,8 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       return true;
     } catch (e) {
       this._onActionError(e, {
-        backendErrorMessage: 'deleteTeamServerErrorContent',
-        networkErrorMessage: 'deleteTeamNetworkErrorContent',
+        backendErrorMessage: 'people.prompt.deleteTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.deleteTeamNetworkErrorContent',
       });
       return false;
     }
@@ -130,7 +130,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   private _onDeleteTeamSuccess = () => {
     Notification.flashToast({
-      message: 'deleteTeamSuccessMsg',
+      message: 'people.team.deleteTeamSuccessMsg',
       type: ToastType.SUCCESS,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
@@ -143,17 +143,10 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     const isNetworkError = errorHelper.isNetworkConnectionError(e);
     let message = '';
     if (isBackEndError) {
-<<<<<<< HEAD
-      message = 'people.prompt.leaveTeamServerErrorContent';
-    }
-    if (isNetworkError) {
-      message = 'people.prompt.leaveTeamNetworkErrorContent';
-=======
       message = options.backendErrorMessage;
     }
     if (isNetworkError) {
       message = options.networkErrorMessage;
->>>>>>> develop
     }
     if (message) {
       return Notification.flashToast({

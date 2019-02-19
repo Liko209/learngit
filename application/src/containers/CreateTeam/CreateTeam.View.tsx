@@ -61,7 +61,7 @@ class CreateTeam extends React.Component<ViewProps, State> {
       },
       {
         type: 'canAddMember',
-        text: i18next.t('MembersMayAddOtherMembers'),
+        text: i18next.t('people.team.MembersMayAddOtherMembers'),
         checked: true,
         automationId: 'CreateTeamCanAddMember',
       },
@@ -72,13 +72,8 @@ class CreateTeam extends React.Component<ViewProps, State> {
         automationId: 'CreateTeamCanPost',
       },
       {
-<<<<<<< HEAD
-        type: 'canAddMember',
-        text: i18next.t('people.team.MembersMayAddOtherMembers'),
-=======
         type: 'canPin',
-        text: i18next.t('MembersMayPinPosts'),
->>>>>>> develop
+        text: i18next.t('people.team.MembersMayPinPosts'),
         checked: true,
         automationId: 'CreateTeamCanPinPost',
       },
