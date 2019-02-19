@@ -41,9 +41,7 @@ describe('ItemService', () => {
     itemService = new ItemService();
     itemServiceController = new ItemServiceController(null, null);
     fileItemService = new FileItemService();
-    itemActionController = new ItemActionController(
-      undefined as IPartialModifyController<Item>,
-    );
+    itemActionController = new ItemActionController(undefined);
 
     Object.assign(itemService, {
       _itemServiceController: itemServiceController,

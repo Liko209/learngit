@@ -585,11 +585,7 @@ class FileUploadController {
     this._updateUploadingFiles(groupId, preInsertItem);
     this._updateCachedFilesStatus(preInsertItem);
 
-    const itemDao = daoManager.getDao(ItemDao);
-    itemDao.update(preInsertItem);
-
     const itemId = preInsertItem.id;
-
     const preHandlePartial = (
       partialPost: Partial<Raw<ItemFile>>,
       originalPost: ItemFile,
@@ -639,8 +635,8 @@ class FileUploadController {
   ) {
     const preInsertId = preInsertItem.id;
     const itemDao = daoManager.getDao(ItemDao);
-    itemDao.delete(preInsertId);
-    itemDao.update(itemFile);
+    await itemDao.delete(preInsertId);
+    await itemDao.update(itemFile);
 
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
@@ -725,7 +721,7 @@ class FileUploadController {
     this._saveItemFileToUploadingFiles(newItemFile);
     this._saveItemFileToProgressCache(newItemFile, file);
     const itemDao = daoManager.getDao(ItemDao);
-    itemDao.put(newItemFile);
+    await itemDao.put(newItemFile);
   }
 
   private _toItemFile(

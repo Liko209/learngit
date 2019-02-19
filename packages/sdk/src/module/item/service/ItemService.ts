@@ -96,7 +96,6 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   async deleteItem(itemId: number) {
     return await this.itemServiceController.itemActionController.deleteItem(
       itemId,
-      this,
     );
   }
 

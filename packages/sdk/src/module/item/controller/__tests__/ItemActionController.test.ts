@@ -15,7 +15,11 @@ import { PartialModifyController } from '../../../../framework/controller/impl/P
 import { Item } from '../../entity';
 import { RequestController } from '../../../../framework/controller/impl/RequestController';
 import { Api } from '../../../../api';
+import { ItemDao } from '../../dao';
+import { daoManager } from '../../../../dao';
 
+jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
 jest.mock('../../../progress');
@@ -29,9 +33,7 @@ function clearMocks() {
 }
 
 describe('ItemActionController', () => {
-  const itemService = {
-    deleteLocalItem: jest.fn(),
-  };
+  const itemDao = new ItemDao(null);
   const requestController = new RequestController<Item>(null);
   const partialUpdateController = new PartialModifyController<Item>(null);
   const itemActionController = new ItemActionController(
@@ -41,9 +43,10 @@ describe('ItemActionController', () => {
 
   function setUp() {
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
-
     buildRequestController.mockReturnValue(requestController);
+    daoManager.getDao = jest.fn().mockReturnValue(itemDao);
   }
+
   beforeEach(() => {
     clearMocks();
   });
@@ -52,7 +55,7 @@ describe('ItemActionController', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
-
+      itemDao.delete = jest.fn();
       requestController.put = jest.fn();
       progressService.deleteProgress = jest.fn();
       notificationCenter.emitEntityDelete = jest.fn();
@@ -77,7 +80,7 @@ describe('ItemActionController', () => {
             doUpdateFunc({ id: normalId, deactivated: true });
           },
         );
-      await itemActionController.deleteItem(normalId, itemService);
+      await itemActionController.deleteItem(normalId);
       expect(partialUpdateController.updatePartially).toBeCalledWith(
         normalId,
         expect.anything(),
@@ -95,7 +98,8 @@ describe('ItemActionController', () => {
       const negativeId = GlipTypeUtil.generatePseudoIdByType(
         TypeDictionary.TYPE_ID_FILE,
       );
-      await itemActionController.deleteItem(negativeId, itemService);
+      await itemActionController.deleteItem(negativeId);
+      expect(itemDao.delete).toBeCalledWith(negativeId);
       expect(requestController.put).not.toBeCalled();
       expect(notificationCenter.emitEntityDelete).toBeCalled();
       expect(progressService.deleteProgress).toBeCalled();
