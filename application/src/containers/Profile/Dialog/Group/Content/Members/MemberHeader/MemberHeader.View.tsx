@@ -25,14 +25,15 @@ class MemberHeader extends React.Component<
       AddTeamMembers,
       isCurrentUserHasPermissionAddMember,
     } = this.props;
-    const key = group.isTeam ? 'teamMembers' : 'groupMembers';
+    const { isTeam } = group;
+    const key = isTeam ? 'teamMembers' : 'groupMembers';
     return (
       <JuiProfileDialogContentMemberHeader
         className={hasShadow ? 'shadow' : ''}
         data-test-automation-id="profileDialogMemberHeader"
       >
         {`${t(key)} (${group.members && group.members.length})`}
-        {isCurrentUserHasPermissionAddMember ? (
+        {isTeam && isCurrentUserHasPermissionAddMember ? (
           <ButtonInRight onClick={AddTeamMembers}>
             <JuiIconography fontSize="small">add_team</JuiIconography>
             {t('AddTeamMembers')}
