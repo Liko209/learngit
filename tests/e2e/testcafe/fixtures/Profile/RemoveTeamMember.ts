@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He 
- * @Date: 2019-02-14 16:15:37 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-02-14 18:26:18
+ * @Date: 2019-02-18 16:59:52 
+ * @Last Modified by:   Potar.He 
+ * @Last Modified time: 2019-02-18 16:59:52 
  */
 import * as assert from 'assert';
 import * as _ from 'lodash';
@@ -18,7 +18,7 @@ fixture('Profile/RemoveTeamMember')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Only admin has the ability to remove members from the team', ['JPT-1081', 'RemoveTeamMember', 'P1', 'Potar.he']), async (t) => {
+test.skip(formalName('Only admin has the ability to remove members from the team', ['JPT-1081', 'RemoveTeamMember', 'P1', 'Potar.he']), async (t) => {
   const app = new AppRoot(t);
 
   const users = h(t).rcData.mainCompany.users
@@ -65,11 +65,20 @@ test(formalName('Only admin has the ability to remove members from the team', ['
     await t.hover(profileDialog.memberEntryByName(adminName1).self);
   });
 
-  await h(t).withLog('Then No "More" menu options', async () => {
-    await t.expect(profileDialog.memberEntryByName(adminName1).moreButton.exists).notOk();
+  await h(t).withLog('Then Show "more" button', async () => {
+    await t.expect(profileDialog.memberEntryByName(adminName1).moreButton.exists).ok();
+  }, true);
+  
+  await h(t).withLog('When I click the more button', async () => {
+    await t.click(profileDialog.memberEntryByName(adminName1).moreButton);
+  });
+
+  await h(t).withLog(`And no ${removeFromTeamText} button`, async () => {
+    await t.expect(profileDialog.memberMoreMenu.removeFromTeamItem.withExactText(removeFromTeamText).exists).notOk();
   }, true);
 
   await h(t).withLog('When admin1 hover admin2 row in members list', async () => {
+    await profileDialog.memberMoreMenu.quit();
     await t.hover(profileDialog.memberEntryByName(adminName2).self);
   });
 
@@ -131,7 +140,7 @@ test(formalName('Only admin has the ability to remove members from the team', ['
 
 });
 
-test(formalName('The remove team member permission should sync dynamically', ['JPT-1086', 'P1', 'RemoveTeamMember', 'Potar.he']), async (t) => {
+test.skip(formalName('The remove team member permission should sync dynamically', ['JPT-1086', 'P1', 'RemoveTeamMember', 'Potar.he']), async (t) => {
   const app = new AppRoot(t);
 
   const users = h(t).rcData.mainCompany.users
@@ -195,7 +204,7 @@ test(formalName('The remove team member permission should sync dynamically', ['J
       await t.hover(profileDialog.nthMemberEntry(i).self);
     });
 
-    await h(t).withLog('Then No "More" menu options', async () => {
+    await h(t).withLog('Then no "more" button', async () => {
       await t.expect(profileDialog.nthMemberEntry(i).moreButton.exists).notOk();
     }, true);
   }
@@ -308,12 +317,12 @@ test(formalName(`The team should be removed from the removed member's side`, ['J
       await teamSection.conversationEntryById(teamId).openMoreMenu();
       await app.homePage.messageTab.moreMenu.profile.enter();
     }, true);
-  
+
     await h(t).withLog(`When the login admin remove ${memberName} from team via member row MoreMenu`, async () => {
       await profileDialog.memberEntryByName(memberName).openMoreMenu();
       await profileDialog.memberMoreMenu.clickRemoveTeamMember();
     });
-  
+
     await h(t).withLog(`Then member ${memberName} is removed from the list and Profile dialog shouldn't dismiss `, async () => {
       await profileDialog.shouldBePopUp();
       await t.expect(profileDialog.memberEntryByName(memberName).exists).notOk();
@@ -322,19 +331,19 @@ test(formalName(`The team should be removed from the removed member's side`, ['J
         assert.ok(!_.includes(members, memberPersonId), `Have not removed ${memberName} from api`);
       })
     }, true);
-  
+
     await h(t).withLog(`When I login Jupiter with a: ${member.company.number}#${member.extension}`, async () => {
       await t.useRole(roleMember);
     });
-  
+
     await h(t).withLog(`Then the team should be removed from the list`, async () => {
       await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
     });
-  
+
     await h(t).withLog(`When The login admin1 send one post to the team`, async () => {
       await h(t).platform(loginAdmin).sendTextPost(uuid(), teamId);
     });
-  
+
     await h(t).withLog(`Then The team shouldn't show in the conversation list`, async () => {
       await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
     });

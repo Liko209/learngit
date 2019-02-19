@@ -17,8 +17,7 @@ import { ENTITY, SERVICE } from '../../../service/eventKey';
 import notificationCenter, {
   NotificationEntityUpdatePayload,
 } from '../../../service/notificationCenter';
-import ProfileService from '../../../service/profile';
-import { extractHiddenGroupIds } from '../../../service/profile/handleData';
+import { ProfileService, extractHiddenGroupIds } from '../../profile';
 import { transform } from '../../../service/utils';
 import { Post } from '../../post/entity';
 import { Profile } from '../../profile/entity';

@@ -6,7 +6,7 @@
 
 import { computed, observable } from 'mobx';
 import { GroupService } from 'sdk/module/group';
-import { ProfileService } from 'sdk/service/profile';
+import { ProfileService } from 'sdk/module/profile';
 import { Group } from 'sdk/module/group/entity';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 

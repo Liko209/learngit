@@ -14,6 +14,10 @@ import { MenuViewProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -30,31 +34,51 @@ class MenuViewComponent extends Component<Props, State> {
   private _renderFlashToast = (message: string) => {
     Notification.flashToast({
       message,
-      type: 'error',
-      messageAlign: 'left',
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
       dismissible: false,
     });
+  }
+
+  private _containErrorHander = async (
+    serviceFunction: Function,
+    [networkError, backendError]: string[],
+  ) => {
+    try {
+      await serviceFunction();
+      return true;
+    } catch (error) {
+      if (errorHelper.isNetworkConnectionError(error)) {
+        this._renderFlashToast(networkError);
+        return false;
+      }
+      if (errorHelper.isBackEndError(error)) {
+        this._renderFlashToast(backendError);
+        return false;
+      }
+      throw error;
+    }
   }
 
   private _handleRemoveFromTeam = async (event: MouseEvent<HTMLElement>) => {
     event && event.stopPropagation();
     const { onMenuClose, removeFromTeam } = this.props;
     onMenuClose();
-    try {
-      await removeFromTeam();
-      return true;
-    } catch (error) {
-      if (errorHelper.isNetworkConnectionError(error)) {
-        this._renderFlashToast('removeMemberNetworkError');
-        return false;
-      }
-      if (errorHelper.isBackEndError(error)) {
-        this._renderFlashToast('removeMemberBackendError');
-        return false;
-      }
-      throw error;
-    }
+    this._containErrorHander(removeFromTeam, [
+      'removeMemberNetworkError',
+      'removeMemberBackendError',
+    ]);
+  }
+
+  private _toggleTeamAdmin = (event: MouseEvent<HTMLElement>) => {
+    event && event.stopPropagation();
+    const { onMenuClose, toggleTeamAdmin, isThePersonAdmin } = this.props;
+    onMenuClose();
+    const errorList = isThePersonAdmin
+      ? ['revokeTeamAdminNetworkError', 'revokeTeamAdminBackendError']
+      : ['makeTeamAdminNetworkError', 'makeTeamAdminBackendError'];
+    this._containErrorHander(toggleTeamAdmin, errorList);
   }
 
   private _Anchor = () => {
@@ -70,7 +94,15 @@ class MenuViewComponent extends Component<Props, State> {
     this.props.onMenuClose();
   }
   render() {
-    const { isCurrentUserSelf, t } = this.props;
+    const {
+      isCurrentUserSelf,
+      t,
+      isThePersonAdmin,
+      isThePersonGuest,
+    } = this.props;
+    const teamAdminToggleButton = isThePersonAdmin
+      ? 'revokeTeamAdmin'
+      : 'makeTeamAdmin';
     return (
       <JuiPopoverMenu
         Anchor={this._Anchor}
@@ -91,6 +123,14 @@ class MenuViewComponent extends Component<Props, State> {
               onClick={this._handleRemoveFromTeam}
             >
               {t('removeFromTeam')}
+            </JuiMenuItem>
+          )}
+          {!isThePersonGuest && (
+            <JuiMenuItem
+              data-test-automation-id={teamAdminToggleButton}
+              onClick={this._toggleTeamAdmin}
+            >
+              {t(teamAdminToggleButton)}
             </JuiMenuItem>
           )}
         </JuiMenuList>

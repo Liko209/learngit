@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { GroupService } from 'sdk/module/group';
-import { ProfileService } from 'sdk/service/profile';
+import { ProfileService } from 'sdk/module/profile';
 import { StateService } from 'sdk/module/state';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -39,7 +39,7 @@ class GroupHandler {
     const _profileService: ProfileService = ProfileService.getInstance();
     try {
       await _profileService.reopenConversation(id);
-    } catch (error) {
+    } catch {
       history.replace('/messages/loading', {
         id,
         error: true,

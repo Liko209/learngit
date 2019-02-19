@@ -77,12 +77,29 @@ class PortalManager extends EventEmitter2 {
           dismiss,
         };
       },
+      startLoading: () => {
+        const portal = this.portals.get(component);
+        if (!portal) {
+          return;
+        }
+        const newProps = portal.props;
+        newProps.loading = true;
+        portal.props = newProps;
+        this.register(component, portal);
+      },
+      stopLoading: () => {
+        const portal = this.portals.get(component);
+        if (!portal) {
+          return;
+        }
+        const newProps = portal.props;
+        newProps.loading = false;
+        portal.props = newProps;
+        this.register(component, portal);
+      },
     };
 
-    return {
-      dismiss: wrapperComponent.dismiss,
-      show: wrapperComponent.show,
-    };
+    return wrapperComponent;
   }
 
   onChange(fn: Function) {

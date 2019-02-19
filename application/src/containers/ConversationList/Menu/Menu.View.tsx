@@ -58,7 +58,7 @@ class MenuViewComponent extends Component<Props, State> {
     this.props.onClose(event);
     try {
       await this.props.toggleFavorite();
-    } catch (error) {
+    } catch {
       const message = isFavorite
         ? 'markUnFavoriteServerErrorContent'
         : 'markFavoriteServerErrorContent';
@@ -128,7 +128,7 @@ class MenuViewComponent extends Component<Props, State> {
         const { history } = this.props;
         history.replace('/messages');
       }
-    } catch (error) {
+    } catch {
       Notification.flashToast({
         message: 'SorryWeWereNotAbleToCloseTheConversation',
         type: ToastType.ERROR,

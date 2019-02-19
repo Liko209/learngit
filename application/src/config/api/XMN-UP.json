@@ -11,6 +11,7 @@
   },
   "glip": {
     "server": "https://xmnup.asialab.glip.net",
+    "apiServer": "https://xmnup.asialab.glip.net:8443",
     "cacheServer": "https://xmnup.asialab.glip.net:31337"
   },
   "glip_desktop": {

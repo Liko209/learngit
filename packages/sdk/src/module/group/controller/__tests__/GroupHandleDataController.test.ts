@@ -11,7 +11,7 @@ import { EVENT_TYPES } from '../../../../service';
 import { UserConfig } from '../../../../service/account';
 import { ENTITY } from '../../../../service/eventKey';
 import notificationCenter from '../../../../service/notificationCenter';
-import ProfileService from '../../../../service/profile';
+import { ProfileService } from '../../../profile';
 import { PersonService } from '../../../person';
 import { Post } from '../../../post/entity';
 import { Profile } from '../../../profile/entity';
@@ -23,7 +23,7 @@ import { GroupHandleDataController } from '../GroupHandleDataController';
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
 
-jest.mock('../../../../service/profile');
+jest.mock('../../../profile');
 jest.mock('../../../../service/account');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../state');

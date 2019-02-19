@@ -26,7 +26,7 @@ class FavoriteViewComponent extends Component<Props> {
     const { handlerFavorite, isFavorite } = this.props;
     try {
       await handlerFavorite();
-    } catch (error) {
+    } catch {
       const message = isFavorite
         ? 'markUnFavoriteServerErrorContent'
         : 'markFavoriteServerErrorContent';

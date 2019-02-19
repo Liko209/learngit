@@ -6,7 +6,6 @@ export { default as ConfigService } from './config';
 export { default as CompanyService } from './company';
 export { default as GroupConfigService } from './groupConfig';
 export { default as PresenceService } from './presence';
-export { default as ProfileService } from './profile';
 export { SplitIO } from './splitio';
 
 // instances

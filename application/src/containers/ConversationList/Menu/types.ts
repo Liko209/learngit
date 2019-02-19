@@ -23,8 +23,8 @@ type MenuViewProps = {
   shouldSkipCloseConfirmation: boolean;
   closable: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
-  toggleFavorite: () => Promise<Profile>;
-  closeConversation: (shouldSkipNextTime: boolean) => Promise<Profile>;
+  toggleFavorite: () => Promise<Profile | null>;
+  closeConversation: (shouldSkipNextTime: boolean) => Promise<Profile | null>;
 };
 
 export { MenuProps, MenuViewProps };

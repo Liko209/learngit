@@ -17,8 +17,7 @@ import { UserConfig } from '../../../service/account';
 import CompanyService from '../../../service/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
-import ProfileService from '../../../service/profile';
-import { extractHiddenGroupIds } from '../../../service/profile/handleData';
+import { ProfileService, extractHiddenGroupIds } from '../../profile';
 import { transform } from '../../../service/utils';
 import {
   PERFORMANCE_KEYS,

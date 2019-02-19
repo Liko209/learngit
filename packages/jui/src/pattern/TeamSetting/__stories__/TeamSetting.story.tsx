@@ -30,6 +30,7 @@ import defaultTeamAvatar from './defaultTeamAvatar.png';
 import { boolean, number } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { JuiDivider } from '../../../components/Divider/Divider';
+import { JuiIconButton } from '../../../components/Buttons/IconButton';
 
 storiesOf('Pattern/TeamSetting', module)
   .add('Admin', () => {
@@ -101,6 +102,20 @@ storiesOf('Pattern/TeamSetting', module)
           </JuiTeamSettingSubSectionList>
         </JuiTeamSettingSubSection>
         <JuiDivider />
+        <JuiTeamSettingButtonList>
+          <JuiTeamSettingButtonListItem color="semantic.negative">
+            <JuiTeamSettingButtonListItemText color="semantic.negative">
+              Delete team
+            </JuiTeamSettingButtonListItemText>
+            <JuiIconButton
+              variant="plain"
+              tooltipTitle="Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit."
+            >
+              remove
+            </JuiIconButton>
+          </JuiTeamSettingButtonListItem>
+          <JuiDivider />
+        </JuiTeamSettingButtonList>
       </JuiModal>
     );
   })

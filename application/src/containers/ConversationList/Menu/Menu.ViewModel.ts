@@ -5,7 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { ProfileService } from 'sdk/service/profile';
+import { ProfileService } from 'sdk/module/profile';
 import { Profile } from 'sdk/module/profile/entity';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';

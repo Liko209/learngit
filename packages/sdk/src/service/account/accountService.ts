@@ -21,7 +21,7 @@ import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
 import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
-import ProfileService from '../profile/index';
+import { ProfileService } from '../../module/profile';
 import { setRcToken } from '../../authenticator';
 import { ERROR_CODES_SDK } from '../../error';
 
