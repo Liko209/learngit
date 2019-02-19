@@ -172,7 +172,7 @@ class ItemDao extends BaseDao<Item> {
   }
 
   private async _bulkPutItemViews(items: Item[]) {
-    const filterResult = this._filterItems<Item>(items);
+    const filterResult = this._filterItems<Item>(items, true);
     const typeIds = Array.from(filterResult.keys());
     await Promise.all(
       typeIds.map((typeId: number) => {
@@ -206,7 +206,7 @@ class ItemDao extends BaseDao<Item> {
   }
 
   private async _bulkUpdateItemViews(partialItems: Partial<Item>[]) {
-    const filterResult = this._filterItems(partialItems as IdModel[], true);
+    const filterResult = this._filterItems(partialItems as IdModel[], false);
     const typeIds = Array.from(filterResult.keys());
     await Promise.all(
       typeIds.map((typeId: number) => {
@@ -233,7 +233,7 @@ class ItemDao extends BaseDao<Item> {
     const idModels = itemIds.map((key: number) => {
       return { id: key };
     });
-    const filterResult = this._filterItems<IdModel>(idModels, true);
+    const filterResult = this._filterItems<IdModel>(idModels, false);
     const typeIds = Array.from(filterResult.keys());
     await Promise.all(
       typeIds.map((typeId: number) => {
@@ -250,12 +250,12 @@ class ItemDao extends BaseDao<Item> {
     );
   }
 
-  private _filterItems<K extends { id: number }>(items: K[], isDelete = false) {
+  private _filterItems<K extends { id: number }>(items: K[], isSave: boolean) {
     const resultMap: Map<number, K[]> = new Map();
     items.forEach((value: K) => {
       const typeId = GlipTypeUtil.extractTypeId(value.id);
       const viewDao = this._getItemViewDaoByTypeId(typeId);
-      if (viewDao && (isDelete || viewDao.shouldSaveSubItem(value))) {
+      if (viewDao && (!isSave || viewDao.shouldSaveSubItem(value))) {
         const itemArr = resultMap.get(typeId);
         if (itemArr) {
           itemArr.push(value);

@@ -91,7 +91,6 @@ class ItemActionController {
     } else {
       const itemDao = daoManager.getDao(ItemDao);
       itemDao.delete(itemId);
-      // await itemService.deleteLocalItem(itemId);
       notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
       const progressService: ProgressService = ProgressService.getInstance();
       progressService.deleteProgress(itemId);
