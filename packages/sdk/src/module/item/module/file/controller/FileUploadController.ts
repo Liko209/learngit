@@ -325,6 +325,7 @@ class FileUploadController {
   private _saveToItemFileCache(items: Item[]) {
     items.forEach((item: Item) => {
       if (!this._progressCaches.has(item.id)) {
+        const hasUploaded = this._hasValidStoredFile(item);
         this._progressCaches.set(item.id, {
           progress: {
             id: item.id,
@@ -332,7 +333,7 @@ class FileUploadController {
               loaded: 0,
               total: 1,
             },
-            status: PROGRESS_STATUS.INPROGRESS,
+            status: hasUploaded ? PROGRESS_STATUS.SUCCESS : PROGRESS_STATUS.FAIL,
           },
           itemFile: item,
         });
@@ -425,27 +426,23 @@ class FileUploadController {
           break;
       }
       info.progress.rate.loaded = loaded;
+      info.progress.status = status;
       notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [info.progress]);
     }
   }
 
-  private _updateProgress(
-    event: ProgressEventInit,
-    groupId: number,
-    itemId: number,
-  ) {
+  private _updateProgress(event: ProgressEventInit, itemId: number) {
     const { loaded, total } = event;
     if (loaded && total) {
-      const progress = {
-        id: itemId, // id is item id
-        rate: { total, loaded },
-      };
+      const rate = { total, loaded };
 
-      const uploadStatus = this._progressCaches.get(progress.id);
+      const uploadStatus = this._progressCaches.get(itemId);
       if (uploadStatus) {
-        uploadStatus.progress = progress;
+        uploadStatus.progress.rate = rate;
+        notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [
+          uploadStatus.progress,
+        ]);
       }
-      notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
     }
   }
 
@@ -489,7 +486,7 @@ class FileUploadController {
         extendFileData.post_url,
         formData,
         (event: ProgressEventInit) => {
-          this._updateProgress(event, groupId, itemId);
+          this._updateProgress(event, itemId);
         },
         requestHolder,
       );
@@ -519,7 +516,7 @@ class FileUploadController {
     const uploadRes = await ItemAPI.uploadFileItem(
       formData,
       (e: ProgressEventInit) => {
-        this._updateProgress(e, groupId, itemId);
+        this._updateProgress(e, itemId);
       },
       requestHolder,
     );
@@ -706,6 +703,7 @@ class FileUploadController {
     const progress = {
       id: preInsertItem.id,
       rate: { total: 0, loaded: 0 },
+      status: PROGRESS_STATUS.INPROGRESS,
     };
 
     const preInsertItemId = preInsertItem.id;
@@ -849,7 +847,7 @@ class FileUploadController {
     const uploadingFiles = Array.from(this._progressCaches.values());
     for (let i = 0; i < uploadingFiles.length; i++) {
       const fileStatus = uploadingFiles[i];
-      if (fileStatus.itemFile && !this._isFileUploaded(fileStatus.itemFile)) {
+      if (fileStatus && this._isFileInUploading(fileStatus)) {
         hasUploading = true;
         break;
       }
@@ -857,10 +855,9 @@ class FileUploadController {
     return hasUploading;
   }
 
-  private _isFileUploaded(itemFile: ItemFile) {
-    return (
-      itemFile.versions.length > 0 && itemFile.versions[0].stored_file_id > 0
-    );
+  private _isFileInUploading(fileStatus: ItemFileUploadStatus) {
+    const progress = fileStatus.progress;
+    return progress.status === PROGRESS_STATUS.INPROGRESS;
   }
 }
 
