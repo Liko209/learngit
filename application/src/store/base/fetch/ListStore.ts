@@ -65,11 +65,11 @@ export class ListStore<T> extends BaseNotificationSubscribe {
   }
 
   first() {
-    return this._items[0];
+    return this.size > 0 ? this._items[0] : undefined;
   }
 
   last() {
-    return this._items[this.size - 1];
+    return this.size > 0 ? this._items[this.size - 1] : undefined;
   }
 
   dump(...args: any[]) {
