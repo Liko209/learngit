@@ -341,7 +341,10 @@ export class BookmarkPage extends BaseConversationPage {
 }
 
 export class PostItem extends BaseWebComponent {
-
+  get postId() {
+    return this.self.getAttribute('data-id');
+  }
+  
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
   }

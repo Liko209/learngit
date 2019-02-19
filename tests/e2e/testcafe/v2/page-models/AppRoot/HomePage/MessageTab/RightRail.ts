@@ -106,6 +106,10 @@ export class RightRail extends BaseWebComponent {
   get notesTab() {
     return this.getComponent(NotesTab);
   }
+
+  get pinnedTab() {
+    return this.getComponent(PinnedTab);
+  }
 }
 
 class TabEntry extends BaseWebComponent {
@@ -296,15 +300,15 @@ class PinnedTab extends BaseTab {
   }
 
   nthItem(n: number) {
-    return this.getComponent(PinnedPost, this.items.nth(n))
+    return this.getComponent(PinnedItem, this.items.nth(n))
   }
 
   ItemByPostId(postId: string) {
-    return this.getComponent(PinnedPost, this.items.filter(`[data-postid=${postId}]`));
+    return this.getComponent(PinnedItem, this.items.filter(`[data-postid=${postId}]`));
   }
 }
 
-class PinnedPost extends BaseWebComponent {
+class PinnedItem extends BaseWebComponent {
   get postId() {
     return this.self.getAttribute('data-postid');
   }
@@ -340,15 +344,24 @@ class PinnedPost extends BaseWebComponent {
     await this.t.expect(this.postId).eql(postId);
   }
 
-  async postTextShouldBe(text:string) {
-    await this.t.expect(this.postText.withText(text).exists).ok();
+  async shouldBeCreator(name: string) {
+    await this.t.expect(this.creator.withExactText(name).exists).ok();
+  }
+
+  async postTextShouldBe(text: string | RegExp) {
+    if (typeof text == "string") {
+      await this.t.expect(this.postText.withText(text).exists).ok();
+    } else {
+      await this.t.expect(this.postText.textContent).match(text);
+    }
+
   }
 
   async shouldHasFileOrImage(fileName: string) {
     await this.t.expect(this.fileOrImageFileNames.withText(fileName).exists).ok();
   }
 
-  async shouldHasItemText(text: string) {
+  async shouldHasAttachmentsTextText(text: string) {
     await this.t.expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists).ok();
   }
 
