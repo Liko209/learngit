@@ -55,7 +55,7 @@ function dialog(config: BaseType) {
     },
   };
 
-  show(undefined, currentConfig);
+  show(currentConfig);
   return {
     dismiss,
     startLoading,
