@@ -12,7 +12,9 @@ describe('MemberHeaderView', () => {
   describe('render()', () => {
     it('should display [AddTeamMembers] button when user has permission to add team. [JPT-911]', () => {
       const props: any = {
-        group: {},
+        group: {
+          isTeam: true,
+        },
         isCurrentUserHasPermissionAddMember: true,
       };
       const Wrapper = shallow(<MemberHeaderView {...props} />);
@@ -20,7 +22,9 @@ describe('MemberHeaderView', () => {
     });
     it('should display none [AddTeamMembers] button when user has not permission to add team. [JPT-911]', () => {
       const props: any = {
-        group: {},
+        group: {
+          isTeam: true,
+        },
         isCurrentUserHasPermissionAddMember: false,
       };
       const Wrapper = shallow(<MemberHeaderView {...props} />);
