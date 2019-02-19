@@ -15,7 +15,7 @@ import {
   IPhoneNumberResponse,
 } from './types';
 
-class TelephonyApi {
+class TelephonyApi extends Api {
   static getSpecialNumbers(request?: ISpecialServiceRequest) {
     const query = {
       path: RINGCENTRAL_API.API_SPECIAL_SERVICE_NUMBER,
