@@ -20,7 +20,7 @@ import {
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
 import { ContactSearch } from '@/containers/ContactSearch';
-import portalManager from '@/common/PortalManager';
+import { DialogContext } from '@/containers/Dialog';
 
 import { ViewProps } from './types';
 import {
@@ -41,6 +41,8 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 
 @observer
 class CreateTeam extends React.Component<ViewProps, State> {
+  static contextType = DialogContext;
+
   teamNameRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
 
@@ -161,7 +163,7 @@ class CreateTeam extends React.Component<ViewProps, State> {
     }
   }
 
-  onClose = () => portalManager.dismiss();
+  onClose = () => this.context();
 
   renderServerUnknownError() {
     const message = 'people.prompt.WeWerentAbleToCreateTheTeamTryAgain';

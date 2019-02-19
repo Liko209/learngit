@@ -121,7 +121,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <FormLink dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
-  messageAfterClick = () => portalManager.dismiss();
+  messageAfterClick = () => portalManager.dismissLast();
 
   render() {
     const {

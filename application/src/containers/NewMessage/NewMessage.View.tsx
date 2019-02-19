@@ -16,7 +16,7 @@ import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactSearch } from '@/containers/ContactSearch';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
-import portalManager from '@/common/PortalManager';
+import { DialogContext } from '@/containers/Dialog';
 import { ViewProps } from './types';
 import {
   ToastType,
@@ -41,6 +41,7 @@ const StyledTextWithLink = styled.div`
 
 @observer
 class NewMessage extends React.Component<ViewProps, State> {
+  static contextType = DialogContext;
   messageRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
 
@@ -73,7 +74,7 @@ class NewMessage extends React.Component<ViewProps, State> {
     this.onClose();
   }
 
-  onClose = () => portalManager.dismiss();
+  onClose = () => this.context();
 
   openCreateTeam = () => {
     this.onClose();

@@ -18,7 +18,7 @@ import { ViewProps } from './types';
 
 @observer
 class AddMembers extends React.Component<ViewProps> {
-  handleClose = () => portalManager.dismiss();
+  handleClose = () => portalManager.dismissLast();
 
   renderFlashToast = (message: string) => {
     Notification.flashToast({
@@ -33,7 +33,7 @@ class AddMembers extends React.Component<ViewProps> {
   handleAddTeam = async () => {
     const { addTeamMembers } = this.props;
     try {
-      portalManager.dismiss();
+      portalManager.dismissLast();
       await addTeamMembers();
       return true;
     } catch (error) {

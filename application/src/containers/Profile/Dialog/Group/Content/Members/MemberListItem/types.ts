@@ -16,7 +16,8 @@ type MembersViewProps = MemberListItemProps & {
   isThePersonAdmin: boolean;
   isCurrentUserAdmin: boolean;
   currentUserId: number;
-  isOnlyOneAdmin: boolean;
+  adminNumber: number;
+  isTeam: boolean;
 };
 
 export { MembersViewProps, MemberListItemProps };

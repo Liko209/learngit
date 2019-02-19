@@ -16,14 +16,16 @@ import { Favorite } from '@/containers/common/Favorite';
 import { Privacy } from '@/containers/common/Privacy';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
-import portalManager from '@/common/PortalManager';
 import { TeamSettingButton } from '@/containers/common/TeamSettingButton';
+import { DialogContext } from '@/containers/Dialog';
 
 @observer
 class ProfileDialogGroupTitleViewComponent extends Component<
   WithNamespaces & ProfileDialogGroupTitleViewProps
 > {
-  dismiss = () => portalManager.dismiss();
+  static contextType = DialogContext;
+
+  dismiss = this.context;
 
   render() {
     const { id, t, group } = this.props;
