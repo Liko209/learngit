@@ -41,7 +41,7 @@ const withLoading = <
   Component: ComponentType<P>,
   CustomizedLoading?: ComponentType<any>,
 ): React.SFC<P & WithLoadingProps> => {
-  return React.memo(({ loading, variant, ...props }: WithLoadingProps) => {
+  return React.memo(({ loading, variant, ...props }) => {
     const LoadingWithDelay = withDelay(
       CustomizedLoading || MAP[variant || 'circular'],
     );
@@ -49,7 +49,7 @@ const withLoading = <
       <>
         {loading ? <LoadingWithDelay delay={100} /> : null}
         <Component
-          {...props}
+          {...props as P}
           loading={loading}
           style={{ display: loading ? 'none' : '' }}
         />

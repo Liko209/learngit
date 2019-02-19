@@ -58,13 +58,22 @@ describe('CreateTeamView', () => {
         },
         {
           type: 'canPost',
+<<<<<<< HEAD
           text: 'people.team.MembersMayPostMessages',
 
+=======
+          text: 'MembersMayPostMessages',
+>>>>>>> develop
           checked: true,
         },
         {
           type: 'canAddMember',
           text: 'people.team.MembersMayAddOtherMembers',
+          checked: true,
+        },
+        {
+          type: 'canPin',
+          text: 'MembersMayPinPosts',
           checked: true,
         },
       ];
@@ -79,6 +88,7 @@ describe('CreateTeamView', () => {
         permissionFlags: {
           TEAM_ADD_MEMBER: true,
           TEAM_POST: true,
+          TEAM_PIN_POST: true,
         },
       };
       expect(mockCreate).toBeCalledWith(props.members, expectResult);

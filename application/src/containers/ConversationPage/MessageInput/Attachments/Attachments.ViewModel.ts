@@ -12,11 +12,15 @@ import {
   SelectFile,
   DidUploadFileCallback,
 } from './types';
-
-import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
+import {
+  notificationCenter,
+  ENTITY,
+  EVENT_TYPES,
+  GroupConfigService,
+} from 'sdk/service';
 
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
@@ -30,8 +34,6 @@ import {
 const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   implements AttachmentsViewProps {
-  private _itemService: ItemService;
-  private _postService: NewPostService;
   private _didUploadFileCallback?: DidUploadFileCallback;
   @observable
   items: Map<number, AttachmentItem> = new Map<number, AttachmentItem>();
@@ -40,8 +42,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   constructor(props: AttachmentsProps) {
     super(props);
-    this._itemService = ItemService.getInstance();
-    this._postService = NewPostService.getInstance();
     this.reaction(
       () => this.id,
       () => {
@@ -52,7 +52,8 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     this.reaction(
       () => this.files,
       () => {
-        const quill = (document.querySelector(QUILL_QUERY) as any).__quill;
+        const getQuill = document.querySelector(QUILL_QUERY) as any;
+        const quill = getQuill && getQuill.__quill;
         requestAnimationFrame(() => {
           quill.focus();
         });
@@ -108,17 +109,16 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       .map((looper: SelectFile) => looper.data);
   }
 
-  reloadFiles = () => {
-    this.items.clear();
-    const result: ItemFile[] = this._itemService.getUploadItems(this.id);
-    if (result && result.length > 0) {
-      result.forEach((element: ItemFile) => {
+  reloadFiles = async () => {
+    this.cleanFiles();
+    const itemService = ItemService.getInstance() as ItemService;
+    const uploadItems = await itemService.initialUploadItemsFromDraft(this.id);
+    if (uploadItems && uploadItems.length > 0) {
+      uploadItems.forEach((element: ItemFile) => {
         this.items.set(element.id, {
           item: element,
         } as AttachmentItem);
       });
-    } else {
-      this.cleanFiles();
     }
   }
 
@@ -159,10 +159,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   canUploadFiles = async (files: File[]) => {
+    const itemService = ItemService.getInstance() as ItemService;
     if (files.length === 0) {
       return true;
     }
-    return this._itemService.canUploadFiles(this.id, files, true); // TODO: The third parameter should be false for drag and drop files.
+    return itemService.canUploadFiles(this.id, files, true); // TODO: The third parameter should be false for drag and drop files.
   }
 
   private _uploadFiles = async (files: SelectFile[], isUpdate: boolean) => {
@@ -172,7 +173,8 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   uploadFile = async (info: SelectFile, isUpdate: boolean) => {
     try {
       const { data } = info;
-      const item = await this._itemService.sendItemFile(
+      const itemService = ItemService.getInstance() as ItemService;
+      const item = await itemService.sendItemFile(
         this.props.id,
         data,
         isUpdate,
@@ -194,6 +196,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         } else {
           this.items.set(item.id, info);
         }
+        if (this.props.forceSaveDraft) {
+          this.forceSaveDraftItems();
+        }
       }
       return item;
     } catch (e) {
@@ -202,15 +207,18 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   isFileExists = async (file: File) => {
-    return await this._itemService.isFileExists(this.props.id, file.name);
+    const itemService = ItemService.getInstance() as ItemService;
+    return await itemService.isFileExists(this.props.id, file.name);
   }
 
   cancelUploadFile = async (info: ItemInfo) => {
     const { id } = info;
     const record = this.items.get(id);
+    const itemService = ItemService.getInstance() as ItemService;
     if (record) {
-      await this._itemService.cancelUpload(id);
+      await itemService.cancelUpload(id);
       this.items.delete(id);
+      this.forceSaveDraftItems();
     }
   }
 
@@ -246,18 +254,31 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   sendFilesOnlyPost = async () => {
+    const postService = PostService.getInstance() as PostService;
     try {
       const ids: number[] = [];
       this.items.forEach((value: AttachmentItem) => {
         ids.push(value.item.id);
       });
-      await this._postService.sendPost({
+      await postService.sendPost({
         text: '',
         groupId: this.id,
         itemIds: ids,
       });
       this.items.clear();
     } catch (e) {}
+  }
+
+  forceSaveDraftItems = () => {
+    const draftItemsIds: number[] = [];
+    const groupConfigService = GroupConfigService.getInstance() as GroupConfigService;
+    this.files.forEach((file: ItemFile) => {
+      draftItemsIds.push(file.id);
+    });
+    groupConfigService.updateDraft({
+      attachment_item_ids: draftItemsIds,
+      id: this.id,
+    });
   }
 
   dispose = () => {

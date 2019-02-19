@@ -20,24 +20,18 @@ storiesOf('Pattern', module)
         <JuiHistoryOperation
           tooltipTitle="Back"
           menu={items}
-          open={true}
           disabled={false}
           type={OPERATION.BACK}
           onClick={() => {}}
-          onLongPress={() => {}}
           onClickMenu={() => {}}
-          onClickAway={() => {}}
         />
         <JuiHistoryOperation
           tooltipTitle="Forward"
           type={OPERATION.FORWARD}
           menu={items}
-          open={false}
           disabled={false}
           onClick={() => {}}
-          onLongPress={() => {}}
           onClickMenu={() => {}}
-          onClickAway={() => {}}
         />
       </div>
     );

@@ -111,16 +111,15 @@ describe('TeamSettingsViewModel', () => {
 describe('TeamSettingsViewModel', () => {
   const groupService = new GroupService();
   beforeEach(() => {
-    (GroupService as any).mockImplementation(() => groupService);
+    jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
   });
   afterEach(() => {
     jest.resetAllMocks();
   });
   describe('Error handling', () => {
     beforeEach(() => {
-      groupService.updateTeamSetting = jest
-        .fn()
-        .mockRejectedValueOnce(new Error());
+      groupService.leaveTeam = jest.fn().mockRejectedValueOnce(new Error());
+      groupService.deleteTeam = jest.fn().mockRejectedValueOnce(new Error());
     });
     const setUp = () => {
       return new TeamSettingsViewModel();
@@ -171,6 +170,47 @@ describe('TeamSettingsViewModel', () => {
         .mockImplementation(() => {});
       const vm = setUp();
       await vm.leaveTeam();
+      expect(flashToast).not.toBeCalled();
+      expect(utils.generalErrorHandler).toHaveBeenCalled();
+    });
+
+    it('should display error when failed to delete team due to unexpected backend issue [JPT-1120]', async () => {
+      const flashToast = jest
+        .spyOn(Notification, 'flashToast')
+        .mockImplementation(() => {});
+      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(true);
+      jest
+        .spyOn(errorHelper, 'isNetworkConnectionError')
+        .mockReturnValue(false);
+      const vm = setUp();
+      await vm.deleteTeam();
+      expect(flashToast).toBeCalledWith(
+        toastParamsBuilder('deleteTeamServerErrorContent'),
+      );
+    });
+    it('should display error when failed to delete team due to disconnect network [JPT-1118]', async () => {
+      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(false);
+      jest.spyOn(errorHelper, 'isNetworkConnectionError').mockReturnValue(true);
+      const flashToast = jest
+        .spyOn(Notification, 'flashToast')
+        .mockImplementation(() => {});
+      const vm = setUp();
+      await vm.deleteTeam();
+      expect(flashToast).toBeCalledWith(
+        toastParamsBuilder('deleteTeamNetworkErrorContent'),
+      );
+    });
+    it('should call generalErrorHandler when server error occurs', async () => {
+      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(false);
+      jest
+        .spyOn(errorHelper, 'isNetworkConnectionError')
+        .mockReturnValue(false);
+      jest.spyOn(utils, 'generalErrorHandler').mockReturnValue(jest.fn());
+      const flashToast = jest
+        .spyOn(Notification, 'flashToast')
+        .mockImplementation(() => {});
+      const vm = setUp();
+      await vm.deleteTeam();
       expect(flashToast).not.toBeCalled();
       expect(utils.generalErrorHandler).toHaveBeenCalled();
     });

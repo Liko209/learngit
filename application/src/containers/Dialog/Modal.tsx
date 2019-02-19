@@ -1,13 +1,13 @@
 /*
  * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2018-10-11 13:21:43
+ * @Date: 2018-11-21 13:28:06
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
-import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
+import { JuiDialog, JuiDialogProps } from 'jui/components/Dialog';
 import portalManager from '@/common/PortalManager';
 
+<<<<<<< HEAD
 type BaseType = {
   isAlert?: boolean;
 } & JuiModalProps;
@@ -32,25 +32,28 @@ function modal(config: BaseType) {
     };
 
     return <JuiModal {...currentConfig} />;
+=======
+type Props = {
+  componentProps?: any;
+} & JuiDialogProps;
+
+function modal(
+  component: React.ComponentType<any> | JSX.Element,
+  props: Props,
+) {
+  const Component = component;
+  const Dialog = () => {
+    return (
+      <JuiDialog {...props}>
+        {Component instanceof Function ? <Component /> : Component}
+      </JuiDialog>
+    );
+>>>>>>> develop
   };
 
-  const { dismiss, show } = portalManager.wrapper(BaseModal);
+  const { dismiss, show } = portalManager.wrapper(Dialog);
 
-  const currentConfig = {
-    ...newConfig,
-    isAlert,
-    open: true,
-    async onOK() {
-      onOK && (await onOK());
-      dismiss();
-    },
-    onCancel() {
-      onCancel && onCancel();
-      dismiss();
-    },
-  };
-
-  show(undefined, currentConfig);
+  show();
   return {
     dismiss,
   };

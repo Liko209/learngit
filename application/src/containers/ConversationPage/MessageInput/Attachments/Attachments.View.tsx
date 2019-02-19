@@ -45,6 +45,7 @@ class AttachmentsViewComponent extends Component<
   }
 
   componentWillUnmount() {
+    this.props.forceSaveDraftItems();
     this.props.cleanFiles();
     this.props.dispose();
   }

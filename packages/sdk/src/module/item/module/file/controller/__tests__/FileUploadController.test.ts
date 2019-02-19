@@ -19,6 +19,7 @@ import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
 import { UserConfig } from '../../../../../../service/account/UserConfig';
 import { isInBeta } from '../../../../../../service/account/clientConfig';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
+import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
 import {
   FileUploadController,
@@ -31,11 +32,14 @@ import {
   JSdkError,
   ERROR_CODES_SDK,
 } from '../../../../../../error';
+import { GroupConfigService } from '../../../../../../service/groupConfig';
 
+jest.mock('../../../../../../service/groupConfig');
 jest.mock('../../../../service/ItemService');
 jest.mock(
   '../../../../../../framework/controller/impl/PartialModifyController',
 );
+jest.mock('../../../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../service/account/clientConfig');
 jest.mock('../../../../../../service/account/UserConfig');
@@ -53,11 +57,13 @@ function clearMocks() {
 }
 
 describe('fileUploadController', () => {
+  const groupConfigService = new GroupConfigService();
   const itemService = new ItemService();
   const itemDao = new ItemDao(null);
+  let fileUploadController: FileUploadController;
   const partialModifyController = new PartialModifyController(null);
   const fileRequestController = new RequestController(null);
-  let fileUploadController: FileUploadController;
+  const entitySourceController = new EntitySourceController(null, null, null);
 
   function setup() {
     const userId = 2;
@@ -66,12 +72,14 @@ describe('fileUploadController', () => {
 
     UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
     UserConfig.getCurrentUserId.mockReturnValue(userId);
-
+    GroupConfigService.getInstance = jest
+      .fn()
+      .mockReturnValue(groupConfigService);
+    itemService.getEntitySource.mockReturnValue(entitySourceController);
     itemService.createLocalItem.mockImplementation(() => {});
     itemService.updateLocalItem.mockImplementation(() => {});
     itemService.deleteLocalItem.mockImplementation(() => {});
 
-    notificationCenter.emitEntityReplace.mockImplementation(() => {});
     notificationCenter.emit.mockImplementation(() => {});
     notificationCenter.removeListener.mockImplementation(() => {});
 
@@ -1261,6 +1269,137 @@ describe('fileUploadController', () => {
       fileUploadController.cleanUploadingFiles(1, [1, 2]);
       expect(uploadingFiles.get(1)).toBeUndefined();
       expect(uploadingFiles.get(2)).not.toBeUndefined();
+    });
+  });
+
+  describe('hasUploadingFiles', () => {
+    let progressCaches = undefined;
+    const groupId = 1;
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      progressCaches = new Map();
+    });
+
+    function setFileCache(itemFile: any) {
+      progressCaches.set(-1, {
+        itemFile,
+        progress: { rate: { loaded: 10 } },
+      } as ItemFileUploadStatus);
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+    }
+
+    it('should return false when has no file cache', () => {
+      expect(fileUploadController.hasUploadingFiles()).toBeFalsy();
+    });
+
+    it('should return true when has files in uploading', () => {
+      setFileCache({
+        group_ids: [groupId],
+        versions: [{ size: 1, stored_file_id: 0 }],
+      });
+
+      expect(fileUploadController.hasUploadingFiles()).toBeTruthy();
+    });
+
+    it('should return false when has no file in uploading', () => {
+      setFileCache({
+        group_ids: [groupId],
+        versions: [{ size: 1, stored_file_id: 999 }],
+      });
+
+      expect(fileUploadController.hasUploadingFiles()).toBeFalsy();
+    });
+  });
+
+  describe('initialUploadItemsFromDraft', () => {
+    let uploadingFiles = undefined;
+    const progressCaches = new Map();
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      uploadingFiles = new Map();
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+    });
+
+    function setUpUploadingFiles(groupId: number, itemFiles: any[]) {
+      uploadingFiles.set(groupId, itemFiles);
+      Object.assign(fileUploadController, {
+        _uploadingFiles: uploadingFiles,
+      });
+    }
+    const groupId = 2;
+
+    it('should just return [] when has no file id', async () => {
+      groupConfigService.getDraftAttachmentItemIds = jest
+        .fn()
+        .mockReturnValue([1]);
+      jest
+        .spyOn(fileUploadController, '_setUploadItems')
+        .mockImplementation(() => {});
+      const res = await fileUploadController.initialUploadItemsFromDraft(
+        groupId,
+      );
+      expect(res).toEqual([]);
+    });
+
+    it('should use draft ids directly when has no upload files before', async () => {
+      const incomingIds = [-10, -376842];
+      groupConfigService.getDraftAttachmentItemIds = jest
+        .fn()
+        .mockReturnValue(incomingIds);
+
+      const itemFiles = [];
+      setUpUploadingFiles(groupId, itemFiles);
+
+      entitySourceController.getEntitiesLocally = jest
+        .fn()
+        .mockReturnValue([
+          { id: -10, name: 'name', is_new: true } as ItemFile,
+          { id: -376842, name: 'name', is_new: false } as ItemFile,
+        ]);
+      const res = await fileUploadController.initialUploadItemsFromDraft(
+        groupId,
+      );
+
+      expect(res.map(x => x.id)).toEqual(incomingIds);
+      expect(progressCaches.has(-376842)).not.toBeUndefined();
+      expect(progressCaches.has(-10)).not.toBeUndefined();
+    });
+
+    it('should compare and insert draft itemIds to uploadFiles when has uploadFiles before', async () => {
+      const incomingIds = [-10, -385034];
+      groupConfigService.getDraftAttachmentItemIds = jest
+        .fn()
+        .mockReturnValue(incomingIds);
+
+      const itemFiles = [
+        { id: -10, name: 'name', is_new: true } as ItemFile,
+        { id: -376842, name: 'name', is_new: false } as ItemFile,
+      ];
+
+      setUpUploadingFiles(groupId, itemFiles);
+      const previousItems = fileUploadController
+        .getUploadItems(groupId)
+        .map(x => x.id);
+
+      entitySourceController.getEntitiesLocally = jest
+        .fn()
+        .mockReturnValue([
+          { id: -385034, name: 'name', is_new: false } as ItemFile,
+        ]);
+
+      const res = await fileUploadController.initialUploadItemsFromDraft(
+        groupId,
+      );
+
+      expect(previousItems).toEqual([-10, -376842]);
+      expect(res.map(x => x.id)).toEqual([-10, -376842, -385034]);
+      expect(progressCaches.has(-385034)).not.toBeUndefined();
     });
   });
 });

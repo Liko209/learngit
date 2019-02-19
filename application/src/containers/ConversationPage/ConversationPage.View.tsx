@@ -146,7 +146,11 @@ class ConversationPageViewComponent extends Component<
             text={t('message.prompt.disabledText')}
           />
         )}
-        <AttachmentManager id={groupId} viewRef={this._attachmentManagerRef} />
+        <AttachmentManager
+          id={groupId}
+          viewRef={this._attachmentManagerRef}
+          forceSaveDraft={false}
+        />
       </JuiConversationPage>
     ) : null;
   }

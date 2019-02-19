@@ -270,7 +270,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   memberEntryByName(name: string) {
-    return this.getComponent(Member, this.memberNames.withExactText(name).parent(0));
+    return this.getComponent(Member, this.memberNames.withExactText(name).parent('li'));
   }
 
   get addMembersIcon() {
@@ -329,6 +329,7 @@ export class ProfileDialog extends BaseWebComponent {
   get memberMoreMenu() {
     return this.getComponent(MemberMoreMenu);
   }
+
   get joinTeamButton() {
     return this.getSelectorByIcon('add_member');
   }
@@ -351,20 +352,25 @@ class Member extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonName', this.self);
   }
 
-  get admin() {
+  get adminLabel() {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self);
   }
 
-  isAdmin(): Promise<boolean> {
-    return this.admin.exists
+  get guestLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
   }
 
-  async shouldBeAdmin() {
-    await this.t.expect(this.isAdmin).ok();
+  async showAdminLabel() {
+    await this.t.expect(this.adminLabel.exists).ok();
   }
 
-  async shouldBeMemberOnly() {
-    await this.t.expect(this.isAdmin).notOk();
+  async showGuestLabel() {
+    await this.t.expect(this.guestLabel.exists).ok();
+  }
+
+  async showMemberLabel() {
+    await this.t.expect(this.adminLabel.exists).notOk();
+    await this.t.expect(this.guestLabel.exists).notOk();
   }
 
   get moreButton() {
@@ -379,7 +385,7 @@ class Member extends BaseWebComponent {
 
 class MoreMenu extends BaseWebComponent {
   get self() {
-    return this.getSelector('div[role="document"]');
+    return this.getSelector('ul[role="menu"]');
   }
 
   get copyUrlMenuItem() {
@@ -404,7 +410,7 @@ class MoreMenu extends BaseWebComponent {
 
 class MemberMoreMenu extends BaseWebComponent {
   get self() {
-    return this.getSelector('div[role="document"]');
+    return this.getSelector('ul[role="menu"]');
   }
 
   get removeFromTeamItem() {

@@ -15,6 +15,9 @@ import { GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 import { TotalUnreadController } from '../TotalUnreadController';
 
+jest.mock('../../../../post/service/PostService');
+jest.mock('../StateFetchDataController');
+jest.mock('../../../../../framework/controller/impl/EntitySourceController');
 class MockRequestController implements IRequestController {
   get = jest.fn();
   put = jest.fn();
@@ -43,10 +46,6 @@ class MockPartialModifyController implements IPartialModifyController {
   getRollbackPartialEntity = jest.fn();
   getMergedEntity = jest.fn();
 }
-
-jest.mock('../../../../../service/post');
-jest.mock('../StateFetchDataController');
-jest.mock('../../../../../framework/controller/impl/EntitySourceController');
 
 describe('StateActionController', () => {
   let stateActionController: StateActionController;
