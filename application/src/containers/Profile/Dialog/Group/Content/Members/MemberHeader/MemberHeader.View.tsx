@@ -25,14 +25,8 @@ class MemberHeader extends React.Component<
       AddTeamMembers,
       isCurrentUserHasPermissionAddMember,
     } = this.props;
-<<<<<<< HEAD
-    const key = group.isTeam
-      ? 'people.team.teamMembers'
-      : 'people.team.groupMembers';
-=======
     const { isTeam } = group;
-    const key = isTeam ? 'teamMembers' : 'groupMembers';
->>>>>>> develop
+    const key = isTeam ? 'people.team.teamMembers' : 'people.team.groupMembers';
     return (
       <JuiProfileDialogContentMemberHeader
         className={hasShadow ? 'shadow' : ''}
