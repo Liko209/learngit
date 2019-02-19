@@ -7,8 +7,10 @@ import { EventEmitter2 } from 'eventemitter2';
 import { IRTCUserAgent } from './IRTCUserAgent';
 import { UA_EVENT, ProvisionDataOptions } from './types';
 import { RTCCallOptions } from '../api/types';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 const WebPhone = require('ringcentral-web-phone');
+const LOG_TAG = 'RTCSipUserAgent';
 
 enum WEBPHONE_REGISTER_EVENT {
   REG_SUCCESS = 'registered',
@@ -29,13 +31,6 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._initListener();
   }
 
-  public register(options?: ProvisionDataOptions): void {
-    if (!this._webphone) {
-      return;
-    }
-    this._webphone.userAgent.register(options);
-  }
-
   public makeCall(phoneNumber: string, options: RTCCallOptions): any {
     if (!this._webphone) {
       return null;
@@ -47,15 +42,20 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   }
 
   public reRegister() {
+    rtcLogger.debug(LOG_TAG, 'Try to restart register with new transport');
     if (!this._webphone) {
       return;
     }
-    this._webphone.userAgent.transport.stopSendingKeepAlives();
-    this._webphone.userAgent.transport.connectionTimeout = null;
-    this._webphone.userAgent.transport.connectionPromise = null;
-    this._webphone.userAgent.transport.connectDeferredResolve = null;
-    this._webphone.userAgent.transport.status = 3;
-    this._webphone.userAgent.transport.reconnect();
+    if (this._webphone.userAgent.transport) {
+      this._webphone.userAgent.transport.removeAllListeners();
+    }
+    this._webphone.userAgent.transport = new this._webphone.userAgent.configuration.transportConstructor(
+      this._webphone.userAgent.getLogger('sip.transport'),
+      this._webphone.userAgent.configuration.transportOptions,
+    );
+    this._webphone.userAgent.setTransportListeners();
+    this._initTransportListener();
+    this._webphone.userAgent.transport.connect();
   }
 
   public unregister() {
@@ -64,6 +64,10 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     }
     this._webphone.userAgent.unregister();
     this._webphone.userAgent.removeAllListeners();
+    if (this._webphone.userAgent.transport) {
+      this._webphone.userAgent.transport.removeAllListeners();
+    }
+    this._webphone.userAgent.stop();
     this._webphone = null;
   }
 
@@ -86,6 +90,22 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
         this.emit(UA_EVENT.RECEIVE_INVITE, session);
       },
     );
+    if (this._webphone.userAgent.transport) {
+      this._initTransportListener();
+    } else {
+      this._webphone.userAgent.on('transportCreated', () => {
+        this._initTransportListener();
+      });
+    }
+  }
+
+  private _initTransportListener() {
+    this._webphone.userAgent.transport.on('transportError', () => {
+      if (this._webphone.userAgent.transport.noAvailableServers()) {
+        rtcLogger.warn(LOG_TAG, 'Transport error');
+        this.emit(UA_EVENT.TRANSPORT_ERROR);
+      }
+    });
   }
 }
 

@@ -35,8 +35,6 @@ class RTCRegistrationManager extends EventEmitter2
   private _retryTimer: NodeJS.Timeout | null = null;
   private _retryInterval: number = kRTCRegisterRetryTimerMin;
 
-  public onRegistrationAction(): void {}
-
   onNetworkChangeToOnlineAction(): void {
     this.reRegister();
   }
@@ -148,6 +146,9 @@ class RTCRegistrationManager extends EventEmitter2
     this._userAgent.on(UA_EVENT.REG_UNREGISTER, () => {
       this._onUADeRegister();
     });
+    this._userAgent.on(UA_EVENT.TRANSPORT_ERROR, () => {
+      this._onUATransportError();
+    });
   }
 
   public provisionReady(provisionData: any, provisionOptions: any) {
@@ -253,6 +254,15 @@ class RTCRegistrationManager extends EventEmitter2
         },
       );
     }
+  }
+
+  private _onUATransportError() {
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.UA_TRANSPORT_ERROR },
+      () => {
+        this._fsm.transportError();
+      },
+    );
   }
 
   private _onUAReceiveInvite(session: any) {
