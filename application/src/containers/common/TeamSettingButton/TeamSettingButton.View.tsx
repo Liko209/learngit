@@ -16,8 +16,8 @@ type Props = TeamSettingButtonViewProps & WithNamespaces;
 class TeamSettingButtonViewComponent extends Component<Props> {
   onClickSettingButton = async () => {
     const { id } = this.props;
-    portalManager.dismiss();
-    TeamSettings.show(undefined, { id });
+    portalManager.dismissLast();
+    TeamSettings.show({ id });
   }
 
   render() {
