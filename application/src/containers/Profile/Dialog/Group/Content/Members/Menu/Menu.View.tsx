@@ -106,9 +106,7 @@ class MenuViewComponent extends Component<Props, State> {
       isThePersonAdmin,
       isThePersonGuest,
     } = this.props;
-    const teamAdminToggleButton = isThePersonAdmin
-      ? 'people.team.revokeTeamAdmin'
-      : 'people.team.makeTeamAdmin';
+
     return (
       <JuiPopoverMenu
         Anchor={this._Anchor}
@@ -131,12 +129,20 @@ class MenuViewComponent extends Component<Props, State> {
               {t('people.team.removeFromTeam')}
             </JuiMenuItem>
           )}
-          {!isThePersonGuest && (
+          {!isThePersonGuest && isThePersonAdmin && (
             <JuiMenuItem
-              data-test-automation-id={teamAdminToggleButton}
+              data-test-automation-id="revokeTeamAdmin"
               onClick={this._toggleTeamAdmin}
             >
-              {t(teamAdminToggleButton)}
+              {t('people.team.revokeTeamAdmin')}
+            </JuiMenuItem>
+          )}
+          {!isThePersonGuest && !isThePersonAdmin && (
+            <JuiMenuItem
+              data-test-automation-id="makeTeamAdmin"
+              onClick={this._toggleTeamAdmin}
+            >
+              {t('people.team.makeTeamAdmin')}
             </JuiMenuItem>
           )}
         </JuiMenuList>
