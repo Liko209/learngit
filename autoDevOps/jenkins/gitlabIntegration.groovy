@@ -160,17 +160,18 @@ String gitlabTargetNamespace = env.gitlabTargetNamespace?: gitlabSourceNamespace
 String gitlabSourceRepoSshURL = env.gitlabSourceRepoSshURL?: params.GITLAB_SSH_URL
 String gitlabTargetRepoSshURL = env.gitlabTargetRepoSshURL?: gitlabSourceRepoSshURL
 String gitlabUserEmail = env.gitlabUserEmail
+String gitlabMergeRequestLastCommit = env.gitlabMergeRequestLastCommit
 
 /* e2e params vars */
 String e2eSiteEnv = params.E2E_SITE_ENV
 String e2eSeleniumServer = params.E2E_SELENIUM_SERVER
-Boolean e2eEnableRemoteDashboard = params.E2E_ENABLE_REMOTE_DASHBOARD
 String e2eBrowsers = params.E2E_BROWSERS
 String e2eConcurrency = params.E2E_CONCURRENCY
 String e2eExcludeTags = params.E2E_EXCLUDE_TAGS?: ''
+Boolean e2eEnableRemoteDashboard = params.E2E_ENABLE_REMOTE_DASHBOARD
+Boolean e2eEnableMockServer = params.E2E_ENABLE_MOCK_SERVER
 
 /* build strategy */
-
 Boolean isMerge = gitlabSourceBranch != gitlabTargetBranch
 Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch)
 Boolean skipUpdateGitlabStatus = !isMerge && integrationBranch != gitlabTargetBranch
@@ -431,6 +432,7 @@ node(buildNode) {
                 "SITE_ENV=${e2eSiteEnv}",
                 "SELENIUM_SERVER=${e2eSeleniumServer}",
                 "ENABLE_REMOTE_DASHBOARD=${e2eEnableRemoteDashboard}",
+                "ENABLE_MOCK_SERVER=${e2eEnableMockServer}",
                 "BROWSERS=${e2eBrowsers}",
                 "CONCURRENCY=${e2eConcurrency}",
                 "EXCLUDE_TAGS=${e2eExcludeTags}",
@@ -443,7 +445,6 @@ node(buildNode) {
                 "QUARANTINE_MODE=true",
                 "QUARANTINE_FAILED_THRESHOLD=4",
                 "QUARANTINE_PASSED_THRESHOLD=1",
-                "ENABLE_MOCK_SERVER=false",
                 "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${gitlabSourceBranch}][${gitlabMergeRequestLastCommit}]",
             ]) {dir("tests/e2e/testcafe") {
                 sh 'env'
