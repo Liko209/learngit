@@ -7,7 +7,7 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 
 import { analytics } from '@/Analytics';
-import { DialogPortal } from '@/containers/Dialog';
+import { ModalPortal } from '@/containers/Dialog';
 import { ToastWrapper } from '@/containers/ToastWrapper';
 
 import { HomeRouter } from '../HomeRouter';
@@ -57,7 +57,7 @@ class HomeView extends Component<HomeViewProps> {
           <Bottom id="app-main-section">
             <LeftNav />
             <HomeRouter />
-            <DialogPortal />
+            <ModalPortal />
           </Bottom>
         </Wrapper>
       </>
