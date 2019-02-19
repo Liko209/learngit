@@ -136,21 +136,31 @@ class FileUploadController {
   }
 
   async sendItemData(groupId: number, postItemIds: number[]) {
+    const expiredItemIds: number[] = [];
     const needWaitItemIds: number[] = [];
     postItemIds.forEach((id: number) => {
       const itemStatus = this._progressCaches.get(id);
       if (itemStatus && itemStatus.itemFile) {
         const item = itemStatus.itemFile;
+        const file = itemStatus.file;
         if (this._hasValidStoredFile(item)) {
           this._uploadItem(groupId, item, this._isUpdateItem(item));
-        } else {
+        } else if (file && file.size > 0) {
           needWaitItemIds.push(item.id);
+        } else {
+          expiredItemIds.push(item.id);
         }
       }
     });
 
     if (needWaitItemIds.length > 0) {
       this._waitUntilAllItemCreated(groupId, needWaitItemIds);
+    }
+
+    if (expiredItemIds.length > 0) {
+      expiredItemIds.forEach((id: number) => {
+        this._handleItemFileSendFailed(id);
+      });
     }
   }
 

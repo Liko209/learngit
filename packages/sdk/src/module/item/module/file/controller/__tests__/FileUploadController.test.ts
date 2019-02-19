@@ -476,7 +476,7 @@ describe('fileUploadController', () => {
         id: -3,
         is_new: true,
         versions: [validStoredFile],
-      } as ItemFile;
+      };
 
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
@@ -485,13 +485,16 @@ describe('fileUploadController', () => {
         type: 'ts',
         size: 123123,
       } as File;
+
       const itemFileUploadStatus = {
         file,
         progress: p,
         requestHolder: r,
-        itemFile: fileItem,
+        itemFile: fileItem as ItemFile,
       } as ItemFileUploadStatus;
+
       progressCaches.set(-3, itemFileUploadStatus);
+
       const itemFileUploadStatus2 = _.cloneDeep(itemFileUploadStatus);
       itemFileUploadStatus2.itemFile.id = -4;
       itemFileUploadStatus2.itemFile.versions = [invalidStoredFile];
@@ -571,7 +574,7 @@ describe('fileUploadController', () => {
     });
 
     it('should update item when user want to update the file item', async (done: jest.DoneCallback) => {
-      const { progressCaches, groupId, okRes } = sendItemData_setUp();
+      const { progressCaches, groupId } = sendItemData_setUp();
       progressCaches.get(-3).itemFile.is_new = false;
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
@@ -675,6 +678,52 @@ describe('fileUploadController', () => {
         expect(spy_uploadItem).toBeCalled();
         done();
       });
+    });
+
+    it('it should notify item upload failed when the item has no stored info and file', async () => {
+      const { progressCaches, groupId } = sendItemData_setUp();
+
+      progressCaches.set(-10, {
+        itemFile: { id: -10, versions: [{ download_url: '' }] },
+        progress: {
+          id: -11,
+          rate: {
+            loaded: 0,
+            total: 1,
+          },
+          status: PROGRESS_STATUS.INPROGRESS,
+        },
+        file: undefined,
+      });
+      progressCaches.set(-11, {
+        itemFile: { id: -11, versions: [{ download_url: '' }] },
+        file: undefined,
+        progress: {
+          id: -11,
+          rate: {
+            loaded: 0,
+            total: 1,
+          },
+          status: PROGRESS_STATUS.INPROGRESS,
+        },
+      });
+
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+
+      await fileUploadController.sendItemData(groupId, [-10, -11]);
+
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
+        SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+        {
+          preInsertId: expect.anything(),
+          status: 1,
+          updatedId: expect.anything(),
+        },
+      );
+      expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(2);
+      expect(notificationCenter.emit).toBeCalledTimes(2);
     });
   });
 
@@ -806,7 +855,6 @@ describe('fileUploadController', () => {
     let progressCaches: Map<number, ItemFileUploadStatus> = undefined;
     let uploadingFiles = undefined;
 
-    const itemDao = new ItemDao(null);
     beforeEach(() => {
       clearMocks();
       setup();
