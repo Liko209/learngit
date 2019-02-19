@@ -294,7 +294,7 @@ node(buildNode) {
             skipSaAndUt = skipBuildApp && skipBuildJui
 
             // we can even skip install dependencies
-            skipInstallDependencies = [skipSaAndUt, skipEndToEnd].every()
+            skipInstallDependencies = skipSaAndUt
         }
 
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
