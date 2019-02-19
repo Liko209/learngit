@@ -51,7 +51,7 @@ class PinnedCellView extends Component<PinnedCellViewProps & PinnedCellProps> {
           <PinnedItem didLoad={didLoad} key={id} id={id} />
         ))}
         {itemLen > MAX_ITEM_LENGTH && (
-          <JuiPinnedCellMore>
+          <JuiPinnedCellMore data-test-automation-id="pinned-section-more">
             {i18next.t('pinnedMore', { num: itemLen - MAX_ITEM_LENGTH })}
           </JuiPinnedCellMore>
         )}
