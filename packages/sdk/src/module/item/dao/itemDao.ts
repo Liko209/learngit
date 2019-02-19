@@ -182,8 +182,9 @@ class ItemDao extends BaseDao<Item> {
           const sanitizedItems = items.map((item: Item) =>
             viewDao.toSanitizedItem(item),
           );
-          viewDao.bulkPut(sanitizedItems);
+          return viewDao.bulkPut(sanitizedItems);
         }
+        return Promise.resolve();
       }),
     );
   }
@@ -216,8 +217,9 @@ class ItemDao extends BaseDao<Item> {
           const sanitizedItems = items.map((partialItem: Item) =>
             viewDao.toPartialSanitizedItem(partialItem),
           );
-          viewDao.bulkUpdate(sanitizedItems);
+          return viewDao.bulkUpdate(sanitizedItems);
         }
+        return Promise.resolve();
       }),
     );
   }
@@ -240,12 +242,14 @@ class ItemDao extends BaseDao<Item> {
         const viewDao = this._getItemViewDaoByTypeId(typeId);
         if (viewDao) {
           const idModes = filterResult.get(typeId) as IdModel[];
-          viewDao.bulkDelete(
+          return viewDao.bulkDelete(
             idModes.map((model: { id: number }) => {
               return model.id;
             }),
           );
         }
+
+        return Promise.resolve();
       }),
     );
   }

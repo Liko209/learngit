@@ -46,6 +46,7 @@ class ItemServiceController {
 
       this._itemActionController = new ItemActionController(
         partialModifyController,
+        this._entitySourceController,
       );
     }
     return this._itemActionController;

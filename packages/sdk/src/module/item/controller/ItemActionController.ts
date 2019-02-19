@@ -17,8 +17,7 @@ import {
 import notificationCenter from '../../../service/notificationCenter';
 import { ProgressService } from '../../progress';
 import { ENTITY } from '../../../service/eventKey';
-import { daoManager } from '../../../dao';
-import { ItemDao } from '../dao';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_FILE, 'file'],
@@ -32,6 +31,7 @@ const itemPathMap: Map<number, string> = new Map([
 class ItemActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
+    private _entitySourceController: IEntitySourceController<Item>,
   ) {}
 
   async doNotRenderItem(id: number, type: string) {
@@ -88,8 +88,7 @@ class ItemActionController {
         doUpdateModel,
       );
     } else {
-      const itemDao = daoManager.getDao(ItemDao);
-      await itemDao.delete(itemId);
+      this._entitySourceController.delete(itemId);
       notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
       const progressService: ProgressService = ProgressService.getInstance();
       progressService.deleteProgress(itemId);

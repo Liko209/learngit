@@ -75,9 +75,6 @@ describe('fileUploadController', () => {
     const userId = 2;
     const companyId = 3;
 
-    itemDao.put = jest.fn();
-    itemDao.update = jest.fn();
-    itemDao.delete = jest.fn();
     daoManager.getDao = jest.fn().mockReturnValue(itemDao);
 
     UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
@@ -193,8 +190,8 @@ describe('fileUploadController', () => {
     };
 
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
-      itemDao.get.mockResolvedValue(itemFile);
-      itemDao.put = jest.fn();
+      entitySourceController.get.mockResolvedValue(itemFile);
+      entitySourceController.put = jest.fn();
       ItemAPI.uploadFileItem.mockImplementation(
         (files: FormData, callback: ProgressCallback) => {
           callback({ lengthComputable: false, loaded: 0, total: 100 });
@@ -221,7 +218,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalledTimes(1);
-        expect(itemDao.put).toBeCalledTimes(1);
+        expect(entitySourceController.put).toBeCalledTimes(1);
         expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
           ENTITY.PROGRESS,
           [{ id: expect.any(Number), rate: { loaded: 10, total: 100 } }],
@@ -248,7 +245,7 @@ describe('fileUploadController', () => {
         } as BaseResponse,
       );
 
-      itemDao.get.mockResolvedValue(itemFile);
+      entitySourceController.get.mockResolvedValue(itemFile);
       ItemAPI.uploadFileItem.mockResolvedValue(errResponse);
 
       const file = new FormData();
@@ -853,7 +850,7 @@ describe('fileUploadController', () => {
       );
 
       setTimeout(() => {
-        expect(itemDao.delete).toBeCalledWith(itemId);
+        expect(entitySourceController.delete).toBeCalledWith(itemId);
         expect(uploadingFiles.get(1)).toHaveLength(1);
         expect(uploadingFiles.get(2)).toHaveLength(3);
         expect(progressCaches.get(-3)).not.toBeUndefined();
@@ -865,7 +862,7 @@ describe('fileUploadController', () => {
     it('should delete item and send notification', async () => {
       const itemId = -3;
       await fileUploadController.cancelUpload(itemId);
-      expect(itemDao.delete).toBeCalledTimes(1);
+      expect(entitySourceController.delete).toBeCalledTimes(1);
       expect(ItemAPI.cancelUploadRequest).toBeCalledWith(expect.anything());
       expect(progressCaches.get(itemId)).toBeUndefined();
       expect(progressCaches.get(-4)).not.toBeUndefined();
@@ -914,7 +911,7 @@ describe('fileUploadController', () => {
     it('should just upload item when file has beed send successfully', async (done: jest.DoneCallback) => {
       const existItem = { id: 11, versions: [] };
       itemDao.getExistGroupFilesByName.mockResolvedValue([existItem]);
-      itemDao.get.mockResolvedValue(itemWithVersion);
+      entitySourceController.get.mockResolvedValue(itemWithVersion);
       const serverItemFile = {
         id: 11,
         versions: itemWithVersion.versions,
@@ -932,8 +929,10 @@ describe('fileUploadController', () => {
           itemWithVersion.name,
           true,
         );
-        expect(itemDao.delete).toBeCalledWith(itemWithVersion.id);
-        expect(itemDao.update).toBeCalledWith(serverItemFile);
+        expect(entitySourceController.delete).toBeCalledWith(
+          itemWithVersion.id,
+        );
+        expect(entitySourceController.update).toBeCalledWith(serverItemFile);
         expect(fileRequestController.put).toBeCalledTimes(1);
         expect(spyNewItem).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();
@@ -942,7 +941,7 @@ describe('fileUploadController', () => {
     });
 
     it('should upload file again when file has not beed sent', async (done: jest.DoneCallback) => {
-      itemDao.get.mockResolvedValue(itemWithOutVersion);
+      entitySourceController.get.mockResolvedValue(itemWithOutVersion);
       const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
       spySendItemFile.mockImplementation(() => {});
       const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
@@ -975,7 +974,7 @@ describe('fileUploadController', () => {
     });
 
     it('should notify upload failed when the file does not exist in db', async (done: jest.DoneCallback) => {
-      itemDao.get.mockResolvedValue(null);
+      entitySourceController.get.mockResolvedValue(null);
       const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
       const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
 
@@ -1008,7 +1007,7 @@ describe('fileUploadController', () => {
 
       const itemId = 5;
       const item = { id: itemId, group_ids: [1], versions: [] };
-      itemDao.get.mockResolvedValue(item);
+      entitySourceController.get.mockResolvedValue(item);
       const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
       const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
 
@@ -1148,7 +1147,7 @@ describe('fileUploadController', () => {
     });
 
     it('should return true when has valid store file', async () => {
-      itemDao.get.mockResolvedValue({
+      entitySourceController.get.mockResolvedValue({
         id: -1,
         versions: [
           {
@@ -1163,18 +1162,18 @@ describe('fileUploadController', () => {
         ],
       });
       expect(await fileUploadController.hasValidItemFile(-1)).toBeTruthy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
 
     it('should return true input id > 0', async () => {
       expect(await fileUploadController.hasValidItemFile(1)).toBeTruthy();
-      expect(itemDao.get).not.toBeCalled();
+      expect(entitySourceController.get).not.toBeCalled();
     });
 
     it('should return false when can not find item in db', async () => {
-      itemDao.get.mockResolvedValue(null);
+      entitySourceController.get.mockResolvedValue(null);
       expect(await fileUploadController.hasValidItemFile(-1)).toBeFalsy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
 
     it('should return true when has valid file', async () => {
@@ -1189,7 +1188,7 @@ describe('fileUploadController', () => {
         file: { size: 1, name: 'name' } as File,
       } as ItemFileUploadStatus);
 
-      itemDao.get.mockResolvedValue({
+      entitySourceController.get.mockResolvedValue({
         id: -1,
         group_ids: [1],
         versions: [
@@ -1201,7 +1200,7 @@ describe('fileUploadController', () => {
         ],
       });
       expect(await fileUploadController.hasValidItemFile(-1)).toBeTruthy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
 
     it('should return false when the cached file has no size', async () => {
@@ -1216,7 +1215,7 @@ describe('fileUploadController', () => {
         file: { size: 0, name: 'name' } as File,
       } as ItemFileUploadStatus);
 
-      itemDao.get.mockResolvedValue({
+      entitySourceController.get.mockResolvedValue({
         id: -1,
         group_ids: [1],
         versions: [
@@ -1228,7 +1227,7 @@ describe('fileUploadController', () => {
         ],
       });
       expect(await fileUploadController.hasValidItemFile(-1)).toBeFalsy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
 
     it('should return false when can not find file cache', async () => {
@@ -1236,7 +1235,7 @@ describe('fileUploadController', () => {
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
-      itemDao.get.mockResolvedValue({
+      entitySourceController.get.mockResolvedValue({
         id: -1,
         group_ids: [1],
         versions: [
@@ -1248,7 +1247,7 @@ describe('fileUploadController', () => {
         ],
       });
       expect(await fileUploadController.hasValidItemFile(-1)).toBeFalsy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
   });
 

@@ -198,8 +198,9 @@ class FileUploadController {
   async hasValidItemFile(itemId: number) {
     let canResend = false;
     if (itemId < 0) {
-      const itemDao = daoManager.getDao(ItemDao);
-      const itemInDB = (await itemDao.get(itemId)) as ItemFile;
+      const itemInDB = (await this._entitySourceController.get(
+        itemId,
+      )) as ItemFile;
       if (itemInDB) {
         if (this._hasValidStoredFile(itemInDB)) {
           canResend = true;
@@ -221,8 +222,9 @@ class FileUploadController {
   async resendFailedFile(itemId: number) {
     this._updateFileProgress(itemId, PROGRESS_STATUS.INPROGRESS);
 
-    const itemDao = daoManager.getDao(ItemDao);
-    const itemInDB = (await itemDao.get(itemId)) as ItemFile;
+    const itemInDB = (await this._entitySourceController.get(
+      itemId,
+    )) as ItemFile;
     let sendFailed = false;
     if (itemInDB) {
       const groupId = itemInDB.group_ids[0];
@@ -271,8 +273,7 @@ class FileUploadController {
 
     this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
-    const itemDao = daoManager.getDao(ItemDao);
-    itemDao.delete(itemId);
+    this._entitySourceController.delete(itemId);
     notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
   }
 
@@ -634,9 +635,8 @@ class FileUploadController {
     itemFile: ItemFile,
   ) {
     const preInsertId = preInsertItem.id;
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.delete(preInsertId);
-    await itemDao.update(itemFile);
+    await this._entitySourceController.delete(preInsertId);
+    await this._entitySourceController.update(itemFile);
 
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
@@ -720,8 +720,7 @@ class FileUploadController {
   private async _preSaveItemFile(newItemFile: ItemFile, file: File) {
     this._saveItemFileToUploadingFiles(newItemFile);
     this._saveItemFileToProgressCache(newItemFile, file);
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.put(newItemFile);
+    await this._entitySourceController.put(newItemFile);
   }
 
   private _toItemFile(
@@ -799,7 +798,6 @@ class FileUploadController {
     fileName: string,
   ): Promise<ItemFile | null> {
     const itemDao = daoManager.getDao(ItemDao);
-
     const existFiles = await itemDao.getExistGroupFilesByName(
       groupId,
       fileName,
