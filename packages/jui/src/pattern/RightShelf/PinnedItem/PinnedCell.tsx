@@ -78,24 +78,6 @@ const JuiPinnedCellMore = styled.div`
 `;
 
 class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
-  // private _renderItems = () => {
-  //   const { items = [] } = this.props;
-
-  //   let array = items;
-  //   let restCount = 0;
-  //   if (items.length > MAX_ITEM_LENGTH) {
-  //     array = items.slice(0, MAX_ITEM_LENGTH);
-  //     restCount = items.length - array.length;
-  //   }
-  //   return (
-  //     <>
-  //       {array.map((props: JuiPinnedItemProps, index: number) => (
-  //         <JuiPinnedItem key={props.id} {...props} />
-  //       ))}
-  //       {restCount > 0 && <MoreWrapper>and {restCount} more</MoreWrapper>}
-  //     </>
-  //   );
-  // }
   render() {
     const {
       creator,

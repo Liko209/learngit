@@ -24,6 +24,8 @@ import {
 } from 'jui/pattern/RightShelf';
 import ReactResizeDetector from 'react-resize-detector';
 import { PinnedCell } from './PinnedCell';
+import { emptyView } from '../ItemList/Empty';
+import { RIGHT_RAIL_ITEM_TYPE } from '../ItemList';
 
 const HEADER_HEIGHT = 36;
 @observer
@@ -59,7 +61,7 @@ class PinnedListView
   }
 
   renderEmptyContent = () => {
-    return <div />;
+    return emptyView(RIGHT_RAIL_ITEM_TYPE.PIN_POSTS);
   }
 
   isRowLoaded = (index: number) => {

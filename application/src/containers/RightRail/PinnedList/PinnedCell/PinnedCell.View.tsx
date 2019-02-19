@@ -44,7 +44,6 @@ class PinnedCellView extends Component<PinnedCellViewProps & PinnedCellProps> {
         creator={creatorName}
         createTime={createTime}
         content={textContent}
-        // items={items}
         postId={post.id}
       >
         {itemIds.slice(0, MAX_ITEM_LENGTH).map((id: number) => (
