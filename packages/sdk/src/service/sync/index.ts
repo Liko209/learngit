@@ -27,13 +27,9 @@ import {
 import handleData from './handleData';
 import { notificationCenter } from '..';
 import { ERROR_TYPES, ErrorParserHolder } from '../../error';
-<<<<<<< HEAD
 import { ItemDao } from '../../module/item/dao';
-import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
-import { progressBar } from '../../utils/progress';
-=======
 // import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
->>>>>>> hotfix/1.0.2.190218
+import { progressBar } from '../../utils/progress';
 
 type SyncListener = {
   onInitialLoaded?: (indexData: IndexDataModel) => Promise<void>;

@@ -38,13 +38,7 @@ import { generalErrorHandler } from '@/utils/error';
 import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
-<<<<<<< HEAD
 import { PostService } from 'sdk/module/post';
-const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
-  dataModel.group_id === Number(groupId) && !dataModel.deactivated;
-=======
-import { NewPostService } from 'sdk/module/post';
->>>>>>> hotfix/1.0.2.190218
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();

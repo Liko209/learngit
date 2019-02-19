@@ -29,16 +29,11 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
-<<<<<<< HEAD
 import { ProfileService } from 'sdk/module/profile';
-=======
 import SequenceProcessorHandler from 'sdk/framework/processor/SequenceProcessorHandler';
 import PrefetchPostProcessor from './PrefetchPostProcessor';
 import { TDelta } from '../base/fetch/types';
 import postCacheController from '@/containers/ConversationPage/Stream/cache/PostCacheController';
-
-const { GroupService, ProfileService } = service;
->>>>>>> hotfix/1.0.2.190218
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
   const {
