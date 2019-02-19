@@ -16,7 +16,6 @@ export { default as AuthDao } from './auth';
 export { default as CompanyDao } from './company';
 export { default as ConfigDao } from './config';
 export { default as GroupStateDao } from './groupState';
-export { default as ProfileDao } from './profile';
 export { default as StateDao } from './state';
 export { default as DeactivatedDao } from './deactivated';
 export { default as GroupConfigDao } from './groupConfig';

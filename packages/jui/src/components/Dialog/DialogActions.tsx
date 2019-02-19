@@ -19,6 +19,7 @@ const JuiDialogActions = styled(
   &.root {
     padding: ${spacing(2, 6, 6)};
     margin: 0;
+    transform: translateZ(0);
   }
 `;
 
