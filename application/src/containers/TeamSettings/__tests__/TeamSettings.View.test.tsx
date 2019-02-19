@@ -9,7 +9,10 @@ import { TeamSettingsComponent } from '../TeamSettings.View';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { Dialog } from '@/containers/Dialog';
-import { JuiTeamSettingButtonListItem as ButtonListItem } from 'jui/pattern/TeamSetting';
+import {
+  JuiTeamSettingButtonListItem as ButtonListItem,
+  JuiTeamSettingButtonListItemText as ButtonListItemText,
+} from 'jui/pattern/TeamSetting';
 
 describe('TeamSettingsView', () => {
   describe('render()', () => {
@@ -106,6 +109,121 @@ describe('TeamSettingsView', () => {
           expect.objectContaining({
             content: 'leaveTeamConfirmContent {"teamName":"my team"}',
             okText: 'Leaveteamconfirmok',
+            cancelText: 'Cancel',
+          }),
+        );
+        done();
+      });
+    });
+
+    it('Only team admins are allowed to delete team [JPT-1107]', () => {
+      const props: any = {
+        t: (s: string, options: object) => {
+          if (!options) {
+            return s;
+          }
+          return `${s} ${JSON.stringify(options)}`;
+        },
+        initialData: {
+          name: '',
+          description: '',
+        },
+        id: 123,
+        isAdmin: false,
+        isCompanyTeam: false,
+        save: () => {},
+        leaveTeam: () => {},
+        groupName: 'my team',
+      };
+      let result = shallow(<TeamSettingsComponent {...props} />);
+      let deleteTeamButton = result
+        .find(ButtonListItem)
+        .filterWhere(
+          wrapper => wrapper.find(ButtonListItemText).text() === 'deleteTeam',
+        );
+      expect(deleteTeamButton.prop('hide')).toBeTruthy();
+      props.isAdmin = true;
+      result = shallow(<TeamSettingsComponent {...props} />);
+      deleteTeamButton = result
+        .find(ButtonListItem)
+        .filterWhere(
+          wrapper => wrapper.find(ButtonListItemText).text() === 'deleteTeam',
+        );
+      expect(deleteTeamButton.prop('hide')).toBeFalsy();
+    });
+
+    it('There\'s no "Delete team" options in the "All Hands" team. [JPT-1115]', () => {
+      const props: any = {
+        t: (s: string, options: object) => {
+          if (!options) {
+            return s;
+          }
+          return `${s} ${JSON.stringify(options)}`;
+        },
+        initialData: {
+          name: '',
+          description: '',
+        },
+        id: 123,
+        isAdmin: true,
+        isCompanyTeam: true,
+        save: () => {},
+        leaveTeam: () => {},
+        groupName: 'my team',
+      };
+      let result = shallow(<TeamSettingsComponent {...props} />);
+      let deleteTeamButton = result
+        .find(ButtonListItem)
+        .filterWhere(
+          wrapper => wrapper.find(ButtonListItemText).text() === 'deleteTeam',
+        );
+      expect(deleteTeamButton.prop('hide')).toBeTruthy();
+      props.isCompanyTeam = false;
+      result = shallow(<TeamSettingsComponent {...props} />);
+      deleteTeamButton = result
+        .find(ButtonListItem)
+        .filterWhere(
+          wrapper => wrapper.find(ButtonListItemText).text() === 'deleteTeam',
+        );
+      expect(deleteTeamButton.prop('hide')).toBeFalsy();
+    });
+
+    it('The Delete Team dialog display correctly after clicking "Delete team" button [JPT-1108]', (done: jest.DoneCallback) => {
+      jest.spyOn(Dialog, 'confirm');
+      const props: any = {
+        t: (s: string, options: object) => {
+          if (!options) {
+            return s;
+          }
+          return `${s} ${JSON.stringify(options)}`;
+        },
+        initialData: {
+          name: '',
+          description: '',
+        },
+        id: 123,
+        isAdmin: true,
+        isCompanyTeam: false,
+        save: () => {},
+        leaveTeam: () => {},
+        groupName: 'my team',
+      };
+      const result = shallow(<TeamSettingsComponent {...props} />);
+      const deleteTeamButton = result
+        .find(ButtonListItem)
+        .filterWhere(
+          wrapper => wrapper.find(ButtonListItemText).text() === 'deleteTeam',
+        );
+      expect(deleteTeamButton.prop('hide')).toBeFalsy();
+      expect(deleteTeamButton.find(ButtonListItemText).text()).toEqual(
+        'deleteTeam',
+      );
+      expect(deleteTeamButton.simulate('click'));
+      setTimeout(() => {
+        expect(Dialog.confirm).toHaveBeenCalledWith(
+          expect.objectContaining({
+            content: 'deleteTeamConfirmContent {"teamName":"my team"}',
+            okText: 'Deleteteamconfirmok',
             cancelText: 'Cancel',
           }),
         );

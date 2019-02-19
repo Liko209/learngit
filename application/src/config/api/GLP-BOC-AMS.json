@@ -12,6 +12,7 @@
   },
   "glip": {
     "server": "https://app.glipdemo.com",
+    "apiServer": "https://app.glipdemo.com:8443",
     "apiPlatform": "/api"
   },
   "glip_desktop": {

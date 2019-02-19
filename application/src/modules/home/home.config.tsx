@@ -16,7 +16,7 @@ import { config as setting } from './config/setting.config';
 import { HomeConfig } from './types';
 
 const config: HomeConfig = {
-  defaultRouterPath: '/messages',
+  defaultRouterPaths: ['/messages', '/phone', '/dashboard'],
   subModules: {
     /*
      * placement: top

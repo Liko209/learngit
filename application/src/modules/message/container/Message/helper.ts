@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { GroupService } from 'sdk/module/group';
-import { ProfileService } from 'sdk/service/profile';
+import { ProfileService } from 'sdk/module/profile';
 import { StateService } from 'sdk/module/state';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -37,8 +37,9 @@ class GroupHandler {
       return;
     }
     const _profileService: ProfileService = ProfileService.getInstance();
-    const result = await _profileService.reopenConversation(id);
-    if (result.isErr()) {
+    try {
+      await _profileService.reopenConversation(id);
+    } catch (e) {
       history.replace('/messages/loading', {
         id,
         error: true,
@@ -61,10 +62,14 @@ export class MessageRouterChangeHelper {
 
   static async goToLastOpenedGroup() {
     const lastGroupId = await this.getLastGroupId();
-    this.goToConversation(lastGroupId, 'REPLACE');
+    this._goToConversation(lastGroupId, 'REPLACE');
+  }
+  static async goToConversation(id: string, action?: Action) {
+    const validId = await this.verifyGroup(Number(id));
+    return this._goToConversation(validId, action);
   }
 
-  static async goToConversation(id: string, action?: Action) {
+  private static async _goToConversation(id: string, action?: Action) {
     switch (action) {
       case 'REPLACE':
         history.replace(`/messages/${id}`);
