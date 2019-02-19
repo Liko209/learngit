@@ -114,7 +114,7 @@ describe('Logger', () => {
       logger.doLog(mockLog);
       expect(mockProcess).toBeCalledWith(mockLog);
     });
-    it('should call browserLogger when config.browser.enabled=true', () => {
+    it('should call browserLogger when config.browser.enabled=true [JPT-1172]', () => {
       const logger = new Logger();
       const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
       const mockLog = logEntityFactory.build({
@@ -158,7 +158,7 @@ describe('Logger', () => {
       logger.doLog(mockLog);
       expect(spyDoLog).toBeCalledTimes(0);
     });
-    it('should call consumerLog when config.consumer.enabled=true', () => {
+    it('should call consumerLog when config.consumer.enabled=true [JPT-1173]', () => {
       const logger = new Logger();
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
@@ -182,7 +182,7 @@ describe('Logger', () => {
       logger.doLog(mockLog);
       expect(spyConsumerOnLog).toBeCalledWith(mockLog);
     });
-    it('should call consumerLog when config.consumer.enabled=false', () => {
+    it('should not call consumerLog when config.consumer.enabled=false', () => {
       const logger = new Logger();
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
@@ -207,7 +207,58 @@ describe('Logger', () => {
       logger.doLog(mockLog);
       expect(spyConsumerOnLog).toBeCalledTimes(0);
     });
-    it('should ignore browser.enabled, when loglevel>=warning', () => {
+
+    it('should both consumerLog, browser when config.browser.enabled=true, config.consumer.enabled=true [JPT-1176]', () => {
+      const logger = new Logger();
+      const mockProcess = jest
+        .spyOn(logger['_logEntityProcessor'], 'process')
+        .mockImplementation(item => item);
+      const mockConsumer = new LogConsumer();
+      logger.setConsumer(mockConsumer);
+      const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
+      const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
+      const mockLog = logEntityFactory.build({
+        level: LOG_LEVEL.LOG,
+      });
+      // consumerEnabled = true
+      configManager.setConfig(
+        logConfigFactory.build({
+          level: LOG_LEVEL.ALL,
+          filter: jest.fn().mockReturnValue(true),
+          consumer: consumerConfigFactory.build({
+            enabled: true,
+          }),
+        }),
+      );
+      logger.doLog(mockLog);
+      expect(spyConsumerOnLog).toBeCalledWith(mockLog);
+      expect(spyDoLog).toBeCalledWith(mockLog);
+    });
+    it('should call consumerLog when config.consumer.enabled=true [JPT-1173]', () => {
+      const logger = new Logger();
+      const mockProcess = jest
+        .spyOn(logger['_logEntityProcessor'], 'process')
+        .mockImplementation(item => item);
+      const mockConsumer = new LogConsumer();
+      logger.setConsumer(mockConsumer);
+      const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
+      const mockLog = logEntityFactory.build({
+        level: LOG_LEVEL.LOG,
+      });
+      // consumerEnabled = true
+      configManager.setConfig(
+        logConfigFactory.build({
+          level: LOG_LEVEL.ALL,
+          filter: jest.fn().mockReturnValue(true),
+          consumer: consumerConfigFactory.build({
+            enabled: true,
+          }),
+        }),
+      );
+      logger.doLog(mockLog);
+      expect(spyConsumerOnLog).toBeCalledWith(mockLog);
+    });
+    it('should ignore browser.enabled, when loglevel>=warning [JPT-1171]', () => {
       const logger = new Logger();
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
@@ -235,7 +286,7 @@ describe('Logger', () => {
       logger.doLog(mockLog);
       expect(spyDoLog).toBeCalledTimes(1);
     });
-    it('should ignore consumer.enabled when loglevel>=warning', () => {
+    it('should ignore consumer.enabled when loglevel>=warning [JPT-1170]', () => {
       const logger = new Logger();
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')

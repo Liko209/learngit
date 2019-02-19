@@ -45,7 +45,7 @@ describe('LogControlManager', () => {
   });
 
   describe('configByPermission', () => {
-    it('should set log config when getUserPermission success', async () => {
+    it('should set log config when getUserPermission success [JPT-1178]', async () => {
       mockPermissionService.hasPermission.mockClear();
       mockPermissionService.hasPermission.mockResolvedValue(false);
       await logControlManager.configByPermission();
@@ -63,7 +63,7 @@ describe('LogControlManager', () => {
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(4);
     });
 
-    it('should log when getUserPermission fail', async () => {
+    it('Should be able to show error info when getting permission service fail. [JPT-1179]', async () => {
       mockPermissionService.hasPermission.mockClear();
       mockLogger.warn.mockClear();
       mockLogManager.config.mockClear();
