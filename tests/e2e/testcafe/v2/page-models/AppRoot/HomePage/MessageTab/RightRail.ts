@@ -1,6 +1,7 @@
 import * as assert from 'assert';
 import { H } from '../../../../helpers';
 import { BaseWebComponent } from "../../../BaseWebComponent";
+import { t } from 'testcafe';
 
 
 export class RightRail extends BaseWebComponent {
@@ -283,4 +284,74 @@ class TasksTab extends BaseTab {
   get items() {
     return this.getSelectorByAutomationId('rightRail-task-item');
   }
+}
+
+class PinnedTab extends BaseTab {
+  get subTitle() {
+    return this.getSubTitle('Pinned');
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('pinned-section');
+  }
+
+  nthItem(n: number) {
+    return this.getComponent(PinnedPost, this.items.nth(n))
+  }
+
+  ItemByPostId(postId: string) {
+    return this.getComponent(PinnedPost, this.items.filter(`[data-postid=${postId}]`));
+  }
+}
+
+class PinnedPost extends BaseWebComponent {
+  get postId() {
+    return this.self.getAttribute('data-postid');
+  }
+  get creator() {
+    return this.getSelectorByAutomationId("pinned-creator", this.self);
+  }
+
+  get createTime() {
+    return this.getSelectorByAutomationId("pinned-createTime", this.self);
+  }
+
+  get postText() {
+    return this.getSelectorByAutomationId("pinned-text", this.self);
+  }
+
+  get attachmentIcons() {
+    return this.getSelectorByAutomationId("pinned-item-icon", this.self);
+  }
+
+  get nonFileOrImageAttachmentsTexts() {
+    return this.getSelectorByAutomationId('pinned-item-text', this.self);
+  }
+
+  get fileOrImageFileNames() {
+    return this.getSelectorByAutomationId('file-name', this.self);
+  }
+
+  get moreAttachmentsInfo() {
+    return // TODO
+  }
+
+  async shouldBePostId(postId: string) {
+    await this.t.expect(this.postId).eql(postId);
+  }
+
+  async postTextShouldBe(text:string) {
+    await this.t.expect(this.postText.withText(text).exists).ok();
+  }
+
+  async shouldHasFileOrImage(fileName: string) {
+    await this.t.expect(this.fileOrImageFileNames.withText(fileName).exists).ok();
+  }
+
+  async shouldHasItemText(text: string) {
+    await this.t.expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists).ok();
+  }
+
+
+
 }
