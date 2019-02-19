@@ -83,6 +83,11 @@ const setAsTrue4HasMoreConfigByDirection = async (ids: number[]) => {
   service.setAsTrue4HasMoreConfigByDirection(ids, QUERY_DIRECTION.OLDER);
 };
 
+const kSortingRateTopPriority: number = 100;
+const kSortingRateHighPriority: number = 10;
+const kSortingRateNormalPriority: number = 1;
+const kSortingRateLowPriority: number = 0.5;
+
 class GroupService extends BaseService<Group> {
   static serviceName = 'GroupService';
 
@@ -669,9 +674,6 @@ class GroupService extends BaseService<Group> {
       return null;
     }
 
-    const kSortingRateWithFirstMatched: number = 1;
-    const kSortingRateWithFirstAndPositionMatched: number = 1.1;
-
     const result = await this.searchEntitiesFromCache(
       (team: Group, terms: string[]) => {
         let isMatched: boolean = false;
@@ -700,14 +702,26 @@ class GroupService extends BaseService<Group> {
 
           const splitNames = this.getTermsFromSearchKey(team.set_abbreviation);
 
-          for (let i = 0; i < splitNames.length; ++i) {
-            for (let j = 0; j < terms.length; ++j) {
-              if (this.isStartWithMatched(splitNames[i], [terms[j]])) {
+          for (let i = 0; i < terms.length; ++i) {
+            for (let j = 0; j < splitNames.length; ++j) {
+              if (this.isStartWithMatched(splitNames[j], [terms[i]])) {
                 sortValue +=
                   i === j
-                    ? kSortingRateWithFirstAndPositionMatched
-                    : kSortingRateWithFirstMatched;
+                    ? kSortingRateNormalPriority
+                    : kSortingRateLowPriority;
+                break;
               }
+            }
+          }
+
+          if (sortValue > 0) {
+            const allNames = splitNames.join(' ');
+            const allTerms = terms.join(' ');
+
+            if (this.isStartWithMatched(allNames, [allTerms])) {
+              sortValue *= kSortingRateTopPriority;
+            } else if (this.isFuzzyMatched(allNames, [allTerms])) {
+              sortValue *= kSortingRateHighPriority;
             }
           }
 

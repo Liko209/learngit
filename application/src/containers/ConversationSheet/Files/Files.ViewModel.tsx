@@ -30,7 +30,10 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { getThumbnail, RULE } from '@/common/getThumbnail';
+import {
+  generateModifiedImageURL,
+  RULE,
+} from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
@@ -75,12 +78,15 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     // 3. git use original url.
     if (FileItemUtils.isGifItem({ type }) && versionUrl) {
       url = versionUrl;
-    } else if (
+    }
+
+    if (
+      !url &&
       origWidth > 0 &&
       origHeight > 0 &&
       FileItemUtils.isSupportPreview({ type })
     ) {
-      const thumbnail = await getThumbnail({
+      const thumbnail = await generateModifiedImageURL({
         id,
         origWidth,
         origHeight,
@@ -129,7 +135,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (!item) {
         return;
       }
-      if (item.deactivated) {
+      if (item.deactivated || item.isMocked) {
         return;
       }
       const file = getFileType(item);
