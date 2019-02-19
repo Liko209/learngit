@@ -2,14 +2,26 @@ import { ILogApi, LogEntity, mainLogger } from 'foundation';
 import AccountService from '../account';
 import axios from 'axios';
 import { UserConfig } from '../../service/account';
-const DEFAULT_EMAIL = 'service@glip.com';
+import { Api } from '../../api';
 
+const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogApi {
   async upload(logs: LogEntity[]): Promise<any> {
     const userInfo = await this._getUserInfo();
-    const logMsgs = logs.map(log => this._getLogText(log));
+    const message = this.transform(logs);
     const sessionId = logs[0].sessionId;
-    await this.doUpload(userInfo, { [sessionId]: logMsgs });
+    const { server, uniqueHttpCollectorCode } = Api.httpConfig.sumologic;
+    const postUrl = `${server}/${uniqueHttpCollectorCode}`;
+    await axios.post(postUrl, message, {
+      headers: {
+        'X-Sumo-Name': `${userInfo.email}| ${userInfo.userId}| ${sessionId}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+  transform(logs: LogEntity[]) {
+    return logs.map(log => this._getLogText(log)).join('\n');
   }
 
   private async _getUserInfo() {
@@ -30,32 +42,8 @@ export class LogUploader implements ILogApi {
     };
   }
 
-  async doUpload(
-    userInfo: {
-      email: string;
-      userId: string;
-      clientId: string;
-    },
-    logInfo: object,
-  ) {
-    await axios({
-      method: 'post',
-      url: 'https://fijilog.lab.nordigy.ru/log/',
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods':
-          'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-        'Access-Control-Allow-Headers':
-          'Origin,X-Requested-With,Content-Type,Accept,Authorization,User-Agent,Access-Control-Allow-Origin,Access-Control-Allow-Methods,Access-Control-Allow-Headers',
-      },
-      data: { userInfo, logInfo },
-    });
-  }
-
   private _getLogText(log: LogEntity) {
-    if (log.tags) {
-      return `${log.tags.join(' ')} ${log.message}`;
-    }
-    return log.message;
+    const { message = '' } = log;
+    return message;
   }
 }

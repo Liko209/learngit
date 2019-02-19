@@ -14,7 +14,9 @@ export class TruncationDecorator implements ILogEntityDecorator {
       data.params = data.params.map((param: string) => {
         if (Object.prototype.toString.call(param) === '[object String]') {
           if (param.length > this.options.limit) {
-            return param.substring(0, this.options.limit);
+            return JSON.stringify({
+              truncation: param.substring(0, this.options.limit),
+            });
           }
         }
         return param;

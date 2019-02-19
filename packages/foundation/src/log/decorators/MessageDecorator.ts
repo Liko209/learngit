@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import DateFormatter from './DateFormatter';
-import { DATE_FORMATTER } from '../constants';
+import { DATE_FORMATTER, LOG_LEVEL } from '../constants';
 import { ILogEntityDecorator, LogEntity } from '../types';
 import _ from 'lodash';
 
@@ -16,27 +16,28 @@ export class MessageDecorator implements ILogEntityDecorator {
   }
 
   decorate(data: LogEntity): LogEntity {
-    let message = '';
-    if (data.timestamp) {
-      message = `${message}[${this._formatTime(data)}]`;
-    }
-    const params = data.params.map((item: any) => {
+    const { tags = [], message, level, timestamp, sessionIndex } = data;
+    if (!_.isEmpty(message)) return data;
+    data.params = data.params.map((item: any) => {
       const type = Object.prototype.toString.call(item);
-      // messageDecorator only deal with string, if want to support other type, please transform to stringg
       if (type !== '[object String]') {
         return type;
       }
       return item;
     });
-    const paramsString = params.join(' ');
-    data.message = `${data.sessionIndex} ${message} ${paramsString}`;
+    const paramsString = data.params.join(' ');
+    data.message = `TAGS: ${tags.join(',')} LEVEL: ${
+      LOG_LEVEL[level]
+    } INDEX: ${sessionIndex} TIME: ${this._formatTime(
+      timestamp,
+    )} MESSAGE: ${paramsString}`;
     data.size = data.message.length;
     return data;
   }
 
-  private _formatTime(logEntity: LogEntity): string {
+  private _formatTime(timestamp: number): string {
     return this.dateFormatter.formatDate(
-      new Date(logEntity.timestamp),
+      new Date(timestamp),
       DATE_FORMATTER.DEFAULT_DATE_FORMAT,
     );
   }
