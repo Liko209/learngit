@@ -68,7 +68,7 @@ class PortalManager extends EventEmitter2 {
         const newProps = { ...props };
 
         if (!newProps.key) {
-          newProps.key = `${Date.now()}`;
+          newProps.key = Date.now();
         }
         wrapperComponent.index = this.register({
           component,
