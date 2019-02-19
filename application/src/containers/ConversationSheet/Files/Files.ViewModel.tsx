@@ -3,7 +3,7 @@
  * @Date: 2018-10-24 15:44:40
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
@@ -56,6 +56,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     );
   }
 
+  @action
   private _fetchUrl = async (
     { item }: ExtendFileItem,
     rule: RULE,
@@ -84,6 +85,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         squareSize: 180,
       });
       url = thumbnail.url;
+    }
+    if (!url) {
+      url = item.versionUrl || '';
     }
     if (url) {
       this.urlMap.set(id, url);
