@@ -288,24 +288,26 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
 
   renderButtonList() {
     const { t, isAdmin, isCompanyTeam } = this.props;
+    const noLeave = isAdmin || isCompanyTeam;
+    const noDelete = !isAdmin || isCompanyTeam;
     return (
       <ButtonList>
         <ButtonListItem
           data-test-automation-id="leaveTeamButton"
           color="semantic.negative"
           onClick={this.handleLeaveTeamClick}
-          hide={isAdmin || isCompanyTeam}
+          hide={noLeave}
         >
           <ButtonListItemText color="semantic.negative">
             {t('leaveTeam')}
           </ButtonListItemText>
         </ButtonListItem>
-        {isAdmin || isCompanyTeam ? null : <JuiDivider />}
+        {noLeave ? null : <JuiDivider />}
         <ButtonListItem
           data-test-automation-id="archiveTeamButton"
           color="semantic.negative"
           onClick={this.handleArchiveTeamClick}
-          hide={!isAdmin || isCompanyTeam}
+          hide={noDelete}
         >
           <ButtonListItemText color="semantic.negative">
             {t('archiveTeam')}
@@ -314,12 +316,12 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             info
           </JuiIconButton>
         </ButtonListItem>
-        {!isAdmin || isCompanyTeam ? null : <JuiDivider />}
+        {noDelete ? null : <JuiDivider />}
         <ButtonListItem
           data-test-automation-id="deleteTeamButton"
           color="semantic.negative"
           onClick={this.handleDeleteTeamClick}
-          hide={!isAdmin || isCompanyTeam}
+          hide={noDelete}
         >
           <ButtonListItemText color="semantic.negative">
             {t('deleteTeam')}
@@ -328,7 +330,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             info
           </JuiIconButton>
         </ButtonListItem>
-        {!isAdmin || isCompanyTeam ? null : <JuiDivider />}
+        {noDelete ? null : <JuiDivider />}
       </ButtonList>
     );
   }
