@@ -56,8 +56,9 @@ class MenuViewComponent extends Component<Props, State> {
     event.stopPropagation();
     const { isFavorite } = this.props;
     this.props.onClose(event);
-    const result = await this.props.toggleFavorite();
-    if (result.isErr()) {
+    try {
+      await this.props.toggleFavorite();
+    } catch (e) {
       const message = isFavorite
         ? 'markUnFavoriteServerErrorContent'
         : 'markFavoriteServerErrorContent';
@@ -119,28 +120,23 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private async _closeConversation(shouldSkipCloseConfirmation: boolean) {
-    const result = await this.props.closeConversation(
-      shouldSkipCloseConfirmation,
-    );
-    result.match({
-      Ok: () => {
-        // jump to section
-        const match = /messages\/(\d+)/.exec(window.location.href);
-        if (match && this.props.groupId === Number(match[1])) {
-          const { history } = this.props;
-          history.replace('/messages');
-        }
-      },
-      Err: () => {
-        Notification.flashToast({
-          message: 'SorryWeWereNotAbleToCloseTheConversation',
-          type: ToastType.ERROR,
-          messageAlign: ToastMessageAlign.LEFT,
-          fullWidth: false,
-          dismissible: false,
-        });
-      },
-    });
+    try {
+      await this.props.closeConversation(shouldSkipCloseConfirmation);
+      // jump to section
+      const match = /messages\/(\d+)/.exec(window.location.href);
+      if (match && this.props.groupId === Number(match[1])) {
+        const { history } = this.props;
+        history.replace('/messages');
+      }
+    } catch (e) {
+      Notification.flashToast({
+        message: 'SorryWeWereNotAbleToCloseTheConversation',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+    }
   }
   private _handleProfileDialog = (event: MouseEvent<HTMLElement>) => {
     this.props.onClose(event);

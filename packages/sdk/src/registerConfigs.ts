@@ -22,7 +22,7 @@ import ConfigService from './service/config';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
 import PresenceService from './service/presence';
-import ProfileService from './service/profile';
+import { ProfileService } from './module/profile';
 import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
