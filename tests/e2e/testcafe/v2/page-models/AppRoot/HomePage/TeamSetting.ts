@@ -105,7 +105,7 @@ export class TeamSettingDialog extends BaseWebComponent {
     await this.t.selectText(this.teamNameInputArea).pressKey('delete');
   }
 
-  checkboxOf(sel: Selector){
+  checkboxOf(sel: Selector) {
     return sel.find('input[type="checkbox"]');
   }
 
@@ -191,12 +191,17 @@ export class TeamSettingDialog extends BaseWebComponent {
   async notAllowMemberPinPost() {
     await this.toggle(this.allowPinPostCheckbox, false);
   }
-  
+
   get deleteTeamButton() {
     return this.getSelectorByAutomationId("deleteTeamButton");
+  }
+
+  get deleteTeamButtonInfo() {
+    return this.getSelectorByIcon('info', this.deleteTeamButton);
   }
 
   async clickDeleteTeamButton() {
     await this.t.click(this.deleteTeamButton);
   }
+
 }

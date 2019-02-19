@@ -129,4 +129,8 @@ export abstract class BaseWebComponent {
     return Number(text);
   }
 
+  // hover some selector will show
+  async showTooltip(text: string) {
+    await this.t.expect(this.getSelector('.tooltip').withExactText(text).exists).ok();
+  }
 }
