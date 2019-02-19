@@ -20,6 +20,7 @@ import { JuiPinnedItem, JuiPinnedItemProps } from './PinnedItem';
 type JuiPinnedCellProps = {
   creator: string;
   createTime: string;
+  postId: number;
   items?: JuiPinnedItemProps[];
   content?: string;
   onClick?: () => void;
@@ -98,11 +99,22 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
     );
   }
   render() {
-    const { creator, createTime, items = [], onClick, content } = this.props;
+    const {
+      creator,
+      createTime,
+      items = [],
+      onClick,
+      content,
+      postId,
+    } = this.props;
     const lineCount = items.length > 0 ? 1 : 2;
 
     return (
-      <CellWrapper data-test-automation-id="pinned-section" onClick={onClick}>
+      <CellWrapper
+        data-postId={postId}
+        data-test-automation-id="pinned-section"
+        onClick={onClick}
+      >
         <HeadWrapper>
           <IconWrapper>
             <JuiIconography fontSize="inherit" color={['grey', '500']}>

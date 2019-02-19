@@ -22,7 +22,13 @@ class PinnedItemView extends Component<PinnedItemViewProps> {
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, id);
   }
   render() {
-    const { creatorName = '', createTime, textContent, items } = this.props;
+    const {
+      creatorName = '',
+      createTime,
+      textContent,
+      items,
+      post,
+    } = this.props;
     return (
       <JuiPinnedCell
         onClick={this.jumpToPost}
@@ -30,6 +36,7 @@ class PinnedItemView extends Component<PinnedItemViewProps> {
         createTime={createTime}
         content={textContent}
         items={items}
+        postId={post.id}
       />
     );
   }
