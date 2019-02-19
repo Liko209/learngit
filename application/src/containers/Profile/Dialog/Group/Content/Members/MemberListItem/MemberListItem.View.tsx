@@ -67,7 +67,7 @@ class MemberListItem extends React.Component<
     const ListItemGuest = JuiProfileDialogContentMemberListItemGuest;
     const ListRightWrapper = JuiProfileDialogContentMemberListItemRightWrapper;
     const isCurrentUserSelf = currentUserId === pid;
-    const ableChangeAdmin = !(adminNumber === 1 && isCurrentUserSelf);
+    const ableChangeAdmin = isTeam && !(adminNumber === 1 && isCurrentUserSelf);
     return (
       <ListItem
         data-id={pid}
