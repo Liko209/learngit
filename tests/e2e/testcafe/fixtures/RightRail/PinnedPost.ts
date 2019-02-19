@@ -96,7 +96,7 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
     await pinnedTab.nthItem(0).postTextShouldBe(reg);
     await pinnedTab.nthItem(0).shouldHasFileOrImage(fileNames[0]);
     await pinnedTab.nthItem(0).shouldHasFileOrImage(fileNames[1]);
-    await pinnedTab.nthItem(0).attachmentIcons.withText('link'); // title of Url is unstable. so only check link item icon
+    await t.expect(pinnedTab.nthItem(0).attachmentIcons.withText('link').exists).ok(); // title of Url is unstable. so only check link item icon
   });
 });
 
