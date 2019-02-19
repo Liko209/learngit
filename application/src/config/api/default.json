@@ -15,6 +15,7 @@
   },
   "glip": {
     "server": "https://app.glip.com",
+    "apiServer": "https://app.glip.com",
     "apiPlatform": "/api",
     "cacheServer": "https://cache.glip.com"
   },
