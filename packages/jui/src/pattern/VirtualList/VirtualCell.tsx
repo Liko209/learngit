@@ -13,15 +13,16 @@ import styled from '../../foundation/styled-components';
 import RO from 'resize-observer-polyfill';
 type JuiVirtualCellOnLoadFunc = () => void;
 
-type JuiVirtualCellProps = {
+type JuiVirtualCellProps<T> = {
   onLoad?: JuiVirtualCellOnLoadFunc;
   style: CSSProperties;
   index: number;
+  item: T;
 };
 
 const JuiVirtualCellWrapper = styled.div``;
 
-class JuiObservedCellWrapper extends PureComponent<JuiVirtualCellProps> {
+class JuiObservedCellWrapper<T> extends PureComponent<JuiVirtualCellProps<T>> {
   private _ref: RefObject<HTMLDivElement> = createRef();
   private _observer?: RO;
   private _handleResize = () => {

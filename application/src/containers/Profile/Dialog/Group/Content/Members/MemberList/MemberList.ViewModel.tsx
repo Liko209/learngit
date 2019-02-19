@@ -10,55 +10,28 @@ import storeManager from '@/store';
 const globalStore = storeManager.getGlobalStore();
 import { GLOBAL_KEYS } from '@/store/constants';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
-import { compact } from 'lodash';
-class MemberListViewModel extends StoreViewModel<MemberListProps> {
-  @observable
-  private _pagination: number = 1;
-  private _PAGE_COUNT = 20;
 
+class MemberListViewModel extends StoreViewModel<MemberListProps> {
   @observable
   private _memberListHandler: SortableGroupMemberHandler | null = null;
   private _allMemberIds: number[] = [];
-
-  constructor(props: MemberListProps) {
-    super(props);
-    this.loadMore = this.loadMore.bind(this);
-  }
-
-  @computed
-  get id() {
-    return this.props.id;
-  }
 
   @action
   private _createSortableMemberIds = async () => {
     if (!this._memberListHandler) {
       this._memberListHandler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
-        this.id,
+        this.props.id,
       );
     }
   }
 
   @computed
-  get allMemberIds() {
+  get memberIds() {
     this._createSortableMemberIds();
     this._allMemberIds = this._memberListHandler
       ? this._memberListHandler.getSortedGroupMembersIds()
       : [];
     return this._allMemberIds;
-  }
-
-  @computed
-  get memberIds() {
-    return compact(
-      this.allMemberIds.slice(0, this._pagination * this._PAGE_COUNT),
-    );
-  }
-
-  @action
-  loadMore() {
-    if (this.allMemberIds.length === this.memberIds.length) return;
-    this._pagination++;
   }
 
   @action
