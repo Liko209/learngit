@@ -507,7 +507,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
       );
 
       if (_.isEqual(partialModel, rollbackPartialModel)) {
-        mainLogger.warn('handlePartialUpdate: no changes, no need update');
+        mainLogger.info('handlePartialUpdate: no changes, no need update');
         result = serviceOk(originalModel);
         break;
       }

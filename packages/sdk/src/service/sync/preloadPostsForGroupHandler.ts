@@ -32,7 +32,7 @@ class PreloadPostsForGroupHandler {
       const processor = new PreloadPostsProcessor(`${group.id}`, group, isFav);
       handler.addProcessor(processor);
     });
-    return await handler.process();
+    return await handler.execute();
   }
 }
 

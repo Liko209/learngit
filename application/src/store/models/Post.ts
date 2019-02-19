@@ -68,7 +68,7 @@ export default class PostModel extends Base<Post> {
     this.text = text;
     this.atMentionNonItemIds = at_mention_non_item_ids;
     this.itemId = item_id;
-    this.itemIds = item_ids;
+    this.itemIds = item_ids || [];
     this.likes = likes;
     this.groupId = group_id;
     this.itemData = item_data;

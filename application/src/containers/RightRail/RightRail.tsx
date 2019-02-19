@@ -28,6 +28,12 @@ type TriggerButtonProps = {
   onClick: () => {};
 } & WithNamespaces;
 
+// height of conversation header & tabs, pass these constant height to list;
+// since resize observer in resize observer will cause UI performance issue.
+const HEIGHT_CONVERSATION_HEADER = 48;
+const HEIGHT_TABS = 33;
+const HEIGHT_FIX = HEIGHT_CONVERSATION_HEADER + HEIGHT_TABS;
+
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
@@ -77,8 +83,8 @@ class RightRailComponent extends React.Component<Props> {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
     return (
-      <ReactResizeDetector handleWidth={true}>
-        {(width: number) => (
+      <ReactResizeDetector handleWidth={true} handleHeight={true}>
+        {(width: number, height: number) => (
           <JuiTabs
             defaultActiveIndex={0}
             tag="right-shelf"
@@ -105,6 +111,8 @@ class RightRailComponent extends React.Component<Props> {
                   <ItemList
                     type={type}
                     groupId={id}
+                    width={width}
+                    height={height - HEIGHT_FIX}
                     active={tabIndex === index}
                   />
                 </JuiTab>

@@ -11,13 +11,15 @@ export default class NoteItemModel extends ItemModel {
   @observable title: string;
   @observable summary: string;
   @observable creatorId: number;
+  @observable deactivated: boolean;
 
   constructor(data: Item) {
     super(data);
-    const { title, summary, creator_id } = data;
+    const { title, summary, creator_id, deactivated } = data;
     this.title = title!;
     this.summary = summary!;
     this.creatorId = creator_id;
+    this.deactivated = deactivated;
   }
 
   static fromJS(data: Item) {

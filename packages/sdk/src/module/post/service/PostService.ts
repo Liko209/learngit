@@ -12,7 +12,7 @@ import { PostDao } from '../../../module/post/dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
 import { DEFAULT_PAGE_SIZE } from '../constant';
-import ProfileService from '../../../service/profile';
+import { ProfileService } from '../../profile';
 import { Item } from '../../../module/item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET } from '../../../service';

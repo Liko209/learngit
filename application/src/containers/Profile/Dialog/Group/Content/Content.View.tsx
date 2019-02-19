@@ -33,19 +33,19 @@ class ProfileDialogGroupContentViewComponent extends Component<
 > {
   joinTeamAfterClick = () => {
     const handerJoinTeam = joinTeam(this.props.group);
-    portalManager.dismiss();
+    portalManager.dismissLast();
     handerJoinTeam();
   }
 
   messageAfterClick = async () => {
     const { id } = this.props;
     await goToConversation({ id });
-    portalManager.dismiss();
+    portalManager.dismissLast();
   }
 
   addTeamMembers = () => {
     const { group } = this.props;
-    portalManager.dismiss();
+    portalManager.dismissLast();
     Dialog.simple(<AddMembers group={group} />, {
       size: 'medium',
     });
