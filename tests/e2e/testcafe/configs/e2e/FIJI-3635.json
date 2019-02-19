@@ -1,8 +1,10 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/Like/LikeAndUnlike.ts",
-      "./fixtures/Profile/addTeamMember.ts"
+      "./fixtures/Profile/ChangeTeamAdmin.ts"
+    ],
+    "include_tags": [
+      "JPT-1092"
     ],
     "browsers": [
       "selenium:chrome"
