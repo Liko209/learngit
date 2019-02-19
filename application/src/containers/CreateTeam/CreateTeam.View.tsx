@@ -198,7 +198,6 @@ class CreateTeam extends React.Component<ViewProps, State> {
       <JuiModal
         open={true}
         size={'medium'}
-        modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn }}
         title={i18next.t('CreateTeam')}
         onCancel={this.onClose}
