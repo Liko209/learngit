@@ -31,15 +31,16 @@ class PortalManager extends EventEmitter2 {
   }
 
   dismissAll(afterDismiss?: () => void) {
-    this.portals.length = 0;
-    this.emit(EventKey, this.portals);
+    this.portals.forEach((portal: Portal) => {
+      portal.dismiss();
+    });
     typeof afterDismiss === 'function' && afterDismiss();
   }
 
   dismissLast(afterDismiss?: () => void) {
-    if (this.portals.length) {
-      this.portals.pop();
-      this.emit(EventKey, this.portals);
+    const portal = this.portals[this.portals.length - 1];
+    if (portal) {
+      portal.dismiss();
     }
     typeof afterDismiss === 'function' && afterDismiss();
   }
@@ -69,7 +70,6 @@ class PortalManager extends EventEmitter2 {
         if (!newProps.key) {
           newProps.key = `${Date.now()}`;
         }
-
         wrapperComponent.index = this.register({
           component,
           dismiss,
