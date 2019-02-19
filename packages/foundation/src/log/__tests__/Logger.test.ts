@@ -228,6 +228,9 @@ describe('Logger', () => {
           consumer: consumerConfigFactory.build({
             enabled: true,
           }),
+          browser: {
+            enabled: true,
+          },
         }),
       );
       logger.doLog(mockLog);
