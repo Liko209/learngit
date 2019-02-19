@@ -6,6 +6,7 @@
     "include_tags": [
       "JPT-1092"
     ],
+    "EXCLUDE_TAGS": [],
     "browsers": [
       "selenium:chrome"
     ]
