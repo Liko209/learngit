@@ -83,6 +83,7 @@ storiesOf('Pattern/ConversationRightShelf', module).add('PinnedItem', () => {
     return (
       <Wrapper>
         <JuiPinnedCell
+          postId={123}
           creator="Virginia Gill"
           createTime="8/8/2019"
           content={content}
