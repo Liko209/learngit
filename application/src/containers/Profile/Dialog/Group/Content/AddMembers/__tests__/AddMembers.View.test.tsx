@@ -18,6 +18,7 @@ const someProps = {
   isOffline: false,
   members: [],
   group: {},
+  isTeam: true,
   handleSearchContactChange: (items: any) => {},
 };
 
