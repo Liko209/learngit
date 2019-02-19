@@ -139,13 +139,9 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
     await t.expect(teamSection.conversationEntryById(openedTeamId).exists).notOk();
   });
-
-
-
-
 });
 
-test(formalName(`The team can't be displayed on conversation list and search results list after the team is deleted.`, ['P1', 'JPT-1116', 'JPT-1104', 'DeleteTeam', 'Potar.He']), async t => {
+test(formalName(`The team can't be displayed on conversation list and search results list after the team is deleted.`, ['P2', 'JPT-1116', 'JPT-1104', 'DeleteTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const memberUser = h(t).rcData.mainCompany.users[5];
@@ -194,6 +190,15 @@ test(formalName(`The team can't be displayed on conversation list and search res
     await teamSettingDialog.showTooltip(deleteTooltip);
   });
 
+  // skip check point (click info icon) due to Function not implemented @chris
+  // await h(t).withLog(`When hover the "i" icon beside the 'Delete team' button`, async () => {
+  //   await t.click(teamSettingDialog.deleteTeamButtonInfo);
+  // });
+
+  // await h(t).withLog(`Then there should be tooltip displayed 'Delete a team permanently.'`, async () => {
+  //   await teamSettingDialog.showTooltip(deleteTooltip);
+  // });
+
   await h(t).withLog(`When I delete the team via 'Delete team' entry`, async () => {
     await teamSettingDialog.clickDeleteTeamButton();
     await deleteTeamDialog.clickDeleteButton();
@@ -203,16 +208,90 @@ test(formalName(`The team can't be displayed on conversation list and search res
     await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
   });
 
+  const searchBar = app.homePage.header.search;
+  await h(t).withLog(`When search with keyword "${teamName}"`, async () => {
+    await searchBar.typeSearchKeyword(teamName);
+  });
 
-    // await h(t).withLog(`When I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
-  //   await app.homePage.openSettingMenu();
-  //   await app.homePage.settingMenu.clickLogout();
-  //   await h(t).directLoginWithUser(SITE_URL, memberUser);
-  //   await app.homePage.ensureLoaded();
-  // });
+  await h(t).withLog(`Then I can't find the team in search results list`, async () => {
+    await t.expect(searchBar.teams.withText(teamName).exists).notOk()
+  }, true);
 
-  // await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
-  //   await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
-  // });
+  await h(t).withLog(`When I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
+    const roleMember = await h(t).userRole(memberUser);
+    await t.useRole(roleMember);
+  });
+
+  await h(t).withLog(`Then can't find the team A in conversation list`, async () => {
+    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+  });
+
+  await h(t).withLog(`When search with keyword "${teamName}"`, async () => {
+    await searchBar.typeSearchKeyword(teamName);
+  });
+
+  await h(t).withLog(`Then I can't find the team in search results list`, async () => {
+    await t.expect(searchBar.teams.withText(teamName).exists).notOk()
+  }, true);
 });
 
+
+test(formalName(`Can create team that team name is same as the deleted team`, ['P2', 'JPT-1121', 'DeleteTeam', 'Potar.He']), async t => {
+  const app = new AppRoot(t);
+  const adminUser = h(t).rcData.mainCompany.users[4];
+  const memberUser = h(t).rcData.mainCompany.users[5];
+  await h(t).platform(adminUser).init();
+  await h(t).glip(adminUser).init();
+
+  const teamName = uuid();
+
+  const teamSection = app.homePage.messageTab.teamsSection;
+  const profileDialog = app.homePage.profileDialog;
+  const deleteTeamDialog = app.homePage.deleteTeamDialog;
+  const teamSettingDialog = app.homePage.teamSettingDialog;
+
+  let teamId;
+  await h(t).withLog(`Given I have one new team`, async () => {
+    teamId = await h(t).platform(adminUser).createAndGetGroupId({
+      name: teamName,
+      type: 'Team',
+      members: [adminUser.rcId, memberUser.rcId],
+    });
+  });
+
+  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, adminUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
+    await teamSection.conversationEntryById(teamId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.profile.enter();
+    await profileDialog.clickSetting();
+  });
+
+  await h(t).withLog(`Then "Delete team" button should be showed`, async () => {
+    await teamSettingDialog.shouldBePopup();
+    await t.expect(teamSettingDialog.deleteTeamButton.visible).ok();
+  });
+
+  await h(t).withLog(`When I delete the team via 'Delete team' entry`, async () => {
+    await teamSettingDialog.clickDeleteTeamButton();
+    await deleteTeamDialog.clickDeleteButton();
+  });
+
+  await h(t).withLog(`Then the team conversation was removed from the conversation list`, async () => {
+    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+  });
+
+  await h(t).withLog(`When I create a team with the same name via "new actions" entry`, async () => {
+    await app.homePage.openAddActionMenu();
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+    await app.homePage.createTeamModal.typeTeamName(teamName);
+    await app.homePage.createTeamModal.clickCreateButton();
+  });
+
+  await h(t).withLog(`Then Create successfully`, async () => {
+    await t.expect(teamSection.conversationEntryByName(teamName).exists).ok();
+  });
+});

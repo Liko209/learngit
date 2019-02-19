@@ -131,6 +131,6 @@ export abstract class BaseWebComponent {
 
   // hover some selector will show
   async showTooltip(text: string) {
-    await this.t.expect(this.getSelector('.tooltip').withExactText(text).exists).ok();
+    await this.t.expect(this.getSelector('[role="tooltip"]').withExactText(text).exists).ok();
   }
 }
