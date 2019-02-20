@@ -247,9 +247,9 @@ class RTCRegistrationManager extends EventEmitter2
       );
     } else {
       if (
-        REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED === cause ||
         REGISTRATION_ERROR_CODE.FORBIDDEN === cause ||
-        REGISTRATION_ERROR_CODE.UNAUTHORIZED === cause
+        REGISTRATION_ERROR_CODE.UNAUTHORIZED === cause ||
+        REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED === cause
       ) {
         this.emit(REGISTRATION_EVENT.ACQUIRE_NEW_PROV);
       }
