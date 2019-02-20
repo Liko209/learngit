@@ -14,8 +14,12 @@ const mockGroupData = {
   displayName: 'Group name',
   isThePersonAdmin: jest.fn(),
   isThePersonGuest: jest.fn(),
+  permissions: {
+    admin: {
+      uids: [1, 2],
+    },
+  },
 };
-
 const mockPersonData = {
   id: 1,
   userDisplayName: 'Name1',
@@ -52,6 +56,12 @@ describe('MemberListItemViewModel', () => {
   describe('pid', () => {
     it('should be get person id when the component is instantiated', () => {
       expect(vm.pid).toEqual(props.pid);
+    });
+  });
+
+  describe('adminNumber()', () => {
+    it('should be get adminNumber when the group has permissions', () => {
+      expect(vm.adminNumber).toEqual(2);
     });
   });
 

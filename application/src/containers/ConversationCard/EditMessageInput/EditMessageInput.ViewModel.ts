@@ -19,8 +19,8 @@ import Keys from 'jui/pattern/MessageInput/keys';
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
 enum ERROR_TYPES {
-  CONTENT_LENGTH = 'contentLength',
-  CONTENT_ILLEGAL = 'contentIllegal',
+  CONTENT_LENGTH = 'message.prompt.contentLength',
+  CONTENT_ILLEGAL = 'message.prompt.contentIllegal',
 }
 
 class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>

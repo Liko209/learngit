@@ -100,7 +100,7 @@ describe('ProfileMiniCardGroupViewModel', () => {
         expect(Notification.flashToast).toHaveBeenCalledWith({
           dismissible: false,
           fullWidth: false,
-          message: 'SorryWeWereNotAbleToOpenThisProfile',
+          message: 'people.prompt.SorryWeWereNotAbleToOpenThisProfile',
           messageAlign: ToastMessageAlign.LEFT,
           type: ToastType.ERROR,
         });

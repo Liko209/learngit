@@ -33,7 +33,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
   private _listStore: ListStore<T>;
   protected _pageSize: number;
   protected _entityName?: ENTITY_NAME;
-  protected _dataChangeCallBack: DeltaDataHandler;
+  protected _dataChangeCallBack?: DeltaDataHandler;
 
   constructor(
     dataProvider: IFetchDataProvider<T> | null,
@@ -71,7 +71,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
       direction === QUERY_DIRECTION.OLDER,
     );
   }
-  setUpDataChangeCallback(cb: DeltaDataHandler) {
+  setDataChangeCallback(cb?: DeltaDataHandler) {
     this._dataChangeCallBack = cb;
   }
 
@@ -133,5 +133,14 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     if (result.length > 0) {
       this._listStore.append(result, inFront);
     }
+  }
+
+  get size() {
+    return this._listStore.size;
+  }
+
+  dispose() {
+    super.dispose();
+    this._dataChangeCallBack = undefined;
   }
 }

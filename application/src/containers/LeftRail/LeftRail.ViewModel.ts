@@ -45,13 +45,13 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   get entries(): LeftRailEntry[] {
     return [
       {
-        title: 'mention_plural',
+        title: 'message.mentionPosts',
         icon: 'mention',
         type: POST_LIST_TYPE.mentions,
         testId: 'entry-mentions',
       },
       {
-        title: 'bookmark_plural',
+        title: 'message.bookmarkPosts',
         icon: 'bookmark_border',
         type: POST_LIST_TYPE.bookmarks,
         testId: 'entry-bookmarks',
@@ -63,7 +63,7 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   get filters(): LeftRailFilter[] {
     return [
       {
-        label: 'show_unread_plural',
+        label: 'message.showUnreads',
         value: this._unreadOnly,
         onChange: this.toggleUnread,
       },

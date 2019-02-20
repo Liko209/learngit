@@ -13,6 +13,6 @@ export default ({ verb, adjectives, noun, user }: Parameter) => {
       adjectives,
       user,
     },
-    key: 'verb-noun-adjectives-user',
+    key: 'item.activity.verb-noun-adjectives-user',
   };
 };

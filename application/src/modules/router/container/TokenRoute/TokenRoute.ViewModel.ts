@@ -13,8 +13,9 @@ import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { StoreViewModel } from '@/store/ViewModel';
 import history from '@/history';
+import { ProfileService } from 'sdk/module/profile';
 
-const { SERVICE, ProfileService } = service;
+const { SERVICE } = service;
 
 class TokenRouteViewModel extends StoreViewModel {
   private _authService: AuthService = AuthService.getInstance();
@@ -40,7 +41,7 @@ class TokenRouteViewModel extends StoreViewModel {
 
   @action.bound
   async handleHasLoggedIn() {
-    const profileService: service.ProfileService = ProfileService.getInstance();
+    const profileService: ProfileService = ProfileService.getInstance();
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
     await profileService.markMeConversationAsFav();
@@ -50,7 +51,8 @@ class TokenRouteViewModel extends StoreViewModel {
   unifiedLogin = async () => {
     try {
       const { location } = history;
-      const { code, id_token: token } = this._getUrlParams(location);
+      const { code, id_token, t } = this._getUrlParams(location);
+      const token = t || id_token;
       if (code || token) {
         await this._authService.unifiedLogin({ code, token });
       }

@@ -6,7 +6,7 @@
 import { getDurationTime, getDateAndTime, getDurationDate } from '../helper';
 
 jest.mock('i18next', () => ({
-  t: (text: string) => text,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
 
 const DAY = 24 * 3600 * 1000;

@@ -7,7 +7,7 @@ import { getEntity } from '../../../store/utils';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
 jest.mock('i18next', () => ({
-  t: (text: string) => text,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
 
 jest.mock('../../../store/utils');

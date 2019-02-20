@@ -28,7 +28,7 @@ import handleData from './handleData';
 import { notificationCenter } from '..';
 import { ERROR_TYPES, ErrorParserHolder } from '../../error';
 import { ItemDao } from '../../module/item/dao';
-import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+// import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 import { progressBar } from '../../utils/progress';
 
 type SyncListener = {
@@ -78,13 +78,13 @@ export default class SyncService extends BaseService {
       await this._firstLogin();
     }
     this.isLoading = false;
-    this._preloadPosts();
+    // this._preloadPosts();
   }
 
-  private async _preloadPosts() {
-    const handler = new PreloadPostsForGroupHandler();
-    handler.preloadPosts();
-  }
+  // private async _preloadPosts() {
+  //   const handler = new PreloadPostsForGroupHandler();
+  //   handler.preloadPosts();
+  // }
 
   private async _firstLogin() {
     const {

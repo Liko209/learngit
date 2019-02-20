@@ -27,34 +27,34 @@ class Conference extends React.Component<conferenceViewProps> {
 
     return (
       <JuiConversationItemCard
-        title={t('audioConference')}
+        title={t('item.audioConferenceTitle')}
         Icon="conference"
         data-test-automation-id="conferenceItem"
       >
-        <JuiItemContent title={t('dialInNumber')}>
+        <JuiItemContent title={t('item.dialInNumber')}>
           <JuiLink size="small" data-test-automation-id="conferencePhoneNumber">
             {phoneNumber}
           </JuiLink>
           {phoneNumber ? (
-            <JuiItemConjunctionText description={t('or')} />
+            <JuiItemConjunctionText description={t('item.or')} />
           ) : null}
           <JuiLink
             size="small"
             data-test-automation-id="conferenceGlobalNumber"
             handleOnClick={() => window.open(globalNumber)}
           >
-            {t('globalNumber')}
+            {t('item.globalNumber')}
           </JuiLink>
         </JuiItemContent>
         {isHostByMe ? (
-          <JuiItemContent title={t('hostCode')}>
+          <JuiItemContent title={t('item.hostCode')}>
             <JuiItemTextValue
               description={hostCode}
               data-test-automation-id="conferenceHostCode"
             />
           </JuiItemContent>
         ) : null}
-        <JuiItemContent title={t('participantCode')}>
+        <JuiItemContent title={t('item.participantCode')}>
           <JuiItemTextValue
             description={participantCode}
             data-test-automation-id="conferenceParticipantCode"

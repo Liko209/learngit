@@ -70,7 +70,7 @@ describe('TeamSettingsViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
-        message: 'SorryWeWereNotAbleToSaveTheUpdate',
+        message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdate',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });
@@ -100,7 +100,7 @@ describe('TeamSettingsViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
-        message: 'SorryWeWereNotAbleToSaveTheUpdateTryAgain',
+        message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });
@@ -145,7 +145,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.leaveTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('leaveTeamServerErrorContent'),
+        toastParamsBuilder('people.prompt.leaveTeamServerErrorContent'),
       );
     });
     it('should show leaveTeamNetworkErrorContent when network error occurs [JPT-930]', async () => {
@@ -157,7 +157,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.leaveTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('leaveTeamNetworkErrorContent'),
+        toastParamsBuilder('people.prompt.leaveTeamNetworkErrorContent'),
       );
     });
     it('should call generalErrorHandler when server error occurs', async () => {
@@ -186,7 +186,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.deleteTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('deleteTeamServerErrorContent'),
+        toastParamsBuilder('people.prompt.deleteTeamServerErrorContent'),
       );
     });
     it('should display error when failed to delete team due to disconnect network [JPT-1118]', async () => {
@@ -198,7 +198,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.deleteTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('deleteTeamNetworkErrorContent'),
+        toastParamsBuilder('people.prompt.deleteTeamNetworkErrorContent'),
       );
     });
     it('should display error when failed to archive team due to unexpected backend issue [JPT-1124]', async () => {
@@ -212,7 +212,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.archiveTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('archiveTeamServerErrorContent'),
+        toastParamsBuilder('people.prompt.archiveTeamServerErrorContent'),
       );
     });
     it('should display error when failed to archive team due to disconnect network [JPT-1123]', async () => {
@@ -224,7 +224,7 @@ describe('TeamSettingsViewModel', () => {
       const vm = setUp();
       await vm.archiveTeam();
       expect(flashToast).toBeCalledWith(
-        toastParamsBuilder('archiveTeamNetworkErrorContent'),
+        toastParamsBuilder('people.prompt.archiveTeamNetworkErrorContent'),
       );
     });
     it('should call generalErrorHandler when server error occurs', async () => {

@@ -5,7 +5,7 @@
  */
 
 import { GroupService } from 'sdk/module/group';
-import { ProfileService } from 'sdk/service/profile';
+import { ProfileService } from 'sdk/module/profile';
 import ServiceCommonErrorType from 'sdk/service/errors/ServiceCommonErrorType';
 import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FavoriteViewModel } from '../Favorite.ViewModel';

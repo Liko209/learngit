@@ -15,7 +15,7 @@ import {
 function getDateAndTime(timestamp: number) {
   const getAMOrPM = dateFormatter.localTime(moment(timestamp));
   const date = recentlyTwoDayAndOther(timestamp);
-  return `${date} ${i18next.t('at')} ${getAMOrPM}`;
+  return `${date} ${i18next.t('common.time.at')} ${getAMOrPM}`;
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number) {
@@ -43,19 +43,19 @@ function getI18Text(type: string, count: number) {
 }
 
 const REPEAT_TEXT = {
-  daily: 'repeatingEveryDay', // ', repeating every day',
-  weekdaily: 'repeatingEveryWeekday',
-  weekly: 'repeatingEveryWeek',
-  monthly: 'repeatingEveryMonth',
-  yearly: 'repeatingEveryYear',
+  daily: 'item.repeatingEveryDay', // ', repeating every day',
+  weekdaily: 'item.repeatingEveryWeekday',
+  weekly: 'item.repeatingEveryWeek',
+  monthly: 'item.repeatingEveryMonth',
+  yearly: 'item.repeatingEveryYear',
 };
 
 const TIMES_TEXT = {
-  daily: 'forDayTimes_interval',
-  weekly: 'forWeekTimes_interval',
-  weekdaily: 'forWeekdailyTimes_interval',
-  monthly: 'forMonthlyTimes_interval',
-  yearly: 'forYearlyTimes_interval',
+  daily: 'item.forDayTimes_interval',
+  weekly: 'item.forWeekTimes_interval',
+  weekdaily: 'item.forWeekdailyTimes_interval',
+  monthly: 'item.forMonthlyTimes_interval',
+  yearly: 'item.forYearlyTimes_interval',
 };
 
 function getDurationTimeText(
@@ -81,7 +81,7 @@ function getDurationTimeText(
   // if has repeat and is forever need hide times
   const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
     repeatEnding === 'none' || repeatEnding === 'on';
-  const repeatText = ` ${i18next.t('until')} ${date}`;
+  const repeatText = ` ${i18next.t('item.until')} ${date}`;
 
   return `${i18next.t(REPEAT_TEXT[repeat]) || ''} ${
     hideTimes(repeatEndingAfter, repeatEnding) ? '' : times

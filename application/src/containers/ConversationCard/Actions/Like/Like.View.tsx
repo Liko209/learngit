@@ -23,8 +23,8 @@ class LikeViewComponent extends Component<Props> {
     const result = await like(!isLike);
     if (result.isFailed) {
       const message = !isLike
-        ? 'SorryWeWereNotAbleToLikeTheMessage'
-        : 'SorryWeWereNotAbleToUnlikeTheMessage';
+        ? 'message.prompt.SorryWeWereNotAbleToLikeTheMessage'
+        : 'message.prompt.SorryWeWereNotAbleToUnlikeTheMessage';
       Notification.flashToast({
         message,
         type: ToastType.ERROR,
@@ -39,7 +39,9 @@ class LikeViewComponent extends Component<Props> {
     return (
       <JuiIconButton
         size="small"
-        tooltipTitle={isLike ? t('Unlike') : t('Like')}
+        tooltipTitle={
+          isLike ? t('message.action.unlike') : t('message.action.like')
+        }
         color={isLike ? 'primary' : undefined}
         onClick={this._handleLikeButton}
         variant="plain"
