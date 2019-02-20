@@ -31,7 +31,7 @@ class LogControlManager implements IAccessor {
     this._isDebugMode = true;
     this._isOnline = true;
     logManager.config({
-      uploadLogApi: new LogUploader(),
+      logUploader: new LogUploader(),
       uploadAccessor: this,
     });
     this.configByPermission();
