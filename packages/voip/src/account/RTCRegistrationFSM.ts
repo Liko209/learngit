@@ -14,7 +14,6 @@ import { rtcLogger } from '../utils/RTCLoggerProxy';
 enum REGISTRATION_FSM_EVENT {
   PROVISION_READY = 'provisionReady',
   REG_SUCCEED = 'regSuccess',
-  REG_TIMEOUT = 'regTimeout',
   REG_FAILED = 'regFailed',
   UNREGISTER = 'unregister',
   RE_REGISTER = 'reRegister',
@@ -106,14 +105,6 @@ class RTCRegistrationFSM extends StateMachine {
           name: REGISTRATION_FSM_EVENT.REG_SUCCEED,
           from: REGISTRATION_FSM_STATE.IN_PROGRESS,
           to: REGISTRATION_FSM_STATE.READY,
-        },
-        {
-          name: REGISTRATION_FSM_EVENT.REG_TIMEOUT,
-          from: [
-            REGISTRATION_FSM_STATE.READY,
-            REGISTRATION_FSM_STATE.IN_PROGRESS,
-          ],
-          to: REGISTRATION_FSM_STATE.FAILURE,
         },
         {
           name: REGISTRATION_FSM_EVENT.REG_FAILED,

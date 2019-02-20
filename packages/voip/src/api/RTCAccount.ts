@@ -163,8 +163,8 @@ class RTCAccount implements IRTCAccount {
       this._onLogoutAction();
     });
 
-    this._regManager.on(REGISTRATION_EVENT.ACQUIRE_NEW_PROV, () => {
-      this.handleProvisioning();
+    this._regManager.on(REGISTRATION_EVENT.REFRESH_PROV, () => {
+      this._refreshProv();
     });
 
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
@@ -251,6 +251,8 @@ class RTCAccount implements IRTCAccount {
       this._regManager.networkChangeToOnline();
     }
   }
+
+  private _refreshProv() {}
 }
 
 export { RTCAccount };

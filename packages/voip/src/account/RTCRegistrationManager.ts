@@ -238,28 +238,19 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _onUARegFailed(response: any, cause: any) {
-    if (REGISTRATION_ERROR_CODE.SERVER_TIME_OUT === cause) {
-      this._eventQueue.push(
-        { name: REGISTRATION_EVENT.UA_REGISTER_TIMEOUT },
-        () => {
-          this._fsm.regTimeout();
-        },
-      );
-    } else {
-      if (
-        REGISTRATION_ERROR_CODE.FORBIDDEN === cause ||
-        REGISTRATION_ERROR_CODE.UNAUTHORIZED === cause ||
-        REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED === cause
-      ) {
-        this.emit(REGISTRATION_EVENT.ACQUIRE_NEW_PROV);
-      }
-      this._eventQueue.push(
-        { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
-        () => {
-          this._fsm.regFailed();
-        },
-      );
+    if (
+      REGISTRATION_ERROR_CODE.FORBIDDEN === cause ||
+      REGISTRATION_ERROR_CODE.UNAUTHORIZED === cause ||
+      REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED === cause
+    ) {
+      this.emit(REGISTRATION_EVENT.ACQUIRE_NEW_PROV);
     }
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
+      () => {
+        this._fsm.regFailed();
+      },
+    );
   }
 
   private _onUAReceiveInvite(session: any) {

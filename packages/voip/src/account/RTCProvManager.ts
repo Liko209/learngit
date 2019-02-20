@@ -56,6 +56,10 @@ class RTCProvManager extends EventEmitter2 {
     await this._sendSipProvRequest();
   }
 
+  async refreshSipProv() {
+    await this._sendSipProvRequest();
+  }
+
   clearProvInfo() {
     this._clearFreshTimer();
     this._sipProvisionInfo = null;

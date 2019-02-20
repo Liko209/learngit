@@ -47,7 +47,7 @@ enum REGISTRATION_EVENT {
   LOGOUT_ACTION = 'logoutAction',
   MAKE_OUTGOING_CALL = 'makeOutgoingCall',
   RECEIVE_INCOMING_INVITE = 'receiveIncomingInvite',
-  ACQUIRE_NEW_PROV = 'acquireNewProvisioning',
+  REFRESH_PROV = 'refreshProvisioning',
 }
 
 enum REGISTRATION_FSM_STATE {
