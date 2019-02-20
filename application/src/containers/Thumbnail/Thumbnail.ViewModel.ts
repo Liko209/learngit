@@ -106,7 +106,6 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
         url = this._thumbsUrlWithSize;
       }
       thumb.url = url;
-      return thumb;
     }
     return thumb;
   }
