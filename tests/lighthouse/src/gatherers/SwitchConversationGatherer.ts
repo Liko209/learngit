@@ -16,7 +16,7 @@ class SwitchConversationGatherer extends Gatherer {
     this.conversationIds = conversationIds;
   }
 
-  beforePass(passContext) {}
+  beforePass(passContext) { }
 
   async pass(passContext) {
     let conversationPage = new ConversationPage(passContext);
@@ -44,7 +44,9 @@ class SwitchConversationGatherer extends Gatherer {
     });
 
     return {
-      switch_conversation: { api: metrics["switch_conversation"], ui: [] }
+      goto_conversation_fetch_items: { api: metrics["goto_conversation_fetch_items"], ui: [] },
+      goto_conversation_fetch_posts: { api: metrics["goto_conversation_fetch_posts"], ui: [] },
+      goto_conversation_shelf_fetch_items: { api: metrics["goto_conversation_shelf_fetch_items"], ui: [] }
     };
   }
 

@@ -217,7 +217,13 @@ describe('fileUploadController', () => {
         expect(entitySourceController.put).toBeCalledTimes(1);
         expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
           ENTITY.PROGRESS,
-          [{ id: expect.any(Number), rate: { loaded: 10, total: 100 } }],
+          [
+            {
+              id: expect.any(Number),
+              rate: { loaded: 10, total: 100 },
+              status: PROGRESS_STATUS.INPROGRESS,
+            },
+          ],
         );
         expect(partialModifyController.updatePartially).toBeCalledTimes(1);
         expect(notificationCenter.emit).toBeCalledWith(
@@ -461,7 +467,7 @@ describe('fileUploadController', () => {
         id: -3,
         is_new: true,
         versions: [validStoredFile],
-      } as ItemFile;
+      };
 
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
@@ -470,13 +476,16 @@ describe('fileUploadController', () => {
         type: 'ts',
         size: 123123,
       } as File;
+
       const itemFileUploadStatus = {
         file,
         progress: p,
         requestHolder: r,
-        itemFile: fileItem,
+        itemFile: fileItem as ItemFile,
       } as ItemFileUploadStatus;
+
       progressCaches.set(-3, itemFileUploadStatus);
+
       const itemFileUploadStatus2 = _.cloneDeep(itemFileUploadStatus);
       itemFileUploadStatus2.itemFile.id = -4;
       itemFileUploadStatus2.itemFile.versions = [invalidStoredFile];
@@ -547,7 +556,7 @@ describe('fileUploadController', () => {
     });
 
     it('should update item when user want to update the file item', async (done: jest.DoneCallback) => {
-      const { progressCaches, groupId, okRes } = sendItemData_setUp();
+      const { progressCaches, groupId } = sendItemData_setUp();
       progressCaches.get(-3).itemFile.is_new = false;
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
@@ -651,6 +660,52 @@ describe('fileUploadController', () => {
         expect(spy_uploadItem).toBeCalled();
         done();
       });
+    });
+
+    it('it should notify item upload failed when the item has no stored info and file', async () => {
+      const { progressCaches, groupId } = sendItemData_setUp();
+
+      progressCaches.set(-10, {
+        itemFile: { id: -10, versions: [{ download_url: '' }] },
+        progress: {
+          id: -11,
+          rate: {
+            loaded: 0,
+            total: 1,
+          },
+          status: PROGRESS_STATUS.INPROGRESS,
+        },
+        file: undefined,
+      });
+      progressCaches.set(-11, {
+        itemFile: { id: -11, versions: [{ download_url: '' }] },
+        file: undefined,
+        progress: {
+          id: -11,
+          rate: {
+            loaded: 0,
+            total: 1,
+          },
+          status: PROGRESS_STATUS.INPROGRESS,
+        },
+      });
+
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+
+      await fileUploadController.sendItemData(groupId, [-10, -11]);
+
+      expect(notificationCenter.emit).toHaveBeenCalledWith(
+        SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+        {
+          preInsertId: expect.anything(),
+          status: 1,
+          updatedId: expect.anything(),
+        },
+      );
+      expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(2);
+      expect(notificationCenter.emit).toBeCalledTimes(2);
     });
   });
 
@@ -1245,7 +1300,7 @@ describe('fileUploadController', () => {
   });
 
   describe('hasUploadingFiles', () => {
-    let progressCaches = undefined;
+    let progressCaches: Map<number, any>;
     const groupId = 1;
     beforeEach(() => {
       clearMocks();
@@ -1253,37 +1308,30 @@ describe('fileUploadController', () => {
       progressCaches = new Map();
     });
 
-    function setFileCache(itemFile: any) {
+    function setFileCache(status: any) {
       progressCaches.set(-1, {
-        itemFile,
-        progress: { rate: { loaded: 10 } },
+        progress: status,
       } as ItemFileUploadStatus);
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
     }
 
-    it('should return false when has no file cache', () => {
-      expect(fileUploadController.hasUploadingFiles()).toBeFalsy();
-    });
+    it.each`
+      progress                                  | expectRes
+      ${{}}                                     | ${false}
+      ${{ status: PROGRESS_STATUS.CANCELED }}   | ${false}
+      ${{ status: PROGRESS_STATUS.SUCCESS }}    | ${false}
+      ${{ status: PROGRESS_STATUS.FAIL }}       | ${false}
+      ${{ status: PROGRESS_STATUS.INPROGRESS }} | ${true}
+    `(
+      'should return true when has file in upload, progress: $progress',
+      ({ progress, expectRes }) => {
+        setFileCache(progress);
 
-    it('should return true when has files in uploading', () => {
-      setFileCache({
-        group_ids: [groupId],
-        versions: [{ size: 1, stored_file_id: 0 }],
-      });
-
-      expect(fileUploadController.hasUploadingFiles()).toBeTruthy();
-    });
-
-    it('should return false when has no file in uploading', () => {
-      setFileCache({
-        group_ids: [groupId],
-        versions: [{ size: 1, stored_file_id: 999 }],
-      });
-
-      expect(fileUploadController.hasUploadingFiles()).toBeFalsy();
-    });
+        expect(fileUploadController.hasUploadingFiles()).toEqual(expectRes);
+      },
+    );
   });
 
   describe('initialUploadItemsFromDraft', () => {
@@ -1325,22 +1373,51 @@ describe('fileUploadController', () => {
         .fn()
         .mockReturnValue(incomingIds);
 
-      const itemFiles = [];
+      const itemFiles: any[] = [];
       setUpUploadingFiles(groupId, itemFiles);
 
-      entitySourceController.getEntitiesLocally = jest
-        .fn()
-        .mockReturnValue([
-          { id: -10, name: 'name', is_new: true } as ItemFile,
-          { id: -376842, name: 'name', is_new: false } as ItemFile,
-        ]);
+      const invalidVersions = [
+        {
+          url: 'url',
+          download_url: '',
+          stored_file_id: 0,
+        },
+      ];
+
+      const validVersions = [
+        {
+          url: 'url',
+          download_url: '123123',
+          stored_file_id: 123123,
+        },
+      ];
+      entitySourceController.getEntitiesLocally = jest.fn().mockResolvedValue([
+        {
+          id: -10,
+          name: 'name',
+          is_new: true,
+          versions: validVersions,
+        },
+        {
+          id: -376842,
+          name: 'name',
+          is_new: false,
+          versions: invalidVersions,
+        },
+      ]);
+
+   
       const res = await fileUploadController.initialUploadItemsFromDraft(
         groupId,
       );
 
       expect(res.map(x => x.id)).toEqual(incomingIds);
-      expect(progressCaches.has(-376842)).not.toBeUndefined();
-      expect(progressCaches.has(-10)).not.toBeUndefined();
+      const uploadInfo_376842 = progressCaches.get(-376842);
+      const uploadInfo_10 = progressCaches.get(-10);
+      expect(uploadInfo_376842).not.toBeUndefined();
+      expect(uploadInfo_376842.progress.status).toEqual(PROGRESS_STATUS.FAIL);
+      expect(uploadInfo_10).not.toBeUndefined();
+      expect(uploadInfo_10.progress.status).toEqual(PROGRESS_STATUS.SUCCESS);
     });
 
     it('should compare and insert draft itemIds to uploadFiles when has uploadFiles before', async () => {
@@ -1349,9 +1426,15 @@ describe('fileUploadController', () => {
         .fn()
         .mockReturnValue(incomingIds);
 
+      const versions = [
+        {
+          download_url: '',
+          stored_file_id: 0,
+        },
+      ];
       const itemFiles = [
-        { id: -10, name: 'name', is_new: true } as ItemFile,
-        { id: -376842, name: 'name', is_new: false } as ItemFile,
+        { versions, id: -10, name: 'name', is_new: true } as ItemFile,
+        { versions, id: -376842, name: 'name', is_new: false } as ItemFile,
       ];
 
       setUpUploadingFiles(groupId, itemFiles);
@@ -1362,7 +1445,7 @@ describe('fileUploadController', () => {
       entitySourceController.getEntitiesLocally = jest
         .fn()
         .mockReturnValue([
-          { id: -385034, name: 'name', is_new: false } as ItemFile,
+          { versions, id: -385034, name: 'name', is_new: false } as ItemFile,
         ]);
 
       const res = await fileUploadController.initialUploadItemsFromDraft(
@@ -1371,7 +1454,9 @@ describe('fileUploadController', () => {
 
       expect(previousItems).toEqual([-10, -376842]);
       expect(res.map(x => x.id)).toEqual([-10, -376842, -385034]);
-      expect(progressCaches.has(-385034)).not.toBeUndefined();
+      const uploadInfo = progressCaches.get(-385034) as ItemFileUploadStatus;
+      expect(uploadInfo).not.toBeUndefined();
+      expect(uploadInfo.progress.status).toEqual(PROGRESS_STATUS.FAIL);
     });
   });
 });

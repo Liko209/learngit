@@ -5,7 +5,6 @@
 require("dotenv").config();
 import { jupiterUtils } from "./utils/JupiterUtils";
 import { sceneConfigFactory } from "./scenes/config/SceneConfigFactory";
-import { mockData } from "./mock/MockData";
 import * as qs from "qs";
 
 (async () => {

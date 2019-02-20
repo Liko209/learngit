@@ -3,7 +3,6 @@
  * @Date: 2018-12-27 10:01:32
  */
 import { SceneConfig } from "./SceneConfig";
-import { ProxyGatherer } from "../../gatherers/ProxyGatherer";
 import { ProcessGatherer } from "../../gatherers/ProcessGatherer";
 import { ProcessAudit } from "../../audits/ProcessAudit";
 
@@ -13,9 +12,6 @@ class SceneConfigFactory {
 
     config.passes = config.passes.splice(0, 1);
     config.passes[0].gatherers = [
-      {
-        instance: new ProxyGatherer()
-      },
       {
         instance: new ProcessGatherer()
       }

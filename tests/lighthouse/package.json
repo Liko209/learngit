@@ -26,7 +26,8 @@
     "sequelize": "^4.41.2",
     "sequelize-typescript": "^0.6.6",
     "ts-node": "^7.0.1",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.2",
+    "mock-client": "git+ssh://git@git.ringcentral.com:TA/tools/mock-client.git#master"
   },
   "devDependencies": {}
 }
