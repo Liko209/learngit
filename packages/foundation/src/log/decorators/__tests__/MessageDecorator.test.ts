@@ -12,5 +12,14 @@ describe('MessageDecorator', () => {
       decorator.decorate(log);
       expect(log.message).not.toBeUndefined();
     });
+    it('should not generate message again when message exist', async () => {
+      const decorator = new MessageDecorator();
+      const log = logEntityFactory.build({
+        params: ['hello', { name: 'min' }, 'world'],
+        message: 'hal',
+      });
+      decorator.decorate(log);
+      expect(log.message).toEqual('hal');
+    });
   });
 });

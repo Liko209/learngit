@@ -32,5 +32,20 @@ describe('TruncationDecorator', () => {
         JSON.stringify({ truncation: '33' }),
       ]);
     });
+    it('should not work when no options', async () => {
+      const mockLog = logEntityFactory.build();
+      const loader = new TruncationDecorator();
+      const object = {
+        x: 'sss',
+      };
+      mockLog.params = ['22', object, '333'];
+      expect(loader.decorate(mockLog)['params']).toEqual(['22', object, '333']);
+    });
+    it('should not work when params is empty', async () => {
+      const mockLog = logEntityFactory.build();
+      const loader = new TruncationDecorator();
+      mockLog.params = [];
+      expect(loader.decorate(mockLog)['params']).toEqual([]);
+    });
   });
 });
