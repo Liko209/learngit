@@ -26,6 +26,7 @@ class MockUserAgent extends EventEmitter2 {
 
   makeCall = jest.fn();
   reRegister = jest.fn();
+  unregister = jest.fn();
 
   mockSignal(signal: string) {
     this.emit(signal);

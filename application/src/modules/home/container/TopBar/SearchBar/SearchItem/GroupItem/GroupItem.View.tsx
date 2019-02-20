@@ -86,7 +86,7 @@ class GroupItemComponent extends React.Component<
                 variant="round"
                 size="small"
               >
-                {t('join')}
+                {t('people.team.joinButtonTitle')}
               </JuiButton>
             )
           }
@@ -98,6 +98,6 @@ class GroupItemComponent extends React.Component<
   }
 }
 
-const GroupItemView = translate('translates')(GroupItemComponent);
+const GroupItemView = translate('translations')(GroupItemComponent);
 
 export { GroupItemView };

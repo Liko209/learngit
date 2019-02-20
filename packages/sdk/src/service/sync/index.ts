@@ -28,7 +28,8 @@ import handleData from './handleData';
 import { notificationCenter } from '..';
 import { ERROR_TYPES, ErrorParserHolder } from '../../error';
 import { ItemDao } from '../../module/item/dao';
-import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+// import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+import { progressBar } from '../../utils/progress';
 
 type SyncListener = {
   onInitialLoaded?: (indexData: IndexDataModel) => Promise<void>;
@@ -44,15 +45,23 @@ export default class SyncService extends BaseService {
   private _syncListener: SyncListener;
 
   constructor() {
-    const subscriptions = {
+    super(null, null, null, {
       [SERVICE.SOCKET_STATE_CHANGE]: ({ state }: { state: any }) => {
         if (state === 'connected' || state === 'refresh') {
           this.syncData();
+        } else if (state === 'connecting') {
+          progressBar.start();
+        } else if (state === 'disconnected') {
+          progressBar.stop();
         }
       },
-    };
-    super(null, null, null, subscriptions);
+    });
     this.isLoading = false;
+  }
+
+  getIndexTimestamp() {
+    const configDao = daoManager.getKVDao(ConfigDao);
+    return configDao.get(LAST_INDEX_TIMESTAMP);
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -60,22 +69,22 @@ export default class SyncService extends BaseService {
     if (this.isLoading) {
       return;
     }
+
     this.isLoading = true;
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
+    const lastIndexTimestamp = this.getIndexTimestamp();
     if (lastIndexTimestamp) {
       await this._syncIndexData(lastIndexTimestamp);
     } else {
       await this._firstLogin();
     }
     this.isLoading = false;
-    this._preloadPosts();
+    // this._preloadPosts();
   }
 
-  private async _preloadPosts() {
-    const handler = new PreloadPostsForGroupHandler();
-    handler.preloadPosts();
-  }
+  // private async _preloadPosts() {
+  //   const handler = new PreloadPostsForGroupHandler();
+  //   handler.preloadPosts();
+  // }
 
   private async _firstLogin() {
     const {
@@ -87,12 +96,16 @@ export default class SyncService extends BaseService {
 
     try {
       const currentTime = Date.now();
+
+      progressBar.start();
       const initialResult = await fetchInitialData(currentTime);
 
       if (initialResult.isOk()) {
         onInitialLoaded && (await onInitialLoaded(initialResult.data));
         await handleData(initialResult.data);
         onInitialHandled && (await onInitialHandled());
+
+        progressBar.stop();
 
         const remainingResult = await fetchRemainingData(currentTime);
 
@@ -103,6 +116,8 @@ export default class SyncService extends BaseService {
           mainLogger.info('fetch initial data or remaining data success');
           return;
         }
+      } else {
+        progressBar.stop();
       }
 
       mainLogger.error('fetch initial data or remaining data error');
@@ -114,6 +129,7 @@ export default class SyncService extends BaseService {
   }
 
   private async _syncIndexData(timeStamp: number) {
+    progressBar.start();
     const { onIndexLoaded, onIndexHandled } = this._syncListener;
     // 5 minutes ago to ensure data is correct
     const result = await fetchIndexData(String(timeStamp - 300000));
@@ -124,6 +140,7 @@ export default class SyncService extends BaseService {
     } else {
       this._handleSyncIndexError(result.error);
     }
+    progressBar.stop();
   }
 
   private async _handleSyncIndexError(result: any) {

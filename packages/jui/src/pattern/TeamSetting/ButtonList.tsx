@@ -44,6 +44,9 @@ const JuiTeamSettingButtonListItemText = styled(
   )),
 )`
   && {
+    vertical-align: middle;
+    display: inline-block;
+    padding-right: ${spacing(3)};
     span {
       ${typography('body1')};
       line-height: ${height(10)};

@@ -47,6 +47,8 @@ const ListItemText = styled(MuiListItemText)`
 type JuiListToggleItemProps = {
   text: string;
   checked: boolean;
+  disabled?: boolean;
+  automationId: string;
   [propName: string]: any;
 };
 
@@ -74,11 +76,17 @@ class JuiListToggleButton extends PureComponent<Props, {}> {
     return (
       <List dense={true} {...listProps} {...rest}>
         {items.map(toggleItem => (
-          <ListItem {...listItemProps} key={toggleItem.text} dense={true}>
+          <ListItem
+            data-test-automation-id={toggleItem.automationId}
+            {...listItemProps}
+            key={toggleItem.text}
+            dense={true}
+          >
             <ListItemText>{toggleItem.text}</ListItemText>
             <ListItemSecondaryAction>
               <JuiToggleButton
                 checked={toggleItem.checked}
+                disabled={!!toggleItem.disabled}
                 onChange={this.handleChange.bind(this, toggleItem)}
               />
             </ListItemSecondaryAction>

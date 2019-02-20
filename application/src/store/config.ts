@@ -1,6 +1,8 @@
 import { service, mainLogger } from 'sdk';
 import { ItemService } from 'sdk/module/item';
+import { PostService } from 'sdk/module/post';
 import { StateService } from 'sdk/module/state';
+import { ProfileService } from 'sdk/module/profile';
 import { ProgressService } from 'sdk/module/progress';
 import { GroupService } from 'sdk/module/group';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
@@ -9,9 +11,7 @@ import { PermissionService } from 'sdk/module/permission';
 const {
   CompanyService,
   GroupConfigService,
-  PostService,
   PresenceService,
-  ProfileService,
   ENTITY,
 } = service;
 
@@ -66,49 +66,49 @@ const ENTITY_SETTING = {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: 10000,
   },
   [ENTITY_NAME.TASK_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: 10000,
   },
   [ENTITY_NAME.EVENT_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: 10000,
   },
   [ENTITY_NAME.LINK_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: 10000,
   },
   [ENTITY_NAME.NOTE_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: 10000,
   },
   [ENTITY_NAME.CODE_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: 10000,
   },
   [ENTITY_NAME.CONFERENCE_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: 10000,
   },
   [ENTITY_NAME.POST]: {
     event: [ENTITY.POST],
     service: () => PostService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: 100000,
   },
   [ENTITY_NAME.PRESENCE]: {
     event: [ENTITY.PRESENCE],

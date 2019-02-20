@@ -3,10 +3,9 @@
  * @Date: 2018-10-08 18:18:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { IFetchSortableDataProvider } from './../../../store/base/fetch/FetchSortableDataListHandler';
+
 import _ from 'lodash';
 import { computed, action, observable } from 'mobx';
-import { ENTITY } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Post } from 'sdk/module/post/entity';
 import { StateService } from 'sdk/module/state';
@@ -39,13 +38,11 @@ import { generalErrorHandler } from '@/utils/error';
 import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
-const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
-  dataModel.group_id === Number(groupId) && !dataModel.deactivated;
+import { PostService } from 'sdk/module/post';
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
-  private _postService: NewPostService = NewPostService.getInstance();
+  private _postService: PostService = PostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
@@ -134,43 +131,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
     this._historyHandler = new HistoryHandler();
     this.initialize(props.groupId);
-    const options = {
-      transformFunc: (dataModel: Post) => ({
-        id: dataModel.id,
-        sortValue: dataModel.created_at,
-        data: dataModel,
-      }),
-      hasMoreUp: true,
-      hasMoreDown: !!this.jumpToPostId,
-      isMatchFunc: isMatchedFunc(props.groupId),
-      entityName: ENTITY_NAME.POST,
-      eventName: ENTITY.POST,
-    };
 
     this._streamController = new StreamController(
       props.groupId,
       this._historyHandler,
-      this.postDataProvider,
-      options,
+      this.jumpToPostId,
     );
   }
-  postDataProvider: IFetchSortableDataProvider<Post> = {
-    fetchData: async (direction, pageSize, anchor) => {
-      const {
-        posts,
-        hasMore,
-        items,
-      } = await this._postService.getPostsByGroupId({
-        direction,
-        groupId: this.props.groupId,
-        postId: anchor && anchor.id,
-        limit: pageSize,
-      });
-      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
-      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.FILE_ITEM, items); // Todo: this should be removed once item store completed the classification.
-      return { hasMore, data: posts };
-    },
-  };
 
   @computed
   private get _groupState() {
@@ -191,7 +158,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       if (this.jumpToPostId) {
         await this._loadSiblingPosts(this.jumpToPostId);
       } else {
-        await this._loadPosts(QUERY_DIRECTION.OLDER);
+        await this._streamController.fetchInitialData(QUERY_DIRECTION.OLDER);
       }
     } catch (err) {
       this._handleLoadInitialPostsError(err);
@@ -326,9 +293,10 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _handleLoadMoreError(err: Error, direction: QUERY_DIRECTION) {
     if (this._canHandleError(err)) {
       Notification.flashToast({
-        message: `SorryWeWereNotAbleToLoad${
-          direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
-        }Messages`,
+        message:
+          direction === QUERY_DIRECTION.OLDER
+            ? 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages'
+            : 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,

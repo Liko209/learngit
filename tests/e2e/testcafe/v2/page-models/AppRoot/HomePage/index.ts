@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { h } from '../../../helpers';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { CreateTeamModal } from './CreateTeamModal';
 import { SendNewMessageModal } from './SendNewMessage';
@@ -11,8 +12,8 @@ import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSetting';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
-import { h } from '../../../helpers';
-
+import { DeleteTeamDialog } from './DeleteTeam';
+import { AlertDialog } from "./AlertDialog";
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -95,4 +96,13 @@ export class HomePage extends BaseWebComponent {
   get leaveTeamDialog() {
     return this.getComponent(LeaveTeamDialog);
   }
+
+  get deleteTeamDialog() {
+    return this.getComponent(DeleteTeamDialog);
+  }
+
+  get alertDialog() {
+    return this.getComponent(AlertDialog); 
+  }
+
 }

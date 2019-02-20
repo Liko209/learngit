@@ -190,7 +190,7 @@ class StreamViewComponent extends Component<Props> {
     return (
       <TimeNodeDivider
         key="TimeNodeDividerNewMessagesDivider"
-        value={toTitleCase(t('newMessage_plural'))}
+        value={toTitleCase(t('message.stream.newMessages'))}
       />
     );
   }
@@ -289,7 +289,7 @@ class StreamViewComponent extends Component<Props> {
           loading={this._jumpToFirstUnreadLoading}
           onClick={this._jumpToFirstUnread}
         >
-          {countText} {toTitleCase(t('newMessage_plural'))}
+          {countText} {toTitleCase(t('message.stream.newMessages'))}
         </JuiLozengeButton>
       </JumpToFirstUnreadButtonWrapper>
     ) : null;
@@ -301,8 +301,8 @@ class StreamViewComponent extends Component<Props> {
     return loadInitialPostsError ? (
       <JuiStreamLoading
         showTip={!!loadInitialPostsError}
-        tip={t('translations:messageLoadingErrorTip')}
-        linkText={t('translations:tryAgain')}
+        tip={t('translations:message.prompt.MessageLoadingErrorTip')}
+        linkText={t('translations:common.prompt.tryAgain')}
         onClick={this._loadInitialPosts}
       />
     ) : (

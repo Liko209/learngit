@@ -20,17 +20,18 @@ import {
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
 import { ContactSearch } from '@/containers/ContactSearch';
-import portalManager from '@/common/PortalManager';
+import { DialogContext } from '@/containers/Dialog';
 
 import { ViewProps } from './types';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { TeamSetting } from './CreateTeam.ViewModel';
 
-interface IState {
+type State = {
   items: JuiListToggleItemProps[];
-}
+};
 
 const StyledSnackbarsContent = styled(JuiSnackbarContent)`
   && {
@@ -39,7 +40,9 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 `;
 
 @observer
-class CreateTeam extends React.Component<ViewProps, IState> {
+class CreateTeam extends React.Component<ViewProps, State> {
+  static contextType = DialogContext;
+
   teamNameRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
 
@@ -54,19 +57,27 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     return [
       {
         type: 'isPublic',
-        text: i18next.t('PublicTeam'),
+        text: i18next.t('people.team.SetAsPublicTeam'),
         checked: false,
-      },
-      {
-        type: 'canPost',
-        text: i18next.t('MembersMayPostMessages'),
-
-        checked: true,
+        automationId: 'CreateTeamIsPublic',
       },
       {
         type: 'canAddMember',
-        text: i18next.t('MembersMayAddOtherMembers'),
+        text: i18next.t('people.team.MembersMayAddOtherMembers'),
         checked: true,
+        automationId: 'CreateTeamCanAddMember',
+      },
+      {
+        type: 'canPost',
+        text: i18next.t('people.team.MembersMayPostMessages'),
+        checked: true,
+        automationId: 'CreateTeamCanPost',
+      },
+      {
+        type: 'canPin',
+        text: i18next.t('people.team.MembersMayPinPosts'),
+        checked: true,
+        automationId: 'CreateTeamCanPinPost',
       },
     ];
   }
@@ -105,6 +116,13 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           checked,
         };
       }
+      if (oldItem.type === 'canPin' && item.type === 'canPost') {
+        return {
+          ...oldItem,
+          checked,
+          disabled: !checked,
+        };
+      }
       return oldItem;
     });
     this.setState({
@@ -124,15 +142,17 @@ class CreateTeam extends React.Component<ViewProps, IState> {
       isPublic: boolean;
       canAddMember: boolean;
       canPost: boolean;
+      canPin: boolean;
     };
 
-    const teamSetting = {
+    const teamSetting: TeamSetting = {
       description,
       name: teamName,
       isPublic: uiSetting.isPublic,
       permissionFlags: {
         TEAM_ADD_MEMBER: uiSetting.canAddMember,
         TEAM_POST: uiSetting.canPost,
+        TEAM_PIN_POST: uiSetting.canPin,
       },
     };
 
@@ -143,10 +163,10 @@ class CreateTeam extends React.Component<ViewProps, IState> {
     }
   }
 
-  onClose = () => portalManager.dismiss();
+  onClose = () => this.context();
 
   renderServerUnknownError() {
-    const message = 'WeWerentAbleToCreateTheTeamTryAgain';
+    const message = 'people.prompt.WeWerentAbleToCreateTheTeamTryAgain';
     Notification.flashToast({
       message,
       type: ToastType.ERROR,
@@ -180,22 +200,22 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn }}
-        title={i18next.t('CreateTeam')}
+        title={i18next.t('people.team.CreateTeam')}
         onCancel={this.onClose}
         onOK={this.createTeam}
-        okText={i18next.t('Create')}
+        okText={i18next.t('people.team.Create')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {i18next.t('Create Team Error')}
+              {i18next.t('people.prompt.CreateTeamError')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={i18next.t('Cancel')}
+        cancelText={i18next.t('common.dialog.cancel')}
       >
         <JuiTextField
-          id={i18next.t('teamName')}
-          label={i18next.t('teamName')}
+          id={i18next.t('people.team.teamName')}
+          label={i18next.t('people.team.teamName')}
           fullWidth={true}
           error={nameError}
           inputProps={{
@@ -208,16 +228,16 @@ class CreateTeam extends React.Component<ViewProps, IState> {
         />
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={i18next.t('Members')}
-          placeholder={i18next.t('Search Contact Placeholder')}
+          label={i18next.t('people.team.Members')}
+          placeholder={i18next.t('people.team.SearchContactPlaceholder')}
           error={emailError}
           helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
           isExcludeMe={true}
         />
         <JuiTextarea
-          id={i18next.t('teamDescription')}
-          label={i18next.t('teamDescription')}
+          id={i18next.t('people.team.teamDescription')}
+          label={i18next.t('people.team.teamDescription')}
           inputProps={{
             'data-test-automation-id': 'CreateTeamDescription',
             maxLength: 1000,
@@ -234,8 +254,8 @@ class CreateTeam extends React.Component<ViewProps, IState> {
           TypographyProps={{
             align: 'center',
           }}
-          text={t('YouAreAnAdminToThisTeam')}
-          linkText={t('LearnAboutTeamAdministration')}
+          text={t('people.prompt.YouAreAnAdminToThisTeam')}
+          linkText={t('people.prompt.LearnAboutTeamAdministration')}
           href=""
         /> */}
       </JuiModal>

@@ -16,8 +16,8 @@ type Props = TeamSettingButtonViewProps & WithNamespaces;
 class TeamSettingButtonViewComponent extends Component<Props> {
   onClickSettingButton = async () => {
     const { id } = this.props;
-    portalManager.dismiss();
-    TeamSettings.show(undefined, { id });
+    portalManager.dismissLast();
+    TeamSettings.show({ id });
   }
 
   render() {
@@ -29,7 +29,7 @@ class TeamSettingButtonViewComponent extends Component<Props> {
         data-test-automation-id="settingButton"
         alwaysEnableTooltip={true}
         onClick={this.onClickSettingButton}
-        tooltipTitle={toTitleCase(t('setting_plural'))}
+        tooltipTitle={toTitleCase(t('setting.teamSettings'))}
       >
         settings
       </JuiIconButton>

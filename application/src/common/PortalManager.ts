@@ -3,94 +3,120 @@
  * @Date: 2018-12-26 14:22:44
  * Copyright © RingCentral. All rights reserved.
  */
-import { ComponentClass, ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { EventEmitter2 } from 'eventemitter2';
 
-type ComponentTypes = ComponentClass | ComponentType<any>;
-type PortalsMapValue = {
-  node: HTMLElement;
+type Portal = {
+  component: ComponentType<any>;
   dismiss: () => void;
   props?: any;
 };
 
-type PortalsMapProps = Map<ComponentTypes, PortalsMapValue>;
+type Portals = Map<number | string, Portal>;
 
 const EventKey = 'portalsChange';
 
 class PortalManager extends EventEmitter2 {
-  portals: PortalsMapProps;
-  constructor() {
-    super();
-    this.portals = new Map();
-  }
+  portals: Portals = new Map();
 
-  register(
-    component: ComponentTypes,
-    { node, dismiss, props }: PortalsMapValue,
-  ) {
-    this.portals.set(component, { node, dismiss, props });
+  register({ component, dismiss, props }: Portal) {
+    this.portals.set(props.key, { component, dismiss, props });
     this.emit(EventKey, this.portals);
   }
 
-  unRegister(component: ComponentTypes) {
-    const value = this.portals.get(component);
-    if (value) {
-      const node = value.node;
-      node.parentNode && node.parentNode.removeChild(node);
-      this.portals.delete(component);
-      this.emit(EventKey, this.portals);
-    }
+  unRegister(key: number) {
+    this.portals.delete(key);
+    this.emit(EventKey, this.portals);
   }
 
-  dismiss(afterDismiss?: () => void) {
-    const portals = this.portals;
-    const last = portals.size - 1;
-    this.unRegister(Array.from(portals.keys())[last]);
+  dismissAll(afterDismiss?: () => void) {
+    this.portals.forEach((portal: Portal) => {
+      portal.dismiss();
+    });
     typeof afterDismiss === 'function' && afterDismiss();
   }
 
-  wrapper(component: ComponentTypes) {
+  dismissLast(afterDismiss?: () => void) {
+    const portal = Array.from(this.portals.values())[this.portals.size - 1];
+    if (portal) {
+      portal.dismiss();
+    }
+    typeof afterDismiss === 'function' && afterDismiss();
+  }
+
+  wrapper(component: ComponentType<any>, container?: Element) {
+    let hasShow = false;
     const wrapperComponent = {
+      key: -1,
       dismiss: (afterDismiss?: () => void) => {
-        this.unRegister(component);
+        hasShow = false;
+        this.unRegister(wrapperComponent.key);
         typeof afterDismiss === 'function' && afterDismiss();
       },
-      show: (appendNode?: HTMLElement, props?: any) => {
+      show: (props?: any) => {
         const dismiss = wrapperComponent.dismiss;
 
-        if (this.portals.get(component)) {
+        if (hasShow) {
           return {
             dismiss,
           };
         }
 
-        const renderNode = document.createElement('div');
+        hasShow = true;
 
-        this.register(component, {
+        const newProps = { ...props };
+
+        if (!newProps.key) {
+          newProps.key = Date.now();
+        }
+        wrapperComponent.key = newProps.key;
+        this.register({
+          component,
           dismiss,
-          props,
-          node: renderNode,
+          props: newProps,
         });
-        (appendNode || document.body).appendChild(renderNode);
 
         return {
           dismiss,
         };
       },
+      startLoading: () => {
+        const portal = this.portals.get(wrapperComponent.key);
+        if (!portal) {
+          return;
+        }
+        const newProps = { ...portal.props };
+        newProps.loading = true;
+        this.register({
+          component,
+          dismiss: wrapperComponent.dismiss,
+          props: newProps,
+        });
+      },
+      stopLoading: () => {
+        const portal = this.portals.get(wrapperComponent.key);
+        if (!portal) {
+          return;
+        }
+        const newProps = { ...portal.props };
+        newProps.loading = false;
+        this.register({
+          component,
+          dismiss: wrapperComponent.dismiss,
+          props: newProps,
+        });
+      },
     };
 
-    return {
-      dismiss: wrapperComponent.dismiss,
-      show: wrapperComponent.show,
-    };
+    return wrapperComponent;
   }
 
   onChange(fn: Function) {
-    this.on(EventKey, (portals: PortalsMapProps) => {
+    this.on(EventKey, (portals: Portals) => {
       fn(portals);
     });
   }
 }
 
-export { PortalsMapProps, PortalManager, EventKey };
+export { Portals, PortalManager, EventKey };
 export default new PortalManager();

@@ -11,6 +11,7 @@
   },
   "glip": {
     "server": "https://aws13-g04-uds02.asialab.glip.net:11904",
+    "apiServer": "https://aws13-g04-uds02.asialab.glip.net:8443",
     "cacheServer": "https://aws13-g04-uds02.asialab.glip.net:11907"
   },
   "glip_desktop": {

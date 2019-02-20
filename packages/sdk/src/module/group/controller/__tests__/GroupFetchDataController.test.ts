@@ -29,8 +29,8 @@ import { IRequestController } from '../../../../framework/controller/interface/I
 import { UserConfig } from '../../../../service/account/UserConfig';
 import CompanyService from '../../../../service/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
-import PostService from '../../../../service/post';
-import ProfileService from '../../../../service/profile';
+import { ProfileService } from '../../../profile';
+import { PostService } from '../../../post';
 import { TypeDictionary } from '../../../../utils';
 import { PersonService } from '../../../person';
 import { Person } from '../../../person/entity';
@@ -44,11 +44,11 @@ jest.mock('../../../../dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
-jest.mock('../../../../service/profile');
+jest.mock('../../../profile');
 jest.mock('../../../../service/account/UserConfig');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../service/company');
-jest.mock('../../../../service/post');
+jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
 

@@ -3,13 +3,19 @@
  * @Date: 2018-11-22 10:16:03
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ChangeEvent, createRef, FocusEventHandler } from 'react';
+import React, {
+  MouseEvent,
+  ChangeEvent,
+  createRef,
+  FocusEventHandler,
+} from 'react';
 import * as Jui from './style';
 
 type JuiSearchInputProps = {
   value: string;
   placeholder: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onClick?: (e: MouseEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEventHandler<HTMLInputElement>) => void;
   onFocus?: (e: FocusEventHandler<HTMLInputElement>) => void;
   onClear: () => void;
@@ -53,7 +59,14 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
   }
 
   render() {
-    const { value, focus, onFocus, placeholder, showCloseBtn } = this.props;
+    const {
+      value,
+      focus,
+      onFocus,
+      onClick,
+      placeholder,
+      showCloseBtn,
+    } = this.props;
 
     return (
       <Jui.SearchWrapper hasValue={value} focus={focus}>
@@ -68,6 +81,7 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
           onChange={this.onChange}
           onFocus={onFocus}
           onBlur={this.onBlur}
+          onClick={onClick}
           inputRef={this._inputDom}
           inputProps={{
             placeholder,

@@ -108,6 +108,10 @@ export abstract class BaseWebComponent {
     return this.self.find('button').withText(name);
   }
 
+  checkboxOf(sel: Selector) {
+    return sel.find('input[type="checkbox"]');
+  }
+
   // misc
   warnFlakySelector() {
     const stack = (new Error()).stack;
@@ -129,4 +133,8 @@ export abstract class BaseWebComponent {
     return Number(text);
   }
 
+  // hover some selector will show
+  async showTooltip(text: string) {
+    await this.t.expect(this.getSelector('[role="tooltip"]').withExactText(text).exists).ok();
+  }
 }

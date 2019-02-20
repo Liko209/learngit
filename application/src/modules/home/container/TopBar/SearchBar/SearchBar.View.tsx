@@ -23,7 +23,7 @@ import { ViewProps, SectionTypeMap } from './types';
 
 import { SearchSectionsConfig } from './config';
 
-const SEARCH_DELAY = 100;
+const SEARCH_DELAY = 50;
 
 type SearchItems = {
   ids: number[];
@@ -196,6 +196,10 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     const { data } = this.state;
     const currentSection = section < 0 ? 0 : section;
     const searchItem: SearchItems = data[currentSection];
+
+    if (!searchItem) {
+      return;
+    }
     const currentSectionLength = searchItem.ids.length;
     if (cell < currentSectionLength - 1) {
       this._setSelectIndex(currentSection, cell + 1);
@@ -268,7 +272,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
           <React.Fragment key={name}>
             <JuiSearchTitle
               isShowMore={hasMore}
-              showMore={i18next.t('showMore')}
+              showMore={i18next.t('home.showMore')}
               title={i18next.t(title)}
               data-test-automation-id={`search-${title}`}
             />
@@ -312,11 +316,11 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
           <JuiSearchInput
             ref={this.textInput}
             focus={focus}
-            onFocus={this.onFocus}
+            onClick={this.onFocus}
             onClear={this.onClear}
             value={searchValue}
             onChange={this.onChange}
-            placeholder={i18next.t('search')}
+            placeholder={i18next.t('home.search')}
             showCloseBtn={!!searchValue}
           />
           {focus && searchValue && <JuiSearchList>{cells}</JuiSearchList>}

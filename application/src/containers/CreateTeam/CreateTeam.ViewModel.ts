@@ -89,7 +89,7 @@ class CreateTeamViewModel extends AbstractViewModel {
         codes: [ERROR_CODES_SERVER.ALREADY_TAKEN],
       })
     ) {
-      this.errorMsg = 'alreadyTaken';
+      this.errorMsg = 'people.prompt.alreadyTaken';
       this.nameError = true;
     } else if (
       error.isMatch({
@@ -100,7 +100,7 @@ class CreateTeamViewModel extends AbstractViewModel {
       const message = error.message;
       if (matchInvalidEmail(message).length > 0) {
         this.errorEmail = matchInvalidEmail(message);
-        this.emailErrorMsg = 'Invalid Email';
+        this.emailErrorMsg = 'people.prompt.InvalidEmail';
         this.emailError = true;
       }
     } else {
@@ -109,4 +109,4 @@ class CreateTeamViewModel extends AbstractViewModel {
   }
 }
 
-export { CreateTeamViewModel };
+export { CreateTeamViewModel, TeamSetting };

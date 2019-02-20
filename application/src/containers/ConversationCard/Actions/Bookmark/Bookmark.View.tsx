@@ -24,8 +24,8 @@ class BookmarkViewComponent extends Component<Props> {
     const result = await bookmark(!isBookmark);
     if (result.isFailed) {
       const message = isBookmark
-        ? 'SorryWeWereNotAbleToRemoveYourBookmark'
-        : 'SorryWeWereNotAbleToBookmarkThisMessage';
+        ? 'message.prompt.SorryWeWereNotAbleToRemoveYourBookmark'
+        : 'message.prompt.SorryWeWereNotAbleToBookmarkThisMessage';
       Notification.flashToast({
         message,
         type: ToastType.ERROR,
@@ -41,7 +41,11 @@ class BookmarkViewComponent extends Component<Props> {
     return (
       <JuiIconButton
         size="small"
-        tooltipTitle={isBookmark ? t('Remove bookmark') : t('Bookmark')}
+        tooltipTitle={
+          isBookmark
+            ? t('message.action.removeBookmark')
+            : t('message.action.bookmark')
+        }
         color={isBookmark ? 'primary' : undefined}
         onClick={this._handleClick}
         variant="plain"

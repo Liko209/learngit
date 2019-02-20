@@ -6,7 +6,7 @@
 
 import { action, observable, computed } from 'mobx';
 import { EditMessageInputProps, EditMessageInputViewProps } from './types';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { getEntity } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
@@ -19,13 +19,13 @@ import Keys from 'jui/pattern/MessageInput/keys';
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
 enum ERROR_TYPES {
-  CONTENT_LENGTH = 'contentLength',
-  CONTENT_ILLEGAL = 'contentIllegal',
+  CONTENT_LENGTH = 'message.prompt.contentLength',
+  CONTENT_ILLEGAL = 'message.prompt.contentIllegal',
 }
 
 class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   implements EditMessageInputViewProps {
-  private _postService: NewPostService;
+  private _postService: PostService;
   @computed
   get id() {
     return this.props.id;
@@ -45,7 +45,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   constructor(props: EditMessageInputProps) {
     super(props);
-    this._postService = NewPostService.getInstance();
+    this._postService = PostService.getInstance();
     this._exitEditMode = this._exitEditMode.bind(this);
     this._editPost = this._editPost.bind(this);
   }
