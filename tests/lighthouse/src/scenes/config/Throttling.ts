@@ -77,12 +77,12 @@ class Throttling {
     }
 }
 
-//$rttMs, $throughputKbps, $requestLatencyMs, 
+//$rttMs, $throughputKbps, $requestLatencyMs,
 //$downloadThroughputKbps, $uploadThroughputKbps, $cpuSlowdownMultiplier
 // see https://github.com/GoogleChrome/lighthouse/blob/master/docs/throttling.md
-const MOBILE_3G = new Throttling(150, 1.6 * 1024, 750, 4);
+const MOBILE_3G = new Throttling(150, 1.6 * 1024, 750, 1);
 
-const WIFI = new Throttling(0.53, 34133, 17066, 4);
+const WIFI = new Throttling(0.53, 34133, 17066, 1);
 
 export {
     Throttling,

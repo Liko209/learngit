@@ -7,7 +7,6 @@ import { SceneDto } from "../models";
 import { sceneConfigFactory } from "./config/SceneConfigFactory";
 import { LoginGatherer } from "../gatherers/LoginGatherer";
 import { FetchGroupGatherer } from "../gatherers/FetchGroupGatherer";
-import { mockHelper } from "../mock";
 import { metriceService } from "../services/MetricService";
 
 class FetchGroupScene extends Scene {
@@ -20,8 +19,6 @@ class FetchGroupScene extends Scene {
     this.config.passes[0].gatherers.unshift({
       instance: new FetchGroupGatherer()
     });
-
-    mockHelper.open();
   }
 
   async saveMetircsIntoDb(): Promise<SceneDto> {
@@ -32,6 +29,9 @@ class FetchGroupScene extends Scene {
       FetchGroupGatherer.name
     );
     return sceneDto;
+  }
+
+  async saveMetircsIntoDisk() {
   }
 }
 
