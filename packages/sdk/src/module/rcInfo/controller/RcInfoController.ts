@@ -12,7 +12,7 @@ import {
   RC_ROLE_PERMISSION,
 } from '../dao';
 import { daoManager } from '../../../dao';
-import { RcInfoApi } from '../../../api/ringcentral/RcInfo';
+import { RcInfoApi } from '../../../api/ringcentral/RcInfoApi';
 
 class RcInfoController {
   private _rcInfoDao: RcInfoDao;

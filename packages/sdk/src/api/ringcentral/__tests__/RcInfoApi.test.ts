@@ -4,17 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import Api from '../../api';
-import { RcInfoApi } from '../RcInfo';
+import { RcInfoApi } from '../RcInfoApi';
 import { NETWORK_VIA } from 'foundation';
 
 jest.mock('../../api');
 
-describe('RcInfo', () => {
+describe('RcInfoApi', () => {
   describe('requestRcClientInfo()', () => {
     it('should be called with correct params', () => {
       RcInfoApi.requestRcClientInfo();
-      expect(Api.rcNetworkClient.http).toBeCalledWith({
+      expect(RcInfoApi.rcNetworkClient.http).toBeCalledWith({
         path: '/v1.0/client-info',
         method: 'get',
         authFree: false,
@@ -26,7 +25,7 @@ describe('RcInfo', () => {
   describe('requestRcAccountInfo()', () => {
     it('should be called with correct params', () => {
       RcInfoApi.requestRcAccountInfo();
-      expect(Api.rcNetworkClient.http).toBeCalledWith({
+      expect(RcInfoApi.rcNetworkClient.http).toBeCalledWith({
         path: '/v1.0/account/~',
         method: 'get',
         authFree: false,
@@ -38,7 +37,7 @@ describe('RcInfo', () => {
   describe('requestRcExtensionInfo()', () => {
     it('should be called with correct params', () => {
       RcInfoApi.requestRcExtensionInfo();
-      expect(Api.rcNetworkClient.http).toBeCalledWith({
+      expect(RcInfoApi.rcNetworkClient.http).toBeCalledWith({
         path: '/v1.0/account/~/extension/~',
         method: 'get',
         authFree: false,
@@ -50,7 +49,7 @@ describe('RcInfo', () => {
   describe('requestRcRolePermission()', () => {
     it('should be called with correct params', () => {
       RcInfoApi.requestRcRolePermission();
-      expect(Api.rcNetworkClient.http).toBeCalledWith({
+      expect(RcInfoApi.rcNetworkClient.http).toBeCalledWith({
         path: '/v1.0/account/~/extension/~/authz-profile',
         method: 'get',
         authFree: false,

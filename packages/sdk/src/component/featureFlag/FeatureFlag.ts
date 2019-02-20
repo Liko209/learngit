@@ -10,9 +10,14 @@ import {
   RcExtensionInfo,
   RcServiceFeature,
 } from '../../api/ringcentral/types/RcExtensionInfo';
-import { RcInfoApi } from '../../api/ringcentral/RcInfo';
+import { RcInfoApi } from '../../api/ringcentral/RcInfoApi';
 
-type IBETA_FLAG_SOURCE = 'Client_Config' | 'RC_PERMISSION' | 'Split.io_Flag';
+const I_BETA_FLAG_SOURCE = {
+  CLIENT_CONFIG: 'Client_Config',
+  RC_PERMISSION: 'RC_PERMISSION',
+  SPLIT_IO_FLAG: 'Split.io_Flag',
+};
+
 class FeatureFlag {
   private _flags: IFlag;
   constructor(
@@ -31,7 +36,7 @@ class FeatureFlag {
     return this._calculator.isFeatureEnabled(this._flags, featureName);
   }
 
-  handleData(flags: IFlag, source: IBETA_FLAG_SOURCE = 'Client_Config') {
+  handleData(flags: IFlag, source: string = I_BETA_FLAG_SOURCE.CLIENT_CONFIG) {
     const oldFlag = this._getFromStorage(source);
     const touchedFlags = strictDiff([oldFlag, flags]);
     Object.keys(touchedFlags).length && this._notify(touchedFlags);
@@ -54,7 +59,7 @@ class FeatureFlag {
     rcExtensionInfo.serviceFeatures!.forEach((item: RcServiceFeature) => {
       permissions[item.featureName] = item.enabled;
     });
-    this.handleData(permissions, 'RC_PERMISSION');
+    this.handleData(permissions, I_BETA_FLAG_SOURCE.RC_PERMISSION);
   }
 
   getFlagValue(key: string) {
@@ -63,7 +68,11 @@ class FeatureFlag {
 
   private _dumpFlags() {
     const defaultFlags = {};
-    return ['Client_Config', 'Split.io_Flag', 'RC_PERMISSION'].reduce(
+    return [
+      I_BETA_FLAG_SOURCE.CLIENT_CONFIG,
+      I_BETA_FLAG_SOURCE.SPLIT_IO_FLAG,
+      I_BETA_FLAG_SOURCE.RC_PERMISSION,
+    ].reduce(
       (prev, curr) => ({ ...prev, ...this._getFromStorage(curr) }),
       defaultFlags,
     );

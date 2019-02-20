@@ -3,7 +3,7 @@ import FeatureFlag from '../FeatureFlag';
 import FlagCalculator from '../FlagCalculator';
 import { BETA_FEATURE, IFlag } from '../interface';
 import { daoManager } from '../../../dao';
-import { RcInfoApi } from '../../../api/ringcentral/RcInfo';
+import { RcInfoApi } from '../../../api/ringcentral/RcInfoApi';
 
 jest.mock('../FlagCalculator');
 jest.mock('../configChangeNotifier');

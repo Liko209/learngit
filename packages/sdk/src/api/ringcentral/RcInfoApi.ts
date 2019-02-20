@@ -12,9 +12,7 @@ import { RcAccountInfo } from './types/RcAccountInfo';
 import { RcExtensionInfo } from './types/RcExtensionInfo';
 import { RcRolePermissions } from './types/RcRolePermissions';
 
-class RcInfoApi {
-  constructor() {}
-
+class RcInfoApi extends Api {
   static requestRcClientInfo() {
     const query = {
       path: RINGCENTRAL_API.API_CLIENT_INFO,
@@ -22,7 +20,7 @@ class RcInfoApi {
       authFree: false,
       via: NETWORK_VIA.HTTP,
     };
-    return Api.rcNetworkClient.http<RcClientInfo>(query);
+    return RcInfoApi.rcNetworkClient.http<RcClientInfo>(query);
   }
 
   static requestRcAccountInfo() {
@@ -32,7 +30,7 @@ class RcInfoApi {
       authFree: false,
       via: NETWORK_VIA.HTTP,
     };
-    return Api.rcNetworkClient.http<RcAccountInfo>(query);
+    return RcInfoApi.rcNetworkClient.http<RcAccountInfo>(query);
   }
 
   static requestRcExtensionInfo() {
@@ -42,7 +40,7 @@ class RcInfoApi {
       authFree: false,
       via: NETWORK_VIA.HTTP,
     };
-    return Api.rcNetworkClient.http<RcExtensionInfo>(query);
+    return RcInfoApi.rcNetworkClient.http<RcExtensionInfo>(query);
   }
 
   static requestRcRolePermission() {
@@ -52,7 +50,7 @@ class RcInfoApi {
       authFree: false,
       via: NETWORK_VIA.HTTP,
     };
-    return Api.rcNetworkClient.http<RcRolePermissions>(query);
+    return RcInfoApi.rcNetworkClient.http<RcRolePermissions>(query);
   }
 }
 

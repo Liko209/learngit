@@ -5,7 +5,7 @@
  */
 
 import { RcInfoController } from '../RcInfoController';
-import { RcInfoApi } from '../../../../api/ringcentral/RcInfo';
+import { RcInfoApi } from '../../../../api/ringcentral/RcInfoApi';
 import { daoManager } from '../../../../dao';
 
 describe('RcInfoController', () => {
