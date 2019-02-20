@@ -15,7 +15,7 @@ const config: SubModuleConfig = {
   nav: () => ({
     url: '/dashboard',
     icon: 'dashboard',
-    title: i18next.t('Dashboard'),
+    title: i18next.t('dashboard.Dashboard'),
     placement: 'top',
   }),
 };

@@ -13,6 +13,7 @@ import { getEntity } from '@/store/utils';
 import FileItemModel, { FileType } from '@/store/models/FileItem';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getFileType } from '@/common/getFileType';
+import { getThumbnailURL } from '@/common/getThumbnailURL';
 import { Props, ViewProps } from './types';
 
 type Size = {
@@ -92,16 +93,26 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
       icon: '',
       url: '',
     };
+
     const file = this.file;
     if (file && file.type) {
+      let url;
+      if (FileItemUtils.isGifItem(file)) {
+        url = file.versionUrl;
+      } else {
+        url = getThumbnailURL(file, this._size);
+      }
       if (
+        !url &&
         FileItemUtils.isSupportPreview(file) &&
         file.origHeight &&
         file.origWidth
       ) {
-        thumb.url = this._thumbsUrlWithSize;
+        url = this._thumbsUrlWithSize;
       }
-      thumb.icon = this.file.iconType;
+      thumb.url = url;
+      thumb.icon = file.iconType;
+      return thumb;
     }
     return thumb;
   }

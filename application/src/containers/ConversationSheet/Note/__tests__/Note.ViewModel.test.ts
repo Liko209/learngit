@@ -28,10 +28,6 @@ describe('Note item', () => {
     jest.clearAllMocks();
   });
 
-  it('computed _ids', () => {
-    expect(noteViewModel._ids).toEqual(props.ids);
-  });
-
   it('computed _items', () => {
     expect(noteViewModel._items).toEqual([mockData]);
   });

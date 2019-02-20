@@ -126,7 +126,8 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     const canUpload = await this.canUploadFiles(files);
     if (!canUpload) {
       Notification.flashToast({
-        message: 'uploadFailedMessageThereIsAlreadyAFileBeingUploaded',
+        message:
+          'item.prompt.uploadFailedMessageThereIsAlreadyAFileBeingUploaded',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,

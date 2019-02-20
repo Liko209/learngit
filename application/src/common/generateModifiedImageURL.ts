@@ -28,7 +28,7 @@ type Result = ThumbnailInfo & {
   url: string;
 };
 
-const getThumbnail = async ({
+const generateModifiedImageURL = async ({
   id,
   origWidth,
   origHeight,
@@ -80,4 +80,4 @@ const getThumbnail = async ({
   return result;
 };
 
-export { getThumbnail, RULE, Result };
+export { generateModifiedImageURL, RULE, Result };

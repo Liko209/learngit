@@ -48,7 +48,7 @@ class ProfileMiniCardGroupFooter extends Component<
               size="medium"
               color="primary"
               variant="plain"
-              tooltipTitle={t('Messages')}
+              tooltipTitle={t('message.Messages')}
               onClick={this.onClickMessage}
               ariaLabel={t(this.getAriaLabelKey(), { name: group.displayName })}
             >

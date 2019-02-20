@@ -53,22 +53,23 @@ describe('CreateTeamView', () => {
       const items = [
         {
           type: 'isPublic',
-          text: 'PublicTeam',
+          text: 'people.team.SetAsPublicTeam',
           checked: false,
         },
         {
           type: 'canPost',
-          text: 'MembersMayPostMessages',
+          text: 'people.team.MembersMayPostMessages',
+
           checked: true,
         },
         {
           type: 'canAddMember',
-          text: 'MembersMayAddOtherMembers',
+          text: 'people.team.MembersMayAddOtherMembers',
           checked: true,
         },
         {
           type: 'canPin',
-          text: 'MembersMayPinPosts',
+          text: 'people.team.MembersMayPinPosts',
           checked: true,
         },
       ];

@@ -34,7 +34,7 @@ describe('AddMembersView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'removeMemberBackendError',
+            message: 'people.prompt.removeMemberBackendError',
           }),
         );
         done();
@@ -54,7 +54,7 @@ describe('AddMembersView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'removeMemberNetworkError',
+            message: 'people.prompt.removeMemberNetworkError',
           }),
         );
         done();

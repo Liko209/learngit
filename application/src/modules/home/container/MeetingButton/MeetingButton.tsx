@@ -9,7 +9,9 @@ import { JuiIconButton } from 'jui/src/components/Buttons';
 
 const MeetingButton = () => {
   return (
-    <JuiIconButton tooltipTitle={i18next.t('Meetings')}>meetings</JuiIconButton>
+    <JuiIconButton tooltipTitle={i18next.t('meeting.Meetings')}>
+      meetings
+    </JuiIconButton>
   );
 };
 
