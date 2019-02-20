@@ -11,7 +11,11 @@ import {
   RC_EXTENSION_INFO,
   RC_ROLE_PERMISSION,
 } from '../dao';
-import { daoManager } from '../../../dao';
+import { daoManager, ConfigDao } from '../../../dao';
+import {
+  ACCOUNT_TYPE,
+  ACCOUNT_TYPE_ENUM,
+} from '../../../authenticator/constants';
 import { RcInfoApi } from '../../../api/ringcentral/RcInfoApi';
 
 class RcInfoController {
@@ -21,10 +25,14 @@ class RcInfoController {
   }
 
   async requestRcInfo() {
-    this.requestRcClientInfo();
-    this.requestRcAccountInfo();
-    this.requestRcExtensionInfo();
-    this.requestRcRolePermission();
+    const configDao = daoManager.getKVDao(ConfigDao);
+    const accountType = configDao.get(ACCOUNT_TYPE);
+    if (accountType === ACCOUNT_TYPE_ENUM.RC) {
+      this.requestRcClientInfo();
+      this.requestRcAccountInfo();
+      this.requestRcExtensionInfo();
+      this.requestRcRolePermission();
+    }
   }
 
   async requestRcClientInfo() {

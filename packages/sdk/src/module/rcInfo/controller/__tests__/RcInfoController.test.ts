@@ -11,17 +11,21 @@ import { daoManager } from '../../../../dao';
 describe('RcInfoController', () => {
   let rcInfoController: RcInfoController;
   let mockPut = jest.fn();
+  let mockGet = jest.fn();
   beforeEach(() => {
     jest.clearAllMocks();
     mockPut = jest.fn();
+    mockGet = jest.fn();
     daoManager.getKVDao = jest.fn().mockReturnValue({
       put: mockPut,
+      get: mockGet,
     });
     rcInfoController = new RcInfoController();
   });
 
   describe('requestRcInfo()', () => {
     it('should call correct function', () => {
+      mockGet.mockReturnValue('RC');
       rcInfoController.requestRcClientInfo = jest.fn();
       rcInfoController.requestRcAccountInfo = jest.fn();
       rcInfoController.requestRcExtensionInfo = jest.fn();
@@ -31,6 +35,19 @@ describe('RcInfoController', () => {
       expect(rcInfoController.requestRcAccountInfo).toBeCalledTimes(1);
       expect(rcInfoController.requestRcExtensionInfo).toBeCalledTimes(1);
       expect(rcInfoController.requestRcRolePermission).toBeCalledTimes(1);
+    });
+
+    it('should call correct function', () => {
+      mockGet.mockReturnValue('GLIP');
+      rcInfoController.requestRcClientInfo = jest.fn();
+      rcInfoController.requestRcAccountInfo = jest.fn();
+      rcInfoController.requestRcExtensionInfo = jest.fn();
+      rcInfoController.requestRcRolePermission = jest.fn();
+      rcInfoController.requestRcInfo();
+      expect(rcInfoController.requestRcClientInfo).toBeCalledTimes(0);
+      expect(rcInfoController.requestRcAccountInfo).toBeCalledTimes(0);
+      expect(rcInfoController.requestRcExtensionInfo).toBeCalledTimes(0);
+      expect(rcInfoController.requestRcRolePermission).toBeCalledTimes(0);
     });
   });
 
