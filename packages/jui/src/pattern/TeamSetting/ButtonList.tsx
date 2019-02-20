@@ -28,8 +28,7 @@ const JuiTeamSettingButtonListItem = styled(
   ),
 )`
   && {
-    padding-top: ${spacing(0)};
-    padding-bottom: ${spacing(0)};
+    padding: ${spacing(0, 6)};
     display: ${({ hide }) => (hide ? 'none' : 'block')};
   }
 `;

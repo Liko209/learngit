@@ -14,6 +14,9 @@ type GoToConversationParams = {
   hasBeforeJumpFun?: boolean;
 };
 
+const goToConversationCallBackName = Symbol('goToConversationCallBackName');
+const DELAY_LOADING = 500;
+
 const getConversationId = async (id: number | number[]) => {
   const groupService: GroupService = GroupService.getInstance();
   const type = Array.isArray(id)
@@ -38,10 +41,12 @@ const getConversationId = async (id: number | number[]) => {
   return null;
 };
 
-const goToConversationCallBackName = Symbol('goToConversationCallBackName');
 async function goToConversation(params: GoToConversationParams) {
   const { id, beforeJump, hasBeforeJumpFun } = params;
-  history.push('/messages/loading');
+  const timer = setTimeout(() => {
+    history.push('/messages/loading');
+  },                       DELAY_LOADING);
+
   let beforeJumpFun;
   if (beforeJump) {
     beforeJumpFun = beforeJump;
@@ -54,6 +59,7 @@ async function goToConversation(params: GoToConversationParams) {
     if (!conversationId) {
       throw new Error('Conversation not found.');
     }
+    clearTimeout(timer);
     (beforeJump || hasBeforeJumpFun) && (await beforeJumpFun(conversationId));
     history.replace(`/messages/${conversationId}`);
     return true;
@@ -71,4 +77,9 @@ async function goToConversation(params: GoToConversationParams) {
   }
 }
 
-export { goToConversation, getConversationId, GoToConversationParams };
+export {
+  goToConversation,
+  getConversationId,
+  GoToConversationParams,
+  DELAY_LOADING,
+};
