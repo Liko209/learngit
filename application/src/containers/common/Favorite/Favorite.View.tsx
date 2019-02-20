@@ -28,8 +28,8 @@ class FavoriteViewComponent extends Component<Props> {
       await handlerFavorite();
     } catch (e) {
       const message = isFavorite
-        ? 'markUnFavoriteServerErrorContent'
-        : 'markFavoriteServerErrorContent';
+        ? 'people.prompt.markUnFavoriteServerErrorContent'
+        : 'people.prompt.markFavoriteServerErrorContent';
 
       Notification.flashToast({
         message,
@@ -48,7 +48,9 @@ class FavoriteViewComponent extends Component<Props> {
       // 2. not a member
       return null;
     }
-    const tooltipKey = isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';
+    const tooltipKey = isFavorite
+      ? 'people.team.removeFromFavorites'
+      : 'people.team.addToFavorites';
     return (
       <JuiIconButton
         size={size}

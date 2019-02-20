@@ -54,8 +54,8 @@ class About extends Component<Props> {
     return (
       <JuiModal
         open={isShowDialog}
-        title={t('AboutRingCentral')}
-        okText={t('Done')}
+        title={t('home.aboutRingCentral')}
+        okText={t('common.dialog.done')}
         onOK={this._handleAboutPage}
       >
         <Param>

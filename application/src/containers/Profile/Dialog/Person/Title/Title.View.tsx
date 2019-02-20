@@ -20,20 +20,20 @@ import portalManager from '@/common/PortalManager';
 class ProfileDialogPersonTitleViewComponent extends Component<
   WithNamespaces & ProfileDialogPersonTitleViewProps
 > {
-  onClick = () => portalManager.dismiss();
+  onClick = () => portalManager.dismissLast();
   render() {
     const { id, t } = this.props;
     return (
       <>
         <JuiDialogTitleWithActionLeft>
-          {t('Profile')}
+          {t('people.team.profile')}
         </JuiDialogTitleWithActionLeft>
         <JuiDialogTitleWithActionRight>
           <Favorite id={id} size="medium" />
           <JuiIconButton
             onClick={this.onClick}
-            tooltipTitle={t('close')}
-            ariaLabel={t('close')}
+            tooltipTitle={t('common.dialog.close')}
+            ariaLabel={t('common.dialog.close')}
           >
             close
           </JuiIconButton>

@@ -272,7 +272,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
           <React.Fragment key={name}>
             <JuiSearchTitle
               isShowMore={hasMore}
-              showMore={i18next.t('showMore')}
+              showMore={i18next.t('home.showMore')}
               title={i18next.t(title)}
               data-test-automation-id={`search-${title}`}
             />
@@ -320,7 +320,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             onClear={this.onClear}
             value={searchValue}
             onChange={this.onChange}
-            placeholder={i18next.t('search')}
+            placeholder={i18next.t('home.search')}
             showCloseBtn={!!searchValue}
           />
           {focus && searchValue && <JuiSearchList>{cells}</JuiSearchList>}

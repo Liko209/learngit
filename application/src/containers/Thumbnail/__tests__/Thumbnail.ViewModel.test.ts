@@ -52,6 +52,7 @@ describe('ThumbnailViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({
         type: 'doc',
         iconType: 'doc',
+        versions: [],
       });
 
       FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);

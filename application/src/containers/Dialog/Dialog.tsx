@@ -19,8 +19,8 @@ function dialog(config: BaseType) {
   const BaseDialog = (props: BaseType) => {
     const { isAlert, loading, ...newConfig } = props;
     const defaultBtnText = {
-      okText: i18next.t('OK'),
-      cancelText: i18next.t('Cancel'),
+      okText: i18next.t('common.dialog.OK'),
+      cancelText: i18next.t('common.dialog.cancel'),
     };
 
     if (isAlert) {
@@ -55,7 +55,7 @@ function dialog(config: BaseType) {
     },
   };
 
-  show(undefined, currentConfig);
+  show(currentConfig);
   return {
     dismiss,
     startLoading,

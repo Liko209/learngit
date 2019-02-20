@@ -32,6 +32,11 @@ class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
   }
 
   @computed
+  get isTeam() {
+    return this._group.isTeam;
+  }
+
+  @computed
   private get _group() {
     return getEntity(ENTITY_NAME.GROUP, this.cid);
   }
@@ -42,8 +47,9 @@ class MemberListItemViewModel extends StoreViewModel<MemberListItemProps> {
   }
 
   @computed
-  get isOnlyOneAdmin() {
-    return this._group.permissions.admin.uids.length === 1;
+  get adminNumber() {
+    const { permissions } = this._group;
+    return permissions && permissions.admin.uids.length;
   }
 
   @computed

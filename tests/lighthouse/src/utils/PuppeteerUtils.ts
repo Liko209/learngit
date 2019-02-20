@@ -6,12 +6,15 @@ import * as puppeteer from "puppeteer";
 import { Page } from "puppeteer/lib/Page";
 import { Browser } from "puppeteer/lib/Browser";
 import { logUtils } from "./LogUtils";
-import { mockHelper } from "../mock";
+import { functionUtils } from "./FunctionUtils";
+import { MockClient, BrowserInitDto } from 'mock-client';
 
 const MAX_TRY_COUNT = 10;
 
+const mockServerUrl = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck01.lab.nordigy.ru";
+
 class PuppeteerUtils {
-  private _browsers = new Array<string>();
+  private _browsers = new Map<string, Browser>();
   private logger = logUtils.getLogger(__filename);
 
   /**
@@ -54,7 +57,7 @@ class PuppeteerUtils {
       try {
         await page.waitForSelector(selector, opt);
         return true;
-      } catch (error) {}
+      } catch (error) { }
     }
     return false;
   }
@@ -80,7 +83,7 @@ class PuppeteerUtils {
       try {
         await page.waitForXPath(xpath, opt);
         return true;
-      } catch (error) {}
+      } catch (error) { }
     }
     return false;
   }
@@ -128,7 +131,7 @@ class PuppeteerUtils {
         }
 
         await page.type(selector, text, typeOpt);
-      } catch (error) {}
+      } catch (error) { }
     }
 
     return false;
@@ -175,7 +178,7 @@ class PuppeteerUtils {
           return true;
         }
         await page.type(selector, text, options);
-      } catch (error) {}
+      } catch (error) { }
     }
 
     return false;
@@ -236,56 +239,111 @@ class PuppeteerUtils {
 
     let browser = await puppeteer.launch(opt);
 
-    const wsEndpoint = browser.wsEndpoint();
+    await this.injectMockServer(browser);
+
+    const wsEndpoint = this.toEndpoint(browser.wsEndpoint());
+
     this.logger.info(
       `launch chrome success, wsEndpoint: ${wsEndpoint}, options: ${JSON.stringify(
         opt
       )}`
     );
 
-    this._browsers.push(wsEndpoint);
-
-    // inject mock
-    await mockHelper.register(browser);
+    this._browsers.set(wsEndpoint, browser);
 
     return browser;
   }
 
   async connect(wsEndpoint: string): Promise<Browser> {
     try {
-      let browser = await puppeteer.connect({
+      wsEndpoint = this.toEndpoint(wsEndpoint);
+      let browser = this._browsers.get(wsEndpoint);
+      if (browser) {
+        this.logger.info(`get chrome connection from cache, wsEndpoint: ${wsEndpoint}`);
+        return browser;
+      }
+
+      browser = await puppeteer.connect({
         headless: false,
         defaultViewport: null,
         browserWSEndpoint: wsEndpoint,
         ignoreHTTPSErrors: true
       });
 
-      if (this._browsers.indexOf(wsEndpoint) < 0) {
-        this._browsers.push(wsEndpoint);
-      }
+      await this.injectMockServer(browser);
+
+      wsEndpoint = this.toEndpoint(wsEndpoint);
 
       this.logger.info(`connect chrome success, wsEndpoint: ${wsEndpoint}`);
 
-      // inject mock
-      await mockHelper.register(browser);
+      this._browsers.set(wsEndpoint, browser);
 
       return browser;
-    } catch (err) {}
+    } catch (err) { }
     return null;
   }
 
+  async close(browser: Browser) {
+    if (browser) {
+      const wsEndpoint = browser.wsEndpoint();
+
+      this._browsers.delete(this.toEndpoint(wsEndpoint));
+
+      await browser.close();
+    }
+  }
+
   async closeAll(): Promise<Browser> {
-    for (let wsEndpoint of this._browsers) {
+
+    this._browsers.forEach(async (browser, wsEndpoint) => {
       try {
-        let browser = await this.connect(wsEndpoint);
+        this.logger.info(`close chrome connection, wsEndpoint: ${wsEndpoint}`);
         if (browser) {
           await browser.close();
         }
       } catch (err) {
         this.logger.error(err);
       }
-    }
+    });
+
     this.logger.info("chrome connection closed.");
+  }
+
+  private toEndpoint(wsEndpoint: string) {
+    return wsEndpoint.replace('localhost', '127.0.0.1');
+  }
+
+  private async injectMockServer(browser: Browser) {
+    if (process.env.MOCK_SWITCH !== 'true') {
+      return;
+    }
+
+    if (browser.mockClient) {
+      return;
+    }
+
+    const client = new MockClient(mockServerUrl);
+
+    let initDto = BrowserInitDto.of()
+      .env(process.env.JUPITER_ENV)
+      .appKey(process.env.JUPITER_APP_KEY)
+      .appSecret(process.env.JUPITER_APP_SECRET)
+      .useInitialCache(true);
+
+    let requestId = await client.registerBrowser(initDto);
+
+    this.logger.info(`mock requestId : ${requestId}`);
+
+    client['requestId'] = requestId;
+
+    browser.mockClient = client;
+
+    functionUtils.bindEvent(browser, 'targetcreated', async target => {
+      let page = await target.page();
+      if (page) {
+        await page.setExtraHTTPHeaders({ "x-mock-request-id": requestId });
+      }
+    })
   }
 }
 

@@ -75,7 +75,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
       await this._postService.reSendPost(this.id);
     } else {
       Notification.flashToast({
-        message: 'fileNoLongerExists',
+        message: 'item.prompt.fileNoLongerExists',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,

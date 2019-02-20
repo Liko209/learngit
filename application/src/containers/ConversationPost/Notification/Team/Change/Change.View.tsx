@@ -20,7 +20,7 @@ class ChangeViewComponent extends Component<ChangeViewProps & WithNamespaces> {
       t,
     } = this.props;
     const changer = renderPerson(changerId, changerName);
-    const html = t('changeTeamName', {
+    const html = t('message.stream.changeTeamName', {
       changer,
       value: `"${value}"`,
       oldValue: `"${oldValue}"`,

@@ -28,7 +28,7 @@ class EditViewComponent extends Component<Props> {
       };
     return (
       <JuiMenuItem {...menuItemOnClickProp} icon="edit" disabled={disabled}>
-        {t('edit')}
+        {t('message.action.editPost')}
       </JuiMenuItem>
     );
   }

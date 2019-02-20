@@ -15,11 +15,11 @@ class DeleteView extends React.Component<ViewProps> {
   private _handleDelete = () => {
     const { deletePost } = this.props;
     Dialog.confirm({
-      title: i18next.t('deletePostTitle'),
-      content: i18next.t('deletePostContent'),
-      okText: i18next.t('delete'),
+      title: i18next.t('message.prompt.deletePostTitle'),
+      content: i18next.t('message.prompt.deletePostContent'),
+      okText: i18next.t('common.dialog.delete'),
       okType: 'negative',
-      cancelText: i18next.t('Cancel'),
+      cancelText: i18next.t('common.dialog.cancel'),
       onOK() {
         deletePost().catch((e: any) => {
           console.log(e);
@@ -35,7 +35,7 @@ class DeleteView extends React.Component<ViewProps> {
         disabled={disabled}
         icon="delete"
       >
-        {i18next.t('deletePost')}
+        {i18next.t('message.action.deletePost')}
       </JuiMenuItem>
     );
   }
