@@ -9,8 +9,6 @@ import { StyledMiniCard } from './StyledMiniCard';
 
 type JuiMiniCardProps = {
   children: JSX.Element[];
-  onBlur?: () => void;
-  onFocus?: () => void;
 };
 
 class JuiMiniCard extends PureComponent<JuiMiniCardProps> {

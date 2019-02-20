@@ -58,12 +58,32 @@ function getStyles(anchor: HTMLElement): React.CSSProperties {
   };
 }
 
+let _timer: number;
+
+function onBlurHandler() {
+  _timer = setTimeout(() => {
+    portalManager.dismissLast();
+  });
+}
+
+function onFocusHandler() {
+  clearTimeout(_timer);
+}
+
 class MiniCard {
   static show(component: JSX.Element, options: Options): Return {
     const Component = component;
     const { anchor } = options;
     const Comp = () => {
-      return <div style={getStyles(anchor)}>{Component}</div>;
+      return (
+        <div
+          style={getStyles(anchor)}
+          onBlur={onBlurHandler}
+          onFocus={onFocusHandler}
+        >
+          {Component}
+        </div>
+      );
     };
     const { dismiss, show } = portalManager.wrapper(Comp);
     show();
