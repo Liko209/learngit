@@ -89,12 +89,12 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get fileTypeOrUrl() {
+    const file = this.file;
     const thumb = {
-      icon: '',
+      icon: file.iconType,
       url: '',
     };
 
-    const file = this.file;
     if (file && file.type) {
       let url;
       if (FileItemUtils.isGifItem(file)) {
@@ -106,7 +106,6 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
         url = this._thumbsUrlWithSize;
       }
       thumb.url = url;
-      thumb.icon = file.iconType;
       return thumb;
     }
     return thumb;
