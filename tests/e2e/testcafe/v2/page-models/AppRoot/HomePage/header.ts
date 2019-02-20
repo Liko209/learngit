@@ -138,7 +138,7 @@ class SearchItem extends BaseWebComponent {
   }
 
   get joinButton() {
-    return this.getSelectorByAutomationId('search-item-joined', this.self);
+    return this.getSelectorByAutomationId('joinButton', this.self);
   }
 
   get privateLabel() {
@@ -158,39 +158,11 @@ class SearchItem extends BaseWebComponent {
   }
 
   async shouldNotHaveJoinButton() {
-    await this.t.expect(this.joinButton.visible).notOk();
+    await this.t.expect(this.joinButton.exists).notOk();
   }
 
   async join() {
-    await this.t.hover(this.self);
-    const joinButton = this.joinButton;
-    await this.t.expect(joinButton.exists).ok();
-    const displayJoinButton = ClientFunction(() => {
-      joinButton().style["bottom"] = "0px";
-      joinButton().style["left"] = "0px";
-      joinButton().style["right"] = "0px";
-      joinButton().style["top"] = "0px";
-      joinButton().style["width"] = "104px";
-      joinButton().style["perspective-origin"] = "52px 14px";
-      joinButton().style["transform-origin"] = "52px 14px";
-    },
-      { dependencies: { joinButton } }
-    );
-    const joinButtonDiv = this.joinButton.parent('div');
-    const displayJoinButtonDiv = ClientFunction(() => {
-      joinButtonDiv().style["display"] = "block";
-      joinButtonDiv().style["height"] = "28px";
-      joinButtonDiv().style["min-height "] = "auto";
-      joinButtonDiv().style["min-width"] = "auto";
-      joinButtonDiv().style["width"] = "104px";
-      joinButtonDiv().style["perspective-origin"] = "52px 14px";
-      joinButtonDiv().style["transform-origin"] = "52px 14px";
-    },
-      { dependencies: { joinButtonDiv } }
-    );
-    await displayJoinButtonDiv();
-    await displayJoinButton();
-    await this.t.click(this.joinButton);
+    await this.t.hover(this.self).click(this.joinButton);
   }
 
   async clickAvatar() {
