@@ -679,4 +679,75 @@ describe('GroupHandleDataController', () => {
       });
     });
   });
+
+  describe('getTransformData()', () => {
+    it('should return deactivated group when removed_guest_user_ids includes current user', async () => {
+      UserConfig.getCurrentUserId.mockReturnValue(123);
+      const groups = generateFakeGroups(3, {
+        deactivated: false,
+      });
+      groups[0].members = [123, 456, 789];
+      groups[0].removed_guest_user_ids = [123];
+      groups[1].members = [123, 456];
+      groups[1].removed_guest_user_ids = [123];
+      const result = await groupHandleDataController.getTransformData(
+        groups as Raw<Group>[],
+      );
+      expect(result).toEqual([
+        {
+          company_id: 1,
+          created_at: 1,
+          creator_id: 1,
+          deactivated: true,
+          email_friendly_abbreviation: '',
+          id: 1,
+          is_company_team: false,
+          is_new: false,
+          is_team: false,
+          members: [123, 456, 789],
+          modified_at: 1,
+          most_recent_content_modified_at: 1,
+          most_recent_post_created_at: 1,
+          removed_guest_user_ids: [123],
+          set_abbreviation: '',
+          version: 1,
+        },
+        {
+          company_id: 2,
+          created_at: 2,
+          creator_id: 2,
+          deactivated: true,
+          email_friendly_abbreviation: '',
+          id: 2,
+          is_company_team: false,
+          is_new: false,
+          is_team: false,
+          members: [123, 456],
+          modified_at: 2,
+          most_recent_content_modified_at: 2,
+          most_recent_post_created_at: 2,
+          removed_guest_user_ids: [123],
+          set_abbreviation: '',
+          version: 2,
+        },
+        {
+          company_id: 3,
+          created_at: 3,
+          creator_id: 3,
+          deactivated: false,
+          email_friendly_abbreviation: '',
+          id: 3,
+          is_company_team: false,
+          is_new: false,
+          is_team: false,
+          members: [],
+          modified_at: 3,
+          most_recent_content_modified_at: 3,
+          most_recent_post_created_at: 3,
+          set_abbreviation: '',
+          version: 3,
+        },
+      ]);
+    });
+  });
 });
