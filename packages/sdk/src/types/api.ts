@@ -32,12 +32,17 @@ type SplitIOConfig = BaseConfig & {
   clientSecret: string;
 };
 
+type LaunchDarklyConfig = {
+  clientId: string;
+};
+
 type ApiConfig = {
   rc: RcConfig;
   glip: GlipConfig;
   glip2: Glip2Config;
   upload: UploadConfig;
   splitio: SplitIOConfig;
+  launchdarkly: LaunchDarklyConfig;
 };
 
 type PartialApiConfig = {
@@ -46,6 +51,7 @@ type PartialApiConfig = {
   glip2?: Partial<Glip2Config>;
   upload?: Partial<UploadConfig>;
   splitio?: Partial<SplitIOConfig>;
+  launchdarkly: Partial<LaunchDarklyConfig>;
 };
 
 type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload' | 'glip_desktop';

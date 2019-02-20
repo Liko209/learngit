@@ -24,6 +24,7 @@ describe('Event Item Dao', () => {
     created_at: 1,
     name: 'item1',
   };
+
   const item2 = {
     id: 2,
     group_ids: [groupId],
@@ -161,5 +162,197 @@ describe('Event Item Dao', () => {
         expect(result).toEqual(expects);
       },
     );
+  });
+
+  describe('toSanitizedItem', () => {
+    it('should return sanitized item', () => {
+      const item = {
+        id: 1111,
+        group_ids: [123123],
+        created_at: 1231233,
+        name: '1231233',
+      } as Item;
+
+      expect(dao.toSanitizedItem(item)).toEqual({
+        id: 1111,
+        group_ids: [123123],
+        created_at: 1231233,
+      });
+    });
+  });
+
+  describe('toPartialSanitizedItem', () => {
+    const item = {
+      id: 1111,
+      group_ids: [123123],
+      created_at: 1231233,
+      name: '1231233',
+      gg: 'gg',
+    } as Partial<Item>;
+
+    const itemResult = {
+      id: 1111,
+      group_ids: [123123],
+      created_at: 1231233,
+    };
+
+    const item2 = {
+      group_ids: [123123],
+      name: '1231233',
+      gg: 'gg',
+    } as Partial<Item>;
+
+    const item2Result = {
+      group_ids: [123123],
+    };
+
+    const item3 = {
+      created_at: 1231233,
+      name: '1231233',
+      gg: 'gg',
+    } as Partial<Item>;
+
+    const item3Result = {
+      created_at: 1231233,
+    } as Partial<Item>;
+
+    it.each`
+      partialItem | result         | comments
+      ${item}     | ${itemResult}  | ${'id, group_ids, created_at'}
+      ${item2}    | ${item2Result} | ${'group_ids'}
+      ${item3}    | ${item3Result} | ${' created_at'}
+    `('$comments', ({ partialItem, result }) => {
+      expect(dao.toPartialSanitizedItem(partialItem)).toEqual(result);
+    });
+  });
+
+  describe('update', () => {
+    const items = [item1, item2, item3, item4, item5];
+
+    beforeEach(async () => {
+      await dao.clear();
+      await dao.bulkPut(items);
+    });
+
+    const newItem = {
+      id: 99,
+      group_ids: [groupId2],
+      created_at: 99,
+      name: 'item5',
+    };
+
+    const newItem5 = {
+      id: 5,
+      group_ids: [groupId2, groupId],
+      created_at: 777,
+    };
+
+    it('should not save not existed items when doing update', async () => {
+      const curAll = (await dao.getAll()).map(x => x.id);
+      expect(curAll).toEqual([1, 2, 3, 4, 5]);
+      await dao.update(newItem);
+      const newAll = (await dao.getAll()).map(x => x.id);
+      expect(newAll).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should update existed items when doing update', async () => {
+      const oldItem5 = await dao.get(item5.id);
+      expect(oldItem5).toEqual(item5);
+      await dao.update(newItem5);
+      const newItem5FromDB = await dao.get(item5.id);
+      expect(newItem5FromDB).toEqual({
+        ...newItem5,
+        name: 'item5',
+      });
+    });
+
+    it('should update items when input is array', async () => {
+      const oldItem5 = await dao.get(item5.id);
+      expect(oldItem5).toEqual(item5);
+      await dao.update([newItem5]);
+      const newItem5FromDB = await dao.get(item5.id);
+      expect(newItem5FromDB).toEqual({
+        ...newItem5,
+        name: 'item5',
+      });
+    });
+  });
+
+  describe('bulkUpdate', () => {
+    const items = [item1, item2, item3, item4, item5];
+
+    beforeEach(async () => {
+      await dao.clear();
+      await dao.bulkPut(items);
+    });
+
+    const newItem = {
+      id: 99,
+      group_ids: [groupId2],
+      created_at: 99,
+      name: 'item5',
+    };
+
+    const newItem5 = {
+      id: 5,
+      group_ids: [groupId2, groupId],
+      created_at: 777,
+    };
+
+    it('should not save not existed items when doing bulkUpdate', async () => {
+      const curAll = (await dao.getAll()).map(x => x.id);
+      expect(curAll).toEqual([1, 2, 3, 4, 5]);
+      await dao.bulkUpdate([newItem]);
+      const newAll = (await dao.getAll()).map(x => x.id);
+      expect(newAll).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should update existed items when doing bulkUpdate', async () => {
+      const oldItem5 = await dao.get(item5.id);
+      expect(oldItem5).toEqual(item5);
+      await dao.bulkUpdate([newItem5]);
+      const newItem5FromDB = await dao.get(item5.id);
+      expect(newItem5FromDB).toEqual({
+        ...newItem5,
+        name: 'item5',
+      });
+    });
+  });
+
+  describe('shouldSaveSubItem', () => {
+    it('should return true when item has id > 0 && has post ids', () => {
+      const item = {
+        id: 1,
+        post_ids: [1],
+      };
+
+      expect(dao.shouldSaveSubItem(item)).toBeTruthy();
+    });
+
+    it('should return true when item id < 0', () => {
+      const item = {
+        id: -1,
+        post_ids: [1],
+      };
+
+      expect(dao.shouldSaveSubItem(item)).toBeFalsy();
+    });
+
+    it('should return true when has no post ids', () => {
+      const item = {
+        id: 1,
+      };
+
+      expect(dao.shouldSaveSubItem(item)).toBeFalsy();
+    });
+
+    it('should return true when post ids length is 0 ', () => {
+      const item = {
+        id: 1,
+        post_ids: [],
+      };
+
+      expect(dao.shouldSaveSubItem(item)).toBeFalsy();
+    });
   });
 });
