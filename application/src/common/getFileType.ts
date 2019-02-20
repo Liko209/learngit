@@ -13,7 +13,7 @@ import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 function getFileType(item: FileItemModel): ExtendFileItem {
   const fileType: ExtendFileItem = {
-    item,
+    item: item.toCoreObject(),
     type: -1,
     previewUrl: '',
   };

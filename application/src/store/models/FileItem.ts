@@ -14,8 +14,21 @@ enum FileType {
   others = 2,
 }
 
+type FileInfoCore = {
+  id: number;
+  type: string;
+  name: string;
+  origHeight: number;
+  origWidth: number;
+  isMocked: boolean;
+  downloadUrl: string;
+  versionUrl: string;
+  size: number;
+  deactivated: boolean;
+};
+
 type ExtendFileItem = {
-  item: FileItemModel;
+  item: FileInfoCore;
   type: number;
   previewUrl: string;
 };
@@ -106,6 +119,22 @@ export default class FileItemModel extends ItemModel {
   @computed
   get iconType() {
     return getFileIcon(this.type);
+  }
+
+  toCoreObject = () => {
+    const result: FileInfoCore = {
+      id: this.id,
+      type: this.type,
+      name: this.name,
+      origHeight: this.origHeight,
+      origWidth: this.origWidth,
+      isMocked: this.isMocked,
+      downloadUrl: this.downloadUrl,
+      versionUrl: this.versionUrl || '',
+      size: this.size,
+      deactivated: this.deactivated,
+    };
+    return result;
   }
 
   static fromJS(data: Item) {

@@ -10,6 +10,7 @@ import {
   JuiFileWithoutPreview,
   JuiFileWithPreview,
   JuiPreviewImage,
+  JuiDelayPlaceholder,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { getThumbnailSize } from 'jui/foundation/utils';
@@ -81,27 +82,34 @@ class FilesView extends React.Component<FilesViewProps> {
       <>
         {files[FileType.image].map((file: ExtendFileItem) => {
           const { item } = file;
-          const { origHeight, id, origWidth, name, downloadUrl } = item;
-          if (id < 0) {
-            return this._renderItem(id, progresses, name);
+          const {
+            origHeight,
+            id,
+            origWidth,
+            name,
+            isMocked,
+            downloadUrl,
+          } = item;
+          const hasSizeInfo = origWidth > 0 && origHeight > 0;
+          const element = this._renderItem(id, progresses, name);
+          if (id < 0 || !hasSizeInfo || isMocked) {
+            return element;
           }
           let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
           if (singleImage) {
             size = getThumbnailSize(origWidth, origHeight);
           }
+          const placeholder = this.props.isRecentlyUploaded(id) ? (
+            element
+          ) : (
+            <JuiDelayPlaceholder width={size.width} height={size.height} />
+          );
           return (
             <JuiPreviewImage
               key={id}
-              placeholder={
-                <JuiFileWithoutPreview
-                  fileName={name}
-                  size={`${getFileSize(item.size)}`}
-                  iconType="image_preview"
-                  Actions={downloadBtn(downloadUrl)}
-                />
-              }
-              width={size.width || SQUARE_SIZE}
-              height={size.height || SQUARE_SIZE}
+              placeholder={placeholder}
+              width={size.width}
+              height={size.height}
               forceSize={!singleImage}
               squareSize={SQUARE_SIZE}
               fileName={name}
@@ -130,7 +138,10 @@ class FilesView extends React.Component<FilesViewProps> {
         })}
         {files[FileType.others].map((file: ExtendFileItem) => {
           const { item } = file;
-          const { size, type, name, downloadUrl, id } = item;
+          const { size, type, name, downloadUrl, id, isMocked } = item;
+          if (isMocked) {
+            return <div style={{ width: '100%', height: 60 }} />;
+          }
           const iconType = getFileIcon(type);
           if (id < 0) {
             return this._renderItem(id, progresses, name);
