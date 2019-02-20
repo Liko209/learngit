@@ -211,7 +211,6 @@ describe('TeamSettingsView', () => {
       setTimeout(() => {
         expect(Dialog.confirm).toHaveBeenCalledWith(
           expect.objectContaining({
-            content: 'deleteTeamConfirmContent {"teamName":"my team"}',
             okText: 'Deleteteamconfirmok',
             cancelText: 'Cancel',
           }),

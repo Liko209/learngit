@@ -20,6 +20,7 @@ import {
   JuiTeamSettingButtonList as ButtonList,
   JuiTeamSettingButtonListItem as ButtonListItem,
   JuiTeamSettingButtonListItemText as ButtonListItemText,
+  JuiHighlightedTeamName,
 } from 'jui/pattern/TeamSetting';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
@@ -29,6 +30,7 @@ import { toTitleCase } from '@/utils/string';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiToggleButton, JuiIconButton } from 'jui/components/Buttons';
 import { Dialog } from '@/containers/Dialog';
+import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 
 type State = {
   name: string;
@@ -149,9 +151,12 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       size: 'small',
       okType: 'negative',
       title: t('people.team.deleteTeamConfirmTitle'),
-      content: t('people.team.deleteTeamConfirmContent', {
-        teamName: groupName,
-      }),
+      content: (
+        <JuiDialogContentText>
+          {t('people.team.deleteTeamConfirmContent')}
+          <JuiHighlightedTeamName> {groupName}</JuiHighlightedTeamName> team?
+        </JuiDialogContentText>
+      ),
       okText: toTitleCase(t('people.team.deleteTeamConfirmOk')),
       cancelText: toTitleCase(t('common.dialog.cancel')),
       onOK: async () => {
