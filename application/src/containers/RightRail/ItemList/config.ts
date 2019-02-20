@@ -50,7 +50,7 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'item.pinned',
     type: RIGHT_RAIL_ITEM_TYPE.PIN_POSTS,
     item: PinnedCell,
-    subheader: '',
+    subheader: 'item.pinnedListSubheader',
     empty: {
       text: 'item.youHaveNothingPinnedYet',
       content: 'item.noPinSubText',
