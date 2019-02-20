@@ -11,11 +11,11 @@ jest.mock('i18next', () => ({
 }));
 
 const DAY = 24 * 3600 * 1000;
-const CHINATIMEZONE = -480;
-const DATE_2019_1_4 = handerTimeZoneOffset(1546564919703, CHINATIMEZONE);
+const CHINATIMEZONEOFFSET = -480;
+const DATE_2019_1_4 = handerTimeZoneOffset(1546564919703, CHINATIMEZONEOFFSET);
 const DATE_2019_1_3 = DATE_2019_1_4 - DAY;
 const DATE_2019_1_5 = DATE_2019_1_4 + DAY;
-const DATE_2019_1_5_12 = handerTimeZoneOffset(1546617600000, CHINATIMEZONE);
+const DATE_2019_1_5_12 = handerTimeZoneOffset(1546617600000, CHINATIMEZONEOFFSET);
 
 describe('Conversation sheet helpers', () => {
   describe('getDateAndTime()', () => {
@@ -81,11 +81,11 @@ describe('Conversation sheet helpers', () => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);
       const Thu_1_24_2019_2_00PM = handerTimeZoneOffset(
         1548309600000,
-        CHINATIMEZONE,
+        CHINATIMEZONEOFFSET,
       ); // Thu, 1/24/2019 at 2:00 PM
       const Thu_1_24_2019_2_30PM = handerTimeZoneOffset(
         1548311400000,
-        CHINATIMEZONE,
+        CHINATIMEZONEOFFSET,
       ); // Thu, 1/24/2019 at 2:30 PM
       const result = getDurationTime(
         Thu_1_24_2019_2_00PM,

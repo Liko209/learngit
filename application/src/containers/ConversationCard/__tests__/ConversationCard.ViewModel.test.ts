@@ -16,8 +16,8 @@ jest.mock('../../../store/utils');
 const conversationCardVM = new ConversationCardViewModel();
 
 const DAY = 24 * 3600 * 1000;
-const CHINATIMEZONE = -480;
-const DATE_2019_1_4 = handerTimeZoneOffset(1546564919703, CHINATIMEZONE);
+const CHINATIMEZONEOFFSET = -480;
+const DATE_2019_1_4 = handerTimeZoneOffset(1546564919703, CHINATIMEZONEOFFSET);
 const DATE_2019_1_3 = DATE_2019_1_4 - DAY;
 const DATE_2019_1_2 = DATE_2019_1_4 - 2 * DAY;
 const DATE_2019_1_1 = DATE_2019_1_4 - 3 * DAY;

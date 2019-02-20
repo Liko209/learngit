@@ -6,11 +6,11 @@
 import { dateFormatter } from '../';
 import { handerTimeZoneOffset } from '../../../utils/date';
 
-const CHINATIMEZONE = -480;
+const CHINATIMEZONEOFFSET = -480;
 describe('dateFormatter', () => {
   it('format date', () => {
     expect(
-      dateFormatter.date(handerTimeZoneOffset(1547086968632, CHINATIMEZONE)),
+      dateFormatter.date(handerTimeZoneOffset(1547086968632, CHINATIMEZONEOFFSET)),
     ).toBe('1/10/2019');
   });
 });

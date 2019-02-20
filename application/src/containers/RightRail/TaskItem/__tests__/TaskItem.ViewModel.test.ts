@@ -15,11 +15,11 @@ const taskItemViewModel = new TaskItemViewModel();
 const mockPersonReturnValue = {
   userDisplayName: 'name',
 };
-const CHINATIMEZONE = -480;
+const CHINATIMEZONEOFFSET = -480;
 const mockTaskReturnValue: any = {
   assignedToIds: [1, 2],
   complete: false,
-  due: handerTimeZoneOffset(1547086968632, CHINATIMEZONE),
+  due: handerTimeZoneOffset(1547086968632, CHINATIMEZONEOFFSET),
 };
 
 describe('taskItemViewModel', () => {
@@ -59,7 +59,7 @@ describe('taskItemViewModel', () => {
     expect(taskItemViewModel.dueTime).toBe('');
 
     (getEntity as jest.Mock).mockReturnValue({
-      due: handerTimeZoneOffset(1547631484105, CHINATIMEZONE),
+      due: handerTimeZoneOffset(1547631484105, CHINATIMEZONEOFFSET),
     });
 
     expect(taskItemViewModel.dueTime).toBe('1/16/2019');
