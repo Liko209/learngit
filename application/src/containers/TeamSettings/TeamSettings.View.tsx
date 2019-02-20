@@ -175,7 +175,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       okBtnProps: { 'data-test-automation-id': 'archiveTeamOkButton' },
       cancelBtnProps: { 'data-test-automation-id': 'archiveTeamCancelButton' },
       size: 'small',
-      okType: 'negative',
+      okType: 'primary',
       title: t('people.team.archiveTeamConfirmTitle'),
       content: t('people.team.archiveTeamConfirmContent', {
         teamName: groupName,
