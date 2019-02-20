@@ -76,10 +76,10 @@ class LogControlManager implements IAccessor {
     const permissionService: PermissionService = PermissionService.getInstance();
     try {
       const logEnabled = await permissionService.hasPermission(
-        UserPermissionType.JUPITER_LOG,
+        UserPermissionType.JUPITER_CAN_SAVE_LOG,
       );
       const logUploadEnabled = await permissionService.hasPermission(
-        UserPermissionType.JUPITER_LOG_UPLOAD,
+        UserPermissionType.JUPITER_CAN_UPLOAD_LOG,
       );
       logManager.config({
         browser: {
