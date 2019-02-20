@@ -108,7 +108,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
       <div>
         <Form onSubmit={this.handleSubmit}>
           <Button type="submit" data-anchor="btnLogin">
-            {t('SignIn')}
+            {t('auth.signIn')}
           </Button>
           {/* <select onChange={this.onChange} value={brandId} style={{ display: 'none' }}>
             <option value="1210">RC US</option>

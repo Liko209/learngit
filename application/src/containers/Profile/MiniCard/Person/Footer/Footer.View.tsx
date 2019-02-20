@@ -27,7 +27,7 @@ class ProfileMiniCardPersonFooter extends Component<
 
   getAriaLabelKey = () => {
     const { isMe } = this.props;
-    return isMe ? 'ariaGoToMe' : 'ariaGoToOther';
+    return isMe ? 'people.profile.ariaGoToMe' : 'people.profile.ariaGoToOther';
   }
 
   render() {
@@ -42,7 +42,7 @@ class ProfileMiniCardPersonFooter extends Component<
             size="medium"
             color="primary"
             variant="plain"
-            tooltipTitle={t('Messages')}
+            tooltipTitle={t('message.Messages')}
             onClick={this.onClickMessage}
             ariaLabel={t(this.getAriaLabelKey(), {
               name: person.userDisplayName,

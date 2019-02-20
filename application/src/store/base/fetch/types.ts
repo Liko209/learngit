@@ -29,6 +29,7 @@ export interface ISortFunc<T> {
 
 export type TDelta = {
   added: ISortableModel[];
+  updated: ISortableModel[];
   deleted: number[];
 };
 

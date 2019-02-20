@@ -16,7 +16,7 @@ const config: SubModuleConfig = {
   nav: () => ({
     url: '/contacts',
     icon: 'contacts',
-    title: i18next.t('Contacts'),
+    title: i18next.t('contact.Contacts'),
     placement: 'bottom',
   }),
 };

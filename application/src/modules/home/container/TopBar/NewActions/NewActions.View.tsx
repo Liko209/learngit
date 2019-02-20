@@ -27,7 +27,7 @@ class NewActions extends React.Component<NewActionsProps> {
     return (
       <JuiIconButton
         size="medium"
-        tooltipTitle={t('newActions')}
+        tooltipTitle={t('home.newActions')}
         data-test-automation-id="addMenuBtn"
       >
         new_actions
@@ -43,7 +43,7 @@ class NewActions extends React.Component<NewActionsProps> {
     const { t } = this.props;
     return this.props.canCreateTeam ? (
       <JuiMenuItem onClick={this.handleCreateTeam}>
-        {t('CreateTeam')}
+        {t('people.team.CreateTeam')}
       </JuiMenuItem>
     ) : null;
   }
@@ -55,7 +55,7 @@ class NewActions extends React.Component<NewActionsProps> {
         onClick={this.handleNewMessage}
         data-test-automation-id="sendNewMessage"
       >
-        {t('SendNewMessage')}
+        {t('message.action.sendNewMessage')}
       </JuiMenuItem>
     ) : null;
   }

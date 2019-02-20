@@ -7,6 +7,7 @@ import { JuiModalProps, JuiDialogFuncProps } from 'jui/components/Dialog';
 import { dialog } from './Dialog';
 import { modal } from './Modal';
 import { ModalPortal } from './ModalPortal';
+export { default as DialogContext } from './DialogContext';
 
 class Dialog {
   static simple(

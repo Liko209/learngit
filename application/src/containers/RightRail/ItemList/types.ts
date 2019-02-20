@@ -20,6 +20,8 @@ type Props = {
   groupId: number;
   type: RIGHT_RAIL_ITEM_TYPE;
   active: boolean;
+  width: number;
+  height: number;
 };
 
 type ViewProps = {
@@ -29,6 +31,8 @@ type ViewProps = {
   tabConfig: TabConfig;
   forceReload: () => void;
   fetchNextPageItems: () => Promise<any>;
+  width: number;
+  height: number;
 };
 
 export { Props, ViewProps, LoadStatus, InitLoadStatus };

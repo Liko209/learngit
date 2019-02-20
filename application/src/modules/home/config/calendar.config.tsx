@@ -15,7 +15,7 @@ const config: SubModuleConfig = {
   nav: () => ({
     url: '/calendar',
     icon: 'calendar',
-    title: i18next.t('Calendar'),
+    title: i18next.t('calendar.Calendar'),
     placement: 'bottom',
   }),
 };

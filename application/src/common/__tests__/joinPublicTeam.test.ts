@@ -35,7 +35,7 @@ describe('joinHander()', () => {
     setTimeout(() => {
       expect(Notification.flashToast).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'JoinTeamNotAuthorizedError',
+          message: 'people.prompt.JoinTeamNotAuthorizedError',
         }),
       );
       done();

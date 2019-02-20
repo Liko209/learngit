@@ -21,10 +21,10 @@ class AttachmentManagerViewComponent extends Component<
     if (showDuplicateFiles) {
       return (
         <JuiDuplicateAlert
-          title={i18next.t('updateFiles')}
-          subtitle={i18next.t('theFollowingFilesAlreadyExist')}
+          title={i18next.t('item.updateFiles')}
+          subtitle={i18next.t('item.theFollowingFilesAlreadyExist')}
           footText={i18next.t(
-            'wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
+            'item.wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
           )}
           duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}

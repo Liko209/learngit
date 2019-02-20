@@ -53,14 +53,14 @@ class BackNForward extends Component<Props> {
           type={OPERATION.BACK}
           menu={backRecord.reverse()}
           disabled={disabledBack}
-          tooltipTitle={t('Back')}
+          tooltipTitle={t('common.back')}
           onClick={back}
           onClickMenu={go}
         />
         <JuiHistoryOperation
           type={OPERATION.FORWARD}
           menu={forwardRecord}
-          tooltipTitle={t('Forward')}
+          tooltipTitle={t('common.forward')}
           disabled={disabledForward}
           onClick={forward}
           onClickMenu={go}

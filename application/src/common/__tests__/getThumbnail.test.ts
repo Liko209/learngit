@@ -5,7 +5,7 @@
  */
 
 import { ItemService } from 'sdk/module/item/service';
-import { getThumbnail, RULE } from '../getThumbnail';
+import { generateModifiedImageURL, RULE } from '../generateModifiedImageURL';
 
 const url = 'URL';
 const id = 1;
@@ -15,13 +15,18 @@ const itemService = {
 };
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
-describe('getThumbnail', () => {
+describe('generateModifiedImageURL', () => {
   describe('cut out to a square', () => {
     const rule = RULE.SQUARE_IMAGE;
     it('should be a 36x36 pixel square size when image size equal ratio and use default square size', async () => {
       const origWidth = 1000;
       const origHeight = 1000;
-      const result = await getThumbnail({ id, origWidth, origHeight, rule });
+      const result = await generateModifiedImageURL({
+        id,
+        origWidth,
+        origHeight,
+        rule,
+      });
       expect(result).toEqual({
         url,
         width: 36,
@@ -37,7 +42,7 @@ describe('getThumbnail', () => {
       const origWidth = 1000;
       const origHeight = 1000;
       const squareSize = 180;
-      const result = await getThumbnail({
+      const result = await generateModifiedImageURL({
         id,
         origWidth,
         origHeight,
@@ -58,7 +63,12 @@ describe('getThumbnail', () => {
     it('should be a 72x36 pixel square size when image size not equal ratio and use default square size', async () => {
       const origWidth = 1000;
       const origHeight = 500;
-      const result = await getThumbnail({ id, origWidth, origHeight, rule });
+      const result = await generateModifiedImageURL({
+        id,
+        origWidth,
+        origHeight,
+        rule,
+      });
       expect(result).toEqual({
         url,
         width: 36,
@@ -74,7 +84,7 @@ describe('getThumbnail', () => {
       const origWidth = 500;
       const origHeight = 1000;
       const squareSize = 180;
-      const result = await getThumbnail({
+      const result = await generateModifiedImageURL({
         id,
         origWidth,
         origHeight,
@@ -99,7 +109,12 @@ describe('getThumbnail', () => {
     it('should be a 360x360 pixel square size when image size equal ratio', async () => {
       const origWidth = 1000;
       const origHeight = 1000;
-      const result = await getThumbnail({ id, origWidth, origHeight, rule });
+      const result = await generateModifiedImageURL({
+        id,
+        origWidth,
+        origHeight,
+        rule,
+      });
       expect(result).toEqual({
         url,
         width: 360,
@@ -114,7 +129,12 @@ describe('getThumbnail', () => {
     it('should be a 360x180 pixel square size when image width greater than height', async () => {
       const origWidth = 1000;
       const origHeight = 500;
-      const result = await getThumbnail({ id, origWidth, origHeight, rule });
+      const result = await generateModifiedImageURL({
+        id,
+        origWidth,
+        origHeight,
+        rule,
+      });
       expect(result).toEqual({
         url,
         width: 360,
@@ -129,7 +149,12 @@ describe('getThumbnail', () => {
     it('should be a 180x360 pixel square size when image height greater than width', async () => {
       const origWidth = 500;
       const origHeight = 1000;
-      const result = await getThumbnail({ id, origWidth, origHeight, rule });
+      const result = await generateModifiedImageURL({
+        id,
+        origWidth,
+        origHeight,
+        rule,
+      });
       expect(result).toEqual({
         url,
         width: 180,
