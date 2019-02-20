@@ -33,9 +33,9 @@ const options = {
     enabled: true,
   },
   logLevel: 10,
-  maxReconnectionAttempts: 1,
-  reconnectionTimeout: 5,
-  connectionTimeout: 5,
+  maxReconnectionAttempts: '0',
+  reconnectionTimeout: '5',
+  connectionTimeout: '5',
 };
 
 const LOG_TAG = 'RTCAccount';

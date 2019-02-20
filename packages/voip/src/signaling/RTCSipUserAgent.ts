@@ -16,6 +16,9 @@ enum WEBPHONE_REGISTER_EVENT {
   REG_SUCCESS = 'registered',
   REG_FAILED = 'registrationFailed',
   INVITE = 'invite',
+  TRANSPORT_CREATED = 'transportCreated',
+  TRANSPORT_ERROR = 'transportError',
+  TRANSPORT_DISCONNECTED = 'disconnected',
 }
 
 class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
@@ -93,19 +96,32 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     if (this._webphone.userAgent.transport) {
       this._initTransportListener();
     } else {
-      this._webphone.userAgent.on('transportCreated', () => {
-        this._initTransportListener();
-      });
+      this._webphone.userAgent.on(
+        WEBPHONE_REGISTER_EVENT.TRANSPORT_CREATED,
+        () => {
+          this._initTransportListener();
+        },
+      );
     }
   }
 
   private _initTransportListener() {
-    this._webphone.userAgent.transport.on('transportError', () => {
-      if (this._webphone.userAgent.transport.noAvailableServers()) {
-        rtcLogger.warn(LOG_TAG, 'Transport error');
+    this._webphone.userAgent.transport.on(
+      WEBPHONE_REGISTER_EVENT.TRANSPORT_ERROR,
+      () => {
+        if (this._webphone.userAgent.transport.noAvailableServers()) {
+          rtcLogger.warn(LOG_TAG, 'Transport error');
+          this.emit(UA_EVENT.TRANSPORT_ERROR);
+        }
+      },
+    );
+    this._webphone.userAgent.transport.on(
+      WEBPHONE_REGISTER_EVENT.TRANSPORT_DISCONNECTED,
+      () => {
+        rtcLogger.warn(LOG_TAG, 'Transport disconnected');
         this.emit(UA_EVENT.TRANSPORT_ERROR);
-      }
-    });
+      },
+    );
   }
 }
 
