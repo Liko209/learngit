@@ -128,10 +128,10 @@ class GroupHandleDataController {
         const transformed: Group = transform<Group>(finalItem);
 
         const beRemovedAsGuest =
-          !transformed.is_team &&
-          transformed.members.length === 2 &&
           transformed.removed_guest_user_ids &&
-          transformed.removed_guest_user_ids.length === 1;
+          transformed.removed_guest_user_ids.includes(
+            UserConfig.getCurrentUserId(),
+          );
 
         if (beRemovedAsGuest) {
           transformed.deactivated = true;
