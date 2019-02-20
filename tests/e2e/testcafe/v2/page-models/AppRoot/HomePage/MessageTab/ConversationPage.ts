@@ -130,10 +130,12 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async expectStreamScrollToBottom() {
-    const scrollTop = await this.scrollDiv.scrollTop;
-    const scrollHeight = await this.scrollDiv.scrollHeight;
-    const clientHeight = await this.scrollDiv.clientHeight;
-    await this.t.expect(scrollTop).eql(scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`);
+    await H.retryUntilPass(async () => {
+      const scrollTop = await this.scrollDiv.scrollTop;
+      const scrollHeight = await this.scrollDiv.scrollHeight;
+      const clientHeight = await this.scrollDiv.clientHeight;
+      assert.deepStrictEqual(scrollTop, scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`)
+    })
   }
 
   async scrollToY(y: number) {
