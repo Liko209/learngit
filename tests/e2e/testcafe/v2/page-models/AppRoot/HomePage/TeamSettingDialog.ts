@@ -196,7 +196,7 @@ export class TeamSettingDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId("deleteTeamButton");
   }
 
-  get deleteTeamButtonInfo() {
+  get deleteTeamButtonInfoIcon() {
     return this.getSelectorByIcon('info', this.deleteTeamButton);
   }
 
@@ -204,4 +204,15 @@ export class TeamSettingDialog extends BaseWebComponent {
     await this.t.click(this.deleteTeamButton);
   }
 
+  get archiveTeamButton() {
+    return this.getSelectorByAutomationId("archiveTeamButton");
+  }
+
+  get archiveTeamButtonInfoIcon() {
+    return this.getSelectorByIcon('info', this.archiveTeamButton);
+  }
+
+  async clickArchiveTeamButton() {
+    await this.t.click(this.archiveTeamButton);
+  }
 }
