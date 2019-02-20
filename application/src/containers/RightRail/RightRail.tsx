@@ -16,7 +16,7 @@ import {
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
-import { TAB_CONFIG } from './ItemList/config';
+import { TAB_CONFIG, TabConfig } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
 import { PinnedList } from './PinnedList';
 
@@ -29,10 +29,18 @@ type TriggerButtonProps = {
   onClick: () => {};
 } & WithNamespaces;
 
+// height of conversation header & tabs, pass these constant height to list;
+// since resize observer in resize observer will cause UI performance issue.
+const HEIGHT_CONVERSATION_HEADER = 48;
+const HEIGHT_TABS = 33;
+const HEIGHT_FIX = HEIGHT_CONVERSATION_HEADER + HEIGHT_TABS;
+
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
-    return isOpen ? 'conversationDetailsHide' : 'conversationDetailsShow';
+    return isOpen
+      ? 'message.conversationDetailsHide'
+      : 'message.conversationDetailsShow';
   }
 
   private _getIconKey = () => {
@@ -64,7 +72,7 @@ class RightRailComponent extends React.Component<Props> {
     return (
       <JuiRightShelfHeader>
         <JuiRightShelfHeaderText>
-          {t('conversationDetails')}
+          {t('message.conversationDetails')}
         </JuiRightShelfHeaderText>
       </JuiRightShelfHeader>
     );
@@ -78,42 +86,50 @@ class RightRailComponent extends React.Component<Props> {
     type: RIGHT_RAIL_ITEM_TYPE,
     id: number,
     active: boolean,
+    width: number,
+    height: number,
   ) => {
     if (type === RIGHT_RAIL_ITEM_TYPE.PIN_POSTS) {
       return <PinnedList groupId={id} />;
     }
-    return <ItemList type={type} groupId={id} active={active} />;
+    return (
+      <ItemList
+        type={type}
+        groupId={id}
+        active={active}
+        width={width}
+        height={height}
+      />
+    );
   }
+
   private _renderTabs = () => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
     return (
-      <ReactResizeDetector handleWidth={true}>
-        {(width: number) => (
+      <ReactResizeDetector handleWidth={true} handleHeight={true}>
+        {(width: number, height: number) => (
           <JuiTabs
             defaultActiveIndex={0}
             tag="right-shelf"
             width={width}
             onChangeTab={this._handleTabChanged}
-            moreText={t('more')}
+            moreText={t('common.more')}
           >
             {TAB_CONFIG.map(
-              (
-                {
-                  title,
-                  type,
-                }: {
-                  title: string;
-                  type: RIGHT_RAIL_ITEM_TYPE;
-                },
-                index: number,
-              ) => (
+              ({ title, type, automationID }: TabConfig, index: number) => (
                 <JuiTab
                   key={index}
                   title={t(title)}
-                  automationId={`right-shelf-${title}`}
+                  automationId={`right-shelf-${automationID}`}
                 >
-                  {this._renderListView(type, id, tabIndex === index)}
+                  {this._renderListView(
+                    type,
+                    id,
+                    tabIndex === index,
+                    width,
+                    height - HEIGHT_FIX,
+                  )}
                 </JuiTab>
               ),
             )}

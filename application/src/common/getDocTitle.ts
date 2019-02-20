@@ -19,20 +19,20 @@ function getMessagesTitle(messagePath?: string) {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, +messagePath);
     return group.displayName;
   }
-  return i18next.t('Messages');
+  return i18next.t('message.Messages');
 }
 
 const DOC_TITLE = {
   messages: getMessagesTitle,
-  dashboard: () => i18next.t('Dashboard'),
-  phone: () => i18next.t('Phone'),
-  meetings: () => i18next.t('Meetings'),
-  contacts: () => i18next.t('Contacts'),
-  calendar: () => i18next.t('Calendar'),
-  tasks: () => i18next.t('Tasks'),
-  notes: () => i18next.t('Notes'),
-  files: () => i18next.t('Files'),
-  settings: () => i18next.t('Settings'),
+  dashboard: () => i18next.t('dashboard.Dashboard'),
+  phone: () => i18next.t('telephony.Phone'),
+  meetings: () => i18next.t('meeting.Meetings'),
+  contacts: () => i18next.t('contact.Contacts'),
+  calendar: () => i18next.t('calendar.Calendar'),
+  tasks: () => i18next.t('item.tasks'),
+  notes: () => i18next.t('item.notes'),
+  files: () => i18next.t('item.files'),
+  settings: () => i18next.t('setting.Settings'),
 };
 
 function getDocTitle(pathname: string) {

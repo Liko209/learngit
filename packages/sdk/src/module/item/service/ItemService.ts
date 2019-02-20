@@ -53,8 +53,6 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       return;
     }
     const transformedData = items.map(item => transform<Item>(item));
-    // handle deactivated data and normal data
-    this.handleSanitizedItems(transformedData);
     return baseHandleData({
       data: transformedData,
       dao: daoManager.getDao(ItemDao),
@@ -95,22 +93,9 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return result;
   }
 
-  async createLocalItem(item: Item) {
-    return await this.itemServiceController.createLocalItem(item);
-  }
-
-  async updateLocalItem(item: Item) {
-    return await this.itemServiceController.updateLocalItem(item);
-  }
-
-  async deleteLocalItem(itemId: number) {
-    return await this.itemServiceController.deleteLocalItem(itemId);
-  }
-
   async deleteItem(itemId: number) {
     return await this.itemServiceController.itemActionController.deleteItem(
       itemId,
-      this,
     );
   }
 
@@ -243,10 +228,6 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       id,
       type,
     );
-  }
-
-  async handleSanitizedItems(items: Item[]) {
-    return await this.itemServiceController.handleSanitizedItems(items);
   }
 
   async requestSyncGroupItems(groupId: number) {

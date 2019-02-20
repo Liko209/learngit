@@ -21,7 +21,7 @@ const Download = React.memo(({ url }: Props) => {
         download={true}
         href={url}
         variant="plain"
-        tooltipTitle={i18next.t('download')}
+        tooltipTitle={i18next.t('common.download')}
       >
         download
       </JuiIconButton>

@@ -6,6 +6,6 @@
 
 export default function () {
   return {
-    key: 'replied',
+    key: 'item.activity.replied',
   };
 }

@@ -33,7 +33,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       id: post.id,
       sortValue: -post.id,
     }),
-    pageSize: 50,
+    pageSize: 20,
     hasMoreUp: false,
     hasMoreDown: true,
     entityName: ENTITY_NAME.POST,
@@ -111,7 +111,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     // when comp did mount
     if (!this._postIds.length && postIds.length) {
       this._postIds = postIds;
-      this.fetchInitialPosts();
+      await this.fetchInitialPosts();
       return;
     }
     // when comp did update

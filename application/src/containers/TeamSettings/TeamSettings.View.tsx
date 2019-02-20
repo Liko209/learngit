@@ -73,11 +73,11 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     maxLength: DESC_MAX_LENGTH,
   };
 
-  handleClose = () => portalManager.dismiss();
+  handleClose = () => portalManager.dismissLast();
   handleOk = async () => {
     const shouldClose = await this.props.save(this.state);
     if (shouldClose) {
-      portalManager.dismiss();
+      this.handleClose();
     }
   }
 
@@ -123,19 +123,19 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
 
   handleLeaveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
     const { t, groupName } = this.props;
-    portalManager.dismiss();
+    portalManager.dismissLast();
     Dialog.confirm({
       modalProps: { 'data-test-automation-id': 'leaveTeamConfirmDialog' },
       okBtnProps: { 'data-test-automation-id': 'leaveTeamOkButton' },
       cancelBtnProps: { 'data-test-automation-id': 'leaveTeamCancelButton' },
       size: 'small',
       okType: 'negative',
-      title: t('leaveTeamConfirmTitle'),
-      content: t('leaveTeamConfirmContent', {
+      title: t('people.team.leaveTeamConfirmTitle'),
+      content: t('people.team.leaveTeamConfirmContent', {
         teamName: groupName,
       }),
-      okText: toTitleCase(t('leaveTeamConfirmOk')),
-      cancelText: toTitleCase(t('cancel')),
+      okText: toTitleCase(t('people.team.leaveTeamConfirmOk')),
+      cancelText: toTitleCase(t('common.dialog.cancel')),
       onOK: this.leaveTeamOKButtonHandler,
     });
   }
@@ -148,12 +148,12 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       cancelBtnProps: { 'data-test-automation-id': 'deleteTeamCancelButton' },
       size: 'small',
       okType: 'negative',
-      title: t('deleteTeamConfirmTitle'),
-      content: t('deleteTeamConfirmContent', {
+      title: t('people.team.deleteTeamConfirmTitle'),
+      content: t('people.team.deleteTeamConfirmContent', {
         teamName: groupName,
       }),
-      okText: toTitleCase(t('deleteTeamConfirmOk')),
-      cancelText: toTitleCase(t('cancel')),
+      okText: toTitleCase(t('people.team.deleteTeamConfirmOk')),
+      cancelText: toTitleCase(t('common.dialog.cancel')),
       onOK: async () => {
         dialog.startLoading();
         const result = await deleteTeam();
@@ -162,14 +162,14 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           return false;
         }
         dialog.dismiss();
-        portalManager.dismiss();
+        portalManager.dismissLast();
         return true;
       },
     });
   }
 
   leaveTeamOKButtonHandler = async () => {
-    portalManager.dismiss();
+    portalManager.dismissLast();
     this.props.leaveTeam();
   }
 
@@ -187,7 +187,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         </EditSectionLeft>
         <EditSectionRight>
           <JuiTextField
-            label={t('teamName')}
+            label={t('people.team.teamName')}
             data-test-automation-id="teamName"
             value={this.state.name}
             fullWidth={true}
@@ -197,7 +197,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             onChange={this.handleNameChange}
           />
           <JuiTextarea
-            label={t('teamDescription')}
+            label={t('people.team.teamDescription')}
             data-test-automation-id="teamDescription"
             value={this.state.description}
             inputProps={TeamSettings.DESCRIPTION_INPUT_PROPS}
@@ -216,12 +216,12 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         <JuiDivider />
         <SubSection data-test-automation-id="memberPermission">
           <SubSectionTitle data-test-automation-id="memberPermissionTitle">
-            {t('allowTeamMembersTo')}
+            {t('people.team.allowTeamMembersTo')}
           </SubSectionTitle>
           <SubSectionList data-test-automation-id="memberPermissionList">
             <SubSectionListItem
               data-test-automation-id="memberPermissionItem"
-              label={t('addTeamMembers')}
+              label={t('people.team.addTeamMembers')}
             >
               <JuiToggleButton
                 data-test-automation-id="allowAddTeamMemberToggle"
@@ -232,7 +232,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             <JuiDivider />
             <SubSectionListItem
               data-test-automation-id="memberPermissionItem"
-              label={t('postMessages')}
+              label={t('people.team.postMessages')}
             >
               <JuiToggleButton
                 data-test-automation-id="allowPostToggle"
@@ -243,7 +243,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             <JuiDivider />
             <SubSectionListItem
               data-test-automation-id="memberPermissionItem"
-              label={t('pinPosts')}
+              label={t('people.team.pinPosts')}
             >
               <JuiToggleButton
                 data-test-automation-id="allowPinToggle"
@@ -269,7 +269,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           hide={isAdmin || isCompanyTeam}
         >
           <ButtonListItemText color="semantic.negative">
-            {t('leaveTeam')}
+            {t('people.team.leaveTeam')}
           </ButtonListItemText>
         </ButtonListItem>
         {isAdmin || isCompanyTeam ? null : <JuiDivider />}
@@ -280,9 +280,12 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           hide={!isAdmin || isCompanyTeam}
         >
           <ButtonListItemText color="semantic.negative">
-            {t('deleteTeam')}
+            {t('people.team.deleteTeam')}
           </ButtonListItemText>
-          <JuiIconButton variant="plain" tooltipTitle={t('deleteTeamToolTip')}>
+          <JuiIconButton
+            variant="plain"
+            tooltipTitle={t('people.team.deleteTeamToolTip')}
+          >
             info
           </JuiIconButton>
         </ButtonListItem>
@@ -302,11 +305,11 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn, loading: saving }}
-        title={t('Settings')}
+        title={t('setting.teamSettings')}
         onCancel={this.handleClose}
         onOK={this.handleOk}
-        okText={toTitleCase(t('save'))}
-        cancelText={toTitleCase(t('cancel'))}
+        okText={toTitleCase(t('common.dialog.save'))}
+        cancelText={toTitleCase(t('common.dialog.cancel'))}
       >
         {isAdmin ? this.renderEditSection() : null}
         {isAdmin ? this.renderMemberPermissionSettings() : null}

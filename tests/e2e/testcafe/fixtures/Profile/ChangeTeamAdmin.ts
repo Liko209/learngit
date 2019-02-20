@@ -93,7 +93,8 @@ test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-
 
   // Case2: admin 'u1' changed to member
   await h(t).withLog(`When hover on the admin 'u1' row`, async () => {
-    await profileDialog.memberMoreMenu.quit();
+    // await profileDialog.memberMoreMenu.quit();
+    await t.click(profileDialog.profileTitle); // FIXME: press key 'ESC' invalid
     await t.hover(profileDialog.memberEntryByName(u1Name).self);
   });
 

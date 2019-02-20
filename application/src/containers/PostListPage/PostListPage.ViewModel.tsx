@@ -25,7 +25,7 @@ type DataMap = {
 class PostListPageViewModel extends AbstractViewModel {
   private _dataMap: DataMap = {
     [POST_LIST_TYPE.mentions]: {
-      caption: '@mentions_title',
+      caption: 'message.@mentionsTitle',
       idListProvider: () => {
         return getSingleEntity<MyState, MyStateModel>(
           ENTITY_NAME.MY_STATE,
@@ -34,7 +34,7 @@ class PostListPageViewModel extends AbstractViewModel {
       },
     },
     [POST_LIST_TYPE.bookmarks]: {
-      caption: 'bookmarks_title',
+      caption: 'message.bookmarksTitle',
       idListProvider: () => {
         return getSingleEntity<Profile, ProfileModel>(
           ENTITY_NAME.PROFILE,

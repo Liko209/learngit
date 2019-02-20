@@ -7,6 +7,10 @@
 import { ExtendedBaseModel } from '../../../../models';
 import { Raw } from '../../../../../framework/model';
 
+export type Thumbs = {
+  string: string | number;
+};
+
 export type ItemVersionPage = {
   file_id: number;
   url: string;
@@ -16,7 +20,7 @@ export type ItemVersions = {
   download_url: string;
   size: number;
   url: string;
-  thumbs?: any;
+  thumbs?: Thumbs;
   length?: number; // document preview
   orig_height?: number;
   orig_width?: number;

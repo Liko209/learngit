@@ -156,7 +156,7 @@ class ConversationPageViewComponent extends Component<
         ) : (
           <JuiDisabledInput
             data-test-automation-id="disabled-message-input"
-            text={t('disabledText')}
+            text={t('message.prompt.disabledText')}
           />
         )}
         <AttachmentManager

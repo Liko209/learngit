@@ -66,8 +66,8 @@ class MenuViewComponent extends Component<Props, State> {
     const { onMenuClose, removeFromTeam } = this.props;
     onMenuClose();
     this._containErrorHander(removeFromTeam, [
-      'removeMemberNetworkError',
-      'removeMemberBackendError',
+      'people.prompt.removeMemberNetworkError',
+      'people.prompt.removeMemberBackendError',
     ]);
   }
 
@@ -76,8 +76,14 @@ class MenuViewComponent extends Component<Props, State> {
     const { onMenuClose, toggleTeamAdmin, isThePersonAdmin } = this.props;
     onMenuClose();
     const errorList = isThePersonAdmin
-      ? ['revokeTeamAdminNetworkError', 'revokeTeamAdminBackendError']
-      : ['makeTeamAdminNetworkError', 'makeTeamAdminBackendError'];
+      ? [
+        'people.prompt.revokeTeamAdminNetworkError',
+        'people.prompt.revokeTeamAdminBackendError',
+      ]
+      : [
+        'people.prompt.makeTeamAdminNetworkError',
+        'people.prompt.makeTeamAdminBackendError',
+      ];
     this._containErrorHander(toggleTeamAdmin, errorList);
   }
 
@@ -100,9 +106,7 @@ class MenuViewComponent extends Component<Props, State> {
       isThePersonAdmin,
       isThePersonGuest,
     } = this.props;
-    const teamAdminToggleButton = isThePersonAdmin
-      ? 'revokeTeamAdmin'
-      : 'makeTeamAdmin';
+
     return (
       <JuiPopoverMenu
         Anchor={this._Anchor}
@@ -122,15 +126,23 @@ class MenuViewComponent extends Component<Props, State> {
               data-test-automation-id="removeFromTeam"
               onClick={this._handleRemoveFromTeam}
             >
-              {t('removeFromTeam')}
+              {t('people.team.removeFromTeam')}
             </JuiMenuItem>
           )}
-          {!isThePersonGuest && (
+          {!isThePersonGuest && isThePersonAdmin && (
             <JuiMenuItem
-              data-test-automation-id={teamAdminToggleButton}
+              data-test-automation-id="revokeTeamAdmin"
               onClick={this._toggleTeamAdmin}
             >
-              {t(teamAdminToggleButton)}
+              {t('people.team.revokeTeamAdmin')}
+            </JuiMenuItem>
+          )}
+          {!isThePersonGuest && !isThePersonAdmin && (
+            <JuiMenuItem
+              data-test-automation-id="makeTeamAdmin"
+              onClick={this._toggleTeamAdmin}
+            >
+              {t('people.team.makeTeamAdmin')}
             </JuiMenuItem>
           )}
         </JuiMenuList>

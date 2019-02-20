@@ -8,7 +8,7 @@ import moment from 'moment';
 import { getDateMessage } from '../';
 
 jest.mock('i18next', () => ({
-  t: (text: string) => text,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
 
 describe('getDateMessage', () => {

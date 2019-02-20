@@ -6,7 +6,6 @@
 
 import { ConferenceItemController } from '../controller/ConferenceItemController';
 import { ConferenceItem, SanitizedConferenceItem } from '../entity';
-import { IItemService } from '../../../service/IItemService';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 import { ConferenceItemDao } from '../dao/ConferenceItemDao';
 import { daoManager } from '../../../../../dao';
@@ -17,7 +16,7 @@ class ConferenceItemService extends BaseSubItemService<
 > {
   private _conferenceItemController: ConferenceItemController;
 
-  constructor(itemService: IItemService) {
+  constructor() {
     super(daoManager.getDao<ConferenceItemDao>(ConferenceItemDao));
   }
 
