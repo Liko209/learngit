@@ -27,7 +27,7 @@ class FromViewModel extends AbstractViewModel implements FromViewProps {
   }
   @computed
   get isTeam(): boolean {
-    return !!this._group.displayName;
+    return !!this._group.isTeam;
   }
 
   onReceiveProps({ id }: FromProps) {
