@@ -95,5 +95,8 @@
       "pre-push": "concurrently \"npm run tsc\" \"npm run lint-all\" \"npm run webpack\" &&  npm run test:changed",
       "commit-msg": "node scripts/validate-commit-msg.js"
     }
+  },
+  "dependencies": {
+    "ldclient-js": "2.9.3"
   }
 }
