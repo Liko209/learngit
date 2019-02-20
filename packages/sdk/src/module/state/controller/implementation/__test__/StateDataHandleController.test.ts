@@ -156,13 +156,13 @@ describe('StateDataHandleController', () => {
           id: 55668833,
           __trigger_ids: [123],
           post_cursor: 456,
-          drp_post_cursor: 789,
+          post_drp_cursor: 789,
         },
         {
           id: 11223344,
           __trigger_ids: [5683],
           post_cursor: 654,
-          drp_post_cursor: 321,
+          post_drp_cursor: 321,
         },
       ];
       daoManager.getKVDao = jest.fn().mockReturnValue({
