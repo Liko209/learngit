@@ -1,5 +1,5 @@
 import { LogUploader } from '../LogUploader';
-import { LogEntity } from 'foundation';
+import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import AccountService, { UserConfig } from '../../account';
 import { Api } from 'sdk/api';
 import axios from 'axios';
@@ -46,6 +46,40 @@ describe('LogUploader', () => {
       mockLog2.message = 'b';
       const result = logUploader.transform([mockLog1, mockLog2]);
       expect(result).toEqual('a\nb');
+    });
+  });
+  describe('errorHandler()', () => {
+    it('should return retry when retry able error occur', () => {
+      const logUploader = new LogUploader();
+      expect(
+        logUploader.errorHandler(
+          new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, ''),
+        ),
+      ).toEqual('retry');
+      expect(
+        logUploader.errorHandler(
+          new JNetworkError(ERROR_CODES_NETWORK.UNAUTHORIZED, ''),
+        ),
+      ).toEqual('retry');
+      expect(
+        logUploader.errorHandler(
+          new JNetworkError(ERROR_CODES_NETWORK.TOO_MANY_REQUESTS, ''),
+        ),
+      ).toEqual('retry');
+      expect(
+        logUploader.errorHandler(
+          new JNetworkError(ERROR_CODES_NETWORK.SERVICE_UNAVAILABLE, ''),
+        ),
+      ).toEqual('retry');
+      expect(
+        logUploader.errorHandler(
+          new JNetworkError(ERROR_CODES_NETWORK.GATEWAY_TIMEOUT, ''),
+        ),
+      ).toEqual('retry');
+    });
+    it('should ignore other error', () => {
+      const logUploader = new LogUploader();
+      expect(logUploader.errorHandler(new Error('sss'))).toEqual('ignore');
     });
   });
 });

@@ -8,18 +8,6 @@ import { logManager, LOG_LEVEL, mainLogger, IAccessor } from 'foundation';
 import { LogUploader } from './LogUploader';
 import { PermissionService, UserPermissionType } from '../../module/permission';
 
-notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
-  LogControlManager.instance().setNetworkState(onLine);
-});
-
-notificationCenter.on(SERVICE.LOGOUT, () => {
-  LogControlManager.instance().flush();
-});
-
-notificationCenter.on(WINDOW.BLUR, () => {
-  LogControlManager.instance().flush();
-});
-
 class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
@@ -34,9 +22,7 @@ class LogControlManager implements IAccessor {
       logUploader: new LogUploader(),
       uploadAccessor: this,
     });
-    notificationCenter.on(ENTITY.USER_PERMISSION, () => {
-      this.configByPermission();
-    });
+    this.subscribeNotifications();
   }
 
   public static instance(): LogControlManager {
@@ -45,6 +31,24 @@ class LogControlManager implements IAccessor {
     }
     this._instance = new LogControlManager();
     return this._instance;
+  }
+
+  subscribeNotifications() {
+    notificationCenter.on(ENTITY.USER_PERMISSION, () => {
+      this.configByPermission();
+    });
+
+    notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
+      this.setNetworkState(onLine);
+    });
+
+    notificationCenter.on(SERVICE.LOGOUT, () => {
+      this.flush();
+    });
+
+    notificationCenter.on(WINDOW.BLUR, () => {
+      this.flush();
+    });
   }
 
   public setDebugMode(isDebug: boolean) {

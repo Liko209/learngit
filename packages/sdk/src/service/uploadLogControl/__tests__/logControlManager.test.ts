@@ -8,6 +8,9 @@ import axios from 'axios';
 import { PermissionService } from '../../../module/permission';
 import LogControlManager from '../logControlManager';
 import { logManager, LOG_LEVEL, mainLogger, IAccessor } from 'foundation';
+import { notificationCenter } from 'sdk/service';
+import { WINDOW, ENTITY, SERVICE } from '../../../service/eventKey';
+
 jest.mock('axios');
 jest.mock('sdk/module/permission/service/PermissionService');
 jest.mock('foundation');
@@ -28,23 +31,59 @@ const mockLogManager = {
   getNetworkLogger: jest.fn().mockReturnValue(mockLogger),
   getConfig: jest.fn().mockReturnValue({}),
   config: jest.fn(),
+  setAllLoggerLevel: jest.fn(),
 };
 logManager = mockLogManager;
 mainLogger = mockLogger;
 
 describe('LogControlManager', () => {
   const logControlManager = LogControlManager.instance();
+  logControlManager.setDebugMode(true);
   beforeEach(() => {
     axios.mockResolvedValue({});
     PermissionService.getInstance = jest
       .fn()
       .mockReturnValue(mockPermissionService);
   });
-  it('instance', async () => {
-    expect(LogControlManager.instance()).toBeInstanceOf(LogControlManager);
+
+  describe('instance()', () => {
+    it('should return instance when call instance()', async () => {
+      expect(LogControlManager.instance()).toBeInstanceOf(LogControlManager);
+    });
   });
 
-  describe('configByPermission', () => {
+  describe('notifications', () => {
+    it('should call configByPermission when receive ENTITY.USER_PERMISSION event', () => {
+      const spy = jest.spyOn(logControlManager, 'configByPermission');
+      spy.mockClear();
+      notificationCenter.emit(ENTITY.USER_PERMISSION);
+      expect(spy).toBeCalledTimes(1);
+    });
+    it('should call setNetworkState when receive WINDOW.ONLINE event', () => {
+      const spy = jest.spyOn(logControlManager, 'setNetworkState');
+      spy.mockClear();
+      notificationCenter.emit(WINDOW.ONLINE, { onLine: false });
+      expect(spy).toBeCalledTimes(1);
+      expect(spy).nthCalledWith(1, false);
+      notificationCenter.emit(WINDOW.ONLINE, { onLine: true });
+      expect(spy).toBeCalledTimes(2);
+      expect(spy).nthCalledWith(2, true);
+    });
+    it('should call flush when receive SERVICE.LOGOUT event', () => {
+      const spy = jest.spyOn(logControlManager, 'flush');
+      spy.mockClear();
+      notificationCenter.emit(SERVICE.LOGOUT);
+      expect(spy).toBeCalledTimes(1);
+    });
+    it('should call flush when receive WINDOW.BLUR event', () => {
+      const spy = jest.spyOn(logControlManager, 'flush');
+      spy.mockClear();
+      notificationCenter.emit(WINDOW.BLUR);
+      expect(spy).toBeCalledTimes(1);
+    });
+  });
+
+  describe('configByPermission()', () => {
     it('should set log config when getUserPermission success [JPT-1178]', async () => {
       mockPermissionService.hasPermission.mockClear();
       mockPermissionService.hasPermission.mockResolvedValue(false);

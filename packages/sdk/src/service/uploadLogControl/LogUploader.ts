@@ -53,9 +53,10 @@ export class LogUploader implements ILogUploader {
 
   private async _getUserInfo() {
     const accountService: AccountService = AccountService.getInstance();
-    const email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
     let id;
+    let email;
     try {
+      email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
       id = UserConfig.getCurrentUserId();
     } catch (error) {
       mainLogger.error(error);
