@@ -26,7 +26,7 @@ class ThumbnailView extends React.Component<ViewProps> {
               <JuiIconography fontSize="large">image_preview</JuiIconography>
             }
           >
-            <JuiThumbnail url={url} />
+            <JuiThumbnail url={url} iconType={''} />
           </PreloadImg>
         ) : (
           <JuiThumbnail iconType={icon} />

@@ -12,6 +12,7 @@ import { JuiThumbnail } from '../Thumbnail';
 storiesOf('Components/Thumbnail', module).add('Thumbnail', () => {
   return (
     <JuiThumbnail
+      iconType={''}
       url={text('url', 'ppt')}
       size={select('size', { small: 'small', large: 'large' }, 'large')}
     />
