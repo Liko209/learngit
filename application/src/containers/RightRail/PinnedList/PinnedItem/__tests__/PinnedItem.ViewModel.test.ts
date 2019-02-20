@@ -72,33 +72,35 @@ describe('PinnedItemViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({ name: 'name' });
       expect(pinnedItemViewModel.text).toBe('name');
     });
-    it('If item type is task item should be return name', () => {
+    it('If item type is task item should be return text', () => {
       jest
         .spyOn(GlipTypeUtil, 'extractTypeId')
         .mockReturnValue(TypeDictionary.TYPE_ID_TASK);
       (getEntity as jest.Mock).mockReturnValue({ text: 'text' });
       expect(pinnedItemViewModel.text).toBe('text');
     });
-    it('If item type is note item should be return name', () => {
+    it('If item type is note item should be return title', () => {
       jest
         .spyOn(GlipTypeUtil, 'extractTypeId')
         .mockReturnValue(TypeDictionary.TYPE_ID_PAGE);
       (getEntity as jest.Mock).mockReturnValue({ title: 'title' });
       expect(pinnedItemViewModel.text).toBe('title');
     });
-    it('If item type is event item should be return name', () => {
+    it('If item type is event item should be return text', () => {
       jest
         .spyOn(GlipTypeUtil, 'extractTypeId')
         .mockReturnValue(TypeDictionary.TYPE_ID_EVENT);
       (getEntity as jest.Mock).mockReturnValue({ text: 'text' });
       expect(pinnedItemViewModel.text).toBe('text');
     });
-    it('If item type is link item should be return name', () => {
+    it('If item type is link item should be return title or url', () => {
       jest
         .spyOn(GlipTypeUtil, 'extractTypeId')
         .mockReturnValue(TypeDictionary.TYPE_ID_LINK);
       (getEntity as jest.Mock).mockReturnValue({ title: 'title' });
       expect(pinnedItemViewModel.text).toBe('title');
+      (getEntity as jest.Mock).mockReturnValue({ url: 'url' });
+      expect(pinnedItemViewModel.text).toBe('url');
     });
   });
 
@@ -123,13 +125,6 @@ describe('PinnedItemViewModel', () => {
         .mockReturnValue(TypeDictionary.TYPE_ID_TASK);
       (getEntity as jest.Mock).mockReturnValue({ complete: true });
       expect(pinnedItemViewModel.icon).toBe('tasks');
-    });
-    it('If item is task item should be return task_incomplete', () => {
-      jest
-        .spyOn(GlipTypeUtil, 'extractTypeId')
-        .mockReturnValue(TypeDictionary.TYPE_ID_TASK);
-      (getEntity as jest.Mock).mockReturnValue({ complete: false });
-      expect(pinnedItemViewModel.icon).toBe('task_incomplete');
     });
     it('If item is notes item should be return notes', () => {
       jest

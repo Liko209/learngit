@@ -61,8 +61,13 @@ class PinnedItemViewModel extends AbstractViewModel<PinnedItemProps> {
 
   @computed
   get text() {
-    const text = ITEM_TEXT_MAP[this.itemType];
-    return this.item[text] || '';
+    type ProcessFunc = (item: ITEM_MODEL_TYPES) => string;
+    const textMapper = ITEM_TEXT_MAP[this.itemType];
+    const text =
+      typeof textMapper === 'function'
+        ? (textMapper as ProcessFunc)(this.item)
+        : textMapper;
+    return this.item[text];
   }
 
   @computed

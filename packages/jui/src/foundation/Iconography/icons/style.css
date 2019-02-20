@@ -114,7 +114,7 @@
 }
 .imagepreview:before {
   content: "\e940";
-  color: #f6ad16;
+  color: #bdbdbd;
 }
 .star:before {
   content: "\e90f";

@@ -28,9 +28,7 @@ const ITEM_ICON_MAP = {
     }
     return getFileIcon(item.type);
   },
-  [TypeDictionary.TYPE_ID_TASK]: (
-    item: Extract<ITEM_MODEL_TYPES, TaskItemModel>,
-  ) => (item.complete ? 'tasks' : 'task_incomplete'),
+  [TypeDictionary.TYPE_ID_TASK]: 'tasks',
   [TypeDictionary.TYPE_ID_PAGE]: 'notes',
   [TypeDictionary.TYPE_ID_EVENT]: 'event',
   [TypeDictionary.TYPE_ID_LINK]: 'link',
@@ -41,7 +39,14 @@ const ITEM_TEXT_MAP = {
   [TypeDictionary.TYPE_ID_TASK]: 'text',
   [TypeDictionary.TYPE_ID_PAGE]: 'title',
   [TypeDictionary.TYPE_ID_EVENT]: 'text',
-  [TypeDictionary.TYPE_ID_LINK]: 'title',
+  [TypeDictionary.TYPE_ID_LINK]: (
+    item: Extract<ITEM_MODEL_TYPES, LinkItemModel>,
+  ) => {
+    if (item && item.title) {
+      return 'title';
+    }
+    return 'url';
+  },
 };
 
 export { ITEM_MODEL_TYPES, ITEM_ICON_MAP, ITEM_TEXT_MAP };
