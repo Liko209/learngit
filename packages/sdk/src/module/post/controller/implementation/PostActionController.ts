@@ -130,7 +130,7 @@ class PostActionController implements IPostActionController {
       ): Partial<Raw<Post>> => {
         return {
           item_ids: itemIds,
-          deactivated: isValid,
+          deactivated: !isValid,
           ...partialPost,
         };
       };
@@ -142,14 +142,13 @@ class PostActionController implements IPostActionController {
             return await this.requestController.put(newPost);
           }
 
-          await this.entitySourceController.update(newPost);
+          if (!isValid) {
+            await this.deletePost(postId);
+          }
+
           return newPost;
         },
       );
-
-      if (!isValid) {
-        await this.deletePost(postId);
-      }
     }
 
     const itemService: ItemService = ItemService.getInstance();
