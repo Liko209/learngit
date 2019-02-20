@@ -34,7 +34,6 @@ class LogControlManager implements IAccessor {
       logUploader: new LogUploader(),
       uploadAccessor: this,
     });
-    this.configByPermission();
     notificationCenter.on(ENTITY.USER_PERMISSION, () => {
       this.configByPermission();
     });
