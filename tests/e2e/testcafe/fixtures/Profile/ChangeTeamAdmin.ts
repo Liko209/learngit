@@ -24,11 +24,10 @@ test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-
   const u1 = users[4];
   const u2 = users[5];
   await h(t).glip(u1).init();
-  await h(t).glip(u2).init();
   const app = new AppRoot(t);
   const profileDialog = app.homePage.profileDialog;
   const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
-  const u2Name = await h(t).glip(u2).getPersonPartialData('display_name', u2.rcId);
+  const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
 
   let teamId;
   await h(t).withLog('Given I have one team with admin and member', async () => {
@@ -133,14 +132,13 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
   const u1 = users[4];
   const u2 = users[5];
   await h(t).glip(u1).init();
-  await h(t).glip(u2).init();
   const app = new AppRoot(t);
   const profileDialog = app.homePage.profileDialog;
   const teamSettingDialog = app.homePage.teamSettingDialog;
   const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
-  const u2Name = await h(t).glip(u2).getPersonPartialData('display_name', u2.rcId);
+  const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
   const u1PersonId = await h(t).glip(u1).toPersonId(u1.rcId);
-  const u2PersonId = await h(t).glip(u2).toPersonId(u2.rcId);
+  const u2PersonId = await h(t).glip(u1).toPersonId(u2.rcId);
 
   let teamId;
   await h(t).withLog('Given I have one team', async () => {
@@ -235,11 +233,10 @@ test(formalName(`The whole "More" menu will be hidden in non-admin side`, ['P1',
   const u1 = users[4];
   const u2 = users[5];
   await h(t).glip(u1).init();
-  await h(t).glip(u2).init();
   const app = new AppRoot(t);
   const profileDialog = app.homePage.profileDialog;
   const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
-  const u2Name = await h(t).glip(u2).getPersonPartialData('display_name', u2.rcId);
+  const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
 
   let teamId;
   await h(t).withLog('Given I have one team', async () => {
@@ -363,12 +360,11 @@ test(formalName(`Make all team members as admin of this team when no admin in th
   const u2 = users[4];
   const u3 = users[5];
   await h(t).glip(u1).init();
-  await h(t).glip(u2).init();
-  await h(t).glip(u3).init();
+
   const app = new AppRoot(t);
   const profileDialog = app.homePage.profileDialog;
-  const u2Name = await h(t).glip(u2).getPersonPartialData('display_name', u2.rcId);
-  const u3Name = await h(t).glip(u3).getPersonPartialData('display_name', u3.rcId);
+  const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
+  const u3Name = await h(t).glip(u1).getPersonPartialData('display_name', u3.rcId);
 
   let teamId;
   await h(t).withLog('Given I have one team', async () => {
@@ -384,7 +380,7 @@ test(formalName(`Make all team members as admin of this team when no admin in th
     await h(t).glip(u1).removeTeamMembers(teamId, [u1.rcId]);
   });
 
-  await h(t).withLog(`And I login Jupiter with a member u2 ${u2.company.number}#${u2.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with a member u3 ${u3.company.number}#${u3.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, u2);
     await app.homePage.ensureLoaded();
   });
