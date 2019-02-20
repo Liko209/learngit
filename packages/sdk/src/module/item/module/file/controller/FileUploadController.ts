@@ -330,7 +330,7 @@ class FileUploadController {
           progress: {
             id: item.id,
             rate: {
-              loaded: 0,
+              loaded: hasUploaded ? 1 : -1,
               total: 1,
             },
             status: hasUploaded ? PROGRESS_STATUS.SUCCESS : PROGRESS_STATUS.FAIL,

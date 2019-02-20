@@ -1418,7 +1418,6 @@ describe('fileUploadController', () => {
           stored_file_id: 123123,
         },
       ];
-      
       entitySourceController.getEntitiesLocally = jest.fn().mockResolvedValue([
         {
           id: -10,
