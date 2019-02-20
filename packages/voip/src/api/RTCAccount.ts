@@ -163,6 +163,10 @@ class RTCAccount implements IRTCAccount {
       this._onLogoutAction();
     });
 
+    this._regManager.on(REGISTRATION_EVENT.ACQUIRE_NEW_PROV, () => {
+      this.handleProvisioning();
+    });
+
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
     });

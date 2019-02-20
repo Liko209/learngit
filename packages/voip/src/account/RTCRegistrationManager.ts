@@ -238,7 +238,7 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _onUARegFailed(response: any, cause: any) {
-    if (REGISTRATION_ERROR_CODE.TIME_OUT === cause) {
+    if (REGISTRATION_ERROR_CODE.SERVER_TIME_OUT === cause) {
       this._eventQueue.push(
         { name: REGISTRATION_EVENT.UA_REGISTER_TIMEOUT },
         () => {
@@ -246,6 +246,13 @@ class RTCRegistrationManager extends EventEmitter2
         },
       );
     } else {
+      if (
+        REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED === cause ||
+        REGISTRATION_ERROR_CODE.FORBIDDEN === cause ||
+        REGISTRATION_ERROR_CODE.UNAUTHORIZED === cause
+      ) {
+        this.emit(REGISTRATION_EVENT.ACQUIRE_NEW_PROV);
+      }
       this._eventQueue.push(
         { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
         () => {
