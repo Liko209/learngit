@@ -15,6 +15,9 @@ import {
 import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+const {
+  MediaStreams,
+} = require('ringcentral-web-phone/src/ringcentral-web-phone-media-engine');
 
 const LOG_TAG = 'RTCSipCallSession';
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
@@ -166,6 +169,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       this._mediaElement.local.play().catch(() => {
         rtcLogger.error(LOG_TAG, 'Failed to play local media element');
       });
+    }
+
+    if (local_stream && remote_stream) {
+      this._session.mediaStreams = new MediaStreams(this._session);
     }
   }
 
@@ -321,6 +328,39 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   getSession() {
     return this._session;
+  }
+
+  reconnectMedia(options: any) {
+    if (this._session && this._session.mediaStreams) {
+      this._session.mediaStreams
+        .reconnectMedia(options)
+        .then(() => {
+          if (options && options.eventHandlers) {
+            options.eventHandlers.succeeded(this._session);
+          }
+        })
+        .catch((error: any) => {
+          if (options && options.eventHandlers) {
+            options.eventHandlers.failed(error, this._session);
+          }
+        });
+    }
+  }
+
+  getMediaStats(callback: any, interval: any) {
+    if (this._session && this._session.mediaStreams) {
+      let timerInterval = interval;
+      if (!interval || interval < 0) {
+        timerInterval = 1000;
+      }
+      this._session.mediaStreams.getMediaStats(callback, timerInterval);
+    }
+  }
+
+  stopMediaStats() {
+    if (this._session && this._session.mediaStreams) {
+      this._session.mediaStreams.stopMediaStats();
+    }
   }
 }
 
