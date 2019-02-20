@@ -8,7 +8,11 @@ import i18next from 'i18next';
 import { JuiIconButton } from 'jui/src/components/Buttons';
 
 const TelephonyButton = () => {
-  return <JuiIconButton tooltipTitle={i18next.t('Phone')}>phone</JuiIconButton>;
+  return (
+    <JuiIconButton tooltipTitle={i18next.t('telephony.Phone')}>
+      phone
+    </JuiIconButton>
+  );
 };
 
 export { TelephonyButton };

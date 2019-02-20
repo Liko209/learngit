@@ -86,7 +86,7 @@ class NewMessage extends React.Component<ViewProps, State> {
   }
 
   renderFailError() {
-    const message = 'SorryWeWereNotAbleToSendTheMessage';
+    const message = 'message.prompt.SorryWeWereNotAbleToSendTheMessage';
     Notification.flashToast({
       message,
       type: ToastType.ERROR,
@@ -115,31 +115,31 @@ class NewMessage extends React.Component<ViewProps, State> {
         size={'medium'}
         modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn }}
-        title={i18next.t('New Message')}
+        title={i18next.t('message.prompt.NewMessage')}
         onCancel={this.onClose}
         onOK={this.sendNewMessage}
-        okText={i18next.t('Send')}
+        okText={i18next.t('common.dialog.send')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {i18next.t('New Message Error')}
+              {i18next.t('message.prompt.NewMessageError')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={i18next.t('Cancel')}
+        cancelText={i18next.t('common.dialog.cancel')}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={i18next.t('Members')}
-          placeholder={i18next.t('Search Contact Placeholder')}
+          label={i18next.t('people.team.Members')}
+          placeholder={i18next.t('people.team.SearchContactPlaceholder')}
           error={emailError}
           helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
           messageRef={this.messageRef}
         />
         <JuiTextarea
-          id={i18next.t('Type new message')}
-          label={i18next.t('Type new message')}
+          id={i18next.t('message.action.typeNewMessage')}
+          label={i18next.t('message.action.typeNewMessage')}
           fullWidth={true}
           inputProps={{
             maxLength: 10000,
@@ -149,8 +149,8 @@ class NewMessage extends React.Component<ViewProps, State> {
         />
         <StyledTextWithLink>
           <JuiTextWithLink
-            text={i18next.t('newMessageTip')}
-            linkText={i18next.t('newMessageTipLink')}
+            text={i18next.t('message.prompt.newMessageTip')}
+            linkText={i18next.t('message.prompt.newMessageTipLink')}
             onClick={this.openCreateTeam}
           />
         </StyledTextWithLink>

@@ -155,7 +155,7 @@ describe('CreateTeamVM', () => {
   it('createErrorHandle()', () => {
     let error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
     createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.errorMsg).toBe('alreadyTaken');
+    expect(createTeamVM.errorMsg).toBe('people.prompt.alreadyTaken');
     expect(createTeamVM.nameError).toBe(true);
 
     error = getNewJServerError(
@@ -163,7 +163,7 @@ describe('CreateTeamVM', () => {
       'This is not a valid email address: q@qq.com.',
     );
     createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.emailErrorMsg).toBe('Invalid Email');
+    expect(createTeamVM.emailErrorMsg).toBe('people.prompt.InvalidEmail');
     expect(createTeamVM.emailError).toBe(true);
   });
 });

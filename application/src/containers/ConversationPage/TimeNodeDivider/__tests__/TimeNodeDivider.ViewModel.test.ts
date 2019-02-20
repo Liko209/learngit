@@ -5,24 +5,9 @@
  */
 
 import { TimeNodeDividerViewModel } from '../TimeNodeDivider.ViewModel';
-import moment from 'moment';
 
 jest.mock('i18next', () => ({
-  t: (text: string) => text,
-}));
-
-const WEEKDAY = [
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-  'Sunday',
-];
-
-jest.mock('i18next', () => ({
-  t: (text: string) => text,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
 
 const timeNodeDividerViewModel = new TimeNodeDividerViewModel();

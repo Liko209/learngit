@@ -35,7 +35,7 @@ describe('MenuView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'SorryWeWereNotAbleToCloseTheConversation',
+            message: 'people.prompt.SorryWeWereNotAbleToCloseTheConversation',
             type: ToastType.ERROR,
           }),
         );
@@ -61,7 +61,7 @@ describe('MenuView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'markFavoriteServerErrorContent',
+            message: 'people.prompt.markFavoriteServerErrorContent',
             type: ToastType.ERROR,
           }),
         );
@@ -87,7 +87,7 @@ describe('MenuView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'markUnFavoriteServerErrorContent',
+            message: 'people.prompt.markUnFavoriteServerErrorContent',
             type: ToastType.ERROR,
           }),
         );

@@ -82,12 +82,12 @@ class MemberListItem extends React.Component<
         </ListItemName>
         {isThePersonAdmin && (
           <ListItemAdmin data-test-automation-id="profileDialogMemberListItemPersonAdmin">
-            {t('admin')}
+            {t('people.profile.admin')}
           </ListItemAdmin>
         )}
         {isThePersonGuest && (
           <ListItemGuest data-test-automation-id="profileDialogMemberListItemPersonGuest">
-            {t('guest')}
+            {t('people.profile.guest')}
           </ListItemGuest>
         )}
         {isTeam && isCurrentUserAdmin && isHover && ableChangeAdmin && (

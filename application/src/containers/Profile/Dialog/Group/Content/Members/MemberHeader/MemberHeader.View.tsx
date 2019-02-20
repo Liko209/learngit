@@ -26,7 +26,7 @@ class MemberHeader extends React.Component<
       isCurrentUserHasPermissionAddMember,
     } = this.props;
     const { isTeam } = group;
-    const key = isTeam ? 'teamMembers' : 'groupMembers';
+    const key = isTeam ? 'people.team.teamMembers' : 'people.team.groupMembers';
     return (
       <JuiProfileDialogContentMemberHeader
         className={hasShadow ? 'shadow' : ''}
@@ -36,7 +36,7 @@ class MemberHeader extends React.Component<
         {isTeam && isCurrentUserHasPermissionAddMember ? (
           <ButtonInRight onClick={AddTeamMembers}>
             <JuiIconography fontSize="small">add_team</JuiIconography>
-            {t('AddTeamMembers')}
+            {t('people.team.AddTeamMembers')}
           </ButtonInRight>
         ) : null}
       </JuiProfileDialogContentMemberHeader>

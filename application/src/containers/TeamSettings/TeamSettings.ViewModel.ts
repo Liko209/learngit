@@ -105,8 +105,8 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       await groupService.leaveTeam(userId, this.id);
     } catch (e) {
       this._onActionError(e, {
-        backendErrorMessage: 'leaveTeamServerErrorContent',
-        networkErrorMessage: 'leaveTeamNetworkErrorContent',
+        backendErrorMessage: 'people.prompt.leaveTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.leaveTeamNetworkErrorContent',
       });
     }
   }
@@ -121,8 +121,8 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       return true;
     } catch (e) {
       this._onActionError(e, {
-        backendErrorMessage: 'deleteTeamServerErrorContent',
-        networkErrorMessage: 'deleteTeamNetworkErrorContent',
+        backendErrorMessage: 'people.prompt.deleteTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.deleteTeamNetworkErrorContent',
       });
       return false;
     }
@@ -130,7 +130,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   private _onDeleteTeamSuccess = () => {
     Notification.flashToast({
-      message: 'deleteTeamSuccessMsg',
+      message: 'people.team.deleteTeamSuccessMsg',
       type: ToastType.SUCCESS,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
@@ -195,12 +195,12 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
             codes: [ERROR_CODES_SERVER.ALREADY_TAKEN],
           })
       ) {
-        this.setNameError('alreadyTaken');
+        this.setNameError('people.prompt.alreadyTaken');
         return false;
       }
       if (errorHelper.isNetworkConnectionError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToSaveTheUpdate',
+          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdate',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
@@ -210,7 +210,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       }
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToSaveTheUpdateTryAgain',
+          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
