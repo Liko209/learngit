@@ -59,9 +59,7 @@ export default class MultiEntityMapStore<
         break;
       case EVENT_TYPES.REPLACE:
         {
-          payload.body.entities.forEach((entity: T) => {
-            this._replace(entity);
-          });
+          this.batchReplace(payload.body.entities);
         }
         break;
       case EVENT_TYPES.UPDATE:
@@ -109,23 +107,29 @@ export default class MultiEntityMapStore<
 
   batchSet(entities: T[]) {
     entities.forEach((entity: T) => {
-      const model = this._data[entity.id];
-      if (!model) {
-        this.set(entity);
-      } else {
-        this._partialUpdate(entity, entity.id);
-      }
+      this._setOrUpdate(entity);
     });
   }
 
-  batchReplace(entities: T[]) {
-    entities.forEach((entity: T) => {
-      this._replace(entity);
+  @action
+  batchReplace(entities: Map<number, T>) {
+    entities.forEach((value: T, key: number) => {
+      this._replace(key, value);
     });
   }
 
-  private _replace(entity: T) {
-    if (entity && this._data[entity.id]) {
+  @action
+  private _replace(oldId: number, entity: T) {
+    if (entity && this._data[oldId]) {
+      this._setOrUpdate(entity);
+    }
+  }
+
+  private _setOrUpdate(entity: T) {
+    const model = this._data[entity.id];
+    if (!model) {
+      this.set(entity);
+    } else {
       this._partialUpdate(entity, entity.id);
     }
   }
@@ -152,7 +156,6 @@ export default class MultiEntityMapStore<
 
   get(id: number) {
     let model = this._data[id];
-
     if (!model) {
       this.set({ id, isMocked: true } as T);
       model = this._data[id] as K;
