@@ -37,7 +37,7 @@ class LinkItemView extends Component<LinkItemViewProps> {
       >
         <JuiListItemIcon>
           {faviconUrl ? (
-            <JuiThumbnail url={faviconUrl} iconType={''} />
+            <JuiThumbnail url={faviconUrl} />
           ) : (
             <JuiIconography fontSize="large" iconColor={this._color}>
               link
