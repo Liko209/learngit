@@ -9,9 +9,6 @@ import { SubItemServiceRegister } from '../config';
 import { ItemActionController } from './ItemActionController';
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Item } from '../entity';
-import { daoManager } from '../../../dao';
-import { ItemDao } from '../dao';
-import { GlipTypeUtil } from '../../../utils';
 import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { ItemSyncController } from './ItemSyncController';
@@ -26,9 +23,7 @@ class ItemServiceController {
     private _itemService: IItemService,
     private _entitySourceController: IEntitySourceController<Item>,
   ) {
-    this._subItemServices = SubItemServiceRegister.buildSubItemServices(
-      _itemService,
-    );
+    this._subItemServices = SubItemServiceRegister.buildSubItemServices();
   }
 
   getSubItemService(typeId: number) {
@@ -51,6 +46,7 @@ class ItemServiceController {
 
       this._itemActionController = new ItemActionController(
         partialModifyController,
+        this._entitySourceController,
       );
     }
     return this._itemActionController;
@@ -81,81 +77,6 @@ class ItemServiceController {
     }
 
     return await this._entitySourceController.batchGet(ids, true);
-  }
-
-  async createLocalItem(item: Item) {
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.put(item);
-
-    this._shouldSaveSanitizedItem(item) &&
-      (await this._getSubItemServiceByITemId(item.id).createLocalItem(item));
-  }
-
-  async updateLocalItem(item: Item) {
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.update(item);
-
-    this._shouldSaveSanitizedItem(item) &&
-      (await this._getSubItemServiceByITemId(item.id).updateLocalItem(item));
-  }
-
-  async deleteLocalItem(itemId: number) {
-    await daoManager.getDao(ItemDao).delete(itemId);
-
-    itemId > 0 &&
-      (await this._getSubItemServiceByITemId(itemId).deleteLocalItem(itemId));
-  }
-
-  private _getSubItemServiceByITemId(itemId: number) {
-    const typeId = GlipTypeUtil.extractTypeId(itemId);
-    return this.getSubItemService(typeId);
-  }
-
-  async handleSanitizedItems(incomingItems: Item[]) {
-    const typeItemsMap: Map<number, Item[]> = new Map();
-    incomingItems.forEach((item: Item) => {
-      this._saveItemsToTypeIdMap(
-        GlipTypeUtil.extractTypeId(item.id),
-        typeItemsMap,
-        item,
-      );
-    });
-
-    typeItemsMap.forEach(
-      (value: Item[], key: number, map: Map<number, Item[]>) => {
-        this._updateSanitizedItems(key, value);
-      },
-    );
-  }
-
-  private _saveItemsToTypeIdMap(
-    typeId: number,
-    typeItemsMap: Map<number, Item[]>,
-    item: Item,
-  ) {
-    typeItemsMap.has(typeId)
-      ? (typeItemsMap.get(typeId) as Item[]).push(item)
-      : typeItemsMap.set(typeId, [item]);
-  }
-
-  private async _updateSanitizedItems(typeId: number, items: Item[]) {
-    const subItemService = this.getSubItemService(typeId);
-    if (!subItemService) {
-      return;
-    }
-    const deactivatedItems = items.filter(item => item.deactivated);
-    deactivatedItems.forEach((item: Item) => {
-      subItemService.deleteLocalItem(item.id);
-    });
-
-    const normalData = items.filter(item => !item.deactivated);
-    normalData.forEach((item: Item) => {
-      subItemService.createLocalItem(item);
-    });
-  }
-
-  private _shouldSaveSanitizedItem(item: Item) {
-    return item.id > 0 && item.post_ids && item.post_ids.length > 0;
   }
 }
 

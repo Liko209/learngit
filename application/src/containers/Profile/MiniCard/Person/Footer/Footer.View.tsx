@@ -15,6 +15,7 @@ import {
 import { ProfileButton } from '@/containers/common/ProfileButton';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
+import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileMiniCardPersonFooter extends Component<
@@ -22,12 +23,15 @@ class ProfileMiniCardPersonFooter extends Component<
 > {
   onClickMessage = () => {
     const { id } = this.props;
-    goToConversation({ id });
+    const result = goToConversation({ id });
+    if (result) {
+      portalManager.dismissLast();
+    }
   }
 
   getAriaLabelKey = () => {
     const { isMe } = this.props;
-    return isMe ? 'ariaGoToMe' : 'ariaGoToOther';
+    return isMe ? 'people.profile.ariaGoToMe' : 'people.profile.ariaGoToOther';
   }
 
   render() {
@@ -42,7 +46,7 @@ class ProfileMiniCardPersonFooter extends Component<
             size="medium"
             color="primary"
             variant="plain"
-            tooltipTitle={t('Messages')}
+            tooltipTitle={t('message.Messages')}
             onClick={this.onClickMessage}
             ariaLabel={t(this.getAriaLabelKey(), {
               name: person.userDisplayName,

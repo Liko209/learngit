@@ -53,18 +53,23 @@ describe('CreateTeamView', () => {
       const items = [
         {
           type: 'isPublic',
-          text: 'PublicTeam',
+          text: 'people.team.SetAsPublicTeam',
           checked: false,
         },
         {
           type: 'canPost',
-          text: 'MembersMayPostMessages',
+          text: 'people.team.MembersMayPostMessages',
 
           checked: true,
         },
         {
           type: 'canAddMember',
-          text: 'MembersMayAddOtherMembers',
+          text: 'people.team.MembersMayAddOtherMembers',
+          checked: true,
+        },
+        {
+          type: 'canPin',
+          text: 'people.team.MembersMayPinPosts',
           checked: true,
         },
       ];
@@ -79,6 +84,7 @@ describe('CreateTeamView', () => {
         permissionFlags: {
           TEAM_ADD_MEMBER: true,
           TEAM_POST: true,
+          TEAM_PIN_POST: true,
         },
       };
       expect(mockCreate).toBeCalledWith(props.members, expectResult);

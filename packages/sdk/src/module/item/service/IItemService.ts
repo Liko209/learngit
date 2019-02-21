@@ -16,14 +16,6 @@ interface IItemService {
 
   getItems(options: ItemQueryOptions): Promise<Item[]>;
 
-  handleSanitizedItems(items: Item[]): void;
-
-  createLocalItem(item: Item): Promise<void>;
-
-  updateLocalItem(item: Item): Promise<void>;
-
-  deleteLocalItem(itemId: number): Promise<void>;
-
   sendItemFile(
     groupId: number,
     file: File,

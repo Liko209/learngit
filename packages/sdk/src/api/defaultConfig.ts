@@ -30,6 +30,9 @@ const defaultConfig: ApiConfig = {
     apiPlatform: '',
     clientSecret: '',
   },
+  launchdarkly: {
+    clientId: '',
+  },
 };
 
 export { defaultConfig };

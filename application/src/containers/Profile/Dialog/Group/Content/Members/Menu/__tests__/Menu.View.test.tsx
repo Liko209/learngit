@@ -7,7 +7,6 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { MenuViewComponent } from '../Menu.View';
 import { Notification } from '@/containers/Notification';
-import { JuiMenuItem } from 'jui/components';
 import { JServerError, JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 jest.mock('@/containers/Notification');
 
@@ -29,11 +28,13 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<MenuViewComponent {...props} />);
-      Wrapper.find(JuiMenuItem).simulate('click');
+      Wrapper.find('[data-test-automation-id="removeFromTeam"]').simulate(
+        'click',
+      );
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'removeMemberBackendError',
+            message: 'people.prompt.removeMemberBackendError',
           }),
         );
         done();
@@ -47,11 +48,13 @@ describe('AddMembersView', () => {
         },
       };
       const Wrapper = shallow(<MenuViewComponent {...props} />);
-      Wrapper.find(JuiMenuItem).simulate('click');
+      Wrapper.find('[data-test-automation-id="removeFromTeam"]').simulate(
+        'click',
+      );
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'removeMemberNetworkError',
+            message: 'people.prompt.removeMemberNetworkError',
           }),
         );
         done();

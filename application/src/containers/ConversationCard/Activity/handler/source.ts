@@ -7,7 +7,7 @@ import buildVerbNounText from './text/buildVerbNounText';
 
 export default function (source: string) {
   return buildVerbNounText({
-    verb: 'via',
+    verb: 'item.activity.via',
     noun: source,
   });
 }

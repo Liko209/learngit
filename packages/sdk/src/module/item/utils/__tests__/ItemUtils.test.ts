@@ -120,22 +120,6 @@ describe('ItemUtils', () => {
       expect(ItemUtils.eventFilter(11)(item3)).toBeTruthy();
     });
   });
-  describe('toSanitizedItem', () => {
-    it('should return sanitized item', () => {
-      const item = {
-        id: 1111,
-        group_ids: [123123],
-        created_at: 1231233,
-        name: '1231233',
-      };
-
-      expect(ItemUtils.toSanitizedItem(item)).toEqual({
-        id: 1111,
-        group_ids: [123123],
-        created_at: 1231233,
-      });
-    });
-  });
 
   describe('taskFilter', () => {
     it('should return true when want to show completed tasks', () => {

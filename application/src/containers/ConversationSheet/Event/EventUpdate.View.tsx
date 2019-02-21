@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiConversationItemCard as EventUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import {
@@ -19,7 +20,7 @@ import { getDurationTime } from '../helper';
 import { EventUpdateViewProps } from './types';
 
 type Props = WithNamespaces & EventUpdateViewProps;
-
+@observer
 class EventUpdate extends React.Component<Props> {
   private _getDurationTime = (value: any) => {
     const { event } = this.props;
@@ -71,8 +72,8 @@ class EventUpdate extends React.Component<Props> {
         Footer={
           (hasOldTime || oldLocation) && (
             <JuiEventCollapse
-              showText={t('showEventHistory')}
-              hideText={t('hideEventHistory')}
+              showText={t('item.showEventHistory')}
+              hideText={t('item.hideEventHistory')}
             >
               {hasOldTime && (
                 <JuiEventCollapseContent>{`${oldTime} ${oldTimeText}`}</JuiEventCollapseContent>
@@ -85,12 +86,12 @@ class EventUpdate extends React.Component<Props> {
         }
       >
         {hasNewTime && (
-          <JuiEventContent title={t('due')}>
+          <JuiEventContent title={t('item.due')}>
             <JuiTimeMessage time={`${newTime} ${newTimeText}`} />
           </JuiEventContent>
         )}
         {newLocation && (
-          <JuiEventContent title={t('locationTitle')}>
+          <JuiEventContent title={t('item.locationTitle')}>
             <JuiEventLocation location={newLocation} />
           </JuiEventContent>
         )}

@@ -5,6 +5,7 @@
  */
 
 import { mainLogger } from 'sdk';
+import { ItemService } from 'sdk/module/item/service';
 const logTag = '[Upgrade]';
 
 class Upgrade {
@@ -26,12 +27,17 @@ class Upgrade {
   public onNewContentAvailable() {
     mainLogger.info(`${logTag}New content available`);
     this._hasNewVersion = true;
+
+    if (!document.hasFocus()) {
+      this.upgradeIfAvailable('Background upgrade');
+    }
   }
 
-  public upgradeIfAvailable() {
+  public upgradeIfAvailable(triggerSource: string) {
     if (this._hasNewVersion && this._canDoReload()) {
+      this._hasNewVersion = false;
       mainLogger.info(
-        `${logTag}Will auto reload due to new version is detected`,
+        `${logTag}[${triggerSource}] Will auto reload due to new version is detected`,
       );
 
       this._reloadApp();
@@ -62,8 +68,64 @@ class Upgrade {
   }
 
   private _canDoReload() {
+    if (this._dialogIsPresenting()) {
+      mainLogger.info(
+        `${logTag}Forbidden to reload due to dialog is presenting`,
+      );
+      return false;
+    }
+
+    if (this._editorIsOnFocusAndNotEmpty()) {
+      mainLogger.info(`${logTag}Forbidden to reload due to editor is focused`);
+      return false;
+    }
+
+    const itemService = ItemService.getInstance() as ItemService;
+    if (itemService.hasUploadingFiles()) {
+      mainLogger.info(`${logTag}Forbidden to reload due to uploading file`);
+      return false;
+    }
+
     // TO-DO in future, disallow reload when there is any call or meeting.
     return true;
+  }
+
+  private _dialogIsPresenting() {
+    return document.querySelectorAll('[role=dialog]').length > 0;
+  }
+
+  private _editorIsOnFocusAndNotEmpty() {
+    if (!document.activeElement) {
+      return false;
+    }
+
+    return (
+      this._hasElementOnFocusAndNotEmpty(
+        'input[type="text"]',
+        (el: Element) => {
+          return !!(el as HTMLInputElement).value;
+        },
+      ) ||
+      this._hasElementOnFocusAndNotEmpty('.ql-editor', (el: Element) => {
+        const classList = [].slice.call(el.classList);
+        // Have both ql-blank and ql-editor if it is empty
+        return classList.length === 1;
+      })
+    );
+  }
+
+  private _hasElementOnFocusAndNotEmpty(
+    type: string,
+    isNotEmptyCallBack: (el: Element) => boolean,
+  ) {
+    const allInput = [].slice.call(document.querySelectorAll(type));
+
+    return allInput.some((el: Element) => {
+      if (el === document.activeElement) {
+        return isNotEmptyCallBack(el);
+      }
+      return false;
+    });
   }
 
   private _reloadApp() {

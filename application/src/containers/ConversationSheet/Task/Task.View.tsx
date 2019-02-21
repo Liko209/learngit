@@ -35,7 +35,7 @@ const downloadBtn = (downloadUrl: string) => (
     download={true}
     href={downloadUrl}
     variant="plain"
-    tooltipTitle={i18next.t('download')}
+    tooltipTitle={i18next.t('common.download')}
   >
     download
   </JuiIconButton>
@@ -52,8 +52,8 @@ const FILE_COMPS = {
           key={id}
           previewUrl={previewUrl}
           fileName={name}
-          i18UnfoldLess={i18next.t('collapse')}
-          i18UnfoldMore={i18next.t('expand')}
+          i18UnfoldLess={i18next.t('common.collapse')}
+          i18UnfoldMore={i18next.t('common.expand')}
           Actions={downloadBtn(downloadUrl)}
           ImageActions={downloadBtn(downloadUrl)}
         />
@@ -138,7 +138,7 @@ class Task extends React.Component<taskViewProps> {
         Icon={<JuiTaskCheckbox checked={complete || false} />}
       >
         {endTime && (
-          <JuiTaskContent title={t('due')}>
+          <JuiTaskContent title={t('item.due')}>
             <JuiTimeMessage
               time={`${startTime} ${hasTime ? '-' : ''} ${endTime} ${timeText}`}
             />
@@ -146,10 +146,10 @@ class Task extends React.Component<taskViewProps> {
         )}
 
         {assignedToIds && assignedToIds.length > 0 && (
-          <JuiTaskContent title={t('assignee')}>
+          <JuiTaskContent title={t('item.assignee')}>
             <JuiTaskAvatarNames
               count={assignedToIds && assignedToIds.length}
-              otherText={t('avatarnamesWithOthers', {
+              otherText={t('item.avatarNamesWithOthers', {
                 count: assignedToIds.length - 2,
               })}
             >
@@ -158,17 +158,17 @@ class Task extends React.Component<taskViewProps> {
           </JuiTaskContent>
         )}
         {section && (
-          <JuiTaskContent title={t('section')}>
+          <JuiTaskContent title={t('item.section')}>
             <JuiTaskSection section={section} />
           </JuiTaskContent>
         )}
         {notes && (
-          <JuiTaskContent title={t('descriptionNotes')}>
+          <JuiTaskContent title={t('item.descriptionNotes')}>
             <JuiTaskNotes notes={notes} />
           </JuiTaskContent>
         )}
         {files && files.length > 0 && (
-          <JuiTaskContent title={t('Attachments')}>
+          <JuiTaskContent title={t('item.attachments')}>
             {files.map((file: ExtendFileItem) => {
               return FILE_COMPS[file.type](file, this.props);
             })}

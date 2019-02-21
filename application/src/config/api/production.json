@@ -11,6 +11,7 @@
   },
   "glip": {
     "server": "https://app.glip.com",
+    "apiServer": "https://app.glip.com",
     "cacheServer": "https://cache.glip.com"
   },
   "glip_desktop": {
@@ -21,6 +22,9 @@
   "upload": {
     "server": "https://api.glip.com",
     "apiPlatform": ""
+  },
+  "launchdarkly": {
+    "clientId": "5c6a4261eb049c2df965e0a8"
   },
   "splitio": {
     "clientSecret": "fo81g08vhro235qg0c6chlh45vo7ejang4bs"

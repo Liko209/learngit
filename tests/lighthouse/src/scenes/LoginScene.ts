@@ -5,7 +5,6 @@
 import { Scene } from './Scene';
 import { SceneConfig } from './config/SceneConfig';
 import { jupiterUtils } from '../utils/JupiterUtils';
-import { mockHelper } from '../mock';
 import { HomePageGatherer } from '../gatherers/HomePageGatherer';
 
 class LoginScene extends Scene {
@@ -18,9 +17,7 @@ class LoginScene extends Scene {
             instance: new HomePageGatherer()
         });
 
-        this._finallyUrl = await jupiterUtils.getAuthUrl(this.url);
-
-        mockHelper.open();
+        this._finallyUrl = await jupiterUtils.getAuthUrl(this.url, this.browser);
     }
 
     finallyUrl(): string {

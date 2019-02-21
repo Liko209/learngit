@@ -12,11 +12,6 @@ import ConfigDao from '../../dao/config';
 import { GroupDao } from '../../module/group/dao';
 import { PersonDao } from '../../module/person/dao';
 import { PostDao } from '../../module/post/dao';
-import { EventItemDao } from '../../module/item/module/event/dao/EventItemDao';
-import { FileItemDao } from '../../module/item/module/file/dao/FileItemDao';
-import { NoteItemDao } from '../../module/item/module/note/dao/NoteItemDao';
-import { TaskItemDao } from '../../module/item/module/task/dao/TaskItemDao';
-import { LinkItemDao } from '../../module/item/module/link/dao/LinkItemDao';
 
 import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
 import {
@@ -28,7 +23,7 @@ import handleData from './handleData';
 import { notificationCenter } from '..';
 import { ERROR_TYPES, ErrorParserHolder } from '../../error';
 import { ItemDao } from '../../module/item/dao';
-import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+// import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
 import { progressBar } from '../../utils/progress';
 
 type SyncListener = {
@@ -78,13 +73,13 @@ export default class SyncService extends BaseService {
       await this._firstLogin();
     }
     this.isLoading = false;
-    this._preloadPosts();
+    // this._preloadPosts();
   }
 
-  private async _preloadPosts() {
-    const handler = new PreloadPostsForGroupHandler();
-    handler.preloadPosts();
-  }
+  // private async _preloadPosts() {
+  //   const handler = new PreloadPostsForGroupHandler();
+  //   handler.preloadPosts();
+  // }
 
   private async _firstLogin() {
     const {
@@ -94,51 +89,39 @@ export default class SyncService extends BaseService {
       onRemainingHandled,
     } = this._syncListener;
 
+    progressBar.start();
     try {
       const currentTime = Date.now();
-
-      progressBar.start();
       const initialResult = await fetchInitialData(currentTime);
 
-      if (initialResult.isOk()) {
-        onInitialLoaded && (await onInitialLoaded(initialResult.data));
-        await handleData(initialResult.data);
-        onInitialHandled && (await onInitialHandled());
+      onInitialLoaded && (await onInitialLoaded(initialResult));
+      await handleData(initialResult);
+      onInitialHandled && (await onInitialHandled());
 
-        progressBar.stop();
-
-        const remainingResult = await fetchRemainingData(currentTime);
-
-        if (remainingResult.isOk()) {
-          onRemainingLoaded && (await onRemainingLoaded(remainingResult.data));
-          await handleData(remainingResult.data);
-          onRemainingHandled && (await onRemainingHandled());
-          mainLogger.info('fetch initial data or remaining data success');
-          return;
-        }
-      } else {
-        progressBar.stop();
-      }
-
-      mainLogger.error('fetch initial data or remaining data error');
-      notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+      const remainingResult = await fetchRemainingData(currentTime);
+      onRemainingLoaded && (await onRemainingLoaded(remainingResult));
+      await handleData(remainingResult);
+      onRemainingHandled && (await onRemainingHandled());
+      mainLogger.info('fetch initial data or remaining data success');
     } catch (e) {
       mainLogger.error('fetch initial data or remaining data error');
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
+    progressBar.stop();
   }
 
   private async _syncIndexData(timeStamp: number) {
     progressBar.start();
     const { onIndexLoaded, onIndexHandled } = this._syncListener;
     // 5 minutes ago to ensure data is correct
-    const result = await fetchIndexData(String(timeStamp - 300000));
-    if (result.isOk()) {
-      onIndexLoaded && (await onIndexLoaded(result.data));
-      await handleData(result.data);
+    let result;
+    try {
+      result = await fetchIndexData(String(timeStamp - 300000));
+      onIndexLoaded && (await onIndexLoaded(result));
+      await handleData(result);
       onIndexHandled && (await onIndexHandled());
-    } else {
-      this._handleSyncIndexError(result.error);
+    } catch (error) {
+      this._handleSyncIndexError(error);
     }
     progressBar.stop();
   }
@@ -169,22 +152,6 @@ export default class SyncService extends BaseService {
     await groupDao.clear();
     const personDao = daoManager.getDao(PersonDao);
     await personDao.clear();
-
-    const eventItemDao = daoManager.getDao(EventItemDao);
-    await eventItemDao.clear();
-
-    const fileItemDao = daoManager.getDao(FileItemDao);
-    await fileItemDao.clear();
-
-    const noteItemDao = daoManager.getDao(NoteItemDao);
-    await noteItemDao.clear();
-
-    const taskItemDao = daoManager.getDao(TaskItemDao);
-    await taskItemDao.clear();
-
-    const linkItemDao = daoManager.getDao(LinkItemDao);
-    await linkItemDao.clear();
-
     await this._firstLogin();
   }
 }

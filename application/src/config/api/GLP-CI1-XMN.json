@@ -11,6 +11,7 @@
   },
   "glip": {
     "server": "https://glpci1xmn.asialab.glip.net",
+    "apiServer": "https://glpci1xmn.asialab.glip.net:8443",
     "cacheServer": "https://glpci1xmn.asialab.glip.net:31337"
   },
   "glip_desktop": {
@@ -20,6 +21,9 @@
   },
   "splitio": {
     "clientSecret": "2rvs5gfmofo7giss2t6u1ebvi0dirt5ooqmt"
+  },
+  "launchdarkly": {
+    "clientId": "5c6a4261eb049c2df965e0a7"
   },
   "upload": {
     "server": "https://glpci1xmn.asialab.glip.net:8443"

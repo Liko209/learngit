@@ -28,8 +28,7 @@ const JuiTeamSettingButtonListItem = styled(
   ),
 )`
   && {
-    padding-top: ${spacing(0)};
-    padding-bottom: ${spacing(0)};
+    padding: ${spacing(0, 6)};
     display: ${({ hide }) => (hide ? 'none' : 'block')};
   }
 `;
@@ -44,6 +43,9 @@ const JuiTeamSettingButtonListItemText = styled(
   )),
 )`
   && {
+    vertical-align: middle;
+    display: inline-block;
+    padding-right: ${spacing(3)};
     span {
       ${typography('body1')};
       line-height: ${height(10)};
