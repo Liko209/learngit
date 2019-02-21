@@ -92,21 +92,16 @@ class ItemListView extends React.Component<ViewProps & Props>
   }
 
   render() {
-    const {
-      totalCount,
-      ids,
-      loadStatus,
-      tabConfig,
-      width,
-      height,
-    } = this.props;
+    const { ids, loadStatus, tabConfig, width, height } = this.props;
     const { loading, firstLoaded } = loadStatus;
     const { subheader } = tabConfig;
     return (
       <JuiRightShelfContent>
-        {firstLoaded && totalCount > 0 && ids.length > 0 && (
+        {firstLoaded && ids.length > 0 && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {i18next.t(subheader)} ({totalCount})
+            {/* https://jira.ringcentral.com/browse/FIJI-3592 */}
+            {/* The total is not displayed for the time being */}
+            {i18next.t(subheader)}
           </JuiListSubheader>
         )}
         {firstLoaded && (
