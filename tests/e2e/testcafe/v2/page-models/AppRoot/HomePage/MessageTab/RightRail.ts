@@ -361,7 +361,7 @@ class PinnedItem extends BaseWebComponent {
     await this.t.expect(this.fileOrImageFileNames.withText(fileName).exists).ok();
   }
 
-  async shouldHasAttachmentsTextText(text: string) {
+  async shouldHasAttachmentsText(text: string) {
     await this.t.expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists).ok();
   }
 
