@@ -138,7 +138,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   // open via search team name
   await h(t).withLog(`When I search the showed team ${secondTeamName} and click it`, async () => {
     await search.typeSearchKeyword(secondTeamName, { replace: true, paste: true });
-    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await t.wait(3e3);
     await search.nthTeam(0).enter();
   });
 
@@ -184,7 +184,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   // open via search other user name
   await h(t).withLog(`When I search the showed privateChat ${otherUserName} and click it`, async () => {
     await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
-    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await t.wait(3e3);
     await search.nthPeople(0).enter();
   });
 
@@ -353,7 +353,12 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   await h(t).withLog(`When I search the hide team ${topTeamName} and click it`, async () => {
     await search.typeSearchKeyword(topTeamName, { replace: true, paste: true });
-    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await t.wait(3e3);
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+    await search.typeSearchKeyword(topTeamName, { replace: true, paste: true });
+    await t.wait(3e3);
     await search.nthTeam(0).enter();
   });
 
@@ -437,7 +442,12 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   await h(t).withLog(`When I search the hide privateChat ${otherUserName} and click it`, async () => {
     await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
-    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await t.wait(3e3);
+    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+    await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
+    await t.wait(3e3);
     await search.nthPeople(0).enter();
   });
 
