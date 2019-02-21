@@ -8,7 +8,6 @@ import name2icon from './name2icon';
 import styled, { css } from '../../foundation/styled-components';
 import { Palette } from '../theme/theme';
 import { palette, width } from '../../foundation/utils/styles';
-// import config from '';
 
 type IconColor = [keyof Palette, string];
 
@@ -52,7 +51,7 @@ const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
 ) => {
   const { children, className, iconColor, fontSize } = props;
   const iconName = name2icon[children as string];
-  const _className = `${className} ${children} icon`;
+  const _className = `material-icons ${className} ${children} icon`;
   return (
     <StyledSvg className={_className} iconColor={iconColor} size={fontSize}>
       <use xlinkHref={`#icon-${iconName}`} />

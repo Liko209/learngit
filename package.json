@@ -45,7 +45,6 @@
     "@types/glob": "7.1.1",
     "@types/jest": "23.3.8",
     "@types/node": "10.12.1",
-    "@types/react-transition-group": "2.0.15",
     "@types/react": "16.8.3",
     "@types/webpack-env": "1.13.6",
     "async": "2.6.1",
