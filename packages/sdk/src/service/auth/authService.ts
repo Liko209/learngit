@@ -12,7 +12,7 @@ import {
   UnifiedLoginAuthenticator,
 } from '../../authenticator';
 import { AuthDao, daoManager } from '../../dao';
-import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
+import { AUTH_GLIP2_TOKEN, AUTH_RC_OWNER_ID } from '../../dao/auth/constants';
 import { AccountManager } from '../../framework';
 import { Aware } from '../../utils/error';
 import BaseService from '../BaseService';
@@ -83,6 +83,14 @@ class AuthService extends BaseService {
     } catch (err) {
       // Since glip2 api is no in use now, we can ignore all it's errors
       Aware(ERROR_CODES_SDK.OAUTH, err.message);
+    }
+  }
+
+  async makeSureUserInWhitelist() {
+    const authDao = daoManager.getKVDao(AuthDao);
+    const mailboxID = authDao.get(AUTH_RC_OWNER_ID);
+    if (mailboxID) {
+      await this._accountManager.makeSureUserInWhitelist(mailboxID);
     }
   }
 
