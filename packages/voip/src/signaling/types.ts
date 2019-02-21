@@ -39,10 +39,36 @@ type ProvisionDataOptions = {
   onSession?: string;
 };
 
+type InboundRtpReport = {
+  bytesReceived: number;
+  fractionLost: number;
+  jitter: number;
+  mediaType: string;
+  packetsLost: number;
+  packetsReceived: number;
+};
+
+type OutboundRtpReport = {
+  bytesSent: number;
+  mediaType: string;
+  packetsSent: number;
+};
+
+type RttMS = {
+  currentRoundTripTime: number;
+};
+
+type MediaStatsReport = {
+  inboundRtpReport?: InboundRtpReport;
+  outboundRtpReport?: OutboundRtpReport;
+  rttMS?: RttMS;
+};
+
 export {
   UA_EVENT,
   WEBPHONE_SESSION_STATE,
   RC_SIP_HEADER_NAME,
   WEBPHONE_SESSION_EVENT,
   ProvisionDataOptions,
+  MediaStatsReport,
 };

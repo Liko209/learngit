@@ -5,33 +5,36 @@
  */
 
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-import { RTCInBoundRtp, RTCOutBoundRtp } from '../api/types';
+import { MediaStatsReport } from './types';
 
-const loggerTag = 'RTCMediaStatsManager';
+const LOG_TAG = 'RTCMediaStatsManager';
 class RTCMediaStatsManager {
-  private static instance: RTCMediaStatsManager;
-  private _rtcOutBoundRtp: RTCOutBoundRtp;
-  private _rtcInBoundRtp: RTCInBoundRtp;
+  private _mediaStatsReport: MediaStatsReport = {};
 
   constructor() {}
 
-  public static getInstance() {
-    if (!RTCMediaStatsManager.instance) {
-      RTCMediaStatsManager.instance = new RTCMediaStatsManager();
+  setMediaStatsReport(mediaStatsReport: any): void {
+    this._formatMediaStatsReport(mediaStatsReport);
+    rtcLogger.info(
+      LOG_TAG,
+      ` Got mediaStats ${JSON.stringify(this._mediaStatsReport)}`,
+    );
+  }
+
+  private _formatMediaStatsReport(mediaStatsReport: any) {
+    if ('undefined' !== typeof mediaStatsReport.inboundRtpReport) {
+      this._mediaStatsReport.inboundRtpReport =
+        mediaStatsReport.inboundRtpReport;
     }
-    return RTCMediaStatsManager.instance;
-  }
 
-  setInBoundRtp(rtcInBoundRtp: RTCInBoundRtp): void {
-    rtcLogger.info(loggerTag, 'get rtcInBoundRtp statistic Success');
-    this._rtcInBoundRtp = rtcInBoundRtp;
-    console.info(this._rtcInBoundRtp);
-  }
+    if ('undefined' !== typeof mediaStatsReport.outboundRtpReport) {
+      this._mediaStatsReport.outboundRtpReport =
+        mediaStatsReport.outboundRtpReport;
+    }
 
-  setOutBoundRtp(rtcOutBoundRtp: RTCOutBoundRtp): void {
-    rtcLogger.info(loggerTag, 'get rtcOutBoundRtp statistic Success');
-    this._rtcOutBoundRtp = rtcOutBoundRtp;
-    console.info(loggerTag, this._rtcOutBoundRtp);
+    if ('undefined' !== typeof mediaStatsReport.rttMS) {
+      this._mediaStatsReport.rttMS = mediaStatsReport.rttMS;
+    }
   }
 }
 

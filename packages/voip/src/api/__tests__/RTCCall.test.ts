@@ -11,7 +11,10 @@ import { RTCCall } from '../RTCCall';
 import { CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_STATE, RTC_CALL_ACTION, RTCCallOptions } from '../types';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
-import { kRTCHangupInvalidCallInterval } from '../../account/constants';
+import {
+  kRTCHangupInvalidCallInterval,
+  kRTCGetStatsInterval,
+} from '../../account/constants';
 
 describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
@@ -1933,6 +1936,41 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call._fsm.state()).toBe('disconnected');
         expect(session.dtmf).toBeCalledTimes(0);
+        done();
+      });
+    });
+  });
+
+  describe('getStats', async () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      session = new MockSession();
+      call.setCallSession(session);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+    }
+
+    it('should get media statics per 2s and print log to console when call enter connected state. [JPT-997]', done => {
+      setup();
+      jest.spyOn(session.mediaStreams, 'getMediaStats');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        expect(session.mediaStreams.getMediaStats.mock.calls[0][1]).toBe(2000);
+        done();
+      });
+    });
+
+    it('should stop get media stats when call leave connected state. [JPT-998]', done => {
+      setup();
+      jest.spyOn(session.mediaStreams, 'stopMediaStats');
+      call.hangup();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('disconnected');
+        expect(session.mediaStreams.stopMediaStats).toBeCalled();
         done();
       });
     });
