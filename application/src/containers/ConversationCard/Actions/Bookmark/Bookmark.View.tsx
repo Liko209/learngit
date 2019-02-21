@@ -21,8 +21,9 @@ type Props = BookmarkViewProps & WithNamespaces;
 class BookmarkViewComponent extends Component<Props> {
   private _handleClick = async () => {
     const { isBookmark, bookmark } = this.props;
-    const result = await bookmark(!isBookmark);
-    if (result.isFailed) {
+    try {
+      await bookmark(!isBookmark);
+    } catch (error) {
       const message = isBookmark
         ? 'message.prompt.SorryWeWereNotAbleToRemoveYourBookmark'
         : 'message.prompt.SorryWeWereNotAbleToBookmarkThisMessage';

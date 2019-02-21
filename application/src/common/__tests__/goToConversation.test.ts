@@ -9,7 +9,6 @@ import { GroupService } from 'sdk/module/group';
 import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { goToConversation, DELAY_LOADING } from '@/common/goToConversation';
-import { ok, err } from 'foundation';
 import { PostService } from 'sdk/module/post';
 
 jest.mock('sdk/module/post');
@@ -71,19 +70,17 @@ describe('getConversationId() with person type conversationId', () => {
   });
 
   it('groupService should return ok', async () => {
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-      ok({
-        id: 2,
-      }),
-    );
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
+    });
     expect(await goToConversation({ id: 1 })).toEqual(true);
     expect(groupService.getOrCreateGroupByMemberList).toHaveBeenCalledWith([1]);
     expect(history.replace).toHaveBeenCalledWith('/messages/2');
   });
 
   it('groupService should return err', async () => {
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
+      new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
     );
     expect(await goToConversation({ id: 1 })).toEqual(false);
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
@@ -95,11 +92,9 @@ describe('getConversationId() with person type conversationId', () => {
 
 describe('getConversationId() with  multiple person type conversationId', () => {
   it('groupService should return ok', async () => {
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-      ok({
-        id: 2,
-      }),
-    );
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
+    });
     expect(await goToConversation({ id: [1, 2, 3] })).toEqual(true);
     expect(groupService.getOrCreateGroupByMemberList).toHaveBeenCalledWith([
       1,
@@ -110,8 +105,8 @@ describe('getConversationId() with  multiple person type conversationId', () => 
   });
 
   it('groupService should return err', async () => {
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
+      new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
     );
     expect(await goToConversation({ id: [1, 2, 3] })).toEqual(false);
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
@@ -124,11 +119,9 @@ describe('getConversationId() with  multiple person type conversationId', () => 
 describe('getConversationId() with message', () => {
   it('should show loading then open the conversation and send the message when success [JPT-692] [JPT-697]', async () => {
     postService.sendPost = jest.fn();
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-      ok({
-        id: 2,
-      }),
-    );
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
+    });
     const beforeJump = (id: number) =>
       postService.sendPost({ text: 'hahahah', groupId: 2 });
     expect(
@@ -148,8 +141,8 @@ describe('getConversationId() with message', () => {
 
   it('should show loading then show error page if failed [JPT-280]', async () => {
     postService.sendPost = jest.fn();
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
+      new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
     );
     expect(
       await goToConversation({ id: [1, 2, 3], message: 'hahahah' }),
@@ -169,11 +162,9 @@ describe('getConversationId() with message', () => {
   it('should show loading then show error page if failed [JPT-280]', async () => {
     postService.sendPost = jest.fn();
     (postService.sendPost as jest.Mock).mockRejectedValue(new Error());
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-      ok({
-        id: 2,
-      }),
-    );
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
+    });
     const beforeJump = (id: number) =>
       postService.sendPost({ text: 'hahahah', groupId: 2 });
     expect(
@@ -201,11 +192,9 @@ describe('has loading component', () => {
       () => {
         return new Promise((resolve: any) => {
           setTimeout(() => {
-            resolve(
-              ok({
-                id: 1,
-              }),
-            );
+            resolve({
+              id: 1,
+            });
           },         DELAY_LOADING * 2);
         });
       },

@@ -26,11 +26,10 @@ class FavoriteViewComponent extends Component<Props> {
     const { handlerFavorite, isFavorite } = this.props;
     try {
       await handlerFavorite();
-    } catch (e) {
+    } catch {
       const message = isFavorite
         ? 'people.prompt.markUnFavoriteServerErrorContent'
         : 'people.prompt.markFavoriteServerErrorContent';
-
       Notification.flashToast({
         message,
         type: ToastType.ERROR,

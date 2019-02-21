@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { toArrayOf } from '../../../../__tests__/utils';
-import { ApiResultOk } from '../../../../api/ApiResult';
 import GroupAPI from '../../../../api/glip/group';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
@@ -55,16 +54,12 @@ jest.mock('../../../../service/serviceManager', () => {
   };
 });
 
-const requestGroupByIdResult = new ApiResultOk(
-  {
-    id: 1,
-    members: [1],
-    deactivated: true,
-    _delta: false,
-  },
-  200,
-  {},
-);
+const requestGroupByIdResult = {
+  id: 1,
+  members: [1],
+  deactivated: true,
+  _delta: false,
+};
 
 jest.mock('../../../../api/glip/group', () => {
   return {
