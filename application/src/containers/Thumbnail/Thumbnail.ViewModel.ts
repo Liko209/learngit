@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable, comparer } from 'mobx';
+import { computed, observable, comparer, action } from 'mobx';
 import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/utils';
 import { Item } from 'sdk/module/item/entity';
@@ -76,6 +76,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
     return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
   }
 
+  @action
   private _getThumbsUrlWithSize = async () => {
     const itemService = ItemService.getInstance() as ItemService;
 
