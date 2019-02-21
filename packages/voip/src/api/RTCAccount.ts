@@ -253,7 +253,9 @@ class RTCAccount implements IRTCAccount {
     }
   }
 
-  private _refreshProv() {}
+  private _refreshProv() {
+    this._provManager.refreshSipProv();
+  }
 }
 
 export { RTCAccount };
