@@ -134,7 +134,7 @@ describe('GroupModel', () => {
       } as Group);
       expect(gmAdmin.canPost).toBeTruthy();
     });
-    it('should return true when group data not ready', () => {
+    it('should return true when group data is not ready', () => {
       const gmAdmin = new GroupModel({ id: 1, isMocked: true } as Group);
       expect(gmAdmin.canPost).toBeTruthy();
     });
@@ -313,14 +313,6 @@ describe('GroupModel', () => {
       jest.resetAllMocks();
       jest.clearAllMocks();
     });
-    it('should return false if current user is not a member', () => {
-      const gm = GroupModel.fromJS({
-        id: 1,
-        is_team: true,
-        members: [mockUserId + 1],
-      } as Group);
-      expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
-    });
     it('should return false when user is a member but has not permission', () => {
       const gm = GroupModel.fromJS({
         id: 1,
@@ -352,6 +344,13 @@ describe('GroupModel', () => {
         },
       } as Group);
       expect(gm.isCurrentUserHasPermissionAddMember).toBe(true);
+    });
+    it('should return false when group info not ready', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        isMocked: true,
+      } as Group);
+      expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
     });
   });
 });

@@ -235,8 +235,8 @@ describe('GroupService', () => {
           isCurrentUserHasPermission: mockIsCurrentUserHasPermission,
         });
       await groupService.isCurrentUserHasPermission(
-        mockParams,
         mockPermissionType,
+        mockParams,
       );
       expect(mockIsCurrentUserHasPermission).toBeCalledWith(
         mockParams,
