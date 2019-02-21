@@ -17,6 +17,7 @@ import {
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { mainLogger } from 'sdk';
 
 const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
@@ -95,10 +96,13 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   }
 
   handleSortEnd(oldIndex: number, newIndex: number) {
-    (ProfileService.getInstance() as ProfileService).reorderFavoriteGroups(
-      oldIndex,
-      newIndex,
-    );
+    (ProfileService.getInstance() as ProfileService)
+      .reorderFavoriteGroups(oldIndex, newIndex)
+      .catch((error: Error) => {
+        mainLogger
+          .tags('Section.ViewModel')
+          .info('reorderFavoriteGroups fail:', error);
+      });
   }
 
   @action

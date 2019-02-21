@@ -7,9 +7,7 @@
 import { indexData, initialData, remainingData } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
-import { ApiResult, ApiResultErr } from '../../api/ApiResult';
 import { IndexDataModel } from '../../api/glip/user';
-import { JError } from '../../error';
 
 interface IParams {
   newer_than?: string;
@@ -20,21 +18,9 @@ const fetchData = (
     params: object,
     requestConfig?: object,
     headers?: object,
-  ) => Promise<ApiResult<IndexDataModel, JError>>,
-) => {
-  return async (params: object) => {
-    let result: ApiResult<IndexDataModel, JError>;
-    try {
-      result = await getDataFunction(params);
-    } catch (e) {
-      if (e instanceof ApiResultErr) {
-        result = e;
-      }
-      throw e;
-    } finally {
-    }
-    return result;
-  };
+  ) => Promise<IndexDataModel>,
+) => async (params: object) => {
+  return await getDataFunction(params);
 };
 
 const initialDataProcess = fetchData(initialData);

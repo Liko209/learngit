@@ -67,4 +67,25 @@ describe('MenuViewModel', () => {
       expect(model.closable).toBe(false);
     });
   });
+  describe('favoriteText()', () => {
+    let groupState: any;
+    beforeEach(() => {
+      groupState = {
+        unreadCount: 0,
+        isFavorite: false,
+      };
+      jest.clearAllMocks();
+      jest.spyOn(utils, 'getEntity').mockImplementation(() => groupState);
+    });
+    it('should favoriteText correctly when isFavorite=true', () => {
+      const model = new MenuViewModel();
+      groupState.isFavorite = true;
+      expect(model.favoriteText).toBe('people.team.removeFromFavorites');
+    });
+    it('should favoriteText correctly when isFavorite=false', () => {
+      const model = new MenuViewModel();
+      groupState.isFavorite = false;
+      expect(model.favoriteText).toBe('people.team.favorite');
+    });
+  });
 });

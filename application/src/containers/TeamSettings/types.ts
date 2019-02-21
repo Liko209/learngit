@@ -21,6 +21,7 @@ type ViewProps = {
   nameErrorMsg?: string;
   leaveTeam: () => void;
   deleteTeam: () => boolean;
+  archiveTeam: () => boolean;
   saving: boolean;
 };
 

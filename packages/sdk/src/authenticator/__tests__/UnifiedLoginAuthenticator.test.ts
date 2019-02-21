@@ -18,7 +18,6 @@ import {
   HttpResponseBuilder,
   HttpResponse,
 } from 'foundation';
-import { ApiResultOk } from '../../api/ApiResult';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -44,30 +43,18 @@ describe('UnifiedLoginAuthenticator', () => {
     expect(resp.success).toBe(false);
   });
   it('UnifiedLoginAuthenticator rc account', async () => {
-    const oauthTokenResult = new ApiResultOk(
-      {
-        access_token: 113123,
+    const oauthTokenResult = {
+      access_token: 113123,
+    };
+    const loginGlipResult = createResponse({
+      status: 200,
+      headers: {
+        'x-authorization': 'glip_token',
       },
-      createResponse({ status: 200, headers: {} }),
-    );
-    const loginGlipResult = new ApiResultOk(
-      '',
-      createResponse({
-        status: 200,
-        headers: {
-          'x-authorization': 'glip_token',
-        },
-      }),
-    );
-    const generateCodeResult = new ApiResultOk(
-      {
-        code: 'code',
-      },
-      createResponse({
-        status: 200,
-        headers: {},
-      }),
-    );
+    });
+    const generateCodeResult = {
+      code: 'code',
+    };
 
     oauthTokenViaAuthCode.mockResolvedValue(oauthTokenResult);
     generateCode.mockResolvedValueOnce(generateCodeResult);

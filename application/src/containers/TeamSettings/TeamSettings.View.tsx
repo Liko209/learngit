@@ -168,6 +168,34 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
     });
   }
 
+  handleArchiveTeamClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    const { t, groupName, archiveTeam } = this.props;
+    const dialog = Dialog.confirm({
+      modalProps: { 'data-test-automation-id': 'archiveTeamConfirmDialog' },
+      okBtnProps: { 'data-test-automation-id': 'archiveTeamOkButton' },
+      cancelBtnProps: { 'data-test-automation-id': 'archiveTeamCancelButton' },
+      size: 'small',
+      okType: 'primary',
+      title: t('people.team.archiveTeamConfirmTitle'),
+      content: t('people.team.archiveTeamConfirmContent', {
+        teamName: groupName,
+      }),
+      okText: toTitleCase(t('people.team.archiveTeamConfirmOk')),
+      cancelText: toTitleCase(t('cancel')),
+      onOK: async () => {
+        dialog.startLoading();
+        const result = await archiveTeam();
+        dialog.stopLoading();
+        if (!result) {
+          return false;
+        }
+        dialog.dismiss();
+        portalManager.dismissLast();
+        return true;
+      },
+    });
+  }
+
   leaveTeamOKButtonHandler = async () => {
     portalManager.dismissLast();
     this.props.leaveTeam();
@@ -260,24 +288,43 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
 
   renderButtonList() {
     const { t, isAdmin, isCompanyTeam } = this.props;
+    const noLeave = isAdmin || isCompanyTeam;
+    const noDelete = !isAdmin || isCompanyTeam;
     return (
       <ButtonList>
         <ButtonListItem
           data-test-automation-id="leaveTeamButton"
           color="semantic.negative"
           onClick={this.handleLeaveTeamClick}
-          hide={isAdmin || isCompanyTeam}
+          hide={noLeave}
         >
           <ButtonListItemText color="semantic.negative">
             {t('people.team.leaveTeam')}
           </ButtonListItemText>
         </ButtonListItem>
-        {isAdmin || isCompanyTeam ? null : <JuiDivider />}
+        {noLeave ? null : <JuiDivider />}
+        <ButtonListItem
+          data-test-automation-id="archiveTeamButton"
+          color="semantic.negative"
+          onClick={this.handleArchiveTeamClick}
+          hide={noDelete}
+        >
+          <ButtonListItemText color="semantic.negative">
+            {t('people.team.archiveTeam')}
+          </ButtonListItemText>
+          <JuiIconButton
+            variant="plain"
+            tooltipTitle={t('people.team.archiveTeamToolTip')}
+          >
+            info
+          </JuiIconButton>
+        </ButtonListItem>
+        {noDelete ? null : <JuiDivider />}
         <ButtonListItem
           data-test-automation-id="deleteTeamButton"
           color="semantic.negative"
           onClick={this.handleDeleteTeamClick}
-          hide={!isAdmin || isCompanyTeam}
+          hide={noDelete}
         >
           <ButtonListItemText color="semantic.negative">
             {t('people.team.deleteTeam')}
@@ -289,7 +336,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
             info
           </JuiIconButton>
         </ButtonListItem>
-        {!isAdmin || isCompanyTeam ? null : <JuiDivider />}
+        {noDelete ? null : <JuiDivider />}
       </ButtonList>
     );
   }
