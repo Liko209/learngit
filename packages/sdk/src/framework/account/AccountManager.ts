@@ -9,7 +9,8 @@ import { mainLogger, Container } from 'foundation';
 import { fetchWhiteList } from './helper';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
-import { daoManager, ConfigDao } from '../../dao';
+import { daoManager, ConfigDao, AuthDao } from '../../dao';
+import { AUTH_RC_OWNER_ID } from '../../dao/auth/constants';
 
 import {
   IAccountInfo,
@@ -48,13 +49,21 @@ class AccountManager extends EventEmitter2 {
     if (!resp.accountInfos) {
       throw Error('Auth fail');
     }
-    const isValid = await this.sanitizeUser(resp.accountInfos);
+    const mailboxID = resp.accountInfos[0].data.owner_id;
+    const authDao = daoManager.getKVDao(AuthDao);
+    authDao.put(AUTH_RC_OWNER_ID, mailboxID);
+
+    await this.makeSureUserInWhitelist(mailboxID);
+    return this._handleLoginResponse(resp);
+  }
+
+  async makeSureUserInWhitelist(mailboxID: string) {
+    const isValid = await this.sanitizeUser(mailboxID);
     if (!isValid) {
       this.logout();
       mainLogger.warn('[Auth]User not in the white list --');
       window.location.href = '/';
     }
-    return this._handleLoginResponse(resp);
   }
 
   async logout() {
@@ -113,18 +122,17 @@ class AccountManager extends EventEmitter2 {
     return accounts;
   }
 
-  async sanitizeUser(account: IAccountInfo[]) {
+  async sanitizeUser(mailboxID: string) {
     const configDao = daoManager.getKVDao(ConfigDao);
     const env = configDao.getEnv();
     const whiteList = await fetchWhiteList();
-    const mailboxId = account[0].data.owner_id;
     const allAccount = whiteList[env];
     if (allAccount !== undefined) {
       const isLegalUser = allAccount.some((account: string) => {
-        return account === mailboxId;
+        return account === mailboxID;
       });
       mainLogger.info(
-        `[Auth]${mailboxId} ${isLegalUser ? '' : 'not '}in whitelist for ${env}`,
+        `[Auth]${mailboxID} ${isLegalUser ? '' : 'not '}in whitelist for ${env}`,
       );
       return isLegalUser;
     }

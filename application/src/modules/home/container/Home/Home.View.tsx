@@ -17,9 +17,14 @@ import Bottom from './Bottom';
 import { HomeViewProps } from './types';
 import Wrapper from './Wrapper';
 
+import { AuthService } from 'sdk/service/auth/authService';
+
 @observer
 class HomeView extends Component<HomeViewProps> {
   componentDidMount() {
+    const authService: AuthService = AuthService.getInstance();
+    authService.makeSureUserInWhitelist();
+
     analytics.identify();
   }
 
