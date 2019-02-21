@@ -30,7 +30,10 @@ describe('LogPersistence', () => {
       expect(await logPersistence.count()).toEqual(1);
       await logPersistence.bulkDelete([mockLogs[1]]);
       expect(await logPersistence.count()).toEqual(0);
-
+      await logPersistence.bulkPut(mockLogs);
+      expect(await logPersistence.count()).toEqual(2);
+      expect(await logPersistence.get(mockLogs[0].id)).toEqual(mockLogs[0]);
+      expect(await logPersistence.get(mockLogs[1].id)).toEqual(mockLogs[1]);
     });
   });
 });
