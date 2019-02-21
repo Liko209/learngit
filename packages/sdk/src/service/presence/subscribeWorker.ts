@@ -17,8 +17,7 @@ class SubscribeWorker {
     if (!socketManager.isConnected()) return;
 
     try {
-      const requestResult = await PresenceAPI.requestPresenceByIds(ids);
-      const data = requestResult.expect('request presence by id failed');
+      const data = await PresenceAPI.requestPresenceByIds(ids);
       this.successCallback(data);
     } catch (err) {
       this.failCallback(ids);

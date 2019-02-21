@@ -10,7 +10,7 @@ type BookmarkProps = {
 
 type BookmarkViewProps = {
   isBookmark: boolean;
-  bookmark: (bookmark: boolean) => Promise<{ isFailed: boolean }>;
+  bookmark: (bookmark: boolean) => Promise<void>;
 };
 
 export { BookmarkProps, BookmarkViewProps };
