@@ -1,0 +1,17 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/**/*.ts"
+    ],
+    "include_tags": [
+      "P0",
+      "P1",
+      "JPT-1114",
+      "JPT-1116",
+      "JPT-1121"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -20,9 +20,9 @@ import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { UserConfig } from '../../../../../service/account/UserConfig';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
+import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
-import { IItemService } from '../../../service/IItemService';
 import {
   isInBeta,
   EBETA_FLAG,
@@ -44,9 +44,9 @@ class FileUploadController {
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
   private _canceledUploadFileIds: Set<number> = new Set();
   constructor(
-    private _itemService: IItemService,
     private _partialModifyController: IPartialModifyController<Item>,
     private _fileRequestController: IRequestController<Item>,
+    private _entitySourceController: IEntitySourceController<Item>,
   ) {}
 
   async sendItemFile(
@@ -136,21 +136,31 @@ class FileUploadController {
   }
 
   async sendItemData(groupId: number, postItemIds: number[]) {
+    const expiredItemIds: number[] = [];
     const needWaitItemIds: number[] = [];
     postItemIds.forEach((id: number) => {
       const itemStatus = this._progressCaches.get(id);
       if (itemStatus && itemStatus.itemFile) {
         const item = itemStatus.itemFile;
+        const file = itemStatus.file;
         if (this._hasValidStoredFile(item)) {
           this._uploadItem(groupId, item, this._isUpdateItem(item));
-        } else {
+        } else if (file && file.size > 0) {
           needWaitItemIds.push(item.id);
+        } else {
+          expiredItemIds.push(item.id);
         }
       }
     });
 
     if (needWaitItemIds.length > 0) {
       this._waitUntilAllItemCreated(groupId, needWaitItemIds);
+    }
+
+    if (expiredItemIds.length > 0) {
+      expiredItemIds.forEach((id: number) => {
+        this._handleItemFileSendFailed(id);
+      });
     }
   }
 
@@ -198,8 +208,9 @@ class FileUploadController {
   async hasValidItemFile(itemId: number) {
     let canResend = false;
     if (itemId < 0) {
-      const itemDao = daoManager.getDao(ItemDao);
-      const itemInDB = (await itemDao.get(itemId)) as ItemFile;
+      const itemInDB = (await this._entitySourceController.get(
+        itemId,
+      )) as ItemFile;
       if (itemInDB) {
         if (this._hasValidStoredFile(itemInDB)) {
           canResend = true;
@@ -221,8 +232,9 @@ class FileUploadController {
   async resendFailedFile(itemId: number) {
     this._updateFileProgress(itemId, PROGRESS_STATUS.INPROGRESS);
 
-    const itemDao = daoManager.getDao(ItemDao);
-    const itemInDB = (await itemDao.get(itemId)) as ItemFile;
+    const itemInDB = (await this._entitySourceController.get(
+      itemId,
+    )) as ItemFile;
     let sendFailed = false;
     if (itemInDB) {
       const groupId = itemInDB.group_ids[0];
@@ -271,7 +283,7 @@ class FileUploadController {
 
     this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
-    this._itemService.deleteLocalItem(itemId);
+    this._entitySourceController.delete(itemId);
     notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
   }
 
@@ -283,7 +295,8 @@ class FileUploadController {
     const groupConfigService = GroupConfigService.getInstance() as GroupConfigService;
     const itemIds = await groupConfigService.getDraftAttachmentItemIds(groupId);
     const fileIds = itemIds.filter(
-      id => GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
+      (id: number) =>
+        GlipTypeUtil.extractTypeId(id) === TypeDictionary.TYPE_ID_FILE,
     );
 
     if (fileIds) {
@@ -304,9 +317,10 @@ class FileUploadController {
     }
 
     if (toFetchItemIds.length > 0) {
-      const toFetchItems = (await this._itemService
-        .getEntitySource()
-        .getEntitiesLocally(toFetchItemIds, false)) as Item[];
+      const toFetchItems = (await this._entitySourceController.getEntitiesLocally(
+        toFetchItemIds,
+        false,
+      )) as Item[];
       this._uploadingFiles.set(groupId, existFile.concat(toFetchItems));
       this._saveToItemFileCache(toFetchItems);
     }
@@ -315,14 +329,15 @@ class FileUploadController {
   private _saveToItemFileCache(items: Item[]) {
     items.forEach((item: Item) => {
       if (!this._progressCaches.has(item.id)) {
+        const hasUploaded = this._hasValidStoredFile(item);
         this._progressCaches.set(item.id, {
           progress: {
             id: item.id,
             rate: {
-              loaded: 0,
+              loaded: hasUploaded ? 1 : -1,
               total: 1,
             },
-            status: PROGRESS_STATUS.INPROGRESS,
+            status: hasUploaded ? PROGRESS_STATUS.SUCCESS : PROGRESS_STATUS.FAIL,
           },
           itemFile: item,
         });
@@ -415,27 +430,23 @@ class FileUploadController {
           break;
       }
       info.progress.rate.loaded = loaded;
+      info.progress.status = status;
       notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [info.progress]);
     }
   }
 
-  private _updateProgress(
-    event: ProgressEventInit,
-    groupId: number,
-    itemId: number,
-  ) {
+  private _updateProgress(event: ProgressEventInit, itemId: number) {
     const { loaded, total } = event;
     if (loaded && total) {
-      const progress = {
-        id: itemId, // id is item id
-        rate: { total, loaded },
-      };
+      const rate = { total, loaded };
 
-      const uploadStatus = this._progressCaches.get(progress.id);
+      const uploadStatus = this._progressCaches.get(itemId);
       if (uploadStatus) {
-        uploadStatus.progress = progress;
+        uploadStatus.progress.rate = rate;
+        notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [
+          uploadStatus.progress,
+        ]);
       }
-      notificationCenter.emitEntityUpdate(ENTITY.PROGRESS, [progress]);
     }
   }
 
@@ -470,29 +481,25 @@ class FileUploadController {
   ) {
     const groupId = preInsertItem.group_ids[0];
     const itemId = preInsertItem.id;
-    const policyResponse = await this._requestAmazonS3Policy(file);
-
-    if (policyResponse.isOk()) {
-      const extendFileData = policyResponse.unwrap();
+    let extendFileData;
+    try {
+      extendFileData = await this._requestAmazonS3Policy(file);
+      // const extendFileData = policyResponse.unwrap();
       const formData = this._createFromDataWithPolicyData(file, extendFileData);
-      const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
+      await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
         formData,
         (event: ProgressEventInit) => {
-          this._updateProgress(event, groupId, itemId);
+          this._updateProgress(event, itemId);
         },
         requestHolder,
       );
-      if (uploadResponse.isOk()) {
-        this._handleFileUploadSuccess(
-          extendFileData.stored_file,
-          groupId,
-          preInsertItem,
-        );
-      } else {
-        this._handleItemFileSendFailed(itemId);
-      }
-    } else {
+      this._handleFileUploadSuccess(
+        extendFileData.stored_file,
+        groupId,
+        preInsertItem,
+      );
+    } catch (error) {
       this._handleItemFileSendFailed(itemId);
     }
   }
@@ -506,23 +513,23 @@ class FileUploadController {
     const itemId = preInsertItem.id;
     const formData = new FormData();
     formData.append(FILE_FORM_DATA_KEYS.FILE, file);
-    const uploadRes = await ItemAPI.uploadFileItem(
-      formData,
-      (e: ProgressEventInit) => {
-        this._updateProgress(e, groupId, itemId);
-      },
-      requestHolder,
-    );
-
-    if (uploadRes.isOk()) {
+    let uploadResult;
+    try {
+      uploadResult = await ItemAPI.uploadFileItem(
+        formData,
+        (e: ProgressEventInit) => {
+          this._updateProgress(e, itemId);
+        },
+        requestHolder,
+      );
       await this._handleFileUploadSuccess(
-        uploadRes.unwrap()[0],
+        uploadResult[0],
         groupId,
         preInsertItem,
       );
-    } else {
+    } catch (error) {
       this._handleItemFileSendFailed(itemId);
-      mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
+      mainLogger.warn(`_sendItemFile error =>${error}`);
     }
   }
 
@@ -582,9 +589,7 @@ class FileUploadController {
     this._updateUploadingFiles(groupId, preInsertItem);
     this._updateCachedFilesStatus(preInsertItem);
 
-    this._itemService.updateLocalItem(preInsertItem);
     const itemId = preInsertItem.id;
-
     const preHandlePartial = (
       partialPost: Partial<Raw<ItemFile>>,
       originalPost: ItemFile,
@@ -633,8 +638,8 @@ class FileUploadController {
     itemFile: ItemFile,
   ) {
     const preInsertId = preInsertItem.id;
-    await this._itemService.deleteLocalItem(preInsertId);
-    await this._itemService.updateLocalItem(itemFile);
+    await this._entitySourceController.delete(preInsertId);
+    await this._entitySourceController.update(itemFile);
 
     const replaceItemFiles = new Map<number, ItemFile>();
     replaceItemFiles.set(preInsertId, itemFile);
@@ -696,6 +701,7 @@ class FileUploadController {
     const progress = {
       id: preInsertItem.id,
       rate: { total: 0, loaded: 0 },
+      status: PROGRESS_STATUS.INPROGRESS,
     };
 
     const preInsertItemId = preInsertItem.id;
@@ -718,7 +724,7 @@ class FileUploadController {
   private async _preSaveItemFile(newItemFile: ItemFile, file: File) {
     this._saveItemFileToUploadingFiles(newItemFile);
     this._saveItemFileToProgressCache(newItemFile, file);
-    await this._itemService.createLocalItem(newItemFile);
+    await this._entitySourceController.put(newItemFile);
   }
 
   private _toItemFile(
@@ -796,7 +802,6 @@ class FileUploadController {
     fileName: string,
   ): Promise<ItemFile | null> {
     const itemDao = daoManager.getDao(ItemDao);
-
     const existFiles = await itemDao.getExistGroupFilesByName(
       groupId,
       fileName,
@@ -839,7 +844,7 @@ class FileUploadController {
     const uploadingFiles = Array.from(this._progressCaches.values());
     for (let i = 0; i < uploadingFiles.length; i++) {
       const fileStatus = uploadingFiles[i];
-      if (fileStatus.itemFile && !this._isFileUploaded(fileStatus.itemFile)) {
+      if (fileStatus && this._isFileInUploading(fileStatus)) {
         hasUploading = true;
         break;
       }
@@ -847,10 +852,9 @@ class FileUploadController {
     return hasUploading;
   }
 
-  private _isFileUploaded(itemFile: ItemFile) {
-    return (
-      itemFile.versions.length > 0 && itemFile.versions[0].stored_file_id > 0
-    );
+  private _isFileInUploading(fileStatus: ItemFileUploadStatus) {
+    const progress = fileStatus.progress;
+    return progress.status === PROGRESS_STATUS.INPROGRESS;
   }
 }
 

@@ -58,7 +58,7 @@ class ItemListView extends React.Component<ViewProps & Props>
     }
 
     return (
-      <JuiVirtualCellWrapper key={index} style={style}>
+      <JuiVirtualCellWrapper key={id} style={style}>
         {content}
       </JuiVirtualCellWrapper>
     );

@@ -10,8 +10,6 @@ import notificationCenter from '../../../../service/notificationCenter';
 import { ItemSyncController } from '../ItemSyncController';
 import { Listener } from 'eventemitter2';
 import { SERVICE } from '../../../../service/eventKey';
-import { ApiResultOk, ApiResultErr } from '../../../../api/ApiResult';
-import { BaseResponse } from 'foundation';
 import { JServerError, ERROR_CODES_SERVER } from '../../../../error';
 
 jest.mock('../../../../api/glip/item');
@@ -103,10 +101,7 @@ describe('ItemSyncController', () => {
         last_index_of_notes: 4,
         last_index_of_links: 5,
       };
-      const response = new ApiResultOk({ id: 1, name: 'jupiter' }, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const response = { id: 1, name: 'jupiter' };
       ItemApi.getItems = jest.fn().mockResolvedValue(response);
       groupConfigService.getById = jest.fn().mockReturnValue(groupConfig);
       groupConfigService.updateGroupConfigPartialData = jest.fn();
@@ -170,6 +165,7 @@ describe('ItemSyncController', () => {
     });
 
     it('should throw error when request sync item failed', async () => {
+      const error = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
       const groupConfig = {
         id: 10,
         last_index_of_files: 1,
@@ -178,14 +174,7 @@ describe('ItemSyncController', () => {
         last_index_of_notes: 4,
         last_index_of_links: 5,
       };
-      const response = new ApiResultErr(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 400,
-          headers: {},
-        } as BaseResponse,
-      );
-      ItemApi.getItems = jest.fn().mockResolvedValue(response);
+      ItemApi.getItems = jest.fn().mockRejectedValue(error);
       groupConfigService.getById = jest.fn().mockReturnValue(groupConfig);
       groupConfigService.updateGroupConfigPartialData = jest.fn();
       expect(

@@ -58,7 +58,7 @@ class MenuViewComponent extends Component<Props, State> {
     this.props.onClose(event);
     try {
       await this.props.toggleFavorite();
-    } catch (e) {
+    } catch {
       const message = isFavorite
         ? 'people.prompt.markUnFavoriteServerErrorContent'
         : 'people.prompt.markFavoriteServerErrorContent';
@@ -130,7 +130,7 @@ class MenuViewComponent extends Component<Props, State> {
         const { history } = this.props;
         history.replace('/messages');
       }
-    } catch (e) {
+    } catch {
       Notification.flashToast({
         message: 'people.prompt.SorryWeWereNotAbleToCloseTheConversation',
         type: ToastType.ERROR,
@@ -140,6 +140,7 @@ class MenuViewComponent extends Component<Props, State> {
       });
     }
   }
+
   private _handleProfileDialog = (event: MouseEvent<HTMLElement>) => {
     this.props.onClose(event);
     const { personId, groupId } = this.props;

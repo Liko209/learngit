@@ -6,7 +6,6 @@
 
 import { getSingleEntity } from '../../../../../store/utils';
 import { BookmarkViewModel } from '../Bookmark.ViewModel';
-import { serviceOk } from 'sdk/service/ServiceResult';
 
 import { PostService } from 'sdk/module/post';
 
@@ -42,7 +41,7 @@ describe('ActionsViewModel', () => {
   });
 
   it('bookmark()', async () => {
-    postService.bookmarkPost.mockResolvedValue(serviceOk({}));
+    postService.bookmarkPost.mockResolvedValue({});
     await bookmarkViewModel.bookmark(true);
     expect(postService.bookmarkPost).toBeCalledWith(1, true);
     await bookmarkViewModel.bookmark(false);

@@ -177,6 +177,14 @@ function getDateTimeStamp(timestamp: number) {
     .startOf('day')
     .valueOf();
 }
+function handerTimeZoneOffset(
+  timestamp: number,
+  timezoneOffset: number,
+): number {
+  const localTimezoneOffset = new Date().getTimezoneOffset();
+  const MINUTE = 60 * 1000;
+  return timestamp + (localTimezoneOffset - timezoneOffset) * MINUTE;
+}
 export {
   getDateTimeStamp,
   getDateMessage,
@@ -184,6 +192,7 @@ export {
   dividerTimestamp,
   postTimestamp,
   dateFormatter,
+  handerTimeZoneOffset,
 };
 
 // 7 days inside

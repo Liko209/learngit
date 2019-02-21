@@ -17,32 +17,12 @@ class BaseSubItemService<K extends Item, T extends SanitizedItem>
     super(false);
   }
 
-  async createLocalItem(item: K) {
-    await this._subItemDao.put(this.toSanitizedItem(item));
-  }
-
-  async updateLocalItem(item: K) {
-    await this._subItemDao.update(this.toSanitizedItem(item));
-  }
-
-  async deleteLocalItem(itemId: number) {
-    await this._subItemDao.delete(itemId);
-  }
-
   async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
     return await this._subItemDao.getSortedIds(options);
   }
 
   async getSubItemsCount(groupId: number, filterFunc?: ItemFilterFunction) {
     return await this._subItemDao.getGroupItemCount(groupId, filterFunc);
-  }
-
-  toSanitizedItem(item: K) {
-    return {
-      id: item.id,
-      group_ids: item.group_ids,
-      created_at: item.created_at,
-    } as T;
   }
 }
 

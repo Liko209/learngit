@@ -120,6 +120,7 @@ describe('TeamSettingsViewModel', () => {
     beforeEach(() => {
       groupService.leaveTeam = jest.fn().mockRejectedValueOnce(new Error());
       groupService.deleteTeam = jest.fn().mockRejectedValueOnce(new Error());
+      groupService.archiveTeam = jest.fn().mockRejectedValueOnce(new Error());
     });
     const setUp = () => {
       return new TeamSettingsViewModel();
@@ -198,6 +199,32 @@ describe('TeamSettingsViewModel', () => {
       await vm.deleteTeam();
       expect(flashToast).toBeCalledWith(
         toastParamsBuilder('people.prompt.deleteTeamNetworkErrorContent'),
+      );
+    });
+    it('should display error when failed to archive team due to unexpected backend issue [JPT-1124]', async () => {
+      const flashToast = jest
+        .spyOn(Notification, 'flashToast')
+        .mockImplementation(() => {});
+      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(true);
+      jest
+        .spyOn(errorHelper, 'isNetworkConnectionError')
+        .mockReturnValue(false);
+      const vm = setUp();
+      await vm.archiveTeam();
+      expect(flashToast).toBeCalledWith(
+        toastParamsBuilder('people.prompt.archiveTeamServerErrorContent'),
+      );
+    });
+    it('should display error when failed to archive team due to disconnect network [JPT-1123]', async () => {
+      jest.spyOn(errorHelper, 'isBackEndError').mockReturnValue(false);
+      jest.spyOn(errorHelper, 'isNetworkConnectionError').mockReturnValue(true);
+      const flashToast = jest
+        .spyOn(Notification, 'flashToast')
+        .mockImplementation(() => {});
+      const vm = setUp();
+      await vm.archiveTeam();
+      expect(flashToast).toBeCalledWith(
+        toastParamsBuilder('people.prompt.archiveTeamNetworkErrorContent'),
       );
     });
     it('should call generalErrorHandler when server error occurs', async () => {

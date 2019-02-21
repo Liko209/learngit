@@ -36,6 +36,7 @@ describe('Event Item Dao', () => {
         name: 'item3',
       },
     ];
+
     beforeAll(async () => {
       await dao.clear();
       await dao.bulkPut(items);
@@ -66,6 +67,71 @@ describe('Event Item Dao', () => {
     it('should return empty when not match', async () => {
       const result = await dao.queryItemsByGroupId(4);
       expect(result).toHaveLength(0);
+    });
+  });
+
+  describe('toSanitizedItem', () => {
+    beforeAll(async () => {
+      await dao.clear();
+    });
+
+    function setUpData() {
+      const taskItem = {
+        id: 123123,
+        created_at: 11231333,
+        group_ids: [123],
+        due: 999,
+        assigned_to_ids: [1, 2],
+        section: 'sec',
+        color: '#1231',
+        complete: true,
+      };
+
+      return { taskItem };
+    }
+
+    const { taskItem } = setUpData();
+    it('should return sanitized item', () => {
+      expect(dao.toSanitizedItem(taskItem)).toEqual({
+        id: taskItem.id,
+        group_ids: taskItem.group_ids,
+        created_at: taskItem.created_at,
+        complete: taskItem.complete,
+        due: taskItem.due,
+        assigned_to_ids: taskItem.assigned_to_ids,
+        color: taskItem.color,
+      });
+    });
+  });
+
+  describe('toPartialSanitizedItem', () => {
+    const item = {
+      id: 123123,
+      created_at: 11231333,
+      group_ids: [123],
+      due: 999,
+      assigned_to_ids: [1, 2],
+      section: 'sec',
+      color: '#1231',
+      complete: true,
+      gg: 'gg',
+    };
+
+    const itemResult = {
+      id: 123123,
+      created_at: 11231333,
+      group_ids: [123],
+      due: 999,
+      assigned_to_ids: [1, 2],
+      color: '#1231',
+      complete: true,
+    };
+
+    it.each`
+      partialItem | result        | comments
+      ${item}     | ${itemResult} | ${'all properties'}
+    `(' should return object $comments', ({ partialItem, result }) => {
+      expect(dao.toPartialSanitizedItem(partialItem)).toEqual(result);
     });
   });
 });

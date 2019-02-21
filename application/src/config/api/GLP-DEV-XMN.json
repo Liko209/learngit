@@ -22,6 +22,9 @@
   "splitio": {
     "clientSecret": "2rvs5gfmofo7giss2t6u1ebvi0dirt5ooqmt"
   },
+  "launchdarkly": {
+    "clientId": "5c6a4261eb049c2df965e0a7"
+  },
   "upload": {
     "server": "https://glpdevxmn.asialab.glip.net:8443"
   }

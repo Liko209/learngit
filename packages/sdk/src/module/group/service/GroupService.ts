@@ -3,8 +3,6 @@
  * @Date: 2019-01-02 09:27:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { Result } from 'foundation';
-
 import { Api } from '../../../api';
 import { daoManager, QUERY_DIRECTION } from '../../../dao';
 import { buildPartialModifyController } from '../../../framework/controller';
@@ -228,26 +226,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .getLocalGroup(personIds);
   }
 
-  async getGroupByPersonId(personId: number): Promise<Result<Group>> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .getGroupByPersonId(personId);
-  }
-
-  async getOrCreateGroupByMemberList(
-    members: number[],
-  ): Promise<Result<Group>> {
+  async getOrCreateGroupByMemberList(members: number[]): Promise<Group> {
     return await this.getGroupController()
       .getGroupFetchDataController()
       .getOrCreateGroupByMemberList(members);
-  }
-
-  async requestRemoteGroupByMemberList(
-    members: number[],
-  ): Promise<Result<Group>> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .requestRemoteGroupByMemberList(members);
   }
 
   async pinPost(
