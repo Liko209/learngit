@@ -91,7 +91,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   get fileTypeOrUrl() {
     const file = this.file;
     const thumb = {
-      icon: file.iconType,
+      icon: file.iconType || '',
       url: '',
     };
 
