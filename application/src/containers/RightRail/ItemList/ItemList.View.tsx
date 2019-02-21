@@ -24,7 +24,7 @@ import {
 import { debounce } from 'lodash';
 // according to most debounce config
 const LOAD_DEBOUNCE = 300;
-
+const LOADING_MORE_HEIGHT = 96;
 const HEADER_HEIGHT = 36;
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
@@ -109,6 +109,8 @@ class ItemListView extends React.Component<ViewProps & Props>
     } = this.props;
     const { loading, firstLoaded } = loadStatus;
     const { subheader } = tabConfig;
+    const showLoading = this._scrolling && loading;
+    const heightFix = showLoading ? LOADING_MORE_HEIGHT : 0;
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
@@ -121,11 +123,11 @@ class ItemListView extends React.Component<ViewProps & Props>
             dataSource={this}
             threshold={1}
             width={width}
-            height={height - HEADER_HEIGHT}
+            height={height - HEADER_HEIGHT - heightFix}
           />
         )}
         {loading && !firstLoaded && this.firstLoader()}
-        {this._scrolling && loading && <JuiRightRailLoadingMore />}
+        {showLoading && <JuiRightRailLoadingMore />}
       </JuiRightShelfContent>
     );
   }

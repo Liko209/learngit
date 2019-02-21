@@ -82,7 +82,7 @@ const JuiRightRailContentLoading = withDelay(
 const LoadingMoreWrapper = styled.div`
   display: flex;
   height: ${height(24)};
-  padding-top: ${spacing(8)};
+  padding: ${spacing(4.5, 0, 0, 0)};
   width: 100%;
 `;
 
