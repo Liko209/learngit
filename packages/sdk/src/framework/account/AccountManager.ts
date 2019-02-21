@@ -9,8 +9,7 @@ import { mainLogger, Container } from 'foundation';
 import { fetchWhiteList } from './helper';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
-import { daoManager, ConfigDao, AuthDao } from '../../dao';
-import { AUTH_RC_OWNER_ID } from '../../dao/auth/constants';
+import { daoManager, ConfigDao } from '../../dao';
 
 import {
   IAccountInfo,
@@ -50,8 +49,6 @@ class AccountManager extends EventEmitter2 {
       throw Error('Auth fail');
     }
     const mailboxID = resp.accountInfos[0].data.owner_id;
-    const authDao = daoManager.getKVDao(AuthDao);
-    authDao.put(AUTH_RC_OWNER_ID, mailboxID);
 
     await this.makeSureUserInWhitelist(mailboxID);
     return this._handleLoginResponse(resp);
