@@ -279,6 +279,7 @@ class StreamViewComponent extends Component<Props>
               stickToBottom={true}
               width={width}
               height={height}
+              overscan={4}
               threshold={40}
               onBeforeRowsRendered={this._rowsRenderedHandler}
             />
