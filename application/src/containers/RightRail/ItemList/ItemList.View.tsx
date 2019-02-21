@@ -30,6 +30,8 @@ const HEADER_HEIGHT = 36;
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
   private _loadData: Function;
+  private _scrollTimer: NodeJS.Timeout;
+  private _scrolling: boolean = false;
   constructor(props: ViewProps & Props) {
     super(props);
     this._loadData = debounce(async () => {
@@ -40,6 +42,10 @@ class ItemListView extends React.Component<ViewProps & Props>
       }
       await this.props.fetchNextPageItems();
     },                        LOAD_DEBOUNCE);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._scrollTimer);
   }
 
   countOfCell() {
@@ -87,6 +93,11 @@ class ItemListView extends React.Component<ViewProps & Props>
     return <JuiRightRailContentLoading delay={500} />;
   }
 
+  onScroll = () => {
+    this._scrolling = true;
+    this._scrollTimer = setTimeout(() => (this._scrolling = false), 100);
+  }
+
   render() {
     const {
       totalCount,
@@ -107,15 +118,14 @@ class ItemListView extends React.Component<ViewProps & Props>
         )}
         {firstLoaded && (
           <JuiVirtualList
-            loadingMoreClass={JuiRightRailLoadingMore}
             dataSource={this}
             threshold={1}
-            isLoading={loading}
             width={width}
             height={height - HEADER_HEIGHT}
           />
         )}
         {loading && !firstLoaded && this.firstLoader()}
+        {this._scrolling && loading && <JuiRightRailLoadingMore />}
       </JuiRightShelfContent>
     );
   }

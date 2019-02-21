@@ -3,7 +3,7 @@
  * @Date: 2019-01-19 21:41:19
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, ComponentType } from 'react';
+import React, { Component } from 'react';
 import {
   // AutoSizer,
   InfiniteLoader,
@@ -14,12 +14,9 @@ import {
 } from 'react-virtualized';
 import { JuiVirtualListWrapper } from './VirtualListWrapper';
 import { IVirtualListDataSource } from './VirtualListDataSource';
-import { withLoadingMore } from '../../hoc/withLoading';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
-  loadingMoreClass?: ComponentType;
-  isLoading: boolean;
   width: number;
   height: number;
   threshold?: number;
@@ -27,7 +24,6 @@ type JuiVirtualListProps = {
 
 class JuiVirtualList extends Component<JuiVirtualListProps> {
   static defaultProps = {
-    isLoading: false,
     threshold: 1,
   };
 
@@ -35,10 +31,8 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     this.props.dataSource.fixedCellHeight!()
 
   loadMore = async ({ startIndex, stopIndex }: IndexRange) => {
-    const { isLoading, dataSource } = this.props;
-    if (!isLoading) {
-      return await dataSource.loadMore!(startIndex, stopIndex);
-    }
+    const { dataSource } = this.props;
+    return await dataSource.loadMore!(startIndex, stopIndex);
   }
 
   isRowLoaded = ({ index }: Index) => {
@@ -59,19 +53,12 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
   }
 
   render() {
-    const {
-      isLoading,
-      dataSource,
-      width,
-      height,
-      loadingMoreClass,
-    } = this.props;
+    const { dataSource, width, height } = this.props;
     const cellCount = dataSource.countOfCell();
     const rowCount = cellCount;
     const { renderEmptyContent, onScroll = undefined } = dataSource;
-    const Wrapper = withLoadingMore(JuiVirtualListWrapper, loadingMoreClass);
     return (
-      <Wrapper viewRef={{} as any} loadingBottom={isLoading} loadingTop={false}>
+      <JuiVirtualListWrapper>
         <>
           {cellCount === 0 && renderEmptyContent && renderEmptyContent()}
           {rowCount !== 0 && (
@@ -97,7 +84,7 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
             </InfiniteLoader>
           )}
         </>
-      </Wrapper>
+      </JuiVirtualListWrapper>
     );
   }
 }
