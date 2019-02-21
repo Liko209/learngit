@@ -4,31 +4,31 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import debounce from 'lodash/debounce';
-import { RawPresence } from '../../module/presence/entity';
-import Worker from './subscribeWorker';
+import { RawPresence } from '../entity';
+import { SubscribeRequestController } from './SubscribeRequestController';
 
 const RETRY_COUNT = 2;
 
-class SubscribeHandler {
+class SubscribeController {
   public queue: number[];
-  public worker: Worker;
+  public subscribeRequestController: SubscribeRequestController;
   public subscribeIds: Function;
   public failIds: Map<number, number>;
 
   constructor(
     threshold: number,
     public subscribeSuccess: Function,
-    interval: number = 200,
+    interval: number,
   ) {
     this.queue = [];
     this.failIds = new Map();
-    this.worker = new Worker(
-      this.workerSuccess.bind(this),
-      this.workerFail.bind(this),
+    this.subscribeRequestController = new SubscribeRequestController(
+      this.onSubscribeRequestSuccess.bind(this),
+      this.onSubscriptRequestFail.bind(this),
     );
     this.subscribeIds = debounce(async () => {
       const ids: number[] = this.queue.splice(-threshold, threshold);
-      await this.worker.execute(ids);
+      await this.subscribeRequestController.execute(ids);
     },                           interval);
   }
 
@@ -40,7 +40,19 @@ class SubscribeHandler {
     this.subscribeIds();
   }
 
-  workerFail(ids: number[]) {
+  removeId(id: number) {
+    const idx = this.queue.indexOf(id);
+    if (idx > -1) {
+      this.queue.splice(idx, 1);
+    }
+  }
+
+  reset() {
+    this.queue = [];
+    this.failIds = new Map();
+  }
+
+  onSubscriptRequestFail(ids: number[]) {
     ids.forEach((id: number) => {
       // avoid endless loop request ids
       // id if count > 3  need throw
@@ -60,7 +72,7 @@ class SubscribeHandler {
     this.subscribeIds();
   }
 
-  workerSuccess(RawPresence: RawPresence[]) {
+  onSubscribeRequestSuccess(RawPresence: RawPresence[]) {
     const successArr: RawPresence[] = [];
 
     RawPresence.forEach((presence: RawPresence) => {
@@ -74,18 +86,6 @@ class SubscribeHandler {
     this.subscribeSuccess(successArr);
     this.subscribeIds();
   }
-
-  removeId(id: number) {
-    const idx = this.queue.indexOf(id);
-    if (idx > -1) {
-      this.queue.splice(idx, 1);
-    }
-  }
-
-  reset() {
-    this.queue = [];
-    this.failIds = new Map();
-  }
 }
 
-export default SubscribeHandler;
+export { SubscribeController };
