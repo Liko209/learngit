@@ -137,10 +137,6 @@ class SearchItem extends BaseWebComponent {
     await this.t.click(this.self);
   }
 
-  get joinButton() {
-    return this.getSelectorByAutomationId('joinButton', this.self);
-  }
-
   get privateLabel() {
     return this.getSelectorByAutomationId('search-item-private', this.self);
   }
@@ -151,6 +147,22 @@ class SearchItem extends BaseWebComponent {
 
   async shouldNotHavePrivateLabel() {
     await this.t.expect(this.privateLabel.visible).notOk();
+  }
+
+  get joinedLabel() {
+    return this.getSelectorByAutomationId('search-item-joined', this.self);
+  }
+
+  async shouldHaveJoinedLabel() {
+    await this.t.expect(this.joinedLabel.visible).ok();
+  }
+
+  async shouldNotHaveJoinedLabel() {
+    await this.t.expect(this.joinedLabel.visible).notOk();
+  }
+
+  get joinButton() {
+    return this.getSelectorByAutomationId('joinButton', this.self);
   }
 
   async shouldHaveJoinButton() {

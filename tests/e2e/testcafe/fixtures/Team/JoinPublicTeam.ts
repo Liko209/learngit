@@ -20,8 +20,9 @@ fixture('Team/PublicTeam')
 
 test(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PublicTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
+  const users = h(t).rcData.mainCompany.users
+  const loginUser = users[4];
+  const otherUser = users[5];
   await h(t).platform(otherUser).init();
   await h(t).glip(otherUser).init();
   const otherUserName = await h(t).glip(otherUser).getPerson()
@@ -51,12 +52,7 @@ test(formalName(`Display Join button for public team which login user doesn't jo
 
     await h(t).platform(otherUser).createGroup({
       type: 'Group',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
-
-    await h(t).platform(otherUser).createGroup({
-      type: 'Group',
-      members: [otherUser.rcId],
+      members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
     });
   });
 
