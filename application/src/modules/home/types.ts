@@ -19,11 +19,10 @@ type SubModuleConfig = {
   nav?: () => NavConfig;
   loader?: () => Promise<{ config: ModuleConfig }>;
   afterBootstrap?: (...args: any[]) => void;
-  isDefault?: boolean;
 };
 
 type HomeConfig = {
-  defaultRouterPath: string;
+  defaultRouterPaths: string[];
   subModules: { [key: string]: SubModuleConfig };
 };
 

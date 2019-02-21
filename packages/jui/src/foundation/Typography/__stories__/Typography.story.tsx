@@ -49,7 +49,7 @@ const StyledContainer = styled.div`
 class TypographyShow extends React.PureComponent<{ variant: string }> {
   text: React.RefObject<any>;
   state: any;
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.text = React.createRef();
     this.state = {};

@@ -9,12 +9,16 @@ import { IProcessor } from './IProcessor';
 abstract class AbstractProcessor {
   private _name: string;
   protected _processors: IProcessor[] = [];
+
   constructor(name: string) {
     this._name = name;
   }
-  abstract async process(): Promise<boolean>;
 
-  name(): string { return this._name; }
+  abstract async execute(): Promise<boolean>;
+
+  name(): string {
+    return this._name;
+  }
 
   getProcessors(): IProcessor[] {
     return this._processors;

@@ -8,9 +8,18 @@ import { Raw } from '../../framework/model/Raw';
 export type SendPostType = {
   text: string;
   groupId: number;
-  mentionIds?: number[];
   itemIds?: number[];
   itemId?: number;
+  mentionNonItemIds?: number[];
+  mentionItemIds?: number[];
+  parentId?: number;
+  annotation?: {
+    xPercent: number;
+    yPercent: number;
+    storedFileVersion: number;
+    annoId?: string;
+    page?: number; // page and anno_id is for document only
+  };
 };
 
 export type RawPostInfo = {
@@ -24,7 +33,9 @@ export type PostItemsReadyCallbackType = {
     item_ids?: [];
   };
 };
-export type PostItemsReadyCallback = (data: PostItemsReadyCallbackType) => void;
+export type PostItemsReadyCallback = (
+  data: PostItemsReadyCallbackType,
+) => Promise<void>;
 export type SendPostItemsUpdateCallback = (
   data: Partial<Post>,
 ) => Promise<Post | null>;

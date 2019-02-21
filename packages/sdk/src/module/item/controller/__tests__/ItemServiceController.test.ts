@@ -11,10 +11,8 @@ import { ISubItemService } from '../../module/base/service/ISubItemService';
 import { SubItemServiceRegister } from '../../config';
 import { ItemDao } from '../../dao';
 import { daoManager } from '../../../../dao';
-import { ItemUtils } from '../../utils';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { EntityPersistentController } from '../../../../framework/controller/impl/EntityPersistentController';
-import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 
 jest.mock('../../dao');
@@ -45,9 +43,6 @@ describe('ItemServiceController', () => {
     itemDao.put = jest.fn();
 
     subItemService = {
-      updateItem: jest.fn(),
-      deleteItem: jest.fn(),
-      createItem: jest.fn(),
       getSubItemsCount: jest.fn(),
       getSortedIds: jest.fn(),
     };
@@ -76,15 +71,6 @@ describe('ItemServiceController', () => {
     clearMocks();
     setUp();
   });
-
-  const validItem = {
-    id: 10,
-    post_ids: [1, 2, 3],
-  } as Item;
-
-  const invalidItem = {
-    id: -10,
-  } as Item;
 
   describe('getGroupItemsCount', () => {
     const cnt = 11111;
@@ -131,69 +117,6 @@ describe('ItemServiceController', () => {
       const res = await itemServiceController.getItems(options);
       expect(subItemService.getSortedIds).toBeCalledWith(options);
       expect(res).toEqual([item1, item3, item2]);
-    });
-  });
-
-  describe('createItem', () => {
-    beforeEach(() => {
-      clearMocks();
-      setUp();
-    });
-
-    it('should create item and its sanitized item when item is valid', async () => {
-      expect.assertions(2);
-      await itemServiceController.createItem(validItem);
-      expect(itemDao.put).toBeCalledWith(validItem);
-      expect(subItemService.createItem).toBeCalledWith(validItem);
-    });
-
-    it('should create item and but dont create its sanitized item when item is invalid', async () => {
-      expect.assertions(2);
-      await itemServiceController.createItem(invalidItem);
-      expect(itemDao.put).toBeCalledWith(invalidItem);
-      expect(subItemService.createItem).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('updateItem', () => {
-    beforeEach(() => {
-      clearMocks();
-      setUp();
-    });
-
-    it('should update item and its sanitized item when item is valid', async () => {
-      expect.assertions(2);
-      await itemServiceController.updateItem(validItem);
-      expect(itemDao.update).toBeCalledWith(validItem);
-      expect(subItemService.updateItem).toBeCalledWith(validItem);
-    });
-
-    it('should update item and but dont update its sanitized item when item is invalid', async () => {
-      expect.assertions(2);
-      await itemServiceController.updateItem(invalidItem);
-      expect(itemDao.update).toBeCalledWith(invalidItem);
-      expect(subItemService.updateItem).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('deleteItem', () => {
-    beforeEach(() => {
-      clearMocks();
-      setUp();
-    });
-
-    it('should delete item and its sanitized item when item is valid', async () => {
-      expect.assertions(2);
-      await itemServiceController.deleteItem(validItem.id);
-      expect(itemDao.delete).toBeCalledWith(validItem.id);
-      expect(subItemService.deleteItem).toBeCalledWith(validItem.id);
-    });
-
-    it('should update item and but dont update its sanitized item when item is invalid', async () => {
-      expect.assertions(2);
-      await itemServiceController.deleteItem(invalidItem.id);
-      expect(itemDao.delete).toBeCalledWith(invalidItem.id);
-      expect(subItemService.deleteItem).not.toBeCalledWith(invalidItem.id);
     });
   });
 });

@@ -17,6 +17,8 @@ type RTCCallInfo = {
   toName: string;
   toNum: string;
   uuid: string;
+  partyId: string;
+  sessionId: string;
 };
 
 type RTCCallOptions = {

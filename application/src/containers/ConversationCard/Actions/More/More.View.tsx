@@ -34,7 +34,7 @@ class More extends React.Component<MoreViewProps, { open: boolean }> {
         size="small"
         variant="plain"
         data-name="actionBarMore"
-        tooltipTitle={t('more')}
+        tooltipTitle={t('common.more')}
         onClick={this.openPopper}
       >
         more_horiz

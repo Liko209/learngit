@@ -11,6 +11,7 @@ class MockHandler implements IRTCRegistrationFsmDependency {
   onRegistrationAction = jest.fn();
   onProvisionReadyAction = jest.fn();
   onReRegisterAction = jest.fn();
+  onUnregisterAction = jest.fn();
 }
 
 const provisionData = 'provisionData';

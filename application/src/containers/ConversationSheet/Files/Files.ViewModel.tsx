@@ -15,13 +15,9 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import i18next from 'i18next';
 import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-import {
-  PostService,
-  notificationCenter,
-  ENTITY,
-  EVENT_TYPES,
-} from 'sdk/service';
+import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
+import { PostService } from 'sdk/module/post';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
@@ -30,7 +26,10 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { getThumbnail, RULE } from '@/common/getThumbnail';
+import {
+  generateModifiedImageURL,
+  RULE,
+} from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
@@ -75,12 +74,15 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     // 3. git use original url.
     if (FileItemUtils.isGifItem({ type }) && versionUrl) {
       url = versionUrl;
-    } else if (
+    }
+
+    if (
+      !url &&
       origWidth > 0 &&
       origHeight > 0 &&
       FileItemUtils.isSupportPreview({ type })
     ) {
-      const thumbnail = await getThumbnail({
+      const thumbnail = await generateModifiedImageURL({
         id,
         origWidth,
         origHeight,
@@ -129,7 +131,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (!item) {
         return;
       }
-      if (item.deactivated) {
+      if (item.deactivated || item.isMocked) {
         return;
       }
       const file = getFileType(item);
@@ -189,7 +191,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       Notification.flashToast({
-        message: i18next.t('notAbleToCancelUpload'),
+        message: i18next.t('item.prompt.notAbleToCancelUpload'),
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
@@ -206,7 +208,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         }
       } catch (e) {
         Notification.flashToast({
-          message: i18next.t('notAbleToCancelUploadTryAgain'),
+          message: i18next.t('item.prompt.notAbleToCancelUploadTryAgain'),
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,

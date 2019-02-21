@@ -7,7 +7,6 @@ import { TaskDto, SceneDto } from "../models";
 import { sceneConfigFactory } from "./config/SceneConfigFactory";
 import { LoginGatherer } from "../gatherers/LoginGatherer";
 import { SearchGatherer } from "../gatherers/SearchGatherer";
-import { mockHelper } from "../mock";
 import { metriceService } from "../services/MetricService";
 
 class SearchScene extends Scene {
@@ -27,14 +26,15 @@ class SearchScene extends Scene {
     this.config.passes[0].gatherers.unshift({
       instance: new SearchGatherer(this.keywords)
     });
-
-    mockHelper.open();
   }
 
   async saveMetircsIntoDb(): Promise<SceneDto> {
     let sceneDto = await super.saveMetircsIntoDb();
     await metriceService.createLoadingTime(sceneDto, this, SearchGatherer.name);
     return sceneDto;
+  }
+
+  async saveMetircsIntoDisk() {
   }
 }
 

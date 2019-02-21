@@ -7,7 +7,7 @@ import buildVerbArticleNounText from './text/buildVerbArticleNounText';
 
 export default function () {
   return buildVerbArticleNounText({
-    verb: 'started',
-    noun: 'audio conference',
+    verb: 'item.activity.started',
+    noun: 'item.activity.audio conference',
   });
 }

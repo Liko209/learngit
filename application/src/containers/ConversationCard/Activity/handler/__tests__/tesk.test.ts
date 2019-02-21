@@ -11,10 +11,10 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        verb: 'created',
-        noun: 'task',
+        verb: 'item.activity.created',
+        noun: 'item.activity.task',
       },
-      key: 'verb-article-noun',
+      key: 'item.activity.verb-article-noun',
     });
   });
   it('Should return a object that key is equal to the verb-noun', () => {
@@ -22,10 +22,10 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        verb: 'assigned',
-        noun: 'task',
+        verb: 'item.activity.assigned',
+        noun: 'item.activity.task',
       },
-      key: 'verb-noun',
+      key: 'item.activity.verb-noun',
     });
   });
 
@@ -34,10 +34,10 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        verb: 'reassigned',
-        noun: 'task',
+        verb: 'item.activity.reassigned',
+        noun: 'item.activity.task',
       },
-      key: 'verb-noun',
+      key: 'item.activity.verb-noun',
     });
   });
 
@@ -46,10 +46,10 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        verb: 'completed',
-        noun: 'task',
+        verb: 'item.activity.completed',
+        noun: 'item.activity.task',
       },
-      key: 'verb-noun',
+      key: 'item.activity.verb-noun',
     });
   });
 
@@ -58,11 +58,11 @@ describe('Task', () => {
     const data = task({ activityData });
     expect(data).toEqual({
       parameter: {
-        verb: 'marked',
-        noun: 'task',
-        adjectives: 'incomplete',
+        verb: 'item.activity.marked',
+        noun: 'item.activity.task',
+        adjectives: 'item.activity.incomplete',
       },
-      key: 'verb-noun-adjectives',
+      key: 'item.activity.verb-noun-adjectives',
     });
   });
 });

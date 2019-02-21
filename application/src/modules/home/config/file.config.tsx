@@ -15,7 +15,7 @@ const config: SubModuleConfig = {
   nav: () => ({
     url: '/files',
     icon: 'files',
-    title: i18next.t('Files'),
+    title: i18next.t('item.files'),
     placement: 'bottom',
   }),
 };

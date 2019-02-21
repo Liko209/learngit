@@ -5,10 +5,16 @@
  */
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
+import { service } from 'sdk';
+
+jest.mock('sdk/service');
+jest.mock('@/store/utils');
 jest.mock('sdk/api');
+
 describe('MenuViewModel', () => {
   describe('shouldSkipCloseConfirmation()', () => {
     it('should return falsy for shouldSkipCloseConfirmation as default', () => {
+      jest.spyOn(utils, 'getSingleEntity').mockImplementationOnce(() => false);
       const model = new MenuViewModel();
       expect(model.shouldSkipCloseConfirmation).toBeFalsy();
     });
@@ -59,6 +65,27 @@ describe('MenuViewModel', () => {
       const model = new MenuViewModel();
       groupState.isFavorite = true;
       expect(model.closable).toBe(false);
+    });
+  });
+  describe('favoriteText()', () => {
+    let groupState: any;
+    beforeEach(() => {
+      groupState = {
+        unreadCount: 0,
+        isFavorite: false,
+      };
+      jest.clearAllMocks();
+      jest.spyOn(utils, 'getEntity').mockImplementation(() => groupState);
+    });
+    it('should favoriteText correctly when isFavorite=true', () => {
+      const model = new MenuViewModel();
+      groupState.isFavorite = true;
+      expect(model.favoriteText).toBe('people.team.removeFromFavorites');
+    });
+    it('should favoriteText correctly when isFavorite=false', () => {
+      const model = new MenuViewModel();
+      groupState.isFavorite = false;
+      expect(model.favoriteText).toBe('people.team.favorite');
     });
   });
 });

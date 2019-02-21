@@ -5,7 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { ProfileService } from 'sdk/service/profile';
+import { ProfileService } from 'sdk/module/profile';
 import { Profile } from 'sdk/module/profile/entity';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';
@@ -49,7 +49,9 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
 
   @computed
   get favoriteText() {
-    return this.isFavorite ? 'remove_from_favorites' : 'Favorite';
+    return this.isFavorite
+      ? 'people.team.removeFromFavorites'
+      : 'people.team.favorite';
   }
 
   @computed

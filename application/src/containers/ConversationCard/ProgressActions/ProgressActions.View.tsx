@@ -22,11 +22,11 @@ class ProgressActionsViewComponent extends Component<Props> {
   private _deletePost = () => {
     const { deletePost } = this.props;
     Dialog.confirm({
-      title: i18next.t('deletePostTitle'),
-      content: i18next.t('deletePostContent'),
-      okText: i18next.t('delete'),
+      title: i18next.t('message.prompt.deletePostTitle'),
+      content: i18next.t('message.prompt.deletePostContent'),
+      okText: i18next.t('common.dialog.delete'),
       okType: 'negative',
-      cancelText: i18next.t('Cancel'),
+      cancelText: i18next.t('common.dialog.cancel'),
       async onOK() {
         try {
           await deletePost();
@@ -57,7 +57,7 @@ class ProgressActionsViewComponent extends Component<Props> {
       return (
         <JuiIconButton
           variant="plain"
-          tooltipTitle={t('resendPost')}
+          tooltipTitle={t('message.action.resendPost')}
           onClick={this._resendPost}
           size="small"
           color="semantic.negative"
@@ -75,7 +75,7 @@ class ProgressActionsViewComponent extends Component<Props> {
       return (
         <JuiIconButton
           variant="plain"
-          tooltipTitle={t('deletePost')}
+          tooltipTitle={t('message.action.deletePost')}
           onClick={this._deletePost}
           size="small"
         >

@@ -3,8 +3,6 @@
  * @Date: 2019-01-02 09:27:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { Result } from 'foundation';
-
 import { Api } from '../../../api';
 import { daoManager, QUERY_DIRECTION } from '../../../dao';
 import { buildPartialModifyController } from '../../../framework/controller';
@@ -21,6 +19,8 @@ import { GroupController } from '../controller/GroupController';
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { PermissionFlags, TeamSetting } from '../types';
 import { IGroupService } from './IGroupService';
+import { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
+import { Post } from '../../post/entity';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   static serviceName = 'GroupService';
@@ -34,12 +34,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     });
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SOCKET.GROUP]: this.getGroupController().getHandleDataController()
-          .handleData,
-        [ENTITY.POST]: this.getGroupController().getHandleDataController()
-          .handleGroupMostRecentPostChanged,
-        [SERVICE.PERSON_SERVICE
-          .TEAMS_REMOVED_FROM]: this.getGroupController().getGroupActionController()
+        [SOCKET.GROUP]: this.handleData,
+        [ENTITY.POST]: this.handleGroupMostRecentPostChanged,
+        [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: this
           .deleteAllTeamInformation,
         [SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: this
           .setAsTrue4HasMoreConfigByDirection,
@@ -75,10 +72,24 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.groupConfigController;
   }
 
-  async handleData(groups: Raw<Group>[]): Promise<void> {
+  handleData = async (groups: Raw<Group>[]): Promise<void> => {
     await this.getGroupController()
       .getHandleDataController()
       .handleData(groups);
+  }
+
+  handleGroupMostRecentPostChanged = async (
+    payload: NotificationEntityUpdatePayload<Post>,
+  ) => {
+    await this.getGroupController()
+      .getHandleDataController()
+      .handleGroupMostRecentPostChanged(payload);
+  }
+
+  deleteAllTeamInformation = async (ids: number[]) => {
+    await this.getGroupController()
+      .getGroupActionController()
+      .deleteAllTeamInformation(ids);
   }
 
   isValid(group: Group): boolean {
@@ -215,26 +226,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .getLocalGroup(personIds);
   }
 
-  async getGroupByPersonId(personId: number): Promise<Result<Group>> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .getGroupByPersonId(personId);
-  }
-
-  async getOrCreateGroupByMemberList(
-    members: number[],
-  ): Promise<Result<Group>> {
+  async getOrCreateGroupByMemberList(members: number[]): Promise<Group> {
     return await this.getGroupController()
       .getGroupFetchDataController()
       .getOrCreateGroupByMemberList(members);
-  }
-
-  async requestRemoteGroupByMemberList(
-    members: number[],
-  ): Promise<Result<Group>> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .requestRemoteGroupByMemberList(members);
   }
 
   async pinPost(
@@ -308,10 +303,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .getGroupEmail(groupId);
   }
 
-  async setAsTrue4HasMoreConfigByDirection(
+  setAsTrue4HasMoreConfigByDirection = async (
     ids: number[],
     direction: QUERY_DIRECTION,
-  ): Promise<void> {
+  ): Promise<void> => {
     return await this.getGroupController()
       .getGroupActionController()
       .setAsTrue4HasMoreConfigByDirection(ids, direction);

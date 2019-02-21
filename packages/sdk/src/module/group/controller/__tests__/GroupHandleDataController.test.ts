@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { toArrayOf } from '../../../../__tests__/utils';
-import { ApiResultOk } from '../../../../api/ApiResult';
 import GroupAPI from '../../../../api/glip/group';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
@@ -12,7 +11,7 @@ import { EVENT_TYPES } from '../../../../service';
 import { UserConfig } from '../../../../service/account';
 import { ENTITY } from '../../../../service/eventKey';
 import notificationCenter from '../../../../service/notificationCenter';
-import ProfileService from '../../../../service/profile';
+import { ProfileService } from '../../../profile';
 import { PersonService } from '../../../person';
 import { Post } from '../../../post/entity';
 import { Profile } from '../../../profile/entity';
@@ -24,7 +23,7 @@ import { GroupHandleDataController } from '../GroupHandleDataController';
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
 
-jest.mock('../../../../service/profile');
+jest.mock('../../../profile');
 jest.mock('../../../../service/account');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../state');
@@ -55,16 +54,12 @@ jest.mock('../../../../service/serviceManager', () => {
   };
 });
 
-const requestGroupByIdResult = new ApiResultOk(
-  {
-    id: 1,
-    members: [1],
-    deactivated: true,
-    _delta: false,
-  },
-  200,
-  {},
-);
+const requestGroupByIdResult = {
+  id: 1,
+  members: [1],
+  deactivated: true,
+  _delta: false,
+};
 
 jest.mock('../../../../api/glip/group', () => {
   return {

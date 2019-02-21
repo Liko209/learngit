@@ -3,8 +3,9 @@
  * @Date: 2019-01-24 13:35:29
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { JuiFade } from 'jui/foundation/Transitions';
+import { withDelay } from 'jui/hoc/withDelay';
 
 type PreloadImgProps = {
   url?: string;
@@ -12,21 +13,36 @@ type PreloadImgProps = {
   children: React.ReactNode;
 };
 
-const cacheUrl = {};
+type PreloadImgState = {
+  loaded: boolean;
+  isError: boolean;
+};
 
-class PreloadImg extends Component<PreloadImgProps> {
-  state = { loaded: false, isError: false };
-  img: any;
+const cacheUrl = {};
+const DELAY_SHOW_PLACEHOLDER_TIME = 500;
+
+const DelayWrapper = withDelay(Fragment);
+
+class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
+  constructor(props: PreloadImgProps) {
+    super(props);
+    this.state = {
+      loaded: false,
+      isError: false,
+    };
+  }
 
   handleLoad = () => {
     const { url } = this.props;
-
-    this.setState({ loaded: true });
     if (url) cacheUrl[url] = true;
+    this.setState({ loaded: true });
   }
 
   handleError = () => {
-    this.setState({ isError: true, loaded: true });
+    const { url } = this.props;
+    if (url) {
+      this.setState({ isError: true, loaded: true });
+    }
   }
 
   render() {
@@ -35,7 +51,7 @@ class PreloadImg extends Component<PreloadImgProps> {
 
     if (loaded && !isError) {
       return (
-        <JuiFade in={true} timeout={1500}>
+        <JuiFade in={true} timeout={700}>
           {children}
         </JuiFade>
       );
@@ -47,13 +63,20 @@ class PreloadImg extends Component<PreloadImgProps> {
 
     return (
       <>
-        <img
-          src={url}
-          onLoad={this.handleLoad}
-          onError={this.handleError}
-          style={{ display: 'none' }}
-        />
-        {placeholder}
+        {url && (
+          <img
+            src={url}
+            onLoad={this.handleLoad}
+            onError={this.handleError}
+            style={{ display: 'none' }}
+          />
+        )}
+        <DelayWrapper
+          delay={DELAY_SHOW_PLACEHOLDER_TIME}
+          placeholder={<div style={{ opacity: 0 }}>{children}</div>}
+        >
+          {placeholder}
+        </DelayWrapper>
       </>
     );
   }

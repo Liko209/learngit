@@ -8,7 +8,7 @@ import { GroupPage } from "../pages/GroupPage";
 class FetchGroupGatherer extends Gatherer {
   private artifacts: Map<string, Array<any>> = new Map();
 
-  beforePass(passContext) {}
+  beforePass(passContext) { }
 
   async pass(passContext) {
     let groupPage = new GroupPage(passContext);
@@ -34,9 +34,11 @@ class FetchGroupGatherer extends Gatherer {
         });
 
         for (let k of keys) {
-          this.artifacts.set(k, this.artifacts.get(k).concat(metrics[k]));
+          if (metrics[k] && metrics[k].length > 0) {
+            this.artifacts.set(k, this.artifacts.get(k).concat(metrics[k]));
+          }
         }
-      } catch (err) {}
+      } catch (err) { }
     }
   }
 

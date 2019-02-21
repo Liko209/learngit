@@ -32,6 +32,7 @@ const StyledListItem = styled(MuiListItem)`
     padding: ${spacing(0)};
     height: ${height(12)};
     line-height: ${height(12)};
+    transform: translateZ(0);
   }
 `;
 
@@ -56,12 +57,10 @@ type JuiTeamSettingSubSectionListItemProps = ListItemProps & {
   children: JSX.Element | JSX.Element[];
 };
 const JuiTeamSettingSubSectionListItem = React.memo(
-  (props: JuiTeamSettingSubSectionListItemProps) => (
-    <StyledListItem dense={true}>
-      <StyledListItemText>{props.label}</StyledListItemText>
-      <StyledListItemSecondaryAction>
-        {props.children}
-      </StyledListItemSecondaryAction>
+  ({ label, children, ...rest }: JuiTeamSettingSubSectionListItemProps) => (
+    <StyledListItem dense={true} {...rest}>
+      <StyledListItemText>{label}</StyledListItemText>
+      <StyledListItemSecondaryAction>{children}</StyledListItemSecondaryAction>
     </StyledListItem>
   ),
 );

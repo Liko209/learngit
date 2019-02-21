@@ -6,7 +6,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, boolean } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconButton } from '../../Buttons/IconButton';
 import { JuiThumbnail } from '../../Thumbnail';
 import { JuiAvatar } from '../../Avatar';

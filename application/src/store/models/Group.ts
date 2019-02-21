@@ -42,6 +42,7 @@ export default class GroupModel extends Base<Group> {
   @observable
   mostRecentPostId?: number;
   @observable
+  deactivated: boolean;
   isCompanyTeam: boolean;
 
   latestTime: number;
@@ -60,6 +61,7 @@ export default class GroupModel extends Base<Group> {
       creator_id,
       guest_user_company_ids,
       permissions,
+      deactivated,
       is_company_team,
     } = data;
 
@@ -77,6 +79,8 @@ export default class GroupModel extends Base<Group> {
     this.guestUserCompanyIds = guest_user_company_ids;
     this.permissions = permissions;
     this.mostRecentPostId = most_recent_post_id;
+
+    this.deactivated = deactivated;
     this.isCompanyTeam = is_company_team;
   }
 
@@ -92,7 +96,9 @@ export default class GroupModel extends Base<Group> {
   }
 
   get isMember() {
-    return this.members.indexOf(UserConfig.getCurrentUserId()) >= 0;
+    return (
+      this.members && this.members.indexOf(UserConfig.getCurrentUserId()) >= 0
+    );
   }
 
   @computed
@@ -108,7 +114,7 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.ME) {
       const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
       if (person.displayName) {
-        return `${person.displayName} (${i18next.t('me')})`;
+        return `${person.displayName} (${i18next.t('message.meGroup')})`;
       }
       return '';
     }

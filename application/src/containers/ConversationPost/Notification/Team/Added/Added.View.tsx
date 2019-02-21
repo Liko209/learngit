@@ -21,7 +21,7 @@ class AddedViewComponent extends Component<AddedViewProps & WithNamespaces> {
     } = this.props;
     const inviter = renderPerson(inviterId, inviterName);
     const newUser = renderPerson(newUserId, newUserName);
-    const html = t('addedToTeam', { inviter, newUser });
+    const html = t('message.stream.addedToTeam', { inviter, newUser });
     return (
       <React.Fragment>
         <div dangerouslySetInnerHTML={{ __html: html }} />

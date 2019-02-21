@@ -1,7 +1,6 @@
 import * as assert from 'assert';
 import * as querystring from 'querystring';
-
-import _ = require('lodash');
+import * as _ from 'lodash';
 import axios, { AxiosInstance } from 'axios';
 
 import { RcPlatformSdk } from './platform';
@@ -207,6 +206,28 @@ export class GlipSdk {
       set_abbreviation: name,
     };
     return this.axiosClient.post(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async removeTeamMembers(groupId: string | number, rcIds: string |string[]) {
+    const uri = `api/remove_team_members/${groupId}`;
+    const members = [].concat(await this.toPersonId(rcIds))
+    const data = {
+      members
+    };
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async addTeamMembers(groupId: string | number, rcIds: string |string[]) {
+    const uri = `api/add_team_members/${groupId}`;
+    const members = [].concat(await this.toPersonId(rcIds))
+    const data = {
+      members
+    };
+    return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
   }
@@ -667,7 +688,7 @@ export class GlipSdk {
     });
   }
 
-  async createSimpleCodeSnippet(groupIds: string[] | string, body: string, title?: string,  options?: object) {
+  async createSimpleCodeSnippet(groupIds: string[] | string, body: string, title?: string, options?: object) {
     if (typeof groupIds == "string") { groupIds = [groupIds] };
     const data = _.assign({
       title: title || 'untitled',

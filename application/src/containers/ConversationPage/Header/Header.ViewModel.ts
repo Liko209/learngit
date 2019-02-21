@@ -36,7 +36,7 @@ class HeaderViewModel extends AbstractViewModel {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
     let title = group.displayName;
     if (group.type === CONVERSATION_TYPES.SMS) {
-      title += ` (${i18next.t('text')})`;
+      title += ` (${i18next.t('message.messageTypeNameSMS')})`;
     }
     return title;
   }

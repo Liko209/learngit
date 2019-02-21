@@ -3,8 +3,7 @@
  * @Date: 2018-09-20 14:56:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { err, ok } from 'foundation';
-import { GroupService } from 'sdk/module/group';
+import { GroupService, TeamSetting } from 'sdk/module/group';
 import {
   JNetworkError,
   ERROR_CODES_NETWORK,
@@ -47,16 +46,18 @@ describe('CreateTeamVM', () => {
   it('create team success', async () => {
     const creatorId = 1;
     UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
-    groupService.createTeam = jest.fn().mockImplementation(() => ok(''));
+    groupService.createTeam = jest.fn().mockImplementation(() => '');
 
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
-    const options = {
+    const options: TeamSetting = {
       name,
       description,
       isPublic: true,
-      canPost: true,
+      permissionFlags: {
+        TEAM_POST: true,
+      },
     };
     await createTeamVM.create(memberIds, options);
     expect(groupService.createTeam).toHaveBeenCalledWith(
@@ -67,51 +68,46 @@ describe('CreateTeamVM', () => {
   });
 
   it('create team success handle error', async () => {
+    const error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
     const creatorId = 1;
     UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
-    groupService.createTeam = jest
-      .fn()
-      .mockResolvedValue(
-        err(getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN)),
-      );
+    groupService.createTeam = jest.fn().mockRejectedValue(error);
 
     jest.spyOn(createTeamVM, 'createErrorHandler');
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
-    const options = {
+    const options: TeamSetting = {
       name,
       description,
       isPublic: true,
-      canPost: true,
+      permissionFlags: {
+        TEAM_POST: true,
+      },
     };
-    const result = await createTeamVM.create(memberIds, options);
-    if (result.isErr()) {
-      expect(result.error.code).toBe(ERROR_CODES_SERVER.ALREADY_TAKEN);
-    } else {
-      expect(result).toBe(false);
-    }
+    expect(await createTeamVM.create(memberIds, options)).toEqual(null);
   });
 
   it('create team server error', async () => {
+    const error = new JNetworkError(
+      ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+      '',
+    );
     const creatorId = 1;
     UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
-    groupService.createTeam = jest
-      .fn()
-      .mockResolvedValueOnce(
-        err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
-      );
+    groupService.createTeam = jest.fn().mockRejectedValueOnce(error);
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
-    const options = {
+    const options: TeamSetting = {
       name,
       description,
       isPublic: true,
-      canPost: true,
+      permissionFlags: {
+        TEAM_POST: true,
+      },
     };
-    const result = await createTeamVM.create(memberIds, options);
-    expect(result.isErr()).toBe(true);
+    expect(await createTeamVM.create(memberIds, options)).toEqual(null);
   });
 
   it('getGlobalValue', () => {
@@ -155,7 +151,7 @@ describe('CreateTeamVM', () => {
   it('createErrorHandle()', () => {
     let error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
     createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.errorMsg).toBe('alreadyTaken');
+    expect(createTeamVM.errorMsg).toBe('people.prompt.alreadyTaken');
     expect(createTeamVM.nameError).toBe(true);
 
     error = getNewJServerError(
@@ -163,7 +159,7 @@ describe('CreateTeamVM', () => {
       'This is not a valid email address: q@qq.com.',
     );
     createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.emailErrorMsg).toBe('Invalid Email');
+    expect(createTeamVM.emailErrorMsg).toBe('people.prompt.InvalidEmail');
     expect(createTeamVM.emailError).toBe(true);
   });
 });

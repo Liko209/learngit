@@ -12,10 +12,10 @@ describe('Link', () => {
     expect(data).toEqual({
       parameter: {
         count: 3,
-        verb: 'shared',
-        noun: 'link',
+        verb: 'item.activity.shared',
+        noun: 'item.activity.link',
       },
-      key: 'verb-numerals-noun',
+      key: 'item.activity.verb-numerals-noun',
     });
   });
   it('Should return a object that key is equal to the verb-article-noun', () => {
@@ -23,10 +23,10 @@ describe('Link', () => {
     const data = link({ ids });
     expect(data).toEqual({
       parameter: {
-        verb: 'shared',
-        noun: 'link',
+        verb: 'item.activity.shared',
+        noun: 'item.activity.link',
       },
-      key: 'verb-article-noun',
+      key: 'item.activity.verb-article-noun',
     });
   });
 });

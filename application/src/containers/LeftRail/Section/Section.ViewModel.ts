@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, observable, action } from 'mobx';
-import { ProfileService } from 'sdk/service/profile';
+import { ProfileService } from 'sdk/module/profile';
 import _ from 'lodash';
 import StoreViewModel from '@/store/ViewModel';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
@@ -17,19 +17,20 @@ import {
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { mainLogger } from 'sdk';
 
 const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
-    title: 'favorite_plural',
+    title: 'message.favoriteGroups',
     iconName: 'star_border',
     sortable: true,
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {
-    title: 'directMessage_plural',
+    title: 'message.directGroups',
     iconName: 'direct_message',
   },
   [SECTION_TYPE.TEAM]: {
-    title: 'team_plural',
+    title: 'message.teamGroups',
     iconName: 'team',
   },
 };
@@ -95,10 +96,13 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   }
 
   handleSortEnd(oldIndex: number, newIndex: number) {
-    (ProfileService.getInstance() as ProfileService).reorderFavoriteGroups(
-      oldIndex,
-      newIndex,
-    );
+    (ProfileService.getInstance() as ProfileService)
+      .reorderFavoriteGroups(oldIndex, newIndex)
+      .catch((error: Error) => {
+        mainLogger
+          .tags('Section.ViewModel')
+          .info('reorderFavoriteGroups fail:', error);
+      });
   }
 
   @action

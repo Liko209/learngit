@@ -20,6 +20,7 @@ import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import _ from 'lodash';
 class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
   private _groupId: number;
 
@@ -52,7 +53,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       groupId,
     );
     if (group) {
-      return new SortableGroupMemberHandler(group);
+      return new SortableGroupMemberHandler(_.cloneDeep(group));
     }
     return null;
   }
@@ -162,7 +163,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       }
 
       // get again
-      this._group = newGroup;
+      this._group = _.cloneDeep(newGroup);
 
       if (needReplaceData) {
         this._replaceData();
@@ -173,7 +174,12 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private async _replaceData() {
     const personService = PersonService.getInstance<PersonService>();
     const groupService = GroupService.getInstance<GroupService>();
-    const group = await groupService.getById(this._group.id);
+    let group;
+    try {
+      group = await groupService.getById(this._group.id);
+    } catch (error) {
+      group = null;
+    }
     const result = await personService.getPersonsByIds(
       group && group.members ? group.members : [],
     );
