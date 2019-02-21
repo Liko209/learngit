@@ -12,6 +12,8 @@ describe('StringifyDecorator', () => {
           new RegExp('a'),
           /a/g,
           true,
+          undefined,
+          null,
         ],
         message: undefined,
       });
@@ -23,6 +25,8 @@ describe('StringifyDecorator', () => {
         '/a/',
         '/a/g',
         'true',
+        'undefined',
+        'null',
       ]);
     });
   });

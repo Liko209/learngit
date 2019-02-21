@@ -8,6 +8,8 @@ enum TYPES {
   String = '[object String]',
   Object = '[object Object]',
   Function = '[object Function]',
+  Undefined = '[object Undefined]',
+  Null = '[object Null]',
 }
 
 type A = TYPES;
@@ -29,6 +31,12 @@ export class StringifyDecorator implements ILogEntityDecorator {
       '[object Function]': (item: Function) => {
         return '[object Function]';
       },
+      '[object Undefined]': (item: undefined) => {
+        return 'undefined';
+      },
+      '[object Null]': (item: null) => {
+        return 'null';
+      },
     };
   }
 
@@ -38,7 +46,7 @@ export class StringifyDecorator implements ILogEntityDecorator {
       if (this.parserMap[type]) {
         return this.parserMap[type](item);
       }
-      return item.toString();
+      return item ? item.toString() : type;
     });
     return data;
   }
