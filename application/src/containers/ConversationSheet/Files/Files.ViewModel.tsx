@@ -35,6 +35,7 @@ import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
+  private _idToDelete: number;
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
   @observable
@@ -142,9 +143,19 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
 
   @computed
   get items() {
-    return this._ids.map((id: number) => {
-      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
+    const result: FileItemModel[] = [];
+    this._ids.forEach((id: number) => {
+      if (id !== this._idToDelete) {
+        try {
+          const item = getEntity<Item, FileItemModel>(
+            ENTITY_NAME.FILE_ITEM,
+            id,
+          );
+          result.push(item);
+        } catch (e) {}
+      }
     });
+    return result;
   }
 
   @computed
@@ -204,6 +215,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         if (postLoading) {
           await this._itemService.cancelUpload(id);
         } else {
+          this._idToDelete = id;
           await this._postService.removeItemFromPost(this._postId, id);
         }
       } catch (e) {
