@@ -19,10 +19,12 @@ enum WEBPHONE_REGISTER_EVENT {
   TRANSPORT_CREATED = 'transportCreated',
   TRANSPORT_ERROR = 'transportError',
   TRANSPORT_DISCONNECTED = 'disconnected',
+  TRANSPORT_CONNECTED = 'connected',
 }
 
 class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _webphone: any;
+  private _connectionTimer: NodeJS.Timeout | null = null;
 
   constructor(provisionData: any, options: ProvisionDataOptions) {
     super();
@@ -32,6 +34,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _createWebPhone(provisionData: any, options: ProvisionDataOptions) {
     this._webphone = new WebPhone(provisionData, options);
     this._initListener();
+    this._startConnectionTimer();
   }
 
   public makeCall(phoneNumber: string, options: RTCCallOptions): any {
@@ -46,6 +49,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
 
   public reRegister() {
     rtcLogger.debug(LOG_TAG, 'Try to restart register with new transport');
+    this._clearConnectionTimer();
     if (!this._webphone) {
       return;
     }
@@ -59,9 +63,11 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._webphone.userAgent.setTransportListeners();
     this._initTransportListener();
     this._webphone.userAgent.transport.connect();
+    this._startConnectionTimer();
   }
 
   public unregister() {
+    this._clearConnectionTimer();
     if (!this._webphone) {
       return;
     }
@@ -111,6 +117,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       () => {
         if (this._webphone.userAgent.transport.noAvailableServers()) {
           rtcLogger.warn(LOG_TAG, 'Transport error');
+          this._clearConnectionTimer();
           this.emit(UA_EVENT.TRANSPORT_ERROR);
         }
       },
@@ -118,10 +125,33 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     this._webphone.userAgent.transport.on(
       WEBPHONE_REGISTER_EVENT.TRANSPORT_DISCONNECTED,
       () => {
-        rtcLogger.warn(LOG_TAG, 'Transport disconnected');
+        rtcLogger.debug(LOG_TAG, 'Transport disconnected');
+        this._clearConnectionTimer();
         this.emit(UA_EVENT.TRANSPORT_ERROR);
       },
     );
+    this._webphone.userAgent.transport.on(
+      WEBPHONE_REGISTER_EVENT.TRANSPORT_CONNECTED,
+      () => {
+        rtcLogger.debug(LOG_TAG, 'Transport connected');
+        this._clearConnectionTimer();
+      },
+    );
+  }
+
+  private _startConnectionTimer() {
+    this._connectionTimer = setTimeout(() => {
+      rtcLogger.error(LOG_TAG, 'Connection time out');
+      this._webphone.userAgent.transport.disconnect({ force: true });
+    },                                 5000);
+  }
+
+  private _clearConnectionTimer() {
+    rtcLogger.debug(LOG_TAG, 'clear connection timeout');
+    if (this._connectionTimer) {
+      clearTimeout(this._connectionTimer);
+    }
+    this._connectionTimer = null;
   }
 }
 
