@@ -29,7 +29,7 @@ class TeamSettingButtonViewComponent extends Component<Props> {
         data-test-automation-id="settingButton"
         alwaysEnableTooltip={true}
         onClick={this.onClickSettingButton}
-        tooltipTitle={toTitleCase(t('setting_plural'))}
+        tooltipTitle={toTitleCase(t('setting.teamSettings'))}
       >
         settings
       </JuiIconButton>

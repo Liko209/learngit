@@ -2,6 +2,7 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { Notification } from '@/containers/Notification';
 import { MenuViewComponent } from '../Menu.View';
+import { ERROR_CODES_SDK, JSdkError } from 'sdk/error';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 
 jest.mock('@/common/genDivAndDismiss');
@@ -20,8 +21,12 @@ describe('MenuView', () => {
         groupId: 1,
         showClose: true,
         closeConversation: () => {
-          throw new Error('Failed to close conversation');
+          throw new JSdkError(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to close conversation',
+          );
         },
+
         shouldSkipCloseConfirmation: true,
         onClose: () => {},
       };
@@ -35,7 +40,7 @@ describe('MenuView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'SorryWeWereNotAbleToCloseTheConversation',
+            message: 'people.prompt.SorryWeWereNotAbleToCloseTheConversation',
             type: ToastType.ERROR,
           }),
         );
@@ -48,7 +53,10 @@ describe('MenuView', () => {
         isFavorite: false,
         onClose: () => {},
         toggleFavorite: () => {
-          throw new Error('Failed to favorite conversation');
+          throw new JSdkError(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to favorite conversation',
+          );
         },
       };
 
@@ -61,7 +69,7 @@ describe('MenuView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'markFavoriteServerErrorContent',
+            message: 'people.prompt.markFavoriteServerErrorContent',
             type: ToastType.ERROR,
           }),
         );
@@ -74,7 +82,10 @@ describe('MenuView', () => {
         isFavorite: true,
         onClose: () => {},
         toggleFavorite: () => {
-          throw new Error('Failed to unFavorite conversation');
+          throw new JSdkError(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to unFavorite conversation',
+          );
         },
       };
 
@@ -87,7 +98,7 @@ describe('MenuView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'markUnFavoriteServerErrorContent',
+            message: 'people.prompt.markUnFavoriteServerErrorContent',
             type: ToastType.ERROR,
           }),
         );

@@ -19,6 +19,7 @@ import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
 import { MiniCard } from '../MiniCard';
+import { Profile, PROFILE_TYPE } from '@/containers/Profile';
 
 class ConversationInitialPost extends React.Component<
   ConversationInitialPostViewProps
@@ -31,9 +32,8 @@ class ConversationInitialPost extends React.Component<
     const { creator } = this.props;
     const target = event.target as HTMLElement;
     event.stopPropagation();
-    MiniCard.showProfile({
-      id: creator.id,
-      anchor: target,
+    MiniCard.show(<Profile id={creator.id} type={PROFILE_TYPE.MINI_CARD} />, {
+      anchor: target as HTMLElement,
     });
   }
 
@@ -61,7 +61,7 @@ class ConversationInitialPost extends React.Component<
     if (!isTeam) {
       return (
         <StyledSpan>
-          {t('directMessageDescription', { displayName })}
+          {t('message.initialPost.directMessageDescription', { displayName })}
         </StyledSpan>
       );
     }
@@ -70,10 +70,12 @@ class ConversationInitialPost extends React.Component<
       return (
         <StyledTitle>
           {this._name}
-          <StyledSpan>&nbsp;{t('createATeam')}&nbsp;</StyledSpan>
+          <StyledSpan>
+            &nbsp;{t('message.initialPost.createATeam')}&nbsp;
+          </StyledSpan>
           <StyledTeamName>{displayName}</StyledTeamName>
           <StyledSpan>
-            &nbsp;{t('on')} {createTime}
+            &nbsp;{t('message.initialPost.on')} {createTime}
           </StyledSpan>
         </StyledTitle>
       );
@@ -95,7 +97,7 @@ class ConversationInitialPost extends React.Component<
     const { t } = this.props;
     return (
       <JuiButton variant="outlined" color="primary">
-        {t('shareFile')}
+        {t('message.initialPost.shareFile')}
       </JuiButton>
     );
   }
@@ -104,7 +106,7 @@ class ConversationInitialPost extends React.Component<
     const { t } = this.props;
     return (
       <JuiButton variant="outlined" color="primary">
-        {t('createTask')}
+        {t('message.initialPost.createTask')}
       </JuiButton>
     );
   }
@@ -113,7 +115,7 @@ class ConversationInitialPost extends React.Component<
     const { t } = this.props;
     return (
       <JuiButton variant="outlined" color="primary">
-        {t('integrateApps')}
+        {t('message.initialPost.integrateApps')}
       </JuiButton>
     );
   }
@@ -123,8 +125,8 @@ class ConversationInitialPost extends React.Component<
 
     return (
       <JuiConversationPageInit
-        text={t('postInitialTitle')}
-        content={t('postInitialContent')}
+        text={t('message.initialPost.postInitialTitle')}
+        content={t('message.initialPost.postInitialContent')}
         actions={[
           this._handleShareFile,
           this._handleCreateTask,

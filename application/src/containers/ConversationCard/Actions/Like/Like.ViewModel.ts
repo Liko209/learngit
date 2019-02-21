@@ -34,22 +34,9 @@ class LikeViewModel extends StoreViewModel<LikeProps> implements LikeViewProps {
   }
 
   @action
-  like = async (toLike: boolean): Promise<{ isFailed: boolean }> => {
+  like = async (toLike: boolean): Promise<void> => {
     const postService: PostService = PostService.getInstance();
-    try {
-      const result = await postService.likePost(
-        this._id,
-        this._currentUserId,
-        toLike,
-      );
-      return {
-        isFailed: result === null,
-      };
-    } catch (e) {
-      return {
-        isFailed: true,
-      };
-    }
+    await postService.likePost(this._id, this._currentUserId, toLike);
   }
 }
 

@@ -77,10 +77,7 @@ class AuthService extends BaseService {
   async loginGlip2(params: ILogin) {
     const authDao = daoManager.getKVDao(AuthDao);
     try {
-      const loginResult = await loginGlip2ByPassword(params);
-      const authToken = loginResult.expect(
-        'Failed to login glip2 by password.',
-      );
+      const authToken = await loginGlip2ByPassword(params);
       authDao.put(AUTH_GLIP2_TOKEN, authToken);
       notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
     } catch (err) {

@@ -38,7 +38,7 @@ class ProfileMiniCardGroupViewModel
     const onError = (error: Error) => {
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToOpenThisProfile',
+          message: 'people.prompt.SorryWeWereNotAbleToOpenThisProfile',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,

@@ -25,9 +25,11 @@ class AttachmentsViewComponent extends Component<
       const { t } = this.props;
       return (
         <JuiDuplicateAlert
-          title={t('updateFiles')}
-          subtitle={t('theFollowingFilesAlreadyExist')}
-          footText={t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne')}
+          title={t('item.updateFiles')}
+          subtitle={t('item.theFollowingFilesAlreadyExist')}
+          footText={t(
+            'item.wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
+          )}
           duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}

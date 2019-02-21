@@ -46,12 +46,12 @@ class CodeSnippet extends React.Component<
     return [
       {
         iconName: 'copy',
-        tooltip: t('copy'),
+        tooltip: t('common.copy'),
         handler: this.handleCopy,
       },
       {
         iconName: 'download',
-        tooltip: t('download'),
+        tooltip: t('common.download'),
         handler: this.handleDownload,
       },
     ];
@@ -68,19 +68,22 @@ class CodeSnippet extends React.Component<
 
     if (collapsed) {
       actions.push({
-        text: t('expandLine', { lineNumber }),
+        text: t('item.expandLines', { lineNumber }),
         handler: this.handleExpand,
       });
     } else {
       actions.push({
-        text: t('collapseLine'),
+        text: t('common.collapse'),
         handler: this.handleCollapse,
       });
     }
 
     if (!collapsed && showDownload) {
       actions.push({
-        text: t('DownloadToSeeTheRestLine', { restLines }),
+        text: t('item.downloadToSeeTheRestLine', {
+          restLines,
+          count: restLines,
+        }),
         handler: this.handleDownload,
       });
     }

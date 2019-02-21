@@ -105,8 +105,8 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       await groupService.leaveTeam(userId, this.id);
     } catch (e) {
       this._onActionError(e, {
-        backendErrorMessage: 'leaveTeamServerErrorContent',
-        networkErrorMessage: 'leaveTeamNetworkErrorContent',
+        backendErrorMessage: 'people.prompt.leaveTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.leaveTeamNetworkErrorContent',
       });
     }
   }
@@ -117,20 +117,37 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
     try {
       await groupService.deleteTeam(this.id);
-      this._onDeleteTeamSuccess();
+      this._onActionSuccess('people.team.deleteTeamSuccessMsg');
       return true;
     } catch (e) {
       this._onActionError(e, {
-        backendErrorMessage: 'deleteTeamServerErrorContent',
-        networkErrorMessage: 'deleteTeamNetworkErrorContent',
+        backendErrorMessage: 'people.prompt.deleteTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.deleteTeamNetworkErrorContent',
       });
       return false;
     }
   }
 
-  private _onDeleteTeamSuccess = () => {
+  @action
+  archiveTeam = async () => {
+    const groupService: GroupService = GroupService.getInstance();
+
+    try {
+      await groupService.archiveTeam(this.id);
+      this._onActionSuccess('people.team.archiveTeamSuccessMsg');
+      return true;
+    } catch (e) {
+      this._onActionError(e, {
+        backendErrorMessage: 'people.prompt.archiveTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.archiveTeamNetworkErrorContent',
+      });
+      return false;
+    }
+  }
+
+  private _onActionSuccess = (message: string) => {
     Notification.flashToast({
-      message: 'deleteTeamSuccessMsg',
+      message,
       type: ToastType.SUCCESS,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,
@@ -195,12 +212,12 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
             codes: [ERROR_CODES_SERVER.ALREADY_TAKEN],
           })
       ) {
-        this.setNameError('alreadyTaken');
+        this.setNameError('people.prompt.alreadyTaken');
         return false;
       }
       if (errorHelper.isNetworkConnectionError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToSaveTheUpdate',
+          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdate',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
@@ -210,7 +227,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       }
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToSaveTheUpdateTryAgain',
+          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,

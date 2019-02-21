@@ -118,8 +118,8 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
             render={() => (
               <JuiConversationLoading
                 showTip={messageError}
-                tip={i18next.t('messageLoadingErrorTip')}
-                linkText={i18next.t('tryAgain')}
+                tip={i18next.t('message.prompt.MessageLoadingErrorTip')}
+                linkText={i18next.t('common.prompt.tryAgain')}
                 onClick={this.retryMessage}
               />
             )}

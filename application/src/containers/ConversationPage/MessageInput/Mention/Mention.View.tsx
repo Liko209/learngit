@@ -42,8 +42,8 @@ class MentionViewComponent extends Component<
               <JuiMentionPanelSectionHeader
                 title={t(
                   searchTerm && searchTerm.trim()
-                    ? 'suggested people'
-                    : 'team members',
+                    ? 'message.suggestedPeople'
+                    : 'message.teamMembers',
                 )}
               />
             )}

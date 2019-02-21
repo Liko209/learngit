@@ -27,7 +27,7 @@ export default function ({
   activityData?: { [key: string]: any };
 }) {
   let buildText: any = buildVerbArticleNounText;
-  let verb = 'created';
+  let verb = 'item.activity.created';
   let numerals = 0;
   let user = '';
   if (activityData) {
@@ -35,11 +35,13 @@ export default function ({
     switch (key) {
       case 'assigned_to_ids':
         buildText = buildVerbNounText;
-        verb = old_value.length ? 'reassigned' : 'assigned';
+        verb = old_value.length
+          ? 'item.activity.reassigned'
+          : 'item.activity.assigned';
         break;
       case 'complete_boolean':
         buildText = value ? buildVerbNounText : buildVerbNounAdjectivesText;
-        verb = value ? 'completed' : 'marked';
+        verb = value ? 'item.activity.completed' : 'item.activity.marked';
         break;
       case 'complete_percentage':
         numerals = old_value ? value - old_value : value;
@@ -47,18 +49,18 @@ export default function ({
           value === 100
             ? buildVerbNounText
             : buildVerbNumeralsPrepositionsNounText;
-        verb = 'completed';
+        verb = 'item.activity.completed';
         break;
       case 'complete_people_ids':
         const activityText = filterHTML(activity);
         user = activityText.slice(activityText.indexOf('for ') + 4);
         if (old_value && old_value.length > value.length) {
           buildText = buildVerbNounAdjectivesUserText;
-          verb = 'marked';
+          verb = 'item.activity.marked';
           break;
         }
         buildText = buildVerbNounUserText;
-        verb = 'completed';
+        verb = 'item.activity.completed';
         break;
     }
   }
@@ -67,7 +69,7 @@ export default function ({
     user,
     verb,
     numerals,
-    noun: 'task',
-    adjectives: 'incomplete',
+    noun: 'item.activity.task',
+    adjectives: 'item.activity.incomplete',
   });
 }

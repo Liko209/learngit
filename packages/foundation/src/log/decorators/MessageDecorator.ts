@@ -20,23 +20,24 @@ export class MessageDecorator implements ILogEntityDecorator {
     if (data.timestamp) {
       message = `${message}[${this._formatTime(data)}]`;
     }
-    data.params = data.params
-      .map((item) => {
-        const type = Object.prototype.toString.call(item);
-        // messageDecorator only deal with string, if want to support other type, please transform to stringg
-        if (type !== '[object String]') {
-          return type;
-        }
-        return item;
-      });
-    const paramsString = data.params
-      .join(' ');
+    const params = data.params.map((item: any) => {
+      const type = Object.prototype.toString.call(item);
+      // messageDecorator only deal with string, if want to support other type, please transform to stringg
+      if (type !== '[object String]') {
+        return type;
+      }
+      return item;
+    });
+    const paramsString = params.join(' ');
     data.message = `${data.sessionIndex} ${message} ${paramsString}`;
     data.size = data.message.length;
     return data;
   }
 
   private _formatTime(logEntity: LogEntity): string {
-    return this.dateFormatter.formatDate(new Date(logEntity.timestamp), DATE_FORMATTER.DEFAULT_DATE_FORMAT);
+    return this.dateFormatter.formatDate(
+      new Date(logEntity.timestamp),
+      DATE_FORMATTER.DEFAULT_DATE_FORMAT,
+    );
   }
 }
