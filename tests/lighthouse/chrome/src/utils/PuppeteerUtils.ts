@@ -17,6 +17,18 @@ class PuppeteerUtils {
   private _browsers = new Map<string, Browser>();
   private logger = logUtils.getLogger(__filename);
 
+  async scrollBy(page: Page, selector: string, x: number, y: number, options = {}): Promise<boolean> {
+    if (!(await this.waitForSelector(page, selector, options))) {
+      return false;
+    }
+
+    await page.$eval(selector, (node, x, y) => {
+      node.scrollBy(x, y);
+    }, x, y);
+
+    return true;
+  }
+
   /**
    * @description: wait for element appear by selector
    */

@@ -1,7 +1,7 @@
 {
-  "name": "jupiter-performance-tests",
+  "name": "jupiter-electron-performance-tests",
   "version": "0.0.1",
-  "description": "performance tests for Jupiter",
+  "description": "performance tests for Jupiter electron",
   "private": true,
   "main": "src/start.ts",
   "scripts": {
@@ -17,7 +17,7 @@
     "axios": "0.18.0",
     "btoa": "^1.2.1",
     "dotenv": "^6.1.0",
-    "lighthouse": "^4.0.0-beta",
+    "lighthouse": "^4.1.0",
     "log4js": "^3.0.6",
     "mysql2": "^1.6.4",
     "puppeteer": "^1.10.0",

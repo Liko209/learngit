@@ -3,6 +3,7 @@
  * @Date: 2019-01-11 10:11:03
  */
 import { Page } from "./Page";
+import * as bluebird from "bluebird";
 
 class ConversationPage extends Page {
   private progressbar: string =
@@ -10,6 +11,8 @@ class ConversationPage extends Page {
 
   private card: string =
     'div[data-test-automation-id="jui-stream"] section div[data-name="conversation-card"]';
+
+  private panel = 'div[data-test-automation-id="jui-stream-wrapper"] > div';
 
   async swichConversationById(id: string) {
     let conversation = `li[data-group-id="${id}"]`;
@@ -20,6 +23,11 @@ class ConversationPage extends Page {
     await this.utils.disappearForSelector(page, this.progressbar);
 
     await this.utils.waitForSelector(page, this.card);
+
+    await this.utils.scrollBy(page, this.panel, 0, -1000);
+    await this.utils.scrollBy(page, this.panel, 0, -1000);
+
+    await bluebird.delay(200);
   }
 }
 

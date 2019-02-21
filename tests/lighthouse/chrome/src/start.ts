@@ -37,15 +37,15 @@ const logger = logUtils.getLogger(__filename);
     // run scenes
     let host = process.env.JUPITER_HOST;
     let scenes: Array<Scene> = [
-      new LoginScene(`${host}`, taskDto),
-      new RefreshScene(`${host}`, taskDto),
-      new OfflineScene(`${host}`, taskDto),
+      // new LoginScene(`${host}`, taskDto),
+      // new RefreshScene(`${host}`, taskDto),
+      // new OfflineScene(`${host}`, taskDto),
       new SwitchConversationScene(`${host}`, taskDto, [
         "506503174",
         "506445830"
       ]),
-      new SearchScene(`${host}`, taskDto, ["John", "Doe", "Team", "kamino"]),
-      new FetchGroupScene(`${host}`, taskDto)
+      // new SearchScene(`${host}`, taskDto, ["John", "Doe", "Team", "kamino"]),
+      // new FetchGroupScene(`${host}`, taskDto)
     ];
 
     let result = true;
