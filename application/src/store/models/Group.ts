@@ -239,10 +239,12 @@ export default class GroupModel extends Base<Group> {
   @computed
   get canPost() {
     const groupService: GroupService = GroupService.getInstance();
-    return groupService.isCurrentUserHasPermission(
-      this.teamPermissionParams,
-      PERMISSION_ENUM.TEAM_POST,
-    );
+    return this.isMocked
+      ? true
+      : groupService.isCurrentUserHasPermission(
+          this.teamPermissionParams,
+          PERMISSION_ENUM.TEAM_POST,
+        );
   }
 
   static fromJS(data: Group) {

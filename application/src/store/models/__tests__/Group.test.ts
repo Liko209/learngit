@@ -134,6 +134,10 @@ describe('GroupModel', () => {
       } as Group);
       expect(gmAdmin.canPost).toBeTruthy();
     });
+    it('should return true when group data not ready', () => {
+      const gmAdmin = new GroupModel({ id: 1, isMocked: true } as Group);
+      expect(gmAdmin.canPost).toBeTruthy();
+    });
   });
   describe('isAdmin', () => {
     it('should return true when user is in admin.uids', () => {
