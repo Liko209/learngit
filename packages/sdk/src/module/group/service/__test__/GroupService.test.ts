@@ -239,8 +239,8 @@ describe('GroupService', () => {
         mockParams,
       );
       expect(mockIsCurrentUserHasPermission).toBeCalledWith(
-        mockParams,
         mockPermissionType,
+        mockParams,
       );
     });
   });
