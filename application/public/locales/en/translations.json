@@ -286,6 +286,7 @@
       "SetAsPublicTeam": "Public Team (visible to any co-worker)",
       "MembersMayPostMessages": "Allow members to post messages",
       "MembersMayAddOtherMembers": "Allow members to add other members",
+      "MembersMayPinPosts": "Allow members to pin posts",
       "teamName": "Team name",
       "teamDescription": "Team description",
       "allowTeamMembersTo": "Allow team members to",
