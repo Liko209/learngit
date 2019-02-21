@@ -1,7 +1,6 @@
 import * as assert from 'assert';
 import { H } from '../../../../helpers';
 import { BaseWebComponent } from "../../../BaseWebComponent";
-import { t } from 'testcafe';
 
 
 export class RightRail extends BaseWebComponent {
