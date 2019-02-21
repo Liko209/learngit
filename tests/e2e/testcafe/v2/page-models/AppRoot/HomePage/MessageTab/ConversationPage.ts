@@ -333,10 +333,22 @@ export class MentionPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
+
+  async waitUntilPostsBeLoaded(timeout = 20e3) {
+    await this.t.wait(1e3); // loading circle is invisible in first 1 second.
+    await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
+    await this.t.expect(this.title.withText("@Mentions").exists).ok();
+  }
 }
 export class BookmarkPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
+  }
+
+  async waitUntilPostsBeLoaded(timeout = 20e3) {
+    await this.t.wait(1e3); // loading circle is invisible in first 1 second.
+    await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
+    await this.t.expect(this.title.withText("Bookmarks").exists).ok();
   }
 }
 
