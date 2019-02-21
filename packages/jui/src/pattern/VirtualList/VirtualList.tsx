@@ -3,7 +3,7 @@
  * @Date: 2019-01-19 21:41:19
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { Component, ComponentType } from 'react';
 import {
   // AutoSizer,
   InfiniteLoader,
@@ -14,9 +14,11 @@ import {
 } from 'react-virtualized';
 import { JuiVirtualListWrapper } from './VirtualListWrapper';
 import { IVirtualListDataSource } from './VirtualListDataSource';
+import { withLoadingMore } from '../../hoc/withLoading';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
+  loadingMoreClass?: ComponentType;
   isLoading: boolean;
   width: number;
   height: number;
@@ -53,44 +55,49 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       return dataSource.cellAtIndex(index, style);
     }
 
-    return (
-      <div key={cellCount} style={style}>
-        {dataSource.moreLoader!()}
-      </div>
-    );
+    return <div key={cellCount} style={style} />;
   }
 
   render() {
-    const { isLoading, dataSource, width, height } = this.props;
+    const {
+      isLoading,
+      dataSource,
+      width,
+      height,
+      loadingMoreClass,
+    } = this.props;
     const cellCount = dataSource.countOfCell();
-    const rowCount = isLoading ? cellCount + 1 : cellCount;
+    const rowCount = cellCount;
     const { renderEmptyContent, onScroll = undefined } = dataSource;
+    const Wrapper = withLoadingMore(JuiVirtualListWrapper, loadingMoreClass);
     return (
-      <JuiVirtualListWrapper>
-        {cellCount === 0 && renderEmptyContent && renderEmptyContent()}
-        {rowCount !== 0 && (
-          <InfiniteLoader
-            rowCount={rowCount}
-            isRowLoaded={this.isRowLoaded}
-            loadMoreRows={this.loadMore}
-          >
-            {({ onRowsRendered, registerChild }) => (
-              <List
-                overscanRowCount={20}
-                rowCount={rowCount}
-                width={width}
-                height={height}
-                rowHeight={this._rowHeight}
-                ref={registerChild}
-                onScroll={onScroll}
-                noRowsRenderer={dataSource.renderEmptyContent}
-                onRowsRendered={onRowsRendered}
-                rowRenderer={this.rowRenderer}
-              />
-            )}
-          </InfiniteLoader>
-        )}
-      </JuiVirtualListWrapper>
+      <Wrapper viewRef={{} as any} loadingBottom={isLoading} loadingTop={false}>
+        <>
+          {cellCount === 0 && renderEmptyContent && renderEmptyContent()}
+          {rowCount !== 0 && (
+            <InfiniteLoader
+              rowCount={rowCount}
+              isRowLoaded={this.isRowLoaded}
+              loadMoreRows={this.loadMore}
+            >
+              {({ onRowsRendered, registerChild }) => (
+                <List
+                  overscanRowCount={20}
+                  rowCount={rowCount}
+                  width={width}
+                  height={height}
+                  rowHeight={this._rowHeight}
+                  ref={registerChild}
+                  onScroll={onScroll}
+                  noRowsRenderer={dataSource.renderEmptyContent}
+                  onRowsRendered={onRowsRendered}
+                  rowRenderer={this.rowRenderer}
+                />
+              )}
+            </InfiniteLoader>
+          )}
+        </>
+      </Wrapper>
     );
   }
 }

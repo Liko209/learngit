@@ -87,10 +87,6 @@ class ItemListView extends React.Component<ViewProps & Props>
     return <JuiRightRailContentLoading delay={500} />;
   }
 
-  moreLoader = () => {
-    return <JuiRightRailLoadingMore />;
-  }
-
   render() {
     const {
       totalCount,
@@ -111,6 +107,7 @@ class ItemListView extends React.Component<ViewProps & Props>
         )}
         {firstLoaded && (
           <JuiVirtualList
+            loadingMoreClass={JuiRightRailLoadingMore}
             dataSource={this}
             threshold={1}
             isLoading={loading}

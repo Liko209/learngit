@@ -8,7 +8,7 @@ import { withTheme } from 'styled-components';
 import ReactContentLoader from 'react-content-loader';
 import styled from '../../foundation/styled-components';
 import { ThemeProps } from '../../foundation/theme/theme';
-import { palette, height } from '../../foundation/utils';
+import { palette, height, spacing } from '../../foundation/utils';
 import { LoadingWrapper, Loading, Progress } from '../ConversationLoading';
 import { withDelay } from '../../hoc/withDelay';
 
@@ -81,7 +81,8 @@ const JuiRightRailContentLoading = withDelay(
 
 const LoadingMoreWrapper = styled.div`
   display: flex;
-  height: ${height(13)};
+  height: ${height(24)};
+  padding-top: ${spacing(8)};
   width: 100%;
 `;
 
