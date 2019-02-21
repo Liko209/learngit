@@ -117,7 +117,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
     try {
       await groupService.deleteTeam(this.id);
-      this._onDeleteTeamSuccess();
+      this._onActionSuccess('people.team.deleteTeamSuccessMsg');
       return true;
     } catch (e) {
       this._onActionError(e, {
@@ -128,9 +128,26 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     }
   }
 
-  private _onDeleteTeamSuccess = () => {
+  @action
+  archiveTeam = async () => {
+    const groupService: GroupService = GroupService.getInstance();
+
+    try {
+      await groupService.archiveTeam(this.id);
+      this._onActionSuccess('people.team.archiveTeamSuccessMsg');
+      return true;
+    } catch (e) {
+      this._onActionError(e, {
+        backendErrorMessage: 'people.prompt.archiveTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.archiveTeamNetworkErrorContent',
+      });
+      return false;
+    }
+  }
+
+  private _onActionSuccess = (message: string) => {
     Notification.flashToast({
-      message: 'people.team.deleteTeamSuccessMsg',
+      message,
       type: ToastType.SUCCESS,
       messageAlign: ToastMessageAlign.LEFT,
       fullWidth: false,

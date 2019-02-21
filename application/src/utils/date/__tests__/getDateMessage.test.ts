@@ -5,11 +5,20 @@
  */
 
 import moment from 'moment';
-import { getDateMessage } from '../';
+import { getDateMessage, handerTimeZoneOffset } from '../';
 
 jest.mock('i18next', () => ({
   t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
+
+describe('handerTimeZoneOffset()', () => {
+  it('should equal when get local timezone offset', () => {
+    const timestamp = Number(moment());
+    const localTimezoneOffset = new Date().getTimezoneOffset();
+    const result = handerTimeZoneOffset(timestamp, localTimezoneOffset);
+    expect(result).toEqual(timestamp);
+  });
+});
 
 describe('getDateMessage', () => {
   it('today', () => {

@@ -10,9 +10,11 @@ import { MessageTab } from './MessageTab';
 import { Header, joinTeamDialog } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
-import { TeamSettingDialog } from './TeamSetting';
+import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
-import { DeleteTeamDialog } from './DeleteTeam';
+import { DeleteTeamDialog } from './DeleteTeamDialog';
+import { ArchiveTeamDialog } from './ArchiveTeamDialog';
+
 import { AlertDialog } from "./AlertDialog";
 
 export class HomePage extends BaseWebComponent {
@@ -99,6 +101,10 @@ export class HomePage extends BaseWebComponent {
 
   get deleteTeamDialog() {
     return this.getComponent(DeleteTeamDialog);
+  }
+
+  get archiveTeamDialog() {
+    return this.getComponent(ArchiveTeamDialog);
   }
 
   get alertDialog() {

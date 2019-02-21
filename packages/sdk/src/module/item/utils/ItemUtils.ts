@@ -6,7 +6,6 @@
 
 import { FileItemUtils } from '../module/file/utils';
 import { GlipTypeUtil, TypeDictionary, TimeUtils } from '../../../utils';
-import { Item, SanitizedItem } from '../module/base/entity';
 
 class ItemUtils {
   static isValidItem<T extends { id: number; group_ids: number[] }>(
@@ -95,13 +94,6 @@ class ItemUtils {
 
       return result;
     };
-  }
-  static toSanitizedItem(item: Item) {
-    return {
-      id: item.id,
-      group_ids: item.group_ids,
-      created_at: item.created_at,
-    } as SanitizedItem;
   }
 }
 
