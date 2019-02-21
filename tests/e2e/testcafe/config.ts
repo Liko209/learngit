@@ -71,6 +71,7 @@ const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TA
 const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
 const MAX_RESOLUTION = (process.env.MAX_RESOLUTION || '1280x720').split('x').map(n => parseInt(n, 10));
 const ASSERTION_TIMEOUT = Number(process.env.ASSERTION_TIMEOUT) || 8e3;
+const SKIP_JS_ERROR = !(process.env.SKIP_JS_ERROR === 'false');
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -86,6 +87,7 @@ const RUNNER_OPTS = {
   STOP_ON_FIRST_FAIL,
   MAX_RESOLUTION,
   ASSERTION_TIMEOUT,
+  SKIP_JS_ERROR,
 }
 
 // beat dashboard configuration
