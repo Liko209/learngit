@@ -53,9 +53,7 @@ describe('RcInfoController', () => {
 
   describe('requestRcClientInfo()', () => {
     it('should send request and save to storage', async () => {
-      RcInfoApi.requestRcClientInfo = jest.fn().mockReturnValue({
-        expect: jest.fn().mockReturnValue('rcClientInfo'),
-      });
+      RcInfoApi.requestRcClientInfo = jest.fn().mockReturnValue('rcClientInfo');
       await rcInfoController.requestRcClientInfo();
       expect(RcInfoApi.requestRcClientInfo).toBeCalledTimes(1);
       expect(mockPut).toBeCalledWith('client_info', 'rcClientInfo');
@@ -64,9 +62,9 @@ describe('RcInfoController', () => {
 
   describe('requestRcAccountInfo()', () => {
     it('should send request and save to storage', async () => {
-      RcInfoApi.requestRcAccountInfo = jest.fn().mockReturnValue({
-        expect: jest.fn().mockReturnValue('rcAccountInfo'),
-      });
+      RcInfoApi.requestRcAccountInfo = jest
+        .fn()
+        .mockReturnValue('rcAccountInfo');
       await rcInfoController.requestRcAccountInfo();
       expect(RcInfoApi.requestRcAccountInfo).toBeCalledTimes(1);
       expect(mockPut).toBeCalledWith('account_info', 'rcAccountInfo');
@@ -75,9 +73,9 @@ describe('RcInfoController', () => {
 
   describe('requestRcExtensionInfo()', () => {
     it('should send request and save to storage', async () => {
-      RcInfoApi.requestRcExtensionInfo = jest.fn().mockReturnValue({
-        expect: jest.fn().mockReturnValue('rcExtensionInfo'),
-      });
+      RcInfoApi.requestRcExtensionInfo = jest
+        .fn()
+        .mockReturnValue('rcExtensionInfo');
       await rcInfoController.requestRcExtensionInfo();
       expect(RcInfoApi.requestRcExtensionInfo).toBeCalledTimes(1);
       expect(mockPut).toBeCalledWith('extension_info', 'rcExtensionInfo');
@@ -86,9 +84,9 @@ describe('RcInfoController', () => {
 
   describe('requestRcRolePermission()', () => {
     it('should send request and save to storage', async () => {
-      RcInfoApi.requestRcRolePermission = jest.fn().mockReturnValue({
-        expect: jest.fn().mockReturnValue('rcRolePermission'),
-      });
+      RcInfoApi.requestRcRolePermission = jest
+        .fn()
+        .mockReturnValue('rcRolePermission');
       await rcInfoController.requestRcRolePermission();
       expect(RcInfoApi.requestRcRolePermission).toBeCalledTimes(1);
       expect(mockPut).toBeCalledWith('role_permission', 'rcRolePermission');

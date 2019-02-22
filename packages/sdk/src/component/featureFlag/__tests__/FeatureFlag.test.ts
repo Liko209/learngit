@@ -85,8 +85,7 @@ describe('FeatureFlag', () => {
         get: jest.fn().mockReturnValue(undefined),
       });
       RcInfoApi.requestRcExtensionInfo = jest.fn().mockReturnValue({
-        isOk: jest.fn().mockReturnValue(true),
-        data: { serviceFeatures: [] },
+        serviceFeatures: [],
       });
       featureFlag.handleData = jest.fn();
       await featureFlag.getServicePermission();
