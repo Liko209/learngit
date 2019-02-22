@@ -41,7 +41,7 @@ class UnReadToggler extends BaseWebComponent {
 
   async isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('arrow_up').exists;
+    return await this.self.child().find('.arrow_up').exists;
   }
 
   private async turn(on: boolean) {
@@ -221,7 +221,7 @@ class ConversationListSection extends BaseWebComponent {
 
   get isExpand() {
     this.warnFlakySelector();
-    return this.self.child().withText('arrow_up').exists;
+    return this.self.child().find('.arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {
