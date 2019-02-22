@@ -137,10 +137,7 @@ class FilesView extends React.Component<FilesViewProps> {
         })}
         {files[FileType.others].map((file: ExtendFileItem) => {
           const { item } = file;
-          const { size, type, name, downloadUrl, id, isMocked } = item;
-          if (isMocked) {
-            return <div style={{ width: '100%', height: 60 }} />;
-          }
+          const { size, type, name, downloadUrl, id } = item;
           const iconType = getFileIcon(type);
           if (id < 0) {
             return this._renderItem(id, progresses, name);
