@@ -83,9 +83,9 @@ export abstract class BaseWebComponent {
 
   getSelectorByIcon(icon: string, root: Selector = null): Selector {
     if (root) {
-      return root.find('.material-icons').withExactText(icon);
+      return root.find(`.material-icons ${icon}`)
     } else {
-      return this.self.find('.material-icons').withExactText(icon);
+      return this.self.find(`.material-icons ${icon}`);
     }
   }
 
