@@ -6,7 +6,12 @@
 
 import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
-import { grey, height, spacing } from '../../foundation/utils/styles';
+import {
+  grey,
+  height,
+  spacing,
+  typography,
+} from '../../foundation/utils/styles';
 import { JuiDivider } from '../../components/Divider';
 
 const StyledBox = styled('div')`
@@ -22,6 +27,7 @@ const StyledDivider = styled(JuiDivider)`
 `;
 
 const StyledText = styled('div')`
+  ${typography('caption1')}
   position: absolute;
   bottom: ${spacing(3)};
   width: 100%;
