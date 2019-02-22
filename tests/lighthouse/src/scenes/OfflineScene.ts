@@ -7,7 +7,6 @@ import { sceneConfigFactory } from './config/SceneConfigFactory';
 import { LoginGatherer } from '../gatherers/LoginGatherer';
 import { HomePageGatherer } from '../gatherers/HomePageGatherer';
 import { OfflineGatherer } from '../gatherers/OfflineGatherer';
-import { mockHelper } from '../mock';
 
 class OfflineScene extends Scene {
 
@@ -25,8 +24,6 @@ class OfflineScene extends Scene {
         this.config.passes[0].gatherers.push({
             instance: new OfflineGatherer()
         });
-
-        mockHelper.open();
     }
 }
 

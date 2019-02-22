@@ -114,7 +114,7 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.ME) {
       const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
       if (person.displayName) {
-        return `${person.displayName} (${i18next.t('me')})`;
+        return `${person.displayName} (${i18next.t('message.meGroup')})`;
       }
       return '';
     }

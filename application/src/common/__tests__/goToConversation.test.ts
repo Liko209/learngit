@@ -8,8 +8,7 @@ import { service } from 'sdk';
 import { GroupService } from 'sdk/module/group';
 import { JNetworkError, ERROR_CODES_NETWORK } from 'sdk/error';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-import { goToConversation } from '@/common/goToConversation';
-import { ok, err } from 'foundation';
+import { goToConversation, DELAY_LOADING } from '@/common/goToConversation';
 import { PostService } from 'sdk/module/post';
 
 jest.mock('sdk/module/post');
@@ -40,7 +39,6 @@ describe('goToConversation()', () => {
     );
 
     expect(await goToConversation({ id: 1 })).toEqual(true);
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/1');
   });
 
@@ -49,7 +47,6 @@ describe('goToConversation()', () => {
       TypeDictionary.TYPE_ID_TEAM,
     );
     expect(await goToConversation({ id: 1 })).toEqual(true);
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/1');
   });
 
@@ -58,7 +55,6 @@ describe('goToConversation()', () => {
       TypeDictionary.TYPE_ID_CALL,
     );
     expect(await goToConversation({ id: 1 })).toEqual(false);
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
@@ -74,23 +70,19 @@ describe('getConversationId() with person type conversationId', () => {
   });
 
   it('groupService should return ok', async () => {
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-      ok({
-        id: 2,
-      }),
-    );
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
+    });
     expect(await goToConversation({ id: 1 })).toEqual(true);
     expect(groupService.getOrCreateGroupByMemberList).toHaveBeenCalledWith([1]);
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/2');
   });
 
   it('groupService should return err', async () => {
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
+      new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
     );
     expect(await goToConversation({ id: 1 })).toEqual(false);
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: 1 },
       error: true,
@@ -100,27 +92,23 @@ describe('getConversationId() with person type conversationId', () => {
 
 describe('getConversationId() with  multiple person type conversationId', () => {
   it('groupService should return ok', async () => {
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-      ok({
-        id: 2,
-      }),
-    );
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
+    });
     expect(await goToConversation({ id: [1, 2, 3] })).toEqual(true);
     expect(groupService.getOrCreateGroupByMemberList).toHaveBeenCalledWith([
       1,
       2,
       3,
     ]);
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/2');
   });
 
   it('groupService should return err', async () => {
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
+      new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
     );
     expect(await goToConversation({ id: [1, 2, 3] })).toEqual(false);
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3] },
       error: true,
@@ -131,11 +119,9 @@ describe('getConversationId() with  multiple person type conversationId', () => 
 describe('getConversationId() with message', () => {
   it('should show loading then open the conversation and send the message when success [JPT-692] [JPT-697]', async () => {
     postService.sendPost = jest.fn();
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-      ok({
-        id: 2,
-      }),
-    );
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
+    });
     const beforeJump = (id: number) =>
       postService.sendPost({ text: 'hahahah', groupId: 2 });
     expect(
@@ -150,14 +136,13 @@ describe('getConversationId() with message', () => {
       groupId: 2,
       text: 'hahahah',
     });
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/2');
   });
 
   it('should show loading then show error page if failed [JPT-280]', async () => {
     postService.sendPost = jest.fn();
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValueOnce(
-      err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockRejectedValueOnce(
+      new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, ''),
     );
     expect(
       await goToConversation({ id: [1, 2, 3], message: 'hahahah' }),
@@ -168,7 +153,6 @@ describe('getConversationId() with message', () => {
       3,
     ]);
     expect(postService.sendPost).not.toHaveBeenCalled();
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3], message: 'hahahah' },
       error: true,
@@ -178,11 +162,9 @@ describe('getConversationId() with message', () => {
   it('should show loading then show error page if failed [JPT-280]', async () => {
     postService.sendPost = jest.fn();
     (postService.sendPost as jest.Mock).mockRejectedValue(new Error());
-    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue(
-      ok({
-        id: 2,
-      }),
-    );
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockResolvedValue({
+      id: 2,
+    });
     const beforeJump = (id: number) =>
       postService.sendPost({ text: 'hahahah', groupId: 2 });
     expect(
@@ -197,10 +179,29 @@ describe('getConversationId() with message', () => {
       groupId: 2,
       text: 'hahahah',
     });
-    expect(history.push).toHaveBeenCalledWith('/messages/loading');
     expect(history.replace).toHaveBeenCalledWith('/messages/loading', {
       params: { id: [1, 2, 3], message: 'hahahah' },
       error: true,
     });
+  });
+});
+
+describe('has loading component', () => {
+  it('should be loading component when get conversation id greater than the maximum delay display loading time', async () => {
+    (groupService.getOrCreateGroupByMemberList as jest.Mock).mockImplementationOnce(
+      () => {
+        return new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve({
+              id: 1,
+            });
+          },         DELAY_LOADING * 2);
+        });
+      },
+    );
+    expect(await goToConversation({ id: 1 })).toEqual(true);
+    expect(groupService.getOrCreateGroupByMemberList).toHaveBeenCalledWith([1]);
+    expect(history.push).toHaveBeenCalledWith('/messages/loading');
+    expect(history.replace).toHaveBeenCalledWith('/messages/1');
   });
 });

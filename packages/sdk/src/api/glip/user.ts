@@ -55,7 +55,7 @@ function loginGlip(authData: object) {
     data: model,
     authFree: true,
   };
-  return Api.glipNetworkClient.http<Object>({
+  return Api.glipNetworkClient.rawRequest<Object>({
     ...query,
     via: NETWORK_VIA.HTTP,
   });

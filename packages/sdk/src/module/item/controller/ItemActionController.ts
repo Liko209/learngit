@@ -17,7 +17,7 @@ import {
 import notificationCenter from '../../../service/notificationCenter';
 import { ProgressService } from '../../progress';
 import { ENTITY } from '../../../service/eventKey';
-import { IItemService } from '../service/IItemService';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_FILE, 'file'],
@@ -31,6 +31,7 @@ const itemPathMap: Map<number, string> = new Map([
 class ItemActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
+    private _entitySourceController: IEntitySourceController<Item>,
   ) {}
 
   async doNotRenderItem(id: number, type: string) {
@@ -62,7 +63,7 @@ class ItemActionController {
     });
   }
 
-  async deleteItem(itemId: number, itemService: IItemService) {
+  async deleteItem(itemId: number) {
     if (itemId > 0) {
       const preHandlePartial = (
         partialItem: Partial<Raw<Item>>,
@@ -87,7 +88,7 @@ class ItemActionController {
         doUpdateModel,
       );
     } else {
-      await itemService.deleteLocalItem(itemId);
+      this._entitySourceController.delete(itemId);
       notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
       const progressService: ProgressService = ProgressService.getInstance();
       progressService.deleteProgress(itemId);

@@ -57,7 +57,7 @@ test(formalName('New event will show under Events tab', ['Shining', 'P1', 'JPT-8
   await h(t).withLog('Then The new events shows under Events tab immediately', async () => {
     await rightRail.eventsTab.waitUntilItemsListExist();
     await rightRail.eventsTab.countInListShouldBe(1);
-    await rightRail.eventsTab.countOnSubTitleShouldBe(1);
+    // await rightRail.eventsTab.countOnSubTitleShouldBe(1);
     await eventsTab.nthItemTitleShouldBe(0, eventTitle);
   });
 });
@@ -168,7 +168,7 @@ test(formalName('Deleted event will NOT show under Events tab', ['Shining', 'P2'
     await rightRail.eventsTab.waitUntilItemsListExist();
     await rightRail.eventsTab.shouldHasTitle(eventTitle);
     await rightRail.eventsTab.countInListShouldBe(2);
-    await rightRail.eventsTab.countOnSubTitleShouldBe(2);
+    // await rightRail.eventsTab.countOnSubTitleShouldBe(2);
   });
 
   // step 3 delete a event
@@ -181,6 +181,6 @@ test(formalName('Deleted event will NOT show under Events tab', ['Shining', 'P2'
   await h(t).withLog(`Then The 'Event A' is removed from Events tab immediately`, async () => {
     await rightRail.eventsTab.shouldHasNoTitle(eventTitle);
     await rightRail.eventsTab.countInListShouldBe(1);
-    await rightRail.eventsTab.countOnSubTitleShouldBe(1);
+    // await rightRail.eventsTab.countOnSubTitleShouldBe(1);
   });
 });

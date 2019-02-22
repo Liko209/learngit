@@ -3,57 +3,85 @@
  * @Date: 2019-01-24 13:35:29
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { JuiFade } from 'jui/foundation/Transitions';
+import { withDelay } from 'jui/hoc/withDelay';
 
 type PreloadImgProps = {
   url?: string;
   placeholder: React.ReactNode;
   children: React.ReactNode;
+  animationForLoad?: boolean;
+};
+
+type PreloadImgState = {
+  loaded: boolean;
+  isError: boolean;
 };
 
 const cacheUrl = {};
+const DELAY_SHOW_PLACEHOLDER_TIME = 500;
 
-class PreloadImg extends Component<PreloadImgProps> {
-  state = { loaded: false, isError: false };
-  img: any;
+const DelayWrapper = withDelay(Fragment);
+
+class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
+  constructor(props: PreloadImgProps) {
+    super(props);
+    this.state = {
+      loaded: false,
+      isError: false,
+    };
+  }
 
   handleLoad = () => {
     const { url } = this.props;
-
-    this.setState({ loaded: true });
     if (url) cacheUrl[url] = true;
+    this.setState({ loaded: true });
   }
 
   handleError = () => {
-    this.setState({ isError: true, loaded: true });
+    const { url } = this.props;
+    if (url) {
+      this.setState({ isError: true, loaded: true });
+    }
   }
 
   render() {
-    const { children, placeholder, url } = this.props;
+    const { children, placeholder, url, animationForLoad } = this.props;
     const { loaded, isError } = this.state;
 
-    if (loaded && !isError) {
-      return (
-        <JuiFade in={true} timeout={1500}>
+    if (url && cacheUrl[url]) {
+      return animationForLoad ? (
+        <JuiFade in={true} timeout={700}>
           {children}
         </JuiFade>
+      ) : (
+        children
       );
     }
 
-    if (url && cacheUrl[url]) {
-      return children;
+    if (isError) {
+      return placeholder;
     }
 
     return (
       <>
-        <img
-          src={url}
-          onLoad={this.handleLoad}
-          onError={this.handleError}
-          style={{ display: 'none' }}
-        />
-        {placeholder}
+        {url && (
+          <img
+            src={url}
+            onLoad={this.handleLoad}
+            onError={this.handleError}
+            style={{ display: 'none' }}
+          />
+        )}
+        {!loaded && (
+          <DelayWrapper
+            delay={DELAY_SHOW_PLACEHOLDER_TIME}
+            placeholder={<div style={{ opacity: 0 }}>{children}</div>}
+          >
+            {placeholder}
+          </DelayWrapper>
+        )}
       </>
     );
   }

@@ -72,26 +72,26 @@ class AvatarActionsView extends React.Component<ViewProps> {
         <JuiMenuList data-test-automation-id="avatarMenu">
           <JuiMenuItem
             onClick={this.handleViewYourProfile}
-            aria-label={i18next.t('viewYourProfile')}
+            aria-label={i18next.t('home.viewYourProfile')}
             data-test-automation-id="viewYourProfile"
           >
-            {i18next.t('Profile')}
+            {i18next.t('people.team.profile')}
           </JuiMenuItem>
           {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}
-              aria-label={i18next.t('AboutRingCentral')}
+              aria-label={i18next.t('home.aboutRingCentral')}
               data-test-automation-id="aboutPage"
             >
-              {i18next.t('AboutRingCentral')}
+              {i18next.t('home.aboutRingCentral')}
             </JuiMenuItem>
           )}
           <JuiMenuItem
             onClick={handleSignOut}
-            aria-label={i18next.t('SignOut')}
+            aria-label={i18next.t('auth.signOut')}
             data-test-automation-id="signOut"
           >
-            {i18next.t('SignOut')}
+            {i18next.t('auth.signOut')}
           </JuiMenuItem>
         </JuiMenuList>
       </JuiAvatarActions>

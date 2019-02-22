@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable, comparer } from 'mobx';
+import { computed, observable, comparer, action } from 'mobx';
 import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/utils';
 import { Item } from 'sdk/module/item/entity';
@@ -13,6 +13,7 @@ import { getEntity } from '@/store/utils';
 import FileItemModel, { FileType } from '@/store/models/FileItem';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getFileType } from '@/common/getFileType';
+import { getThumbnailURL } from '@/common/getThumbnailURL';
 import { Props, ViewProps } from './types';
 
 type Size = {
@@ -75,6 +76,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
     return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
   }
 
+  @action
   private _getThumbsUrlWithSize = async () => {
     const itemService = ItemService.getInstance() as ItemService;
 
@@ -88,24 +90,31 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get fileTypeOrUrl() {
+    const file = this.file;
     const thumb = {
-      icon: '',
+      icon: file.iconType || '',
       url: '',
     };
 
-    if (this.file && this.file.type) {
-      // const { previewUrl, isImage } = this.isImage(this.file);
-      // if (isImage) {
-      if (FileItemUtils.isSupportPreview(this.file)) {
-        thumb.url = this._thumbsUrlWithSize;
-        return thumb;
+    if (file && file.type) {
+      let url;
+      if (FileItemUtils.isGifItem(file)) {
+        url = file.versionUrl;
+      } else {
+        url = getThumbnailURL(file, this._size);
       }
-      // thumb.url = previewUrl;
-      // return thumb;
-      // }
-
-      thumb.icon = this.file.iconType;
-      return thumb;
+      if (
+        !url &&
+        FileItemUtils.isSupportPreview(file) &&
+        file.origHeight &&
+        file.origWidth
+      ) {
+        url = this._thumbsUrlWithSize;
+      }
+      if (!url) {
+        url = file.versionUrl;
+      }
+      thumb.url = url;
     }
     return thumb;
   }

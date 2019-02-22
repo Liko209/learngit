@@ -47,7 +47,7 @@ const Icon = withDelay(() => <JuiIconography>image_preview</JuiIconography>);
 const JuiDelayPlaceholder = (props: SizeType) => (
   <Jui.ImageCard width={props.width} height={props.height}>
     <Wrapper>
-      <Icon delay={300} />
+      <Icon delay={400} />
     </Wrapper>
   </Jui.ImageCard>
 );

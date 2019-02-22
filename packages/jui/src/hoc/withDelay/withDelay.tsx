@@ -3,9 +3,9 @@
  * @Date: 2018-11-07 19:14:28
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ComponentType, ComponentClass } from 'react';
+import React, { ComponentType, ComponentClass, ReactNode } from 'react';
 
-type Props = { delay: number; placeholder?: JSX.Element };
+type Props = { delay: number; placeholder?: ReactNode };
 type States = { visible: boolean };
 
 function withDelay<T>(Component: ComponentType<T>): ComponentClass<Props | T> {

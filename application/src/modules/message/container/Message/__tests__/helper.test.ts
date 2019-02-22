@@ -4,14 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 jest.mock('sdk/module/state');
-jest.mock('sdk/service/profile');
+jest.mock('sdk/module/profile');
 jest.mock('sdk/module/group');
 jest.mock('@/history');
 jest.mock('@/store');
 jest.mock('@/store/handler/SectionGroupHandler');
 
+import { ProfileService } from 'sdk/module/profile';
 import { GroupService } from 'sdk/module/group';
-import { ProfileService } from 'sdk/service/profile';
 import { StateService } from 'sdk/module/state';
 import history from '@/history';
 import storeManager from '@/store';
@@ -164,7 +164,7 @@ describe('ensureGroupOpened', () => {
       .mockResolvedValueOnce(true);
     mockedProfileService.reopenConversation = jest
       .fn()
-      .mockResolvedValueOnce({ isErr: () => true });
+      .mockRejectedValueOnce(new Error('test'));
     MessageRouterChangeHelper.handleSourceOfRouter(110);
     setTimeout(() => {
       expect(mockedProfileService.reopenConversation).toHaveBeenCalled();

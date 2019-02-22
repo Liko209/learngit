@@ -10,9 +10,9 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, CONFIG, SOCKET } from '../../../service/eventKey';
 import { daoManager, ConfigDao } from '../../../dao';
 import SocketIO from '../__mocks__/socket';
-import { SocketClient } from 'foundation';
+import { SocketClient } from 'foundation/src/network/client/socket';
 
-jest.mock('foundation');
+jest.mock('foundation/src/network/client/socket');
 jest.mock('../../../dao');
 const mockedSetReconnection = jest.fn((bOn: boolean) => {});
 SocketFSM.prototype = {

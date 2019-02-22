@@ -10,6 +10,7 @@ import styled from '../../foundation/styled-components';
 import { ThemeProps } from '../../foundation/theme/theme';
 import { palette, height } from '../../foundation/utils';
 import { LoadingWrapper, Loading, Progress } from '../ConversationLoading';
+import { withDelay } from '../../hoc/withDelay';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -68,13 +69,15 @@ type JuiRightRailContentLoadingProps = {
   onClick?: () => void;
 };
 
-const JuiRightRailContentLoading = (props: JuiRightRailContentLoadingProps) => {
-  return (
-    <LoadingWrapper>
-      <Loading>{props.loading !== false && <Progress />}</Loading>
-    </LoadingWrapper>
-  );
-};
+const JuiRightRailContentLoading = withDelay(
+  (props: JuiRightRailContentLoadingProps) => {
+    return (
+      <LoadingWrapper>
+        <Loading>{props.loading !== false && <Progress />}</Loading>
+      </LoadingWrapper>
+    );
+  },
+);
 
 const LoadingMoreWrapper = styled.div`
   display: flex;

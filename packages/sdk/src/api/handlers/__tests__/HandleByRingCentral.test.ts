@@ -141,7 +141,7 @@ describe('HandleByRingCentral', () => {
         refresh_token_expires_in: 6000,
       };
       const refreshToken = HandleByRingCentral.doRefreshToken(originToken);
-      return expect(refreshToken).rejects.toEqual(originToken);
+      await expect(refreshToken).rejects.toEqual(originToken);
     });
 
     it('should resolve if refresh success', async () => {
@@ -163,7 +163,7 @@ describe('HandleByRingCentral', () => {
         refresh_token_expires_in: 6000,
       };
       const refreshToken = HandleByRingCentral.doRefreshToken(originToken);
-      return expect(refreshToken).resolves.toEqual({
+      await expect(refreshToken).resolves.toEqual({
         expires_in: 6001,
         access_token: 'accessToken',
         refresh_token: 'refreshToken',

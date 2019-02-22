@@ -1,16 +1,9 @@
 /// <reference path="../../../../__tests__/types.d.ts" />
-import {
-  BaseResponse,
-  err,
-  ERROR_CODES_NETWORK,
-  JNetworkError,
-  ok,
-} from 'foundation';
+import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation';
 import _ from 'lodash';
 
 import { groupFactory } from '../../../../__tests__/factories';
 import { Api } from '../../../../api';
-import { ApiResultErr, ApiResultOk } from '../../../../api/ApiResult';
 import GroupAPI from '../../../../api/glip/group';
 import {
   AccountDao,
@@ -29,8 +22,8 @@ import { IRequestController } from '../../../../framework/controller/interface/I
 import { UserConfig } from '../../../../service/account/UserConfig';
 import CompanyService from '../../../../service/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
+import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
-import ProfileService from '../../../../service/profile';
 import { TypeDictionary } from '../../../../utils';
 import { PersonService } from '../../../person';
 import { Person } from '../../../person/entity';
@@ -44,7 +37,7 @@ jest.mock('../../../../dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
-jest.mock('../../../../service/profile');
+jest.mock('../../../profile');
 jest.mock('../../../../service/account/UserConfig');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../service/company');
@@ -186,7 +179,7 @@ describe('GroupFetchDataController', () => {
       const result1 = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(result1).toHaveProperty('data', mockNormal);
+      expect(result1).toEqual(mockNormal);
     });
 
     it('should return result with group if it can get from remote', async () => {
@@ -194,26 +187,27 @@ describe('GroupFetchDataController', () => {
       const memberIDs = [1, 2];
       jest
         .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(ok(mockNormal));
+        .mockResolvedValueOnce(mockNormal);
       groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
       const result = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(result).toHaveProperty('data', mockNormal);
+      expect(result).toEqual(mockNormal);
     });
 
     it('should return result with error if it can not get from remote', async () => {
       const memberIDs = [1, 2];
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+        '',
+      );
       jest
         .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(
-          err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
-        );
+        .mockRejectedValueOnce(error);
       groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
-      const result = await groupFetchDataController.getOrCreateGroupByMemberList(
-        memberIDs,
-      );
-      expect(result.isErr()).toBe(true);
+      await expect(
+        groupFetchDataController.getOrCreateGroupByMemberList(memberIDs),
+      ).rejects.toEqual(error);
     });
   });
 
@@ -222,38 +216,25 @@ describe('GroupFetchDataController', () => {
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(1); // userId
 
-    const mockNormal = new ApiResultOk({ _id: 1 }, {
-      status: 200,
-      headers: {},
-    } as BaseResponse);
+    const mockNormal = { _id: 1 };
     GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
     const result1 = await groupFetchDataController.requestRemoteGroupByMemberList(
       [1, 2],
     );
-    expect(result1).toHaveProperty('data', { id: 1 });
+    expect(result1).toEqual({ id: 1 });
 
-    const mockEmpty = new ApiResultOk(null, {
-      status: 200,
-      headers: {},
-    } as BaseResponse);
+    const mockEmpty = null;
     GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
     const result2 = await groupFetchDataController.requestRemoteGroupByMemberList(
       [1, 2],
     );
-    expect(result2).toHaveProperty('data', null);
+    expect(result2).toEqual(null);
 
-    const mockError = new ApiResultErr(
-      new JNetworkError(ERROR_CODES_NETWORK.FORBIDDEN, ''),
-      {
-        status: 403,
-        headers: {},
-      } as BaseResponse,
-    );
-    GroupAPI.requestNewGroup.mockResolvedValue(mockError);
-    const result3 = await groupFetchDataController.requestRemoteGroupByMemberList(
-      [1, 2],
-    );
-    expect(result3.isOk()).toBe(false);
+    const mockError = new JNetworkError(ERROR_CODES_NETWORK.FORBIDDEN, '');
+    GroupAPI.requestNewGroup.mockRejectedValue(mockError);
+    await expect(
+      groupFetchDataController.requestRemoteGroupByMemberList([1, 2]),
+    ).rejects.toEqual(mockError);
   });
 
   it('getGroupByPersonId()', async () => {
@@ -264,7 +245,7 @@ describe('GroupFetchDataController', () => {
     accountDao.get.mockReturnValue(1); // userId
     groupDao.queryGroupByMemberList.mockResolvedValue(mock);
     const result1 = await groupFetchDataController.getGroupByPersonId(2);
-    expect(result1).toHaveProperty('data', mock);
+    expect(result1).toEqual(mock);
   });
 
   describe('get left rail conversations', () => {
@@ -637,13 +618,13 @@ describe('GroupFetchDataController', () => {
       );
       expect(UserConfig.getCurrentUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(result1).toHaveProperty('data', mockNormal);
+      expect(result1).toEqual(mockNormal);
     });
 
     it('group not exist in DB already, request from server', async () => {
       jest
         .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(ok(mockNormal)); // first call
+        .mockResolvedValueOnce(mockNormal); // first call
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
       const result2 = await groupFetchDataController.getOrCreateGroupByMemberList(
@@ -651,21 +632,22 @@ describe('GroupFetchDataController', () => {
       );
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(UserConfig.getCurrentUserId).toBeCalled();
-      expect(result2).toHaveProperty('data', mockNormal);
+      expect(result2).toEqual(mockNormal);
     });
 
     it('throw error ', async () => {
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+        '',
+      );
       jest
         .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(
-          err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
-        );
+        .mockRejectedValueOnce(error);
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(null);
-      const result = await groupFetchDataController.getOrCreateGroupByMemberList(
-        memberIDs,
-      );
-      expect(result.isOk()).toBe(false);
+      expect(
+        groupFetchDataController.getOrCreateGroupByMemberList(memberIDs),
+      ).rejects.toBe(error);
     });
   });
 
@@ -680,16 +662,11 @@ describe('GroupFetchDataController', () => {
     });
     it('should return a group when request success', async () => {
       const data = { _id: 1 };
-      GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new ApiResultOk(data, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      GroupAPI.requestNewGroup.mockResolvedValueOnce(data);
       const result = await groupFetchDataController.requestRemoteGroupByMemberList(
         [1, 2],
       );
-      expect(result).toHaveProperty('data', { id: 1 });
+      expect(result).toEqual({ id: 1 });
       expect(GroupAPI.requestNewGroup).toBeCalledWith(
         expect.objectContaining({
           members: [1, 2, 3],
@@ -701,19 +678,14 @@ describe('GroupFetchDataController', () => {
     });
 
     it('should throw an error when exception happened ', async () => {
-      GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new ApiResultErr(
-          new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, 'error'),
-            {
-              status: 500,
-              headers: {},
-            } as BaseResponse,
-        ),
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+        'error',
       );
-      const result = await groupFetchDataController.requestRemoteGroupByMemberList(
-        [1, 2],
-      );
-      expect(result.isErr()).toBe(true);
+      GroupAPI.requestNewGroup.mockRejectedValueOnce(error);
+      await expect(
+        groupFetchDataController.requestRemoteGroupByMemberList([1, 2]),
+      ).rejects.toEqual(error);
     });
   });
 

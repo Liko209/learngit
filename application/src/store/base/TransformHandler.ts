@@ -17,7 +17,7 @@ abstract class TransformHandler<T, K extends IdModel> {
     protected _orderListHandler: FetchSortableDataListHandler<K>,
     public listStore = new ListStore<T>(),
   ) {
-    this._orderListHandler.setUpDataChangeCallback(this._modificationHandler);
+    this._orderListHandler.setDataChangeCallback(this._modificationHandler);
     this.fetchData = async (...args) => {
       return this._orderListHandler.fetchData(...args);
     };

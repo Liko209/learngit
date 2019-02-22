@@ -6,21 +6,14 @@
 
 import { ISubItemService } from '../../base/service/ISubItemService';
 import { EntityBaseService } from '../../../../../framework/service';
-import { IItemService } from '../../../service/IItemService';
 import { ItemQueryOptions } from '../../../types';
 import { CodeItem } from '../entity';
 
 class CodeItemService extends EntityBaseService<CodeItem>
   implements ISubItemService {
-  constructor(itemService: IItemService) {
+  constructor() {
     super(false);
   }
-
-  async updateLocalItem(file: CodeItem) {}
-
-  async deleteLocalItem(itemId: number) {}
-
-  async createLocalItem(file: CodeItem) {}
 
   async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
     return [];
