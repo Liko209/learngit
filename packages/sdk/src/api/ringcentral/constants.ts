@@ -15,5 +15,19 @@ const RINGCENTRAL_API = {
   API_ACCOUNT_INFO: `/${API_VERSION}/account/~`,
   API_EXTENSION_INFO: `/${API_VERSION}/account/~/extension/~`,
   API_ROLE_PERMISSION: `/${API_VERSION}/account/~/extension/~/authz-profile`,
+  API_SPECIAL_SERVICE_NUMBER: `/${API_VERSION}/client-info/special-number-rule`,
+  API_PHONE_PARSER_DATA: `/${API_VERSION}/number-parser/phonedata.xml`,
+  API_DIALING_PLAN: `/${API_VERSION}/account/~/dialing-plan`,
+  API_EXTENSION_PHONE_NUMBER: `/${API_VERSION}/account/~/extension/~/phone-number`,
 };
-export { RINGCENTRAL_API };
+
+const HTTP_HEADER_KEY = {
+  ACCEPT: 'Accept',
+  IF_NONE_MATCH: 'If-None-Match',
+};
+
+const CONTENT_TYPE = {
+  XML: 'application/xml',
+};
+
+export { RINGCENTRAL_API, HTTP_HEADER_KEY, CONTENT_TYPE };
