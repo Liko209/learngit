@@ -12,7 +12,9 @@ class LoginGatherer extends Gatherer {
 
     let homePage = new HomePage(passContext);
 
-    let authUrl = await jupiterUtils.getAuthUrl(url);
+    let browser = await homePage.browser();
+
+    let authUrl = await jupiterUtils.getAuthUrl(url, browser);
     let page = await homePage.newPage();
 
     await page.goto(authUrl);
@@ -26,7 +28,7 @@ class LoginGatherer extends Gatherer {
     return {};
   }
 
-  pass(passContext) {}
+  pass(passContext) { }
 }
 
 export { LoginGatherer };

@@ -34,6 +34,7 @@ async function runTests(runnerOpts) {
       skipUncaughtErrors: true, 
       skipJsErrors: true,
       stopOnFirstFail: runnerOpts.STOP_ON_FIRST_FAIL, 
+      assertionTimeout: runnerOpts.ASSERTION_TIMEOUT,
      });
   } finally {
     await testCafe.close();

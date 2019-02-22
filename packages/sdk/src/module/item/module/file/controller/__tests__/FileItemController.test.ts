@@ -7,14 +7,14 @@
 import { FileItemController } from '../FileItemController';
 import { FileUploadController } from '../FileUploadController';
 import { IItemService } from '../../../../service/IItemService';
-import { daoManager, ItemDao } from '../../../../../../dao';
+import { daoManager } from '../../../../../../dao';
+import { ItemDao } from '../../../../dao';
 import {
   buildEntitySourceController,
   buildPartialModifyController,
   buildRequestController,
   buildEntityPersistentController,
 } from '../../../../../../framework/controller';
-import { FileItem } from '../../entity/FileItem';
 import { Api } from '../../../../../../api';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
@@ -27,7 +27,7 @@ jest.mock(
 );
 jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../api');
-jest.mock('../../../../../../dao');
+jest.mock('../../../../dao');
 jest.mock('../FileUploadController');
 jest.mock('../../../../../../framework/controller');
 
@@ -42,7 +42,7 @@ describe('FileItemController', () => {
   const itemDao = new ItemDao(null);
   const itemService = {} as IItemService;
   function setup() {
-    fileItemController = new FileItemController(itemService);
+    fileItemController = new FileItemController();
 
     Object.defineProperty(Api, 'glipNetworkClient', {
       get: jest.fn(() => {

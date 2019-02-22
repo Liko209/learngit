@@ -32,11 +32,61 @@ describe('CreateTeamView', () => {
         handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => {},
         handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => {},
         handleSearchContactChange: (items: any) => {},
-        serverUnknownError: true,
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       shallow(<CreateTeamComponent {...props} />);
-      expect(Notification.flashToast).toHaveBeenCalled();
+      expect(Notification.flashToast).toHaveBeenCalledTimes(0);
+    });
+  });
+
+  describe('createTeam()', () => {
+    it('should call create with correct teamSetting', () => {
+      const mockCreate = jest.fn();
+      const props: any = {
+        create: mockCreate,
+        teamName: 'teamName',
+        description: 'teamDescription',
+        members: 'teamMember',
+      };
+      const view = new CreateTeamComponent(props);
+      const items = [
+        {
+          type: 'isPublic',
+          text: 'people.team.SetAsPublicTeam',
+          checked: false,
+        },
+        {
+          type: 'canPost',
+          text: 'people.team.MembersMayPostMessages',
+
+          checked: true,
+        },
+        {
+          type: 'canAddMember',
+          text: 'people.team.MembersMayAddOtherMembers',
+          checked: true,
+        },
+        {
+          type: 'canPin',
+          text: 'people.team.MembersMayPinPosts',
+          checked: true,
+        },
+      ];
+      Object.assign(view.state, { items });
+      view.createTeam();
+      expect(mockCreate).toBeCalled();
+
+      const expectResult = {
+        name: props.teamName,
+        description: props.description,
+        isPublic: false,
+        permissionFlags: {
+          TEAM_ADD_MEMBER: true,
+          TEAM_POST: true,
+          TEAM_PIN_POST: true,
+        },
+      };
+      expect(mockCreate).toBeCalledWith(props.members, expectResult);
     });
   });
 });

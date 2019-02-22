@@ -6,9 +6,9 @@
 import { observable, action, computed } from 'mobx';
 import { debounce } from 'lodash';
 
-import PersonService from 'sdk/service/person';
+import { PersonService } from 'sdk/module/person';
 import { Person } from 'sdk/module/person/entity';
-import { SortableModel } from 'sdk/models';
+import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, SelectedMember } from './types';
 

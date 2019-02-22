@@ -4,11 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
+export {
+  CALL_ID_USAGE_TYPE,
+  PHONE_NUMBER_TYPE,
+  PhoneNumberInfo,
+  SortingOrder,
+} from './types';
+
+export {
   PhoneNumberModel,
   SanitizedExtensionModel,
   Person,
   HeadShotModel,
 } from './Person';
-
-export { PhoneNumberModel, SanitizedExtensionModel, Person, HeadShotModel };

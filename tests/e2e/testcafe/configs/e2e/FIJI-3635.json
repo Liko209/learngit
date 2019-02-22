@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile/ChangeTeamAdmin.ts"
+    ],
+    "include_tags": [
+      "JPT-1092"
+    ],
+    "EXCLUDE_TAGS": [],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

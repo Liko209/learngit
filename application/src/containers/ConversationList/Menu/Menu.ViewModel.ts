@@ -5,7 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { service } from 'sdk';
+import { ProfileService } from 'sdk/module/profile';
 import { Profile } from 'sdk/module/profile/entity';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';
@@ -15,10 +15,8 @@ import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
 
-const { GroupService } = service;
-
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
-  private _groupService: service.GroupService = GroupService.getInstance();
+  private _profileService: ProfileService = ProfileService.getInstance();
   @computed
   get personId() {
     return this.props.personId;
@@ -51,7 +49,9 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
 
   @computed
   get favoriteText() {
-    return this.isFavorite ? 'remove_from_favorites' : 'Favorite';
+    return this.isFavorite
+      ? 'people.team.removeFromFavorites'
+      : 'people.team.favorite';
   }
 
   @computed
@@ -77,14 +77,14 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   toggleFavorite = () => {
-    return this._groupService.markGroupAsFavorite(
+    return this._profileService.markGroupAsFavorite(
       this.groupId,
       !this.isFavorite,
     );
   }
 
   closeConversation = (shouldSkipNextTime: boolean) => {
-    return this._groupService.hideConversation(
+    return this._profileService.hideConversation(
       this.groupId,
       true,
       shouldSkipNextTime,

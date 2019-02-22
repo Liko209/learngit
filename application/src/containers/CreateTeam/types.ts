@@ -5,9 +5,13 @@
  */
 import { RouteComponentProps } from 'react-router-dom';
 import { WithNamespaces } from 'react-i18next';
+import { Group, TeamSetting } from 'sdk/module/group';
 
 type ViewProps = WithNamespaces & {
-  create: Function;
+  create: (
+    memberIds: (number | string)[],
+    options: TeamSetting,
+  ) => Promise<Group | null>;
   disabledOkBtn: boolean;
   isOffline: boolean;
   nameError: boolean;
@@ -22,7 +26,6 @@ type ViewProps = WithNamespaces & {
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchContactChange: (items: any) => void;
-  serverUnknownError: boolean;
 } & RouteComponentProps;
 
 export { ViewProps };

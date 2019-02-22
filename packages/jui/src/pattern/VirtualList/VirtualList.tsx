@@ -17,7 +17,6 @@ import { IVirtualListDataSource } from './VirtualListDataSource';
 
 type JuiVirtualListProps = {
   dataSource: IVirtualListDataSource;
-  isLoading: boolean;
   width: number;
   height: number;
   threshold?: number;
@@ -25,7 +24,6 @@ type JuiVirtualListProps = {
 
 class JuiVirtualList extends Component<JuiVirtualListProps> {
   static defaultProps = {
-    isLoading: false,
     threshold: 1,
   };
 
@@ -33,10 +31,8 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
     this.props.dataSource.fixedCellHeight!()
 
   loadMore = async ({ startIndex, stopIndex }: IndexRange) => {
-    const { isLoading, dataSource } = this.props;
-    if (!isLoading) {
-      return await dataSource.loadMore!(startIndex, stopIndex);
-    }
+    const { dataSource } = this.props;
+    return await dataSource.loadMore!(startIndex, stopIndex);
   }
 
   isRowLoaded = ({ index }: Index) => {
@@ -53,42 +49,41 @@ class JuiVirtualList extends Component<JuiVirtualListProps> {
       return dataSource.cellAtIndex(index, style);
     }
 
-    return (
-      <div key={cellCount} style={style}>
-        {dataSource.moreLoader!()}
-      </div>
-    );
+    return <div key={cellCount} style={style} />;
   }
 
   render() {
-    const { isLoading, dataSource, width, height } = this.props;
+    const { dataSource, width, height } = this.props;
     const cellCount = dataSource.countOfCell();
-    const rowCount = isLoading ? cellCount + 1 : cellCount;
-    const { renderEmptyContent } = dataSource;
+    const rowCount = cellCount;
+    const { renderEmptyContent, onScroll = undefined } = dataSource;
     return (
       <JuiVirtualListWrapper>
-        {cellCount === 0 && renderEmptyContent && renderEmptyContent()}
-        {rowCount !== 0 && (
-          <InfiniteLoader
-            rowCount={rowCount}
-            isRowLoaded={this.isRowLoaded}
-            loadMoreRows={this.loadMore}
-          >
-            {({ onRowsRendered, registerChild }) => (
-              <List
-                overscanRowCount={20}
-                rowCount={rowCount}
-                width={width}
-                height={height}
-                rowHeight={this._rowHeight}
-                ref={registerChild}
-                noRowsRenderer={dataSource.renderEmptyContent}
-                onRowsRendered={onRowsRendered}
-                rowRenderer={this.rowRenderer}
-              />
-            )}
-          </InfiniteLoader>
-        )}
+        <>
+          {cellCount === 0 && renderEmptyContent && renderEmptyContent()}
+          {rowCount !== 0 && (
+            <InfiniteLoader
+              rowCount={rowCount}
+              isRowLoaded={this.isRowLoaded}
+              loadMoreRows={this.loadMore}
+            >
+              {({ onRowsRendered, registerChild }) => (
+                <List
+                  overscanRowCount={20}
+                  rowCount={rowCount}
+                  width={width}
+                  height={height}
+                  rowHeight={this._rowHeight}
+                  ref={registerChild}
+                  onScroll={onScroll}
+                  noRowsRenderer={dataSource.renderEmptyContent}
+                  onRowsRendered={onRowsRendered}
+                  rowRenderer={this.rowRenderer}
+                />
+              )}
+            </InfiniteLoader>
+          )}
+        </>
       </JuiVirtualListWrapper>
     );
   }

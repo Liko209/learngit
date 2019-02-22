@@ -130,10 +130,12 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async expectStreamScrollToBottom() {
-    const scrollTop = await this.scrollDiv.scrollTop;
-    const scrollHeight = await this.scrollDiv.scrollHeight;
-    const clientHeight = await this.scrollDiv.clientHeight;
-    await this.t.expect(scrollTop).eql(scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`);
+    await H.retryUntilPass(async () => {
+      const scrollTop = await this.scrollDiv.scrollTop;
+      const scrollHeight = await this.scrollDiv.scrollHeight;
+      const clientHeight = await this.scrollDiv.clientHeight;
+      assert.deepStrictEqual(scrollTop, scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`)
+    })
   }
 
   async scrollToY(y: number) {
@@ -230,12 +232,32 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.click(this.privateButton);
   }
 
+  get privateTeamIcon() {
+    return this.getSelectorByIcon('lock', this.privateButton);
+  }
+
+  get publicTeamIcon() {
+    return this.getSelectorByIcon('lock_open', this.privateButton);
+  }
+  
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon('star', this.favoriteButton);
+  }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon('star_border', this.favoriteButton);
+  }
+
   async favorite() {
-    await this.t.click(this.leftWrapper.find('span').withText('star').nextSibling('input'));
+    await this.t.click(this.unFavoriteStatusIcon.parent('button'));
   }
 
   async unFavorite() {
-    await this.t.click(this.leftWrapper.find('span').withText('star_border').nextSibling('input'));
+    await this.t.click(this.favoriteStatusIcon.parent('button'));
   }
 
   async groupIdShouldBe(id: string | number) {
@@ -276,6 +298,15 @@ export class ConversationPage extends BaseConversationPage {
 
   async removeFileOnMessageArea(n = 0) {
     await this.t.click(this.removeFileButtons.nth(n));
+  }
+
+  get readOnlyDiv() {
+    return this.getSelectorByAutomationId("disabled-message-input", this.self);
+  }
+
+  async shouldBeReadOnly() {
+    await this.t.expect(this.messageInputArea.exists).notOk();
+    await this.t.expect(this.readOnlyDiv.exists).ok();
   }
 }
 
@@ -324,10 +355,22 @@ export class MentionPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
+
+  async waitUntilPostsBeLoaded(timeout = 20e3) {
+    await this.t.wait(1e3); // loading circle is invisible in first 1 second.
+    await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
+    await this.t.expect(this.title.withText("@Mentions").exists).ok();
+  }
 }
 export class BookmarkPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
+  }
+
+  async waitUntilPostsBeLoaded(timeout = 20e3) {
+    await this.t.wait(1e3); // loading circle is invisible in first 1 second.
+    await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
+    await this.t.expect(this.title.withText("Bookmarks").exists).ok();
   }
 }
 

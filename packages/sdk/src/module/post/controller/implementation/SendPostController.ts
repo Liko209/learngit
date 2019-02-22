@@ -5,7 +5,8 @@
  */
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
-import { daoManager, PostDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { Post } from '../../entity';
 import { SendPostType, PostItemsReadyCallbackType } from '../../types';
 import SendPostControllerHelper from './SendPostControllerHelper';
@@ -51,7 +52,7 @@ class SendPostController implements ISendPostController {
       ...params,
     };
     const rawInfo = this._helper.buildRawPostInfo(paramsInfo);
-    this.innerSendPost(rawInfo, false);
+    await this.innerSendPost(rawInfo, false);
   }
 
   async reSendPost(id: number) {
@@ -85,20 +86,22 @@ class SendPostController implements ISendPostController {
 
     await this.preInsertController.insert(post);
 
-    const sendPostAfterItemsReady = (result: PostItemsReadyCallbackType) => {
+    const sendPostAfterItemsReady = async (
+      result: PostItemsReadyCallbackType,
+    ) => {
       Object.keys(result.obj).forEach((key: string) => {
         post[key] = _.cloneDeep(result.obj[key]);
       });
       if (PostControllerUtils.isValidPost(post)) {
         if (result.success) {
-          this.sendPostToServer(post);
+          await this.sendPostToServer(post);
         } else {
           // handle failed
-          this.handleSendPostFail(post, post.group_id);
+          await this.handleSendPostFail(post, post.group_id);
         }
       } else {
         // delete post
-        this.postActionController.deletePost(post.id);
+        await this.postActionController.deletePost(post.id);
       }
     };
 
@@ -146,7 +149,7 @@ class SendPostController implements ISendPostController {
       const result = await this.postActionController.requestController.post(
         sendPost,
       );
-      return this.handleSendPostSuccess(result, post);
+      return await this.handleSendPostSuccess(result, post);
     } catch (e) {
       this.handleSendPostFail(post, post.group_id);
       throw ErrorParserHolder.getErrorParser().parse(e);

@@ -7,7 +7,6 @@
 import { BaseSubItemService } from '../BaseSubItemService';
 import { SubItemDao } from '../../dao';
 import { daoManager, DeactivatedDao } from '../../../../../../dao';
-import { TestDatabase } from '../../../../../../framework/controller/__tests__/TestTypes';
 
 jest.mock('../../dao');
 
@@ -19,7 +18,7 @@ function clearMocks() {
 
 describe('BaseSubItemService', () => {
   const subItemDao = new SubItemDao('', null);
-  const deactivatedDao = new DeactivatedDao(new TestDatabase());
+  const deactivatedDao = new DeactivatedDao(null);
   jest.spyOn(daoManager, 'getDao').mockImplementation(() => {
     return deactivatedDao;
   });
@@ -28,65 +27,6 @@ describe('BaseSubItemService', () => {
 
   beforeAll(async () => {
     clearMocks();
-  });
-
-  function setUpData() {
-    const item = {
-      id: 123123,
-      created_at: 11231333,
-      group_ids: [123],
-      start: 111,
-      end: 222,
-    };
-
-    return { item };
-  }
-
-  describe('createItem', () => {
-    beforeEach(() => {
-      clearMocks();
-    });
-
-    it('should sanitize item and create it', async () => {
-      const { item } = setUpData();
-      subItemDao.put = jest.fn();
-      await baseSubItemService.createItem(item);
-      expect(subItemDao.put).toBeCalledWith({
-        id: item.id,
-        group_ids: item.group_ids,
-        created_at: item.created_at,
-      });
-    });
-  });
-
-  describe('updateItem', () => {
-    beforeEach(() => {
-      clearMocks();
-    });
-
-    it('should sanitize item and update it', async () => {
-      const { item } = setUpData();
-      subItemDao.update = jest.fn();
-      await baseSubItemService.updateItem(item);
-      expect(subItemDao.update).toBeCalledWith({
-        id: item.id,
-        group_ids: item.group_ids,
-        created_at: item.created_at,
-      });
-    });
-  });
-
-  describe('deleteItem', () => {
-    beforeEach(() => {
-      clearMocks();
-    });
-
-    it('should  delete it', async () => {
-      const { item } = setUpData();
-      subItemDao.delete = jest.fn();
-      await baseSubItemService.deleteItem(item.id);
-      expect(subItemDao.delete).toBeCalledWith(item.id);
-    });
   });
 
   describe('getSortedIds', () => {

@@ -6,7 +6,6 @@
 
 import { IdModel, Raw } from '../../../framework/model';
 import { ErrorHandlingController } from './ErrorHandlingController';
-import { ApiResult } from '../../../api/ApiResult';
 import { transform } from '../../../service/utils';
 import NetworkClient from '../../../api/NetworkClient';
 import { IRequestController } from '../interface/IRequestController';
@@ -23,14 +22,8 @@ class RequestController<T extends IdModel = IdModel>
       error.throwInvalidParameterError('id', id);
     }
 
-    const result: ApiResult<any> = await this._get(id);
-    const resultData = result.expect(
-      `request can not get the entity of id: ${id}`,
-    );
-    const arr: T[] = []
-      .concat(resultData)
-      .map((item: Raw<T>) => transform(item));
-    return arr.length > 0 ? arr[0] : null;
+    const resultData = await this._get(id);
+    return transform<T>(resultData);
   }
 
   async put(data: Partial<T>) {
@@ -41,18 +34,12 @@ class RequestController<T extends IdModel = IdModel>
       error.throwInvalidParameterError('id', id);
     }
 
-    const result = await this._put<T>(id!, data);
-    const resultData = result.expect(
-      `request can not put the entity of id: ${id}`,
-    );
+    const resultData = await this._put<T>(id!, data);
     return transform<T>(resultData);
   }
 
   async post(data: Partial<T>) {
-    const result = await this._post<T>(data);
-    const resultData = result.expect(
-      'request can not post the entity of data ',
-    );
+    const resultData = await this._post<T>(data);
     return transform<T>(resultData);
   }
 

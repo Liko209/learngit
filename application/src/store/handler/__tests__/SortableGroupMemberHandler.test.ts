@@ -4,21 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  GroupService,
-  PersonService,
-  notificationCenter,
-  ENTITY,
-} from 'sdk/service';
+import { notificationCenter, ENTITY } from 'sdk/service';
 
-import { TeamPermission } from 'sdk/service/group';
+import { PersonService } from 'sdk/module/person';
+
+import { TeamPermission, GroupService } from 'sdk/module/group';
 import SortableGroupMemberHandler from '../SortableGroupMemberHandler';
-import { Person } from 'sdk/models';
+import { Person } from 'sdk/module/person/entity';
 
-jest.mock('sdk/service/group');
-jest.mock('sdk/service/person');
+jest.mock('sdk/module/group');
+jest.mock('sdk/module/person');
 
-describe('SortableGroupMemberHandler', () => {
+describe('SortableGroupMemberHandler', async () => {
   const groupService = new GroupService();
   const personService = new PersonService();
   beforeEach(() => {
@@ -35,7 +32,7 @@ describe('SortableGroupMemberHandler', () => {
     jest.restoreAllMocks();
   });
 
-  it('should return SortableGroupMemberHandler', async (done: jest.DoneCallback) => {
+  it('should return SortableGroupMemberHandler', async () => {
     const groupId = 3;
     const group = { id: groupId, members: [1, 2, 3] };
     const persons = [
@@ -43,8 +40,8 @@ describe('SortableGroupMemberHandler', () => {
       { id: 2, email: 'b@c.com' },
       { id: 3, email: 'a@a.com' },
     ];
-    groupService.getGroupById.mockResolvedValueOnce(group);
-    personService.getPersonsByGroupId.mockResolvedValueOnce(persons);
+    groupService.getById.mockResolvedValueOnce(group);
+    personService.getPersonsByIds.mockResolvedValueOnce(persons);
     const handler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
       groupId,
     );
@@ -56,12 +53,11 @@ describe('SortableGroupMemberHandler', () => {
         persons[1].id,
         persons[2].id,
       ]);
-      expect(personService.getPersonsByGroupId).toBeCalledWith(groupId);
-      done();
+      expect(personService.getPersonsByIds).resolves.toBeCalledWith([1, 2, 3]);
     });
   });
 
-  it('should return sorted member list, admin first, then members', async (done: jest.DoneCallback) => {
+  it('should return sorted member list, admin first, then members', async () => {
     const groupId = 3;
     const group = {
       id: groupId,
@@ -80,8 +76,8 @@ describe('SortableGroupMemberHandler', () => {
 
     const expectRes = [3, 2, 1, 7, 6, 5, 4];
 
-    groupService.getGroupById.mockResolvedValueOnce(group);
-    personService.getPersonsByGroupId.mockResolvedValueOnce(persons);
+    groupService.getById.mockResolvedValueOnce(group);
+    personService.getPersonsByIds.mockResolvedValueOnce(persons);
 
     groupService.isTeamAdmin.mockImplementation(
       (personId: number, permission?: TeamPermission) => {
@@ -98,8 +94,15 @@ describe('SortableGroupMemberHandler', () => {
     );
     setTimeout(() => {
       expect(handler.getSortedGroupMembersIds()).toEqual(expectRes);
-      expect(personService.getPersonsByGroupId).toBeCalledWith(groupId);
-      done();
+      expect(personService.getPersonsByIds).resolves.toBeCalledWith([
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+      ]);
     });
   });
 
@@ -111,8 +114,8 @@ describe('SortableGroupMemberHandler', () => {
     };
     const persons = [{ id: 2, email: 'b@a.com' }, { id: 3, email: 'a@a.com' }];
 
-    groupService.getGroupById.mockResolvedValueOnce(group);
-    personService.getPersonsByGroupId.mockResolvedValueOnce(persons);
+    groupService.getById.mockResolvedValueOnce(group);
+    personService.getPersonsByIds.mockResolvedValueOnce(persons);
 
     const groupUpdates = [
       { id: groupId, members: [1] },

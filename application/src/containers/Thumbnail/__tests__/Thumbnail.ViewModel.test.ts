@@ -60,13 +60,13 @@ describe('ThumbnailViewModel', () => {
       thumbnailViewModel = new ThumbnailViewModel();
 
       expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
-        url: '',
         icon: 'doc',
       });
     });
     it('should get default type', async () => {
       (getEntity as jest.Mock).mockReturnValue({
         type: '',
+        iconType: 'default_file',
       });
 
       FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
@@ -75,7 +75,7 @@ describe('ThumbnailViewModel', () => {
 
       expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
         url: '',
-        icon: '',
+        icon: 'default_file',
       });
     });
 

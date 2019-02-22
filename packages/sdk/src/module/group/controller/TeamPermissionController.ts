@@ -3,21 +3,17 @@
  * @Date: 2019-01-14 14:08:02
  * Copyright © RingCentral. All rights reserved.
  */
-
 import _ from 'lodash';
-import { daoManager, AccountDao } from '../../../dao';
+
+import { UserConfig } from '../../../service/account/UserConfig';
 import {
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-} from '../../../dao/account/constants';
-import {
-  MAX_PERMISSION_LEVEL,
-  PERMISSION_ENUM,
   DEFAULT_ADMIN_PERMISSION_LEVEL,
   DEFAULT_USER_PERMISSION_LEVEL,
+  MAX_PERMISSION_LEVEL,
+  PERMISSION_ENUM,
 } from '../constants';
 import { TeamPermission, TeamPermissionParams } from '../entity';
-import { PermissionFlags } from '../types';
+import { PermissionFlags, TeamSetting } from '../types';
 
 const REGEXP_IS_NUMBER = /^\d+(\.{0,1}\d+){0,1}$/;
 
@@ -25,8 +21,7 @@ class TeamPermissionController {
   constructor() {}
 
   isCurrentUserGuest(teamPermissionParams: TeamPermissionParams): boolean {
-    const accountDao: AccountDao = daoManager.getKVDao(AccountDao);
-    const companyId = accountDao.get(ACCOUNT_COMPANY_ID);
+    const companyId = UserConfig.getCurrentCompanyId();
     const guestUserCompanyIds = teamPermissionParams.guest_user_company_ids;
     return guestUserCompanyIds
       ? guestUserCompanyIds.includes(companyId)
@@ -37,7 +32,7 @@ class TeamPermissionController {
     teamPermissionParams: TeamPermissionParams,
     userId: number,
   ): boolean {
-    return (
+    return !!(
       teamPermissionParams.members &&
       teamPermissionParams.members.length === 1 &&
       userId === teamPermissionParams.members[0]
@@ -47,8 +42,17 @@ class TeamPermissionController {
   getCurrentUserPermissionLevel(
     teamPermissionParams: TeamPermissionParams,
   ): number {
-    const accountDao: AccountDao = daoManager.getKVDao(AccountDao);
-    const userId = accountDao.get(ACCOUNT_USER_ID);
+    const userId = UserConfig.getCurrentUserId();
+
+    const {
+      permissions: {
+        admin: {
+          uids: adminUids = [],
+          level: adminLevel = DEFAULT_ADMIN_PERMISSION_LEVEL,
+        } = {},
+        user: { level: userLevel = DEFAULT_USER_PERMISSION_LEVEL } = {},
+      } = {},
+    } = teamPermissionParams;
 
     if (!teamPermissionParams.is_team) {
       if (this.isSelfGroup(teamPermissionParams, userId)) {
@@ -57,69 +61,64 @@ class TeamPermissionController {
       return MAX_PERMISSION_LEVEL - PERMISSION_ENUM.TEAM_ADMIN;
     }
 
-    const permissions = teamPermissionParams.permissions;
-    if (!permissions || !permissions.admin) {
-      return DEFAULT_ADMIN_PERMISSION_LEVEL;
-    }
-    if (
-      permissions.admin.uids.length === 0 ||
-      permissions.admin.uids.includes(userId)
-    ) {
-      return permissions.admin.level || DEFAULT_ADMIN_PERMISSION_LEVEL;
-    }
-
-    if (!permissions.user) {
-      return DEFAULT_ADMIN_PERMISSION_LEVEL;
+    const guestPermissionLevel = this.mergePermissionFlagsWithLevel(
+      {
+        TEAM_ADD_MEMBER: false,
+        TEAM_PIN_POST: false,
+      },
+      userLevel,
+    );
+    if (this.isCurrentUserGuest(teamPermissionParams)) {
+      return guestPermissionLevel;
     }
 
-    return permissions.user.level || DEFAULT_USER_PERMISSION_LEVEL;
+    if (adminUids.length === 0 || adminUids.includes(userId)) {
+      return adminLevel;
+    }
+    return userLevel;
   }
 
   getCurrentUserPermissions(
     teamPermissionParams: TeamPermissionParams,
   ): PERMISSION_ENUM[] {
-    let permissions = this._permissionLevelToArray(
+    const permissions = this._permissionLevelToArray(
       this.getCurrentUserPermissionLevel(teamPermissionParams),
     );
-    if (this.isCurrentUserGuest(teamPermissionParams)) {
-      permissions = permissions.filter(
-        permission =>
-          permission !== PERMISSION_ENUM.TEAM_ADD_MEMBER &&
-          permission !== PERMISSION_ENUM.TEAM_PIN_POST,
-      );
-    }
     return permissions;
   }
 
   isCurrentUserHasPermission(
-    teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
+    teamPermissionParams: TeamPermissionParams,
   ): boolean {
+    if (
+      !teamPermissionParams.members &&
+      !teamPermissionParams.guest_user_company_ids &&
+      !teamPermissionParams.is_team &&
+      !teamPermissionParams.permissions
+    ) {
+      const defaultPermissions = this._permissionLevelToArray(PERMISSION_ENUM.TEAM_POST);
+      return defaultPermissions.includes(type);
+    }
     const permissionList = this.getCurrentUserPermissions(teamPermissionParams);
     return permissionList.includes(type);
   }
 
-  createPermissionsMask(newPermissions: PermissionFlags) {
-    const permissions_mask = _.reduce(
-      newPermissions,
-      (mask: number, value: boolean, key: string) => {
-        if (value) {
-          return mask + PERMISSION_ENUM[key];
-        }
-        return mask;
-      },
-      0,
-    );
-    return permissions_mask;
+  hasTeamAdmin(permission?: TeamPermission): boolean {
+    const { admin: { uids: adminUids = [] } = {} } = permission || {};
+    return adminUids.length > 0;
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean {
-    if (permission) {
-      // for some old team, thy don't have permission, so all member are admin
-      const adminUserIds = this._getTeamAdmins(permission);
-      return adminUserIds.includes(personId);
-    }
-    return true;
+    const { admin: { uids: adminUids = [] } = {} } = permission || {};
+    return adminUids.includes(personId);
+  }
+
+  hasTeamAdminPermission(teamPermissionParams: TeamPermissionParams): boolean {
+    return this.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_ADMIN,
+      teamPermissionParams,
+    );
   }
 
   getTeamUserLevel(permission: TeamPermission | undefined) {
@@ -140,6 +139,24 @@ class TeamPermissionController {
       }
     }
     return permissionFlags;
+  }
+
+  processLinkTeamSetting(teamSetting: TeamSetting) {
+    const { permissionFlags: rawPermissionFlags = {} } = teamSetting;
+    const result: TeamSetting = {
+      ...teamSetting,
+      permissionFlags: rawPermissionFlags,
+    };
+    if (teamSetting.isPublic) {
+      // in dthor, when team is public, all member can add member
+      result.permissionFlags!.TEAM_ADD_MEMBER = true;
+    }
+    if (!rawPermissionFlags.TEAM_POST) {
+      // in dthor, when disabled TEAM_POST, disabled TEAM_ADD_INTEGRATIONS, TEAM_PIN_POST too
+      result.permissionFlags!.TEAM_ADD_INTEGRATIONS = false;
+      result.permissionFlags!.TEAM_PIN_POST = false;
+    }
+    return result;
   }
 
   mergePermissionFlagsWithLevel(
@@ -168,10 +185,6 @@ class TeamPermissionController {
       }
     }
     return array;
-  }
-
-  private _getTeamAdmins(permission?: TeamPermission): number[] {
-    return permission && permission.admin ? permission.admin.uids : [];
   }
 
   private _checkPermissionWithMask(

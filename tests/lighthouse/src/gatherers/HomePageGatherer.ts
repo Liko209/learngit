@@ -7,19 +7,19 @@ import { HomePage } from '../pages/HomePage';
 
 class HomePageGatherer extends Gatherer {
 
-    beforePass(passContext) {
-    }
+  beforePass(passContext) {
+  }
 
-    async afterPass(passContext) {
-        let homePage = new HomePage(passContext);
-        await homePage.waitForCompleted();
-        return {};
-    }
+  async afterPass(passContext) {
+    return {};
+  }
 
-    pass(passContext) {
-    }
+  async pass(passContext) {
+    let homePage = new HomePage(passContext);
+    await homePage.waitForCompleted();
+  }
 }
 
 export {
-    HomePageGatherer
+  HomePageGatherer
 }

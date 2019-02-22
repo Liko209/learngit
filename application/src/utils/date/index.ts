@@ -18,13 +18,13 @@ function getDateMessage(
     .millisecond(0);
   const diff = now.diff(m, 'days', true);
   if (diff === 0) {
-    return i18next.t('today');
+    return i18next.t('common.time.today');
   }
   if (diff === 1) {
-    return i18next.t('yesterday');
+    return i18next.t('common.time.yesterday');
   }
   if (diff === -1) {
-    return i18next.t('tomorrow');
+    return i18next.t('common.time.tomorrow');
   }
   if (diff <= 7) {
     return m.format(format); // Tue, Oct 30th  周二, 10月30日
@@ -33,13 +33,13 @@ function getDateMessage(
 }
 
 const WEEKDAY = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
+  'common.time.Sunday',
+  'common.time.Monday',
+  'common.time.Tuesday',
+  'common.time.Wednesday',
+  'common.time.Thursday',
+  'common.time.Friday',
+  'common.time.Saturday',
 ];
 type Moment = moment.Moment;
 const dateFormatter = {
@@ -47,10 +47,10 @@ const dateFormatter = {
     return m.format('LT');
   },
   today: () => {
-    return i18next.t('today');
+    return i18next.t('common.time.today');
   },
   yesterday: () => {
-    return i18next.t('yesterday');
+    return i18next.t('common.time.yesterday');
   },
   weekday: (m: Moment) => {
     const date = new Date(m.format());
@@ -177,6 +177,14 @@ function getDateTimeStamp(timestamp: number) {
     .startOf('day')
     .valueOf();
 }
+function handerTimeZoneOffset(
+  timestamp: number,
+  timezoneOffset: number,
+): number {
+  const localTimezoneOffset = new Date().getTimezoneOffset();
+  const MINUTE = 60 * 1000;
+  return timestamp + (localTimezoneOffset - timezoneOffset) * MINUTE;
+}
 export {
   getDateTimeStamp,
   getDateMessage,
@@ -184,6 +192,7 @@ export {
   dividerTimestamp,
   postTimestamp,
   dateFormatter,
+  handerTimeZoneOffset,
 };
 
 // 7 days inside

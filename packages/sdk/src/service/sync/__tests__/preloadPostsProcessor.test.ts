@@ -5,23 +5,22 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 import { Group } from '../../../module/group/entity/Group';
-import { NewPostService } from '../../../module/post/service/PostService';
+import { PostService } from '../../../module/post/service/PostService';
 import PreloadPostsProcessor from '../preloadPostsProcessor';
 import { StateService } from '../../../module/state';
-import { NewGroupService } from '../../../module/group';
+import { GroupService } from '../../../module/group';
 
 jest.mock('../../../module/post/service/PostService');
-jest.mock('../../../service/profile');
 jest.mock('../../../module/state');
 jest.mock('../../../module/group');
 
-const postService: NewPostService = new NewPostService();
+const postService: PostService = new PostService();
 const stateService: StateService = new StateService();
-const groupService: NewGroupService = new NewGroupService();
+const groupService: GroupService = new GroupService();
 beforeEach(() => {
-  NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+  PostService.getInstance = jest.fn().mockReturnValue(postService);
   StateService.getInstance = jest.fn().mockReturnValue(stateService);
-  NewGroupService.getInstance = jest.fn().mockReturnValue(groupService);
+  GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 });
 
 const ONE_PAGE = 20;
@@ -72,9 +71,9 @@ describe('PreloadPostsProcessor', () => {
         shouldPreload: true,
         limit: ONE_PAGE,
       });
-      postService.getRemotePostsByGroupIdAndSave.mockResolvedValueOnce(null);
+      postService.getRemotePostsByGroupId.mockResolvedValueOnce(null);
       await processor.process();
-      expect(postService.getRemotePostsByGroupIdAndSave).toHaveBeenCalledTimes(
+      expect(postService.getRemotePostsByGroupId).toHaveBeenCalledTimes(
         1,
       );
     });
@@ -84,9 +83,9 @@ describe('PreloadPostsProcessor', () => {
         shouldPreload: false,
         limit: 0,
       });
-      postService.getRemotePostsByGroupIdAndSave.mockResolvedValueOnce(null);
+      postService.getRemotePostsByGroupId.mockResolvedValueOnce(null);
       await processor.process();
-      expect(postService.getRemotePostsByGroupIdAndSave).toHaveBeenCalledTimes(
+      expect(postService.getRemotePostsByGroupId).toHaveBeenCalledTimes(
         0,
       );
     });

@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 14:19:15
  * Copyright © RingCentral. All rights reserved.
  */
-import { BaseDao } from '../base';
+import { BaseDao } from '../../framework/dao';
 import { GroupConfig } from '../../models';
 import { IDatabase } from 'foundation';
 import { QUERY_DIRECTION } from '../constants';

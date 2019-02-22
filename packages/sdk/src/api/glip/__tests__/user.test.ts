@@ -10,9 +10,9 @@ jest.mock('../../api');
 
 describe('UserAPI', () => {
   describe('loginGlip()', () => {
-    it('glipNetworkClient http() should be called with specific path', () => {
-      loginGlip({ auth: 'asdfsd' });
-      expect(Api.glipNetworkClient.http).toHaveBeenCalledWith({
+    it('glipNetworkClient rawRequest() should be called with specific path', async () => {
+      await loginGlip({ auth: 'asdfsd' });
+      expect(Api.glipNetworkClient.rawRequest).toHaveBeenCalledWith({
         authFree: true,
         data: { rc_access_token_data: 'eyJhdXRoIjoiYXNkZnNkIn0=' },
         method: 'put',
@@ -22,13 +22,18 @@ describe('UserAPI', () => {
     });
   });
   describe('indexData()', () => {
-    it('glipNetworkClient get() should be called with specific path', () => {
+    it('glipNetworkClient get() should be called with specific path', async () => {
       const mock = { id: 111 };
       const requestConfig = {};
       const header = {};
-      indexData(mock);
-      expect(Api.glipNetworkClient.get)
-        .toHaveBeenCalledWith('/index', mock, 0, requestConfig, header);
+      await indexData(mock);
+      expect(Api.glipNetworkClient.get).toHaveBeenCalledWith(
+        '/index',
+        mock,
+        0,
+        requestConfig,
+        header,
+      );
     });
   });
 });

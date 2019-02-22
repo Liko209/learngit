@@ -5,9 +5,8 @@
  */
 import { SplitIOClient } from '../SplitIOClient';
 import { SplitIOController } from '../SplitIOController';
-import { notificationCenter, SERVICE } from '../../../../../service';
+import { notificationCenter } from '../../../../../service';
 import UserPermissionType from '../../../types';
-import { resolve } from 'path';
 
 jest.mock('../SplitIOClient');
 jest.mock('../../../../../service');

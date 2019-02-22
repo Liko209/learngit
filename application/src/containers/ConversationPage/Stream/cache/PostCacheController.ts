@@ -10,7 +10,7 @@ import {
   ISortableModel,
 } from '@/store/base';
 import { Post } from 'sdk/module/post/entity';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { ENTITY } from 'sdk/service';
@@ -21,7 +21,7 @@ import { TypeDictionary } from 'sdk/utils';
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 class PostDataProvider implements IFetchSortableDataProvider<Post> {
-  private _postService: NewPostService = NewPostService.getInstance();
+  private _postService: PostService = PostService.getInstance();
   private _itemStoreMap = new Map<number, ENTITY_NAME>();
 
   constructor(private _groupId: number) {
@@ -52,7 +52,6 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
         limit: pageSize,
       },
     );
-    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
     items.forEach((item: Item) => {
       const type = GlipTypeUtil.extractTypeId(item.id);
       const entityName = this._itemStoreMap.get(type);

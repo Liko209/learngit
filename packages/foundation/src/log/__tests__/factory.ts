@@ -32,7 +32,7 @@ const logConfigBuilder: Builder<LogConfig> = {
     uploadQueueLimit: 4,
     autoFlushTimeCycle: 30 * 1000,
   },
-  uploadLogApi: null,
+  logUploader: null,
   uploadAccessor: null,
   persistence: null,
   decorators: [],

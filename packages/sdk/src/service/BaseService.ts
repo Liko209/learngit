@@ -4,19 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { mainLogger, JError } from 'foundation';
+import { mainLogger } from 'foundation';
 import { transform, isFunction } from '../service/utils';
 import { daoManager, DeactivatedDao } from '../dao';
-import { IdModel, Raw } from '../framework/model';
-import { SortableModel } from '../models'; // eslint-disable-line
+import { IdModel, Raw, SortableModel } from '../framework/model';
 import { AbstractService } from '../framework';
 import notificationCenter, {
   NotificationEntityPayload,
 } from './notificationCenter';
 import { container } from '../container';
 import dataDispatcher from '../component/DataDispatcher';
-import { ApiResult } from '../api/ApiResult';
-import { ServiceResult, serviceOk, serviceErr } from './ServiceResult';
 import { SOCKET, SERVICE } from './eventKey';
 import EntityCacheManager from './entityCacheManager';
 import { EVENT_TYPES } from './constants';
@@ -117,16 +114,19 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
     if (id <= 0) {
       throwError(`invalid id(${id}), should not do network request`);
     }
-    const result: ApiResult<any> = await this.ApiClass.getDataById(id);
-    if (result.isOk()) {
-      const arr: SubModel[] = []
-        .concat(result.data)
-        .map((item: Raw<SubModel>) => transform(item)); // normal transform
-      const shouldSaveToDB = await this.shouldSaveItemFetchedById(result.data);
-      await this.handleData(arr, shouldSaveToDB);
-      return arr.length > 0 ? arr[0] : null;
+    let result;
+    try {
+      result = await this.ApiClass.getDataById(id);
+    } catch (error) {
+      result = null;
     }
-    return null;
+    const arr: SubModel[] = []
+      .concat(result)
+      .filter(item => !!item)
+      .map((item: Raw<SubModel>) => transform(item)); // normal transform
+    const shouldSaveToDB = await this.shouldSaveItemFetchedById(result);
+    await this.handleData(arr, shouldSaveToDB);
+    return arr.length > 0 ? arr[0] : null;
   }
 
   async getAllFromDao({ offset = 0, limit = Infinity } = {}): Promise<
@@ -215,7 +215,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
     genSortableModelFunc: (
       entity: SubModel,
       terms: string[],
-    ) => SortableModel<SubModel> | null,
+    ) => Promise<SortableModel<SubModel> | null>,
     searchKey?: string,
     arrangeIds?: number[],
     sortFunc?: (
@@ -240,11 +240,16 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
       entities = await this.getEntitiesFromCache();
     }
 
-    entities.forEach((entity: SubModel) => {
-      const result = genSortableModelFunc(entity, terms);
-      if (result) {
-        sortableEntities.push(result);
-      }
+    const promises = entities.map(async (entity: SubModel) => {
+      return await genSortableModelFunc(entity, terms);
+    });
+
+    await Promise.all(promises).then((results: any[]) => {
+      results.forEach((result: any) => {
+        if (result) {
+          sortableEntities.push(result);
+        }
+      });
     });
 
     if (sortFunc) {
@@ -364,37 +369,36 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
       partialModel: Partial<Raw<SubModel>>,
       originalModel: SubModel,
     ) => Partial<Raw<SubModel>>,
-    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel | JError>,
+    doUpdateModel?: (updatedModel: SubModel) => Promise<SubModel>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
       partialModels: Partial<Raw<SubModel>>[],
     ) => void,
-  ): Promise<ServiceResult<SubModel>> {
+  ): Promise<SubModel> {
     const id: number = partialModel.id
       ? partialModel.id
       : partialModel._id
       ? partialModel._id
       : 0;
-    let result: ServiceResult<SubModel>;
+    let result: SubModel;
 
     do {
       const originalModel = await this.getById(id);
 
       if (!originalModel) {
         mainLogger.warn('handlePartialUpdate: OriginalModel not found');
-        result = serviceErr(
+        throw new JSdkError(
           ERROR_CODES_SDK.GENERAL,
           `OriginalModel not found: modelId: ${id}`,
         );
-        break;
       }
 
       if (!doUpdateModel) {
         mainLogger.warn(
           'handlePartialUpdate: doUpdateModel is nil, no updates',
         );
-        result = serviceOk(originalModel);
+        result = originalModel;
         break;
       }
 
@@ -483,14 +487,14 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
   private async _handlePartialUpdateWithOriginal(
     partialModel: Partial<Raw<SubModel>>,
     originalModel: SubModel,
-    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel | JError>,
+    doUpdateModel: (updatedModel: SubModel) => Promise<SubModel>,
     doPartialNotify?: (
       originalModels: SubModel[],
       updatedModels: SubModel[],
       partialModels: Partial<Raw<SubModel>>[],
     ) => void,
-  ): Promise<ServiceResult<SubModel>> {
-    let result: ServiceResult<SubModel>;
+  ): Promise<SubModel> {
+    let result: SubModel;
     do {
       partialModel.id = originalModel.id;
       if (partialModel._id) {
@@ -504,7 +508,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
 
       if (_.isEqual(partialModel, rollbackPartialModel)) {
         mainLogger.info('handlePartialUpdate: no changes, no need update');
-        result = serviceOk(originalModel);
+        result = originalModel;
         break;
       }
 
@@ -520,10 +524,10 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
 
       mainLogger.info('handlePartialUpdate: trigger doUpdateModel');
 
-      const updateResult = await doUpdateModel(mergedModel);
-
-      if (updateResult instanceof JError) {
-        const error = updateResult;
+      let updateResult;
+      try {
+        updateResult = await doUpdateModel(mergedModel);
+      } catch (error) {
         mainLogger.error('handlePartialUpdate: doUpdateModel failed');
         const fullRollbackModel = this.getMergedModel(
           rollbackPartialModel,
@@ -535,13 +539,10 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
           rollbackPartialModel,
           doPartialNotify,
         );
-        result = serviceErr(ERROR_CODES_SDK.GENERAL, 'doUpdateModel failed', {
-          apiError: error,
-        });
-        break;
+        throw error;
       }
 
-      result = serviceOk(updateResult);
+      result = updateResult;
     } while (false);
 
     return result;

@@ -42,6 +42,7 @@ export type Item = ExtendedBaseModel & {
   url?: string;
   image?: string;
   do_not_render?: boolean;
+  at_mentioning_post_ids?: number[];
 };
 
 export type StoredFile = Raw<ExtendedBaseModel> & {

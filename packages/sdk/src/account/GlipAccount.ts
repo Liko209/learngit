@@ -4,16 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractAccount } from '../framework';
-import PostService from '../service/post';
-import GroupService from '../service/group';
+import GroupService from '../module/group';
 import CompanyService from '../service/company';
-import PersonService from '../service/person';
+import { PersonService } from '../module/person';
 import PresenceService from '../service/presence';
-import ProfileService from '../service/profile';
-import SearchService from '../service/search';
+import { ProfileService } from '../module/profile';
 import { TelephonyService } from '../module/telephony';
 import { ItemService } from '../module/item';
 import { StateService } from '../module/state';
+import { PostService } from '../module/post';
 
 class GlipAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {
@@ -25,18 +24,10 @@ class GlipAccount extends AbstractAccount {
       PersonService.name,
       PresenceService.name,
       ProfileService.name,
-      SearchService.name,
       StateService.name,
       TelephonyService.name,
     ]);
   }
-
-  // updateAccountInfo(){
-  //   this.updateServices();
-  // }
-  // updateServices(){
-  //   emitServicesChange();
-  // }
 }
 
 export { GlipAccount };

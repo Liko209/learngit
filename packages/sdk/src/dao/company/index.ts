@@ -2,7 +2,7 @@
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-02-24 23:26:14
  */
-import { BaseDao } from '../base';
+import { BaseDao } from '../../framework/dao';
 import { Company } from '../../module/company/entity';
 import { IDatabase } from 'foundation';
 

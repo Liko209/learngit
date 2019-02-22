@@ -11,15 +11,15 @@ import {
   ISortableModel,
 } from '@/store/base/fetch';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
-import { service } from 'sdk';
 import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
+import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import { GroupState } from 'sdk/models';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { autorun, observable, computed, action } from 'mobx';
+import { autorun, observable, computed, reaction, action } from 'mobx';
 import { getSingleEntity, getGlobalValue } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import _ from 'lodash';
@@ -29,12 +29,11 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
+import { ProfileService } from 'sdk/module/profile';
 import SequenceProcessorHandler from 'sdk/framework/processor/SequenceProcessorHandler';
 import PrefetchPostProcessor from './PrefetchPostProcessor';
 import { TDelta } from '../base/fetch/types';
 import postCacheController from '@/containers/ConversationPage/Stream/cache/PostCacheController';
-
-const { GroupService, ProfileService } = service;
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
   const {
@@ -65,7 +64,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     pageSize: number,
     anchor: ISortableModel<Group>,
   ): Promise<{ data: Group[]; hasMore: boolean }> {
-    const groupService = GroupService.getInstance<service.GroupService>();
+    const groupService = GroupService.getInstance<GroupService>();
     const result = await groupService.getGroupsByType(this._queryType);
     return { data: result, hasMore: false };
   }
@@ -94,7 +93,16 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       .get(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     this._subscribeNotification();
     autorun(() => this._profileUpdateGroupSections());
-    autorun(() => this._updateHiddenGroupIds());
+    reaction(
+      () => {
+        const hiddenGroupIds = getSingleEntity<Profile, ProfileModel>(
+          ENTITY_NAME.PROFILE,
+          'hiddenGroupIds',
+        );
+        return hiddenGroupIds || [];
+      },
+      (newIds: number[]) => this._updateHiddenGroupIds(newIds),
+    );
     autorun(() => this.removeOverLimitGroupByChangingIds());
     autorun(() => this.removeOverLimitGroupByChangingCurrentGroupId());
   }
@@ -110,12 +118,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     this._dataLoader = this._dataLoader.then(() => handler(this.groupIds));
   }
 
-  private _updateHiddenGroupIds() {
-    const hiddenGroupIds = getSingleEntity<Profile, ProfileModel>(
-      ENTITY_NAME.PROFILE,
-      'hiddenGroupIds',
-    );
-    const newIds = hiddenGroupIds || [];
+  private _updateHiddenGroupIds(newIds: number[]) {
     this.checkIfGroupOpenedFromHidden(this._hiddenGroupIds, newIds);
     this._hiddenGroupIds = newIds;
     this._removeGroupsIfExistedInHiddenGroups();
@@ -154,10 +157,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       }
     }
     if (shouldAdd) {
-      const groupService = GroupService.getInstance<service.GroupService>();
-      const groups = await groupService.getGroupsByIds(ids);
-      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(groups);
-      this._handlersMap[SECTION_TYPE.TEAM].upsert(groups);
+      const groupService = GroupService.getInstance<GroupService>();
+      const groups: Group[] = await groupService.getGroupsByIds(ids);
+      const validGroups = groups.filter(group => groupService.isValid(group));
+      this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(validGroups);
+      this._handlersMap[SECTION_TYPE.TEAM].upsert(validGroups);
     } else {
       this._remove(ids);
     }
@@ -182,7 +186,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
       this._oldFavGroupIds = newFavIds;
       // handle favorite section change
-      const groupService = GroupService.getInstance<service.GroupService>();
+      const groupService = GroupService.getInstance<GroupService>();
       const groups = await groupService.getGroupsByType(
         GROUP_QUERY_TYPE.FAVORITE,
       );
@@ -210,7 +214,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
           ids = ids.filter((id: number) => {
             const group = payload.body.entities.get(id);
-            return !group || !group.members.includes(currentUserId);
+            return (
+              !group ||
+              !_.includes(group.members, currentUserId) ||
+              group.is_archived
+            );
           });
         }
         // update url
@@ -243,7 +251,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _remove(ids: number[], checkLimit: boolean = false) {
     let limit = 0;
     if (checkLimit) {
-      const profileService: service.ProfileService = ProfileService.getInstance();
+      const profileService: ProfileService = ProfileService.getInstance();
       limit = await profileService.getMaxLeftRailGroup();
     }
     const directIdsShouldBeRemoved: number[] = [];
@@ -361,11 +369,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _addFavoriteSection() {
     const isMatchFun = (model: Group) => {
       const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      const includesMe = userId && model.members.includes(userId);
+      const includesMe = userId && _.includes(model.members, userId);
       return (
         this._oldFavGroupIds.indexOf(model.id) !== -1 &&
         this._hiddenGroupIds.indexOf(model.id) === -1 &&
-        includesMe
+        includesMe &&
+        !model.is_archived
       );
     };
     const transformFun = (model: Group) => {
@@ -412,8 +421,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         this._hiddenGroupIds.indexOf(model.id) === -1;
       const isTeamInTeamSection = model.is_team as boolean;
       const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      const includesMe = userId && model.members.includes(userId);
-      return notInFav && isTeamInTeamSection && includesMe;
+      const includesMe = userId && _.includes(model.members, userId);
+      return (
+        notInFav && isTeamInTeamSection && includesMe && !model.is_archived
+      );
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
       isMatchFunc: isMatchFun,
@@ -527,7 +538,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   async removeOverLimitGroupByChangingCurrentGroupId() {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    const profileService = ProfileService.getInstance<service.ProfileService>();
+    const profileService = ProfileService.getInstance<ProfileService>();
     const lastGroupId = this._lastGroupId;
     const limit = await profileService.getMaxLeftRailGroup();
     if (currentId !== lastGroupId) {
@@ -572,7 +583,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (this._lastGroupId === 0) {
       return;
     }
-    const profileService = ProfileService.getInstance<service.ProfileService>();
+    const profileService = ProfileService.getInstance<ProfileService>();
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
     const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
     const limit = await profileService.getMaxLeftRailGroup();

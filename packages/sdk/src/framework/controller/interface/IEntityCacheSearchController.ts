@@ -28,7 +28,7 @@ interface IEntityCacheSearchController<T extends IdModel = IdModel> {
     genSortableModelFunc: (
       entity: T,
       terms: string[],
-    ) => SortableModel<T> | null,
+    ) => Promise<SortableModel<T> | null>,
     searchKey?: string,
     arrangeIds?: number[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
@@ -38,6 +38,12 @@ interface IEntityCacheSearchController<T extends IdModel = IdModel> {
   } | null>;
 
   isFuzzyMatched(srcText: string, terms: string[]): boolean;
+
+  isStartWithMatched(srcText: string, terms: string[]): boolean;
+
+  getTermsFromSearchKey(searchKey: string): string[];
+
+  isInitialized(): boolean;
 }
 
 export { IEntityCacheSearchController, SortableModel };

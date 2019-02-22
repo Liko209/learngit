@@ -18,7 +18,7 @@ import { ViewProps } from './types';
 
 @observer
 class AddMembers extends React.Component<ViewProps> {
-  handleClose = () => portalManager.dismiss();
+  handleClose = () => portalManager.dismissLast();
 
   renderFlashToast = (message: string) => {
     Notification.flashToast({
@@ -33,16 +33,16 @@ class AddMembers extends React.Component<ViewProps> {
   handleAddTeam = async () => {
     const { addTeamMembers } = this.props;
     try {
-      portalManager.dismiss();
+      portalManager.dismissLast();
       await addTeamMembers();
       return true;
     } catch (error) {
       if (errorHelper.isNetworkConnectionError(error)) {
-        this.renderFlashToast('AddTeamMembersNetworkError');
+        this.renderFlashToast('people.prompt.AddTeamMembersNetworkError');
         return false;
       }
       if (errorHelper.isBackEndError(error)) {
-        this.renderFlashToast('AddTeamMembersBackendError');
+        this.renderFlashToast('people.prompt.AddTeamMembersBackendError');
         return false;
       }
       generalErrorHandler(error);
@@ -58,19 +58,19 @@ class AddMembers extends React.Component<ViewProps> {
         open={true}
         size={'medium'}
         okBtnProps={{ disabled: disabledOkBtn }}
-        title={t('AddTeamMembersTitle')}
+        title={t('people.team.AddTeamMembersTitle')}
         onCancel={this.handleClose}
         onOK={this.handleAddTeam}
-        okText={t('Add')}
-        cancelText={t('Cancel')}
+        okText={t('people.team.addTeamMemberSubmit')}
+        cancelText={t('common.dialog.cancel')}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={t('Members')}
+          label={t('people.team.Members')}
           error={false}
           helperText=""
           hasMembers={members}
-          placeholder={t('Search Contact Placeholder')}
+          placeholder={t('people.team.SearchContactPlaceholder')}
           isExcludeMe={true}
         />
       </JuiModal>

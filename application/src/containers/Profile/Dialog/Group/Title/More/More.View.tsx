@@ -23,8 +23,8 @@ class More extends React.Component<WithNamespaces & MoreViewProps> {
       <JuiIconButton
         size={size}
         data-name="actionBarMore"
-        tooltipTitle={t('more')}
-        ariaLabel={t('checkMoreTeamOption')}
+        tooltipTitle={t('common.more')}
+        ariaLabel={t('people.profile.checkMoreTeamOption')}
       >
         more_horiz
       </JuiIconButton>
@@ -57,10 +57,10 @@ class More extends React.Component<WithNamespaces & MoreViewProps> {
       >
         <JuiMenuList>
           <JuiMenuItem onClick={this.onClickCopyUrl}>
-            {t('copyUrl')}
+            {t('people.profile.copyUrl')}
           </JuiMenuItem>
           <JuiMenuItem onClick={this.onClickCopyEmail}>
-            {t('copyEmail')}
+            {t('people.profile.copyEmail')}
           </JuiMenuItem>
         </JuiMenuList>
       </JuiPopoverMenu>

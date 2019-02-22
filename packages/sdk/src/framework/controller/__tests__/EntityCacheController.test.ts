@@ -62,10 +62,10 @@ describe('Entity Cache Manager', () => {
     entityCacheController.clear();
 
     let entity = await entityCacheController.get(entityA.id);
-    expect(entity).toBeUndefined();
+    expect(entity).toBeNull();
 
     entity = await entityCacheController.get(entityB.id);
-    expect(entity).toBeUndefined();
+    expect(entity).toBeNull();
   });
 
   it('test for replace func', async () => {
@@ -93,7 +93,7 @@ describe('Entity Cache Manager', () => {
     await entityCacheController.replace([entityA.id], eMap2);
 
     entity = await entityCacheController.get(entityA.id);
-    expect(entity).toBeUndefined();
+    expect(entity).toBeNull();
     entity = await entityCacheController.get(entityD.id);
     expect(entity).toBe(entity);
   });

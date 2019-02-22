@@ -3,22 +3,27 @@
  * @Date: 2018-12-07 14:48:11
  * Copyright © RingCentral. All rights reserved.
  */
-import { GroupService } from 'sdk/service/group';
-import { ProfileService } from 'sdk/service/profile';
+import { GroupService } from 'sdk/module/group';
+import { ProfileService } from 'sdk/module/profile';
 import { StateService } from 'sdk/module/state';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store/base/StoreManager';
 import history from '@/history';
 import { Action } from 'history';
+import { mainLogger } from 'sdk';
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
     const _groupService: GroupService = GroupService.getInstance();
-    return _groupService.updateGroupLastAccessedTime({
-      id,
-      timestamp: accessTime,
-    });
+    _groupService
+      .updateGroupLastAccessedTime({
+        id,
+        timestamp: accessTime,
+      })
+      .catch((err: any) => {
+        mainLogger.tags('GroupHandler').info(`access Group ${id} fail:`, err);
+      });
   }
 
   static async isGroupHidden(id: number) {
@@ -32,8 +37,9 @@ class GroupHandler {
       return;
     }
     const _profileService: ProfileService = ProfileService.getInstance();
-    const result = await _profileService.reopenConversation(id);
-    if (result.isErr()) {
+    try {
+      await _profileService.reopenConversation(id);
+    } catch {
       history.replace('/messages/loading', {
         id,
         error: true,
@@ -56,10 +62,14 @@ export class MessageRouterChangeHelper {
 
   static async goToLastOpenedGroup() {
     const lastGroupId = await this.getLastGroupId();
-    this.goToConversation(lastGroupId, 'REPLACE');
+    this._goToConversation(lastGroupId, 'REPLACE');
+  }
+  static async goToConversation(id: string, action?: Action) {
+    const validId = await this.verifyGroup(Number(id));
+    return this._goToConversation(validId, action);
   }
 
-  static async goToConversation(id: string, action?: Action) {
+  private static async _goToConversation(id: string, action?: Action) {
     switch (action) {
       case 'REPLACE':
         history.replace(`/messages/${id}`);

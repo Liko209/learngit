@@ -12,7 +12,7 @@ import {
 } from '../../dao/account/constants';
 import { daoManager, AuthDao } from '../../dao';
 import AccountDao from '../../dao/account';
-import PersonDao from '../../dao/person';
+import { PersonDao } from '../../module/person/dao';
 import ConfigDao from '../../dao/config';
 import { CLIENT_ID } from '../../dao/config/constants';
 import { UserInfo } from '../../models';
@@ -21,7 +21,7 @@ import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
 import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
-import ProfileService from '../profile/index';
+import { ProfileService } from '../../module/profile';
 import { setRcToken } from '../../authenticator';
 import { ERROR_CODES_SDK } from '../../error';
 
@@ -78,8 +78,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
     const authDao = daoManager.getKVDao(AuthDao);
     try {
       const oldRcToken = authDao.get(AUTH_RC_TOKEN);
-      const refreshResult = await refreshToken(oldRcToken);
-      const newRcToken = refreshResult.expect('Failed to refresh rcToken');
+      const newRcToken = await refreshToken(oldRcToken);
       setRcToken(newRcToken);
       notificationCenter.emitKVChange(AUTH_RC_TOKEN, newRcToken);
       return newRcToken;
@@ -91,7 +90,11 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
 
   async onBoardingPreparation() {
     const profileService: ProfileService = ProfileService.getInstance();
-    await profileService.markMeConversationAsFav();
+    await profileService.markMeConversationAsFav().catch((error: Error) => {
+      mainLogger
+        .tags('AccountService')
+        .info('markMeConversationAsFav fail:', error);
+    });
   }
 
   getUnreadToggleSetting() {

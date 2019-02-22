@@ -37,18 +37,12 @@ class FeatureFlag {
 
   async getServicePermission() {
     const result = await fetchServicePermission();
-    if (result.isOk()) {
-      const {
-        data: { serviceFeatures },
-      } = result;
-      const permissions = {};
-      serviceFeatures.forEach((item: IServiceFeatures) => {
-        permissions[item.featureName] = item.enabled;
-      });
-      this.handleData(permissions, 'RC_PERMISSION');
-    } else {
-      throw result.error;
-    }
+    const { serviceFeatures } = result;
+    const permissions = {};
+    serviceFeatures.forEach((item: IServiceFeatures) => {
+      permissions[item.featureName] = item.enabled;
+    });
+    this.handleData(permissions, 'RC_PERMISSION');
   }
 
   getFlagValue(key: string) {

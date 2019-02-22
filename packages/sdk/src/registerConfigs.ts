@@ -19,13 +19,10 @@ import AccountService from './service/account';
 import AuthService from './service/auth';
 import CompanyService from './service/company';
 import ConfigService from './service/config';
-import GroupService from './service/group';
 import { ItemService } from './module/item';
-import PersonService from './service/person';
-import PostService from './service/post';
+import { PersonService } from './module/person';
 import PresenceService from './service/presence';
-import ProfileService from './service/profile';
-import SearchService from './service/search';
+import { ProfileService } from './module/profile';
 import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
@@ -33,26 +30,14 @@ import { StateService } from './module/state';
 import SyncService from './service/sync';
 import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
-import { NewPostService } from './module/post';
+import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
-import { NewGroupService } from './module/group';
+import { GroupService } from './module/group';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
 const registerConfigs = {
   classes: [
-    // DAOs
-    // { name: AccountDao.name, value: AccountDao },
-    // { name: PostDao.name, value: PostDao },
-    // { name: GroupDao.name, value: GroupDao },
-    // { name: CompanyDao.name, value: CompanyDao },
-    // { name: ItemDao.name, value: ItemDao },
-    // { name: PersonDao.name, value: PersonDao },
-    // { name: ProfileDao.name, value: ProfileDao },
-    // { name: StateDao.name, value: StateDao },
-    // { name: ConfigDao.name, value: ConfigDao },
-    // { name: AuthDao.name, value: AuthDao },
-
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     {
@@ -67,19 +52,17 @@ const registerConfigs = {
     { name: GlipAccount.name, value: GlipAccount },
 
     // Services
-    { name: PostService.name, value: PostService },
     { name: GroupService.name, value: GroupService },
     { name: CompanyService.name, value: CompanyService },
     { name: ItemService.name, value: ItemService },
     { name: PersonService.name, value: PersonService },
     { name: PresenceService.name, value: PresenceService },
     { name: ProfileService.name, value: ProfileService },
-    { name: SearchService.name, value: SearchService },
     { name: StateService.name, value: StateService },
     { name: ProgressService.name, value: ProgressService },
-    { name: NewPostService.name, value: NewPostService },
+    { name: PostService.name, value: PostService },
     { name: PermissionService.name, value: PermissionService },
-    { name: NewGroupService.name, value: NewGroupService },
+    { name: GroupService.name, value: GroupService },
     {
       name: ConfigService.name,
       value: ConfigService,

@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ServiceResult } from 'sdk/service/ServiceResult';
 import { Profile } from 'sdk/module/profile/entity';
 import { IconButtonSize } from 'jui/components/Buttons';
 
@@ -17,7 +16,8 @@ type FavoriteViewProps = FavoriteProps & {
   getConversationId: () => void;
   conversationId: number;
   isFavorite: boolean;
-  handlerFavorite: () => Promise<ServiceResult<Profile>>;
+  isMember: boolean;
+  handlerFavorite: () => Promise<Profile>;
 };
 
 export { FavoriteProps, FavoriteViewProps };

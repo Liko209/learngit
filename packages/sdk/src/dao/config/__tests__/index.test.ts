@@ -9,7 +9,7 @@ import { setupKV } from '../../__tests__/utils';
 import { ENV } from '../constants';
 
 jest.mock('foundation');
-jest.mock('../../base/BaseKVDao');
+jest.mock('../../../framework/dao');
 
 describe('ConfigDao', () => {
   let configDao: ConfigDao;

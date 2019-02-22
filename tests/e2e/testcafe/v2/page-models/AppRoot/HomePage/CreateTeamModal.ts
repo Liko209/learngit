@@ -13,39 +13,28 @@ export class CreateTeamModal extends BaseWebComponent {
     return this.getSelector('*[role="dialog"]');
   }
 
-
   get cancelButton() {
     this.warnFlakySelector();
     return this.self.find('button').nth(0);
   }
 
   get createButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').nth(1);
-  }
-
-  get toggleList() {
-    return this.getSelectorByAutomationId("CreateTeamToggleList");
+    return this.self.find('.modal-actions button').nth(1);
   }
 
   get teamNameInput() {
     return this.getSelectorByAutomationId("CreateTeamName");
   }
 
+  get teamNameInlineError() {
+    return this.self.find('#Team name-helper-text');
+  }
+
+  get toggleList() {
+    return this.getSelectorByAutomationId("CreateTeamToggleList");
+  }
   get teamDescriptionInput() {
     return this.getSelectorByAutomationId("CreateTeamDescription");
-  }
-
-  private getToggleButton(index) {
-    return this.toggleList.find('input').nth(index);
-  }
-
-  async clickPublicTeamButton() {
-    await this.t.click(this.getToggleButton(0));
-  }
-
-  async clickMayPostButton() {
-    await this.t.click(this.getToggleButton(1));
   }
 
   async typeTeamName(teamName) {
@@ -78,6 +67,12 @@ export class CreateTeamModal extends BaseWebComponent {
 
   async typeMember(text: string, options?) {
     await this.clickAndTypeText(this.membersInput, text, options);
+  }
+
+  async addMember(name: string) {
+    await this.typeMember(name, { paste: true });
+    await this.t.wait(3e3);
+    await this.selectMemberByNth(0);
   }
 
   get selectedMembers() {
@@ -121,10 +116,77 @@ export class CreateTeamModal extends BaseWebComponent {
     await this.t.click(this.contactSearchItems.find('.secondary').withText(email));
   }
 
-  async click() {
-    await this.t.click(this.self);
+  get isPublicDiv() {
+    return this.getSelectorByAutomationId('CreateTeamIsPublic').parent('li');
   }
 
+  get mayAddMemberDiv() {
+    return this.getSelectorByAutomationId('CreateTeamCanAddMember').parent('li');
+  }
+
+  get mayPostMessageDiv() {
+    return this.getSelectorByAutomationId('CreateTeamCanPost').parent('li');
+  }
+
+  get mayPinPostDiv() {
+    return this.getSelectorByAutomationId('CreateTeamCanPinPost').parent('li');
+  }
+
+  get isPublicToggle() {
+    return this.checkboxOf(this.isPublicDiv);
+  }
+
+  get mayAddMemberToggle() {
+    return this.checkboxOf(this.mayAddMemberDiv);
+  }
+
+  get mayPostMessageToggle() {
+    return this.checkboxOf(this.mayPostMessageDiv);
+  }
+
+  get mayPinPostToggle() {
+    return this.checkboxOf(this.mayPinPostDiv);
+  }
+
+  private async toggle(checkbox: Selector, check: boolean) {
+    const isChecked = await checkbox.checked;
+    if (isChecked != check) {
+      await this.t.click(checkbox);
+    }
+  }
+
+  async turnOnIsPublic() {
+    await this.toggle(this.isPublicToggle, true);
+  }
+
+  async turnOffIsPublic() {
+    await this.toggle(this.isPublicToggle, false);
+  }
+
+  async turnOnMayAddMember() {
+    await this.toggle(this.mayAddMemberToggle, true);
+  }
+
+  async turnOffMayAddMember() {
+    await this.toggle(this.mayAddMemberToggle, false);
+  }
+
+  async turnOnMayPostMessage() {
+    await this.toggle(this.mayPostMessageToggle, true);
+  }
+
+  async turnOffMayPostMessage() {
+    await this.toggle(this.mayPostMessageToggle, false);
+  }
+
+  async turnOnMayPinPost() {
+    await this.toggle(this.mayPinPostToggle, true);
+  }
+
+  async turnOffMayPinPost() {
+    await this.toggle(this.mayPinPostToggle, false);
+  }
+  
   get isCreateButtonDisable(): Promise<boolean> {
     return this.createButton.hasAttribute('disabled');
   }

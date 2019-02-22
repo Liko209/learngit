@@ -21,18 +21,18 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
 enum ERROR_TYPES {
-  CONTENT_LENGTH = 'contentLength',
-  CONTENT_ILLEGAL = 'contentIllegal',
+  CONTENT_LENGTH = 'message.prompt.contentLength',
+  CONTENT_ILLEGAL = 'message.prompt.contentIllegal',
 }
 
 class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
-  private _postService: NewPostService;
+  private _postService: PostService;
   private _itemService: ItemService;
 
   private _onPostCallbacks: OnPostCallback[] = [];
@@ -64,7 +64,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   constructor(props: MessageInputProps) {
     super(props);
-    this._postService = NewPostService.getInstance();
+    this._postService = PostService.getInstance();
 
     this._itemService = ItemService.getInstance();
     this._groupConfigService = GroupConfigService.getInstance();
@@ -110,6 +110,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
+    });
+  }
+
+  cleanDraft = () => {
+    this._groupConfigService.updateDraft({
+      draft: '',
+      id: this._oldId,
+      attachment_item_ids: [],
     });
   }
 
@@ -180,7 +188,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private async _sendPost(content: string, ids: number[]) {
     this.contentChange('');
-    this.forceSaveDraft();
+    this.cleanDraft();
     const items = this.items;
     try {
       let realContent: string = content;
@@ -192,7 +200,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
         text: realContent,
         groupId: this.id,
         itemIds: items.map(item => item.id),
-        mentionIds: ids,
+        mentionNonItemIds: ids,
       });
       // clear context (attachments) after post
       //

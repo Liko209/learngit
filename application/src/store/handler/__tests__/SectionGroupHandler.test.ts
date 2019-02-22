@@ -6,17 +6,14 @@
 import { getGlobalValue } from '../../utils/entities';
 import SectionGroupHandler from '../SectionGroupHandler';
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
-import {
-  notificationCenter,
-  ENTITY,
-  ProfileService,
-  GroupService,
-} from 'sdk/service';
+import { ProfileService } from 'sdk/module/profile';
 import { StateService } from 'sdk/module/state';
-
-jest.mock('sdk/service/profile');
+import { GroupService } from 'sdk/module/group';
+import { notificationCenter, ENTITY } from 'sdk/service';
+jest.mock('sdk/api');
+jest.mock('sdk/module/profile');
 jest.mock('sdk/module/state');
-jest.mock('sdk/service/group');
+jest.mock('sdk/module/group');
 jest.mock('../../utils/entities');
 
 const profileService = new ProfileService();
@@ -198,6 +195,70 @@ describe('SectionGroupHandler', () => {
         ),
       ).toEqual([11111]);
       notificationCenter.emitEntityDelete(ENTITY.GROUP, [11111]);
+    });
+
+    it('should id sets not change when entity archive id not in id sets', () => {
+      SectionGroupHandler.getInstance();
+      const putData = [
+        {
+          id: 2,
+          is_team: true,
+          created_at: 0,
+          members: [1],
+        },
+      ];
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([2]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [
+        {
+          id: 3,
+          is_team: true,
+          created_at: 0,
+          is_archived: true,
+        },
+      ]);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([2]);
+      expect(
+        SectionGroupHandler.getInstance()
+          .getGroupIdsByType(SECTION_TYPE.TEAM)
+          .sort(),
+      ).toEqual([2]);
+      notificationCenter.emitEntityDelete(ENTITY.GROUP, [2]);
+    });
+
+    it('should delete id from id sets when entity archived in id sets', () => {
+      SectionGroupHandler.getInstance();
+      const putData = [
+        {
+          id: 2,
+          is_team: true,
+          created_at: 0,
+          members: [1],
+        },
+      ];
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, putData);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([2]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
+      ).toEqual([2]);
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, [
+        {
+          id: 2,
+          is_team: true,
+          created_at: 0,
+          is_archived: true,
+        },
+      ]);
+      expect(SectionGroupHandler.getInstance().groupIds).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.DIRECT_MESSAGE,
+        ),
+      ).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
+      ).toEqual([]);
     });
   });
   describe('getRemovedIds', async () => {
