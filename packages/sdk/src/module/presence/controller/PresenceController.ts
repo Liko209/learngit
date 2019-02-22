@@ -11,7 +11,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 
 class PresenceController {
-  private _caches: Map<number, Presence>; // <id, RawPresence['calculatedStatus']>
+  private _caches: Map<number, Presence> = new Map(); // <id, RawPresence['calculatedStatus']>
   private _subscribeController: SubscribeController;
 
   constructor(threshold: number, interval: number) {
@@ -96,7 +96,7 @@ class PresenceController {
   }
 
   reset() {
-    this._caches = new Map();
+    this._caches.clear();
     this._subscribeController.reset();
   }
 

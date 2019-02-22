@@ -23,7 +23,6 @@ class PresenceService extends EntityBaseService {
         [SERVICE.SOCKET_STATE_CHANGE]: this.handleStore,
       }),
     );
-    this.reset();
   }
 
   saveToMemory(presences: Presence[]): void {

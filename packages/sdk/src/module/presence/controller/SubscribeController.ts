@@ -10,18 +10,16 @@ import { SubscribeRequestController } from './SubscribeRequestController';
 const RETRY_COUNT = 2;
 
 class SubscribeController {
-  public queue: number[];
+  public queue: number[] = [];
   public subscribeRequestController: SubscribeRequestController;
   public subscribeIds: Function;
-  public failIds: Map<number, number>;
+  public failIds: Map<number, number> = new Map();
 
   constructor(
     threshold: number,
     public subscribeSuccess: Function,
     interval: number,
   ) {
-    this.queue = [];
-    this.failIds = new Map();
     this.subscribeRequestController = new SubscribeRequestController(
       this.onSubscribeRequestSuccess.bind(this),
       this.onSubscriptRequestFail.bind(this),
@@ -49,7 +47,7 @@ class SubscribeController {
 
   reset() {
     this.queue = [];
-    this.failIds = new Map();
+    this.failIds.clear();
   }
 
   onSubscriptRequestFail(ids: number[]) {
