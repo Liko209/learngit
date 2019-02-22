@@ -102,7 +102,7 @@ describe('LogControlManager', () => {
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(4);
     });
 
-    it('Should be able to show error info when getting permission service fail. [JPT-1179]', async () => {
+    it.skip('Should be able to show error info when getting permission service fail. [JPT-1179]', async () => {
       mockPermissionService.hasPermission.mockClear();
       mockLogger.warn.mockClear();
       mockLogManager.config.mockClear();
