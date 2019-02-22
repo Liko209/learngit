@@ -62,7 +62,7 @@ test(formalName('Should remains where it is when click a conversation in the con
       await app.homePage.ensureLoaded();
     });
 
-    await h(t).withLog('Then the conversation 2 display in the top', async () => {
+    await h(t).withLog('Then the conversation 2 display in the second', async () => {
       await teamsSection.nthConversationEntry(-1).groupIdShouldBe(teamId);
     });
   },
