@@ -381,7 +381,7 @@ test(formalName(`Make all team members as admin of this team when no admin in th
   });
 
   await h(t).withLog(`And I login Jupiter with a member u3 ${u3.company.number}#${u3.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, u2);
+    await h(t).directLoginWithUser(SITE_URL, u3);
     await app.homePage.ensureLoaded();
   });
 
