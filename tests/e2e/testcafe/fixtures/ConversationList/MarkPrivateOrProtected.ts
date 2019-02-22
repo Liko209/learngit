@@ -237,11 +237,9 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
     }, true);
 
     await h(t).withLog(`then should icon not update`, async () => {
-      await t.expect(conversationSection.privateButton.find('.material-icons').withText(icon[i]).exists).ok();
+      await t.expect(conversationSection.privateButton.find(`.icon.${icon[i]}`).exists).ok();
     }, true);
-
   }
-
 });
 
 

@@ -51,7 +51,7 @@ const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
 ) => {
   const { children, className, iconColor, fontSize } = props;
   const iconName = name2icon[children as string];
-  const _className = `material-icons ${className} ${children} icon`;
+  const _className = `${className} ${children} icon`;
   return (
     <StyledSvg className={_className} iconColor={iconColor} size={fontSize}>
       <use xlinkHref={`#icon-${iconName}`} />

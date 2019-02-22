@@ -111,8 +111,7 @@ class MenuItem extends Entry {
 
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
-    this.warnFlakySelector();
-    return this.self.find('span').withText('more_vert');
+    return this.self.find('.icon.more_vert');
   }
 
   get name() {
