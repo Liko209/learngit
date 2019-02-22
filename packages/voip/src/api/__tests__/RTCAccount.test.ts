@@ -13,8 +13,10 @@ import {
   RTC_CALL_ACTION,
   RTCCallOptions,
 } from '../types';
-
-import { kRTCAnonymous } from '../../account/constants';
+import {
+  kRTCAnonymous,
+  kRTCProvRefreshByRegFailedInterval,
+} from '../../account/constants';
 import {
   REGISTRATION_FSM_STATE,
   RTCSipProvisionInfo,
@@ -42,8 +44,8 @@ class MockUserAgent extends EventEmitter2 {
   constructor() {
     super();
   }
-  mockSignal(signal: any) {
-    this.emit(signal);
+  mockSignal(signal: any, response?: any, cause?: any) {
+    this.emit(signal, response, cause);
   }
   makeCall(phoneNumber: string, options: RTCCallOptions): any {
     return new MockSession();
@@ -122,29 +124,29 @@ describe('networkChangeToOnline()', () => {
   });
 });
 
-describe('RTCAccount', async () => {
-  let mockListener: MockAccountListener;
-  let localStorage: MockLocalStorage;
-  let account: RTCAccount = null;
-  let ua: MockUserAgent;
-  function setupAccount() {
-    if (account) {
-      account.destroy();
-      account = null;
-    }
-    mockListener = new MockAccountListener();
-    localStorage = new MockLocalStorage();
-    RTCDaoManager.instance().setDaoDelegate(localStorage);
-    account = new RTCAccount(mockListener);
-    ua = new MockUserAgent();
-    jest
-      .spyOn(account._regManager, 'onProvisionReadyAction')
-      .mockImplementation(() => {});
-    account._regManager._userAgent = ua;
-    account._regManager._initUserAgentListener();
-    account._onNewProv({});
+let mockListener: MockAccountListener;
+let localStorage: MockLocalStorage;
+let account: RTCAccount = null;
+let ua: MockUserAgent;
+function setupAccount() {
+  if (account) {
+    account.destroy();
+    account = null;
   }
+  mockListener = new MockAccountListener();
+  localStorage = new MockLocalStorage();
+  RTCDaoManager.instance().setDaoDelegate(localStorage);
+  account = new RTCAccount(mockListener);
+  ua = new MockUserAgent();
+  jest
+    .spyOn(account._regManager, 'onProvisionReadyAction')
+    .mockImplementation(() => {});
+  account._regManager._userAgent = ua;
+  account._regManager._initUserAgentListener();
+  account._onNewProv({});
+}
 
+describe('RTCAccount', async () => {
   it('Should  Report registered state to upper layer when account state transient to registered [JPT-528]', done => {
     setupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
@@ -480,6 +482,103 @@ describe('RTCAccount', async () => {
           );
           done();
         });
+      });
+    });
+  });
+
+  describe('refreshProv', () => {
+    const errorCode = 401;
+    const response = 'response';
+    it('Should not call refreshProv api if error code is not 401/403/407 when register failed [JPT-1182]', done => {
+      setupAccount();
+      jest.spyOn(account, '_refreshProv');
+      ua.mockSignal(UA_EVENT.REG_FAILED, response, 402);
+      setImmediate(() => {
+        expect(account._refreshProv).not.toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('Should refresh sip provisioning, set _isRefreshed true and set timer 1h if _isRefreshed is false when register failed with 401/403/407 [JPT-1184]', done => {
+      setupAccount();
+      jest.spyOn(account, '_refreshProv');
+      jest.spyOn(account._provManager, '_sendSipProvRequest');
+      ua.mockSignal(UA_EVENT.REG_FAILED, response, errorCode);
+      setImmediate(() => {
+        expect(account._refreshProv).toHaveBeenCalled();
+        expect(account._provManager._isRefreshedWithinTime).toBeTruthy();
+        expect(account._provManager._refreshByRegFailedTimer).not.toBeNull();
+        expect(account._provManager._sendSipProvRequest).toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('Should set should_request true if _isRefreshed is true when register failed with 401/403/407 [JPT-1183]', done => {
+      setupAccount();
+      jest.spyOn(account._provManager, '_sendSipProvRequest');
+      account._provManager._isRefreshedWithinTime = true;
+      ua.mockSignal(UA_EVENT.REG_FAILED, response, errorCode);
+      setImmediate(() => {
+        expect(account._provManager._isRefreshedWithinTime).toBeTruthy();
+        expect(account._provManager._refreshByRegFailedTimer).toBeNull();
+        expect(account._provManager._sendSipProvRequest).not.toHaveBeenCalled();
+        expect(account._provManager._isAcquireProvWhenTimeArrived).toBeTruthy();
+        done();
+      });
+    });
+
+    it('Should set _isRefreshed to false if should_request is false when timer arrived [JPT-1185]', done => {
+      jest.useFakeTimers();
+      setupAccount();
+      jest.spyOn(account, '_refreshProv');
+      jest.spyOn(account._provManager, '_sendSipProvRequest');
+      account._provManager._isRefreshedWithinTime = true;
+      account._provManager._isAcquireProvWhenTimeArrived = false;
+      account._provManager._setRefreshByRegFailedTimer();
+      setImmediate(() => {
+        jest.advanceTimersByTime(kRTCProvRefreshByRegFailedInterval * 1000);
+        expect(account._provManager._isRefreshedWithinTime).not.toBeTruthy();
+        expect(account._provManager._sendSipProvRequest).not.toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('Should request sip provisioning, set should_request false and set timer if should_request is true when timer arrived [JPT-1186]', done => {
+      jest.useFakeTimers();
+      setupAccount();
+      jest.spyOn(account, '_refreshProv');
+      account._provManager._sendSipProvRequest = jest
+        .fn()
+        .mockResolvedValue(null);
+      account._provManager._isRefreshedWithinTime = true;
+      account._provManager._isAcquireProvWhenTimeArrived = true;
+      account._provManager._setRefreshByRegFailedTimer();
+      setImmediate(() => {
+        jest.advanceTimersByTime(kRTCProvRefreshByRegFailedInterval * 1000);
+        expect(account._provManager._isRefreshedWithinTime).toBeTruthy();
+        expect(
+          account._provManager._isAcquireProvWhenTimeArrived,
+        ).not.toBeTruthy();
+        expect(account._provManager._sendSipProvRequest).toHaveBeenCalled();
+        done();
+      });
+    });
+
+    it('Should set should_request false, set _isRefresh false and clear timer when registration FSM state enter ready after register failed with 401/403/407 [JPT-1187]', done => {
+      setupAccount();
+      jest.spyOn(account, '_refreshProv');
+      jest.spyOn(account._provManager, '_sendSipProvRequest');
+      ua.mockSignal(UA_EVENT.REG_FAILED, response, errorCode);
+      ua.mockSignal(UA_EVENT.REG_SUCCESS, response, errorCode);
+      setImmediate(() => {
+        expect(account._refreshProv).toHaveBeenCalled();
+        expect(account._provManager._isRefreshedWithinTime).not.toBeTruthy();
+        expect(
+          account._provManager._isAcquireProvWhenTimeArrived,
+        ).not.toBeTruthy();
+        expect(account._provManager._refreshByRegFailedTimer).not.toBeNull();
+        expect(account._provManager._sendSipProvRequest).toHaveBeenCalled();
+        done();
       });
     });
   });

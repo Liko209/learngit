@@ -32,7 +32,7 @@ enum ERROR_TYPE {
   PARAMS_ERROR,
 }
 
-const loggerTag = 'RTCProvManager';
+const LOG_TAG = 'RTCProvManager';
 
 class RTCProvManager extends EventEmitter2 {
   private _sipProvisionInfo: RTCSipProvisionInfo | null = null;
@@ -86,8 +86,8 @@ class RTCProvManager extends EventEmitter2 {
 
   private _refreshSipProvWhenTimeArrived() {
     if (this._isAcquireProvWhenTimeArrived) {
+      this._isAcquireProvWhenTimeArrived = false;
       this._sendSipProvRequest().then(() => {
-        this._isAcquireProvWhenTimeArrived = false;
         this._setRefreshByRegFailedTimer();
       });
       return;
@@ -111,7 +111,7 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   private async _sendSipProvRequest() {
-    rtcLogger.info(loggerTag, 'start send SipProv Request');
+    rtcLogger.info(LOG_TAG, 'start send SipProv Request');
     const provRequest: HttpRequest = new NetworkRequestBuilder()
       .setPath(RTC_REST_API.API_SIP_PROVISION)
       .setMethod(NETWORK_METHOD.POST)
@@ -124,18 +124,18 @@ class RTCProvManager extends EventEmitter2 {
     try {
       response = await RTCRestApiManager.instance().sendRequest(provRequest);
     } catch (error) {
-      rtcLogger.error(loggerTag, `the request error is: ${error}`);
+      rtcLogger.error(LOG_TAG, `the request error is: ${error}`);
     }
 
-    rtcLogger.info(loggerTag, `the response is: ${JSON.stringify(response)}`);
+    rtcLogger.info(LOG_TAG, `the response is: ${JSON.stringify(response)}`);
 
     if (!response) {
-      rtcLogger.error(loggerTag, 'the response is null');
+      rtcLogger.error(LOG_TAG, 'the response is null');
       return;
     }
 
     if (<number>response.status < 200 || <number>response.status >= 400) {
-      rtcLogger.info(loggerTag, `the response is error:${response.status}`);
+      rtcLogger.info(LOG_TAG, `the response is error:${response.status}`);
       this._errorHandling(ERROR_TYPE.REQUEST_ERROR, response.retryAfter);
       return;
     }
@@ -143,7 +143,7 @@ class RTCProvManager extends EventEmitter2 {
     const responseData: RTCSipProvisionInfo = response.data;
 
     if (!this._checkSipProvInfoParams(responseData)) {
-      rtcLogger.info(loggerTag, 'the response param is error');
+      rtcLogger.info(LOG_TAG, 'the response param is error');
       this._errorHandling(ERROR_TYPE.PARAMS_ERROR, response.retryAfter);
       return;
     }
@@ -155,7 +155,7 @@ class RTCProvManager extends EventEmitter2 {
       !this._sipProvisionInfo ||
       !_.isEqual(responseData, this._sipProvisionInfo)
     ) {
-      rtcLogger.info(loggerTag, 'emit new prov');
+      rtcLogger.info(LOG_TAG, 'emit new prov');
       this._sipProvisionInfo = responseData;
       RTCDaoManager.instance().saveProvisionInfo(this._sipProvisionInfo);
       this.emit(RTC_PROV_EVENT.NEW_PROV, { info: responseData });
@@ -163,7 +163,7 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   private _resetFreshTimer() {
-    rtcLogger.info(loggerTag, 'set fresh timer');
+    rtcLogger.info(LOG_TAG, 'set fresh timer');
     this._clearFreshTimer();
     this._reFreshTimerId = setTimeout(() => {
       this._sendSipProvRequest();
@@ -198,13 +198,13 @@ class RTCProvManager extends EventEmitter2 {
         this._retryRequestForError(interval);
         break;
       default:
-        rtcLogger.error(loggerTag, `the error type ${type} is not defined`);
+        rtcLogger.error(LOG_TAG, `the error type ${type} is not defined`);
         break;
     }
   }
 
   private _retryRequestForError(seconds: number) {
-    rtcLogger.info(loggerTag, `set ${seconds} s error retry timer`);
+    rtcLogger.info(LOG_TAG, `set ${seconds} s error retry timer`);
     this._clearFreshTimer();
     this._canAcquireSipProv = false;
     this.retrySeconds = seconds;
@@ -215,7 +215,7 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   private _checkSipProvInfoParams(info: RTCSipProvisionInfo): boolean {
-    rtcLogger.info(loggerTag, `the prov info: ${JSON.stringify(info)}`);
+    rtcLogger.info(LOG_TAG, `the prov info: ${JSON.stringify(info)}`);
     let paramsCorrect: boolean = false;
     try {
       const paramsSipInfo =
@@ -229,7 +229,7 @@ class RTCProvManager extends EventEmitter2 {
         isNotEmptyString(paramsSipInfo.transport) &&
         isNotEmptyString(paramsSipInfo.username);
     } catch (error) {
-      rtcLogger.error(loggerTag, `the Prov Info Params error is: ${error}`);
+      rtcLogger.error(LOG_TAG, `the Prov Info Params error is: ${error}`);
     }
     return paramsCorrect;
   }
