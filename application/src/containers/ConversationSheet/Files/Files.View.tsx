@@ -21,9 +21,10 @@ import {
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
-import FileItemModel from '@/store/models/FileItem';
+import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 
 const SQUARE_SIZE = 180;
+const FutureAttachmentItem = withFuture(AttachmentItem);
 
 const downloadBtn = (downloadUrl: string) => (
   <JuiIconButton
@@ -46,6 +47,7 @@ class FilesView extends React.Component<FilesViewProps> {
     id: number,
     progresses: Map<number, number>,
     name: string,
+    future?: FutureCreator,
   ) => {
     const progress = progresses.get(id);
     let realStatus: ITEM_STATUS = ITEM_STATUS.NORMAL;
@@ -61,24 +63,20 @@ class FilesView extends React.Component<FilesViewProps> {
       realStatus = ITEM_STATUS.ERROR;
     }
     return (
-      <AttachmentItem
+      <FutureAttachmentItem
         fileIcon={getFileIcon(name)}
         status={realStatus}
         key={id}
         name={name}
         progress={progress}
         onClickDeleteButton={() => this.props.removeFile(id)}
+        future={future}
       />
     );
   }
 
   async componentDidMount() {
     await this.props.getCropImage();
-  }
-
-  private _isRecentUploaded = (item: FileItemModel) => {
-    const { createdAt } = item;
-    return Date.now() - createdAt < 2000;
   }
 
   render() {
@@ -89,20 +87,35 @@ class FilesView extends React.Component<FilesViewProps> {
         {files[FileType.image].map((file: ExtendFileItem) => {
           const { item } = file;
           const { origHeight, id, origWidth, name, downloadUrl } = item;
-          const hasSizeInfo = origWidth > 0 && origHeight > 0;
-          const element = this._renderItem(id, progresses, name);
-          if (id < 0 || !hasSizeInfo) {
-            return element;
-          }
           let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
           if (singleImage) {
             size = getThumbnailSize(origWidth, origHeight);
           }
-          const placeholder = this._isRecentUploaded(item) ? (
-            element
-          ) : (
+          const hasSizeInfo = origWidth > 0 && origHeight > 0;
+          const placeholder = (
             <JuiDelayPlaceholder width={size.width} height={size.height} />
           );
+          if (id < 0 || !hasSizeInfo) {
+            return this._renderItem(
+              id,
+              progresses,
+              name,
+              (callback: Function) => (
+                <JuiPreviewImage
+                  key={id}
+                  didLoad={callback}
+                  placeholder={placeholder}
+                  width={size.width}
+                  height={size.height}
+                  forceSize={!singleImage}
+                  squareSize={SQUARE_SIZE}
+                  fileName={name}
+                  url={urlMap.get(id) || ''}
+                  Actions={downloadBtn(downloadUrl)}
+                />
+              ),
+            );
+          }
           return (
             <JuiPreviewImage
               key={id}

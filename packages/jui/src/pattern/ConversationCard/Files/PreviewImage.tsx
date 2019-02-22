@@ -33,6 +33,7 @@ type JuiPreviewImageProps = {
   squareSize?: number;
   url: string;
   placeholder?: JSX.Element;
+  didLoad?: Function;
 } & SizeType;
 
 const Wrapper = styled.div`
@@ -73,7 +74,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   private _loaded: boolean = false;
 
   private _handleImageLoad = () => {
-    const { forceSize, squareSize } = this.props;
+    const { forceSize, squareSize, didLoad } = this.props;
     const { width, height } = this._imageRef.current!;
     if (forceSize) {
       this._imageInfo = getThumbnailForSquareSize(
@@ -85,6 +86,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
       this._imageInfo = getThumbnailSize(width, height);
     }
     this._loaded = true;
+    didLoad && didLoad();
     if (this._mounted) {
       this.forceUpdate();
     }
