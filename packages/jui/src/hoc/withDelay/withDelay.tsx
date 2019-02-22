@@ -5,7 +5,7 @@
  */
 import React, { ComponentType, ComponentClass } from 'react';
 
-type Props = { delay: number };
+type Props = { delay: number; placeholder?: JSX.Element };
 type States = { visible: boolean };
 
 function withDelay<T>(Component: ComponentType<T>): ComponentClass<Props | T> {
@@ -32,8 +32,12 @@ function withDelay<T>(Component: ComponentType<T>): ComponentClass<Props | T> {
     }
 
     render() {
-      const { delay, ...rest } = this.props;
-      return this.state.visible ? <Component {...rest as T} /> : null;
+      const { delay, placeholder, ...rest } = this.props;
+      return this.state.visible ? (
+        <Component {...rest as T} />
+      ) : (
+        placeholder || null
+      );
     }
 
     private _show = () => {

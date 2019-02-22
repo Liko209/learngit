@@ -99,11 +99,12 @@ class FilesView extends React.Component<FilesViewProps> {
           if (singleImage) {
             size = getThumbnailSize(origWidth, origHeight);
           }
-          const placeholder = this.props.isRecentlyUploaded(id) ? (
-            element
-          ) : (
-            <JuiDelayPlaceholder width={size.width} height={size.height} />
-          );
+          const placeholder =
+            origHeight > 0 && origWidth > 0 ? (
+              <JuiDelayPlaceholder width={size.width} height={size.height} />
+            ) : (
+              element
+            );
           return (
             <JuiPreviewImage
               key={id}

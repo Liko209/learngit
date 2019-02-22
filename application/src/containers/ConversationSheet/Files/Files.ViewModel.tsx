@@ -29,9 +29,6 @@ import {
 import { getThumbnail, RULE } from '@/common/getThumbnail';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
-const kIDMap: Map<number, number> = new Map();
-const kItemMap: Map<number, FileItemModel> = new Map();
-
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
@@ -47,7 +44,6 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const { ids } = props;
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
-      notificationCenter.on(ENTITY.ITEM, this._handleItemReplace);
     }
     this.autorun(this.getCropImage);
   }
@@ -58,14 +54,6 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     await Promise.all(
       images.map((file: ExtendFileItem) => this._fetchUrl(file, rule)),
     );
-  }
-
-  isRecentlyUploaded = (id: number) => {
-    if (id < 0) {
-      return true;
-    }
-    const realID = kIDMap.get(id);
-    return realID && realID < 0;
   }
 
   @action
@@ -123,59 +111,13 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     }
   }
 
-  private _handleItemReplace = (payload: NotificationEntityPayload<Item>) => {
-    const { type } = payload;
-    if (type === EVENT_TYPES.REPLACE) {
-      const data: any = payload;
-      const { ids, entities } = data.body;
-      ids.forEach((looper: number) => {
-        const newItem: FileItemModel = entities.get(looper);
-        const oldItem = getEntity<Item, FileItemModel>(
-          ENTITY_NAME.FILE_ITEM,
-          looper,
-        );
-        const newID = newItem.id;
-        if (looper !== newID) {
-          kItemMap.set(looper, oldItem);
-          kItemMap.set(newID, newItem);
-          kIDMap.set(looper, newID);
-          kIDMap.set(newID, looper);
-        }
-      });
-    }
-  }
-
   dispose = () => {
-    const ids = this.props.ids;
-    ids.forEach((looper: number) => {
-      const realID = kIDMap.get(looper);
-      if (realID) {
-        kIDMap.delete(realID);
-        kItemMap.delete(realID);
-      }
-      kIDMap.delete(looper);
-      kItemMap.delete(looper);
-    });
-
     notificationCenter.off(ENTITY.ITEM, this._handleItemChanged);
   }
 
   @computed
   get _ids() {
     return this.props.ids;
-  }
-
-  private _getRealItem = (item: FileItemModel): FileItemModel => {
-    const { id } = item;
-    const realID = kIDMap.get(id);
-    let oldItem: FileItemModel | null = null;
-    if (typeof realID !== 'undefined') {
-      oldItem = kItemMap.get(realID) || null;
-    }
-    if (oldItem && !oldItem.isMocked) {
-      return oldItem;
-    }
-    return item;
   }
 
   @computed
@@ -192,13 +134,8 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       if (item.deactivated) {
         return;
       }
-      const realItem = this._getRealItem(item);
-      const fakeItem = { ...item } as FileItemModel;
-      fakeItem.type = realItem.type;
-      const file = getFileType(fakeItem);
-      const coreInfo = item.toCoreObject();
-      coreInfo.name = realItem.name;
-      file.item = coreInfo;
+      const file = getFileType(item);
+      file.item = item;
       files[file.type].push(file);
     });
     return files;

@@ -25,7 +25,6 @@ type FilesViewProps = {
   dispose: () => void;
   urlMap: Map<number, string>;
   getCropImage: () => Promise<void>;
-  isRecentlyUploaded: (id: number) => boolean;
 };
 
 export { FilesProps, FilesViewProps, FileType, ExtendFileItem };

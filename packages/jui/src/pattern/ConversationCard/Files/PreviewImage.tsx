@@ -16,6 +16,9 @@ import {
   ThumbnailInfo,
   getThumbnailForSquareSize,
 } from '../../../foundation/utils/calculateImageSize';
+import { JuiIconography } from '../../../foundation/Iconography';
+import styled from '../../../foundation/styled-components';
+import { withDelay } from '../../../hoc/withDelay';
 
 type SizeType = {
   width: number;
@@ -31,9 +34,21 @@ type JuiPreviewImageProps = {
   placeholder?: JSX.Element;
 } & SizeType;
 
+const Wrapper = styled.div`
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+`;
+
+const Icon = withDelay(() => <JuiIconography>image_preview</JuiIconography>);
+
 const JuiDelayPlaceholder = (props: SizeType) => (
   <Jui.ImageCard width={props.width} height={props.height}>
-    <div>Image place holder</div>
+    <Wrapper>
+      <Icon delay={300} />
+    </Wrapper>
   </Jui.ImageCard>
 );
 
