@@ -14,6 +14,7 @@ import { Group } from 'sdk/module/group/entity';
 import { errorHelper } from 'sdk/error';
 import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
+
 import {
   onScrollToTop,
   onScroll,
@@ -23,7 +24,7 @@ import {
 } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps } from './types';
+import { StreamProps, StreamItemType } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -89,6 +90,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @computed
   get postIds() {
     return _(this.items)
+      .filter({ type: StreamItemType.POST })
       .flatMap('value')
       .compact()
       .value();
