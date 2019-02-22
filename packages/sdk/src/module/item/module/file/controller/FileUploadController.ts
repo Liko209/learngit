@@ -481,12 +481,12 @@ class FileUploadController {
   ) {
     const groupId = preInsertItem.group_ids[0];
     const itemId = preInsertItem.id;
-    const policyResponse = await this._requestAmazonS3Policy(file);
-
-    if (policyResponse.isOk()) {
-      const extendFileData = policyResponse.unwrap();
+    let extendFileData;
+    try {
+      extendFileData = await this._requestAmazonS3Policy(file);
+      // const extendFileData = policyResponse.unwrap();
       const formData = this._createFromDataWithPolicyData(file, extendFileData);
-      const uploadResponse = await ItemAPI.uploadFileToAmazonS3(
+      await ItemAPI.uploadFileToAmazonS3(
         extendFileData.post_url,
         formData,
         (event: ProgressEventInit) => {
@@ -494,16 +494,12 @@ class FileUploadController {
         },
         requestHolder,
       );
-      if (uploadResponse.isOk()) {
-        this._handleFileUploadSuccess(
-          extendFileData.stored_file,
-          groupId,
-          preInsertItem,
-        );
-      } else {
-        this._handleItemFileSendFailed(itemId);
-      }
-    } else {
+      this._handleFileUploadSuccess(
+        extendFileData.stored_file,
+        groupId,
+        preInsertItem,
+      );
+    } catch (error) {
       this._handleItemFileSendFailed(itemId);
     }
   }
@@ -517,23 +513,23 @@ class FileUploadController {
     const itemId = preInsertItem.id;
     const formData = new FormData();
     formData.append(FILE_FORM_DATA_KEYS.FILE, file);
-    const uploadRes = await ItemAPI.uploadFileItem(
-      formData,
-      (e: ProgressEventInit) => {
-        this._updateProgress(e, itemId);
-      },
-      requestHolder,
-    );
-
-    if (uploadRes.isOk()) {
+    let uploadResult;
+    try {
+      uploadResult = await ItemAPI.uploadFileItem(
+        formData,
+        (e: ProgressEventInit) => {
+          this._updateProgress(e, itemId);
+        },
+        requestHolder,
+      );
       await this._handleFileUploadSuccess(
-        uploadRes.unwrap()[0],
+        uploadResult[0],
         groupId,
         preInsertItem,
       );
-    } else {
+    } catch (error) {
       this._handleItemFileSendFailed(itemId);
-      mainLogger.warn(`_sendItemFile error =>${uploadRes}`);
+      mainLogger.warn(`_sendItemFile error =>${error}`);
     }
   }
 

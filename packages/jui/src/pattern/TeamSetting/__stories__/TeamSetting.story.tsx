@@ -115,6 +115,18 @@ storiesOf('Pattern/TeamSetting', module)
             </JuiIconButton>
           </JuiTeamSettingButtonListItem>
           <JuiDivider />
+          <JuiTeamSettingButtonListItem color="semantic.negative">
+            <JuiTeamSettingButtonListItemText color="semantic.negative">
+              Archive team
+            </JuiTeamSettingButtonListItemText>
+            <JuiIconButton
+              variant="plain"
+              tooltipTitle="Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit."
+            >
+              remove
+            </JuiIconButton>
+          </JuiTeamSettingButtonListItem>
+          <JuiDivider />
         </JuiTeamSettingButtonList>
       </JuiModal>
     );

@@ -48,12 +48,7 @@ class FeatureFlag {
     const rcInfoDao = daoManager.getKVDao(RcInfoDao);
     let rcExtensionInfo: RcExtensionInfo = rcInfoDao.get(RC_EXTENSION_INFO);
     if (!rcExtensionInfo || !rcExtensionInfo.serviceFeatures) {
-      const result = await RcInfoApi.requestRcExtensionInfo();
-      if (result.isOk()) {
-        rcExtensionInfo = result.data;
-      } else {
-        throw result.error;
-      }
+      rcExtensionInfo = await RcInfoApi.requestRcExtensionInfo();
     }
     const permissions = {};
     rcExtensionInfo.serviceFeatures!.forEach((item: RcServiceFeature) => {

@@ -89,51 +89,39 @@ export default class SyncService extends BaseService {
       onRemainingHandled,
     } = this._syncListener;
 
+    progressBar.start();
     try {
       const currentTime = Date.now();
-
-      progressBar.start();
       const initialResult = await fetchInitialData(currentTime);
 
-      if (initialResult.isOk()) {
-        onInitialLoaded && (await onInitialLoaded(initialResult.data));
-        await handleData(initialResult.data);
-        onInitialHandled && (await onInitialHandled());
+      onInitialLoaded && (await onInitialLoaded(initialResult));
+      await handleData(initialResult);
+      onInitialHandled && (await onInitialHandled());
 
-        progressBar.stop();
-
-        const remainingResult = await fetchRemainingData(currentTime);
-
-        if (remainingResult.isOk()) {
-          onRemainingLoaded && (await onRemainingLoaded(remainingResult.data));
-          await handleData(remainingResult.data);
-          onRemainingHandled && (await onRemainingHandled());
-          mainLogger.info('fetch initial data or remaining data success');
-          return;
-        }
-      } else {
-        progressBar.stop();
-      }
-
-      mainLogger.error('fetch initial data or remaining data error');
-      notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+      const remainingResult = await fetchRemainingData(currentTime);
+      onRemainingLoaded && (await onRemainingLoaded(remainingResult));
+      await handleData(remainingResult);
+      onRemainingHandled && (await onRemainingHandled());
+      mainLogger.info('fetch initial data or remaining data success');
     } catch (e) {
       mainLogger.error('fetch initial data or remaining data error');
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
+    progressBar.stop();
   }
 
   private async _syncIndexData(timeStamp: number) {
     progressBar.start();
     const { onIndexLoaded, onIndexHandled } = this._syncListener;
     // 5 minutes ago to ensure data is correct
-    const result = await fetchIndexData(String(timeStamp - 300000));
-    if (result.isOk()) {
-      onIndexLoaded && (await onIndexLoaded(result.data));
-      await handleData(result.data);
+    let result;
+    try {
+      result = await fetchIndexData(String(timeStamp - 300000));
+      onIndexLoaded && (await onIndexLoaded(result));
+      await handleData(result);
       onIndexHandled && (await onIndexHandled());
-    } else {
-      this._handleSyncIndexError(result.error);
+    } catch (error) {
+      this._handleSyncIndexError(error);
     }
     progressBar.stop();
   }

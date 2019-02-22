@@ -12,7 +12,6 @@ import { ItemDao } from '../../../../dao';
 import { Item } from '../../../../entity';
 
 import ItemAPI from '../../../../../../api/glip/item';
-import { ApiResultOk, ApiResultErr } from '../../../../../../api/ApiResult';
 import notificationCenter from '../../../../../../service/notificationCenter';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
@@ -179,10 +178,7 @@ describe('fileUploadController', () => {
       size: 1111,
     };
 
-    const mockStoredFileRes = new ApiResultOk([storedFile], {
-      status: 200,
-      headers: {},
-    } as BaseResponse);
+    const mockStoredFileRes = [storedFile];
 
     const itemFile = {
       id: 1,
@@ -243,13 +239,7 @@ describe('fileUploadController', () => {
     });
 
     it('should go to _handleItemFileSendFailed process when upload file failed ', async (done: jest.DoneCallback) => {
-      const errResponse = new ApiResultErr(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 403,
-          headers: {},
-        } as BaseResponse,
-      );
+      const errResponse = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
 
       entitySourceController.get.mockResolvedValue(itemFile);
       ItemAPI.uploadFileItem.mockResolvedValue(errResponse);
@@ -276,15 +266,8 @@ describe('fileUploadController', () => {
     });
 
     it('should not handle failed result when the request is failed because the user canceled it.  ', async (done: jest.DoneCallback) => {
-      const errRes = new ApiResultErr(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 403,
-          statusText: NETWORK_FAIL_TYPE.CANCELLED,
-          headers: {},
-        } as BaseResponse,
-      );
-      ItemAPI.uploadFileItem.mockResolvedValue(errRes);
+      const errRes = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
+      ItemAPI.uploadFileItem.mockRejectedValue(errRes);
       jest
         .spyOn(fileUploadController, '_handleFileUploadSuccess')
         .mockImplementation(() => {});
@@ -515,18 +498,9 @@ describe('fileUploadController', () => {
 
       const groupId = 3;
 
-      const okRes = new ApiResultOk({ id: 10 }, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const okRes = { id: 10 };
 
-      const errRes = new ApiResultErr<ItemFile>(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 403,
-          headers: {},
-        } as BaseResponse,
-      );
+      const errRes = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
 
       return {
         progressCaches,
@@ -756,18 +730,9 @@ describe('fileUploadController', () => {
         },
       };
 
-      const okRes = new ApiResultOk(policy, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const okRes = policy;
 
-      const errRes = new ApiResultErr(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 403,
-          headers: {},
-        } as BaseResponse,
-      );
+      const errRes = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
 
       const groupId = 123123;
 
@@ -789,7 +754,7 @@ describe('fileUploadController', () => {
       );
       spyHandleFailed.mockImplementation(() => {});
 
-      ItemAPI.requestAmazonFilePolicy.mockResolvedValue(errRes);
+      ItemAPI.requestAmazonFilePolicy.mockRejectedValue(errRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(okRes);
 
       await fileUploadController.sendItemFile(groupId, file, false);
@@ -817,7 +782,7 @@ describe('fileUploadController', () => {
       spyHandleFailed.mockImplementation(() => {});
 
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(okRes);
-      ItemAPI.uploadFileToAmazonS3.mockResolvedValue(errRes);
+      ItemAPI.uploadFileToAmazonS3.mockRejectedValue(errRes);
 
       await fileUploadController.sendItemFile(groupId, file, false);
       setTimeout(() => {
@@ -971,7 +936,7 @@ describe('fileUploadController', () => {
         id: 11,
         versions: itemWithVersion.versions,
       };
-      const mockItemFileRes = new ApiResultOk(serverItemFile, 200, undefined);
+      const mockItemFileRes = serverItemFile;
       ItemAPI.putItem.mockResolvedValue(mockItemFileRes);
       fileRequestController.put.mockResolvedValue(serverItemFile);
       const spyNewItem = jest.spyOn(fileUploadController, '_newItem');

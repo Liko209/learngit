@@ -23,15 +23,13 @@ class RCPasswordAuthenticator implements IAuthenticator {
   ): Promise<IAuthResponse> {
     params.username = this.parsePhoneNumber(params.username);
 
-    const rcLoginResult = await loginRCByPassword(params);
-    const rcAuthData = rcLoginResult.expect('Failed to login RC By password.');
-    const glipAuthResult = await loginGlip(rcAuthData);
-    glipAuthResult.expect('Failed to login Glip.');
+    const rcAuthData = await loginRCByPassword(params);
+    const glipAuthResponse = await loginGlip(rcAuthData);
 
     setRcToken(rcAuthData);
 
     const authDao = daoManager.getKVDao(AuthDao);
-    authDao.put(AUTH_GLIP_TOKEN, glipAuthResult.headers['x-authorization']);
+    authDao.put(AUTH_GLIP_TOKEN, glipAuthResponse.headers['x-authorization']);
 
     const configDao = daoManager.getKVDao(ConfigDao);
     configDao.put(ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM.RC);
@@ -41,11 +39,11 @@ class RCPasswordAuthenticator implements IAuthenticator {
       accountInfos: [
         {
           type: RCAccount.name,
-          data: rcLoginResult,
+          data: rcAuthData,
         },
         {
           type: GlipAccount.name,
-          data: glipAuthResult,
+          data: glipAuthResponse.data,
         },
       ],
     };

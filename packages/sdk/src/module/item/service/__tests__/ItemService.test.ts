@@ -11,7 +11,6 @@ import { daoManager } from '../../../../dao';
 import { ItemFile, Item } from '../../entity';
 import { postFactory, rawItemFactory } from '../../../../__tests__/factories';
 import { ItemActionController } from '../../controller/ItemActionController';
-import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { transform, baseHandleData } from '../../../../service/utils';
 import { TypeDictionary } from '../../../../utils';
 import { ItemSyncController } from '../../controller/ItemSyncController';

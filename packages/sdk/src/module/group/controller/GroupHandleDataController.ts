@@ -46,11 +46,14 @@ class GroupHandleDataController {
             }
           } else {
             // If not existed in DB, request from API and handle the response again
-            const result = await GroupAPI.requestGroupById(item._id);
-            result.match({
-              Ok: data => this.handleData([data]),
-              Err: err => mainLogger.error(`${JSON.stringify(err)}`),
-            });
+            let result;
+            try {
+              result = await GroupAPI.requestGroupById(item._id);
+              this.handleData([result]);
+              return result;
+            } catch (error) {
+              mainLogger.error(`${JSON.stringify(error)}`);
+            }
           }
         }
         return null;
@@ -116,15 +119,29 @@ class GroupHandleDataController {
           if (calculated) {
             return calculated;
           }
-          const result = await GroupAPI.requestGroupById(item._id);
-          if (result.isOk()) {
-            finalItem = result.data;
-          } else {
+          try {
+            finalItem = await GroupAPI.requestGroupById(item._id);
+          } catch (error) {
             return null;
           }
         }
         /* eslint-enable no-underscore-dangle */
         const transformed: Group = transform<Group>(finalItem);
+
+        const beRemovedAsGuest =
+          transformed.removed_guest_user_ids &&
+          transformed.removed_guest_user_ids.includes(
+            UserConfig.getCurrentUserId(),
+          );
+
+        if (beRemovedAsGuest) {
+          transformed.deactivated = true;
+        }
+
+        if (transformed.privacy) {
+          transformed.is_public = transformed.privacy === 'protected';
+        }
+
         return transformed;
       }),
     );

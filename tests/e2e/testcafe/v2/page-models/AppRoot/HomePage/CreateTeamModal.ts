@@ -26,6 +26,10 @@ export class CreateTeamModal extends BaseWebComponent {
     return this.getSelectorByAutomationId("CreateTeamName");
   }
 
+  get teamNameInlineError() {
+    return this.self.find('#Team name-helper-text');
+  }
+
   get toggleList() {
     return this.getSelectorByAutomationId("CreateTeamToggleList");
   }

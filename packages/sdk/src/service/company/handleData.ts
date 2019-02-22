@@ -20,10 +20,9 @@ const _getTransformData = async (
       const { _delta: delta, _id: id } = item;
       let finalItem = item;
       if (delta && id) {
-        const result = await CompanyAPI.requestCompanyById(id);
-        if (result.isOk()) {
-          finalItem = result.data;
-        } else {
+        try {
+          finalItem = await CompanyAPI.requestCompanyById(id);
+        } catch (error) {
           return null;
         }
       }

@@ -59,13 +59,15 @@ class ItemSyncController {
     typeId: number,
     newerThen: number,
   ) {
-    const response = await ItemApi.getItems(typeId, groupId, newerThen);
-    if (response.isOk()) {
+    let result;
+    try {
+      result = await ItemApi.getItems(typeId, groupId, newerThen);
       await this._updateGroupItemNewerThan(groupId, typeId);
-      await this._itemService.getItemDataHandler()(response.data);
-    } else {
+      await this._itemService.getItemDataHandler()(result);
+    } catch (error) {
       mainLogger.info(
-        `failed to request type:${typeId} of group($groupId), response: ${response}`,
+        `failed to request type:${typeId} of group($groupId)`,
+        error,
       );
     }
   }

@@ -39,7 +39,7 @@ class GroupHandler {
     const _profileService: ProfileService = ProfileService.getInstance();
     try {
       await _profileService.reopenConversation(id);
-    } catch (e) {
+    } catch {
       history.replace('/messages/loading', {
         id,
         error: true,
