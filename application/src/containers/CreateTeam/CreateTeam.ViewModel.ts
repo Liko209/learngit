@@ -34,8 +34,6 @@ class CreateTeamViewModel extends AbstractViewModel {
   members: (number | string)[] = [];
   @observable
   errorEmail: string;
-  @observable
-  serverUnknownError: boolean = false;
 
   @computed
   get isOffline() {
@@ -76,13 +74,16 @@ class CreateTeamViewModel extends AbstractViewModel {
     try {
       return await groupService.createTeam(creatorId, memberIds, options);
     } catch (error) {
-      this.createErrorHandler(error);
+      const unkonwnError = this.createErrorHandler(error);
+      if (unkonwnError) {
+        throw new Error();
+      }
       return null;
     }
   }
 
   createErrorHandler(error: JError) {
-    this.serverUnknownError = false;
+    let serverUnknownError = false;
     if (
       error.isMatch({
         type: ERROR_TYPES.SERVER,
@@ -104,8 +105,9 @@ class CreateTeamViewModel extends AbstractViewModel {
         this.emailError = true;
       }
     } else {
-      this.serverUnknownError = true;
+      serverUnknownError = true;
     }
+    return serverUnknownError;
   }
 }
 

@@ -130,10 +130,12 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async expectStreamScrollToBottom() {
-    const scrollTop = await this.scrollDiv.scrollTop;
-    const scrollHeight = await this.scrollDiv.scrollHeight;
-    const clientHeight = await this.scrollDiv.clientHeight;
-    await this.t.expect(scrollTop).eql(scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`);
+    await H.retryUntilPass(async () => {
+      const scrollTop = await this.scrollDiv.scrollTop;
+      const scrollHeight = await this.scrollDiv.scrollHeight;
+      const clientHeight = await this.scrollDiv.clientHeight;
+      assert.deepStrictEqual(scrollTop, scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`)
+    })
   }
 
   async scrollToY(y: number) {
@@ -230,12 +232,32 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.click(this.privateButton);
   }
 
+  get privateTeamIcon() {
+    return this.getSelectorByIcon('lock', this.privateButton);
+  }
+
+  get publicTeamIcon() {
+    return this.getSelectorByIcon('lock_open', this.privateButton);
+  }
+  
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon('star', this.favoriteButton);
+  }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon('star_border', this.favoriteButton);
+  }
+
   async favorite() {
-    await this.t.click(this.leftWrapper.find('span').withText('star').nextSibling('input'));
+    await this.t.click(this.unFavoriteStatusIcon.parent('button'));
   }
 
   async unFavorite() {
-    await this.t.click(this.leftWrapper.find('span').withText('star_border').nextSibling('input'));
+    await this.t.click(this.favoriteStatusIcon.parent('button'));
   }
 
   async groupIdShouldBe(id: string | number) {

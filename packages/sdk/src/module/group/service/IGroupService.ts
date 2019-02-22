@@ -25,8 +25,8 @@ interface IGroupService {
   removeTeamMembers(members: number[], teamId: number): Promise<void>;
 
   isCurrentUserHasPermission(
-    teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
+    teamPermissionParams: TeamPermissionParams,
   ): boolean;
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean;
