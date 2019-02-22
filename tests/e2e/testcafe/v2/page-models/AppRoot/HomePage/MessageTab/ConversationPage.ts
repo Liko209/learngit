@@ -230,12 +230,32 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.click(this.privateButton);
   }
 
+  get privateTeamIcon() {
+    return this.getSelectorByIcon('lock', this.privateButton);
+  }
+
+  get publicTeamIcon() {
+    return this.getSelectorByIcon('lock_open', this.privateButton);
+  }
+  
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon('star', this.favoriteButton);
+  }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon('star_border', this.favoriteButton);
+  }
+
   async favorite() {
-    await this.t.click(this.leftWrapper.find('span').withText('star').nextSibling('input'));
+    await this.t.click(this.unFavoriteStatusIcon.parent('button'));
   }
 
   async unFavorite() {
-    await this.t.click(this.leftWrapper.find('span').withText('star_border').nextSibling('input'));
+    await this.t.click(this.favoriteStatusIcon.parent('button'));
   }
 
   async groupIdShouldBe(id: string | number) {
