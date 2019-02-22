@@ -18,6 +18,7 @@ import {
 } from '../../../foundation/utils/calculateImageSize';
 import { JuiIconography } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
+import { grey } from '../../../foundation/utils';
 import { withDelay } from '../../../hoc/withDelay';
 
 type SizeType = {
@@ -40,9 +41,14 @@ const Wrapper = styled.div`
   width: 100%;
   justify-content: center;
   align-items: center;
+  & .image-preview:before {
+    color: ${grey('400')} !important;
+  }
 `;
 
-const Icon = withDelay(() => <JuiIconography>image_preview</JuiIconography>);
+const Icon = withDelay(() => (
+  <JuiIconography fontSize="large">image_preview</JuiIconography>
+));
 
 const JuiDelayPlaceholder = (props: SizeType) => (
   <Jui.ImageCard width={props.width} height={props.height}>

@@ -21,6 +21,7 @@ import {
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
+import FileItemModel from '@/store/models/FileItem';
 
 const SQUARE_SIZE = 180;
 
@@ -75,6 +76,11 @@ class FilesView extends React.Component<FilesViewProps> {
     await this.props.getCropImage();
   }
 
+  private _isRecentUploaded = (item: FileItemModel) => {
+    const { createdAt } = item;
+    return Date.now() - createdAt < 2000;
+  }
+
   render() {
     const { files, progresses, urlMap } = this.props;
     const singleImage = files[FileType.image].length === 1;
@@ -82,29 +88,21 @@ class FilesView extends React.Component<FilesViewProps> {
       <>
         {files[FileType.image].map((file: ExtendFileItem) => {
           const { item } = file;
-          const {
-            origHeight,
-            id,
-            origWidth,
-            name,
-            isMocked,
-            downloadUrl,
-          } = item;
+          const { origHeight, id, origWidth, name, downloadUrl } = item;
           const hasSizeInfo = origWidth > 0 && origHeight > 0;
           const element = this._renderItem(id, progresses, name);
-          if (id < 0 || !hasSizeInfo || isMocked) {
+          if (id < 0 || !hasSizeInfo) {
             return element;
           }
           let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
           if (singleImage) {
             size = getThumbnailSize(origWidth, origHeight);
           }
-          const placeholder =
-            origHeight > 0 && origWidth > 0 ? (
-              <JuiDelayPlaceholder width={size.width} height={size.height} />
-            ) : (
-              element
-            );
+          const placeholder = this._isRecentUploaded(item) ? (
+            element
+          ) : (
+            <JuiDelayPlaceholder width={size.width} height={size.height} />
+          );
           return (
             <JuiPreviewImage
               key={id}
