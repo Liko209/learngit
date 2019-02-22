@@ -24,12 +24,14 @@ import {
 import { debounce } from 'lodash';
 // according to most debounce config
 const LOAD_DEBOUNCE = 300;
-
+const LOADING_MORE_HEIGHT = 96;
 const HEADER_HEIGHT = 36;
 @observer
 class ItemListView extends React.Component<ViewProps & Props>
   implements IVirtualListDataSource {
   private _loadData: Function;
+  private _scrollTimer: NodeJS.Timeout;
+  private _scrolling: boolean = false;
   constructor(props: ViewProps & Props) {
     super(props);
     this._loadData = debounce(async () => {
@@ -40,6 +42,10 @@ class ItemListView extends React.Component<ViewProps & Props>
       }
       await this.props.fetchNextPageItems();
     },                        LOAD_DEBOUNCE);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this._scrollTimer);
   }
 
   countOfCell() {
@@ -87,14 +93,17 @@ class ItemListView extends React.Component<ViewProps & Props>
     return <JuiRightRailContentLoading delay={500} />;
   }
 
-  moreLoader = () => {
-    return <JuiRightRailLoadingMore />;
+  onScroll = () => {
+    this._scrolling = true;
+    this._scrollTimer = setTimeout(() => (this._scrolling = false), 100);
   }
 
   render() {
     const { ids, loadStatus, tabConfig, width, height } = this.props;
     const { loading, firstLoaded } = loadStatus;
     const { subheader } = tabConfig;
+    const showLoading = this._scrolling && loading;
+    const heightFix = showLoading ? LOADING_MORE_HEIGHT : 0;
     return (
       <JuiRightShelfContent>
         {firstLoaded && ids.length > 0 && (
@@ -108,12 +117,12 @@ class ItemListView extends React.Component<ViewProps & Props>
           <JuiVirtualList
             dataSource={this}
             threshold={1}
-            isLoading={loading}
             width={width}
-            height={height - HEADER_HEIGHT}
+            height={height - HEADER_HEIGHT - heightFix}
           />
         )}
         {loading && !firstLoaded && this.firstLoader()}
+        {showLoading && <JuiRightRailLoadingMore />}
       </JuiRightShelfContent>
     );
   }
