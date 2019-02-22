@@ -355,7 +355,6 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
         fillContent={true}
         open={true}
         size={'medium'}
-        modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn, loading: saving }}
         title={t('setting.teamSettings')}
         onCancel={this.handleClose}
