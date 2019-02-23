@@ -37,10 +37,10 @@ class RecentSearchRecordController {
     return records || [];
   }
 
-  removeRecentSearchRecords(ids: Set<number>) {
+  removeRecentSearchRecords(toRemoveIds: Set<number>) {
     let records = this.getRecentSearchRecords();
     records = records.filter((record: RecentSearchModel) => {
-      return !ids.has(record.id);
+      return !toRemoveIds.has(record.id);
     });
     this._updateRecentRecords(records);
   }
