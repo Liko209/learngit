@@ -153,11 +153,7 @@ storiesOf('Pattern/VirtualList', module).add('Infinite VirtualList', () => {
       const cellCount = this.countOfCell();
       return (
         <div style={style}>
-          <JuiVirtualList
-            dataSource={this}
-            threshold={10}
-            isLoading={this.state.isLoading}
-          />
+          <JuiVirtualList dataSource={this} threshold={10} />
         </div>
       );
     }

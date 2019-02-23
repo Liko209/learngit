@@ -300,7 +300,7 @@
       "deleteTeam": "Delete team",
       "deleteTeamToolTip": "Delete a team permanently.",
       "deleteTeamConfirmTitle": "Delete Team?",
-      "deleteTeamConfirmContent": "Are you sure you want to permanently delete {{teamName}}?",
+      "deleteTeamConfirmContent": "Are you sure you want to permanently delete",
       "deleteTeamConfirmOk": "delete",
       "deleteTeamSuccessMsg": "Team deleted successfully.",
       "archiveTeam": "Archive team",

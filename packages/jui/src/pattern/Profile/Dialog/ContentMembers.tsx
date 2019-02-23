@@ -57,6 +57,7 @@ const JuiProfileDialogContentMemberListItemRightWrapper = styled('div')`
   width: ${width(5)};
   height: ${height(5)};
   margin-right: ${spacing(4)};
+  margin-left: ${spacing(6)};
   display: flex;
   flex: 1;
   z-index: ${({ theme }) => theme.zIndex.elementOnRipple};

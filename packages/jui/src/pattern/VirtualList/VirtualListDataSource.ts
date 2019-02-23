@@ -30,8 +30,6 @@ interface IVirtualListDataSource {
   renderEmptyContent?: () => JSX.Element;
 
   onScroll?: (event: { scrollTop: number }) => void;
-
-  moreLoader?: () => JSX.Element;
 }
 
 export { IVirtualListDataSource };
