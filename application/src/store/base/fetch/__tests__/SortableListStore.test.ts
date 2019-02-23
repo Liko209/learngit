@@ -48,7 +48,7 @@ describe('SortableListStore', () => {
     ]);
   });
 
-  it('upsert with more than 11 items and there are sort same sort value', () => {
+  it('upsert with more than 11 items and there are same sort value', () => {
     checkListStore(listStore, preInsertItems);
 
     listStore.upsert([

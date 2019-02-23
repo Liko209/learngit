@@ -14,9 +14,9 @@ import _ from 'lodash';
 // ) => first.sortValue - second.sortValue;
 
 export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
-  private _sortFunc: ISortFunc<ISortableModel<T>> | undefined;
+  private _sortFunc?: ISortFunc<ISortableModel<T>>;
 
-  constructor(sortFunc: ISortFunc<ISortableModel<T>> | undefined = undefined) {
+  constructor(sortFunc?: ISortFunc<ISortableModel<T>>) {
     super();
     this._sortFunc = sortFunc;
   }
@@ -25,10 +25,9 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
   upsert(idArray: ISortableModel<T>[]) {
     if (idArray.length) {
       const unionArray = _.unionBy(idArray, this.items, 'id');
-      const unionAndSortIds =
-        this._sortFunc !== undefined
-          ? unionArray.sort(this._sortFunc)
-          : _.sortBy(unionArray, 'sortValue');
+      const unionAndSortIds = this._sortFunc
+        ? unionArray.sort(this._sortFunc)
+        : _.sortBy(unionArray, 'sortValue');
       this.replaceAll(unionAndSortIds);
     }
   }
