@@ -25,6 +25,10 @@ type JuiIconographyProps = {
   children: string;
 } & React.HTMLAttributes<HTMLElement>;
 
+const StyledSpan = styled('span')`
+  display: inline-flex;
+`;
+
 const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: FontSize }>`
   display: inline-block;
   width: 1em;
@@ -49,13 +53,15 @@ const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: FontSize }>`
 const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
   props: JuiIconographyProps,
 ) => {
-  const { children, className, iconColor, fontSize } = props;
+  const { children, className, iconColor, fontSize, ...rest } = props;
   const iconName = name2icon[children as string];
-  const _className = `${className} ${children} icon`;
+  const _className = `${className || ''} ${children} icon`;
   return (
-    <StyledSvg className={_className} iconColor={iconColor} size={fontSize}>
-      <use xlinkHref={`#icon-${iconName}`} />
-    </StyledSvg>
+    <StyledSpan className={_className} {...rest}>
+      <StyledSvg iconColor={iconColor} size={fontSize}>
+        <use xlinkHref={`#icon-${iconName}`} />
+      </StyledSvg>
+    </StyledSpan>
   );
 };
 

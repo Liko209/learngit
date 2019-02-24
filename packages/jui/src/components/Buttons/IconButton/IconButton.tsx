@@ -32,6 +32,7 @@ type JuiIconButtonProps = {
   alwaysEnableTooltip?: boolean;
   ariaLabel?: string;
   innerRef?: RefObject<HTMLElement>;
+  ref?: any;
   children: ReactNode;
 } & Omit<MuiIconButtonProps, 'color' | 'children'> &
   Omit<JuiIconographyProps, 'color' | 'children'>;
