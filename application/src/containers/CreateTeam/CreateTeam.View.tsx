@@ -155,11 +155,14 @@ class CreateTeam extends React.Component<ViewProps, State> {
         TEAM_PIN_POST: uiSetting.canPin,
       },
     };
-
-    const newTeam = await create(members, teamSetting);
-    if (newTeam) {
-      this.onClose();
-      history.push(`/messages/${newTeam.id}`);
+    try {
+      const newTeam = await create(members, teamSetting);
+      if (newTeam) {
+        this.onClose();
+        history.push(`/messages/${newTeam.id}`);
+      }
+    } catch (e) {
+      this.renderServerUnknownError();
     }
   }
 
@@ -189,11 +192,7 @@ class CreateTeam extends React.Component<ViewProps, State> {
       handleSearchContactChange,
       serverError,
       errorEmail,
-      serverUnknownError,
     } = this.props;
-    if (serverUnknownError) {
-      this.renderServerUnknownError();
-    }
     return (
       <JuiModal
         open={true}

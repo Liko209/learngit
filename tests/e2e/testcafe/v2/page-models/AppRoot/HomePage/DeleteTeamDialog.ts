@@ -23,7 +23,7 @@ export class DeleteTeamDialog extends BaseWebComponent {
   }
 
   async teamNameInConfirmationShouldBe(teamName: string) {
-    const text = `Are you sure you want to permanently delete ${teamName}?`;
+    const text = `Are you sure you want to permanently delete ${teamName} team?`;
     await this.t.expect(this.confirmation.textContent).eql(text);
   }
 
