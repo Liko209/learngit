@@ -1,0 +1,1 @@
+export { ModuleConfig } from './ModuleConfig';
