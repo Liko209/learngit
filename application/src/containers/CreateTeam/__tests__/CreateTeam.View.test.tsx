@@ -32,11 +32,10 @@ describe('CreateTeamView', () => {
         handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => {},
         handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => {},
         handleSearchContactChange: (items: any) => {},
-        serverUnknownError: true,
       };
       Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
       shallow(<CreateTeamComponent {...props} />);
-      expect(Notification.flashToast).toHaveBeenCalled();
+      expect(Notification.flashToast).toHaveBeenCalledTimes(0);
     });
   });
 

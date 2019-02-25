@@ -137,10 +137,6 @@ class SearchItem extends BaseWebComponent {
     await this.t.click(this.self);
   }
 
-  get joinButton() {
-    return this.getSelectorByAutomationId('search-item-joined', this.self);
-  }
-
   get privateLabel() {
     return this.getSelectorByAutomationId('search-item-private', this.self);
   }
@@ -153,44 +149,32 @@ class SearchItem extends BaseWebComponent {
     await this.t.expect(this.privateLabel.visible).notOk();
   }
 
+  get joinedLabel() {
+    return this.getSelectorByAutomationId('search-item-joined', this.self);
+  }
+
+  async shouldHaveJoinedLabel() {
+    await this.t.expect(this.joinedLabel.visible).ok();
+  }
+
+  async shouldNotHaveJoinedLabel() {
+    await this.t.expect(this.joinedLabel.visible).notOk();
+  }
+
+  get joinButton() {
+    return this.getSelectorByAutomationId('joinButton', this.self);
+  }
+
   async shouldHaveJoinButton() {
     await this.t.expect(this.joinButton.visible).ok();
   }
 
   async shouldNotHaveJoinButton() {
-    await this.t.expect(this.joinButton.visible).notOk();
+    await this.t.expect(this.joinButton.exists).notOk();
   }
 
   async join() {
-    await this.t.hover(this.self);
-    const joinButton = this.joinButton;
-    await this.t.expect(joinButton.exists).ok();
-    const displayJoinButton = ClientFunction(() => {
-      joinButton().style["bottom"] = "0px";
-      joinButton().style["left"] = "0px";
-      joinButton().style["right"] = "0px";
-      joinButton().style["top"] = "0px";
-      joinButton().style["width"] = "104px";
-      joinButton().style["perspective-origin"] = "52px 14px";
-      joinButton().style["transform-origin"] = "52px 14px";
-    },
-      { dependencies: { joinButton } }
-    );
-    const joinButtonDiv = this.joinButton.parent('div');
-    const displayJoinButtonDiv = ClientFunction(() => {
-      joinButtonDiv().style["display"] = "block";
-      joinButtonDiv().style["height"] = "28px";
-      joinButtonDiv().style["min-height "] = "auto";
-      joinButtonDiv().style["min-width"] = "auto";
-      joinButtonDiv().style["width"] = "104px";
-      joinButtonDiv().style["perspective-origin"] = "52px 14px";
-      joinButtonDiv().style["transform-origin"] = "52px 14px";
-    },
-      { dependencies: { joinButtonDiv } }
-    );
-    await displayJoinButtonDiv();
-    await displayJoinButton();
-    await this.t.click(this.joinButton);
+    await this.t.hover(this.self).click(this.joinButton);
   }
 
   async clickAvatar() {

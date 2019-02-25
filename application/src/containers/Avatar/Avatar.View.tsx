@@ -44,7 +44,11 @@ class AvatarView extends React.Component<AvatarViewProps> {
     );
 
     return !shouldShowShortName ? (
-      <PreloadImg url={headShotUrl} placeholder={DefaultAvatar}>
+      <PreloadImg
+        url={headShotUrl}
+        placeholder={DefaultAvatar}
+        animationForLoad={true}
+      >
         <JuiAvatar
           src={headShotUrl}
           data-test-automation-id={automationId}
