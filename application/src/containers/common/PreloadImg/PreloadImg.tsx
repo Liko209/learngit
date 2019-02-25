@@ -70,7 +70,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
 
     return (
       <>
-        {url && (
+        {url && !loaded && (
           <img
             src={url}
             onLoad={this.handleLoad}
