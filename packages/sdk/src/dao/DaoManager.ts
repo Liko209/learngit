@@ -75,12 +75,19 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
     await this.dbManager.closeDatabase();
   }
 
-  async deleteDatabase(): Promise<void> {
+  private _clearLocalStorage() {
+    // need to remove last index timestamp or can't sync data when users re-login
     NewGlobalConfig.getInstance().removeLastIndexTimestamp();
+    // need to remove glip token or can't logout
     AuthGlobalConfig.getInstance().removeGlipToken();
     AuthGlobalConfig.getInstance().removeRcToken();
+    // each module need to remove its user config when users logout
     const userConfig = new AccountUserConfig();
     userConfig.clear();
+  }
+
+  async deleteDatabase(): Promise<void> {
+    this._clearLocalStorage();
     await this.dbManager.deleteDatabase();
   }
 

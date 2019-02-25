@@ -23,7 +23,7 @@ const mockPersonService = {
 jest.mock('../../../module/config/service/GlobalConfigService');
 GlobalConfigService.getInstance = jest.fn();
 
-jest.mock('../../../service/account/config/accountGlobalConfig');
+jest.mock('../../../service/account/config/accountGlobalConfig1');
 jest.mock('../../../api/glip/profile');
 jest.mock('../../profile/handleData');
 jest.mock('../../../service/account/UserConfig');
