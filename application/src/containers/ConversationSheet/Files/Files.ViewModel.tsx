@@ -31,6 +31,7 @@ import {
   RULE,
 } from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { UploadFileTracker } from './UploadFileTracker';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -48,8 +49,13 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const { ids } = props;
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
+      UploadFileTracker.init();
     }
     this.autorun(this.getCropImage);
+  }
+
+  isRecentlyUploaded = (id: number) => {
+    return UploadFileTracker.tracker().getMapID(id) !== id;
   }
 
   getCropImage = async () => {
