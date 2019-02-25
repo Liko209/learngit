@@ -370,7 +370,7 @@ test(formalName(`Save button should be disabled when entering only blanks or cle
   });
 });
 
-test(formalName(`The inline error should be displayed if the team is failed to be created due to the name is taken`, ['P2', 'JPT-890', 'TeamSetting', 'Potar.He']), async t => {
+test.only(formalName(`The inline error should be displayed if the team is failed to be created due to the name is taken`, ['P2', 'JPT-890', 'TeamSetting', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -387,7 +387,6 @@ test(formalName(`The inline error should be displayed if the team is failed to b
   await h(t).withLog(`Given I am admin of team "${teamName}" and other team ${anotherTeamName} ,`, async () => {
     teamId = await h(t).platform(adminUser).createAndGetGroupId({
       name: teamName,
-      description: "need description??", // if no description, save button is invalid
       type: 'Team',
       members: [adminUser.rcId, otherUser.rcId],
     });
