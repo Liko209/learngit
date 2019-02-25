@@ -48,6 +48,10 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     this._subscribeController = subscribeController;
   }
 
+  async clear() {
+    await this._entitySourceController.clear();
+  }
+
   protected onStarted() {
     if (this._subscribeController) {
       this._subscribeController.subscribe();

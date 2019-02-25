@@ -29,7 +29,7 @@ import { AccountManager, ServiceManager } from './framework';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from './service/constants';
 import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
-import SyncService from './service/sync';
+import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './service';
 
