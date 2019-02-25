@@ -18,12 +18,6 @@ import {
 } from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
-import { AuthDao } from './dao';
-import {
-  AUTH_GLIP2_TOKEN,
-  AUTH_GLIP_TOKEN,
-  AUTH_RC_TOKEN,
-} from './dao/auth/constants';
 import DaoManager from './dao/DaoManager';
 import { AccountManager, ServiceManager } from './framework';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from './service/constants';
@@ -32,6 +26,7 @@ import notificationCenter from './service/notificationCenter';
 import SyncService from './service/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './service';
+import { AuthGlobalConfig } from './service/auth/config';
 
 const AM = AccountManager;
 
@@ -46,7 +41,7 @@ class Sdk {
     public serviceManager: ServiceManager,
     public networkManager: NetworkManager,
     public syncService: SyncService,
-  ) { }
+  ) {}
 
   async init(config: ISdkConfig) {
     // Use default config value
@@ -130,10 +125,10 @@ class Sdk {
   }
 
   updateNetworkToken() {
-    const authDao = this.daoManager.getKVDao(AuthDao);
-    const glipToken: string = authDao.get(AUTH_GLIP_TOKEN);
-    const rcToken: Token = authDao.get(AUTH_RC_TOKEN);
-    const glip2Token: Token = authDao.get(AUTH_GLIP2_TOKEN);
+    const authConfig = AuthGlobalConfig.getInstance();
+    const glipToken: string = authConfig.getGlipToken();
+    const rcToken: Token = authConfig.getRcToken();
+    const glip2Token: Token = authConfig.getGlip2Token();
 
     if (glipToken) {
       this.networkManager.setOAuthToken(new Token(glipToken), HandleByGlip);

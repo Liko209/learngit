@@ -7,7 +7,6 @@ import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { Sdk, LogControlManager, service } from 'sdk';
-import { UserConfig } from 'sdk/service/account';
 import { SectionUnread, UMI_SECTION_TYPE } from 'sdk/module/state';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
@@ -25,6 +24,7 @@ import { HomeService } from '@/modules/home';
 
 import './index.css';
 import { generalErrorHandler } from '@/utils/error';
+import { AccountGlobalConfig } from 'sdk/service/account/config';
 
 /**
  * The root module, we call it AppModule,
@@ -93,8 +93,8 @@ class AppModule extends AbstractModule {
       const accountService: service.AccountService = AccountService.getInstance();
 
       if (accountService.isAccountReady()) {
-        const currentUserId = UserConfig.getCurrentUserId();
-        const currentCompanyId = UserConfig.getCurrentCompanyId();
+        const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
+        const currentCompanyId = AccountGlobalConfig.getInstance().getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
 

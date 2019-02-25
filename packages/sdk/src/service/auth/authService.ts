@@ -11,7 +11,6 @@ import {
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
 } from '../../authenticator';
-import { AuthDao, daoManager } from '../../dao';
 import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
 import { AccountManager } from '../../framework';
 import { Aware } from '../../utils/error';
@@ -19,6 +18,7 @@ import BaseService from '../BaseService';
 import { SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
 import { ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
+import { AuthGlobalConfig } from '../../service/auth/config';
 
 interface ILogin {
   username: string;
@@ -75,13 +75,12 @@ class AuthService extends BaseService {
   }
 
   async loginGlip2(params: ILogin) {
-    const authDao = daoManager.getKVDao(AuthDao);
     try {
       const loginResult = await loginGlip2ByPassword(params);
       const authToken = loginResult.expect(
         'Failed to login glip2 by password.',
       );
-      authDao.put(AUTH_GLIP2_TOKEN, authToken);
+      AuthGlobalConfig.getInstance().setGlip2Token(authToken);
       notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
     } catch (err) {
       // Since glip2 api is no in use now, we can ignore all it's errors

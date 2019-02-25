@@ -34,11 +34,15 @@ import { ProgressService } from './module/progress';
 import { NewPostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
+import { UserConfigService, GlobalConfigService } from './module/config';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
 const registerConfigs = {
   classes: [
+    { name: GlobalConfigService.name, value: GlobalConfigService },
+    { name: UserConfigService.name, value: UserConfigService },
+
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     {

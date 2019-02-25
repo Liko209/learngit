@@ -9,15 +9,21 @@ import ProfileAPI from '../../../api/glip/profile';
 import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { ServiceResultOk } from '../../ServiceResult';
 import handleData from '../handleData';
-import { UserConfig } from '../../../service/account/UserConfig';
 import { daoManager } from '../../../dao';
 import { PersonDao } from '../../../module/person/dao';
+import { GlobalConfigService } from '../../../module/config';
+import { AccountGlobalConfig } from '../../../service/account/config';
 
 const mockPersonService = {
   getById: jest.fn().mockImplementation(() => {
     return { me_group_id: 2 };
   }),
 };
+
+jest.mock('../../../module/config/service/GlobalConfigService');
+GlobalConfigService.getInstance = jest.fn();
+
+jest.mock('../../../service/account/config/accountGlobalConfig');
 jest.mock('../../../api/glip/profile');
 jest.mock('../../profile/handleData');
 jest.mock('../../../service/account/UserConfig');
@@ -50,8 +56,9 @@ describe('ProfileService', () => {
 
   describe('getProfile()', () => {
     it('should return current user profile', async () => {
-      jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValue(2);
-      UserConfig.getCurrentUserProfileId.mockImplementationOnce(() => 2);
+      const accConfig = new AccountGlobalConfig(null);
+      AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accConfig);
+      accConfig.getCurrentUserProfileId = jest.fn().mockReturnValue(2);
       jest.spyOn(profileService, 'getById').mockImplementationOnce(id => id);
 
       const result = await profileService.getProfile();
@@ -205,6 +212,8 @@ describe('ProfileService', () => {
     });
   });
   describe('markMeGroupAsFavorite()', () => {
+    const accConfig = new AccountGlobalConfig(null);
+
     function setupMock(profile: any, returnValue: any = {}) {
       jest
         .spyOn(profileService, 'handlePartialUpdate')
@@ -213,10 +222,10 @@ describe('ProfileService', () => {
       jest
         .spyOn(profileService, 'updatePartialModel2Db')
         .mockImplementationOnce(() => {});
-      jest
-        .spyOn(profileService, 'getCurrentProfileId')
+      accConfig.getCurrentUserProfileId = jest
+        .fn()
         .mockReturnValueOnce(profile.id);
-      jest.spyOn(UserConfig, 'getCurrentUserId').mockReturnValueOnce(1);
+      accConfig.getCurrentUserId = jest.fn().mockReturnValueOnce(1);
       jest.spyOn(mockPersonService, 'getById').mockResolvedValueOnce(profile);
       ProfileAPI.putDataById.mockResolvedValueOnce(
         new ApiResultOk(returnValue, {
@@ -229,6 +238,7 @@ describe('ProfileService', () => {
     beforeEach(() => {
       jest.resetAllMocks();
       jest.clearAllMocks();
+      AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accConfig);
     });
 
     it('should not add self to favorite when me_tab=true', async () => {
@@ -319,8 +329,9 @@ describe('ProfileService', () => {
   });
 
   describe('reopenConversation()', () => {
+    const accConfig = new AccountGlobalConfig(null);
     function setupMock(profile: any, returnValue: any, ok: boolean = true) {
-      jest.spyOn(profileService, 'getCurrentProfileId').mockReturnValueOnce(2);
+      accConfig.getCurrentUserProfileId = jest.fn().mockReturnValue(2);
       jest.spyOn(profileService, 'getById').mockReturnValue(profile);
       jest.spyOn(profileService, 'getProfile').mockResolvedValueOnce(profile);
       jest
@@ -348,6 +359,7 @@ describe('ProfileService', () => {
     beforeEach(() => {
       jest.clearAllMocks();
       jest.restoreAllMocks();
+      AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accConfig);
     });
 
     it('should reopen the conversation', async () => {

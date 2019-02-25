@@ -15,13 +15,17 @@ import {
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { UserConfig } from 'sdk/service/account';
+import { GlobalConfigService } from 'sdk/module/config';
+import { AccountGlobalConfig } from 'sdk/service/account/config';
 
 jest.mock('sdk/service/account');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
 jest.mock('sdk/api');
+
+jest.mock('sdk/module/config');
+GlobalConfigService.getInstance = jest.fn();
 
 const groupService = {
   createTeam() {},
@@ -34,6 +38,9 @@ function getNewJServerError(code: string, message: string = '') {
   return new JServerError(code, message);
 }
 describe('CreateTeamVM', () => {
+  const accountConfig = new AccountGlobalConfig(null);
+  const creatorId = 1;
+
   beforeAll(() => {
     jest.resetAllMocks();
     jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
@@ -42,11 +49,11 @@ describe('CreateTeamVM', () => {
       set: jest.fn(),
     };
     jest.spyOn(storeManager, 'getGlobalStore').mockReturnValue(gs);
+    AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
+    accountConfig.getCurrentUserId = jest.fn().mockReturnValue(creatorId);
   });
 
   it('create team success', async () => {
-    const creatorId = 1;
-    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
     groupService.createTeam = jest.fn().mockImplementation(() => ok(''));
 
     const name = 'name';
@@ -68,7 +75,6 @@ describe('CreateTeamVM', () => {
 
   it('create team success handle error', async () => {
     const creatorId = 1;
-    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
     groupService.createTeam = jest
       .fn()
       .mockResolvedValue(
@@ -95,7 +101,6 @@ describe('CreateTeamVM', () => {
 
   it('create team server error', async () => {
     const creatorId = 1;
-    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
     groupService.createTeam = jest
       .fn()
       .mockResolvedValueOnce(

@@ -22,6 +22,12 @@ import { PostDao } from '../../../dao/PostDao';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
+import { GlobalConfigService } from '../../../../../module/config';
+import { AccountGlobalConfig } from '../../../../../service/account/config';
+
+jest.mock('../../../../../module/config');
+jest.mock('../../../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../PostActionController');
 jest.mock('../../../../../service/groupConfig');
@@ -77,8 +83,10 @@ describe('SendPostController', () => {
   describe('sendPost', () => {
     it('should add user id and company id into parameters', async () => {
       let correct = false;
-      daoManager.getKVDao.mockReturnValue(accountDao);
-      accountDao.get.mockReturnValueOnce(4).mockReturnValueOnce(1);
+      const accConfig = new AccountGlobalConfig(null);
+      AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accConfig);
+      accConfig.getCurrentUserId = jest.fn().mockReturnValueOnce(4);
+      accConfig.getCurrentCompanyId = jest.fn().mockReturnValueOnce(1);
       jest
         .spyOn(sendPostController, 'innerSendPost')
         .mockImplementationOnce((parameters: any, isRend: boolean) => {

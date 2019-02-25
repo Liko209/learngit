@@ -1,11 +1,10 @@
-import { AuthDao, daoManager, ConfigDao } from '../dao';
-import { AUTH_GLIP_TOKEN, AUTH_RC_TOKEN } from '../dao/auth/constants';
-import { ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM } from './constants';
+import { ACCOUNT_TYPE_ENUM } from './constants';
 import { ITokenModel } from '../api';
+import { AuthGlobalConfig } from '../service/auth/config';
+import { NewGlobalConfig } from '../service/config';
 
 const setAccountType = async (type: any) => {
-  const configDao = daoManager.getKVDao(ConfigDao);
-  await configDao.put(ACCOUNT_TYPE, type);
+  await NewGlobalConfig.getInstance().setAccountType(type);
   return true;
 };
 
@@ -13,8 +12,8 @@ const setRcToken = async (token: ITokenModel) => {
   if (!token.timestamp) {
     token.timestamp = Date.now();
   }
-  const authDao = daoManager.getKVDao(AuthDao);
-  await authDao.put(AUTH_RC_TOKEN, token);
+  const authConfig = AuthGlobalConfig.getInstance();
+  await authConfig.setRcToken(token);
   return true;
 };
 
@@ -23,8 +22,8 @@ const setRcAccountType = async () => {
 };
 
 const setGlipToken = async (token: string) => {
-  const authDao = daoManager.getKVDao(AuthDao);
-  await authDao.put(AUTH_GLIP_TOKEN, token);
+  const authConfig = AuthGlobalConfig.getInstance();
+  await authConfig.setGlipToken(token);
   return true;
 };
 

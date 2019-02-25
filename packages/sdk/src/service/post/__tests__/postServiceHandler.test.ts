@@ -4,22 +4,28 @@
  * Copyright © RingCentral. All rights reserved.
  */
 /// <reference path="../../../__tests__/types.d.ts" />
-import { daoManager, AccountDao } from '../../../dao';
+import { daoManager } from '../../../dao';
 import { PostDao } from '../../../module/post/dao/PostDao';
 import PostServiceHandler from '../postServiceHandler';
 import { randomInt, versionHash } from '../../../utils/mathUtils';
 import { postFactory } from '../../../__tests__/factories';
 import { ItemService } from '../../../module/item';
 import { number } from '@storybook/addon-knobs';
+import { AccountGlobalConfig } from '../../../service/account/config';
+import { GlobalConfigService } from '../../../module/config';
 
 jest.mock('../../../dao');
 jest.mock('../../../module/post/dao/PostDao');
 jest.mock('../../../utils/mathUtils');
 jest.mock('../../../module/item');
+jest.mock('../../../service/account/config');
+jest.mock('../../../module/config');
+
+const accountGlobalConfig = new AccountGlobalConfig(null);
+GlobalConfigService.getInstance = jest.fn();
 
 describe('PostServiceHandler', () => {
   const mockPostDao = new PostDao(null);
-  const mockAccountDao = new AccountDao(null);
   const mockItemService = new ItemService();
 
   beforeEach(() => {
@@ -28,10 +34,12 @@ describe('PostServiceHandler', () => {
     jest.restoreAllMocks();
 
     daoManager.getDao.mockReturnValue(mockPostDao);
-    daoManager.getKVDao.mockReturnValue(mockAccountDao);
 
     ItemService.getInstance = jest.fn().mockReturnValue(mockItemService);
     mockItemService.getUploadItems.mockReturnValue([]);
+    AccountGlobalConfig.getInstance = jest
+      .fn()
+      .mockReturnValue(accountGlobalConfig);
   });
 
   describe('buildPostInfo()', () => {
@@ -39,7 +47,11 @@ describe('PostServiceHandler', () => {
       versionHash.mockReturnValue('versionHash');
       randomInt.mockReturnValue(1000);
       Date.now = jest.fn().mockReturnValue(123123);
-      mockAccountDao.get.mockReturnValue(123);
+
+      jest.spyOn(accountGlobalConfig, 'getCurrentUserId').mockReturnValue(123);
+      jest
+        .spyOn(accountGlobalConfig, 'getCurrentCompanyId')
+        .mockReturnValue(123);
     });
 
     it('should not build activity_data for post if there is not activity [FIJI-2740]', async () => {
@@ -124,7 +136,6 @@ describe('PostServiceHandler', () => {
       versionHash.mockReturnValue('versionHash');
       randomInt.mockReturnValue(1000);
       Date.now = jest.fn().mockReturnValue(123123);
-      mockAccountDao.get.mockReturnValue(123);
     });
 
     it('has old post & has users', async () => {

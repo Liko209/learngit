@@ -6,12 +6,9 @@
 import { SocketFSM } from './SocketFSM';
 import notificationCenter from '../../service/notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
-import { daoManager } from '../../dao';
-import ConfigDao from '../../dao/config';
-import AuthDao from '../../dao/auth';
-import { AUTH_GLIP_TOKEN } from '../../dao/auth/constants';
-import { SOCKET_SERVER_HOST } from '../../dao/config/constants';
 import { mainLogger } from 'foundation';
+import { AuthGlobalConfig } from '../../service/auth/config';
+import { NewGlobalConfig } from '../../service/config';
 
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
@@ -151,8 +148,7 @@ export class SocketManager {
 
   private _onServerHostUpdated() {
     const hasActive = this.hasActiveFSM();
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const serverUrl = configDao.get(SOCKET_SERVER_HOST);
+    const serverUrl = NewGlobalConfig.getInstance().getSocketServerHost();
     // tslint:disable-next-line:max-line-length
     this.info(
       `onServerHostUpdated: ${serverUrl}, _hasLoggedIn: ${
@@ -261,8 +257,7 @@ export class SocketManager {
 
     try {
       const body = JSON.parse(data.body);
-      const configDao = daoManager.getKVDao(ConfigDao);
-      configDao.put(SOCKET_SERVER_HOST, body.server);
+      NewGlobalConfig.getInstance().setSocketServerHost(body.server);
       notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, body.server);
     } catch (error) {
       this.warn(`fail on socket reconnect: ${error}`);
@@ -271,10 +266,8 @@ export class SocketManager {
 
   private _startFSM() {
     // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const serverHost = configDao.get(SOCKET_SERVER_HOST);
-    const authDao = daoManager.getKVDao(AuthDao);
-    const glipToken = authDao.get(AUTH_GLIP_TOKEN);
+    const serverHost = NewGlobalConfig.getInstance().getSocketServerHost();
+    const glipToken = AuthGlobalConfig.getInstance().getGlipToken();
     if (serverHost) {
       this.activeFSM = new SocketFSM(
         serverHost,

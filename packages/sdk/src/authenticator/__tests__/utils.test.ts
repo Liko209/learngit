@@ -10,8 +10,21 @@ import {
   setGlipToken,
   setGlipAccountType,
 } from '../utils';
+import { GlobalConfigService } from '../../module/config';
+import { AuthGlobalConfig } from '../../service/auth/config';
+import { NewGlobalConfig } from '../../service/config';
+
+jest.mock('../../module/config/service/GlobalConfigService');
+GlobalConfigService.getInstance = jest.fn();
+jest.mock('../../service/auth/config');
+jest.mock('../../service/config');
 
 describe('utils method', () => {
+  const accountConfig = new AuthGlobalConfig(null);
+  AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
+  const newConfig = new NewGlobalConfig(null);
+  NewGlobalConfig.getInstance = jest.fn().mockReturnValue(newConfig);
+
   it('setRcToken method set success should be true', async () => {
     const obj = { token: '123' };
     const result = await setRcToken(obj);

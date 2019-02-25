@@ -5,14 +5,7 @@
  */
 
 import _ from 'lodash';
-import {
-  daoManager,
-  StateDao,
-  AccountDao,
-  ConfigDao,
-  MY_STATE_ID,
-  ACCOUNT_USER_ID,
-} from '../../../../dao';
+import { daoManager, StateDao } from '../../../../dao';
 import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
@@ -23,6 +16,8 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { StateFetchDataController } from './StateFetchDataController';
 import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+import { NewUserConfig } from '../../../../service/config';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 
@@ -92,9 +87,7 @@ class StateDataHandleController {
           switch (key) {
             case '__trigger_ids': {
               const triggerIds = group[key];
-              const currentUserId: number = daoManager
-                .getKVDao(AccountDao)
-                .get(ACCOUNT_USER_ID);
+              const currentUserId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
               if (
                 triggerIds &&
                 currentUserId &&
@@ -333,7 +326,8 @@ class StateDataHandleController {
     if (transformedState.myState) {
       const myState = transformedState.myState;
       await daoManager.getDao(StateDao).update(myState);
-      await daoManager.getKVDao(ConfigDao).put(MY_STATE_ID, myState.id);
+      const newConfig = new NewUserConfig();
+      await newConfig.setMyStateId(myState.id);
       notificationCenter.emitEntityUpdate(
         ENTITY.MY_STATE,
         [myState],

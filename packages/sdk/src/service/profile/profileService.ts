@@ -8,7 +8,6 @@ import ProfileDao from '../../dao/profile';
 import ProfileAPI from '../../api/glip/profile';
 
 import BaseService from '../../service/BaseService';
-import { UserConfig } from '../account/UserConfig';
 import { Profile } from '../../module/profile/entity';
 import { Raw } from '../../framework/model';
 import { SOCKET, SERVICE } from '../eventKey';
@@ -19,6 +18,7 @@ import { JSdkError, ERROR_CODES_SDK, JError } from '../../error';
 import handleData from './handleData';
 import { daoManager } from '../../dao';
 import { PersonDao } from '../../module/person/dao';
+import { AccountGlobalConfig } from '../account/config/accountGlobalConfig';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
@@ -29,6 +29,7 @@ const DEFAULT_LEFTRAIL_GROUP: number = 20;
 
 class ProfileService extends BaseService<Profile> {
   static serviceName = 'ProfileService';
+
   constructor() {
     const subscriptions = {
       [SOCKET.PROFILE]: handleData,
@@ -153,7 +154,7 @@ class ProfileService extends BaseService<Profile> {
       return serviceOk(profile);
     }
 
-    const currentId = UserConfig.getCurrentUserId();
+    const currentId = AccountGlobalConfig.getInstance().getCurrentUserId();
     const profileId = this.getCurrentProfileId();
     const personDao = daoManager.getDao(PersonDao);
     const result = await personDao.get(currentId);
@@ -232,7 +233,7 @@ class ProfileService extends BaseService<Profile> {
   }
 
   getCurrentProfileId(): number {
-    return UserConfig.getCurrentUserProfileId();
+    return AccountGlobalConfig.getInstance().getCurrentUserProfileId();
   }
 
   async handleGroupIncomesNewPost(groupIds: number[]) {

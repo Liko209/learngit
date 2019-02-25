@@ -70,12 +70,20 @@ class NewGlobalConfig extends BaseGlobalConfig {
     this.put(CONFIG_KEYS.DB_SCHEMA_VERSION, version);
   }
 
+  getDBSchemaVersion() {
+    return this.get(CONFIG_KEYS.DB_SCHEMA_VERSION);
+  }
+
   putConfig(key: string, value: any) {
     this.put(key, value);
   }
 
   getConfig(key: string) {
     return this.get(key);
+  }
+
+  removeConfig(key: string) {
+    this.remove(key);
   }
 
   setClientId(id: string) {

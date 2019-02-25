@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao } from '../../../../dao';
 import { IPreInsertIdController } from '../interface/IPreInsertIdController';
 import { mainLogger } from 'foundation';
+import { NewGlobalConfig } from '../../../../service/config';
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
@@ -20,13 +20,12 @@ class PreInsertIdController implements IPreInsertIdController {
   }
 
   private _initVersions() {
-    const dao: ConfigDao = daoManager.getKVDao(ConfigDao);
-    this._versions = dao.get(this._modelName) || [];
+    this._versions =
+      NewGlobalConfig.getInstance().getConfig(this._modelName) || [];
   }
 
   private _syncDataDB() {
-    const dao: ConfigDao = daoManager.getKVDao(ConfigDao);
-    dao.put(this._modelName, this._versions);
+    NewGlobalConfig.getInstance().putConfig(this._modelName, this._versions);
   }
 
   isInPreInsert(version: number): boolean {

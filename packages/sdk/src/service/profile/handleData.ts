@@ -8,7 +8,8 @@ import { ENTITY } from '../../service/eventKey';
 import { daoManager } from '../../dao';
 import ProfileDao from '../../dao/profile';
 import { transform } from '../../service/utils';
-import { UserConfig } from '../account/UserConfig';
+import { AccountGlobalConfig } from '../../service/account/config';
+
 import { Profile } from '../../module/profile/entity';
 import { Raw } from '../../framework/model';
 import _ from 'lodash';
@@ -52,7 +53,10 @@ const handlePartialProfileUpdate = async (
       if (transformedData) {
         let localProfile: Profile | null = null;
         const profileDao = daoManager.getDao(ProfileDao);
-        const profileId: number | null = UserConfig.getCurrentUserProfileId();
+
+        const profileId:
+          | number
+          | null = AccountGlobalConfig.getInstance().getCurrentUserProfileId();
         if (profileId) {
           localProfile = await profileDao.get(profileId);
           if (localProfile && key) {

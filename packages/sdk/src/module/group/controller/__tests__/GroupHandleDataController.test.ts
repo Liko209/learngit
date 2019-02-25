@@ -9,7 +9,6 @@ import GroupAPI from '../../../../api/glip/group';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
 import { EVENT_TYPES } from '../../../../service';
-import { UserConfig } from '../../../../service/account';
 import { ENTITY } from '../../../../service/eventKey';
 import notificationCenter from '../../../../service/notificationCenter';
 import ProfileService from '../../../../service/profile';
@@ -20,6 +19,12 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
+import { GlobalConfigService } from '../../../../module/config';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+
+jest.mock('../../../../module/config');
+jest.mock('../../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
@@ -118,6 +123,7 @@ function generateFakeGroups(
 const stateService: StateService = new StateService();
 const personService = new PersonService();
 const profileService = new ProfileService();
+const accountConfig = new AccountGlobalConfig(null);
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -137,7 +143,10 @@ describe('GroupHandleDataController', () => {
 
     it('passing an array', async () => {
       expect.assertions(7);
-      UserConfig.getCurrentUserId.mockReturnValueOnce(1);
+      AccountGlobalConfig.getInstance = jest
+        .fn()
+        .mockReturnValue(accountConfig);
+      accountConfig.getCurrentUserId.mockReturnValueOnce(1);
       daoManager.getDao(GroupDao).get.mockReturnValue(1);
       const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
         {
@@ -349,6 +358,12 @@ describe('GroupHandleDataController', () => {
   });
 
   describe('filterGroups()', () => {
+    beforeEach(() => {
+      AccountGlobalConfig.getInstance = jest
+        .fn()
+        .mockReturnValue(accountConfig);
+      accountConfig.getCurrentUserId = jest.fn().mockReturnValue(99);
+    });
     it('should remove extra, when limit < total teams', async () => {
       const LIMIT = 2;
       const TOTAL_GROUPS = 5;
@@ -357,7 +372,7 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
+
       const filteredGroups = await groupHandleDataController.filterGroups(
         groups,
         LIMIT,
@@ -373,7 +388,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       const filteredGroups = await groupHandleDataController.filterGroups(
         teams,
         LIMIT,
@@ -389,7 +403,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       const filteredGroups = await groupHandleDataController.filterGroups(
         teams,
         LIMIT,
@@ -405,7 +418,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
 
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1, is_team: true },
@@ -423,7 +435,6 @@ describe('GroupHandleDataController', () => {
       const TOTAL_GROUPS = 5;
 
       const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1, is_team: true },
       ]);
@@ -443,7 +454,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1 },
       ]);
@@ -463,7 +473,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_mentions_count: 1 },
         { id: 3, unread_mentions_count: 1 },
@@ -484,7 +493,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValue([
         { id: 4, unread_count: 1 },
         { id: 3, unread_count: 1 },
@@ -506,7 +514,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
       const filteredGroups = await groupHandleDataController.filterGroups(
@@ -524,7 +531,6 @@ describe('GroupHandleDataController', () => {
         members: [99, 10],
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
       const filteredGroups = await groupHandleDataController.filterGroups(
@@ -573,7 +579,7 @@ describe('GroupHandleDataController', () => {
         },
       ] as Group[];
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
-      UserConfig.getCurrentUserId.mockReturnValue(2);
+      accountConfig.getCurrentUserId = jest.fn().mockReturnValue(2);
       const filteredGroups = await groupHandleDataController.filterGroups(
         group,
         2,

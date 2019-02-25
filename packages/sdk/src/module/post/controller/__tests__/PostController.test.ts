@@ -7,7 +7,7 @@
 import { PostController } from '../PostController';
 import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
-import { daoManager, ConfigDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
 import { PostDao } from '../../dao';
 import {
   buildEntitySourceController,
@@ -17,22 +17,24 @@ import {
 
 import { SendPostController } from '../implementation/SendPostController';
 import { ProgressService } from '../../../progress';
+import { NewGlobalConfig } from '../../../../service/config/newGlobalConfig';
 
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
 jest.mock('../../dao');
 jest.mock('../../../progress');
+jest.mock('../../../../service/config/newGlobalConfig');
 
 describe('PostController', () => {
   const progressService: ProgressService = new ProgressService();
   const postDao: PostDao = new PostDao(null);
-  const configDao: ConfigDao = new ConfigDao(null);
+  const globalConfig: NewGlobalConfig = new NewGlobalConfig(null);
 
   beforeEach(() => {
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
     jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
-    jest.spyOn(daoManager, 'getKVDao').mockReturnValue(configDao);
+    NewGlobalConfig.getInstance = jest.fn().mockReturnValue(globalConfig);
   });
 
   describe('getPostActionController()', () => {

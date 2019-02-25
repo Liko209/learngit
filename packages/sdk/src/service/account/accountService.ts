@@ -5,16 +5,8 @@
  */
 import { mainLogger } from 'foundation';
 import BaseService from '../../service/BaseService';
-import {
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-  UNREAD_TOGGLE_ON,
-} from '../../dao/account/constants';
-import { daoManager, AuthDao } from '../../dao';
-import AccountDao from '../../dao/account';
+import { daoManager } from '../../dao';
 import { PersonDao } from '../../module/person/dao';
-import ConfigDao from '../../dao/config';
-import { CLIENT_ID } from '../../dao/config/constants';
 import { UserInfo } from '../../models';
 import { generateUUID } from '../../utils/mathUtils';
 import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
@@ -24,24 +16,34 @@ import notificationCenter from '../notificationCenter';
 import ProfileService from '../profile/index';
 import { setRcToken } from '../../authenticator';
 import { ERROR_CODES_SDK } from '../../error';
+import { AccountGlobalConfig, AccountUserConfig } from './config';
+import { AuthGlobalConfig } from '../../service/auth/config';
+import { NewGlobalConfig } from '../../service/config';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
+
 class AccountService extends BaseService implements ITokenRefreshDelegate {
   static serviceName = 'AccountService';
+  private _userConfig: AccountUserConfig;
 
-  private accountDao: AccountDao;
   constructor() {
     super();
-    this.accountDao = daoManager.getKVDao(AccountDao);
+    this._userConfig = new AccountUserConfig();
+    const userId = AccountGlobalConfig.getInstance().getCurrentUserId();
+    if (userId) {
+      this._userConfig.setUserId(userId);
+    }
   }
 
   isAccountReady(): boolean {
-    return !!this.accountDao.get(ACCOUNT_USER_ID);
+    return !!AccountGlobalConfig.getInstance().getCurrentUserId();
   }
 
   async getCurrentUserInfo(): Promise<UserInfo | {}> {
-    const userId = Number(this.accountDao.get(ACCOUNT_USER_ID));
-    const company_id = Number(this.accountDao.get(ACCOUNT_COMPANY_ID));
+    const userId = Number(AccountGlobalConfig.getInstance().getCurrentUserId());
+    const company_id = Number(
+      AccountGlobalConfig.getInstance().getCurrentCompanyId(),
+    );
     if (!userId) return {};
     const personDao = daoManager.getDao(PersonDao);
     const personInfo = await personDao.get(userId);
@@ -55,7 +57,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   }
 
   async getUserEmail(): Promise<string> {
-    const userId = Number(this.accountDao.get(ACCOUNT_USER_ID));
+    const userId = Number(AccountGlobalConfig.getInstance().getCurrentUserId());
     if (!userId) return '';
     const personDao = daoManager.getDao(PersonDao);
     const personInfo = await personDao.get(userId);
@@ -64,20 +66,19 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   }
 
   getClientId(): string {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    let id = configDao.get(CLIENT_ID);
+    let id = NewGlobalConfig.getInstance().getClientId();
     if (id) {
       return id;
     }
     id = generateUUID();
-    configDao.put(CLIENT_ID, id);
+    NewGlobalConfig.getInstance().setClientId(id);
     return id;
   }
 
   async refreshRCToken(): Promise<ITokenModel | null> {
-    const authDao = daoManager.getKVDao(AuthDao);
+    const authConfig = AuthGlobalConfig.getInstance();
     try {
-      const oldRcToken = authDao.get(AUTH_RC_TOKEN);
+      const oldRcToken = authConfig.getRcToken();
       const refreshResult = await refreshToken(oldRcToken);
       const newRcToken = refreshResult.expect('Failed to refresh rcToken');
       setRcToken(newRcToken);
@@ -96,12 +97,12 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
 
   getUnreadToggleSetting() {
     return (
-      this.accountDao.get(UNREAD_TOGGLE_ON) || DEFAULT_UNREAD_TOGGLE_SETTING
+      this._userConfig.getUnreadToggleSetting() || DEFAULT_UNREAD_TOGGLE_SETTING
     );
   }
 
   setUnreadToggleSetting(value: boolean) {
-    this.accountDao.put(UNREAD_TOGGLE_ON, value);
+    this._userConfig.setUnreadToggleSetting(value);
   }
 }
 

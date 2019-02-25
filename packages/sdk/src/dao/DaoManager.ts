@@ -7,8 +7,7 @@ import { BaseDao, BaseKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import ConfigDao from './config/index';
-import { DB_SCHEMA_VERSION, LAST_INDEX_TIMESTAMP } from './config/constants';
+import { NewGlobalConfig } from '../service/config/newGlobalConfig';
 
 class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   private kvStorageManager: KVStorageManager;
@@ -33,28 +32,32 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
         this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
         await this.dbManager.deleteDatabase();
       }
-      this.getKVDao(ConfigDao).remove(LAST_INDEX_TIMESTAMP);
+      NewGlobalConfig.getInstance().removeLastIndexTimestamp();
     }
 
     const db = this.dbManager.getDatabase();
-    const configDao = this.getKVDao(ConfigDao);
+
     if (db instanceof DexieDB) {
       db.db.on('ready', () => {
-        configDao.put(DB_SCHEMA_VERSION, schema.version);
+        NewGlobalConfig.getInstance().setDBSchemaVersion(schema.version);
       });
       const isIEOrEdge = /(MSIE|Trident|Edge)/.test(navigator.userAgent);
       if (isIEOrEdge) {
         const BLOCK_MESSAGE_KEY = 'DB_VERSION_CHANGE';
         const BLOCK_MESSAGE_VALUE = 1;
         db.db.on('blocked', () => {
-          configDao.put(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
+          NewGlobalConfig.getInstance().putConfig(
+            BLOCK_MESSAGE_KEY,
+            BLOCK_MESSAGE_VALUE,
+          );
         });
         window.addEventListener('storage', async (e: any) => {
           if (
-            e.key === configDao.getKey(BLOCK_MESSAGE_KEY) &&
+            e.key ===
+              NewGlobalConfig.getInstance().getConfig(BLOCK_MESSAGE_KEY) &&
             Number(e.newValue) === BLOCK_MESSAGE_VALUE
           ) {
-            configDao.remove(BLOCK_MESSAGE_KEY);
+            NewGlobalConfig.getInstance().removeConfig(BLOCK_MESSAGE_KEY);
             await this.dbManager.deleteDatabase();
           }
         });
@@ -99,9 +102,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   private _isSchemaCompatible() {
-    const currentSchemaVersion = this.getKVDao(ConfigDao).get(
-      DB_SCHEMA_VERSION,
-    );
+    const currentSchemaVersion = NewGlobalConfig.getInstance().getDBSchemaVersion();
     return (
       typeof currentSchemaVersion === 'number' &&
       currentSchemaVersion === schema.version

@@ -3,13 +3,6 @@
  * @Date: 2018-04-19 13:53:49
  * Copyright © RingCentral. All rights reserved.
  */
-import { daoManager } from '../../dao';
-import ConfigDao from '../../dao/config';
-import {
-  LAST_INDEX_TIMESTAMP,
-  SOCKET_SERVER_HOST,
-  STATIC_HTTP_SERVER,
-} from '../../dao/config/constants';
 import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
@@ -27,6 +20,7 @@ import { StateService } from '../../module/state';
 import { ErrorParserHolder } from '../../error';
 import { PersonService } from '../../module/person';
 import { GroupService } from '../../module/group';
+import { NewGlobalConfig } from '../config';
 
 const dispatchIncomingData = async (data: IndexDataModel) => {
   const {
@@ -91,15 +85,14 @@ const handleData = async (
       scoreboard = null,
       static_http_server: staticHttpServer = '',
     } = result;
-    const configDao = daoManager.getKVDao(ConfigDao);
 
     if (scoreboard && shouldSaveScoreboard) {
-      configDao.put(SOCKET_SERVER_HOST, scoreboard);
+      NewGlobalConfig.getInstance().setSocketServerHost(scoreboard);
       notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
     }
 
     if (staticHttpServer) {
-      configDao.put(STATIC_HTTP_SERVER, staticHttpServer);
+      NewGlobalConfig.getInstance().setStaticHttpServer(staticHttpServer);
       notificationCenter.emitKVChange(
         CONFIG.STATIC_HTTP_SERVER,
         staticHttpServer,
@@ -110,7 +103,7 @@ const handleData = async (
     await dispatchIncomingData(result);
     // logger.timeEnd('handle index data');
     if (timestamp) {
-      configDao.put(LAST_INDEX_TIMESTAMP, timestamp);
+      NewGlobalConfig.getInstance().setLastIndexTimestamp(timestamp);
       notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
     }
 

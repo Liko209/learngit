@@ -8,7 +8,7 @@ import { IPermissionService } from './IPermissionService';
 import { EntityBaseService } from '../../../framework';
 import { PermissionController } from '../controller/PermissionController';
 import UserPermissionType from '../types';
-import { UserConfig } from '../../../service/account';
+import { AccountGlobalConfig } from '../../../service/account/config';
 
 type UserPermission = {
   id: number;
@@ -26,7 +26,7 @@ class PermissionService extends EntityBaseService<UserPermission>
   }
 
   async getUserPermission() {
-    const id = UserConfig.getCurrentUserId();
+    const id = AccountGlobalConfig.getInstance().getCurrentUserId();
     return this.getById(id);
   }
 

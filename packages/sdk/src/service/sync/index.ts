@@ -8,7 +8,6 @@ import BaseService from '../BaseService';
 import { SERVICE } from '../eventKey';
 import { IndexDataModel } from '../../api/glip/user';
 import { daoManager } from '../../dao';
-import ConfigDao from '../../dao/config';
 import { GroupDao } from '../../module/group/dao';
 import { PersonDao } from '../../module/person/dao';
 import { PostDao } from '../../module/post/dao';
@@ -18,7 +17,6 @@ import { NoteItemDao } from '../../module/item/module/note/dao/NoteItemDao';
 import { TaskItemDao } from '../../module/item/module/task/dao/TaskItemDao';
 import { LinkItemDao } from '../../module/item/module/link/dao/LinkItemDao';
 
-import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
 import {
   fetchIndexData,
   fetchInitialData,
@@ -29,6 +27,7 @@ import { notificationCenter } from '..';
 import { ERROR_TYPES, ErrorParserHolder } from '../../error';
 import { ItemDao } from '../../module/item/dao';
 import PreloadPostsForGroupHandler from './preloadPostsForGroupHandler';
+import { NewGlobalConfig } from '../../service/config/newGlobalConfig';
 
 type SyncListener = {
   onInitialLoaded?: (indexData: IndexDataModel) => Promise<void>;
@@ -61,8 +60,7 @@ export default class SyncService extends BaseService {
       return;
     }
     this.isLoading = true;
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const lastIndexTimestamp = configDao.get(LAST_INDEX_TIMESTAMP);
+    const lastIndexTimestamp = NewGlobalConfig.getInstance().getLastIndexTimestamp();
     if (lastIndexTimestamp) {
       await this._syncIndexData(lastIndexTimestamp);
     } else {
@@ -142,8 +140,7 @@ export default class SyncService extends BaseService {
 
   private async _handle504GateWayError() {
     // clear data
-    const configDao = daoManager.getKVDao(ConfigDao);
-    configDao.put(LAST_INDEX_TIMESTAMP, '');
+    NewGlobalConfig.getInstance().setLastIndexTimestamp('');
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.clear();
     const postDao = daoManager.getDao(PostDao);

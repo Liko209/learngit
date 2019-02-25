@@ -16,6 +16,12 @@ import {
 import { daoManager, AuthDao } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
 import SyncService from '../service/sync';
+import { GlobalConfigService } from '../module/config';
+import { AuthGlobalConfig } from '../service/auth/config';
+
+jest.mock('../module/config');
+jest.mock('../service/auth/config');
+GlobalConfigService.getInstance = jest.fn();
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
@@ -99,15 +105,15 @@ describe('Sdk', () => {
   });
 
   describe('initNetworkManager()', () => {
-    let authDao: AuthDao;
+    let authConfig: AuthGlobalConfig;
     beforeEach(() => {
-      authDao = new AuthDao(null);
-      daoManager.getKVDao.mockReturnValue(authDao);
+      authConfig = new AuthGlobalConfig(null);
+      AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(authConfig);
     });
     it('should init with glip token', () => {
-      authDao.get.mockReturnValueOnce('glip token');
-      authDao.get.mockReturnValueOnce(null);
-      authDao.get.mockReturnValueOnce(null);
+      authConfig.getGlipToken = jest.fn().mockReturnValueOnce('glip token');
+      authConfig.getRcToken = jest.fn().mockReturnValueOnce(null);
+      authConfig.getGlip2Token = jest.fn().mockReturnValueOnce(null);
 
       sdk.updateNetworkToken();
 
@@ -122,9 +128,9 @@ describe('Sdk', () => {
     });
 
     it('should init with rc token ', () => {
-      authDao.get.mockReturnValueOnce(null);
-      authDao.get.mockReturnValueOnce('rc token');
-      authDao.get.mockReturnValueOnce(null);
+      authConfig.getGlipToken = jest.fn().mockReturnValueOnce(null);
+      authConfig.getRcToken = jest.fn().mockReturnValueOnce('rc token');
+      authConfig.getGlip2Token = jest.fn().mockReturnValueOnce(null);
 
       sdk.updateNetworkToken();
 
@@ -139,10 +145,9 @@ describe('Sdk', () => {
     });
 
     it('should init with glip2 token ', () => {
-      authDao.get.mockReturnValueOnce(null);
-      authDao.get.mockReturnValueOnce(null);
-      authDao.get.mockReturnValueOnce('glip2 token');
-
+      authConfig.getGlipToken = jest.fn().mockReturnValueOnce(null);
+      authConfig.getRcToken = jest.fn().mockReturnValueOnce(null);
+      authConfig.getGlip2Token = jest.fn().mockReturnValueOnce('glip2 token');
       sdk.updateNetworkToken();
 
       expect(networkManager.setOAuthToken).toHaveBeenCalledWith(

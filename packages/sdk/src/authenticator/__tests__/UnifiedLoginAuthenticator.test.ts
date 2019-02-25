@@ -19,6 +19,11 @@ import {
   HttpResponse,
 } from 'foundation';
 import { ApiResultOk } from '../../api/ApiResult';
+import { GlobalConfigService } from '../../module/config';
+
+jest.mock('../../module/config');
+jest.mock('../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 

@@ -8,12 +8,8 @@ import { SplitIOClient } from './splitioClient';
 import { Api } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
-import { daoManager, AccountDao } from '../../dao';
-import {
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-} from '../../dao/account/constants';
 import { mainLogger } from 'foundation';
+import { AccountGlobalConfig } from '../../service/account/config';
 
 const LOG_TAG = '[SplitIO]';
 const FEATURE_FLAGS = ['Jupiter_telephony', 'Jupiter_version']; // For test
@@ -91,14 +87,12 @@ class SplitIO {
   }
 
   private _getCurrentUserId(): string {
-    const dao: AccountDao = daoManager.getKVDao(AccountDao);
-    const userId: number = dao.get(ACCOUNT_USER_ID);
+    const userId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
     return userId ? userId.toString() : '';
   }
 
   private _getCurrentCompanyId(): string {
-    const dao: AccountDao = daoManager.getKVDao(AccountDao);
-    const companyId: number = dao.get(ACCOUNT_COMPANY_ID);
+    const companyId: number = AccountGlobalConfig.getInstance().getCurrentCompanyId();
     return companyId ? companyId.toString() : '';
   }
 

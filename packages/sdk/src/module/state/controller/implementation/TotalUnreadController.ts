@@ -17,7 +17,7 @@ import { GroupState } from '../../entity';
 import { GroupService } from '../../../group';
 import { ProfileService } from '../../../../service/profile';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { UserConfig } from '../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../service/account/config';
 import notificationCenter, {
   NotificationEntityPayload,
 } from '../../../../service/notificationCenter';
@@ -161,7 +161,7 @@ class TotalUnreadController {
         }
       });
     } else if (payload.type === EVENT_TYPES.UPDATE) {
-      const currentUserId = UserConfig.getCurrentUserId();
+      const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
       await Promise.all(
         payload.body.ids.map(async (id: number) => {
           const group = payload.body.entities.get(id);
@@ -274,11 +274,14 @@ class TotalUnreadController {
     const profileService: ProfileService = ProfileService.getInstance();
     const groups = await groupService.getEntitySource().getEntities();
     this._favoriteGroupIds = await profileService.getFavoriteGroupIds();
+
     await Promise.all(
       groups.map(async (group: Group) => {
         if (
           !groupService.isValid(group) ||
-          !group.members.includes(UserConfig.getCurrentUserId())
+          !group.members.includes(
+            AccountGlobalConfig.getInstance().getCurrentUserId(),
+          )
         ) {
           return;
         }

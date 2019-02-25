@@ -3,7 +3,7 @@
  * @Date: 2019-01-14 14:30:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { UserConfig } from 'sdk/service/account/UserConfig';
+import { GlobalConfigService } from '../../../../module/config';
 
 import {
   DEFAULT_USER_PERMISSION_LEVEL,
@@ -11,10 +11,19 @@ import {
 } from '../../constants';
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 import { TeamPermissionController } from '../TeamPermissionController';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+
+jest.mock('../../../../module/config/service/GlobalConfigService');
+jest.mock('../../../../service/account/config');
 
 jest.mock('sdk/service/account/UserConfig');
 const mockCurrentUserId = 5683;
 const mockCurrentUserCompanyId = 55668833;
+
+const accountConfig = new AccountGlobalConfig(null);
+AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
+GlobalConfigService.getInstance = jest.fn();
+
 describe('TeamPermissionController', () => {
   let teamPermissionController: TeamPermissionController;
   beforeEach(() => {
@@ -24,12 +33,13 @@ describe('TeamPermissionController', () => {
 
   describe('isCurrentUserGuest()', () => {
     beforeAll(() => {
-      UserConfig.getCurrentUserId = jest
-        .fn()
-        .mockImplementation(() => mockCurrentUserId);
-      UserConfig.getCurrentCompanyId = jest
-        .fn()
-        .mockImplementation(() => mockCurrentUserCompanyId);
+      jest
+        .spyOn(accountConfig, 'getCurrentUserId')
+        .mockReturnValue(mockCurrentUserId);
+
+      jest
+        .spyOn(accountConfig, 'getCurrentCompanyId')
+        .mockReturnValue(mockCurrentUserCompanyId);
     });
     it('should return false when guestUserCompanyIds is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -62,6 +72,7 @@ describe('TeamPermissionController', () => {
         members: [mockCurrentUserId],
         guest_user_company_ids: [mockCurrentUserCompanyId],
       };
+
       expect(
         teamPermissionController.isCurrentUserGuest(teamPermissionParams),
       ).toBeTruthy();

@@ -39,6 +39,8 @@ import { Group, TeamPermission } from '../../entity';
 import { GroupService } from '../../index';
 import { GroupFetchDataController } from '../GroupFetchDataController';
 import { GroupHandleDataController } from '../GroupHandleDataController';
+import { GlobalConfigService } from '../../../../module/config';
+import { AccountGlobalConfig } from '../../../../service/account/config';
 
 jest.mock('../../../../dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
@@ -51,6 +53,8 @@ jest.mock('../../../../service/company');
 jest.mock('../../../../service/post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
+jest.mock('../../../../module/config');
+jest.mock('../../../../service/account/config');
 
 class TestRequestController implements IRequestController<Group> {
   get = jest.fn();
@@ -65,6 +69,7 @@ beforeEach(() => {
 
   PersonService.getInstance = jest.fn().mockReturnValue(personService);
   ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+  GlobalConfigService.getInstance = jest.fn();
 });
 
 describe('GroupFetchDataController', () => {
@@ -113,6 +118,10 @@ describe('GroupFetchDataController', () => {
       testEntityCacheSearchController,
       new GroupHandleDataController(),
     );
+
+    const accountConfig = new AccountGlobalConfig(null);
+    AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
+    accountConfig.getCurrentUserId = jest.fn().mockReturnValue(mockUserId);
   });
 
   it('getGroupsByType()', async () => {
@@ -619,9 +628,13 @@ describe('GroupFetchDataController', () => {
 
   describe('getOrCreateGroupByMemberList', () => {
     const groupDao = new GroupDao(null);
+    const accountConfig = new AccountGlobalConfig(null);
 
     beforeEach(() => {
-      UserConfig.getCurrentUserId.mockReturnValueOnce(3);
+      AccountGlobalConfig.getInstance = jest
+        .fn()
+        .mockReturnValue(accountConfig);
+      accountConfig.getCurrentUserId = jest.fn().mockReturnValue(3);
     });
 
     const mockNormal = { id: 1 };
@@ -635,7 +648,7 @@ describe('GroupFetchDataController', () => {
       const result1 = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(UserConfig.getCurrentUserId).toBeCalled();
+      expect(accountConfig.getCurrentUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(result1).toHaveProperty('data', mockNormal);
     });
@@ -650,7 +663,7 @@ describe('GroupFetchDataController', () => {
         memberIDs,
       );
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(UserConfig.getCurrentUserId).toBeCalled();
+      expect(accountConfig.getCurrentUserId).toBeCalled();
       expect(result2).toHaveProperty('data', mockNormal);
     });
 
@@ -670,15 +683,12 @@ describe('GroupFetchDataController', () => {
   });
 
   describe('requestRemoteGroupByMemberList', () => {
-    const accountDao = new AccountDao(null);
-
-    beforeEach(() => {
-      const curUserId = 3;
-      daoManager.getKVDao.mockReturnValue(accountDao);
-      accountDao.get.mockReturnValue(3);
-      UserConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
-    });
+    beforeEach(() => {});
     it('should return a group when request success', async () => {
+      const mockUserId = 3;
+      const accConfig = new AccountGlobalConfig(null);
+      AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accConfig);
+      accConfig.getCurrentUserId = jest.fn().mockReturnValue(mockUserId);
       const data = { _id: 1 };
       GroupAPI.requestNewGroup.mockResolvedValueOnce(
         new ApiResultOk(data, {

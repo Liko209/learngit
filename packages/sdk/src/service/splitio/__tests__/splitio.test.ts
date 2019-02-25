@@ -7,11 +7,15 @@
 import { SplitIO } from '../splitio';
 import { SplitIOClient } from '../splitioClient';
 import notificationCenter from '../../../service/notificationCenter';
-import { daoManager, AccountDao } from '../../../dao';
 import { SERVICE } from '../../../service/eventKey';
 import { SplitIOSdkClient } from '../__mocks__/splitioSdkClient';
+import { GlobalConfigService } from '../../../module/config';
+import { AccountGlobalConfig } from '../../../service/account/config';
 
 jest.mock('../../../dao');
+jest.mock('../../../module/config');
+jest.mock('../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 const sdkClient = new SplitIOSdkClient();
 const mockedFactorySplitClient = jest.fn(
@@ -30,7 +34,6 @@ describe('SplitIO', async () => {
     return 'aiers1fdmskm7paalb3ubhhuumaauv21rnti';
   });
 
-  let accountDao: AccountDao;
   const testUserId = '111';
   const companyId = '222';
   let mock = {
@@ -38,19 +41,21 @@ describe('SplitIO', async () => {
     company_id: companyId,
   };
 
-  beforeAll(() => {
-    accountDao = new AccountDao(null);
-  });
+  const accountConfig = new AccountGlobalConfig(null);
+
+  beforeAll(() => {});
 
   beforeEach(() => {
     mock = {
       user_id: testUserId,
       company_id: companyId,
     };
-    daoManager.getKVDao.mockReturnValue(accountDao);
-    jest.spyOn(accountDao, 'get').mockImplementation((key: string) => {
-      return mock[key];
-    });
+
+    AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
+    accountConfig.getCurrentUserId = jest.fn().mockReturnValue(mock.user_id);
+    accountConfig.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(mock.company_id);
   });
 
   afterEach(() => {
@@ -68,16 +73,14 @@ describe('SplitIO', async () => {
     });
 
     it('login - user id not ready', () => {
-      mock.user_id = '';
-
+      accountConfig.getCurrentUserId = jest.fn().mockReturnValue('');
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
     });
 
     it('login - company id not ready', () => {
-      mock.company_id = '';
-
+      accountConfig.getCurrentCompanyId = jest.fn().mockReturnValue('');
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();

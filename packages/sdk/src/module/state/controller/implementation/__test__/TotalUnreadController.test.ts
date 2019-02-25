@@ -26,7 +26,12 @@ import {
 } from '../../../../../service';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
-import { UserConfig } from '../../../../../service/account';
+import { GlobalConfigService } from '../../../../../module/config';
+import { AccountGlobalConfig } from '../../../../../service/account/config';
+
+jest.mock('../../../../../module/config');
+jest.mock('../../../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 type DataHandleTask =
   | GroupStateHandleTask
@@ -285,8 +290,14 @@ describe('TotalUnreadController', () => {
   });
 
   describe('_updateTotalUnreadByGroupChanges()', () => {
+    const accountConfig = new AccountGlobalConfig(new GlobalConfigService());
+    beforeEach(() => {
+      AccountGlobalConfig.getInstance = jest
+        .fn()
+        .mockReturnValue(accountConfig);
+    });
     it('should update correctly when delete groups', async () => {
-      UserConfig.getCurrentUserId = jest.fn();
+      accountConfig.getCurrentUserId = jest.fn();
       totalUnreadController['_updateTotalUnread'] = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
       totalUnreadController['_groupSectionUnread'].set(1, {
@@ -301,7 +312,7 @@ describe('TotalUnreadController', () => {
         },
       };
       await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
-      expect(UserConfig.getCurrentUserId).toBeCalledTimes(0);
+      expect(accountConfig.getCurrentUserId).toBeCalledTimes(0);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(0);
       expect(totalUnreadController['_updateTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
@@ -314,7 +325,7 @@ describe('TotalUnreadController', () => {
     });
 
     it('should update correctly when update groups', async () => {
-      UserConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
+      accountConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
       totalUnreadController['_updateTotalUnread'] = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
       totalUnreadController['_groupSectionUnread'].set(1, {
@@ -344,7 +355,7 @@ describe('TotalUnreadController', () => {
         },
       };
       await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
-      expect(UserConfig.getCurrentUserId).toBeCalledTimes(1);
+      expect(accountConfig.getCurrentUserId).toBeCalledTimes(1);
       expect(totalUnreadController['_updateTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
@@ -492,7 +503,11 @@ describe('TotalUnreadController', () => {
     it('should initialize correctly', async () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
-      UserConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
+      const accountConfig = new AccountGlobalConfig(new GlobalConfigService());
+      AccountGlobalConfig.getInstance = jest
+        .fn()
+        .mockReturnValue(accountConfig);
+      accountConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
       GroupService.getInstance = jest.fn().mockReturnValue({
         getEntitySource: jest.fn().mockReturnValue({
           getEntities: jest
@@ -523,7 +538,7 @@ describe('TotalUnreadController', () => {
       expect(GroupService.getInstance<GroupService>().isValid).toBeCalledTimes(
         3,
       );
-      expect(UserConfig.getCurrentUserId).toBeCalledTimes(2);
+      expect(accountConfig.getCurrentUserId).toBeCalledTimes(2);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({
         members: [1, 5683],

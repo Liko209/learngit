@@ -18,7 +18,7 @@ import { versionHash } from '../../../../../utils/mathUtils';
 import { FILE_FORM_DATA_KEYS } from '../constants';
 import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
-import { UserConfig } from '../../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../../service/account/config';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
 import { IItemService } from '../../../service/IItemService';
@@ -673,8 +673,8 @@ class FileUploadController {
     file: File,
     isUpdate: boolean,
   ): ItemFile {
-    const companyId: number = UserConfig.getCurrentCompanyId();
-    const userId: number = UserConfig.getCurrentUserId();
+    const companyId: number = AccountGlobalConfig.getInstance().getCurrentCompanyId();
+    const userId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
     const now = Date.now();
     const id = GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE);
     return {

@@ -16,7 +16,6 @@ import notificationCenter from '../../../../../../service/notificationCenter';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
 import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
-import { UserConfig } from '../../../../../../service/account/UserConfig';
 import { isInBeta } from '../../../../../../service/account/clientConfig';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
@@ -31,6 +30,12 @@ import {
   JSdkError,
   ERROR_CODES_SDK,
 } from '../../../../../../error';
+import { GlobalConfigService } from '../../../../../../module/config';
+import { AccountGlobalConfig } from '../../../../../../service/account/config';
+
+jest.mock('../../../../../../module/config');
+jest.mock('../../../../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../service/ItemService');
 jest.mock(
@@ -58,14 +63,12 @@ describe('fileUploadController', () => {
   const partialModifyController = new PartialModifyController(null);
   const fileRequestController = new RequestController(null);
   let fileUploadController: FileUploadController;
+  const accConfig = new AccountGlobalConfig(null);
 
   function setup() {
     const userId = 2;
     const companyId = 3;
     daoManager.getDao.mockReturnValue(itemDao);
-
-    UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
-    UserConfig.getCurrentUserId.mockReturnValue(userId);
 
     itemService.createLocalItem.mockImplementation(() => {});
     itemService.updateLocalItem.mockImplementation(() => {});
@@ -81,6 +84,10 @@ describe('fileUploadController', () => {
       fileRequestController,
     );
     partialModifyController.updatePartially = jest.fn();
+
+    AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accConfig);
+    accConfig.getCurrentUserId = jest.fn().mockReturnValue(userId);
+    accConfig.getCurrentCompanyId = jest.fn().mockReturnValue(companyId);
   }
 
   beforeEach(() => {

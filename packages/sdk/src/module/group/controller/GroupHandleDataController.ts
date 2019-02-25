@@ -11,7 +11,6 @@ import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
 import { GroupState, PartialWithKey } from '../../../models';
 import { GroupDao } from '../../../module/group/dao';
-import { UserConfig } from '../../../service/account';
 import { EVENT_TYPES } from '../../../service/constants';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
 import notificationCenter, {
@@ -24,6 +23,7 @@ import { Post } from '../../post/entity';
 import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
+import { AccountGlobalConfig } from '../../../service/account/config';
 
 class GroupHandleDataController {
   getExistedAndTransformDataFromPartial = async (
@@ -367,7 +367,7 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
         return true;

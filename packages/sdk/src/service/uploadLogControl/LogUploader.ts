@@ -1,7 +1,8 @@
 import { ILogApi, LogEntity, mainLogger } from 'foundation';
 import AccountService from '../account';
 import axios from 'axios';
-import { UserConfig } from '../../service/account';
+import { AccountGlobalConfig } from '../../service/account/config';
+
 const DEFAULT_EMAIL = 'service@glip.com';
 
 export class LogUploader implements ILogApi {
@@ -17,7 +18,7 @@ export class LogUploader implements ILogApi {
     const email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
     let id;
     try {
-      id = UserConfig.getCurrentUserId();
+      id = AccountGlobalConfig.getInstance().getCurrentUserId();
     } catch (error) {
       mainLogger.error(error);
     }

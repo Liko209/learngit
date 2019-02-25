@@ -3,11 +3,7 @@
  * @Date: 2018-03-08 11:15:48
  */
 import _ from 'lodash';
-import { daoManager, AccountDao } from '../../dao';
-import {
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-} from '../../dao/account/constants';
+import { daoManager } from '../../dao';
 import { versionHash } from '../../utils/mathUtils';
 import { Markdown } from 'glipdown';
 import { RawPostInfo } from './types';
@@ -16,6 +12,7 @@ import { Post, PostItemData } from '../../module/post/entity';
 import { ItemFile } from '../../module/item/entity';
 import { ItemService } from '../../module/item';
 import { PostDao } from '../../module/post/dao';
+import { AccountGlobalConfig } from '../../service/account/config';
 
 // global_url_regex
 export type LinksArray = { url: string }[];
@@ -86,10 +83,8 @@ class PostServiceHandler {
   }
 
   static async buildPostInfo(params: RawPostInfo): Promise<Post> {
-    const userId: number = daoManager.getKVDao(AccountDao).get(ACCOUNT_USER_ID);
-    const companyId: number = daoManager
-      .getKVDao(AccountDao)
-      .get(ACCOUNT_COMPANY_ID);
+    const userId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const companyId: number = AccountGlobalConfig.getInstance().getCurrentCompanyId();
     const vers = versionHash();
     const links = PostServiceHandler.buildLinksInfo(params);
     const now = Date.now();
