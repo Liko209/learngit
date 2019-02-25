@@ -12,27 +12,31 @@ import { Entity } from '../../store';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { JSdkError, ERROR_CODES_SDK } from 'sdk/error/sdk';
 import { notificationCenter } from 'sdk/service';
-
+import { ISortableModel } from './types';
 interface IEntityDataProvider<T> {
   getByIds(ids: number[]): Promise<T[]>;
 }
 
+interface ISourceIdsChangeListener {
+  onSourceIdsChanged(newIds: number[]): void;
+}
+
 class IdListDateProvider<T extends IdModel, K extends Entity>
-  implements IFetchSortableDataProvider<number> {
+  implements IFetchSortableDataProvider<T>, ISourceIdsChangeListener {
   private _cursors: { front: number | undefined; end: number | undefined };
   private _filterFunc: ((value: K, index?: number) => boolean) | undefined;
   private _sourceIds: number[];
-  private _entity: string;
+  private _eventName: string;
   private _entityName: ENTITY_NAME;
   private _entityDataProvider: IEntityDataProvider<T>;
   constructor(
     sourceIds: number[],
-    entity: string,
+    eventName: string,
     entityName: ENTITY_NAME,
     entityDataProvider: IEntityDataProvider<T>,
   ) {
     this._sourceIds = sourceIds;
-    this._entity = entity;
+    this._eventName = eventName;
     this._entityName = entityName;
     this._entityDataProvider = entityDataProvider;
   }
@@ -43,7 +47,7 @@ class IdListDateProvider<T extends IdModel, K extends Entity>
     this._filterFunc = filterFunc;
   }
 
-  onIdSourceChanged(newSourceId: number[]) {
+  onSourceIdsChanged(newSourceId: number[]) {
     const newIds = _.difference(newSourceId, this._sourceIds);
     if (newIds.length > 0) {
       this._handleNewIds(newIds);
@@ -51,22 +55,26 @@ class IdListDateProvider<T extends IdModel, K extends Entity>
 
     const deletedIds = _.difference(this._sourceIds, newSourceId);
     if (deletedIds.length > 0) {
-      notificationCenter.emitEntityDelete(this._entity, deletedIds);
+      notificationCenter.emitEntityDelete(this._eventName, deletedIds);
     }
   }
 
   private async _handleNewIds(newIds: number[]) {
     const entities = await this._entityDataProvider.getByIds(newIds);
     this._updateEntityStore(entities);
-    notificationCenter.emitEntityUpdate(this._entity, entities);
+    notificationCenter.emitEntityUpdate(this._eventName, entities);
   }
 
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: number,
-  ): Promise<{ data: number[]; hasMore: boolean }> {
-    const pageData = this._getIdsByPage(direction, pageSize, anchor);
+    anchor?: ISortableModel<T>,
+  ): Promise<{ data: T[]; hasMore: boolean }> {
+    const pageData = this._getIdsByPage(
+      direction,
+      pageSize,
+      anchor && anchor.id,
+    );
     await this._fetchAndSaveModels(pageData.ids);
     let validModels: K[] = [];
     pageData.ids.forEach((id: number) => {
@@ -85,12 +93,28 @@ class IdListDateProvider<T extends IdModel, K extends Entity>
       return this.fetchData(
         direction,
         pageSize - validModels.length,
-        direction === QUERY_DIRECTION.NEWER
-          ? this._cursors.end
-          : this._cursors.front,
+        this._toSortableModel(
+          direction === QUERY_DIRECTION.NEWER
+            ? this._cursors.end
+            : this._cursors.front,
+        ),
       );
     }
-    return Promise.resolve({ data: pageData.ids, hasMore: true });
+
+    return {
+      data: this._toIdModels(pageData.ids),
+      hasMore: true,
+    };
+  }
+
+  private _toSortableModel(id: number | undefined) {
+    return id ? { id, sortValue: id } : undefined;
+  }
+
+  private _toIdModels(ids: number[]) {
+    return ids.map((id: number) => {
+      return { id } as T;
+    });
   }
 
   private _getIdsByPage(
@@ -159,4 +183,4 @@ class IdListDateProvider<T extends IdModel, K extends Entity>
   }
 }
 
-export { IdListDateProvider, IEntityDataProvider };
+export { IdListDateProvider, IEntityDataProvider, ISourceIdsChangeListener };

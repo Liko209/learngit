@@ -41,7 +41,7 @@ export interface IFetchSortableDataProvider<T> {
   fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<T> | T,
+    anchor?: ISortableModel<T>,
   ): Promise<{ data: T[]; hasMore: boolean }>;
 }
 
