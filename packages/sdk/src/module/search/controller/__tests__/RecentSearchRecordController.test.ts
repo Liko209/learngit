@@ -6,6 +6,7 @@
 import _ from 'lodash';
 import { daoManager, AccountDao } from '../../../../dao';
 import { RecentSearchRecordController } from '../RecentSearchRecordController';
+
 jest.mock('../../../../dao');
 
 function clearMocks() {
@@ -33,6 +34,7 @@ describe('RecentSearchRecordController', () => {
       type: '',
       value: `${id}`,
       query_params: {},
+      time_stamp: Date.now(),
     };
   }
 
@@ -59,33 +61,70 @@ describe('RecentSearchRecordController', () => {
       newRecords.pop();
       newRecords = [newRecord].concat(newRecords);
 
-      controller.addRecentSearchRecord(newRecord);
+      controller.addRecentSearchRecord(
+        newRecord.type,
+        newRecord.value,
+        newRecord.query_params,
+      );
 
       expect(accountDao.put).toBeCalledWith(
         'recent_search_records',
-        newRecords,
+        newRecords.map((x: any) => {
+          return {
+            id: expect.anything(),
+            type: x.type,
+            value: x.value,
+            query_params: x.query_params,
+            time_stamp: expect.anything(),
+          };
+        }),
       );
     });
 
     it('new record should be at first place', () => {
       accountDao.get = jest.fn().mockReturnValue(threeRecords);
       const newRecord: any = buildRecord(4);
-      controller.addRecentSearchRecord(newRecord);
+      controller.addRecentSearchRecord(
+        newRecord.type,
+        newRecord.value,
+        newRecord.query_params,
+      );
+      const expectRecords = [newRecord].concat(threeRecords);
       expect(accountDao.put).toBeCalledWith(
         'recent_search_records',
-        [newRecord].concat(threeRecords),
+        expectRecords.map((x: any) => {
+          return {
+            id: expect.anything(),
+            type: x.type,
+            value: x.value,
+            query_params: x.query_params,
+            time_stamp: expect.anything(),
+          };
+        }),
       );
     });
 
     it('new record should be replace old records and put at first place', () => {
       accountDao.get = jest.fn().mockReturnValue(threeRecords);
       const newRecord: any = buildRecord(2);
-      controller.addRecentSearchRecord(newRecord);
-      expect(accountDao.put).toBeCalledWith('recent_search_records', [
-        buildRecord(2),
-        buildRecord(1),
-        buildRecord(3),
-      ]);
+      controller.addRecentSearchRecord(
+        newRecord.type,
+        newRecord.value,
+        newRecord.query_params,
+      );
+      const expectedRes = [buildRecord(2), buildRecord(1), buildRecord(3)];
+      expect(accountDao.put).toBeCalledWith(
+        'recent_search_records',
+        expectedRes.map((x: any) => {
+          return {
+            id: expect.anything(),
+            type: x.type,
+            value: x.value,
+            query_params: x.query_params,
+            time_stamp: expect.anything(),
+          };
+        }),
+      );
     });
   });
 

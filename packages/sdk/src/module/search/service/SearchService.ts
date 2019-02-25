@@ -5,7 +5,7 @@
  */
 import { AbstractService } from '../../../framework/service/AbstractService';
 import { ISearchService } from './ISearchService';
-import { RecentSearchModel } from '../entity';
+import { RecentSearchTypes, RecentSearchModel } from '../entity';
 import { SearchServiceController } from '../controller/SearchServiceController';
 import { container } from '../../../container';
 
@@ -22,8 +22,16 @@ class SearchService extends AbstractService implements ISearchService {
     return this._searchServiceController.recentSearchRecordController;
   }
 
-  addRecentSearchRecord(model: RecentSearchModel) {
-    this.recentSearchRecordController.addRecentSearchRecord(model);
+  addRecentSearchRecord(
+    type: RecentSearchTypes,
+    value: string | number,
+    params = {},
+  ) {
+    this.recentSearchRecordController.addRecentSearchRecord(
+      type,
+      value,
+      params,
+    );
   }
 
   clearRecentSearchRecords() {

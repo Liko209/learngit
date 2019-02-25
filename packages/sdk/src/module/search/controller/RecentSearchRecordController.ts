@@ -7,21 +7,34 @@
 import _ from 'lodash';
 import { AccountDao, daoManager } from '../../../dao';
 import { RECENT_SEARCH_RECORDS } from '../../../dao/account/constants';
-import { RecentSearchModel } from '../entity';
+import { RecentSearchModel, RecentSearchTypes } from '../entity';
 
 const MAX_RECENT_LIMIT = 10;
 class RecentSearchRecordController {
   constructor() {}
 
-  addRecentSearchRecord(model: RecentSearchModel) {
+  addRecentSearchRecord(
+    type: RecentSearchTypes,
+    value: string | number,
+    params: {},
+  ) {
     let recentRecords = this.getRecentSearchRecords();
     if (recentRecords.length === MAX_RECENT_LIMIT) {
       recentRecords.pop();
     }
 
     recentRecords = recentRecords.filter((x: RecentSearchModel) => {
-      return x.type !== model.type || x.value !== model.value;
+      return x.type !== type || x.value !== value;
     });
+
+    const time = Date.now();
+    const model: RecentSearchModel = {
+      type,
+      value,
+      query_params: params,
+      id: time,
+      time_stamp: time,
+    };
 
     recentRecords = [model].concat(recentRecords);
     this._updateRecentRecords(recentRecords);

@@ -40,10 +40,12 @@ describe('SearchService', () => {
     });
 
     it('addRecentSearchRecord', () => {
-      const model: any = { id: 11 };
-      searchService.addRecentSearchRecord(model);
+      const theType: any = 'people';
+      searchService.addRecentSearchRecord(theType, 123);
       expect(recentSearchRecordController.addRecentSearchRecord).toBeCalledWith(
-        model,
+        theType,
+        123,
+        {},
       );
     });
 

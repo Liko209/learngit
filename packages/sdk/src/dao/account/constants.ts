@@ -1,8 +1,8 @@
 /*
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-03-01 13:42:43
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-02-23 11:11:25
+ * @Last Modified by: Thomas Yang
+ * @Last Modified time: 2019-02-25 12:10:25
  */
 
 export const ACCOUNT_COLLECTION_NAME = 'account';

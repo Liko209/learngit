@@ -4,9 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RecentSearchModel } from '../entity';
+import { RecentSearchTypes, RecentSearchModel } from '../entity';
 interface ISearchService {
-  addRecentSearchRecord(model: RecentSearchModel): void;
+  addRecentSearchRecord(
+    type: RecentSearchTypes,
+    value: string | number,
+    params: {},
+  ): void;
   clearRecentSearchRecords(): void;
   getRecentSearchRecords(): RecentSearchModel[];
   removeRecentSearchRecords(ids: Set<number>): void;

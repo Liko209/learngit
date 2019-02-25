@@ -16,6 +16,7 @@ type RecentSearchModel = {
   type: RecentSearchTypes;
   value: string | number;
   query_params: {};
+  time_stamp: number;
 };
 
 export { RecentSearchModel, RecentSearchTypes };
