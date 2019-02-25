@@ -53,6 +53,8 @@ export class FetchSortableDataListHandler<
   private _sortFun?: ISortFunc<ISortableModel<T>>;
   private _sortableDataProvider?: IFetchSortableDataProvider<T>;
 
+  private _maintainMode: boolean = false;
+
   constructor(
     dataProvider: IFetchSortableDataProvider<T> | undefined,
     options: IFetchSortableDataListHandlerOptions<T>,
@@ -74,6 +76,23 @@ export class FetchSortableDataListHandler<
 
   get sortableListStore() {
     return this.listStore as SortableListStore<T>;
+  }
+
+  set maintainMode(mode: boolean) {
+    if (this._maintainMode !== mode) {
+      this._maintainMode = mode;
+      this._releaseDataInMaintainMode();
+    }
+  }
+
+  get maintainMode() {
+    return this._maintainMode;
+  }
+
+  private _releaseDataInMaintainMode() {
+    if (this._maintainMode) {
+      this.refreshData();
+    }
   }
 
   protected async fetchDataInternal(
@@ -103,6 +122,10 @@ export class FetchSortableDataListHandler<
           updated: [],
           deleted: [],
         });
+
+      if (sortableResult.length) {
+        this._releaseDataInMaintainMode();
+      }
     });
     return data;
   }
@@ -241,16 +264,20 @@ export class FetchSortableDataListHandler<
     }
 
     if (
-      deletedSortableModelIds.length ||
-      addedSortableModels.length ||
-      updatedSortableModels.length
-    ) {
       this._dataChangeCallBack &&
-        this._dataChangeCallBack({
-          deleted: deletedSortableModelIds,
-          updated: updatedSortableModels,
-          added: addedSortableModels,
-        });
+      (deletedSortableModelIds.length ||
+        addedSortableModels.length ||
+        updatedSortableModels.length)
+    ) {
+      this._dataChangeCallBack({
+        deleted: deletedSortableModelIds,
+        updated: updatedSortableModels,
+        added: addedSortableModels,
+      });
+
+      if (addedSortableModels.length) {
+        this._releaseDataInMaintainMode();
+      }
     }
   }
 
