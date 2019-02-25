@@ -99,11 +99,9 @@ class ScenarioHelper {
     team.members.push(...data);
   }
 
-  public async createOrOpenChat(chat: IGroup, operator?: IUser) {
-    assert(chat.members, "require members");
-    operator = operator || (chat.owner || chat.members[0]);
-    assert(operator, "require operator or owner");
-    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+  public async createOrOpenChat(chat: IGroup) {
+    assert(chat.members && chat.owner, "require members and owner");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(chat.owner);
     const res = await platform.createOrOpenChat({
       members: chat.members.map(user => { return { id: user.rcId, email: user.email }; }),
     });

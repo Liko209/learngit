@@ -45,6 +45,7 @@ test(formalName(`Display Join button for public team which login user doesn't jo
 
   let otherChat = <IGroup>{
     type: "Chat",
+    owner: me,
     members: [me, anotherUser, users[0]]
   }
 
@@ -254,6 +255,7 @@ test(formalName(`The user should see go to conversation icon instead of the join
 
   let chatWithMe = <IGroup>{
     type: "Chat",
+    owner: loginUser,
     members: [adminUser, loginUser]
   }
 
@@ -327,6 +329,7 @@ test(formalName(`Will show confirmation dialog when joining the public team from
 
   let chatWithMe = <IGroup>{
     type: "Chat",
+    owner: loginUser,
     members: [adminUser, loginUser]
   }
 

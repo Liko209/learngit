@@ -25,11 +25,13 @@ test(formalName('UMI should be added received messages count in conversations', 
 
   let privateChat = <IGroup>{
     type: "DirectMessage",
+    owner: loginUser,
     members: [loginUser, otherUser]
   }
 
   let groupChat = <IGroup>{
     type: "DirectMessage",
+    owner: loginUser,
     members: [loginUser, otherUser, users[7]]
   }
 
