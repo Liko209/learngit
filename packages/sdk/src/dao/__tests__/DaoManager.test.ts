@@ -14,8 +14,9 @@ import DaoManager from '../DaoManager';
 import { BaseDao, BaseKVDao } from '../../framework/dao';
 import Dexie from 'dexie';
 import { IdModel } from '../../framework/model';
-import { GlobalConfigService } from '../../module/config';
+import { GlobalConfigService, UserConfigService } from '../../module/config';
 import { NewGlobalConfig } from '../../service/config/newGlobalConfig';
+import { AuthGlobalConfig } from '../../service/auth/config';
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
@@ -43,7 +44,9 @@ jest.mock('../schema', () => ({
 }));
 jest.mock('../../module/config');
 jest.mock('../../service/config/newGlobalConfig');
+jest.mock('../../service/auth/config');
 GlobalConfigService.getInstance = jest.fn();
+UserConfigService.getInstance = jest.fn();
 
 class TestKVDao extends BaseKVDao {
   static COLLECTION_NAME = 'TestKVDao';
@@ -146,8 +149,10 @@ describe('DaoManager', () => {
 
   describe('deleteDatabase()', () => {
     it('should delete database', async () => {
+      const authConfig = new AuthGlobalConfig(null);
+      AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(authConfig);
       await daoManager.deleteDatabase();
-      expect(KVStorageManager.mock.instances[0].clear).toHaveBeenCalled();
+      expect(authConfig.removeGlipToken).toHaveBeenCalled();
       expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
     });
   });

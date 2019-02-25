@@ -29,6 +29,10 @@ class AuthGlobalConfig extends BaseGlobalConfig {
     return this.get(AUTH_GLIP_TOKEN);
   }
 
+  removeGlipToken() {
+    this.remove(AUTH_GLIP_TOKEN);
+  }
+
   setGlip2Token(token: any) {
     this.put(AUTH_GLIP2_TOKEN, token);
   }
@@ -43,6 +47,10 @@ class AuthGlobalConfig extends BaseGlobalConfig {
 
   getRcToken() {
     return this.get(AUTH_RC_TOKEN);
+  }
+
+  removeRcToken() {
+    this.remove(AUTH_RC_TOKEN);
   }
 }
 

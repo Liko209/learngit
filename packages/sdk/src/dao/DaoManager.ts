@@ -8,6 +8,8 @@ import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
 import { NewGlobalConfig } from '../service/config/newGlobalConfig';
+import { AuthGlobalConfig } from '../service/auth/config';
+import { AccountUserConfig } from '../service/account/config';
 
 class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   private kvStorageManager: KVStorageManager;
@@ -74,7 +76,10 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   async deleteDatabase(): Promise<void> {
-    this.kvStorageManager.clear();
+    AuthGlobalConfig.getInstance().removeGlipToken();
+    AuthGlobalConfig.getInstance().removeRcToken();
+    const userConfig = new AccountUserConfig();
+    userConfig.clear();
     await this.dbManager.deleteDatabase();
   }
 
