@@ -50,7 +50,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
     const { children, placeholder, url, animationForLoad } = this.props;
     const { loaded, isError } = this.state;
 
-    if (url && cacheUrl[url]) {
+    if (loaded && !isError) {
       return animationForLoad ? (
         <JuiFade in={true} timeout={700}>
           {children}
@@ -58,6 +58,10 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
       ) : (
         children
       );
+    }
+
+    if (url && cacheUrl[url]) {
+      return children;
     }
 
     if (isError) {
