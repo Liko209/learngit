@@ -173,7 +173,8 @@ Boolean e2eEnableMockServer = params.E2E_ENABLE_MOCK_SERVER
 
 /* build strategy */
 Boolean isMerge = gitlabSourceBranch != gitlabTargetBranch
-Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch)
+Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch) &&
+    !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
 Boolean skipUpdateGitlabStatus = !isMerge && integrationBranch != gitlabTargetBranch
 Boolean buildRelease = gitlabTargetBranch.startsWith('release') || gitlabTargetBranch.endsWith('release') || releaseBranch == gitlabTargetBranch
 
