@@ -226,7 +226,6 @@ node(buildNode) {
     try {
         // start to build
         stage ('Collect Facts') {
-            cleanWs()
             sh 'env'
             sh 'df -h'
             sh 'uptime'
@@ -307,8 +306,8 @@ node(buildNode) {
                 sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
             }
             try {
-                sh 'VERSION_CACHE_PATH=/tmp '
-
+                sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version check'
+                sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version cache'
             } catch (e) { }
         }
 
