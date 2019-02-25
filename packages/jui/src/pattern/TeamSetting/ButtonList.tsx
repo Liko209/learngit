@@ -60,6 +60,10 @@ const JuiTeamSettingButtonListItemText = styled(
   }
 `;
 
+const JuiHighlightedTeamName = styled.span`
+  color: ${palette('primary', 'main')};
+`;
+
 export {
   JuiTeamSettingButtonList,
   JuiTeamSettingButtonListProps,
@@ -67,4 +71,5 @@ export {
   JuiTeamSettingButtonListItemProps,
   JuiTeamSettingButtonListItemText,
   JuiTeamSettingButtonListItemTextProps,
+  JuiHighlightedTeamName,
 };

@@ -70,7 +70,6 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
             <JuiProfileDialogContentMemberList>
               <JuiVirtualList
                 dataSource={this}
-                isLoading={false}
                 width={width}
                 height={virtualListHeight}
                 data-test-automation-id="profileDialogMemberList"

@@ -18,21 +18,20 @@ import { HomeViewProps } from './types';
 import Wrapper from './Wrapper';
 
 import { dao, mainLogger } from 'sdk';
-import portalManager from '@/common/PortalManager';
+import { AuthService } from 'sdk/service/auth/authService';
 
 @observer
 class HomeView extends Component<HomeViewProps> {
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
+    const authService: AuthService = AuthService.getInstance();
+    authService.makeSureUserInWhitelist();
+
     analytics.identify();
   }
 
   componentWillUnmount() {
     window.removeEventListener('storage', this._storageEventHandler);
-  }
-
-  private _onScrollDismissMiniCard = () => {
-    portalManager.dismissLast(); // dismiss mini card
   }
 
   private _storageEventHandler = (event: StorageEvent) => {
@@ -57,7 +56,7 @@ class HomeView extends Component<HomeViewProps> {
     return (
       <>
         <ToastWrapper />
-        <Wrapper onScroll={this._onScrollDismissMiniCard}>
+        <Wrapper>
           <TopBar />
           <Bottom id="app-main-section">
             <LeftNav />

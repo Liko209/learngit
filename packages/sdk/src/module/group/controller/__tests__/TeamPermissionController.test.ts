@@ -138,16 +138,17 @@ describe('TeamPermissionController', () => {
         ),
       ).toEqual(15);
     });
-    it('should return 0 level when user is not a team member', () => {
+    it('should return default team admin permission level when there is not permissions info', () => {
       const teamPermissionParams: TeamPermissionParams = {
         members: [],
         is_team: true,
+
       };
       expect(
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(0);
+      ).toEqual(31);
     });
     it('should return team permission level when permissions is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -325,32 +326,32 @@ describe('TeamPermissionController', () => {
         ]);
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_POST,
+          teamPermissionParams,
         ),
       ).toBeTruthy();
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADD_MEMBER,
+          teamPermissionParams,
         ),
       ).toBeTruthy();
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_PIN_POST,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
     });
@@ -368,8 +369,8 @@ describe('TeamPermissionController', () => {
       };
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
     });
@@ -387,8 +388,8 @@ describe('TeamPermissionController', () => {
       };
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
         ),
       ).toBeTruthy();
     });
@@ -406,8 +407,43 @@ describe('TeamPermissionController', () => {
       };
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
+        ),
+      ).toBeFalsy();
+    });
+
+    it('should has default permission when do not have info', () => {
+      const teamPermissionParams: TeamPermissionParams = {
+      };
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_POST,
+          teamPermissionParams,
+        ),
+      ).toBeTruthy();
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_ADD_MEMBER,
+          teamPermissionParams,
+        ),
+      ).toBeFalsy();
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_PIN_POST,
+          teamPermissionParams,
+        ),
+      ).toBeFalsy();
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
+          teamPermissionParams,
+        ),
+      ).toBeFalsy();
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
     });

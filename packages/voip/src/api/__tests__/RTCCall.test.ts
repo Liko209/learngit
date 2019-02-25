@@ -457,7 +457,7 @@ describe('RTC call', () => {
       session.stopRecord.mockResolvedValue(null);
       call.onAccountReady();
       session.mockSignal('accepted');
-      call._isRecording = true;
+      call._recordState = "recording";
       call.stopRecord();
       setImmediate(() => {
         call._callSession.emit(

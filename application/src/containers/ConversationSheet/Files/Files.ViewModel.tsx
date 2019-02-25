@@ -3,7 +3,7 @@
  * @Date: 2018-10-24 15:44:40
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
@@ -35,6 +35,7 @@ import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
+  private _idToDelete: number;
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
   @observable
@@ -59,6 +60,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     );
   }
 
+  @action
   private _fetchUrl = async (
     { item }: ExtendFileItem,
     rule: RULE,
@@ -90,6 +92,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         squareSize: 180,
       });
       url = thumbnail.url;
+    }
+    if (!url) {
+      url = item.versionUrl || '';
     }
     if (url) {
       this.urlMap.set(id, url);
@@ -142,9 +147,19 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
 
   @computed
   get items() {
-    return this._ids.map((id: number) => {
-      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
+    const result: FileItemModel[] = [];
+    this._ids.forEach((id: number) => {
+      if (id !== this._idToDelete) {
+        try {
+          const item = getEntity<Item, FileItemModel>(
+            ENTITY_NAME.FILE_ITEM,
+            id,
+          );
+          result.push(item);
+        } catch (e) {}
+      }
     });
+    return result;
   }
 
   @computed
@@ -204,6 +219,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         if (postLoading) {
           await this._itemService.cancelUpload(id);
         } else {
+          this._idToDelete = id;
           await this._postService.removeItemFromPost(this._postId, id);
         }
       } catch (e) {

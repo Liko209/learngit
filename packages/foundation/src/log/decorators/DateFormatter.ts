@@ -6,10 +6,12 @@ class DateFormatter {
     const vMonth = this.addZero(vDate.getMonth() + 1);
     const vYearLong = this.addZero(vDate.getFullYear());
     const vYearShort = this.addZero(
-      Number(vDate
-        .getFullYear()
-        .toString()
-        .substring(3, 4)),
+      Number(
+        vDate
+          .getFullYear()
+          .toString()
+          .substring(3, 4),
+      ),
     );
     const vYear = vFormat.indexOf('yyyy') > -1 ? vYearLong : vYearShort;
     const vHour = this.addZero(vDate.getHours());
@@ -25,33 +27,6 @@ class DateFormatter {
       .replace(/mm/g, vMinute)
       .replace(/ss/g, vSecond);
     vDateString = vDateString.replace(/O/g, vTimeZone);
-    return vDateString;
-  }
-
-  formatUTCDate(vDate: Date, vFormat: DATE_FORMATTER) {
-    const vDay = this.addZero(vDate.getUTCDate());
-    const vMonth = this.addZero(vDate.getUTCMonth() + 1);
-    const vYearLong = this.addZero(vDate.getUTCFullYear());
-    const vYearShort = this.addZero(
-      Number(
-        vDate
-          .getUTCFullYear()
-          .toString()
-          .substring(3, 4),
-      ),
-    );
-    const vYear = vFormat.indexOf('yyyy') > -1 ? vYearLong : vYearShort;
-    const vHour = this.addZero(vDate.getUTCHours());
-    const vMinute = this.addZero(vDate.getUTCMinutes());
-    const vSecond = this.addZero(vDate.getUTCSeconds());
-    let vDateString = vFormat
-      .replace(/dd/g, vDay)
-      .replace(/MM/g, vMonth)
-      .replace(/y{1,4}/g, vYear);
-    vDateString = vDateString
-      .replace(/hh/g, vHour)
-      .replace(/mm/g, vMinute)
-      .replace(/ss/g, vSecond);
     return vDateString;
   }
 

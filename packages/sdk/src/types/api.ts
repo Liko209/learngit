@@ -36,6 +36,11 @@ type LaunchDarklyConfig = {
   clientId: string;
 };
 
+type SumologicConfig = {
+  server: string;
+  uniqueHttpCollectorCode: string;
+};
+
 type ApiConfig = {
   rc: RcConfig;
   glip: GlipConfig;
@@ -43,6 +48,7 @@ type ApiConfig = {
   upload: UploadConfig;
   splitio: SplitIOConfig;
   launchdarkly: LaunchDarklyConfig;
+  sumologic: SumologicConfig;
 };
 
 type PartialApiConfig = {
@@ -52,6 +58,7 @@ type PartialApiConfig = {
   upload?: Partial<UploadConfig>;
   splitio?: Partial<SplitIOConfig>;
   launchdarkly: Partial<LaunchDarklyConfig>;
+  sumologic?: Partial<SumologicConfig>;
 };
 
 type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload' | 'glip_desktop';
