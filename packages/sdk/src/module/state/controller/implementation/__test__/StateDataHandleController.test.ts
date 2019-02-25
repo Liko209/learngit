@@ -15,7 +15,7 @@ import { TASK_DATA_TYPE } from '../../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { TotalUnreadController } from '../TotalUnreadController';
 import { GlobalConfigService } from '../../../../../module/config/service/GlobalConfigService';
-import { AccountGlobalConfig } from '../../../../../service/account/config/accountGlobalConfig';
+import { AccountGlobalConfig } from '../../../../../service/account/config/AccountGlobalConfig1';
 
 jest.mock('../../../../../module/config/service/GlobalConfigService');
 jest.mock('../../../../../service/account/config/accountGlobalConfig');

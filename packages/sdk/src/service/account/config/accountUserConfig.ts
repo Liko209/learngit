@@ -1,6 +1,6 @@
 import { ACCOUNT_KEYS } from './configKeys';
 import { UserConfigService, BaseUserConfig } from '../../../module/config';
-import { AccountGlobalConfig } from './accountGlobalConfig';
+import { AccountGlobalConfig } from './AccountGlobalConfig1';
 
 class AccountUserConfig extends BaseUserConfig {
   constructor() {

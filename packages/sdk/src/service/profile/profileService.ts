@@ -18,7 +18,7 @@ import { JSdkError, ERROR_CODES_SDK, JError } from '../../error';
 import handleData from './handleData';
 import { daoManager } from '../../dao';
 import { PersonDao } from '../../module/person/dao';
-import { AccountGlobalConfig } from '../account/config/accountGlobalConfig';
+import { AccountGlobalConfig } from '../account/config/AccountGlobalConfig1';
 
 const handleGroupIncomesNewPost = (groupIds: number[]) => {
   const profileService: ProfileService = ProfileService.getInstance();
