@@ -145,12 +145,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   isCurrentUserHasPermission(
-    teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
+    teamPermissionParams: TeamPermissionParams,
   ): boolean {
     return this.getGroupController()
       .getTeamPermissionController()
-      .isCurrentUserHasPermission(teamPermissionParams, type);
+      .isCurrentUserHasPermission(type, teamPermissionParams);
   }
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean {

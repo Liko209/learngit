@@ -66,7 +66,7 @@ type Group = ExtendedBaseModel & {
 } & GroupCommon;
 
 type TeamPermissionParams = {
-  members: number[];
+  members?: number[];
   is_team?: boolean;
   guest_user_company_ids?: number[];
   permissions?: TeamPermission;

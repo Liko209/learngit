@@ -193,7 +193,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
 
 
 
-test(formalName('Should display in the top of conversation list when opening a conversation from URL and it is out of the left list', ['P2', 'JPT-463', 'Potar.He', 'ConversationList',]), async (t: TestController) => {
+test.skip(formalName('Should display in the top of conversation list when opening a conversation from URL and it is out of the left list', ['P2', 'JPT-463', 'Potar.He', 'ConversationList',]), async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users
   const loginUser = users[7];
@@ -215,60 +215,70 @@ test(formalName('Should display in the top of conversation list when opening a c
   const search = app.homePage.header.search;
 
   let teamId, directMessageChatId, teamMentionPostId, directMessageMentionPostId;
-  await h(t).withLog(`Given I have Team conversation A (with mention and bookmark post) and out `, async () => {
+  let teamInListIds = [];
+  await h(t).withLog(`Given I have Team conversation A and some teams`, async () => {
     teamId = await h(t).platform(loginUser).createAndGetGroupId({
       name: topTeamName,
       type: 'Team',
       members: [loginUser.rcId, otherUser.rcId],
     });
-    teamMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-      `${uuid()}, ![:Person](${loginUser.rcId})`,
-      teamId
-    );
-    await h(t).platform(loginUser).createAndGetGroupId({
+
+    const teamId1 = await h(t).platform(loginUser).createAndGetGroupId({
       name: uuid(),
       type: 'Team',
       members: [loginUser.rcId, otherUser.rcId],
     });
-    await h(t).platform(loginUser).createAndGetGroupId({
+    const teamId2 = await h(t).platform(loginUser).createAndGetGroupId({
       name: uuid(),
       type: 'Team',
       members: [loginUser.rcId, otherUser.rcId],
     });
 
-    await h(t).platform(loginUser).createAndGetGroupId({
+    const teamId3 = await h(t).platform(loginUser).createAndGetGroupId({
       name: uuid(),
       type: 'Team',
       members: [loginUser.rcId, otherUser.rcId],
     });
 
+    teamInListIds = [teamId1, teamId2, teamId3];
   })
 
-  await h(t).withLog(`And directMessage conversation B (with mention and bookmark post), and out of list`, async () => {
+  let privateChatInListIds = [];
+  await h(t).withLog(`And directMessage conversation B and some private chats`, async () => {
     directMessageChatId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, otherUser.rcId],
     });
-    await h(t).glip(loginUser).hideGroups(directMessageChatId); // hide first then show for pre condition of last group
-    await h(t).platform(loginUser).createAndGetGroupId({
+
+    const dmId1 = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[0].rcId],
     });
 
-    await h(t).platform(loginUser).createAndGetGroupId({
+    const dmId2 = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[1].rcId],
     });
 
-    await h(t).platform(loginUser).createAndGetGroupId({
+    const dmId3 = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
       members: [loginUser.rcId, users[2].rcId],
     });
+
+    privateChatInListIds = [dmId1, dmId2, dmId3];
+  });
+
+  await h(t).withLog(`And conversation A and B with at mention and bookmark post and clear all umi`, async () => {
+    teamMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
+      `${uuid()}, ![:Person](${loginUser.rcId})`,
+      teamId
+    );
 
     directMessageMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `${uuid()}, ![:Person](${loginUser.rcId})`,
       directMessageChatId
     );
+
     await h(t).glip(loginUser).updateProfile({
       favorite_post_ids: [+teamMentionPostId, +directMessageMentionPostId]
     });
@@ -279,7 +289,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     await h(t).withLog(`Then ${teamName} should be on the top in ${sectionName} section`, async () => {
       await conversationPage.groupIdShouldBe(chatId);
       await section.nthConversationEntry(0).groupIdShouldBe(chatId);
-      await t.wait(5e3); // wait for back-end sync last-group-id
+      await conversationPage.waitUntilPostsBeLoaded();
     });
 
     await h(t).withLog(`When I refresh page`, async () => {
@@ -288,6 +298,7 @@ test(formalName('Should display in the top of conversation list when opening a c
     });
 
     await h(t).withLog(`Then ${teamName} should be still opened and on the top in ${sectionName} section`, async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
       await conversationPage.groupIdShouldBe(chatId);
       await section.nthConversationEntry(0).groupIdShouldBe(chatId);
     });
@@ -308,57 +319,76 @@ test(formalName('Should display in the top of conversation list when opening a c
   await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
 
   // open via mentions
-  await h(t).withLog(`Given I hide the conversation A`, async () => {
-    await h(t).glip(loginUser).hideGroups([+teamId]);
+  await h(t).withLog(`Given I the conversation A is out of list (not close)`, async () => {
+    for (const chatId of teamInListIds) {
+      await h(t).platform(otherUser).sendTextPost(uuid(), chatId);
+      await teamSection.conversationEntryById(chatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    }
+    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
   });
 
   await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
     await mentionPageEntry.enter();
+    await mentionPage.waitUntilPostsBeLoaded();
     await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
+
   });
 
   await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
 
   // open via bookmark
-  await h(t).withLog(`Given I hide the conversation A`, async () => {
-    await h(t).glip(loginUser).hideGroups([+teamId]);
+  await h(t).withLog(`Given I the conversation A is out of list (not close)`, async () => {
+    for (const chatId of teamInListIds) {
+      await h(t).platform(otherUser).sendTextPost(uuid(), chatId);
+      await teamSection.conversationEntryById(chatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    }
+    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
   });
 
   await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
     await bookmarkEntry.enter();
+    await bookmarkPage.waitUntilPostsBeLoaded();
     await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
   });
 
   await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
 
   // skip this entry due to a bug: https://jira.ringcentral.com/browse/FIJI-3278
-  // // open via URL
-  // await h(t).withLog(`Given I hide the conversation A`, async () => {
-  //   await h(t).glip(loginUser).hideGroups([+teamId]);
-  // });
+  // open via URL
+  await h(t).withLog(`Given I the conversation A is out of list (not close)`, async () => {
+    for (const chatId of teamInListIds) {
+      await h(t).platform(otherUser).sendTextPost(uuid(), chatId);
+      await t.expect(teamSection.conversationEntryById(chatId).exists).ok({ timeout: 10e3 })
+      await teamSection.conversationEntryById(chatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    }
+  });
 
-  // await h(t).withLog(`When I open conversation A via URL `, async () => {
-  //   const url = new URL(SITE_URL)
-  //   const NEW_URL = `${url.protocol}//${url.hostname}/messages/${teamId}`;
-  //   await t.navigateTo(NEW_URL);
-  //   await app.homePage.ensureLoaded();
-  // });
+  await h(t).withLog(`When I open conversation A via URL `, async () => {
+    const url = new URL(SITE_URL)
+    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${teamId}`;
+    await t.navigateTo(NEW_URL);
+    await app.homePage.ensureLoaded();
+  });
 
-  // await nextSteps(teamSection, teamId, 'conversation A', 'team');
+  await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
 
   // open via search team name
-  await h(t).withLog(`Given I hide the conversation A`, async () => {
-    await h(t).glip(loginUser).hideGroups([+teamId]);
+  await h(t).withLog(`Given I the conversation A is out of list (not close)`, async () => {
+    for (const chatId of teamInListIds) {
+      await h(t).platform(otherUser).sendTextPost(uuid(), chatId);
+      await t.expect(teamSection.conversationEntryById(chatId).exists).ok({ timeout: 10e3 })
+      await teamSection.conversationEntryById(chatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    }
+    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
   });
 
   await h(t).withLog(`When I search the hide team ${topTeamName} and click it`, async () => {
     await search.typeSearchKeyword(topTeamName, { replace: true, paste: true });
-    await t.wait(3e3);
-    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-    await search.typeSearchKeyword(topTeamName, { replace: true, paste: true });
-    await t.wait(3e3);
+    await t.expect(search.allResultItems.count).gte(1);
     await search.nthTeam(0).enter();
   });
 
@@ -396,7 +426,6 @@ test(formalName('Should display in the top of conversation list when opening a c
   await h(t).withLog(`When I logout And set last_group_id is id of conversation B and login again`, async () => {
     await app.homePage.openSettingMenu();
     await app.homePage.settingMenu.clickLogout();
-    await h(t).glip(loginUser).showGroups(directMessageChatId); // set show again for open last group test
     await h(t).glip(loginUser).setLastGroupId(directMessageChatId);
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -407,14 +436,26 @@ test(formalName('Should display in the top of conversation list when opening a c
   // open via mentions
   await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
     await mentionPageEntry.enter();
+    await mentionPage.waitUntilPostsBeLoaded();
     await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
   await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via bookmark
+  await h(t).withLog(`Given I the conversation B is out of list (not close)`, async () => {
+    for (const chatId of privateChatInListIds) {
+      await h(t).platform(otherUser).sendTextPost(uuid(), chatId);
+      await t.expect(directMessagesSection.conversationEntryById(chatId).exists).ok({ timeout: 10e3 });
+      await directMessagesSection.conversationEntryById(chatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    }
+    await t.expect(directMessagesSection.conversationEntryById(directMessageChatId).exists).notOk();
+  });
+
   await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
     await bookmarkEntry.enter();
+    await bookmarkPage.waitUntilPostsBeLoaded();
     await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
   });
 
@@ -422,40 +463,52 @@ test(formalName('Should display in the top of conversation list when opening a c
 
   // skip this entry due to a bug: https://jira.ringcentral.com/browse/FIJI-3278
   // open via URL
-  // await h(t).withLog(`Given I hide the conversation B`, async () => {
-  //   await h(t).glip(loginUser).hideGroups([+directMessageChatId]);
-  // });
+  await h(t).withLog(`Given I the conversation B is out of list (not close)`, async () => {
+    for (const chatId of privateChatInListIds) {
+      await h(t).platform(otherUser).sendTextPost(uuid(), chatId);
+      await t.expect(directMessagesSection.conversationEntryById(chatId).exists).ok({ timeout: 10e3 });
+      await directMessagesSection.conversationEntryById(chatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    }
+  });
 
-  // await h(t).withLog(`When I open conversation B via URL `, async () => {
-  //   const url = new URL(SITE_URL)
-  //   const NEW_URL = `${url.protocol}//${url.hostname}/messages/${directMessageChatId}`;
-  //   await t.navigateTo(NEW_URL);
-  //   await app.homePage.ensureLoaded();
-  // });
+  await h(t).withLog(`When I open conversation B via URL `, async () => {
+    const url = new URL(SITE_URL)
+    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${directMessageChatId}`;
+    await t.navigateTo(NEW_URL);
+    await app.homePage.ensureLoaded();
+  });
 
-  // await nextSteps(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via search other user name
-  await h(t).withLog(`Given I hide the conversation B`, async () => {
-    await h(t).glip(loginUser).hideGroups([+directMessageChatId]);
-  });
+  await h(t).withLog(`Given I the conversation B is out of list (not close)`, async () => {
+    for (const chatId of privateChatInListIds) {
+      await h(t).platform(otherUser).sendTextPost(uuid(), chatId);
+      await t.expect(directMessagesSection.conversationEntryById(chatId).exists).ok({ timeout: 10e3 });
+      await directMessagesSection.conversationEntryById(chatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    }
+    await t.expect(directMessagesSection.conversationEntryById(directMessageChatId).exists).notOk();
+  });;
 
   await h(t).withLog(`When I search the hide privateChat ${otherUserName} and click it`, async () => {
     await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
-    await t.wait(3e3);
-    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-    await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
-    await t.wait(3e3);
+    await t.expect(search.allResultItems.count).gte(1);
     await search.nthPeople(0).enter();
   });
 
   await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
 
   // open via send new message entry
-  await h(t).withLog(`Given I hide the conversation A`, async () => {
-    await h(t).glip(loginUser).hideGroups([+directMessageChatId]);
+  await h(t).withLog(`Given I the conversation B is out of list (not close)`, async () => {
+    for (const chatId of privateChatInListIds) {
+      await h(t).platform(otherUser).sendTextPost(uuid(), chatId);
+      await t.expect(directMessagesSection.conversationEntryById(chatId).exists).ok({ timeout: 10e3 });
+      await directMessagesSection.conversationEntryById(chatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
+    }
+    await t.expect(directMessagesSection.conversationEntryById(directMessageChatId).exists).notOk();
   });
 
   await h(t).withLog('When I click "Send New Message" on AddActionMenu', async () => {

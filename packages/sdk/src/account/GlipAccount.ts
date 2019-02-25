@@ -13,6 +13,7 @@ import { TelephonyService } from '../module/telephony';
 import { ItemService } from '../module/item';
 import { StateService } from '../module/state';
 import { PostService } from '../module/post';
+import { RcInfoService } from '../module/rcInfo';
 
 class GlipAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {
@@ -26,6 +27,7 @@ class GlipAccount extends AbstractAccount {
       ProfileService.name,
       StateService.name,
       TelephonyService.name,
+      RcInfoService.name,
     ]);
   }
 }

@@ -350,6 +350,37 @@ describe('RTCAccount', async () => {
     });
   });
 
+  it('should transition from regInProgress state to regFailure state when receive transportError event. [JPT-1174]', done => {
+    setupAccount();
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.IN_PROGRESS,
+      );
+      ua.emit(UA_EVENT.TRANSPORT_ERROR);
+      setImmediate(() => {
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.FAILURE,
+        );
+        done();
+      });
+    });
+  });
+
+  it('should transition from Ready state to regFailure state when receive transportError event. [JPT-1175]', done => {
+    setupAccount();
+    ua.emit(UA_EVENT.REG_SUCCESS);
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
+      ua.emit(UA_EVENT.TRANSPORT_ERROR);
+      setImmediate(() => {
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.FAILURE,
+        );
+        done();
+      });
+    });
+  });
+
   it('Should parse multi-party conference headers for outbound call. [JPT-1051]', done => {
     setupAccount();
     const listener = new MockCallListener();
