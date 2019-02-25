@@ -126,7 +126,7 @@ module.exports = {
     // This is the URL that app is served from. We use "/" in development.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
+    devtoolModuleFilenameTemplate: (info) =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")
   },
   optimization: {
@@ -248,6 +248,13 @@ module.exports = {
                   ["@babel/plugin-proposal-decorators", { legacy: true }],
                   ["@babel/plugin-proposal-class-properties", { loose: true }],
                   ["@babel/plugin-syntax-dynamic-import"],
+                  [
+                    "babel-plugin-styled-components",
+                    {
+                      ssr: false,
+                      displayName: true
+                    }
+                  ],
                   "react-hot-loader/babel"
                 ]
               }
@@ -388,7 +395,7 @@ module.exports = {
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-          dllPath =>
+          (dllPath) =>
             new AddAssetHtmlPlugin({
               filepath: dllPath,
               includeSourcemap: false
