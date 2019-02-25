@@ -81,12 +81,10 @@ class PostViewDao extends BaseDao<PostView> {
       } else {
         const halfLimit =
           limit === Infinity ? DEFAULT_PAGE_SIZE / 2 : limit / 2;
-        const difEnd = postIds.length - postIdIndex;
-        endIndex =
-          difEnd < halfLimit ? postIds.length : postIdIndex + halfLimit;
-        const difStart =
-          endIndex - (limit === Infinity ? DEFAULT_PAGE_SIZE : limit);
-        startIndex = difStart > 0 ? difStart : 0;
+        startIndex = postIdIndex - halfLimit > 0 ? postIdIndex - halfLimit : 0;
+        const difEnd =
+          startIndex + (limit === Infinity ? DEFAULT_PAGE_SIZE : limit);
+        endIndex = difEnd >= postIds.length ? postIds.length : difEnd;
       }
     } else {
       endIndex =

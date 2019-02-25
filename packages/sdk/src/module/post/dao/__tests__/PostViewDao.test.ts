@@ -133,20 +133,7 @@ describe('PostViewDao', () => {
       expect(_.last(result).created_at).toBe(2);
     });
 
-    it('should return both posts when direction is both | post id > 0 | startIndex > 0', async () => {
-      jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[1]);
-      const result = await postViewDao.queryPostsByGroupId(
-        fetchPostsFunc,
-        9163628546,
-        3752569536516,
-        QUERY_DIRECTION.BOTH,
-        4,
-      );
-      expect(result).toHaveLength(4);
-      expect(_.last(result).created_at).toBe(2);
-    });
-
-    it('should return both posts when direction is both | post id > 0 | startIndex === 0', async () => {
+    it('should return both posts when direction is both | post id > 0 | postIdIndex - halfLimit === 0', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
@@ -159,20 +146,48 @@ describe('PostViewDao', () => {
       expect(_.last(result).created_at).toBe(3);
     });
 
-    it('should return both posts when direction is both | post id > 0 | endIndex < posts.length', async () => {
-      jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[5]);
+    it('should return both posts when direction is both | post id > 0 | postIdIndex - halfLimit > 0', async () => {
+      jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[1]);
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        1151236399108,
+        3752569536516,
+        QUERY_DIRECTION.BOTH,
+        4,
+      );
+      expect(result).toHaveLength(4);
+      expect(_.last(result).created_at).toBe(2);
+      expect(_.first(result).created_at).toBe(5);
+    });
+
+    it('should return both posts when direction is both | post id > 0 | postIdIndex - halfLimit < 0', async () => {
+      jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[2]);
+      const result = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
+        9163628546,
+        1151236554700,
         QUERY_DIRECTION.BOTH,
         4,
       );
       expect(result).toHaveLength(4);
       expect(_.last(result).created_at).toBe(3);
+      expect(_.first(result).created_at).toBe(6);
     });
 
-    it('should return both posts when direction is both | post id > 0 | entIndex === posts.length', async () => {
+    it('should return both posts when direction is both | post id > 0 | endIndex < posts.length', async () => {
+      jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[1]);
+      const result = await postViewDao.queryPostsByGroupId(
+        fetchPostsFunc,
+        9163628546,
+        3752569536516,
+        QUERY_DIRECTION.BOTH,
+        4,
+      );
+      expect(result).toHaveLength(4);
+      expect(_.last(result).created_at).toBe(2);
+    });
+
+    it('should return both posts when direction is both | post id > 0 | endIndex === posts.length', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[3]);
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
@@ -183,6 +198,7 @@ describe('PostViewDao', () => {
       );
       expect(result).toHaveLength(4);
       expect(_.last(result).created_at).toBe(1);
+      expect(_.first(result).created_at).toBe(4);
     });
 
     it('should return both posts when direction is both | post id > 0 | entIndex > posts.length', async () => {
@@ -194,17 +210,17 @@ describe('PostViewDao', () => {
         QUERY_DIRECTION.BOTH,
         4,
       );
-      expect(result).toHaveLength(4);
+      expect(result).toHaveLength(3);
       expect(_.last(result).created_at).toBe(1);
-      expect(_.first(result).created_at).toBe(4);
+      expect(_.first(result).created_at).toBe(3);
     });
 
-    it('should return both posts when direction is both | post id > 0 | limit > posts.length', async () => {
+    it('should return both posts when direction is both | post id > 0 | postIdIndex - halfLimit < 0 | entIndex > posts.length', async () => {
       jest.spyOn(postViewDao, 'get').mockResolvedValue(postViews[0]);
       const result = await postViewDao.queryPostsByGroupId(
         fetchPostsFunc,
         9163628546,
-        3752569593860,
+        3752569536516,
         QUERY_DIRECTION.BOTH,
         8,
       );
