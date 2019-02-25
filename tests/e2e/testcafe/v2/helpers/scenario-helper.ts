@@ -57,6 +57,18 @@ class ScenarioHelper {
     _.pull(team.members, me);
   }
 
+  public async archiveTeam(team: IGroup, operator: IUser) {
+    assert(team.glipId && operator, "require glipId and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    await platform.archiveTeam(team.glipId);
+  }
+
+  public async unArchiveTeam(team: IGroup, operator: IUser) {
+    assert(team.glipId && operator, "require glipId and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    await platform.leaveTeam(team.glipId);
+  }
+
   public async joinTeam(team: IGroup, me: IUser) {
     assert(team.glipId && me, "require glipId and me");
     const platform = await this.sdkHelper.sdkManager.getPlatform(me);
@@ -89,7 +101,7 @@ class ScenarioHelper {
 
   public async createOrOpenChat(chat: IGroup, operator?: IUser) {
     assert(chat.members, "require members");
-    operator = operator || (chat.owner|| chat.members[0]);
+    operator = operator || (chat.owner || chat.members[0]);
     assert(operator, "require operator or owner");
     const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
     const res = await platform.createOrOpenChat({
@@ -109,7 +121,37 @@ class ScenarioHelper {
     }
   }
 
-  
+  public async sentAndGetTextPostId(text: string, chat: IGroup, operator: IUser) {
+    assert(text && chat && operator, "require text, chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    return await platform.sentAndGetTextPostId(text, chat.glipId);
+  }
+
+  public async addChatToFavorites(chat: IGroup, operator: IUser) {
+    assert(chat && operator, "require chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    await platform.addChatToFavorites(chat.glipId);
+  }
+
+  async removeChatToFavorites(chat: IGroup, operator: IUser) {
+    assert(chat && operator, "require chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    await platform.removeChatToFavorites(chat.glipId);
+  }
+
+  // glip
+  public async clearAllUMI(operator: IUser) {
+    assert(operator, "require operator");
+    const glip = await this.sdkHelper.sdkManager.getGlip(operator);
+    await glip.clearAllUmi(operator.rcId);
+  }
+
+
+  public async resetProfile(operator: IUser) {
+    assert(operator, "require operator");
+    const glip = await this.sdkHelper.sdkManager.getGlip(operator);
+    await glip.resetProfile(operator.rcId);
+  }
 }
 
 
