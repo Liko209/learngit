@@ -166,7 +166,7 @@ class ConversationEntry extends BaseWebComponent {
     const moreButton = this.moreMenuEntry;
     await this.t.expect(moreButton.exists).ok();
     const displayMoreButton = ClientFunction(
-      () => { moreButton().style["display"] = "inline-block"; },
+      () => { moreButton().style["display"] = "inline-flex"; },
       { dependencies: { moreButton } }
     );
     await displayMoreButton();
