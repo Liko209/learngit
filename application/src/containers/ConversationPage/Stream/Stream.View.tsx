@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import RO from 'resize-observer-polyfill';
 import storeManager from '@/store/base/StoreManager';
 import VisibilitySensor from 'react-visibility-sensor';
-import { action, observable } from 'mobx';
+import { action, observable, runInAction } from 'mobx';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -67,7 +67,7 @@ class StreamViewComponent extends Component<Props> {
   componentWillUnmount() {
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
-    this._ro.forEach(i => i.disconnect());
+    this._ro.forEach((i: RO) => i.disconnect());
     this._detachScrollHandlerToContainer();
   }
 
@@ -224,6 +224,7 @@ class StreamViewComponent extends Component<Props> {
       <VisibilitySensor
         offset={VISIBILITY_SENSOR_OFFSET}
         onChange={this._handleFirstUnreadPostVisibilityChange}
+        active={this._visibilitySensorEnabled}
       >
         <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
       </VisibilitySensor>
@@ -313,7 +314,6 @@ class StreamViewComponent extends Component<Props> {
       </JuiStream>
     );
   }
-
   @action.bound
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, updateHistoryHandler, markAsRead } = this.props;
@@ -327,12 +327,12 @@ class StreamViewComponent extends Component<Props> {
     _jumpToPostId
       ? await this.scrollToPost(_jumpToPostId)
       : await this.scrollToBottom();
-    this._visibilitySensorEnabled = true;
-    updateHistoryHandler();
-    markAsRead();
-    setTimeout(() => {
+    runInAction(() => {
+      this._visibilitySensorEnabled = true;
+      updateHistoryHandler();
+      markAsRead();
       this._hideList = false;
-    },         0);
+    });
   }
 
   private _attachScrollHandlerToContainer() {
