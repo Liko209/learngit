@@ -58,6 +58,10 @@ class RTCAccount implements IRTCAccount {
     this._provManager.acquireSipProv();
   }
 
+  public clearLocalProvisioning() {
+    this._provManager.clearProvInfo();
+  }
+
   public makeCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
@@ -188,7 +192,7 @@ class RTCAccount implements IRTCAccount {
 
   private _onLogoutAction() {
     this._callManager.endAllCalls();
-    this._provManager.clearProvInfo();
+    this.clearLocalProvisioning();
   }
 
   private _onMakeOutgoingCall(

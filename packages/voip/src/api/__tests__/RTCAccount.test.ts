@@ -505,6 +505,7 @@ describe('RTCAccount', async () => {
 
   it('Should postpone provisioning info when receive new provisioning event from Provision manager during call. [JPT-1202]', done => {
     setupAccount();
+    account.clearLocalProvisioning();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     const listener = new MockCallListener();
     account.makeCall('123', listener);
@@ -520,6 +521,7 @@ describe('RTCAccount', async () => {
 
   it('Should send new provisioning event in Account FSM when receive new provisioning event from Provision manager without call. [JPT-1203]', done => {
     setupAccount();
+    account.clearLocalProvisioning();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.REGISTERED);
@@ -537,6 +539,7 @@ describe('RTCAccount', async () => {
 
   it("Should send new provisioning event in Account FSM when call end & there's postponed provisioning info. [JPT-1204]", done => {
     setupAccount();
+    account.clearLocalProvisioning();
     const listener = new MockCallListener();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
     setImmediate(() => {
