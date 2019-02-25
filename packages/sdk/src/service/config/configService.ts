@@ -9,7 +9,6 @@ import AuthService from '../auth';
 import { SERVICE } from '../eventKey';
 import { handleLogout } from './handleData';
 import { NewGlobalConfig } from './newGlobalConfig';
-// import { UserConfigService } from 'sdk/src/module/config';
 
 export default class ConfigService extends BaseService {
   static serviceName = 'ConfigService';
