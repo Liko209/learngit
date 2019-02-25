@@ -161,8 +161,15 @@ describe('RecentSearchRecordController', () => {
       const idSet = new Set(ids);
       accountDao.get = jest.fn().mockReturnValue(threeRecords);
       controller.removeRecentSearchRecords(idSet);
+      const res = buildRecord(2);
       expect(accountDao.put).toBeCalledWith('recent_search_records', [
-        buildRecord(2),
+        {
+          id: 2,
+          time_stamp: expect.anything(),
+          type: res.type,
+          value: res.value,
+          query_params: res.query_params,
+        },
       ]);
     });
   });
