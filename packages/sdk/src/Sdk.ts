@@ -125,10 +125,9 @@ class Sdk {
   }
 
   updateNetworkToken() {
-    const authConfig = AuthGlobalConfig.getInstance();
-    const glipToken: string = authConfig.getGlipToken();
-    const rcToken: Token = authConfig.getRcToken();
-    const glip2Token: Token = authConfig.getGlip2Token();
+    const glipToken: string = AuthGlobalConfig.getGlipToken();
+    const rcToken: Token = AuthGlobalConfig.getRcToken();
+    const glip2Token: Token = AuthGlobalConfig.getGlip2Token();
 
     if (glipToken) {
       this.networkManager.setOAuthToken(new Token(glipToken), HandleByGlip);

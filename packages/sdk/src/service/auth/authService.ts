@@ -80,7 +80,7 @@ class AuthService extends BaseService {
       const authToken = loginResult.expect(
         'Failed to login glip2 by password.',
       );
-      AuthGlobalConfig.getInstance().setGlip2Token(authToken);
+      AuthGlobalConfig.setGlip2Token(authToken);
       notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
     } catch (err) {
       // Since glip2 api is no in use now, we can ignore all it's errors

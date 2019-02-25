@@ -8,8 +8,12 @@ import { BaseUserConfig } from './base/BaseUserConfig';
 import { GlobalConfigService } from './service/GlobalConfigService';
 import { BaseGlobalConfig } from './base/BaseGlobalConfig';
 import { IGlobalConfigService } from './service/IGlobalConfigService';
+import { GlobalConfig } from './GlobalConfig';
+import { UserConfig } from './UserConfig';
 
 export {
+  GlobalConfig,
+  UserConfig,
   UserConfigService,
   BaseUserConfig,
   BaseGlobalConfig,

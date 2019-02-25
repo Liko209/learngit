@@ -56,8 +56,8 @@ class BaseConfigService extends AbstractService {
     // TODO remove from notification list
   }
 
-  clear() {
-    const st = store.namespace(this._ns);
+  clear(module: string) {
+    const st = store.namespace(`${this._ns}.${module}`);
     st.clearAll();
     // TODO clearAll notification
   }

@@ -105,15 +105,12 @@ describe('Sdk', () => {
   });
 
   describe('initNetworkManager()', () => {
-    let authConfig: AuthGlobalConfig;
-    beforeEach(() => {
-      authConfig = new AuthGlobalConfig(null);
-      AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(authConfig);
-    });
     it('should init with glip token', () => {
-      authConfig.getGlipToken = jest.fn().mockReturnValueOnce('glip token');
-      authConfig.getRcToken = jest.fn().mockReturnValueOnce(null);
-      authConfig.getGlip2Token = jest.fn().mockReturnValueOnce(null);
+      AuthGlobalConfig.getGlipToken = jest
+        .fn()
+        .mockReturnValueOnce('glip token');
+      AuthGlobalConfig.getRcToken = jest.fn().mockReturnValueOnce(null);
+      AuthGlobalConfig.getGlip2Token = jest.fn().mockReturnValueOnce(null);
 
       sdk.updateNetworkToken();
 
@@ -128,9 +125,9 @@ describe('Sdk', () => {
     });
 
     it('should init with rc token ', () => {
-      authConfig.getGlipToken = jest.fn().mockReturnValueOnce(null);
-      authConfig.getRcToken = jest.fn().mockReturnValueOnce('rc token');
-      authConfig.getGlip2Token = jest.fn().mockReturnValueOnce(null);
+      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValueOnce(null);
+      AuthGlobalConfig.getRcToken = jest.fn().mockReturnValueOnce('rc token');
+      AuthGlobalConfig.getGlip2Token = jest.fn().mockReturnValueOnce(null);
 
       sdk.updateNetworkToken();
 
@@ -145,9 +142,11 @@ describe('Sdk', () => {
     });
 
     it('should init with glip2 token ', () => {
-      authConfig.getGlipToken = jest.fn().mockReturnValueOnce(null);
-      authConfig.getRcToken = jest.fn().mockReturnValueOnce(null);
-      authConfig.getGlip2Token = jest.fn().mockReturnValueOnce('glip2 token');
+      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValueOnce(null);
+      AuthGlobalConfig.getRcToken = jest.fn().mockReturnValueOnce(null);
+      AuthGlobalConfig.getGlip2Token = jest
+        .fn()
+        .mockReturnValueOnce('glip2 token');
       sdk.updateNetworkToken();
 
       expect(networkManager.setOAuthToken).toHaveBeenCalledWith(

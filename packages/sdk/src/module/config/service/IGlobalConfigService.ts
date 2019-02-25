@@ -8,7 +8,7 @@ interface IGlobalConfigService {
   get(module: string, key: string): any;
   put(module: string, key: string, value: any): void;
   remove(module: string, key: string): void;
-  clear(): void;
+  clear(module: string): void;
   on(module: string, key: string): void;
   off(module: string, key: string): void;
 }

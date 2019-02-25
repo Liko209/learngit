@@ -267,7 +267,7 @@ export class SocketManager {
   private _startFSM() {
     // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
     const serverHost = NewGlobalConfig.getInstance().getSocketServerHost();
-    const glipToken = AuthGlobalConfig.getInstance().getGlipToken();
+    const glipToken = AuthGlobalConfig.getGlipToken();
     if (serverHost) {
       this.activeFSM = new SocketFSM(
         serverHost,

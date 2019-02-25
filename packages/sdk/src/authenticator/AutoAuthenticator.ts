@@ -37,7 +37,7 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authGlipLogin(): IAuthResponse {
-    const glipToken: string = AuthGlobalConfig.getInstance().getGlipToken();
+    const glipToken: string = AuthGlobalConfig.getGlipToken();
 
     if (glipToken) {
       return {
@@ -55,9 +55,8 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authRCLogin(): IAuthResponse {
-    const authGlobalConfig = AuthGlobalConfig.getInstance();
-    const rcToken: string = authGlobalConfig.getRcToken();
-    const glipToken: string = authGlobalConfig.getGlipToken();
+    const rcToken: string = AuthGlobalConfig.getRcToken();
+    const glipToken: string = AuthGlobalConfig.getGlipToken();
 
     if (rcToken && glipToken) {
       return {

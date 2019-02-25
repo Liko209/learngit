@@ -9,7 +9,6 @@ import { loginGlip } from '../../api/glip/user';
 import { RCPasswordAuthenticator } from '..';
 import { ApiResultOk } from '../../api/ApiResult';
 import { GlobalConfigService } from '../../module/config';
-import { AuthGlobalConfig } from '../../service/auth/config';
 
 jest.mock('../../api/glip/user', () => ({
   loginGlip: jest.fn(),
@@ -21,8 +20,6 @@ jest.mock('../../api/ringcentral/login', () => ({
 jest.mock('../../module/config');
 jest.mock('../../service/auth/config');
 GlobalConfigService.getInstance = jest.fn();
-const authConfig = new AuthGlobalConfig();
-AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(authConfig);
 
 function createResponse(obj: any) {
   const builder = new HttpResponseBuilder();

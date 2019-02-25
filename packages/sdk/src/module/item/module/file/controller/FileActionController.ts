@@ -41,7 +41,7 @@ class FileActionController {
         break;
       }
 
-      const glipAccessToken = AuthGlobalConfig.getInstance().getGlipToken();
+      const glipAccessToken = AuthGlobalConfig.getGlipToken();
       if (!glipAccessToken) {
         break;
       }

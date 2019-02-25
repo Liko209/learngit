@@ -1,55 +1,38 @@
-import {
-  BaseGlobalConfig,
-  GlobalConfigService,
-  IGlobalConfigService,
-} from '../../../module/config';
 import { AUTH_GLIP_TOKEN, AUTH_RC_TOKEN, AUTH_GLIP2_TOKEN } from './configKeys';
+import { GlobalConfig } from '../../../module/config';
 
-class AuthGlobalConfig extends BaseGlobalConfig {
-  constructor(configService: IGlobalConfigService) {
-    super(configService, 'auth');
-  }
+class AuthGlobalConfig extends GlobalConfig {
+  static moduleName = 'auth';
 
-  private static instance: AuthGlobalConfig;
-
-  public static getInstance() {
-    if (!AuthGlobalConfig.instance) {
-      AuthGlobalConfig.instance = new AuthGlobalConfig(
-        GlobalConfigService.getInstance() as GlobalConfigService,
-      );
-    }
-    return AuthGlobalConfig.instance;
-  }
-
-  setGlipToken(token: any) {
+  static setGlipToken(token: any) {
     this.put(AUTH_GLIP_TOKEN, token);
   }
 
-  getGlipToken() {
+  static getGlipToken() {
     return this.get(AUTH_GLIP_TOKEN);
   }
 
-  removeGlipToken() {
+  static removeGlipToken() {
     this.remove(AUTH_GLIP_TOKEN);
   }
 
-  setGlip2Token(token: any) {
+  static setGlip2Token(token: any) {
     this.put(AUTH_GLIP2_TOKEN, token);
   }
 
-  getGlip2Token() {
+  static getGlip2Token() {
     return this.get(AUTH_GLIP2_TOKEN);
   }
 
-  setRcToken(token: any) {
+  static setRcToken(token: any) {
     this.put(AUTH_RC_TOKEN, token);
   }
 
-  getRcToken() {
+  static getRcToken() {
     return this.get(AUTH_RC_TOKEN);
   }
 
-  removeRcToken() {
+  static removeRcToken() {
     this.remove(AUTH_RC_TOKEN);
   }
 }

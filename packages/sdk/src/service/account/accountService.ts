@@ -76,9 +76,8 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   }
 
   async refreshRCToken(): Promise<ITokenModel | null> {
-    const authConfig = AuthGlobalConfig.getInstance();
     try {
-      const oldRcToken = authConfig.getRcToken();
+      const oldRcToken = AuthGlobalConfig.getRcToken();
       const refreshResult = await refreshToken(oldRcToken);
       const newRcToken = refreshResult.expect('Failed to refresh rcToken');
       setRcToken(newRcToken);

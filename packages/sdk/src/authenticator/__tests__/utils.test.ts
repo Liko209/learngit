@@ -11,7 +11,6 @@ import {
   setGlipAccountType,
 } from '../utils';
 import { GlobalConfigService } from '../../module/config';
-import { AuthGlobalConfig } from '../../service/auth/config';
 import { NewGlobalConfig } from '../../service/config';
 
 jest.mock('../../module/config/service/GlobalConfigService');
@@ -20,8 +19,6 @@ jest.mock('../../service/auth/config');
 jest.mock('../../service/config');
 
 describe('utils method', () => {
-  const accountConfig = new AuthGlobalConfig(null);
-  AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
   const newConfig = new NewGlobalConfig(null);
   NewGlobalConfig.getInstance = jest.fn().mockReturnValue(newConfig);
 

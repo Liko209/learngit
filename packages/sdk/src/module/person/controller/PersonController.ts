@@ -79,7 +79,7 @@ class PersonController {
     headShotVersion: string,
     size: number,
   ) {
-    const token = AuthGlobalConfig.getInstance().getGlipToken();
+    const token = AuthGlobalConfig.getGlipToken();
     const glipToken = token && token.replace(/\"/g, '');
     if (headShotVersion) {
       return PersonAPI.getHeadShotUrl({

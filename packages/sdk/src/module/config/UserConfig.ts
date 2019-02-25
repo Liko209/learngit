@@ -4,14 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IUserConfigService } from '../service/IUserConfigService';
+import { IUserConfigService } from './service/IUserConfigService';
+import { UserConfigService } from './service/UserConfigService';
 
-class BaseUserConfig {
-  constructor(
-    private _configService: IUserConfigService,
-    private _userId: string,
-    private _moduleName: string,
-  ) {
+class UserConfig {
+  private _configService: IUserConfigService;
+  constructor(private _userId: string, private _moduleName: string) {
+    this._configService = UserConfigService.getInstance() as UserConfigService;
     if (this._userId) {
       this._configService.setUserId(this._userId);
     }
@@ -34,4 +33,4 @@ class BaseUserConfig {
   }
 }
 
-export { BaseUserConfig };
+export { UserConfig };

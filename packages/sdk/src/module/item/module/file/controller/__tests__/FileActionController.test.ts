@@ -173,9 +173,8 @@ describe('FileActionController', () => {
     it('should return empty when has no auth token', async () => {
       const { fileItemA } = setUpData();
       entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
-      const authConfig = new AuthGlobalConfig(null);
-      AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(authConfig);
-      jest.spyOn(authConfig, 'getGlipToken').mockReturnValue('');
+
+      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('');
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe('');
       expect(entitySourceController.get).toBeCalledWith(11);
@@ -183,9 +182,7 @@ describe('FileActionController', () => {
 
     it('should return expected url', async () => {
       const { fileItemA } = setUpData();
-      const authConfig = new AuthGlobalConfig(null);
-      AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(authConfig);
-      jest.spyOn(authConfig, 'getGlipToken').mockReturnValue('token');
+      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('token');
       entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe(

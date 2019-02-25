@@ -149,10 +149,8 @@ describe('DaoManager', () => {
 
   describe('deleteDatabase()', () => {
     it('should delete database', async () => {
-      const authConfig = new AuthGlobalConfig(null);
-      AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(authConfig);
       await daoManager.deleteDatabase();
-      expect(authConfig.removeGlipToken).toHaveBeenCalled();
+      expect(AuthGlobalConfig.removeGlipToken).toHaveBeenCalled();
       expect(DBManager.mock.instances[0].deleteDatabase).toHaveBeenCalled();
     });
   });

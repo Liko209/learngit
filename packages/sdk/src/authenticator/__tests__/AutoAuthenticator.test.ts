@@ -7,7 +7,6 @@
 import { AutoAuthenticator } from '../AutoAuthenticator';
 import { daoManager } from '../../dao';
 import { ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM } from '../constants';
-import { AUTH_GLIP_TOKEN, AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { GlobalConfigService } from '../../module/config';
 import { NewGlobalConfig } from '../../service/config/newGlobalConfig';
 import { AuthGlobalConfig } from '../../service/auth/config';
@@ -20,11 +19,9 @@ GlobalConfigService.getInstance = jest.fn();
 
 describe('AutoAuthenticator', () => {
   const autoAuthenticator = new AutoAuthenticator(daoManager);
-  const authConfig = new AuthGlobalConfig(null);
   const newConfig = new NewGlobalConfig(null);
 
   beforeEach(() => {
-    AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(authConfig);
     NewGlobalConfig.getInstance = jest.fn().mockReturnValue(newConfig);
   });
 
@@ -47,7 +44,7 @@ describe('AutoAuthenticator', () => {
       config.getAccountType = jest
         .fn()
         .mockReturnValue('ACCOUNT_TYPE_ENUM.GLIP');
-      authConfig.getGlipToken = jest.fn().mockReturnValue('glip_token');
+      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('glip_token');
       const resp = autoAuthenticator.authenticate();
       expect(resp.success).toBe(true);
     });
@@ -62,8 +59,8 @@ describe('AutoAuthenticator', () => {
       expect(resp.success).toBe(false);
     });
     it('RC user type and has token', () => {
-      authConfig.getGlipToken = jest.fn().mockReturnValue('glip_token');
-      authConfig.getRcToken = jest.fn().mockReturnValue('rc_token');
+      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('glip_token');
+      AuthGlobalConfig.getRcToken = jest.fn().mockReturnValue('rc_token');
       const resp = autoAuthenticator.authenticate();
       expect(resp.success).toBe(true);
     });

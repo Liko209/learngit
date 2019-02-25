@@ -30,9 +30,7 @@ class RCPasswordAuthenticator implements IAuthenticator {
 
     setRcToken(rcAuthData);
 
-    AuthGlobalConfig.getInstance().setGlipToken(
-      glipAuthResult.headers['x-authorization'],
-    );
+    AuthGlobalConfig.setGlipToken(glipAuthResult.headers['x-authorization']);
 
     NewGlobalConfig.getInstance().setAccountType(ACCOUNT_TYPE_ENUM.RC);
 

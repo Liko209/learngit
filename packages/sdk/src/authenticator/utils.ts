@@ -12,8 +12,7 @@ const setRcToken = async (token: ITokenModel) => {
   if (!token.timestamp) {
     token.timestamp = Date.now();
   }
-  const authConfig = AuthGlobalConfig.getInstance();
-  await authConfig.setRcToken(token);
+  await AuthGlobalConfig.setRcToken(token);
   return true;
 };
 
@@ -22,8 +21,7 @@ const setRcAccountType = async () => {
 };
 
 const setGlipToken = async (token: string) => {
-  const authConfig = AuthGlobalConfig.getInstance();
-  await authConfig.setGlipToken(token);
+  await AuthGlobalConfig.setGlipToken(token);
   return true;
 };
 

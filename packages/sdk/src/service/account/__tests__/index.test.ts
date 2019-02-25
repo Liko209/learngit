@@ -12,7 +12,6 @@ import { GlobalConfigService } from '../../../module/config/service/GlobalConfig
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { UserConfigService } from '../../../module/config';
 import { AuthGlobalConfig } from '../../../service/auth/config';
-// import { NewG }
 
 jest.mock('../../../dao');
 jest.mock('../../../module/person/dao');
@@ -79,10 +78,6 @@ describe('AccountService', () => {
   });
 
   describe('refreshRCToken()', () => {
-    const authConfig = new AuthGlobalConfig(null);
-    beforeEach(() => {
-      AuthGlobalConfig.getInstance = jest.fn().mockReturnValue(authConfig);
-    });
     it('should refresh rc roken if api return data', () => {
       const result = new ResultOk({
         timestamp: 1,
