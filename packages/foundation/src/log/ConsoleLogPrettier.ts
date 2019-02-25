@@ -8,11 +8,11 @@ const COLORS = ['#ff8800', '#516bf0', '#008b8b'];
 export class ConsoleLogPrettier implements IConsoleLogPrettier {
   prettier(logEntity: LogEntity): any[] {
     const { tags, params } = logEntity;
-    let combineParams: any[] = [];
+    let finalParams: any[] = [];
     if (tags && tags.length > 0) {
-      combineParams = [...this.addColor(tags), ...params];
+      finalParams = [...this.addColor(tags), ...finalParams];
     }
-    return [...combineParams, ...params];
+    return [...finalParams, ...params];
   }
 
   addColor(tags: string[]): string[] {

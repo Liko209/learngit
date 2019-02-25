@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable, comparer } from 'mobx';
+import { computed, observable, comparer, action } from 'mobx';
 import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/utils';
 import { Item } from 'sdk/module/item/entity';
@@ -76,6 +76,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
     return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
   }
 
+  @action
   private _getThumbsUrlWithSize = async () => {
     const itemService = ItemService.getInstance() as ItemService;
 
@@ -91,7 +92,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   get fileTypeOrUrl() {
     const file = this.file;
     const thumb = {
-      icon: file.iconType,
+      icon: file.iconType || '',
       url: '',
     };
 
@@ -102,8 +103,16 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
       } else {
         url = getThumbnailURL(file, this._size);
       }
-      if (!url && FileItemUtils.isSupportPreview(file)) {
+      if (
+        !url &&
+        FileItemUtils.isSupportPreview(file) &&
+        file.origHeight &&
+        file.origWidth
+      ) {
         url = this._thumbsUrlWithSize;
+      }
+      if (!url) {
+        url = file.versionUrl;
       }
       thumb.url = url;
     }

@@ -21,7 +21,7 @@ import CompanyService from './service/company';
 import ConfigService from './service/config';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
-import PresenceService from './service/presence';
+import { PresenceService } from './module/presence';
 import { ProfileService } from './module/profile';
 import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
@@ -34,6 +34,7 @@ import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
 import { SearchService } from './module/search';
+import { RcInfoService } from './module/rcInfo';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -64,6 +65,7 @@ const registerConfigs = {
     { name: PostService.name, value: PostService },
     { name: PermissionService.name, value: PermissionService },
     { name: GroupService.name, value: GroupService },
+    { name: RcInfoService.name, value: RcInfoService },
     {
       name: ConfigService.name,
       value: ConfigService,

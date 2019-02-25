@@ -14,7 +14,7 @@ import accountHandleData from '../account/handleData';
 import companyHandleData from '../company/handleData';
 import { CONFIG, SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
-import { presenceHandleData } from '../presence/handleData';
+import { PresenceService } from '../../module/presence';
 import { IndexDataModel } from '../../api/glip/user';
 import { mainLogger } from 'foundation';
 // import featureFlag from '../../component/featureFlag';
@@ -65,7 +65,9 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
     }), // eslint-disable-line no-underscore-dangle, no-undefined
     companyHandleData(companies),
     (ItemService.getInstance() as ItemService).handleIncomingData(items),
-    presenceHandleData(presences),
+    PresenceService.getInstance<PresenceService>().presenceHandleData(
+      presences,
+    ),
     (StateService.getInstance() as StateService).handleState(arrState),
     // featureFlag.handleData(clientConfig),
   ])

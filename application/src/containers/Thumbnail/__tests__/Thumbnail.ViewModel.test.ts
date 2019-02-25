@@ -60,7 +60,6 @@ describe('ThumbnailViewModel', () => {
       thumbnailViewModel = new ThumbnailViewModel();
 
       expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
-        url: '',
         icon: 'doc',
       });
     });
