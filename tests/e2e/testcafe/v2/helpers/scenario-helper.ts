@@ -140,7 +140,7 @@ class ScenarioHelper {
   }
 
   // glip
-  public async clearAllUMI(operator: IUser) {
+  public async clearAllUmi(operator: IUser) {
     assert(operator, "require operator");
     const glip = await this.sdkHelper.sdkManager.getGlip(operator);
     await glip.clearAllUmi(operator.rcId);
