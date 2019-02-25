@@ -86,6 +86,29 @@ class ScenarioHelper {
     // update model
     team.members.push(...data);
   }
+
+  public async createOrOpenChat(chat: IGroup, operator?: IUser) {
+    assert(chat.members, "require members");
+    operator = operator || (chat.owner|| chat.members[0]);
+    assert(operator, "require operator or owner");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    const res = await platform.createOrOpenChat({
+      members: chat.members.map(user => { return { id: user.rcId, email: user.email }; }),
+    });
+    // update model
+    chat.glipId = res.data.id;
+  }
+
+  public async createTeamsOrChats(groups: IGroup[]) {
+    for (const group of groups) {
+      if (group.type == "Team") {
+        await this.createTeam(group);
+      } else {
+        await this.createOrOpenChat(group);
+      }
+    }
+  }
+  
 }
 
 

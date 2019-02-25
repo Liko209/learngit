@@ -133,6 +133,13 @@ export class RcPlatformSdk {
     });
   }
 
+async createOrOpenChat(data) {
+  const url = `restapi/v1.0/glip/conversations`;
+  return await this.retryRequestOnException(async () => {
+    return await this.sdk.post(url, data);
+  });
+}
+
   // deprecated
   async createAndGetGroupId(data: any) {
     return await this.createGroup(data).then(res => res.data.id);

@@ -30,7 +30,7 @@ export interface IGroup {
   glipId?: string;
   owner?: IUser;
   members: IUser[];
-  type: string;
+  type: string; // Team or Chat
   privacy?: string;
   isPublic?: boolean;
   description?: string;
