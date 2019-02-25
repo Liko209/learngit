@@ -76,6 +76,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   async deleteDatabase(): Promise<void> {
+    NewGlobalConfig.getInstance().removeLastIndexTimestamp();
     AuthGlobalConfig.getInstance().removeGlipToken();
     AuthGlobalConfig.getInstance().removeRcToken();
     const userConfig = new AccountUserConfig();
