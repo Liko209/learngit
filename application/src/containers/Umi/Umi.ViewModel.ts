@@ -101,7 +101,11 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
           (this.props.type === UMI_SECTION_TYPE.ALL ||
             this.props.type === currentUnreadInfo.section)
         ) {
-          unreadInfo.unreadCount -= currentUnreadInfo.unreadCount;
+          if (currentUnreadInfo.isTeam) {
+            unreadInfo.unreadCount -= currentUnreadInfo.mentionCount;
+          } else {
+            unreadInfo.unreadCount -= currentUnreadInfo.unreadCount;
+          }
           unreadInfo.mentionCount -= currentUnreadInfo.mentionCount;
         }
       }
