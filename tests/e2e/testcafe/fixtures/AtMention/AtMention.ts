@@ -92,8 +92,6 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
     const mentionsEntry = app.homePage.messageTab.mentionsEntry;
     const mentionPage = app.homePage.messageTab.mentionPage;
     const conversationPage = app.homePage.messageTab.conversationPage;
-    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-    const teamsSection = app.homePage.messageTab.teamsSection;
 
     let chatId, groupId, teamId;
     let chatPostId, groupPostId, teamPostId;

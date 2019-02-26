@@ -19,7 +19,7 @@ const config: SubModuleConfig = {
   nav: () => ({
     url: '/phone',
     icon: 'phone',
-    title: i18next.t('Phone'),
+    title: i18next.t('telephony.Phone'),
     placement: 'top',
   }),
   loader: () =>

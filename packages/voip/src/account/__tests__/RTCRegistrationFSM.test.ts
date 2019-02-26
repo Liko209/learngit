@@ -8,9 +8,9 @@ import { IRTCRegistrationFsmDependency } from '../IRTCRegistrationFsmDependency'
 import { REGISTRATION_FSM_STATE } from '../types';
 
 class MockHandler implements IRTCRegistrationFsmDependency {
-  onRegistrationAction = jest.fn();
   onProvisionReadyAction = jest.fn();
   onReRegisterAction = jest.fn();
+  onUnregisterAction = jest.fn();
 }
 
 const provisionData = 'provisionData';
@@ -54,7 +54,6 @@ describe('RTCRegistrationFSM', () => {
       fsm.regSuccess();
       fsm.regSuccess();
       expect(fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
-      expect(mockHandler.onRegistrationAction).toHaveBeenCalled();
     });
 
     it('Should transition from failed state to ready state when regSucceed fired in ready state [JPT-529]', () => {
@@ -64,7 +63,6 @@ describe('RTCRegistrationFSM', () => {
       fsm.regFailed();
       fsm.regSuccess();
       expect(fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
-      expect(mockHandler.onRegistrationAction).toHaveBeenCalled();
     });
   });
 

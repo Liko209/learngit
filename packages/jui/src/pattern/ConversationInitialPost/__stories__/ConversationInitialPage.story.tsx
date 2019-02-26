@@ -12,23 +12,13 @@ import { storiesOf } from '@storybook/react';
 import {
   JuiConversationInitialPost,
   JuiConversationInitialPostHeader,
+  StyledTitle,
+  StyledSpan,
+  StyledTeamName,
 } from '..';
 import { JuiConversationPageInit } from '../../EmptyScreen';
 import { JuiButton } from '../../../components/Buttons';
-import { JuiLink } from '../../../components/Link';
 import image from './img/illustrator_2x.png';
-
-const name = <JuiLink>John Smith</JuiLink>;
-
-const ConversationInitialPostHeader = () => {
-  return (
-    <JuiConversationInitialPostHeader
-      name={name}
-      teamName="Global UXD"
-      description="This Team about: Mauris non tempor quam, et lacinia sapien. Mauris accumsan eros eget libero posuere vulputate."
-    />
-  );
-};
 
 const Action1 = (
   <JuiButton variant="outlined" color="primary">
@@ -60,7 +50,14 @@ const ConversationInitialPostBody = () => {
 storiesOf('Pattern', module).add('ConversationInitialPost', () => {
   return (
     <JuiConversationInitialPost>
-      <ConversationInitialPostHeader />
+      <JuiConversationInitialPostHeader>
+        <StyledTitle>
+          {'Dan Abramov'}
+          <StyledSpan>&nbsp;create a team&nbsp;</StyledSpan>
+          <StyledTeamName>RingCentral</StyledTeamName>
+          <StyledSpan>&nbsp;on 2017/1/1</StyledSpan>
+        </StyledTitle>
+      </JuiConversationInitialPostHeader>
       <ConversationInitialPostBody />
     </JuiConversationInitialPost>
   );

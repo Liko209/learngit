@@ -65,34 +65,26 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     const { rc } = Api.httpConfig;
 
     // fetch rc token
-    const rcOauthResult = await oauthTokenViaAuthCode({
+    const rcToken = await oauthTokenViaAuthCode({
       code,
       redirect_uri: window.location.origin,
     });
-    const rcToken = rcOauthResult.expect(
-      'Failed to oauth token via auth code.',
-    );
     await setRcToken(rcToken);
     await setRcAccountType();
     notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN);
 
     // fetch new code for glip token
-    const codeResult = await generateCode(rc.clientId, rc.redirectUri);
-    const codeData = codeResult.expect('Failed to generate code');
+    const codeData = await generateCode(rc.clientId, rc.redirectUri);
     const newCode = codeData.code;
 
     // fetch request params for glip token
-    const glipParamsResult = await oauthTokenViaAuthCode(
+    const glipParams = await oauthTokenViaAuthCode(
       { code: newCode, redirect_uri: 'glip://rclogin' },
       { Authorization: `Basic ${btoa(`${rc.clientId}:${rc.clientSecret}`)}` },
     );
-    const glipParams = glipParamsResult.expect(
-      'Failed to oauth token via auth code.',
-    );
     // fetch glip token
-    const glipLoginResult = await loginGlip(glipParams);
-    glipLoginResult.expect('Failed to login Glip.');
-    const glipToken = glipLoginResult.headers['x-authorization'];
+    const glipLoginResponse = await loginGlip(glipParams);
+    const glipToken = glipLoginResponse.headers['x-authorization'];
     await setGlipToken(glipToken);
 
     return {

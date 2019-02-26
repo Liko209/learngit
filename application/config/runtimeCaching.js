@@ -33,6 +33,11 @@ module.exports = [
   // }
   {
     urlPattern: new RegExp("https://i.icomoon.io/public/6483cc0f53/Jupiter/*"),
-    handler: "cacheFirst"
+    handler: "staleWhileRevalidate",
+    options: {
+      cacheableResponse: {
+        statuses: [0, 200]
+      }
+    }
   }
 ];

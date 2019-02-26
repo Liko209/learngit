@@ -3,8 +3,7 @@
  * @Date: 2018-09-20 14:56:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { err, ok } from 'foundation';
-import { GroupService } from 'sdk/module/group';
+import { GroupService, TeamSetting } from 'sdk/module/group';
 import {
   JNetworkError,
   ERROR_CODES_NETWORK,
@@ -15,17 +14,13 @@ import {
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { GlobalConfigService } from 'sdk/module/config';
-import { AccountGlobalConfig } from 'sdk/service/account/config';
+import { UserConfig } from 'sdk/service/account';
 
 jest.mock('sdk/service/account');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
 jest.mock('sdk/api');
-
-jest.mock('sdk/module/config');
-GlobalConfigService.getInstance = jest.fn();
 
 const groupService = {
   createTeam() {},
@@ -38,9 +33,6 @@ function getNewJServerError(code: string, message: string = '') {
   return new JServerError(code, message);
 }
 describe('CreateTeamVM', () => {
-  const accountConfig = new AccountGlobalConfig(null);
-  const creatorId = 1;
-
   beforeAll(() => {
     jest.resetAllMocks();
     jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
@@ -49,21 +41,23 @@ describe('CreateTeamVM', () => {
       set: jest.fn(),
     };
     jest.spyOn(storeManager, 'getGlobalStore').mockReturnValue(gs);
-    AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
-    accountConfig.getCurrentUserId = jest.fn().mockReturnValue(creatorId);
   });
 
   it('create team success', async () => {
-    groupService.createTeam = jest.fn().mockImplementation(() => ok(''));
+    const creatorId = 1;
+    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
+    groupService.createTeam = jest.fn().mockImplementation(() => '');
 
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
-    const options = {
+    const options: TeamSetting = {
       name,
       description,
       isPublic: true,
-      canPost: true,
+      permissionFlags: {
+        TEAM_POST: true,
+      },
     };
     await createTeamVM.create(memberIds, options);
     expect(groupService.createTeam).toHaveBeenCalledWith(
@@ -74,49 +68,50 @@ describe('CreateTeamVM', () => {
   });
 
   it('create team success handle error', async () => {
+    const error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
     const creatorId = 1;
-    groupService.createTeam = jest
-      .fn()
-      .mockResolvedValue(
-        err(getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN)),
-      );
+    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
+    groupService.createTeam = jest.fn().mockRejectedValue(error);
 
     jest.spyOn(createTeamVM, 'createErrorHandler');
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
-    const options = {
+    const options: TeamSetting = {
       name,
       description,
       isPublic: true,
-      canPost: true,
+      permissionFlags: {
+        TEAM_POST: true,
+      },
     };
-    const result = await createTeamVM.create(memberIds, options);
-    if (result.isErr()) {
-      expect(result.error.code).toBe(ERROR_CODES_SERVER.ALREADY_TAKEN);
-    } else {
-      expect(result).toBe(false);
-    }
+    expect(await createTeamVM.create(memberIds, options)).toEqual(null);
   });
 
   it('create team server error', async () => {
+    const error = new JNetworkError(
+      ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+      '',
+    );
     const creatorId = 1;
-    groupService.createTeam = jest
-      .fn()
-      .mockResolvedValueOnce(
-        err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
-      );
+    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
+    groupService.createTeam = jest.fn().mockRejectedValueOnce(error);
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
-    const options = {
+    const options: TeamSetting = {
       name,
       description,
       isPublic: true,
-      canPost: true,
+      permissionFlags: {
+        TEAM_POST: true,
+      },
     };
-    const result = await createTeamVM.create(memberIds, options);
-    expect(result.isErr()).toBe(true);
+    try {
+      expect(await createTeamVM.create(memberIds, options)).toEqual(null);
+    } catch (e) {
+      expect(true).toBeTruthy();
+    }
   });
 
   it('getGlobalValue', () => {
@@ -160,7 +155,7 @@ describe('CreateTeamVM', () => {
   it('createErrorHandle()', () => {
     let error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
     createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.errorMsg).toBe('alreadyTaken');
+    expect(createTeamVM.errorMsg).toBe('people.prompt.alreadyTaken');
     expect(createTeamVM.nameError).toBe(true);
 
     error = getNewJServerError(
@@ -168,7 +163,7 @@ describe('CreateTeamVM', () => {
       'This is not a valid email address: q@qq.com.',
     );
     createTeamVM.createErrorHandler(error);
-    expect(createTeamVM.emailErrorMsg).toBe('Invalid Email');
+    expect(createTeamVM.emailErrorMsg).toBe('people.prompt.InvalidEmail');
     expect(createTeamVM.emailError).toBe(true);
   });
 });

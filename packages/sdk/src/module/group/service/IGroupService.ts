@@ -1,4 +1,3 @@
-import { Result } from 'foundation';
 import _ from 'lodash';
 
 import { QUERY_DIRECTION } from '../../../dao/constants';
@@ -26,8 +25,8 @@ interface IGroupService {
   removeTeamMembers(members: number[], teamId: number): Promise<void>;
 
   isCurrentUserHasPermission(
-    teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
+    teamPermissionParams: TeamPermissionParams,
   ): boolean;
 
   isTeamAdmin(personId: number, permission?: TeamPermission): boolean;
@@ -67,11 +66,7 @@ interface IGroupService {
 
   getLocalGroup(personIds: number[]): Promise<Group | null>;
 
-  getGroupByPersonId(personId: number): Promise<Result<Group>>;
-
-  getOrCreateGroupByMemberList(members: number[]): Promise<Result<Group>>;
-
-  requestRemoteGroupByMemberList(members: number[]): Promise<Result<Group>>;
+  getOrCreateGroupByMemberList(members: number[]): Promise<Group>;
 
   pinPost(postId: number, groupId: number, toPin: boolean): Promise<void>;
 

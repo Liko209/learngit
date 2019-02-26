@@ -247,7 +247,10 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     try {
       this._loadStatus.loading = true;
       await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
-      Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
+      Object.assign(this._loadStatus, {
+        firstLoaded: true,
+        loading: false,
+      });
     } catch (e) {
       Object.assign(this._loadStatus, { loading: false });
     }
@@ -265,6 +268,16 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get ids() {
     return this._sortableDataHandler.sortableListStore.getIds;
+  }
+
+  @computed
+  get width() {
+    return this.props.width;
+  }
+
+  @computed
+  get height() {
+    return this.props.height;
   }
 }
 

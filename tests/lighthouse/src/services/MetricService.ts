@@ -204,6 +204,9 @@ class MetriceService {
         min = 60000000;
         arr = [];
         for (let t of apiTimes) {
+          if (!t) {
+            continue;
+          }
           costTime = t.endTime - t.startTime;
           sum += costTime;
           min = costTime > min ? min : costTime;

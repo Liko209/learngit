@@ -16,7 +16,6 @@ import {
   RTCSipProvisionInfo,
   RTC_PROV_EVENT,
 } from '../account/types';
-import { v4 as uuid } from 'uuid';
 import { RTC_ACCOUNT_STATE, RTCCallOptions } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -34,6 +33,9 @@ const options = {
     enabled: true,
   },
   logLevel: 10,
+  maxReconnectionAttempts: '0',
+  reconnectionTimeout: '5',
+  connectionTimeout: '5',
 };
 
 const LOG_TAG = 'RTCAccount';
@@ -123,6 +125,10 @@ class RTCAccount implements IRTCAccount {
     return this._callManager.getCallByUuid(uuid);
   }
 
+  logout() {
+    this._regManager.logout();
+  }
+
   createOutgoingCallSession(toNum: string, options: RTCCallOptions): any {
     return this._regManager.createOutgoingCallSession(toNum, options);
   }
@@ -154,6 +160,11 @@ class RTCAccount implements IRTCAccount {
         this._onAccountStateChanged(state);
       },
     );
+
+    this._regManager.on(REGISTRATION_EVENT.LOGOUT_ACTION, () => {
+      this._onLogoutAction();
+    });
+
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
     });
@@ -175,6 +186,11 @@ class RTCAccount implements IRTCAccount {
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
     }
+  }
+
+  private _onLogoutAction() {
+    this._callManager.endAllCalls();
+    this._provManager.clearProvInfo();
   }
 
   private _onMakeOutgoingCall(
@@ -217,15 +233,7 @@ class RTCAccount implements IRTCAccount {
     if (!this._regManager) {
       return;
     }
-    const info = {
-      appKey: options.appKey,
-      appName: options.appName,
-      appVersion: options.appVersion,
-      endPointId: uuid(),
-      audioHelper: options.audioHelper,
-      logLevel: options.logLevel,
-    };
-    this._regManager.provisionReady(sipProv, info);
+    this._regManager.provisionReady(sipProv, options);
   }
 
   private _onNetworkChange(params: any) {

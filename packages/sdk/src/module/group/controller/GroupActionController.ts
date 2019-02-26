@@ -18,8 +18,8 @@ import { Raw } from '../../../framework/model';
 import { GroupApiType } from '../../../models';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import PostService from '../../../service/post';
-import ProfileService from '../../../service/profile';
+import { ProfileService } from '../../profile';
+import { PostService } from '../../post';
 import { transform } from '../../../service/utils';
 import { GroupDao } from '../dao';
 import { Group } from '../entity';
@@ -270,8 +270,8 @@ export class GroupActionController {
         },
       },
     };
-    const apiResult = await GroupAPI.createTeam(team);
-    return await this.handleRawGroup(apiResult.expect('create team fail'));
+    const result = await GroupAPI.createTeam(team);
+    return await this.handleRawGroup(result);
   }
 
   async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
@@ -338,7 +338,7 @@ export class GroupActionController {
     }
   }
 
-  async deleteAllTeamInformation(ids: number[]) {
+  deleteAllTeamInformation = async (ids: number[]) => {
     const postService: PostService = PostService.getInstance();
     await postService.deletePostsByGroupIds(ids, true);
     await this.groupService.deleteGroupsConfig(ids);

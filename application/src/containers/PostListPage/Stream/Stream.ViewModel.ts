@@ -13,7 +13,8 @@ import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
 import { Post } from 'sdk/module/post/entity';
-import { EVENT_TYPES, ENTITY, PostService } from 'sdk/service';
+import { EVENT_TYPES, ENTITY } from 'sdk/service';
+import { PostService } from 'sdk/module/post';
 import { transform2Map, getEntity } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store/base/StoreManager';
@@ -32,7 +33,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       id: post.id,
       sortValue: -post.id,
     }),
-    pageSize: 50,
+    pageSize: 20,
     hasMoreUp: false,
     hasMoreDown: true,
     entityName: ENTITY_NAME.POST,
@@ -56,7 +57,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     pageSize: number,
     anchor?: ISortableModel<Post>,
   ) => {
-    const postService: PostService = PostService.getInstance<PostService>();
+    const postService: PostService = PostService.getInstance();
     let ids;
     let hasMore;
     if (anchor) {
@@ -110,7 +111,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     // when comp did mount
     if (!this._postIds.length && postIds.length) {
       this._postIds = postIds;
-      this.fetchInitialPosts();
+      await this.fetchInitialPosts();
       return;
     }
     // when comp did update

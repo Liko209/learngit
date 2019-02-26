@@ -9,7 +9,6 @@ import { puppeteerUtils } from "../utils/PuppeteerUtils";
 import { TaskDto, SceneDto } from "../models";
 import { fileService } from "../services/FileService";
 import { metriceService } from "../services/MetricService";
-import { mockHelper } from "../mock";
 import * as reportGenerater from "lighthouse/lighthouse-core/report/report-generator";
 
 const EXTENSION_PATH = `${process.cwd()}/extension`;
@@ -18,6 +17,7 @@ type Timing = { startTime: Date; endTime: Date; total: number };
 const RETRY_COUNT = 3;
 
 class Scene {
+  protected browser;
   protected url: string;
   protected config: SceneConfig;
   protected timing: Timing;
@@ -40,6 +40,8 @@ class Scene {
     for (let i = 0; i < RETRY_COUNT; i++) {
       try {
         const startTime = new Date();
+
+        await this.launchBrowser();
 
         await this.preHandle();
 
@@ -70,6 +72,16 @@ class Scene {
     return false;
   }
 
+  async launchBrowser() {
+    this.browser = await puppeteerUtils.launch({
+      args: [
+        `--disable-extensions-except=${EXTENSION_PATH}`,
+        `--load-extension=${EXTENSION_PATH}`,
+        "--enable-experimental-extension-apis"
+      ]
+    });
+  }
+
   /**
    * @description: save performance metrics into disk. don't override this method
    */
@@ -91,8 +103,6 @@ class Scene {
    */
   async preHandle() {
     this.config = new SceneConfig();
-
-    mockHelper.open();
   }
 
   async clearCustomGathererWraning() {
@@ -134,19 +144,11 @@ class Scene {
    * @description: collect performance metrics
    */
   async collectData() {
-    const browser = await puppeteerUtils.launch({
-      args: [
-        `--disable-extensions-except=${EXTENSION_PATH}`,
-        `--load-extension=${EXTENSION_PATH}`,
-        "--enable-experimental-extension-apis"
-      ]
-    });
-
     try {
       const { lhr, artifacts } = await lighthouse(
         this.finallyUrl(),
         {
-          port: new URL(browser.wsEndpoint()).port,
+          port: new URL(this.browser.wsEndpoint()).port,
           logLevel: "info"
         },
         this.config.toLightHouseConfig()
@@ -163,7 +165,7 @@ class Scene {
     } catch (err) {
       this.logger.error(err);
     } finally {
-      await browser.close();
+      await puppeteerUtils.close(this.browser);
     }
   }
 

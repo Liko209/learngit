@@ -39,7 +39,10 @@ enum REGISTRATION_EVENT {
   UA_REGISTER_FAILED = 'uaRegisterFailed',
   UA_REGISTER_TIMEOUT = 'uaRegisterTimeout',
   UA_UNREGISTERED = 'uaUnregistered',
+  UA_TRANSPORT_ERROR = 'uaTransportError',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
+  LOGOUT = 'logout',
+  LOGOUT_ACTION = 'logoutAction',
   MAKE_OUTGOING_CALL = 'makeOutgoingCall',
   RECEIVE_INCOMING_INVITE = 'receiveIncomingInvite',
 }

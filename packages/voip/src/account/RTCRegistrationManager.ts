@@ -35,14 +35,14 @@ class RTCRegistrationManager extends EventEmitter2
   private _retryTimer: NodeJS.Timeout | null = null;
   private _retryInterval: number = kRTCRegisterRetryTimerMin;
 
-  public onRegistrationAction(): void {}
-
   onNetworkChangeToOnlineAction(): void {
     this.reRegister();
   }
 
   public onReRegisterAction(): void {
-    this._userAgent.reRegister();
+    if (this._userAgent) {
+      this._userAgent.reRegister();
+    }
   }
 
   public onProvisionReadyAction(
@@ -51,6 +51,13 @@ class RTCRegistrationManager extends EventEmitter2
   ): void {
     this._userAgent = new RTCSipUserAgent(provisionData, options);
     this._initUserAgentListener();
+  }
+
+  public onUnregisterAction() {
+    if (this._userAgent) {
+      this._userAgent.unregister();
+    }
+    this.emit(REGISTRATION_EVENT.LOGOUT_ACTION);
   }
 
   public onMakeOutgoingCallAction(
@@ -139,6 +146,9 @@ class RTCRegistrationManager extends EventEmitter2
     this._userAgent.on(UA_EVENT.REG_UNREGISTER, () => {
       this._onUADeRegister();
     });
+    this._userAgent.on(UA_EVENT.TRANSPORT_ERROR, () => {
+      this._onUATransportError();
+    });
   }
 
   public provisionReady(provisionData: any, provisionOptions: any) {
@@ -202,6 +212,17 @@ class RTCRegistrationManager extends EventEmitter2
     return this._userAgent.makeCall(phoneNumber, options);
   }
 
+  public logout() {
+    this._eventQueue.push(
+      {
+        name: REGISTRATION_EVENT.LOGOUT,
+      },
+      () => {
+        this._fsm.unregister();
+      },
+    );
+  }
+
   private _onUARegSuccess() {
     this._eventQueue.push(
       { name: REGISTRATION_EVENT.UA_REGISTER_SUCCESS },
@@ -233,6 +254,15 @@ class RTCRegistrationManager extends EventEmitter2
         },
       );
     }
+  }
+
+  private _onUATransportError() {
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.UA_TRANSPORT_ERROR },
+      () => {
+        this._fsm.transportError();
+      },
+    );
   }
 
   private _onUAReceiveInvite(session: any) {

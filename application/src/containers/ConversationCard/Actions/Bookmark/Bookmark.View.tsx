@@ -21,11 +21,12 @@ type Props = BookmarkViewProps & WithNamespaces;
 class BookmarkViewComponent extends Component<Props> {
   private _handleClick = async () => {
     const { isBookmark, bookmark } = this.props;
-    const result = await bookmark(!isBookmark);
-    if (result.isFailed) {
+    try {
+      await bookmark(!isBookmark);
+    } catch (error) {
       const message = isBookmark
-        ? 'SorryWeWereNotAbleToRemoveYourBookmark'
-        : 'SorryWeWereNotAbleToBookmarkThisMessage';
+        ? 'message.prompt.SorryWeWereNotAbleToRemoveYourBookmark'
+        : 'message.prompt.SorryWeWereNotAbleToBookmarkThisMessage';
       Notification.flashToast({
         message,
         type: ToastType.ERROR,
@@ -41,7 +42,11 @@ class BookmarkViewComponent extends Component<Props> {
     return (
       <JuiIconButton
         size="small"
-        tooltipTitle={isBookmark ? t('Remove bookmark') : t('Bookmark')}
+        tooltipTitle={
+          isBookmark
+            ? t('message.action.removeBookmark')
+            : t('message.action.bookmark')
+        }
         color={isBookmark ? 'primary' : undefined}
         onClick={this._handleClick}
         variant="plain"

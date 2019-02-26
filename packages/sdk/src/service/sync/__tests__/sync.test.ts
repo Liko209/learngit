@@ -1,7 +1,6 @@
 import { daoManager } from '../../../dao';
+import ConfigDao from '../../../dao/config';
 import handleData from '../handleData';
-import { GlobalConfigService } from '../../../module/config';
-import { NewGlobalConfig } from '../../../service/config/newGlobalConfig';
 
 import {
   fetchIndexData,
@@ -13,20 +12,10 @@ jest.mock('../../../dao');
 jest.mock('../../../dao/config');
 jest.mock('../handleData');
 jest.mock('../fetchIndexData');
-jest.mock('../../../module/config');
-GlobalConfigService.getInstance = jest.fn();
-jest.mock('../../../service/config/newGlobalConfig');
 
 import SyncService from '..';
-import { ApiResultOk } from '../../../api/ApiResult';
 describe('SyncService ', () => {
   const syncService = new SyncService();
-  const globalConfig = new NewGlobalConfig(null);
-
-  beforeEach(() => {
-    NewGlobalConfig.getInstance = jest.fn().mockReturnValue(globalConfig);
-  });
-
   describe('syncData', () => {
     beforeAll(() => {
       daoManager.getKVDao.mockImplementation(() => ({
@@ -39,6 +28,10 @@ describe('SyncService ', () => {
       Object.assign(syncService, {
         isLoading: false,
       });
+
+      daoManager.getKVDao.mockImplementation(() => ({
+        get: jest.fn().mockReturnValue(null),
+      }));
       const spy = jest.spyOn(syncService, '_firstLogin');
       await syncService.syncData();
       expect(spy).toBeCalled();
@@ -49,6 +42,9 @@ describe('SyncService ', () => {
         isLoading: true,
       });
 
+      daoManager.getKVDao.mockImplementation(() => ({
+        get: jest.fn().mockReturnValue(null),
+      }));
       const spy = jest.spyOn(syncService, '_firstLogin');
       await syncService.syncData();
       expect(spy).not.toBeCalled();
@@ -58,8 +54,10 @@ describe('SyncService ', () => {
       Object.assign(syncService, {
         isLoading: false,
       });
-      fetchIndexData.mockResolvedValueOnce(new ApiResultOk({}, 200, {}));
-      globalConfig.getLastIndexTimestamp = jest.fn().mockReturnValue(1);
+      fetchIndexData.mockResolvedValueOnce({});
+      daoManager.getKVDao.mockImplementation(() => ({
+        get: jest.fn().mockReturnValue(1),
+      }));
       const spy = jest.spyOn(syncService, '_syncIndexData');
       await syncService.syncData();
       expect(spy).toBeCalled();

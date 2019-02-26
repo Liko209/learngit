@@ -21,8 +21,8 @@ class HomeService {
     names.forEach(name => this.registerSubModule(name));
   }
 
-  setDefaultRouterPath(path: string) {
-    this._homeStore.setDefaultRouterPath(path);
+  setDefaultRouterPaths(paths: string[]) {
+    this._homeStore.setDefaultRouterPaths(paths);
   }
 
   private _registerSubModule(subModuleConfig: SubModuleConfig) {

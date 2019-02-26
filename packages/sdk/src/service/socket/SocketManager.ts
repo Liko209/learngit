@@ -37,16 +37,16 @@ export class SocketManager {
     return SocketManager.instance;
   }
 
-  public info(message: string) {
-    mainLogger.info(`${this._logPrefix} ${message}`);
+  public info(...messages: any) {
+    mainLogger.tags(this._logPrefix).info(...messages);
   }
 
-  public warn(message: string) {
-    mainLogger.warn(`${this._logPrefix} ${message}`);
+  public warn(...messages: any) {
+    mainLogger.tags(this._logPrefix).warn(...messages);
   }
 
-  public error(message: string) {
-    mainLogger.error(`${this._logPrefix} ${message}`);
+  public error(...messages: any) {
+    mainLogger.tags(this._logPrefix).error(...messages);
   }
 
   public onPowerMonitorEvent(actionName: string) {

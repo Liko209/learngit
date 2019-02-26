@@ -18,7 +18,7 @@ jest.mock('../../../module/config');
 
 GlobalConfigService.getInstance = jest.fn();
 
-jest.mock('foundation');
+jest.mock('foundation/src/network/client/socket');
 jest.mock('../../../dao');
 const mockedSetReconnection = jest.fn((bOn: boolean) => {});
 SocketFSM.prototype = {

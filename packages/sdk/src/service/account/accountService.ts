@@ -5,45 +5,43 @@
  */
 import { mainLogger } from 'foundation';
 import BaseService from '../../service/BaseService';
-import { daoManager } from '../../dao';
+import {
+  ACCOUNT_USER_ID,
+  ACCOUNT_COMPANY_ID,
+  UNREAD_TOGGLE_ON,
+} from '../../dao/account/constants';
+import { daoManager, AuthDao } from '../../dao';
+import AccountDao from '../../dao/account';
 import { PersonDao } from '../../module/person/dao';
+import ConfigDao from '../../dao/config';
+import { CLIENT_ID } from '../../dao/config/constants';
 import { UserInfo } from '../../models';
 import { generateUUID } from '../../utils/mathUtils';
 import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
 import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
-import ProfileService from '../profile/index';
+import { ProfileService } from '../../module/profile';
 import { setRcToken } from '../../authenticator';
 import { ERROR_CODES_SDK } from '../../error';
-import { AccountGlobalConfig, AccountUserConfig } from './config';
-import { AuthGlobalConfig } from '../../service/auth/config';
-import { NewGlobalConfig } from '../../service/config';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
-
 class AccountService extends BaseService implements ITokenRefreshDelegate {
   static serviceName = 'AccountService';
-  private _userConfig: AccountUserConfig;
 
+  private accountDao: AccountDao;
   constructor() {
     super();
-    this._userConfig = new AccountUserConfig();
-    const userId = AccountGlobalConfig.getInstance().getCurrentUserId();
-    if (userId) {
-      this._userConfig.setUserId(userId);
-    }
+    this.accountDao = daoManager.getKVDao(AccountDao);
   }
 
   isAccountReady(): boolean {
-    return !!AccountGlobalConfig.getInstance().getCurrentUserId();
+    return !!this.accountDao.get(ACCOUNT_USER_ID);
   }
 
   async getCurrentUserInfo(): Promise<UserInfo | {}> {
-    const userId = Number(AccountGlobalConfig.getInstance().getCurrentUserId());
-    const company_id = Number(
-      AccountGlobalConfig.getInstance().getCurrentCompanyId(),
-    );
+    const userId = Number(this.accountDao.get(ACCOUNT_USER_ID));
+    const company_id = Number(this.accountDao.get(ACCOUNT_COMPANY_ID));
     if (!userId) return {};
     const personDao = daoManager.getDao(PersonDao);
     const personInfo = await personDao.get(userId);
@@ -57,7 +55,7 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   }
 
   async getUserEmail(): Promise<string> {
-    const userId = Number(AccountGlobalConfig.getInstance().getCurrentUserId());
+    const userId = Number(this.accountDao.get(ACCOUNT_USER_ID));
     if (!userId) return '';
     const personDao = daoManager.getDao(PersonDao);
     const personInfo = await personDao.get(userId);
@@ -66,20 +64,21 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   }
 
   getClientId(): string {
-    let id = NewGlobalConfig.getInstance().getClientId();
+    const configDao = daoManager.getKVDao(ConfigDao);
+    let id = configDao.get(CLIENT_ID);
     if (id) {
       return id;
     }
     id = generateUUID();
-    NewGlobalConfig.getInstance().setClientId(id);
+    configDao.put(CLIENT_ID, id);
     return id;
   }
 
   async refreshRCToken(): Promise<ITokenModel | null> {
+    const authDao = daoManager.getKVDao(AuthDao);
     try {
-      const oldRcToken = AuthGlobalConfig.getRcToken();
-      const refreshResult = await refreshToken(oldRcToken);
-      const newRcToken = refreshResult.expect('Failed to refresh rcToken');
+      const oldRcToken = authDao.get(AUTH_RC_TOKEN);
+      const newRcToken = await refreshToken(oldRcToken);
       setRcToken(newRcToken);
       notificationCenter.emitKVChange(AUTH_RC_TOKEN, newRcToken);
       return newRcToken;
@@ -91,17 +90,21 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
 
   async onBoardingPreparation() {
     const profileService: ProfileService = ProfileService.getInstance();
-    await profileService.markMeConversationAsFav();
+    await profileService.markMeConversationAsFav().catch((error: Error) => {
+      mainLogger
+        .tags('AccountService')
+        .info('markMeConversationAsFav fail:', error);
+    });
   }
 
   getUnreadToggleSetting() {
     return (
-      this._userConfig.getUnreadToggleSetting() || DEFAULT_UNREAD_TOGGLE_SETTING
+      this.accountDao.get(UNREAD_TOGGLE_ON) || DEFAULT_UNREAD_TOGGLE_SETTING
     );
   }
 
   setUnreadToggleSetting(value: boolean) {
-    this._userConfig.setUnreadToggleSetting(value);
+    this.accountDao.put(UNREAD_TOGGLE_ON, value);
   }
 }
 

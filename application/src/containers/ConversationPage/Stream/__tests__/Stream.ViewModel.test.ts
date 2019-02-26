@@ -5,14 +5,13 @@
  */
 
 /// <reference path="../../../../../__tests__/types.d.ts" />
-import { PostService, notificationCenter } from 'sdk/service';
+import { notificationCenter } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { StreamViewModel } from '../Stream.ViewModel';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import _ from 'lodash';
-import { id } from 'inversify';
 import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import * as errorUtil from '@/utils/error';
@@ -23,17 +22,15 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { ItemService } from 'sdk/module/item';
 import * as SCM from '../StreamController';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { StreamProps, StreamItemType } from '../types';
 
 jest.mock('sdk/module/item');
-jest.mock('sdk/service/post');
+jest.mock('sdk/module/post');
 jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
-const postService = {
-  getPostsByGroupId: jest.fn(),
-};
+const postService = new PostService();
 
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
@@ -55,7 +52,7 @@ describe('StreamViewModel', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     itemService = new ItemService();
-    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
@@ -346,7 +343,7 @@ describe('StreamViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
-        message: 'SorryWeWereNotAbleToLoadOlderMessages',
+        message: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });
@@ -430,10 +427,38 @@ describe('StreamViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
-        message: 'SorryWeWereNotAbleToLoadNewerMessages',
+        message: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });
+    });
+
+    it('should not show toast multiple times if calling error catched frequently', async () => {
+      const fetchData = jest.fn(() =>
+        Promise.reject(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.GENERAL,
+            'Backend error',
+          ),
+        ),
+      );
+      const hasMore = jest.fn().mockReturnValue(true);
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      Notification.flashToast = jest.fn();
+
+      await vm.loadNextPosts();
+      await vm.loadNextPosts();
+      await vm.loadNextPosts();
+
+      expect(Notification.flashToast).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -17,6 +17,7 @@ enum REGISTRATION_FSM_EVENT {
   REG_TIMEOUT = 'regTimeout',
   REG_FAILED = 'regFailed',
   UNREGISTER = 'unregister',
+  TRARNSPORT_ERROR = 'transportError',
   RE_REGISTER = 'reRegister',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
   MAKE_OUTGOING_CALL = 'makeOutgoingCall',
@@ -123,19 +124,32 @@ class RTCRegistrationFSM extends StateMachine {
           ],
           to: REGISTRATION_FSM_STATE.FAILURE,
         },
+        {
+          name: REGISTRATION_FSM_EVENT.TRARNSPORT_ERROR,
+          from: [
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.READY,
+          ],
+          to: REGISTRATION_FSM_STATE.FAILURE,
+        },
         // ready
         {
           name: REGISTRATION_FSM_EVENT.UNREGISTER,
-          from: REGISTRATION_FSM_STATE.READY,
-          to: REGISTRATION_FSM_STATE.UNREGISTERED,
+          from: [
+            REGISTRATION_FSM_STATE.READY,
+            REGISTRATION_FSM_STATE.FAILURE,
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.IDLE,
+          ],
+          to: () => {
+            dependency.onUnregisterAction();
+            return REGISTRATION_FSM_STATE.UNREGISTERED;
+          },
         },
         {
           name: REGISTRATION_FSM_EVENT.REG_SUCCEED,
           from: [REGISTRATION_FSM_STATE.READY, REGISTRATION_FSM_STATE.FAILURE],
-          to: () => {
-            dependency.onRegistrationAction();
-            return REGISTRATION_FSM_STATE.READY;
-          },
+          to: REGISTRATION_FSM_STATE.READY,
         },
       ],
       methods: {

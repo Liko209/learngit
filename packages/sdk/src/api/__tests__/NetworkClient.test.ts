@@ -15,7 +15,6 @@ import {
 } from 'foundation';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
-import { ApiResultOk, ApiResultErr } from '../ApiResult';
 import { RequestHolder } from '../glip/item';
 
 // Using manual mock to improve mock priority.
@@ -224,10 +223,8 @@ describe('NetworkClient', () => {
       expect(mockRequest1.callback).not.toBeUndefined();
       expect(mockRequest2.callback).toBeUndefined();
       expect(networkManager.addApiRequest).toHaveBeenCalledTimes(1);
-      expect(response1).toHaveProperty('status', 200);
-      expect(response1).toHaveProperty('data', { a: 1 });
-      expect(response2).toHaveProperty('status', 200);
-      expect(response2).toHaveProperty('data', { a: 1 });
+      expect(response1).toEqual({ a: 1 });
+      expect(response2).toEqual({ a: 1 });
     });
   });
 

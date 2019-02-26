@@ -33,6 +33,14 @@ export class TestEntitySourceController<T extends IdModel = IdModel>
     .fn()
     .mockImplementation(() => this.entityCache.getEntityName());
 
+  getEntities = jest
+    .fn()
+    .mockImplementation(
+      async (filterFunc?: ((entity: T) => boolean) | undefined) => {
+        return await this.entityCache.getEntities(filterFunc);
+      },
+    );
+
   getAll = jest
     .fn()
     .mockImplementation(async () => await this.entityCache.getAll());

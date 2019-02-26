@@ -33,7 +33,7 @@ class TeamPermissionController {
     teamPermissionParams: TeamPermissionParams,
     userId: number,
   ): boolean {
-    return (
+    return !!(
       teamPermissionParams.members &&
       teamPermissionParams.members.length === 1 &&
       userId === teamPermissionParams.members[0]
@@ -46,7 +46,6 @@ class TeamPermissionController {
     const userId = AccountGlobalConfig.getInstance().getCurrentUserId();
 
     const {
-      members = [],
       permissions: {
         admin: {
           uids: adminUids = [],
@@ -55,7 +54,6 @@ class TeamPermissionController {
         user: { level: userLevel = DEFAULT_USER_PERMISSION_LEVEL } = {},
       } = {},
     } = teamPermissionParams;
-    if (!members.includes(userId)) return 0;
 
     if (!teamPermissionParams.is_team) {
       if (this.isSelfGroup(teamPermissionParams, userId)) {
@@ -91,9 +89,18 @@ class TeamPermissionController {
   }
 
   isCurrentUserHasPermission(
-    teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
+    teamPermissionParams: TeamPermissionParams,
   ): boolean {
+    if (
+      !teamPermissionParams.members &&
+      !teamPermissionParams.guest_user_company_ids &&
+      !teamPermissionParams.is_team &&
+      !teamPermissionParams.permissions
+    ) {
+      const defaultPermissions = this._permissionLevelToArray(PERMISSION_ENUM.TEAM_POST);
+      return defaultPermissions.includes(type);
+    }
     const permissionList = this.getCurrentUserPermissions(teamPermissionParams);
     return permissionList.includes(type);
   }
@@ -110,8 +117,8 @@ class TeamPermissionController {
 
   hasTeamAdminPermission(teamPermissionParams: TeamPermissionParams): boolean {
     return this.isCurrentUserHasPermission(
-      teamPermissionParams,
       PERMISSION_ENUM.TEAM_ADMIN,
+      teamPermissionParams,
     );
   }
 

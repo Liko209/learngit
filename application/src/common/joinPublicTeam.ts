@@ -26,7 +26,7 @@ const joinHander = async (conversationId: number) => {
     const e = error;
     if (errorHelper.isAuthenticationError(e)) {
       Notification.flashToast({
-        message: 'JoinTeamNotAuthorizedError',
+        message: 'people.prompt.JoinTeamNotAuthorizedError',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
@@ -40,10 +40,12 @@ const joinHander = async (conversationId: number) => {
 const joinTeam = (item: GroupModel) => (e?: React.MouseEvent<HTMLElement>) => {
   e && e.stopPropagation();
   Dialog.confirm({
-    title: i18next.t('joinTeamTitle'),
-    content: i18next.t('joinTeamContent', { teamName: item.displayName }),
-    okText: i18next.t('join'),
-    cancelText: i18next.t('Cancel'),
+    title: i18next.t('people.team.joinTeamTitle'),
+    content: i18next.t('people.team.joinTeamContent', {
+      teamName: item.displayName,
+    }),
+    okText: i18next.t('people.team.joinTeamSubmit'),
+    cancelText: i18next.t('common.dialog.cancel'),
     onOK: () =>
       goToConversation({
         id: item.id,

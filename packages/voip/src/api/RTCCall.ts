@@ -22,10 +22,20 @@ import {
   RTCCallActionSuccessOptions,
 } from './types';
 import { v4 as uuid } from 'uuid';
+import { RC_SIP_HEADER_NAME } from '../signaling/types';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
+
+const LOG_TAG = 'RTCCall';
 
 enum SDH_DIRECTION {
   SEND_ONLY = 'sendonly',
   SEND_RECV = 'sendrecv',
+}
+
+enum RECORD_STATE {
+  IDLE = 'idle',
+  RECORDING = 'recording',
+  RECORD_IN_PROGRESS = 'recordInProgress',
 }
 
 class RTCCall {
@@ -36,13 +46,15 @@ class RTCCall {
     toName: '',
     toNum: '',
     uuid: '',
+    partyId: '',
+    sessionId: '',
   };
   private _callSession: IRTCCallSession;
   private _fsm: RTCCallFsm;
   private _account: IRTCAccount;
   private _delegate: IRTCCallDelegate;
   private _isIncomingCall: boolean;
-  private _isRecording: boolean = false;
+  private _recordState: RECORD_STATE = RECORD_STATE.IDLE;
   private _isMute: boolean = false;
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
@@ -96,6 +108,11 @@ class RTCCall {
     this._delegate = delegate;
   }
 
+  // This api is only for UT
+  setCallState(newstate: RTC_CALL_STATE) {
+    this._callState = newstate;
+  }
+
   getCallState(): RTC_CALL_STATE {
     return this._callState;
   }
@@ -106,6 +123,10 @@ class RTCCall {
 
   getCallInfo(): RTCCallInfo {
     return this._callInfo;
+  }
+
+  getRecordState(): RECORD_STATE {
+    return this._recordState;
   }
 
   isMuted(): boolean {
@@ -189,6 +210,15 @@ class RTCCall {
 
   setCallSession(session: any): void {
     this._callSession.setSession(session);
+    if (
+      this._isIncomingCall &&
+      session &&
+      session.request &&
+      session.request.headers
+    ) {
+      // Update party id and session id in incoming call sip message
+      this._parseRcApiIds(session.request.headers);
+    }
   }
 
   private _startOutCallFSM(): void {
@@ -201,6 +231,19 @@ class RTCCall {
 
   private _prepare(): void {
     // listen session
+    this._callSession.on(CALL_SESSION_STATE.ACCEPTED, () => {
+      // Update party id and session id in invite response sip message
+      const inviteRes = this._callSession.getInviteResponse();
+      if (inviteRes && inviteRes.headers) {
+        this._parseRcApiIds(inviteRes.headers);
+      } else {
+        rtcLogger.warn(
+          LOG_TAG,
+          "Can't get invite response for parsing partyid and sessionid",
+        );
+      }
+      this._onSessionAccepted();
+    });
     this._callSession.on(CALL_SESSION_STATE.CONFIRMED, () => {
       this._onSessionConfirmed();
     });
@@ -324,11 +367,11 @@ class RTCCall {
   ) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
-        this._isRecording = true;
+        this._recordState = RECORD_STATE.RECORDING;
         break;
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
-        this._isRecording = false;
+        this._recordState = RECORD_STATE.IDLE;
         break;
       }
       case RTC_CALL_ACTION.HOLD: {
@@ -351,11 +394,11 @@ class RTCCall {
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
-        this._isRecording = false;
+        this._recordState = RECORD_STATE.IDLE;
         break;
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
-        this._isRecording = true;
+        this._recordState = RECORD_STATE.RECORDING;
         break;
       }
       case RTC_CALL_ACTION.HOLD: {
@@ -375,6 +418,9 @@ class RTCCall {
   }
 
   // session listener
+  private _onSessionAccepted() {
+    this._fsm.sessionAccepted();
+  }
   private _onSessionConfirmed() {
     this._fsm.sessionConfirmed();
   }
@@ -450,19 +496,19 @@ class RTCCall {
   }
 
   private _onStartRecordAction() {
-    if (this._isRecording) {
+    if (RECORD_STATE.RECORDING === this._recordState) {
       this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD);
-    } else {
-      this._isRecording = true;
+    } else if (RECORD_STATE.IDLE === this._recordState) {
+      this._recordState = RECORD_STATE.RECORD_IN_PROGRESS;
       this._callSession.startRecord();
     }
   }
 
   private _onStopRecordAction() {
-    if (this._isRecording) {
-      this._isRecording = false;
+    if (RECORD_STATE.RECORDING === this._recordState) {
+      this._recordState = RECORD_STATE.RECORD_IN_PROGRESS;
       this._callSession.stopRecord();
-    } else {
+    } else if (RECORD_STATE.IDLE === this._recordState) {
       this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
     }
   }
@@ -495,6 +541,33 @@ class RTCCall {
     if (this._delegate) {
       this._delegate.onCallStateChange(state);
     }
+  }
+
+  // Header name: P-Rc-Api-Ids
+  // Example: party-id=cs172622609264474468-2;session-id=Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw"
+  private _parseRcApiIds(headers: any) {
+    if (!headers) {
+      return;
+    }
+    const apiIds = headers[RC_SIP_HEADER_NAME.RC_API_IDS];
+    if (!apiIds) {
+      rtcLogger.warn(
+        LOG_TAG,
+        `Sip headers have no ${RC_SIP_HEADER_NAME.RC_API_IDS}`,
+      );
+      return;
+    }
+    const idMap = apiIds[0]['raw'].split(';').map((sub: string) => {
+      return sub.split('=');
+    });
+    this._callInfo.partyId = idMap[0][1];
+    this._callInfo.sessionId = idMap[1][1];
+    rtcLogger.info(
+      LOG_TAG,
+      `Got party id=${this._callInfo.partyId} session id=${
+        this._callInfo.sessionId
+      }`,
+    );
   }
 }
 

@@ -8,15 +8,21 @@ enum UA_EVENT {
   REG_FAILED = 'uaRegisterFailed',
   REG_UNREGISTER = 'uaUnRegisterFailed',
   RECEIVE_INVITE = 'uaReceiveInvite',
+  TRANSPORT_ERROR = 'uaTransportError',
 }
 
 enum WEBPHONE_SESSION_STATE {
   ACCEPTED = 'accepted',
+  CONFIRMED = 'confirmed',
   BYE = 'bye',
   FAILED = 'failed',
   PROGRESS = 'progress',
   REINVITE_ACCEPTED = 'reinviteAccepted',
   REINVITE_FAILED = 'reinviteFailed',
+}
+
+enum RC_SIP_HEADER_NAME {
+  RC_API_IDS = 'P-Rc-Api-Ids',
 }
 
 enum WEBPHONE_SESSION_EVENT {
@@ -32,11 +38,15 @@ type ProvisionDataOptions = {
   logLevel?: string;
   audioHelper?: string;
   onSession?: string;
+  maxReconnectionAttempts?: number;
+  reconnectionTimeout?: number;
+  connectionTimeout?: number;
 };
 
 export {
   UA_EVENT,
   WEBPHONE_SESSION_STATE,
+  RC_SIP_HEADER_NAME,
   WEBPHONE_SESSION_EVENT,
   ProvisionDataOptions,
 };
