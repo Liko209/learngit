@@ -22,6 +22,7 @@ import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
+import { UploadFileTracker } from './UploadFileTracker';
 
 const SQUARE_SIZE = 180;
 const FutureAttachmentItem = withFuture(AttachmentItem);
@@ -79,6 +80,11 @@ class FilesView extends React.Component<FilesViewProps> {
     await this.props.getCropImage();
   }
 
+  private _handleImageDidLoad = (id: number, callback: Function) => {
+    UploadFileTracker.tracker().clear(this.props.ids);
+    callback();
+  }
+
   render() {
     const { files, progresses, urlMap } = this.props;
     const singleImage = files[FileType.image].length === 1;
@@ -102,7 +108,7 @@ class FilesView extends React.Component<FilesViewProps> {
               (callback: Function) => (
                 <JuiPreviewImage
                   key={id}
-                  didLoad={callback}
+                  didLoad={() => this._handleImageDidLoad(id, callback)}
                   placeholder={placeholder}
                   width={size.width}
                   height={size.height}

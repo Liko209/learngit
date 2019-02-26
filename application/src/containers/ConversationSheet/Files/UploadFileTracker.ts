@@ -24,14 +24,14 @@ class UploadFileTracker {
   private _idMap: Map<number, number> = new Map();
 
   constructor() {
-    notificationCenter.on(ENTITY.PROGRESS, this._handleItemReplace);
+    notificationCenter.on(ENTITY.ITEM, this._handleItemReplace);
   }
 
   private _handleItemReplace = (
     payload: NotificationEntityPayload<FileItemModel>,
   ) => {
     const { type } = payload;
-    if (type === EVENT_TYPES.UPDATE) {
+    if (type === EVENT_TYPES.REPLACE) {
       const data: any = payload;
       const { ids, entities } = data.body;
       ids.forEach((looper: number) => {
@@ -47,6 +47,10 @@ class UploadFileTracker {
       return mapID;
     }
     return id;
+  }
+
+  clear = (ids: number[]) => {
+    ids.forEach((id: number) => this._idMap.delete(id));
   }
 }
 
