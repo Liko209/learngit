@@ -358,3 +358,59 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).notOk()
   });
 })
+
+test.only(formalName(`The unread button (up) shouldn't dismiss when opening one conversation with more than 1 screen unread posts then send one post`, ['JPT-1212', 'P2', 'Mia.Cai', 'JumpToUnreadButton']), async (t) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[6];
+  const otherUser = users[5];
+  await h(t).platform(loginUser).init();
+  await h(t).platform(otherUser).init();
+
+  let conversation;
+  await h(t).withLog('Given I have an extension with one conversation', async () => {
+    conversation = await h(t).platform(loginUser).createAndGetGroupId({
+      isPublic: true,
+      name: `Team ${uuid()}`,
+      type: 'Team',
+      members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
+    });
+  });
+
+  await h(t).withLog('And another user send 15 message in the conversation', async () => {
+    const msgs = _.range(15)
+    for (let msg of msgs) {
+      await h(t).platform(otherUser).createPost({ text: `${msg} ${uuid()}` }, conversation);
+    }
+  });
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I enter the conversation', async () => {
+    const teamsSection = app.homePage.messageTab.teamsSection;
+    await teamsSection.expand();
+    await teamsSection.conversationEntryById(conversation).enter();
+    await teamsSection.ensureLoaded();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('Then I should see unread button', async () => {
+    await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
+  });
+
+  const newMessage = uuid();
+  await h(t).withLog('When I send one message to this conversation', async () => {
+    await conversationPage.sendMessage(newMessage);
+  });
+
+  await h(t).withLog('Then I can read this message from post list', async () => {
+    await t.expect(conversationPage.nthPostItem(-1).body.withText(newMessage).exists).ok();
+  }, true);
+
+  await h(t).withLog(`And the unread button shouldn't dismiss`, async () => {
+    await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok();
+  });
+});
