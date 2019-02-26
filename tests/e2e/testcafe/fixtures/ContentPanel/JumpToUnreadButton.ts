@@ -359,7 +359,7 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
   });
 })
 
-test.only(formalName(`The unread button (up) shouldn't dismiss when opening one conversation with more than 1 screen unread posts then send one post`, ['JPT-1212', 'P2', 'Mia.Cai', 'JumpToUnreadButton']), async (t) => {
+test(formalName(`The unread button (up) shouldn't dismiss when opening one conversation with more than 1 screen unread posts then send one post`, ['JPT-1212', 'P2', 'Mia.Cai', 'JumpToUnreadButton']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
