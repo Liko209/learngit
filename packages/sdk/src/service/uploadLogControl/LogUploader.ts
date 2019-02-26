@@ -1,4 +1,9 @@
-import { ILogUploader, LogEntity, mainLogger } from 'foundation';
+import {
+  ILogUploader,
+  LogEntity,
+  mainLogger,
+  HTTP_STATUS_CODE,
+} from 'foundation';
 import AccountService from '../account';
 import axios, { AxiosError } from 'axios';
 import { UserConfig } from '../../service/account';
@@ -31,7 +36,14 @@ export class LogUploader implements ILogUploader {
     if (!response) {
       return 'abortAll';
     }
-    if ([401, 429, 503, 504].includes(response.status)) {
+    if (
+      [
+        HTTP_STATUS_CODE.UNAUTHORIZED,
+        HTTP_STATUS_CODE.TOO_MANY_REQUESTS,
+        HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,
+        HTTP_STATUS_CODE.GATEWAY_TIME_OUT,
+      ].includes(response.status)
+    ) {
       return 'retry';
     }
     return 'ignore';
