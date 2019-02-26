@@ -23,7 +23,7 @@ jest.mock('../../../../api');
 jest.mock('../../../../dao');
 jest.mock('../../dao');
 jest.mock('../../../progress');
-jest.mock('../../../../service/config/NewGlobalConfig1');
+jest.mock('../../../../service/config/NewGlobalConfig');
 
 describe('PostController', () => {
   const progressService: ProgressService = new ProgressService();

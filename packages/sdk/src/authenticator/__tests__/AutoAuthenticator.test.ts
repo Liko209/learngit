@@ -8,11 +8,11 @@ import { AutoAuthenticator } from '../AutoAuthenticator';
 import { daoManager } from '../../dao';
 import { ACCOUNT_TYPE_ENUM } from '../constants';
 import { GlobalConfigService } from '../../module/config';
-import { NewGlobalConfig } from '../../service/config/NewGlobalConfig1';
+import { NewGlobalConfig } from '../../service/config/NewGlobalConfig';
 import { AuthGlobalConfig } from '../../service/auth/config';
 
 jest.mock('../../module/config');
-jest.mock('../../service/config/NewGlobalConfig1');
+jest.mock('../../service/config/NewGlobalConfig');
 jest.mock('../../service/auth/config');
 
 GlobalConfigService.getInstance = jest.fn();

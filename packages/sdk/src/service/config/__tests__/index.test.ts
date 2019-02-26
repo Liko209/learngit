@@ -1,13 +1,13 @@
 /// <reference path="../../../__tests__/types.d.ts" />
 import ConfigService from '..';
 import AuthService from '../../auth';
-import { NewGlobalConfig } from '../NewGlobalConfig1';
+import { NewGlobalConfig } from '../NewGlobalConfig';
 
 jest.mock('../../auth');
 jest.mock('../../BaseService');
 jest.mock('../../../dao');
 jest.mock('../../../module/config');
-jest.mock('../../../service/config/NewGlobalConfig1');
+jest.mock('../../../service/config/NewGlobalConfig');
 
 describe('ConfigService', () => {
   let configService: ConfigService;

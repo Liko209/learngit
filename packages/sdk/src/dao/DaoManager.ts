@@ -7,10 +7,10 @@ import { BaseDao, BaseKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import { NewGlobalConfig } from '../service/config/NewGlobalConfig1';
+import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
 import { AuthGlobalConfig } from '../service/auth/config';
 import { AccountUserConfig } from '../service/account/config';
-import { NewUserConfig } from '../service/config/NewUserConfig1';
+import { NewUserConfig } from '../service/config/NewUserConfig';
 
 class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   private kvStorageManager: KVStorageManager;

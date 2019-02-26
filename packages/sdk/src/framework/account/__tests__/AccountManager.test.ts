@@ -9,9 +9,9 @@ import {
 import { AbstractAccount } from '../AbstractAccount';
 import * as helper from '../helper';
 import * as dao from '../../../dao';
-import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig1';
+import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 
-jest.mock('../../../service/config/NewGlobalConfig1');
+jest.mock('../../../service/config/NewGlobalConfig');
 class MyAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {}
 }

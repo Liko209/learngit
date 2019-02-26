@@ -1,4 +1,4 @@
-import { NewGlobalConfig } from './NewGlobalConfig1';
+import { NewGlobalConfig } from './NewGlobalConfig';
 
 function handleLogout() {
   // When logout, ConfigDao was cleared, but we don't want to loose

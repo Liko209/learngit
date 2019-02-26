@@ -10,10 +10,10 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, CONFIG, SOCKET } from '../../../service/eventKey';
 import SocketIO from '../__mocks__/socket';
 import { SocketClient } from 'foundation';
-import { NewGlobalConfig } from '../../config/NewGlobalConfig1';
+import { NewGlobalConfig } from '../../config/NewGlobalConfig';
 import { GlobalConfigService } from '../../../module/config';
 
-jest.mock('../../../service/config/NewGlobalConfig1');
+jest.mock('../../../service/config/NewGlobalConfig');
 jest.mock('../../../module/config');
 
 GlobalConfigService.getInstance = jest.fn();

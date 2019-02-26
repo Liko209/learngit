@@ -8,7 +8,7 @@ import BaseService from '../BaseService';
 import AuthService from '../auth';
 import { SERVICE } from '../eventKey';
 import { handleLogout } from './handleData';
-import { NewGlobalConfig } from './NewGlobalConfig1';
+import { NewGlobalConfig } from './NewGlobalConfig';
 
 export default class ConfigService extends BaseService {
   static serviceName = 'ConfigService';

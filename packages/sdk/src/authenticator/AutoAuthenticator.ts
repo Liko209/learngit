@@ -8,7 +8,7 @@ import { GlipAccount, RCAccount } from '../account';
 import { ACCOUNT_TYPE_ENUM } from './constants';
 import DaoManager from '../dao/DaoManager';
 import { AuthGlobalConfig } from '../service/auth/config';
-import { NewGlobalConfig } from '../service/config/NewGlobalConfig1';
+import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
 
 class AutoAuthenticator implements ISyncAuthenticator {
   private _accountTypeHandleMap: Map<string, any>;
