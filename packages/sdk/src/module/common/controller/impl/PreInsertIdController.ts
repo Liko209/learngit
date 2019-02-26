@@ -20,12 +20,11 @@ class PreInsertIdController implements IPreInsertIdController {
   }
 
   private _initVersions() {
-    this._versions =
-      NewGlobalConfig.getInstance().getConfig(this._modelName) || [];
+    this._versions = NewGlobalConfig.getConfig(this._modelName) || [];
   }
 
   private _syncDataDB() {
-    NewGlobalConfig.getInstance().putConfig(this._modelName, this._versions);
+    NewGlobalConfig.putConfig(this._modelName, this._versions);
   }
 
   isInPreInsert(version: number): boolean {

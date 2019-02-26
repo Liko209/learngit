@@ -19,9 +19,6 @@ jest.mock('../../service/auth/config');
 jest.mock('../../service/config');
 
 describe('utils method', () => {
-  const newConfig = new NewGlobalConfig(null);
-  NewGlobalConfig.getInstance = jest.fn().mockReturnValue(newConfig);
-
   it('setRcToken method set success should be true', async () => {
     const obj = { token: '123' };
     const result = await setRcToken(obj);

@@ -8,7 +8,7 @@ import BaseService from '../BaseService';
 import AuthService from '../auth';
 import { SERVICE } from '../eventKey';
 import { handleLogout } from './handleData';
-import { NewGlobalConfig } from './newGlobalConfig';
+import { NewGlobalConfig } from './NewGlobalConfig1';
 
 export default class ConfigService extends BaseService {
   static serviceName = 'ConfigService';
@@ -22,19 +22,19 @@ export default class ConfigService extends BaseService {
   }
 
   getEnv() {
-    return NewGlobalConfig.getInstance().getEnv();
+    return NewGlobalConfig.getEnv();
   }
 
   getLastIndexTimestamp() {
-    return NewGlobalConfig.getInstance().getLastIndexTimestamp();
+    return NewGlobalConfig.getLastIndexTimestamp();
   }
 
   getStaticHttpServer() {
-    return NewGlobalConfig.getInstance().getStaticHttpServer();
+    return NewGlobalConfig.getStaticHttpServer();
   }
 
   async switchEnv(env: string): Promise<boolean> {
-    const oldEnv = NewGlobalConfig.getInstance().getEnv();
+    const oldEnv = NewGlobalConfig.getEnv();
 
     if (oldEnv === env) return false;
 
@@ -43,7 +43,7 @@ export default class ConfigService extends BaseService {
       await this._authService.logout();
     }
 
-    NewGlobalConfig.getInstance().setEnv(env);
+    NewGlobalConfig.setEnv(env);
     sessionStorage.setItem('env', env);
 
     return true;

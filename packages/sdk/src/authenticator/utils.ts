@@ -4,7 +4,7 @@ import { AuthGlobalConfig } from '../service/auth/config';
 import { NewGlobalConfig } from '../service/config';
 
 const setAccountType = async (type: any) => {
-  await NewGlobalConfig.getInstance().setAccountType(type);
+  await NewGlobalConfig.setAccountType(type);
   return true;
 };
 

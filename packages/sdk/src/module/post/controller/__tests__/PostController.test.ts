@@ -17,24 +17,21 @@ import {
 
 import { SendPostController } from '../implementation/SendPostController';
 import { ProgressService } from '../../../progress';
-import { NewGlobalConfig } from '../../../../service/config/newGlobalConfig';
 
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
 jest.mock('../../dao');
 jest.mock('../../../progress');
-jest.mock('../../../../service/config/newGlobalConfig');
+jest.mock('../../../../service/config/NewGlobalConfig1');
 
 describe('PostController', () => {
   const progressService: ProgressService = new ProgressService();
   const postDao: PostDao = new PostDao(null);
-  const globalConfig: NewGlobalConfig = new NewGlobalConfig(null);
 
   beforeEach(() => {
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
     jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
-    NewGlobalConfig.getInstance = jest.fn().mockReturnValue(globalConfig);
   });
 
   describe('getPostActionController()', () => {

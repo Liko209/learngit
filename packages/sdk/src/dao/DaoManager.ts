@@ -7,7 +7,7 @@ import { BaseDao, BaseKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import { NewGlobalConfig } from '../service/config/newGlobalConfig';
+import { NewGlobalConfig } from '../service/config/NewGlobalConfig1';
 import { AuthGlobalConfig } from '../service/auth/config';
 import { AccountUserConfig } from '../service/account/config';
 
@@ -34,32 +34,28 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
         this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
         await this.dbManager.deleteDatabase();
       }
-      NewGlobalConfig.getInstance().removeLastIndexTimestamp();
+      NewGlobalConfig.removeLastIndexTimestamp();
     }
 
     const db = this.dbManager.getDatabase();
 
     if (db instanceof DexieDB) {
       db.db.on('ready', () => {
-        NewGlobalConfig.getInstance().setDBSchemaVersion(schema.version);
+        NewGlobalConfig.setDBSchemaVersion(schema.version);
       });
       const isIEOrEdge = /(MSIE|Trident|Edge)/.test(navigator.userAgent);
       if (isIEOrEdge) {
         const BLOCK_MESSAGE_KEY = 'DB_VERSION_CHANGE';
         const BLOCK_MESSAGE_VALUE = 1;
         db.db.on('blocked', () => {
-          NewGlobalConfig.getInstance().putConfig(
-            BLOCK_MESSAGE_KEY,
-            BLOCK_MESSAGE_VALUE,
-          );
+          NewGlobalConfig.putConfig(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
         });
         window.addEventListener('storage', async (e: any) => {
           if (
-            e.key ===
-              NewGlobalConfig.getInstance().getConfig(BLOCK_MESSAGE_KEY) &&
+            e.key === NewGlobalConfig.getConfig(BLOCK_MESSAGE_KEY) &&
             Number(e.newValue) === BLOCK_MESSAGE_VALUE
           ) {
-            NewGlobalConfig.getInstance().removeConfig(BLOCK_MESSAGE_KEY);
+            NewGlobalConfig.removeConfig(BLOCK_MESSAGE_KEY);
             await this.dbManager.deleteDatabase();
           }
         });
@@ -77,7 +73,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
 
   private _clearLocalStorage() {
     // need to remove last index timestamp or can't sync data when users re-login
-    NewGlobalConfig.getInstance().removeLastIndexTimestamp();
+    NewGlobalConfig.removeLastIndexTimestamp();
     // need to remove glip token or can't logout
     AuthGlobalConfig.removeGlipToken();
     AuthGlobalConfig.removeRcToken();
@@ -115,7 +111,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   private _isSchemaCompatible() {
-    const currentSchemaVersion = NewGlobalConfig.getInstance().getDBSchemaVersion();
+    const currentSchemaVersion = NewGlobalConfig.getDBSchemaVersion();
     return (
       typeof currentSchemaVersion === 'number' &&
       currentSchemaVersion === schema.version

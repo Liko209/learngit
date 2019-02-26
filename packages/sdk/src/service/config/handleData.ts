@@ -1,4 +1,4 @@
-import { NewGlobalConfig } from './newGlobalConfig';
+import { NewGlobalConfig } from './NewGlobalConfig1';
 
 function handleLogout() {
   // When logout, ConfigDao was cleared, but we don't want to loose
@@ -6,7 +6,7 @@ function handleLogout() {
   // get the env from sessionStorage and put it back to ConfigDao
   const env = sessionStorage.getItem('env');
   if (!env) return;
-  NewGlobalConfig.getInstance().setEnv(env);
+  NewGlobalConfig.setEnv(env);
 }
 
 export { handleLogout };

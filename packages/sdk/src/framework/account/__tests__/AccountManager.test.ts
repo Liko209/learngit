@@ -9,9 +9,9 @@ import {
 import { AbstractAccount } from '../AbstractAccount';
 import * as helper from '../helper';
 import * as dao from '../../../dao';
-import { NewGlobalConfig } from '../../../service/config/newGlobalConfig';
+import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig1';
 
-jest.mock('../../../service/config/newGlobalConfig');
+jest.mock('../../../service/config/NewGlobalConfig1');
 class MyAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {}
 }
@@ -125,8 +125,6 @@ describe('AccountManager', () => {
 
   describe('login()', () => {
     it('should work', async () => {
-      const config = new NewGlobalConfig(null);
-      NewGlobalConfig.getInstance = jest.fn().mockReturnValue(config);
       mockAuthenticate.mockReturnValue({
         success: true,
         accountInfos: [{ type: MyAccount.name, data: 'token' }],
@@ -265,9 +263,7 @@ describe('AccountManager', () => {
         release: ['123'],
       });
 
-      const config = new NewGlobalConfig(null);
-      NewGlobalConfig.getInstance = jest.fn().mockReturnValue(config);
-      config.getEnv = jest.fn().mockReturnValue('release');
+      NewGlobalConfig.getEnv = jest.fn().mockReturnValue('release');
       const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
 
       expect(permitted).toBeFalsy();

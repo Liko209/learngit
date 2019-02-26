@@ -8,7 +8,7 @@ import { GlobalConfigService } from '../../../module/config';
 import { AccountGlobalConfig } from '../../../service/account/config';
 
 jest.mock('../../../module/config');
-jest.mock('../../../service/config/newGlobalConfig');
+jest.mock('../../../service/config/NewGlobalConfig1');
 jest.mock('../../../service/account/config');
 
 GlobalConfigService.getInstance = jest.fn();

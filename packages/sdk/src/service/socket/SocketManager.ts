@@ -148,7 +148,7 @@ export class SocketManager {
 
   private _onServerHostUpdated() {
     const hasActive = this.hasActiveFSM();
-    const serverUrl = NewGlobalConfig.getInstance().getSocketServerHost();
+    const serverUrl = NewGlobalConfig.getSocketServerHost();
     // tslint:disable-next-line:max-line-length
     this.info(
       `onServerHostUpdated: ${serverUrl}, _hasLoggedIn: ${
@@ -257,7 +257,7 @@ export class SocketManager {
 
     try {
       const body = JSON.parse(data.body);
-      NewGlobalConfig.getInstance().setSocketServerHost(body.server);
+      NewGlobalConfig.setSocketServerHost(body.server);
       notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, body.server);
     } catch (error) {
       this.warn(`fail on socket reconnect: ${error}`);
@@ -266,7 +266,7 @@ export class SocketManager {
 
   private _startFSM() {
     // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
-    const serverHost = NewGlobalConfig.getInstance().getSocketServerHost();
+    const serverHost = NewGlobalConfig.getSocketServerHost();
     const glipToken = AuthGlobalConfig.getGlipToken();
     if (serverHost) {
       this.activeFSM = new SocketFSM(

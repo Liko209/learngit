@@ -98,12 +98,12 @@ const handleData = async (
     } = result;
 
     if (scoreboard && shouldSaveScoreboard) {
-      NewGlobalConfig.getInstance().setSocketServerHost(scoreboard);
+      NewGlobalConfig.setSocketServerHost(scoreboard);
       notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
     }
 
     if (staticHttpServer) {
-      NewGlobalConfig.getInstance().setStaticHttpServer(staticHttpServer);
+      NewGlobalConfig.setStaticHttpServer(staticHttpServer);
       notificationCenter.emitKVChange(
         CONFIG.STATIC_HTTP_SERVER,
         staticHttpServer,
@@ -114,7 +114,7 @@ const handleData = async (
     await dispatchIncomingData(result);
     // logger.timeEnd('handle index data');
     if (timestamp) {
-      NewGlobalConfig.getInstance().setLastIndexTimestamp(timestamp);
+      NewGlobalConfig.setLastIndexTimestamp(timestamp);
       notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
     }
 
