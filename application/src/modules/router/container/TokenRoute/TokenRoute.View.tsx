@@ -20,7 +20,7 @@ type TokenRouteProps = RouteComponentProps<{}> &
   };
 
 @observer
-class TokenRoute extends Component<TokenRouteProps, { open: boolean }> {
+class TokenRoute extends Component<TokenRouteProps> {
   constructor(props: TokenRouteProps) {
     super(props);
   }
