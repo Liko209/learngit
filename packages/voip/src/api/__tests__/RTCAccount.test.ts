@@ -512,7 +512,7 @@ describe('RTCAccount', async () => {
     setImmediate(() => {
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.REGISTERED);
       expect(account.callCount()).toBe(1);
-      expect(account._postponeProvisioning).toBe(null);
+      expect(account._postponeProvisioning).not.toBeDefined();
       account._onNewProv(mockProvisionData2);
       expect(account._postponeProvisioning).toBe(mockProvisionData2);
       done();
@@ -552,7 +552,7 @@ describe('RTCAccount', async () => {
       account.makeCall('123', listener);
       setImmediate(() => {
         expect(account.callCount()).toBe(1);
-        expect(account._postponeProvisioning).toBe(null);
+        expect(account._postponeProvisioning).not.toBeDefined();
         account._onNewProv(mockProvisionData2);
         expect(account._postponeProvisioning).toBe(mockProvisionData2);
         account._callManager.callList()[0].hangup();

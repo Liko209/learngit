@@ -30,7 +30,7 @@ class RTCAccount implements IRTCAccount {
   private _regManager: RTCRegistrationManager;
   private _delegate: IRTCAccountDelegate;
   private _state: RTC_ACCOUNT_STATE;
-  private _postponeProvisioning: RTCSipProvisionInfo | null = null;
+  private _postponeProvisioning: RTCSipProvisionInfo | null;
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
