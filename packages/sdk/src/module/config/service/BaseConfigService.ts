@@ -28,13 +28,7 @@ class BaseConfigService extends AbstractService {
   put(module: string, key: string, value: any) {
     const st = store.namespace(this._ns);
     st.set(`${module}.${key}`, value);
-    // TODO emit notificaition
-    // if (
-    //   (key === '' && notifyManager.isPartialMatch(`${this._ns}.${module}`)) ||
-    //   notifyManager.isExactMatch(`${this._ns}.${module}`, key)
-    // ) {
-    //   notificationCenter.emitKVChange(`${this._ns}.${module}.${key}`, value);
-    // }
+    // TODO emit notification FIJI-3770
   }
 
   get(module: string, key: string): any {
@@ -45,21 +39,21 @@ class BaseConfigService extends AbstractService {
   remove(module: string, key: string) {
     const st = store.namespace(this._ns);
     return st.remove(`${module}.${key}`);
-    // TODO remove from notification list
+    // TODO remove from notification list FIJI-3770
   }
 
   on(module: string, key: string) {
-    // TODO add to notification list
+    // TODO add to notification list FIJI-3770
   }
 
   off(module: string, key: string) {
-    // TODO remove from notification list
+    // TODO remove from notification list FIJI-3770
   }
 
   clear(module: string) {
     const st = store.namespace(`${this._ns}.${module}`);
     st.clearAll();
-    // TODO clearAll notification
+    // TODO clearAll notification FIJI-3770
   }
 }
 

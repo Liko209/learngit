@@ -10,6 +10,7 @@ import { INewable } from '../types';
 import { NewGlobalConfig } from '../service/config/NewGlobalConfig1';
 import { AuthGlobalConfig } from '../service/auth/config';
 import { AccountUserConfig } from '../service/account/config';
+import { NewUserConfig } from '../service/config/NewUserConfig1';
 
 class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   private kvStorageManager: KVStorageManager;
@@ -78,7 +79,9 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
     AuthGlobalConfig.removeGlipToken();
     AuthGlobalConfig.removeRcToken();
     // each module need to remove its user config when users logout
-    const userConfig = new AccountUserConfig();
+    const accoutUserConfig = new AccountUserConfig();
+    accoutUserConfig.clear();
+    const userConfig = new NewUserConfig();
     userConfig.clear();
   }
 

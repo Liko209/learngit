@@ -1,14 +1,10 @@
-import { BaseUserConfig, UserConfigService } from '../../module/config';
+import { UserConfig } from '../../module/config';
 import { CONFIG_KEYS } from './configKeys';
 import { AccountGlobalConfig } from '../account/config';
 
-class NewUserConfig extends BaseUserConfig {
+class NewUserConfig extends UserConfig {
   constructor() {
-    super(
-      UserConfigService.getInstance() as UserConfigService,
-      AccountGlobalConfig.getCurrentUserId(),
-      'config',
-    );
+    super(AccountGlobalConfig.getCurrentUserId(), 'config');
   }
 
   setMyStateId(id: number) {

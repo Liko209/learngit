@@ -1,14 +1,10 @@
 import { ACCOUNT_KEYS } from './configKeys';
-import { UserConfigService, BaseUserConfig } from '../../../module/config';
+import { UserConfig } from '../../../module/config';
 import { AccountGlobalConfig } from '../../../service/account/config/AccountGlobalConfig';
 
-class AccountUserConfig extends BaseUserConfig {
+class AccountUserConfig extends UserConfig {
   constructor() {
-    super(
-      UserConfigService.getInstance() as UserConfigService,
-      AccountGlobalConfig.getCurrentUserId(),
-      'account',
-    );
+    super(AccountGlobalConfig.getCurrentUserId(), 'account');
   }
 
   setClientConfig(config: any) {

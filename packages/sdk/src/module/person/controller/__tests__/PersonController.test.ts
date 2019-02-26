@@ -31,7 +31,6 @@ jest.mock('../../../../service/account/config');
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../module/group');
-jest.mock('../../../../service/account/UserConfig');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao/DaoManager');
 

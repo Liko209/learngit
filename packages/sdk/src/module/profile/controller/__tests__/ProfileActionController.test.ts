@@ -13,7 +13,6 @@ import { PersonDao } from '../../../person/dao/PersonDao';
 import { daoManager } from '../../../../dao';
 
 jest.mock('../ProfileDataController');
-jest.mock('../../../../service/account/UserConfig');
 
 jest.mock('../../../person/dao/PersonDao');
 jest.mock('../../../../dao');
