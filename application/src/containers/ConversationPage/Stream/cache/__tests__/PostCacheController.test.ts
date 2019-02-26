@@ -22,7 +22,7 @@ describe('PostCacheController', () => {
       expect(result).toBe(listHandler);
     });
 
-    it('should return  when jump2PostId is undefined and groupId not in cacheMap', () => {
+    it('should return FetchSortableDataListHandler type when jump2PostId is undefined and groupId not in cacheMap', () => {
       jest
         .spyOn(postCacheController, 'set')
         .mockImplementation((groupId, listHandler) => {
@@ -53,7 +53,7 @@ describe('PostCacheController', () => {
       expect(postCacheController._currentGroupId).toBe(1);
     });
 
-    it('should not remove groupId from cache when groupId is currentGroupId', () => {
+    it('should remove groupId from cache when groupId is currentGroupId', () => {
       postCacheController._currentGroupId = 2;
       jest
         .spyOn(postCacheController, 'get')
