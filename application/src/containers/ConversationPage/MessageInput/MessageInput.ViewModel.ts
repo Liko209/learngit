@@ -10,7 +10,8 @@ import {
   MessageInputViewProps,
   OnPostCallback,
 } from './types';
-import { GroupConfigService, notificationCenter } from 'sdk/service';
+import { notificationCenter } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';

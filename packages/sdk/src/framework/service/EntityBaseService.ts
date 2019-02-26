@@ -44,6 +44,10 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     return buildEntityCacheSearchController<T>(this._entityCacheController);
   }
 
+  getEntityCacheController(): IEntityCacheController {
+    return this._entityCacheController;
+  }
+
   setSubscriptionController(subscribeController: ISubscribeController) {
     this._subscribeController = subscribeController;
   }

@@ -23,8 +23,10 @@ import { Post } from '../../post/entity';
 import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
+import { IGroupService } from '../service/IGroupService';
 
 class GroupHandleDataController {
+  constructor(public groupService: IGroupService) {}
   getExistedAndTransformDataFromPartial = async (
     groups: Partial<Raw<Group>>[],
   ): Promise<Group[]> => {
@@ -220,12 +222,12 @@ class GroupHandleDataController {
       const profile = await profileService.getProfile();
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const validFavIds = _.difference(filteredFavIds, hiddenIds);
-      const dao = daoManager.getDao(GroupDao);
-      let groups = await dao.queryGroupsByIds(validFavIds);
-      groups = this.sortFavoriteGroups(validFavIds, groups);
+      const groups = await this.groupService.getGroupsByIds(validFavIds, true);
 
       _.forEach(groups, (group: Group) => {
-        replaceGroups.set(group.id, group);
+        if (this.groupService.isValid(group)) {
+          replaceGroups.set(group.id, group);
+        }
       });
     }
     notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, replaceGroups);
@@ -255,16 +257,26 @@ class GroupHandleDataController {
       if (oldIds.toString() !== newIds.toString()) {
         const moreFavorites: number[] = _.difference(newIds, oldIds);
         const moreNormals: number[] = _.difference(oldIds, newIds);
-        const dao = daoManager.getDao(GroupDao);
         if (moreFavorites.length) {
-          const resultGroups: Group[] = await dao.queryGroupsByIds(
+          const groups = await this.groupService.getGroupsByIds(
             moreFavorites,
+            true,
           );
-          this.doNonFavoriteGroupsNotification(resultGroups, false);
+          const resultGroup = groups.filter((item: Group) =>
+            this.groupService.isValid(item),
+          );
+          this.doNonFavoriteGroupsNotification(resultGroup, false);
         }
         if (moreNormals.length) {
-          const resultGroups = await dao.queryGroupsByIds(moreNormals);
-          this.doNonFavoriteGroupsNotification(resultGroups, true);
+          const groups = await this.groupService.getGroupsByIds(
+            moreNormals,
+            true,
+          );
+          const resultGroup = groups.filter((item: Group) =>
+            this.groupService.isValid(item),
+          );
+
+          this.doNonFavoriteGroupsNotification(resultGroup, true);
         }
         await this.doFavoriteGroupsNotification(
           newProfile.favorite_group_ids || [],

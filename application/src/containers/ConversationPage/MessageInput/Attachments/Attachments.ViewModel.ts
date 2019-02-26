@@ -12,13 +12,9 @@ import {
   SelectFile,
   DidUploadFileCallback,
 } from './types';
-import {
-  notificationCenter,
-  ENTITY,
-  EVENT_TYPES,
-  GroupConfigService,
-} from 'sdk/service';
+import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';

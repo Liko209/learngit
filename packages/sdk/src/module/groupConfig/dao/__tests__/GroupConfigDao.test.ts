@@ -3,9 +3,10 @@
  * @Date: 2018-11-07 14:24:35
  * Copyright © RingCentral. All rights reserved.
  */
-import GroupConfigDao from '..';
-import { setup } from '../../__tests__/utils';
-import { QUERY_DIRECTION } from '../../constants';
+
+import { GroupConfigDao } from '../GroupConfigDao';
+import { setup } from '../../../../dao/__tests__/utils';
+import { QUERY_DIRECTION } from '../../../../dao/constants';
 
 describe('groupConfig Dao', async () => {
   let groupConfigDao: GroupConfigDao;

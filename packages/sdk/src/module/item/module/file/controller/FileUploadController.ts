@@ -27,7 +27,7 @@ import {
   isInBeta,
   EBETA_FLAG,
 } from '../../../../../service/account/clientConfig';
-import { GroupConfigService } from '../../../../../service/groupConfig';
+import { GroupConfigService } from '../../../../groupConfig';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes

@@ -5,7 +5,8 @@
  */
 
 import { computed } from 'mobx';
-import { GroupConfigService, notificationCenter } from 'sdk/service';
+import { notificationCenter } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';

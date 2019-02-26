@@ -4,7 +4,8 @@ import _ from 'lodash';
 
 import { groupFactory } from '../../../../__tests__/factories';
 import GroupAPI from '../../../../api/glip/group';
-import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../../dao';
+import { GroupConfigDao } from '../../../groupConfig/dao';
 import { ERROR_CODES_SERVER, JServerError } from '../../../../error';
 import { TestEntityCacheSearchController } from '../../../../framework/__mocks__/controller/TestEntityCacheSearchController';
 import { TestEntitySourceController } from '../../../../framework/__mocks__/controller/TestEntitySourceController';
@@ -32,6 +33,7 @@ import { PERMISSION_ENUM } from '../../../../service';
 
 jest.mock('../GroupHandleDataController');
 jest.mock('../../../../dao');
+jest.mock('../../../groupConfig/dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');

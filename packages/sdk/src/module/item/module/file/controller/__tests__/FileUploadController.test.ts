@@ -32,9 +32,9 @@ import {
   ERROR_CODES_SDK,
 } from '../../../../../../error';
 import { IPartialModifyController } from '../../../../../../framework/controller/interface/IPartialModifyController';
-import { GroupConfigService } from '../../../../../../service/groupConfig';
+import { GroupConfigService } from '../../../../../groupConfig';
 
-jest.mock('../../../../../../service/groupConfig');
+jest.mock('../../../../../groupConfig');
 jest.mock('../../../../service/ItemService');
 jest.mock(
   '../../../../../../framework/controller/impl/PartialModifyController',
@@ -1406,7 +1406,6 @@ describe('fileUploadController', () => {
         },
       ]);
 
-   
       const res = await fileUploadController.initialUploadItemsFromDraft(
         groupId,
       );
