@@ -83,10 +83,10 @@ describe('SendPostController', () => {
   describe('sendPost', () => {
     it('should add user id and company id into parameters', async () => {
       let correct = false;
-      const accConfig = new AccountGlobalConfig(null);
-      AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accConfig);
-      accConfig.getCurrentUserId = jest.fn().mockReturnValueOnce(4);
-      accConfig.getCurrentCompanyId = jest.fn().mockReturnValueOnce(1);
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValueOnce(4);
+      AccountGlobalConfig.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
       jest
         .spyOn(sendPostController, 'innerSendPost')
         .mockImplementationOnce((parameters: any, isRend: boolean) => {

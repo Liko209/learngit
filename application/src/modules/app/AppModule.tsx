@@ -93,8 +93,8 @@ class AppModule extends AbstractModule {
       const accountService: service.AccountService = AccountService.getInstance();
 
       if (accountService.isAccountReady()) {
-        const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
-        const currentCompanyId = AccountGlobalConfig.getInstance().getCurrentCompanyId();
+        const currentUserId = AccountGlobalConfig.getCurrentUserId();
+        const currentCompanyId = AccountGlobalConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
 

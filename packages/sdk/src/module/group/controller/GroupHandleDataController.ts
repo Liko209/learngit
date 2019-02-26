@@ -131,7 +131,7 @@ class GroupHandleDataController {
         const beRemovedAsGuest =
           transformed.removed_guest_user_ids &&
           transformed.removed_guest_user_ids.includes(
-            UserConfig.getCurrentUserId(),
+            AccountGlobalConfig.getCurrentUserId(),
           );
 
         if (beRemovedAsGuest) {
@@ -383,7 +383,7 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
         return true;

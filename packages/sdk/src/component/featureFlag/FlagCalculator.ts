@@ -20,8 +20,8 @@ class FlagCalculator implements IFlagCalculator {
     this._permissionKeys = Object.values(PERMISSION);
   }
   get accountInfo(): IAccountInfo {
-    const companyId: number = AccountGlobalConfig.getInstance().getCurrentCompanyId();
-    const userId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
+    const userId: number = AccountGlobalConfig.getCurrentUserId();
     return { companyId, userId };
   }
 

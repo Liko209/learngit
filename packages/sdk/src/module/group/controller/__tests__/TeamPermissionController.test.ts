@@ -16,12 +16,9 @@ import { AccountGlobalConfig } from '../../../../service/account/config';
 jest.mock('../../../../module/config/service/GlobalConfigService');
 jest.mock('../../../../service/account/config');
 
-jest.mock('sdk/service/account/UserConfig');
 const mockCurrentUserId = 5683;
 const mockCurrentUserCompanyId = 55668833;
 
-const accountConfig = new AccountGlobalConfig(null);
-AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
 GlobalConfigService.getInstance = jest.fn();
 
 describe('TeamPermissionController', () => {
@@ -33,12 +30,11 @@ describe('TeamPermissionController', () => {
 
   describe('isCurrentUserGuest()', () => {
     beforeAll(() => {
-      jest
-        .spyOn(accountConfig, 'getCurrentUserId')
+      AccountGlobalConfig.getCurrentUserId = jest
+        .fn()
         .mockReturnValue(mockCurrentUserId);
-
-      jest
-        .spyOn(accountConfig, 'getCurrentCompanyId')
+      AccountGlobalConfig.getCurrentCompanyId = jest
+        .fn()
         .mockReturnValue(mockCurrentUserCompanyId);
     });
     it('should return false when guestUserCompanyIds is undefined', () => {
@@ -153,7 +149,6 @@ describe('TeamPermissionController', () => {
       const teamPermissionParams: TeamPermissionParams = {
         members: [],
         is_team: true,
-
       };
       expect(
         teamPermissionController.getCurrentUserPermissionLevel(
@@ -425,8 +420,7 @@ describe('TeamPermissionController', () => {
     });
 
     it('should has default permission when do not have info', () => {
-      const teamPermissionParams: TeamPermissionParams = {
-      };
+      const teamPermissionParams: TeamPermissionParams = {};
       expect(
         teamPermissionController.isCurrentUserHasPermission(
           PERMISSION_ENUM.TEAM_POST,

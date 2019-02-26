@@ -87,7 +87,7 @@ class StateDataHandleController {
           switch (key) {
             case '__trigger_ids': {
               const triggerIds = group[key];
-              const currentUserId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
+              const currentUserId: number = AccountGlobalConfig.getCurrentUserId();
               if (
                 triggerIds &&
                 currentUserId &&

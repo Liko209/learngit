@@ -27,15 +27,15 @@ const accountHandleData = ({
 }: IHandleData): void => {
   if (userId) {
     notificationCenter.emitKVChange(ACCOUNT_USER_ID, userId);
-    AccountGlobalConfig.getInstance().setCurrentUserId(userId);
+    AccountGlobalConfig.setCurrentUserId(userId);
   }
   if (companyId) {
     notificationCenter.emitKVChange(ACCOUNT_COMPANY_ID, companyId);
-    AccountGlobalConfig.getInstance().setCurrentCompanyId(companyId);
+    AccountGlobalConfig.setCurrentCompanyId(companyId);
   }
   if (profileId) {
     notificationCenter.emitKVChange(ACCOUNT_PROFILE_ID, profileId);
-    AccountGlobalConfig.getInstance().setCurrentUserProfileId(profileId);
+    AccountGlobalConfig.setCurrentUserProfileId(profileId);
   }
   if (clientConfig) {
     notificationCenter.emitKVChange(ACCOUNT_CLIENT_CONFIG, clientConfig);

@@ -2,8 +2,8 @@ import {
   BaseGlobalConfig,
   IGlobalConfigService,
   GlobalConfigService,
-} from '../../../module/config';
-import { ACCOUNT_KEYS } from './configKeys';
+} from 'sdk/src/module/config';
+import { ACCOUNT_KEYS } from 'sdk/src/service/account/config/configKeys';
 
 class AccountGlobalConfig extends BaseGlobalConfig {
   private static instance: AccountGlobalConfig;

@@ -201,7 +201,7 @@ class PersonController {
     );
     let currentUserId: number | null = null;
     if (excludeSelf) {
-      currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
+      currentUserId = AccountGlobalConfig.getCurrentUserId();
     }
 
     const result = await this._cacheSearchController.searchEntities(
@@ -359,8 +359,7 @@ class PersonController {
     extensionData?: SanitizedExtensionModel,
   ) {
     const availNumbers: PhoneNumberInfo[] = [];
-    const isCoWorker =
-      AccountGlobalConfig.getInstance().getCurrentCompanyId() === companyId;
+    const isCoWorker = AccountGlobalConfig.getCurrentCompanyId() === companyId;
     if (isCoWorker && extensionData) {
       availNumbers.push({
         type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,

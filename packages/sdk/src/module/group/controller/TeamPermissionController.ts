@@ -22,7 +22,7 @@ class TeamPermissionController {
   constructor() {}
 
   isCurrentUserGuest(teamPermissionParams: TeamPermissionParams): boolean {
-    const companyId = AccountGlobalConfig.getInstance().getCurrentCompanyId();
+    const companyId = AccountGlobalConfig.getCurrentCompanyId();
     const guestUserCompanyIds = teamPermissionParams.guest_user_company_ids;
     return guestUserCompanyIds
       ? guestUserCompanyIds.includes(companyId)
@@ -43,7 +43,7 @@ class TeamPermissionController {
   getCurrentUserPermissionLevel(
     teamPermissionParams: TeamPermissionParams,
   ): number {
-    const userId = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const userId = AccountGlobalConfig.getCurrentUserId();
 
     const {
       permissions: {
@@ -98,7 +98,9 @@ class TeamPermissionController {
       !teamPermissionParams.is_team &&
       !teamPermissionParams.permissions
     ) {
-      const defaultPermissions = this._permissionLevelToArray(PERMISSION_ENUM.TEAM_POST);
+      const defaultPermissions = this._permissionLevelToArray(
+        PERMISSION_ENUM.TEAM_POST,
+      );
       return defaultPermissions.includes(type);
     }
     const permissionList = this.getCurrentUserPermissions(teamPermissionParams);

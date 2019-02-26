@@ -19,7 +19,6 @@ jest.mock('../../../module/config');
 jest.mock('../../../service/account/config');
 GlobalConfigService.getInstance = jest.fn();
 UserConfigService.getInstance = jest.fn();
-AccountGlobalConfig.getInstance = jest.fn();
 
 describe('AccountService', () => {
   let accountService: AccountService;
@@ -31,8 +30,6 @@ describe('AccountService', () => {
     accountDao = new AccountDao(null);
     personDao = new PersonDao(null);
     daoManager.getDao.mockReturnValue(personDao);
-    accountConfig = new AccountGlobalConfig(null);
-    AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
     accountService = new AccountService();
   });
 
@@ -49,8 +46,8 @@ describe('AccountService', () => {
         display_name: 'display_name',
       });
 
-      accountConfig.getCurrentCompanyId = jest.fn().mockReturnValue(222);
-      accountConfig.getCurrentUserId = jest.fn().mockReturnValue(222);
+      AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(222);
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(222);
 
       const user = accountService.getCurrentUserInfo();
       return expect(user).resolves.toEqual({

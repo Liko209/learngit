@@ -161,7 +161,7 @@ class TotalUnreadController {
         }
       });
     } else if (payload.type === EVENT_TYPES.UPDATE) {
-      const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
+      const currentUserId = AccountGlobalConfig.getCurrentUserId();
       await Promise.all(
         payload.body.ids.map(async (id: number) => {
           const group = payload.body.entities.get(id);
@@ -279,9 +279,7 @@ class TotalUnreadController {
       groups.map(async (group: Group) => {
         if (
           !groupService.isValid(group) ||
-          !group.members.includes(
-            AccountGlobalConfig.getInstance().getCurrentUserId(),
-          )
+          !group.members.includes(AccountGlobalConfig.getCurrentUserId())
         ) {
           return;
         }

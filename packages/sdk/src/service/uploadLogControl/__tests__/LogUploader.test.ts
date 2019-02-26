@@ -1,11 +1,14 @@
 import { LogUploader } from '../LogUploader';
 import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import AccountService, { UserConfig } from '../../account';
+import AccountService from '../../account';
 import { Api } from 'sdk/api';
 import axios from 'axios';
+import { AccountGlobalConfig } from '../../account/config';
+
 jest.mock('sdk/api');
 jest.mock('../../account');
 jest.mock('axios');
+jest.mock('../../account/config');
 
 describe('LogUploader', () => {
   const accountService = new AccountService();
@@ -19,7 +22,7 @@ describe('LogUploader', () => {
     (axios.post as jest.Mock).mockResolvedValue({});
     AccountService.getInstance = jest.fn().mockReturnValue(accountService);
     (accountService.getUserEmail as jest.Mock).mockResolvedValue('abc@rc.com');
-    (UserConfig.getCurrentUserId as jest.Mock).mockReturnValue(12345);
+    (AccountGlobalConfig.getCurrentUserId as jest.Mock).mockReturnValue(12345);
     (accountService.getClientId as jest.Mock).mockReturnValue('54321');
   });
   describe('upload()', () => {
@@ -53,9 +56,11 @@ describe('LogUploader', () => {
     it('should call post correctly when get userId error', async () => {
       const logUploader = new LogUploader();
       const mockLog = new LogEntity();
-      (UserConfig.getCurrentUserId as jest.Mock).mockImplementation(() => {
-        throw new Error('');
-      });
+      (AccountGlobalConfig.getCurrentUserId as jest.Mock).mockImplementation(
+        () => {
+          throw new Error('');
+        },
+      );
       mockLog.sessionId = 'sessionA';
       jest.spyOn(logUploader, 'transform').mockReturnValue('mm');
       await logUploader.upload([mockLog]);

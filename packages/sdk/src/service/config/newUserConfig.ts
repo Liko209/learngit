@@ -6,7 +6,7 @@ class NewUserConfig extends BaseUserConfig {
   constructor() {
     super(
       UserConfigService.getInstance() as UserConfigService,
-      AccountGlobalConfig.getInstance().getCurrentUserId(),
+      AccountGlobalConfig.getCurrentUserId(),
       'config',
     );
   }

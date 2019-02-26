@@ -393,7 +393,7 @@ export class GroupActionController {
     }
     if (group) {
       isValid = this.groupService.isValid(group);
-      const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
+      const currentUserId = AccountGlobalConfig.getCurrentUserId();
       isIncludeSelf = group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;

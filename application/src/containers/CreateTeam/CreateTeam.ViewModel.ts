@@ -71,9 +71,7 @@ class CreateTeamViewModel extends AbstractViewModel {
     options: TeamSetting,
   ): Promise<Group | null> => {
     const groupService: GroupService = GroupService.getInstance();
-    const creatorId = Number(
-      AccountGlobalConfig.getInstance().getCurrentUserId(),
-    );
+    const creatorId = Number(AccountGlobalConfig.getCurrentUserId());
     try {
       return await groupService.createTeam(creatorId, memberIds, options);
     } catch (error) {

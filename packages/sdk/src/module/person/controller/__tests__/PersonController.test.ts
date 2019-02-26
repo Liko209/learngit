@@ -9,7 +9,6 @@ import { daoManager, AuthDao } from '../../../../dao';
 import { PersonDao } from '../../dao';
 import { Person, PHONE_NUMBER_TYPE } from '../../entity';
 import { personFactory } from '../../../../__tests__/factories';
-import { KVStorage } from 'foundation/src';
 import { KVStorageManager } from 'foundation';
 import PersonAPI from '../../../../api/glip/person';
 
@@ -289,16 +288,12 @@ describe('PersonService', () => {
       };
       entityCacheController.put(amRemovedGuest);
     }
-    const accountConfig = new AccountGlobalConfig(null);
 
     beforeEach(async () => {
       jest.clearAllMocks();
       jest.resetAllMocks();
       setUp();
-      AccountGlobalConfig.getInstance = jest
-        .fn()
-        .mockReturnValue(accountConfig);
-      accountConfig.getCurrentUserId = jest.fn().mockReturnValue(1);
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(1);
       await prepareDataForSearchUTs();
     });
 
@@ -545,13 +540,9 @@ describe('PersonService', () => {
       type: PHONE_NUMBER_TYPE.DIRECT_NUMBER,
       phoneNumber: '234567',
     };
-    const accountConfig = new AccountGlobalConfig(null);
 
     beforeEach(() => {
-      AccountGlobalConfig.getInstance = jest
-        .fn()
-        .mockReturnValue(accountConfig);
-      accountConfig.getCurrentCompanyId = jest.fn().mockReturnValue(1);
+      AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(1);
     });
 
     it('should not return extension id for guest user', () => {

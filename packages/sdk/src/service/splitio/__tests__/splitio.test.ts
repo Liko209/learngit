@@ -41,8 +41,6 @@ describe('SplitIO', async () => {
     company_id: companyId,
   };
 
-  const accountConfig = new AccountGlobalConfig(null);
-
   beforeAll(() => {});
 
   beforeEach(() => {
@@ -51,9 +49,10 @@ describe('SplitIO', async () => {
       company_id: companyId,
     };
 
-    AccountGlobalConfig.getInstance = jest.fn().mockReturnValue(accountConfig);
-    accountConfig.getCurrentUserId = jest.fn().mockReturnValue(mock.user_id);
-    accountConfig.getCurrentCompanyId = jest
+    AccountGlobalConfig.getCurrentUserId = jest
+      .fn()
+      .mockReturnValue(mock.user_id);
+    AccountGlobalConfig.getCurrentCompanyId = jest
       .fn()
       .mockReturnValue(mock.company_id);
   });
@@ -73,14 +72,14 @@ describe('SplitIO', async () => {
     });
 
     it('login - user id not ready', () => {
-      accountConfig.getCurrentUserId = jest.fn().mockReturnValue('');
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue('');
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
     });
 
     it('login - company id not ready', () => {
-      accountConfig.getCurrentCompanyId = jest.fn().mockReturnValue('');
+      AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue('');
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(splitio.hasCreatedClient(testUserId)).toBeFalsy();

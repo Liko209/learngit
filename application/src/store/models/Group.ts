@@ -98,9 +98,7 @@ export default class GroupModel extends Base<Group> {
   get isMember() {
     return (
       this.members &&
-      this.members.indexOf(
-        AccountGlobalConfig.getInstance().getCurrentUserId(),
-      ) >= 0
+      this.members.indexOf(AccountGlobalConfig.getCurrentUserId()) >= 0
     );
   }
 
@@ -110,7 +108,7 @@ export default class GroupModel extends Base<Group> {
       return this.setAbbreviation || '';
     }
 
-    const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
@@ -155,7 +153,7 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
 
     const members = this.members || [];
 
@@ -183,7 +181,7 @@ export default class GroupModel extends Base<Group> {
   get membersExcludeMe() {
     const members = this.members || [];
 
-    const currentUserId = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
 
     return members.filter(member => member !== currentUserId);
   }

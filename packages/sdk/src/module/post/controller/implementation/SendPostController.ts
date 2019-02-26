@@ -44,8 +44,8 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPost(params: SendPostType) {
-    const userId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
-    const companyId: number = AccountGlobalConfig.getInstance().getCurrentCompanyId();
+    const userId: number = AccountGlobalConfig.getCurrentUserId();
+    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
     const paramsInfo = {
       userId,
       companyId,

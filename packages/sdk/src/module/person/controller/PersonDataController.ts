@@ -15,7 +15,7 @@ import { SERVICE, ENTITY } from '../../../service/eventKey';
 
 class PersonDataController {
   handleTeamRemovedIds = async (people: any[]) => {
-    const userId: Number = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const userId: Number = AccountGlobalConfig.getCurrentUserId();
     if (userId) {
       let ids: number[] = [];
       people.some((person: Person) => {

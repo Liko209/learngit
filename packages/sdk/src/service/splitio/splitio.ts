@@ -87,12 +87,12 @@ class SplitIO {
   }
 
   private _getCurrentUserId(): string {
-    const userId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const userId: number = AccountGlobalConfig.getCurrentUserId();
     return userId ? userId.toString() : '';
   }
 
   private _getCurrentCompanyId(): string {
-    const companyId: number = AccountGlobalConfig.getInstance().getCurrentCompanyId();
+    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
     return companyId ? companyId.toString() : '';
   }
 

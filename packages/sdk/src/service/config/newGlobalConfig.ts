@@ -85,14 +85,6 @@ class NewGlobalConfig extends BaseGlobalConfig {
   removeConfig(key: string) {
     this.remove(key);
   }
-
-  setClientId(id: string) {
-    this.put(CONFIG_KEYS.CLIENT_ID, id);
-  }
-
-  getClientId() {
-    return this.get(CONFIG_KEYS.CLIENT_ID);
-  }
 }
 
 export { NewGlobalConfig };

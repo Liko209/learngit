@@ -55,7 +55,7 @@ class PermissionController {
 
   private async _refreshPermissions() {
     const permissions = await this._getAllPermissions();
-    const id = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const id = AccountGlobalConfig.getCurrentUserId();
     mainLogger.log(`user:${id}, refreshPermissions:${permissions}`);
     notificationCenter.emitEntityUpdate(ENTITY.USER_PERMISSION, [
       {

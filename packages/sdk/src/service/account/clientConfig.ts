@@ -5,7 +5,6 @@
 
 import { BETA_CONFIG_KEYS } from './constants';
 import { AccountGlobalConfig } from '../../service/account/config';
-import { NewGlobalConfig } from '../../service/config/newGlobalConfig';
 
 enum EBETA_FLAG {
   BETA_LOG,
@@ -81,7 +80,7 @@ function isInBetaEmailList(flagName: string): boolean {
   const list: string = getFlagValue(flagName);
   if (list !== '') {
     const emailsList: string[] = list.split(',');
-    const userId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const userId: number = AccountGlobalConfig.getCurrentUserId();
     if (userId) {
       return emailsList.indexOf(userId.toString()) !== -1;
     }
@@ -93,7 +92,7 @@ function isInBetaDomainList(flagName: string): boolean {
   const list: string = getFlagValue(flagName);
   if (list !== '') {
     const emailsList: string[] = list.split(',');
-    const companyId: number = AccountGlobalConfig.getInstance().getCurrentCompanyId();
+    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
     if (companyId) {
       return emailsList.indexOf(companyId.toString()) !== -1;
     }
@@ -102,7 +101,7 @@ function isInBetaDomainList(flagName: string): boolean {
 }
 
 function getFlagValue(flagName: string): string {
-  const clientConfig = NewGlobalConfig.getInstance().getClientId();
+  const clientConfig = AccountGlobalConfig.getClientId();
   if (clientConfig && clientConfig[flagName]) {
     return clientConfig[flagName];
   }

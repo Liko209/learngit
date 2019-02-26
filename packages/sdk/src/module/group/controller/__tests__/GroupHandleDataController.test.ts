@@ -118,7 +118,6 @@ function generateFakeGroups(
 const stateService: StateService = new StateService();
 const personService = new PersonService();
 const profileService = new ProfileService();
-const accountConfig = new AccountGlobalConfig(null);
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -138,10 +137,7 @@ describe('GroupHandleDataController', () => {
 
     it('passing an array', async () => {
       expect.assertions(7);
-      AccountGlobalConfig.getInstance = jest
-        .fn()
-        .mockReturnValue(accountConfig);
-      accountConfig.getCurrentUserId.mockReturnValueOnce(1);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
       daoManager.getDao(GroupDao).get.mockReturnValue(1);
       const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
         {
@@ -354,10 +350,7 @@ describe('GroupHandleDataController', () => {
 
   describe('filterGroups()', () => {
     beforeEach(() => {
-      AccountGlobalConfig.getInstance = jest
-        .fn()
-        .mockReturnValue(accountConfig);
-      accountConfig.getCurrentUserId = jest.fn().mockReturnValue(99);
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(99);
     });
     it('should remove extra, when limit < total teams', async () => {
       const LIMIT = 2;
@@ -574,7 +567,7 @@ describe('GroupHandleDataController', () => {
         },
       ] as Group[];
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
-      accountConfig.getCurrentUserId = jest.fn().mockReturnValue(2);
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(2);
       const filteredGroups = await groupHandleDataController.filterGroups(
         group,
         2,
@@ -683,7 +676,7 @@ describe('GroupHandleDataController', () => {
 
   describe('getTransformData()', () => {
     it('should return deactivated group when removed_guest_user_ids includes current user', async () => {
-      UserConfig.getCurrentUserId.mockReturnValue(123);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValue(123);
       const groups = generateFakeGroups(3, {
         deactivated: false,
       });

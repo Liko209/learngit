@@ -732,8 +732,8 @@ class FileUploadController {
     file: File,
     isUpdate: boolean,
   ): ItemFile {
-    const companyId: number = AccountGlobalConfig.getInstance().getCurrentCompanyId();
-    const userId: number = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
+    const userId: number = AccountGlobalConfig.getCurrentUserId();
     const now = Date.now();
     const id = GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE);
     return {

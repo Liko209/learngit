@@ -26,7 +26,7 @@ class PermissionService extends EntityBaseService<UserPermission>
   }
 
   async getUserPermission() {
-    const id = AccountGlobalConfig.getInstance().getCurrentUserId();
+    const id = AccountGlobalConfig.getCurrentUserId();
     return this.getById(id);
   }
 
