@@ -18,14 +18,17 @@ const fetchPrevSpy = jest.fn().mockName('fetchPrevSpy');
 const fetchNextSpy = jest.fn().mockName('fetchNextSpy');
 
 class MyViewModel extends AbstractViewModel {
-  @onScrollToTop
+  hasMoreUp = true;
+  hasMoreDown = true;
+
+  @onScrollToTop((vm: MyViewModel) => vm.hasMoreUp)
   @loadingTop
   fetchPrev() {
     fetchPrevSpy();
     return this.sleep(1);
   }
 
-  @onScrollToBottom
+  @onScrollToBottom((vm: MyViewModel) => vm.hasMoreDown)
   @loadingBottom
   fetchNext() {
     fetchNextSpy();
@@ -78,6 +81,18 @@ describe('LoadingMorePlugin', () => {
       await promise;
       expect(vm).toHaveProperty('loadingTop', false);
     });
+
+    it('should not call the function when hasMoreUp=false', async () => {
+      const plugin = new LoadingMorePlugin();
+      const vm = new MyViewModel();
+      vm.hasMoreUp = false;
+      const View = plugin.wrapView(() => <div>Hello World</div>);
+      plugin.install(vm);
+      const wrapper = mount(<View {...vm} />);
+      wrapper.prop('onScrollToTop')();
+      expect(fetchPrevSpy).not.toHaveBeenCalled();
+      expect(vm).toHaveProperty('loadingTop', false);
+    });
   });
 
   describe('decorator/onScrollToBottom+loadingBottom', () => {
@@ -92,6 +107,19 @@ describe('LoadingMorePlugin', () => {
       expect(fetchNextSpy).toHaveBeenCalled();
       expect(vm).toHaveProperty('loadingBottom', true);
       await promise;
+      expect(vm).toHaveProperty('loadingBottom', false);
+    });
+
+    it('should not call the function when hasMoreDown=false', async () => {
+      const plugin = new LoadingMorePlugin();
+      const vm = new MyViewModel();
+      vm.hasMoreDown = false;
+      const View = plugin.wrapView(() => <div>Hello World</div>);
+      plugin.install(vm);
+      const wrapper = mount(<View {...vm} />);
+      wrapper.prop('onScrollToBottom')();
+
+      expect(fetchNextSpy).not.toHaveBeenCalled();
       expect(vm).toHaveProperty('loadingBottom', false);
     });
   });

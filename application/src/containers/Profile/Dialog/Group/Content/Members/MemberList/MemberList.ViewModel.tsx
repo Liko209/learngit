@@ -30,6 +30,11 @@ class MemberListViewModel extends StoreViewModel<MemberListProps> {
     return this.props.id;
   }
 
+  @computed
+  get hasMoreDown() {
+    return this.memberIds.length < this._allMemberIds.length;
+  }
+
   @action
   private _createSortableMemberIds = async () => {
     if (!this._memberListHandler) {
