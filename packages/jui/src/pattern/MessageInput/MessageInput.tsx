@@ -110,6 +110,7 @@ const formats = [
   'direction',
   'code-block',
   'formula',
+  'mention',
   // 'image',
   // 'video',
 ];
