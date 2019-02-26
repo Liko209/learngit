@@ -11,7 +11,7 @@ import {
   STATIC_HTTP_SERVER,
 } from '../../dao/config/constants';
 import accountHandleData from '../account/handleData';
-import companyHandleData from '../company/handleData';
+import { CompanyService } from '../../module/company';
 import { CONFIG, SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
 import { PresenceService } from '../../module/presence';
@@ -63,7 +63,7 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
       clientConfig,
       profileId: profile ? profile._id : undefined,
     }), // eslint-disable-line no-underscore-dangle, no-undefined
-    companyHandleData(companies),
+    CompanyService.getInstance<CompanyService>().handleIncomingData(companies),
     (ItemService.getInstance() as ItemService).handleIncomingData(items),
     PresenceService.getInstance<PresenceService>().presenceHandleData(
       presences,

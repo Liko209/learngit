@@ -38,7 +38,7 @@ const CheckboxLabel = memo((props: IProps) => {
 });
 
 @observer
-class CheckboxWithLabel extends React.PureComponent {
+class CheckboxWithLabel extends React.Component {
   @observable
   private _checked: boolean;
   private _handleChange: Function;
