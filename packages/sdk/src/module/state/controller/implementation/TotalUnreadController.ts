@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { UMI_SECTION_TYPE, TASK_TYPE } from '../../constants';
+import { UMI_SECTION_TYPE, TASK_DATA_TYPE } from '../../constants';
 import {
   SectionUnread,
   GroupStateHandleTask,
@@ -75,7 +75,7 @@ class TotalUnreadController {
 
   handleGroupState(groupStates: GroupState[]): void {
     const task: DataHandleTask = {
-      type: TASK_TYPE.HANDLE_GROUP_STATE,
+      type: TASK_DATA_TYPE.GROUP_STATE,
       data: groupStates,
     };
     this._taskArray.push(task);
@@ -86,7 +86,7 @@ class TotalUnreadController {
 
   handleGroup(payload: NotificationEntityPayload<Group>): void {
     const task: DataHandleTask = {
-      type: TASK_TYPE.HANDLE_GROUP_ENTITY,
+      type: TASK_DATA_TYPE.GROUP_ENTITY,
       data: payload,
     };
     this._taskArray.push(task);
@@ -97,7 +97,7 @@ class TotalUnreadController {
 
   handleProfile(payload: NotificationEntityPayload<Profile>): void {
     const task: DataHandleTask = {
-      type: TASK_TYPE.HANDLE_PROFILE_ENTITY,
+      type: TASK_DATA_TYPE.PROFILE_ENTITY,
       data: payload,
     };
     this._taskArray.push(task);
@@ -110,9 +110,9 @@ class TotalUnreadController {
     if (!this._unreadInitialized) {
       await this._initializeTotalUnread();
     } else {
-      if (task.type === TASK_TYPE.HANDLE_GROUP_STATE) {
+      if (task.type === TASK_DATA_TYPE.GROUP_STATE) {
         await this._updateTotalUnreadByStateChanges(task.data);
-      } else if (task.type === TASK_TYPE.HANDLE_GROUP_ENTITY) {
+      } else if (task.type === TASK_DATA_TYPE.GROUP_ENTITY) {
         await this._updateTotalUnreadByGroupChanges(task.data);
       } else {
         await this._updateTotalUnreadByProfileChanges(task.data);

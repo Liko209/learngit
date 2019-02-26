@@ -16,7 +16,7 @@ import {
 import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
-import { TASK_TYPE } from '../../constants';
+import { TASK_DATA_TYPE } from '../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
@@ -38,7 +38,7 @@ class StateDataHandleController {
 
   async handleState(states: Partial<State>[]): Promise<void> {
     const stateTask: DataHandleTask = {
-      type: TASK_TYPE.HANDLE_STATE,
+      type: TASK_DATA_TYPE.STATE,
       data: states,
     };
     this._taskArray.push(stateTask);
@@ -49,7 +49,7 @@ class StateDataHandleController {
 
   async handleGroupCursor(groups: Partial<Group>[]): Promise<void> {
     const groupTask: DataHandleTask = {
-      type: TASK_TYPE.HANDLE_GROUP_CURSOR,
+      type: TASK_DATA_TYPE.GROUP_CURSOR,
       data: groups,
     };
     this._taskArray.push(groupTask);
@@ -60,7 +60,7 @@ class StateDataHandleController {
 
   private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
     let transformedState: TransformedState;
-    if (task.type === TASK_TYPE.HANDLE_STATE) {
+    if (task.type === TASK_DATA_TYPE.STATE) {
       transformedState = this._transformStateData(task.data);
     } else {
       transformedState = this._transformGroupData(task.data);
