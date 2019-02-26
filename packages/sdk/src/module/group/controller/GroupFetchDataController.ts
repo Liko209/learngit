@@ -14,7 +14,7 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { SortableModel } from '../../../framework/model';
 import { UserConfig } from '../../../service/account';
-import CompanyService from '../../../service/company';
+import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
 import { ProfileService, extractHiddenGroupIds } from '../../profile';
