@@ -154,7 +154,10 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
 
     private _handleAddCell = () => {
       this.state.dataSource.addRandomCell(1);
-      this._listRef.current.forceUpdate();
+      const { current } = this._listRef;
+      if (current) {
+        current.forceUpdate();
+      }
     }
 
     private _rowRenderer = ({
