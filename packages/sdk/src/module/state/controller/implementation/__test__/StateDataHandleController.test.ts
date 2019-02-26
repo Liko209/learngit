@@ -11,7 +11,7 @@ import { daoManager, DeactivatedDao } from '../../../../../dao';
 import { StateFetchDataController } from '../StateFetchDataController';
 import { State, GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
-import { TASK_DATA_TYPE } from '../../../constants';
+import { TASK_TYPE } from '../../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { TotalUnreadController } from '../TotalUnreadController';
 
@@ -50,7 +50,7 @@ describe('StateDataHandleController', () => {
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
       await stateDataHandleController.handleState(states);
       expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.STATE,
+        type: TASK_TYPE.HANDLE_STATE,
         data: states,
       });
     });
@@ -58,7 +58,7 @@ describe('StateDataHandleController', () => {
     it('should only add task to array when array has more than one task', async () => {
       const states: Partial<State>[] = [{ id: 123 }];
       stateDataHandleController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.STATE, data: states },
+        { type: TASK_TYPE.HANDLE_STATE, data: states },
       ];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
       await stateDataHandleController.handleState(states);
@@ -74,7 +74,7 @@ describe('StateDataHandleController', () => {
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
       await stateDataHandleController.handleGroupCursor(groups);
       expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.GROUP_CURSOR,
+        type: TASK_TYPE.HANDLE_GROUP_CURSOR,
         data: groups,
       });
     });
@@ -82,7 +82,7 @@ describe('StateDataHandleController', () => {
     it('should only add task to array when array has more than one task', async () => {
       const groups: Partial<Group>[] = [{ id: 123 }];
       stateDataHandleController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.GROUP_CURSOR, data: groups },
+        { type: TASK_TYPE.HANDLE_GROUP_CURSOR, data: groups },
       ];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
       await stateDataHandleController.handleGroupCursor(groups);
@@ -94,7 +94,7 @@ describe('StateDataHandleController', () => {
 
   describe('_startDataHandleTask', () => {
     it('should handle state task and stop the queue', async () => {
-      const task: DataHandleTask = { type: TASK_DATA_TYPE.STATE, data: [] };
+      const task: DataHandleTask = { type: TASK_TYPE.HANDLE_STATE, data: [] };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
       stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
@@ -121,7 +121,7 @@ describe('StateDataHandleController', () => {
 
     it('should handle group task and stop the queue', async () => {
       const task: DataHandleTask = {
-        type: TASK_DATA_TYPE.GROUP_CURSOR,
+        type: TASK_TYPE.HANDLE_GROUP_CURSOR,
         data: [],
       };
       stateDataHandleController['_transformStateData'] = jest.fn();

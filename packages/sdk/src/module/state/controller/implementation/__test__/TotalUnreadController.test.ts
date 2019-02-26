@@ -12,7 +12,7 @@ import {
 } from '../../../types';
 import { Group } from '../../../../group/entity';
 import { Profile } from '../../../../profile/entity';
-import { UMI_SECTION_TYPE, TASK_DATA_TYPE } from '../../../constants';
+import { UMI_SECTION_TYPE, TASK_TYPE } from '../../../constants';
 import { GroupState } from '../../../entity';
 import { GroupService } from '../../../../group';
 import { ProfileService } from '../../../../profile';
@@ -136,7 +136,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_startDataHandleTask'] = jest.fn();
       await totalUnreadController.handleGroupState(groupState);
       expect(totalUnreadController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.GROUP_STATE,
+        type: TASK_TYPE.HANDLE_GROUP_STATE,
         data: groupState,
       });
     });
@@ -144,7 +144,7 @@ describe('TotalUnreadController', () => {
     it('should only add task to array when array has more than one task', async () => {
       const groupState: GroupState[] = [{ id: 123 }];
       totalUnreadController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.GROUP_STATE, data: groupState },
+        { type: TASK_TYPE.HANDLE_GROUP_STATE, data: groupState },
       ];
       totalUnreadController['_startDataHandleTask'] = jest.fn();
       await totalUnreadController.handleGroupState(groupState);
@@ -158,7 +158,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_startDataHandleTask'] = jest.fn();
       await totalUnreadController.handleGroup(payload);
       expect(totalUnreadController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.GROUP_ENTITY,
+        type: TASK_TYPE.HANDLE_GROUP_ENTITY,
         data: payload,
       });
     });
@@ -166,7 +166,7 @@ describe('TotalUnreadController', () => {
     it('should only add task to array when array has more than one task', async () => {
       const payload = {} as NotificationEntityPayload<Group>;
       totalUnreadController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.GROUP_ENTITY, data: payload },
+        { type: TASK_TYPE.HANDLE_GROUP_ENTITY, data: payload },
       ];
       totalUnreadController['_startDataHandleTask'] = jest.fn();
       await totalUnreadController.handleGroup(payload);
@@ -180,7 +180,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_startDataHandleTask'] = jest.fn();
       await totalUnreadController.handleProfile(payload);
       expect(totalUnreadController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.PROFILE_ENTITY,
+        type: TASK_TYPE.HANDLE_PROFILE_ENTITY,
         data: payload,
       });
     });
@@ -188,7 +188,7 @@ describe('TotalUnreadController', () => {
     it('should only add task to array when array has more than one task', async () => {
       const payload = {} as NotificationEntityPayload<Profile>;
       totalUnreadController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.PROFILE_ENTITY, data: payload },
+        { type: TASK_TYPE.HANDLE_PROFILE_ENTITY, data: payload },
       ];
       totalUnreadController['_startDataHandleTask'] = jest.fn();
       await totalUnreadController.handleProfile(payload);
@@ -199,7 +199,7 @@ describe('TotalUnreadController', () => {
   describe('_startDataHandleTask', () => {
     it('should init and stop the queue when _unreadInitialized === false', async () => {
       const task: DataHandleTask = {
-        type: TASK_DATA_TYPE.GROUP_STATE,
+        type: TASK_TYPE.HANDLE_GROUP_STATE,
         data: [],
       };
       totalUnreadController['_unreadInitialized'] = false;
@@ -227,7 +227,7 @@ describe('TotalUnreadController', () => {
 
     it('should handle task and stop the queue when _unreadInitialized === true', async () => {
       const task: DataHandleTask = {
-        type: TASK_DATA_TYPE.GROUP_STATE,
+        type: TASK_TYPE.HANDLE_GROUP_STATE,
         data: [],
       };
       totalUnreadController['_unreadInitialized'] = true;

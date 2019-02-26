@@ -16,7 +16,7 @@ import {
 import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
-import { TASK_DATA_TYPE } from '../../constants';
+import { TASK_TYPE } from '../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../types';
 import notificationCenter from '../../../../service/notificationCenter';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
@@ -36,40 +36,38 @@ class StateDataHandleController {
     this._taskArray = [];
   }
 
-  handleState(states: Partial<State>[]): void {
+  async handleState(states: Partial<State>[]): Promise<void> {
     const stateTask: DataHandleTask = {
-      type: TASK_DATA_TYPE.STATE,
+      type: TASK_TYPE.HANDLE_STATE,
       data: states,
     };
     this._taskArray.push(stateTask);
     if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
+      await this._startDataHandleTask(this._taskArray[0]);
     }
   }
 
-  handleGroupCursor(groups: Partial<Group>[]): void {
+  async handleGroupCursor(groups: Partial<Group>[]): Promise<void> {
     const groupTask: DataHandleTask = {
-      type: TASK_DATA_TYPE.GROUP_CURSOR,
+      type: TASK_TYPE.HANDLE_GROUP_CURSOR,
       data: groups,
     };
     this._taskArray.push(groupTask);
     if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
+      await this._startDataHandleTask(this._taskArray[0]);
     }
   }
 
   private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
     let transformedState: TransformedState;
-    if (task.type === TASK_DATA_TYPE.STATE) {
+    if (task.type === TASK_TYPE.HANDLE_STATE) {
       transformedState = this._transformStateData(task.data);
     } else {
       transformedState = this._transformGroupData(task.data);
     }
     const updatedState = await this._generateUpdatedState(transformedState);
     await this._updateEntitiesAndDoNotification(updatedState);
-    await this._totalUnreadController.handleGroupState(
-      updatedState.groupStates,
-    );
+    this._totalUnreadController.handleGroupState(updatedState.groupStates);
 
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
