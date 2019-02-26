@@ -8,7 +8,6 @@ import { IEntitySourceController } from '../../../../../../framework/controller/
 import { Item } from '../../../../entity';
 import { FileItemUtils } from '../../utils';
 import { daoManager } from '../../../../../../dao';
-import { AUTH_GLIP_TOKEN } from '../../../../../../dao/auth/constants';
 import { Api } from '../../../../../../api';
 import { FileActionController } from '../FileActionController';
 import { BaseSubItemService } from '../../../base/service';

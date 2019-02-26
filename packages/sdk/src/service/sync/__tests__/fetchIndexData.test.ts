@@ -1,5 +1,4 @@
 /// <reference path="../../../__tests__/types.d.ts" />
-import { daoManager } from '../../../dao';
 import { indexData } from '../../../api';
 
 import { fetchIndexData } from '../fetchIndexData';

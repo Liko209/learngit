@@ -5,12 +5,7 @@ import _ from 'lodash';
 import { groupFactory } from '../../../../__tests__/factories';
 import { Api } from '../../../../api';
 import GroupAPI from '../../../../api/glip/group';
-import {
-  AccountDao,
-  ConfigDao,
-  daoManager,
-  GroupConfigDao,
-} from '../../../../dao';
+import { daoManager, GroupConfigDao } from '../../../../dao';
 import { TestEntityCacheSearchController } from '../../../../framework/__mocks__/controller/TestEntityCacheSearchController';
 import { TestEntitySourceController } from '../../../../framework/__mocks__/controller/TestEntitySourceController';
 import { TestPartialModifyController } from '../../../../framework/__mocks__/controller/TestPartialModifyController';
@@ -69,9 +64,7 @@ describe('GroupFetchDataController', () => {
   let testEntityCacheSearchController: IEntityCacheSearchController<Group>;
   let groupService: GroupService;
 
-  const accountDao = new AccountDao(null);
   const groupDao = new GroupDao(null);
-  const configDao = new ConfigDao(null);
   const groupConfigDao = new GroupConfigDao(null);
   const postService = new PostService();
   const mockUserId = 1;
@@ -212,7 +205,6 @@ describe('GroupFetchDataController', () => {
   });
 
   it('requestRemoteGroupByMemberList()', async () => {
-    daoManager.getKVDao.mockReturnValue(accountDao);
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(1); // userId
 
@@ -240,9 +232,9 @@ describe('GroupFetchDataController', () => {
   it('getGroupByPersonId()', async () => {
     const mock = { id: 2 };
     AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
-    daoManager.getKVDao.mockReturnValueOnce(accountDao);
+
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    accountDao.get.mockReturnValue(1); // userId
+
     groupDao.queryGroupByMemberList.mockResolvedValue(mock);
     const result1 = await groupFetchDataController.getGroupByPersonId(2);
     expect(result1).toEqual(mock);
@@ -656,12 +648,8 @@ describe('GroupFetchDataController', () => {
   });
 
   describe('requestRemoteGroupByMemberList', () => {
-    const accountDao = new AccountDao(null);
-
     beforeEach(() => {
       const curUserId = 3;
-      daoManager.getKVDao.mockReturnValue(accountDao);
-      accountDao.get.mockReturnValue(3);
       AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it('should return a group when request success', async () => {

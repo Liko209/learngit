@@ -4,13 +4,12 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 import AccountService from '..';
-import { daoManager, AccountDao } from '../../../dao';
+import { daoManager } from '../../../dao';
 import { PersonDao } from '../../../module/person/dao';
 import { refreshToken } from '../../../api';
 import { GlobalConfigService } from '../../../module/config/service/GlobalConfigService';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { UserConfigService } from '../../../module/config';
-import { AuthGlobalConfig } from '../../../service/auth/config';
 
 jest.mock('../../../dao');
 jest.mock('../../../module/person/dao');
@@ -22,19 +21,12 @@ UserConfigService.getInstance = jest.fn();
 
 describe('AccountService', () => {
   let accountService: AccountService;
-  let accountDao: AccountDao;
   let personDao: PersonDao;
-  let accountConfig: AccountGlobalConfig;
 
   beforeAll(() => {
-    accountDao = new AccountDao(null);
     personDao = new PersonDao(null);
     daoManager.getDao.mockReturnValue(personDao);
     accountService = new AccountService();
-  });
-
-  beforeEach(() => {
-    accountDao.get.mockClear();
   });
 
   describe('getCurrentUserInfo()', () => {
@@ -65,8 +57,6 @@ describe('AccountService', () => {
 
     it('should return {} when not personInfo', () => {
       expect.assertions(1);
-      accountDao.get.mockClear();
-      accountDao.get.mockReturnValueOnce('12').mockReturnValueOnce('123');
       personDao.get.mockReturnValueOnce('');
       const personInfo = accountService.getCurrentUserInfo();
       return expect(personInfo).resolves.toEqual({});
