@@ -1,2 +1,2 @@
 export { AccountGlobalConfig } from './AccountGlobalConfig';
-export { AccountUserConfig } from './AccountUserConfig1';
+export { AccountUserConfig } from './AccountUserConfig';
