@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { observer } from 'mobx-react';
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import ReactResizeDetector from 'react-resize-detector';
 import { JuiProfileDialogContentMemberList } from 'jui/pattern/Profile/Dialog';
@@ -12,6 +12,7 @@ import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellWrapper,
+  JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
 import { MemberListViewProps } from './types';
 import { MemberListItem } from '../MemberListItem';
@@ -19,35 +20,31 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 const ITEM_HEIGHT = 48;
 const MAX_ITEM_NUMBER = 8;
+
 @observer
 class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
-  implements IVirtualListDataSource {
+  implements IVirtualListDataSource<number, number> {
   componentWillUnmount() {
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
   }
 
-  countOfCell() {
+  get(index: number) {
+    return this.props.memberIds[index];
+  }
+
+  size() {
     const { memberIds } = this.props;
     return memberIds.length;
   }
 
-  cellAtIndex = (index: number, style: CSSProperties) => {
-    const { memberIds, id } = this.props;
-    const memberId = memberIds[index];
-    return memberId ? (
-      <JuiVirtualCellWrapper key={index} style={style}>
+  rowRenderer = ({ style, item: memberId }: JuiVirtualCellProps<number>) => {
+    const { id } = this.props;
+    return (
+      <JuiVirtualCellWrapper key={memberId} style={style}>
         <MemberListItem key={memberId} cid={id} pid={memberId} />
       </JuiVirtualCellWrapper>
-    ) : null;
-  }
-
-  loadMore = async (startIndex: number, stopIndex: number) => {
-    await this.props.loadMore();
-  }
-
-  fixedCellHeight() {
-    return ITEM_HEIGHT;
+    );
   }
 
   onScroll = (event: { scrollTop: number }) => {
@@ -70,8 +67,12 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
             <JuiProfileDialogContentMemberList>
               <JuiVirtualList
                 dataSource={this}
+                overscan={5}
+                rowRenderer={this.rowRenderer}
                 width={width}
                 height={virtualListHeight}
+                fixedCellHeight={ITEM_HEIGHT}
+                onScroll={this.onScroll}
                 data-test-automation-id="profileDialogMemberList"
               />
             </JuiProfileDialogContentMemberList>

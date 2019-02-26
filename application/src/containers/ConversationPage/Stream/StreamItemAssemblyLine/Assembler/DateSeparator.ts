@@ -24,7 +24,6 @@ export class DateSeparator extends Assembler {
       id: Number(timeStamp),
       timeStart: Number(timeStamp),
       type: StreamItemType.DATE_SEPARATOR,
-      value: Number(timeStamp),
     });
     const dates = postByDay
       .keys()
