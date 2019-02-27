@@ -32,15 +32,6 @@ enum CACHE_INITIAL_STATUS {
   SUCCESS,
 }
 
-enum PRESENCE {
-  NOTREADY = 'NotReady',
-  UNAVAILABLE = 'Unavailable',
-  AVAILABLE = 'Available',
-  ONCALL = 'OnCall',
-  DND = 'DND',
-  INMEETING = 'InMeeting',
-}
-
 const SHOULD_UPDATE_NETWORK_TOKEN = 'should_update_network_token';
 const UMI_METRICS = [
   'group_post_drp_cursor',
@@ -56,5 +47,4 @@ export {
   SHOULD_UPDATE_NETWORK_TOKEN,
   CACHE_INITIAL_STATUS,
   UMI_METRICS,
-  PRESENCE,
 };

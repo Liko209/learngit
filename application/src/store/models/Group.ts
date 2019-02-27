@@ -193,9 +193,9 @@ export default class GroupModel extends Base<Group> {
   @computed
   get teamPermissionParams() {
     return {
-      members: this.members || [],
+      members: this.members,
       is_team: this.isTeam,
-      guest_user_company_ids: this.guestUserCompanyIds || [],
+      guest_user_company_ids: this.guestUserCompanyIds,
       permissions: this.permissions,
     };
   }
@@ -204,16 +204,16 @@ export default class GroupModel extends Base<Group> {
   get isCurrentUserHasPermissionAddMember() {
     const groupService: GroupService = GroupService.getInstance();
     return groupService.isCurrentUserHasPermission(
-      this.teamPermissionParams,
       PERMISSION_ENUM.TEAM_ADD_MEMBER,
+      this.teamPermissionParams,
     );
   }
 
   get isAdmin() {
     const groupService: GroupService = GroupService.getInstance();
     return groupService.isCurrentUserHasPermission(
-      this.teamPermissionParams,
       PERMISSION_ENUM.TEAM_ADMIN,
+      this.teamPermissionParams,
     );
   }
 
@@ -240,8 +240,8 @@ export default class GroupModel extends Base<Group> {
   get canPost() {
     const groupService: GroupService = GroupService.getInstance();
     return groupService.isCurrentUserHasPermission(
-      this.teamPermissionParams,
       PERMISSION_ENUM.TEAM_POST,
+      this.teamPermissionParams,
     );
   }
 

@@ -8,6 +8,7 @@ import {
   SessionDecorator,
   TruncationDecorator,
   TimestampDecorator,
+  StringifyDecorator,
 } from './decorators';
 import { LogConsumer, LogPersistence } from './consumer';
 
@@ -33,6 +34,7 @@ class LogManager {
       TruncationDecorator: new TruncationDecorator(),
       TimestampDecorator: new TimestampDecorator(),
       MessageDecorator: new MessageDecorator(),
+      StringifyDecorator: new StringifyDecorator(),
     };
     configManager.mergeConfig({
       persistence: new LogPersistence(),
@@ -42,9 +44,12 @@ class LogManager {
         loader: 'SessionDecorator',
       },
       {
+        loader: 'StringifyDecorator',
+      },
+      {
         loader: 'TruncationDecorator',
         options: {
-          limit: 2000,
+          limit: 4000,
         },
       },
       {
@@ -74,7 +79,7 @@ class LogManager {
     }
   }
 
-  static get Instance() {
+  static getInstance() {
     this._instance || (this._instance = new this());
     return this._instance;
   }
@@ -90,6 +95,10 @@ class LogManager {
   config(config: Partial<LogConfig>) {
     configManager.mergeConfig(config);
     return this;
+  }
+
+  getConfig() {
+    return configManager.getConfig();
   }
 
   configDecorators(loaderItems: LoaderItem[], customLoaderMap?: LoaderMap) {

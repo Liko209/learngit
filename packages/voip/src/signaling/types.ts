@@ -8,6 +8,7 @@ enum UA_EVENT {
   REG_FAILED = 'uaRegisterFailed',
   REG_UNREGISTER = 'uaUnRegisterFailed',
   RECEIVE_INVITE = 'uaReceiveInvite',
+  TRANSPORT_ERROR = 'uaTransportError',
 }
 
 enum WEBPHONE_SESSION_STATE {
@@ -37,6 +38,9 @@ type ProvisionDataOptions = {
   logLevel?: string;
   audioHelper?: string;
   onSession?: string;
+  maxReconnectionAttempts?: number;
+  reconnectionTimeout?: number;
+  connectionTimeout?: number;
 };
 
 type InboundRtpReport = {

@@ -26,9 +26,9 @@ def cancelOldBuildOfSameCause() {
         def causeData = cause.getData()
 
         if (currentCauseData.sourceBranch == causeData.sourceBranch
-                && currentCauseData.sourceRepoName == causeData.sourceRepoName
-                && currentCauseData.targetBranch == causeData.targetBranch
-                && currentCauseData.targetRepoName == causeData.targetRepoName) {
+            && currentCauseData.sourceRepoName == causeData.sourceRepoName
+            && currentCauseData.targetBranch == causeData.targetBranch
+            && currentCauseData.targetRepoName == causeData.targetRepoName) {
             build.doStop()
             println "build ${build.getFullDisplayName()} is canceled"
         }
@@ -40,7 +40,7 @@ def condStage(Map args, Closure block) {
     assert args.name, 'stage name is required'
     String name = args.name
     Boolean enable = (null == args.enable) ? true: args.enable
-    Integer time = (null == args.timeout) ? 600: args.timeout
+    Integer time = (null == args.timeout) ? 1800: args.timeout
     Boolean activity = (null == args.activity) ? true: args.activity
     return timeout(time: time, activity: activity, unit: 'SECONDS') {
         stage(name, enable ? block : {
@@ -116,7 +116,7 @@ def safeMail(addresses, subject, body) {
 def isStableBranch(String branchName) {
     if (null == branchName)
         return false
-    return branchName ==~ /^(develop)|(master)|(release.*)|(stage.*)$/
+    return branchName ==~ /^(develop)|(master)|(release.*)|(stage.*)|(hotfix.*)$/
 }
 
 def buildReport(result, buildUrl, report) {
@@ -139,27 +139,47 @@ def buildReport(result, buildUrl, report) {
 }
 
 /* job params */
-String jobName = env.JOB_BASE_NAME
-String buildNode = env.BUILD_NODE
-String scmCredentialId = env.SCM_CREDENTIAL
-String npmRegistry = env.NPM_REGISTRY
-String nodejsTool = env.NODEJS_TOOL
-String deployUri = env.DEPLOY_URI
-String deployCredentialId = env.DEPLOY_CREDENTIAL
-String deployBaseDir = env.DEPLOY_BASE_DIR
-String rcCredentialId = env.E2E_RC_CREDENTIAL
+String buildNode = params.BUILD_NODE ?: env.BUILD_NODE
+String scmCredentialId = params.SCM_CREDENTIAL
+String npmRegistry = params.NPM_REGISTRY
+String nodejsTool = params.NODEJS_TOOL
+String deployUri = params.DEPLOY_URI
+String deployCredentialId = params.DEPLOY_CREDENTIAL
+String deployBaseDir = params.DEPLOY_BASE_DIR
+String rcCredentialId = params.E2E_RC_CREDENTIAL
 
 String releaseBranch = 'master'
 String integrationBranch = 'develop'
 
+/* gitlab params and env vars */
+String buildUrl = env.BUILD_URL
+String gitlabSourceBranch = env.gitlabSourceBranch?: params.GITLAB_BRANCH
+String gitlabTargetBranch = env.gitlabTargetBranch?: gitlabSourceBranch
+String gitlabSourceNamespace = env.gitlabSourceNamespace?: params.GITLAB_NAMESPACE
+String gitlabTargetNamespace = env.gitlabTargetNamespace?: gitlabSourceNamespace
+String gitlabSourceRepoSshURL = env.gitlabSourceRepoSshURL?: params.GITLAB_SSH_URL
+String gitlabTargetRepoSshURL = env.gitlabTargetRepoSshURL?: gitlabSourceRepoSshURL
+String gitlabUserEmail = env.gitlabUserEmail
+String gitlabMergeRequestLastCommit = env.gitlabMergeRequestLastCommit
+
+/* e2e params vars */
+String e2eSiteEnv = params.E2E_SITE_ENV
+String e2eSeleniumServer = params.E2E_SELENIUM_SERVER
+String e2eBrowsers = params.E2E_BROWSERS
+String e2eConcurrency = params.E2E_CONCURRENCY
+String e2eExcludeTags = params.E2E_EXCLUDE_TAGS?: ''
+Boolean e2eEnableRemoteDashboard = params.E2E_ENABLE_REMOTE_DASHBOARD
+Boolean e2eEnableMockServer = params.E2E_ENABLE_MOCK_SERVER
+
 /* build strategy */
-Boolean isMerge = (null != env.gitlabTargetBranch) && (env.gitlabSourceBranch != env.gitlabTargetBranch)
-Boolean skipEndToEnd = !isStableBranch(env.gitlabSourceBranch) && !isStableBranch(env.gitlabTargetBranch)
-Boolean skipUpdateGitlabStatus = 'PUSH' == env.gitlabActionType && integrationBranch != env.gitlabSourceBranch
-Boolean buildRelease = env.gitlabSourceBranch.startsWith('release') || env.gitlabSourceBranch.endsWith('release') || releaseBranch == env.gitlabSourceBranch
+Boolean isMerge = gitlabSourceBranch != gitlabTargetBranch
+Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch) &&
+    !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
+Boolean skipUpdateGitlabStatus = !isMerge && integrationBranch != gitlabTargetBranch
+Boolean buildRelease = gitlabTargetBranch.startsWith('release') || gitlabTargetBranch.endsWith('release') || releaseBranch == gitlabTargetBranch
 
 /* deploy params */
-String subDomain = getSubDomain(env.gitlabSourceBranch, env.gitlabTargetBranch)
+String subDomain = getSubDomain(gitlabSourceBranch, gitlabTargetBranch)
 String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
 String appStageLinkDir = "${deployBaseDir}/stage".toString()
 String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
@@ -183,13 +203,14 @@ Boolean skipInstallDependencies = false
 
 // glip channel
 def reportChannels = [
-        env.gitlabUserEmail,
-        getMessageChannel(env.gitlabSourceBranch, env.gitlabTargetBranch)
+    getMessageChannel(gitlabSourceBranch, gitlabTargetBranch)
 ]
+// send report to owner if gitlabUserEmail is provided
+gitlabUserEmail && reportChannels.push(gitlabUserEmail)
 
 // report
 Map report = [:]
-report.buildUrl = env.BUILD_URL
+report.buildUrl = buildUrl
 
 // start to build
 skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'pending')
@@ -198,7 +219,7 @@ cancelOldBuildOfSameCause()
 node(buildNode) {
     skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'running')
 
-    // install nodejs tool
+    // install nodejs tool and update environment variables
     env.NODEJS_HOME = tool nodejsTool
     env.PATH="${env.NODEJS_HOME}/bin:${env.PATH}"
     env.TZ='UTC-8'
@@ -215,36 +236,37 @@ node(buildNode) {
             sh 'grep --version'
             sh 'which tr'
             sh 'which xargs'
+            sh 'npm cache verify'
         }
 
         stage ('Checkout') {
             checkout ([
-                    $class: 'GitSCM',
-                    branches: [[name: "${env.gitlabSourceNamespace}/${env.gitlabSourceBranch}"]],
-                    extensions: [
-                            [$class: 'PruneStaleBranch'],
-                            [$class: 'CleanBeforeCheckout'],
-                            [
-                                    $class: 'PreBuildMerge',
-                                    options: [
-                                            fastForwardMode: 'FF',
-                                            mergeRemote: env.gitlabTargetNamespace?: env.gitlabSourceNamespace,
-                                            mergeTarget: env.gitlabTargetBranch?: env.gitlabSourceBranch
-                                    ]
-                            ]
-                    ],
-                    userRemoteConfigs: [
-                            [
-                                    credentialsId: scmCredentialId,
-                                    name: env.gitlabTargetNamespace,
-                                    url: env.gitlabTargetRepoSshURL
-                            ],
-                            [
-                                    credentialsId: scmCredentialId,
-                                    name: env.gitlabSourceNamespace,
-                                    url: env.gitlabSourceRepoSshURL
-                            ]
+                $class: 'GitSCM',
+                branches: [[name: "${gitlabSourceNamespace}/${gitlabSourceBranch}"]],
+                extensions: [
+                    [$class: 'PruneStaleBranch'],
+                    [$class: 'CleanBeforeCheckout'],
+                    [
+                        $class: 'PreBuildMerge',
+                        options: [
+                            fastForwardMode: 'FF',
+                            mergeRemote: gitlabTargetNamespace,
+                            mergeTarget: gitlabTargetBranch,
+                        ]
                     ]
+                ],
+                userRemoteConfigs: [
+                    [
+                        credentialsId: scmCredentialId,
+                        name: gitlabTargetNamespace,
+                        url: gitlabTargetRepoSshURL,
+                    ],
+                    [
+                        credentialsId: scmCredentialId,
+                        name: gitlabSourceNamespace,
+                        url: gitlabSourceRepoSshURL
+                    ]
+                ]
             ])
             // change in tests and autoDevOps directory should not trigger application build
             // for git 1.9, there is an easy way to exclude files
@@ -273,7 +295,7 @@ node(buildNode) {
             skipSaAndUt = skipBuildApp && skipBuildJui
 
             // we can even skip install dependencies
-            skipInstallDependencies = [skipSaAndUt, skipEndToEnd].every()
+            skipInstallDependencies = skipSaAndUt
         }
 
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
@@ -284,177 +306,178 @@ node(buildNode) {
                 sh 'npm install --ignore-scripts --unsafe-perm'
                 sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
             }
+            try {
+                sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version check'
+                sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version cache'
+            } catch (e) { }
         }
 
         parallel (
-                'Static Analysis': {
-                    report.saReport = 'skip'
-                    condStage(name: 'Static Analysis', enable: !skipSaAndUt) {
-                        sh 'mkdir -p lint'
-                        try {
-                            [
-                                    ['application', 'lint/application-tslint-report.txt'],
-                                    ['packages/foundation', 'lint/foundation-tslint-report.txt'],
-                                    ['packages/sdk', 'lint/sdk-tslint-report.txt'],
-                                    ['packages/jui', 'lint/jui-tslint-report.txt'],
+            'Static Analysis': {
+                report.saReport = 'skip'
+                condStage(name: 'Static Analysis', enable: !skipSaAndUt) {
+                    sh 'mkdir -p lint'
+                    try {
+                        sh 'npm run lint-all > lint/report.txt'
+                        report.saReport = "${SUCCESS_EMOJI} no tslint error"
+                    } catch (e) {
+                        String saErrorMessage = sh(returnStdout: true, script: 'cat lint/report.txt').trim()
+                        report.saReport = "${FAILURE_EMOJI} ${saErrorMessage}"
+                        throw e
+                    }
+                }
+            },
 
-                            ].each {
-                                sh "npx tslint --project ${it[0]} --out ${it[1]}"
-                            }
-                            report.saReport = "${SUCCESS_EMOJI} no tslint error"
-                        } catch (e) {
-                            String saErrorMessage = sh(returnStdout: true, script: 'cat lint/*.txt').trim()
-                            report.saReport = "${FAILURE_EMOJI} ${saErrorMessage}"
-                            throw e
+            'Unit Test': {
+                report.coverage = 'skip'
+                condStage(name: 'Unit Test', enable: !skipSaAndUt) {
+                    sh 'npm run test:cover'
+                    publishHTML([
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: 'coverage/lcov-report',
+                        reportFiles: 'index.html',
+                        reportName: 'Coverage',
+                        reportTitles: 'Coverage'
+                    ])
+                    report.coverage = "${buildUrl}Coverage"
+                    if (!isMerge && integrationBranch == gitlabTargetBranch) {
+                        // attach coverage report as git note when new commits are pushed to integration branch
+                        // push git notes to remote
+                        sshagent (credentials: [scmCredentialId]) {
+                            sh "git fetch -f ${gitlabSourceNamespace} refs/notes/*:refs/notes/*"
+                            sh 'git notes add -f -F coverage/coverage-summary.json'
+                            sh "git push -f ${gitlabSourceNamespace} refs/notes/*"
                         }
                     }
-                },
-
-                'Unit Test': {
-                    report.coverage = 'skip'
-                    condStage(name: 'Unit Test', enable: !skipSaAndUt) {
-                        sh 'npm run test:cover'
-                        publishHTML([
-                                allowMissing: false,
-                                alwaysLinkToLastBuild: false,
-                                keepAll: true,
-                                reportDir: 'coverage/lcov-report',
-                                reportFiles: 'index.html',
-                                reportName: 'Coverage',
-                                reportTitles: 'Coverage'
-                        ])
-                        report.coverage = "${env.BUILD_URL}Coverage"
-                        if (!isMerge && integrationBranch == env.gitlabSourceBranch) {
-                            // attach coverage report as git note when new commits are pushed to integration branch
-                            // push git notes to remote
-                            sshagent (credentials: [scmCredentialId]) {
-                                sh "git fetch -f ${env.gitlabSourceNamespace} refs/notes/*:refs/notes/*"
-                                sh 'git notes add -f -F coverage/coverage-summary.json'
-                                sh "git push -f ${env.gitlabSourceNamespace} refs/notes/*"
-                            }
+                    if (isMerge && integrationBranch == gitlabTargetBranch && fileExists('scripts/coverage-diff.js')) {
+                        // compare coverage report with integration branch's
+                        // step 1: fetch git notes
+                        sshagent (credentials: [scmCredentialId]) {
+                            sh "git fetch -f ${gitlabTargetNamespace} ${gitlabTargetBranch}"
+                            sh "git fetch -f ${gitlabTargetNamespace} refs/notes/*:refs/notes/*"
                         }
-                        if (isMerge && integrationBranch == env.gitlabTargetBranch && fileExists('scripts/coverage-diff.js')) {
-                            // compare coverage report with integration branch's
-                            // step 1: fetch git notes
-                            sshagent (credentials: [scmCredentialId]) {
-                                sh "git fetch -f ${env.gitlabTargetNamespace} ${env.gitlabTargetBranch}"
-                                sh "git fetch -f ${env.gitlabTargetNamespace} refs/notes/*:refs/notes/*"
-                            }
-                            // step 2: get latest commit on integration branch with notes
-                            sh "git rev-list ${env.gitlabTargetNamespace}/${env.gitlabTargetBranch} > commit-sha.txt"
-                            sh "git notes | cut -d ' ' -f 2 > note-sha.txt"
-                            String latestCommitWithNote = sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
-                            // step 3: compare with baseline
-                            if (latestCommitWithNote) {
-                                sh "git notes show ${latestCommitWithNote} > baseline-coverage-summary.json"
-                                int exitCode = sh(
-                                    returnStatus: true,
-                                    script: "node scripts/coverage-diff.js baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff",
-                                )
-                                report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
-                                report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
-                                // TODO: throw exception when coverage drop
-                            }
+                        // step 2: get latest commit on integration branch with notes
+                        sh "git rev-list ${gitlabTargetNamespace}/${gitlabTargetBranch} > commit-sha.txt"
+                        sh "git notes | cut -d ' ' -f 2 > note-sha.txt"
+                        String latestCommitWithNote = sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
+                        // step 3: compare with baseline
+                        if (latestCommitWithNote) {
+                            sh "git notes show ${latestCommitWithNote} > baseline-coverage-summary.json"
+                            int exitCode = sh(
+                                returnStatus: true,
+                                script: "node scripts/coverage-diff.js baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff",
+                            )
+                            report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
+                            report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
+                            // TODO: throw exception when coverage drop
                         }
                     }
                 }
+            }
         )
 
         parallel (
-                'Build JUI' : {
-                    condStage(name: 'Build JUI', enable: !skipBuildJui) {
-                        sh 'npm run build:ui'
-                    }
-
-                    condStage(name: 'Deploy JUI') {
-                        String sourceDir = "packages/jui/storybook-static/"  // !!! don't forget trailing '/'
-                        sshagent(credentials: [deployCredentialId]) {
-                            // copy to dir name with head sha when dir is not exists
-                            skipBuildJui || rsyncFolderToRemote(sourceDir, deployUri, juiHeadShaDir)
-                            // and create link to branch name based folder
-                            updateRemoteLink(deployUri, juiHeadShaDir, juiLinkDir)
-                        }
-                    }
-                    report.juiUrl = juiUrl
-                },
-
-                'Build Application': {
-                    condStage(name: 'Build Application', enable: !skipBuildApp) {
-                        // FIXME: move this part to build script
-                        sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
-                        sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
-                        if (buildRelease) {
-                            sh 'npm run build:release'
-                        } else {
-                            dir('application') {
-                                sh 'npm run build'
-                            }
-                        }
-                    }
-
-                    condStage(name: 'Deploy Application') {
-                        String sourceDir = "application/build/"  // !!! don't forget trailing '/'
-                        sshagent(credentials: [deployCredentialId]) {
-                            // copy to dir name with head sha when dir is not exists
-                            skipBuildApp || rsyncFolderToRemote(sourceDir, deployUri, appHeadShaDir)
-                            // and create link to branch name based folder
-                            updateRemoteLink(deployUri, appHeadShaDir, appLinkDir)
-                            // for stage build, also create link to stage folder
-                            if (!isMerge && env.gitlabSourceBranch.startsWith('stage'))
-                                updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
-                        }
-                    }
-                    report.appUrl = appUrl
+            'Build JUI' : {
+                condStage(name: 'Build JUI', enable: !skipBuildJui) {
+                    sh 'npm run build:ui'
                 }
+
+                condStage(name: 'Deploy JUI') {
+                    String sourceDir = "packages/jui/storybook-static/"  // !!! don't forget trailing '/'
+                    sshagent(credentials: [deployCredentialId]) {
+                        // copy to dir name with head sha when dir is not exists
+                        skipBuildJui || rsyncFolderToRemote(sourceDir, deployUri, juiHeadShaDir)
+                        // and create link to branch name based folder
+                        updateRemoteLink(deployUri, juiHeadShaDir, juiLinkDir)
+                    }
+                }
+                report.juiUrl = juiUrl
+            },
+
+            'Build Application': {
+                condStage(name: 'Build Application', enable: !skipBuildApp) {
+                    // FIXME: move this part to build script
+                    sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
+                    sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
+                    if (buildRelease) {
+                        sh 'npm run build:release'
+                    } else {
+                        dir('application') {
+                            sh 'npm run build'
+                        }
+                    }
+                }
+
+                condStage(name: 'Deploy Application') {
+                    String sourceDir = "application/build/"  // !!! don't forget trailing '/'
+                    sshagent(credentials: [deployCredentialId]) {
+                        // copy to dir name with head sha when dir is not exists
+                        skipBuildApp || rsyncFolderToRemote(sourceDir, deployUri, appHeadShaDir)
+                        // and create link to branch name based folder
+                        updateRemoteLink(deployUri, appHeadShaDir, appLinkDir)
+                        // for stage build, also create link to stage folder
+                        if (!isMerge && gitlabSourceBranch.startsWith('stage'))
+                            updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
+                    }
+                }
+                report.appUrl = appUrl
+            }
         )
 
         condStage (name: 'E2E Automation', timeout: 3600, enable: !skipEndToEnd) {
             String hostname =  sh(returnStdout: true, script: 'hostname -f').trim()
             String startTime = sh(returnStdout: true, script: "TZ=UTC-8 date +'%F %T'").trim()
             withEnv([
-                    "HOST_NAME=${hostname}",
-                    "SITE_URL=${appUrl}",
-                    "SITE_ENV=${env.E2E_SITE_ENV}",
-                    "SCREENSHOTS_PATH=${env.E2E_SCREENSHOTS_PATH}",
-                    "SELENIUM_SERVER=${env.E2E_SELENIUM_SERVER}",
-                    "ENABLE_REMOTE_DASHBOARD=${env.E2E_ENABLE_REMOTE_DASHBOARD}",
-                    "BROWSERS=${env.E2E_BROWSERS}",
-                    "CONCURRENCY=${env.E2E_CONCURRENCY}",
-                    "BRANCH=${env.gitlabSourceBranch}",
-                    "ACTION=ON_MERGE",
-                    "DEBUG_MODE=false",
-                    "QUARANTINE_MODE=true",
-                    "STOP_ON_FIRST_FAIL=true",
-                    "SCREENSHOT_WEBP_QUALITY=80",
-                    "QUARANTINE_FAILED_THRESHOLD=4",
-                    "QUARANTINE_PASSED_THRESHOLD=1",
-                    "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${env.gitlabSourceBranch}][${env.gitlabMergeRequestLastCommit}]",
+                "HOST_NAME=${hostname}",
+                "SITE_URL=${appUrl}",
+                "SITE_ENV=${e2eSiteEnv}",
+                "SELENIUM_SERVER=${e2eSeleniumServer}",
+                "ENABLE_REMOTE_DASHBOARD=${e2eEnableRemoteDashboard}",
+                "ENABLE_MOCK_SERVER=${e2eEnableMockServer}",
+                "BROWSERS=${e2eBrowsers}",
+                "CONCURRENCY=${e2eConcurrency}",
+                "EXCLUDE_TAGS=${e2eExcludeTags}",
+                "BRANCH=${gitlabSourceBranch}",
+                "ACTION=ON_MERGE",
+                "SCREENSHOTS_PATH=./screenshots",
+                "DEBUG_MODE=false",
+                "STOP_ON_FIRST_FAIL=true",
+                "SKIP_JS_ERROR=true",
+                "SKIP_CONSOLE_ERROR=true",
+                "SKIP_CONSOLE_WARN=true",
+                "SCREENSHOT_WEBP_QUALITY=80",
+                "QUARANTINE_MODE=true",
+                "QUARANTINE_FAILED_THRESHOLD=4",
+                "QUARANTINE_PASSED_THRESHOLD=1",
+                "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${gitlabSourceBranch}][${gitlabMergeRequestLastCommit}]",
             ]) {dir("tests/e2e/testcafe") {
                 sh 'env'
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
                 sshagent (credentials: [scmCredentialId]) {
                     sh 'npm install --unsafe-perm'
                 }
-                if ('true' == env.E2E_ENABLE_REMOTE_DASHBOARD){
+                if (e2eEnableRemoteDashboard){
                     sh 'npx ts-node create-run-id.ts'
                     report.e2eUrl = sh(returnStdout: true, script: 'cat reportUrl || true').trim()
                 } else {
                     report.e2eUrl = 'beat dashboard is disabled'
                 }
                 withCredentials([usernamePassword(
-                        credentialsId: rcCredentialId,
-                        usernameVariable: 'RC_PLATFORM_APP_KEY',
-                        passwordVariable: 'RC_PLATFORM_APP_SECRET')]) {
+                    credentialsId: rcCredentialId,
+                    usernameVariable: 'RC_PLATFORM_APP_KEY',
+                    passwordVariable: 'RC_PLATFORM_APP_SECRET')]) {
                     sh "npm run e2e"
                 }
             }}
         }
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'success')
-        def description = currentBuild.getDescription() + '\n' + buildReport("${SUCCESS_EMOJI} Success", env.BUILD_URL, report)
+        def description = currentBuild.getDescription() + '\n' + buildReport("${SUCCESS_EMOJI} Success", buildUrl, report)
         safeMail(
-                reportChannels,
-                "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
-                description,
+            reportChannels,
+            "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
+            description,
         )
         currentBuild.setDescription(description)
     } catch (e) {
@@ -462,11 +485,11 @@ node(buildNode) {
         String statusTitle = "${FAILURE_EMOJI} Failure"
         if (e in InterruptedException)
             statusTitle = "${ABORTED_EMOJI} Aborted"
-        def description = currentBuild.getDescription() + '\n' + buildReport(statusTitle, env.BUILD_URL, report)
+        def description = currentBuild.getDescription() + '\n' + buildReport(statusTitle, buildUrl, report)
         safeMail(
-                reportChannels,
-                "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}",
-                description,
+            reportChannels,
+            "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}",
+            description,
         )
         currentBuild.setDescription(description)
         throw e

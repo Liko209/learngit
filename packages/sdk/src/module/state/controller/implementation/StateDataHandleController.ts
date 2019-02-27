@@ -108,7 +108,7 @@ class StateDataHandleController {
               groupState.group_post_cursor = group[key];
               break;
             }
-            case 'drp_post_cursor': {
+            case 'post_drp_cursor': {
               groupState.group_post_drp_cursor = group[key];
               break;
             }

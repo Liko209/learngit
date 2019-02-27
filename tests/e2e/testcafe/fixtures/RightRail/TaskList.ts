@@ -56,7 +56,7 @@ test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850',
 
   await h(t).withLog('Then tasks count in tasks tab should be 1', async () => {
     await tasksTab.nthItemTitleShouldBe(0, taskTitle);
-    await tasksTab.countOnSubTitleShouldBe(1);
+    // await tasksTab.countOnSubTitleShouldBe(1);
     await tasksTab.countInListShouldBe(1);
   });
 
@@ -66,7 +66,7 @@ test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850',
   });
 
   await h(t).withLog('Then tasks count in tasks tab should be 2', async () => {
-    await tasksTab.countOnSubTitleShouldBe(2);
+    // await tasksTab.countOnSubTitleShouldBe(2);
     await tasksTab.countInListShouldBe(2);
   });
 });
@@ -115,7 +115,7 @@ test(formalName('Task info will sync immediately when update', ['Nello', 'P2', '
 
   await h(t).withLog('Then tasks count in tasks tab should be 1', async () => {
     await tasksTab.nthItemTitleShouldBe(0, taskTitle);
-    await tasksTab.countOnSubTitleShouldBe(1);
+    // await tasksTab.countOnSubTitleShouldBe(1);
     await tasksTab.countInListShouldBe(1);
   });
 
@@ -177,7 +177,7 @@ test(formalName('Deleted task will NOT show under Tasks tab', ['Nello', 'P1', 'J
 
   await h(t).withLog('Then tasks count in tasks tab should be 2', async () => {
     await tasksTab.shouldHasTitle(taskTitle);
-    await tasksTab.countOnSubTitleShouldBe(2);
+    // await tasksTab.countOnSubTitleShouldBe(2);
     await tasksTab.countInListShouldBe(2);
   });
 
@@ -190,7 +190,7 @@ test(formalName('Deleted task will NOT show under Tasks tab', ['Nello', 'P1', 'J
 
   await h(t).withLog(`Then The 'Task' is removed from Tasks tab immediately`, async () => {
     await tasksTab.shouldHasNoTitle(taskTitle);
-    await tasksTab.countOnSubTitleShouldBe(1);
+    // await tasksTab.countOnSubTitleShouldBe(1);
     await tasksTab.countInListShouldBe(1);
   });
 });
@@ -238,7 +238,7 @@ test(formalName('Completed task will NOT show under Tasks tab', ['Nello', 'P1', 
 
   await h(t).withLog('Then tasks count in tasks tab should be 2', async () => {
     await tasksTab.shouldHasTitle(taskTitle);
-    await tasksTab.countOnSubTitleShouldBe(2);
+    // await tasksTab.countOnSubTitleShouldBe(2);
     await tasksTab.countInListShouldBe(2);
   });
 
@@ -251,7 +251,7 @@ test(formalName('Completed task will NOT show under Tasks tab', ['Nello', 'P1', 
 
   await h(t).withLog(`Then The Task A is removed from Tasks tab`, async () => {
     await tasksTab.shouldHasNoTitle(taskTitle);
-    await tasksTab.countOnSubTitleShouldBe(1);
+    // await tasksTab.countOnSubTitleShouldBe(1);
     await tasksTab.countInListShouldBe(1);
   });
 });

@@ -86,26 +86,24 @@ const GlobalToolTipStyle = createGlobalStyle`
   }
 `;
 export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
-  static dependencies = [MuiTooltip];
-  arrowRef: React.RefObject<any>;
+  state = {
+    arrowRef: null,
+  };
 
-  constructor(props: any) {
-    super(props);
-    this.arrowRef = React.createRef();
-  }
-
-  handleArrowRef = (ele: any) => {
-    this.arrowRef = ele;
-    // parse arrow ref to tooltip
-    this.forceUpdate();
+  handleArrowRef = (node: any) => {
+    this.setState({
+      arrowRef: node,
+    });
   }
 
   render() {
     const { title, children, placement = 'bottom', ...rest } = this.props;
+    const { arrowRef } = this.state;
     return (
       <React.Fragment>
         <MuiTooltip
           {...rest}
+          disableFocusListener={true}
           placement={placement}
           title={
             <React.Fragment>
@@ -123,8 +121,8 @@ export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
             popperOptions: {
               modifiers: {
                 arrow: {
-                  enabled: Boolean(this.arrowRef),
-                  element: this.arrowRef,
+                  enabled: Boolean(arrowRef),
+                  element: arrowRef,
                 },
               },
             },

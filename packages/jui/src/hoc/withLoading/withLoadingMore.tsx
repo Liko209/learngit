@@ -12,7 +12,7 @@ import { withDelay } from '../withDelay';
 type WithLoadingMoreProps = {
   loadingTop: boolean;
   loadingBottom: boolean;
-  viewRef: RefObject<any>;
+  viewRef?: RefObject<any>;
   children: JSX.Element;
 };
 

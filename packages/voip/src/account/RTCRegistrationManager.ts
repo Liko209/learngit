@@ -17,6 +17,7 @@ import {
   REGISTRATION_EVENT,
   REGISTRATION_FSM_NOTIFY,
   RTCRegisterAsyncTask,
+  RTCSipProvisionInfo,
 } from './types';
 import async, { AsyncQueue } from 'async';
 import {
@@ -35,8 +36,6 @@ class RTCRegistrationManager extends EventEmitter2
   private _retryTimer: NodeJS.Timeout | null = null;
   private _retryInterval: number = kRTCRegisterRetryTimerMin;
 
-  public onRegistrationAction(): void {}
-
   onNetworkChangeToOnlineAction(): void {
     this.reRegister();
   }
@@ -48,11 +47,10 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   public onProvisionReadyAction(
-    provisionData: any,
+    provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ): void {
-    this._userAgent = new RTCSipUserAgent(provisionData, options);
-    this._initUserAgentListener();
+    this._restartUA(provisionData, options);
   }
 
   public onUnregisterAction() {
@@ -82,11 +80,13 @@ class RTCRegistrationManager extends EventEmitter2
   constructor() {
     super();
     this._fsm = new RTCRegistrationFSM(this);
+    this._userAgent = new RTCSipUserAgent();
     this._eventQueue = async.queue(
       (task: RTCRegisterAsyncTask, callback: any) => {
         callback(task.data);
       },
     );
+    this._initUserAgentListener();
     this._initFsmObserve();
   }
 
@@ -147,6 +147,9 @@ class RTCRegistrationManager extends EventEmitter2
     });
     this._userAgent.on(UA_EVENT.REG_UNREGISTER, () => {
       this._onUADeRegister();
+    });
+    this._userAgent.on(UA_EVENT.TRANSPORT_ERROR, () => {
+      this._onUATransportError();
     });
   }
 
@@ -255,6 +258,15 @@ class RTCRegistrationManager extends EventEmitter2
     }
   }
 
+  private _onUATransportError() {
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.UA_TRANSPORT_ERROR },
+      () => {
+        this._fsm.transportError();
+      },
+    );
+  }
+
   private _onUAReceiveInvite(session: any) {
     this._eventQueue.push(
       {
@@ -295,6 +307,13 @@ class RTCRegistrationManager extends EventEmitter2
     if (this._retryInterval > kRTCRegisterRetryTimerMax) {
       this._retryInterval = kRTCRegisterRetryTimerMax;
     }
+  }
+
+  private _restartUA(
+    provisionData: RTCSipProvisionInfo,
+    options: ProvisionDataOptions,
+  ) {
+    this._userAgent.restartUA(provisionData, options);
   }
 }
 
