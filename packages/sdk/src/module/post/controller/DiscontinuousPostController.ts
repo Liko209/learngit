@@ -12,24 +12,24 @@ import { Raw } from '../../../framework/model';
 import { transform } from '../../../service/utils';
 import _ from 'lodash';
 import { daoManager, DeactivatedDao } from '../../../dao';
+import { PostDao } from '../dao';
+import { mainLogger } from 'foundation/src';
 
 class DiscontinuousPostController {
   constructor(public entitySourceController: IEntitySourceController<Post>) {}
 
   /**
-   * 1, Get posts from db firstly(include deactivated posts)
-   * 2, If not get all posts, get the remaining posts from server
-   * 3, If still have posts not get, mock deactivated posts for not get posts
-   * 4, Save server's & mock posts into db
+   * 1, Get posts from discontinuous post table firstly(include deactivated posts)
+   * 2, If not get all posts, get the remaining posts from post table
+   * 3, If not get all posts, get the remaining posts from server
+   * 4, If still have posts not get, mock deactivated posts for not get posts
+   * 5, Save server's & mock posts into db
    */
   async getPostsByIds(
     ids: number[],
   ): Promise<{ posts: Post[]; items: Item[] }> {
     const itemService: ItemService = ItemService.getInstance();
-    const localPosts = await this.entitySourceController.getEntitiesLocally(
-      ids,
-      true,
-    );
+    const localPosts = await this._getPostFromLocal(ids);
     const result = {
       posts: localPosts.filter((post: Post) => !post.deactivated),
       items: await itemService.getByPosts(localPosts),
@@ -61,7 +61,30 @@ class DiscontinuousPostController {
     return result;
   }
 
+  /**
+   * 1, Get posts from discontinuous post table firstly(include deactivated posts)
+   * 2, If not get all posts, get the remaining posts from post table
+   */
+  private async _getPostFromLocal(ids: number[]): Promise<Post[]> {
+    const discontinuousPosts = await this.entitySourceController.getEntitiesLocally(
+      ids,
+      true,
+    );
+    const surplusIds = _.difference(
+      ids,
+      discontinuousPosts.map(({ id }) => id),
+    );
+    if (surplusIds.length > 0) {
+      const surplusPosts = await daoManager
+        .getDao(PostDao)
+        .batchGet(surplusIds);
+      discontinuousPosts.push(...surplusPosts);
+    }
+    return discontinuousPosts;
+  }
+
   private _mockDeactivatedPosts(ids: number[]): Post[] {
+    mainLogger.info('_mockDeactivatedPosts ids:', ids);
     return ids.map((id: number) => {
       return { id, deactivated: true } as Post;
     });
@@ -77,7 +100,7 @@ class DiscontinuousPostController {
       await this.entitySourceController.bulkUpdate(normalPosts);
     }
     if (deactivatedPosts.length > 0) {
-      daoManager.getDao(DeactivatedDao).bulkUpdate(deactivatedPosts);
+      await daoManager.getDao(DeactivatedDao).bulkUpdate(deactivatedPosts);
     }
     return normalPosts;
   }

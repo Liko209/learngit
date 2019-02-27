@@ -100,12 +100,9 @@ class BaseDao<T extends IdModel> implements IDao<T> {
 
   async primaryKeys(ids: number[]): Promise<number[]> {
     try {
-      console.time('primaryKeys');
       await this.db.ensureDBOpened();
       const query = this.createQuery();
-      const result = await query.anyOf('id', ids).primaryKeys();
-      console.timeEnd('primaryKeys');
-      return result;
+      return await query.anyOf('id', ids).primaryKeys();
     } catch (err) {
       errorHandler(err);
       return [];
@@ -158,7 +155,7 @@ class BaseDao<T extends IdModel> implements IDao<T> {
         await this.db.ensureDBOpened();
         const primaryKeyName = this.collection.primaryKeyName();
         if (shouldDoPut) {
-          const saved = shouldDoPut && (await this.get(item[primaryKeyName]));
+          const saved = await this.get(item[primaryKeyName]);
           // If item not exists, will put
           if (!saved) {
             await this.put(item as T);

@@ -91,8 +91,6 @@ class PostDataController {
     posts.forEach((post: Post) => {
       post.deactivated ? deactivatedPosts.push(post) : normalPosts.push(post);
     });
-    const ids = deactivatedPosts.map((post: Post) => post.id);
-    console.error(`deactivatedPosts: ${ids}`);
     if (deactivatedPosts.length > 0) {
       await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedPosts);
       await postDiscontinuousDao.bulkDelete(
