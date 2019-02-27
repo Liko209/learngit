@@ -7,7 +7,14 @@
       "P0",
       "P1",
       "JPT-304",
-      "JPT-47"
+      "JPT-308",
+      "JPT-1104",
+      "JPT-949",
+      "JPT-1132",
+      "JPT-1116",
+      "JPT-932",
+      "JPT-935",
+      "JPT-1102"
     ],
     "browsers": [
       "selenium:chrome"
