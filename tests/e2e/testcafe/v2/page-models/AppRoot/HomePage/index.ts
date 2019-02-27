@@ -57,7 +57,7 @@ export class HomePage extends BaseWebComponent {
 
   get addActionButton() {
     this.warnFlakySelector();
-    return this.self.find('button').child().withText('new_actions').parent().parent();
+    return this.self.find('button').child().find('.icon.new_actions');
   }
 
   get addActionMenu() {

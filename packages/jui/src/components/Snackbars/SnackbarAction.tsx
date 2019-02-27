@@ -10,6 +10,7 @@ const CLOSE_ICON_SIZE_FIX = { transform: 'scale(1.7142857142857142)' };
 
 type JuiSnackbarActionProps = MuiButtonBaseProps & {
   variant?: 'text' | 'icon';
+  children: string;
 };
 
 const JuiSnackbarAction = styled(
