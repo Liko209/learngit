@@ -43,7 +43,7 @@ class DiscontinuousPosListHandler extends IdListPaginationHandler<
     const options = {
       filterFunc,
       isMatchFunc,
-      eventName: ENTITY.NON_CONVERSATION_POST,
+      eventName: ENTITY.DISCONTINUOUS_POST,
       entityName: ENTITY_NAME.POST,
       entityDataProvider: new PostProvider(),
     };

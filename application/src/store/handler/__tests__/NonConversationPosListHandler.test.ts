@@ -26,7 +26,7 @@ describe('DiscontinuousPosListHandler', () => {
     sourceIds.push(i);
   }
 
-  const eventName = ENTITY.NON_CONVERSATION_POST;
+  const eventName = ENTITY.DISCONTINUOUS_POST;
   const entityName = ENTITY_NAME.POST;
   let postListHandler: DiscontinuousPosListHandler;
   let postService: PostService;

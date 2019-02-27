@@ -66,7 +66,7 @@ describe('IdListDataProvider', () => {
   const sourceIds = [5, 6, 7, 8, 9, 10, 11];
   let idsDataProvider: IdListDataProvider<Post, PostModel>;
   let postProvider: PostProvider;
-  const eventName = ENTITY.NON_CONVERSATION_POST;
+  const eventName = ENTITY.DISCONTINUOUS_POST;
   const entityName = ENTITY_NAME.POST;
   function setUp() {
     postProvider = new PostProvider();
