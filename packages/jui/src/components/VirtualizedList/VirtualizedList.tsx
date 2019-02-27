@@ -24,35 +24,6 @@ const useRange = (
   return [range, setRange];
 };
 
-// const useScrollTop = (
-//   initialScrollTop: number
-// ): [number, (newValue: number) => void] => {
-//   const [value, setValue] = useState(initialScrollTop);
-
-//   const setScrollTop = (newValue: number) => {
-//     if (newValue !== value && newValue >= 0) {
-//       setValue(newValue);
-//     }
-//   };
-
-//   return [value, setScrollTop];
-// };
-
-// const applyScrollTop = ({
-//   ref,
-//   scrollTop
-// }: {
-//   ref: MutableRefObject<HTMLElement | null>;
-//   scrollTop: number;
-// }) => {
-//   useLayoutEffect(() => {
-//     const targetEl = ref.current;
-//     if (targetEl) {
-//       targetEl.scrollTop = scrollTop;
-//     }
-//   }, [scrollTop]);
-// };
-
 const JuiVirtualizedList = ({ height, children }: VirtualizedListProps) => {
   const getCacheKey = (i: number) => {
     const child = children[i] as { key: string };
@@ -129,11 +100,6 @@ const JuiVirtualizedList = ({ height, children }: VirtualizedListProps) => {
   const childrenToDisplay: ReactNode[] = children.filter((_, i) => {
     return startIndex <= i && i <= stopIndex;
   });
-
-  // applyScrollTop({
-  //   ref,
-  //   scrollTop: scrollTop
-  // });
 
   useLayoutEffect(() => {
     const resizeObservers: ResizeObserver[] = [];
