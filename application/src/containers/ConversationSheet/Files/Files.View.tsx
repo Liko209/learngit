@@ -6,10 +6,17 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import i18next from 'i18next';
-import { JuiFileWithoutPreview, JuiFileWithPreview, JuiPreviewImage } from 'jui/pattern/ConversationCard/Files';
+import {
+  JuiFileWithoutPreview,
+  JuiFileWithPreview,
+  JuiPreviewImage,
+} from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { getThumbnailSize } from 'jui/foundation/utils';
-import { AttachmentItem, ITEM_STATUS } from 'jui/pattern/MessageInput/AttachmentItem';
+import {
+  AttachmentItem,
+  ITEM_STATUS,
+} from 'jui/pattern/MessageInput/AttachmentItem';
 import { Dialog } from '@/containers/Dialog';
 import { Viewer } from '@/containers/Viewer';
 import { getFileSize } from './helper';
@@ -35,7 +42,11 @@ class FilesView extends React.Component<FilesViewProps> {
   componentWillUnmount() {
     this.props.dispose();
   }
-  private _renderItem = (id: number, progresses: Map<number, number>, name: string) => {
+  private _renderItem = (
+    id: number,
+    progresses: Map<number, number>,
+    name: string,
+  ) => {
     const progress = progresses.get(id);
     let realStatus: ITEM_STATUS = ITEM_STATUS.NORMAL;
     if (typeof progress !== 'undefined') {
