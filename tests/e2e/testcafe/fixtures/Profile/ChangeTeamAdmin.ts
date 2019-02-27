@@ -136,7 +136,7 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
 
   await h(t).glip(u1).init();
 
-  const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
+  const u3Name = await h(t).glip(u1).getPersonPartialData('display_name', u3.rcId);
   const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
   const u1PersonId = await h(t).glip(u1).toPersonId(u1.rcId);
   const u2PersonId = await h(t).glip(u1).toPersonId(u2.rcId);
@@ -170,13 +170,12 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
   });
 
   await h(t).withLog(`When u2 open team profile via team "More Menu"`, async () => {
-    console.log(team.name);
-    await t.debug();
     await teamEntry.openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
   await h(t).withLog(`When I open the team setting dialog`, async () => {
+    await profileDialog.memberEntryByName(u2Name).showAdminLabel();
     await profileDialog.clickSetting();
   });
 
@@ -198,7 +197,7 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
     await teamSettingDialog.cancel();
   });
 
-  await h(t).withLog(`And admin open team profile via team "More Menu"`, async () => {
+  await h(t).withLog(`And u2 open team profile via team "More Menu"`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
@@ -216,6 +215,7 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
   await h(t).withLog(`When u3 open team profile via team "More Menu"`, async () => {
     await teamEntry.openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
+    await profileDialog.memberEntryByName(u3Name).showMemberLabel();
   });
 
   adminIds = [u1PersonId, u3PersonId];
@@ -228,7 +228,7 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
   });
 
   await h(t).withLog(`Then will show 'Admin' label in u3 row`, async () => {
-    await profileDialog.memberEntryByName(u2Name).showAdminLabel();
+    await profileDialog.memberEntryByName(u3Name).showAdminLabel();
   });
 
   await h(t).withLog(`When I open the team setting dialog`, async () => {
@@ -239,7 +239,6 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
     await teamSettingDialog.shouldBePopup();
     await t.expect(teamSettingDialog.teamNameInputArea.exists).ok();
   });
-
 });
 
 test(formalName(`The whole "More" menu will be hidden in non-admin side`, ['P1', 'JPT-1101', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {

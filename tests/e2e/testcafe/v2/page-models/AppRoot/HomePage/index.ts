@@ -31,7 +31,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   async logout() {
-    await this.openAddActionMenu();
+    await this.openSettingMenu();
     await this.settingMenu.clickLogout();
     await this.t.expect(h(this.t).href).contains('unified-login');
   }
