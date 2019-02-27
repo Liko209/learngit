@@ -227,6 +227,7 @@ node(buildNode) {
     try {
         // start to build
         stage ('Collect Facts') {
+            cleanWs()
             sh 'env'
             sh 'df -h'
             sh 'uptime'
