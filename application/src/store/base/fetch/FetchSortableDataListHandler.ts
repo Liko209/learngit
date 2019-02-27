@@ -239,6 +239,7 @@ export class FetchSortableDataListHandler<
         );
       }
     }
+
     if (
       deletedSortableModelIds.length ||
       addedSortableModels.length ||

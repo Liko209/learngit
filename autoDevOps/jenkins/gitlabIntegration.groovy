@@ -173,7 +173,8 @@ Boolean e2eEnableMockServer = params.E2E_ENABLE_MOCK_SERVER
 
 /* build strategy */
 Boolean isMerge = gitlabSourceBranch != gitlabTargetBranch
-Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch)
+Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch) &&
+    !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
 Boolean skipUpdateGitlabStatus = !isMerge && integrationBranch != gitlabTargetBranch
 Boolean buildRelease = gitlabTargetBranch.startsWith('release') || gitlabTargetBranch.endsWith('release') || releaseBranch == gitlabTargetBranch
 
@@ -301,12 +302,14 @@ node(buildNode) {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sh "[ -f package-lock.json ] && rm package-lock.json || true"
             sshagent (credentials: [scmCredentialId]) {
-                // sh 'npm install terser@3.14 --unsafe-perm'
-                sh 'npm install @types/react-transition-group@2.0.15 --unsafe-perm'
                 sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
                 sh 'npm install --ignore-scripts --unsafe-perm'
                 sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
             }
+            try {
+                sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version check'
+                sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version cache'
+            } catch (e) { }
         }
 
         parallel (
@@ -441,6 +444,9 @@ node(buildNode) {
                 "SCREENSHOTS_PATH=./screenshots",
                 "DEBUG_MODE=false",
                 "STOP_ON_FIRST_FAIL=true",
+                "SKIP_JS_ERROR=true",
+                "SKIP_CONSOLE_ERROR=true",
+                "SKIP_CONSOLE_WARN=true",
                 "SCREENSHOT_WEBP_QUALITY=80",
                 "QUARANTINE_MODE=true",
                 "QUARANTINE_FAILED_THRESHOLD=4",

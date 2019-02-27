@@ -9,7 +9,7 @@ import name2icon from './name2icon';
 import styled, { css } from '../../foundation/styled-components';
 import { Omit } from '../utils/typeHelper';
 import { Palette } from '../theme/theme';
-import { palette } from '../../foundation/utils/styles';
+import { palette, grey } from '../../foundation/utils/styles';
 
 type JuiIconographyProps = Omit<MuiIconProps, 'color'> & {
   color?: [keyof Palette, string];
@@ -31,6 +31,9 @@ const StyledIcon = styled<JuiIconographyProps>(WrappedMuiIcon)`
       color: ${palette(colorScope, colorName)({ theme })}};
     `;
   }}
+  &&.image-preview:before {
+    color: ${grey('400')};
+  }
 `;
 
 const JuiIconographyComponent: React.SFC<JuiIconographyProps> & {

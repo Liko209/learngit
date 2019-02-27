@@ -5,9 +5,9 @@
  */
 import { AbstractAccount } from '../framework';
 import GroupService from '../module/group';
-import CompanyService from '../service/company';
+import { CompanyService } from '../module/company';
 import { PersonService } from '../module/person';
-import PresenceService from '../service/presence';
+import { PresenceService } from '../module/presence';
 import { ProfileService } from '../module/profile';
 import { TelephonyService } from '../module/telephony';
 import { ItemService } from '../module/item';
