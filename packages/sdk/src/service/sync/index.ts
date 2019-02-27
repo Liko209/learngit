@@ -8,12 +8,11 @@ import BaseService from '../BaseService';
 import { SERVICE } from '../eventKey';
 import { IndexDataModel } from '../../api/glip/user';
 import { daoManager } from '../../dao';
-import ConfigDao from '../../dao/config';
 import { GroupDao } from '../../module/group/dao';
 import { PersonDao } from '../../module/person/dao';
 import { PostDao } from '../../module/post/dao';
+import { NewGlobalConfig } from '../../service/config/NewGlobalConfig';
 
-import { LAST_INDEX_TIMESTAMP } from '../../dao/config/constants';
 import {
   fetchIndexData,
   fetchInitialData,
@@ -55,8 +54,7 @@ export default class SyncService extends BaseService {
   }
 
   getIndexTimestamp() {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    return configDao.get(LAST_INDEX_TIMESTAMP);
+    return NewGlobalConfig.getLastIndexTimestamp();
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -142,8 +140,7 @@ export default class SyncService extends BaseService {
 
   private async _handle504GateWayError() {
     // clear data
-    const configDao = daoManager.getKVDao(ConfigDao);
-    configDao.put(LAST_INDEX_TIMESTAMP, '');
+    NewGlobalConfig.setLastIndexTimestamp('');
     const itemDao = daoManager.getDao(ItemDao);
     await itemDao.clear();
     const postDao = daoManager.getDao(PostDao);

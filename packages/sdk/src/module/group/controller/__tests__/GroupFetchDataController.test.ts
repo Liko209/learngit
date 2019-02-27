@@ -15,7 +15,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { AccountGlobalConfig } from '../../../../service/account/config';
-import CompanyService from '../../../../service/company';
+import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
@@ -35,7 +35,7 @@ jest.mock('../../dao');
 jest.mock('../../../profile');
 jest.mock('../../../../service/account/config');
 jest.mock('../../../../service/notificationCenter');
-jest.mock('../../../../service/company');
+jest.mock('../../../../module/company');
 jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');

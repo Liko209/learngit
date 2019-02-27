@@ -97,6 +97,20 @@ export class RcPlatformSdk {
     });
   }
 
+  async archiveTeam(chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}/archive`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url);
+    });
+  }
+
+  async unArchiveTeam(chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}/unarchive`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url);
+    });
+  }
+
   async joinTeam(chatId: string) {
     const url = `restapi/v1.0/glip/teams/${chatId}/join`;
     return await this.retryRequestOnException(async () => {
@@ -133,6 +147,34 @@ export class RcPlatformSdk {
     });
   }
 
+  async createOrOpenChat(data: any) {
+    const url = `restapi/v1.0/glip/conversations`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url, data);
+    });
+  }
+
+  async addChatToFavorites(chatId: string) {
+    const url = `restapi/v1.0/glip/chats/${chatId}/favorite`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url);
+    });
+  }
+
+  async removeChatToFavorites(chatId: string) {
+    const url = `restapi/v1.0/glip/chats/${chatId}/unfavorite`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url);
+    });
+  }
+
+  async markChatAsRead(chatId: string) {
+    const url = `/restapi/v1.0/glip/chats/${chatId}/read`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.post(url);
+    });
+  }
+  
   // deprecated
   async createAndGetGroupId(data: any) {
     return await this.createGroup(data).then(res => res.data.id);

@@ -38,7 +38,7 @@ jest.mock('../../dao');
 jest.mock('../../../profile');
 jest.mock('../../../../service/account/config');
 jest.mock('../../../../service/notificationCenter');
-jest.mock('../../../../service/company');
+jest.mock('../../../../module/company');
 jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
