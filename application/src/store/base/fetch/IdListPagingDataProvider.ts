@@ -157,8 +157,8 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     const pos = anchorId ? this._sourceIds.indexOf(anchorId) : -1;
     switch (direction) {
       case QUERY_DIRECTION.NEWER: {
-        const posFromOne = pos + 1;
-        slicedIds = _.slice(this._sourceIds, posFromOne, posFromOne + pageSize);
+        const starPos = pos + 1;
+        slicedIds = _.slice(this._sourceIds, starPos, starPos + pageSize);
         this._cursors.end = _.last(slicedIds) || this._cursors.end;
         hasMore = this._cursors.end !== _.last(this._sourceIds);
 
@@ -198,11 +198,8 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   }
 
   private async _fetchAndSaveModels(ids: number[]) {
-    const needFetchIds: number[] = [];
-    ids.forEach((id: number) => {
-      if (!hasValidEntity(this._entityName, id)) {
-        needFetchIds.push(id);
-      }
+    const needFetchIds: number[] = ids.filter((id: number) => {
+      return !hasValidEntity(this._entityName, id);
     });
 
     needFetchIds.length > 0 && (await this._fetchFromService(needFetchIds));
