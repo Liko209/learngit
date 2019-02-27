@@ -239,7 +239,7 @@ export class ConversationPage extends BaseConversationPage {
   get publicTeamIcon() {
     return this.getSelectorByIcon('lock_open', this.privateButton);
   }
-  
+
   get favoriteButton() {
     return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
   }
