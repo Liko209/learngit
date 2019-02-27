@@ -81,6 +81,13 @@ def updateRemoteLink(String remoteUri, String linkSource, String linkTarget) {
     println sshCmd(remoteUri, "cp -r ${linkSource} ${linkTarget}")
 }
 
+def createRemoteTarbar(String remoteUri, String sourceDir, String targetDir, String filename) {
+    // 1. ensure targetDir is existed
+    println sshCmd(remoteUri, "mkdir -p ${targetDir}")
+    // 2. cd to publishDir and create tar.gz file from deployDir
+    println sshCmd(remoteUri, "cd ${targetDir} && tar -czvf ${filename} -C ${sourceDir} .")
+}
+
 // business logic
 static String getSubDomain(String sourceBranch, String targetBranch) {
     if ("master" == sourceBranch)
@@ -183,9 +190,11 @@ String subDomain = getSubDomain(gitlabSourceBranch, gitlabTargetBranch)
 String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
 String appStageLinkDir = "${deployBaseDir}/stage".toString()
 String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
+String publishDir = "${deployBaseDir}/publish".toString()
 
 String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 String juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
+String publishUrl = "https://publish.fiji.gliprc.com".toString()
 
 // following params should be updated after checkout stage success
 String appHeadSha = null
@@ -422,6 +431,12 @@ node(buildNode) {
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
                             updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
+                        // for release build, we should also create a tar.gz package for public deployment
+                        if (buildRelease) {
+
+
+                        }
+
                     }
                 }
                 report.appUrl = appUrl
