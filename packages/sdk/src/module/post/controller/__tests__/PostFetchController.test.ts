@@ -12,11 +12,10 @@ import { PostDao } from '../../dao';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { PostFetchController } from '../PostFetchController';
 import PostAPI from '../../../../api/glip/post';
-import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import { Post } from '../../entity/Post';
 import { PostDataController } from '../PostDataController';
 import { GroupService } from '../../../../module/group/service';
-import { GROUP_QUERY_TYPE } from '../../../../service';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
