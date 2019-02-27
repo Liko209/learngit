@@ -7,7 +7,7 @@
 import { computed } from 'mobx';
 import {
   FetchSortableDataListHandler,
-  IdListDataProvider,
+  IdListPagingDataProvider,
   IEntityDataProvider,
 } from '../base/fetch';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
@@ -33,7 +33,7 @@ type IdListPaginationOptions<T, K> = {
 
 class IdListPaginationHandler<T extends IdModel, K extends Entity> {
   protected _sourceIds: number[];
-  private _idsDataProvider: IdListDataProvider<T, K>;
+  private _idsDataProvider: IdListPagingDataProvider<T, K>;
   private _foc: FetchSortableDataListHandler<T>;
   constructor(sourceIds: number[], options: IdListPaginationOptions<T, K>) {
     this._sourceIds = sourceIds;
@@ -55,12 +55,15 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
   }
 
   protected buildFoc(options: IdListPaginationOptions<T, K>) {
-    this._idsDataProvider = new IdListDataProvider<T, K>(this._sourceIds, {
-      filterFunc: options.filterFunc,
-      entityName: options.entityName,
-      eventName: options.eventName,
-      entityDataProvider: options.entityDataProvider,
-    });
+    this._idsDataProvider = new IdListPagingDataProvider<T, K>(
+      this._sourceIds,
+      {
+        filterFunc: options.filterFunc,
+        entityName: options.entityName,
+        eventName: options.eventName,
+        entityDataProvider: options.entityDataProvider,
+      },
+    );
 
     return new FetchSortableDataListHandler(this._idsDataProvider, {
       isMatchFunc: options.isMatchFunc || this.defaultIsMatchFunc,

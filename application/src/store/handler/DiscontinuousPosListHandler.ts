@@ -10,7 +10,7 @@ import { Post } from 'sdk/module/post/entity';
 import { PostService } from 'sdk/module/post';
 import PostModel from '../models/Post';
 
-import { IdListPaginationHandler } from './IdListPaginationHandler';
+import { IdListPaginationHandler } from './IdListPagingHandler';
 
 enum NonConversationPostListType {
   BOOK_MARK_POSTS,

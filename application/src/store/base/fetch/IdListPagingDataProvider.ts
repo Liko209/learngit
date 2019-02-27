@@ -26,7 +26,7 @@ type IdListDataProviderOptions<T, K> = {
   filterFunc: IMatchFunc<K>;
 };
 
-class IdListDataProvider<T extends IdModel, K extends Entity>
+class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   implements IFetchSortableDataProvider<T> {
   private _cursors: { front: number | undefined; end: number | undefined } = {
     front: undefined,
@@ -227,4 +227,8 @@ class IdListDataProvider<T extends IdModel, K extends Entity>
   }
 }
 
-export { IdListDataProvider, IEntityDataProvider, IdListDataProviderOptions };
+export {
+  IdListPagingDataProvider,
+  IEntityDataProvider,
+  IdListDataProviderOptions,
+};

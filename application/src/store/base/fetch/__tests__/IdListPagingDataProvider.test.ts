@@ -6,9 +6,9 @@
 import _ from 'lodash';
 import {
   IdListDataProviderOptions,
-  IdListDataProvider,
+  IdListPagingDataProvider,
   IEntityDataProvider,
-} from '../IdListDataProvider';
+} from '../IdListPagingDataProvider';
 
 import PostModel from '../../../models/Post';
 import { Post } from 'sdk/module/post/entity';
@@ -59,9 +59,9 @@ class PostProvider implements IEntityDataProvider<Post> {
   }
 }
 
-describe('IdListDataProvider', () => {
+describe('IdListPagingDataProvider', () => {
   const sourceIds = [5, 6, 7, 8, 9, 10, 11];
-  let idsDataProvider: IdListDataProvider<Post, PostModel>;
+  let idsDataProvider: IdListPagingDataProvider<Post, PostModel>;
   let postProvider: PostProvider;
   const eventName = ENTITY.DISCONTINUOUS_POST;
   const entityName = ENTITY_NAME.POST;
@@ -74,7 +74,7 @@ describe('IdListDataProvider', () => {
       filterFunc: isMatchFunc,
       entityDataProvider: postProvider,
     } as IdListDataProviderOptions<Post, PostModel>;
-    idsDataProvider = new IdListDataProvider(sourceIds, options);
+    idsDataProvider = new IdListPagingDataProvider(sourceIds, options);
     const store = storeManager.getEntityMapStore(entityName);
     storeManager.removeStore(store);
   }
