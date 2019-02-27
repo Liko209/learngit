@@ -3,13 +3,14 @@
  * @Date: 2018-12-18 16:30:30
  * Copyright © RingCentral. All rights reserved.
  */
-
+import * as assert from 'assert';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers'
+import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { v4 as uuid } from 'uuid';
-import { BrandTire } from '../../config'
+import { BrandTire, SITE_URL } from '../../config'
+import { IGroup } from '../../v2/models';
 
 fixture('LikeAndUnlike')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -20,157 +21,119 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   const userA = users[4];
   const userB = users[5];
   const app = new AppRoot(t);
-  await h(t).platform(userA).init();
+  await h(t).glip(userB).init();
 
-  let teamId, postId;
-  await h(t).withLog(`Given I 1 team chat (T1) have members userA(${userA.company.number}#${userA.extension}) and userB(${userB.company.number}#${userB.extension}) and 1 post (M1) in T1.`, async () => {
-    teamId = await h(t).platform(userA).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [userA.rcId, userB.rcId],
-    });
-    postId = await h(t).platform(userA).sentAndGetTextPostId(
-      `test "like" ${uuid()}`,
-      teamId
-    );
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    members: [userA, userB],
+    owner: userA
+  }
+
+  let postId;
+  await h(t).withLog(`Given I one team named: "${team.name}" and one post M1 in it`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, userA);
   });
 
-  const enterSpecifyTeam = async (app) => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
-  }
-  const roleA = await h(t).userRole(userA, enterSpecifyTeam);
-  const roleB = await h(t).userRole(userB, enterSpecifyTeam);
   const conversationPage = app.homePage.messageTab.conversationPage
   const postCard = conversationPage.postItemById(postId);
 
-  await h(t).withLog(`When userA open T1, and hover M1 card`, async () => {
-    await t.useRole(roleA);
+  await h(t).withLog(`And I login extension with useA: ${userA.company.number}#${userA.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, userA);
     await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I open the team ${team.name} and hover the post`, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.waitUntilPostsBeLoaded();
     await postCard.ensureLoaded();
     await t.hover(postCard.self)
   });
 
-  await h(t).withLog(`Then Appear action bar and there have hollow "unlike" icon `, async () => {
+  await h(t).withLog(`Then Appear action bar and there have hollow "like" icon `, async () => {
     await t.hover(postCard.likeToggleOnActionBar);
-    await t.expect(postCard.prompt).eql('Like');
+     await postCard.showTooltip('Like')
   });
 
-
-  await h(t).withLog(`When userB hover the same M1 card `, async () => {
-    await t.useRole(roleB);
-    await app.homePage.ensureLoaded();
-    await postCard.ensureLoaded();
+  let currentNumber = 0;
+  await h(t).withLog(`and userB check no one like the message via Api`, async () => {
+    await H.retryUntilPass(async () => {
+      const likeCount = await h(t).glip(userB).getPostLikesCount(postId);
+      assert.deepStrictEqual(currentNumber, likeCount, `likeCount expect ${currentNumber}, actual ${likeCount}`);
+    });
   });
 
-  await h(t).withLog(`Then should check no one like the M1 `, async () => {
-    await postCard.likeShouldBe(0);
-  });
-
-  await h(t).withLog(`When userA click "unlike" button`, async () => {
-    await t.useRole(roleA);
-    await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
-    await postCard.ensureLoaded();
+  await h(t).withLog(`When userA click hollow "like" button on M1 action bar`, async () => {
     await postCard.clickLikeOnActionBar();
+    currentNumber = 1
   });
 
-  await h(t).withLog(`Then M1 action bar 'unlike' icon change to 'like', and M1 card footer appear "like" icon with number 1`, async () => {
+  await h(t).withLog(`Then M1 action bar 'like' icon change to bold 'unlike', and M1 card footer appear bold "unlike" icon with number ${currentNumber}`, async () => {
     await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
     await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
-    await postCard.likeShouldBe(1);
+    await postCard.likeShouldBe(currentNumber);
   });
 
-  await h(t).withLog(`When userB view the message M1 card`, async () => {
-    await t.useRole(roleB);
-    await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
-    await postCard.ensureLoaded();
+  await h(t).withLog(`And userB check the message with like number ${currentNumber} via Api`, async () => {
+    await H.retryUntilPass(async () => {
+      const likeCount = await h(t).glip(userB).getPostLikesCount(postId);
+      assert.deepStrictEqual(currentNumber, likeCount, `likeCount expect ${currentNumber}, actual ${likeCount}`);
+    });
   });
 
-  await h(t).withLog(`Then M1 should appear "like" icon with number 1`, async () => {
-    await postCard.likeShouldBe(1);
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
-  });
-
-
-  await h(t).withLog(`When userA click 'like' icon on action bar`, async () => {
-    await t.useRole(roleA);
-    await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
-    await postCard.ensureLoaded();
+  await h(t).withLog(`When userA click bold 'unlike' icon on action bar`, async () => {
     await postCard.clickLikeOnActionBar();
+    currentNumber = 0
   });
 
-  await h(t).withLog(`Then there is hollow "unlike" icon on M1 action bar and no like or unlike on M1 footer `, async () => {
+  await h(t).withLog(`Then Action bar bold "unlike" icon change to hollow "like" icon and no like or unlike on M1 footer `, async () => {
     await t.hover(postCard.self);
-    await postCard.likeShouldBe(0);
     await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
+    await postCard.likeShouldBe(currentNumber);
   });
 
-  await h(t).withLog(`When userB view the message M1 card`, async () => {
-    await t.useRole(roleB);
-    await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
-    await postCard.ensureLoaded();
+  await h(t).withLog(`and userB check no one like the message via Api`, async () => {
+    await H.retryUntilPass(async () => {
+      const likeCount = await h(t).glip(userB).getPostLikesCount(postId);
+      assert.deepStrictEqual(currentNumber, likeCount, `likeCount expect ${currentNumber}, actual ${likeCount}`);
+    });
   });
 
-  await h(t).withLog(`Then should check no one like the M1`, async () => {
-    await postCard.likeShouldBe(0);
+  await h(t).withLog(`When userA click hollow "like" button on M1 action bar`, async () => {
+   await postCard.clickLikeOnActionBar();
+   currentNumber = 1
   });
 
-  await h(t).withLog(`When userA click "unlike" button`, async () => {
-    await t.useRole(roleA);
-    await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
-    await postCard.ensureLoaded();
-    await postCard.clickLikeOnActionBar();
-  });
-
-  await h(t).withLog(`Then M1 action bar 'unlike' icon change to 'like', and M1 card footer appear "like" icon with number 1`, async () => {
-    await postCard.likeShouldBe(1);
+  await h(t).withLog(`Then M1 action bar 'like' icon change to bold 'unlike', and M1 card footer appear bold "unlike" icon with number ${currentNumber}`, async () => {
     await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
     await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
-    await postCard.likeShouldBe(1);
+    await postCard.likeShouldBe(currentNumber);
   });
 
-  await h(t).withLog(`When userB view the message M1 card`, async () => {
-    await t.useRole(roleB);
-    await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
-    await postCard.ensureLoaded();
+  await h(t).withLog(`And userB  check the message with like number ${currentNumber} via Api`, async () => {
+    await H.retryUntilPass(async () => {
+      const likeCount = await h(t).glip(userB).getPostLikesCount(postId);
+      assert.deepStrictEqual(currentNumber, likeCount, `likeCount expect ${currentNumber}, actual ${likeCount}`);
+    });
   });
 
-  await h(t).withLog(`Then M1 should appear "like" icon with number 1`, async () => {
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup_border');
-    await postCard.likeShouldBe(1);
-  });
-
-
-  await h(t).withLog(`When userA click 'like' icon on footer`, async () => {
-    await t.useRole(roleA);
-    await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
-    await postCard.ensureLoaded();
+  await h(t).withLog(`When userA click bold 'unlike' icon on footer`, async () => {
     await postCard.clickLikeButtonOnFooter();
+    currentNumber = 0
   });
 
-  await h(t).withLog(`Then there is hollow "unlike" icon on M1 action bar and no like or unlike on M1 footer `, async () => {
+  await h(t).withLog(`Then Action bar bold "unlike" icon change to hollow "like" icon and no like or unlike on M1 footer`, async () => {
     await t.hover(postCard.self);
     await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
-    await postCard.likeShouldBe(0);
-  });
+    await postCard.likeShouldBe(currentNumber);
+  });;
 
-  await h(t).withLog(`When userB view the message M1 card`, async () => {
-    await t.useRole(roleB);
-    await app.homePage.ensureLoaded();
-    await conversationPage.waitUntilPostsBeLoaded();
-    await postCard.ensureLoaded();
-  });
-
-  await h(t).withLog(`Then should check no one like the M1`, async () => {
-    await postCard.likeShouldBe(0);
+  await h(t).withLog(`and userB check no one like the message via Api`, async () => {
+    await H.retryUntilPass(async () => {
+      const likeCount = await h(t).glip(userB).getPostLikesCount(postId);
+      assert.deepStrictEqual(currentNumber, likeCount, `likeCount expect ${currentNumber}, actual ${likeCount}`);
+    });
   });
 });
 
