@@ -54,7 +54,6 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
 
   await h(t).withLog(`Then Appear action bar and there have hollow "like" icon `, async () => {
     await t.hover(postCard.likeToggleOnActionBar);
-    await postCard.showTooltip('Like')
   });
 
   await h(t).withLog(`and userB check like number should be ${currentNumber} on the message via Api`, async () => {
@@ -70,8 +69,8 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   });
 
   await h(t).withLog(`Then action bar 'like' icon change to solid 'unlike', and message card appear solid "unlike" icon with number ${currentNumber}`, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
+    await t.expect(postCard.unlikeIconOnActionBar.exists).ok();
+    await t.expect(postCard.unlikeIconOnFooter.exists).ok();
     await postCard.likeShouldBe(currentNumber);
   });
 
@@ -89,7 +88,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
 
   await h(t).withLog(`Then Action bar solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card `, async () => {
     await t.hover(postCard.self);
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
+    await t.expect(postCard.likeIconOnActionBar.exists).ok();
     await postCard.likeShouldBe(currentNumber);
   });
 
@@ -106,8 +105,8 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   });
 
   await h(t).withLog(`Then action bar 'like' icon change to solid 'unlike', and message card appear solid "unlike" icon with number ${currentNumber}`, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
+    await t.expect(postCard.unlikeIconOnActionBar.exists).ok();
+    await t.expect(postCard.unlikeIconOnFooter.exists).ok();
     await postCard.likeShouldBe(currentNumber);
   });
 
@@ -125,7 +124,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
 
   await h(t).withLog(`Then Action bar solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card`, async () => {
     await t.hover(postCard.self);
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
+    await t.expect(postCard.likeIconOnActionBar.exists).ok();
     await postCard.likeShouldBe(currentNumber);
   });;
 
@@ -178,7 +177,6 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
 
   await h(t).withLog(`Then Appear action bar and there have hollow "like" icon And like number should be ${currentNumber} on message card`, async () => {
     await t.hover(postCard.likeToggleOnActionBar);
-    await postCard.showTooltip('Like');
     await postCard.likeShouldBe(currentNumber);
   });
 
@@ -194,9 +192,9 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     currentNumber = 2;
   });
 
-  await h(t).withLog(`Then action bar 'like' icon change to solid 'unlike', and message card appear solid "unlike" icon with number ${currentNumber}`, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
+  await h(t).withLog(`Then action bar and message card hollow 'like' icon change to solid 'unlike', and message card appear solid "unlike" icon with number ${currentNumber}`, async () => {
+    await t.expect(postCard.unlikeIconOnActionBar.exists).ok();
+    await t.expect(postCard.unlikeIconOnFooter.exists).ok();
     await postCard.likeShouldBe(currentNumber);
   });
 
@@ -212,9 +210,10 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     currentNumber = 1;
   });
 
-  await h(t).withLog(`Then Action bar solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card `, async () => {
+  await h(t).withLog(`Then Action bar and message card solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card `, async () => {
     await t.hover(postCard.self);
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
+    await t.expect(postCard.likeIconOnActionBar.exists).ok();
+    await t.expect(postCard.likeIconOnFooter.exists).ok();
     await postCard.likeShouldBe(currentNumber);
   });
 
@@ -230,9 +229,9 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     currentNumber = 2;
   });
 
-  await h(t).withLog(`Then action bar 'like' icon change to solid 'unlike', and message card appear solid "unlike" icon with number ${currentNumber}`, async () => {
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup');
-    await t.expect(postCard.likeButtonOnFooter.textContent).eql('thumbup');
+  await h(t).withLog(`Then action bar and message card 'like' icon change to solid 'unlike', and message card appear solid "unlike" icon with number ${currentNumber}`, async () => {
+    await t.expect(postCard.unlikeIconOnActionBar.exists).ok();
+    await t.expect(postCard.unlikeIconOnFooter.exists).ok();
     await postCard.likeShouldBe(currentNumber);
   });
 
@@ -248,9 +247,10 @@ test(formalName('Like a message that you not first like then unlike', ['JPT-308'
     currentNumber = 1;
   });
 
-  await h(t).withLog(`Then Action bar solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card`, async () => {
+  await h(t).withLog(`Then Action bar and message card solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card`, async () => {
     await t.hover(postCard.self);
-    await t.expect(postCard.likeToggleOnActionBar.textContent).eql('thumbup_border');
+    await t.expect(postCard.likeIconOnActionBar.exists).ok();
+    await t.expect(postCard.likeIconOnFooter.exists).ok();
     await postCard.likeShouldBe(currentNumber);
   });;
 
