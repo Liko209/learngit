@@ -256,7 +256,7 @@ describe('TotalUnreadController', () => {
 
   describe('_updateTotalUnreadByStateChanges()', () => {
     it('should update correctly', async () => {
-      totalUnreadController['_updateTotalUnread'] = jest.fn();
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
       totalUnreadController['_groupSectionUnread'].set(1, {
         section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
         unreadCount: 8,
@@ -269,12 +269,11 @@ describe('TotalUnreadController', () => {
       await totalUnreadController['_updateTotalUnreadByStateChanges'](
         groupStates,
       );
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
         9,
         -1,
-        false,
       );
       expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
         section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
@@ -282,12 +281,99 @@ describe('TotalUnreadController', () => {
         mentionCount: 1,
       });
     });
+
+    it('should update correctly when current unread count != 0 and update unread count = 0', async () => {
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
+      totalUnreadController['_groupSectionUnread'].set(1, {
+        section: UMI_SECTION_TYPE.TEAM,
+        unreadCount: 8,
+        mentionCount: 2,
+        isTeam: true,
+      });
+      const groupStates = [
+        { id: 1, unread_count: 0, unread_mentions_count: 1 },
+        { id: 2 },
+      ] as GroupState[];
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](
+        groupStates,
+      );
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+        UMI_SECTION_TYPE.TEAM,
+        -2,
+        -1,
+      );
+      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
+        section: UMI_SECTION_TYPE.TEAM,
+        unreadCount: 0,
+        mentionCount: 1,
+        isTeam: true,
+      });
+    });
+
+    it('should update correctly when current unread count = 0 and update unread count != 0', async () => {
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
+      totalUnreadController['_groupSectionUnread'].set(1, {
+        section: UMI_SECTION_TYPE.TEAM,
+        unreadCount: 0,
+        mentionCount: 2,
+        isTeam: true,
+      });
+      const groupStates = [
+        { id: 1, unread_count: 6, unread_mentions_count: 17 },
+        { id: 2 },
+      ] as GroupState[];
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](
+        groupStates,
+      );
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+        UMI_SECTION_TYPE.TEAM,
+        17,
+        15,
+      );
+      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
+        section: UMI_SECTION_TYPE.TEAM,
+        unreadCount: 6,
+        mentionCount: 17,
+        isTeam: true,
+      });
+    });
+
+    it('should update correctly when current unread count = 0 and update unread count = 0 and mention count changed', async () => {
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
+      totalUnreadController['_groupSectionUnread'].set(1, {
+        section: UMI_SECTION_TYPE.TEAM,
+        unreadCount: 0,
+        mentionCount: 2,
+        isTeam: true,
+      });
+      const groupStates = [
+        { id: 1, unread_count: 0, unread_mentions_count: 17 },
+        { id: 2 },
+      ] as GroupState[];
+      await totalUnreadController['_updateTotalUnreadByStateChanges'](
+        groupStates,
+      );
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+        UMI_SECTION_TYPE.TEAM,
+        0,
+        15,
+      );
+      expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
+        section: UMI_SECTION_TYPE.TEAM,
+        unreadCount: 0,
+        mentionCount: 17,
+        isTeam: true,
+      });
+    });
   });
 
   describe('_updateTotalUnreadByGroupChanges()', () => {
     it('should update correctly when delete groups', async () => {
       UserConfig.getCurrentUserId = jest.fn();
-      totalUnreadController['_updateTotalUnread'] = jest.fn();
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
       totalUnreadController['_groupSectionUnread'].set(1, {
         section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
@@ -303,19 +389,74 @@ describe('TotalUnreadController', () => {
       await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
       expect(UserConfig.getCurrentUserId).toBeCalledTimes(0);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(0);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
         -8,
         -2,
-        false,
+      );
+      expect(totalUnreadController['_groupSectionUnread'].size).toEqual(0);
+    });
+
+    it('should delete team correctly when current unread count = 0', async () => {
+      UserConfig.getCurrentUserId = jest.fn();
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
+      totalUnreadController['_addNewGroupUnread'] = jest.fn();
+      totalUnreadController['_groupSectionUnread'].set(1, {
+        section: UMI_SECTION_TYPE.TEAM,
+        unreadCount: 0,
+        mentionCount: 5,
+        isTeam: true,
+      });
+      const payload: NotificationEntityPayload<Group> = {
+        type: EVENT_TYPES.DELETE,
+        body: {
+          ids: [1, 2],
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
+      expect(UserConfig.getCurrentUserId).toBeCalledTimes(0);
+      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(0);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+        UMI_SECTION_TYPE.TEAM,
+        0,
+        -5,
+      );
+      expect(totalUnreadController['_groupSectionUnread'].size).toEqual(0);
+    });
+
+    it('should delete team correctly when current unread count != 0', async () => {
+      UserConfig.getCurrentUserId = jest.fn();
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
+      totalUnreadController['_addNewGroupUnread'] = jest.fn();
+      totalUnreadController['_groupSectionUnread'].set(1, {
+        section: UMI_SECTION_TYPE.TEAM,
+        unreadCount: 7,
+        mentionCount: 5,
+        isTeam: true,
+      });
+      const payload: NotificationEntityPayload<Group> = {
+        type: EVENT_TYPES.DELETE,
+        body: {
+          ids: [1, 2],
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
+      expect(UserConfig.getCurrentUserId).toBeCalledTimes(0);
+      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(0);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
+        UMI_SECTION_TYPE.TEAM,
+        -5,
+        -5,
       );
       expect(totalUnreadController['_groupSectionUnread'].size).toEqual(0);
     });
 
     it('should update correctly when update groups', async () => {
       UserConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
-      totalUnreadController['_updateTotalUnread'] = jest.fn();
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
       totalUnreadController['_groupSectionUnread'].set(1, {
         section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
@@ -345,12 +486,11 @@ describe('TotalUnreadController', () => {
       };
       await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
       expect(UserConfig.getCurrentUserId).toBeCalledTimes(1);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
         -8,
         -2,
-        false,
       );
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({
@@ -391,7 +531,7 @@ describe('TotalUnreadController', () => {
 
   describe('_updateTotalUnreadByFavoriteChanges()', () => {
     beforeEach(() => {
-      totalUnreadController['_updateTotalUnread'] = jest.fn();
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
     });
 
     it('should do nothing when group unread is not in map or is already added to favorite', () => {
@@ -405,7 +545,7 @@ describe('TotalUnreadController', () => {
         [1, 2],
         true,
       );
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledTimes(0);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(0);
       expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
         section: UMI_SECTION_TYPE.FAVORITE,
         unreadCount: 2,
@@ -422,7 +562,7 @@ describe('TotalUnreadController', () => {
         isTeam: false,
       });
       totalUnreadController['_updateTotalUnreadByFavoriteChanges']([1], false);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledTimes(0);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(0);
       expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
         section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
         unreadCount: 2,
@@ -438,18 +578,16 @@ describe('TotalUnreadController', () => {
         mentionCount: 3,
       });
       totalUnreadController['_updateTotalUnreadByFavoriteChanges']([1], true);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledTimes(2);
-      expect(totalUnreadController['_updateTotalUnread']).toHaveBeenCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(2);
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
         -7,
         -3,
-        false,
       );
-      expect(totalUnreadController['_updateTotalUnread']).toHaveBeenCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toHaveBeenCalledWith(
         UMI_SECTION_TYPE.FAVORITE,
         7,
         3,
-        false,
       );
       expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
         section: UMI_SECTION_TYPE.FAVORITE,
@@ -466,18 +604,16 @@ describe('TotalUnreadController', () => {
         isTeam: true,
       });
       totalUnreadController['_updateTotalUnreadByFavoriteChanges']([1], false);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledTimes(2);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(2);
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.FAVORITE,
-        -9,
         -6,
-        true,
+        -6,
       );
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.TEAM,
-        9,
         6,
-        true,
+        6,
       );
       expect(totalUnreadController['_groupSectionUnread'].get(1)).toEqual({
         section: UMI_SECTION_TYPE.TEAM,
@@ -543,15 +679,14 @@ describe('TotalUnreadController', () => {
         unread_mentions_count: 6,
       };
       totalUnreadController['_favoriteGroupIds'] = [55668833];
-      totalUnreadController['_updateTotalUnread'] = jest.fn();
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
       mockEntitySourceController.get = jest.fn().mockReturnValue(groupState);
       await totalUnreadController['_addNewGroupUnread'](group);
       expect(mockEntitySourceController.get).toBeCalledWith(groupId);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.FAVORITE,
-        15,
         6,
-        true,
+        6,
       );
       expect(totalUnreadController['_groupSectionUnread'].get(groupId)).toEqual(
         {
@@ -571,15 +706,14 @@ describe('TotalUnreadController', () => {
         unread_count: 15,
       };
       totalUnreadController['_favoriteGroupIds'] = [11223344];
-      totalUnreadController['_updateTotalUnread'] = jest.fn();
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
       mockEntitySourceController.get = jest.fn().mockReturnValue(groupState);
       await totalUnreadController['_addNewGroupUnread'](group);
       expect(mockEntitySourceController.get).toBeCalledWith(groupId);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.TEAM,
-        15,
         0,
-        true,
+        0,
       );
       expect(totalUnreadController['_groupSectionUnread'].get(groupId)).toEqual(
         {
@@ -595,15 +729,14 @@ describe('TotalUnreadController', () => {
       const groupId: number = 55668833;
       const group = { id: groupId } as Group;
       totalUnreadController['_favoriteGroupIds'] = [11223344];
-      totalUnreadController['_updateTotalUnread'] = jest.fn();
+      totalUnreadController['_modifyTotalUnread'] = jest.fn();
       mockEntitySourceController.get = jest.fn().mockReturnValue(null);
       await totalUnreadController['_addNewGroupUnread'](group);
       expect(mockEntitySourceController.get).toBeCalledWith(groupId);
-      expect(totalUnreadController['_updateTotalUnread']).toBeCalledWith(
+      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
         0,
         0,
-        false,
       );
       expect(totalUnreadController['_groupSectionUnread'].get(groupId)).toEqual(
         {
@@ -617,43 +750,14 @@ describe('TotalUnreadController', () => {
   });
 
   describe('_updateTotalUnread()', () => {
-    it('should update correct when isTeam === true', () => {
+    it('should update correct', () => {
       const section = UMI_SECTION_TYPE.FAVORITE;
       const unreadUpdate = 15;
       const mentionUpdate = -2;
-      const isTeam = true;
-      totalUnreadController['_updateTotalUnread'](
+      totalUnreadController['_modifyTotalUnread'](
         section,
         unreadUpdate,
         mentionUpdate,
-        isTeam,
-      );
-      expect(
-        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.FAVORITE),
-      ).toEqual({
-        section: UMI_SECTION_TYPE.FAVORITE,
-        unreadCount: mentionUpdate,
-        mentionCount: mentionUpdate,
-      });
-      expect(
-        totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.ALL),
-      ).toEqual({
-        section: UMI_SECTION_TYPE.ALL,
-        unreadCount: mentionUpdate,
-        mentionCount: mentionUpdate,
-      });
-    });
-
-    it('should update correct when isTeam === false', () => {
-      const section = UMI_SECTION_TYPE.FAVORITE;
-      const unreadUpdate = -5;
-      const mentionUpdate = 16;
-      const isTeam = false;
-      totalUnreadController['_updateTotalUnread'](
-        section,
-        unreadUpdate,
-        mentionUpdate,
-        isTeam,
       );
       expect(
         totalUnreadController['_totalUnreadMap'].get(UMI_SECTION_TYPE.FAVORITE),
