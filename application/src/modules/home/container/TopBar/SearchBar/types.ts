@@ -53,6 +53,9 @@ type ViewProps = {
   setSelectIndex: (section: number, cellIndex: number) => void;
   setData: (data: SearchItems[]) => void;
   findNextValidSectionLength: (section: number, offset: number) => number[];
+  onKeyUp: () => void;
+  onKeyDown: () => void;
+  selectIndexChange: (sectionIndex: number, cellIndex: number) => void;
 };
 
 type SectionType<T> = {

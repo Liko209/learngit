@@ -26,8 +26,6 @@ import { SearchSectionsConfig } from './config';
 
 const SEARCH_DELAY = 50;
 
-const InvalidIndexPath: number[] = [-1, -1];
-
 type Props = { closeSearchBar: () => void; isShowSearchBar: boolean };
 
 @observer
@@ -101,9 +99,6 @@ class SearchBarView extends React.Component<ViewProps & Props> {
     }
     updateFocus(false);
     resetSelectIndex();
-    // this.setState({
-    //   selectIndex: InvalidIndexPath,
-    // });
   }
 
   private _goToConversation = async (id: number) => {
@@ -119,89 +114,13 @@ class SearchBarView extends React.Component<ViewProps & Props> {
     await joinTeamByItem();
   }
 
-  onKeyUp = () => {
-    // const { selectIndex } = this.state;
-    const {
-      selectIndex,
-      setSelectIndex,
-      findNextValidSectionLength,
-    } = this.props;
-    const [section, cell] = selectIndex;
-    if (cell > 0) {
-      setSelectIndex(section, cell - 1);
-    } else {
-      if (section > 0) {
-        const [nextSection, sectionLength] = findNextValidSectionLength(
-          section - 1,
-          -1,
-        );
-        if (nextSection !== -1) {
-          setSelectIndex(nextSection, sectionLength - 1);
-        }
-      }
-    }
-  }
-
-  onKeyDown = () => {
-    // const { selectIndex } = this.state;
-    const {
-      selectIndex,
-      data,
-      setSelectIndex,
-      findNextValidSectionLength,
-    } = this.props;
-    const [section, cell] = selectIndex;
-    // const { data } = this.state;
-    const currentSection = section < 0 ? 0 : section;
-    const searchItem: SearchItems = data[currentSection];
-
-    if (!searchItem) {
-      return;
-    }
-    const currentSectionLength = searchItem.ids.length;
-    if (cell < currentSectionLength - 1) {
-      setSelectIndex(currentSection, cell + 1);
-    } else {
-      if (currentSection < data.length - 1) {
-        const [nextSection] = findNextValidSectionLength(section + 1, 1);
-        if (nextSection !== -1) {
-          setSelectIndex(nextSection, 0);
-        }
-      }
-    }
-  }
-
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
-    // const [section, cell] = this.state.selectIndex;
-    const [section, cell] = this.props.selectIndex;
-    const { setSelectIndex } = this.props;
-    // let { data } = this.state;
-    let { data } = this.props;
-    data = data.slice(0);
-
-    const items: SearchItems = data[sectionIndex];
-    items.ids.splice(cellIndex, 1);
-    // this.setState({ data });
-    this.props.setData(data);
-    // remove current select item
-    if (sectionIndex === section && cell === cellIndex) {
-      setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
-      return;
-    }
-
-    // remove before current select item
-    if (sectionIndex === section && cellIndex < cell) {
-      setSelectIndex(section, cell - 1);
-    }
+    this.props.selectIndexChange(sectionIndex, cellIndex);
   }
 
-  addHighlight = (sectionIndex: number, cellIndex: number) => () => {
+  hoverHighlight = (sectionIndex: number, cellIndex: number) => () => {
     this.props.setSelectIndex(sectionIndex, cellIndex);
-  }
-
-  mouseLeaveItem = () => {
-    this.props.setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
   }
 
   onKeyEsc = () => {
@@ -221,7 +140,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
 
   get searchResult() {
     // const { data, terms, selectIndex } = this.state;
-    const { data, terms, selectIndex } = this.props;
+    const { data, terms, selectIndex, resetSelectIndex } = this.props;
     return data.map(
       ({ ids, name, hasMore }: SearchItems, sectionIndex: number) => {
         if (ids.length === 0) return null;
@@ -241,8 +160,8 @@ class SearchBarView extends React.Component<ViewProps & Props> {
                 cellIndex={cellIndex}
                 selectIndex={selectIndex}
                 sectionIndex={sectionIndex}
-                onMouseEnter={this.addHighlight}
-                onMouseLeave={this.mouseLeaveItem}
+                onMouseEnter={this.hoverHighlight}
+                onMouseLeave={resetSelectIndex} // this.mouseLeaveItem
                 hasMore={hasMore}
                 title={title}
                 goToConversation={this._goToConversation}
@@ -268,8 +187,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
 
   get searchRecord() {
     // const { terms, selectIndex } = this.state;
-    const { terms, selectIndex } = this.props;
-    const { recentRecord } = this.props;
+    const { terms, selectIndex, recentRecord, resetSelectIndex } = this.props;
     if (recentRecord.length === 0) {
       return null;
     }
@@ -291,8 +209,8 @@ class SearchBarView extends React.Component<ViewProps & Props> {
                 cellIndex={cellIndex}
                 selectIndex={selectIndex}
                 sectionIndex={1}
-                onMouseEnter={this.addHighlight}
-                onMouseLeave={this.mouseLeaveItem}
+                onMouseEnter={this.hoverHighlight}
+                onMouseLeave={resetSelectIndex} // this.mouseLeaveItem
                 hasMore={false}
                 title={title}
                 goToConversation={this._goToConversation}
@@ -310,7 +228,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
   }
 
   render() {
-    const { searchValue, focus } = this.props;
+    const { searchValue, focus, onKeyUp, onKeyDown } = this.props;
 
     return (
       <JuiSearchBar
@@ -322,8 +240,8 @@ class SearchBarView extends React.Component<ViewProps & Props> {
       >
         <HotKeys
           keyMap={{
-            up: this.onKeyUp,
-            down: this.onKeyDown,
+            up: onKeyUp,
+            down: onKeyDown,
             esc: this.onKeyEsc,
           }}
         >

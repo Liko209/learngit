@@ -174,7 +174,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     this.selectIndex = [section, cellIndex];
   }
 
-  findNextValidSectionLength(section: number, offset: number): number[] {
+  findNextValidSectionLength = (section: number, offset: number): number[] => {
     const data = this.data;
     for (let i = section; i >= 0 && i < data.length; i += offset) {
       const { length } = (data[i] as SearchItems).ids;
@@ -183,6 +183,67 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
       }
     }
     return InvalidIndexPath;
+  }
+
+  onKeyUp = () => {
+    const [section, cell] = this.selectIndex;
+    if (cell > 0) {
+      this.setSelectIndex(section, cell - 1);
+    } else {
+      if (section > 0) {
+        const [nextSection, sectionLength] = this.findNextValidSectionLength(
+          section - 1,
+          -1,
+        );
+        if (nextSection !== -1) {
+          this.setSelectIndex(nextSection, sectionLength - 1);
+        }
+      }
+    }
+  }
+
+  onKeyDown = () => {
+    const [section, cell] = this.selectIndex;
+    const data = this.data;
+    const currentSection = section < 0 ? 0 : section;
+    const searchItem: SearchItems = data[currentSection];
+
+    if (!searchItem) {
+      return;
+    }
+    const currentSectionLength = searchItem.ids.length;
+    if (cell < currentSectionLength - 1) {
+      this.setSelectIndex(currentSection, cell + 1);
+    } else {
+      if (currentSection < data.length - 1) {
+        const [nextSection] = this.findNextValidSectionLength(section + 1, 1);
+        if (nextSection !== -1) {
+          this.setSelectIndex(nextSection, 0);
+        }
+      }
+    }
+  }
+
+  // if search item removed need update selectIndex
+  selectIndexChange = (sectionIndex: number, cellIndex: number) => {
+    const [section, cell] = this.selectIndex;
+    let data = this.data;
+    data = data.slice(0);
+
+    const items: SearchItems = data[sectionIndex];
+    items.ids.splice(cellIndex, 1);
+
+    this.setData(data);
+    // remove current select item
+    if (sectionIndex === section && cell === cellIndex) {
+      this.setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
+      return;
+    }
+
+    // remove before current select item
+    if (sectionIndex === section && cellIndex < cell) {
+      this.setSelectIndex(section, cell - 1);
+    }
   }
 
   getRecent = () => {
