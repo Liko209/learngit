@@ -46,13 +46,6 @@ class AvatarActionsView extends React.Component<ViewProps> {
 
   handleAboutPage = () => this.props.toggleAboutPage();
 
-  // handleViewYourProfile = () => {
-  //   const { currentUserId } = this.props;
-  //   Dialog.simple(<ProfileDialogPerson id={currentUserId} />, {
-  //     size: 'medium',
-  //   });
-  // }
-
   render() {
     const { handleSignOut, currentUserId } = this.props;
 
