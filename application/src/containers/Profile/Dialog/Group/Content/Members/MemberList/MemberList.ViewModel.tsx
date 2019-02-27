@@ -16,24 +16,6 @@ class MemberListViewModel extends StoreViewModel<MemberListProps> {
   private _memberListHandler: SortableGroupMemberHandler | null = null;
   private _allMemberIds: number[] = [];
 
-<<<<<<< HEAD
-=======
-  constructor(props: MemberListProps) {
-    super(props);
-    this.loadMore = this.loadMore.bind(this);
-  }
-
-  @computed
-  get id() {
-    return this.props.id;
-  }
-
-  @computed
-  get hasMoreDown() {
-    return this.memberIds.length < this._allMemberIds.length;
-  }
-
->>>>>>> stage/1.1.0.190221
   @action
   private _createSortableMemberIds = async () => {
     if (!this._memberListHandler) {
