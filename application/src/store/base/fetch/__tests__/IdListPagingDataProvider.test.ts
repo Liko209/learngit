@@ -4,10 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import {
-  IdListDataProviderOptions,
-  IdListPagingDataProvider,
-} from '../IdListPagingDataProvider';
+import { IdListPagingDataProvider } from '../IdListPagingDataProvider';
 import { IEntityDataProvider } from '../types';
 
 import PostModel from '../../../models/Post';
@@ -73,7 +70,7 @@ describe('IdListPagingDataProvider', () => {
       entityName,
       filterFunc: isMatchFunc,
       entityDataProvider: postProvider,
-    } as IdListDataProviderOptions<Post, PostModel>;
+    };
     idsDataProvider = new IdListPagingDataProvider(sourceIds, options);
     const store = storeManager.getEntityMapStore(entityName);
     storeManager.removeStore(store);

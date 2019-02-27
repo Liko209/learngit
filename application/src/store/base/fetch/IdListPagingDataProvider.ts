@@ -220,4 +220,4 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   }
 }
 
-export { IdListPagingDataProvider, IdListDataProviderOptions };
+export { IdListPagingDataProvider };
