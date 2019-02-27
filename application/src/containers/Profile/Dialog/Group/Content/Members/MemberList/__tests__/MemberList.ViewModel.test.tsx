@@ -9,56 +9,32 @@ import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandl
 
 jest.mock('../../../../../../../../store/handler/SectionGroupHandler');
 
-const mockData: number[] = [];
+const allMembersIds: number[] = [];
 for (let i = 0; i < 50; i++) {
-  mockData[i] = i;
+  allMembersIds[i] = i;
 }
 
 SortableGroupMemberHandler.createSortableGroupMemberHandler = jest
   .fn()
   .mockResolvedValue({
-    getSortedGroupMembersIds: jest.fn().mockReturnValue(mockData),
+    getSortedGroupMembersIds: jest.fn().mockReturnValue(allMembersIds),
   });
-
-const props = {
-  id: 123,
-};
-const vm = new MemberListViewModel(props);
 
 describe('MemberListViewModel', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
   });
 
-  describe('id', () => {
-    it('should be get conversation id when the component is instantiated', () => {
-      expect(vm.id).toEqual(props.id);
-    });
-  });
-
   describe('memberIds', () => {
     it('should be get correct memberIds when scrolling [JPT-405]', () => {
+      const vm = new MemberListViewModel();
       const getSortedGroupMembersIds = jest.fn();
       // @ts-ignore
       vm._memberListHandler = {
         getSortedGroupMembersIds,
       };
-      // first page
-      const firstPageMemberIds = mockData.slice(0, 20);
-      getSortedGroupMembersIds.mockReturnValue(firstPageMemberIds);
-      expect(vm.memberIds).toMatchObject(firstPageMemberIds);
-      // second page
-      vm.loadMore(); // next page
-      const secondPageMemberIds = mockData.slice(20, 40);
-      getSortedGroupMembersIds.mockReturnValue(secondPageMemberIds);
-      expect(vm.memberIds).toMatchObject(secondPageMemberIds);
-      // third page
-      vm.loadMore(); // next page
-      const thirdPageMemberIds = mockData.slice(40, 50);
-      getSortedGroupMembersIds.mockReturnValue(thirdPageMemberIds);
-      expect(vm.memberIds).toMatchObject(thirdPageMemberIds);
-      // fourth page
-      vm.loadMore(); // next page
+      getSortedGroupMembersIds.mockReturnValue(allMembersIds);
+      expect(vm.memberIds).toEqual(allMembersIds);
     });
   });
 });
