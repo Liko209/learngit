@@ -7,15 +7,10 @@
 import { ItemService } from '../ItemService';
 import { ItemServiceController } from '../../controller/ItemServiceController';
 import { FileItemService } from '../../module/file';
-import { daoManager, ItemDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
 import { ItemFile, Item } from '../../entity';
 import { postFactory, rawItemFactory } from '../../../../__tests__/factories';
 import { ItemActionController } from '../../controller/ItemActionController';
-import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import { SubscribeController } from '../../../base/controller/SubscribeController';
-import { Api } from '../../../../api';
-import ItemAPI from '../../../../api/glip/item';
-import { ApiResultOk } from '../../../../api/ApiResult';
 import { transform, baseHandleData } from '../../../../service/utils';
 import { TypeDictionary } from '../../../../utils';
 import { ItemSyncController } from '../../controller/ItemSyncController';
@@ -44,10 +39,8 @@ describe('ItemService', () => {
   function setup() {
     itemService = new ItemService();
     itemServiceController = new ItemServiceController(null, null);
-    fileItemService = new FileItemService(itemService);
-    itemActionController = new ItemActionController(
-      undefined as IPartialModifyController<Item>,
-    );
+    fileItemService = new FileItemService();
+    itemActionController = new ItemActionController(undefined, undefined);
 
     Object.assign(itemService, {
       _itemServiceController: itemServiceController,
@@ -281,107 +274,6 @@ describe('ItemService', () => {
     });
   });
 
-  describe('createLocalItem()', () => {
-    it('should controller with correct parameter', async () => {
-      Object.assign(itemService, {
-        _itemServiceController: itemServiceController,
-      });
-
-      itemServiceController.createLocalItem = jest.fn();
-
-      await itemService.createLocalItem({
-        id: -1,
-        created_at: 1234,
-        modified_at: 1234,
-        creator_id: 2222,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        group_ids: [1],
-        post_ids: [1],
-        company_id: 1,
-        name: 'test name',
-        type_id: 1,
-        type: 'jpg',
-        versions: [],
-      });
-
-      expect(itemServiceController.createLocalItem).toBeCalledWith({
-        id: -1,
-        created_at: 1234,
-        modified_at: 1234,
-        creator_id: 2222,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        group_ids: [1],
-        post_ids: [1],
-        company_id: 1,
-        name: 'test name',
-        type_id: 1,
-        type: 'jpg',
-        versions: [],
-      });
-    });
-  });
-
-  describe('updateLocalItem()', () => {
-    it('should controller with correct parameter', async () => {
-      Object.assign(itemService, {
-        _itemServiceController: itemServiceController,
-      });
-
-      itemServiceController.updateLocalItem = jest.fn();
-
-      await itemService.updateLocalItem({
-        id: 1,
-        created_at: 1234,
-        modified_at: 1234,
-        creator_id: 2222,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        group_ids: [1],
-        post_ids: [1],
-        company_id: 1,
-        name: 'test name',
-        type_id: 1,
-        type: 'jpg',
-        versions: [],
-      });
-      expect(itemServiceController.updateLocalItem).toBeCalledWith({
-        id: 1,
-        created_at: 1234,
-        modified_at: 1234,
-        creator_id: 2222,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        group_ids: [1],
-        post_ids: [1],
-        company_id: 1,
-        name: 'test name',
-        type_id: 1,
-        type: 'jpg',
-        versions: [],
-      });
-    });
-  });
-
-  describe('deleteLocalItem()', () => {
-    it('should controller with correct parameter', async () => {
-      Object.assign(itemService, {
-        _itemServiceController: itemServiceController,
-      });
-
-      itemServiceController.deleteLocalItem = jest.fn();
-
-      itemService.deleteLocalItem(1);
-
-      expect(itemServiceController.deleteLocalItem).toBeCalledWith(1);
-    });
-  });
-
   describe('getByPosts', () => {
     const itemDao = {
       batchGet: jest.fn(),
@@ -493,15 +385,12 @@ describe('ItemService', () => {
       Object.assign(itemService, {
         _itemServiceController: itemServiceController,
       });
-
-      itemServiceController.handleSanitizedItems = jest.fn();
     });
 
     it('should insert transformed data', async () => {
       const item = rawItemFactory.build({ _id: 1 });
       delete item.id;
       await itemService.handleIncomingData([item]);
-      expect(itemServiceController.handleSanitizedItems).toHaveBeenCalled();
       expect(baseHandleData).toHaveBeenCalled();
       expect(transform).toHaveBeenCalledTimes(1);
       expect(daoManager.getDao).toHaveBeenCalled();
@@ -509,7 +398,6 @@ describe('ItemService', () => {
 
     it('should insert nothing', async () => {
       const ret = await itemService.handleIncomingData([]);
-      expect(itemServiceController.handleSanitizedItems).not.toHaveBeenCalled();
       expect(baseHandleData).not.toHaveBeenCalled();
       expect(ret).toBeUndefined();
     });

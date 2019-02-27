@@ -8,7 +8,7 @@ import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
-import { kRTCAnonymous } from '../account/constants';
+import { kRTCAnonymous, kRTCProvisioningOptions } from '../account/constants';
 
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import {
@@ -16,7 +16,6 @@ import {
   RTCSipProvisionInfo,
   RTC_PROV_EVENT,
 } from '../account/types';
-import { v4 as uuid } from 'uuid';
 import { RTC_ACCOUNT_STATE, RTCCallOptions } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
@@ -25,23 +24,13 @@ import { RTCNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCen
 import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
 import { Listener } from 'eventemitter2';
 
-const options = {
-  appKey: 'YCWFuqW8T7-GtSTb6KBS6g',
-  appName: 'RingCentral',
-  appVersion: '0.1.0',
-  endPointId: 'FVKGRbLRTxGxPempqg5f9g',
-  audioHelper: {
-    enabled: true,
-  },
-  logLevel: 10,
-};
-
 const LOG_TAG = 'RTCAccount';
 
 class RTCAccount implements IRTCAccount {
   private _regManager: RTCRegistrationManager;
   private _delegate: IRTCAccountDelegate;
   private _state: RTC_ACCOUNT_STATE;
+  private _postponeProvisioning: RTCSipProvisionInfo | null;
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
@@ -67,6 +56,10 @@ class RTCAccount implements IRTCAccount {
 
   public handleProvisioning() {
     this._provManager.acquireSipProv();
+  }
+
+  public clearLocalProvisioning() {
+    this._provManager.clearProvInfo();
   }
 
   public makeCall(
@@ -133,6 +126,17 @@ class RTCAccount implements IRTCAccount {
 
   removeCallFromCallManager(uuid: string): void {
     this._callManager.removeCall(uuid);
+    if (this._callManager.callCount() === 0 && this._postponeProvisioning) {
+      rtcLogger.debug(
+        LOG_TAG,
+        "There's no active call. Process postpone provisioning info",
+      );
+      this._regManager.provisionReady(
+        this._postponeProvisioning,
+        kRTCProvisioningOptions,
+      );
+      this._postponeProvisioning = null;
+    }
   }
 
   private _initListener() {
@@ -193,7 +197,7 @@ class RTCAccount implements IRTCAccount {
 
   private _onLogoutAction() {
     this._callManager.endAllCalls();
-    this._provManager.clearProvInfo();
+    this.clearLocalProvisioning();
   }
 
   private _onMakeOutgoingCall(
@@ -236,15 +240,19 @@ class RTCAccount implements IRTCAccount {
     if (!this._regManager) {
       return;
     }
-    const info = {
-      appKey: options.appKey,
-      appName: options.appName,
-      appVersion: options.appVersion,
-      endPointId: uuid(),
-      audioHelper: options.audioHelper,
-      logLevel: options.logLevel,
-    };
-    this._regManager.provisionReady(sipProv, info);
+    if (this._callManager.callCount() === 0) {
+      rtcLogger.debug(
+        LOG_TAG,
+        "There's no active call. Process new provisioning info",
+      );
+      this._regManager.provisionReady(sipProv, kRTCProvisioningOptions);
+    } else {
+      rtcLogger.debug(
+        LOG_TAG,
+        "There're active calls. Postpone new provisioning info",
+      );
+      this._postponeProvisioning = sipProv;
+    }
   }
 
   private _onNetworkChange(params: any) {

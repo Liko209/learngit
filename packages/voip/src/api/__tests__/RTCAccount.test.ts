@@ -15,6 +15,7 @@ import {
 } from '../types';
 import {
   kRTCAnonymous,
+  kRTCProvisioningOptions,
   kRTCProvRefreshByRegFailedInterval,
 } from '../../account/constants';
 import {
@@ -27,6 +28,36 @@ import { kProvisioningInfoKey } from '../../utils/constants';
 import { ITelephonyDaoDelegate } from 'foundation/src';
 import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { RTCCall } from '../RTCCall';
+
+const mockProvisionData = {
+  device: { name: 'device' },
+  sipInfo: [
+    {
+      transport: 'transport',
+      password: 'password',
+      domain: 'domain',
+      username: 'userName',
+      authorizationId: 'id',
+      outboundProxy: 'proxy',
+    },
+  ],
+  sipFlags: { flag: 'sipFlags' },
+};
+
+const mockProvisionData2 = {
+  device: { name: 'device2' },
+  sipInfo: [
+    {
+      transport: 'transport2',
+      password: 'password2',
+      domain: 'domain2',
+      username: 'userName2',
+      authorizationId: 'id2',
+      outboundProxy: 'proxy2',
+    },
+  ],
+  sipFlags: { flag: 'sipFlags2' },
+};
 
 class MockAccountListener implements IRTCAccountDelegate {
   onAccountStateChanged = jest.fn();
@@ -52,6 +83,7 @@ class MockUserAgent extends EventEmitter2 {
   }
   unregister = jest.fn();
   reRegister = jest.fn();
+  restartUA = jest.fn();
 }
 
 class MockRequest {
@@ -138,12 +170,10 @@ function setupAccount() {
   RTCDaoManager.instance().setDaoDelegate(localStorage);
   account = new RTCAccount(mockListener);
   ua = new MockUserAgent();
-  jest
-    .spyOn(account._regManager, 'onProvisionReadyAction')
-    .mockImplementation(() => {});
+  jest.spyOn(account._regManager._fsm, 'provisionReady');
   account._regManager._userAgent = ua;
   account._regManager._initUserAgentListener();
-  account._onNewProv({});
+  account._onNewProv(mockProvisionData);
 }
 
 describe('RTCAccount', async () => {
@@ -352,6 +382,37 @@ describe('RTCAccount', async () => {
     });
   });
 
+  it('should transition from regInProgress state to regFailure state when receive transportError event. [JPT-1174]', done => {
+    setupAccount();
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(
+        REGISTRATION_FSM_STATE.IN_PROGRESS,
+      );
+      ua.emit(UA_EVENT.TRANSPORT_ERROR);
+      setImmediate(() => {
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.FAILURE,
+        );
+        done();
+      });
+    });
+  });
+
+  it('should transition from Ready state to regFailure state when receive transportError event. [JPT-1175]', done => {
+    setupAccount();
+    ua.emit(UA_EVENT.REG_SUCCESS);
+    setImmediate(() => {
+      expect(account._regManager._fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
+      ua.emit(UA_EVENT.TRANSPORT_ERROR);
+      setImmediate(() => {
+        expect(account._regManager._fsm.state).toBe(
+          REGISTRATION_FSM_STATE.FAILURE,
+        );
+        done();
+      });
+    });
+  });
+
   it('Should parse multi-party conference headers for outbound call. [JPT-1051]', done => {
     setupAccount();
     const listener = new MockCallListener();
@@ -438,6 +499,102 @@ describe('RTCAccount', async () => {
       expect(account._regManager._fsm.state).toBe(
         REGISTRATION_FSM_STATE.UNREGISTERED,
       );
+      done();
+    });
+  });
+
+  it('Should postpone provisioning info when receive new provisioning event from Provision manager during call. [JPT-1202]', done => {
+    setupAccount();
+    account.clearLocalProvisioning();
+    ua.mockSignal(UA_EVENT.REG_SUCCESS);
+    const listener = new MockCallListener();
+    account.makeCall('123', listener);
+    setImmediate(() => {
+      expect(account.state()).toBe(RTC_ACCOUNT_STATE.REGISTERED);
+      expect(account.callCount()).toBe(1);
+      expect(account._postponeProvisioning).not.toBeDefined();
+      account._onNewProv(mockProvisionData2);
+      expect(account._postponeProvisioning).toBe(mockProvisionData2);
+      done();
+    });
+  });
+
+  it('Should send new provisioning event in Account FSM when receive new provisioning event from Provision manager without call. [JPT-1203]', done => {
+    setupAccount();
+    account.clearLocalProvisioning();
+    ua.mockSignal(UA_EVENT.REG_SUCCESS);
+    setImmediate(() => {
+      expect(account.state()).toBe(RTC_ACCOUNT_STATE.REGISTERED);
+      expect(account.callCount()).toBe(0);
+      account._onNewProv(mockProvisionData2);
+      setImmediate(() => {
+        expect(account._regManager._fsm.provisionReady).toBeCalledWith(
+          mockProvisionData2,
+          kRTCProvisioningOptions,
+        );
+        done();
+      });
+    });
+  });
+
+  it("Should send new provisioning event in Account FSM when call end & there's postponed provisioning info. [JPT-1204]", done => {
+    setupAccount();
+    account.clearLocalProvisioning();
+    const listener = new MockCallListener();
+    ua.mockSignal(UA_EVENT.REG_SUCCESS);
+    setImmediate(() => {
+      expect(account._regManager._fsm.provisionReady).toBeCalledWith(
+        mockProvisionData,
+        kRTCProvisioningOptions,
+      );
+      expect(account.state()).toBe(RTC_ACCOUNT_STATE.REGISTERED);
+      expect(account.callCount()).toBe(0);
+      account.makeCall('123', listener);
+      setImmediate(() => {
+        expect(account.callCount()).toBe(1);
+        expect(account._postponeProvisioning).not.toBeDefined();
+        account._onNewProv(mockProvisionData2);
+        expect(account._postponeProvisioning).toBe(mockProvisionData2);
+        account._callManager.callList()[0].hangup();
+        setImmediate(() => {
+          expect(account.callCount()).toBe(0);
+          setImmediate(() => {
+            expect(account._regManager._fsm.provisionReady).toBeCalledWith(
+              mockProvisionData2,
+              kRTCProvisioningOptions,
+            );
+            done();
+          });
+        });
+      });
+    });
+  });
+
+  it("Should do nothing when Account FSM doesn't trigger NewProvAction after send new provisioning event in Account FSM. [JPT-1205]", done => {
+    setupAccount();
+    ua.mockSignal(UA_EVENT.REG_SUCCESS);
+    setImmediate(() => {
+      expect(ua.restartUA).toBeCalledTimes(1);
+      expect(account.state()).toBe(RTC_ACCOUNT_STATE.REGISTERED);
+      account.logout();
+      setImmediate(() => {
+        expect(account.state()).toBe(RTC_ACCOUNT_STATE.UNREGISTERED);
+        account._onNewProv(mockProvisionData2);
+        setImmediate(() => {
+          expect(account.state()).toBe(RTC_ACCOUNT_STATE.UNREGISTERED);
+          expect(ua.restartUA).toBeCalledTimes(1);
+          done();
+        });
+      });
+    });
+  });
+
+  it('Should restart UserAgent when Account FSM trigger NewProvAction after send new provisioning event in Account FSM. [JPT-1206]', done => {
+    setupAccount();
+    account._onNewProv({});
+    setImmediate(() => {
+      expect(account.state()).toBe(RTC_ACCOUNT_STATE.IN_PROGRESS);
+      expect(ua.restartUA).toBeCalledTimes(2);
       done();
     });
   });

@@ -6,7 +6,6 @@
 import React from 'react';
 import i18next from 'i18next';
 import { container } from 'framework';
-// import { lazyComponent } from '@/modules/common/util/lazyComponent';
 import { MessageService } from '@/modules/message/service/MessageService';
 import { MessageUmi } from '../container/MessageUmi';
 import Message from './lazy/Message';

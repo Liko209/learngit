@@ -64,4 +64,60 @@ describe('Event Item Dao', () => {
       ]);
     });
   });
+
+  describe('toSanitizedItem', () => {
+    function setUpData() {
+      const eventItem = {
+        id: 123123,
+        created_at: 11231333,
+        group_ids: [123],
+        start: 111,
+        end: 222,
+        effective_end: 999,
+      };
+
+      return { eventItem };
+    }
+
+    const { eventItem } = setUpData();
+    it('should return sanitized item', () => {
+      expect(dao.toSanitizedItem(eventItem)).toEqual({
+        id: eventItem.id,
+        group_ids: eventItem.group_ids,
+        created_at: eventItem.created_at,
+        start: eventItem.start,
+        end: eventItem.end,
+        effective_end: eventItem.effective_end,
+      });
+    });
+  });
+
+  describe('toPartialSanitizedItem', () => {
+    const item = {
+      id: 123123,
+      created_at: 11231333,
+      group_ids: [123],
+      start: 111,
+      end: 222,
+      effective_end: 999,
+      complete: true,
+      gg: 'gg',
+    };
+
+    const itemResult = {
+      id: 123123,
+      created_at: 11231333,
+      group_ids: [123],
+      start: 111,
+      end: 222,
+      effective_end: 999,
+    };
+
+    it.each`
+      partialItem | result        | comments
+      ${item}     | ${itemResult} | ${'all properties'}
+    `('should return object with $comments', ({ partialItem, result }) => {
+      expect(dao.toPartialSanitizedItem(partialItem)).toEqual(result);
+    });
+  });
 });

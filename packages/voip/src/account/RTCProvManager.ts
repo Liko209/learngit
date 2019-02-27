@@ -65,8 +65,13 @@ class RTCProvManager extends EventEmitter2 {
   }
 
   refreshSipProv() {
+    rtcLogger.info(LOG_TAG, 'start refresh Sip Provisioning');
     if (this._isRefreshedWithinTime) {
       this._isAcquireProvWhenTimeArrived = true;
+      rtcLogger.info(
+        LOG_TAG,
+        'waiting to refresh Sip Provisioning when time arrives',
+      );
       return;
     }
     this._isRefreshedWithinTime = true;
@@ -86,6 +91,10 @@ class RTCProvManager extends EventEmitter2 {
 
   private _refreshSipProvWhenTimeArrived() {
     if (this._isAcquireProvWhenTimeArrived) {
+      rtcLogger.info(
+        LOG_TAG,
+        'during the timer call refresh api then refresh sip provisioning when time arrives',
+      );
       this._isAcquireProvWhenTimeArrived = false;
       this._sendSipProvRequest().then(() => {
         this._setRefreshByRegFailedTimer();

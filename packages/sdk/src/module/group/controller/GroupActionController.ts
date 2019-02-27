@@ -269,8 +269,8 @@ export class GroupActionController {
         },
       },
     };
-    const apiResult = await GroupAPI.createTeam(team);
-    return await this.handleRawGroup(apiResult.expect('create team fail'));
+    const result = await GroupAPI.createTeam(team);
+    return await this.handleRawGroup(result);
   }
 
   async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {

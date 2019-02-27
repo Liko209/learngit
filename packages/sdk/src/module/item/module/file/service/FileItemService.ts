@@ -8,7 +8,6 @@ import { FileItemController } from '../controller/FileItemController';
 import { ItemFile } from '../../../entity';
 import { daoManager } from '../../../../../dao';
 import { Progress } from '../../../../progress';
-import { IItemService } from '../../../service/IItemService';
 import { FileItemDao } from '../dao/FileItemDao';
 import { SanitizedFileItem, FileItem } from '../entity';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
@@ -16,13 +15,13 @@ import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
   private _fileItemController: FileItemController;
 
-  constructor(private _itemService: IItemService) {
+  constructor() {
     super(daoManager.getDao<FileItemDao>(FileItemDao));
   }
 
   protected get fileItemController() {
     if (!this._fileItemController) {
-      this._fileItemController = new FileItemController(this._itemService);
+      this._fileItemController = new FileItemController();
     }
     return this._fileItemController;
   }
@@ -105,14 +104,6 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
 
   cleanUploadingFiles(groupId: number, itemIds: number[]) {
     this.fileUploadController.cleanUploadingFiles(groupId, itemIds);
-  }
-
-  toSanitizedItem(file: FileItem) {
-    return {
-      ...super.toSanitizedItem(file),
-      name: file.name,
-      type: file.type,
-    } as SanitizedFileItem;
   }
 
   async getThumbsUrlWithSize(itemId: number, width: number, height: number) {

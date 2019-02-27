@@ -19,6 +19,7 @@ import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Activity } from './Activity';
 import { EditMessageInput } from './EditMessageInput';
+import { Profile, PROFILE_TYPE } from '@/containers/Profile';
 
 @observer
 export class ConversationCard extends React.Component<
@@ -44,9 +45,8 @@ export class ConversationCard extends React.Component<
   onClickAvatar = (event: React.MouseEvent) => {
     const { creator } = this.props;
     event.stopPropagation();
-    MiniCard.showProfile({
+    MiniCard.show(<Profile id={creator.id} type={PROFILE_TYPE.MINI_CARD} />, {
       anchor: event.target as HTMLElement,
-      id: creator.id,
     });
   }
 

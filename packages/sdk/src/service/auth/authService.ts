@@ -12,7 +12,7 @@ import {
   UnifiedLoginAuthenticator,
 } from '../../authenticator';
 import { AuthDao, daoManager } from '../../dao';
-import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
+import { AUTH_GLIP2_TOKEN, AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { AccountManager } from '../../framework';
 import { Aware } from '../../utils/error';
 import BaseService from '../BaseService';
@@ -77,15 +77,22 @@ class AuthService extends BaseService {
   async loginGlip2(params: ILogin) {
     const authDao = daoManager.getKVDao(AuthDao);
     try {
-      const loginResult = await loginGlip2ByPassword(params);
-      const authToken = loginResult.expect(
-        'Failed to login glip2 by password.',
-      );
+      const authToken = await loginGlip2ByPassword(params);
       authDao.put(AUTH_GLIP2_TOKEN, authToken);
       notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
     } catch (err) {
       // Since glip2 api is no in use now, we can ignore all it's errors
       Aware(ERROR_CODES_SDK.OAUTH, err.message);
+    }
+  }
+
+  async makeSureUserInWhitelist() {
+    const authDao = daoManager.getKVDao(AuthDao);
+    const rc_token_info = authDao.get(AUTH_RC_TOKEN);
+    if (rc_token_info && rc_token_info.owner_id) {
+      await this._accountManager.makeSureUserInWhitelist(
+        rc_token_info.owner_id,
+      );
     }
   }
 

@@ -16,6 +16,7 @@ enum REGISTRATION_FSM_EVENT {
   REG_SUCCEED = 'regSuccess',
   REG_FAILED = 'regFailed',
   UNREGISTER = 'unregister',
+  TRARNSPORT_ERROR = 'transportError',
   RE_REGISTER = 'reRegister',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
   MAKE_OUTGOING_CALL = 'makeOutgoingCall',
@@ -29,7 +30,12 @@ class RTCRegistrationFSM extends StateMachine {
       transitions: [
         {
           name: REGISTRATION_FSM_EVENT.PROVISION_READY,
-          from: REGISTRATION_FSM_STATE.IDLE,
+          from: [
+            REGISTRATION_FSM_STATE.IDLE,
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.READY,
+            REGISTRATION_FSM_STATE.FAILURE,
+          ],
           to: (provisionData: any, options: any) => {
             dependency.onProvisionReadyAction(provisionData, options);
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
@@ -114,6 +120,14 @@ class RTCRegistrationFSM extends StateMachine {
           ],
           to: REGISTRATION_FSM_STATE.FAILURE,
         },
+        {
+          name: REGISTRATION_FSM_EVENT.TRARNSPORT_ERROR,
+          from: [
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.READY,
+          ],
+          to: REGISTRATION_FSM_STATE.FAILURE,
+        },
         // ready
         {
           name: REGISTRATION_FSM_EVENT.UNREGISTER,
@@ -131,10 +145,7 @@ class RTCRegistrationFSM extends StateMachine {
         {
           name: REGISTRATION_FSM_EVENT.REG_SUCCEED,
           from: [REGISTRATION_FSM_STATE.READY, REGISTRATION_FSM_STATE.FAILURE],
-          to: () => {
-            dependency.onRegistrationAction();
-            return REGISTRATION_FSM_STATE.READY;
-          },
+          to: REGISTRATION_FSM_STATE.READY,
         },
       ],
       methods: {

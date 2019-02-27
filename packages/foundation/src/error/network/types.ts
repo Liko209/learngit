@@ -26,6 +26,7 @@ export const ERROR_CODES_NETWORK = {
   URI_TOO_LONG: 'HTTP_414', // URI Too Long
   UNSUPPORTED_MEDIA_TYPE: 'HTTP_415', // Unsupported Media Type
   RANGE_NOT_SATISFIABLE: 'HTTP_416', // Range Not Satisfiable
+  TOO_MANY_REQUESTS: 'HTTP_429', // Range Not Satisfiable
   // 5xx server errors
   INTERNAL_SERVER_ERROR: 'HTTP_500', // Internal Server Error
   NOT_IMPLEMENTED: 'HTTP_501', // Not Implemented

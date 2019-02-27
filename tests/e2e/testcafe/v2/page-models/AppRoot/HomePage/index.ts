@@ -1,4 +1,5 @@
 import * as _ from 'lodash';
+import { h } from '../../../helpers';
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { CreateTeamModal } from './CreateTeamModal';
 import { SendNewMessageModal } from './SendNewMessage';
@@ -9,10 +10,12 @@ import { MessageTab } from './MessageTab';
 import { Header, joinTeamDialog } from './header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
-import { TeamSettingDialog } from './TeamSetting';
+import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
-import { h } from '../../../helpers';
+import { DeleteTeamDialog } from './DeleteTeamDialog';
+import { ArchiveTeamDialog } from './ArchiveTeamDialog';
 
+import { AlertDialog } from "./AlertDialog";
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -41,7 +44,7 @@ export class HomePage extends BaseWebComponent {
 
   get addActionButton() {
     this.warnFlakySelector();
-    return this.self.find('button').child().withText('new_actions').parent().parent();
+    return this.self.find('button').child().find('.icon.new_actions');
   }
 
   get addActionMenu() {
@@ -95,4 +98,17 @@ export class HomePage extends BaseWebComponent {
   get leaveTeamDialog() {
     return this.getComponent(LeaveTeamDialog);
   }
+
+  get deleteTeamDialog() {
+    return this.getComponent(DeleteTeamDialog);
+  }
+
+  get archiveTeamDialog() {
+    return this.getComponent(ArchiveTeamDialog);
+  }
+
+  get alertDialog() {
+    return this.getComponent(AlertDialog);
+  }
+
 }

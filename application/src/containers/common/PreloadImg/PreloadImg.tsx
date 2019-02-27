@@ -11,6 +11,7 @@ type PreloadImgProps = {
   url?: string;
   placeholder: React.ReactNode;
   children: React.ReactNode;
+  animationForLoad?: boolean;
 };
 
 type PreloadImgState = {
@@ -46,19 +47,21 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
   }
 
   render() {
-    const { children, placeholder, url } = this.props;
+    const { children, placeholder, url, animationForLoad } = this.props;
     const { loaded, isError } = this.state;
 
-    if (loaded && !isError) {
-      return (
+    if (url && cacheUrl[url]) {
+      return animationForLoad ? (
         <JuiFade in={true} timeout={700}>
           {children}
         </JuiFade>
+      ) : (
+        children
       );
     }
 
-    if (url && cacheUrl[url]) {
-      return children;
+    if (isError) {
+      return placeholder;
     }
 
     return (
@@ -71,12 +74,14 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
             style={{ display: 'none' }}
           />
         )}
-        <DelayWrapper
-          delay={DELAY_SHOW_PLACEHOLDER_TIME}
-          placeholder={<div style={{ opacity: 0 }}>{children}</div>}
-        >
-          {placeholder}
-        </DelayWrapper>
+        {!loaded && (
+          <DelayWrapper
+            delay={DELAY_SHOW_PLACEHOLDER_TIME}
+            placeholder={<div style={{ opacity: 0 }}>{children}</div>}
+          >
+            {placeholder}
+          </DelayWrapper>
+        )}
       </>
     );
   }
