@@ -9,14 +9,8 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { JuiResponsiveLayout, withResponsive, VISUAL_MODE } from 'jui/foundation/Layout/Responsive';
 import { ViewerContentViewProps } from './types';
-import { viewerType } from '../types';
 const CONTENT_VIEWER = {
   imageViewer: () => <div>imageViewer</div>,
-};
-
-const factory = (viewer: viewerType) => {
-  const Component = CONTENT_VIEWER[viewer];
-  return <Component />;
 };
 
 const LeftResponsive = withResponsive(props => props.children, {
@@ -34,9 +28,12 @@ const RightResponsive = withResponsive(() => <div>commitBlock</div>, {
 class ViewerContentViewComponent extends Component<WithNamespaces & ViewerContentViewProps> {
   render() {
     const { viewerType } = this.props;
+    const Component = CONTENT_VIEWER[viewerType];
     return (
       <JuiResponsiveLayout>
-        <LeftResponsive>{factory(viewerType)}</LeftResponsive>
+        <LeftResponsive>
+          <Component />
+        </LeftResponsive>
         <RightResponsive />
       </JuiResponsiveLayout>
     );
