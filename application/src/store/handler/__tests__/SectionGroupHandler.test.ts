@@ -592,7 +592,7 @@ describe('SectionGroupHandler', () => {
       await sectionGroupHandler.fetchGroups(sectionType, direction);
       expect(spy).toHaveBeenCalledTimes(2);
     });
-    it('should call addProcessor twice when sectionType is direct_messages and state.unread_count is 2', async () => {
+    it('should call addProcessor twice when sectionType is direct_messages and state.unread_count is 2', async (done: any) => {
       const sectionGroupHandler = SectionGroupHandler.getInstance();
       const direction = QUERY_DIRECTION.OLDER;
       const sectionType = SECTION_TYPE.DIRECT_MESSAGE;
@@ -608,11 +608,11 @@ describe('SectionGroupHandler', () => {
       await sectionGroupHandler.fetchGroups(sectionType, direction);
       setTimeout(() => {
         expect(spy).toHaveBeenCalledTimes(2);
-        // done();
+        done();
       });
     });
 
-    it('should call addProcessor twice when sectionType is teams and state.unread_mentions_count is 2', async () => {
+    it('should call addProcessor twice when sectionType is teams and state.unread_mentions_count is 2', async (done: any) => {
       const sectionGroupHandler = SectionGroupHandler.getInstance();
       const direction = QUERY_DIRECTION.OLDER;
       const sectionType = SECTION_TYPE.TEAM;
@@ -626,9 +626,10 @@ describe('SectionGroupHandler', () => {
         .spyOn(sectionGroupHandler._prefetchHandler, 'addProcessor')
         .mockResolvedValue(1);
       await sectionGroupHandler.fetchGroups(sectionType, direction);
+      jest.setTimeout(10000);
       setTimeout(() => {
         expect(spy).toHaveBeenCalledTimes(2);
-        // done();
+        done();
       });
     });
   });
