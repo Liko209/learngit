@@ -90,6 +90,31 @@ const StyledError = styled.div`
   }
 `;
 
+const formats = [
+  'background',
+  'bold',
+  'color',
+  'font',
+  'code',
+  'italic',
+  'link',
+  'size',
+  'strike',
+  'script',
+  'underline',
+  'blockquote',
+  'header',
+  'indent',
+  'list',
+  'align',
+  'direction',
+  'code-block',
+  'formula',
+  'mention',
+  // 'image',
+  // 'video',
+];
+
 type Props = {
   value?: string | Delta;
   defaultValue?: string;
@@ -189,6 +214,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
           onChange={this.onChange}
           placeholder="Type new message"
           modules={modules}
+          formats={formats}
           ref={this._inputRef}
         />
         {error ? <StyledError>{error}</StyledError> : null}
