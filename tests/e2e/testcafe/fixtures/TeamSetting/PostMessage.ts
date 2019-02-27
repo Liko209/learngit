@@ -67,7 +67,7 @@ test(formalName(`Turn on/off Post message toggle should/shouldn't be able to pos
     await app.homePage.ensureLoaded();
     await teamEntry.enter();
     await conversationPage.shouldBeReadOnly();
-    awagit t.expect(conversationPage.readOnlyDiv.withText(readOnlyText).exists).ok();
+    await t.expect(conversationPage.readOnlyDiv.withText(readOnlyText).exists).ok();
   });
 
   await h(t).withLog(`When admin turn Post message toggle on and save`, async () => {
