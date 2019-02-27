@@ -14,9 +14,6 @@ import { WINDOW, ENTITY, SERVICE } from '../../../service/eventKey';
 jest.mock('axios');
 jest.mock('sdk/module/permission/service/PermissionService');
 jest.mock('foundation');
-const mockPermissionService = {
-  hasPermission: jest.fn(),
-};
 const mockLogger = {
   tags: jest.fn(),
   error: jest.fn(),
@@ -41,9 +38,6 @@ describe('LogControlManager', () => {
   logControlManager.setDebugMode(true);
   beforeEach(() => {
     axios.mockResolvedValue({});
-    PermissionService.getInstance = jest
-      .fn()
-      .mockReturnValue(mockPermissionService);
   });
 
   describe('instance()', () => {
@@ -84,7 +78,13 @@ describe('LogControlManager', () => {
   });
 
   describe('configByPermission()', () => {
-    it.skip('should set log config when getUserPermission success [JPT-1178]', async () => {
+    it('should set log config when getUserPermission success [JPT-1178]', async () => {
+      const mockPermissionService = {
+        hasPermission: jest.fn(),
+      };
+      PermissionService.getInstance = jest
+        .fn()
+        .mockReturnValue(mockPermissionService);
       mockPermissionService.hasPermission.mockClear();
       mockPermissionService.hasPermission.mockResolvedValue(false);
       await logControlManager.configByPermission();
@@ -102,7 +102,13 @@ describe('LogControlManager', () => {
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(4);
     });
 
-    it.skip('Should be able to show error info when getting permission service fail. [JPT-1179]', async () => {
+    it('Should be able to show error info when getting permission service fail. [JPT-1179]', async () => {
+      const mockPermissionService = {
+        hasPermission: jest.fn(),
+      };
+      PermissionService.getInstance = jest
+        .fn()
+        .mockReturnValue(mockPermissionService);
       mockPermissionService.hasPermission.mockClear();
       mockLogger.warn.mockClear();
       mockLogManager.config.mockClear();
