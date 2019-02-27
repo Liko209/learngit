@@ -25,6 +25,7 @@ type FilesViewProps = {
   dispose: () => void;
   urlMap: Map<number, string>;
   getCropImage: () => void;
+  getShowDialogPermission: () => boolean;
 };
 
 export { FilesProps, FilesViewProps, FileType, ExtendFileItem };

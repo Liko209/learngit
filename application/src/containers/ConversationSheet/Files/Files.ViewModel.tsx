@@ -18,18 +18,13 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
 import PostModel from '@/store/models/Post';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
-import {
-  generateModifiedImageURL,
-  RULE,
-} from '@/common/generateModifiedImageURL';
+import { ToastType, ToastMessageAlign } from '@/containers/ToastWrapper/Toast/types';
+import { generateModifiedImageURL, RULE } from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
@@ -55,16 +50,16 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   getCropImage = async () => {
     const images = this.files[FileType.image];
     const rule = images.length > 1 ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
-    await Promise.all(
-      images.map((file: ExtendFileItem) => this._fetchUrl(file, rule)),
-    );
+    await Promise.all(images.map((file: ExtendFileItem) => this._fetchUrl(file, rule)));
+  }
+
+  async getShowDialogPermission() {
+    const permissionService: PermissionService = PermissionService.getInstance();
+    return await permissionService.hasPermission(UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG);
   }
 
   @action
-  private _fetchUrl = async (
-    { item }: ExtendFileItem,
-    rule: RULE,
-  ): Promise<string> => {
+  private _fetchUrl = async ({ item }: ExtendFileItem, rule: RULE): Promise<string> => {
     const { id, origWidth, origHeight, type, versionUrl } = item;
     let url = '';
     if (!type) {
@@ -78,12 +73,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       url = versionUrl;
     }
 
-    if (
-      !url &&
-      origWidth > 0 &&
-      origHeight > 0 &&
-      FileItemUtils.isSupportPreview({ type })
-    ) {
+    if (!url && origWidth > 0 && origHeight > 0 && FileItemUtils.isSupportPreview({ type })) {
       const thumbnail = await generateModifiedImageURL({
         id,
         origWidth,
@@ -102,9 +92,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return url;
   }
 
-  private _handleItemChanged = (
-    payload: NotificationEntityPayload<Progress>,
-  ) => {
+  private _handleItemChanged = (payload: NotificationEntityPayload<Progress>) => {
     const { type } = payload;
     if (type === EVENT_TYPES.UPDATE) {
       const data: any = payload;
@@ -151,10 +139,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     this._ids.forEach((id: number) => {
       if (id !== this._idToDelete) {
         try {
-          const item = getEntity<Item, FileItemModel>(
-            ENTITY_NAME.FILE_ITEM,
-            id,
-          );
+          const item = getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
           result.push(item);
         } catch (e) {}
       }
@@ -167,8 +152,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const result = new Map<number, number>();
     this._ids.forEach((id: number) => {
       if (id < 0) {
-        const progress =
-          this._progressMap.get(id) || this._itemService.getUploadProgress(id);
+        const progress = this._progressMap.get(id) || this._itemService.getUploadProgress(id);
         if (progress && progress.rate) {
           const { loaded = 0, total } = progress.rate;
           const value = (loaded / Math.max(total, 1)) * 100;
@@ -195,10 +179,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   private _getPostStatus() {
-    const progress = getEntity<Progress, ProgressModel>(
-      ENTITY_NAME.PROGRESS,
-      this._postId,
-    );
+    const progress = getEntity<Progress, ProgressModel>(ENTITY_NAME.PROGRESS, this._postId);
     return progress.progressStatus;
   }
 
@@ -214,8 +195,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       });
     } else {
       try {
-        const postLoading =
-          this._getPostStatus() === PROGRESS_STATUS.INPROGRESS;
+        const postLoading = this._getPostStatus() === PROGRESS_STATUS.INPROGRESS;
         if (postLoading) {
           await this._itemService.cancelUpload(id);
         } else {
