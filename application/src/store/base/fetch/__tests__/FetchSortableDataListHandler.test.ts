@@ -622,4 +622,48 @@ describe('FetchSortableDataListHandler', () => {
       ]);
     });
   });
+
+  describe('refreshData()', () => {
+    it('should sortableResult is listStore.items when lsitStore.items.length 2 and _pageSize is 2', () => {
+      const { fetchSortableDataHandler } = setup({
+        originalItems: [buildItem(1), buildItem(2)],
+      });
+      const dataChangeCallback = jest.fn();
+      fetchSortableDataHandler.setDataChangeCallback(dataChangeCallback);
+      fetchSortableDataHandler.refreshData();
+      expect(dataChangeCallback).toHaveBeenCalledWith(
+        expect.objectContaining({
+          added: fetchSortableDataHandler.listStore.items,
+          updated: [],
+          deleted: [],
+        }),
+      );
+    });
+    it('should sortableResult have 2 items when lsitStore.items.length is 5 and _pageSize is 2', () => {
+      const { fetchSortableDataHandler } = setup({
+        originalItems: [
+          buildItem(1),
+          buildItem(2),
+          buildItem(3),
+          buildItem(4),
+          buildItem(5),
+        ],
+      });
+      const mockSortableResult = fetchSortableDataHandler.listStore.items.slice(
+        3,
+        5,
+      );
+      const dataChangeCallback = jest.fn();
+      fetchSortableDataHandler.setDataChangeCallback(dataChangeCallback);
+
+      fetchSortableDataHandler.refreshData();
+      expect(dataChangeCallback).toHaveBeenCalledWith(
+        expect.objectContaining({
+          added: mockSortableResult,
+          updated: [],
+          deleted: [],
+        }),
+      );
+    });
+  });
 });
