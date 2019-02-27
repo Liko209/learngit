@@ -87,7 +87,6 @@ const JuiVirtualizedList = ({ height, children }: VirtualizedListProps) => {
   //
   const [anchor] = useState(0);
   const [cache] = useState(new Map());
-  // const [scrollTop] = useScrollTop(0);
   const [scrollOffset] = useState(0);
   const [estimateRowHeight, setEstimateRowHeight] = useState(10);
   const [{ startIndex, stopIndex }, setDisplayRange] = useRange(
