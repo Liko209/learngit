@@ -303,11 +303,11 @@ test(formalName(`The team can't be displayed on conversation list and search res
   });
 
   await h(t).withLog(`Then I can't find the team in search results list`, async () => {
-    await searchBar.quit();
-    await t.expect(searchBar.teams.withText(team.name).exists).notOk()
+     await t.expect(searchBar.teams.withText(team.name).exists).notOk()
   }, true);
 
   await h(t).withLog(`When I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
+    await searchBar.quit();
     await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
   });
 
