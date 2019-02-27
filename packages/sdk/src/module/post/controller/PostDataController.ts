@@ -92,10 +92,12 @@ class PostDataController {
       post.deactivated ? deactivatedPosts.push(post) : normalPosts.push(post);
     });
     if (deactivatedPosts.length > 0) {
-      await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedPosts);
-      await postDiscontinuousDao.bulkDelete(
-        deactivatedPosts.map((post: Post) => post.id),
-      );
+      await Promise.all([
+        daoManager.getDao(DeactivatedDao).bulkPut(deactivatedPosts),
+        postDiscontinuousDao.bulkDelete(
+          deactivatedPosts.map((post: Post) => post.id),
+        ),
+      ]);
     }
     if (normalPosts.length > 0) {
       await postDiscontinuousDao.bulkUpdate(normalPosts, false);
