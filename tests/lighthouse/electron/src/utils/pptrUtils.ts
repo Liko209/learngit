@@ -2,9 +2,9 @@
  * @Author: doyle.wu
  * @Date: 2019-02-25 09:39:26
  */
-import * as puppeteer from "puppeteer";
-import { Page } from "puppeteer/lib/Page";
-import { Browser } from "puppeteer/lib/Browser";
+import * as puppeteer from "puppeteer-core";
+import { Page } from "puppeteer-core/lib/Page";
+import { Browser } from "puppeteer-core/lib/Browser";
 import { LogUtils } from "./logUtils";
 import { MockClient, BrowserInitDto } from 'mock-client';
 import { Config } from '../config';
