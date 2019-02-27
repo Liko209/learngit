@@ -3,10 +3,11 @@
  * @Date: 2018-09-05 10:05:18
  * Copyright © RingCentral. All rights reserved.
  */
-import PresenceAPI from '../../api/glip/presence';
-import socketManager from '../socket';
 
-class SubscribeWorker {
+import PresenceAPI from '../../../api/glip/presence';
+import socketManager from '../../../service/socket';
+
+class SubscribeRequestController {
   constructor(
     public successCallback: Function,
     public failCallback: Function,
@@ -26,4 +27,4 @@ class SubscribeWorker {
   }
 }
 
-export default SubscribeWorker;
+export { SubscribeRequestController };

@@ -47,7 +47,7 @@ const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: FontSize }>`
     return css`
       fill: ${palette(colorScope, colorName)({ theme })}};
     `;
-  }};
+  }}
 `;
 
 const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (

@@ -1,8 +1,6 @@
 import handleData from '../handleData';
 
 jest.mock('../../account/handleData', () => jest.fn().mockResolvedValue(true));
-jest.mock('../../company/handleData', () => jest.fn().mockResolvedValue(true));
-jest.mock('../../presence/handleData', () => jest.fn().mockResolvedValue(true));
 it('handleData()', async () => {
   await handleData({
     data: {},

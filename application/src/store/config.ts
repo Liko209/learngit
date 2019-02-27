@@ -8,12 +8,10 @@ import { GroupService } from 'sdk/module/group';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 import { PersonService } from 'sdk/module/person';
 import { PermissionService } from 'sdk/module/permission';
-const {
-  CompanyService,
-  GroupConfigService,
-  PresenceService,
-  ENTITY,
-} = service;
+import { PresenceService } from 'sdk/module/presence';
+import { CompanyService } from 'sdk/module/company';
+
+const { GroupConfigService, ENTITY } = service;
 
 const ENTITY_SETTING = {
   [ENTITY_NAME.GROUP]: {

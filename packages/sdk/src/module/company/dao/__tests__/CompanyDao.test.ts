@@ -1,7 +1,13 @@
-import CompanyDao from '../';
-import { setup } from '../../__tests__/utils';
-import { Company } from '../../../models';
-import { companyFactory } from '../../../__tests__/factories';
+/*
+ * Jerry Cai (jerry.cai@ringcentral.co
+ * @Date: 2019-02-22 14:36:00
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { CompanyDao } from '../CompanyDao';
+import { setup } from '../../../../dao/__tests__/utils';
+import { Company } from '../../entity';
+import { companyFactory } from '../../../../__tests__/factories';
 
 describe('Company Dao', () => {
   let companyDao: CompanyDao;
