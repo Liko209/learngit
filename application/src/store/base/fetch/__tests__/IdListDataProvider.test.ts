@@ -55,9 +55,6 @@ const isMatchFunc = (model: PostModel) => {
 
 class PostProvider implements IEntityDataProvider<Post> {
   async getByIds(ids: number[]) {
-    console.log('TCL: PostProvider -> getByIds -> ids', ids);
-    console.log('TCL: PostProvider -> getByIds -> ids', ids);
-
     return [];
   }
 }
