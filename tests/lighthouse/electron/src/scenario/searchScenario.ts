@@ -1,0 +1,38 @@
+/*
+ * @Author: doyle.wu
+ * @Date: 2019-02-27 10:18:13
+ */
+import { Scenario } from './scenario';
+import { TaskDto, SceneDto } from '../model';
+import { ScenarioConfigFactory, gatherers } from '../lighthouse';
+import { MetricService } from '../service';
+
+class SearchScenario extends Scenario {
+  private keywords: Array<string>;
+
+  constructor(taskDto: TaskDto, keywords: Array<string>, url?: string) {
+    super(taskDto, url);
+    this.keywords = keywords;
+  }
+
+  async preHandle() {
+    this.lightHouseConfig = ScenarioConfigFactory.getSimplifyConfig();
+
+    this.lightHouseConfig.passes[0].gatherers.unshift({
+      instance: new gatherers.SearchGatherer(this.keywords)
+    });
+  }
+
+  async saveMetircsIntoDb(): Promise<SceneDto> {
+    let sceneDto = await super.saveMetircsIntoDb();
+    await MetricService.createLoadingTime(sceneDto, this, gatherers.SearchGatherer.name);
+    return sceneDto;
+  }
+
+  async saveMetircsIntoDisk() {
+  }
+}
+
+export {
+  SearchScenario
+}
