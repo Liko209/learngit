@@ -47,7 +47,7 @@ class FileItem extends PureComponent<FileItemProps> {
                 disabled={disabled}
                 onClick={action}
               >
-                get_app
+                download
               </JuiIconButton>
             </JuiListItemIcon>
           </JuiListItemSecondaryAction>
@@ -55,7 +55,7 @@ class FileItem extends PureComponent<FileItemProps> {
           <JuiListItemSecondaryAction>
             <JuiListItemIcon>
               <JuiIconButton variant="plain" disabled={disabled}>
-                info
+                link
               </JuiIconButton>
             </JuiListItemIcon>
           </JuiListItemSecondaryAction>

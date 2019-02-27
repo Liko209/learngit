@@ -61,7 +61,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     );
   }
 
-  async getShowDialogPermission() {
+  getShowDialogPermission = async () => {
     const permissionService: PermissionService = PermissionService.getInstance();
     return await permissionService.hasPermission(
       UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
