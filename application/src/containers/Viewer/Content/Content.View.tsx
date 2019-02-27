@@ -14,8 +14,8 @@ const CONTENT_VIEWER = {
   imageViewer: () => <div>imageViewer</div>,
 };
 
-const factory = (viewerType: viewerType) => {
-  const Component = CONTENT_VIEWER[viewerType];
+const factory = (viewer: viewerType) => {
+  const Component = CONTENT_VIEWER[viewer];
   return <Component />;
 };
 
