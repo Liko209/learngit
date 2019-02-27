@@ -53,11 +53,15 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       return;
     }
     const transformedData = items.map(item => transform<Item>(item));
-    return baseHandleData({
+    const handledItems = await baseHandleData({
       data: transformedData,
       dao: daoManager.getDao(ItemDao),
       eventKey: ENTITY.ITEM,
     });
+
+    this.fileService.handleIncomingItem(handledItems);
+
+    return handledItems;
   }
 
   protected get itemServiceController() {
