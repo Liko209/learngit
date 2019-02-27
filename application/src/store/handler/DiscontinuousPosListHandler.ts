@@ -12,7 +12,7 @@ import PostModel from '../models/Post';
 
 import { IdListPaginationHandler } from './IdListPagingHandler';
 
-enum NonConversationPostListType {
+enum DiscontinuousPostListType {
   BOOK_MARK_POSTS,
   AT_MENTIONS_POSTS,
   PINNED_POSTS,
@@ -52,4 +52,4 @@ class DiscontinuousPosListHandler extends IdListPaginationHandler<
   }
 }
 
-export { DiscontinuousPosListHandler, NonConversationPostListType };
+export { DiscontinuousPosListHandler, DiscontinuousPostListType };
