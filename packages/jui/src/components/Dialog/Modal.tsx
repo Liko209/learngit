@@ -71,8 +71,8 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
             color="primary"
             variant={cancelVariant}
             autoFocus={true}
-            {...cancelBtnProps}
             disabled={loading}
+            {...cancelBtnProps}
           >
             {cancelText}
           </JuiButton>
@@ -82,9 +82,9 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           color={okType}
           variant={okVariant}
           autoFocus={true}
+          disabled={loading}
           {...okBtnProps}
           loading={loading}
-          disabled={loading}
         >
           {okText}
         </JuiButton>
