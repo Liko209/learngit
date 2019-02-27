@@ -199,6 +199,26 @@ describe('StreamView', () => {
         expect(hasSomeMessages.find(ConversationInitialPost)).toHaveLength(0);
         expect(noMessages.find(ConversationInitialPost)).toHaveLength(0);
       });
+
+      it('should deactivate visibility checking when _visibilitySensorEnabled is false by default', () => {
+        const hasMoreUp = false;
+        const hasSomeMessages = getWrapper({ hasMoreUp, notEmpty: false });
+        const noMessages = getWrapper({ hasMoreUp, notEmpty: true });
+        hasSomeMessages.update();
+        noMessages.update();
+        expect(
+          hasSomeMessages
+            .find(ConversationInitialPost)
+            .parent()
+            .prop('active'),
+        ).toBe(false);
+        expect(
+          noMessages
+            .find(ConversationInitialPost)
+            .parent()
+            .prop('active'),
+        ).toBe(false);
+      });
     });
   });
 });

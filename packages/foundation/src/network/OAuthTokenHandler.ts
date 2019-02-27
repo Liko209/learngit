@@ -145,8 +145,6 @@ class OAuthTokenHandler implements ITokenHandler {
       } else {
         this._notifyRefreshTokenFailure();
       }
-    } else {
-      this._notifyRefreshTokenFailure();
     }
   }
 

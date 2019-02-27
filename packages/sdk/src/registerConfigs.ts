@@ -17,7 +17,7 @@ import Sdk from './Sdk';
 // Service
 import AccountService from './service/account';
 import AuthService from './service/auth';
-import CompanyService from './service/company';
+import { CompanyService } from './module/company';
 import ConfigService from './service/config';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
