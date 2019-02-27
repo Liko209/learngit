@@ -42,6 +42,11 @@ class GroupItemComponent extends React.Component<
     await goToConversation(group.id);
   }
 
+  onClick = () => {
+    const { addRecentRecord } = this.props;
+    addRecentRecord();
+  }
+
   render() {
     const {
       t,
@@ -74,7 +79,7 @@ class GroupItemComponent extends React.Component<
           onMouseEnter={onMouseEnter(sectionIndex, cellIndex)}
           onMouseLeave={onMouseLeave}
           hovered={hovered}
-          onClick={canJoinTeam ? this.handleJoinTeam : this.goToConversation}
+          onClick={this.onClick} // canJoinTeam ? this.handleJoinTeam : this.goToConversation
           Avatar={<GroupAvatar cid={id} size="small" />}
           value={displayName}
           terms={terms}

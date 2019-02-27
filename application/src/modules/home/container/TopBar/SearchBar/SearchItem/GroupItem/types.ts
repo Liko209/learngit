@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import GroupModel from '@/store/models/Group';
-import { Props, BaseViewProps } from '../types';
+import { Props, BaseViewProps, ISearchItemModel } from '../types';
 
 type ViewProps = {
   group: GroupModel;
@@ -14,4 +14,4 @@ type ViewProps = {
   shouldHidden: boolean;
 } & BaseViewProps;
 
-export { Props, ViewProps, GroupModel };
+export { Props, ViewProps, GroupModel, ISearchItemModel };

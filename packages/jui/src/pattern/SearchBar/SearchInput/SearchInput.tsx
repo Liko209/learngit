@@ -21,6 +21,7 @@ type JuiSearchInputProps = {
   onClear: () => void;
   focus: boolean;
   showCloseBtn: boolean;
+  hasValue?: boolean;
 };
 
 class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
@@ -58,9 +59,17 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
     }
   }
 
+  focusTextInput = () => {
+    const node = this._inputDom.current;
+    if (node) {
+      node.focus();
+    }
+  }
+
   render() {
     const {
       value,
+      hasValue,
       focus,
       onFocus,
       onClick,
@@ -69,7 +78,7 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
     } = this.props;
 
     return (
-      <Jui.SearchWrapper hasValue={value} focus={focus}>
+      <Jui.SearchWrapper hasValue={hasValue} focus={focus}>
         <Jui.SearchIcon
           data-test-automation-id="search-icon"
           disableToolTip={true}

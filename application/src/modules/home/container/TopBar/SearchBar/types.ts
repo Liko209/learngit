@@ -6,12 +6,7 @@
 import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
-
-enum SectionTypeMap {
-  PEOPLE,
-  GROUPS,
-  TEAMS,
-}
+import { RecentSearchModel, RecentSearchTypes } from 'sdk/module/search';
 
 type SearchSection<T> = {
   sortableModel: SortableModel<T>[];
@@ -30,16 +25,34 @@ type SearchResult = {
   teams: SearchSections;
 };
 
+type SearchItems = {
+  ids: number[];
+  name: RecentSearchTypes;
+  hasMore: boolean;
+};
+
 type Props = {};
 
 type ViewProps = {
   focus: boolean;
   updateFocus: (focus: boolean) => void;
   search: (key: string) => Promise<SearchResult | undefined>;
+  setSearchResult: (key: string) => void;
   searchValue: string;
   setValue: (value: string) => void;
   currentUserId: number;
   isTeamOrGroup: (id: number) => boolean;
+  getRecent: () => void;
+  clearRecent: () => void;
+  recentRecord: RecentSearchModel[];
+  data: SearchItems[];
+  terms: string[];
+  selectIndex: number[];
+  resetData: () => void;
+  resetSelectIndex: () => void;
+  setSelectIndex: (section: number, cellIndex: number) => void;
+  setData: (data: SearchItems[]) => void;
+  findNextValidSectionLength: (section: number, offset: number) => number[];
 };
 
 type SectionType<T> = {
@@ -56,5 +69,5 @@ export {
   SortableModel,
   Person,
   Group,
-  SectionTypeMap,
+  SearchItems,
 };

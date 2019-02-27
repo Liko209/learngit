@@ -15,13 +15,18 @@ class PersonItemView extends React.Component<ViewProps, {}> {
   onEnter = () => {
     const { hovered } = this.props;
     if (hovered) {
-      this.goToConversation();
+      // this.goToConversation();
     }
   }
 
-  goToConversation = async () => {
-    const { goToConversation, person } = this.props;
-    await goToConversation(person.id);
+  // goToConversation = async () => {
+  //   const { goToConversation, person } = this.props;
+  //   await goToConversation(person.id);
+  // }
+
+  onClick = () => {
+    const { addRecentRecord } = this.props;
+    addRecentRecord();
   }
 
   render() {
@@ -35,6 +40,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
       sectionIndex,
       hovered,
     } = this.props;
+    console.log(person, '-----person');
     const { id, userDisplayName, deactivated } = person;
 
     if (deactivated) {
@@ -52,7 +58,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
           onMouseLeave={onMouseLeave}
           hovered={hovered}
           key={id}
-          onClick={this.goToConversation}
+          onClick={this.onClick}
           Avatar={<Avatar uid={id} size="small" />}
           value={userDisplayName}
           terms={terms}

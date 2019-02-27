@@ -17,7 +17,7 @@ import { JuiTextField } from '../../../components/Forms';
 
 type SearchWrapperType = {
   focus: boolean;
-  hasValue: string;
+  hasValue?: boolean;
 };
 
 const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`

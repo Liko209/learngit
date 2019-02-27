@@ -7,14 +7,19 @@ import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { Props } from './types';
+import { Props, ISearchItemModel } from './types';
 import { Group } from 'sdk/module/group/entity';
 import GroupModel from '@/store/models/Group';
+import { SearchService, RecentSearchTypes } from 'sdk/module/search';
 
-class GroupItemViewModel extends StoreViewModel<Props> {
+class GroupItemViewModel extends StoreViewModel<Props>
+  implements ISearchItemModel {
+  searchService: SearchService;
+
   constructor(props: Props) {
     super(props);
     const { sectionIndex, cellIndex } = props;
+    this.searchService = SearchService.getInstance();
     this.reaction(
       () => this.group,
       () => this.props.didChange(sectionIndex, cellIndex),
@@ -54,6 +59,15 @@ class GroupItemViewModel extends StoreViewModel<Props> {
   get shouldHidden() {
     const { isMember, deactivated } = this.group;
     return deactivated || (!isMember && this.isPrivate);
+  }
+
+  addRecentRecord = () => {
+    const { isTeam } = this.group;
+
+    this.searchService.addRecentSearchRecord(
+      isTeam ? RecentSearchTypes.TEAM : RecentSearchTypes.GROUP,
+      this.props.id,
+    );
   }
 }
 

@@ -8,29 +8,47 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { PersonService } from 'sdk/module/person';
 import { GroupService } from 'sdk/module/group';
 import {
+  SearchService,
+  RecentSearchModel,
+  RecentSearchTypes,
+} from 'sdk/module/search';
+import {
   SectionType,
   SortableModel,
   ViewProps,
   Person,
   Group,
   Props,
+  SearchItems,
 } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+// import { debounce } from 'lodash';
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
 
+const InvalidIndexPath: number[] = [-1, -1];
+
 class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
+  // private _debounceSearch: Function;
+
   personService: PersonService;
   groupService: GroupService;
+  searchService: SearchService;
   @observable value: string = '';
   @observable focus: boolean = false;
+  @observable recentRecord: RecentSearchModel[] = [];
+
+  @observable terms: string[] = [];
+  @observable data: SearchItems[] = [];
+  @observable selectIndex: number[] = InvalidIndexPath;
 
   constructor() {
     super();
     this.personService = PersonService.getInstance<PersonService>();
     this.groupService = GroupService.getInstance();
+    this.searchService = SearchService.getInstance();
   }
 
   updateFocus = (focus: boolean) => {
@@ -113,6 +131,66 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
       groups: this.getSection<Group>(groups, sectionCount),
       teams: this.getSection<Group>(teams, sectionCount),
     };
+  }
+
+  setSearchResult = async (value: string) => {
+    const ret = await this.search(value);
+    if (!ret) return;
+    const { terms, people, groups, teams } = ret;
+    const data: SearchItems[] = [
+      {
+        ...people,
+        name: RecentSearchTypes.PEOPLE,
+      },
+      {
+        ...groups,
+        name: RecentSearchTypes.GROUP,
+      },
+      {
+        ...teams,
+        name: RecentSearchTypes.TEAM,
+      },
+    ];
+    this.data = data;
+    this.terms = terms;
+    this.resetSelectIndex();
+  }
+
+  resetData = () => {
+    this.data = [];
+    this.terms = [];
+    this.resetSelectIndex();
+  }
+
+  resetSelectIndex = () => {
+    this.selectIndex = InvalidIndexPath;
+  }
+
+  setData = (data: SearchItems[]) => {
+    this.data = data;
+  }
+
+  setSelectIndex = (section: number, cellIndex: number) => {
+    this.selectIndex = [section, cellIndex];
+  }
+
+  findNextValidSectionLength(section: number, offset: number): number[] {
+    const data = this.data;
+    for (let i = section; i >= 0 && i < data.length; i += offset) {
+      const { length } = (data[i] as SearchItems).ids;
+      if (length > 0) {
+        return [i, length];
+      }
+    }
+    return InvalidIndexPath;
+  }
+
+  getRecent = () => {
+    this.recentRecord = this.searchService.getRecentSearchRecords();
+  }
+
+  clearRecent = () => {
+    this.searchService.clearRecentSearchRecords();
   }
 }
 

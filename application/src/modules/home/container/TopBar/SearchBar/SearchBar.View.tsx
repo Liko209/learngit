@@ -3,7 +3,7 @@
  * @Date: 2018-11-23 16:26:44
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import i18next from 'i18next';
 import { debounce } from 'lodash';
@@ -19,68 +19,27 @@ import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 import GroupModel from '@/store/models/Group';
 import { joinTeam } from '@/common/joinPublicTeam';
 
-import { ViewProps, SectionTypeMap } from './types';
+import { ViewProps, SearchItems } from './types';
+import { RecentSearchModel } from 'sdk/module/search';
 
 import { SearchSectionsConfig } from './config';
 
 const SEARCH_DELAY = 50;
-
-type SearchItems = {
-  ids: number[];
-  name: SectionTypeMap;
-  hasMore: boolean;
-};
-
-type State = {
-  terms: string[];
-  data: SearchItems[];
-  selectIndex: number[];
-};
 
 const InvalidIndexPath: number[] = [-1, -1];
 
 type Props = { closeSearchBar: () => void; isShowSearchBar: boolean };
 
 @observer
-class SearchBarView extends React.Component<ViewProps & Props, State> {
+class SearchBarView extends React.Component<ViewProps & Props> {
   private _debounceSearch: Function;
   private timer: number;
   textInput: React.RefObject<JuiSearchInput> = React.createRef();
 
-  state = {
-    terms: [],
-    data: [],
-    selectIndex: InvalidIndexPath,
-  };
-
   constructor(props: ViewProps & Props) {
     super(props);
-    const { search } = this.props;
-    this._debounceSearch = debounce(async (value: string) => {
-      const ret = await search(value);
-      if (!ret) return;
-
-      const { terms, people, groups, teams } = ret;
-      const data: SearchItems[] = [
-        {
-          ...people,
-          name: SectionTypeMap.PEOPLE,
-        },
-        {
-          ...groups,
-          name: SectionTypeMap.GROUPS,
-        },
-        {
-          ...teams,
-          name: SectionTypeMap.TEAMS,
-        },
-      ];
-      this.setState({
-        terms,
-        data,
-        selectIndex: InvalidIndexPath,
-      });
-    },                              SEARCH_DELAY);
+    const { setSearchResult } = this.props;
+    this._debounceSearch = debounce(setSearchResult, SEARCH_DELAY);
   }
 
   componentDidMount() {
@@ -94,20 +53,18 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   private _resetData() {
-    this.setState({
-      terms: [],
-      data: [],
-      selectIndex: InvalidIndexPath,
-    });
+    const { resetData } = this.props;
+    resetData();
   }
 
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
     const { value } = e.target;
-    const { setValue, updateFocus, focus } = this.props;
+    const { setValue, updateFocus, focus, getRecent } = this.props;
     setValue(value);
     if (!value.trim()) {
       this._resetData();
+      getRecent();
       return;
     }
     this._debounceSearch(value);
@@ -117,9 +74,13 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   onFocus = () => {
-    const { updateFocus, searchValue } = this.props;
+    const { updateFocus, searchValue, getRecent } = this.props;
     updateFocus(true);
-    this._debounceSearch(searchValue);
+    if (searchValue) {
+      this._debounceSearch(searchValue);
+    } else {
+      getRecent();
+    }
   }
 
   onClear = () => {
@@ -129,14 +90,20 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   onClose = () => {
-    const { closeSearchBar, isShowSearchBar, updateFocus } = this.props;
+    const {
+      closeSearchBar,
+      isShowSearchBar,
+      updateFocus,
+      resetSelectIndex,
+    } = this.props;
     if (isShowSearchBar) {
       closeSearchBar();
     }
     updateFocus(false);
-    this.setState({
-      selectIndex: InvalidIndexPath,
-    });
+    resetSelectIndex();
+    // this.setState({
+    //   selectIndex: InvalidIndexPath,
+    // });
   }
 
   private _goToConversation = async (id: number) => {
@@ -152,48 +119,39 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     await joinTeamByItem();
   }
 
-  private _setSelectIndex(section: number, cellIndex: number) {
-    this.setState({
-      selectIndex: [section, cellIndex],
-    });
-  }
-
-  private _findNextValidSectionLength(
-    section: number,
-    offset: number,
-  ): number[] {
-    const { data } = this.state;
-    for (let i = section; i >= 0 && i < data.length; i += offset) {
-      const { length } = (data[i] as SearchItems).ids;
-      if (length > 0) {
-        return [i, length];
-      }
-    }
-    return InvalidIndexPath;
-  }
-
   onKeyUp = () => {
-    const { selectIndex } = this.state;
+    // const { selectIndex } = this.state;
+    const {
+      selectIndex,
+      setSelectIndex,
+      findNextValidSectionLength,
+    } = this.props;
     const [section, cell] = selectIndex;
     if (cell > 0) {
-      this._setSelectIndex(section, cell - 1);
+      setSelectIndex(section, cell - 1);
     } else {
       if (section > 0) {
-        const [nextSection, sectionLength] = this._findNextValidSectionLength(
+        const [nextSection, sectionLength] = findNextValidSectionLength(
           section - 1,
           -1,
         );
         if (nextSection !== -1) {
-          this._setSelectIndex(nextSection, sectionLength - 1);
+          setSelectIndex(nextSection, sectionLength - 1);
         }
       }
     }
   }
 
   onKeyDown = () => {
-    const { selectIndex } = this.state;
+    // const { selectIndex } = this.state;
+    const {
+      selectIndex,
+      data,
+      setSelectIndex,
+      findNextValidSectionLength,
+    } = this.props;
     const [section, cell] = selectIndex;
-    const { data } = this.state;
+    // const { data } = this.state;
     const currentSection = section < 0 ? 0 : section;
     const searchItem: SearchItems = data[currentSection];
 
@@ -202,12 +160,12 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     }
     const currentSectionLength = searchItem.ids.length;
     if (cell < currentSectionLength - 1) {
-      this._setSelectIndex(currentSection, cell + 1);
+      setSelectIndex(currentSection, cell + 1);
     } else {
       if (currentSection < data.length - 1) {
-        const [nextSection] = this._findNextValidSectionLength(section + 1, 1);
+        const [nextSection] = findNextValidSectionLength(section + 1, 1);
         if (nextSection !== -1) {
-          this._setSelectIndex(nextSection, 0);
+          setSelectIndex(nextSection, 0);
         }
       }
     }
@@ -215,33 +173,35 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
 
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
-    const [section, cell] = this.state.selectIndex;
-
-    let { data } = this.state;
+    // const [section, cell] = this.state.selectIndex;
+    const [section, cell] = this.props.selectIndex;
+    const { setSelectIndex } = this.props;
+    // let { data } = this.state;
+    let { data } = this.props;
     data = data.slice(0);
 
     const items: SearchItems = data[sectionIndex];
     items.ids.splice(cellIndex, 1);
-    this.setState({ data });
-
+    // this.setState({ data });
+    this.props.setData(data);
     // remove current select item
     if (sectionIndex === section && cell === cellIndex) {
-      this._setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
+      setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
       return;
     }
 
     // remove before current select item
     if (sectionIndex === section && cellIndex < cell) {
-      this._setSelectIndex(section, cell - 1);
+      setSelectIndex(section, cell - 1);
     }
   }
 
   addHighlight = (sectionIndex: number, cellIndex: number) => () => {
-    this._setSelectIndex(sectionIndex, cellIndex);
+    this.props.setSelectIndex(sectionIndex, cellIndex);
   }
 
   mouseLeaveItem = () => {
-    this._setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
+    this.props.setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
   }
 
   onKeyEsc = () => {
@@ -259,10 +219,10 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     clearTimeout(this.timer);
   }
 
-  render() {
-    const { data, terms, selectIndex } = this.state;
-    const { searchValue, focus } = this.props;
-    const cells: ReactNode[] = data.map(
+  get searchResult() {
+    // const { data, terms, selectIndex } = this.state;
+    const { data, terms, selectIndex } = this.props;
+    return data.map(
       ({ ids, name, hasMore }: SearchItems, sectionIndex: number) => {
         if (ids.length === 0) return null;
 
@@ -297,6 +257,60 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
         );
       },
     );
+  }
+
+  clearRecent = () => {
+    const { clearRecent } = this.props;
+    clearRecent();
+    this.onClose();
+    this.textInput.current!.focusTextInput();
+  }
+
+  get searchRecord() {
+    // const { terms, selectIndex } = this.state;
+    const { terms, selectIndex } = this.props;
+    const { recentRecord } = this.props;
+    if (recentRecord.length === 0) {
+      return null;
+    }
+
+    return (
+      <>
+        <JuiSearchTitle
+          onClick={this.clearRecent}
+          isShowMore={true}
+          showMore={'clear all'}
+          title={'Recently search'}
+          data-test-automation-id={'search-clear'}
+        />
+        {recentRecord.map(
+          ({ value, type }: RecentSearchModel, cellIndex: number) => {
+            const { SearchItem, title } = SearchSectionsConfig[type];
+            return (
+              <SearchItem
+                cellIndex={cellIndex}
+                selectIndex={selectIndex}
+                sectionIndex={1}
+                onMouseEnter={this.addHighlight}
+                onMouseLeave={this.mouseLeaveItem}
+                hasMore={false}
+                title={title}
+                goToConversation={this._goToConversation}
+                handleJoinTeam={this.handleJoinTeam}
+                didChange={this.selectIndexChange}
+                terms={terms}
+                id={value}
+                key={value}
+              />
+            );
+          },
+        )}
+      </>
+    );
+  }
+
+  render() {
+    const { searchValue, focus } = this.props;
 
     return (
       <JuiSearchBar
@@ -319,11 +333,17 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
             onClick={this.onFocus}
             onClear={this.onClear}
             value={searchValue}
+            hasValue={!!searchValue || !!this.searchRecord}
             onChange={this.onChange}
             placeholder={i18next.t('home.search')}
             showCloseBtn={!!searchValue}
           />
-          {focus && searchValue && <JuiSearchList>{cells}</JuiSearchList>}
+          {focus && searchValue && (
+            <JuiSearchList>{this.searchResult}</JuiSearchList>
+          )}
+          {focus && !searchValue && this.searchRecord && (
+            <JuiSearchList>{this.searchRecord}</JuiSearchList>
+          )}
         </HotKeys>
       </JuiSearchBar>
     );
