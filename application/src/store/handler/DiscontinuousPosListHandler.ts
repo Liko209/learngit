@@ -5,7 +5,7 @@
  */
 import storeManager, { ENTITY_NAME } from '@/store';
 import { ENTITY } from 'sdk/service/eventKey';
-import { IEntityDataProvider } from '../base/fetch';
+import { IEntityDataProvider } from '../base/fetch/types';
 import { Post } from 'sdk/module/post/entity';
 import { PostService } from 'sdk/module/post';
 import PostModel from '../models/Post';

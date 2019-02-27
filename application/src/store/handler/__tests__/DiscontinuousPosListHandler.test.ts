@@ -63,7 +63,7 @@ describe('DiscontinuousPosListHandler', () => {
       setTimeout(() => {
         expect(postListHandler.ids).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
         done();
-      },         1000);
+      },         100);
     });
   });
 
@@ -78,9 +78,6 @@ describe('DiscontinuousPosListHandler', () => {
       postListHandler.loadMorePosts(QUERY_DIRECTION.NEWER, 10);
 
       setTimeout(() => {
-        // has 10 element before
-        expect(postListHandler.ids).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
         const newPost = { id: 11111111111, text: 'text', deactivated: false };
         notificationCenter.emitEntityUpdate(eventName, [newPost]);
 

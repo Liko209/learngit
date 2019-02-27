@@ -11,13 +11,9 @@ import { IdModel } from 'sdk/framework/model';
 import { Entity } from '../../store';
 import { JSdkError, ERROR_CODES_SDK } from 'sdk/error/sdk';
 import notificationCenter from 'sdk/service/notificationCenter';
-import { ISortableModel, IMatchFunc } from './types';
+import { ISortableModel, IMatchFunc, IEntityDataProvider } from './types';
 import storeManager from '@/store/base/StoreManager';
 import { ENTITY_NAME } from '@/store/constants';
-
-interface IEntityDataProvider<T> {
-  getByIds(ids: number[]): Promise<T[]>;
-}
 
 type IdListDataProviderOptions<T, K> = {
   eventName: string;
@@ -227,8 +223,4 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   }
 }
 
-export {
-  IdListPagingDataProvider,
-  IEntityDataProvider,
-  IdListDataProviderOptions,
-};
+export { IdListPagingDataProvider, IdListDataProviderOptions };

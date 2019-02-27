@@ -7,8 +7,8 @@ import _ from 'lodash';
 import {
   IdListDataProviderOptions,
   IdListPagingDataProvider,
-  IEntityDataProvider,
 } from '../IdListPagingDataProvider';
+import { IEntityDataProvider } from '../types';
 
 import PostModel from '../../../models/Post';
 import { Post } from 'sdk/module/post/entity';
