@@ -16,6 +16,7 @@ import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
 
 import { AlertDialog } from "./AlertDialog";
+import { IUser } from '../../../models';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -27,6 +28,18 @@ export class HomePage extends BaseWebComponent {
 
   get self() {
     return this.getSelector('#root');
+  }
+
+  async logout() {
+    await this.openAddActionMenu();
+    await this.settingMenu.clickLogout();
+    await this.t.expect(h(this.t).href).contains('unified-login');
+  }
+
+  async logoutThenLoginWithUser(url: string, user: IUser) {
+    await this.logout();
+    await h(this.t).directLoginWithUser(url, user);
+    await this.ensureLoaded();
   }
 
   get leftPanel() {
@@ -108,7 +121,7 @@ export class HomePage extends BaseWebComponent {
   }
 
   get alertDialog() {
-    return this.getComponent(AlertDialog); 
+    return this.getComponent(AlertDialog);
   }
 
 }
