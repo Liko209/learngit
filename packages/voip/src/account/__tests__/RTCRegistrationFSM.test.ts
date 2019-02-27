@@ -8,6 +8,9 @@ import { IRTCRegistrationFsmDependency } from '../IRTCRegistrationFsmDependency'
 import { REGISTRATION_FSM_STATE } from '../types';
 
 class MockHandler implements IRTCRegistrationFsmDependency {
+  onNetworkChangeToOnlineAction = jest.fn();
+  onMakeOutgoingCallAction = jest.fn();
+  onReceiveIncomingInviteAction = jest.fn();
   onProvisionReadyAction = jest.fn();
   onReRegisterAction = jest.fn();
   onUnregisterAction = jest.fn();
@@ -15,6 +18,7 @@ class MockHandler implements IRTCRegistrationFsmDependency {
 
 const provisionData = 'provisionData';
 const options = 'options';
+const newProvisionData = 'newProvisionData';
 
 describe('RTCRegistrationFSM', () => {
   describe('create', () => {
@@ -26,13 +30,53 @@ describe('RTCRegistrationFSM', () => {
   });
 
   describe('provisionReady', () => {
-    it('Should transition from idle state to regInProgress state when provision is ready [JPT-522]', () => {
-      const mockHandler = new MockHandler();
-      const fsm = new RTCRegistrationFSM(mockHandler);
+    let mockHandler: IRTCRegistrationFsmDependency;
+    let fsm: RTCRegistrationFSM;
+    function setup() {
+      mockHandler = new MockHandler();
+      fsm = new RTCRegistrationFSM(mockHandler);
       fsm.provisionReady(provisionData, options);
+    }
+    it('Should transition from idle state to regInProgress state when provision is ready [JPT-522]', () => {
+      setup();
       expect(fsm.state).toBe(REGISTRATION_FSM_STATE.IN_PROGRESS);
       expect(mockHandler.onProvisionReadyAction).toHaveBeenCalledWith(
         provisionData,
+        options,
+      );
+    });
+
+    it('Should transition from Failed state to regInProgress state when receive new provisioning event. [JPT-1199]', () => {
+      setup();
+      fsm.regFailed();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.FAILURE);
+      fsm.provisionReady(newProvisionData, options);
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.IN_PROGRESS);
+      expect(mockHandler.onProvisionReadyAction).toHaveBeenCalledWith(
+        newProvisionData,
+        options,
+      );
+    });
+
+    it('Should transition from InProgress state to regInProgress state when receive new provisioning event. [JPT-1200]', () => {
+      setup();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.IN_PROGRESS);
+      fsm.provisionReady(newProvisionData, options);
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.IN_PROGRESS);
+      expect(mockHandler.onProvisionReadyAction).toHaveBeenCalledWith(
+        newProvisionData,
+        options,
+      );
+    });
+
+    it('Should transition from InProgress state to regInProgress state when receive new provisioning event. [JPT-1201]', () => {
+      setup();
+      fsm.regSuccess();
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.READY);
+      fsm.provisionReady(newProvisionData, options);
+      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.IN_PROGRESS);
+      expect(mockHandler.onProvisionReadyAction).toHaveBeenCalledWith(
+        newProvisionData,
         options,
       );
     });
