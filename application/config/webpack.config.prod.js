@@ -40,6 +40,8 @@ const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== "false";
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
 const publicUrl = publicPath.slice(0, -1);
+const iconUrl =
+  "https://s3.amazonaws.com/icomoon.io/79019/Jupiter/symbol-defs.svg";
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
 
@@ -373,7 +375,10 @@ module.exports = {
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     // In production, it will be an empty string unless you specify "homepage"
     // in `package.json`, in which case it will be the pathname of that URL.
-    new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
+    new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
+      ...env.raw,
+      ICON_URL: iconUrl
+    }),
     // This gives some necessary context to module not found errors, such as
     // the requesting resource.
     new ModuleNotFoundPlugin(paths.appPath),
