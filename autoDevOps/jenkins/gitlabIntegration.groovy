@@ -192,7 +192,8 @@ String appHeadSha = null
 String juiHeadSha = null
 
 // update with +=
-String appHeadShaDir = "${deployBaseDir}/app-".toString()
+// release build use different build command, we should distinguish it from other build by using different name pattern
+String appHeadShaDir = "${deployBaseDir}/app-${buildRelease ? 'release-' : ''}".toString()
 String juiHeadShaDir = "${deployBaseDir}/jui-".toString()
 
 // by default we should not skip building app and jui
@@ -287,7 +288,7 @@ node(buildNode) {
             // check if app or jui has been built
             sshagent(credentials: [deployCredentialId]) {
                 // we should always build release version
-                skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir) && !buildRelease
+                skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir)
                 skipBuildJui = doesRemoteDirectoryExist(deployUri, juiHeadShaDir)
             }
             // since SA and UT must be passed before we build and deploy app and jui
