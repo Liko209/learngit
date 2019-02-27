@@ -481,10 +481,6 @@ export class PostItem extends BaseWebComponent {
     await this.t.hover(this.self).click(this.moreMenu);
   }
 
-  // get prompt() {
-  //   return this.getSelector('.tooltipPlacementBottom').textContent;
-  // }
-
   async clickAvatar() {
     await this.t.click(this.avatar);
   }

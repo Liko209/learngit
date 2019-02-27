@@ -89,6 +89,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`Then Action bar solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card `, async () => {
     await t.hover(postCard.self);
     await t.expect(postCard.likeIconOnActionBar.exists).ok();
+    await t.expect(postCard.likeButtonOnFooter.exists).notOk();
     await postCard.likeShouldBe(currentNumber);
   });
 
@@ -125,6 +126,7 @@ test(formalName('Operating a message that you first like then unlike', ['JPT-304
   await h(t).withLog(`Then Action bar solid "unlike" icon change to hollow "like" icon and like number should be ${currentNumber} on message card`, async () => {
     await t.hover(postCard.self);
     await t.expect(postCard.likeIconOnActionBar.exists).ok();
+    await t.expect(postCard.likeButtonOnFooter.exists).notOk();
     await postCard.likeShouldBe(currentNumber);
   });;
 
