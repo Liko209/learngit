@@ -77,9 +77,12 @@ class FilesView extends React.Component<FilesViewProps> {
     if (!canShowDialogPermission) {
       return;
     }
-    Dialog.simple(<Viewer itemId={id} viewerType={'imageViewer'} />, {
-      fullScreen: true,
-    });
+    Dialog.simple(
+      <Viewer itemId={id} containComponent={<div>imageViewer</div>} />,
+      {
+        fullScreen: true,
+      },
+    );
   }
 
   async componentDidMount() {
