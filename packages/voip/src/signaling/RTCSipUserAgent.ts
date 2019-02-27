@@ -8,6 +8,7 @@ import { IRTCUserAgent } from './IRTCUserAgent';
 import { UA_EVENT, ProvisionDataOptions } from './types';
 import { RTCCallOptions } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { RTCSipProvisionInfo } from '../account/types';
 
 const WebPhone = require('ringcentral-web-phone');
 const LOG_TAG = 'RTCSipUserAgent';
@@ -26,12 +27,35 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   private _webphone: any;
   private _connectionTimer: NodeJS.Timeout | null = null;
 
-  constructor(provisionData: any, options: ProvisionDataOptions) {
+  constructor() {
     super();
+  }
+
+  public restartUA(
+    provisionData: RTCSipProvisionInfo,
+    options: ProvisionDataOptions,
+  ) {
+    if (this._webphone) {
+      this._destroy();
+    }
     this._createWebPhone(provisionData, options);
   }
 
-  private _createWebPhone(provisionData: any, options: ProvisionDataOptions) {
+  private _destroy() {
+    rtcLogger.debug(LOG_TAG, 'Destroy User Agent ...');
+    this._clearConnectionTimer();
+    this._webphone.userAgent.removeAllListeners();
+    if (this._webphone.userAgent.transport) {
+      this._webphone.userAgent.transport.removeAllListeners();
+    }
+    this._webphone.userAgent.stop();
+    this._webphone = null;
+  }
+
+  private _createWebPhone(
+    provisionData: RTCSipProvisionInfo,
+    options: ProvisionDataOptions,
+  ) {
     this._webphone = new WebPhone(provisionData, options);
     this._initListener();
     this._startConnectionTimer();
@@ -67,17 +91,11 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   }
 
   public unregister() {
-    this._clearConnectionTimer();
     if (!this._webphone) {
       return;
     }
     this._webphone.userAgent.unregister();
-    this._webphone.userAgent.removeAllListeners();
-    if (this._webphone.userAgent.transport) {
-      this._webphone.userAgent.transport.removeAllListeners();
-    }
-    this._webphone.userAgent.stop();
-    this._webphone = null;
+    this._destroy();
   }
 
   private _initListener(): void {
@@ -147,8 +165,8 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
   }
 
   private _clearConnectionTimer() {
-    rtcLogger.debug(LOG_TAG, 'clear connection timeout');
     if (this._connectionTimer) {
+      rtcLogger.debug(LOG_TAG, 'Clear connection timeout');
       clearTimeout(this._connectionTimer);
     }
     this._connectionTimer = null;

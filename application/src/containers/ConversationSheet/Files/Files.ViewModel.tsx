@@ -31,6 +31,7 @@ import {
   RULE,
 } from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { UploadFileTracker } from './UploadFileTracker';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -48,8 +49,13 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const { ids } = props;
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
+      UploadFileTracker.init();
     }
     this.autorun(this.getCropImage);
+  }
+
+  isRecentlyUploaded = (id: number) => {
+    return UploadFileTracker.tracker().getMapID(id) !== id;
   }
 
   getCropImage = async () => {
@@ -73,11 +79,10 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     // Notes
     // 1. There is no thumbnail for the image just uploaded.
     // 2. tif has thumbnail field.
-    // 3. git use original url.
-    if (FileItemUtils.isGifItem({ type }) && versionUrl) {
-      url = versionUrl;
+    // 3. gif use original url.
+    if (FileItemUtils.isGifItem({ type })) {
+      url = versionUrl || '';
     }
-
     if (
       !url &&
       origWidth > 0 &&
@@ -94,7 +99,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       url = thumbnail.url;
     }
     if (!url) {
-      url = item.versionUrl || '';
+      url = versionUrl || '';
     }
     if (url) {
       this.urlMap.set(id, url);
@@ -140,6 +145,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         return;
       }
       const file = getFileType(item);
+      file.item = item;
       files[file.type].push(file);
     });
     return files;

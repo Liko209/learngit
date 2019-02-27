@@ -61,7 +61,7 @@ const ItemCardHeader = styled.div<{
   titleColor?: [keyof Palette, string];
 }>`
   position: relative;
-  padding: ${spacing(4, 4, 0, 4)};
+  padding: ${spacing(4, 4, 4, 4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
   display: flex ${typography('body1')};
   color: ${({ titleColor }) => getAccentColor(titleColor)};

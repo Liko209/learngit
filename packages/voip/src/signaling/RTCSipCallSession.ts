@@ -367,7 +367,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
   }
 
-  getMediaStats(callback: any, interval: any) {
+  getMediaStats(callback: any, interval: number) {
     if (this._session && this._session.mediaStreams) {
       let timerInterval = interval;
       if (!interval || interval < 0) {
