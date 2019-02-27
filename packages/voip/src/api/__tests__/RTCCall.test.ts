@@ -1962,7 +1962,6 @@ describe('RTC call', () => {
       setImmediate(() => {
         expect(call._fsm.state()).toBe('connected');
         expect(session.mediaStreams.getMediaStats.mock.calls[0][1]).toBe(2000);
-        expect(session.mediaStreams.getMediaStats.mock.calls[0][1]).toBe(2000);
         expect(rtcLogger.info).toHaveBeenCalledTimes(1);
         done();
       });
@@ -1979,7 +1978,7 @@ describe('RTC call', () => {
         });
       });
 
-      it('should stop get media stats when enter holding state from connected state.', done => {
+      it('should stop get media stats when enter holded state from connected state.', done => {
         setup();
         jest.spyOn(session.mediaStreams, 'stopMediaStats');
         session.hold.mockResolvedValue(null);
