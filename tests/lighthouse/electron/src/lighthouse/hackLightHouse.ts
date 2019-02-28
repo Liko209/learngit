@@ -19,7 +19,9 @@ const hackLightHouse = async () => {
   };
 
   TraceProcessor.findMainFrameIds = (events) => {
+    logger.info(`findMainFrameIds:\n${JSON.stringify(events)}`);
     const navigationStartEvts = events.filter(e => e.name === 'navigationStart');
+    logger.info(`navigationStartEvts:\n${JSON.stringify(navigationStartEvts)}`);
     if (!navigationStartEvts || navigationStartEvts.length === 0) {
       logger.warn('there have not navigationStart');
     }
@@ -34,11 +36,13 @@ const hackLightHouse = async () => {
       const tid = threadNameEvt && threadNameEvt.tid;
 
       if (pid && tid && frameId) {
-        return {
+        let res = {
           pid,
           tid,
           frameId,
         };
+        logger.info(`findMainFrameIds - FrameCommittedInBrowser:\n${res}`);
+        return res;
       }
     }
 
@@ -55,11 +59,13 @@ const hackLightHouse = async () => {
       const tid = threadNameEvt && threadNameEvt.tid;
 
       if (pid && tid && frameId) {
-        return {
+        let res = {
           pid,
           tid,
           frameId,
         };
+        logger.info(`findMainFrameIds - TracingStartedInBrowser:\n${res}`);
+        return res;
       }
     }
 
@@ -70,11 +76,13 @@ const hackLightHouse = async () => {
     if (startedInPageEvt && startedInPageEvt.args && startedInPageEvt.args.data) {
       const frameId = startedInPageEvt.args.data.page;
       if (frameId) {
-        return {
+        let res = {
           pid: startedInPageEvt.pid,
           tid: startedInPageEvt.tid,
           frameId,
-        };
+        }
+        logger.info(`findMainFrameIds - TracingStartedInPage:\n${res}`);
+        return res;
       }
     }
 

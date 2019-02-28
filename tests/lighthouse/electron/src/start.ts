@@ -24,9 +24,9 @@ const logger = LogUtils.getLogger(__filename);
     let taskDto = await MetricService.createTask();
 
     let list: Array<scenarios.Scenario> = [
+      new scenarios.LoginScenario(taskDto),
       // new scenarios.RefreshScenario(taskDto),
       // new scenarios.OfflineScenario(taskDto),
-      new scenarios.LoginScenario(taskDto),
       // new scenarios.SearchScenario(taskDto, ["John", "Doe", "Team", "kamino"]),
       // new scenarios.SwitchConversationScenario(taskDto, [
       //   "506503174",
