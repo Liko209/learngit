@@ -52,7 +52,7 @@ class PostDataController {
   async handleIndexPosts(data: Raw<Post>[], maxPostsExceed: boolean) {
     if (data.length) {
       let posts = this.transformData(data);
-      this._handleMDDiscontinuousPosts(
+      this._handleModifiedDiscontinuousPosts(
         posts.filter(
           (post: Post) =>
             post.created_at !== post.modified_at || post.deactivated,
