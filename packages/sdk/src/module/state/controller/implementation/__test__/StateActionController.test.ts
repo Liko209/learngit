@@ -25,6 +25,7 @@ class MockRequestController implements IRequestController {
 }
 
 class MockPartialModifyController implements IPartialModifyController {
+  constructor(public groupState: GroupState) {}
   updatePartially = jest.fn(
     (
       entityId: number,
@@ -34,13 +35,8 @@ class MockPartialModifyController implements IPartialModifyController {
       ) => Partial<GroupState>,
       doUpdateEntity: (updatedEntity: GroupState) => Promise<GroupState>,
     ) => {
-      const originalEntity: GroupState = {
-        id: 0,
-        group_post_cursor: 0,
-        group_post_drp_cursor: 0,
-      };
       const partialEntity: Partial<GroupState> = {};
-      return preHandlePartialEntity(partialEntity, originalEntity);
+      return preHandlePartialEntity(partialEntity, this.groupState);
     },
   );
   getRollbackPartialEntity = jest.fn();
@@ -50,18 +46,18 @@ class MockPartialModifyController implements IPartialModifyController {
 describe('StateActionController', () => {
   let stateActionController: StateActionController;
   let mockRequestController: MockRequestController;
-  let mockPartialModifyController: MockPartialModifyController;
   let mockEntitySourceController: EntitySourceController;
   let mockStateFetchDataController: StateFetchDataController;
   let mockTotalUnreadController: TotalUnreadController;
   beforeEach(() => {
     jest.clearAllMocks();
     mockRequestController = new MockRequestController();
-    mockPartialModifyController = new MockPartialModifyController();
+
     mockEntitySourceController = new EntitySourceController<GroupState>(
       {} as IEntityPersistentController,
       {} as DeactivatedDao,
     );
+
     mockStateFetchDataController = new StateFetchDataController(
       mockEntitySourceController,
     );
@@ -69,7 +65,7 @@ describe('StateActionController', () => {
       mockEntitySourceController,
     );
     stateActionController = new StateActionController(
-      mockPartialModifyController,
+      mockEntitySourceController,
       mockRequestController,
       mockStateFetchDataController,
       mockTotalUnreadController,
@@ -85,9 +81,35 @@ describe('StateActionController', () => {
           most_recent_post_id: 123,
         }),
       });
+
+      const originalModel = {
+        id: groupId,
+        unread_count: 0,
+        unread_mentions_count: 0,
+        read_through: 123,
+        last_read_through: 123,
+        marked_as_unread: false,
+        post_cursor: 1,
+        group_post_cursor: 1,
+        group_post_drp_cursor: 0,
+      };
+
+      jest
+        .spyOn(mockEntitySourceController, 'get')
+        .mockImplementationOnce(() => {
+          return originalModel;
+        });
       mockStateFetchDataController.getMyStateId = jest
         .fn()
         .mockReturnValue(5683);
+
+      const mockPartialModifyController = new MockPartialModifyController(
+        originalModel,
+      );
+      Object.assign(stateActionController, {
+        _partialModifyController: mockPartialModifyController,
+      });
+
       await stateActionController.updateReadStatus(groupId, isUnread);
       expect(GroupService.getInstance<GroupService>().getById).toBeCalledWith(
         groupId,
@@ -98,6 +120,8 @@ describe('StateActionController', () => {
         mockPartialModifyController.updatePartially.mock.results[0].value,
       ).toEqual({
         unread_count: 1,
+        marked_as_unread: true,
+        post_cursor: 0,
       });
     });
 
@@ -112,6 +136,32 @@ describe('StateActionController', () => {
       mockStateFetchDataController.getMyStateId = jest
         .fn()
         .mockReturnValue(5683);
+
+      const originalModel = {
+        id: groupId,
+        unread_count: 1,
+        unread_mentions_count: 0,
+        read_through: 123,
+        last_read_through: 123,
+        marked_as_unread: true,
+        post_cursor: 1,
+        group_post_cursor: 2,
+        group_post_drp_cursor: 0,
+        unread_deactivated_count: 0,
+      };
+      jest
+        .spyOn(mockEntitySourceController, 'get')
+        .mockImplementationOnce(() => {
+          return originalModel;
+        });
+
+      const mockPartialModifyController = new MockPartialModifyController(
+        originalModel,
+      );
+      Object.assign(stateActionController, {
+        _partialModifyController: mockPartialModifyController,
+      });
+
       await stateActionController.updateReadStatus(groupId, isUnread);
       expect(GroupService.getInstance<GroupService>().getById).toBeCalledWith(
         groupId,
@@ -121,12 +171,12 @@ describe('StateActionController', () => {
       expect(
         mockPartialModifyController.updatePartially.mock.results[0].value,
       ).toEqual({
-        read_through: 123,
-        last_read_through: 123,
         unread_count: 0,
         unread_mentions_count: 0,
-        unread_deactivated_count: 0,
+        read_through: 123,
+        last_read_through: 123,
         marked_as_unread: false,
+        unread_deactivated_count: 0,
       });
     });
   });
