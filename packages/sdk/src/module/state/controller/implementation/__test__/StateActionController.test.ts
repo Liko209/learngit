@@ -46,7 +46,6 @@ class MockPartialModifyController implements IPartialModifyController {
 describe('StateActionController', () => {
   let stateActionController: StateActionController;
   let mockRequestController: MockRequestController;
-  let mockPartialModifyController: IPartialModifyController;
   let mockEntitySourceController: EntitySourceController;
   let mockStateFetchDataController: StateFetchDataController;
   let mockTotalUnreadController: TotalUnreadController;
@@ -71,11 +70,6 @@ describe('StateActionController', () => {
       mockStateFetchDataController,
       mockTotalUnreadController,
     );
-
-    mockPartialModifyController = new MockPartialModifyController({ id: 1 });
-    Object.assign(stateActionController, {
-      _partialModifyController: mockPartialModifyController,
-    });
   });
 
   describe('updateReadStatus()', () => {
@@ -107,7 +101,7 @@ describe('StateActionController', () => {
         .fn()
         .mockReturnValue(5683);
 
-      mockPartialModifyController = new MockPartialModifyController(
+      const mockPartialModifyController = new MockPartialModifyController(
         originalModel,
       );
       Object.assign(stateActionController, {
@@ -157,7 +151,7 @@ describe('StateActionController', () => {
         return originalModel;
       });
 
-      mockPartialModifyController = new MockPartialModifyController(
+      const mockPartialModifyController = new MockPartialModifyController(
         originalModel,
       );
       Object.assign(stateActionController, {
