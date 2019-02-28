@@ -2,14 +2,13 @@
  * @Author: Potar.He 
  * @Date: 2019-02-28 14:12:13 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-02-28 16:17:34
+ * @Last Modified time: 2019-02-28 17:06:12
  */
 
 import { formalName } from '../../libs/filter';
-import { h, H } from '../../v2/helpers'
+import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { IGroup } from "../../v2/models";
 import { SITE_URL, BrandTire } from '../../config';
 
 fixture('Recently Search')
