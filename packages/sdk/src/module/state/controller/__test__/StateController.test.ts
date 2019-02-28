@@ -33,9 +33,6 @@ describe('StateController', () => {
   describe('getStateActionController()', () => {
     it('should call functions with correct params', () => {
       const result = stateController.getStateActionController();
-      expect(buildPartialModifyController).toBeCalledWith(
-        mockEntitySourceController,
-      );
       expect(buildRequestController).toBeCalledWith({
         basePath: '/save_state_partial',
         networkClient: Api.glipNetworkClient,
