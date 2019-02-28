@@ -27,7 +27,7 @@ import GroupConfigService from './service/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
 import { StateService } from './module/state';
-import SyncService from './service/sync';
+import { SyncService } from './module/sync';
 import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
 import { PostService } from './module/post';
