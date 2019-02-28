@@ -12,6 +12,8 @@ type PinProps = {
 type PinViewProps = {
   isPin: boolean;
   pin: (pin: boolean) => Promise<void>;
+  shouldShowPinOption: boolean;
+  shouldDisablePinOption: boolean;
 };
 
 export { PinProps, PinViewProps };

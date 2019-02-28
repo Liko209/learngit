@@ -245,6 +245,15 @@ export default class GroupModel extends Base<Group> {
     );
   }
 
+  @computed
+  get canPin() {
+    const groupService: GroupService = GroupService.getInstance();
+    return groupService.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_PIN_POST,
+      this.teamPermissionParams,
+    );
+  }
+
   static fromJS(data: Group) {
     return new GroupModel(data);
   }

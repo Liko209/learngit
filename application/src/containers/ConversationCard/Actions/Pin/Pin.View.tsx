@@ -36,22 +36,25 @@ class PinViewComponent extends Component<Props> {
     }
   }
   render() {
-    const { isPin } = this.props;
+    const { isPin, shouldShowPinOption, shouldDisablePinOption } = this.props;
     return (
-      <JuiIconButton
-        size="small"
-        tooltipTitle={
-          isPin
-            ? i18next.t('message.action.unpin')
-            : i18next.t('message.action.pin')
-        }
-        color={isPin ? 'primary' : undefined}
-        onClick={this._handlePinButton}
-        variant="plain"
-        data-name="actionBarPin"
-      >
-        pin
-      </JuiIconButton>
+      shouldShowPinOption && (
+        <JuiIconButton
+          size="small"
+          tooltipTitle={
+            isPin
+              ? i18next.t('message.action.unpin')
+              : i18next.t('message.action.pin')
+          }
+          color={isPin ? 'primary' : undefined}
+          onClick={this._handlePinButton}
+          disabled={shouldDisablePinOption}
+          variant="plain"
+          data-name="actionBarPin"
+        >
+          pin
+        </JuiIconButton>
+      )
     );
   }
 }
