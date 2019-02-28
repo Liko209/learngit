@@ -239,7 +239,7 @@ export class ConversationPage extends BaseConversationPage {
   get publicTeamIcon() {
     return this.getSelectorByIcon('lock_open', this.privateButton);
   }
-  
+
   get favoriteButton() {
     return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
   }
@@ -518,6 +518,11 @@ export class PostItem extends BaseWebComponent {
     }
     // wait extra 1 sec for writing indexedDB
     await this.t.wait(1e3);
+  }
+
+  async waitImageVisible(timeout = 10e3) {
+    await this.t.expect(this.self.find('img').clientHeight).gt(0, { timeout });
+    await this.t.expect(this.self.find('img').clientWidth).gt(0, { timeout });
   }
 
   get fileNames() {

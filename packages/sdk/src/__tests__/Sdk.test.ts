@@ -15,11 +15,11 @@ import {
 } from '../api';
 import { daoManager, AuthDao } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
-import SyncService from '../service/sync';
+import { SyncService } from '../module/sync';
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
-jest.mock('../service/sync');
+jest.mock('../module/sync');
 jest.mock('../dao');
 jest.mock('../api');
 jest.mock('../utils');

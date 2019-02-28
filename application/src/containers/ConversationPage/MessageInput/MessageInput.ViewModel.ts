@@ -23,6 +23,7 @@ import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
 import { PostService } from 'sdk/module/post';
+import { FileItem } from 'sdk/module/item/module/file/entity';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -200,17 +201,18 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       await this._postService.sendPost({
         text: realContent,
         groupId: this.id,
-        itemIds: items.map(item => item.id),
+        itemIds: items.map((item: FileItem) => item.id),
         mentionNonItemIds: ids,
       });
       // clear context (attachments) after post
       //
-      const onPostHandler = this.props.onPost;
-      onPostHandler && onPostHandler();
-      this._onPostCallbacks.forEach(callback => callback());
+      this._onPostCallbacks.forEach((callback: OnPostCallback) => callback());
     } catch (e) {
       mainLogger.error(`send post error ${e}`);
       // You do not need to handle the error because the message will display a resend
+    } finally {
+      const onPostHandler = this.props.onPost;
+      onPostHandler && onPostHandler();
     }
   }
 

@@ -17,7 +17,7 @@ import Sdk from './Sdk';
 // Service
 import AccountService from './service/account';
 import AuthService from './service/auth';
-import CompanyService from './service/company';
+import { CompanyService } from './module/company';
 import ConfigService from './service/config';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
@@ -27,7 +27,7 @@ import { GroupConfigService } from './module/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
 import { StateService } from './module/state';
-import SyncService from './service/sync';
+import { SyncService } from './module/sync';
 import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
 import { PostService } from './module/post';

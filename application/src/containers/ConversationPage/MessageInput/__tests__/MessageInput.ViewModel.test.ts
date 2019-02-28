@@ -130,6 +130,25 @@ describe('MessageInputViewModel', () => {
         const result = handler();
         expect(result).toBeUndefined();
       });
+      it('should always call onPostHandler of the props when a post sent successfully', async () => {
+        const onPostHandler = jest.fn();
+        messageInputViewModel = new MessageInputViewModel({
+          id: 123,
+          onPost: onPostHandler,
+        });
+        await messageInputViewModel._sendPost();
+        expect(onPostHandler).toBeCalled();
+      });
+      it('should always call onPostHandler of the props when a post fails to sent', async () => {
+        const onPostHandler = jest.fn();
+        jest.spyOn(postService, 'sendPost').mockRejectedValue('');
+        messageInputViewModel = new MessageInputViewModel({
+          id: 123,
+          onPost: onPostHandler,
+        });
+        await messageInputViewModel._sendPost();
+        expect(onPostHandler).toBeCalled();
+      });
     });
     describe('cellWillChange', () => {
       it('should call groupConfigService.updateDraft when cellWillChange called', () => {
