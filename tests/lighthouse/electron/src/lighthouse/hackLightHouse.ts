@@ -20,9 +20,26 @@ const hackLightHouse = async () => {
 
   TraceProcessor.findMainFrameIds = (events) => {
     const navigationStartEvts = events.filter(e => e.name === 'navigationStart');
-    logger.info(`navigationStartEvts:\n${JSON.stringify(navigationStartEvts)}`);
     if (!navigationStartEvts || navigationStartEvts.length === 0) {
       logger.warn('there have not navigationStart');
+    }
+
+    const frameCommittedInBrowserEvt = events.find(e => e.name === 'FrameCommittedInBrowser');
+    if (frameCommittedInBrowserEvt && frameCommittedInBrowserEvt.args.data) {
+      const frameId = frameCommittedInBrowserEvt.args.data.frame;
+      const pid = frameCommittedInBrowserEvt.args.data.processId;
+
+      const threadNameEvt = events.find(e => e.pid === pid && e.ph === 'M' &&
+        e.cat === '__metadata' && e.name === 'thread_name' && e.args.name === 'CrRendererMain');
+      const tid = threadNameEvt && threadNameEvt.tid;
+
+      if (pid && tid && frameId) {
+        return {
+          pid,
+          tid,
+          frameId,
+        };
+      }
     }
 
     // Prefer the newer TracingStartedInBrowser event first, if it exists
