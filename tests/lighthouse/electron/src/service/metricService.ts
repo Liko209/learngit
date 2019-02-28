@@ -221,7 +221,9 @@ class MetricService {
             costTime: costTime
           });
         }
-        arr.sort();
+        arr.sort((a, b) => {
+          return a === b ? 0 : (a > b ? 1 : -1);
+        });
         summaryDto.apiMaxTime = max;
         summaryDto.apiAvgTime = sum / arr.length;
         summaryDto.apiMinTime = min;
