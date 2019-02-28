@@ -36,25 +36,25 @@ class StateDataHandleController {
     this._taskArray = [];
   }
 
-  handleState(states: Partial<State>[]): void {
+  async handleState(states: Partial<State>[]): Promise<void> {
     const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
       data: states,
     };
     this._taskArray.push(stateTask);
     if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
+      await this._startDataHandleTask(this._taskArray[0]);
     }
   }
 
-  handleGroupCursor(groups: Partial<Group>[]): void {
+  async handleGroupCursor(groups: Partial<Group>[]): Promise<void> {
     const groupTask: DataHandleTask = {
       type: TASK_DATA_TYPE.GROUP_CURSOR,
       data: groups,
     };
     this._taskArray.push(groupTask);
     if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
+      await this._startDataHandleTask(this._taskArray[0]);
     }
   }
 
@@ -67,9 +67,7 @@ class StateDataHandleController {
     }
     const updatedState = await this._generateUpdatedState(transformedState);
     await this._updateEntitiesAndDoNotification(updatedState);
-    await this._totalUnreadController.handleGroupState(
-      updatedState.groupStates,
-    );
+    this._totalUnreadController.handleGroupState(updatedState.groupStates);
 
     this._taskArray.shift();
     if (this._taskArray.length > 0) {

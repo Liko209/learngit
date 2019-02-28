@@ -56,6 +56,9 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
   if (profile && Object.keys(profile).length > 0) {
     transProfile = profile;
   }
+
+  const MergedGroups = groups.concat(teams, public_teams);
+
   return Promise.all([
     accountHandleData({
       userId,
@@ -78,10 +81,8 @@ const dispatchIncomingData = async (data: IndexDataModel) => {
       PersonService.getInstance<PersonService>().handleIncomingData(people),
     )
     .then(() =>
-      GroupService.getInstance<GroupService>().handleData(public_teams),
+      GroupService.getInstance<GroupService>().handleData(MergedGroups),
     )
-    .then(() => GroupService.getInstance<GroupService>().handleData(groups))
-    .then(() => GroupService.getInstance<GroupService>().handleData(teams))
     .then(() =>
       PostService.getInstance<PostService>().handleIndexData(
         posts,
