@@ -254,6 +254,9 @@ const JuiVirtualizedList: RefForwardingComponent<
       style={{
         height,
         overflow: 'auto',
+        // Prevent repaints on scroll
+        transform: 'translateZ(0)',
+        // Prevent chrome's default behavior
         overflowAnchor: 'none',
       }}
     >
