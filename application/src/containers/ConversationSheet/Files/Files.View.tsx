@@ -10,6 +10,7 @@ import {
   JuiFileWithoutPreview,
   JuiFileWithPreview,
   JuiPreviewImage,
+  JuiDelayPlaceholder,
 } from 'jui/pattern/ConversationCard/Files';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { getThumbnailSize } from 'jui/foundation/utils';
@@ -22,8 +23,11 @@ import { Viewer } from '@/containers/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
+import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
+import { UploadFileTracker } from './UploadFileTracker';
 
 const SQUARE_SIZE = 180;
+const FutureAttachmentItem = withFuture(AttachmentItem);
 
 const downloadBtn = (downloadUrl: string) => (
   <JuiIconButton
@@ -46,6 +50,7 @@ class FilesView extends React.Component<FilesViewProps> {
     id: number,
     progresses: Map<number, number>,
     name: string,
+    future?: FutureCreator,
   ) => {
     const progress = progresses.get(id);
     let realStatus: ITEM_STATUS = ITEM_STATUS.NORMAL;
@@ -61,19 +66,21 @@ class FilesView extends React.Component<FilesViewProps> {
       realStatus = ITEM_STATUS.ERROR;
     }
     return (
-      <AttachmentItem
+      <FutureAttachmentItem
         fileIcon={getFileIcon(name)}
         status={realStatus}
         key={id}
         name={name}
         progress={progress}
         onClickDeleteButton={() => this.props.removeFile(id)}
+        future={future}
       />
     );
   }
 
   _handleImageClick = (id: number) => async () => {
     const canShowDialogPermission = await this.props.getShowDialogPermission();
+    console.log('canShowDialogPermission', canShowDialogPermission);
     if (!canShowDialogPermission) {
       return;
     }
@@ -89,6 +96,11 @@ class FilesView extends React.Component<FilesViewProps> {
     await this.props.getCropImage();
   }
 
+  private _handleImageDidLoad = (id: number, callback: Function) => {
+    UploadFileTracker.tracker().clear(this.props.ids);
+    callback();
+  }
+
   render() {
     const { files, progresses, urlMap } = this.props;
     const singleImage = files[FileType.image].length === 1;
@@ -97,27 +109,42 @@ class FilesView extends React.Component<FilesViewProps> {
         {files[FileType.image].map((file: ExtendFileItem) => {
           const { item } = file;
           const { origHeight, id, origWidth, name, downloadUrl } = item;
-          if (id < 0) {
-            return this._renderItem(id, progresses, name);
-          }
           let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
           if (singleImage) {
             size = getThumbnailSize(origWidth, origHeight);
           }
+          const placeholder = (
+            <JuiDelayPlaceholder width={size.width} height={size.height} />
+          );
+          if (id < 0 || this.props.isRecentlyUploaded(id)) {
+            return this._renderItem(
+              id,
+              progresses,
+              name,
+              (callback: Function) => (
+                <JuiPreviewImage
+                  key={id}
+                  didLoad={() => this._handleImageDidLoad(id, callback)}
+                  handleImageClick={this._handleImageClick(id)}
+                  placeholder={placeholder}
+                  width={size.width}
+                  height={size.height}
+                  forceSize={!singleImage}
+                  squareSize={SQUARE_SIZE}
+                  fileName={name}
+                  url={urlMap.get(id) || ''}
+                  Actions={downloadBtn(downloadUrl)}
+                />
+              ),
+            );
+          }
           return (
             <JuiPreviewImage
               key={id}
-              placeholder={
-                <JuiFileWithoutPreview
-                  fileName={name}
-                  size={`${getFileSize(item.size)}`}
-                  iconType="image_preview"
-                  Actions={downloadBtn(downloadUrl)}
-                />
-              }
-              width={size.width || SQUARE_SIZE}
-              height={size.height || SQUARE_SIZE}
+              placeholder={placeholder}
               handleImageClick={this._handleImageClick(id)}
+              width={size.width}
+              height={size.height}
               forceSize={!singleImage}
               squareSize={SQUARE_SIZE}
               fileName={name}
