@@ -112,7 +112,6 @@ const JuiVirtualizedList = ({
   const childrenCount = children.length;
 
   const ref: DivRefObject = useRef(null);
-  const innerRef: DivRefObject = useRef(null);
   const contentRef: DivRefObject = useRef(null);
 
   //
@@ -193,8 +192,6 @@ const JuiVirtualizedList = ({
       //
       // When scrolling, update displayRange.
       //
-      console.time('handleScroll');
-
       const getRowIndexFromPosition = (position: number) => {
         let rowsHeight = 0;
         for (let index = 0; index < childrenCount; index++) {
@@ -208,7 +205,6 @@ const JuiVirtualizedList = ({
       const scrollTop = ref.current.scrollTop;
       const anchor = getRowIndexFromPosition(scrollTop + height / 2);
 
-      console.timeEnd('handleScroll');
       setScrollToIndex(anchor);
       setScrollOffset(scrollTop - getRowsHeight(0, anchor - 1));
       setDisplayRange(
@@ -230,9 +226,7 @@ const JuiVirtualizedList = ({
       }}
     >
       <div style={{ height: heightBeforeStartRow }} />
-      <div ref={innerRef}>
-        <div ref={contentRef}>{childrenToDisplay}</div>
-      </div>
+      <div ref={contentRef}>{childrenToDisplay}</div>
       <div style={{ height: heightAfterStopRow }} />
     </div>
   );
