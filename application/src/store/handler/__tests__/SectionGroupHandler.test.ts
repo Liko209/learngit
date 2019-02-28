@@ -594,12 +594,11 @@ describe('SectionGroupHandler', () => {
       jest
         .spyOn(stateService, 'getById')
         .mockResolvedValue({ unread_count: 2 });
-      const spy = jest
-        .spyOn(sectionGroupHandler._prefetchHandler, 'addProcessor')
-        .mockReturnValue(1);
       await sectionGroupHandler.fetchGroups(sectionType, direction);
       setTimeout(() => {
-        expect(spy).toHaveBeenCalledTimes(2);
+        expect(
+          sectionGroupHandler._prefetchHandler.addProcessor,
+        ).toHaveBeenCalledTimes(2);
         done();
       });
     });
@@ -614,12 +613,11 @@ describe('SectionGroupHandler', () => {
       jest
         .spyOn(stateService, 'getById')
         .mockResolvedValue({ unread_mentions_count: 2 });
-      const spy = jest
-        .spyOn(sectionGroupHandler._prefetchHandler, 'addProcessor')
-        .mockReturnValue(1);
       await sectionGroupHandler.fetchGroups(sectionType, direction);
       setTimeout(() => {
-        expect(spy).toHaveBeenCalledTimes(2);
+        expect(
+          sectionGroupHandler._prefetchHandler.addProcessor,
+        ).toHaveBeenCalledTimes(2);
         done();
       });
     });

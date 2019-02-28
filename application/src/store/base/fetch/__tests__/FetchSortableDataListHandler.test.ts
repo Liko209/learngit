@@ -624,7 +624,7 @@ describe('FetchSortableDataListHandler', () => {
   });
 
   describe('refreshData()', () => {
-    it('should sortableResult is listStore.items when lsitStore.items.length 2 and _pageSize is 2', () => {
+    it('should call dataChangeCallback with expected parameters when lsitStore.items.length 2 and _pageSize is 2', () => {
       const { fetchSortableDataHandler } = setup({
         originalItems: [buildItem(1), buildItem(2)],
       });
@@ -639,7 +639,7 @@ describe('FetchSortableDataListHandler', () => {
         }),
       );
     });
-    it('should sortableResult have 2 items when lsitStore.items.length is 5 and _pageSize is 2', () => {
+    it('should call dataChangeCallback with expected parameters when lsitStore.items.length is 5 and _pageSize is 2', () => {
       const { fetchSortableDataHandler } = setup({
         originalItems: [
           buildItem(1),
