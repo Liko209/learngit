@@ -240,11 +240,14 @@ class RTCRegistrationManager extends EventEmitter2
     });
   }
 
-  private _onUARegFailed(response: any, cause: any) {
+  private _onUARegFailed(response?: any, cause?: any) {
     if (
-      REGISTRATION_ERROR_CODE.FORBIDDEN === cause ||
-      REGISTRATION_ERROR_CODE.UNAUTHORIZED === cause ||
-      REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED === cause
+      response &&
+      response.status_code &&
+      (REGISTRATION_ERROR_CODE.FORBIDDEN === response.status_code ||
+        REGISTRATION_ERROR_CODE.UNAUTHORIZED === response.status_code ||
+        REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED ===
+          response.status_code)
     ) {
       this.emit(REGISTRATION_EVENT.REFRESH_PROV);
     }

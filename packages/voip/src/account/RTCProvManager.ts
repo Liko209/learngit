@@ -83,6 +83,7 @@ class RTCProvManager extends EventEmitter2 {
   private _setRefreshByRegFailedTimer() {
     if (this._refreshByRegFailedTimer) {
       clearTimeout(this._refreshByRegFailedTimer);
+      this._refreshByRegFailedTimer = null;
     }
     this._refreshByRegFailedTimer = setTimeout(() => {
       this._refreshSipProvWhenTimeArrived();
@@ -110,6 +111,7 @@ class RTCProvManager extends EventEmitter2 {
     this._isAcquireProvWhenTimeArrived = false;
     if (this._refreshByRegFailedTimer) {
       clearTimeout(this._refreshByRegFailedTimer);
+      this._refreshByRegFailedTimer = null;
     }
   }
 
