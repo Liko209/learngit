@@ -36,7 +36,6 @@ type SyncListener = {
 };
 
 export default class SyncService extends BaseService {
-  private isLoading: boolean;
   private _syncListener: SyncListener;
 
   constructor() {
@@ -51,7 +50,6 @@ export default class SyncService extends BaseService {
         }
       },
     });
-    this.isLoading = false;
   }
 
   getIndexTimestamp() {
@@ -61,11 +59,6 @@ export default class SyncService extends BaseService {
 
   async syncData(syncListener?: SyncListener) {
     this._syncListener = syncListener || {};
-    if (this.isLoading) {
-      return;
-    }
-
-    this.isLoading = true;
     const lastIndexTimestamp = this.getIndexTimestamp();
     try {
       if (lastIndexTimestamp) {
@@ -76,8 +69,6 @@ export default class SyncService extends BaseService {
     } catch (e) {
       mainLogger.log('syncData fail', e);
     }
-
-    this.isLoading = false;
     // this._preloadPosts();
   }
 
