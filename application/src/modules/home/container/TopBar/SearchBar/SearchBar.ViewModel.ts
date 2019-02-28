@@ -19,8 +19,8 @@ import {
   Person,
   Group,
   Props,
-  ISearchItems,
-  IRecentItems,
+  SearchItems,
+  RecentItems,
 } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
@@ -142,7 +142,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     const ret = await this.search(value);
     if (!ret) return;
     const { terms, people, groups, teams } = ret;
-    const data: ISearchItems[] = [
+    const data: SearchItems[] = [
       {
         ...people,
         type: RecentSearchTypes.PEOPLE,
@@ -171,13 +171,13 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     this.selectIndex = InvalidIndexPath;
   }
 
-  setData = (data: ISearchItems[] | IRecentItems[]) => {
+  setData = (data: SearchItems[] | RecentItems[]) => {
     switch (this.dataType) {
       case DATA_TYPE.search:
-        this.searchResult = data as ISearchItems[];
+        this.searchResult = data as SearchItems[];
         break;
       case DATA_TYPE.recent:
-        this.recentRecord = data as IRecentItems[];
+        this.recentRecord = data as RecentItems[];
         break;
       default:
         break;
@@ -191,7 +191,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   findNextValidSectionLength = (section: number, offset: number): number[] => {
     const data = this.currentResults();
     for (let i = section; i >= 0 && i < data.length; i += offset) {
-      const { length } = (data[i] as ISearchItems).ids;
+      const { length } = (data[i] as SearchItems).ids;
       if (length > 0) {
         return [i, length];
       }
@@ -220,7 +220,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     const [section, cell] = this.selectIndex;
     const data = this.currentResults();
     const currentSection = section < 0 ? 0 : section;
-    const searchItem: ISearchItems | IRecentItems = data[currentSection];
+    const searchItem: SearchItems | RecentItems = data[currentSection];
 
     if (!searchItem) {
       return;
@@ -253,7 +253,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     let data = this.currentResults();
     data = data.slice(0);
 
-    const items: ISearchItems | IRecentItems = data[sectionIndex];
+    const items: SearchItems | RecentItems = data[sectionIndex];
     items.ids.splice(cellIndex, 1);
 
     this.setData(data);

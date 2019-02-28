@@ -19,7 +19,7 @@ import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 import GroupModel from '@/store/models/Group';
 import { joinTeam } from '@/common/joinPublicTeam';
 
-import { ViewProps, ISearchItems, IRecentItems } from './types';
+import { ViewProps, SearchItems, RecentItems } from './types';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { SearchSectionsConfig } from './config';
 import { OpenProfile } from '@/common/OpenProfile';
@@ -164,7 +164,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
   get searchResultList() {
     const { searchResult } = this.props;
     return searchResult.map(
-      ({ ids, type, hasMore }: ISearchItems, sectionIndex: number) => {
+      ({ ids, type, hasMore }: SearchItems, sectionIndex: number) => {
         if (ids.length === 0) return null;
 
         const { title } = SearchSectionsConfig[type];
@@ -213,7 +213,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
           title={'Recently search'}
           data-test-automation-id={'search-clear'}
         />
-        {recentRecord.map(({ ids, types }: IRecentItems) => {
+        {recentRecord.map(({ ids, types }: RecentItems) => {
           return ids.map((id: number | string, cellIndex: number) => {
             return this.createSearchItem({
               id,

@@ -8,17 +8,18 @@ import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { RecentSearchTypes } from 'sdk/module/search';
 
-interface IBaseItems<T> {
+type BaseItems<T> = {
   ids: T[];
-}
-interface ISearchItems extends IBaseItems<number> {
+};
+
+type SearchItems = BaseItems<number> & {
   type: RecentSearchTypes;
   hasMore: boolean;
-}
+};
 
-interface IRecentItems extends IBaseItems<number | string> {
-  types: RecentSearchTypes[];
-}
+type RecentItems = BaseItems<number | string> & {
+  types: RecentSearchTypes;
+};
 
 type SearchSection<T> = {
   sortableModel: SortableModel<T>[];
@@ -50,14 +51,14 @@ type ViewProps = {
   isTeamOrGroup: (id: number) => boolean;
   getRecent: () => void;
   clearRecent: () => void;
-  searchResult: ISearchItems[];
-  recentRecord: IRecentItems[];
+  searchResult: SearchItems[];
+  recentRecord: RecentItems[];
   terms: string[];
   selectIndex: number[];
   resetData: () => void;
   resetSelectIndex: () => void;
   setSelectIndex: (section: number, cellIndex: number) => void;
-  setData: (data: ISearchItems[]) => void;
+  setData: (data: SearchItems[]) => void;
   findNextValidSectionLength: (section: number, offset: number) => number[];
   onKeyUp: () => void;
   onKeyDown: () => void;
@@ -79,6 +80,6 @@ export {
   SortableModel,
   Person,
   Group,
-  ISearchItems,
-  IRecentItems,
+  SearchItems,
+  RecentItems,
 };
