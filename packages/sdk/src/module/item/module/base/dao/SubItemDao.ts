@@ -10,7 +10,8 @@ import { BaseDao } from '../../../../../framework/dao';
 import { SanitizedItem, Item } from '../entity';
 import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { isIEOrEdge } from 'foundation/src/db/adapter/dexie/utils';
-
+import { ArrayUtils } from '../../../../../utils/ArrayUtils';
+import { QUERY_DIRECTION } from '../../../../../dao/constants';
 class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   constructor(collectionName: string, db: IDatabase) {
     super(collectionName, db);
@@ -22,7 +23,15 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   }
 
   async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    const { groupId, sortKey, desc, limit, offsetItemId, filterFunc } = options;
+    const {
+      groupId,
+      sortKey,
+      desc,
+      limit,
+      offsetItemId,
+      filterFunc,
+      direction = QUERY_DIRECTION.NEWER,
+    } = options;
     let sanitizedItems = await this.queryItemsByGroupId(groupId);
 
     if (sanitizedItems.length === 0) {
@@ -38,21 +47,30 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     };
 
     sanitizedItems = sanitizedItems.sort(sortFunc);
-    const itemIds: number[] = [];
-    let insertAble: boolean = offsetItemId ? false : true;
-    for (let i = 0; i < sanitizedItems.length; ++i) {
-      const itemId = sanitizedItems[i].id;
-      if (!insertAble && itemId === offsetItemId) {
-        insertAble = true;
-      }
-      if (insertAble && itemId !== offsetItemId) {
-        if (itemIds.length < limit) {
-          itemIds.push(itemId);
-        } else {
-          break;
-        }
-      }
-    }
+    const allItemIds = sanitizedItems.map((x: T) => x.id);
+    const itemIds = ArrayUtils.sliceIdArray(
+      allItemIds,
+      limit,
+      offsetItemId,
+      direction,
+    );
+
+    // const itemIds: number[] = [];
+    // let insertAble: boolean = offsetItemId ? false : true;
+
+    // for (let i = 0; i < sanitizedItems.length; ++i) {
+    //   const itemId = sanitizedItems[i].id;
+    //   if (!insertAble && itemId === offsetItemId) {
+    //     insertAble = true;
+    //   }
+    //   if (insertAble && itemId !== offsetItemId) {
+    //     if (itemIds.length < limit) {
+    //       itemIds.push(itemId);
+    //     } else {
+    //       break;
+    //     }
+    //   }
+    // }
 
     return itemIds;
   }
