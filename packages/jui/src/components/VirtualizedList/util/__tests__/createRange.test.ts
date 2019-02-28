@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-02-28 14:59:30
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { createRangeFromAnchor } from '../createRange';
 
 describe('createRange()', () => {

@@ -1,3 +1,8 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-02-28 14:59:36
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, {
   memo,
   MutableRefObject,
@@ -5,11 +10,11 @@ import React, {
   useRef,
   useState,
   ReactNode,
-  useReducer,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { createRange, createRangeFromAnchor } from './util/createRange';
 import { VirtualizedListProps } from './VirtualizedListProps';
+import { useForceUpdate } from './useForceUpdate';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 
@@ -23,14 +28,6 @@ const useRange = (
 ): [IndexRange, React.Dispatch<React.SetStateAction<IndexRange>>] => {
   const [range, setRange] = useState(initialRange);
   return [range, setRange];
-};
-
-const useForceUpdate = () => {
-  const [updateTrigger, setValue] = useReducer(x => x + 1, 0);
-  const forceUpdate = () => {
-    setValue({});
-  };
-  return { updateTrigger, forceUpdate };
 };
 
 const JuiVirtualizedList = ({

@@ -1,7 +1,13 @@
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-02-28 14:59:26
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { useState, useLayoutEffect } from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
 import { JuiVirtualizedList } from '../VirtualizedList';
+import { itemFactory } from './itemFactory';
 
 type ItemModel = {
   id: number;
@@ -64,28 +70,6 @@ const useItems = (defaultItems: ItemModel[] | (() => ItemModel[])) => {
   return { items, appendItem, prependItem, removeItem };
 };
 
-const buildItem = (id: number) => {
-  return {
-    id,
-    text: `Item-${id}`,
-  };
-};
-
-const buildCrazyItem = (id: number) => {
-  return {
-    ...buildItem(id),
-    crazy: true,
-  };
-};
-
-const buildImageItem = (id: number, randomSize = false) => {
-  const height = randomSize ? Math.floor(Math.random() * 10) * 10 : 53;
-  return {
-    ...buildItem(id),
-    imageUrl: `https://via.placeholder.com/500x${height}`,
-  };
-};
-
 storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
   const dataCount = number('dataCount', 100);
   const initialScrollToIndex = number('initialScrollToIndex', 11);
@@ -95,9 +79,9 @@ storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
   const Demo = () => {
     const { items, prependItem, removeItem } = useItems(() => {
       const items: ItemModel[] = [];
-      items.push(buildItem(0));
+      items.push(itemFactory.buildItem(0));
       for (let i = 1; i < dataCount; i++) {
-        items.push(buildItem(i));
+        items.push(itemFactory.buildItem(i));
       }
       return items;
     });
