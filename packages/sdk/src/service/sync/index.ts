@@ -67,11 +67,16 @@ export default class SyncService extends BaseService {
 
     this.isLoading = true;
     const lastIndexTimestamp = this.getIndexTimestamp();
-    if (lastIndexTimestamp) {
-      await this._syncIndexData(lastIndexTimestamp);
-    } else {
-      await this._firstLogin();
+    try {
+      if (lastIndexTimestamp) {
+        await this._syncIndexData(lastIndexTimestamp);
+      } else {
+        await this._firstLogin();
+      }
+    } catch (e) {
+      mainLogger.log('syncData fail', e);
     }
+
     this.isLoading = false;
     // this._preloadPosts();
   }

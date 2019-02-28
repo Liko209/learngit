@@ -17,14 +17,14 @@ import SyncService from '..';
 describe('SyncService ', () => {
   const syncService = new SyncService();
   describe('syncData', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       daoManager.getKVDao.mockImplementation(() => ({
         get: jest.fn().mockReturnValue(null),
       }));
-    });
-    it('should call _firstLogin if LAST_INDEX_TIMESTAMP is null', async () => {
       jest.clearAllMocks();
+    });
 
+    it('should call _firstLogin if LAST_INDEX_TIMESTAMP is null', async () => {
       Object.assign(syncService, {
         isLoading: false,
       });
@@ -37,7 +37,6 @@ describe('SyncService ', () => {
       expect(spy).toBeCalled();
     });
     it('should call _firstLogin if LAST_INDEX_TIMESTAMP is null', async () => {
-      jest.clearAllMocks();
       Object.assign(syncService, {
         isLoading: true,
       });
@@ -50,7 +49,6 @@ describe('SyncService ', () => {
       expect(spy).not.toBeCalled();
     });
     it('should not call _firstLogin if LAST_INDEX_TIMESTAMP is not null', async () => {
-      jest.clearAllMocks();
       Object.assign(syncService, {
         isLoading: false,
       });
@@ -61,6 +59,14 @@ describe('SyncService ', () => {
       const spy = jest.spyOn(syncService, '_syncIndexData');
       await syncService.syncData();
       expect(spy).toBeCalled();
+    });
+    it('should set isLoading to be false even request data fail', async () => {
+      daoManager.getKVDao.mockImplementation(() => ({
+        get: jest.fn().mockReturnValue(1),
+      }));
+      jest.spyOn(syncService, '_syncIndexData').mockRejectedValueOnce();
+      await syncService.syncData();
+      expect(syncService.isLoading).toBeFalsy();
     });
   });
 });
