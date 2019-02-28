@@ -8,6 +8,7 @@ import * as bluebird from 'bluebird';
 
 const GatherRunner = require("lighthouse/lighthouse-core/gather/gather-runner");
 const TraceProcessor = require("lighthouse/lighthouse-core/lib/traces/tracing-processor");
+const TraceOfTab = require("lighthouse/lighthouse-core/computed/trace-of-tab");
 
 const logger = LogUtils.getLogger(__filename);
 
@@ -18,44 +19,30 @@ const hackLightHouse = async () => {
   };
 
   TraceProcessor.findMainFrameIds = (events) => {
-    logger.info(`events:\n${JSON.stringify(events)}`);
     const navigationStartEvts = events.filter(e => e.name === 'navigationStart');
     logger.info(`navigationStartEvts:\n${JSON.stringify(navigationStartEvts)}`);
     if (!navigationStartEvts || navigationStartEvts.length === 0) {
       logger.warn('there have not navigationStart');
     }
-    const startedInBrowserEvts = events.filter(e => e.name === 'TracingStartedInBrowser');
-    for (let startedInBrowserEvt of startedInBrowserEvts) {
-      if (startedInBrowserEvt && startedInBrowserEvt.args.data &&
-        startedInBrowserEvt.args.data.frames) {
-        const mainFrame = startedInBrowserEvt.args.data.frames.find(frame => !frame.parent);
-        const frameId = mainFrame && mainFrame.frame;
-        const pid = mainFrame && mainFrame.processId;
-        const tid = startedInBrowserEvt.tid;
 
-        if (pid && tid && frameId) {
-          return {
-            pid,
-            tid,
-            frameId,
-          };
-        }
-      }
-    }
+    // Prefer the newer TracingStartedInBrowser event first, if it exists
+    const startedInBrowserEvt = events.find(e => e.name === 'TracingStartedInBrowser');
+    if (startedInBrowserEvt && startedInBrowserEvt.args.data &&
+      startedInBrowserEvt.args.data.frames) {
+      const mainFrame = startedInBrowserEvt.args.data.frames.find(frame => !frame.parent);
+      const frameId = mainFrame && mainFrame.frame;
+      const pid = mainFrame && mainFrame.processId;
 
-    const frameCommittedInBrowserEvts = events.filter(e => e.name === 'FrameCommittedInBrowser');
-    for (let frameCommittedInBrowserEvt of frameCommittedInBrowserEvts) {
-      if (frameCommittedInBrowserEvt && frameCommittedInBrowserEvt.args && frameCommittedInBrowserEvt.args.data) {
-        const frameId = frameCommittedInBrowserEvt.args.data.frame;
-        const url = frameCommittedInBrowserEvt.args.data.url;
-        const pid = frameCommittedInBrowserEvt.args.data.processId;
-        if (frameId && pid && url && !url.startsWith(Config.blankUrl)) {
-          return {
-            pid: pid,
-            tid: frameCommittedInBrowserEvt.tid,
-            frameId,
-          };
-        }
+      const threadNameEvt = events.find(e => e.pid === pid && e.ph === 'M' &&
+        e.cat === '__metadata' && e.name === 'thread_name' && e.args.name === 'CrRendererMain');
+      const tid = threadNameEvt && threadNameEvt.tid;
+
+      if (pid && tid && frameId) {
+        return {
+          pid,
+          tid,
+          frameId,
+        };
       }
     }
 
@@ -74,8 +61,20 @@ const hackLightHouse = async () => {
       }
     }
 
+
     logger.info(`can't find frameId, event:\n${JSON.stringify(events)}`);
     throw new Error('NO_TRACING_STARTED');
+  }
+
+  TraceOfTab.isNavigationStartOfInterest = (event) => {
+    let url;
+    if (event.args.data) {
+      url = event.args.data.documentLoaderURL;
+    }
+    if (!url) {
+      url = '';
+    }
+    return event.name === 'navigationStart' && !url.startsWith(Config.blankUrl);
   }
 };
 
