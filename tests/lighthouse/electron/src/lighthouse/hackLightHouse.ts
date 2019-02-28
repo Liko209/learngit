@@ -18,6 +18,10 @@ const hackLightHouse = async () => {
   };
 
   TraceProcessor.findMainFrameIds = (events) => {
+    const navigationStartEvts = events.filter(e => e.name === 'navigationStart');
+    if (!navigationStartEvts || navigationStartEvts.length === 0) {
+      logger.warn('there have not navigationStart');
+    }
     const startedInBrowserEvts = events.filter(e => e.name === 'TracingStartedInBrowser');
     for (let startedInBrowserEvt of startedInBrowserEvts) {
       if (startedInBrowserEvt && startedInBrowserEvt.args.data &&
