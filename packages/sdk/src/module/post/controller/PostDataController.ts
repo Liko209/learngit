@@ -53,10 +53,7 @@ class PostDataController {
     if (data.length) {
       let posts = this.transformData(data);
       this._handleModifiedDiscontinuousPosts(
-        posts.filter(
-          (post: Post) =>
-            post.created_at !== post.modified_at || post.deactivated,
-        ),
+        posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
       await this.handelPostsOverThreshold(posts, maxPostsExceed);
       await this.preInsertController.bulkDelete(posts);
