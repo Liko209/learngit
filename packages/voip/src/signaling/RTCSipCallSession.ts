@@ -37,9 +37,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       return;
     }
     this._session.removeAllListeners();
-    if (this._session.mediaStreams) {
-      this._releaseMediaStreams();
-    }
+    this._releaseMediaStreams();
     if (this._session.sessionDescriptionHandler) {
       this._session.sessionDescriptionHandler.removeAllListeners();
     }
