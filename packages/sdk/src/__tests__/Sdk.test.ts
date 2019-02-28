@@ -13,11 +13,11 @@ import {
   HandleByUpload,
   HandleByGlip2,
 } from '../api';
-import { daoManager, AuthDao } from '../dao';
+import { daoManager } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
-import SyncService from '../service/sync';
 import { GlobalConfigService } from '../module/config';
 import { AuthGlobalConfig } from '../service/auth/config';
+import { SyncService } from '../module/sync';
 
 jest.mock('../module/config');
 jest.mock('../service/auth/config');
@@ -25,7 +25,7 @@ GlobalConfigService.getInstance = jest.fn();
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
-jest.mock('../service/sync');
+jest.mock('../module/sync');
 jest.mock('../dao');
 jest.mock('../api');
 jest.mock('../utils');

@@ -132,12 +132,7 @@ class TotalUnreadController {
     groupStates.forEach((groupState: GroupState) => {
       const groupUnread = this._groupSectionUnread.get(groupState.id);
       if (groupUnread) {
-        this._updateTotalUnread(
-          groupUnread.section,
-          (groupState.unread_count || 0) - groupUnread.unreadCount,
-          (groupState.unread_mentions_count || 0) - groupUnread.mentionCount,
-          groupUnread.isTeam || false,
-        );
+        this._updateToTotalUnread(groupUnread, groupState);
         groupUnread.unreadCount = groupState.unread_count || 0;
         groupUnread.mentionCount = groupState.unread_mentions_count || 0;
       }
@@ -151,12 +146,7 @@ class TotalUnreadController {
       payload.body.ids.forEach((id: number) => {
         const groupUnread = this._groupSectionUnread.get(id);
         if (groupUnread) {
-          this._updateTotalUnread(
-            groupUnread.section,
-            -groupUnread.unreadCount,
-            -groupUnread.mentionCount,
-            groupUnread.isTeam || false,
-          );
+          this._deleteFromTotalUnread(groupUnread);
           this._groupSectionUnread.delete(id);
         }
       });
@@ -175,12 +165,7 @@ class TotalUnreadController {
             !group.members.includes(currentUserId)
           ) {
             if (groupUnread) {
-              this._updateTotalUnread(
-                groupUnread.section,
-                -groupUnread.unreadCount,
-                -groupUnread.mentionCount,
-                groupUnread.isTeam || false,
-              );
+              this._deleteFromTotalUnread(groupUnread);
               this._groupSectionUnread.delete(id);
             }
           } else {
@@ -223,42 +208,37 @@ class TotalUnreadController {
       }
       if (isAdd) {
         if (groupUnread.section !== UMI_SECTION_TYPE.FAVORITE) {
-          this._updateTotalUnread(
-            groupUnread.section,
-            -groupUnread.unreadCount,
-            -groupUnread.mentionCount,
-            groupUnread.isTeam || false,
-          );
-          this._updateTotalUnread(
-            UMI_SECTION_TYPE.FAVORITE,
-            groupUnread.unreadCount,
-            groupUnread.mentionCount,
-            groupUnread.isTeam || false,
-          );
+          this._deleteFromTotalUnread(groupUnread);
+          if (groupUnread.isTeam) {
+            this._modifyTotalUnread(
+              UMI_SECTION_TYPE.FAVORITE,
+              groupUnread.unreadCount > 0 ? groupUnread.mentionCount : 0,
+              groupUnread.mentionCount,
+            );
+          } else {
+            this._modifyTotalUnread(
+              UMI_SECTION_TYPE.FAVORITE,
+              groupUnread.unreadCount,
+              groupUnread.mentionCount,
+            );
+          }
           groupUnread.section = UMI_SECTION_TYPE.FAVORITE;
         }
       } else {
         if (groupUnread.section === UMI_SECTION_TYPE.FAVORITE) {
-          this._updateTotalUnread(
-            groupUnread.section,
-            -groupUnread.unreadCount,
-            -groupUnread.mentionCount,
-            groupUnread.isTeam || false,
-          );
+          this._deleteFromTotalUnread(groupUnread);
           if (!groupUnread.isTeam) {
-            this._updateTotalUnread(
+            this._modifyTotalUnread(
               UMI_SECTION_TYPE.DIRECT_MESSAGE,
               groupUnread.unreadCount,
               groupUnread.mentionCount,
-              groupUnread.isTeam || false,
             );
             groupUnread.section = UMI_SECTION_TYPE.DIRECT_MESSAGE;
           } else {
-            this._updateTotalUnread(
+            this._modifyTotalUnread(
               UMI_SECTION_TYPE.TEAM,
-              groupUnread.unreadCount,
+              groupUnread.unreadCount > 0 ? groupUnread.mentionCount : 0,
               groupUnread.mentionCount,
-              groupUnread.isTeam || false,
             );
             groupUnread.section = UMI_SECTION_TYPE.TEAM;
           }
@@ -308,12 +288,6 @@ class TotalUnreadController {
     } else {
       section = UMI_SECTION_TYPE.TEAM;
     }
-    this._updateTotalUnread(
-      section,
-      unreadCount,
-      mentionCount,
-      group.is_team || false,
-    );
 
     this._groupSectionUnread.set(group.id, {
       section,
@@ -321,13 +295,63 @@ class TotalUnreadController {
       mentionCount,
       isTeam: group.is_team,
     });
+
+    if (group.is_team && unreadCount > 0) {
+      unreadCount = mentionCount;
+    }
+    this._modifyTotalUnread(section, unreadCount, mentionCount);
   }
 
-  private _updateTotalUnread(
+  private _deleteFromTotalUnread(groupUnread: SectionUnread): void {
+    let unreadUpdate = -groupUnread.unreadCount;
+    if (groupUnread.isTeam) {
+      if (groupUnread.unreadCount === 0) {
+        unreadUpdate = 0;
+      } else {
+        unreadUpdate = -groupUnread.mentionCount;
+      }
+    }
+
+    this._modifyTotalUnread(
+      groupUnread.section,
+      unreadUpdate,
+      -groupUnread.mentionCount,
+    );
+  }
+
+  private _updateToTotalUnread(
+    groupUnread: SectionUnread,
+    groupState: GroupState,
+  ): void {
+    let unreadUpdate = (groupState.unread_count || 0) - groupUnread.unreadCount;
+    if (groupUnread.isTeam) {
+      if (groupUnread.unreadCount === 0) {
+        if ((groupState.unread_count || 0) > 0) {
+          unreadUpdate = groupState.unread_mentions_count || 0;
+        } else {
+          unreadUpdate = 0;
+        }
+      } else {
+        if ((groupState.unread_count || 0) === 0) {
+          unreadUpdate = -groupUnread.mentionCount;
+        } else {
+          unreadUpdate =
+            (groupState.unread_mentions_count || 0) - groupUnread.mentionCount;
+        }
+      }
+    }
+
+    this._modifyTotalUnread(
+      groupUnread.section,
+      unreadUpdate,
+      (groupState.unread_mentions_count || 0) - groupUnread.mentionCount,
+    );
+  }
+
+  private _modifyTotalUnread(
     section: UMI_SECTION_TYPE,
     unreadUpdate: number,
     mentionUpdate: number,
-    isTeam: boolean,
   ): void {
     let target = this._totalUnreadMap.get(section);
     if (!target) {
@@ -347,20 +371,13 @@ class TotalUnreadController {
       };
       this._totalUnreadMap.set(UMI_SECTION_TYPE.ALL, totalUnread);
     }
-    if (isTeam) {
-      target.unreadCount += mentionUpdate;
-      target.mentionCount += mentionUpdate;
-      totalUnread.unreadCount += mentionUpdate;
-      totalUnread.mentionCount += mentionUpdate;
-    } else {
-      target.unreadCount += unreadUpdate;
-      target.mentionCount += mentionUpdate;
-      totalUnread.unreadCount += unreadUpdate;
-      totalUnread.mentionCount += mentionUpdate;
-    }
+    target.unreadCount += unreadUpdate;
+    target.mentionCount += mentionUpdate;
+    totalUnread.unreadCount += unreadUpdate;
+    totalUnread.mentionCount += mentionUpdate;
   }
 
-  private _doNotification() {
+  private _doNotification(): void {
     notificationCenter.emit(SERVICE.TOTAL_UNREAD, this._totalUnreadMap);
   }
 }

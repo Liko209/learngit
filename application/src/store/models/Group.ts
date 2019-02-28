@@ -125,7 +125,7 @@ export default class GroupModel extends Base<Group> {
       this.type === CONVERSATION_TYPES.SMS
     ) {
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
-      return person.userDisplayName || '';
+      return person.userDisplayNameForGroupName || '';
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
