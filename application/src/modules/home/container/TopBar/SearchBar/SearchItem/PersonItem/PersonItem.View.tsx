@@ -54,7 +54,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
         variant="plain"
         size="small"
       >
-        {'messages'}
+        messages
       </JuiIconButton>
     );
     return (

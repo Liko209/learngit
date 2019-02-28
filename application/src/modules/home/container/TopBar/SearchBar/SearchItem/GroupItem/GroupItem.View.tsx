@@ -84,7 +84,7 @@ class GroupItemComponent extends React.Component<
         variant="plain"
         size="small"
       >
-        {'messages'}
+        messages
       </JuiIconButton>
     );
     return (
