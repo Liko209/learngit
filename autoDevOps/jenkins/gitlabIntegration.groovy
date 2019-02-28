@@ -545,6 +545,8 @@ node(buildNode) {
     } catch (e) {
         // post failure actions
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
+        report.description = currentBuild.getDescription()
+        report.jobUrl = buildUrl
         report.buildResult = "${FAILURE_EMOJI} Failure"
         if (e in InterruptedException)
             report.buildResult = "${ABORTED_EMOJI} Aborted"
