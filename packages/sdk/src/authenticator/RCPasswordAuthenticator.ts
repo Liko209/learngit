@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { loginGlip, loginRCByPassword } from '../api';
-import { AuthDao, daoManager, ConfigDao } from '../dao';
-import { AUTH_GLIP_TOKEN } from '../dao/auth/constants';
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
 import { GlipAccount, RCAccount } from '../account';
-import { ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM } from './constants';
+import { ACCOUNT_TYPE_ENUM } from './constants';
 import { setRcToken } from './utils';
+import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
+import { AuthGlobalConfig } from '../service/auth/config';
 
 interface IRCPasswordAuthenticateParams extends IAuthParams {
   username: string;
@@ -28,11 +28,9 @@ class RCPasswordAuthenticator implements IAuthenticator {
 
     setRcToken(rcAuthData);
 
-    const authDao = daoManager.getKVDao(AuthDao);
-    authDao.put(AUTH_GLIP_TOKEN, glipAuthResponse.headers['x-authorization']);
+    AuthGlobalConfig.setGlipToken(glipAuthResponse.headers['x-authorization']);
 
-    const configDao = daoManager.getKVDao(ConfigDao);
-    configDao.put(ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM.RC);
+    NewGlobalConfig.setAccountType(ACCOUNT_TYPE_ENUM.RC);
 
     return {
       success: true,

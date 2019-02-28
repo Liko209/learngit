@@ -17,6 +17,7 @@ import {
   REGISTRATION_EVENT,
   REGISTRATION_FSM_NOTIFY,
   RTCRegisterAsyncTask,
+  RTCSipProvisionInfo,
 } from './types';
 import async, { AsyncQueue } from 'async';
 import {
@@ -46,11 +47,10 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   public onProvisionReadyAction(
-    provisionData: any,
+    provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ): void {
-    this._userAgent = new RTCSipUserAgent(provisionData, options);
-    this._initUserAgentListener();
+    this._restartUA(provisionData, options);
   }
 
   public onUnregisterAction() {
@@ -80,11 +80,13 @@ class RTCRegistrationManager extends EventEmitter2
   constructor() {
     super();
     this._fsm = new RTCRegistrationFSM(this);
+    this._userAgent = new RTCSipUserAgent();
     this._eventQueue = async.queue(
       (task: RTCRegisterAsyncTask, callback: any) => {
         callback(task.data);
       },
     );
+    this._initUserAgentListener();
     this._initFsmObserve();
   }
 
@@ -305,6 +307,13 @@ class RTCRegistrationManager extends EventEmitter2
     if (this._retryInterval > kRTCRegisterRetryTimerMax) {
       this._retryInterval = kRTCRegisterRetryTimerMax;
     }
+  }
+
+  private _restartUA(
+    provisionData: RTCSipProvisionInfo,
+    options: ProvisionDataOptions,
+  ) {
+    this._userAgent.restartUA(provisionData, options);
   }
 }
 

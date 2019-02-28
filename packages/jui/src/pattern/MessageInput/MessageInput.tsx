@@ -32,9 +32,12 @@ const Wrapper = styled.div<{
 
 const GlobalStyle = createGlobalStyle<{}>`
   [data-name=conversation-card] {
+      &&&& .ql-container {
+        max-height: ${height(64)};
+      }
       &&&& .ql-editor {
-      max-height: ${height(64)};
-    }
+        max-height: ${height(64)};
+      }
   }
   .quill {
     width: 100%;
@@ -89,6 +92,31 @@ const StyledError = styled.div`
     margin-top: ${spacing(2)};
   }
 `;
+
+const formats = [
+  'background',
+  'bold',
+  'color',
+  'font',
+  'code',
+  'italic',
+  'link',
+  'size',
+  'strike',
+  'script',
+  'underline',
+  'blockquote',
+  'header',
+  'indent',
+  'list',
+  'align',
+  'direction',
+  'code-block',
+  'formula',
+  'mention',
+  // 'image',
+  // 'video',
+];
 
 type Props = {
   value?: string | Delta;
@@ -189,6 +217,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
           onChange={this.onChange}
           placeholder="Type new message"
           modules={modules}
+          formats={formats}
           ref={this._inputRef}
         />
         {error ? <StyledError>{error}</StyledError> : null}
