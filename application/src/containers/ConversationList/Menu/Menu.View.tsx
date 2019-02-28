@@ -14,13 +14,10 @@ import { Dialog } from '@/containers/Dialog';
 import { Notification } from '@/containers/Notification';
 import { MenuViewProps } from './types';
 import {
-  ProfileDialogGroup,
-  ProfileDialogPerson,
-} from '@/containers/Profile/Dialog';
-import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 type State = {
@@ -141,21 +138,15 @@ class MenuViewComponent extends Component<Props, State> {
     }
   }
 
-  private _handleProfileDialog = (event: MouseEvent<HTMLElement>) => {
-    this.props.onClose(event);
-    const { personId, groupId } = this.props;
-    let ProfileDialog = ProfileDialogGroup;
-    let id = groupId;
-    if (personId) {
-      ProfileDialog = ProfileDialogPerson;
-      id = personId;
-    }
-    Dialog.simple(<ProfileDialog id={id} />, {
-      size: 'medium',
-    });
-  }
   render() {
-    const { anchorEl, onClose, favoriteText, t } = this.props;
+    const {
+      personId,
+      groupId,
+      anchorEl,
+      onClose,
+      favoriteText,
+      t,
+    } = this.props;
     return (
       <JuiMenu
         id="render-props-menu"
@@ -169,12 +160,11 @@ class MenuViewComponent extends Component<Props, State> {
         >
           {t(`${favoriteText}`)}
         </JuiMenuItem>
-        <JuiMenuItem
-          data-test-automation-id="profileEntry"
-          onClick={this._handleProfileDialog}
-        >
-          {t('people.team.profile')}
-        </JuiMenuItem>
+        <OpenProfileDialog id={groupId || personId} beforeClick={onClose}>
+          <JuiMenuItem data-test-automation-id="profileEntry">
+            {t('people.team.profile')}
+          </JuiMenuItem>
+        </OpenProfileDialog>
         {this.renderCloseMenuItem()}
       </JuiMenu>
     );
