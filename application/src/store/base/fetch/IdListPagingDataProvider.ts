@@ -28,18 +28,12 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     front: undefined,
     end: undefined,
   };
-  private _filterFunc: IMatchFunc<K>;
+  private _options: IdListDataProviderOptions<T, K>;
   private _sourceIds: number[];
-  private _eventName: string;
-  private _entityName: ENTITY_NAME;
-  private _entityDataProvider: IEntityDataProvider<T>;
 
   constructor(sourceIds: number[], options: IdListDataProviderOptions<T, K>) {
     this._sourceIds = sourceIds;
-    this._eventName = options.eventName;
-    this._entityName = options.entityName;
-    this._entityDataProvider = options.entityDataProvider;
-    this._filterFunc = options.filterFunc;
+    this._options = options;
   }
 
   async fetchData(
@@ -57,15 +51,12 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     const pageData = this._getIdsByPage(direction, pageSize, realAnchorId);
 
     await this._fetchAndSaveModels(pageData.ids);
-    let validModels: K[] = pageData.ids.map((id: number) => {
-      return getEntity(this._entityName, id);
+    const validModels: K[] = [];
+    pageData.ids.forEach((id: number) => {
+      const model = getEntity(this._options.entityName, id) as K;
+      this._options.filterFunc(model) && validModels.push(model);
     });
 
-    if (this._filterFunc) {
-      validModels = validModels.filter((model: K) => {
-        return this._filterFunc && this._filterFunc(model);
-      });
-    }
     let hasMore = pageData.hasMore;
     let idModels = this._toIdModels(validModels.map(x => x.id));
     if (idModels.length < pageSize && hasMore) {
@@ -99,7 +90,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
 
     const deletedIds = _.difference(this._sourceIds, newSourceId);
     if (deletedIds.length > 0) {
-      notificationCenter.emitEntityDelete(this._eventName, deletedIds);
+      notificationCenter.emitEntityDelete(this._options.eventName, deletedIds);
     }
   }
 
@@ -131,13 +122,13 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   }
 
   private async _handleNewIds(newIds: number[]) {
-    const entities = await this._entityDataProvider.getByIds(newIds);
+    const entities = await this._options.entityDataProvider.getByIds(newIds);
     this._updateEntityStore(entities);
-    notificationCenter.emitEntityUpdate(this._eventName, entities);
+    notificationCenter.emitEntityUpdate(this._options.eventName, entities);
   }
 
-  private _toSortableModel(id: number | undefined) {
-    return id && id !== -1 ? { id, sortValue: id } : undefined;
+  private _toSortableModel(id?: number) {
+    return id ? { id, sortValue: id } : undefined;
   }
 
   private _toIdModels(ids: number[]) {
@@ -199,14 +190,14 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
 
   private async _fetchAndSaveModels(ids: number[]) {
     const needFetchIds: number[] = ids.filter((id: number) => {
-      return !hasValidEntity(this._entityName, id);
+      return !hasValidEntity(this._options.entityName, id);
     });
 
     needFetchIds.length > 0 && (await this._fetchFromService(needFetchIds));
   }
 
   private async _fetchFromService(ids: number[]) {
-    const entities = await this._entityDataProvider.getByIds(ids);
+    const entities = await this._options.entityDataProvider.getByIds(ids);
     this._updateEntityStore(entities);
   }
 
@@ -214,8 +205,8 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     if (!models.length) {
       return;
     }
-    if (this._entityName) {
-      storeManager.dispatchUpdatedDataModels(this._entityName, models);
+    if (this._options.entityName) {
+      storeManager.dispatchUpdatedDataModels(this._options.entityName, models);
     }
   }
 }
