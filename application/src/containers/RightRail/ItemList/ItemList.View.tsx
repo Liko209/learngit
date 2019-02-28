@@ -60,13 +60,14 @@ class ItemListView extends React.Component<ViewProps & Props> {
   moreLoader = () => <JuiRightRailLoadingMore />;
 
   render() {
-    const { dataSource, type, groupId, width, height } = this.props;
+    const { type, width, height, dataSource } = this.props;
     const { subheader } = getTabConfig(type);
-    const totalCount = dataSource.total();
+    console.log(77777, dataSource);
+    const totalCount = dataSource.total!();
     return (
       <JuiRightShelfContent>
-        {dataSource.isLoadingContent() && this.firstLoader()}
-        {!dataSource.isLoadingContent() &&
+        {dataSource.isLoadingContent!() && this.firstLoader()}
+        {!dataSource.isLoadingContent!() &&
           totalCount > 0 &&
           dataSource.size() > 0 && (
             <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
@@ -74,7 +75,6 @@ class ItemListView extends React.Component<ViewProps & Props> {
             </JuiListSubheader>
           )}
         <JuiVirtualList
-          key={`vl-${groupId}-${type}`}
           overscan={5}
           threshold={40}
           dataSource={dataSource}
