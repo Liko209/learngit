@@ -84,11 +84,9 @@ class EntitySourceController<T extends IdModel = IdModel>
   }
 
   private _getIds(entities: T[]): number[] {
-    const ids: number[] = [];
-    entities.forEach((entity: T) => {
-      ids.push(entity.id);
+    return entities.map((entity: T) => {
+      return entity.id;
     });
-    return ids;
   }
 
   private _orderAsIds(ids: number[], entities: T[]) {
