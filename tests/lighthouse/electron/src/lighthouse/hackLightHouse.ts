@@ -18,8 +18,9 @@ const hackLightHouse = async () => {
   };
 
   TraceProcessor.findMainFrameIds = (events) => {
-    logger.info(`can't find frameId, event:\n${JSON.stringify(events)}`);
+    logger.info(`events:\n${JSON.stringify(events)}`);
     const navigationStartEvts = events.filter(e => e.name === 'navigationStart');
+    logger.info(`navigationStartEvts:\n${JSON.stringify(navigationStartEvts)}`);
     if (!navigationStartEvts || navigationStartEvts.length === 0) {
       logger.warn('there have not navigationStart');
     }
@@ -27,9 +28,7 @@ const hackLightHouse = async () => {
     for (let startedInBrowserEvt of startedInBrowserEvts) {
       if (startedInBrowserEvt && startedInBrowserEvt.args.data &&
         startedInBrowserEvt.args.data.frames) {
-        const mainFrame = startedInBrowserEvt.args.data.frames.find(frame => {
-          return !frame.parent && !frame.url.startsWith(Config.blankUrl);
-        });
+        const mainFrame = startedInBrowserEvt.args.data.frames.find(frame => !frame.parent);
         const frameId = mainFrame && mainFrame.frame;
         const pid = mainFrame && mainFrame.processId;
         const tid = startedInBrowserEvt.tid;
