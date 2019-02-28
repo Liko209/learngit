@@ -18,6 +18,7 @@ const hackLightHouse = async () => {
   };
 
   TraceProcessor.findMainFrameIds = (events) => {
+    logger.info(`can't find frameId, event:\n${JSON.stringify(events)}`);
     const navigationStartEvts = events.filter(e => e.name === 'navigationStart');
     if (!navigationStartEvts || navigationStartEvts.length === 0) {
       logger.warn('there have not navigationStart');
