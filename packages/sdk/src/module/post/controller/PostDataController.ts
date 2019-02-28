@@ -52,8 +52,11 @@ class PostDataController {
   async handleIndexPosts(data: Raw<Post>[], maxPostsExceed: boolean) {
     if (data.length) {
       let posts = this.transformData(data);
-      this._handleModifiedDiscontinuousPosts(
-        posts.filter((post: Post) => post.created_at !== post.modified_at),
+      this._handleMDDiscontinuousPosts(
+        posts.filter(
+          (post: Post) =>
+            post.created_at !== post.modified_at || post.deactivated,
+        ),
       );
       await this.handelPostsOverThreshold(posts, maxPostsExceed);
       await this.preInsertController.bulkDelete(posts);
@@ -71,8 +74,11 @@ class PostDataController {
   async handleSexioPosts(data: Raw<Post>[]) {
     if (data.length) {
       let posts = this.transformData(data);
-      this._handleModifiedDiscontinuousPosts(
-        posts.filter((post: Post) => post.created_at !== post.modified_at),
+      this._handleMDDiscontinuousPosts(
+        posts.filter(
+          (post: Post) =>
+            post.created_at !== post.modified_at || post.deactivated,
+        ),
       );
       posts = await this.handleSexioModifiedPosts(posts);
       await this.preInsertController.bulkDelete(posts);
@@ -83,8 +89,10 @@ class PostDataController {
 
   /**
    * For bookmark/@mentions/pin post/reply
+   * Note: Regardless continuous or discontinuous, will store all deactivated post to deactivated table
+   * MD: Modified Deactivated
    */
-  private async _handleModifiedDiscontinuousPosts(posts: Post[]) {
+  private async _handleMDDiscontinuousPosts(posts: Post[]) {
     const postDiscontinuousDao = daoManager.getDao(PostDiscontinuousDao);
     const deactivatedPosts: Post[] = [];
     const normalPosts: Post[] = [];
