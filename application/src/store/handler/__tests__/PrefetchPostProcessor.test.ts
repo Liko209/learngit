@@ -1,3 +1,8 @@
+/*
+ * @Author: Vicky Zhu(vicky.zhu@ringcentral.com)
+ * @Date: 2019-02-28 13:17:56
+ * Copyright © RingCentral. All rights reserved.
+ */
 import postCacheController from '@/containers/ConversationPage/Stream/cache/PostCacheController';
 import PrefetchPostProcessor from '../PrefetchPostProcessor';
 jest.mock('sdk/api');
