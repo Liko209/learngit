@@ -20,7 +20,6 @@ import {
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
-import ReactResizeDetector from 'react-resize-detector';
 import { getTabConfig } from './utils';
 
 const HEADER_HEIGHT = 36;
@@ -61,10 +60,9 @@ class ItemListView extends React.Component<ViewProps & Props> {
   moreLoader = () => <JuiRightRailLoadingMore />;
 
   render() {
-    const { dataSource, groupId, type } = this.props;
+    const { dataSource, type, groupId, width, height } = this.props;
     const { subheader } = getTabConfig(type);
     const totalCount = dataSource.total();
-
     return (
       <JuiRightShelfContent>
         {dataSource.isLoadingContent() && this.firstLoader()}
@@ -75,29 +73,18 @@ class ItemListView extends React.Component<ViewProps & Props> {
               {i18next.t(subheader)}
             </JuiListSubheader>
           )}
-        {
-          <ReactResizeDetector
-            key={groupId}
-            handleWidth={true}
-            handleHeight={true}
-          >
-            {(width: number = 0, height: number = HEADER_HEIGHT) => {
-              return (
-                <JuiVirtualList
-                  overscan={5}
-                  threshold={40}
-                  dataSource={dataSource}
-                  rowRenderer={this.rowRenderer}
-                  noContentRenderer={this.noContentRenderer}
-                  moreLoader={this.moreLoader}
-                  fixedCellHeight={ITEM_HEIGHT}
-                  width={width}
-                  height={height - HEADER_HEIGHT}
-                />
-              );
-            }}
-          </ReactResizeDetector>
-        }
+        <JuiVirtualList
+          key={`vl-${groupId}-${type}`}
+          overscan={5}
+          threshold={40}
+          dataSource={dataSource}
+          rowRenderer={this.rowRenderer}
+          noContentRenderer={this.noContentRenderer}
+          moreLoader={this.moreLoader}
+          fixedCellHeight={ITEM_HEIGHT}
+          width={width}
+          height={height - HEADER_HEIGHT}
+        />
       </JuiRightShelfContent>
     );
   }

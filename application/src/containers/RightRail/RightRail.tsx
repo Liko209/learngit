@@ -86,33 +86,37 @@ class RightRailComponent extends React.Component<Props> {
     const { tabIndex } = this.state;
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {(width: number, height: number) => (
-          <JuiTabs
-            defaultActiveIndex={0}
-            tag="right-shelf"
-            width={width}
-            onChangeTab={this._handleTabChanged}
-            moreText={t('common.more')}
-          >
-            {TAB_CONFIG.map(
-              ({ title, type, automationID }: TabConfig, index: number) => (
-                <JuiTab
-                  key={index}
-                  title={t(title)}
-                  automationId={`right-shelf-${automationID}`}
-                >
-                  <ItemList
-                    type={type}
-                    groupId={id}
-                    width={width}
-                    height={height - HEIGHT_FIX}
-                    active={tabIndex === index}
-                  />
-                </JuiTab>
-              ),
-            )}
-          </JuiTabs>
-        )}
+        {(w: number, h: number) => {
+          const width = Number.isInteger(w) ? w : 1;
+          const height = Number.isInteger(h) ? h : 1;
+          return (
+            <JuiTabs
+              defaultActiveIndex={0}
+              tag="right-shelf"
+              width={width}
+              onChangeTab={this._handleTabChanged}
+              moreText={t('common.more')}
+            >
+              {TAB_CONFIG.map(
+                ({ title, type, automationID }: TabConfig, index: number) => (
+                  <JuiTab
+                    key={`${id}-${index}`}
+                    title={t(title)}
+                    automationId={`right-shelf-${automationID}`}
+                  >
+                    <ItemList
+                      type={type}
+                      groupId={id}
+                      width={width}
+                      height={height - HEIGHT_FIX}
+                      active={tabIndex === index}
+                    />
+                  </JuiTab>
+                ),
+              )}
+            </JuiTabs>
+          );
+        }}
       </ReactResizeDetector>
     );
   }
