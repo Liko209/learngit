@@ -3,10 +3,13 @@
  * @Date: 2019-02-28 14:59:26
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
-import { JuiVirtualizedList } from '../VirtualizedList';
+import {
+  JuiVirtualizedList,
+  JuiVirtualizedListHandles,
+} from '../VirtualizedList';
 import { itemFactory } from './itemFactory';
 
 type ItemModel = {
@@ -71,12 +74,14 @@ const useItems = (defaultItems: ItemModel[] | (() => ItemModel[])) => {
 };
 
 storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
-  const dataCount = number('dataCount', 100);
+  const dataCount = number('dataCount', 1000);
   const initialScrollToIndex = number('initialScrollToIndex', 11);
   const initialRangeSize = number('initialRangeSize', 11);
   const listHeight = number('listHeight', 200);
 
   const Demo = () => {
+    const ref = useRef<JuiVirtualizedListHandles>(null);
+
     const { items, prependItem, removeItem } = useItems(() => {
       const items: ItemModel[] = [];
       items.push(itemFactory.buildItem(0));
@@ -108,13 +113,29 @@ storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
     const handleRemoveClick = () => {
       removeItem(0);
     };
+
+    const scrollToIndex = (event: React.FormEvent<HTMLInputElement>) => {
+      if (ref.current) {
+        const str = event.currentTarget.value;
+        const index = parseInt(str, 10);
+        ref.current.scrollToIndex(index);
+      }
+    };
+
     const children = items.map(item => <Item key={item.id} item={item} />);
     return (
       <div>
         <button onClick={handleAddClick}>Add Item</button>
         <button onClick={handleAddCrazyClick}>Add Crazy Item</button>
         <button onClick={handleRemoveClick}>Remove Item</button>
+        <br />
+        <label>
+          scrollToIndex:
+          <input onInput={scrollToIndex} type="number" />
+        </label>
+        <br />
         <JuiVirtualizedList
+          ref={ref}
           initialScrollToIndex={initialScrollToIndex}
           initialRangeSize={initialRangeSize}
           height={listHeight}

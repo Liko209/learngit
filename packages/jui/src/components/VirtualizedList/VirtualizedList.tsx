@@ -10,17 +10,25 @@ import React, {
   useRef,
   useState,
   ReactNode,
+  forwardRef,
+  useImperativeHandle,
+  RefForwardingComponent,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { createRange, createRangeFromAnchor } from './util/createRange';
 import { VirtualizedListProps } from './VirtualizedListProps';
 import { useForceUpdate } from './useForceUpdate';
+import { useScroll } from './useScroll';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 
 type IndexRange = {
   startIndex: number;
   stopIndex: number;
+};
+
+type JuiVirtualizedListHandles = {
+  scrollToIndex: (index: number) => void;
 };
 
 const useRange = (
@@ -30,12 +38,18 @@ const useRange = (
   return [range, setRange];
 };
 
-const JuiVirtualizedList = ({
-  initialScrollToIndex,
-  initialRangeSize,
-  height,
-  children,
-}: VirtualizedListProps) => {
+const JuiVirtualizedList: RefForwardingComponent<
+  JuiVirtualizedListHandles,
+  VirtualizedListProps
+> = (
+  {
+    initialScrollToIndex,
+    initialRangeSize,
+    height,
+    children,
+  }: VirtualizedListProps,
+  forwardRef,
+) => {
   const getCacheKey = (i: number) => {
     const child = children[i] as { key: string };
     if (!child) return '';
@@ -72,6 +86,17 @@ const JuiVirtualizedList = ({
       heightBeforeIndex += rowHeight;
     }
     return heightBeforeIndex;
+  };
+
+  const getRowIndexFromPosition = (position: number) => {
+    let rowsHeight = 0;
+    for (let index = 0; index < childrenCount; index++) {
+      rowsHeight += getRowHeight(index);
+      if (position <= rowsHeight) {
+        return index;
+      }
+    }
+    return childrenCount - 1;
   };
 
   const createDisplayRange = ({
@@ -115,19 +140,33 @@ const JuiVirtualizedList = ({
   const contentRef: DivRefObject = useRef(null);
 
   //
+  // Forward ref
+  //
+  useImperativeHandle(forwardRef, () => ({
+    scrollToIndex: (index: number) => {
+      setDisplayRange(createDisplayRange({ startIndex: index - 5 }));
+      scrollTo({ index });
+    },
+  }));
+
+  //
   // State
   //
-  const [scrollToIndex, setScrollToIndex] = useState(initialScrollToIndex);
   const {
-    updateTrigger: scrollTopUpdateTrigger,
-    forceUpdate: forceUpdateScrollTop,
-  } = useForceUpdate();
+    scrollPosition,
+    setScrollPosition,
+    scrollTo,
+    scrollTopUpdateTrigger,
+    forceUpdateScrollTop,
+  } = useScroll({
+    index: initialScrollToIndex,
+    offset: 0,
+  });
   const { forceUpdate } = useForceUpdate();
   const [cache] = useState(new Map());
-  const [scrollOffset, setScrollOffset] = useState(0);
   const [estimateRowHeight] = useState(20);
   const [{ startIndex, stopIndex }, setDisplayRange] = useRange(
-    createDisplayRange({ startIndex: scrollToIndex - 5 }),
+    createDisplayRange({ startIndex: initialScrollToIndex - 5 }),
   );
 
   const heightBeforeStartRow = getRowsHeight(0, startIndex - 1);
@@ -137,43 +176,45 @@ const JuiVirtualizedList = ({
     return startIndex <= i && i <= stopIndex;
   });
 
+  //
+  // Update height cache
+  //
   useLayoutEffect(() => {
     if (contentRef.current) {
       const contentEl = contentRef.current;
-
-      //
-      // Update height cache
-      //
       const displayedRowsEls: Element[] = getChildrenEls(contentEl);
       displayedRowsEls.forEach((el, i) => {
         const { diff } = updateRowHeightCache(el, startIndex + i);
-        if (diff !== 0 && i + startIndex < scrollToIndex) {
+        if (diff !== 0 && i + startIndex < scrollPosition.index) {
           forceUpdate();
         }
       });
     }
   },              [getCacheKey(startIndex), getCacheKey(stopIndex)]);
 
+  //
+  // Handle scroll to
+  //
   useLayoutEffect(() => {
     if (ref.current) {
       ref.current.scrollTop =
-        getRowsHeight(0, scrollToIndex - 1) + scrollOffset;
+        getRowsHeight(0, scrollPosition.index - 1) + scrollPosition.offset;
     }
   },              [scrollTopUpdateTrigger]);
 
+  //
+  // Observe dynamic rows
+  //
   useLayoutEffect(() => {
     const resizeObservers: ResizeObserver[] = [];
     if (contentRef.current) {
       const contentEl = contentRef.current;
 
-      //
-      // Observe dynamic rows
-      //
       const displayedRowsEls: Element[] = getChildrenEls(contentEl);
       displayedRowsEls.forEach((el, i) => {
         const ro = new ResizeObserver((entities: ResizeObserverEntry[]) => {
           const { diff } = updateRowHeightCache(el, startIndex + i);
-          if (diff !== 0 && i + startIndex < scrollToIndex) {
+          if (diff !== 0 && i + startIndex < scrollPosition.index) {
             forceUpdateScrollTop();
           }
         });
@@ -187,31 +228,22 @@ const JuiVirtualizedList = ({
     };
   },              [getCacheKey(startIndex), getCacheKey(stopIndex)]);
 
-  const handleScroll = (event: React.UIEvent<HTMLElement>) => {
+  //
+  // Scrolling
+  //
+  const handleScroll = () => {
     if (ref.current) {
-      //
-      // When scrolling, update displayRange.
-      //
-      const getRowIndexFromPosition = (position: number) => {
-        let rowsHeight = 0;
-        for (let index = 0; index < childrenCount; index++) {
-          rowsHeight += getRowHeight(index);
-          if (position <= rowsHeight) {
-            return index;
-          }
-        }
-        return childrenCount - 1;
-      };
       const scrollTop = ref.current.scrollTop;
       const anchor = getRowIndexFromPosition(scrollTop + height / 2);
 
-      setScrollToIndex(anchor);
-      setScrollOffset(scrollTop - getRowsHeight(0, anchor - 1));
-      setDisplayRange(
-        createDisplayRangeFromAnchor({
-          anchor,
-        }),
-      );
+      // Remember the position
+      setScrollPosition({
+        index: anchor,
+        offset: scrollTop - getRowsHeight(0, anchor - 1),
+      });
+
+      // Update display range
+      setDisplayRange(createDisplayRangeFromAnchor({ anchor }));
     }
   };
 
@@ -236,5 +268,5 @@ JuiVirtualizedList.defaultProps = {
   initialRangeSize: 10,
 };
 
-const MemoList = memo(JuiVirtualizedList);
-export { MemoList as JuiVirtualizedList };
+const MemoList = memo(forwardRef(JuiVirtualizedList));
+export { MemoList as JuiVirtualizedList, JuiVirtualizedListHandles };
