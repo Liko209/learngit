@@ -4,13 +4,17 @@
  */
 
 import axios from "axios";
+import { LogUtils } from '../utils';
+
 const WebSocket = require('ws');
 const Connection = require('lighthouse/lighthouse-core/gather/connections/connection');
+const logger = LogUtils.getLogger(__filename);
 
 /*
  * Electron don't support to create tab, so not need to close tab
  */
 class ElectronConnection extends Connection {
+  private cmdCache = [];
   /**
      * @param {number=} port Optional port number. Defaults to 9222;
      * @param {string=} hostname Optional hostname. Defaults to localhost.
@@ -60,6 +64,10 @@ class ElectronConnection extends Connection {
 
       ws.on('open', () => {
         this._ws = ws;
+
+        for (let message of this.cmdCache) {
+          this._ws.send(message);
+        }
         resolve();
       });
       ws.on('message', data => this.handleRawMessage(/** @type {string} */(data)));
@@ -112,8 +120,9 @@ class ElectronConnection extends Connection {
    */
   sendRawMessage(message) {
     if (!this._ws) {
-      log.error('ElectronConnection', 'sendRawMessage() was called without an established connection.');
-      throw new Error('sendRawMessage() was called without an established connection.');
+      this.cmdCache.push(message);
+      // logger.error('ElectronConnection', 'sendRawMessage() was called without an established connection.');
+      // throw new Error('sendRawMessage() was called without an established connection.');
     }
     this._ws.send(message);
   }
