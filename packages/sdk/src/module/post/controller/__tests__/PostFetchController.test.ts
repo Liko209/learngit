@@ -329,6 +329,87 @@ describe('PostFetchController()', () => {
         limit: 20,
       });
     });
+
+    it('should getRemotePostsByGroupId with both direction if should not save to db', async () => {
+      const mockPosts = [];
+      const mockItems = [];
+      const data = {
+        posts: [],
+        items: [],
+      };
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+
+      jest
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
+        .mockResolvedValueOnce({
+          hasMore: false,
+          ...data,
+        });
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        postId: 1,
+        limit: 20,
+        direction: QUERY_DIRECTION.BOTH,
+      });
+
+      expect(postFetchController.getRemotePostsByGroupId).toBeCalledWith({
+        groupId: 1,
+        postId: 1,
+        limit: 20,
+        direction: QUERY_DIRECTION.BOTH,
+        shouldSaveToDb: false,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        limit: 20,
+      });
+    });
+
+    it('should getRemotePostsByGroupId with old direction if should save to db', async () => {
+      const mockPosts = [];
+      const mockItems = [];
+      const data = {
+        posts: [],
+        items: [],
+      };
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+
+      jest
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
+        .mockResolvedValueOnce({
+          hasMore: false,
+          ...data,
+        });
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+        direction: QUERY_DIRECTION.BOTH,
+      });
+
+      expect(postFetchController.getRemotePostsByGroupId).toBeCalledWith({
+        groupId: 1,
+        postId: 0,
+        limit: 20,
+        direction: QUERY_DIRECTION.OLDER,
+        shouldSaveToDb: true,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        limit: 20,
+      });
+    });
   });
 
   describe('fetchPaginationPosts()', () => {

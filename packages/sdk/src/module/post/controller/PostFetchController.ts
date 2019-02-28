@@ -81,11 +81,14 @@ class PostFetchController {
           result.posts,
         );
         const serverResult = await this.getRemotePostsByGroupId({
-          direction,
           groupId,
           limit,
           shouldSaveToDb,
           postId: validAnchorPostId ? validAnchorPostId : postId,
+          direction:
+            shouldSaveToDb && direction === QUERY_DIRECTION.BOTH
+              ? QUERY_DIRECTION.OLDER
+              : direction,
         });
         if (serverResult) {
           result.posts = this._handleDuplicatePosts(

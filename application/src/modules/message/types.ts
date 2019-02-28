@@ -4,14 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ComponentType } from 'react';
-import { JuiIconButtonProps } from 'jui/components/Buttons';
 
 type MessageExtension = {
-  'CONVERSATION_PAGE.HEADER.BUTTONS'?: ComponentType<JuiIconButtonProps>[];
-  'CONVERSATION_PAGE.MESSAGE_INPUT.BUTTONS'?: ComponentType<
-    JuiIconButtonProps
-  >[];
-  'CONVERSATION_LIST.MENU.BUTTONS'?: ComponentType<JuiIconButtonProps>[];
+  'CONVERSATION_PAGE.HEADER.BUTTONS'?: ComponentType<{}>[];
+  'CONVERSATION_PAGE.MESSAGE_INPUT.BUTTONS'?: ComponentType<{}>[];
+  'CONVERSATION_LIST.MENU.BUTTONS'?: ComponentType<{}>[];
 };
 
 type MessageModuleBootstrapOptions = {

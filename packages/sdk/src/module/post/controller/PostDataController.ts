@@ -5,7 +5,7 @@
  */
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
-import { daoManager, DeactivatedDao } from '../../../dao';
+import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
 import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
@@ -264,6 +264,7 @@ class PostDataController {
       notificationCenter.emit(
         SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE,
         [...deleteGroupIdSet],
+        QUERY_DIRECTION.OLDER,
       );
       return deletePostIds;
     }
