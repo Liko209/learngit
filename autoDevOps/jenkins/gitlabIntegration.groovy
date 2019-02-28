@@ -126,23 +126,61 @@ def isStableBranch(String branchName) {
     return branchName ==~ /^(develop)|(master)|(release.*)|(stage.*)|(hotfix.*)$/
 }
 
-def buildReport(result, buildUrl, report) {
+// report helper
+def aTagToGlipLink(String html) {
+    return html.replaceAll(/<a\b[^>]*?href="(.*?)"[^>]*?>(.*?)<\/a>/, '[$2]($1)')
+}
+
+def aTagToUrl(String html) {
+    return html.replaceAll(/<a\b[^>]*?href="(.*?)"[^>]*?>(.*?)<\/a>/, '$1')
+}
+
+def urlToATag(String url) {
+    return """<a href="${url}">${url}</a>"""
+}
+
+def formatGlipReport(report) {
     List lines = []
-    lines.push("**Build Result**: ${result}")
-    lines.push("**Detail**: ${buildUrl}")
+    if (null != report.buildResult)
+        lines.push("**Build Result**: ${report.buildResult}")
+    if (null != report.description)
+        lines.push("**Description**: ${aTagToGlipLink(report.description)}")
+    if (null != report.jobUrl)
+        lines.push("**Job URL**: ${report.jobUrl}")
     if (null != report.saReport)
         lines.push("**Static Analysis**: ${report.saReport}")
-    if (null != report.appUrl)
-        lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.coverage)
         lines.push("**Coverage Report**: ${report.coverage}")
     if (null != report.coverageDiff)
         lines.push("**Coverage Changes**: ${report.coverageDiff}")
+    if (null != report.appUrl)
+        lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.juiUrl)
         lines.push("**Storybook URL**: ${report.juiUrl}")
+    if (null != report.publishUrl)
+        lines.push("**Package URL**: ${report.publishUrl}")
     if (null != report.e2eUrl)
         lines.push("**E2E Report**: ${report.e2eUrl}")
     return lines.join(' \n')
+}
+
+def formatJenkinsReport(report) {
+    List lines = []
+    if (null != report.description)
+        lines.push("Description: ${report.description}")
+    if (null != report.saReport)
+        lines.push("Static Analysis: ${report.saReport}")
+    if (null != report.coverageDiff)
+        lines.push("Coverage Changes: ${report.coverageDiff}")
+    if (null != report.appUrl)
+        lines.push("Application URL: ${urlToATag(report.appUrl)}")
+    if (null != report.juiUrl)
+        lines.push("Storybook URL: ${urlToATag(report.juiUrl)}")
+    if (null != report.publishUrl)
+        lines.push("Package URL: ${urlToATag(report.publishUrl)}")
+    if (null != report.e2eUrl)
+        lines.push("E2E Report: ${urlToATag(report.e2eUrl)}")
+    return lines.join('<br>')
 }
 
 /* job params */
@@ -180,12 +218,18 @@ Boolean e2eEnableMockServer = params.E2E_ENABLE_MOCK_SERVER
 
 /* build strategy */
 Boolean isMerge = gitlabSourceBranch != gitlabTargetBranch
+// skip e2e when neither source or target branch is stable branch.
+// won't skip e2e when configuration file of source branch exists
 Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch) &&
     !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
+// update status for merge request event and new push on stable branch
 Boolean skipUpdateGitlabStatus = !isMerge && integrationBranch != gitlabTargetBranch
-Boolean buildRelease = gitlabTargetBranch.startsWith('release') || gitlabTargetBranch.endsWith('release') || releaseBranch == gitlabTargetBranch
+// create release build when targetBranch match specific name pattern
+Boolean buildRelease = gitlabTargetBranch.startsWith('release') || gitlabTargetBranch.endsWith('release') ||
+    releaseBranch == gitlabTargetBranch
 
 /* deploy params */
+// generate subDomain name from branch name, and then we can decide deploy directory and url
 String subDomain = getSubDomain(gitlabSourceBranch, gitlabTargetBranch)
 String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
 String appStageLinkDir = "${deployBaseDir}/stage".toString()
@@ -194,7 +238,7 @@ String publishDir = "${deployBaseDir}/publish".toString()
 
 String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 String juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
-String publishPackageName = "${subDomain}.tar.gz"
+String publishPackageName = "${subDomain}.tar.gz".toString()
 String publishUrl = "https://publish.fiji.gliprc.com/${publishPackageName}".toString()
 
 // following params should be updated after checkout stage success
@@ -383,6 +427,9 @@ node(buildNode) {
                             )
                             report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
                             report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
+                            if (exitCode > 0) {
+                                throw new Exception('coverage drop!')
+                            }
                         }
                     }
                 }
@@ -431,10 +478,10 @@ node(buildNode) {
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
                             updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
-                        // for release build, we should also create a tar.gz package for public deployment
-
+                        // for release build, we should also create a tar.gz package for deployment
                         if (buildRelease) {
                             createRemoteTarbar(deployUri, appHeadShaDir, publishDir, publishPackageName)
+                            report.publishUrl = publishUrl
                         }
                     }
                 }
@@ -488,26 +535,21 @@ node(buildNode) {
                 }
             }}
         }
+        // post success actions
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'success')
-        def description = currentBuild.getDescription() + '\n' + buildReport("${SUCCESS_EMOJI} Success", buildUrl, report)
-        safeMail(
-            reportChannels,
-            "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
-            description,
-        )
-        currentBuild.setDescription(description)
+        report.description = currentBuild.getDescription()
+        report.jobUrl = buildUrl
+        report.buildResult = "${SUCCESS_EMOJI} Success"
+        currentBuild.setDescription(formatJenkinsReport(report))
+        safeMail(reportChannels, "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}", formatGlipReport(report))
     } catch (e) {
+        // post failure actions
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
-        String statusTitle = "${FAILURE_EMOJI} Failure"
+        report.buildResult = "${FAILURE_EMOJI} Failure"
         if (e in InterruptedException)
-            statusTitle = "${ABORTED_EMOJI} Aborted"
-        def description = currentBuild.getDescription() + '\n' + buildReport(statusTitle, buildUrl, report)
-        safeMail(
-            reportChannels,
-            "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}",
-            description,
-        )
-        currentBuild.setDescription(description)
+            report.buildResult = "${ABORTED_EMOJI} Aborted"
+        currentBuild.setDescription(formatJenkinsReport(report))
+        safeMail(reportChannels, "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}", formatGlipReport(report))
         throw e
     }
 }
