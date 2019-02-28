@@ -17,10 +17,11 @@ import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { ItemList } from './ItemList';
 import { TAB_CONFIG, TabConfig } from './ItemList/config';
-import ReactResizeDetector from 'react-resize-detector';
 
 type Props = {
   id: number;
+  width: number;
+  height: number;
 } & WithNamespaces;
 
 type TriggerButtonProps = {
@@ -81,55 +82,49 @@ class RightRailComponent extends React.Component<Props> {
     this.setState({ tabIndex: index });
   }
 
-  private _renderTabs = () => {
+  private _renderTabs = (w: number, h: number) => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
+    const width = Number.isInteger(w) ? w : 1;
+    const height = Number.isInteger(h) ? h : 1;
     return (
-      <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {(w: number, h: number) => {
-          const width = Number.isInteger(w) ? w : 1;
-          const height = Number.isInteger(h) ? h : 1;
-          return (
-            <JuiTabs
-              defaultActiveIndex={0}
-              tag="right-shelf"
-              width={width}
-              onChangeTab={this._handleTabChanged}
-              moreText={t('common.more')}
+      <JuiTabs
+        defaultActiveIndex={0}
+        tag="right-shelf"
+        width={width}
+        onChangeTab={this._handleTabChanged}
+        moreText={t('common.more')}
+      >
+        {TAB_CONFIG.map(
+          ({ title, type, automationID }: TabConfig, index: number) => (
+            <JuiTab
+              key={`${id}-${index}`}
+              title={t(title)}
+              automationId={`right-shelf-${automationID}`}
             >
-              {TAB_CONFIG.map(
-                ({ title, type, automationID }: TabConfig, index: number) => (
-                  <JuiTab
-                    key={`${id}-${index}`}
-                    title={t(title)}
-                    automationId={`right-shelf-${automationID}`}
-                  >
-                    <ItemList
-                      type={type}
-                      groupId={id}
-                      width={width}
-                      height={height - HEIGHT_FIX}
-                      active={tabIndex === index}
-                    />
-                  </JuiTab>
-                ),
-              )}
-            </JuiTabs>
-          );
-        }}
-      </ReactResizeDetector>
+              <ItemList
+                type={type}
+                groupId={id}
+                width={width}
+                height={height - HEIGHT_FIX}
+                active={tabIndex === index}
+              />
+            </JuiTab>
+          ),
+        )}
+      </JuiTabs>
     );
   }
 
   render() {
-    const { id } = this.props;
+    const { id, width, height } = this.props;
     if (!id) {
       return null;
     }
     return (
       <JuiRightShelf data-test-automation-id="rightRail">
         {this._renderHeader()}
-        {this._renderTabs()}
+        {this._renderTabs(width, height)}
       </JuiRightShelf>
     );
   }
