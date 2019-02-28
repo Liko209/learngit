@@ -194,7 +194,8 @@ String publishDir = "${deployBaseDir}/publish".toString()
 
 String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 String juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
-String publishUrl = "https://publish.fiji.gliprc.com".toString()
+String publishPackageName = "${subDomain}.tar.gz"
+String publishUrl = "https://publish.fiji.gliprc.com/${publishPackageName}".toString()
 
 // following params should be updated after checkout stage success
 String appHeadSha = null
@@ -382,7 +383,6 @@ node(buildNode) {
                             )
                             report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
                             report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
-                            // TODO: throw exception when coverage drop
                         }
                     }
                 }
@@ -432,11 +432,10 @@ node(buildNode) {
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
                             updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
                         // for release build, we should also create a tar.gz package for public deployment
+
                         if (buildRelease) {
-
-
+                            createRemoteTarbar(deployUri, appHeadShaDir, publishDir, publishPackageName)
                         }
-
                     }
                 }
                 report.appUrl = appUrl
