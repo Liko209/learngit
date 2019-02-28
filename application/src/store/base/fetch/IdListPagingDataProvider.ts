@@ -83,15 +83,63 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   }
 
   onSourceIdsChanged(newSourceId: number[]) {
-    const newIds = _.difference(newSourceId, this._sourceIds);
-    if (newIds.length > 0) {
-      this._handleNewIds(newIds);
+    const range = this._getCursorRange();
+    const oldInRangeIds = this._getInCursorRangeIds(this._sourceIds, range);
+    const newInRangeIds = this._getInCursorRangeIds(newSourceId, range);
+    if (newInRangeIds === oldInRangeIds) {
+      return;
     }
 
-    const deletedIds = _.difference(this._sourceIds, newSourceId);
-    if (deletedIds.length > 0) {
-      notificationCenter.emitEntityDelete(this._options.eventName, deletedIds);
+    this._handleIdSourceChanged(newInRangeIds, oldInRangeIds);
+  }
+
+  private async _handleIdSourceChanged(
+    newInRangeIds: number[],
+    oldInRangeIds: number[],
+  ) {
+    const changeMap: Map<number, IdModel> = new Map();
+    const entities = await this._options.entityDataProvider.getByIds(
+      newInRangeIds,
+    );
+    const entityMap: Map<number, T> = new Map();
+    entities.forEach((entity: T) => {
+      entityMap.set(entity.id, entity);
+    });
+    let pos = 0;
+    while (newInRangeIds.length > pos) {
+      changeMap.set(oldInRangeIds[pos], entityMap.get(newInRangeIds[pos]) as T);
+      ++pos;
     }
+    notificationCenter.emitEntityReplace(
+      this._options.eventName,
+      changeMap,
+      true,
+    );
+  }
+
+  private _getCursorRange() {
+    const range = { front: -1, end: -1 };
+    let pos = 0;
+    for (const id of this._sourceIds) {
+      range.front =
+        range.front === -1 && id === this._cursors.front ? pos : range.front;
+
+      range.end =
+        range.end === -1 && id === this._cursors.end ? pos : range.end;
+      pos++;
+
+      if (range.front !== -1 && range.end !== -1) {
+        break;
+      }
+    }
+    return range;
+  }
+
+  private _getInCursorRangeIds(
+    sourceIds: number[],
+    range: { front: number; end: number },
+  ) {
+    return _.slice(sourceIds, range.front, range.end + 1);
   }
 
   private _getRightAnchor(direction: QUERY_DIRECTION, anchorId: number) {
@@ -119,12 +167,6 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
           'not supported direction, _getRightAnchor',
         );
     }
-  }
-
-  private async _handleNewIds(newIds: number[]) {
-    const entities = await this._options.entityDataProvider.getByIds(newIds);
-    this._updateEntityStore(entities);
-    notificationCenter.emitEntityUpdate(this._options.eventName, entities);
   }
 
   private _toSortableModel(id?: number) {

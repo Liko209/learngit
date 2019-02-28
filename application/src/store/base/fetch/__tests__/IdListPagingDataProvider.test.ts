@@ -16,6 +16,7 @@ import notificationCenter from 'sdk/service/notificationCenter';
 import storeManager from '@/store/base/StoreManager';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { hasValidEntity } from '@/store/utils';
+import { doesNotReject } from 'assert';
 
 jest.mock('sdk/service/notificationCenter');
 
@@ -76,6 +77,24 @@ describe('IdListPagingDataProvider', () => {
     storeManager.removeStore(store);
   }
 
+  function setUpData(
+    existPostIds: number[],
+    needFetchPostIds: number[],
+    invalidPostIds: number[],
+  ) {
+    const existPosts = existPostIds.map((x: number) => {
+      return toIdModel(x, invalidPostIds.includes(x));
+    });
+
+    storeManager.dispatchUpdatedDataModels(entityName, existPosts);
+
+    const toFetchPosts = needFetchPostIds.map((x: number) => {
+      return toIdModel(x, invalidPostIds.includes(x));
+    });
+
+    postProvider.getByIds = jest.fn().mockResolvedValue(toFetchPosts);
+  }
+
   beforeEach(() => {
     clearMocks();
   });
@@ -84,38 +103,54 @@ describe('IdListPagingDataProvider', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
-    });
 
-    it('should notify ids was deleted when find id in id list is deleted', () => {
       notificationCenter.emitEntityDelete = jest.fn();
-      const newSourceIds = [6, 7, 8, 9, 10];
-      idsDataProvider.onSourceIdsChanged(newSourceIds);
-      expect(notificationCenter.emitEntityDelete).toBeCalledWith(eventName, [
-        5,
-        11,
-      ]);
+      notificationCenter.emitEntityUpdate = jest.fn();
     });
 
-    it('should fetch post and notify new incoming ids when new id found in the id list', (done: any) => {
-      const entities = [{ id: 4 }, { id: 12 }, { id: 13 }];
-      postProvider.getByIds = jest.fn().mockResolvedValue(entities);
-      const newSourceIds = [4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
+    it.each`
+      sourceIds    | newIds                                | updatedIds                | cursors
+      ${sourceIds} | ${[6, 7, 8, 9, 10]}                   | ${[6, 7, 8, 9, 10]}       | ${{ front: 5, end: 11 }}
+      ${sourceIds} | ${[4, 5, 6, 7, 8, 9, 10, 11, 12, 13]} | ${[4, 5, 6, 7, 8, 9, 10]} | ${{ front: 5, end: 11 }}
+    `(
+      'should send right notification when source ids changed, new ids: $newIds',
+      async ({ sourceIds, newIds, updatedIds, cursors }) => {
+        Object.assign(idsDataProvider, { _cursors: cursors });
+        postProvider.getByIds = jest
+          .fn()
+          .mockImplementation((ids: number[]) => {
+            return toIdModels(ids);
+          });
 
-      idsDataProvider.onSourceIdsChanged(newSourceIds);
-
-      setTimeout(() => {
-        expect(postProvider.getByIds).toBeCalledWith([4, 12, 13]);
-        expect(notificationCenter.emitEntityDelete).not.toBeCalled();
-        expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
-          eventName,
-          entities,
+        let receivedEvent = '';
+        let receivedPayload: any = {};
+        let receivedReplaceAll = false;
+        notificationCenter.emitEntityReplace.mockImplementation(
+          (event: string, changeMap: any, isReplaceAll: boolean) => {
+            receivedEvent = event;
+            receivedPayload = changeMap;
+            receivedReplaceAll = isReplaceAll;
+          },
         );
-        entities.forEach((x: any) => {
-          expect(hasValidEntity(entityName, x.id)).toBeTruthy();
+        idsDataProvider.onSourceIdsChanged(newIds);
+
+        const promise = new Promise((resolve: any, reject: any) => {
+          setTimeout(() => {
+            resolve();
+          },         100);
         });
-        done();
-      });
-    });
+        await Promise.all([promise]);
+
+        expect(notificationCenter.emitEntityReplace).toBeCalled();
+        expect(receivedEvent).toBe(receivedEvent);
+        expect(receivedReplaceAll).toBeTruthy();
+        const ids = Array.from(receivedPayload.keys());
+        const values = Array.from(receivedPayload.values());
+        const valueIds = values.map((x: any) => x.id);
+        expect(valueIds).toEqual(updatedIds);
+        // expect(ids).toEqual([]);
+      },
+    );
   });
 
   describe('fetchData', () => {
@@ -124,24 +159,6 @@ describe('IdListPagingDataProvider', () => {
       setUp();
     });
     const pageSize = 3;
-
-    function setUpData(
-      existPostIds: number[],
-      needFetchPostIds: number[],
-      invalidPostIds: number[],
-    ) {
-      const existPosts = existPostIds.map((x: number) => {
-        return toIdModel(x, invalidPostIds.includes(x));
-      });
-
-      storeManager.dispatchUpdatedDataModels(entityName, existPosts);
-
-      const toFetchPosts = needFetchPostIds.map((x: number) => {
-        return toIdModel(x, invalidPostIds.includes(x));
-      });
-
-      postProvider.getByIds = jest.fn().mockResolvedValue(toFetchPosts);
-    }
 
     it.each`
       existPosts                 | anchor                        | needFetchPosts  | invalidPosts            | expectedIds   | hasMore  | direction

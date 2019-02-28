@@ -31,6 +31,7 @@ describe('DiscontinuousPosListHandler', () => {
   let postListHandler: DiscontinuousPosListHandler;
   let postService: PostService;
   function setUp() {
+    notificationCenter.removeAllListeners([eventName]);
     const store = storeManager.getEntityMapStore(entityName);
     storeManager.removeStore(store);
     postListHandler = new DiscontinuousPosListHandler(sourceIds);
@@ -107,34 +108,50 @@ describe('DiscontinuousPosListHandler', () => {
   });
 
   describe('onSourceIdsChanged', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       clearMocks();
       setUp();
       setUpData();
+      postListHandler.loadMorePosts(QUERY_DIRECTION.NEWER, 10);
+
+      await waitFunc();
     });
+
+    async function waitFunc() {
+      const promise = new Promise((resolve: any, reject: any) => {
+        setTimeout(() => {
+          resolve();
+        },         100);
+      });
+      await Promise.all([promise]);
+    }
 
     it('should insert new ids to list store when receive new source ids with new ids', async (done: any) => {
       const newSourceIds = [100, 101, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-      postListHandler.loadMorePosts(QUERY_DIRECTION.NEWER, 10);
       postListHandler.onSourceIdsChanged(newSourceIds);
+      setTimeout(() => {
+        expect(postListHandler.ids).toEqual([100, 101, 1, 2, 3, 4, 5, 6, 7, 8]);
+        done();
+      },         100);
+    });
+
+    it('should delete ids not existed in new source ids', async (done: any) => {
+      const newSourceIds = [2, 3, 4, 5, 6];
+      postListHandler.onSourceIdsChanged(newSourceIds);
+
       setTimeout(() => {
         expect(postListHandler.ids).toEqual(newSourceIds);
         done();
       },         100);
     });
 
-    it('should delete ids not existed in new source ids', async (done: any) => {
-      postListHandler.loadMorePosts(QUERY_DIRECTION.NEWER, 10);
+    it('should  update source id list when order changed', async (done: any) => {
+      expect(postListHandler.ids).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      const newSourceIds = [10, 9, 2, 3, 4, 5, 6, 7, 8, 1];
+      postListHandler.onSourceIdsChanged(newSourceIds);
 
       setTimeout(() => {
-        // has 10 element before
-        expect(postListHandler.ids).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-
-        const newSourceIds = [2, 3, 4, 5, 6];
-        postListHandler.onSourceIdsChanged(newSourceIds);
-
-        expect(postListHandler.ids).toEqual(newSourceIds);
+        expect(postListHandler.ids).toEqual([10, 9, 2, 3, 4, 5, 6, 7, 8, 1]);
         done();
       },         100);
     });
