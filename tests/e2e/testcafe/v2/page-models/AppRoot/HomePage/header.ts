@@ -1,5 +1,4 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { ClientFunction } from "testcafe";
 import { IGroup } from '../../../models';
 
 export class Header extends BaseWebComponent {
@@ -55,6 +54,10 @@ class Search extends BaseWebComponent {
     return this.getSelectorByAutomationId('search-input');
   }
 
+  async clickInputArea() {
+    await this.t.click(this.inputArea);
+  }
+
   async typeSearchKeyword(text: string, options?: TypeActionOptions) {
     await this.t.typeText(this.inputArea, text, options)
   }
@@ -69,6 +72,10 @@ class Search extends BaseWebComponent {
 
   get allResultItems() {
     return this.getSelector('.search-items');
+  }
+
+  get historyItems() {
+    return this.getSelectorByAutomationId(''); // FIXME 
   }
 
   get itemsNames() {
@@ -99,6 +106,10 @@ class Search extends BaseWebComponent {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
 
+  nthHistory(n: number) {
+    return this.getComponent(SearchItem, this.historyItems.nth(n));
+  }
+
   getSearchItemByCid(cid: string) {
     this.warnFlakySelector();
     const root = this.allResultItems.child().find(`[cid="${cid}"]`).parent('.search-items');
@@ -111,6 +122,58 @@ class Search extends BaseWebComponent {
 
   async dropDownListShouldContainTeam(team: IGroup, timeout: number = 20e3) {
     await this.t.expect(this.teams.withText(team.name).exists).ok({ timeout });
+  }
+
+  get peopleHeader() {
+    return this.getSelectorByAutomationId('search-People');
+  }
+
+  get groupsHeader() {
+    return this.getSelectorByAutomationId('search-Groups');
+  }
+
+  get teamsHeader() {
+    return this.getSelectorByAutomationId('search-Teams');
+  }
+
+  get historyHeader() {
+    return this.getSelectorByAutomationId('search-History');  // FIXME
+  }
+  
+  showMoreButtonOn(header: Selector) {
+    return header.find('span').withText('Show more')
+  }
+
+  get showMorePeopleButton() {
+    return this.showMoreButtonOn(this.peopleHeader);
+  }
+
+  get showMoreGroupsButton() {
+    return this.showMoreButtonOn(this.groupsHeader);
+  }
+
+  get showMoreTeamsButton() {
+    return this.showMoreButtonOn(this.teamsHeader);
+  }
+
+  get clearHistoryButton() {
+    return this.historyHeader.find('span').withText('Clear History'); //FIXME
+  }
+
+  async clickShowMorePeople() {
+    await this.t.click(this.showMorePeopleButton);
+  }
+
+  async clickShowMoreGroups() {
+    await this.t.click(this.showMoreGroupsButton);
+  }
+
+  async clickShowMoreTeams() {
+    await this.t.click(this.showMoreTeamsButton);
+  }
+
+  async clickClearHistory() {
+    await this.t.click(this.clearHistoryButton)
   }
 
 }
