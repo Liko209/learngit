@@ -10,8 +10,7 @@ import i18next from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
-  JuiTaskSection,
-  JuiTaskNotes,
+  JuiTaskSectionOrDescription,
   JuiTaskAvatarNames,
   JuiTaskContent,
   JuiTimeMessage,
@@ -159,12 +158,12 @@ class Task extends React.Component<taskViewProps> {
         )}
         {section && (
           <JuiTaskContent title={t('item.section')}>
-            <JuiTaskSection section={section} />
+            <JuiTaskSectionOrDescription text={section} />
           </JuiTaskContent>
         )}
         {notes && (
           <JuiTaskContent title={t('item.descriptionNotes')}>
-            <JuiTaskNotes notes={notes} />
+            <JuiTaskSectionOrDescription text={notes} />
           </JuiTaskContent>
         )}
         {files && files.length > 0 && (
