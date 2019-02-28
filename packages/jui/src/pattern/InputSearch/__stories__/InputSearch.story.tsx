@@ -15,7 +15,7 @@ storiesOf('Pattern', module)
   .add('InputSearch', () => {
     return (
       <div style={{ padding: '0 10%' }}>
-        <JuiInputSearch placeholder="Search member" ariaLabel="Search" />
+        <JuiInputSearch placeholder="Search member" />
       </div>
     );
   });
