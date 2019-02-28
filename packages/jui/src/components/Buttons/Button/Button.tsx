@@ -7,6 +7,7 @@ import * as React from 'react';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
+import Fab from '@material-ui/core/Fab';
 import { JuiCircularProgress } from '../../Progress';
 import { Palette } from '../../../foundation/theme/theme';
 import styled, { css } from '../../../foundation/styled-components';
@@ -54,8 +55,10 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
     restProps.disableRipple = true;
     restProps.size = 'small';
   }
+  const Component = ({ ...props }) =>
+    variant === 'fab' ? <Fab {...props} /> : <MuiButton {...props} />;
   return (
-    <MuiButton
+    <Component
       classes={{
         disabled: 'disabled',
         contained: 'containedButtonStyle',
@@ -72,7 +75,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       ) : (
         children
       )}
-    </MuiButton>
+    </Component>
   );
 };
 
@@ -82,7 +85,29 @@ const shadow = (n: number) => {
       variant === 'round' ? theme.shadows[n] : 'unset'};
   `;
 };
-
+const StyledFabButton = styled<JuiButtonProps>(WrappedMuiButton)`
+  && {
+    background-color: ${palette('common', 'white')};
+    height: ${({ theme }) => height(15)({ theme })};
+    width: ${({ theme }) => width(15)({ theme })};
+    ${typography('caption1')};
+    &:hover {
+      background-color: ${grey('50')};
+    }
+    &:active {
+      background-color: ${grey('100')};
+    }
+    .rippleVisible {
+      opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
+      transform: scale(1);
+      animation-name: ${({ theme }) => rippleEnter(theme)};
+    }
+    &.disabled {
+      background-color: ${palette('common', 'white')};
+      opacity: 0.12;
+    }
+  }
+`;
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
     min-width: ${({ theme }) => width(26)({ theme })};
@@ -147,7 +172,14 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
 
 const JuiButtonComponent: React.StatelessComponent<JuiButtonProps> = (
   props: JuiButtonProps,
-) => <StyledButton {...props} />;
+) => {
+  const { variant } = props;
+  return variant === 'fab' ? (
+    <StyledFabButton {...props} />
+  ) : (
+    <StyledButton {...props} />
+  );
+};
 
 JuiButtonComponent.defaultProps = {
   size: 'large',
