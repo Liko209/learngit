@@ -13,7 +13,7 @@ import { StateFetchDataController } from './StateFetchDataController';
 import { TotalUnreadController } from './TotalUnreadController';
 import { Raw } from '../../../../framework/model';
 import { mainLogger } from 'foundation';
-import { buildPartialModifyController } from '../../../../framework/controller';
+import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
 
 class StateActionController {
   private _partialModifyController: IPartialModifyController<GroupState>;
@@ -23,7 +23,7 @@ class StateActionController {
     private _stateFetchDataController: StateFetchDataController,
     private _totalUnreadController: TotalUnreadController,
   ) {
-    this._partialModifyController = buildPartialModifyController<GroupState>(
+    this._partialModifyController = new PartialModifyController<GroupState>(
       this._entitySourceController,
     );
   }
