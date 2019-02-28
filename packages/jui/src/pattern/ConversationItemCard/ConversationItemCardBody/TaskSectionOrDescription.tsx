@@ -14,10 +14,6 @@ type Props = {
 const StyledTaskSectionOrDescription = styled.div`
   ${typography('body1')};
   color: ${grey('500')};
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
 `;
 
 const JuiTaskSectionOrDescription = memo((props: Props) => (
