@@ -1,8 +1,9 @@
-export type CreateRangeParams = {
-  /**
-   * Anchor index of range
-   */
-  anchor: number;
+/*
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2019-02-27 17:41:26
+ * Copyright © RingCentral. All rights reserved.
+ */
+type BaseCreateRangeParams = {
   /**
    * Size of range
    */
@@ -17,26 +18,63 @@ export type CreateRangeParams = {
   max: number;
 };
 
+type CreateRangeFromAnchorParams = BaseCreateRangeParams & {
+  /**
+   * Anchor index of range
+   */
+  anchor: number;
+};
+
+type CreateRangeFromStartIndexParams = BaseCreateRangeParams & {
+  /**
+   * Start index of range
+   */
+  startIndex: number;
+};
+
 /**
  * Create a range from given anchor
  */
-const createRange = ({ anchor, size, min, max }: CreateRangeParams) => {
-  const halfSize = Math.floor(size / 2);
+const createRange = ({
+  startIndex,
+  size,
+  min,
+  max,
+}: CreateRangeFromStartIndexParams) => {
+  let resultStartIndex = startIndex;
 
-  let startIndex = anchor - halfSize;
-  if (startIndex < min) {
-    startIndex = min;
+  if (resultStartIndex < min) {
+    resultStartIndex = min;
   }
 
-  let stopIndex = startIndex + size - 1;
-  if (stopIndex > max) {
-    stopIndex = max;
+  let resultStopIndex = resultStartIndex + size - 1;
+  if (resultStopIndex > max) {
+    resultStopIndex = max;
   }
 
-  if (stopIndex - size + 1 < startIndex) {
-    startIndex = Math.max(stopIndex - size + 1, min);
+  if (resultStopIndex - size + 1 < resultStartIndex) {
+    resultStartIndex = Math.max(resultStopIndex - size + 1, min);
   }
-  return { startIndex, stopIndex };
+  return { startIndex: resultStartIndex, stopIndex: resultStopIndex };
 };
 
-export { createRange };
+const createRangeFromAnchor = ({
+  anchor,
+  size,
+  min,
+  max,
+}: CreateRangeFromAnchorParams) => {
+  return createRange({
+    size,
+    min,
+    max,
+    startIndex: anchor - Math.floor(size / 2),
+  });
+};
+
+export {
+  createRange,
+  createRangeFromAnchor,
+  CreateRangeFromStartIndexParams,
+  CreateRangeFromAnchorParams,
+};

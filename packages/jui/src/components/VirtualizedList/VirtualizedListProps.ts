@@ -1,7 +1,7 @@
 type VirtualizedListProps = {
   height: number;
-  // scrollTop: number;
-  // onScroll: (event: React.UIEvent<HTMLElement>) => void;
+  initialScrollToIndex: number;
+  initialRangeSize: number;
   children: React.ReactNode[];
 };
 

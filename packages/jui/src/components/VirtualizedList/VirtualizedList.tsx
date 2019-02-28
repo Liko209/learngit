@@ -5,9 +5,10 @@ import React, {
   useRef,
   useState,
   ReactNode,
+  useReducer,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
-import { createRange } from './util/createRange';
+import { createRange, createRangeFromAnchor } from './util/createRange';
 import { VirtualizedListProps } from './VirtualizedListProps';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
@@ -24,7 +25,20 @@ const useRange = (
   return [range, setRange];
 };
 
-const JuiVirtualizedList = ({ height, children }: VirtualizedListProps) => {
+const useForceUpdate = () => {
+  const [updateTrigger, setValue] = useReducer(x => x + 1, 0);
+  const forceUpdate = () => {
+    setValue({});
+  };
+  return { updateTrigger, forceUpdate };
+};
+
+const JuiVirtualizedList = ({
+  initialScrollToIndex,
+  initialRangeSize,
+  height,
+  children,
+}: VirtualizedListProps) => {
   const getCacheKey = (i: number) => {
     const child = children[i] as { key: string };
     if (!child) return '';
@@ -32,25 +46,26 @@ const JuiVirtualizedList = ({ height, children }: VirtualizedListProps) => {
   };
 
   const updateRowHeightCache = (element: Element, i: number) => {
-    const key = getCacheKey(startIndex + i);
-    const newHeight = element.clientHeight;
-    const oldHeight = cache.get(key);
-    const diff = newHeight - oldHeight;
+    let diff = 0;
+    let newHeight = 0;
+    let oldHeight = 0;
 
-    if (diff !== 0) {
-      cache.set(key, element.clientHeight);
+    if (element.clientHeight !== 0) {
+      newHeight = element.clientHeight;
+      oldHeight = getRowHeight(i);
+      diff = newHeight - oldHeight;
+
+      if (diff !== 0) {
+        cache.set(getCacheKey(i), newHeight);
+      }
     }
 
-    return diff;
+    return { newHeight, oldHeight, diff };
   };
 
   const getRowHeight = (i: number) => {
     const key = getCacheKey(i);
     return cache.has(key) ? cache.get(key) : estimateRowHeight;
-  };
-
-  const getAllRowsHeight = () => {
-    return getRowsHeight(0, childrenCount - 1);
   };
 
   const getRowsHeight = (startIndex: number, stopIndex: number) => {
@@ -62,10 +77,31 @@ const JuiVirtualizedList = ({ height, children }: VirtualizedListProps) => {
     return heightBeforeIndex;
   };
 
-  const createDisplayRange = (anchor: number, size?: number) => {
+  const createDisplayRange = ({
+    startIndex,
+    size = displayRangeSize,
+  }: {
+    startIndex: number;
+    size?: number;
+  }) => {
     return createRange({
+      startIndex,
+      size,
+      min: 0,
+      max: childrenCount - 1,
+    });
+  };
+
+  const createDisplayRangeFromAnchor = ({
+    anchor,
+    size = displayRangeSize,
+  }: {
+    anchor: number;
+    size?: number;
+  }) => {
+    return createRangeFromAnchor({
       anchor,
-      size: size || batchCount,
+      size,
       min: 0,
       max: childrenCount - 1,
     });
@@ -75,7 +111,7 @@ const JuiVirtualizedList = ({ height, children }: VirtualizedListProps) => {
     return Array.prototype.slice.call(contentEl.children, 0);
   };
 
-  const batchCount = 11;
+  const [displayRangeSize] = useState(initialRangeSize);
   const childrenCount = children.length;
 
   const ref: DivRefObject = useRef(null);
@@ -85,64 +121,69 @@ const JuiVirtualizedList = ({ height, children }: VirtualizedListProps) => {
   //
   // State
   //
-  const [anchor] = useState(0);
+  const [scrollToIndex, setScrollToIndex] = useState(initialScrollToIndex);
+  const {
+    updateTrigger: scrollTopUpdateTrigger,
+    forceUpdate: forceUpdateScrollTop,
+  } = useForceUpdate();
+  const { forceUpdate } = useForceUpdate();
   const [cache] = useState(new Map());
-  const [scrollOffset] = useState(0);
-  const [estimateRowHeight, setEstimateRowHeight] = useState(10);
+  const [scrollOffset, setScrollOffset] = useState(0);
+  const [estimateRowHeight] = useState(20);
   const [{ startIndex, stopIndex }, setDisplayRange] = useRange(
-    createDisplayRange(anchor),
+    createDisplayRange({ startIndex: scrollToIndex - 5 }),
   );
 
   const heightBeforeStartRow = getRowsHeight(0, startIndex - 1);
-  const totalHeight = getAllRowsHeight();
+  const heightAfterStopRow = getRowsHeight(stopIndex + 1, childrenCount - 1);
 
   const childrenToDisplay: ReactNode[] = children.filter((_, i) => {
     return startIndex <= i && i <= stopIndex;
   });
 
   useLayoutEffect(() => {
+    if (contentRef.current) {
+      const contentEl = contentRef.current;
+
+      //
+      // Update height cache
+      //
+      const displayedRowsEls: Element[] = getChildrenEls(contentEl);
+      displayedRowsEls.forEach((el, i) => {
+        const { diff } = updateRowHeightCache(el, startIndex + i);
+        if (diff !== 0 && i + startIndex < scrollToIndex) {
+          forceUpdate();
+        }
+      });
+    }
+  },              [getCacheKey(startIndex), getCacheKey(stopIndex)]);
+
+  useLayoutEffect(() => {
+    if (ref.current) {
+      ref.current.scrollTop =
+        getRowsHeight(0, scrollToIndex - 1) + scrollOffset;
+    }
+  },              [scrollTopUpdateTrigger]);
+
+  useLayoutEffect(() => {
     const resizeObservers: ResizeObserver[] = [];
     if (contentRef.current) {
       const contentEl = contentRef.current;
-      const { clientHeight: contentHeight } = contentEl;
 
-      if (contentHeight < height) {
-        //
-        // Expand display range when there still
-        // space to place more items.
-        //
-        const rangeSize = stopIndex - startIndex;
-        const newRangeSize = rangeSize + batchCount;
-        setDisplayRange(createDisplayRange(anchor, newRangeSize));
-      }
-
+      //
+      // Observe dynamic rows
+      //
       const displayedRowsEls: Element[] = getChildrenEls(contentEl);
-
-      //
-      // Update height cache and observe dynamic rows
-      //
       displayedRowsEls.forEach((el, i) => {
-        updateRowHeightCache(el, i);
-
-        const ro = new ResizeObserver(() => {
-          const rowHeightDiff = updateRowHeightCache(el, i);
-          if (rowHeightDiff !== 0) {
-            console.log('rowHeightDiff', rowHeightDiff);
-            // setDisplayRange({ startIndex, stopIndex });
+        const ro = new ResizeObserver((entities: ResizeObserverEntry[]) => {
+          const { diff } = updateRowHeightCache(el, startIndex + i);
+          if (diff !== 0 && i + startIndex < scrollToIndex) {
+            forceUpdateScrollTop();
           }
         });
-
-        ro.observe(contentEl);
+        ro.observe(el);
         resizeObservers.push(ro);
       });
-
-      //
-      // Update estimateRowHeight
-      //
-      const newEstimateRowHeight = Math.floor(
-        getAllRowsHeight() / childrenCount,
-      );
-      setEstimateRowHeight(newEstimateRowHeight);
     }
 
     return () => {
@@ -150,51 +191,59 @@ const JuiVirtualizedList = ({ height, children }: VirtualizedListProps) => {
     };
   },              [getCacheKey(startIndex), getCacheKey(stopIndex)]);
 
-  useLayoutEffect(() => {
-    if (ref.current) {
-      const newScrollTop = getRowsHeight(0, anchor - 1);
-      ref.current.scrollTop = newScrollTop + scrollOffset;
-    }
-  },              [anchor, scrollOffset]);
-
   const handleScroll = (event: React.UIEvent<HTMLElement>) => {
     if (ref.current) {
       //
       // When scrolling, update displayRange.
       //
-      const centerOfViewport = ref.current.scrollTop + height / 2;
-      const newAnchor = Math.floor(centerOfViewport / estimateRowHeight);
-      setDisplayRange(createDisplayRange(newAnchor));
+      console.time('handleScroll');
+
+      const getRowIndexFromPosition = (position: number) => {
+        let rowsHeight = 0;
+        for (let index = 0; index < childrenCount; index++) {
+          rowsHeight += getRowHeight(index);
+          if (position <= rowsHeight) {
+            return index;
+          }
+        }
+        return childrenCount - 1;
+      };
+      const scrollTop = ref.current.scrollTop;
+      const anchor = getRowIndexFromPosition(scrollTop + height / 2);
+
+      console.timeEnd('handleScroll');
+      setScrollToIndex(anchor);
+      setScrollOffset(scrollTop - getRowsHeight(0, anchor - 1));
+      setDisplayRange(
+        createDisplayRangeFromAnchor({
+          anchor,
+        }),
+      );
     }
   };
-
-  const handleClick = () => {};
 
   return (
     <div
       ref={ref}
-      onClick={handleClick}
       onScroll={handleScroll}
       style={{
         height,
         overflow: 'auto',
+        overflowAnchor: 'none',
       }}
     >
-      <div
-        ref={innerRef}
-        style={{
-          position: 'relative',
-          top: heightBeforeStartRow,
-          height: totalHeight - heightBeforeStartRow,
-        }}
-      >
+      <div style={{ height: heightBeforeStartRow }} />
+      <div ref={innerRef}>
         <div ref={contentRef}>{childrenToDisplay}</div>
       </div>
+      <div style={{ height: heightAfterStopRow }} />
     </div>
   );
 };
 
-JuiVirtualizedList.defaultProps = {};
+JuiVirtualizedList.defaultProps = {
+  initialRangeSize: 10,
+};
 
 const MemoList = memo(JuiVirtualizedList);
 export { MemoList as JuiVirtualizedList };

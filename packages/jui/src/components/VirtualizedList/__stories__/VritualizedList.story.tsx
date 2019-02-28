@@ -1,11 +1,12 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { storiesOf } from '@storybook/react';
+import { number } from '@storybook/addon-knobs';
 import { JuiVirtualizedList } from '../VirtualizedList';
 
 type ItemModel = {
   id: number;
   text: string;
-  imageUrl: string;
+  imageUrl?: string;
   crazy?: boolean;
 };
 
@@ -13,15 +14,15 @@ const Item = ({ item }: { item: ItemModel }) => {
   const [crazyHeight, setCrazyHeight] = useState(10);
   useLayoutEffect(() => {
     if (item.crazy) {
-      const animationFrame = requestAnimationFrame(() => {
+      const interval = setInterval(() => {
         if (crazyHeight < 100) {
-          setCrazyHeight(crazyHeight + 1);
+          setCrazyHeight(crazyHeight + 10);
         } else {
-          setCrazyHeight(10);
+          setCrazyHeight(50);
         }
-      });
+      },                           1000);
       return () => {
-        cancelAnimationFrame(animationFrame);
+        clearInterval(interval);
       };
     }
     return () => {};
@@ -33,22 +34,19 @@ const Item = ({ item }: { item: ItemModel }) => {
     );
   }
 
-  return (
-    <p style={{ overflow: 'hidden' }}>
-      {item.text} <br />
-      <img src={item.imageUrl} />
-    </p>
-  );
+  if (item.imageUrl) {
+    return (
+      <div style={{ padding: '10px 0' }}>
+        {item.text} <br />
+        <img src={item.imageUrl} />
+      </div>
+    );
+  }
+
+  return <div style={{ padding: '10px 0', height: 20 }}>{item.text}</div>;
 };
 
-const useItems = (
-  defaultItems: ItemModel[] | (() => ItemModel[]),
-): [
-  ItemModel[],
-  (...newItems: ItemModel[]) => void,
-  (...newItems: ItemModel[]) => void,
-  (removeIndex: number) => void
-] => {
+const useItems = (defaultItems: ItemModel[] | (() => ItemModel[])) => {
   const [items, setItems] = useState(defaultItems);
 
   const prependItem = (...newItems: ItemModel[]) => {
@@ -63,63 +61,84 @@ const useItems = (
     setItems(items.filter((_, index) => removeIndex !== index));
   };
 
-  return [items, appendItem, prependItem, removeItem];
+  return { items, appendItem, prependItem, removeItem };
 };
 
-const Demo = () => {
-  const listHeight = 200;
-
-  const [items, , prependItem, removeItem] = useItems(() => {
-    const items: ItemModel[] = [];
-    for (let i = 100; i < 200; i++) {
-      const height = Math.floor(Math.random() * 200);
-      items.push({
-        id: i,
-        text: `Item-${i}`,
-        imageUrl: `https://via.placeholder.com/500x${height}`,
-      });
-    }
-    return items;
-  });
-
-  const handleAddClick = () => {
-    const i = items[0].id - 1;
-    prependItem({
-      id: i,
-      text: `Item-${i}`,
-      imageUrl: 'https://via.placeholder.com/200x150',
-    });
+const buildItem = (id: number) => {
+  return {
+    id,
+    text: `Item-${id}`,
   };
+};
 
-  const handleAddCrazyClick = () => {
-    const i = items[0].id - 1;
-    console.log(i);
-    prependItem({
-      crazy: true,
-      id: i,
-      text: `Item-${i}`,
-      imageUrl: 'https://via.placeholder.com/200x150',
-    });
+const buildCrazyItem = (id: number) => {
+  return {
+    ...buildItem(id),
+    crazy: true,
   };
+};
 
-  const handleRemoveClick = () => {
-    removeItem(0);
+const buildImageItem = (id: number, randomSize = false) => {
+  const height = randomSize ? Math.floor(Math.random() * 10) * 10 : 53;
+  return {
+    ...buildItem(id),
+    imageUrl: `https://via.placeholder.com/500x${height}`,
   };
-
-  return (
-    <div>
-      <button onClick={handleAddClick}>Add Item</button>
-      <button onClick={handleAddCrazyClick}>Add Crazy Item</button>
-      <button onClick={handleRemoveClick}>Remove Item</button>
-      <JuiVirtualizedList height={listHeight}>
-        {items.map(item => (
-          <Item key={item.id} item={item} />
-        ))}
-      </JuiVirtualizedList>
-    </div>
-  );
 };
 
 storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
+  const dataCount = number('dataCount', 100);
+  const initialScrollToIndex = number('initialScrollToIndex', 11);
+  const initialRangeSize = number('initialRangeSize', 11);
+  const listHeight = number('listHeight', 200);
+
+  const Demo = () => {
+    const { items, prependItem, removeItem } = useItems(() => {
+      const items: ItemModel[] = [];
+      items.push(buildItem(0));
+      for (let i = 1; i < dataCount; i++) {
+        items.push(buildItem(i));
+      }
+      return items;
+    });
+
+    const handleAddClick = () => {
+      const i = items[0].id - 1;
+      prependItem({
+        id: i,
+        text: `Item-${i}`,
+        imageUrl: 'https://via.placeholder.com/200x150',
+      });
+    };
+
+    const handleAddCrazyClick = () => {
+      const i = items[0].id - 1;
+      prependItem({
+        crazy: true,
+        id: i,
+        text: `Item-${i}`,
+        imageUrl: 'https://via.placeholder.com/200x150',
+      });
+    };
+
+    const handleRemoveClick = () => {
+      removeItem(0);
+    };
+    const children = items.map(item => <Item key={item.id} item={item} />);
+    return (
+      <div>
+        <button onClick={handleAddClick}>Add Item</button>
+        <button onClick={handleAddCrazyClick}>Add Crazy Item</button>
+        <button onClick={handleRemoveClick}>Remove Item</button>
+        <JuiVirtualizedList
+          initialScrollToIndex={initialScrollToIndex}
+          initialRangeSize={initialRangeSize}
+          height={listHeight}
+        >
+          {children}
+        </JuiVirtualizedList>
+      </div>
+    );
+  };
   return <Demo />;
 });
