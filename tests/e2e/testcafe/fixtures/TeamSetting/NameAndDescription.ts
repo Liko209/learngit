@@ -387,7 +387,6 @@ test(formalName(`The inline error should be displayed if the team is failed to b
   await h(t).withLog(`Given I am admin of team "${teamName}" and other team ${anotherTeamName} ,`, async () => {
     teamId = await h(t).platform(adminUser).createAndGetGroupId({
       name: teamName,
-      description: "need description??", // if no description, save button is invalid
       type: 'Team',
       members: [adminUser.rcId, otherUser.rcId],
     });

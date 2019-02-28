@@ -2,17 +2,25 @@ import { LogUploader } from '../LogUploader';
 import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import AccountService, { UserConfig } from '../../account';
 import { Api } from 'sdk/api';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 jest.mock('sdk/api');
 jest.mock('../../account');
 jest.mock('axios');
-
+function createError(status: number): AxiosError {
+  return (status
+    ? {
+      response: {
+        status,
+      },
+    }
+    : {}) as AxiosError;
+}
 describe('LogUploader', () => {
   const accountService = new AccountService();
   beforeEach(() => {
     Api.httpConfig = {
       sumologic: {
-        server: 'url',
+        server: 'url/',
         uniqueHttpCollectorCode: 'code',
       },
     };
@@ -81,35 +89,15 @@ describe('LogUploader', () => {
   describe('errorHandler()', () => {
     it('should return retry when retry able error occur', () => {
       const logUploader = new LogUploader();
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, ''),
-        ),
-      ).toEqual('retry');
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.UNAUTHORIZED, ''),
-        ),
-      ).toEqual('retry');
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.TOO_MANY_REQUESTS, ''),
-        ),
-      ).toEqual('retry');
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.SERVICE_UNAVAILABLE, ''),
-        ),
-      ).toEqual('retry');
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.GATEWAY_TIMEOUT, ''),
-        ),
-      ).toEqual('retry');
+      expect(logUploader.errorHandler(createError(0))).toEqual('abortAll');
+      expect(logUploader.errorHandler(createError(401))).toEqual('retry');
+      expect(logUploader.errorHandler(createError(429))).toEqual('retry');
+      expect(logUploader.errorHandler(createError(503))).toEqual('retry');
+      expect(logUploader.errorHandler(createError(504))).toEqual('retry');
     });
     it('should ignore other error', () => {
       const logUploader = new LogUploader();
-      expect(logUploader.errorHandler(new Error('sss'))).toEqual('ignore');
+      expect(logUploader.errorHandler(createError(500))).toEqual('ignore');
     });
   });
 });

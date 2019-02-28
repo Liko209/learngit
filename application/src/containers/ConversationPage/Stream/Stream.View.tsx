@@ -159,11 +159,14 @@ class StreamViewComponent extends Component<Props> {
   private _renderPost(streamItem: StreamItem & { value: number[] }) {
     const { firstHistoryUnreadPostId, historyReadThrough } = this.props;
 
-    const checkFirstUnreadVisibility = streamItem.value.some(
-      (id: number) =>
-        (firstHistoryUnreadPostId && id <= firstHistoryUnreadPostId) ||
-        id <= historyReadThrough,
-    );
+    const checkFirstUnreadVisibility = streamItem.value.some((id: number) => {
+      const isPreInsertPost = id <= 0;
+      const isUnreadPostFallBack =
+        firstHistoryUnreadPostId && id <= firstHistoryUnreadPostId;
+      const isUnreadPost = id <= historyReadThrough;
+      return !!((isUnreadPost || isUnreadPostFallBack) && !isPreInsertPost);
+    });
+
     const checkMostRecentVisibility = streamItem.value.includes(
       this.props.mostRecentPostId,
     );
