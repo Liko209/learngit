@@ -94,9 +94,11 @@ describe('StateActionController', () => {
         group_post_drp_cursor: 0,
       };
 
-      mockEntitySourceController.get.mockImplementationOnce(() => {
-        return originalModel;
-      });
+      jest
+        .spyOn(mockEntitySourceController, 'get')
+        .mockImplementationOnce(() => {
+          return originalModel;
+        });
       mockStateFetchDataController.getMyStateId = jest
         .fn()
         .mockReturnValue(5683);
@@ -147,9 +149,11 @@ describe('StateActionController', () => {
         group_post_drp_cursor: 0,
         unread_deactivated_count: 0,
       };
-      mockEntitySourceController.get.mockImplementationOnce(() => {
-        return originalModel;
-      });
+      jest
+        .spyOn(mockEntitySourceController, 'get')
+        .mockImplementationOnce(() => {
+          return originalModel;
+        });
 
       const mockPartialModifyController = new MockPartialModifyController(
         originalModel,
