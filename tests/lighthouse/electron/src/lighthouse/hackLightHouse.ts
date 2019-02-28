@@ -18,37 +18,40 @@ const hackLightHouse = async () => {
   };
 
   TraceProcessor.findMainFrameIds = (events) => {
-    // Prefer the newer TracingStartedInBrowser event first, if it exists
-    const startedInBrowserEvt = events.find(e => e.name === 'TracingStartedInBrowser');
-    if (startedInBrowserEvt && startedInBrowserEvt.args.data &&
-      startedInBrowserEvt.args.data.frames) {
-      const mainFrame = startedInBrowserEvt.args.data.frames.find(frame => {
-        return !frame.parent && !frame.url.startsWith(Config.blankUrl);
-      });
-      const frameId = mainFrame && mainFrame.frame;
-      const pid = mainFrame && mainFrame.processId;
-      const tid = startedInBrowserEvt.tid;
+    const startedInBrowserEvts = events.filter(e => e.name === 'TracingStartedInBrowser');
+    for (let startedInBrowserEvt of startedInBrowserEvts) {
+      if (startedInBrowserEvt && startedInBrowserEvt.args.data &&
+        startedInBrowserEvt.args.data.frames) {
+        const mainFrame = startedInBrowserEvt.args.data.frames.find(frame => {
+          return !frame.parent && !frame.url.startsWith(Config.blankUrl);
+        });
+        const frameId = mainFrame && mainFrame.frame;
+        const pid = mainFrame && mainFrame.processId;
+        const tid = startedInBrowserEvt.tid;
 
-      if (pid && tid && frameId) {
-        return {
-          pid,
-          tid,
-          frameId,
-        };
+        if (pid && tid && frameId) {
+          return {
+            pid,
+            tid,
+            frameId,
+          };
+        }
       }
     }
 
-    const frameCommittedInBrowserEvt = events.find(e => e.name === 'FrameCommittedInBrowser');
-    if (frameCommittedInBrowserEvt && frameCommittedInBrowserEvt.args && frameCommittedInBrowserEvt.args.data) {
-      const frameId = frameCommittedInBrowserEvt.args.data.frame;
-      const url = frameCommittedInBrowserEvt.args.data.url;
-      const pid = frameCommittedInBrowserEvt.args.data.processId;
-      if (frameId && pid && url && !url.startsWith(Config.blankUrl)) {
-        return {
-          pid: pid,
-          tid: frameCommittedInBrowserEvt.tid,
-          frameId,
-        };
+    const frameCommittedInBrowserEvts = events.filter(e => e.name === 'FrameCommittedInBrowser');
+    for (let frameCommittedInBrowserEvt of frameCommittedInBrowserEvts) {
+      if (frameCommittedInBrowserEvt && frameCommittedInBrowserEvt.args && frameCommittedInBrowserEvt.args.data) {
+        const frameId = frameCommittedInBrowserEvt.args.data.frame;
+        const url = frameCommittedInBrowserEvt.args.data.url;
+        const pid = frameCommittedInBrowserEvt.args.data.processId;
+        if (frameId && pid && url && !url.startsWith(Config.blankUrl)) {
+          return {
+            pid: pid,
+            tid: frameCommittedInBrowserEvt.tid,
+            frameId,
+          };
+        }
       }
     }
 
