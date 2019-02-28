@@ -48,11 +48,11 @@ class PersonItemView extends React.Component<ViewProps, {}> {
     }
     const goToConversationIcon = (
       <JuiIconButton
-        size="small"
-        color="accent.ash"
+        data-test-automation-id="goToConversationIcon"
         tooltipTitle={i18next.t('message.message')}
         onClick={this.handleGoToConversation}
         variant="plain"
+        size="small"
       >
         {'messages'}
       </JuiIconButton>

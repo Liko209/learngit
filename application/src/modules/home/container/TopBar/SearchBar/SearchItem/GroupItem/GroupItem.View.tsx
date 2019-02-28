@@ -43,7 +43,6 @@ class GroupItemComponent extends React.Component<
     await goToConversation(group.id);
   }
   handleGoToConversation = (evt: React.MouseEvent) => {
-    console.log('=====aaaa');
     evt.stopPropagation();
     this.goToConversation();
   }
@@ -79,11 +78,11 @@ class GroupItemComponent extends React.Component<
     );
     const goToConversationIcon = (
       <JuiIconButton
-        size="small"
-        color="accent.ash"
+        data-test-automation-id="goToConversationIcon"
         tooltipTitle={i18next.t('message.message')}
         onClick={this.handleGoToConversation}
         variant="plain"
+        size="small"
       >
         {'messages'}
       </JuiIconButton>
