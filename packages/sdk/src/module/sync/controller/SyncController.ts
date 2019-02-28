@@ -25,13 +25,8 @@ import { ProfileService } from '../../profile';
 import { PersonService } from '../../person';
 import { GroupService } from '../../group';
 import { PostService } from '../../post';
-import {
-  LAST_INDEX_TIMESTAMP,
-  SOCKET_SERVER_HOST,
-  STATIC_HTTP_SERVER,
-} from '../../../dao/config/constants';
-import { daoManager, ConfigDao } from '../../../dao';
 import { SyncListener } from '../service/SyncListener';
+import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 
 class SyncController {
   private isLoading: boolean = false;
@@ -50,8 +45,7 @@ class SyncController {
   }
 
   getIndexTimestamp() {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    return configDao.get(LAST_INDEX_TIMESTAMP);
+    return NewGlobalConfig.getLastIndexTimestamp();
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -131,8 +125,7 @@ class SyncController {
 
   private async _handle504GateWayError() {
     // clear data
-    const configDao = daoManager.getKVDao(ConfigDao);
-    configDao.put(LAST_INDEX_TIMESTAMP, '');
+    NewGlobalConfig.setLastIndexTimestamp('');
 
     await Promise.all([
       ItemService.getInstance<ItemService>().clear(),
@@ -245,15 +238,14 @@ class SyncController {
         scoreboard = null,
         static_http_server: staticHttpServer = '',
       } = result;
-      const configDao = daoManager.getKVDao(ConfigDao);
 
       if (scoreboard && shouldSaveScoreboard) {
-        configDao.put(SOCKET_SERVER_HOST, scoreboard);
+        NewGlobalConfig.setSocketServerHost(scoreboard);
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
       }
 
       if (staticHttpServer) {
-        configDao.put(STATIC_HTTP_SERVER, staticHttpServer);
+        NewGlobalConfig.setStaticHttpServer(staticHttpServer);
         notificationCenter.emitKVChange(
           CONFIG.STATIC_HTTP_SERVER,
           staticHttpServer,
@@ -264,7 +256,7 @@ class SyncController {
       await this._dispatchIncomingData(result);
       // logger.timeEnd('handle index data');
       if (timestamp) {
-        configDao.put(LAST_INDEX_TIMESTAMP, timestamp);
+        NewGlobalConfig.setLastIndexTimestamp(timestamp);
         notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
       }
 

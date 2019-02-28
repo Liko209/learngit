@@ -1,0 +1,1 @@
+export { AuthGlobalConfig } from './AuthGlobalConfig';
