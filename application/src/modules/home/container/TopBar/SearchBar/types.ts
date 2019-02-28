@@ -6,7 +6,19 @@
 import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
-import { RecentSearchModel, RecentSearchTypes } from 'sdk/module/search';
+import { RecentSearchTypes } from 'sdk/module/search';
+
+interface IBaseItems<T> {
+  ids: T[];
+}
+interface ISearchItems extends IBaseItems<number> {
+  type: RecentSearchTypes;
+  hasMore: boolean;
+}
+
+interface IRecentItems extends IBaseItems<number | string> {
+  types: RecentSearchTypes[];
+}
 
 type SearchSection<T> = {
   sortableModel: SortableModel<T>[];
@@ -25,12 +37,6 @@ type SearchResult = {
   teams: SearchSections;
 };
 
-type SearchItems = {
-  ids: number[];
-  name: RecentSearchTypes;
-  hasMore: boolean;
-};
-
 type Props = {};
 
 type ViewProps = {
@@ -44,18 +50,19 @@ type ViewProps = {
   isTeamOrGroup: (id: number) => boolean;
   getRecent: () => void;
   clearRecent: () => void;
-  recentRecord: RecentSearchModel[];
-  data: SearchItems[];
+  searchResult: ISearchItems[];
+  recentRecord: IRecentItems[];
   terms: string[];
   selectIndex: number[];
   resetData: () => void;
   resetSelectIndex: () => void;
   setSelectIndex: (section: number, cellIndex: number) => void;
-  setData: (data: SearchItems[]) => void;
+  setData: (data: ISearchItems[]) => void;
   findNextValidSectionLength: (section: number, offset: number) => number[];
   onKeyUp: () => void;
   onKeyDown: () => void;
   selectIndexChange: (sectionIndex: number, cellIndex: number) => void;
+  getCurrentItemId: () => any;
 };
 
 type SectionType<T> = {
@@ -72,5 +79,6 @@ export {
   SortableModel,
   Person,
   Group,
-  SearchItems,
+  ISearchItems,
+  IRecentItems,
 };

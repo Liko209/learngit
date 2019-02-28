@@ -9,7 +9,6 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { GroupAvatar } from '@/containers/Avatar';
 import { JuiButton } from 'jui/components/Buttons';
-import { HotKeys } from 'jui/hoc/HotKeys';
 import { ViewProps } from './types';
 
 @observer
@@ -70,35 +69,29 @@ class GroupItemComponent extends React.Component<
     }
 
     return (
-      <HotKeys
-        keyMap={{
-          enter: this.onEnter,
-        }}
-      >
-        <JuiSearchItem
-          onMouseEnter={onMouseEnter(sectionIndex, cellIndex)}
-          onMouseLeave={onMouseLeave}
-          hovered={hovered}
-          onClick={this.onClick} // canJoinTeam ? this.handleJoinTeam : this.goToConversation
-          Avatar={<GroupAvatar cid={id} size="small" />}
-          value={displayName}
-          terms={terms}
-          data-test-automation-id={`search-${title}-item`}
-          Actions={
-            canJoinTeam && (
-              <JuiButton
-                data-test-automation-id="joinButton"
-                variant="round"
-                size="small"
-              >
-                {t('people.team.joinButtonTitle')}
-              </JuiButton>
-            )
-          }
-          isPrivate={isPrivate}
-          isJoined={isJoined}
-        />
-      </HotKeys>
+      <JuiSearchItem
+        onMouseEnter={onMouseEnter(sectionIndex, cellIndex)}
+        onMouseLeave={onMouseLeave}
+        hovered={hovered}
+        onClick={this.onClick} // canJoinTeam ? this.handleJoinTeam : this.goToConversation
+        Avatar={<GroupAvatar cid={id} size="small" />}
+        value={displayName}
+        terms={terms}
+        data-test-automation-id={`search-${title}-item`}
+        Actions={
+          canJoinTeam && (
+            <JuiButton
+              data-test-automation-id="joinButton"
+              variant="round"
+              size="small"
+            >
+              {t('people.team.joinButtonTitle')}
+            </JuiButton>
+          )
+        }
+        isPrivate={isPrivate}
+        isJoined={isJoined}
+      />
     );
   }
 }

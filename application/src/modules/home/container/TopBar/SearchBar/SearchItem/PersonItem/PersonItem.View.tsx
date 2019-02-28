@@ -7,23 +7,11 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { Avatar } from '@/containers/Avatar';
-import { HotKeys } from 'jui/hoc/HotKeys';
+// import { HotKeys } from 'jui/hoc/HotKeys';
 import { ViewProps } from './types';
 
 @observer
 class PersonItemView extends React.Component<ViewProps, {}> {
-  onEnter = () => {
-    const { hovered } = this.props;
-    if (hovered) {
-      // this.goToConversation();
-    }
-  }
-
-  // goToConversation = async () => {
-  //   const { goToConversation, person } = this.props;
-  //   await goToConversation(person.id);
-  // }
-
   onClick = () => {
     const { addRecentRecord } = this.props;
     addRecentRecord();
@@ -40,7 +28,6 @@ class PersonItemView extends React.Component<ViewProps, {}> {
       sectionIndex,
       hovered,
     } = this.props;
-    console.log(person, '-----person');
     const { id, userDisplayName, deactivated } = person;
 
     if (deactivated) {
@@ -48,26 +35,21 @@ class PersonItemView extends React.Component<ViewProps, {}> {
     }
 
     return (
-      <HotKeys
-        keyMap={{
-          enter: this.onEnter,
-        }}
-      >
-        <JuiSearchItem
-          onMouseEnter={onMouseEnter(sectionIndex, cellIndex)}
-          onMouseLeave={onMouseLeave}
-          hovered={hovered}
-          key={id}
-          onClick={this.onClick}
-          Avatar={<Avatar uid={id} size="small" />}
-          value={userDisplayName}
-          terms={terms}
-          data-test-automation-id={`search-${title}-item`}
-          Actions={null}
-          isPrivate={false}
-          isJoined={false}
-        />
-      </HotKeys>
+      <JuiSearchItem
+        tabIndex={1}
+        onMouseEnter={onMouseEnter(sectionIndex, cellIndex)}
+        onMouseLeave={onMouseLeave}
+        hovered={hovered}
+        key={id}
+        onClick={this.onClick}
+        Avatar={<Avatar uid={id} size="small" />}
+        value={userDisplayName}
+        terms={terms}
+        data-test-automation-id={`search-${title}-item`}
+        Actions={null}
+        isPrivate={false}
+        isJoined={false}
+      />
     );
   }
 }

@@ -28,25 +28,24 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   position: relative;
   box-sizing: border-box;
   background: ${({ focus }) =>
-      focus ? palette('common', 'white') : grey('100')}
-    ${({ hasValue, focus }) => {
-      return hasValue && focus
-        ? css`
-            border-top-right-radius: ${spacing(1)};
-            border-top-left-radius: ${spacing(1)};
-          `
-        : css`
-            border-radius: ${spacing(1)};
-          `;
-    }}
-    ${({ focus }) =>
-      focus
-        ? css`
-            border-bottom: 1px solid ${grey('200')};
-          `
-        : null};
+    focus ? palette('common', 'white') : grey('100')};
+  ${({ hasValue, focus }) => {
+    return hasValue && focus
+      ? css`
+          border-top-right-radius: ${spacing(1)};
+          border-top-left-radius: ${spacing(1)};
+        `
+      : css`
+          border-radius: ${spacing(1)};
+        `;
+  }};
+  ${({ focus }) =>
+    focus
+      ? css`
+          border-bottom: 1px solid ${grey('200')};
+        `
+      : null};
   z-index: ${({ theme }) => theme.zIndex.drawer + 12};
-  transition: all 0.3s ${({ theme }) => theme.transitions.easing.easeInOut};
   &:hover {
     background: ${({ focus }) =>
       focus ? palette('common', 'white') : grey('300')};

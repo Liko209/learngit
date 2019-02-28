@@ -19,7 +19,8 @@ import {
   Person,
   Group,
   Props,
-  SearchItems,
+  ISearchItems,
+  IRecentItems,
 } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
@@ -30,6 +31,10 @@ const MORE_SECTION_LENGTH = 3;
 
 const InvalidIndexPath: number[] = [-1, -1];
 
+enum DATA_TYPE {
+  search,
+  recent,
+}
 class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   // private _debounceSearch: Function;
 
@@ -38,10 +43,10 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   searchService: SearchService;
   @observable value: string = '';
   @observable focus: boolean = false;
-  @observable recentRecord: RecentSearchModel[] = [];
+  @observable recentRecord: IRecentItems[] = [];
 
   @observable terms: string[] = [];
-  @observable data: SearchItems[] = [];
+  @observable searchResult: ISearchItems[] = [];
   @observable selectIndex: number[] = InvalidIndexPath;
 
   constructor() {
@@ -137,27 +142,27 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     const ret = await this.search(value);
     if (!ret) return;
     const { terms, people, groups, teams } = ret;
-    const data: SearchItems[] = [
+    const data: ISearchItems[] = [
       {
         ...people,
-        name: RecentSearchTypes.PEOPLE,
+        type: RecentSearchTypes.PEOPLE,
       },
       {
         ...groups,
-        name: RecentSearchTypes.GROUP,
+        type: RecentSearchTypes.GROUP,
       },
       {
         ...teams,
-        name: RecentSearchTypes.TEAM,
+        type: RecentSearchTypes.TEAM,
       },
     ];
-    this.data = data;
+    this.searchResult = data;
     this.terms = terms;
     this.resetSelectIndex();
   }
 
   resetData = () => {
-    this.data = [];
+    this.searchResult = [];
     this.terms = [];
     this.resetSelectIndex();
   }
@@ -166,8 +171,17 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     this.selectIndex = InvalidIndexPath;
   }
 
-  setData = (data: SearchItems[]) => {
-    this.data = data;
+  setData = (data: ISearchItems[] | IRecentItems[]) => {
+    switch (this.dataType) {
+      case DATA_TYPE.search:
+        this.searchResult = data as ISearchItems[];
+        break;
+      case DATA_TYPE.recent:
+        this.recentRecord = data as IRecentItems[];
+        break;
+      default:
+        break;
+    }
   }
 
   setSelectIndex = (section: number, cellIndex: number) => {
@@ -175,9 +189,9 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   findNextValidSectionLength = (section: number, offset: number): number[] => {
-    const data = this.data;
+    const data = this.currentResults();
     for (let i = section; i >= 0 && i < data.length; i += offset) {
-      const { length } = (data[i] as SearchItems).ids;
+      const { length } = (data[i] as ISearchItems).ids;
       if (length > 0) {
         return [i, length];
       }
@@ -204,9 +218,9 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
 
   onKeyDown = () => {
     const [section, cell] = this.selectIndex;
-    const data = this.data;
+    const data = this.currentResults();
     const currentSection = section < 0 ? 0 : section;
-    const searchItem: SearchItems = data[currentSection];
+    const searchItem: ISearchItems | IRecentItems = data[currentSection];
 
     if (!searchItem) {
       return;
@@ -224,13 +238,22 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     }
   }
 
+  getCurrentItemId = () => {
+    const [section, cell] = this.selectIndex;
+    const list = this.currentResults();
+    if (section < 0) {
+      return null;
+    }
+    return list[section].ids[cell];
+  }
+
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
     const [section, cell] = this.selectIndex;
-    let data = this.data;
+    let data = this.currentResults();
     data = data.slice(0);
 
-    const items: SearchItems = data[sectionIndex];
+    const items: ISearchItems | IRecentItems = data[sectionIndex];
     items.ids.splice(cellIndex, 1);
 
     this.setData(data);
@@ -246,8 +269,24 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     }
   }
 
+  currentResults() {
+    return this.dataType === DATA_TYPE.search
+      ? this.searchResult
+      : this.recentRecord;
+  }
+
+  get dataType() {
+    return this.value ? DATA_TYPE.search : DATA_TYPE.recent;
+  }
+
   getRecent = () => {
-    this.recentRecord = this.searchService.getRecentSearchRecords();
+    const result = this.searchService.getRecentSearchRecords();
+    this.recentRecord = [
+      {
+        ids: result.map((item: RecentSearchModel) => item.value),
+        types: result.map((item: RecentSearchModel) => item.type),
+      },
+    ];
   }
 
   clearRecent = () => {
