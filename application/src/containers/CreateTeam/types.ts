@@ -27,6 +27,7 @@ type ViewProps = WithNamespaces & {
   handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchContactChange: (items: any) => void;
   serverUnknownError: boolean;
+  loading: boolean;
 } & RouteComponentProps;
 
 export { ViewProps };

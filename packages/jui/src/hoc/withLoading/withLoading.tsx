@@ -11,6 +11,8 @@ import { withDelay } from '../withDelay';
 type WithLoadingProps = {
   loading: boolean;
   variant?: 'circular';
+  alwaysComponentShow?: boolean;
+  delay?: number;
 };
 
 const StyledLoadingPage = styled.div`
@@ -42,22 +44,32 @@ const withLoading = <
 ): React.SFC<P & WithLoadingProps> => {
   const CustomizedLoadingWithDelay =
     CustomizedLoading && withDelay(CustomizedLoading);
-
-  return React.memo(({ loading, variant, ...props }: WithLoadingProps) => {
-    const LoadingWithDelay =
-      CustomizedLoadingWithDelay || MAP[variant || 'circular'];
-
-    return (
-      <>
-        {loading ? <LoadingWithDelay delay={100} /> : null}
-        <Component
-          {...props as P}
-          loading={loading}
-          style={{ display: loading ? 'none' : '' }}
-        />
-      </>
-    );
-  });
+  return React.memo(
+    ({
+      loading,
+      alwaysComponentShow = false,
+      delay = 100,
+      variant,
+      ...props
+    }: WithLoadingProps) => {
+      let displayStyle = loading ? 'none' : '';
+      const LoadingWithDelay =
+        CustomizedLoadingWithDelay || MAP[variant || 'circular'];
+      if (alwaysComponentShow) {
+        displayStyle = '';
+      }
+      return (
+        <>
+          {loading ? <LoadingWithDelay delay={delay} /> : null}
+          <Component
+            {...props as P}
+            loading={loading}
+            style={{ display: displayStyle }}
+          />
+        </>
+      );
+    },
+  );
 };
 
 export { withLoading, WithLoadingProps };

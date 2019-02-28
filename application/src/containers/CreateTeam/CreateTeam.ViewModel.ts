@@ -36,6 +36,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   errorEmail: string;
   @observable
   serverUnknownError: boolean = false;
+  @observable
+  loading: boolean = false;
 
   @computed
   get isOffline() {
@@ -74,8 +76,11 @@ class CreateTeamViewModel extends AbstractViewModel {
     const groupService: GroupService = GroupService.getInstance();
     const creatorId = Number(UserConfig.getCurrentUserId());
     try {
+      this.loading = true;
       return await groupService.createTeam(creatorId, memberIds, options);
+      this.loading = false;
     } catch (error) {
+      this.loading = false;
       this.createErrorHandler(error);
       return null;
     }
