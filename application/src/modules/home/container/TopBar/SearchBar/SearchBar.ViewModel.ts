@@ -43,10 +43,10 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   searchService: SearchService;
   @observable value: string = '';
   @observable focus: boolean = false;
-  @observable recentRecord: IRecentItems[] = [];
+  @observable recentRecord: RecentItems[] = [];
 
   @observable terms: string[] = [];
-  @observable searchResult: ISearchItems[] = [];
+  @observable searchResult: SearchItems[] = [];
   @observable selectIndex: number[] = InvalidIndexPath;
 
   constructor() {

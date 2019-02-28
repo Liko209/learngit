@@ -18,7 +18,7 @@ type SearchItems = BaseItems<number> & {
 };
 
 type RecentItems = BaseItems<number | string> & {
-  types: RecentSearchTypes;
+  types: RecentSearchTypes[];
 };
 
 type SearchSection<T> = {
