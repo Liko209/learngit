@@ -10,7 +10,7 @@ import {
   withInfoDecorator,
   alignCenterDecorator,
 } from '../../../../foundation/utils/decorators';
-import { JuiButton } from '../';
+import { JuiFabButton, JuiButton } from '../';
 import { JuiIconButton } from '../../IconButton';
 import styled from '../../../../foundation/styled-components';
 import { grey } from '../../../../foundation/utils/styles';
@@ -90,16 +90,16 @@ storiesOf('Components/Buttons', module)
     const { content, ...rest } = knobs;
     return (
       <Wrapper>
-        <JuiButton variant="fab" {...rest} className="buttonWrapper">
-          <JuiIconButton variant="plain" tooltipTitle="left">
+        <JuiFabButton {...rest} className="buttonWrapper">
+          <JuiIconButton variant="plain" tooltipTitle="left" color="grey.900">
             pervious
           </JuiIconButton>
-        </JuiButton>
-        <JuiButton variant="fab" {...rest} className="buttonWrapper">
-          <JuiIconButton variant="plain" tooltipTitle="right">
+        </JuiFabButton>
+        <JuiFabButton {...rest} className="buttonWrapper">
+          <JuiIconButton variant="plain" tooltipTitle="right" color="grey.900">
             forward
           </JuiIconButton>
-        </JuiButton>
+        </JuiFabButton>
       </Wrapper>
     );
   });

@@ -7,7 +7,7 @@ import * as React from 'react';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
-import Fab from '@material-ui/core/Fab';
+import Fab, { FabProps as MuiFabProps } from '@material-ui/core/Fab';
 import { JuiCircularProgress } from '../../Progress';
 import { Palette } from '../../../foundation/theme/theme';
 import styled, { css } from '../../../foundation/styled-components';
@@ -27,13 +27,20 @@ type Variant = 'round' | 'text' | 'contained' | 'outlined' | 'fab';
 
 type JuiButtonColor = 'primary' | 'secondary' | 'negative';
 
-type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> & {
+type buttonProps = {
   size?: 'small' | 'large';
-  variant?: Variant;
   disabled?: boolean;
   color?: JuiButtonColor;
   loading?: boolean;
 };
+
+type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> &
+  buttonProps & {
+    variant?: Variant;
+  };
+
+type JuiFabProps = Omit<MuiFabProps, 'innerRef' | 'variant' | 'color'> &
+  buttonProps;
 
 const ColorMap: {
   [x: string]: [keyof Palette, string];
@@ -55,10 +62,8 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
     restProps.disableRipple = true;
     restProps.size = 'small';
   }
-  const Component = ({ ...props }) =>
-    variant === 'fab' ? <Fab {...props} /> : <MuiButton {...props} />;
   return (
-    <Component
+    <MuiButton
       classes={{
         disabled: 'disabled',
         contained: 'containedButtonStyle',
@@ -75,7 +80,16 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       ) : (
         children
       )}
-    </Component>
+    </MuiButton>
+  );
+};
+
+const WrappedMuiFab = (props: JuiFabProps) => {
+  const { color, children, loading, ...restProps } = props;
+  return (
+    <Fab TouchRippleProps={{ classes: touchRippleClasses }} {...restProps}>
+      {loading ? <JuiCircularProgress size={20} /> : children}
+    </Fab>
   );
 };
 
@@ -85,7 +99,7 @@ const shadow = (n: number) => {
       variant === 'round' ? theme.shadows[n] : 'unset'};
   `;
 };
-const StyledFabButton = styled<JuiButtonProps>(WrappedMuiButton)`
+const StyledFabButton = styled<JuiFabProps>(WrappedMuiFab)`
   && {
     background-color: ${palette('common', 'white')};
     height: ${({ theme }) => height(15)({ theme })};
@@ -105,6 +119,9 @@ const StyledFabButton = styled<JuiButtonProps>(WrappedMuiButton)`
     &.disabled {
       background-color: ${palette('common', 'white')};
       opacity: 0.12;
+    }
+    .icon {
+      opacity: ${({ disabled }) => (disabled ? 0.12 : 1)};
     }
   }
 `;
@@ -172,22 +189,26 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
 
 const JuiButtonComponent: React.StatelessComponent<JuiButtonProps> = (
   props: JuiButtonProps,
-) => {
-  const { variant } = props;
-  return variant === 'fab' ? (
-    <StyledFabButton {...props} />
-  ) : (
-    <StyledButton {...props} />
-  );
-};
+) => <StyledButton {...props} />;
+
+const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
+  props: JuiFabProps,
+) => <StyledFabButton {...props} />;
 
 JuiButtonComponent.defaultProps = {
   size: 'large',
   color: 'primary',
+  disabled: false,
   variant: 'contained',
+};
+
+JuiFabButtonComponent.defaultProps = {
+  size: 'large',
+  color: 'primary',
   disabled: false,
 };
 
 const JuiButton = styled(React.memo(JuiButtonComponent))``;
+const JuiFabButton = styled(React.memo(JuiFabButtonComponent))``;
 
-export { JuiButton, JuiButtonProps, JuiButtonColor };
+export { JuiButton, JuiButtonProps, JuiButtonColor, JuiFabButton, JuiFabProps };
