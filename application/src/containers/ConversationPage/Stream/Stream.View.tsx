@@ -101,30 +101,38 @@ class StreamViewComponent extends Component<Props> {
     } = prevProps;
     const { postIds, mostRecentPostId, lastPost: currentLastPost } = this.props;
     const prevSize = prevPostIds.length;
-
+    const currSize = postIds.length;
     if (postIds.length && mostRecentPostId) {
       if (!postIds.includes(mostRecentPostId)) {
         storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
       }
     }
-    if (prevSize === 0) return;
+
+    if (prevSize === 0 || !currentLastPost) return;
+    const PostAdded = prevSize <= currSize;
+
+    if (!PostAdded) {
+      return;
+    }
+
     // scroll bottom and load post
-    if (prevLastPost !== currentLastPost) {
-      if (this._isAtBottom && !hasMoreDown) {
-        return this.scrollToBottom();
-      }
-      if (currentLastPost!.creatorId === this._currentUser) {
+    const newPostAddedAtBottom = prevLastPost !== currentLastPost;
+
+    if (newPostAddedAtBottom) {
+      const receivePostWhenAtBottom = this._isAtBottom && !hasMoreDown;
+      const receivePostFromCurrentUser =
+        currentLastPost.creatorId === this._currentUser;
+      if (receivePostWhenAtBottom || receivePostFromCurrentUser) {
         return this.scrollToBottom();
       }
     }
+
     // scroll TOP and load posts
     if (this._isAtTop && hasMoreUp && this._listRef.current) {
       const parent = getScrollParent(this._listRef.current);
       parent.scrollTop =
         this._scrollTop + parent.scrollHeight - this._scrollHeight;
-      return;
     }
-    return;
   }
 
   private async _stickToBottom() {
