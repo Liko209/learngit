@@ -220,8 +220,7 @@ Boolean e2eEnableMockServer = params.E2E_ENABLE_MOCK_SERVER
 Boolean isMerge = gitlabSourceBranch != gitlabTargetBranch
 // skip e2e when neither source or target branch is stable branch.
 // won't skip e2e when configuration file of source branch exists
-Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch) &&
-    !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
+Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch)
 // update status for merge request event and new push on stable branch
 Boolean skipUpdateGitlabStatus = !isMerge && integrationBranch != gitlabTargetBranch
 // create release build when targetBranch match specific name pattern
@@ -352,6 +351,9 @@ node(buildNode) {
 
             // we can even skip install dependencies
             skipInstallDependencies = skipSaAndUt
+
+            // don't skip e2e if configuration file exists
+            skipEndToEnd = skipEndToEnd && !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
         }
 
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
@@ -403,7 +405,7 @@ node(buildNode) {
                         // push git notes to remote
                         sshagent (credentials: [scmCredentialId]) {
                             sh "git fetch -f ${gitlabSourceNamespace} refs/notes/*:refs/notes/*"
-                            sh 'git notes add -f -F coverage/coverage-summary.json'
+                            sh "git notes add -f -F coverage/coverage-summary.json ${appHeadSha}"
                             sh "git push -f ${gitlabSourceNamespace} refs/notes/*"
                         }
                     }
