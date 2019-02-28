@@ -43,7 +43,7 @@ const hackLightHouse = async () => {
       const frameId = frameCommittedInBrowserEvt.args.data.frame;
       const url = frameCommittedInBrowserEvt.args.data.url;
       const pid = frameCommittedInBrowserEvt.args.data.processId;
-      if (frameId && pid && url && url.startsWith(Config.blankUrl)) {
+      if (frameId && pid && url && !url.startsWith(Config.blankUrl)) {
         return {
           pid: pid,
           tid: frameCommittedInBrowserEvt.tid,
