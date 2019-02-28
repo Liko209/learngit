@@ -27,15 +27,12 @@ class StateController {
 
   getStateActionController(): StateActionController {
     if (!this._stateActionController) {
-      const partialModifyController = buildPartialModifyController<GroupState>(
-        this._entitySourceController,
-      );
       const requestController = buildRequestController<State>({
         basePath: '/save_state_partial',
         networkClient: Api.glipNetworkClient,
       });
       this._stateActionController = new StateActionController(
-        partialModifyController,
+        this._entitySourceController,
         requestController,
         this.getStateFetchDataController(),
         this.getTotalUnreadController(),
