@@ -119,7 +119,7 @@ const hackLightHouse = async () => {
 
     // Filter to just events matching the frame ID for sanity
     const frameEvents = keyEvents.filter(e => e.pid === mainFrameIds.pid && e.tid === mainFrameIds.tid);
-    console.log(`frameEvents ->  ${JSON.stringify(frameEvents)}`);
+    // logger.log(`frameEvents ->  ${JSON.stringify(frameEvents)}`);
     // Our navStart will be the last frame navigation in the trace
     const navigationStart = frameEvents.find(TraceOfTab.isNavigationStartOfInterest);
     logger.log(`navigationStart -> ${JSON.stringify(navigationStart)}`);
