@@ -86,26 +86,35 @@ const useItems = (defaultItems: ItemModel[] | (() => ItemModel[])) => {
 };
 
 storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
-  const dataCount = number('dataCount', 1000);
-  const initialScrollToIndex = number('initialScrollToIndex', 999);
-  const initialRangeSize = number('initialRangeSize', 11);
+  const dataCount = number('dataCount', 100);
+  const initialScrollToIndex = number('initialScrollToIndex', 0);
+  const initialRangeSize = number('initialRangeSize', 7);
   const listHeight = number('listHeight', 200);
 
   const Demo = () => {
     const ref = useRef<JuiVirtualizedListHandles>(null);
 
-    const { items, prependItem, removeItem } = useItems(() => {
+    const { items, appendItem, prependItem, removeItem } = useItems(() => {
       const items: ItemModel[] = [];
-      items.push(itemFactory.buildImageItem(100));
-      for (let i = 101; i < dataCount; i++) {
+      const startId = 100;
+      for (let i = startId; i < startId + dataCount; i++) {
         items.push(itemFactory.buildImageItem(i, true));
       }
       return items;
     });
 
-    const handleAddClick = () => {
+    const handlePrependClick = () => {
       const i = items[0].id - 1;
       prependItem({
+        id: i,
+        text: `Item-${i}`,
+        imageUrl: 'https://via.placeholder.com/200x150',
+      });
+    };
+
+    const handleAppendClick = () => {
+      const i = items[items.length - 1].id + 1;
+      appendItem({
         id: i,
         text: `Item-${i}`,
         imageUrl: 'https://via.placeholder.com/200x150',
@@ -137,7 +146,8 @@ storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
     const children = items.map(item => <Item key={item.id} item={item} />);
     return (
       <div>
-        <button onClick={handleAddClick}>Add Item</button>
+        <button onClick={handlePrependClick}>Prepend Item</button>
+        <button onClick={handleAppendClick}>Append Item</button>
         <button onClick={handleAddCrazyClick}>Add Crazy Item</button>
         <button onClick={handleRemoveClick}>Remove Item</button>
         <br />

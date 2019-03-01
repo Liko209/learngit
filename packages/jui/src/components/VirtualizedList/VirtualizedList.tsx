@@ -17,7 +17,7 @@ import React, {
 import ResizeObserver from 'resize-observer-polyfill';
 import { createRange, createRangeFromAnchor } from './util/createRange';
 import { VirtualizedListProps } from './VirtualizedListProps';
-import { useScroll } from './useScroll';
+import { useScroll, ScrollPosition } from './useScroll';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 
@@ -50,7 +50,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   forwardRef,
 ) => {
   const getChildKey = (i: number) => {
-    const child = children[i] as { key: string };
+    const child = children[i];
     if (!child) return '';
     return child.key;
   };
@@ -91,7 +91,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     let rowsHeight = 0;
     for (let index = 0; index < childrenCount; index++) {
       rowsHeight += getRowHeight(index);
-      if (position <= rowsHeight) {
+      if (position < rowsHeight) {
         return index;
       }
     }
@@ -132,11 +132,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     return Array.prototype.slice.call(contentEl.children, 0);
   };
 
-  const [displayRangeSize] = useState(initialRangeSize);
-  const childrenCount = children.length;
-
-  const ref: DivRefObject = useRef(null);
-  const contentRef: DivRefObject = useRef(null);
+  const scrollToPosition = (position: ScrollPosition) => {
+    if (ref.current) {
+      ref.current.scrollTop =
+        getRowsHeight(0, position.index - 1) + position.offset;
+    }
+  };
 
   //
   // Forward ref
@@ -144,28 +145,66 @@ const JuiVirtualizedList: RefForwardingComponent<
   useImperativeHandle(forwardRef, () => ({
     scrollToIndex: (index: number) => {
       setDisplayRange(createDisplayRange({ startIndex: index - 5 }));
-      scrollTo({ index });
+      setScrollPosition({ index });
+      scrollEffectTriggerRef.current++; // Trigger scroll after next render
     },
   }));
+
+  const ref: DivRefObject = useRef(null);
+  const contentRef: DivRefObject = useRef(null);
 
   //
   // State
   //
-  const {
-    scrollPosition,
-    setScrollPosition,
-    scrollTo,
-    scrollEffectTrigger,
-    fireScrollToEffect,
-  } = useScroll({
+  const [displayRangeSize] = useState(initialRangeSize);
+  const childrenCount = children.length;
+  const { scrollPosition, setScrollPosition } = useScroll({
     index: initialScrollToIndex,
     offset: 0,
   });
   const [cache] = useState(new Map());
   const [estimateRowHeight] = useState(20);
-  const [{ startIndex, stopIndex }, setDisplayRange] = useRange(
-    createDisplayRange({ startIndex: initialScrollToIndex - 5 }),
-  );
+  const [
+    { startIndex: _startIndex, stopIndex: _stopIndex },
+    setDisplayRange,
+  ] = useRange(createDisplayRange({ startIndex: initialScrollToIndex - 5 }));
+
+  // ------------------------------------------------------------
+  const prevStartChildRef = useRef(children[_startIndex]);
+  const prevStartIndexRef = useRef(_startIndex);
+  const prevChildrenCountRef = useRef(childrenCount);
+  const totalOffsetRef = useRef(0);
+
+  let startIndex: number = _startIndex;
+  let stopIndex: number = _stopIndex;
+  const scrollEffectTriggerRef = useRef(0);
+
+  if (prevChildrenCountRef.current !== children.length) {
+    const prevStartChild = prevStartChildRef.current;
+    const offset =
+      children.findIndex(child => child.key === prevStartChild.key) -
+      prevStartIndexRef.current;
+
+    totalOffsetRef.current += offset;
+    const totalOffset = Math.max(totalOffsetRef.current, 0);
+
+    if (offset !== 0) {
+      startIndex = startIndex + totalOffset;
+      stopIndex = stopIndex + totalOffset;
+      scrollPosition.index = Math.max(scrollPosition.index + offset, 0);
+      scrollEffectTriggerRef.current++; // Trigger scroll after render
+    }
+  }
+
+  console.log('currentOffset: ', totalOffsetRef.current);
+  console.log('_startIndex: ', _startIndex, _stopIndex);
+  console.log('startIndex: ', startIndex, stopIndex);
+  console.log('scrollPosition: ', scrollPosition);
+
+  prevStartChildRef.current = children[_startIndex];
+  prevStartIndexRef.current = _startIndex;
+  prevChildrenCountRef.current = children.length;
+  // ------------------------------------------------------------
 
   const heightBeforeStartRow = getRowsHeight(0, startIndex - 1);
   const heightAfterStopRow = getRowsHeight(stopIndex + 1, childrenCount - 1);
@@ -184,7 +223,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       displayedRowsEls.forEach((el, i) => {
         const { diff } = updateRowHeightCache(el, startIndex + i);
         if (diff !== 0 && i + startIndex < scrollPosition.index) {
-          fireScrollToEffect();
+          scrollToPosition(scrollPosition);
         }
       });
     }
@@ -194,11 +233,8 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Handle scroll to
   //
   useLayoutEffect(() => {
-    if (ref.current) {
-      ref.current.scrollTop =
-        getRowsHeight(0, scrollPosition.index - 1) + scrollPosition.offset;
-    }
-  },              [scrollEffectTrigger]);
+    scrollToPosition(scrollPosition);
+  },              [scrollEffectTriggerRef.current]);
 
   //
   // Observe dynamic rows
@@ -213,7 +249,7 @@ const JuiVirtualizedList: RefForwardingComponent<
         const ro = new ResizeObserver((entities: ResizeObserverEntry[]) => {
           const { diff } = updateRowHeightCache(el, startIndex + i);
           if (diff !== 0 && i + startIndex < scrollPosition.index) {
-            fireScrollToEffect();
+            scrollToPosition(scrollPosition);
           }
         });
         ro.observe(el);
@@ -242,14 +278,19 @@ const JuiVirtualizedList: RefForwardingComponent<
       });
 
       // Update display range
+      const range = createDisplayRangeFromAnchor({ anchor });
       setDisplayRange(createDisplayRangeFromAnchor({ anchor }));
+      prevStartChildRef.current = children[range.startIndex];
+      prevStartIndexRef.current = range.startIndex;
+      prevChildrenCountRef.current = children.length;
+      totalOffsetRef.current = 0;
     }
   };
 
   return (
     <div
       ref={ref}
-      onScroll={() => handleScroll}
+      onScroll={handleScroll}
       style={{
         height,
         overflow: 'auto',
