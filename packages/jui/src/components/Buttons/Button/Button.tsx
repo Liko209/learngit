@@ -7,7 +7,6 @@ import * as React from 'react';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
-import Fab, { FabProps as MuiFabProps } from '@material-ui/core/Fab';
 import { JuiCircularProgress } from '../../Progress';
 import { Palette } from '../../../foundation/theme/theme';
 import styled, { css } from '../../../foundation/styled-components';
@@ -27,20 +26,13 @@ type Variant = 'round' | 'text' | 'contained' | 'outlined' | 'fab';
 
 type JuiButtonColor = 'primary' | 'secondary' | 'negative';
 
-type buttonProps = {
+type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> & {
   size?: 'small' | 'large';
+  variant?: Variant;
   disabled?: boolean;
   color?: JuiButtonColor;
   loading?: boolean;
 };
-
-type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> &
-  buttonProps & {
-    variant?: Variant;
-  };
-
-type JuiFabProps = Omit<MuiFabProps, 'innerRef' | 'variant' | 'color'> &
-  buttonProps;
 
 const ColorMap: {
   [x: string]: [keyof Palette, string];
@@ -84,47 +76,13 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
   );
 };
 
-const WrappedMuiFab = (props: JuiFabProps) => {
-  const { color, children, loading, ...restProps } = props;
-  return (
-    <Fab TouchRippleProps={{ classes: touchRippleClasses }} {...restProps}>
-      {loading ? <JuiCircularProgress size={20} /> : children}
-    </Fab>
-  );
-};
-
 const shadow = (n: number) => {
   return css<JuiButtonProps>`
     box-shadow: ${({ theme, variant }) =>
       variant === 'round' ? theme.shadows[n] : 'unset'};
   `;
 };
-const StyledFabButton = styled<JuiFabProps>(WrappedMuiFab)`
-  && {
-    background-color: ${palette('common', 'white')};
-    height: ${({ theme }) => height(15)({ theme })};
-    width: ${({ theme }) => width(15)({ theme })};
-    ${typography('caption1')};
-    &:hover {
-      background-color: ${grey('50')};
-    }
-    &:active {
-      background-color: ${grey('100')};
-    }
-    .rippleVisible {
-      opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
-      transform: scale(1);
-      animation-name: ${({ theme }) => rippleEnter(theme)};
-    }
-    &.disabled {
-      background-color: ${palette('common', 'white')};
-      opacity: 0.12;
-    }
-    .icon {
-      opacity: ${({ disabled }) => (disabled ? 0.12 : 1)};
-    }
-  }
-`;
+
 const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
   && {
     min-width: ${({ theme }) => width(26)({ theme })};
@@ -191,24 +149,13 @@ const JuiButtonComponent: React.StatelessComponent<JuiButtonProps> = (
   props: JuiButtonProps,
 ) => <StyledButton {...props} />;
 
-const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
-  props: JuiFabProps,
-) => <StyledFabButton {...props} />;
-
 JuiButtonComponent.defaultProps = {
   size: 'large',
   color: 'primary',
-  disabled: false,
   variant: 'contained',
-};
-
-JuiFabButtonComponent.defaultProps = {
-  size: 'large',
-  color: 'primary',
   disabled: false,
 };
 
 const JuiButton = styled(React.memo(JuiButtonComponent))``;
-const JuiFabButton = styled(React.memo(JuiFabButtonComponent))``;
 
-export { JuiButton, JuiButtonProps, JuiButtonColor, JuiFabButton, JuiFabProps };
+export { JuiButton, JuiButtonProps, JuiButtonColor };

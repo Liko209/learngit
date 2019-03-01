@@ -11,7 +11,7 @@ import {
   alignCenterDecorator,
 } from '../../../../foundation/utils/decorators';
 import { JuiFabButton, JuiButton } from '../';
-import { JuiIconButton } from '../../IconButton';
+import { JuiIconography } from '../../../../foundation/Iconography';
 import styled from '../../../../foundation/styled-components';
 import { grey } from '../../../../foundation/utils/styles';
 
@@ -91,14 +91,10 @@ storiesOf('Components/Buttons', module)
     return (
       <Wrapper>
         <JuiFabButton {...rest} className="buttonWrapper">
-          <JuiIconButton variant="plain" tooltipTitle="left" color="grey.900">
-            pervious
-          </JuiIconButton>
+          <JuiIconography color="grey.900">pervious</JuiIconography>
         </JuiFabButton>
         <JuiFabButton {...rest} className="buttonWrapper">
-          <JuiIconButton variant="plain" tooltipTitle="right" color="grey.900">
-            forward
-          </JuiIconButton>
+          <JuiIconography color="grey.900">forward</JuiIconography>
         </JuiFabButton>
       </Wrapper>
     );
