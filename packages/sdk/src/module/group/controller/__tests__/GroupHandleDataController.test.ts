@@ -129,7 +129,7 @@ beforeEach(() => {
 describe('GroupHandleDataController', () => {
   let groupHandleDataController: GroupHandleDataController;
   beforeEach(() => {
-    groupHandleDataController = new GroupHandleDataController();
+    groupHandleDataController = new GroupHandleDataController(groupService);
   });
   describe('handleData()', () => {
     it('passing an empty array', async () => {
