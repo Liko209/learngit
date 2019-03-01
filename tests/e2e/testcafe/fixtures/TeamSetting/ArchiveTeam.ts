@@ -1,6 +1,6 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-02-20 10:25:49 
+ * @Author: Potar.He
+ * @Date: 2019-02-20 10:25:49
  * @Last Modified by: Potar.He
  * @Last Modified time: 2019-02-20 13:14:07
  */
@@ -144,7 +144,7 @@ test.skip(formalName(`Should display tooltip when click "i" icon beside the "Arc
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 
-  const tooltipText = "Archive a team so that it doesn't show up in your active conversations but is still searchable and can be restored."
+  const tooltipText = "Archive a team so that it doesn't show up in your active conversations. The team will still show up on your team list and can be restored."
 
   const teamSection = app.homePage.messageTab.teamsSection;
   const profileDialog = app.homePage.profileDialog;

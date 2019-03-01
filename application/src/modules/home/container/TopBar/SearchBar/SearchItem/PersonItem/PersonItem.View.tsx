@@ -4,17 +4,29 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import i18next from 'i18next';
 import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { Avatar } from '@/containers/Avatar';
 // import { HotKeys } from 'jui/hoc/HotKeys';
 import { ViewProps } from './types';
+import { JuiIconButton } from 'jui/components/Buttons';
 
 @observer
 class PersonItemView extends React.Component<ViewProps, {}> {
+  goToConversation = async () => {
+    const { goToConversation, person } = this.props;
+    await goToConversation(person.id);
+  }
+
   onClick = () => {
     const { addRecentRecord } = this.props;
     addRecentRecord();
+  }
+
+  handleGoToConversation = (evt: React.MouseEvent) => {
+    evt.stopPropagation();
+    this.goToConversation();
   }
 
   render() {
@@ -33,10 +45,19 @@ class PersonItemView extends React.Component<ViewProps, {}> {
     if (deactivated) {
       return null;
     }
-
+    const goToConversationIcon = (
+      <JuiIconButton
+        data-test-automation-id="goToConversationIcon"
+        tooltipTitle={i18next.t('message.message')}
+        onClick={this.handleGoToConversation}
+        variant="plain"
+        size="small"
+      >
+        messages
+      </JuiIconButton>
+    );
     return (
       <JuiSearchItem
-        tabIndex={1}
         onMouseEnter={onMouseEnter(sectionIndex, cellIndex)}
         onMouseLeave={onMouseLeave}
         hovered={hovered}
@@ -46,7 +67,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
         value={userDisplayName}
         terms={terms}
         data-test-automation-id={`search-${title}-item`}
-        Actions={null}
+        Actions={goToConversationIcon}
         isPrivate={false}
         isJoined={false}
       />
