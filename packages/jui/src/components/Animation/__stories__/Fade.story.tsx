@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
+import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { Fade } from '../index';
 import { Button } from '@material-ui/core';
 
@@ -55,8 +55,8 @@ class Test extends React.Component {
         {this.state.open && (
           <Fade
             show={this.state.show}
-            duration="openDialog"
-            easing="openDialog"
+            duration="openCloseDialog"
+            easing="openCloseDialog"
             onExited={this.hide}
           >
             <header> the is a header</header>

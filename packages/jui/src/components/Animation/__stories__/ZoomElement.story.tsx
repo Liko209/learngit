@@ -6,9 +6,9 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
+import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { ZoomElement } from '../index';
-import styled from '../../../../foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import { Button } from '@material-ui/core';
 
 const StyledImage = styled('img')<any>`
@@ -76,8 +76,8 @@ class Test extends React.Component {
           <ZoomElement
             originalElement={this.imageRef.current}
             show={this.state.show}
-            duration="openDialog"
-            easing="openDialog"
+            duration="openCloseDialog"
+            easing="openCloseDialog"
             onExited={this.hide}
           >
             {(registerChild: Function) => (
@@ -92,7 +92,9 @@ class Test extends React.Component {
         )}
         <div>
           <Button onClick={this.update}>update</Button>
-          <Button onClick={this.toggleOriginalImage}>toggle</Button>
+          <Button onClick={this.toggleOriginalImage}>
+            {this.state.showOriginal ? 'hide' : 'show'} original image
+          </Button>
         </div>
       </div>
     );

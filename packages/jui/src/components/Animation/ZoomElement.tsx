@@ -3,7 +3,7 @@ import styled, {
   css,
   keyframes,
   withTheme,
-} from '../../../foundation/styled-components';
+} from '../../foundation/styled-components';
 import { Transition } from 'react-transition-group';
 import {
   TransitionStatus,
@@ -11,7 +11,7 @@ import {
   EnterHandler,
 } from 'react-transition-group/Transition';
 import { AnimationOptions } from './types';
-import { ThemeProps } from '../../..//foundation/theme/theme';
+import { ThemeProps } from '../../foundation/theme/theme';
 
 type ZoomElementProps = {
   children: (cb: Function) => any;
@@ -44,8 +44,8 @@ function genStyle(
         css`
           &&& > * {
             animation: ${getAnimation(startPosition, endPosition, true)}
-              ${({ theme }) => theme.transitions.duration.openDialog}ms
-              ${({ theme }) => theme.transitions.easing.openDialog};
+              ${({ theme }) => theme.transitions.duration.openCloseDialog}ms
+              ${({ theme }) => theme.transitions.easing.openCloseDialog};
           }
         `
       );
@@ -54,9 +54,8 @@ function genStyle(
       return css`
         &&& > * {
           animation: ${getAnimation(endPosition, startPosition, false)}
-          ${({ theme }) => theme.transitions.duration[option.duration]}ms
-          ${({ theme }) => theme.transitions.easing[option.easing]};
-          forwards;
+            ${({ theme }) => theme.transitions.duration[option.duration]}ms
+            ${({ theme }) => theme.transitions.easing[option.easing]} forwards;
         }
       `;
     }

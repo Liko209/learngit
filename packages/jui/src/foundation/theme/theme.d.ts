@@ -202,10 +202,10 @@ type Theme = {
   };
   transitions: {
     easing: {
-      openDialog: string;
+      openCloseDialog: string;
     };
     duration: {
-      openDialog: string;
+      openCloseDialog: string;
     };
   };
 } & Omit<MuiTheme, 'typography'>;

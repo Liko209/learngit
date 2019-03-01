@@ -1,37 +1,29 @@
 import * as React from 'react';
 import { Transition } from 'react-transition-group';
-import styled, {
-  css,
-  keyframes,
-  withTheme,
-} from '../../../foundation/styled-components';
+import styled, { css, withTheme } from '../../foundation/styled-components';
 import { TransitionStatus } from 'react-transition-group/Transition';
-import { ThemeProps } from '../../../foundation/theme/theme';
-import { TransitionAnimationProps, AnimationOptions } from './types';
+import { ThemeProps } from '../../foundation/theme/theme';
+import { AnimationOptions, TransitionAnimationProps } from './types';
+import { Keyframes } from 'styled-components';
 
-const slideAnimation = keyframes`
-    from {
-      opacity: 0;
-    }
-    to {
-      transform: opacity: 1;
-    }
-`;
-
-function getStyle(state: TransitionStatus, option: AnimationOptions) {
+function getStyle(
+  state: TransitionStatus,
+  option: AnimationOptions,
+  animation: Keyframes,
+) {
   switch (state) {
     case 'entering':
       return css`
-        &&& > * {
-          animation: ${slideAnimation}
+        & > * {
+          animation: ${animation}
             ${({ theme }) => theme.transitions.duration[option.duration]}ms
             ${({ theme }) => theme.transitions.easing[option.easing]};
         }
       `;
     case 'exiting':
       return css`
-        &&& > * {
-          animation: ${slideAnimation}
+        & > * {
+          animation: ${animation}
             ${({ theme }) => theme.transitions.duration[option.duration]}ms
             ${({ theme }) => theme.transitions.easing[option.easing]} reverse
             forwards;
@@ -45,12 +37,15 @@ function getStyle(state: TransitionStatus, option: AnimationOptions) {
 const StyledContainer = styled('div')<{
   state: TransitionStatus;
   option: AnimationOptions;
+  animation: Keyframes;
 }>`
-  ${({ state, option }) => getStyle(state, option)}
+  ${({ state, option, animation }) => getStyle(state, option, animation)}
 `;
 
-class FadeAnimation extends React.PureComponent<
-  TransitionAnimationProps & ThemeProps
+class TransitionAnimation extends React.PureComponent<
+  TransitionAnimationProps & {
+    animation: Keyframes;
+  } & Partial<ThemeProps>
 > {
   render() {
     const {
@@ -61,17 +56,22 @@ class FadeAnimation extends React.PureComponent<
       easing,
       onEntered,
       theme,
+      animation,
     } = this.props;
     return (
       <Transition
         in={show}
         appear={true}
-        timeout={theme.transitions.duration[duration]}
+        timeout={theme!.transitions.duration[duration]}
         onEntered={onEntered}
         onExited={onExited}
       >
         {state => (
-          <StyledContainer option={{ duration, easing }} state={state}>
+          <StyledContainer
+            option={{ duration, easing }}
+            state={state}
+            animation={animation}
+          >
             {children}
           </StyledContainer>
         )}
@@ -80,6 +80,6 @@ class FadeAnimation extends React.PureComponent<
   }
 }
 
-const Fade = withTheme(FadeAnimation);
+const JuiTransition = withTheme(TransitionAnimation);
 
-export { Fade };
+export { JuiTransition };

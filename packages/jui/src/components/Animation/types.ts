@@ -1,4 +1,3 @@
-import { ThemeProps } from '../../../foundation/theme/theme';
 import { ExitHandler, EnterHandler } from 'react-transition-group/Transition';
 export type AnimationOptions = {
   duration: string;
@@ -10,7 +9,6 @@ export type TransitionAnimationProps = {
   show: boolean;
   duration: string;
   easing: string;
-  theme: ThemeProps;
   onExited?: ExitHandler;
   onEntered?: EnterHandler;
 };
