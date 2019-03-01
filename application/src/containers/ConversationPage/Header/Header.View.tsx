@@ -12,7 +12,7 @@ import {
   JuiConversationPageHeader,
   JuiConversationPageHeaderSubtitle,
 } from 'jui/pattern/ConversationPageHeader';
-import { JuiButtonBar, JuiIconButtonProps } from 'jui/components/Buttons';
+import { JuiButtonBar } from 'jui/components/Buttons';
 import { Favorite, Privacy } from '@/containers/common';
 import { translate, WithNamespaces } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
@@ -48,7 +48,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   @computed
   private get _rightButtonsComponents() {
     const { extensions } = this._messageStore;
-    const buttons: ComponentType<JuiIconButtonProps>[] = [];
+    const buttons: ComponentType<{}>[] = [];
     extensions.forEach((extension: MessageExtension) => {
       const extensionButtons = extension['CONVERSATION_PAGE.HEADER.BUTTONS'];
       if (extensionButtons) {
@@ -60,9 +60,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
   private _ActionButtons() {
     const actionButtons = this._rightButtonsComponents.map(
-      (Comp: ComponentType<JuiIconButtonProps>, i: number) => (
-        <Comp key={`ACTION_${i}`} />
-      ),
+      (Comp: ComponentType<{}>, i: number) => <Comp key={`ACTION_${i}`} />,
     );
 
     return <JuiButtonBar overlapSize={1}>{actionButtons}</JuiButtonBar>;

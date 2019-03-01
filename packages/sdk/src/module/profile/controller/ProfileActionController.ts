@@ -9,7 +9,7 @@ import { IPartialModifyController } from '../../../framework/controller/interfac
 import { Raw } from '../../../framework/model';
 import _ from 'lodash';
 import { ProfileDataController } from './ProfileDataController';
-import { UserConfig } from '../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../service/account/config';
 import { PersonDao } from '../../person/dao/PersonDao';
 import { daoManager } from '../../../dao';
 
@@ -91,7 +91,7 @@ class ProfileActionController {
 
     // should use Person Service to get current user
     // waiting for Person Service refactor
-    const currentId = UserConfig.getCurrentUserId();
+    const currentId = AccountGlobalConfig.getCurrentUserId();
     const personDao = daoManager.getDao(PersonDao);
     const result = await personDao.get(currentId);
 

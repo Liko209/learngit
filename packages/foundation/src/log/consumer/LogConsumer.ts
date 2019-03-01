@@ -101,7 +101,7 @@ export class LogConsumer implements ILogConsumer {
             await loopController.abortAll();
             break;
           case 'retry':
-            sleep(5000);
+            await sleep(5000);
             await loopController.retry();
             break;
           case 'ignore':

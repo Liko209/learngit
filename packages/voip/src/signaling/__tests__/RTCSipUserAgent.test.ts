@@ -45,14 +45,16 @@ const phoneNumber = 'phoneNumber';
 
 describe('RTCSipUserAgent', async () => {
   it('should emit registered event when web-phone tells register is successful. [JPT-599]', () => {
-    const userAgent = new RTCSipUserAgent(provisionData, options);
+    const userAgent = new RTCSipUserAgent();
+    userAgent._createWebPhone(provisionData, options);
     const eventReceiver = new MockEventReceiver(userAgent);
     userAgent._webphone.userAgent.emit('registered');
     expect(eventReceiver.registerSuccess).toBeCalled();
   });
 
   it('should emit registerFailed event withe cause and response when webphone tells register is failed. [JPT-600]', () => {
-    const userAgent = new RTCSipUserAgent(provisionData, options);
+    const userAgent = new RTCSipUserAgent();
+    userAgent._createWebPhone(provisionData, options);
     const eventReceiver = new MockEventReceiver(userAgent);
     userAgent._webphone.userAgent.emit(
       'registrationFailed',
@@ -67,7 +69,8 @@ describe('RTCSipUserAgent', async () => {
 
   describe('reRegister()', () => {
     it('Should reRegister has been called', () => {
-      const userAgent = new RTCSipUserAgent(provisionData, options);
+      const userAgent = new RTCSipUserAgent();
+      userAgent._createWebPhone(provisionData, options);
       jest.spyOn(userAgent, 'reRegister').mockImplementation(() => {});
       userAgent.reRegister();
       expect(userAgent.reRegister).toHaveBeenCalled();
@@ -77,7 +80,8 @@ describe('RTCSipUserAgent', async () => {
   describe('makeCall', () => {
     let userAgent = null;
     function setupMakeCall() {
-      userAgent = new RTCSipUserAgent(provisionData, {});
+      userAgent = new RTCSipUserAgent();
+      userAgent._createWebPhone(provisionData, options);
       jest.spyOn(userAgent, 'makeCall');
     }
 

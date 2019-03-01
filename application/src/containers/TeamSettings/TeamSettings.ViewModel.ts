@@ -70,7 +70,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   get initialData() {
     return {
       name: this._group.displayName,
-      description: this._group.description,
+      description: this._group.description || '',
       allowMemberAddMember: this.allowMemberAddMember,
       allowMemberPost: this.allowMemberPost,
       allowMemberPin: this.allowMemberPin,

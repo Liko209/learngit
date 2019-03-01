@@ -16,16 +16,16 @@ import {
 } from '../entity';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SortableModel, Raw } from '../../../framework/model';
-import { daoManager, AuthDao, AUTH_GLIP_TOKEN } from '../../../dao';
 import PersonAPI from '../../../api/glip/person';
 import {
   PerformanceTracerHolder,
   PERFORMANCE_KEYS,
 } from '../../../utils/performance';
-import { UserConfig } from '../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../service/account/config';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { PersonDataController } from './PersonDataController';
+import { AuthGlobalConfig } from '../../../service/auth/config';
 
 const PersonFlags = {
   deactivated: 2,
@@ -79,8 +79,7 @@ class PersonController {
     headShotVersion: string,
     size: number,
   ) {
-    const authDao = daoManager.getKVDao(AuthDao);
-    const token = authDao.get(AUTH_GLIP_TOKEN);
+    const token = AuthGlobalConfig.getGlipToken();
     const glipToken = token && token.replace(/\"/g, '');
     if (headShotVersion) {
       return PersonAPI.getHeadShotUrl({
@@ -202,7 +201,7 @@ class PersonController {
     );
     let currentUserId: number | null = null;
     if (excludeSelf) {
-      currentUserId = UserConfig.getCurrentUserId();
+      currentUserId = AccountGlobalConfig.getCurrentUserId();
     }
 
     const result = await this._cacheSearchController.searchEntities(
@@ -360,7 +359,7 @@ class PersonController {
     extensionData?: SanitizedExtensionModel,
   ) {
     const availNumbers: PhoneNumberInfo[] = [];
-    const isCoWorker = UserConfig.getCurrentCompanyId() === companyId;
+    const isCoWorker = AccountGlobalConfig.getCurrentCompanyId() === companyId;
     if (isCoWorker && extensionData) {
       availNumbers.push({
         type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,

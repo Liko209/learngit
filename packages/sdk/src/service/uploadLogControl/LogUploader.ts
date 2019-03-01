@@ -1,14 +1,13 @@
-import { ILogUploader, LogEntity, mainLogger } from 'foundation';
-import AccountService from '../account';
-import axios from 'axios';
-import { UserConfig } from '../../service/account';
-import { Api } from '../../api';
 import {
-  ErrorParserHolder,
-  JError,
-  ERROR_TYPES,
-  ERROR_CODES_NETWORK,
-} from '../../error';
+  ILogUploader,
+  LogEntity,
+  mainLogger,
+  HTTP_STATUS_CODE,
+} from 'foundation';
+import AccountService from '../account';
+import axios, { AxiosError } from 'axios';
+import { AccountGlobalConfig } from '../../service/account/config';
+import { Api } from '../../api';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {
@@ -17,7 +16,7 @@ export class LogUploader implements ILogUploader {
     const message = this.transform(logs);
     const sessionId = logs[0].sessionId;
     const { server, uniqueHttpCollectorCode } = Api.httpConfig.sumologic;
-    const postUrl = `${server}/${uniqueHttpCollectorCode}`;
+    const postUrl = `${server}${uniqueHttpCollectorCode}`;
     await axios.post(postUrl, message, {
       headers: {
         'X-Sumo-Name': `${userInfo.email}| ${userInfo.userId}| ${sessionId}`,
@@ -30,21 +29,20 @@ export class LogUploader implements ILogUploader {
     return logs.map(log => this._getLogText(log)).join('\n');
   }
 
-  errorHandler(error: Error) {
-    const jError: JError = ErrorParserHolder.getErrorParser().parse(error);
+  errorHandler(error: AxiosError) {
     // detail error types description see sumologic doc
     // https://help.sumologic.com/03Send-Data/Sources/02Sources-for-Hosted-Collectors/HTTP-Source/Troubleshooting-HTTP-Sources
+    const { response } = error;
+    if (!response) {
+      return 'abortAll';
+    }
     if (
-      jError.isMatch({
-        type: ERROR_TYPES.NETWORK,
-        codes: [
-          ERROR_CODES_NETWORK.NOT_NETWORK,
-          ERROR_CODES_NETWORK.UNAUTHORIZED,
-          ERROR_CODES_NETWORK.TOO_MANY_REQUESTS,
-          ERROR_CODES_NETWORK.SERVICE_UNAVAILABLE,
-          ERROR_CODES_NETWORK.GATEWAY_TIMEOUT,
-        ],
-      })
+      [
+        HTTP_STATUS_CODE.UNAUTHORIZED,
+        HTTP_STATUS_CODE.TOO_MANY_REQUESTS,
+        HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,
+        HTTP_STATUS_CODE.GATEWAY_TIME_OUT,
+      ].includes(response.status)
     ) {
       return 'retry';
     }
@@ -56,7 +54,7 @@ export class LogUploader implements ILogUploader {
     let id;
     let email = DEFAULT_EMAIL;
     try {
-      id = UserConfig.getCurrentUserId();
+      id = AccountGlobalConfig.getCurrentUserId();
       email = await accountService.getUserEmail();
     } catch (error) {
       mainLogger.error(error);

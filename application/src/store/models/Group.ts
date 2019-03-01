@@ -16,7 +16,7 @@ import Base from './Base';
 import i18next from 'i18next';
 import { TeamPermission, GroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
-import { UserConfig } from 'sdk/service/account';
+import { AccountGlobalConfig } from 'sdk/service/account/config';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -97,7 +97,8 @@ export default class GroupModel extends Base<Group> {
 
   get isMember() {
     return (
-      this.members && this.members.indexOf(UserConfig.getCurrentUserId()) >= 0
+      this.members &&
+      this.members.indexOf(AccountGlobalConfig.getCurrentUserId()) >= 0
     );
   }
 
@@ -107,7 +108,7 @@ export default class GroupModel extends Base<Group> {
       return this.setAbbreviation || '';
     }
 
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
@@ -124,7 +125,7 @@ export default class GroupModel extends Base<Group> {
       this.type === CONVERSATION_TYPES.SMS
     ) {
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
-      return person.userDisplayName || '';
+      return person.userDisplayNameForGroupName || '';
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
@@ -152,7 +153,7 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
 
     const members = this.members || [];
 
@@ -180,7 +181,7 @@ export default class GroupModel extends Base<Group> {
   get membersExcludeMe() {
     const members = this.members || [];
 
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
 
     return members.filter(member => member !== currentUserId);
   }

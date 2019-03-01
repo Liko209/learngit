@@ -34,6 +34,9 @@ const publicPath = "/";
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_PATH%/xyz looks better than %PUBLIC_PATH%xyz.
 const publicUrl = "";
+const iconUrl =
+  "https://s3.amazonaws.com/icomoon.io/79019/Jupiter/symbol-defs.svg";
+
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
 
@@ -126,7 +129,7 @@ module.exports = {
     // This is the URL that app is served from. We use "/" in development.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
+    devtoolModuleFilenameTemplate: (info) =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")
   },
   optimization: {
@@ -248,6 +251,13 @@ module.exports = {
                   ["@babel/plugin-proposal-decorators", { legacy: true }],
                   ["@babel/plugin-proposal-class-properties", { loose: true }],
                   ["@babel/plugin-syntax-dynamic-import"],
+                  [
+                    "babel-plugin-styled-components",
+                    {
+                      ssr: false,
+                      displayName: true
+                    }
+                  ],
                   "react-hot-loader/babel"
                 ]
               }
@@ -320,7 +330,10 @@ module.exports = {
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     // In development, this will be an empty string.
-    new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
+    new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
+      ...env.raw,
+      ICON_URL: iconUrl
+    }),
     // This gives some necessary context to module not found errors, such as
     // the requesting resource.
     new ModuleNotFoundPlugin(paths.appPath),
@@ -388,7 +401,7 @@ module.exports = {
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-          dllPath =>
+          (dllPath) =>
             new AddAssetHtmlPlugin({
               filepath: dllPath,
               includeSourcemap: false
