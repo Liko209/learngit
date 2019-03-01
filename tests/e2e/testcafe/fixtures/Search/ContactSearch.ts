@@ -81,8 +81,8 @@ test(formalName('Search result should be updated in real time when team privacy 
     await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
-  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a join button`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinButton();
+  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
   // update configuration of teams
@@ -122,8 +122,8 @@ test(formalName('Search result should be updated in real time when team privacy 
     await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
-  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a join button`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinButton();
+  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
 });
@@ -195,8 +195,8 @@ test(formalName('Search result should be updated in real time when team membersh
     await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
-  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a join button`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinButton();
+  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
   // update configuration of teams
@@ -232,8 +232,8 @@ test(formalName('Search result should be updated in real time when team membersh
     }
   }, true);
 
-  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a join button`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinButton();
+  await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
+    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 });
 

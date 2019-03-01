@@ -12,7 +12,6 @@ import { PostDao } from '../../dao';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { PostFetchController } from '../PostFetchController';
 import PostAPI from '../../../../api/glip/post';
-import { ApiResultOk, ApiResultErr } from '../../../../api/ApiResult';
 import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import { Post } from '../../entity/Post';
 import { PostDataController } from '../PostDataController';
@@ -331,6 +330,87 @@ describe('PostFetchController()', () => {
         limit: 20,
       });
     });
+
+    it('should getRemotePostsByGroupId with both direction if should not save to db', async () => {
+      const mockPosts = [];
+      const mockItems = [];
+      const data = {
+        posts: [],
+        items: [],
+      };
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+
+      jest
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
+        .mockResolvedValueOnce({
+          hasMore: false,
+          ...data,
+        });
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        postId: 1,
+        limit: 20,
+        direction: QUERY_DIRECTION.BOTH,
+      });
+
+      expect(postFetchController.getRemotePostsByGroupId).toBeCalledWith({
+        groupId: 1,
+        postId: 1,
+        limit: 20,
+        direction: QUERY_DIRECTION.BOTH,
+        shouldSaveToDb: false,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        limit: 20,
+      });
+    });
+
+    it('should getRemotePostsByGroupId with old direction if should save to db', async () => {
+      const mockPosts = [];
+      const mockItems = [];
+      const data = {
+        posts: [],
+        items: [],
+      };
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+
+      jest
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
+        .mockResolvedValueOnce({
+          hasMore: false,
+          ...data,
+        });
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+        direction: QUERY_DIRECTION.BOTH,
+      });
+
+      expect(postFetchController.getRemotePostsByGroupId).toBeCalledWith({
+        groupId: 1,
+        postId: 0,
+        limit: 20,
+        direction: QUERY_DIRECTION.OLDER,
+        shouldSaveToDb: true,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        limit: 20,
+      });
+    });
   });
 
   describe('fetchPaginationPosts()', () => {
@@ -345,10 +425,7 @@ describe('PostFetchController()', () => {
     };
 
     it('should return posts when postid is available', async () => {
-      const mockNormal = new ApiResultOk(data, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNormal = data;
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
       const result = await postFetchController.fetchPaginationPosts({
         groupId: 1,
@@ -363,10 +440,7 @@ describe('PostFetchController()', () => {
     });
 
     it('should return post when no postid is specific', async () => {
-      const mockNotPostId = new ApiResultOk(data, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNotPostId = data;
       PostAPI.requestPosts.mockResolvedValue(mockNotPostId);
       const result = await postFetchController.fetchPaginationPosts({
         groupId: 1,
@@ -380,10 +454,7 @@ describe('PostFetchController()', () => {
     });
 
     it('should return [] when no matched', async () => {
-      const mockNoMatch = new ApiResultOk({ posts: [], items: [] }, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNoMatch = { posts: [], items: [] };
       PostAPI.requestPosts.mockResolvedValue(mockNoMatch);
       const result = await postFetchController.fetchPaginationPosts({
         groupId: 1,
@@ -397,14 +468,8 @@ describe('PostFetchController()', () => {
     });
 
     it('should throw exception if failed to request', async () => {
-      PostAPI.requestPosts.mockResolvedValueOnce(
-        new ApiResultErr(
-          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
-            {
-              status: 403,
-              headers: {},
-            } as BaseResponse,
-        ),
+      PostAPI.requestPosts.mockRejectedValueOnce(
+        new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
       );
       expect.assertions(1);
       await expect(
@@ -433,14 +498,8 @@ describe('PostFetchController()', () => {
     }
 
     it('should throw exception when request server error', async () => {
-      PostAPI.requestPosts.mockResolvedValueOnce(
-        new ApiResultErr(
-          new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
-            {
-              status: 403,
-              headers: {},
-            } as BaseResponse,
-        ),
+      PostAPI.requestPosts.mockRejectedValueOnce(
+        new JNetworkError(ERROR_CODES_NETWORK.GENERAL, 'error'),
       );
       await expect(
         postFetchController.getRemotePostsByGroupId(getParaMeters(true)),
@@ -452,10 +511,7 @@ describe('PostFetchController()', () => {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],
       };
-      const mockNormal = new ApiResultOk(data, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNormal = data;
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
       itemService.handleIncomingData = jest
         .fn()
@@ -478,10 +534,7 @@ describe('PostFetchController()', () => {
         posts: [{ id: 3 }, { id: 4 }],
         items: [{ id: 12 }, { id: 23 }],
       };
-      const mockNormal = new ApiResultOk(data, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNormal = data;
       PostAPI.requestPosts.mockResolvedValue(mockNormal);
       jest
         .spyOn(postDataController, 'handleFetchedPosts')
@@ -519,10 +572,7 @@ describe('PostFetchController()', () => {
         posts: [{ _id: 2 }],
         items: [],
       };
-      const mockNormal = new ApiResultOk(data, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const mockNormal = data;
       PostAPI.requestByIds.mockResolvedValueOnce(mockNormal);
 
       postFetchController.postDataController.filterAndSavePosts.mockResolvedValueOnce(

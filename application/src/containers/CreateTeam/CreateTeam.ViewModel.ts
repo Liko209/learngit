@@ -6,7 +6,8 @@
 import { action, computed, observable } from 'mobx';
 
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
-import { UserConfig } from 'sdk/service/account';
+import { AccountGlobalConfig } from 'sdk/service/account/config';
+
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -34,8 +35,6 @@ class CreateTeamViewModel extends AbstractViewModel {
   members: (number | string)[] = [];
   @observable
   errorEmail: string;
-  @observable
-  serverUnknownError: boolean = false;
 
   @computed
   get isOffline() {
@@ -72,17 +71,20 @@ class CreateTeamViewModel extends AbstractViewModel {
     options: TeamSetting,
   ): Promise<Group | null> => {
     const groupService: GroupService = GroupService.getInstance();
-    const creatorId = Number(UserConfig.getCurrentUserId());
+    const creatorId = Number(AccountGlobalConfig.getCurrentUserId());
     try {
       return await groupService.createTeam(creatorId, memberIds, options);
     } catch (error) {
-      this.createErrorHandler(error);
+      const unkonwnError = this.createErrorHandler(error);
+      if (unkonwnError) {
+        throw new Error();
+      }
       return null;
     }
   }
 
   createErrorHandler(error: JError) {
-    this.serverUnknownError = false;
+    let serverUnknownError = false;
     if (
       error.isMatch({
         type: ERROR_TYPES.SERVER,
@@ -104,8 +106,9 @@ class CreateTeamViewModel extends AbstractViewModel {
         this.emailError = true;
       }
     } else {
-      this.serverUnknownError = true;
+      serverUnknownError = true;
     }
+    return serverUnknownError;
   }
 }
 

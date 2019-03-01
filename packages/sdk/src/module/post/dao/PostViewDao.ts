@@ -8,6 +8,7 @@ import _ from 'lodash';
 import { BaseDao } from '../../../framework/dao';
 import { Post, PostView } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
+import { DEFAULT_PAGE_SIZE } from '../constant';
 
 class PostViewDao extends BaseDao<PostView> {
   static COLLECTION_NAME = 'postView';
@@ -71,12 +72,19 @@ class PostViewDao extends BaseDao<PostView> {
           limit === Infinity || postIdIndex + limit >= postIds.length
             ? postIds.length
             : startIndex + limit;
-      } else {
+      } else if (direction === QUERY_DIRECTION.NEWER) {
         startIndex =
           postIdIndex - limit <= 0 || limit === Infinity
             ? 0
             : postIdIndex - limit;
         endIndex = postIdIndex;
+      } else {
+        const halfLimit =
+          limit === Infinity ? DEFAULT_PAGE_SIZE / 2 : limit / 2;
+        startIndex = postIdIndex - halfLimit > 0 ? postIdIndex - halfLimit : 0;
+        const difEnd =
+          startIndex + (limit === Infinity ? DEFAULT_PAGE_SIZE : limit);
+        endIndex = difEnd >= postIds.length ? postIds.length : difEnd;
       }
     } else {
       endIndex =

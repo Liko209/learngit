@@ -8,10 +8,29 @@ import { observer } from 'mobx-react';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { PreloadImg } from '@/containers/common';
-import { ViewProps } from './types';
+import { ViewProps, Props } from './types';
 
 @observer
-class ThumbnailView extends React.Component<ViewProps> {
+class ThumbnailView extends React.Component<ViewProps & Props> {
+  shouldComponentUpdate(nextProps: ViewProps & Props) {
+    const {
+      fileTypeOrUrl: { icon, url },
+      type,
+      id,
+    } = nextProps;
+    const current = this.props.fileTypeOrUrl;
+    if (
+      id === this.props.id &&
+      icon === current.icon &&
+      type === this.props.type
+    ) {
+      if (current.url) {
+        return false;
+      }
+      return url !== current.url;
+    }
+    return true;
+  }
   render() {
     const {
       fileTypeOrUrl: { icon, url },

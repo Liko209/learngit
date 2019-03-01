@@ -19,6 +19,7 @@ import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
 import { MiniCard } from '../MiniCard';
+import { Profile, PROFILE_TYPE } from '@/containers/Profile';
 
 class ConversationInitialPost extends React.Component<
   ConversationInitialPostViewProps
@@ -31,9 +32,8 @@ class ConversationInitialPost extends React.Component<
     const { creator } = this.props;
     const target = event.target as HTMLElement;
     event.stopPropagation();
-    MiniCard.showProfile({
-      id: creator.id,
-      anchor: target,
+    MiniCard.show(<Profile id={creator.id} type={PROFILE_TYPE.MINI_CARD} />, {
+      anchor: target as HTMLElement,
     });
   }
 

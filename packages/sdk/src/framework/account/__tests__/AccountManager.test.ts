@@ -9,6 +9,9 @@ import {
 import { AbstractAccount } from '../AbstractAccount';
 import * as helper from '../helper';
 import * as dao from '../../../dao';
+import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
+
+jest.mock('../../../service/config/NewGlobalConfig');
 class MyAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {}
 }
@@ -241,21 +244,28 @@ describe('AccountManager', () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         Chris_sandbox: [],
       });
-      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+      const permitted = await accountManager.sanitizeUser(
+        mockedAccountInfo[0].data.owner_id,
+      );
       expect(permitted).toBeTruthy();
     });
     it('should be valid user when the user is in the white list [JPT-631]', async () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         release: ['110'],
       });
-      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+      const permitted = await accountManager.sanitizeUser(
+        mockedAccountInfo[0].data.owner_id,
+      );
       expect(permitted).toBeTruthy();
     });
     it('should be invalid user when the user is not in the white list [JPT-639]', async () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         release: ['123'],
       });
+
+      NewGlobalConfig.getEnv = jest.fn().mockReturnValue('release');
       const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+
       expect(permitted).toBeFalsy();
     });
   });

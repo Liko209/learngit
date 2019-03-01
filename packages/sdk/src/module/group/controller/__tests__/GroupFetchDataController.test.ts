@@ -1,23 +1,11 @@
 /// <reference path="../../../../__tests__/types.d.ts" />
-import {
-  BaseResponse,
-  err,
-  ERROR_CODES_NETWORK,
-  JNetworkError,
-  ok,
-} from 'foundation';
+import { ERROR_CODES_NETWORK, JNetworkError } from 'foundation';
 import _ from 'lodash';
 
 import { groupFactory } from '../../../../__tests__/factories';
 import { Api } from '../../../../api';
-import { ApiResultErr, ApiResultOk } from '../../../../api/ApiResult';
 import GroupAPI from '../../../../api/glip/group';
-import {
-  AccountDao,
-  ConfigDao,
-  daoManager,
-  GroupConfigDao,
-} from '../../../../dao';
+import { daoManager, GroupConfigDao } from '../../../../dao';
 import { TestEntityCacheSearchController } from '../../../../framework/__mocks__/controller/TestEntityCacheSearchController';
 import { TestEntitySourceController } from '../../../../framework/__mocks__/controller/TestEntitySourceController';
 import { TestPartialModifyController } from '../../../../framework/__mocks__/controller/TestPartialModifyController';
@@ -26,8 +14,8 @@ import { IEntityCacheSearchController } from '../../../../framework/controller/i
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { UserConfig } from '../../../../service/account/UserConfig';
-import CompanyService from '../../../../service/company';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
@@ -45,9 +33,9 @@ jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../service/account/UserConfig');
+jest.mock('../../../../service/account/config');
 jest.mock('../../../../service/notificationCenter');
-jest.mock('../../../../service/company');
+jest.mock('../../../../module/company');
 jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
@@ -76,9 +64,7 @@ describe('GroupFetchDataController', () => {
   let testEntityCacheSearchController: IEntityCacheSearchController<Group>;
   let groupService: GroupService;
 
-  const accountDao = new AccountDao(null);
   const groupDao = new GroupDao(null);
-  const configDao = new ConfigDao(null);
   const groupConfigDao = new GroupConfigDao(null);
   const postService = new PostService();
   const mockUserId = 1;
@@ -86,7 +72,7 @@ describe('GroupFetchDataController', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
-    UserConfig.getCurrentUserId = jest
+    AccountGlobalConfig.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
     PostService.getInstance = jest.fn().mockReturnValue(postService);
@@ -186,7 +172,7 @@ describe('GroupFetchDataController', () => {
       const result1 = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(result1).toHaveProperty('data', mockNormal);
+      expect(result1).toEqual(mockNormal);
     });
 
     it('should return result with group if it can get from remote', async () => {
@@ -194,77 +180,64 @@ describe('GroupFetchDataController', () => {
       const memberIDs = [1, 2];
       jest
         .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(ok(mockNormal));
+        .mockResolvedValueOnce(mockNormal);
       groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
       const result = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(result).toHaveProperty('data', mockNormal);
+      expect(result).toEqual(mockNormal);
     });
 
     it('should return result with error if it can not get from remote', async () => {
       const memberIDs = [1, 2];
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+        '',
+      );
       jest
         .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(
-          err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
-        );
+        .mockRejectedValueOnce(error);
       groupDao.queryGroupByMemberList.mockResolvedValueOnce(null);
-      const result = await groupFetchDataController.getOrCreateGroupByMemberList(
-        memberIDs,
-      );
-      expect(result.isErr()).toBe(true);
+      await expect(
+        groupFetchDataController.getOrCreateGroupByMemberList(memberIDs),
+      ).rejects.toEqual(error);
     });
   });
 
   it('requestRemoteGroupByMemberList()', async () => {
-    daoManager.getKVDao.mockReturnValue(accountDao);
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(1); // userId
 
-    const mockNormal = new ApiResultOk({ _id: 1 }, {
-      status: 200,
-      headers: {},
-    } as BaseResponse);
+    const mockNormal = { _id: 1 };
     GroupAPI.requestNewGroup.mockResolvedValue(mockNormal);
     const result1 = await groupFetchDataController.requestRemoteGroupByMemberList(
       [1, 2],
     );
-    expect(result1).toHaveProperty('data', { id: 1 });
+    expect(result1).toEqual({ id: 1 });
 
-    const mockEmpty = new ApiResultOk(null, {
-      status: 200,
-      headers: {},
-    } as BaseResponse);
+    const mockEmpty = null;
     GroupAPI.requestNewGroup.mockResolvedValue(mockEmpty);
     const result2 = await groupFetchDataController.requestRemoteGroupByMemberList(
       [1, 2],
     );
-    expect(result2).toHaveProperty('data', null);
+    expect(result2).toEqual(null);
 
-    const mockError = new ApiResultErr(
-      new JNetworkError(ERROR_CODES_NETWORK.FORBIDDEN, ''),
-      {
-        status: 403,
-        headers: {},
-      } as BaseResponse,
-    );
-    GroupAPI.requestNewGroup.mockResolvedValue(mockError);
-    const result3 = await groupFetchDataController.requestRemoteGroupByMemberList(
-      [1, 2],
-    );
-    expect(result3.isOk()).toBe(false);
+    const mockError = new JNetworkError(ERROR_CODES_NETWORK.FORBIDDEN, '');
+    GroupAPI.requestNewGroup.mockRejectedValue(mockError);
+    await expect(
+      groupFetchDataController.requestRemoteGroupByMemberList([1, 2]),
+    ).rejects.toEqual(mockError);
   });
 
   it('getGroupByPersonId()', async () => {
     const mock = { id: 2 };
-    UserConfig.getCurrentUserId.mockReturnValueOnce(1);
-    daoManager.getKVDao.mockReturnValueOnce(accountDao);
+    AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    accountDao.get.mockReturnValue(1); // userId
+
     groupDao.queryGroupByMemberList.mockResolvedValue(mock);
     const result1 = await groupFetchDataController.getGroupByPersonId(2);
-    expect(result1).toHaveProperty('data', mock);
+    expect(result1).toEqual(mock);
   });
 
   describe('get left rail conversations', () => {
@@ -287,7 +260,9 @@ describe('GroupFetchDataController', () => {
 
   describe('doFuzzySearch', () => {
     function prepareGroupsForSearch() {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      AccountGlobalConfig.getCurrentUserId = jest
+        .fn()
+        .mockImplementation(() => 1);
 
       const person1: Person = {
         id: 11001,
@@ -592,7 +567,9 @@ describe('GroupFetchDataController', () => {
     };
 
     function prepareGroupsForSearch() {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      AccountGlobalConfig.getCurrentUserId = jest
+        .fn()
+        .mockImplementation(() => 1);
 
       entityCacheController.put(team1);
       entityCacheController.put(team2);
@@ -621,7 +598,7 @@ describe('GroupFetchDataController', () => {
     const groupDao = new GroupDao(null);
 
     beforeEach(() => {
-      UserConfig.getCurrentUserId.mockReturnValueOnce(3);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(3);
     });
 
     const mockNormal = { id: 1 };
@@ -635,61 +612,53 @@ describe('GroupFetchDataController', () => {
       const result1 = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(UserConfig.getCurrentUserId).toBeCalled();
+      expect(AccountGlobalConfig.getCurrentUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(result1).toHaveProperty('data', mockNormal);
+      expect(result1).toEqual(mockNormal);
     });
 
     it('group not exist in DB already, request from server', async () => {
       jest
         .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(ok(mockNormal)); // first call
+        .mockResolvedValueOnce(mockNormal); // first call
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(nullGroup);
       const result2 = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(UserConfig.getCurrentUserId).toBeCalled();
-      expect(result2).toHaveProperty('data', mockNormal);
+      expect(AccountGlobalConfig.getCurrentUserId).toBeCalled();
+      expect(result2).toEqual(mockNormal);
     });
 
     it('throw error ', async () => {
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+        '',
+      );
       jest
         .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
-        .mockResolvedValueOnce(
-          err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
-        );
+        .mockRejectedValueOnce(error);
       daoManager.getDao.mockReturnValue(groupDao);
       groupDao.queryGroupByMemberList.mockResolvedValue(null);
-      const result = await groupFetchDataController.getOrCreateGroupByMemberList(
-        memberIDs,
-      );
-      expect(result.isOk()).toBe(false);
+      expect(
+        groupFetchDataController.getOrCreateGroupByMemberList(memberIDs),
+      ).rejects.toBe(error);
     });
   });
 
   describe('requestRemoteGroupByMemberList', () => {
-    const accountDao = new AccountDao(null);
-
     beforeEach(() => {
       const curUserId = 3;
-      daoManager.getKVDao.mockReturnValue(accountDao);
-      accountDao.get.mockReturnValue(3);
-      UserConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it('should return a group when request success', async () => {
       const data = { _id: 1 };
-      GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new ApiResultOk(data, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      GroupAPI.requestNewGroup.mockResolvedValueOnce(data);
       const result = await groupFetchDataController.requestRemoteGroupByMemberList(
         [1, 2],
       );
-      expect(result).toHaveProperty('data', { id: 1 });
+      expect(result).toEqual({ id: 1 });
       expect(GroupAPI.requestNewGroup).toBeCalledWith(
         expect.objectContaining({
           members: [1, 2, 3],
@@ -701,19 +670,14 @@ describe('GroupFetchDataController', () => {
     });
 
     it('should throw an error when exception happened ', async () => {
-      GroupAPI.requestNewGroup.mockResolvedValueOnce(
-        new ApiResultErr(
-          new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, 'error'),
-            {
-              status: 500,
-              headers: {},
-            } as BaseResponse,
-        ),
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+        'error',
       );
-      const result = await groupFetchDataController.requestRemoteGroupByMemberList(
-        [1, 2],
-      );
-      expect(result.isErr()).toBe(true);
+      GroupAPI.requestNewGroup.mockRejectedValueOnce(error);
+      await expect(
+        groupFetchDataController.requestRemoteGroupByMemberList([1, 2]),
+      ).rejects.toEqual(error);
     });
   });
 
@@ -728,7 +692,7 @@ describe('GroupFetchDataController', () => {
         favorite_group_ids: groupIds,
       });
 
-      UserConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it("should return true when the person's conversion is favored", async () => {
       const spy = jest.spyOn(groupService, 'getLocalGroup');

@@ -1,3 +1,3 @@
 export * from './persistence';
-export * from './api';
+export * from './uploader';
 export * from './LogConsumer';

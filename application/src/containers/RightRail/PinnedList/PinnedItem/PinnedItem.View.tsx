@@ -9,9 +9,7 @@ import { observer } from 'mobx-react';
 import { JuiPinnedItem } from 'jui/pattern/RightShelf/PinnedItem';
 
 @observer
-class PinnedItemView extends Component<
-  PinnedItemViewProps & { didLoad: () => void }
-> {
+class PinnedItemView extends Component<PinnedItemViewProps> {
   render() {
     const { id, icon, text, isFile } = this.props;
     return <JuiPinnedItem id={id} icon={icon} text={text} isFile={isFile} />;

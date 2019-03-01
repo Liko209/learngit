@@ -41,7 +41,7 @@ class UnReadToggler extends BaseWebComponent {
 
   async isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('arrow_up').exists;
+    return await this.self.child().find('.arrow_up').exists;
   }
 
   private async turn(on: boolean) {
@@ -111,8 +111,7 @@ class MenuItem extends Entry {
 
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
-    this.warnFlakySelector();
-    return this.self.find('span').withText('more_vert');
+    return this.self.find('.icon.more_vert');
   }
 
   get name() {
@@ -167,7 +166,7 @@ class ConversationEntry extends BaseWebComponent {
     const moreButton = this.moreMenuEntry;
     await this.t.expect(moreButton.exists).ok();
     const displayMoreButton = ClientFunction(
-      () => { moreButton().style["display"] = "inline-block"; },
+      () => { moreButton().style["display"] = "inline-flex"; },
       { dependencies: { moreButton } }
     );
     await displayMoreButton();
@@ -221,7 +220,7 @@ class ConversationListSection extends BaseWebComponent {
 
   get isExpand() {
     this.warnFlakySelector();
-    return this.self.child().withText('arrow_up').exists;
+    return this.self.child().find('.arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {

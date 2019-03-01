@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-02-18 17:51:37 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-02-18 18:03:45
+ * @Last Modified time: 2019-02-20 11:14:11
  */
 
 import * as assert from 'assert';
@@ -133,7 +133,7 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   });
 
   await h(t).withLog(`And send to the empty conversation screen`, async () => {
-    await t.expect(h(t).href).match(/messages$/);
+    await t.expect(h(t).href).match(/messages\/$/);
   });
 
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {
@@ -141,14 +141,13 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   });
 });
 
-test(formalName(`The team can't be displayed on conversation list and search results list after the team is deleted.`, ['P2', 'JPT-1116', 'JPT-1104', 'DeleteTeam', 'Potar.He']), async t => {
+test(formalName(`The team can't be displayed on conversation list and search results list after the team is deleted.`, ['P2', 'JPT-1116', 'DeleteTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const memberUser = h(t).rcData.mainCompany.users[5];
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 
-  const deleteTooltip = "Delete a team permanently.";
   const teamName = uuid();
 
   const teamSection = app.homePage.messageTab.teamsSection;
@@ -180,16 +179,6 @@ test(formalName(`The team can't be displayed on conversation list and search res
     await teamSettingDialog.shouldBePopup();
     await t.expect(teamSettingDialog.deleteTeamButton.visible).ok();
   });
-
-  // JPT-1104
-  // skip check point (click info icon) due to Function not implemented @chris
-  // await h(t).withLog(`When hover the "i" icon beside the 'Delete team' button`, async () => {
-  //   await t.click(teamSettingDialog.deleteTeamButtonInfo);
-  // });
-
-  // await h(t).withLog(`Then there should be tooltip displayed 'Delete a team permanently.'`, async () => {
-  //   await teamSettingDialog.showTooltip(deleteTooltip);
-  // });
 
   await h(t).withLog(`When I delete the team via 'Delete team' entry`, async () => {
     await teamSettingDialog.clickDeleteTeamButton();
@@ -285,5 +274,51 @@ test(formalName(`Can create team that team name is same as the deleted team`, ['
 
   await h(t).withLog(`Then Create successfully`, async () => {
     await t.expect(teamSection.conversationEntryByName(teamName).exists).ok();
+  });
+});
+
+test.skip(formalName(`Should display tooltip when click "i" icon beside the "Delete team" button`, ['P2', 'JPT-1114', 'DeleteTeam', 'Potar.He']), async t => {
+  const app = new AppRoot(t);
+  const adminUser = h(t).rcData.mainCompany.users[4];
+  await h(t).platform(adminUser).init();
+  await h(t).glip(adminUser).init();
+
+  const tooltipText = "Delete a team permanently."
+
+  const teamSection = app.homePage.messageTab.teamsSection;
+  const profileDialog = app.homePage.profileDialog;
+
+  let teamId;
+  await h(t).withLog(`Given I have one new team`, async () => {
+    teamId = await h(t).platform(adminUser).createAndGetGroupId({
+      name: uuid(),
+      type: 'Team',
+      members: [adminUser.rcId],
+    });
+  });
+
+  await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, adminUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
+    await teamSection.conversationEntryById(teamId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.profile.enter();
+    await profileDialog.clickSetting();
+  });
+
+  const teamSettingDialog = app.homePage.teamSettingDialog;
+  await h(t).withLog(`Then "Archive team" button should be showed`, async () => {
+    await teamSettingDialog.shouldBePopup();
+    await t.expect(teamSettingDialog.deleteTeamButton.visible).ok();
+  });
+
+  await h(t).withLog(`When I click "i" icon beside the 'Delete team' button`, async () => {
+    await t.click(teamSettingDialog.deleteTeamButtonInfoIcon);
+  });
+
+  await h(t).withLog(`Then there should be tooltip displayed '${tooltipText}`, async () => {
+    await teamSettingDialog.showTooltip(tooltipText);
   });
 });

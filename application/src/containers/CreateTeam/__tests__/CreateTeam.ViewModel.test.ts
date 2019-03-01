@@ -3,8 +3,7 @@
  * @Date: 2018-09-20 14:56:18
  * Copyright © RingCentral. All rights reserved.
  */
-import { err, ok } from 'foundation';
-import { GroupService } from 'sdk/module/group';
+import { GroupService, TeamSetting } from 'sdk/module/group';
 import {
   JNetworkError,
   ERROR_CODES_NETWORK,
@@ -15,9 +14,9 @@ import {
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { UserConfig } from 'sdk/service/account';
+import { AccountGlobalConfig } from 'sdk/service/account/config';
 
-jest.mock('sdk/service/account');
+jest.mock('sdk/service/account/config');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
@@ -26,8 +25,6 @@ jest.mock('sdk/api');
 const groupService = {
   createTeam() {},
 };
-// GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-// AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 
 const createTeamVM = new CreateTeamViewModel();
 function getNewJServerError(code: string, message: string = '') {
@@ -46,17 +43,21 @@ describe('CreateTeamVM', () => {
 
   it('create team success', async () => {
     const creatorId = 1;
-    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
-    groupService.createTeam = jest.fn().mockImplementation(() => ok(''));
+    AccountGlobalConfig.getCurrentUserId = jest
+      .fn()
+      .mockImplementation(() => creatorId);
+    groupService.createTeam = jest.fn().mockImplementation(() => '');
 
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
-    const options = {
+    const options: TeamSetting = {
       name,
       description,
       isPublic: true,
-      canPost: true,
+      permissionFlags: {
+        TEAM_POST: true,
+      },
     };
     await createTeamVM.create(memberIds, options);
     expect(groupService.createTeam).toHaveBeenCalledWith(
@@ -67,51 +68,54 @@ describe('CreateTeamVM', () => {
   });
 
   it('create team success handle error', async () => {
+    const error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
     const creatorId = 1;
-    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
-    groupService.createTeam = jest
+    AccountGlobalConfig.getCurrentUserId = jest
       .fn()
-      .mockResolvedValue(
-        err(getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN)),
-      );
+      .mockImplementation(() => creatorId);
+    groupService.createTeam = jest.fn().mockRejectedValue(error);
 
     jest.spyOn(createTeamVM, 'createErrorHandler');
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
-    const options = {
+    const options: TeamSetting = {
       name,
       description,
       isPublic: true,
-      canPost: true,
+      permissionFlags: {
+        TEAM_POST: true,
+      },
     };
-    const result = await createTeamVM.create(memberIds, options);
-    if (result.isErr()) {
-      expect(result.error.code).toBe(ERROR_CODES_SERVER.ALREADY_TAKEN);
-    } else {
-      expect(result).toBe(false);
-    }
+    expect(await createTeamVM.create(memberIds, options)).toEqual(null);
   });
 
   it('create team server error', async () => {
+    const error = new JNetworkError(
+      ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+      '',
+    );
     const creatorId = 1;
-    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
-    groupService.createTeam = jest
+    AccountGlobalConfig.getCurrentUserId = jest
       .fn()
-      .mockResolvedValueOnce(
-        err(new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, '')),
-      );
+      .mockImplementation(() => creatorId);
+    groupService.createTeam = jest.fn().mockRejectedValueOnce(error);
     const name = 'name';
     const memberIds = [1, 2];
     const description = 'description';
-    const options = {
+    const options: TeamSetting = {
       name,
       description,
       isPublic: true,
-      canPost: true,
+      permissionFlags: {
+        TEAM_POST: true,
+      },
     };
-    const result = await createTeamVM.create(memberIds, options);
-    expect(result.isErr()).toBe(true);
+    try {
+      expect(await createTeamVM.create(memberIds, options)).toEqual(null);
+    } catch (e) {
+      expect(true).toBeTruthy();
+    }
   });
 
   it('getGlobalValue', () => {

@@ -117,37 +117,42 @@ class PostActionController implements IPostActionController {
   }
 
   async removeItemFromPost(postId: number, itemId: number) {
-    const itemService: ItemService = ItemService.getInstance();
-    await itemService.deleteItem(itemId);
-
     const post = await this.entitySourceController.getEntityLocally(postId);
     if (post) {
       const itemIds = post.item_ids.filter((value: number) => {
         return value !== itemId;
       });
       post.item_ids = itemIds;
-      const result = !PostControllerUtils.isValidPost(post);
-      if (result) {
-        // await this.deletePost(postId);
-      } else {
-        const preHandlePartial = (
-          partialPost: Partial<Raw<Post>>,
-          originalPost: Post,
-        ): Partial<Raw<Post>> => {
-          return {
-            item_ids: itemIds,
-            ...partialPost,
-          };
+      const isValid = PostControllerUtils.isValidPost(post);
+      const preHandlePartial = (
+        partialPost: Partial<Raw<Post>>,
+        originalPost: Post,
+      ): Partial<Raw<Post>> => {
+        return {
+          item_ids: itemIds,
+          deactivated: !isValid,
+          ...partialPost,
         };
-        await this.partialModifyController.updatePartially(
-          postId,
-          preHandlePartial,
-          async (newPost: Post) => {
-            return this.requestController.put(newPost);
-          },
-        );
-      }
+      };
+      await this.partialModifyController.updatePartially(
+        postId,
+        preHandlePartial,
+        async (newPost: Post) => {
+          if (newPost.id > 0) {
+            return await this.requestController.put(newPost);
+          }
+
+          if (!isValid) {
+            await this.deletePost(postId);
+          }
+
+          return newPost;
+        },
+      );
     }
+
+    const itemService: ItemService = ItemService.getInstance();
+    await itemService.deleteItem(itemId);
   }
 
   async deletePostsByGroupIds(groupIds: number[], shouldNotify: boolean) {

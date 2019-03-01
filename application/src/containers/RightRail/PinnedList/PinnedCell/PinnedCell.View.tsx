@@ -18,9 +18,6 @@ const MAX_ITEM_LENGTH = 3;
 
 @observer
 class PinnedCellView extends Component<PinnedCellViewProps & PinnedCellProps> {
-  componentDidUpdate() {
-    this.props.didLoad();
-  }
   jumpToPost = () => {
     const { post } = this.props;
     const { id } = post;
@@ -34,7 +31,6 @@ class PinnedCellView extends Component<PinnedCellViewProps & PinnedCellProps> {
       textContent,
       itemIds,
       post,
-      didLoad,
     } = this.props;
 
     const itemLen = itemIds.length;
@@ -47,7 +43,7 @@ class PinnedCellView extends Component<PinnedCellViewProps & PinnedCellProps> {
         postId={post.id}
       >
         {itemIds.slice(0, MAX_ITEM_LENGTH).map((id: number) => (
-          <PinnedItem didLoad={didLoad} key={id} id={id} />
+          <PinnedItem key={id} id={id} />
         ))}
         {itemLen > MAX_ITEM_LENGTH && (
           <JuiPinnedCellMore data-test-automation-id="pinned-section-more">

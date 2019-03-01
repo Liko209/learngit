@@ -6,6 +6,8 @@
 
 type PinnedListProps = {
   groupId: number;
+  width: number;
+  height: number;
 };
 
 type PinnedListViewProps = {

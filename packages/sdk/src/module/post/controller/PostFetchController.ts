@@ -82,11 +82,14 @@ class PostFetchController {
           result.posts,
         );
         const serverResult = await this.getRemotePostsByGroupId({
-          direction,
           groupId,
           limit,
           shouldSaveToDb,
           postId: validAnchorPostId ? validAnchorPostId : postId,
+          direction:
+            shouldSaveToDb && direction === QUERY_DIRECTION.BOTH
+              ? QUERY_DIRECTION.OLDER
+              : direction,
         });
         if (serverResult) {
           result.posts = this._handleDuplicatePosts(
@@ -125,9 +128,7 @@ class PostFetchController {
     if (postId) {
       params.post_id = postId;
     }
-    const requestResult = await PostAPI.requestPosts(params);
-
-    const data = requestResult.expect('Get remote post failed');
+    const data = await PostAPI.requestPosts(params);
 
     if (data) {
       result.posts = data.posts;
@@ -228,8 +229,7 @@ class PostFetchController {
     };
     const restIds = _.difference(ids, localPosts.map(({ id }) => id));
     if (restIds.length) {
-      const remoteResult = await PostAPI.requestByIds(restIds);
-      const remoteData = remoteResult.expect('getPostsByIds failed');
+      const remoteData = await PostAPI.requestByIds(restIds);
       const posts: Post[] =
         (await this.postDataController.filterAndSavePosts(
           this.postDataController.transformData(remoteData.posts),

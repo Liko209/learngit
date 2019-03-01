@@ -411,8 +411,8 @@ describe.skip('i18next-en', () => {
     "Sorry, we weren't able to delete this team.",
   );
   expect(i18next.t('deleteTeamConfirmTitle')).toEqual('Delete Team?');
-  expect(i18next.t('deleteTeamConfirmContent', { teamName: 'team 1' })).toEqual(
-    'Are you sure you want to permanently delete team 1?',
+  expect(i18next.t('deleteTeamConfirmContent')).toEqual(
+    'Are you sure you want to permanently delete',
   );
   expect(i18next.t('deleteTeamConfirmOk')).toEqual('delete');
   expect(i18next.t('deleteTeamSuccessMsg')).toEqual(

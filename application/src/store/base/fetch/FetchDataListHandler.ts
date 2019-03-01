@@ -113,13 +113,16 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     }
   }
 
-  protected replaceEntityStore<Entity>(entities: Entity[]) {
-    if (!entities.length) {
+  protected replaceEntityStore<Entity>(replaceEntities: Map<number, Entity>) {
+    if (!replaceEntities.size) {
       return;
     }
 
     if (this._entityName) {
-      storeManager.dispatchReplacedDataModels(this._entityName, entities);
+      storeManager.dispatchReplacedDataModels(
+        this._entityName,
+        replaceEntities,
+      );
     }
   }
 

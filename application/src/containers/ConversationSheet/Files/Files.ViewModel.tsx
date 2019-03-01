@@ -3,7 +3,7 @@
  * @Date: 2018-10-24 15:44:40
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
@@ -18,6 +18,7 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
@@ -31,10 +32,12 @@ import {
   RULE,
 } from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { UploadFileTracker } from './UploadFileTracker';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
+  private _idToDelete: number;
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
   @observable
@@ -47,8 +50,13 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const { ids } = props;
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
+      UploadFileTracker.init();
     }
     this.autorun(this.getCropImage);
+  }
+
+  isRecentlyUploaded = (id: number) => {
+    return UploadFileTracker.tracker().getMapID(id) !== id;
   }
 
   getCropImage = async () => {
@@ -59,6 +67,14 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     );
   }
 
+  getShowDialogPermission = async () => {
+    const permissionService: PermissionService = PermissionService.getInstance();
+    return await permissionService.hasPermission(
+      UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
+    );
+  }
+
+  @action
   private _fetchUrl = async (
     { item }: ExtendFileItem,
     rule: RULE,
@@ -71,11 +87,10 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     // Notes
     // 1. There is no thumbnail for the image just uploaded.
     // 2. tif has thumbnail field.
-    // 3. git use original url.
-    if (FileItemUtils.isGifItem({ type }) && versionUrl) {
-      url = versionUrl;
+    // 3. gif use original url.
+    if (FileItemUtils.isGifItem({ type })) {
+      url = versionUrl || '';
     }
-
     if (
       !url &&
       origWidth > 0 &&
@@ -90,6 +105,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         squareSize: 180,
       });
       url = thumbnail.url;
+    }
+    if (!url) {
+      url = versionUrl || '';
     }
     if (url) {
       this.urlMap.set(id, url);
@@ -135,6 +153,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         return;
       }
       const file = getFileType(item);
+      file.item = item;
       files[file.type].push(file);
     });
     return files;
@@ -142,9 +161,19 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
 
   @computed
   get items() {
-    return this._ids.map((id: number) => {
-      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
+    const result: FileItemModel[] = [];
+    this._ids.forEach((id: number) => {
+      if (id !== this._idToDelete) {
+        try {
+          const item = getEntity<Item, FileItemModel>(
+            ENTITY_NAME.FILE_ITEM,
+            id,
+          );
+          result.push(item);
+        } catch (e) {}
+      }
     });
+    return result;
   }
 
   @computed
@@ -204,6 +233,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         if (postLoading) {
           await this._itemService.cancelUpload(id);
         } else {
+          this._idToDelete = id;
           await this._postService.removeItemFromPost(this._postId, id);
         }
       } catch (e) {

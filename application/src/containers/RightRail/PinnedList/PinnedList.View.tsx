@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import i18next from 'i18next';
 import { PinnedListViewProps, PinnedListProps } from './types';
@@ -13,8 +13,7 @@ import { JuiListSubheader } from 'jui/components/Lists';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
-  JuiVirtualCellWrapper,
-  JuiVirtualCellOnLoadFunc,
+  JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
 
 import {
@@ -22,7 +21,6 @@ import {
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
-import ReactResizeDetector from 'react-resize-detector';
 import { PinnedCell } from './PinnedCell';
 import { emptyView } from '../ItemList/Empty';
 import { RIGHT_RAIL_ITEM_TYPE } from '../ItemList';
@@ -31,33 +29,31 @@ const HEADER_HEIGHT = 36;
 @observer
 class PinnedListView
   extends React.Component<PinnedListViewProps & PinnedListProps>
-  implements IVirtualListDataSource {
+  implements IVirtualListDataSource<any, number> {
   constructor(props: PinnedListViewProps & PinnedListProps) {
     super(props);
   }
 
-  countOfCell() {
+  size() {
     const { totalCount } = this.props;
     return totalCount;
   }
 
-  cellAtIndex = (
-    index: number,
-    style: CSSProperties,
-    didLoad: JuiVirtualCellOnLoadFunc,
-  ) => {
-    const { ids } = this.props;
-    const id = ids[index];
+  get(index: number) {
+    return this.props.ids[index];
+  }
+
+  rowRenderer = ({
+    index,
+    item: itemId,
+    style,
+  }: JuiVirtualCellProps<number>) => {
     let content;
-    if (id) {
-      content = <PinnedCell id={id} didLoad={didLoad} />;
+    if (itemId) {
+      content = <PinnedCell id={itemId} key={itemId} />;
     }
 
-    return (
-      <JuiVirtualCellWrapper key={id} style={style}>
-        {content}
-      </JuiVirtualCellWrapper>
-    );
+    return content;
   }
 
   renderEmptyContent = () => {
@@ -81,7 +77,7 @@ class PinnedListView
   }
 
   render() {
-    const { totalCount, ids } = this.props;
+    const { totalCount, ids, width, height } = this.props;
     const firstLoaded = true;
     return (
       <JuiRightShelfContent>
@@ -91,17 +87,17 @@ class PinnedListView
           </JuiListSubheader>
         )}
         {firstLoaded && (
-          <ReactResizeDetector handleWidth={true} handleHeight={true}>
-            {(width: number = 0, height: number = HEADER_HEIGHT) => (
-              <JuiVirtualList
-                dataSource={this}
-                threshold={1}
-                isLoading={false}
-                width={width}
-                height={height - HEADER_HEIGHT}
-              />
-            )}
-          </ReactResizeDetector>
+          <JuiVirtualList
+            dataSource={this}
+            threshold={1}
+            width={width}
+            height={height - HEADER_HEIGHT}
+            overscan={5}
+            observeCell={true}
+            rowRenderer={this.rowRenderer}
+            noContentRenderer={this.renderEmptyContent}
+            moreLoader={this.moreLoader}
+          />
         )}
       </JuiRightShelfContent>
     );

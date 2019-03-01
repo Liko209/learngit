@@ -6,7 +6,7 @@
 
 import styled from '../../foundation/styled-components';
 
-const JuiVirtualListWrapper = styled.div`
+const JuiVirtualListWrapper = styled.div<{ children: any }>`
   display: flex;
   flex: 1;
   position: relative;

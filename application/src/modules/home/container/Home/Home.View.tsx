@@ -7,7 +7,6 @@ import { observer } from 'mobx-react';
 import React, { Component } from 'react';
 
 import { analytics } from '@/Analytics';
-import { ModalPortal } from '@/containers/Dialog';
 import { ToastWrapper } from '@/containers/ToastWrapper';
 
 import { HomeRouter } from '../HomeRouter';
@@ -18,11 +17,16 @@ import { HomeViewProps } from './types';
 import Wrapper from './Wrapper';
 
 import { dao, mainLogger } from 'sdk';
+import { AuthService } from 'sdk/service/auth/authService';
+import { ModalPortal } from '@/containers/Dialog';
 
 @observer
 class HomeView extends Component<HomeViewProps> {
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
+    const authService: AuthService = AuthService.getInstance();
+    authService.makeSureUserInWhitelist();
+
     analytics.identify();
   }
 
@@ -57,8 +61,8 @@ class HomeView extends Component<HomeViewProps> {
           <Bottom id="app-main-section">
             <LeftNav />
             <HomeRouter />
-            <ModalPortal />
           </Bottom>
+          <ModalPortal />
         </Wrapper>
       </>
     );

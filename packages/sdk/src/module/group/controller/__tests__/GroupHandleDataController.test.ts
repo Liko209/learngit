@@ -4,12 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { toArrayOf } from '../../../../__tests__/utils';
-import { ApiResultOk } from '../../../../api/ApiResult';
 import GroupAPI from '../../../../api/glip/group';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
 import { EVENT_TYPES } from '../../../../service';
-import { UserConfig } from '../../../../service/account';
 import { ENTITY } from '../../../../service/eventKey';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
@@ -20,6 +18,12 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
+import { GlobalConfigService } from '../../../../module/config';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+
+jest.mock('../../../../module/config');
+jest.mock('../../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
@@ -55,16 +59,12 @@ jest.mock('../../../../service/serviceManager', () => {
   };
 });
 
-const requestGroupByIdResult = new ApiResultOk(
-  {
-    id: 1,
-    members: [1],
-    deactivated: true,
-    _delta: false,
-  },
-  200,
-  {},
-);
+const requestGroupByIdResult = {
+  id: 1,
+  members: [1],
+  deactivated: true,
+  _delta: false,
+};
 
 jest.mock('../../../../api/glip/group', () => {
   return {
@@ -137,7 +137,7 @@ describe('GroupHandleDataController', () => {
 
     it('passing an array', async () => {
       expect.assertions(7);
-      UserConfig.getCurrentUserId.mockReturnValueOnce(1);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
       daoManager.getDao(GroupDao).get.mockReturnValue(1);
       const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
         {
@@ -156,8 +156,8 @@ describe('GroupHandleDataController', () => {
         },
         { _id: 2, members: [1, 2], deactivated: false },
         { _id: 3, members: [2], deactivated: false },
-        { _id: 4, deactivated: false },
-        { _id: 5, is_archived: true },
+        { _id: 4, members: [], deactivated: false },
+        { _id: 5, members: [], is_archived: true },
       ]);
       await groupHandleDataController.handleData(groups);
       // expect getTransformData function
@@ -172,8 +172,8 @@ describe('GroupHandleDataController', () => {
       expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
         { id: 2, members: [1, 2], deactivated: false },
         { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
-        { id: 4, deactivated: false },
-        { id: 5, is_archived: true },
+        { id: 4, members: [], deactivated: false },
+        { id: 5, members: [], is_archived: true },
       ]);
     });
   });
@@ -349,6 +349,9 @@ describe('GroupHandleDataController', () => {
   });
 
   describe('filterGroups()', () => {
+    beforeEach(() => {
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(99);
+    });
     it('should remove extra, when limit < total teams', async () => {
       const LIMIT = 2;
       const TOTAL_GROUPS = 5;
@@ -357,7 +360,7 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
+
       const filteredGroups = await groupHandleDataController.filterGroups(
         groups,
         LIMIT,
@@ -373,7 +376,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       const filteredGroups = await groupHandleDataController.filterGroups(
         teams,
         LIMIT,
@@ -389,7 +391,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       const filteredGroups = await groupHandleDataController.filterGroups(
         teams,
         LIMIT,
@@ -405,7 +406,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
 
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1, is_team: true },
@@ -423,7 +423,6 @@ describe('GroupHandleDataController', () => {
       const TOTAL_GROUPS = 5;
 
       const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1, is_team: true },
       ]);
@@ -443,7 +442,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1 },
       ]);
@@ -463,7 +461,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_mentions_count: 1 },
         { id: 3, unread_mentions_count: 1 },
@@ -484,7 +481,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValue([
         { id: 4, unread_count: 1 },
         { id: 3, unread_count: 1 },
@@ -506,7 +502,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
       const filteredGroups = await groupHandleDataController.filterGroups(
@@ -524,7 +519,6 @@ describe('GroupHandleDataController', () => {
         members: [99, 10],
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
       const filteredGroups = await groupHandleDataController.filterGroups(
@@ -573,7 +567,7 @@ describe('GroupHandleDataController', () => {
         },
       ] as Group[];
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
-      UserConfig.getCurrentUserId.mockReturnValue(2);
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(2);
       const filteredGroups = await groupHandleDataController.filterGroups(
         group,
         2,
@@ -677,6 +671,77 @@ describe('GroupHandleDataController', () => {
           members: [123, 456, 789, 111222],
         });
       });
+    });
+  });
+
+  describe('getTransformData()', () => {
+    it('should return deactivated group when removed_guest_user_ids includes current user', async () => {
+      AccountGlobalConfig.getCurrentUserId.mockReturnValue(123);
+      const groups = generateFakeGroups(3, {
+        deactivated: false,
+      });
+      groups[0].members = [123, 456, 789];
+      groups[0].removed_guest_user_ids = [123];
+      groups[1].members = [123, 456];
+      groups[1].removed_guest_user_ids = [123];
+      const result = await groupHandleDataController.getTransformData(
+        groups as Raw<Group>[],
+      );
+      expect(result).toEqual([
+        {
+          company_id: 1,
+          created_at: 1,
+          creator_id: 1,
+          deactivated: true,
+          email_friendly_abbreviation: '',
+          id: 1,
+          is_company_team: false,
+          is_new: false,
+          is_team: false,
+          members: [123, 456, 789],
+          modified_at: 1,
+          most_recent_content_modified_at: 1,
+          most_recent_post_created_at: 1,
+          removed_guest_user_ids: [123],
+          set_abbreviation: '',
+          version: 1,
+        },
+        {
+          company_id: 2,
+          created_at: 2,
+          creator_id: 2,
+          deactivated: true,
+          email_friendly_abbreviation: '',
+          id: 2,
+          is_company_team: false,
+          is_new: false,
+          is_team: false,
+          members: [123, 456],
+          modified_at: 2,
+          most_recent_content_modified_at: 2,
+          most_recent_post_created_at: 2,
+          removed_guest_user_ids: [123],
+          set_abbreviation: '',
+          version: 2,
+        },
+        {
+          company_id: 3,
+          created_at: 3,
+          creator_id: 3,
+          deactivated: false,
+          email_friendly_abbreviation: '',
+          id: 3,
+          is_company_team: false,
+          is_new: false,
+          is_team: false,
+          members: [],
+          modified_at: 3,
+          most_recent_content_modified_at: 3,
+          most_recent_post_created_at: 3,
+          set_abbreviation: '',
+          version: 3,
+        },
+      ]);
     });
   });
 });

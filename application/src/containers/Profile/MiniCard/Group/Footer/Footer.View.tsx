@@ -12,10 +12,11 @@ import {
   JuiProfileMiniCardFooterLeft,
   JuiProfileMiniCardFooterRight,
 } from 'jui/pattern/Profile/MiniCard';
-import { ProfileButton } from '@/containers/common/ProfileButton';
-import { JuiIconButton } from 'jui/components/Buttons';
+import { JuiIconButton, JuiButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
 import { TypeDictionary } from 'sdk/utils';
+import portalManager from '@/common/PortalManager';
+import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
 @observer
 class ProfileMiniCardGroupFooter extends Component<
@@ -23,7 +24,10 @@ class ProfileMiniCardGroupFooter extends Component<
 > {
   onClickMessage = () => {
     const { id } = this.props;
-    goToConversation({ id });
+    const result = goToConversation({ id });
+    if (result) {
+      portalManager.dismissLast();
+    }
   }
 
   getAriaLabelKey = () => {
@@ -35,12 +39,20 @@ class ProfileMiniCardGroupFooter extends Component<
     return mapping[typeId];
   }
 
+  handleCloseMiniCard = () => {
+    portalManager.dismissLast();
+  }
+
   render() {
     const { id, t, showMessage, group } = this.props;
     return (
       <>
         <JuiProfileMiniCardFooterLeft>
-          <ProfileButton id={id} />
+          <OpenProfileDialog id={id} beforeClick={this.handleCloseMiniCard}>
+            <JuiButton variant="text" color="primary">
+              {t('people.team.profile')}
+            </JuiButton>
+          </OpenProfileDialog>
         </JuiProfileMiniCardFooterLeft>
         <JuiProfileMiniCardFooterRight>
           {showMessage && (

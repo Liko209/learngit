@@ -7,7 +7,6 @@ import React, { createRef } from 'react';
 import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
-import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
@@ -40,7 +39,7 @@ const StyledTextWithLink = styled.div`
 `;
 
 @observer
-class NewMessage extends React.Component<ViewProps, State> {
+class NewMessageView extends React.Component<ViewProps, State> {
   static contextType = DialogContext;
   messageRef = createRef<HTMLInputElement>();
   focusTimer: NodeJS.Timeout;
@@ -113,7 +112,6 @@ class NewMessage extends React.Component<ViewProps, State> {
       <JuiModal
         open={true}
         size={'medium'}
-        modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn }}
         title={i18next.t('message.prompt.NewMessage')}
         onCancel={this.onClose}
@@ -159,7 +157,6 @@ class NewMessage extends React.Component<ViewProps, State> {
   }
 }
 
-const NewMessageView = withRouter(NewMessage);
-const NewMessageComponent = NewMessage;
+const NewMessageComponent = NewMessageView;
 
 export { NewMessageView, NewMessageComponent };

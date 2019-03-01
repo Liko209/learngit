@@ -4,12 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PostModel from '@/store/models/Post';
-// import { JuiPinnedItemProps } from 'jui/pattern/RightShelf/PinnedItem';
-import { JuiVirtualCellOnLoadFunc } from 'jui/pattern/VirtualList';
 
 type PinnedCellProps = {
   id: number;
-  didLoad: JuiVirtualCellOnLoadFunc;
 };
 
 type PinnedCellViewProps = {

@@ -90,7 +90,7 @@ class RightRailComponent extends React.Component<Props> {
     height: number,
   ) => {
     if (type === RIGHT_RAIL_ITEM_TYPE.PIN_POSTS) {
-      return <PinnedList groupId={id} />;
+      return <PinnedList groupId={id} width={width} height={height} />;
     }
     return (
       <ItemList

@@ -11,7 +11,6 @@ import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
 import { GroupState, PartialWithKey } from '../../../models';
 import { GroupDao } from '../../../module/group/dao';
-import { UserConfig } from '../../../service/account';
 import { EVENT_TYPES } from '../../../service/constants';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
 import notificationCenter, {
@@ -23,6 +22,7 @@ import { Post } from '../../post/entity';
 import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
+import { AccountGlobalConfig } from '../../../service/account/config';
 
 class GroupHandleDataController {
   getExistedAndTransformDataFromPartial = async (
@@ -46,11 +46,14 @@ class GroupHandleDataController {
             }
           } else {
             // If not existed in DB, request from API and handle the response again
-            const result = await GroupAPI.requestGroupById(item._id);
-            result.match({
-              Ok: data => this.handleData([data]),
-              Err: err => mainLogger.error(`${JSON.stringify(err)}`),
-            });
+            let result;
+            try {
+              result = await GroupAPI.requestGroupById(item._id);
+              this.handleData([result]);
+              return result;
+            } catch (error) {
+              mainLogger.error(`${JSON.stringify(error)}`);
+            }
           }
         }
         return null;
@@ -116,15 +119,29 @@ class GroupHandleDataController {
           if (calculated) {
             return calculated;
           }
-          const result = await GroupAPI.requestGroupById(item._id);
-          if (result.isOk()) {
-            finalItem = result.data;
-          } else {
+          try {
+            finalItem = await GroupAPI.requestGroupById(item._id);
+          } catch (error) {
             return null;
           }
         }
         /* eslint-enable no-underscore-dangle */
         const transformed: Group = transform<Group>(finalItem);
+
+        const beRemovedAsGuest =
+          transformed.removed_guest_user_ids &&
+          transformed.removed_guest_user_ids.includes(
+            AccountGlobalConfig.getCurrentUserId(),
+          );
+
+        if (beRemovedAsGuest) {
+          transformed.deactivated = true;
+        }
+
+        if (transformed.privacy) {
+          transformed.is_public = transformed.privacy === 'protected';
+        }
+
         return transformed;
       }),
     );
@@ -366,7 +383,7 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
         return true;
