@@ -14,12 +14,10 @@ import { Props, ISearchItemModel, RecentSearchTypes } from '../types';
 
 class PersonItemViewModel extends StoreViewModel<Props>
   implements ISearchItemModel {
-  searchService: SearchService;
-
   constructor(props: Props) {
     super(props);
     const { sectionIndex, cellIndex } = props;
-    this.searchService = SearchService.getInstance();
+
     this.reaction(
       () => this.person,
       () => this.props.didChange(sectionIndex, cellIndex),
@@ -39,7 +37,7 @@ class PersonItemViewModel extends StoreViewModel<Props>
   }
 
   addRecentRecord = () => {
-    this.searchService.addRecentSearchRecord(
+    SearchService.getInstance().addRecentSearchRecord(
       RecentSearchTypes.PEOPLE,
       this.props.id,
     );

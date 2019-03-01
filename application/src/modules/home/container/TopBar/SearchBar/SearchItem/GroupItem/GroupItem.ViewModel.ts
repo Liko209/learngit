@@ -14,12 +14,10 @@ import { Props, RecentSearchTypes, ISearchItemModel } from '../types';
 
 class GroupItemViewModel extends StoreViewModel<Props>
   implements ISearchItemModel {
-  searchService: SearchService;
-
   constructor(props: Props) {
     super(props);
     const { sectionIndex, cellIndex } = props;
-    this.searchService = SearchService.getInstance();
+
     this.reaction(
       () => this.group,
       () => this.props.didChange(sectionIndex, cellIndex),
@@ -64,7 +62,7 @@ class GroupItemViewModel extends StoreViewModel<Props>
   addRecentRecord = () => {
     const { isTeam } = this.group;
 
-    this.searchService.addRecentSearchRecord(
+    SearchService.getInstance().addRecentSearchRecord(
       isTeam ? RecentSearchTypes.TEAM : RecentSearchTypes.GROUP,
       this.props.id,
     );
