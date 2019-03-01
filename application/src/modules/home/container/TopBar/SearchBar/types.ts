@@ -6,7 +6,7 @@
 import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
-import { RecentSearchTypes } from 'sdk/module/search';
+import { RecentSearchTypes } from 'sdk/module/search/entity';
 
 type BaseItems<T> = {
   ids: T[];
@@ -43,12 +43,12 @@ type Props = {};
 type ViewProps = {
   focus: boolean;
   updateFocus: (focus: boolean) => void;
-  search: (key: string) => Promise<SearchResult | undefined>;
+  // search: (key: string) => Promise<SearchResult | undefined>;
   setSearchResult: (key: string) => void;
   searchValue: string;
   setValue: (value: string) => void;
   currentUserId: number;
-  isTeamOrGroup: (id: number) => boolean;
+  // isTeamOrGroup: (id: number) => boolean;
   getRecent: () => void;
   clearRecent: () => void;
   searchResult: SearchItems[];
@@ -58,8 +58,8 @@ type ViewProps = {
   resetData: () => void;
   resetSelectIndex: () => void;
   setSelectIndex: (section: number, cellIndex: number) => void;
-  setData: (data: SearchItems[]) => void;
-  findNextValidSectionLength: (section: number, offset: number) => number[];
+  // setCurrentResults: (data: SearchItems[]) => void;
+  // findNextValidSectionLength: (section: number, offset: number) => number[];
   onKeyUp: () => void;
   onKeyDown: () => void;
   selectIndexChange: (sectionIndex: number, cellIndex: number) => void;

@@ -7,11 +7,8 @@ import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PersonService } from 'sdk/module/person';
 import { GroupService } from 'sdk/module/group';
-import {
-  SearchService,
-  RecentSearchModel,
-  RecentSearchTypes,
-} from 'sdk/module/search';
+import { SearchService } from 'sdk/module/search';
+import { RecentSearchModel, RecentSearchTypes } from 'sdk/module/search/entity';
 import {
   SectionType,
   SortableModel,
@@ -24,8 +21,7 @@ import {
 } from './types';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
-// import { debounce } from 'lodash';
+
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
 
@@ -36,8 +32,6 @@ enum DATA_TYPE {
   recent,
 }
 class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
-  // private _debounceSearch: Function;
-
   personService: PersonService;
   groupService: GroupService;
   searchService: SearchService;
@@ -68,15 +62,6 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
   get searchValue() {
     return this.value;
-  }
-
-  isTeamOrGroup = (id: number) => {
-    const type = GlipTypeUtil.extractTypeId(id);
-
-    return (
-      type === TypeDictionary.TYPE_ID_GROUP ||
-      type === TypeDictionary.TYPE_ID_TEAM
-    );
   }
 
   setValue = (value: string) => {
@@ -171,7 +156,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     this.selectIndex = InvalidIndexPath;
   }
 
-  setData = (data: SearchItems[] | RecentItems[]) => {
+  setCurrentResults = (data: SearchItems[] | RecentItems[]) => {
     switch (this.dataType) {
       case DATA_TYPE.search:
         this.searchResult = data as SearchItems[];
@@ -256,7 +241,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     const items: SearchItems | RecentItems = data[sectionIndex];
     items.ids.splice(cellIndex, 1);
 
-    this.setData(data);
+    this.setCurrentResults(data);
     // remove current select item
     if (sectionIndex === section && cell === cellIndex) {
       this.setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);

@@ -5,6 +5,7 @@
  */
 import PersonModel from '@/store/models/Person';
 import GroupModel from '@/store/models/Group';
+import { RecentSearchTypes } from 'sdk/module/search/entity';
 
 interface ISearchItemModel {
   addRecentRecord: () => void;
@@ -35,4 +36,10 @@ type BaseViewProps = {
   addRecentRecord: () => void;
 };
 
-export { Props, BaseViewProps, PersonModel, ISearchItemModel };
+export {
+  Props,
+  BaseViewProps,
+  PersonModel,
+  ISearchItemModel,
+  RecentSearchTypes,
+};

@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PersonModel from '@/store/models/Person';
-import { Props, BaseViewProps, ISearchItemModel } from '../types';
+import { Props, BaseViewProps } from '../types';
 
 type ViewProps = {
   person: PersonModel;
 } & BaseViewProps;
 
-export { Props, ViewProps, PersonModel, ISearchItemModel };
+export { Props, ViewProps, PersonModel };

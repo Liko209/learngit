@@ -7,10 +7,10 @@ import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { Props, ISearchItemModel } from '../types';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
-import { SearchService, RecentSearchTypes } from 'sdk/module/search';
+import { SearchService } from 'sdk/module/search';
+import { Props, ISearchItemModel, RecentSearchTypes } from '../types';
 
 class PersonItemViewModel extends StoreViewModel<Props>
   implements ISearchItemModel {

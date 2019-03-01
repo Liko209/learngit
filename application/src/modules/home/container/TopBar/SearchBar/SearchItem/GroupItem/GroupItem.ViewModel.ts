@@ -7,10 +7,10 @@ import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { Props, ISearchItemModel } from './types';
 import { Group } from 'sdk/module/group/entity';
 import GroupModel from '@/store/models/Group';
-import { SearchService, RecentSearchTypes } from 'sdk/module/search';
+import { SearchService } from 'sdk/module/search';
+import { Props, RecentSearchTypes, ISearchItemModel } from '../types';
 
 class GroupItemViewModel extends StoreViewModel<Props>
   implements ISearchItemModel {

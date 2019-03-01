@@ -6,4 +6,3 @@
 
 import { SearchService } from './service';
 export { SearchService };
-export * from './entity';
