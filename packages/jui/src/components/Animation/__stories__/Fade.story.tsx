@@ -7,7 +7,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { Fade } from '../index';
+import { JuiFade } from '../index';
 import { Button } from '@material-ui/core';
 
 class Test extends React.Component {
@@ -53,14 +53,15 @@ class Test extends React.Component {
     return (
       <div style={{ height: '50vh' }}>
         {this.state.open && (
-          <Fade
+          <JuiFade
             show={this.state.show}
-            duration="openCloseDialog"
+            duration="standard"
             easing="openCloseDialog"
             onExited={this.hide}
+            appear={true}
           >
             <header> the is a header</header>
-          </Fade>
+          </JuiFade>
         )}
 
         <div>
@@ -72,8 +73,8 @@ class Test extends React.Component {
   }
 }
 
-storiesOf('Pattern/ImagePreviewer/Animation', module)
-  .addDecorator(withInfoDecorator(Fade, { inline: true }))
-  .add('Fade', () => {
+storiesOf('Components/Animation', module)
+  .addDecorator(withInfoDecorator(JuiFade, { inline: true }))
+  .add('JuiFade', () => {
     return <Test />;
   });

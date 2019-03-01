@@ -7,7 +7,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { ZoomElement } from '../index';
+import { JuiZoomElement } from '../index';
 import styled from '../../../foundation/styled-components';
 import { Button } from '@material-ui/core';
 
@@ -73,10 +73,10 @@ class Test extends React.Component {
           />
         )}
         {this.state.open && (
-          <ZoomElement
+          <JuiZoomElement
             originalElement={this.imageRef.current}
             show={this.state.show}
-            duration="openCloseDialog"
+            duration="standard"
             easing="openCloseDialog"
             onExited={this.hide}
           >
@@ -88,7 +88,7 @@ class Test extends React.Component {
                 onClick={this.close}
               />
             )}
-          </ZoomElement>
+          </JuiZoomElement>
         )}
         <div>
           <Button onClick={this.update}>update</Button>
@@ -101,8 +101,8 @@ class Test extends React.Component {
   }
 }
 
-storiesOf('Pattern/ImagePreviewer/Animation', module)
-  .addDecorator(withInfoDecorator(ZoomElement, { inline: true }))
-  .add('ZoomElement', () => {
+storiesOf('Components/Animation', module)
+  .addDecorator(withInfoDecorator(JuiZoomElement, { inline: true }))
+  .add('JuiZoomElement', () => {
     return <Test />;
   });

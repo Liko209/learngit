@@ -1,3 +1,9 @@
+/*
+ * @Author: Wayne Zhou (wayne.zhou@ringcentral.com)
+ * @Date: 2019-03-01 11:18:22
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import React from 'react';
 import styled, {
   css,
@@ -44,8 +50,8 @@ function genStyle(
         css`
           &&& > * {
             animation: ${getAnimation(startPosition, endPosition, true)}
-              ${({ theme }) => theme.transitions.duration.openCloseDialog}ms
-              ${({ theme }) => theme.transitions.easing.openCloseDialog};
+              ${({ theme }) => theme.transitions.duration[option.duration]}ms
+              ${({ theme }) => theme.transitions.easing[option.easing]};
           }
         `
       );
@@ -143,7 +149,6 @@ class ZoomElementAnimation extends React.PureComponent<
     return (
       <Transition
         in={show}
-        appear={false}
         timeout={0}
         onEntered={this.handleEntered}
         onExited={this.handleExited}
@@ -163,6 +168,6 @@ class ZoomElementAnimation extends React.PureComponent<
   }
 }
 
-const ZoomElement = withTheme(ZoomElementAnimation);
+const JuiZoomElement = withTheme(ZoomElementAnimation);
 
-export { ZoomElement, ZoomElementProps };
+export { JuiZoomElement, ZoomElementProps as JuiZoomElementProps };

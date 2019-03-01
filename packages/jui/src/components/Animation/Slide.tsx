@@ -1,3 +1,9 @@
+/*
+ * @Author: Wayne Zhou (wayne.zhou@ringcentral.com)
+ * @Date: 2019-03-01 11:17:41
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import * as React from 'react';
 import { keyframes } from '../../foundation/styled-components';
 import { TransitionAnimationProps } from './types';
@@ -12,8 +18,8 @@ const slideAnimation = keyframes`
     }
 `;
 
-const Slide = React.memo((props: TransitionAnimationProps) => (
+const JuiSlide = React.memo((props: TransitionAnimationProps) => (
   <JuiTransition {...props} animation={slideAnimation} />
 ));
 
-export { Slide };
+export { JuiSlide };

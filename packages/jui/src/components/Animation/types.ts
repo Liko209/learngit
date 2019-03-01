@@ -1,4 +1,11 @@
-import { ExitHandler, EnterHandler } from 'react-transition-group/Transition';
+/*
+ * @Author: Wayne Zhou (wayne.zhou@ringcentral.com)
+ * @Date: 2019-03-01 11:18:15
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { TransitionProps } from 'react-transition-group/Transition';
+import { Omit } from '../../foundation/utils/typeHelper';
 export type AnimationOptions = {
   duration: string;
   easing: string;
@@ -9,6 +16,4 @@ export type TransitionAnimationProps = {
   show: boolean;
   duration: string;
   easing: string;
-  onExited?: ExitHandler;
-  onEntered?: EnterHandler;
-};
+} & Omit<TransitionProps, 'timeout'>;

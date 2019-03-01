@@ -204,9 +204,6 @@ type Theme = {
     easing: {
       openCloseDialog: string;
     };
-    duration: {
-      openCloseDialog: string;
-    };
   };
 } & Omit<MuiTheme, 'typography'>;
 

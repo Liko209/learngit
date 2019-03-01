@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component, Fragment } from 'react';
-import { JuiFade } from 'jui/foundation/Transitions';
+import { JuiFade } from 'jui/components/Animation';
 import { withDelay } from 'jui/hoc/withDelay';
 
 type PreloadImgProps = {
@@ -52,7 +52,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
 
     if (url && cacheUrl[url]) {
       return animationForLoad ? (
-        <JuiFade in={true} timeout={700}>
+        <JuiFade appear={true} show={true} duration="standard" easing="easeIn">
           {children}
         </JuiFade>
       ) : (

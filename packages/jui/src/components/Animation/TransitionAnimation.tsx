@@ -1,3 +1,9 @@
+/*
+ * @Author: Wayne Zhou (wayne.zhou@ringcentral.com)
+ * @Date: 2019-03-01 11:18:07
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import * as React from 'react';
 import { Transition } from 'react-transition-group';
 import styled, { css, withTheme } from '../../foundation/styled-components';
@@ -42,11 +48,10 @@ const StyledContainer = styled('div')<{
   ${({ state, option, animation }) => getStyle(state, option, animation)}
 `;
 
-class TransitionAnimation extends React.PureComponent<
-  TransitionAnimationProps & {
-    animation: Keyframes;
-  } & Partial<ThemeProps>
-> {
+type Props = TransitionAnimationProps & {
+  animation: Keyframes;
+} & Partial<ThemeProps>;
+class TransitionAnimation extends React.PureComponent<Props> {
   render() {
     const {
       onExited,
@@ -57,14 +62,15 @@ class TransitionAnimation extends React.PureComponent<
       onEntered,
       theme,
       animation,
+      ...rest
     } = this.props;
     return (
       <Transition
         in={show}
-        appear={true}
         timeout={theme!.transitions.duration[duration]}
         onEntered={onEntered}
         onExited={onExited}
+        {...rest}
       >
         {state => (
           <StyledContainer
