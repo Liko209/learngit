@@ -47,7 +47,7 @@ function mockUpload() {
       firstItem.id = -firstItem.id;
       _uploadedItems.push(firstItem);
       _uploadingItems.splice(0, 1);
-    },         3 * 1000);
+    },         3);
   }
 }
 
@@ -121,6 +121,7 @@ describe('AttachmentsViewModel', () => {
     vm = new AttachmentsViewModel({ id: 456, forceSaveDraft: true });
     _uploadedItems = [];
     _uploadingItems = [];
+    fileIDs = -1001;
   });
 
   describe('_sendPost()', () => {
@@ -186,6 +187,12 @@ describe('AttachmentsViewModel', () => {
       // will check duplicate
       await vm.autoUploadFiles([file]);
       expect(itemService.sendItemFile).toBeCalledTimes(1);
+    });
+
+    it('should not show duplicate dialog', async () => {
+      await vm.autoUploadFiles([file], false);
+      expect(vm.duplicateFiles.length).toBe(0);
+      expect(vm.showDuplicateFiles).toBeFalsy();
     });
   });
 
@@ -297,6 +304,9 @@ describe('AttachmentsViewModel', () => {
   });
 
   describe('forceSaveDraftItems()', () => {
+    beforeEach(() => {
+      fileIDs = -1001;
+    });
     it('should call forceSaveDraftItems after uploading a file', async () => {
       const info: SelectFile = { data: file, duplicate: false };
       jest.spyOn(vm, 'forceSaveDraftItems');
@@ -309,7 +319,7 @@ describe('AttachmentsViewModel', () => {
       jest.spyOn(vm, 'forceSaveDraftItems');
       await vm.uploadFile(info, false);
       expect(groupConfigService.updateDraft).toHaveBeenCalledWith({
-        attachment_item_ids: [-1022],
+        attachment_item_ids: [fileIDs + 1],
         id: 456,
       });
     });

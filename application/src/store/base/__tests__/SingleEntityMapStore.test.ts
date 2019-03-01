@@ -174,7 +174,6 @@ describe('batchSet()', () => {
 
 describe('get()', () => {
   beforeEach(() => {
-    jest.spyOn(instance, 'getByService').mockResolvedValue({});
     jest.spyOn(instance.data, 'get').mockReturnValue(1);
   });
 
@@ -189,18 +188,33 @@ describe('get()', () => {
 
   it('should directly call this.data.get if init', () => {
     instance.init = true;
+    jest.spyOn(instance, 'getByService').mockResolvedValue({});
     instance.get('id');
     expect(instance.getByService).not.toHaveBeenCalledTimes(1);
     expect(instance.data.get).toHaveBeenCalledTimes(1);
   });
 
-  it('should init if this.init is not true', () => {
+  it('should init if this.init is not true and getByService resolve {}', () => {
     instance.init = false;
     expect(instance.init).toBe(false);
+    jest.spyOn(instance, 'getByService').mockResolvedValue({});
     instance.get('id');
     expect(instance.getByService).toHaveBeenCalledTimes(1);
     expect(instance.data.get).toHaveBeenCalledTimes(1);
     expect(instance.init).toBe(true);
+  });
+
+  it('should init if this.init is not true and getByService resolve null', done => {
+    instance.init = false;
+    expect(instance.init).toBe(false);
+    jest.spyOn(instance, 'getByService').mockResolvedValue(null);
+    instance.get('id');
+    setTimeout(() => {
+      expect(instance.getByService).toHaveBeenCalledTimes(1);
+      expect(instance.data.get).toHaveBeenCalledTimes(1);
+      expect(instance.init).toBeFalsy();
+      done();
+    });
   });
 });
 

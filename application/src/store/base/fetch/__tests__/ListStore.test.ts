@@ -59,4 +59,9 @@ describe('List Store', () => {
     expect(listStore.first()).toEqual(1);
     expect(listStore.last()).toEqual(3);
   });
+  it('should return undefined when listStore.length is 0', () => {
+    listStore.append([]);
+    expect(listStore.first()).toBeUndefined();
+    expect(listStore.last()).toBeUndefined();
+  });
 });
