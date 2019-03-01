@@ -7,13 +7,13 @@ import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { height, width, grey, spacing } from '../../foundation/utils/styles';
 
-type JuiFabGroupProps = {
+type JuiZoomGroupProps = {
   disabled?: boolean;
   ZoomIn: React.ReactNode;
   ZoomOut: React.ReactNode;
   centerText: string;
 };
-const StylesButtonContain = styled.div`
+const StylesContain = styled.div`
   && {
     display: flex;
     align-items: center;
@@ -45,17 +45,17 @@ const StyledTextContain = styled.div`
   }
 `;
 
-class JuiFabGroup extends PureComponent<JuiFabGroupProps> {
+class JuiFabGroup extends PureComponent<JuiZoomGroupProps> {
   render() {
     const { ZoomIn, ZoomOut, centerText } = this.props;
     return (
-      <StylesButtonContain>
+      <StylesContain>
         <StyledZoom>{ZoomIn}</StyledZoom>
         <StyledTextContain>{centerText}</StyledTextContain>
         <StyledZoom>{ZoomOut}</StyledZoom>
-      </StylesButtonContain>
+      </StylesContain>
     );
   }
 }
 
-export { JuiFabGroup, JuiFabGroupProps };
+export { JuiFabGroup, JuiZoomGroupProps };
