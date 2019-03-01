@@ -52,7 +52,7 @@ class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
   voipDaoDelegate: VoIPDaoClient;
-  private accountController: TelephonyAccountController;
+  private _accountController: TelephonyAccountController;
 
   constructor() {
     this.voipNetworkDelegate = new VoIPNetworkClient();
@@ -67,14 +67,14 @@ class TelephonyEngineController {
 
   createAccount(delegate: ITelephonyAccountDelegate) {
     // Engine can hold multiple accounts for multiple calls
-    this.accountController = new TelephonyAccountController(
+    this._accountController = new TelephonyAccountController(
       this.rtcEngine,
       delegate,
     );
   }
 
   getAccountController() {
-    return this.accountController;
+    return this._accountController;
   }
 }
 

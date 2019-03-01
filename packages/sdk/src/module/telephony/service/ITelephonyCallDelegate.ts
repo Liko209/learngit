@@ -3,10 +3,10 @@
  * @Date: 2019-02-28 09:17:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { TELEPHONY_CALL_STATE } from '../types';
+import { RTC_CALL_STATE } from 'voip';
 
 interface ITelephonyCallDelegate {
-  onCallStateChange(callId: string, state: TELEPHONY_CALL_STATE): void;
+  onCallStateChange(callId: string, state: RTC_CALL_STATE): void;
 }
 
 export { ITelephonyCallDelegate };

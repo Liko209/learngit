@@ -28,17 +28,17 @@ class TelephonyService extends EntityBaseService {
   }
 
   createAccount(delegate: ITelephonyAccountDelegate) {
-    this._telephonyEngineController.createAccount(delegate);
+    this.telephonyController.createAccount(delegate);
   }
 
   makeCall(toNumber: string, callDelegate: ITelephonyCallDelegate) {
-    this._telephonyEngineController
+    this.telephonyController
       .getAccountController()
       .makeCall(toNumber, callDelegate);
   }
 
   hangUp(callId: string) {
-    this._telephonyEngineController.getAccountController().hangUp(callId);
+    this.telephonyController.getAccountController().hangUp(callId);
   }
 }
 

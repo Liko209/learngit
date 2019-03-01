@@ -13,7 +13,6 @@ import {
 import { TelephonyCallController } from '../controller/TelephonyCallController';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
-import { TELEPHONY_ACCOUNT_STATE } from '../types';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _delegate: ITelephonyAccountDelegate;
@@ -37,23 +36,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
-    let accountState = TELEPHONY_ACCOUNT_STATE.IDLE;
-    switch (state) {
-      case RTC_ACCOUNT_STATE.REGISTERED:
-        accountState = TELEPHONY_ACCOUNT_STATE.REGISTERED;
-        break;
-      case RTC_ACCOUNT_STATE.UNREGISTERED:
-        accountState = TELEPHONY_ACCOUNT_STATE.UNREGISTERED;
-        break;
-      case RTC_ACCOUNT_STATE.IN_PROGRESS:
-        accountState = TELEPHONY_ACCOUNT_STATE.IN_PROGRESS;
-        break;
-      case RTC_ACCOUNT_STATE.FAILED:
-        accountState = TELEPHONY_ACCOUNT_STATE.FAILED;
-        break;
-    }
-
-    this._delegate.onAccountStateChanged(accountState);
+    this._delegate.onAccountStateChanged(state);
   }
 
   onMadeOutgoingCall(call: RTCCall) {

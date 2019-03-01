@@ -11,7 +11,6 @@ import {
   RTCCall,
 } from 'voip';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
-import { TELEPHONY_CALL_STATE } from '../types';
 
 class TelephonyCallController implements IRTCCallDelegate {
   private _callDelegate: ITelephonyCallDelegate;
@@ -26,21 +25,9 @@ class TelephonyCallController implements IRTCCallDelegate {
   }
 
   onCallStateChange(state: RTC_CALL_STATE) {
-    let callState = TELEPHONY_CALL_STATE.IDLE;
-    switch (state) {
-      case RTC_CALL_STATE.CONNECTED:
-        callState = TELEPHONY_CALL_STATE.CONNECTED;
-        break;
-      case RTC_CALL_STATE.CONNECTING:
-        callState = TELEPHONY_CALL_STATE.CONNECTING;
-        break;
-      case RTC_CALL_STATE.DISCONNECTED:
-        callState = TELEPHONY_CALL_STATE.DISCONNECTED;
-        break;
-    }
     this._callDelegate.onCallStateChange(
       this._rtcCall.getCallInfo().uuid,
-      callState,
+      state,
     );
   }
 
