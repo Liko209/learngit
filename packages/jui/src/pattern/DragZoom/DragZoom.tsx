@@ -4,13 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component, createRef, RefObject } from 'react';
-import { ElementRect, Transform } from '../../foundation/utils/calculateZoom';
-import { DragArea } from '../../hoc/withDrag';
+import { DragArea } from '../../components/DragArea';
 import {
-  ZoomComponent,
-  ZoomOptions,
+  ElementRect,
+  Transform,
+  JuiZoomComponent,
+  JuiZoomOptions,
   DEFAULT_OPTIONS as DEFAULT_ZOOM_OPTIONS,
-} from '../../hoc/withZoom';
+} from '../../components/ZoomArea';
 type JuiWithDragZoomProps = {
   autoFitContentRect?: ElementRect;
   notifyContentRectChange: () => void;
@@ -18,7 +19,7 @@ type JuiWithDragZoomProps = {
 };
 
 type JuiDragZoomProps = {
-  zoomRef?: RefObject<ZoomComponent>;
+  zoomRef?: RefObject<JuiZoomComponent>;
   contentRef?: RefObject<any>;
   options?: Partial<JuiDragZoomOptions>;
   onAutoFitContentRectChange?: (contentRect: ElementRect) => void;
@@ -34,7 +35,7 @@ type JuiDragZoomState = {
   canZoomOut: boolean;
 };
 type Padding = [number, number, number, number];
-type JuiDragZoomOptions = ZoomOptions & {
+type JuiDragZoomOptions = JuiZoomOptions & {
   padding: Padding; // left, top, right, bottom
 };
 
@@ -137,7 +138,7 @@ function isDraggable(
 }
 
 class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
-  private _zoomRef: RefObject<ZoomComponent> = createRef();
+  private _zoomRef: RefObject<JuiZoomComponent> = createRef();
   private _contentRef: RefObject<any> = createRef();
 
   constructor(props: JuiDragZoomProps) {
@@ -154,7 +155,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     };
   }
 
-  getZoomRef(): RefObject<ZoomComponent> {
+  getZoomRef(): RefObject<JuiZoomComponent> {
     return this.props.zoomRef || this._zoomRef;
   }
 
@@ -261,7 +262,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     const { autoFitContentRect, transform, canDrag } = this.state;
     const { ...zoomOptions } = ensureOptions(this.props.options);
     return (
-      <ZoomComponent
+      <JuiZoomComponent
         ref={this.getZoomRef()}
         zoomOptions={zoomOptions}
         transform={transform}
@@ -298,7 +299,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
             }
           </DragArea>
         )}
-      </ZoomComponent>
+      </JuiZoomComponent>
     );
   }
 }

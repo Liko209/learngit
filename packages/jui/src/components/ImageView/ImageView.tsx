@@ -6,8 +6,8 @@
 import React, { ComponentType, createRef, RefObject } from 'react';
 
 import { JuiCircularProgress } from '../../components/Progress';
-import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
+import styled from '../../foundation/styled-components';
 
 const StyledLoadingPage = styled.div`
   width: 100%;
@@ -73,7 +73,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   private _errorView() {
     return (
       <StyledLoadingPage>
-        <JuiIconography iconColor={['grey', '400']}>
+        <JuiIconography fontSize="large" iconColor={['grey', '400']}>
           image_broken
         </JuiIconography>
       </StyledLoadingPage>

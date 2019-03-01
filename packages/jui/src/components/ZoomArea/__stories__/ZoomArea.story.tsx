@@ -1,19 +1,12 @@
 import React, { RefObject, createRef } from 'react';
 import { storiesOf } from '@storybook/react';
-import { text, number, boolean } from '@storybook/addon-knobs';
+import { number, boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { ZoomComponent, ZoomArea, WithZoomProps, ZoomProps } from '../withZoom';
+import { JuiZoomComponent, JuiZoomArea, JuiWithZoomProps } from '../ZoomArea';
 import styled from '../../../foundation/styled-components';
-import {
-  zoom,
-  ElementRect,
-  Point,
-  Transform,
-} from '../../../foundation/utils/calculateZoom';
+import { Transform } from '../types';
 const knobs = {
   step: () => number('step', 0.2),
-  accuracy: () =>
-    number('accuracy', 2, { step: 1, max: 10, min: 1, range: false }),
   wheel: () => boolean('wheel', true),
 };
 
@@ -44,11 +37,10 @@ class DemoWithZoomComponent extends React.Component<any, any> {
     return (
       <div>
         <div style={{ width: 400, height: 400 }}>
-          <ZoomComponent
+          <JuiZoomComponent
             ref={this._zoomRef}
             zoomOptions={{
               step: knobs.step(),
-              accuracy: knobs.accuracy(),
               wheel: knobs.wheel(),
             }}
             transform={this.state.transform}
@@ -65,7 +57,7 @@ class DemoWithZoomComponent extends React.Component<any, any> {
                 </TransformDiv>
               );
             }}
-          </ZoomComponent>
+          </JuiZoomComponent>
         </div>
 
         <div>
@@ -103,25 +95,24 @@ class DemoWithZoomComponent extends React.Component<any, any> {
   }
 }
 
-storiesOf('HoC/withZoom', module)
-  .addDecorator(withInfoDecorator(ZoomComponent, { inline: true }))
+storiesOf('Components/ZoomArea', module)
+  .addDecorator(withInfoDecorator(JuiZoomComponent, { inline: true }))
   .add('ZoomComponent', () => (
     <div>
       <DemoWithZoomComponent />
     </div>
   ))
   .add('ZoomArea', () => (
-    <div style={{ width: 400, height: 400 }}>
-      <ZoomArea
+    <div style={{ width: '100%', height: 400 }}>
+      <JuiZoomArea
         zoomOptions={{
           step: knobs.step(),
-          accuracy: knobs.accuracy(),
           wheel: knobs.wheel(),
         }}
       >
-        {(withZoomProps: WithZoomProps) => {
+        {(withZoomProps: JuiWithZoomProps) => {
           return <div>Text in ZoomArea</div>;
         }}
-      </ZoomArea>
+      </JuiZoomArea>
     </div>
   ));

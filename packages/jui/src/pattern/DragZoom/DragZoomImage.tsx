@@ -6,33 +6,32 @@
 import React, { Component, createRef, RefObject } from 'react';
 
 import { JuiButton } from '../../components/Buttons';
+import { JuiImageView } from '../../components/ImageView';
+import { ElementRect, JuiZoomComponent } from '../../components/ZoomArea';
 import styled from '../../foundation/styled-components';
-import { ZoomComponent } from '../../hoc/withZoom';
 import {
+  DEFAULT_OPTIONS as DEFAULT_DRAG_ZOOM_OPTIONS,
   JuiDragZoom,
   JuiDragZoomOptions,
-  DEFAULT_OPTIONS as DEFAULT_DRAG_ZOOM_OPTIONS,
 } from './DragZoom';
-import { JuiImageView } from './ImageView';
-import { ElementRect } from 'src/foundation/utils/calculateZoom';
 
-type JuiZoomImageProps = {
+type JuiDragZoomImageProps = {
   src: string;
-  options?: Partial<JuiZoomImageOptions>;
+  options?: Partial<JuiDragZoomImageOptions>;
 };
 
-type JuiZoomImageState = {
+type JuiDragZoomImageState = {
   scale: number;
   minScale: number;
   maxScale: number;
 };
 
-type JuiZoomImageOptions = {
+type JuiDragZoomImageOptions = {
   minPixel: number;
   maxPixel: number;
 } & JuiDragZoomOptions;
 
-const DEFAULT_OPTIONS: JuiZoomImageOptions = {
+const DEFAULT_OPTIONS: JuiDragZoomImageOptions = {
   ...DEFAULT_DRAG_ZOOM_OPTIONS,
   step: 0.1,
   minPixel: 10,
@@ -53,14 +52,15 @@ const ButtonGroup = styled.div`
 
 const ImageView = styled(JuiImageView)<{ draggable: boolean }>`
   display: block;
+  box-shadow: ${({ theme }) => theme.shadows[7]};
   &:hover {
     ${({ draggable }) => (draggable ? 'cursor: move' : null)};
   }
 `;
 
 function ensureOptions(
-  options?: Partial<JuiZoomImageOptions>,
-): JuiZoomImageOptions {
+  options?: Partial<JuiDragZoomImageOptions>,
+): JuiDragZoomImageOptions {
   return options
     ? {
       ...DEFAULT_OPTIONS,
@@ -73,12 +73,15 @@ function formatScaleText(scale: number) {
   return `${(scale * 100).toFixed()}%`;
 }
 
-class JuiZoomImage extends Component<JuiZoomImageProps, JuiZoomImageState> {
+class JuiDragZoomImage extends Component<
+  JuiDragZoomImageProps,
+  JuiDragZoomImageState
+> {
   private _dragZoomRef: RefObject<JuiDragZoom> = createRef();
-  private _zoomRef: RefObject<ZoomComponent> = createRef();
+  private _zoomRef: RefObject<JuiZoomComponent> = createRef();
   private _imageRef: RefObject<any> = createRef();
 
-  constructor(props: JuiZoomImageProps) {
+  constructor(props: JuiDragZoomImageProps) {
     super(props);
     this.state = {
       scale: 1,
@@ -183,4 +186,9 @@ class JuiZoomImage extends Component<JuiZoomImageProps, JuiZoomImageState> {
   }
 }
 
-export { JuiZoomImage, JuiZoomImageProps, DEFAULT_OPTIONS };
+export {
+  JuiDragZoomImage,
+  JuiDragZoomImageProps,
+  JuiDragZoomImageOptions,
+  DEFAULT_OPTIONS,
+};

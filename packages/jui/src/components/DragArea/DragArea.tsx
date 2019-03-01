@@ -5,8 +5,8 @@
  */
 import React, { RefObject } from 'react';
 
-type WithDragProps = DragState;
-type DragProps = {
+type JuiWithDragProps = JuiDragState;
+type JuiDragProps = {
   viewRef?: RefObject<any>;
   dragOptions?: {
     enabled?: boolean;
@@ -14,12 +14,12 @@ type DragProps = {
     preventDefault?: boolean;
   };
   onDragStart?: () => void;
-  onDragMove?: (dragState: DragState) => void;
+  onDragMove?: (dragState: JuiDragState) => void;
   onDragEnd?: () => void;
-  children: (props: WithDragProps) => JSX.Element;
+  children: (props: JuiWithDragProps) => JSX.Element;
 };
 
-type DragState = {
+type JuiDragState = {
   isDragging: boolean;
   distance: [number, number];
   offset: [number, number];
@@ -29,8 +29,8 @@ type DragState = {
   cancel: () => void;
 };
 
-class DragArea extends React.Component<DragProps, DragState> {
-  constructor(props: DragProps) {
+class DragArea extends React.Component<JuiDragProps, JuiDragState> {
+  constructor(props: JuiDragProps) {
     super(props);
     this.state = {
       isDragging: false,
@@ -60,7 +60,7 @@ class DragArea extends React.Component<DragProps, DragState> {
     const { pageX, pageY } = ev;
     const dragState = {
       ...this.state,
-    } as DragState;
+    } as JuiDragState;
     dragState.isDragging = true;
     dragState.startPosition = {
       left: pageX,
@@ -84,7 +84,7 @@ class DragArea extends React.Component<DragProps, DragState> {
     const { pageX, pageY } = ev;
     const dragState = {
       ...this.state,
-    } as DragState;
+    } as JuiDragState;
     if (dragState.isDragging) {
       dragState.distance = [
         pageX - dragState.startPosition.left,
@@ -111,7 +111,7 @@ class DragArea extends React.Component<DragProps, DragState> {
   handleUp = () => {
     const dragState = {
       ...this.state,
-    } as DragState;
+    } as JuiDragState;
     dragState.isDragging = false;
     dragState.distance = [0, 0];
     this.removeEventListeners();
@@ -146,10 +146,13 @@ class DragArea extends React.Component<DragProps, DragState> {
       output['onMouseOut'] = this.handleUp;
     }
     return React.cloneElement(children(this.state), {
-      // ...rest,
       ...output,
     });
   }
 }
 
-export { DragArea, WithDragProps, DragProps };
+export {
+  DragArea,
+  JuiWithDragProps as WithDragProps,
+  JuiDragProps as DragProps,
+};

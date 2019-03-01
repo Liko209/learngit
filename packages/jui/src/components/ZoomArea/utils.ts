@@ -1,25 +1,9 @@
-type ElementRect = {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-};
-
-type Point = {
-  left: number;
-  top: number;
-};
-
-type ZoomRatio = {
-  fromRatio: number;
-  toRatio: number;
-};
-
-type Transform = {
-  scale: number;
-  translateX: number;
-  translateY: number;
-};
+export function getCenterPoint(react: ElementRect) {
+  return {
+    left: react.left + react.width / 2,
+    top: react.top + react.height / 2,
+  };
+}
 
 function isZoomRatio(arg: any): arg is ZoomRatio {
   return (
@@ -29,7 +13,9 @@ function isZoomRatio(arg: any): arg is ZoomRatio {
   );
 }
 
-function zoom(
+import { ElementRect, ZoomRatio, Point } from './types';
+
+export function zoom(
   ratio: number | ZoomRatio,
   rect: ElementRect,
   center: Point,
@@ -60,5 +46,3 @@ function zoom(
     height: newHeight,
   };
 }
-
-export { zoom, ElementRect, Point, ZoomRatio, Transform };

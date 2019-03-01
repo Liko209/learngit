@@ -9,11 +9,10 @@ import { number, text, array } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiDragZoom } from '../DragZoom';
-import { JuiZoomImage } from '../ZoomImage';
+import { JuiDragZoomImage } from '../DragZoomImage';
 
 const knobs = {
-  containerWidth: () => number('containerWidth', 700),
+  // containerWidth: () => number('containerWidth', 700),
   containerHeight: () => number('containerHeight', 500),
   src: () =>
     text('src', 'https://fengyuanchen.github.io/viewerjs/images/tibet-3.jpg'),
@@ -31,16 +30,16 @@ const knobs = {
       number
     ],
 };
-storiesOf('Pattern/ZoomImage', module)
-  .addDecorator(withInfoDecorator(JuiDragZoom, { inline: true }))
-  .add('ZoomImage', () => (
+storiesOf('Pattern/DragZoom', module)
+  .addDecorator(withInfoDecorator(JuiDragZoomImage, { inline: true }))
+  .add('DragZoomImage', () => (
     <div
       style={{
-        width: knobs.containerWidth(),
+        width: '100%',
         height: knobs.containerHeight(),
       }}
     >
-      <JuiZoomImage
+      <JuiDragZoomImage
         src={knobs.src()}
         options={{
           minPixel: 200,

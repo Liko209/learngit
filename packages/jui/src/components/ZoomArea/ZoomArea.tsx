@@ -8,32 +8,29 @@ import React, { RefObject } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 
 import styled from '../../foundation/styled-components';
-import {
-  ElementRect,
-  Point,
-  Transform,
-} from '../../foundation/utils/calculateZoom';
 import { Omit } from '../../foundation/utils/typeHelper';
+import { ElementRect, Point, Transform } from './types';
+import { getCenterPoint } from './utils';
 
-type ZoomProps = {
+type JuiZoomProps = {
   transform: Transform;
   onTransformChange: (newTransform: Transform) => void;
-  children: (withZoomProps: WithZoomProps) => JSX.Element;
+  children: (withZoomProps: JuiWithZoomProps) => JSX.Element;
   viewRef?: RefObject<HTMLDivElement>;
-  zoomOptions?: Partial<ZoomOptions>;
+  zoomOptions?: Partial<JuiZoomOptions>;
   onZoomRectChange?: (newZoomRect: ElementRect) => void;
 };
 
-type WithZoomProps = Pick<ZoomProps, 'transform'> & {
+type JuiWithZoomProps = Pick<JuiZoomProps, 'transform'> & {
   zoomIn: (zoomCenter?: Point) => void;
   zoomOut: (zoomCenter?: Point) => void;
 };
 
-type ZoomState = {
+type JuiZoomState = {
   zoomRect: ElementRect;
 };
 
-type ZoomOptions = {
+type JuiZoomOptions = {
   accuracy: number;
   step: number;
   minScale: number;
@@ -41,7 +38,7 @@ type ZoomOptions = {
   wheel: boolean;
 };
 
-const DEFAULT_OPTIONS: ZoomOptions = {
+const DEFAULT_OPTIONS: JuiZoomOptions = {
   accuracy: 2,
   step: 0.1,
   minScale: 0.1,
@@ -59,7 +56,7 @@ const Container = styled.div`
   height: 100%;
 `;
 
-function ensureOptions(zoomOptions?: Partial<ZoomOptions>): ZoomOptions {
+function ensureOptions(zoomOptions?: Partial<JuiZoomOptions>): JuiZoomOptions {
   return zoomOptions
     ? {
       ...DEFAULT_OPTIONS,
@@ -68,21 +65,10 @@ function ensureOptions(zoomOptions?: Partial<ZoomOptions>): ZoomOptions {
     : DEFAULT_OPTIONS;
 }
 
-function getCenterPoint(react: ElementRect) {
-  return {
-    left: react.left + react.width / 2,
-    top: react.top + react.height / 2,
-  };
-}
-
-function fixScaleAccuracy(scale: number, accuracy: number): number {
-  return Number(scale.toFixed(accuracy));
-}
-
-class ZoomComponent extends React.Component<ZoomProps, ZoomState> {
+class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
   private _viewRef: RefObject<HTMLDivElement> = React.createRef();
 
-  constructor(props: ZoomProps) {
+  constructor(props: JuiZoomProps) {
     super(props);
     this.state = {
       zoomRect: {
@@ -109,15 +95,29 @@ class ZoomComponent extends React.Component<ZoomProps, ZoomState> {
     return this.props.viewRef || this._viewRef;
   }
 
+  zoomStep = (scaleStep: number, zoomCenterPoint?: Point) => {
+    const { scale } = this.props.transform;
+    const newScale = scale + scaleStep;
+    this.zoomTo(newScale, zoomCenterPoint);
+  }
+
+  zoomIn = () => {
+    this.zoomStep(ensureOptions(this.props.zoomOptions).step);
+  }
+
+  zoomOut = () => {
+    this.zoomStep(-ensureOptions(this.props.zoomOptions).step);
+  }
+
   zoomTo = (newScale: number, zoomCenterPoint?: Point) => {
     const { scale, translateX, translateY } = this.props.transform;
     const { accuracy, maxScale, minScale } = ensureOptions(
       this.props.zoomOptions,
     );
-    const fixNewScale = fixScaleAccuracy(newScale, accuracy);
+    const fixNewScale = Number(newScale.toFixed(accuracy));
     if (
       (fixNewScale > scale && fixNewScale > maxScale) ||
-      (fixNewScale < minScale)
+      fixNewScale < minScale
     ) {
       return;
     }
@@ -139,20 +139,6 @@ class ZoomComponent extends React.Component<ZoomProps, ZoomState> {
         translateY -
         (translateOffsetY * (fixNewScale / scale - 1)) / fixNewScale,
     });
-  }
-
-  zoomStep = (scaleStep: number, zoomCenterPoint?: Point) => {
-    const { scale } = this.props.transform;
-    const newScale = scale + scaleStep;
-    this.zoomTo(newScale, zoomCenterPoint);
-  }
-
-  zoomIn = () => {
-    this.zoomStep(ensureOptions(this.props.zoomOptions).step);
-  }
-
-  zoomOut = () => {
-    this.zoomStep(-ensureOptions(this.props.zoomOptions).step);
   }
 
   reset = () => {
@@ -184,7 +170,7 @@ class ZoomComponent extends React.Component<ZoomProps, ZoomState> {
 
   render() {
     const { children, transform, onZoomRectChange } = this.props;
-    const zoomProps: WithZoomProps = {
+    const zoomProps: JuiWithZoomProps = {
       transform,
       zoomIn: this.zoomIn,
       zoomOut: this.zoomOut,
@@ -224,11 +210,11 @@ class ZoomComponent extends React.Component<ZoomProps, ZoomState> {
   }
 }
 
-class ZoomArea extends React.Component<
-  Omit<ZoomProps, 'transform' | 'onTransformChange'>,
+class JuiZoomArea extends React.Component<
+  Omit<JuiZoomProps, 'transform' | 'onTransformChange'>,
   { transform: Transform }
 > {
-  constructor(props: Omit<ZoomProps, 'transform' | 'onTransformChange'>) {
+  constructor(props: Omit<JuiZoomProps, 'transform' | 'onTransformChange'>) {
     super(props);
     this.state = {
       transform: {
@@ -239,7 +225,7 @@ class ZoomArea extends React.Component<
     };
   }
   render() {
-    return React.createElement(ZoomComponent, {
+    return React.createElement(JuiZoomComponent, {
       ...this.props,
       transform: this.state.transform,
       onTransformChange: (newTransform: Transform) => {
@@ -252,10 +238,10 @@ class ZoomArea extends React.Component<
 }
 
 export {
-  WithZoomProps,
-  ZoomProps,
-  ZoomComponent,
-  ZoomArea,
-  ZoomOptions,
+  JuiWithZoomProps,
+  JuiZoomProps,
+  JuiZoomComponent,
+  JuiZoomArea,
+  JuiZoomOptions,
   DEFAULT_OPTIONS,
 };

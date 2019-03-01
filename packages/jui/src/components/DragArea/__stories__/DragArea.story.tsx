@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 // import { text, number, boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { DragArea, WithDragProps } from '../withDrag';
+import { DragArea, WithDragProps } from '../DragArea';
 import styled from '../../../foundation/styled-components';
 
 const ImageView = styled.img`
@@ -27,8 +27,7 @@ const Image = styled.img<{ dragState: WithDragProps }>`
   }
 `;
 
-const knobs = {};
-storiesOf('HoC/withDrag', module)
+storiesOf('Components/DragArea', module)
   .addDecorator(withInfoDecorator(DragArea, { inline: true }))
   .add('Demo1', () => (
     <div>
