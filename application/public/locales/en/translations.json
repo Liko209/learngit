@@ -316,6 +316,7 @@
       "privateTeam": "Private team",
       "teamMembers": "Team members",
       "groupMembers": "Group members",
+      "searchMembers": "Search members",
       "makeTeamAdmin": "Make team admin",
       "revokeTeamAdmin": "Revoke team admin",
 
