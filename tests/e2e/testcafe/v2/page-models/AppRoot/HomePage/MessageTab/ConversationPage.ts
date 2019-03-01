@@ -375,7 +375,10 @@ export class BookmarkPage extends BaseConversationPage {
 }
 
 export class PostItem extends BaseWebComponent {
-
+  get postId() {
+    return this.self.getAttribute('data-id');
+  }
+  
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
   }
@@ -409,7 +412,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[data-placeholder="Type new message"]');
   }
 
-  async editMessage(message: string, options?) {
+  async editMessage(message: string, options?: TypeActionOptions) {
     await this.t
       .wait(1e3) // need time to wait edit text area loaded
       .typeText(this.editTextArea, message, options)
