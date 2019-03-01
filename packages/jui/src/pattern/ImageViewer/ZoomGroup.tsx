@@ -32,7 +32,6 @@ const StyledZoom = styled.div`
   && {
     svg {
       font-size: ${spacing(5)};
-      color: ${grey('500')};
     }
   }
 `;
