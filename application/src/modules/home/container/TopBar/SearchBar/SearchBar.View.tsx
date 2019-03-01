@@ -210,8 +210,8 @@ class SearchBarView extends React.Component<ViewProps & Props> {
         <JuiSearchTitle
           onClick={this.clearRecent}
           isShowMore={true}
-          showMore={'clear all'}
-          title={'Recently search'}
+          showMore={i18next.t('home.ClearHistory')}
+          title={i18next.t('home.RecentSearches')}
           data-test-automation-id={'search-clear'}
         />
         {recentRecord.map(({ ids, types }: RecentItems) => {
@@ -263,10 +263,14 @@ class SearchBarView extends React.Component<ViewProps & Props> {
           }}
         >
           {focus && searchValue && (
-            <JuiSearchList>{this.searchResultList}</JuiSearchList>
+            <JuiSearchList data-test-automation-id="search-results">
+              {this.searchResultList}
+            </JuiSearchList>
           )}
           {focus && !searchValue && this.searchRecordList && (
-            <JuiSearchList>{this.searchRecordList}</JuiSearchList>
+            <JuiSearchList data-test-automation-id="search-records">
+              {this.searchRecordList}
+            </JuiSearchList>
           )}
         </HotKeys>
       </JuiSearchBar>
