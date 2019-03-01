@@ -11,6 +11,9 @@ import {
 import RTCEngine from 'voip';
 import { Api } from '../../../api';
 import { daoManager, VoIPDao } from '../../../dao';
+import { TelephonyAccountController } from './TelephonyAccountController';
+import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
+
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
     return await Api.rcNetworkClient.rawRequest({
@@ -49,6 +52,7 @@ class TelephonyEngineController {
   rtcEngine: RTCEngine;
   voipNetworkDelegate: VoIPNetworkClient;
   voipDaoDelegate: VoIPDaoClient;
+  private accountController: TelephonyAccountController;
 
   constructor() {
     this.voipNetworkDelegate = new VoIPNetworkClient();
@@ -59,6 +63,18 @@ class TelephonyEngineController {
     this.rtcEngine = RTCEngine.getInstance();
     this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
+  }
+
+  createAccount(delegate: ITelephonyAccountDelegate) {
+    // Engine can hold multiple accounts for multiple calls
+    this.accountController = new TelephonyAccountController(
+      this.rtcEngine,
+      delegate,
+    );
+  }
+
+  getAccountController() {
+    return this.accountController;
   }
 }
 

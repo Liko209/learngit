@@ -5,6 +5,8 @@
  */
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { TelephonyEngineController } from '../controller';
+import { ITelephonyCallDelegate } from './ITelephonyCallDelegate';
+import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
 
 class TelephonyService extends EntityBaseService {
   private _telephonyEngineController: TelephonyEngineController;
@@ -23,6 +25,20 @@ class TelephonyService extends EntityBaseService {
 
   private _init() {
     this.telephonyController.initEngine();
+  }
+
+  createAccount(delegate: ITelephonyAccountDelegate) {
+    this._telephonyEngineController.createAccount(delegate);
+  }
+
+  makeCall(toNumber: string, callDelegate: ITelephonyCallDelegate) {
+    this._telephonyEngineController
+      .getAccountController()
+      .makeCall(toNumber, callDelegate);
+  }
+
+  hangUp(callId: string) {
+    this._telephonyEngineController.getAccountController().hangUp(callId);
   }
 }
 
