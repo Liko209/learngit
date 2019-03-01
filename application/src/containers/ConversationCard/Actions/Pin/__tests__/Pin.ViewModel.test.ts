@@ -28,15 +28,6 @@ beforeAll(() => {
 });
 
 describe('likeViewModel', () => {
-  it('lifecycle method', () => {
-    expect(pinViewModel._postId).toBe(1);
-    expect(pinViewModel._groupId).toBe(2);
-  });
-
-  it('_group', () => {
-    expect(pinViewModel._post).toBe(mockGroupEntityData);
-  });
-
   it('isPin', () => {
     expect(pinViewModel.isPin).toBe(false);
     mockGroupEntityData.pinnedPostIds! = [];

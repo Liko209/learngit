@@ -27,23 +27,13 @@ const PIN_OPTION_EXCLUDE_VERBS = [
 
 class PinViewModel extends StoreViewModel<PinProps> implements PinViewProps {
   @computed
-  private get _groupId() {
-    return this.props.groupId;
-  }
-
-  @computed
-  private get _postId() {
-    return this.props.postId;
-  }
-
-  @computed
   private get _group() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._groupId);
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId);
   }
 
   @computed
   private get _post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.postId);
   }
 
   @computed
@@ -84,13 +74,14 @@ class PinViewModel extends StoreViewModel<PinProps> implements PinViewProps {
   @computed
   get isPin() {
     const { pinnedPostIds } = this._group;
-    return !!pinnedPostIds && pinnedPostIds.includes(this._postId);
+    return !!pinnedPostIds && pinnedPostIds.includes(this.props.postId);
   }
 
   @action
   pin = async (toPin: boolean): Promise<void> => {
+    const { postId, groupId } = this.props;
     const groupService: GroupService = GroupService.getInstance();
-    await groupService.pinPost(this._postId, this._groupId, toPin);
+    await groupService.pinPost(postId, groupId, toPin);
   }
 }
 
