@@ -112,6 +112,10 @@ export abstract class BaseWebComponent {
     return sel.find('input[type="checkbox"]');
   }
 
+  async quitByPressESC() {
+    await this.t.pressKey('ESC');
+  }
+
   // misc
   warnFlakySelector() {
     const stack = (new Error()).stack;
