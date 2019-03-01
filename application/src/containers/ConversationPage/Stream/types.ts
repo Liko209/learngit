@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { TDelta, ISortableModel } from '../../../store/base/fetch/types';
+import PostModel from '../../../store/models/Post';
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -73,6 +74,7 @@ type StreamViewProps = {
   firstHistoryUnreadPostId?: number;
   loadInitialPostsError?: Error;
   loading?: boolean;
+  lastPost?: PostModel;
 };
 
 type StreamSnapshot = {
