@@ -41,6 +41,7 @@ export default class SyncService extends BaseService {
   constructor() {
     super(null, null, null, {
       [SERVICE.SOCKET_STATE_CHANGE]: ({ state }: { state: any }) => {
+        mainLogger.log('sync service SERVICE.SOCKET_STATE_CHANGE', state);
         if (state === 'connected' || state === 'refresh') {
           this.syncData();
         } else if (state === 'connecting') {
@@ -60,6 +61,7 @@ export default class SyncService extends BaseService {
   async syncData(syncListener?: SyncListener) {
     this._syncListener = syncListener || {};
     const lastIndexTimestamp = this.getIndexTimestamp();
+    mainLogger.log('start syncData time: ', lastIndexTimestamp);
     try {
       if (lastIndexTimestamp) {
         await this._syncIndexData(lastIndexTimestamp);
