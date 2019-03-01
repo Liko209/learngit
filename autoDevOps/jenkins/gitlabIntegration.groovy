@@ -52,7 +52,7 @@ def condStage(Map args, Closure block) {
 // generate sha1 hash from a git treeish object, ensure stability by only taking parent and tree object into account
 def stableSha1(String treeish) {
     String cmd = "git cat-file commit ${treeish} | grep -e ^tree -e ^parent | openssl sha1 |  grep -oE '[^ ]+\$'".toString()
-    return sh(returnStdout: true, script: cmd)
+    return sh(returnStdout: true, script: cmd).trim()
 }
 
 
