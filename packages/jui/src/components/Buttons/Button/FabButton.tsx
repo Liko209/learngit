@@ -60,11 +60,12 @@ const StyledFabButton = styled<JuiFabProps>(WrappedMuiFab)`
       animation-name: ${({ theme }) => rippleEnter(theme)};
     }
     &.disabled {
-      .icon {
-        opacity: ${({ theme }) => theme.palette.action.hoverOpacity};
-      }
       background-color: ${palette('common', 'white')};
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
+    }
+    .icon {
+      opacity: ${({ theme, disabled }) =>
+        disabled ? theme.palette.action.hoverOpacity : 1};
     }
   }
 `;
