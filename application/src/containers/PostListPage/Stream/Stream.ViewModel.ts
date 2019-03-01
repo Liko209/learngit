@@ -13,7 +13,7 @@ import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
 import { Post } from 'sdk/module/post/entity';
-import { EVENT_TYPES, ENTITY } from 'sdk/service';
+import { EVENT_TYPES } from 'sdk/service';
 import { PostService } from 'sdk/module/post';
 import { transform2Map, getEntity } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
@@ -109,6 +109,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       }
       const data = [...postsFromService, ...postsFromStore];
       addOrderIndicatorForPosts(data, this._postIds);
+      console.log('hihihi fetched', data.map(({ id }) => id));
       return { hasMore, data };
     } catch (err) {
       return { hasMore: true, data: [] };
@@ -121,7 +122,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this._postProvider,
       this._options,
     );
-    this.hackPostChange();
   }
 
   async onReceiveProps(props: StreamProps) {
@@ -180,18 +180,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     if (this._sortableListHandler.hasMore(direction)) {
       return this._sortableListHandler.fetchData(direction);
     }
-  }
-
-  hackPostChange() {
-    this.subscribeNotification(ENTITY.POST, ({ type, body }) => {
-      if (type !== EVENT_TYPES.UPDATE) {
-        return;
-      }
-      this._sortableListHandler.onDataChanged({
-        body,
-        type: EVENT_TYPES.UPDATE,
-      });
-    });
   }
 }
 
