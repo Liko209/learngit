@@ -1,1 +1,1 @@
-export * from './Zoom';
+export * from './ZoomImage';

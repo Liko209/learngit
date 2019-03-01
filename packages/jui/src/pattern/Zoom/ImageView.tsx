@@ -1,4 +1,10 @@
-import React, { ComponentType, RefObject, createRef } from 'react';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-02-28 16:33:52
+ * Copyright © RingCentral. All rights reserved.
+ */
+import React, { ComponentType, createRef, RefObject } from 'react';
+
 import { JuiCircularProgress } from '../../components/Progress';
 import styled from '../../foundation/styled-components';
 
@@ -14,25 +20,26 @@ const StyledLoadingPage = styled.div`
   z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
-type ImageProps = React.DetailedHTMLProps<
+type JuiImageProps = React.DetailedHTMLProps<
   React.ImgHTMLAttributes<HTMLImageElement>,
   HTMLImageElement
 > & {
+  viewRef?: RefObject<HTMLImageElement>;
   loadingPlaceHolder?: ComponentType<any>;
   onSizeLoad?: (naturalWidth: number, naturalHeight: number) => void;
 };
 
-type ImageState = {
+type JuiImageState = {
   loading: boolean;
   error: boolean;
   naturalWidth: number;
   naturalHeight: number;
 };
 
-class ImageView extends React.Component<ImageProps, ImageState> {
-  private _imageRef: RefObject<any> = createRef();
+class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
+  private _imageRef: RefObject<HTMLImageElement> = createRef();
 
-  constructor(props: ImageProps) {
+  constructor(props: JuiImageProps) {
     super(props);
     this.state = {
       loading: true,
@@ -42,7 +49,11 @@ class ImageView extends React.Component<ImageProps, ImageState> {
     };
   }
 
-  componentWillReceiveProps(newProps: ImageProps) {
+  getImageRef = (): RefObject<HTMLImageElement> => {
+    return this.props.viewRef || this._imageRef;
+  }
+
+  componentWillReceiveProps(newProps: JuiImageProps) {
     if (newProps.src !== this.props.src) {
       this.setState({
         loading: true,
@@ -55,6 +66,7 @@ class ImageView extends React.Component<ImageProps, ImageState> {
 
   render() {
     const { loading, error } = this.state;
+    const { onSizeLoad, loadingPlaceHolder, viewRef, ...rest } = this.props;
     return (
       <>
         {loading ? (
@@ -63,16 +75,15 @@ class ImageView extends React.Component<ImageProps, ImageState> {
           </StyledLoadingPage>
         ) : null}
         <img
-          ref={this._imageRef}
+          ref={this.getImageRef()}
           style={{ visibility: loading || error ? 'hidden' : 'visible' }}
           onLoad={() => {
-            const { naturalWidth, naturalHeight } = this._imageRef.current!;
-            this.props.onSizeLoad &&
-              this.props.onSizeLoad(naturalWidth, naturalHeight);
+            const { naturalWidth, naturalHeight } = this.getImageRef().current!;
+            onSizeLoad && onSizeLoad(naturalWidth, naturalHeight);
             this.setState({
+              naturalWidth,
+              naturalHeight,
               loading: false,
-              naturalWidth: naturalHeight as number,
-              naturalHeight: naturalHeight as number,
             });
           }}
           onError={() => {
@@ -81,7 +92,7 @@ class ImageView extends React.Component<ImageProps, ImageState> {
               error: true,
             });
           }}
-          {...this.props}
+          {...rest}
         />
         {error ? (
           <StyledLoadingPage>
@@ -93,4 +104,4 @@ class ImageView extends React.Component<ImageProps, ImageState> {
   }
 }
 
-export { ImageView };
+export { JuiImageView };

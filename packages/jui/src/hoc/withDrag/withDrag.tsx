@@ -3,7 +3,7 @@
  * @Date: 2019-02-28 15:16:12
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ComponentType, RefObject } from 'react';
+import React, { RefObject } from 'react';
 
 type WithDragProps = DragState;
 type DragProps = {
@@ -16,7 +16,7 @@ type DragProps = {
   onDragStart?: () => void;
   onDragMove?: (dragState: DragState) => void;
   onDragEnd?: () => void;
-  render: (props: WithDragProps) => JSX.Element;
+  children: (props: WithDragProps) => JSX.Element;
 };
 
 type DragState = {
@@ -132,13 +132,11 @@ class DragArea extends React.Component<DragProps, DragState> {
 
   render() {
     const {
-      children,
       dragOptions: {
         enabled = true,
         passive = { passive: false, capture: false },
       } = {},
-      render,
-      ...rest
+      children,
     } = this.props;
     const output = {};
     if (enabled) {
@@ -147,8 +145,8 @@ class DragArea extends React.Component<DragProps, DragState> {
       output[`onTouchStart${capture}`] = this.handleDown;
       output['onMouseOut'] = this.handleUp;
     }
-    return React.cloneElement(render(this.state), {
-      ...rest,
+    return React.cloneElement(children(this.state), {
+      // ...rest,
       ...output,
     });
   }

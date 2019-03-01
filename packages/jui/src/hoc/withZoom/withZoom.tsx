@@ -5,20 +5,19 @@
  */
 import _, { throttle } from 'lodash';
 import React, { RefObject } from 'react';
+import ReactResizeDetector from 'react-resize-detector';
 
 import styled from '../../foundation/styled-components';
-import {
-  ElementRect,
-  Point,
-  Transform,
-} from '../../foundation/utils/calculateZoom';
+import { ElementRect, Point, Transform } from '../../foundation/utils/calculateZoom';
 import { Omit } from '../../foundation/utils/typeHelper';
 
 type ZoomProps = {
-  zoomOptions?: Partial<ZoomOptions>;
   transform: Transform;
   onTransformChange: (newTransform: Transform) => void;
-  render: (withZoomProps: WithZoomProps) => JSX.Element;
+  children: (withZoomProps: WithZoomProps) => JSX.Element;
+  viewRef?: RefObject<HTMLDivElement>;
+  zoomOptions?: Partial<ZoomOptions>;
+  onZoomRectChange?: (newZoomRect: ElementRect) => void;
 };
 
 type WithZoomProps = Pick<ZoomProps, 'transform'> & {
@@ -26,17 +25,23 @@ type WithZoomProps = Pick<ZoomProps, 'transform'> & {
   zoomOut: (zoomCenter?: Point) => void;
 };
 
-type ZoomState = {};
+type ZoomState = {
+  zoomRect: ElementRect;
+};
 
 type ZoomOptions = {
   accuracy: number;
   step: number;
+  minScale: number;
+  maxScale: number;
   wheel: boolean;
 };
 
-const DEFAULT_ZOOM_OPTIONS: ZoomOptions = {
+const DEFAULT_OPTIONS: ZoomOptions = {
   accuracy: 2,
   step: 0.1,
+  minScale: 0.1,
+  maxScale: Number.MAX_SAFE_INTEGER,
   wheel: false,
 };
 
@@ -51,6 +56,15 @@ const Container = styled.div`
   height: 100%;
 `;
 
+function ensureOptions(zoomOptions?: Partial<ZoomOptions>): ZoomOptions {
+  return zoomOptions
+    ? {
+      ...DEFAULT_OPTIONS,
+      ...zoomOptions,
+    }
+    : DEFAULT_OPTIONS;
+}
+
 function getCenterPoint(react: ElementRect) {
   return {
     left: react.left + react.width / 2,
@@ -62,39 +76,59 @@ function fixScaleAccuracy(scale: number, accuracy: number): number {
   return Number(scale.toFixed(accuracy));
 }
 
-function ensureZoomOption(zoomOptions?: Partial<ZoomOptions>): ZoomOptions {
-  return zoomOptions
-    ? {
-      ...DEFAULT_ZOOM_OPTIONS,
-      ...zoomOptions,
-    }
-    : DEFAULT_ZOOM_OPTIONS;
-}
-
-class ZoomComponent extends React.Component<ZoomProps> {
-  private _zoomRef: RefObject<any> = React.createRef();
+class ZoomComponent extends React.Component<ZoomProps, ZoomState> {
+  private _viewRef: RefObject<HTMLDivElement> = React.createRef();
 
   constructor(props: ZoomProps) {
     super(props);
-    this.throttleZoom = throttle(this.zoomStep.bind(this), 500);
+    this.state = {
+      zoomRect: {
+        left: 0,
+        top: 0,
+        width: 0,
+        height: 0,
+      },
+    };
+    this.throttleZoom = throttle(this.zoomStep.bind(this), 50, {
+      leading: true,
+    });
+  }
+
+  getBoundingClientRect(): ElementRect {
+    return this.getViewRef().current.getBoundingClientRect();
+  }
+
+  getTransform(): Transform {
+    return this.props.transform;
+  }
+
+  getViewRef(): RefObject<any> {
+    return this.props.viewRef || this._viewRef;
   }
 
   zoomTo = (newScale: number, zoomCenterPoint?: Point) => {
     const { scale, translateX, translateY } = this.props.transform;
-    const { accuracy } = ensureZoomOption(this.props.zoomOptions);
-    const fixNewScale = fixScaleAccuracy(newScale, accuracy);
+    const { accuracy, maxScale, minScale } = ensureOptions(
+      this.props.zoomOptions,
+    );
+    let fixNewScale = fixScaleAccuracy(newScale, accuracy);
+    fixNewScale = Math.max(minScale, Math.min(maxScale, fixNewScale));
     let translateOffsetX = 0;
     let translateOffsetY = 0;
     if (zoomCenterPoint) {
-      const rect = this._zoomRef.current.getBoundingClientRect();
+      const rect = this.getViewRef().current.getBoundingClientRect();
       const rectCenter = getCenterPoint(rect);
       translateOffsetX = zoomCenterPoint.left - rectCenter.left;
       translateOffsetY = zoomCenterPoint.top - rectCenter.top;
     }
     this.props.onTransformChange({
       scale: fixNewScale,
-      translateX: translateX - translateOffsetX * (fixNewScale / scale - 1),
-      translateY: translateY - translateOffsetY * (fixNewScale / scale - 1),
+      translateX:
+        translateX -
+        (translateOffsetX * (fixNewScale / scale - 1)) / fixNewScale,
+      translateY:
+        translateY -
+        (translateOffsetY * (fixNewScale / scale - 1)) / fixNewScale,
     });
   }
 
@@ -104,39 +138,79 @@ class ZoomComponent extends React.Component<ZoomProps> {
     this.zoomTo(newScale, zoomCenterPoint);
   }
 
+  zoomIn = () => {
+    this.zoomStep(ensureOptions(this.props.zoomOptions).step);
+  }
+
+  zoomOut = () => {
+    this.zoomStep(-ensureOptions(this.props.zoomOptions).step);
+  }
+
+  reset = () => {
+    this.props.onTransformChange({
+      scale: 1,
+      translateX: 0,
+      translateY: 0,
+    });
+  }
+
   throttleZoom(scaleStep: number, zoomCenterPoint?: Point) {
     this.zoomStep(scaleStep, zoomCenterPoint);
   }
 
   onWheel = (ev: React.WheelEvent) => {
-    const { step, wheel } = ensureZoomOption(this.props.zoomOptions);
+    const { step, wheel } = ensureOptions(this.props.zoomOptions);
     if (!wheel) return;
     ev.preventDefault();
     const point: Point = {
       left: ev.pageX,
       top: ev.pageY,
     };
-    if (ev.deltaY > 2) {
+    if (ev.deltaY > 0) {
       this.throttleZoom(-step, point);
-    } else if (ev.deltaY < -2) {
+    } else if (ev.deltaY < -0) {
       this.throttleZoom(+step, point);
     }
   }
 
   render() {
-    const { children, render, transform, ...rest } = this.props;
-    const { step } = ensureZoomOption(this.props.zoomOptions);
+    const { children, transform, onZoomRectChange } = this.props;
+    const { step } = ensureOptions(this.props.zoomOptions);
     const zoomProps: WithZoomProps = {
       transform,
-      zoomIn: this.zoomStep.bind(step),
-      zoomOut: this.zoomStep.bind(-step),
+      zoomIn: this.zoomIn,
+      zoomOut: this.zoomOut,
+    };
+    const divStyle = {
+      transform: `scale(${transform.scale}) translate(${
+        transform.translateX
+      }px, ${transform.translateY}px)`,
     };
     return (
-      <Container ref={this._zoomRef}>
-        {React.cloneElement(render(zoomProps), {
-          ...rest,
-          onWheel: this.onWheel,
-        })}
+      <Container ref={this.getViewRef()}>
+        <div style={divStyle} onWheel={this.onWheel}>
+          {children(zoomProps)}
+        </div>
+        <ReactResizeDetector
+          handleHeight={true}
+          handleWidth={true}
+          onResize={(width, height) => {
+            const zoomRect = {
+              width,
+              height,
+              left: 0,
+              top: 0,
+            };
+            this.setState(
+              {
+                zoomRect,
+              },
+              () => {
+                onZoomRectChange && onZoomRectChange(zoomRect);
+              },
+            );
+          }}
+        />
       </Container>
     );
   }
@@ -169,4 +243,4 @@ class ZoomArea extends React.Component<
   }
 }
 
-export { WithZoomProps, ZoomProps, ZoomComponent, ZoomArea };
+export { WithZoomProps, ZoomProps, ZoomComponent, ZoomArea, ZoomOptions, DEFAULT_OPTIONS };

@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { text, number, boolean } from '@storybook/addon-knobs';
+// import { text, number, boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { DragArea, WithDragProps } from '../withDrag';
 import styled from '../../../foundation/styled-components';
@@ -33,7 +33,7 @@ storiesOf('HoC/withDrag', module)
   .add('Demo1', () => (
     <div>
       <DragArea
-        render={(dragState: WithDragProps) => {
+        children={(dragState: WithDragProps) => {
           return (
             <ImageView
               style={{
@@ -51,7 +51,7 @@ storiesOf('HoC/withDrag', module)
   .add('Demo2', () => (
     <div>
       <DragArea
-        render={(dragState: WithDragProps) => {
+        children={(dragState: WithDragProps) => {
           return (
             <Image
               dragState={dragState}

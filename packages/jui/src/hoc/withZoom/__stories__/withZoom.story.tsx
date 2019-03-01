@@ -16,6 +16,7 @@ const knobs = {
     number('accuracy', 2, { step: 1, max: 10, min: 1, range: false }),
   wheel: () => boolean('wheel', true),
 };
+
 const TransformDiv = styled.div<{
   transform: Transform;
 }>`
@@ -25,7 +26,6 @@ const TransformDiv = styled.div<{
     }px, ${transform.translateY}px);`;
   }}
 `;
-
 class DemoWithZoomComponent extends React.Component<any, any> {
   private _zoomRef: RefObject<any> = createRef();
   constructor(props: any) {
@@ -57,14 +57,15 @@ class DemoWithZoomComponent extends React.Component<any, any> {
                 transform,
               });
             }}
-            render={() => {
+          >
+            {() => {
               return (
                 <TransformDiv transform={transform}>
                   Text in ZoomComponent
                 </TransformDiv>
               );
             }}
-          />
+          </ZoomComponent>
         </div>
 
         <div>
@@ -117,13 +118,10 @@ storiesOf('HoC/withZoom', module)
           accuracy: knobs.accuracy(),
           wheel: knobs.wheel(),
         }}
-        render={(withZoomProps: WithZoomProps) => {
-          return (
-            <TransformDiv transform={withZoomProps.transform}>
-              Text in ZoomArea
-            </TransformDiv>
-          );
+      >
+        {(withZoomProps: WithZoomProps) => {
+          return <div>Text in ZoomArea</div>;
         }}
-      />
+      </ZoomArea>
     </div>
   ));
