@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, text } from '@storybook/addon-knobs';
+import { text } from '@storybook/addon-knobs';
 import { JuiDialogHeader } from '../DialogHeader';
 import { JuiDialogHeaderTitle } from '../DialogHeaderTitle';
 import { JuiDialogHeaderActions } from '../DialogHeaderActions';
