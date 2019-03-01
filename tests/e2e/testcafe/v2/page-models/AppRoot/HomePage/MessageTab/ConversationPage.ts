@@ -375,7 +375,6 @@ export class BookmarkPage extends BaseConversationPage {
 }
 
 export class PostItem extends BaseWebComponent {
-
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
   }
@@ -436,9 +435,26 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="actionBarLike"]`);
   }
 
+  get likeIconOnActionBar() {
+    return this.getSelectorByIcon('thumbup_border', this.likeToggleOnActionBar);
+  }
+
+  get unlikeIconOnActionBar() {
+    return this.getSelectorByIcon('thumbup', this.likeToggleOnActionBar);
+  }
+
   get likeButtonOnFooter() {
     return this.self.find(`[data-name="footerLikeButton"]`).find(`[data-name="actionBarLike"]`);
   }
+
+  get likeIconOnFooter() {
+    return this.getSelectorByIcon('thumbup_border', this.likeButtonOnFooter);
+  }
+  
+  get unlikeIconOnFooter() {
+    return this.getSelectorByIcon('thumbup', this.likeButtonOnFooter);
+  }
+
 
   get likeCount() {
     return this.likeButtonOnFooter.nextSibling('span');
@@ -463,10 +479,6 @@ export class PostItem extends BaseWebComponent {
 
   async clickMoreItemOnActionBar() {
     await this.t.hover(this.self).click(this.moreMenu);
-  }
-
-  get prompt() {
-    return this.getSelector('.tooltipPlacementBottom').textContent;
   }
 
   async clickAvatar() {
