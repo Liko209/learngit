@@ -55,23 +55,6 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
       direction,
     );
 
-    // const itemIds: number[] = [];
-    // let insertAble: boolean = offsetItemId ? false : true;
-
-    // for (let i = 0; i < sanitizedItems.length; ++i) {
-    //   const itemId = sanitizedItems[i].id;
-    //   if (!insertAble && itemId === offsetItemId) {
-    //     insertAble = true;
-    //   }
-    //   if (insertAble && itemId !== offsetItemId) {
-    //     if (itemIds.length < limit) {
-    //       itemIds.push(itemId);
-    //     } else {
-    //       break;
-    //     }
-    //   }
-    // }
-
     return itemIds;
   }
 

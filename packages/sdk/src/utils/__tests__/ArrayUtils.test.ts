@@ -50,17 +50,5 @@ describe('ArrayUtils', () => {
         ).toEqual(result);
       },
     );
-
-    // it.only.each`
-    //   originalArray                  | anchor | result       | direction               | limit
-    //   ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${3}   | ${[2, 3, 4]} | ${QUERY_DIRECTION.BOTH} | ${3}
-    // `(
-    //   'should slice array at $anchor, return $result, direction: $direction',
-    //   ({ originalArray, anchor, result, direction, limit }) => {
-    //     expect(
-    //       ArrayUtils.sliceIdArray(originalArray, limit, anchor, direction),
-    //     ).toEqual(result);
-    //   },
-    // );
   });
 });
