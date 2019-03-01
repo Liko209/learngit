@@ -41,7 +41,7 @@ const JuiConversationCardFrom = React.memo(
   ({ onClick, isTeam, name, ...rest }: ConversationCardFromProps) => (
     <StyledName onClick={onClick} {...rest}>
       <span className="preposition">in</span>
-      {isTeam ? <JuiIconography fontSize="small">team</JuiIconography> : null}
+      {isTeam ? <JuiIconography iconSize="small">team</JuiIconography> : null}
       <span className="conversation-name">{name}</span>
     </StyledName>
   ),

@@ -47,12 +47,11 @@ type Props = {
 };
 
 const WrapperTaskIcon = ({ iconColor, ...rest }: TaskIconProps) => (
-  <JuiIconography {...rest} />
+  <JuiIconography iconSize="medium" {...rest} />
 );
 
 const TaskIcon = styled<TaskIconProps>(WrapperTaskIcon)`
   && {
-    font-size: ${spacing(5)};
     color: ${({ iconColor }) => getAccentColor(iconColor, grey('500'))};
   }
 `;
