@@ -8,7 +8,7 @@ import i18next from 'i18next';
 import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { Avatar } from '@/containers/Avatar';
-// import { HotKeys } from 'jui/hoc/HotKeys';
+
 import { ViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 
@@ -25,7 +25,9 @@ class PersonItemView extends React.Component<ViewProps, {}> {
   }
 
   handleGoToConversation = (evt: React.MouseEvent) => {
+    const { addRecentRecord } = this.props;
     evt.stopPropagation();
+    addRecentRecord();
     this.goToConversation();
   }
 

@@ -35,7 +35,9 @@ class GroupItemComponent extends React.Component<
   }
 
   handleGoToConversation = (evt: React.MouseEvent) => {
+    const { addRecentRecord } = this.props;
     evt.stopPropagation();
+    addRecentRecord();
     this.goToConversation();
   }
 
