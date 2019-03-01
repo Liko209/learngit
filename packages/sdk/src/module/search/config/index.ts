@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SEARCH_CONFIG_KEYS } from './configKeys';
-import { SearchGlobalConfig } from './SearchGlobalConfig';
+import { SearchUserConfig } from './SearchUserConfig';
 
-export { SEARCH_CONFIG_KEYS, SearchGlobalConfig };
+export { SearchUserConfig };

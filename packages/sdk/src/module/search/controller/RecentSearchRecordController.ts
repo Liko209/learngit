@@ -5,7 +5,7 @@
  */
 
 import _ from 'lodash';
-import { SearchGlobalConfig, SEARCH_CONFIG_KEYS } from '../config';
+import { SearchUserConfig } from '../config';
 import { RecentSearchModel, RecentSearchTypes } from '../entity';
 
 const MAX_RECENT_LIMIT = 10;
@@ -44,9 +44,8 @@ class RecentSearchRecordController {
   }
 
   getRecentSearchRecords(): RecentSearchModel[] {
-    const records = SearchGlobalConfig.get(
-      SEARCH_CONFIG_KEYS.RECENT_SEARCH_RECORDS,
-    );
+    const searchConfig = new SearchUserConfig();
+    const records = searchConfig.getRecentSearchRecords();
     return records || [];
   }
 
@@ -59,7 +58,8 @@ class RecentSearchRecordController {
   }
 
   private _updateRecentRecords(records: RecentSearchModel[]) {
-    SearchGlobalConfig.put(SEARCH_CONFIG_KEYS.RECENT_SEARCH_RECORDS, records);
+    const searchConfig = new SearchUserConfig();
+    searchConfig.setRecentSearchRecords(records);
   }
 }
 
