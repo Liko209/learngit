@@ -51,5 +51,17 @@ describe('PinView', () => {
         done();
       },         0);
     }, 2);
+
+    it('should pin/unpin button should be disabled when user do not have permission [JPT-1250]', () => {
+      const props = setUpMock(true, true, true, true);
+      const Wrapper = shallow(<PinView {...props} />);
+      expect(Wrapper.find(JuiIconButton).get(0).props.disabled).toBe(true);
+    });
+
+    it('should pin/unpin button should no be shown when type of post cannot support pin function [JPT-1255]', () => {
+      const props = setUpMock(true, false, false, true);
+      const Wrapper = shallow(<PinView {...props} />);
+      expect(Wrapper.find(JuiIconButton).get(0)).toBe(undefined);
+    });
   });
 });

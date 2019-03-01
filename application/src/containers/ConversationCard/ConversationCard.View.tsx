@@ -26,7 +26,7 @@ export class ConversationCard extends React.Component<
   ConversationCardViewProps
 > {
   state = {
-    isHover: false,
+    isHover: true,
     isFocusMoreAction: false,
   };
 
@@ -38,7 +38,7 @@ export class ConversationCard extends React.Component<
 
   handleMouseLeave = () => {
     this.setState({
-      isHover: false,
+      isHover: true,
     });
   }
 
