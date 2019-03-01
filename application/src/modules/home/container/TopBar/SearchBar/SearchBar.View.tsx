@@ -200,7 +200,8 @@ class SearchBarView extends React.Component<ViewProps & Props> {
 
   get searchRecordList() {
     const { recentRecord } = this.props;
-    if (recentRecord.length === 0) {
+
+    if (recentRecord[0].ids.length === 0) {
       return null;
     }
 
