@@ -29,12 +29,12 @@ import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 
 class SyncController {
-  private isLoading: boolean = false;
   private _syncListener: SyncListener;
 
   constructor() {}
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
+    mainLogger.log('sync service SERVICE.SOCKET_STATE_CHANGE', state);
     if (state === 'connected' || state === 'refresh') {
       this.syncData();
     } else if (state === 'connecting') {
@@ -50,18 +50,17 @@ class SyncController {
 
   async syncData(syncListener?: SyncListener) {
     this._syncListener = syncListener || {};
-    if (this.isLoading) {
-      return;
-    }
-
-    this.isLoading = true;
     const lastIndexTimestamp = this.getIndexTimestamp();
-    if (lastIndexTimestamp) {
-      await this._syncIndexData(lastIndexTimestamp);
-    } else {
-      await this._firstLogin();
+    mainLogger.log('start syncData time: ', lastIndexTimestamp);
+    try {
+      if (lastIndexTimestamp) {
+        await this._syncIndexData(lastIndexTimestamp);
+      } else {
+        await this._firstLogin();
+      }
+    } catch (e) {
+      mainLogger.log('syncData fail', e);
     }
-    this.isLoading = false;
   }
 
   private async _firstLogin() {
@@ -181,6 +180,8 @@ class SyncController {
       client_config: clientConfig = {},
     } = data;
 
+    const MergedGroups = groups.concat(teams, public_teams);
+
     const arrState: any[] = [];
     if (state && Object.keys(state).length > 0) {
       arrState.push(state);
@@ -216,10 +217,8 @@ class SyncController {
         PersonService.getInstance<PersonService>().handleIncomingData(people),
       )
       .then(() =>
-        GroupService.getInstance<GroupService>().handleData(public_teams),
+        GroupService.getInstance<GroupService>().handleData(MergedGroups),
       )
-      .then(() => GroupService.getInstance<GroupService>().handleData(groups))
-      .then(() => GroupService.getInstance<GroupService>().handleData(teams))
       .then(() =>
         PostService.getInstance<PostService>().handleIndexData(
           posts,

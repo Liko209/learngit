@@ -8,12 +8,7 @@ import GroupAPI from '../../../../api/glip/group';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
 import { EVENT_TYPES } from '../../../../service';
-<<<<<<< HEAD
-import { ENTITY } from '../../../../service/eventKey';
-=======
-import { UserConfig } from '../../../../service/account';
 import { ENTITY, SERVICE } from '../../../../service/eventKey';
->>>>>>> stage/1.1.0.190221
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PersonService } from '../../../person';
@@ -76,10 +71,6 @@ jest.mock('../../../../api/glip/group', () => {
     requestGroupById: jest.fn(),
   };
 });
-
-type GenerateFakeGroupOptions = {
-  hasPost: boolean;
-};
 
 function generateFakeGroups(
   count: number,
