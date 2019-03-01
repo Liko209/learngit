@@ -6,7 +6,7 @@
 
 import { LaunchDarklyClient } from './LaunchDarklyClient';
 import { notificationCenter, SERVICE } from '../../../../service';
-import { UserConfig } from '../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../service/account/config';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyDefaultPermissions';
 import UserPermissionType from '../../types';
 import { LDFlagSet } from 'ldclient-js';
@@ -44,8 +44,8 @@ class LaunchDarklyController {
     if (this.isClientReady) {
       return;
     }
-    const userId: number = UserConfig.getCurrentUserId();
-    const companyId: number = UserConfig.getCurrentCompanyId();
+    const userId: number = AccountGlobalConfig.getCurrentUserId();
+    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
     if (!userId || !companyId) {
       return;
     }
