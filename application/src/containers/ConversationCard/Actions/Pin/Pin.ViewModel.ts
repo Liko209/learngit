@@ -14,6 +14,16 @@ import { ENTITY_NAME } from '@/store';
 import GroupModel from '@/store/models/Group';
 import PostModel from '@/store/models/Post';
 import config from '../../Activity';
+import { TypeDictionary } from 'sdk/utils';
+
+const CHECK_TYPE = [TypeDictionary.TYPE_ID_EVENT, TypeDictionary.TYPE_ID_TASK];
+
+const PIN_OPTION_EXCLUDE_VERBS = [
+  'assigned',
+  'reassigned',
+  'completed',
+  'updated',
+];
 
 class PinViewModel extends StoreViewModel<PinProps> implements PinViewProps {
   @computed
@@ -38,35 +48,30 @@ class PinViewModel extends StoreViewModel<PinProps> implements PinViewProps {
 
   @computed
   private get _activityData() {
-    const activity = {};
+    let activityData: any;
     const { itemTypeIds } = this._post;
     if (itemTypeIds) {
-      Object.keys(itemTypeIds).forEach((type: string) => {
-        if (config[type]) {
+      Object.keys(itemTypeIds).some((type: string) => {
+        if (CHECK_TYPE.includes(+type)) {
           const props = {
             ...this._post,
             ids: itemTypeIds[type],
           };
-          activity[type] = config[type](props);
+          activityData = config[type](props);
+          return true;
         }
+        return false;
       });
     }
-    return activity;
+    return activityData;
   }
 
   @computed
   get shouldShowPinOption() {
-    const pinOptionExcludeVerbs = [
-      'assigned',
-      'reassigned',
-      'completed',
-      'updated',
-    ];
-    const types = Object.keys(this._activityData);
-    if (types && !!types.length) {
-      const { verb } = this._activityData[types[0]].parameter;
+    if (this._activityData) {
+      const { verb } = this._activityData.parameter;
       const popVerb = verb.split('.').pop();
-      return !pinOptionExcludeVerbs.includes(popVerb);
+      return !PIN_OPTION_EXCLUDE_VERBS.includes(popVerb);
     }
     return true;
   }

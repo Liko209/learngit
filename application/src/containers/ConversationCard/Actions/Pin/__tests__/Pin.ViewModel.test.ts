@@ -3,17 +3,67 @@
  * @Date: 2019-02-27 10:46:49
  * Copyright © RingCentral. All rights reserved.
  */
+
+import { getEntity } from '../../../../../store/utils';
 import { PinViewModel } from '../Pin.ViewModel';
+import { GroupService } from 'sdk/module/group';
 
-let ViewModel: FormViewModel;
+const mockGroupService = {
+  pinPost: jest.fn(),
+};
 
-describe('PinVM', () => {
-  beforeAll(() => {
-    jest.resetAllMocks();
-    ViewModel = new PinViewModel();
+GroupService.getInstance = jest.fn().mockReturnValue(mockGroupService);
+
+jest.mock('../../../../../store/utils');
+
+let pinViewModel: PinViewModel;
+const mockGroupEntityData: {
+  pinnedPostIds?: number[];
+} = {};
+
+beforeAll(() => {
+  (getEntity as jest.Mock).mockReturnValue(mockGroupEntityData);
+
+  pinViewModel = new PinViewModel({ postId: 1, groupId: 2 });
+});
+
+describe('likeViewModel', () => {
+  it('lifecycle method', () => {
+    expect(pinViewModel._postId).toBe(1);
+    expect(pinViewModel._groupId).toBe(2);
   });
 
-  it('Expect to have unit tests specified', () => {
-    expect(true).toEqual(false);
+  it('_group', () => {
+    expect(pinViewModel._post).toBe(mockGroupEntityData);
+  });
+
+  it('isPin', () => {
+    expect(pinViewModel.isPin).toBe(false);
+    mockGroupEntityData.pinnedPostIds! = [];
+    expect(pinViewModel.isPin).toBe(false);
+    mockGroupEntityData.pinnedPostIds! = [1];
+    expect(pinViewModel.isPin).toBe(true);
+  });
+
+  describe('pin()', () => {
+    it('should pin post', async () => {
+      mockGroupService.pinPost.mockResolvedValue({});
+
+      await pinViewModel.pin(true);
+
+      expect(mockGroupService.pinPost).toBeCalledWith(1, 2, true);
+    });
+    it('should unlike post', async () => {
+      mockGroupService.pinPost.mockResolvedValue({});
+      await pinViewModel.pin(false);
+
+      expect(mockGroupService.pinPost).toBeCalledWith(1, 2, false);
+    });
+
+    it('should return hasError=true when like failed', async () => {
+      mockGroupService.pinPost.mockRejectedValueOnce({});
+      await expect(pinViewModel.pin(true)).rejects.toEqual({});
+      expect(mockGroupService.pinPost).toBeCalledWith(1, 2, true);
+    });
   });
 });
