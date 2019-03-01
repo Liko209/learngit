@@ -11,6 +11,7 @@ import { JuiIconography } from 'jui/foundation/Iconography';
 import {
   JuiProfileDialogContentMemberHeader,
   JuiProfileDialogContentMemberHeaderTitle,
+  JuiProfileDialogContentMemberHeaderSearch,
   JuiProfileDialogContentSummaryButtonInRight as ButtonInRight,
 } from 'jui/pattern/Profile/Dialog';
 import { JuiOutlineTextField } from 'jui/src/components';
@@ -26,9 +27,11 @@ class MemberHeader extends React.Component<
       hasShadow,
       AddTeamMembers,
       isCurrentUserHasPermissionAddMember,
+      sortedAllMemberIds,
     } = this.props;
     const { isTeam } = group;
     const key = isTeam ? 'people.team.teamMembers' : 'people.team.groupMembers';
+    const hasSearch = sortedAllMemberIds.length > 10;
     return (
       <JuiProfileDialogContentMemberHeader
         className={hasShadow ? 'shadow' : ''}
@@ -43,13 +46,17 @@ class MemberHeader extends React.Component<
             </ButtonInRight>
           ) : null}
         </JuiProfileDialogContentMemberHeaderTitle>
-        <JuiOutlineTextField
-          placeholder={t('people.team.searchMembers')}
-          iconName="search"
-          iconPosition="left"
-          maxLength={30}
-          data-test-automation-id="profileDialogMemberSearch"
-        />
+        {hasSearch && (
+          <JuiProfileDialogContentMemberHeaderSearch>
+            <JuiOutlineTextField
+              placeholder={t('people.team.searchMembers')}
+              iconName="search"
+              iconPosition="left"
+              maxLength={30}
+              data-test-automation-id="profileDialogMemberSearch"
+            />
+          </JuiProfileDialogContentMemberHeaderSearch>
+        )}
       </JuiProfileDialogContentMemberHeader>
     );
   }
