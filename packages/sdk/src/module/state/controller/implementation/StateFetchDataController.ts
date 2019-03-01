@@ -5,10 +5,10 @@
  */
 
 import _ from 'lodash';
-import { daoManager, StateDao, ConfigDao, MY_STATE_ID } from '../../../../dao';
+import { daoManager, StateDao } from '../../../../dao';
 import { GroupState, MyState } from '../../entity/State';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-
+import { NewUserConfig } from '../../../../service/config';
 class StateFetchDataController {
   private _myStateId: number;
   constructor(
@@ -34,7 +34,8 @@ class StateFetchDataController {
 
   getMyStateId(): number {
     if (!this._myStateId || this._myStateId <= 0) {
-      this._myStateId = daoManager.getKVDao(ConfigDao).get(MY_STATE_ID);
+      const userConfig = new NewUserConfig();
+      this._myStateId = userConfig.getMyStateId();
     }
     return this._myStateId;
   }

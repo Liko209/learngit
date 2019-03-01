@@ -33,6 +33,7 @@ type JuiPreviewImageProps = {
   squareSize?: number;
   url: string;
   placeholder?: JSX.Element;
+  handleImageClick?: () => void;
   didLoad?: Function;
 } & SizeType;
 
@@ -98,7 +99,14 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     this._mounted = false;
   }
   render() {
-    const { Actions, fileName, forceSize, url, placeholder } = this.props;
+    const {
+      Actions,
+      fileName,
+      forceSize,
+      url,
+      placeholder,
+      handleImageClick,
+    } = this.props;
     let { width, height } = this.props;
     const imageProps = {} as SizeType;
     const imageStyle: CSSProperties = { position: 'absolute', display: 'none' };
@@ -126,11 +134,18 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
             ref={this._imageRef}
             src={url}
             onLoad={this._handleImageLoad}
+            onClick={handleImageClick}
+            {...imageProps}
           />
         )}
         {this._loaded && (
           <Jui.ImageCard width={width} height={height}>
-            <img style={imageStyle} src={url} {...imageProps} />
+            <img
+              style={imageStyle}
+              src={url}
+              onClick={handleImageClick}
+              {...imageProps}
+            />
             <Jui.ImageFileInfo width={width} height={height} component="div">
               <FileName filename={fileName} />
               <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>

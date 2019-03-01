@@ -18,6 +18,8 @@ import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
+import { Dialog } from '@/containers/Dialog';
+import { Viewer } from '@/containers/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
@@ -76,6 +78,20 @@ class FilesView extends React.Component<FilesViewProps> {
     );
   }
 
+  _handleImageClick = (id: number) => async () => {
+    const canShowDialogPermission = await this.props.getShowDialogPermission();
+    console.log('canShowDialogPermission', canShowDialogPermission);
+    if (!canShowDialogPermission) {
+      return;
+    }
+    Dialog.simple(
+      <Viewer itemId={id} containComponent={<div>imageViewer</div>} />,
+      {
+        fullScreen: true,
+      },
+    );
+  }
+
   async componentDidMount() {
     await this.props.getCropImage();
   }
@@ -109,6 +125,7 @@ class FilesView extends React.Component<FilesViewProps> {
                 <JuiPreviewImage
                   key={id}
                   didLoad={() => this._handleImageDidLoad(id, callback)}
+                  handleImageClick={this._handleImageClick(id)}
                   placeholder={placeholder}
                   width={size.width}
                   height={size.height}
@@ -125,6 +142,7 @@ class FilesView extends React.Component<FilesViewProps> {
             <JuiPreviewImage
               key={id}
               placeholder={placeholder}
+              handleImageClick={this._handleImageClick(id)}
               width={size.width}
               height={size.height}
               forceSize={!singleImage}

@@ -5,9 +5,8 @@ import _ from 'lodash';
 import { groupFactory } from '../../../../__tests__/factories';
 import { Api } from '../../../../api';
 import GroupAPI from '../../../../api/glip/group';
-import { AccountDao, ConfigDao, daoManager } from '../../../../dao';
+import { daoManager } from '../../../../dao';
 import { GroupConfigDao } from '../../../groupConfig/dao';
-
 import { TestEntityCacheSearchController } from '../../../../framework/__mocks__/controller/TestEntityCacheSearchController';
 import { TestEntitySourceController } from '../../../../framework/__mocks__/controller/TestEntitySourceController';
 import { TestPartialModifyController } from '../../../../framework/__mocks__/controller/TestPartialModifyController';
@@ -16,7 +15,7 @@ import { IEntityCacheSearchController } from '../../../../framework/controller/i
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { UserConfig } from '../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../service/account/config';
 import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
 import { ProfileService } from '../../../profile';
@@ -36,7 +35,7 @@ jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../service/account/UserConfig');
+jest.mock('../../../../service/account/config');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../module/company');
 jest.mock('../../../post');
@@ -62,22 +61,19 @@ describe('GroupFetchDataController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
   let groupFetchDataController: GroupFetchDataController;
   let testPartialModifyController: IPartialModifyController<Group>;
-  let testRequestController: TestRequestController;
+
   let entityCacheController: EntityCacheController;
   let testEntityCacheSearchController: IEntityCacheSearchController<Group>;
   let groupService: GroupService;
 
-  const accountDao = new AccountDao(null);
   const groupDao = new GroupDao(null);
-  const configDao = new ConfigDao(null);
-  const groupConfigDao = new GroupConfigDao(null);
   const postService = new PostService();
   const mockUserId = 1;
 
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
-    UserConfig.getCurrentUserId = jest
+    AccountGlobalConfig.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
     PostService.getInstance = jest.fn().mockReturnValue(postService);
@@ -210,7 +206,6 @@ describe('GroupFetchDataController', () => {
   });
 
   it('requestRemoteGroupByMemberList()', async () => {
-    daoManager.getKVDao.mockReturnValue(accountDao);
     daoManager.getDao.mockReturnValue(groupDao);
     groupDao.get.mockResolvedValue(1); // userId
 
@@ -237,10 +232,10 @@ describe('GroupFetchDataController', () => {
 
   it('getGroupByPersonId()', async () => {
     const mock = { id: 2 };
-    UserConfig.getCurrentUserId.mockReturnValueOnce(1);
-    daoManager.getKVDao.mockReturnValueOnce(accountDao);
+    AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+
     daoManager.getDao.mockReturnValueOnce(groupDao);
-    accountDao.get.mockReturnValue(1); // userId
+
     groupDao.queryGroupByMemberList.mockResolvedValue(mock);
     const result1 = await groupFetchDataController.getGroupByPersonId(2);
     expect(result1).toEqual(mock);
@@ -265,7 +260,9 @@ describe('GroupFetchDataController', () => {
 
   describe('doFuzzySearch', () => {
     function prepareGroupsForSearch() {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      AccountGlobalConfig.getCurrentUserId = jest
+        .fn()
+        .mockImplementation(() => 1);
 
       const person1: Person = {
         id: 11001,
@@ -570,7 +567,9 @@ describe('GroupFetchDataController', () => {
     };
 
     function prepareGroupsForSearch() {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
+      AccountGlobalConfig.getCurrentUserId = jest
+        .fn()
+        .mockImplementation(() => 1);
 
       entityCacheController.put(team1);
       entityCacheController.put(team2);
@@ -599,7 +598,7 @@ describe('GroupFetchDataController', () => {
     const groupDao = new GroupDao(null);
 
     beforeEach(() => {
-      UserConfig.getCurrentUserId.mockReturnValueOnce(3);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(3);
     });
 
     const mockNormal = { id: 1 };
@@ -613,7 +612,7 @@ describe('GroupFetchDataController', () => {
       const result1 = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
-      expect(UserConfig.getCurrentUserId).toBeCalled();
+      expect(AccountGlobalConfig.getCurrentUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(result1).toEqual(mockNormal);
     });
@@ -628,7 +627,7 @@ describe('GroupFetchDataController', () => {
         memberIDs,
       );
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(UserConfig.getCurrentUserId).toBeCalled();
+      expect(AccountGlobalConfig.getCurrentUserId).toBeCalled();
       expect(result2).toEqual(mockNormal);
     });
 
@@ -649,13 +648,9 @@ describe('GroupFetchDataController', () => {
   });
 
   describe('requestRemoteGroupByMemberList', () => {
-    const accountDao = new AccountDao(null);
-
     beforeEach(() => {
       const curUserId = 3;
-      daoManager.getKVDao.mockReturnValue(accountDao);
-      accountDao.get.mockReturnValue(3);
-      UserConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it('should return a group when request success', async () => {
       const data = { _id: 1 };
@@ -697,7 +692,7 @@ describe('GroupFetchDataController', () => {
         favorite_group_ids: groupIds,
       });
 
-      UserConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
     });
     it("should return true when the person's conversion is favored", async () => {
       const spy = jest.spyOn(groupService, 'getLocalGroup');

@@ -18,6 +18,7 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
@@ -63,6 +64,13 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const rule = images.length > 1 ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
     await Promise.all(
       images.map((file: ExtendFileItem) => this._fetchUrl(file, rule)),
+    );
+  }
+
+  getShowDialogPermission = async () => {
+    const permissionService: PermissionService = PermissionService.getInstance();
+    return await permissionService.hasPermission(
+      UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
     );
   }
 

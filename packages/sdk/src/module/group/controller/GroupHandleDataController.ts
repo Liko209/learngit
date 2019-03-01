@@ -11,7 +11,6 @@ import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
 import { GroupState, PartialWithKey } from '../../../models';
 import { GroupDao } from '../../../module/group/dao';
-import { UserConfig } from '../../../service/account';
 import { EVENT_TYPES } from '../../../service/constants';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
 import notificationCenter, {
@@ -24,6 +23,7 @@ import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
+import { AccountGlobalConfig } from '../../../service/account/config';
 
 class GroupHandleDataController {
   constructor(public groupService: IGroupService) {}
@@ -133,7 +133,7 @@ class GroupHandleDataController {
         const beRemovedAsGuest =
           transformed.removed_guest_user_ids &&
           transformed.removed_guest_user_ids.includes(
-            UserConfig.getCurrentUserId(),
+            AccountGlobalConfig.getCurrentUserId(),
           );
 
         if (beRemovedAsGuest) {
@@ -395,7 +395,7 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
         return true;

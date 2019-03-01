@@ -8,11 +8,14 @@ import { PostDao } from '../../../post/dao';
 import { PreInsertController } from '../impl/PreInsertController';
 import { ProgressService, PROGRESS_STATUS } from '../../../progress';
 import notificationCenter from '../../../../service/notificationCenter';
+import { GlobalConfigService } from '../../../../module/config';
 
 jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao');
 jest.mock('../../../post/dao');
+jest.mock('../../../../module/config');
+GlobalConfigService.getInstance = jest.fn();
 
 describe('PreInsertController', () => {
   let preInsertController: PreInsertController;
