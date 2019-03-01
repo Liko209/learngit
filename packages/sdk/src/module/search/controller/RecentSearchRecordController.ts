@@ -5,8 +5,7 @@
  */
 
 import _ from 'lodash';
-import { AccountDao, daoManager } from '../../../dao';
-import { RECENT_SEARCH_RECORDS } from '../../../dao/account/constants';
+import { SearchGlobalConfig, SEARCH_CONFIG_KEYS } from '../config';
 import { RecentSearchModel, RecentSearchTypes } from '../entity';
 
 const MAX_RECENT_LIMIT = 10;
@@ -45,8 +44,9 @@ class RecentSearchRecordController {
   }
 
   getRecentSearchRecords(): RecentSearchModel[] {
-    const accountDao = daoManager.getKVDao(AccountDao);
-    const records = accountDao.get(RECENT_SEARCH_RECORDS);
+    const records = SearchGlobalConfig.get(
+      SEARCH_CONFIG_KEYS.RECENT_SEARCH_RECORDS,
+    );
     return records || [];
   }
 
@@ -59,8 +59,7 @@ class RecentSearchRecordController {
   }
 
   private _updateRecentRecords(records: RecentSearchModel[]) {
-    const accountDao = daoManager.getKVDao(AccountDao);
-    accountDao.put(RECENT_SEARCH_RECORDS, records);
+    SearchGlobalConfig.put(SEARCH_CONFIG_KEYS.RECENT_SEARCH_RECORDS, records);
   }
 }
 

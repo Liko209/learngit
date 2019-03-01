@@ -4,10 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { daoManager, AccountDao } from '../../../../dao';
-import { RecentSearchRecordController } from '../RecentSearchRecordController';
 
-jest.mock('../../../../dao');
+import { RecentSearchRecordController } from '../RecentSearchRecordController';
+import { SearchGlobalConfig } from '../../config';
+
+jest.mock('../../config');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -17,13 +18,12 @@ function clearMocks() {
 
 describe('RecentSearchRecordController', () => {
   const db: any = {};
-  let accountDao: AccountDao;
   let controller: RecentSearchRecordController;
   let threeRecords = [buildRecord(1), buildRecord(2), buildRecord(3)];
 
   function setUp() {
-    accountDao = new AccountDao(db);
-    daoManager.getKVDao = jest.fn().mockReturnValue(accountDao);
+    SearchGlobalConfig.put = jest.fn();
+    SearchGlobalConfig.get = jest.fn();
     controller = new RecentSearchRecordController();
     threeRecords = [buildRecord(1), buildRecord(2), buildRecord(3)];
   }
@@ -55,7 +55,7 @@ describe('RecentSearchRecordController', () => {
         records.push(buildRecord(i));
       }
 
-      accountDao.get = jest.fn().mockReturnValue(records);
+      SearchGlobalConfig.get = jest.fn().mockReturnValue(records);
       let newRecords = _.cloneDeep(records);
       const newRecord: any = buildRecord(100);
       newRecords.pop();
@@ -67,7 +67,7 @@ describe('RecentSearchRecordController', () => {
         newRecord.query_params,
       );
 
-      expect(accountDao.put).toBeCalledWith(
+      expect(SearchGlobalConfig.put).toBeCalledWith(
         'recent_search_records',
         newRecords.map((x: any) => {
           return {
@@ -82,7 +82,7 @@ describe('RecentSearchRecordController', () => {
     });
 
     it('new record should be at first place', () => {
-      accountDao.get = jest.fn().mockReturnValue(threeRecords);
+      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
       const newRecord: any = buildRecord(4);
       controller.addRecentSearchRecord(
         newRecord.type,
@@ -90,7 +90,7 @@ describe('RecentSearchRecordController', () => {
         newRecord.query_params,
       );
       const expectRecords = [newRecord].concat(threeRecords);
-      expect(accountDao.put).toBeCalledWith(
+      expect(SearchGlobalConfig.put).toBeCalledWith(
         'recent_search_records',
         expectRecords.map((x: any) => {
           return {
@@ -105,7 +105,7 @@ describe('RecentSearchRecordController', () => {
     });
 
     it('new record should be replace old records and put at first place', () => {
-      accountDao.get = jest.fn().mockReturnValue(threeRecords);
+      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
       const newRecord: any = buildRecord(2);
       controller.addRecentSearchRecord(
         newRecord.type,
@@ -113,7 +113,7 @@ describe('RecentSearchRecordController', () => {
         newRecord.query_params,
       );
       const expectedRes = [buildRecord(2), buildRecord(1), buildRecord(3)];
-      expect(accountDao.put).toBeCalledWith(
+      expect(SearchGlobalConfig.put).toBeCalledWith(
         'recent_search_records',
         expectedRes.map((x: any) => {
           return {
@@ -135,9 +135,12 @@ describe('RecentSearchRecordController', () => {
     });
 
     it('should clear all records', () => {
-      accountDao.get = jest.fn().mockReturnValue(threeRecords);
+      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
       controller.clearRecentSearchRecords();
-      expect(accountDao.put).toBeCalledWith('recent_search_records', []);
+      expect(SearchGlobalConfig.put).toBeCalledWith(
+        'recent_search_records',
+        [],
+      );
     });
   });
 
@@ -148,9 +151,9 @@ describe('RecentSearchRecordController', () => {
     });
 
     it('should return all records', () => {
-      accountDao.get = jest.fn().mockReturnValue(threeRecords);
+      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
       const newRecords = controller.getRecentSearchRecords();
-      expect(accountDao.get).toBeCalledWith('recent_search_records');
+      expect(SearchGlobalConfig.get).toBeCalledWith('recent_search_records');
       expect(newRecords).toEqual(threeRecords);
     });
   });
@@ -159,10 +162,10 @@ describe('RecentSearchRecordController', () => {
     it('should remove record in the input id set', () => {
       const ids = [1, 3];
       const idSet = new Set(ids);
-      accountDao.get = jest.fn().mockReturnValue(threeRecords);
+      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
       controller.removeRecentSearchRecords(idSet);
       const res = buildRecord(2);
-      expect(accountDao.put).toBeCalledWith('recent_search_records', [
+      expect(SearchGlobalConfig.put).toBeCalledWith('recent_search_records', [
         {
           id: 2,
           time_stamp: expect.anything(),

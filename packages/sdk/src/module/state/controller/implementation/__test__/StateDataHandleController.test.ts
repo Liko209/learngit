@@ -14,7 +14,14 @@ import { IEntityPersistentController } from '../../../../../framework/controller
 import { TASK_DATA_TYPE } from '../../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { TotalUnreadController } from '../TotalUnreadController';
+import { GlobalConfigService } from '../../../../../module/config/service/GlobalConfigService';
+import { AccountGlobalConfig } from '../../../../../service/account/config/AccountGlobalConfig';
 
+jest.mock('../../../../../module/config/service/GlobalConfigService');
+jest.mock('../../../../../service/account/config/AccountGlobalConfig');
+GlobalConfigService.getInstance = jest
+  .fn()
+  .mockReturnValue(new GlobalConfigService());
 jest.mock('../StateFetchDataController');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
 
@@ -168,6 +175,9 @@ describe('StateDataHandleController', () => {
       daoManager.getKVDao = jest.fn().mockReturnValue({
         get: jest.fn().mockReturnValue(5683),
       });
+
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(123);
+
       expect(stateDataHandleController['_transformGroupData'](groups)).toEqual({
         groupStates: [
           {

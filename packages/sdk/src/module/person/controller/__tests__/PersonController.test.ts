@@ -8,9 +8,7 @@ import { PersonController } from '../PersonController';
 import { daoManager, AuthDao } from '../../../../dao';
 import { PersonDao } from '../../dao';
 import { Person, PHONE_NUMBER_TYPE } from '../../entity';
-import { UserConfig } from '../../../../service/account/UserConfig';
 import { personFactory } from '../../../../__tests__/factories';
-import { KVStorage } from 'foundation/src';
 import { KVStorageManager } from 'foundation';
 import PersonAPI from '../../../../api/glip/person';
 
@@ -25,9 +23,14 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
+import { GlobalConfigService } from '../../../../module/config';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+
+jest.mock('../../../../module/config');
+jest.mock('../../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../module/group');
-jest.mock('../../../../service/account/UserConfig');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao/DaoManager');
 
@@ -289,7 +292,7 @@ describe('PersonService', () => {
       jest.clearAllMocks();
       jest.resetAllMocks();
       setUp();
-
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(1);
       await prepareDataForSearchUTs();
     });
 
@@ -361,13 +364,11 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, exclude self', async () => {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personController.doFuzzySearchPersons('dora', true);
       expect(result.sortableModels.length).toBe(9999);
     });
 
     it('search parts of data, searchKey is empty, return all if search key is empty', async () => {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personController.doFuzzySearchPersons(
         '',
         undefined,
@@ -378,7 +379,6 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey is empty, can not return all if search key is empty', async () => {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personController.doFuzzySearchPersons(
         '',
         undefined,
@@ -390,7 +390,6 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey not empty, can not return all if search key is empty', async () => {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personController.doFuzzySearchPersons(
         'dora',
         undefined,
@@ -402,7 +401,6 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey is empty, excludeSelf, return all if search key is empty', async () => {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personController.doFuzzySearchPersons(
         '',
         true,
@@ -413,7 +411,6 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey is empty, excludeSelf, arrangeIds, return all if search key is empty', async () => {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personController.doFuzzySearchPersons(
         undefined,
         true,
@@ -429,7 +426,6 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey not empty, excludeSelf, arrangeIds, return all if search key is empty', async () => {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personController.doFuzzySearchPersons(
         'dora',
         true,
@@ -443,7 +439,6 @@ describe('PersonService', () => {
     });
 
     it('search parts of data, searchKey is empty, excludeSelf, arrangeIds, can not return all if search key is empty', async () => {
-      UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => 1);
       const result = await personController.doFuzzySearchPersons(
         '',
         true,
@@ -546,7 +541,7 @@ describe('PersonService', () => {
     };
 
     beforeEach(() => {
-      UserConfig.getCurrentCompanyId = jest.fn().mockReturnValueOnce(1);
+      AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(1);
     });
 
     it('should not return extension id for guest user', () => {

@@ -520,6 +520,11 @@ export class PostItem extends BaseWebComponent {
     await this.t.wait(1e3);
   }
 
+  async waitImageVisible(timeout = 10e3) {
+    await this.t.expect(this.self.find('img').clientHeight).gt(0, { timeout });
+    await this.t.expect(this.self.find('img').clientWidth).gt(0, { timeout });
+  }
+
   get fileNames() {
     return this.getSelectorByAutomationId('file-name', this.self);
   }
