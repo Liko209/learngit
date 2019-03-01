@@ -9,7 +9,7 @@ import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
 import { EVENT_TYPES } from '../../../../service';
 import { UserConfig } from '../../../../service/account';
-import { ENTITY } from '../../../../service/eventKey';
+import { ENTITY, SERVICE } from '../../../../service/eventKey';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PersonService } from '../../../person';
@@ -123,7 +123,10 @@ beforeEach(() => {
 });
 
 describe('GroupHandleDataController', () => {
-  const groupHandleDataController = new GroupHandleDataController();
+  let groupHandleDataController: GroupHandleDataController;
+  beforeEach(() => {
+    groupHandleDataController = new GroupHandleDataController();
+  });
   describe('handleData()', () => {
     it('passing an empty array', async () => {
       const result = await groupHandleDataController.handleData([]);
@@ -321,7 +324,6 @@ describe('GroupHandleDataController', () => {
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
     });
-
     it('group has most_recent_post_created_at and greater then post created_at should not update group recent modified time', async () => {
       daoManager
         .getDao(GroupDao)
@@ -340,6 +342,47 @@ describe('GroupHandleDataController', () => {
         },
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+    });
+    it('should emit NEW_POST_TO_GROUP with correct ids always', async () => {
+      const map = new Map();
+      map.set(11, {
+        id: 11,
+        modified_at: 100,
+        created_at: 100,
+        group_id: 21,
+      });
+      map.set(12, {
+        id: 12,
+        modified_at: 200,
+        created_at: 200,
+        group_id: 21,
+      });
+      map.set(13, {
+        id: 13,
+        modified_at: 300,
+        created_at: 300,
+        group_id: 22,
+      });
+      daoManager.getDao = jest.fn().mockReturnValue({
+        doInTransaction: jest.fn().mockImplementation(async (fn: Function) => {
+          await fn();
+        }),
+        get: jest.fn().mockReturnValue(null),
+      });
+      groupHandleDataController.handlePartialData = jest.fn();
+      await groupHandleDataController.handleGroupMostRecentPostChanged({
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: map,
+        },
+      });
+      expect(groupHandleDataController.handlePartialData).toBeCalledTimes(1);
+      expect(groupHandleDataController.handlePartialData).toBeCalledWith([]);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emit).toBeCalledWith(
+        SERVICE.POST_SERVICE.NEW_POST_TO_GROUP,
+        [21, 22],
+      );
     });
   });
 

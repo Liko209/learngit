@@ -36,12 +36,12 @@ type SyncListener = {
 };
 
 export default class SyncService extends BaseService {
-  private isLoading: boolean;
   private _syncListener: SyncListener;
 
   constructor() {
     super(null, null, null, {
       [SERVICE.SOCKET_STATE_CHANGE]: ({ state }: { state: any }) => {
+        mainLogger.log('sync service SERVICE.SOCKET_STATE_CHANGE', state);
         if (state === 'connected' || state === 'refresh') {
           this.syncData();
         } else if (state === 'connecting') {
@@ -51,7 +51,6 @@ export default class SyncService extends BaseService {
         }
       },
     });
-    this.isLoading = false;
   }
 
   getIndexTimestamp() {
@@ -61,18 +60,17 @@ export default class SyncService extends BaseService {
 
   async syncData(syncListener?: SyncListener) {
     this._syncListener = syncListener || {};
-    if (this.isLoading) {
-      return;
-    }
-
-    this.isLoading = true;
     const lastIndexTimestamp = this.getIndexTimestamp();
-    if (lastIndexTimestamp) {
-      await this._syncIndexData(lastIndexTimestamp);
-    } else {
-      await this._firstLogin();
+    mainLogger.log('start syncData time: ', lastIndexTimestamp);
+    try {
+      if (lastIndexTimestamp) {
+        await this._syncIndexData(lastIndexTimestamp);
+      } else {
+        await this._firstLogin();
+      }
+    } catch (e) {
+      mainLogger.log('syncData fail', e);
     }
-    this.isLoading = false;
     // this._preloadPosts();
   }
 
