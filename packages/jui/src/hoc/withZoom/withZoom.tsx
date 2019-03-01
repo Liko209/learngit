@@ -8,7 +8,11 @@ import React, { RefObject } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 
 import styled from '../../foundation/styled-components';
-import { ElementRect, Point, Transform } from '../../foundation/utils/calculateZoom';
+import {
+  ElementRect,
+  Point,
+  Transform,
+} from '../../foundation/utils/calculateZoom';
 import { Omit } from '../../foundation/utils/typeHelper';
 
 type ZoomProps = {
@@ -47,7 +51,6 @@ const DEFAULT_OPTIONS: ZoomOptions = {
 
 const Container = styled.div`
   position: relative;
-  background: gray;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -111,8 +114,14 @@ class ZoomComponent extends React.Component<ZoomProps, ZoomState> {
     const { accuracy, maxScale, minScale } = ensureOptions(
       this.props.zoomOptions,
     );
-    let fixNewScale = fixScaleAccuracy(newScale, accuracy);
-    fixNewScale = Math.max(minScale, Math.min(maxScale, fixNewScale));
+    const fixNewScale = fixScaleAccuracy(newScale, accuracy);
+    if (
+      (fixNewScale > scale && fixNewScale > maxScale) ||
+      (fixNewScale < minScale)
+    ) {
+      return;
+    }
+    // fixNewScale = Math.max(minScale, Math.min(maxScale, fixNewScale));
     let translateOffsetX = 0;
     let translateOffsetY = 0;
     if (zoomCenterPoint) {
@@ -175,7 +184,6 @@ class ZoomComponent extends React.Component<ZoomProps, ZoomState> {
 
   render() {
     const { children, transform, onZoomRectChange } = this.props;
-    const { step } = ensureOptions(this.props.zoomOptions);
     const zoomProps: WithZoomProps = {
       transform,
       zoomIn: this.zoomIn,
@@ -243,4 +251,11 @@ class ZoomArea extends React.Component<
   }
 }
 
-export { WithZoomProps, ZoomProps, ZoomComponent, ZoomArea, ZoomOptions, DEFAULT_OPTIONS };
+export {
+  WithZoomProps,
+  ZoomProps,
+  ZoomComponent,
+  ZoomArea,
+  ZoomOptions,
+  DEFAULT_OPTIONS,
+};

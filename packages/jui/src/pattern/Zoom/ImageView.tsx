@@ -7,16 +7,14 @@ import React, { ComponentType, createRef, RefObject } from 'react';
 
 import { JuiCircularProgress } from '../../components/Progress';
 import styled from '../../foundation/styled-components';
+import { JuiIconography } from '../../foundation/Iconography';
 
 const StyledLoadingPage = styled.div`
-  position: absolute;
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  top: 0px;
-  left: 0px;
   z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
@@ -64,16 +62,30 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
     }
   }
 
+  private _loadingView() {
+    return (
+      <StyledLoadingPage>
+        <JuiCircularProgress />
+      </StyledLoadingPage>
+    );
+  }
+
+  private _errorView() {
+    return (
+      <StyledLoadingPage>
+        <JuiIconography iconColor={['grey', '400']}>
+          image_broken
+        </JuiIconography>
+      </StyledLoadingPage>
+    );
+  }
+
   render() {
     const { loading, error } = this.state;
     const { onSizeLoad, loadingPlaceHolder, viewRef, ...rest } = this.props;
     return (
       <>
-        {loading ? (
-          <StyledLoadingPage>
-            <JuiCircularProgress />
-          </StyledLoadingPage>
-        ) : null}
+        {loading && this._loadingView()}
         <img
           ref={this.getImageRef()}
           style={{ visibility: loading || error ? 'hidden' : 'visible' }}
@@ -94,11 +106,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
           }}
           {...rest}
         />
-        {error ? (
-          <StyledLoadingPage>
-            <span>error</span>
-          </StyledLoadingPage>
-        ) : null}
+        {error && this._errorView()}
       </>
     );
   }
