@@ -48,6 +48,8 @@
     "menu": "Menu",
     "search": "Search",
     "showMore": "Show more",
+    "ClearHistory": "Clear history",
+    "RecentSearches": "Recent searches",
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
     "aboutRingCentral": "About RingCentral"
@@ -304,7 +306,7 @@
       "deleteTeamConfirmOk": "delete",
       "deleteTeamSuccessMsg": "Team deleted successfully.",
       "archiveTeam": "Archive team",
-      "archiveTeamToolTip": "Archive a team so that it doesn't show up in your active conversations but is still searchable and can be restored.",
+      "archiveTeamToolTip": "Archive a team so that it doesn't show up in your active conversations. The team will still show up on your team list and can be restored.",
       "archiveTeamConfirmTitle": "Archive Team?",
       "archiveTeamConfirmContent": "Archived teams are still available at the bottom of the teams page, but won't show up in your active conversations.",
       "archiveTeamConfirmOk": "archive",

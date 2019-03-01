@@ -33,6 +33,7 @@ import { ProgressService } from './module/progress';
 import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
+import { SearchService } from './module/search';
 import { RcInfoService } from './module/rcInfo';
 import { GlobalConfigService, UserConfigService } from './module/config';
 
@@ -82,6 +83,7 @@ const registerConfigs = {
     { name: SyncService.name, value: SyncService },
     { name: TelephonyService.name, value: TelephonyService },
     { name: GroupConfigService.name, value: GroupConfigService },
+    { name: SearchService.name, value: SearchService },
 
     // Manager
     {

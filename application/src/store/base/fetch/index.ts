@@ -8,3 +8,4 @@ export * from './FetchDataListHandler';
 export * from './FetchSortableDataListHandler';
 export * from './ListStore';
 export * from './SortableListStore';
+export * from './IdListPagingDataProvider';

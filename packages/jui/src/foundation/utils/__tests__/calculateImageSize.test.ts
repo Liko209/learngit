@@ -36,14 +36,14 @@ describe('calculateImageSize', () => {
 
     it('should match case4 when width < height', () => {
       const { width, height } = getThumbnailSize(400, 700);
-      expect(width).toEqual(360);
+      expect(width).toEqual(206);
       expect(height).toEqual(360);
     });
 
     it('should match case4 when width > height', () => {
       const { width, height } = getThumbnailSize(700, 400);
       expect(width).toEqual(360);
-      expect(height).toEqual(360);
+      expect(height).toEqual(206);
     });
 
     it('should match case5', () => {
