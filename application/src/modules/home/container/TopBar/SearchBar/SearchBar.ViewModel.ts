@@ -125,7 +125,10 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
 
   setSearchResult = async (value: string) => {
     const ret = await this.search(value);
-    if (!ret) return;
+    if (!ret) {
+      return;
+    }
+
     const { terms, people, groups, teams } = ret;
     const data: SearchItems[] = [
       {
@@ -223,24 +226,6 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     }
   }
 
-  getCurrentItemId = () => {
-    const [section, cell] = this.selectIndex;
-    const list = this.currentResults();
-    if (section < 0) {
-      return null;
-    }
-    return list[section].ids[cell];
-  }
-
-  getCurrentItemType = () => {
-    const [section, cell] = this.selectIndex;
-    const list = this.currentResults();
-    if (this.dataType === DATA_TYPE.search) {
-      return (list as SearchItems[])[section].type;
-    }
-    return (list as RecentItems[])[section].types[cell];
-  }
-
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
     const [section, cell] = this.selectIndex;
@@ -261,6 +246,24 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     if (sectionIndex === section && cellIndex < cell) {
       this.setSelectIndex(section, cell - 1);
     }
+  }
+
+  getCurrentItemId = () => {
+    const [section, cell] = this.selectIndex;
+    const list = this.currentResults();
+    if (section < 0) {
+      return null;
+    }
+    return list[section].ids[cell];
+  }
+
+  getCurrentItemType = () => {
+    const [section, cell] = this.selectIndex;
+    const list = this.currentResults();
+    if (this.dataType === DATA_TYPE.search) {
+      return (list as SearchItems[])[section].type;
+    }
+    return (list as RecentItems[])[section].types[cell];
   }
 
   currentResults() {

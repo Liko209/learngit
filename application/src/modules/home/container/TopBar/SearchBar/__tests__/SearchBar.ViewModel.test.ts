@@ -5,14 +5,15 @@
  */
 import { GroupService } from 'sdk/module/group';
 import { PersonService } from 'sdk/module/person';
+
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
+import { RecentSearchTypes } from 'sdk/module/search/entity';
+
 jest.mock('../../../../../../store/utils');
 jest.mock('@/containers/Notification');
 
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
-
-const searchBarViewModel = new SearchBarViewModel();
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -28,10 +29,11 @@ const groupService = {
 
 describe('SearchBarViewModel', () => {
   let personService: PersonService;
-
+  let searchBarViewModel: SearchBarViewModel;
   beforeEach(() => {
     jest.resetAllMocks();
     personService = new PersonService();
+    searchBarViewModel = new SearchBarViewModel();
 
     jest.spyOn(personService, 'doFuzzySearchPersons').mockImplementation(() => {
       return { terms: [], sortableModels: [{ id: 1 }] };
@@ -242,6 +244,197 @@ describe('SearchBarViewModel', () => {
       );
       expect(existCount).toBe(3);
     });
+  });
+
+  describe('setSearchResult()', () => {
+    it('If search return null should be return', async () => {
+      jest.spyOn(searchBarViewModel, 'search').mockReturnValue(null);
+      const ret = await searchBarViewModel.setSearchResult('null');
+      expect(ret).toBe(undefined);
+    });
+    it('If search has result should be set search result and terms and reset select index', async () => {
+      const resultData = {
+        terms: ['a'],
+        people: {
+          ids: [1, 2],
+          hasMore: true,
+        },
+        groups: {
+          ids: [1, 2],
+          hasMore: true,
+        },
+        teams: {
+          ids: [1, 2],
+          hasMore: true,
+        },
+      };
+      jest.spyOn(searchBarViewModel, 'search').mockReturnValue(resultData);
+      jest.spyOn(searchBarViewModel, 'resetSelectIndex');
+      await searchBarViewModel.setSearchResult('value');
+      expect(searchBarViewModel.searchResult).toEqual([
+        {
+          ids: [1, 2],
+          hasMore: true,
+          type: RecentSearchTypes.PEOPLE,
+        },
+        {
+          ids: [1, 2],
+          hasMore: true,
+          type: RecentSearchTypes.GROUP,
+        },
+        {
+          ids: [1, 2],
+          hasMore: true,
+          type: RecentSearchTypes.TEAM,
+        },
+      ]);
+      expect(searchBarViewModel.terms).toEqual(['a']);
+      expect(searchBarViewModel.resetSelectIndex).toHaveBeenCalled();
+    });
+  });
+
+  it('resetData()', () => {
+    searchBarViewModel.resetSelectIndex();
+    expect(searchBarViewModel.searchResult).toEqual([]);
+    expect(searchBarViewModel.terms).toEqual([]);
+    expect(searchBarViewModel.selectIndex).toEqual([-1, -1]);
+  });
+
+  describe('setCurrentResults()', () => {
+    it('If data type is search should be set search result', () => {
+      searchBarViewModel.setValue('123'); // this.dataType = DATA_TYPE.search
+      const data = [
+        {
+          ids: [1, 2],
+          type: RecentSearchTypes.PEOPLE,
+          hasMore: false,
+        },
+      ];
+      searchBarViewModel.setCurrentResults(data);
+      expect(searchBarViewModel.searchResult).toEqual(data);
+    });
+    it('If data type is record should be set recent record', () => {
+      // this.dataType = DATA_TYPE.recent
+      const data = [
+        {
+          ids: [1, 2],
+          types: [RecentSearchTypes.PEOPLE, RecentSearchTypes.PEOPLE],
+        },
+      ];
+      searchBarViewModel.setCurrentResults(data);
+      expect(searchBarViewModel.recentRecord).toEqual(data);
+    });
+  });
+
+  it('setSelectIndex()', () => {
+    searchBarViewModel.setSelectIndex(1, 1);
+    expect(searchBarViewModel.selectIndex).toEqual([1, 1]);
+  });
+
+  describe('getCurrentItemId()', () => {
+    it('If section < 0 should return null', () => {
+      searchBarViewModel.setSelectIndex(-1, -1);
+      expect(searchBarViewModel.getCurrentItemId()).toBe(null);
+    });
+    it('If section > 0 should return select id', () => {
+      searchBarViewModel.setSelectIndex(0, 1);
+      const data = [
+        {
+          ids: [1, 2],
+          types: [RecentSearchTypes.PEOPLE, RecentSearchTypes.PEOPLE],
+        },
+      ];
+      searchBarViewModel.setCurrentResults(data);
+      expect(searchBarViewModel.getCurrentItemId()).toBe(2);
+    });
+  });
+
+  describe('getCurrentItemType()', () => {
+    it('If data type is search should be return type from section', () => {
+      searchBarViewModel.setValue('123'); // this.dataType = DATA_TYPE.search
+      searchBarViewModel.setSelectIndex(0, 0);
+      const data = [
+        {
+          ids: [1, 2],
+          type: RecentSearchTypes.PEOPLE,
+          hasMore: false,
+        },
+      ];
+      searchBarViewModel.setCurrentResults(data);
+      expect(searchBarViewModel.getCurrentItemType()).toBe(
+        RecentSearchTypes.PEOPLE,
+      );
+    });
+    it('If data type is record should be return type from types', () => {
+      searchBarViewModel.setSelectIndex(0, 1);
+      const data = [
+        {
+          ids: [1, 2],
+          types: [RecentSearchTypes.PEOPLE, RecentSearchTypes.GROUP],
+        },
+      ];
+      searchBarViewModel.setCurrentResults(data);
+      expect(searchBarViewModel.getCurrentItemType()).toBe(
+        RecentSearchTypes.GROUP,
+      );
+    });
+  });
+
+  describe('currentResults()', () => {
+    it('If data type is search should be return search result', () => {
+      searchBarViewModel.setValue('123');
+      expect(searchBarViewModel.currentResults()).toEqual(
+        searchBarViewModel.searchResult,
+      );
+    });
+    it('If data type is record should be return recent record', () => {
+      expect(searchBarViewModel.currentResults()).toEqual(
+        searchBarViewModel.recentRecord,
+      );
+    });
+  });
+
+  it('getRecent()', () => {
+    jest
+      .spyOn(searchBarViewModel.searchService, 'getRecentSearchRecords')
+      .mockReturnValue([
+        {
+          value: 1,
+          type: 'type',
+        },
+        {
+          value: 'text',
+          type: 'text',
+        },
+      ]);
+
+    searchBarViewModel.getRecent();
+    expect(searchBarViewModel.recentRecord).toEqual([
+      {
+        ids: [1, 'text'],
+        types: ['type', 'text'],
+      },
+    ]);
+  });
+
+  it('addRecentRecord()', () => {
+    jest.spyOn(searchBarViewModel.searchService, 'addRecentSearchRecord');
+    jest
+      .spyOn(searchBarViewModel, 'getCurrentItemType')
+      .mockReturnValue('type');
+
+    searchBarViewModel.addRecentRecord(1);
+    expect(
+      searchBarViewModel.searchService.addRecentSearchRecord,
+    ).toHaveBeenCalledWith('type', 1);
+  });
+
+  it('should be clear recent search records', () => {
+    jest.spyOn(searchBarViewModel.searchService, 'clearRecentSearchRecords');
+    searchBarViewModel.clearRecent();
+    expect(
+      searchBarViewModel.searchService.clearRecentSearchRecords,
+    ).toHaveBeenCalled();
   });
 
   // describe('search()', async () => {
