@@ -3,7 +3,7 @@
  * @Date: 2018-08-22 15:22:51
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { RefObject, memo } from 'react';
+import React, { RefObject, memo, ReactNode } from 'react';
 import MuiIconButton, {
   IconButtonProps as MuiIconButtonProps,
 } from '@material-ui/core/IconButton';
@@ -32,8 +32,10 @@ type JuiIconButtonProps = {
   alwaysEnableTooltip?: boolean;
   ariaLabel?: string;
   innerRef?: RefObject<HTMLElement>;
-} & Omit<MuiIconButtonProps, 'color'> &
-  Omit<JuiIconographyProps, 'color'>;
+  ref?: any;
+  children: ReactNode;
+} & Omit<MuiIconButtonProps, 'color' | 'children'> &
+  Omit<JuiIconographyProps, 'color' | 'children'>;
 
 const iconSizes = {
   large: 6,
@@ -46,7 +48,7 @@ const WrappedMuiIcon = ({
   awake,
   color,
   ...rest
-}: JuiIconButtonProps) => <JuiIconography {...rest} />;
+}: JuiIconButtonProps & { children: string }) => <JuiIconography {...rest} />;
 const StyledIcon = styled<JuiIconButtonProps>(WrappedMuiIcon)``;
 const rippleEnter = (theme: Theme) => keyframes`
   from {

@@ -44,6 +44,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._sortableListHandler.sortableListStore.getIds;
   }
 
+  @computed
+  get hasMoreDown() {
+    return this._sortableListHandler.hasMore(QUERY_DIRECTION.NEWER);
+  }
+
   private _sortableListHandler: FetchSortableDataListHandler<SuccinctPost>;
 
   get _postProvider() {
@@ -150,7 +155,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._batchFetchPosts();
   }
 
-  @onScrollToBottom
+  @onScrollToBottom((vm: StreamViewModel) => vm.hasMoreDown)
   @loadingBottom
   fetchNextPagePosts() {
     return this._batchFetchPosts();

@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { PermissionService } from './service/PermissionService';
-export { PermissionService };
+import UserPermissionType from './types';
+export { PermissionService, UserPermissionType };

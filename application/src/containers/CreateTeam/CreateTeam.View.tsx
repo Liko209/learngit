@@ -4,11 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { createRef } from 'react';
+import React, { createRef, Fragment } from 'react';
 import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
-import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
@@ -29,6 +28,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { TeamSetting } from './CreateTeam.ViewModel';
+import history from '@/history';
 
 type State = {
   items: JuiListToggleItemProps[];
@@ -41,9 +41,9 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 `;
 
 const createTeamLoading = () => <DefaultLoadingWithDelay mask={true} />;
-const Loading = withLoading(props => <>{props.children}</>, createTeamLoading);
+const Loading = withLoading(Fragment, createTeamLoading);
 @observer
-class CreateTeam extends React.Component<ViewProps, State> {
+class CreateTeamView extends React.Component<ViewProps, State> {
   static contextType = DialogContext;
 
   teamNameRef = createRef<HTMLInputElement>();
@@ -86,7 +86,7 @@ class CreateTeam extends React.Component<ViewProps, State> {
   }
 
   static getDerivedStateFromProps(props: any, state: any) {
-    let items = CreateTeam.initItems;
+    let items = CreateTeamView.initItems;
 
     if (state.items.length) {
       items = state.items;
@@ -136,7 +136,7 @@ class CreateTeam extends React.Component<ViewProps, State> {
   createTeam = async () => {
     const { items } = this.state;
     const { teamName, description, members } = this.props;
-    const { history, create } = this.props;
+    const { create } = this.props;
 
     const uiSetting = items.reduce((options, option) => {
       options[option.type] = option.checked;
@@ -158,11 +158,14 @@ class CreateTeam extends React.Component<ViewProps, State> {
         TEAM_PIN_POST: uiSetting.canPin,
       },
     };
-
-    const newTeam = await create(members, teamSetting);
-    if (newTeam) {
-      this.onClose();
-      history.push(`/messages/${newTeam.id}`);
+    try {
+      const newTeam = await create(members, teamSetting);
+      if (newTeam) {
+        this.onClose();
+        history.push(`/messages/${newTeam.id}`);
+      }
+    } catch (e) {
+      this.renderServerUnknownError();
     }
   }
 
@@ -192,11 +195,7 @@ class CreateTeam extends React.Component<ViewProps, State> {
       handleSearchContactChange,
       serverError,
       errorEmail,
-      serverUnknownError,
     } = this.props;
-    if (serverUnknownError) {
-      this.renderServerUnknownError();
-    }
     return (
       <JuiModal
         open={true}
@@ -271,7 +270,6 @@ class CreateTeam extends React.Component<ViewProps, State> {
   }
 }
 
-const CreateTeamView = withRouter(CreateTeam);
-const CreateTeamComponent = CreateTeam;
+const CreateTeamComponent = CreateTeamView;
 
 export { CreateTeamView, CreateTeamComponent };

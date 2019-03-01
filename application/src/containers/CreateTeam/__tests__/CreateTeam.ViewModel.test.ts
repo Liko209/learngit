@@ -14,9 +14,9 @@ import {
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { UserConfig } from 'sdk/service/account';
+import { AccountGlobalConfig } from 'sdk/service/account/config';
 
-jest.mock('sdk/service/account');
+jest.mock('sdk/service/account/config');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
@@ -25,8 +25,6 @@ jest.mock('sdk/api');
 const groupService = {
   createTeam() {},
 };
-// GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-// AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 
 const createTeamVM = new CreateTeamViewModel();
 function getNewJServerError(code: string, message: string = '') {
@@ -45,7 +43,9 @@ describe('CreateTeamVM', () => {
 
   it('create team success', async () => {
     const creatorId = 1;
-    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
+    AccountGlobalConfig.getCurrentUserId = jest
+      .fn()
+      .mockImplementation(() => creatorId);
     groupService.createTeam = jest.fn().mockImplementation(() => '');
 
     const name = 'name';
@@ -70,7 +70,9 @@ describe('CreateTeamVM', () => {
   it('create team success handle error', async () => {
     const error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
     const creatorId = 1;
-    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
+    AccountGlobalConfig.getCurrentUserId = jest
+      .fn()
+      .mockImplementation(() => creatorId);
     groupService.createTeam = jest.fn().mockRejectedValue(error);
 
     jest.spyOn(createTeamVM, 'createErrorHandler');
@@ -94,7 +96,9 @@ describe('CreateTeamVM', () => {
       '',
     );
     const creatorId = 1;
-    UserConfig.getCurrentUserId = jest.fn().mockImplementation(() => creatorId);
+    AccountGlobalConfig.getCurrentUserId = jest
+      .fn()
+      .mockImplementation(() => creatorId);
     groupService.createTeam = jest.fn().mockRejectedValueOnce(error);
     const name = 'name';
     const memberIds = [1, 2];
@@ -107,7 +111,11 @@ describe('CreateTeamVM', () => {
         TEAM_POST: true,
       },
     };
-    expect(await createTeamVM.create(memberIds, options)).toEqual(null);
+    try {
+      expect(await createTeamVM.create(memberIds, options)).toEqual(null);
+    } catch (e) {
+      expect(true).toBeTruthy();
+    }
   });
 
   it('getGlobalValue', () => {

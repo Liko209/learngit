@@ -18,6 +18,6 @@ storiesOf('Foundation', module)
   )
   .add('Iconography', () => (
     <div>
-      <JuiIconography color={['primary', '500']}>star</JuiIconography>
+      <JuiIconography iconColor={['primary', '500']}>star</JuiIconography>
     </div>
   ));

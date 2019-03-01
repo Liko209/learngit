@@ -8,6 +8,7 @@ enum UA_EVENT {
   REG_FAILED = 'uaRegisterFailed',
   REG_UNREGISTER = 'uaUnRegisterFailed',
   RECEIVE_INVITE = 'uaReceiveInvite',
+  TRANSPORT_ERROR = 'uaTransportError',
 }
 
 enum WEBPHONE_SESSION_STATE {
@@ -37,6 +38,34 @@ type ProvisionDataOptions = {
   logLevel?: string;
   audioHelper?: string;
   onSession?: string;
+  maxReconnectionAttempts?: number;
+  reconnectionTimeout?: number;
+  connectionTimeout?: number;
+};
+
+type InboundRtpReport = {
+  bytesReceived: number;
+  fractionLost: number;
+  jitter: number;
+  mediaType: string;
+  packetsLost: number;
+  packetsReceived: number;
+};
+
+type OutboundRtpReport = {
+  bytesSent: number;
+  mediaType: string;
+  packetsSent: number;
+};
+
+type RttMS = {
+  currentRoundTripTime: number;
+};
+
+type MediaStatsReport = {
+  inboundRtpReport?: InboundRtpReport;
+  outboundRtpReport?: OutboundRtpReport;
+  rttMS?: RttMS;
 };
 
 export {
@@ -45,4 +74,5 @@ export {
   RC_SIP_HEADER_NAME,
   WEBPHONE_SESSION_EVENT,
   ProvisionDataOptions,
+  MediaStatsReport,
 };

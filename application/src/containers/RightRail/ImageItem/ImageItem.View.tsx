@@ -37,6 +37,10 @@ class ImageItemView extends Component<ImageItemViewProps> {
   }
 
   render() {
+    const { file } = this.props;
+    if (file.isMocked || file.id < 0) {
+      return <></>;
+    }
     return (
       <JuiListItemWithHover
         render={this._renderItem}

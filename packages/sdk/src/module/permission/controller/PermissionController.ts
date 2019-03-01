@@ -8,7 +8,7 @@ import { LaunchDarklyController } from './launchDarkly/LaunchDarklyController';
 import UserPermissionType from '../types';
 import SplitIODefaultPermissions from './splitIO/SplitIODefaultPermissions';
 import { notificationCenter, ENTITY } from '../../../service';
-import { UserConfig } from '../../../service/account';
+import { AccountGlobalConfig } from '../../../service/account/config';
 import { UserPermission } from '../entity';
 import { mainLogger } from 'foundation/src';
 class PermissionController {
@@ -55,7 +55,7 @@ class PermissionController {
 
   private async _refreshPermissions() {
     const permissions = await this._getAllPermissions();
-    const id = UserConfig.getCurrentUserId();
+    const id = AccountGlobalConfig.getCurrentUserId();
     mainLogger.log(`user:${id}, refreshPermissions:${permissions}`);
     notificationCenter.emitEntityUpdate(ENTITY.USER_PERMISSION, [
       {

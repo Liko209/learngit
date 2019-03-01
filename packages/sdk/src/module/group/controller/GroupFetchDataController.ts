@@ -13,8 +13,8 @@ import { IEntityCacheSearchController } from '../../../framework/controller/inte
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { SortableModel } from '../../../framework/model';
-import { UserConfig } from '../../../service/account';
-import CompanyService from '../../../service/company';
+import { AccountGlobalConfig } from '../../../service/account/config';
+import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
 import { ProfileService, extractHiddenGroupIds } from '../../profile';
@@ -35,7 +35,7 @@ import { IGroupService } from '../service/IGroupService';
 import { GroupHandleDataController } from './GroupHandleDataController';
 
 function buildNewGroupInfo(members: number[]) {
-  const userId = UserConfig.getCurrentUserId();
+  const userId = AccountGlobalConfig.getCurrentUserId();
   return {
     members,
     creator_id: Number(userId),
@@ -81,7 +81,7 @@ export class GroupFetchDataController {
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-      const userId = UserConfig.getCurrentUserId();
+      const userId = AccountGlobalConfig.getCurrentUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
       if (this.entityCacheSearchController.isInitialized()) {
         result = await this.entityCacheSearchController.getEntities(
@@ -207,7 +207,7 @@ export class GroupFetchDataController {
       PERFORMANCE_KEYS.SEARCH_GROUP,
       logId,
     );
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
@@ -271,7 +271,7 @@ export class GroupFetchDataController {
       PERFORMANCE_KEYS.SEARCH_TEAM,
       logId,
     );
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
     if (!currentUserId) {
       return null;
     }
@@ -438,7 +438,7 @@ export class GroupFetchDataController {
     const group = await this.entitySourceController.get(groupId);
     if (group) {
       isValid = this.groupService.isValid(group);
-      const currentUserId = UserConfig.getCurrentUserId();
+      const currentUserId = AccountGlobalConfig.getCurrentUserId();
       isIncludeSelf = group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;
@@ -473,7 +473,7 @@ export class GroupFetchDataController {
   }
 
   private _addCurrentUserToMemList(ids: number[]) {
-    const userId = UserConfig.getCurrentUserId();
+    const userId = AccountGlobalConfig.getCurrentUserId();
     if (userId) {
       ids.push(userId);
     }

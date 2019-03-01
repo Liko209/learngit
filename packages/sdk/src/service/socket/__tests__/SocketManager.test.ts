@@ -8,11 +8,17 @@ import { SocketManager } from '../SocketManager';
 import { SocketFSM } from '../SocketFSM';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, CONFIG, SOCKET } from '../../../service/eventKey';
-import { daoManager, ConfigDao } from '../../../dao';
 import SocketIO from '../__mocks__/socket';
 import { SocketClient } from 'foundation';
+import { NewGlobalConfig } from '../../config/NewGlobalConfig';
+import { GlobalConfigService } from '../../../module/config';
 
-jest.mock('foundation');
+jest.mock('../../../service/config/NewGlobalConfig');
+jest.mock('../../../module/config');
+
+GlobalConfigService.getInstance = jest.fn();
+
+jest.mock('foundation/src/network/client/socket');
 jest.mock('../../../dao');
 const mockedSetReconnection = jest.fn((bOn: boolean) => {});
 SocketFSM.prototype = {
@@ -23,7 +29,6 @@ SocketFSM.prototype = {
 describe('Socket Manager', () => {
   const socketManager = SocketManager.getInstance();
 
-  let configDao: ConfigDao;
   const test_url = 'test_url';
   const mock = {
     type: '',
@@ -32,13 +37,11 @@ describe('Socket Manager', () => {
 
   beforeAll(() => {
     SocketClient.prototype.socket = new SocketIO();
-    configDao = new ConfigDao(null);
   });
 
   beforeEach(() => {
     mockedSetReconnection.mockRestore();
-    daoManager.getKVDao.mockReturnValue(configDao);
-    configDao.get.mockReturnValue(test_url);
+    NewGlobalConfig.getSocketServerHost = jest.fn().mockReturnValue(test_url);
     mock.payload = test_url;
     notificationCenter.emitKVChange(SERVICE.LOGOUT);
   });
@@ -134,7 +137,9 @@ describe('Socket Manager', () => {
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-        configDao.get.mockReturnValue('new_url_server_host_updated');
+        NewGlobalConfig.getSocketServerHost = jest
+          .fn()
+          .mockReturnValue('new_url_server_host_updated');
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeFalsy();
       });
@@ -143,7 +148,6 @@ describe('Socket Manager', () => {
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         const fsmName1 = socketManager.activeFSM.name;
 
-        configDao.get.mockReturnValue('');
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         const fsmName2 = socketManager.activeFSM.name;
         expect(socketManager.hasActiveFSM()).toBeTruthy();
@@ -168,7 +172,10 @@ describe('Socket Manager', () => {
 
         socketManager.activeFSM.finishConnect();
 
-        configDao.get.mockReturnValue('new_url_changed');
+        NewGlobalConfig.getSocketServerHost = jest
+          .fn()
+          .mockReturnValue('new_url_changed');
+
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmName2 = socketManager.activeFSM.name;
@@ -176,7 +183,9 @@ describe('Socket Manager', () => {
 
         socketManager.activeFSM.finishConnect();
 
-        configDao.get.mockReturnValue(test_url);
+        NewGlobalConfig.getSocketServerHost = jest
+          .fn()
+          .mockReturnValue(test_url);
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmName3 = socketManager.activeFSM.name;

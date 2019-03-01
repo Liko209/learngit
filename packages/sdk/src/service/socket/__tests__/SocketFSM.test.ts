@@ -7,8 +7,17 @@
 import { SocketFSM } from '../SocketFSM';
 import { mainLogger, SocketClient } from 'foundation';
 import SocketIO from '../__mocks__/socket';
-
 jest.mock('foundation');
+const mockLogger = {
+  tags: jest.fn(),
+  error: jest.fn(),
+  info: jest.fn(),
+  debug: jest.fn(),
+  log: jest.fn(),
+  warn: jest.fn(),
+};
+mockLogger.tags.mockReturnValue(mockLogger);
+mainLogger = mockLogger;
 
 describe('Socket FSM', async () => {
   const serverUrl = 'aws13-g04-uds02.asialab.glip.net:11904';
@@ -99,13 +108,12 @@ describe('Socket FSM', async () => {
 
   describe('Invalid state transition', () => {
     it('onInvalidTransition(): will trigger when the change of state is incorrect ', () => {
+      mockLogger.tags.mockClear();
+      mockLogger.error.mockClear();
+      expect(mockLogger.error).not.toHaveBeenCalled();
       const fsm = fsmCreate();
-      const spy = jest.spyOn(mainLogger, 'error');
       fsm.stop(); // idle => disconnecting is incorrect
-      expect(spy).toHaveBeenCalled();
-
-      spy.mockReset();
-      spy.mockRestore();
+      expect(mockLogger.error).toHaveBeenCalled();
     });
   });
 

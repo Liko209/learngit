@@ -3,21 +3,10 @@
  * @Date: 2018-06-08 11:05:46
  */
 import notificationCenter from '../notificationCenter';
-import { SERVICE, WINDOW } from '../../service/eventKey';
+import { SERVICE, WINDOW, ENTITY } from '../../service/eventKey';
 import { logManager, LOG_LEVEL, mainLogger, IAccessor } from 'foundation';
 import { LogUploader } from './LogUploader';
-
-notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
-  LogControlManager.instance().setNetworkState(onLine);
-});
-
-notificationCenter.on(SERVICE.LOGOUT, () => {
-  LogControlManager.instance().flush();
-});
-
-notificationCenter.on(WINDOW.BLUR, () => {
-  LogControlManager.instance().flush();
-});
+import { PermissionService, UserPermissionType } from '../../module/permission';
 
 class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -28,11 +17,12 @@ class LogControlManager implements IAccessor {
   private constructor() {
     this._enabledLog = true;
     this._isDebugMode = true;
-    this._isOnline = true;
+    this._isOnline = window.navigator.onLine;
     logManager.config({
-      uploadLogApi: new LogUploader(),
+      logUploader: new LogUploader(),
       uploadAccessor: this,
     });
+    this.subscribeNotifications();
   }
 
   public static instance(): LogControlManager {
@@ -41,6 +31,24 @@ class LogControlManager implements IAccessor {
     }
     this._instance = new LogControlManager();
     return this._instance;
+  }
+
+  subscribeNotifications() {
+    notificationCenter.on(ENTITY.USER_PERMISSION, () => {
+      this.configByPermission();
+    });
+
+    notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
+      this.setNetworkState(onLine);
+    });
+
+    notificationCenter.on(SERVICE.LOGOUT, () => {
+      this.flush();
+    });
+
+    notificationCenter.on(WINDOW.BLUR, () => {
+      this.flush();
+    });
   }
 
   public setDebugMode(isDebug: boolean) {
@@ -65,6 +73,29 @@ class LogControlManager implements IAccessor {
 
   subscribe(onChange: (accessible: boolean) => void): void {
     this._onUploadAccessorChange = onChange;
+  }
+
+  async configByPermission() {
+    const permissionService: PermissionService = PermissionService.getInstance();
+    try {
+      const logEnabled = await permissionService.hasPermission(
+        UserPermissionType.JUPITER_CAN_SAVE_LOG,
+      );
+      const logUploadEnabled = await permissionService.hasPermission(
+        UserPermissionType.JUPITER_CAN_UPLOAD_LOG,
+      );
+      logManager.config({
+        browser: {
+          enabled: logEnabled,
+        },
+        consumer: {
+          ...(logManager.getConfig().consumer || {}),
+          enabled: logUploadEnabled,
+        },
+      });
+    } catch (error) {
+      mainLogger.warn('getUserPermission fail:', error);
+    }
   }
 
   private _updateLogSystemLevel() {

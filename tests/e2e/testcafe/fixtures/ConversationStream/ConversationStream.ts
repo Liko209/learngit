@@ -161,11 +161,18 @@ test(formalName('Should be able to read the newest posts once open a conversatio
   }
 );
 
+
 test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser= users[6];
   await h(t).platform(loginUser).init();
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
+  const meChatId = await h(t).glip(loginUser).getPersonPartialData('me_group_id');
+
+  const imagePaths = ['../../sources/1.png','../../sources/2.png'];
+  const imageNames = ['1.png','2.png'];
 
   let conversationId;
   await h(t).withLog('Given I have an extension with a conversation', async () => {
@@ -173,7 +180,7 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
       isPublic: true,
       name: `Team ${uuid()}`,
       type: 'Team',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
+      members: [loginUser.rcId, users[5].rcId],
     });
   });
 
@@ -188,6 +195,7 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
     await app.homePage.ensureLoaded();
   });
 
+  const favoriteSection = app.homePage.messageTab.favoritesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('And enter the team conversation', async () => {
@@ -210,7 +218,6 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
     await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
   });
 
-
   const anotherMessage = `${uuid()}`;
   await h(t).withLog('When I send another message to this conversation', async () => {
     await conversationPage.sendMessage(anotherMessage, { paste: true });
@@ -221,4 +228,41 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
     await conversationPage.expectStreamScrollToBottom();
     await t.expect(conversationPage.nthPostItem(-1).body.withText(anotherMessage).exists).ok();
   });
-})
+
+  await h(t).withLog('When I scroll to middle of page and send a image A post', async () => {
+    await conversationPage.scrollToMiddle();
+    await conversationPage.uploadFilesToMessageAttachment(imagePaths[0]);
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+    await conversationPage.nthPostItem(-1).waitImageVisible();
+  });
+
+  await h(t).withLog('Then I should see the post with image A in bottom of stream section', async () => {
+    await t.wait(1e3);
+    await conversationPage.expectStreamScrollToBottom();
+    await t.expect(conversationPage.nthPostItem(-1).fileNames.withText(imageNames[0]).exists).ok();
+  });
+
+  await h(t).withLog('When I send a image B post', async () => {
+    await conversationPage.uploadFilesToMessageAttachment(imagePaths[1]);
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+    await conversationPage.nthPostItem(-1).waitImageVisible();
+  });
+
+  await h(t).withLog('Then I should see the post with image B in bottom of stream section', async () => {
+    await conversationPage.expectStreamScrollToBottom();
+    await t.expect(conversationPage.nthPostItem(-1).fileNames.withText(imageNames[1]).exists).ok();
+  });
+
+  await h(t).withLog('When I enter other conversation and come bask  post', async () => {
+    await favoriteSection.conversationEntryById(meChatId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+    await teamsSection.conversationEntryById(conversationId).enter();
+  });
+
+  await h(t).withLog('Then I should see the post with image B in bottom of stream section', async () => {
+    await conversationPage.expectStreamScrollToBottom();
+    await t.expect(conversationPage.nthPostItem(-1).fileNames.withText(imageNames[1]).exists).ok();
+  });
+});

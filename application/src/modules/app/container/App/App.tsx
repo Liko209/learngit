@@ -20,7 +20,6 @@ import { TopBanner } from '../TopBanner';
 import { AppStore } from '../../store';
 import { Title } from './Title';
 import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
-import config from '@/config';
 
 @observer
 class App extends React.Component {
@@ -54,7 +53,6 @@ class App extends React.Component {
     const { globalLoading } = this._appStore;
     return (
       <>
-        <link rel="stylesheet" type="text/css" href={config.get('iconLink')} />
         <ThemeProvider>
           {globalLoading ? (
             <JuiContentLoader />

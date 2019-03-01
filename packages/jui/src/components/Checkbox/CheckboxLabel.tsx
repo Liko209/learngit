@@ -28,22 +28,22 @@ const styles = {
   },
 };
 
-interface IProps {
+type CheckboxLabelProps = {
   checked: boolean;
   label: string;
   handleChange(event: React.ChangeEvent<{}>, checked: boolean): void;
-}
-const CheckboxLabel = memo((props: IProps) => {
+};
+const CheckboxLabel = memo((props: CheckboxLabelProps) => {
   return <CheckboxWithLabel {...props} />;
 });
 
 @observer
-class CheckboxWithLabel extends React.PureComponent {
+class CheckboxWithLabel extends React.Component<CheckboxLabelProps> {
   @observable
   private _checked: boolean;
   private _handleChange: Function;
   private _label: string;
-  constructor(props: any) {
+  constructor(props: CheckboxLabelProps) {
     super(props);
     this._checked = props.checked;
     this._handleChange = props.handleChange;

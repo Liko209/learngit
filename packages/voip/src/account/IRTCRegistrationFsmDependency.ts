@@ -8,7 +8,6 @@ import { IRTCCallDelegate } from '../api/IRTCCallDelegate';
 import { RTCCallOptions } from '../api/types';
 
 interface IRTCRegistrationFsmDependency {
-  onRegistrationAction(): void;
   onProvisionReadyAction(provisionData: any, options: any): void;
   onReRegisterAction(): void;
   onNetworkChangeToOnlineAction(): void;

@@ -5,11 +5,11 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import _ from 'lodash';
-import { Container } from 'foundation';
+import { mainLogger, Container } from 'foundation';
 import { fetchWhiteList } from './helper';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
-import { daoManager, ConfigDao } from '../../dao';
+import { NewGlobalConfig } from '../../service/config/NewGlobalConfig';
 
 import {
   IAccountInfo,
@@ -48,11 +48,19 @@ class AccountManager extends EventEmitter2 {
     if (!resp.accountInfos) {
       throw Error('Auth fail');
     }
-    const isValid = await this.sanitizeUser(resp.accountInfos);
-    if (!isValid) {
-      throw Error('User not in the white list');
-    }
+    const mailboxID = resp.accountInfos[0].data.owner_id;
+
+    await this.makeSureUserInWhitelist(mailboxID);
     return this._handleLoginResponse(resp);
+  }
+
+  async makeSureUserInWhitelist(mailboxID: string) {
+    const isValid = await this.sanitizeUser(mailboxID);
+    if (!isValid) {
+      this.logout();
+      mainLogger.warn('[Auth]User not in the white list');
+      window.location.href = '/';
+    }
   }
 
   async logout() {
@@ -111,14 +119,21 @@ class AccountManager extends EventEmitter2 {
     return accounts;
   }
 
-  async sanitizeUser(account: IAccountInfo[]) {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const env = configDao.getEnv();
+  async sanitizeUser(mailboxID: string) {
+    const env = NewGlobalConfig.getEnv();
     const whiteList = await fetchWhiteList();
-    if (Object.keys(whiteList).includes(env)) {
-      const isLegalUser = whiteList[env].includes(account[0].data.owner_id);
+    const allAccount = whiteList[env];
+    if (allAccount !== undefined) {
+      const isLegalUser = allAccount.some((account: string) => {
+        return account === mailboxID;
+      });
+      mainLogger.info(
+        `[Auth]${mailboxID} ${isLegalUser ? '' : 'not '}in whitelist for ${env}`,
+      );
       return isLegalUser;
     }
+
+    mainLogger.info(`[Auth]white list not defined for ${env}`);
     return true;
   }
 
