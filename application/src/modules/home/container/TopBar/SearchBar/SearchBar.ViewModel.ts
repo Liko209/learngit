@@ -232,6 +232,15 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     return list[section].ids[cell];
   }
 
+  getCurrentItemType = () => {
+    const [section, cell] = this.selectIndex;
+    const list = this.currentResults();
+    if (this.dataType === DATA_TYPE.search) {
+      return (list as SearchItems[])[section].type;
+    }
+    return (list as RecentItems[])[section].types[cell];
+  }
+
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
     const [section, cell] = this.selectIndex;
@@ -272,6 +281,10 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
         types: result.map((item: RecentSearchModel) => item.type),
       },
     ];
+  }
+
+  addRecentRecord = (id: number) => {
+    this.searchService.addRecentSearchRecord(this.getCurrentItemType(), id);
   }
 
   clearRecent = () => {

@@ -230,11 +230,12 @@ class SearchBarView extends React.Component<ViewProps & Props> {
   }
 
   onEnter = () => {
-    const { getCurrentItemId } = this.props;
+    const { getCurrentItemId, addRecentRecord } = this.props;
     const currentItemId = getCurrentItemId();
     if (!currentItemId) {
       return;
     }
+    addRecentRecord(currentItemId);
     OpenProfile.show(currentItemId, null, this.onClose);
   }
 

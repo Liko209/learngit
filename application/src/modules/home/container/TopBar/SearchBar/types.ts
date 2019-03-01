@@ -43,14 +43,13 @@ type Props = {};
 type ViewProps = {
   focus: boolean;
   updateFocus: (focus: boolean) => void;
-  // search: (key: string) => Promise<SearchResult | undefined>;
   setSearchResult: (key: string) => void;
   searchValue: string;
   setValue: (value: string) => void;
   currentUserId: number;
-  // isTeamOrGroup: (id: number) => boolean;
   getRecent: () => void;
   clearRecent: () => void;
+  addRecentRecord: (id: number) => void;
   searchResult: SearchItems[];
   recentRecord: RecentItems[];
   terms: string[];
@@ -58,8 +57,6 @@ type ViewProps = {
   resetData: () => void;
   resetSelectIndex: () => void;
   setSelectIndex: (section: number, cellIndex: number) => void;
-  // setCurrentResults: (data: SearchItems[]) => void;
-  // findNextValidSectionLength: (section: number, offset: number) => number[];
   onKeyUp: () => void;
   onKeyDown: () => void;
   selectIndexChange: (sectionIndex: number, cellIndex: number) => void;
