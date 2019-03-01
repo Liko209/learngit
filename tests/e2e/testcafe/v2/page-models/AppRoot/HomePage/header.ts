@@ -106,6 +106,10 @@ class Search extends BaseWebComponent {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
 
+  nthAllResults(n: number) {
+    return this.getComponent(SearchItem, this.allResultItems.nth(n));
+  }
+  
   getSearchItemByCid(cid: string) {
     this.warnFlakySelector();
     const root = this.allResultItems.child().find(`[cid="${cid}"]`).parent('.search-items');

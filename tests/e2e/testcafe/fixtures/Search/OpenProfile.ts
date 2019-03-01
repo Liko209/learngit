@@ -2,9 +2,10 @@
  * @Author: Potar.He 
  * @Date: 2019-03-01 10:44:59 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-01 10:46:36
+ * @Last Modified time: 2019-03-01 16:27:33
  */
 import { v4 as uuid } from 'uuid';
+import * as _ from 'lodash';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
@@ -37,7 +38,7 @@ test(formalName('Check can open profile dialog when click the item of search res
 
   await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
 
-  await h(t).withLog(`And with a team named: ${team.name} and a group`, async () => {
+  await h(t).withLog(`And with a team named: ${team.name} and a group include ${anotherUserName}`, async () => {
     await h(t).scenarioHelper.createTeamsOrChats([team, group]);
   });
 
@@ -50,91 +51,86 @@ test(formalName('Check can open profile dialog when click the item of search res
 
   const searchBar = app.homePage.header.search;
 
-  // person
-  await h(t).withLog(`When I search keyword ${anotherUserName} and click the first people result`, async () => {
-    await searchBar.typeSearchKeyword(anotherUserName);
-    await t.expect(searchBar.peoples.count).gte(1);
-    await searchBar.nthPeople(0).enter();
-  });
+  const searchResults = [{
+    keyword: anotherUserName,
+    item: searchBar.nthPeople(0),
+    type: "result",
+  }, {
+    keyword: anotherUserName,
+    item: searchBar.nthGroup(0),
+    type: "groups",
+  }, {
+    keyword: team.name,
+    item: searchBar.nthTeam(0),
+    type: "teams",
+  }]
 
   const profileDialog = app.homePage.profileDialog;
-  await h(t).withLog(`Then Profile dialog should be popup and search result should be closed`, async () => {
-    await profileDialog.shouldBePopUp();
-    await t.expect(searchBar.allResultItems.exists).notOk();
+  for (const result of searchResults) {
+    const { keyword, item, type } = result;
+    await h(t).withLog(`When I search keyword ${keyword} and click the first ${type} result`, async () => {
+      await searchBar.clearInputAreaText();
+      await searchBar.typeSearchKeyword(keyword);
+      await t.expect(item.exists).ok();
+      await item.enter();
+    });
+
+    await h(t).withLog(`Then Profile dialog should be popup and search result should be closed`, async () => {
+      await profileDialog.shouldBePopUp();
+      await t.expect(searchBar.searchResultsContainer.exists).notOk();
+    });
+
+    await h(t).withLog(`When I close the profile dialog`, async () => {
+      await profileDialog.close();
+    });
+
+    await h(t).withLog(`Then Keep the search text in the search box`, async () => {
+      await t.expect(searchBar.inputArea.value).eql(keyword);
+    });
+
+    await h(t).withLog(`When I click the search box`, async () => {
+      await searchBar.clickInputArea();
+    });
+
+    await h(t).withLog(`Then display instant search`, async () => {
+      await t.expect(item.exists).ok();
+    });
+  }
+
+  // recently search 
+  await h(t).withLog(`Given I clear search box text`, async () => {
+    await searchBar.clearInputAreaText();
+    await searchBar.quitByPressESC();
   });
 
-  await h(t).withLog(`When I close the profile dialog`, async () => {
-    await profileDialog.close();
-  });
+  const recentHistoryCount = searchResults.length;
+  for (const i of _.range(recentHistoryCount)) {
+    await h(t).withLog(`When I click the search box`, async () => {
+      await searchBar.clickInputArea();
+    })
 
-  await h(t).withLog(`Then Keep the search text in the search box`, async () => {
-    await t.expect(searchBar.inputArea.value).eql(anotherUserName);
-  });
+    let resultName;
+    await h(t).withLog(`Then recently search result should be showed`, async () => {
+      await searchBar.shouldShowRecentlyHistory();
+      resultName = await searchBar.itemsNames.nth(recentHistoryCount - 1).textContent
+    });
 
-  await h(t).withLog(`When I click the search box`, async () => {
-    await profileDialog.close();
-  });
+    await h(t).withLog(`When I click the last one: ${resultName}`, async () => {
+      await searchBar.nthAllResults(recentHistoryCount - 1).enter();
+    })
 
-  await h(t).withLog(`Then display instant search`, async () => {
-    await t.expect(searchBar.peoples.count).gte(1);
-  });
+    await h(t).withLog(`Then Profile dialog should be popup and recently search result should be closed`, async () => {
+      await profileDialog.shouldBePopUp();
+      await t.expect(searchBar.historyContainer.exists).notOk();
+    });
 
-  // group
-  await h(t).withLog(`When I search keyword ${anotherUserName} and click the first group result`, async () => {
-    await searchBar.typeSearchKeyword(anotherUserName);
-    await t.expect(searchBar.groups.count).gte(1);
-    await searchBar.nthGroup(0).enter();
-  });
+    await h(t).withLog(`When I close the profile dialog`, async () => {
+      await profileDialog.close();
+    });
 
-  await h(t).withLog(`Then Profile dialog should be popup and search result should be closed`, async () => {
-    await profileDialog.shouldBePopUp();
-    await t.expect(searchBar.allResultItems.exists).notOk();
-  });
-
-  await h(t).withLog(`When I close the profile dialog`, async () => {
-    await profileDialog.close();
-  });
-
-  await h(t).withLog(`Then Keep the search text in the search box`, async () => {
-    await t.expect(searchBar.inputArea.value).eql(anotherUserName);
-  });
-
-  await h(t).withLog(`When I click the search box`, async () => {
-    await profileDialog.close();
-  });
-
-  await h(t).withLog(`Then display instant search`, async () => {
-    await t.expect(searchBar.groups.count).gte(1);
-  });
-
-  // team 
-  await h(t).withLog(`When I search keyword ${team.name} and click the first team result`, async () => {
-    await searchBar.typeSearchKeyword(anotherUserName);
-    await t.expect(searchBar.teams.count).gte(1);
-    await searchBar.nthTeam(0).enter();
-  });
-
-  await h(t).withLog(`Then Profile dialog should be popup and search result should be closed`, async () => {
-    await profileDialog.shouldBePopUp();
-    await t.expect(searchBar.allResultItems.exists).notOk();
-  });
-
-  await h(t).withLog(`When I close the profile dialog`, async () => {
-    await profileDialog.close();
-  });
-
-  await h(t).withLog(`Then Keep the search text in the search box`, async () => {
-    await t.expect(searchBar.inputArea.value).eql(anotherUserName);
-  });
-
-  await h(t).withLog(`When I click the search box`, async () => {
-    await profileDialog.close();
-  });
-
-  await h(t).withLog(`Then display instant search`, async () => {
-    await t.expect(searchBar.teams.count).gte(1);
-  });
-
-  // TODO: recently search 
+    await h(t).withLog(`Then the search text should be clean`, async () => {
+      await t.expect(searchBar.inputArea.value).eql('');
+    });
+  }
 
 });
