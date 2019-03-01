@@ -6,9 +6,19 @@
 import _ from 'lodash';
 
 import { RecentSearchRecordController } from '../RecentSearchRecordController';
-import { SearchGlobalConfig } from '../../config';
+import { SearchUserConfig } from '../../config';
 
-jest.mock('../../config');
+jest.mock('../../config', () => {
+  const xx = {
+    setRecentSearchRecords: jest.fn(),
+    getRecentSearchRecords: jest.fn(),
+  };
+  return {
+    SearchUserConfig: () => {
+      return xx;
+    },
+  };
+});
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -17,13 +27,11 @@ function clearMocks() {
 }
 
 describe('RecentSearchRecordController', () => {
-  const db: any = {};
   let controller: RecentSearchRecordController;
   let threeRecords = [buildRecord(1), buildRecord(2), buildRecord(3)];
-
+  let searchUserConfig: SearchUserConfig;
   function setUp() {
-    SearchGlobalConfig.put = jest.fn();
-    SearchGlobalConfig.get = jest.fn();
+    searchUserConfig = new SearchUserConfig();
     controller = new RecentSearchRecordController();
     threeRecords = [buildRecord(1), buildRecord(2), buildRecord(3)];
   }
@@ -55,7 +63,9 @@ describe('RecentSearchRecordController', () => {
         records.push(buildRecord(i));
       }
 
-      SearchGlobalConfig.get = jest.fn().mockReturnValue(records);
+      searchUserConfig.getRecentSearchRecords = jest
+        .fn()
+        .mockReturnValue(records);
       let newRecords = _.cloneDeep(records);
       const newRecord: any = buildRecord(100);
       newRecords.pop();
@@ -66,9 +76,7 @@ describe('RecentSearchRecordController', () => {
         newRecord.value,
         newRecord.query_params,
       );
-
-      expect(SearchGlobalConfig.put).toBeCalledWith(
-        'recent_search_records',
+      expect(searchUserConfig.setRecentSearchRecords).toBeCalledWith(
         newRecords.map((x: any) => {
           return {
             id: expect.anything(),
@@ -82,7 +90,9 @@ describe('RecentSearchRecordController', () => {
     });
 
     it('new record should be at first place', () => {
-      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
+      searchUserConfig.getRecentSearchRecords = jest
+        .fn()
+        .mockReturnValue(threeRecords);
       const newRecord: any = buildRecord(4);
       controller.addRecentSearchRecord(
         newRecord.type,
@@ -90,8 +100,7 @@ describe('RecentSearchRecordController', () => {
         newRecord.query_params,
       );
       const expectRecords = [newRecord].concat(threeRecords);
-      expect(SearchGlobalConfig.put).toBeCalledWith(
-        'recent_search_records',
+      expect(searchUserConfig.setRecentSearchRecords).toBeCalledWith(
         expectRecords.map((x: any) => {
           return {
             id: expect.anything(),
@@ -105,7 +114,9 @@ describe('RecentSearchRecordController', () => {
     });
 
     it('new record should be replace old records and put at first place', () => {
-      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
+      searchUserConfig.getRecentSearchRecords = jest
+        .fn()
+        .mockReturnValue(threeRecords);
       const newRecord: any = buildRecord(2);
       controller.addRecentSearchRecord(
         newRecord.type,
@@ -113,8 +124,7 @@ describe('RecentSearchRecordController', () => {
         newRecord.query_params,
       );
       const expectedRes = [buildRecord(2), buildRecord(1), buildRecord(3)];
-      expect(SearchGlobalConfig.put).toBeCalledWith(
-        'recent_search_records',
+      expect(searchUserConfig.setRecentSearchRecords).toBeCalledWith(
         expectedRes.map((x: any) => {
           return {
             id: expect.anything(),
@@ -135,12 +145,11 @@ describe('RecentSearchRecordController', () => {
     });
 
     it('should clear all records', () => {
-      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
+      searchUserConfig.getRecentSearchRecords = jest
+        .fn()
+        .mockReturnValue(threeRecords);
       controller.clearRecentSearchRecords();
-      expect(SearchGlobalConfig.put).toBeCalledWith(
-        'recent_search_records',
-        [],
-      );
+      expect(searchUserConfig.setRecentSearchRecords).toBeCalledWith([]);
     });
   });
 
@@ -151,9 +160,11 @@ describe('RecentSearchRecordController', () => {
     });
 
     it('should return all records', () => {
-      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
+      searchUserConfig.getRecentSearchRecords = jest
+        .fn()
+        .mockReturnValue(threeRecords);
       const newRecords = controller.getRecentSearchRecords();
-      expect(SearchGlobalConfig.get).toBeCalledWith('recent_search_records');
+      expect(searchUserConfig.getRecentSearchRecords).toBeCalled();
       expect(newRecords).toEqual(threeRecords);
     });
   });
@@ -162,10 +173,12 @@ describe('RecentSearchRecordController', () => {
     it('should remove record in the input id set', () => {
       const ids = [1, 3];
       const idSet = new Set(ids);
-      SearchGlobalConfig.get = jest.fn().mockReturnValue(threeRecords);
+      searchUserConfig.getRecentSearchRecords = jest
+        .fn()
+        .mockReturnValue(threeRecords);
       controller.removeRecentSearchRecords(idSet);
       const res = buildRecord(2);
-      expect(SearchGlobalConfig.put).toBeCalledWith('recent_search_records', [
+      expect(searchUserConfig.setRecentSearchRecords).toBeCalledWith([
         {
           id: 2,
           time_stamp: expect.anything(),
