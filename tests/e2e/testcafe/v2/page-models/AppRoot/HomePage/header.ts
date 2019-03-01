@@ -132,28 +132,40 @@ class Search extends BaseWebComponent {
     return this.getSelectorByAutomationId('search-Teams');
   }
 
+  get historyContainer() {
+    return this.getSelectorByAutomationId('search-records');
+  };
+
+  get searchResultsContainer() {
+    return this.getSelectorByAutomationId('search-results');
+  }
+
+  async shouldShowRecentlyHistory() {
+    await  this.t.expect(this.historyContainer.exists).ok();
+  }
+
+  async shouldShowSearchResults() {
+    await this.t.expect(this.searchResultsContainer.exists).ok();
+  }
+
   get historyHeader() {
     return this.getSelectorByAutomationId('search-clear');
   }
 
-  showMoreButtonOn(header: Selector) {
-    return header.find('span').withText('Show more');
-  }
-
   get showMorePeopleButton() {
-    return this.showMoreButtonOn(this.peopleHeader);
+    return this.peopleHeader.find('span');
   }
 
   get showMoreGroupsButton() {
-    return this.showMoreButtonOn(this.groupsHeader);
+    return this.groupsHeader.find('span');
   }
 
   get showMoreTeamsButton() {
-    return this.showMoreButtonOn(this.teamsHeader);
+    return this.teamsHeader.find('span');
   }
 
   get clearHistoryButton() {
-    return this.historyHeader.find('span'); 
+    return this.historyHeader.find('span');
   }
 
   async clickShowMorePeople() {
@@ -172,7 +184,7 @@ class Search extends BaseWebComponent {
     await this.t.click(this.clearHistoryButton)
   }
 
-  
+
 }
 
 class SearchItem extends BaseWebComponent {
