@@ -134,7 +134,7 @@ test(formalName(`Delete team successfully after clicking Delete button.`, ['P1',
   });
 
   await h(t).withLog(`And send to the empty conversation screen`, async () => {
-    await t.expect(h(t).href).match(/messages\/$/);
+    await t.expect(h(t).href).match(/messages$/);
   });
 
   await h(t).withLog(`And the team conversation was removed from the conversation list`, async () => {

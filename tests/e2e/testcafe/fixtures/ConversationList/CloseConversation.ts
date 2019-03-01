@@ -98,7 +98,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
       );
 
       await h(t).withLog('And Content panel should navigate to Blank page', async () => {
-        await t.expect(h(t).href).match(/messages\/$/);
+        await t.expect(h(t).href).match(/messages$/);
       });
     }
 
