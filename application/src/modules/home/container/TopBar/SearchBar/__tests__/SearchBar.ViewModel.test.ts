@@ -5,7 +5,7 @@
  */
 import { GroupService } from 'sdk/module/group';
 import { PersonService } from 'sdk/module/person';
-
+import { SearchService } from 'sdk/module/search';
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 
@@ -395,9 +395,8 @@ describe('SearchBarViewModel', () => {
   });
 
   it('getRecent()', () => {
-    jest
-      .spyOn(searchBarViewModel.searchService, 'getRecentSearchRecords')
-      .mockReturnValue([
+    const s = {
+      getRecentSearchRecords: jest.fn().mockReturnValue([
         {
           value: 1,
           type: 'type',
@@ -406,7 +405,9 @@ describe('SearchBarViewModel', () => {
           value: 'text',
           type: 'text',
         },
-      ]);
+      ]),
+    };
+    jest.spyOn(SearchService, 'getInstance').mockImplementation(() => s);
 
     searchBarViewModel.getRecent();
     expect(searchBarViewModel.recentRecord).toEqual([
@@ -418,23 +419,24 @@ describe('SearchBarViewModel', () => {
   });
 
   it('addRecentRecord()', () => {
-    jest.spyOn(searchBarViewModel.searchService, 'addRecentSearchRecord');
+    const s = {
+      addRecentSearchRecord: jest.fn(),
+    };
+    jest.spyOn(SearchService, 'getInstance').mockImplementation(() => s);
     jest
       .spyOn(searchBarViewModel, 'getCurrentItemType')
       .mockReturnValue('type');
-
     searchBarViewModel.addRecentRecord(1);
-    expect(
-      searchBarViewModel.searchService.addRecentSearchRecord,
-    ).toHaveBeenCalledWith('type', 1);
+    expect(s.addRecentSearchRecord).toHaveBeenCalledWith('type', 1);
   });
 
   it('should be clear recent search records', () => {
-    jest.spyOn(searchBarViewModel.searchService, 'clearRecentSearchRecords');
+    const s = {
+      clearRecentSearchRecords: jest.fn(),
+    };
+    jest.spyOn(SearchService, 'getInstance').mockImplementation(() => s);
     searchBarViewModel.clearRecent();
-    expect(
-      searchBarViewModel.searchService.clearRecentSearchRecords,
-    ).toHaveBeenCalled();
+    expect(s.clearRecentSearchRecords).toHaveBeenCalled();
   });
 
   // describe('search()', async () => {

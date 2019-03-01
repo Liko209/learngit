@@ -34,7 +34,6 @@ enum DATA_TYPE {
 class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   personService: PersonService;
   groupService: GroupService;
-  searchService: SearchService;
   @observable value: string = '';
   @observable focus: boolean = false;
   @observable recentRecord: RecentItems[] = [{ ids: [], types: [] }];
@@ -47,7 +46,6 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     super();
     this.personService = PersonService.getInstance<PersonService>();
     this.groupService = GroupService.getInstance();
-    this.searchService = SearchService.getInstance();
   }
 
   updateFocus = (focus: boolean) => {
@@ -277,7 +275,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   getRecent = () => {
-    const result = this.searchService.getRecentSearchRecords();
+    const result = SearchService.getInstance().getRecentSearchRecords();
     this.recentRecord = [
       {
         ids: result.map((item: RecentSearchModel) => item.value),
@@ -287,11 +285,14 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   addRecentRecord = (id: number) => {
-    this.searchService.addRecentSearchRecord(this.getCurrentItemType(), id);
+    SearchService.getInstance().addRecentSearchRecord(
+      this.getCurrentItemType(),
+      id,
+    );
   }
 
   clearRecent = () => {
-    this.searchService.clearRecentSearchRecords();
+    SearchService.getInstance().clearRecentSearchRecords();
   }
 }
 
