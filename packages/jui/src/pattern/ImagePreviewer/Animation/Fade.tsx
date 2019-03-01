@@ -5,40 +5,22 @@ import styled, {
   keyframes,
   withTheme,
 } from '../../../foundation/styled-components';
-import {
-  TransitionStatus,
-  EnterHandler,
-  ExitHandler,
-} from 'react-transition-group/Transition';
+import { TransitionStatus } from 'react-transition-group/Transition';
 import { ThemeProps } from '../../../foundation/theme/theme';
-
-type SlideElementAnimationProps = {
-  children: React.ReactNode;
-  show: boolean;
-  duration: string;
-  easing: string;
-  theme: ThemeProps;
-  onExited?: ExitHandler;
-  onEntered?: EnterHandler;
-};
+import { TransitionAnimationProps, AnimationOptions } from './types';
 
 const slideAnimation = keyframes`
     from {
-      transform: translateY(-100%)
+      opacity: 0;
     }
     to {
-      transform: translateY(0)
+      transform: opacity: 1;
     }
 `;
 
-type Options = {
-  duration: string;
-  easing: string;
-};
-
-function getStyle(state: TransitionStatus, option: Options) {
+function getStyle(state: TransitionStatus, option: AnimationOptions) {
   switch (state) {
-    case 'entered':
+    case 'entering':
       return css`
         &&& > * {
           animation: ${slideAnimation}
@@ -46,7 +28,7 @@ function getStyle(state: TransitionStatus, option: Options) {
             ${({ theme }) => theme.transitions.easing[option.easing]};
         }
       `;
-    case 'exited':
+    case 'exiting':
       return css`
         &&& > * {
           animation: ${slideAnimation}
@@ -62,37 +44,31 @@ function getStyle(state: TransitionStatus, option: Options) {
 
 const StyledContainer = styled('div')<{
   state: TransitionStatus;
-  option: Options;
+  option: AnimationOptions;
 }>`
   ${({ state, option }) => getStyle(state, option)}
 `;
 
-class SlideElement extends React.PureComponent<
-  SlideElementAnimationProps & ThemeProps
+class FadeAnimation extends React.PureComponent<
+  TransitionAnimationProps & ThemeProps
 > {
-  handleEntered = (node: HTMLElement, isAppearing: boolean) => {
-    const { onEntered, theme, duration } = this.props;
-    setTimeout(() => {
-      onEntered && onEntered(node, isAppearing);
-    },         theme.transitions.duration[duration]);
-  }
-
-  handleExited = (node: HTMLElement) => {
-    const { onExited, theme, duration } = this.props;
-    setTimeout(() => {
-      onExited && onExited(node);
-    },         theme.transitions.duration[duration]);
-  }
-
   render() {
-    const { children, show, duration, easing, onEntered } = this.props;
+    const {
+      onExited,
+      children,
+      show,
+      duration,
+      easing,
+      onEntered,
+      theme,
+    } = this.props;
     return (
       <Transition
         in={show}
         appear={true}
-        timeout={0}
+        timeout={theme.transitions.duration[duration]}
         onEntered={onEntered}
-        onExited={this.handleExited}
+        onExited={onExited}
       >
         {state => (
           <StyledContainer option={{ duration, easing }} state={state}>
@@ -104,6 +80,6 @@ class SlideElement extends React.PureComponent<
   }
 }
 
-const SlideElementAnimation = withTheme(SlideElement);
+const Fade = withTheme(FadeAnimation);
 
-export { SlideElementAnimation };
+export { Fade };

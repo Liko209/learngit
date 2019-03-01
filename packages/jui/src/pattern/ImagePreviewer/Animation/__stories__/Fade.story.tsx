@@ -7,26 +7,17 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
-import { ZoomElement } from '../index';
-import styled from '../../../../foundation/styled-components';
+import { Fade } from '../index';
 import { Button } from '@material-ui/core';
-
-const StyledImage = styled('img')<any>`
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: ${({ position }) => position.width};
-  height: ${({ position }) => position.height};
-`;
 
 class Test extends React.Component {
   state = {
     show: false,
     mounted: false,
     open: false,
-    showOriginal: true,
   };
 
+  endImageRef: HTMLImageElement;
   imageRef: React.RefObject<HTMLImageElement> = React.createRef();
 
   toggleShow = () => {
@@ -54,10 +45,6 @@ class Test extends React.Component {
     this.forceUpdate();
   }
 
-  toggleOriginalImage = () => {
-    this.setState({ showOriginal: !this.state.showOriginal });
-  }
-
   componentDidMount() {
     this.setState({ mounted: true });
   }
@@ -65,34 +52,20 @@ class Test extends React.Component {
   render() {
     return (
       <div style={{ height: '50vh' }}>
-        {this.state.showOriginal && (
-          <img
-            ref={this.imageRef}
-            src="https://placeimg.com/100/100/any"
-            onClick={this.open}
-          />
-        )}
         {this.state.open && (
-          <ZoomElement
-            originalElement={this.imageRef.current}
+          <Fade
             show={this.state.show}
             duration="openDialog"
             easing="openDialog"
             onExited={this.hide}
           >
-            {(registerChild: Function) => (
-              <StyledImage
-                ref={element => registerChild(element)}
-                position={{ width: '70%', height: '70%' }}
-                src="https://placeimg.com/100/100/any"
-                onClick={this.close}
-              />
-            )}
-          </ZoomElement>
+            <header> the is a header</header>
+          </Fade>
         )}
+
         <div>
-          <Button onClick={this.update}>update</Button>
-          <Button onClick={this.toggleOriginalImage}>toggle</Button>
+          <Button onClick={this.open}>open</Button>
+          <Button onClick={this.close}>close</Button>
         </div>
       </div>
     );
@@ -100,7 +73,7 @@ class Test extends React.Component {
 }
 
 storiesOf('Pattern/ImagePreviewer/Animation', module)
-  .addDecorator(withInfoDecorator(ZoomElement, { inline: true }))
-  .add('ZoomElement', () => {
+  .addDecorator(withInfoDecorator(Fade, { inline: true }))
+  .add('Fade', () => {
     return <Test />;
   });

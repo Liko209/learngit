@@ -1,53 +1,81 @@
 import React from 'react';
-import styled, { css, keyframes } from '../../../foundation/styled-components';
+import styled, {
+  css,
+  keyframes,
+  withTheme,
+} from '../../../foundation/styled-components';
+import { Transition } from 'react-transition-group';
+import {
+  TransitionStatus,
+  ExitHandler,
+  EnterHandler,
+} from 'react-transition-group/Transition';
+import { AnimationOptions } from './types';
+import { ThemeProps } from '../../..//foundation/theme/theme';
 
-type ZoomElementAnimationProps = {
-  timeout?: number;
+type ZoomElementProps = {
   children: (cb: Function) => any;
   show: boolean;
   originalElement: HTMLElement | null;
-  animationLength: string;
+  duration: string;
+  easing: string;
+  onExited?: ExitHandler;
+  onEntered?: EnterHandler;
 };
-
-type TransitionStatus = 'mounting' | 'animateIn' | 'idle' | 'animateOut';
 
 function genStyle(
   state: TransitionStatus,
-  position: DOMRect | ClientRect,
+  startPosition: DOMRect | ClientRect | null,
   endPosition: null | DOMRect | ClientRect,
-  animationLength: string,
+  option: AnimationOptions,
 ) {
   switch (state) {
-    case 'mounting': {
+    case 'entering': {
       return css`
         &&& > * {
           opacity: 0;
         }
       `;
     }
-    case 'animateIn': {
+
+    case 'entered': {
+      return (
+        endPosition &&
+        css`
+          &&& > * {
+            animation: ${getAnimation(startPosition, endPosition, true)}
+              ${({ theme }) => theme.transitions.duration.openDialog}ms
+              ${({ theme }) => theme.transitions.easing.openDialog};
+          }
+        `
+      );
+    }
+    case 'exited': {
       return css`
         &&& > * {
-          animation: ${getAnimation(position, endPosition)} ${animationLength}
-            linear;
+          animation: ${getAnimation(endPosition, startPosition, false)}
+          ${({ theme }) => theme.transitions.duration[option.duration]}ms
+          ${({ theme }) => theme.transitions.easing[option.easing]};
+          forwards;
         }
       `;
     }
-    case 'animateOut': {
-      return css`
-        &&& > * {
-          animation: ${getAnimation(endPosition, position)} ${animationLength}
-            linear forwards;
-        }
-      `;
-    }
-    case 'idle': {
+    default:
       return '';
-    }
   }
 }
 
-function getAnimation(inPosition: any, outPosition: any) {
+function getAnimation(inPosition: any, outPosition: any, show: boolean) {
+  if (!outPosition || !inPosition) {
+    return keyframes`
+      0%{
+        opacity: ${show ? 0 : 1};
+      }
+      100%{
+        opacity: ${show ? 1 : 0};
+      }
+    `;
+  }
   return keyframes`
   0% {
     position: fix;
@@ -69,65 +97,73 @@ function getAnimation(inPosition: any, outPosition: any) {
 const StyledAnimation = styled('div')<
   {
     state: TransitionStatus;
-    startPosition: DOMRect | ClientRect;
-    animationLength: string;
+    startPosition: DOMRect | ClientRect | null;
     endPosition: any;
+    option: AnimationOptions;
   } & React.HTMLAttributes<HTMLElement>
 >`
-  ${({ state, startPosition: position, endPosition, animationLength }) =>
-    genStyle(state, position, endPosition, animationLength)}
+  ${({ state, startPosition, endPosition, option }) =>
+    genStyle(state, startPosition, endPosition, option)}
 `;
 
-class ZoomElementAnimation extends React.Component<ZoomElementAnimationProps> {
-  state = {
-    mounted: false,
-    inAnimation: false,
-    transitionStatus: 'mounting' as TransitionStatus,
-    endPosition: null as ClientRect | DOMRect | null,
-  };
+class ZoomElementAnimation extends React.PureComponent<
+  ZoomElementProps & ThemeProps
+> {
   childRef: HTMLElement;
 
   componentDidMount() {
-    this.setState({ mounted: true });
+    this.forceUpdate();
   }
 
   registerRef = (element: HTMLElement) => {
     if (!this.childRef && element) {
       this.childRef = element;
-      this.forceUpdate();
     }
   }
 
+  handleEntered = (node: HTMLElement, isAppearing: boolean) => {
+    const { onEntered, theme, duration } = this.props;
+    setTimeout(() => {
+      onEntered && onEntered(node, isAppearing);
+    },         theme.transitions.duration[duration]);
+  }
+
+  handleExited = (node: HTMLElement) => {
+    const { onExited, theme, duration } = this.props;
+    setTimeout(() => {
+      onExited && onExited(node);
+    },         theme.transitions.duration[duration]);
+  }
+
   render() {
-    const { show, animationLength, children, originalElement } = this.props;
-    const startPosition = originalElement!.getBoundingClientRect();
-    const endPosition = this.childRef
-      ? this.childRef.getBoundingClientRect()
-      : null;
-
-    let transitionStatus: TransitionStatus = this.state.mounted
-      ? 'idle'
-      : 'mounting';
-
-    if (this.state.mounted && show && endPosition) {
-      transitionStatus = 'animateIn';
-    }
-
-    if (this.state.mounted && !show && endPosition) {
-      transitionStatus = 'animateOut';
-    }
+    const { show, duration, easing, children, originalElement } = this.props;
+    const startPosition =
+      originalElement && originalElement.getBoundingClientRect();
+    const endPosition = this.childRef && this.childRef.getBoundingClientRect();
 
     return (
-      <StyledAnimation
-        state={transitionStatus}
-        startPosition={startPosition}
-        endPosition={endPosition}
-        animationLength={animationLength}
+      <Transition
+        in={show}
+        appear={false}
+        timeout={0}
+        onEntered={this.handleEntered}
+        onExited={this.handleExited}
       >
-        {children(this.registerRef)}
-      </StyledAnimation>
+        {state => (
+          <StyledAnimation
+            state={state}
+            startPosition={startPosition}
+            endPosition={endPosition}
+            option={{ duration, easing }}
+          >
+            {children(this.registerRef)}
+          </StyledAnimation>
+        )}
+      </Transition>
     );
   }
 }
 
-export { ZoomElementAnimation, ZoomElementAnimationProps };
+const ZoomElement = withTheme(ZoomElementAnimation);
+
+export { ZoomElement, ZoomElementProps };
