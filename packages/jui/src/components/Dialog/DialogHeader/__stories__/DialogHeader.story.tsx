@@ -20,6 +20,7 @@ import {
   JuiDialogHeaderMetaLeft,
   JuiDialogHeaderMetaRight,
 } from '../DialogHeaderMeta';
+import { JuiButtonBar } from '../../../Buttons/ButtonBar';
 
 storiesOf('Components/Dialog/DialogHeader', module)
   .addDecorator(
@@ -33,7 +34,9 @@ storiesOf('Components/Dialog/DialogHeader', module)
         <JuiDialogHeader>
           <JuiDialogHeaderTitle>{title}</JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
-            <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+            <JuiButtonBar overlapSize={2.5}>
+              <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+            </JuiButtonBar>
           </JuiDialogHeaderActions>
         </JuiDialogHeader>
       </div>
@@ -46,29 +49,31 @@ storiesOf('Components/Dialog/DialogHeader', module)
         <JuiDialogHeader>
           <JuiDialogHeaderTitle>{title}</JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
-            <JuiIconButton color="accent.gold" tooltipTitle="Favorite">
-              star
-            </JuiIconButton>
-            <JuiIconButton tooltipTitle="Settings">settings</JuiIconButton>
-            <JuiPopoverMenu
-              Anchor={() => (
-                <JuiIconButton tooltipTitle="More">more_horiz</JuiIconButton>
-              )}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-            >
-              <JuiMenuList>
-                <JuiMenuItem>Copy url</JuiMenuItem>
-                <JuiMenuItem>Copy email</JuiMenuItem>
-              </JuiMenuList>
-            </JuiPopoverMenu>
-            <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+            <JuiButtonBar overlapSize={2.5}>
+              <JuiIconButton color="accent.gold" tooltipTitle="Favorite">
+                star
+              </JuiIconButton>
+              <JuiIconButton tooltipTitle="Settings">settings</JuiIconButton>
+              <JuiPopoverMenu
+                Anchor={() => (
+                  <JuiIconButton tooltipTitle="More">more_horiz</JuiIconButton>
+                )}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+              >
+                <JuiMenuList>
+                  <JuiMenuItem>Copy url</JuiMenuItem>
+                  <JuiMenuItem>Copy email</JuiMenuItem>
+                </JuiMenuList>
+              </JuiPopoverMenu>
+              <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+            </JuiButtonBar>
           </JuiDialogHeaderActions>
         </JuiDialogHeader>
       </div>
@@ -93,29 +98,31 @@ storiesOf('Components/Dialog/DialogHeader', module)
             {title}
           </JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
-            <JuiIconButton color="accent.gold" tooltipTitle="Favorite">
-              star
-            </JuiIconButton>
-            <JuiIconButton tooltipTitle="Settings">settings</JuiIconButton>
-            <JuiPopoverMenu
-              Anchor={() => (
-                <JuiIconButton tooltipTitle="More">more_horiz</JuiIconButton>
-              )}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-              }}
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-              }}
-            >
-              <JuiMenuList>
-                <JuiMenuItem>Copy url</JuiMenuItem>
-                <JuiMenuItem>Copy email</JuiMenuItem>
-              </JuiMenuList>
-            </JuiPopoverMenu>
-            <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+            <JuiButtonBar overlapSize={2.5}>
+              <JuiIconButton color="accent.gold" tooltipTitle="Favorite">
+                star
+              </JuiIconButton>
+              <JuiIconButton tooltipTitle="Settings">settings</JuiIconButton>
+              <JuiPopoverMenu
+                Anchor={() => (
+                  <JuiIconButton tooltipTitle="More">more_horiz</JuiIconButton>
+                )}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+              >
+                <JuiMenuList>
+                  <JuiMenuItem>Copy url</JuiMenuItem>
+                  <JuiMenuItem>Copy email</JuiMenuItem>
+                </JuiMenuList>
+              </JuiPopoverMenu>
+              <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+            </JuiButtonBar>
           </JuiDialogHeaderActions>
         </JuiDialogHeader>
       </div>
