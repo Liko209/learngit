@@ -7,15 +7,17 @@ import React, { ComponentType } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiCircularProgress } from '../../components/Progress';
 import { withDelay } from '../withDelay';
-
+import { palette } from '../../foundation/utils';
 type WithLoadingProps = {
   loading: boolean;
   variant?: 'circular';
   alwaysComponentShow?: boolean;
   delay?: number;
 };
-
-const StyledLoadingPage = styled.div`
+type LoaderProps = {
+  mask?: boolean;
+};
+const StyledLoadingPage = styled('div')<LoaderProps>`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -24,15 +26,19 @@ const StyledLoadingPage = styled.div`
   justify-content: center;
   top: 0px;
   left: 0px;
-  background: #fff;
+  opacity: ${({ mask, theme }) =>
+    mask ? theme.palette.action.hoverOpacity * 5 : 1};
+  background: ${palette('common', 'white')}
   z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
-const DefaultLoadingWithDelay = withDelay(() => (
-  <StyledLoadingPage>
-    <JuiCircularProgress />
-  </StyledLoadingPage>
-));
+const DefaultLoadingWithDelay = withDelay((props: LoaderProps) => {
+  return (
+    <StyledLoadingPage {...props}>
+      <JuiCircularProgress />
+    </StyledLoadingPage>
+  );
+});
 
 const MAP = { circular: DefaultLoadingWithDelay };
 
@@ -72,4 +78,4 @@ const withLoading = <
   );
 };
 
-export { withLoading, WithLoadingProps };
+export { withLoading, WithLoadingProps, DefaultLoadingWithDelay };

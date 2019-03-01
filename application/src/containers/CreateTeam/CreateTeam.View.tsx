@@ -14,8 +14,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiSnackbarContent } from 'jui/components/Banners';
-import { JuiCircularProgress } from 'jui/components/Progress';
-import { withLoading } from 'jui/hoc/withLoading';
+import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
 import { Notification } from '@/containers/Notification';
 import {
   JuiListToggleButton,
@@ -40,25 +39,8 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
     margin: 0 0 ${spacing(4)} 0;
   }
 `;
-const StyledLoadingPage = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  top: 0px;
-  left: 0px;
-  opacity: 0.6;
-  background: #fff;
-  z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
-`;
 
-const createTeamLoading = () => (
-  <StyledLoadingPage>
-    <JuiCircularProgress />
-  </StyledLoadingPage>
-);
+const createTeamLoading = () => <DefaultLoadingWithDelay mask={true} />;
 const Loading = withLoading(props => <>{props.children}</>, createTeamLoading);
 @observer
 class CreateTeam extends React.Component<ViewProps, State> {
