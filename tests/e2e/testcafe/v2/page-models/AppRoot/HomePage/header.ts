@@ -51,11 +51,15 @@ class Search extends BaseWebComponent {
   }
 
   get inputArea() {
-    return this.getSelectorByAutomationId('search-input');
+    return this.getSelectorByAutomationId('search-input').find('input');
   }
 
   async clickInputArea() {
     await this.t.click(this.inputArea);
+  }
+
+  async clearInputAreaText() {
+    await this.t.click(this.inputArea).selectText(this.inputArea).pressKey('delete');
   }
 
   async typeSearchKeyword(text: string, options?: TypeActionOptions) {
@@ -66,16 +70,12 @@ class Search extends BaseWebComponent {
     return this.getSelectorByIcon('close');
   }
 
-  async close() {
+  async clickCloseButton() {
     await this.t.click(this.closeButton);
   }
 
   get allResultItems() {
     return this.getSelector('.search-items');
-  }
-
-  get historyItems() {
-    return this.getSelectorByAutomationId(''); // FIXME 
   }
 
   get itemsNames() {
@@ -106,10 +106,6 @@ class Search extends BaseWebComponent {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
 
-  nthHistory(n: number) {
-    return this.getComponent(SearchItem, this.historyItems.nth(n));
-  }
-
   getSearchItemByCid(cid: string) {
     this.warnFlakySelector();
     const root = this.allResultItems.child().find(`[cid="${cid}"]`).parent('.search-items');
@@ -137,11 +133,11 @@ class Search extends BaseWebComponent {
   }
 
   get historyHeader() {
-    return this.getSelectorByAutomationId('search-History');  // FIXME
+    return this.getSelectorByAutomationId('search-clear');
   }
-  
+
   showMoreButtonOn(header: Selector) {
-    return header.find('span').withText('Show more')
+    return header.find('span').withText('Show more');
   }
 
   get showMorePeopleButton() {
@@ -157,7 +153,7 @@ class Search extends BaseWebComponent {
   }
 
   get clearHistoryButton() {
-    return this.historyHeader.find('span').withText('Clear History'); //FIXME
+    return this.historyHeader.find('span'); 
   }
 
   async clickShowMorePeople() {
@@ -176,6 +172,7 @@ class Search extends BaseWebComponent {
     await this.t.click(this.clearHistoryButton)
   }
 
+  
 }
 
 class SearchItem extends BaseWebComponent {

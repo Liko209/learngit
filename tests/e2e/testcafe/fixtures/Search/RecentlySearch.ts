@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-02-28 14:12:13 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-02-28 17:06:12
+ * @Last Modified time: 2019-03-01 14:29:19
  */
 
 import { formalName } from '../../libs/filter';
@@ -33,6 +33,8 @@ test(formalName('Open and close the recently searched list', ['JPT-1216', 'P1', 
     await searchBar.typeSearchKeyword(beSearchedName);
     await searchBar.nthPeople(0).enter();
     await app.homePage.profileDialog.close();
+    await searchBar.clearInputAreaText();
+    await searchBar.quitByPressESC();
   });
 
   for (let i = 0; i < 2; i++) {
@@ -42,7 +44,7 @@ test(formalName('Open and close the recently searched list', ['JPT-1216', 'P1', 
 
     await h(t).withLog(`Then the recently searched dropdown list displayed`, async () => {
       await t.expect(searchBar.historyHeader.exists).ok();
-      await t.expect(searchBar.historyItems.count).eql(1);
+      await t.expect(searchBar.allResultItems.count).eql(1);
     });
 
     await h(t).withLog(`When tap ESC keyboard`, async () => {
@@ -77,13 +79,15 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
 
   await h(t).withLog(`Then there is no recently searched dropdown list displayed`, async () => {
     await t.expect(searchBar.historyHeader.exists).notOk();
-    await t.expect(searchBar.historyItems.exists).notOk();
+    await t.expect(searchBar.allResultItems.exists).notOk();
   });
 
   await h(t).withLog(`When make some recently search history with ${beSearchedName}`, async () => {
     await searchBar.typeSearchKeyword(beSearchedName);
     await searchBar.nthPeople(0).enter();
     await app.homePage.profileDialog.close();
+    await searchBar.clearInputAreaText();
+    await searchBar.quitByPressESC();
   });
 
   await h(t).withLog(`And mouse in the global search box`, async () => {
@@ -92,7 +96,7 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
 
   await h(t).withLog(`Then the recently searched dropdown list displayed and the new contact items are added`, async () => {
     await t.expect(searchBar.historyHeader.exists).ok();
-    await t.expect(searchBar.historyItems.count).eql(1);
+    await t.expect(searchBar.allResultItems.count).eql(1);
     await t.expect(searchBar.getSearchItemByName(beSearchedName).exists).ok();
   });
 
@@ -101,7 +105,7 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
   });
 
   await h(t).withLog(`Then the recently searched list should be cleared`, async () => {
-    await t.expect(searchBar.historyItems.exists).notOk();
+    await t.expect(searchBar.allResultItems.exists).notOk();
   });
 
   await h(t).withLog(`Then the dropdown list should disappear`, async () => {
