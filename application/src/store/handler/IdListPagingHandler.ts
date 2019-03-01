@@ -42,6 +42,9 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
 
   onSourceIdsChanged(newIds: number[]) {
     this._sourceIds = newIds;
+    if (this._sourceIds.length < newIds.length) {
+      this._foc.setHasMore(true, QUERY_DIRECTION.NEWER);
+    }
     this._idsDataProvider.onSourceIdsChanged(newIds);
   }
 
