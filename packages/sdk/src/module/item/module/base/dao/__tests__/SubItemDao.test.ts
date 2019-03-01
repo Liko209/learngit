@@ -7,6 +7,7 @@
 import { setup } from '../../../../../../dao/__tests__/utils';
 import { SubItemDao } from '../SubItemDao';
 import { SanitizedItem, Item } from '../../entity';
+import { QUERY_DIRECTION } from '../../../../../../dao/constants';
 
 describe('Event Item Dao', () => {
   let dao: SubItemDao<SanitizedItem>;
@@ -58,6 +59,20 @@ describe('Event Item Dao', () => {
     created_at: 6,
   };
 
+  const item7 = {
+    id: 7,
+    group_ids: [groupId],
+    created_at: 7,
+    name: 'item7',
+  };
+
+  const item8 = {
+    id: 8,
+    group_ids: [groupId],
+    created_at: 8,
+    name: 'item8',
+  };
+
   describe('queryItemsByGroupId', () => {
     const items = [item1, item2, item3, item4, item5];
     beforeAll(async () => {
@@ -105,7 +120,7 @@ describe('Event Item Dao', () => {
   });
 
   describe('getSortedIds()', () => {
-    const items = [item1, item2, item3];
+    const items = [item1, item2, item3, item7, item8];
     const items2 = [item4, item5, item6];
 
     beforeEach(() => {
@@ -135,28 +150,40 @@ describe('Event Item Dao', () => {
         sortKey: name,
         offsetItemId: undefined,
       });
-      expect(result).toEqual([item2.id, item3.id]);
+      expect(result).toEqual([item2.id, item3.id, item7.id]);
     });
 
     it.each`
-      groupId     | sortKey         | limit | offsetItemId | expects                           | desc     | comment
-      ${groupId}  | ${'name'}       | ${3}  | ${undefined} | ${[item3.id, item2.id, item1.id]} | ${true}  | ${'sort by name desc'}
-      ${groupId}  | ${'name'}       | ${3}  | ${undefined} | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by name asc'}
-      ${groupId}  | ${'created_at'} | ${3}  | ${undefined} | ${[item3.id, item2.id, item1.id]} | ${true}  | ${'sort by created_at desc'}
-      ${groupId}  | ${'created_at'} | ${3}  | ${undefined} | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by created_at asc'}
-      ${groupId}  | ${'created_at'} | ${2}  | ${1}         | ${[item2.id, item3.id]}           | ${false} | ${'slice limit 2, offset item 1'}
-      ${groupId}  | ${'created_at'} | ${2}  | ${2}         | ${[item3.id]}                     | ${false} | ${'slice limit 2, offset item 2'}
-      ${groupId2} | ${'name'}       | ${3}  | ${5}         | ${[item4.id, item6.id]}           | ${true}  | ${'compare incomplete item desc'}
-      ${groupId2} | ${'name'}       | ${3}  | ${4}         | ${[item6.id, item5.id]}           | ${false} | ${'compare incomplete item asc'}
+      groupId     | sortKey         | limit | offsetItemId | expects                           | desc     | comment                           | direction
+      ${groupId}  | ${'name'}       | ${3}  | ${undefined} | ${[item8.id, item7.id, item3.id]} | ${true}  | ${'sort by name desc'}            | ${undefined}
+      ${groupId}  | ${'name'}       | ${3}  | ${undefined} | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by name asc'}             | ${undefined}
+      ${groupId}  | ${'created_at'} | ${3}  | ${undefined} | ${[item8.id, item7.id, item3.id]} | ${true}  | ${'sort by created_at desc'}      | ${undefined}
+      ${groupId}  | ${'created_at'} | ${3}  | ${undefined} | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by created_at asc'}       | ${undefined}
+      ${groupId}  | ${'created_at'} | ${2}  | ${1}         | ${[item2.id, item3.id]}           | ${false} | ${'slice limit 2, offset item 1'} | ${undefined}
+      ${groupId}  | ${'created_at'} | ${2}  | ${2}         | ${[item3.id, item7.id]}           | ${false} | ${'slice limit 2, offset item 2'} | ${undefined}
+      ${groupId2} | ${'name'}       | ${3}  | ${5}         | ${[item4.id, item6.id]}           | ${true}  | ${'compare incomplete item desc'} | ${undefined}
+      ${groupId2} | ${'name'}       | ${3}  | ${4}         | ${[item6.id, item5.id]}           | ${false} | ${'compare incomplete item asc'}  | ${undefined}
+      ${groupId}  | ${'created_at'} | ${3}  | ${item3.id}  | ${[item2.id, item3.id, item7.id]} | ${false} | ${'sort by created_at asc'}       | ${QUERY_DIRECTION.BOTH}
+      ${groupId}  | ${'created_at'} | ${3}  | ${item1.id}  | ${[item1.id, item2.id, item3.id]} | ${false} | ${'sort by created_at asc'}       | ${QUERY_DIRECTION.BOTH}
+      ${groupId}  | ${'created_at'} | ${3}  | ${item7.id}  | ${[item3.id, item7.id, item8.id]} | ${false} | ${'sort by created_at asc'}       | ${QUERY_DIRECTION.BOTH}
     `(
-      '$comment',
-      async ({ groupId, sortKey, limit, offsetItemId, desc, expects }) => {
+      '$comment, $expect, $direction',
+      async ({
+        groupId,
+        sortKey,
+        limit,
+        offsetItemId,
+        desc,
+        expects,
+        direction,
+      }) => {
         const result = await dao.getSortedIds({
           groupId,
           limit,
           offsetItemId,
           sortKey,
           desc,
+          direction,
           typeId: 10,
         });
         expect(result).toEqual(expects);

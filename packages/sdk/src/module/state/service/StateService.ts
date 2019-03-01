@@ -91,18 +91,18 @@ class StateService extends EntityBaseService<GroupState>
       .handleGroupCursor(groups);
   }
 
-  handleGroupChangeForTotalUnread = async (
+  handleGroupChangeForTotalUnread = (
     payload: NotificationEntityPayload<Group>,
-  ): Promise<void> => {
-    await this.getStateController()
+  ): void => {
+    this.getStateController()
       .getTotalUnreadController()
       .handleGroup(payload);
   }
 
-  handleProfileChangeForTotalUnread = async (
+  handleProfileChangeForTotalUnread = (
     payload: NotificationEntityPayload<Profile>,
-  ): Promise<void> => {
-    await this.getStateController()
+  ): void => {
+    this.getStateController()
       .getTotalUnreadController()
       .handleProfile(payload);
   }
