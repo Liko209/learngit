@@ -3,7 +3,6 @@
  * @Date: 2019-03-01 13:19:14
  * Copyright © RingCentral. All rights reserved.
  */
-// import React, { ReactElement, memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { spacing, height } from '../../../foundation/utils/styles';
 

@@ -3,7 +3,6 @@
  * @Date: 2019-03-01 14:08:05
  * Copyright © RingCentral. All rights reserved.
  */
-// import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils/styles';
 
