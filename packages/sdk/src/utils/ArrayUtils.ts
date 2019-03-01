@@ -37,7 +37,7 @@ class ArrayUtils {
       }
     } else {
       endIndex =
-        direction === QUERY_DIRECTION.NEWER
+        direction !== QUERY_DIRECTION.OLDER
           ? startIndex + limit > idArray.length
             ? idArray.length
             : limit
