@@ -22,8 +22,8 @@ const useScroll = ({ index, offset = 0 }: PartialScrollPosition) => {
     offset,
   });
   const {
-    updateTrigger: scrollTopUpdateTrigger,
-    forceUpdate: forceUpdateScrollTop,
+    updateTrigger: scrollEffectTrigger,
+    forceUpdate: fireScrollToEffect,
   } = useForceUpdate();
 
   const setScrollPosition = ({ index, offset = 0 }: PartialScrollPosition) => {
@@ -32,15 +32,15 @@ const useScroll = ({ index, offset = 0 }: PartialScrollPosition) => {
 
   const scrollTo = (scrollPosition: PartialScrollPosition) => {
     setScrollPosition(scrollPosition);
-    forceUpdateScrollTop();
+    fireScrollToEffect();
   };
 
   return {
     scrollPosition,
     setScrollPosition,
     scrollTo,
-    scrollTopUpdateTrigger,
-    forceUpdateScrollTop,
+    scrollEffectTrigger,
+    fireScrollToEffect,
   };
 };
 

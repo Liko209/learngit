@@ -17,7 +17,6 @@ import React, {
 import ResizeObserver from 'resize-observer-polyfill';
 import { createRange, createRangeFromAnchor } from './util/createRange';
 import { VirtualizedListProps } from './VirtualizedListProps';
-import { useForceUpdate } from './useForceUpdate';
 import { useScroll } from './useScroll';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
@@ -50,24 +49,24 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: VirtualizedListProps,
   forwardRef,
 ) => {
-  const getCacheKey = (i: number) => {
+  const getChildKey = (i: number) => {
     const child = children[i] as { key: string };
     if (!child) return '';
     return child.key;
   };
 
-  const updateRowHeightCache = (element: Element, i: number) => {
+  const updateRowHeightCache = (element: HTMLElement, i: number) => {
     let diff = 0;
     let newHeight = 0;
     let oldHeight = 0;
 
-    if (element.clientHeight !== 0) {
-      newHeight = element.clientHeight;
+    if (element.offsetHeight !== 0) {
+      newHeight = element.offsetHeight;
       oldHeight = getRowHeight(i);
       diff = newHeight - oldHeight;
 
       if (diff !== 0) {
-        cache.set(getCacheKey(i), newHeight);
+        cache.set(getChildKey(i), newHeight);
       }
     }
 
@@ -75,7 +74,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   };
 
   const getRowHeight = (i: number) => {
-    const key = getCacheKey(i);
+    const key = getChildKey(i);
     return cache.has(key) ? cache.get(key) : estimateRowHeight;
   };
 
@@ -129,7 +128,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     });
   };
 
-  const getChildrenEls = (contentEl: Element) => {
+  const getChildrenEls = (contentEl: HTMLElement) => {
     return Array.prototype.slice.call(contentEl.children, 0);
   };
 
@@ -156,13 +155,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     scrollPosition,
     setScrollPosition,
     scrollTo,
-    scrollTopUpdateTrigger,
-    forceUpdateScrollTop,
+    scrollEffectTrigger,
+    fireScrollToEffect,
   } = useScroll({
     index: initialScrollToIndex,
     offset: 0,
   });
-  const { forceUpdate } = useForceUpdate();
   const [cache] = useState(new Map());
   const [estimateRowHeight] = useState(20);
   const [{ startIndex, stopIndex }, setDisplayRange] = useRange(
@@ -182,15 +180,15 @@ const JuiVirtualizedList: RefForwardingComponent<
   useLayoutEffect(() => {
     if (contentRef.current) {
       const contentEl = contentRef.current;
-      const displayedRowsEls: Element[] = getChildrenEls(contentEl);
+      const displayedRowsEls: HTMLElement[] = getChildrenEls(contentEl);
       displayedRowsEls.forEach((el, i) => {
         const { diff } = updateRowHeightCache(el, startIndex + i);
         if (diff !== 0 && i + startIndex < scrollPosition.index) {
-          forceUpdate();
+          fireScrollToEffect();
         }
       });
     }
-  },              [getCacheKey(startIndex), getCacheKey(stopIndex)]);
+  },              [getChildKey(startIndex), getChildKey(stopIndex)]);
 
   //
   // Handle scroll to
@@ -200,7 +198,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       ref.current.scrollTop =
         getRowsHeight(0, scrollPosition.index - 1) + scrollPosition.offset;
     }
-  },              [scrollTopUpdateTrigger]);
+  },              [scrollEffectTrigger]);
 
   //
   // Observe dynamic rows
@@ -210,12 +208,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (contentRef.current) {
       const contentEl = contentRef.current;
 
-      const displayedRowsEls: Element[] = getChildrenEls(contentEl);
+      const displayedRowsEls: HTMLElement[] = getChildrenEls(contentEl);
       displayedRowsEls.forEach((el, i) => {
         const ro = new ResizeObserver((entities: ResizeObserverEntry[]) => {
           const { diff } = updateRowHeightCache(el, startIndex + i);
           if (diff !== 0 && i + startIndex < scrollPosition.index) {
-            forceUpdateScrollTop();
+            fireScrollToEffect();
           }
         });
         ro.observe(el);
@@ -226,7 +224,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     return () => {
       resizeObservers.forEach(ro => ro.disconnect());
     };
-  },              [getCacheKey(startIndex), getCacheKey(stopIndex)]);
+  },              [getChildKey(startIndex), getChildKey(stopIndex)]);
 
   //
   // Scrolling
@@ -235,11 +233,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (ref.current) {
       const scrollTop = ref.current.scrollTop;
       const anchor = getRowIndexFromPosition(scrollTop + height / 2);
+      const index = getRowIndexFromPosition(scrollTop);
 
       // Remember the position
       setScrollPosition({
-        index: anchor,
-        offset: scrollTop - getRowsHeight(0, anchor - 1),
+        index,
+        offset: scrollTop - getRowsHeight(0, index - 1),
       });
 
       // Update display range
@@ -250,7 +249,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   return (
     <div
       ref={ref}
-      onScroll={handleScroll}
+      onScroll={() => handleScroll}
       style={{
         height,
         overflow: 'auto',

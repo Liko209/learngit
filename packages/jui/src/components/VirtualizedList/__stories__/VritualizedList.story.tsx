@@ -39,20 +39,32 @@ const Item = ({ item }: { item: ItemModel }) => {
 
   if (item.crazy) {
     return (
-      <div style={{ height: crazyHeight, background: '#fdd' }}>I am CRAZY</div>
+      <div
+        style={{
+          height: crazyHeight,
+          background: '#fdd',
+          borderBottom: '1px dashed',
+        }}
+      >
+        I am CRAZY
+      </div>
     );
   }
 
   if (item.imageUrl) {
     return (
-      <div style={{ padding: '10px 0' }}>
+      <div style={{ padding: '10px 0', borderBottom: '1px dashed' }}>
         {item.text} <br />
         <img src={item.imageUrl} />
       </div>
     );
   }
 
-  return <div style={{ padding: '10px 0', height: 20 }}>{item.text}</div>;
+  return (
+    <div style={{ padding: '10px 0', height: 20, borderBottom: '1px dashed' }}>
+      {item.text}
+    </div>
+  );
 };
 
 const useItems = (defaultItems: ItemModel[] | (() => ItemModel[])) => {
@@ -75,7 +87,7 @@ const useItems = (defaultItems: ItemModel[] | (() => ItemModel[])) => {
 
 storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
   const dataCount = number('dataCount', 1000);
-  const initialScrollToIndex = number('initialScrollToIndex', 11);
+  const initialScrollToIndex = number('initialScrollToIndex', 999);
   const initialRangeSize = number('initialRangeSize', 11);
   const listHeight = number('listHeight', 200);
 
@@ -84,9 +96,9 @@ storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
 
     const { items, prependItem, removeItem } = useItems(() => {
       const items: ItemModel[] = [];
-      items.push(itemFactory.buildItem(0));
-      for (let i = 1; i < dataCount; i++) {
-        items.push(itemFactory.buildItem(i));
+      items.push(itemFactory.buildImageItem(100));
+      for (let i = 101; i < dataCount; i++) {
+        items.push(itemFactory.buildImageItem(i, true));
       }
       return items;
     });
@@ -134,14 +146,16 @@ storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
           <input onInput={scrollToIndex} type="number" />
         </label>
         <br />
-        <JuiVirtualizedList
-          ref={ref}
-          initialScrollToIndex={initialScrollToIndex}
-          initialRangeSize={initialRangeSize}
-          height={listHeight}
-        >
-          {children}
-        </JuiVirtualizedList>
+        <div style={{ border: '1px solid' }}>
+          <JuiVirtualizedList
+            ref={ref}
+            initialScrollToIndex={initialScrollToIndex}
+            initialRangeSize={initialRangeSize}
+            height={listHeight}
+          >
+            {children}
+          </JuiVirtualizedList>
+        </div>
       </div>
     );
   };
