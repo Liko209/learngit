@@ -49,6 +49,13 @@ def condStage(Map args, Closure block) {
     }
 }
 
+// generate sha1 hash from a git treeish object, ensure stability by only taking parent and tree object into account
+def stableSha1(String treeish) {
+    String cmd = "git cat-file commit ${treeish} | grep -e ^tree -e ^parent | openssl sha1 |  grep -oE '[^ ]+\$'".toString()
+    return sh(returnStdout: true, script: cmd)
+}
+
+
 // ssh helper
 def sshCmd(String remoteUri, String cmd) {
     URI uri = new URI(remoteUri)
@@ -323,10 +330,18 @@ node(buildNode) {
                     ]
                 ]
             ])
+            // get head sha
+            String head = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             // change in tests and autoDevOps directory should not trigger application build
             // for git 1.9, there is an easy way to exclude files
             // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
             appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
+            if (isMerge && head == appHeadSha) {
+                // the reason to use stableSha here is if HEAD is generate via fast-forward, the commit will be changed when re-running the job due to timestamp changed
+                echo "generate stable sha1 key from ${appHeadSha}"
+                appHeadSha = stableSha1(appHeadSha)
+            }
+
             echo "appHeadSha=${appHeadSha}"
             assert appHeadSha, 'appHeadSha is invalid'
             appHeadShaDir += appHeadSha
