@@ -4,55 +4,51 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  RcInfoDao,
-  RC_CLIENT_INFO,
-  RC_ACCOUNT_INFO,
-  RC_EXTENSION_INFO,
-  RC_ROLE_PERMISSION,
-} from '../dao';
-import { daoManager, ConfigDao } from '../../../dao';
-import {
-  ACCOUNT_TYPE,
-  ACCOUNT_TYPE_ENUM,
-} from '../../../authenticator/constants';
-import { RcInfoApi } from '../../../api/ringcentral/RcInfoApi';
+import { RcInfoConfig } from '../config';
+import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
+import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
+import { RcInfoApi, TelephonyApi } from '../../../api/ringcentral';
+import { PhoneParserUtility } from '../../../utils/phoneParser';
 
 class RcInfoController {
-  private _rcInfoDao: RcInfoDao;
-  constructor() {
-    this._rcInfoDao = daoManager.getKVDao(RcInfoDao);
-  }
+  constructor() {}
 
   async requestRcInfo() {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const accountType = configDao.get(ACCOUNT_TYPE);
+    const accountType = NewGlobalConfig.getAccountType();
     if (accountType === ACCOUNT_TYPE_ENUM.RC) {
       this.requestRcClientInfo();
       this.requestRcAccountInfo();
       this.requestRcExtensionInfo();
       this.requestRcRolePermission();
+      this.requestRcPhoneData();
     }
   }
 
   async requestRcClientInfo() {
     const result = await RcInfoApi.requestRcClientInfo();
-    this._rcInfoDao.put(RC_CLIENT_INFO, result);
+    RcInfoConfig.setRcClientInfo(result);
   }
 
   async requestRcAccountInfo() {
     const result = await RcInfoApi.requestRcAccountInfo();
-    this._rcInfoDao.put(RC_ACCOUNT_INFO, result);
+    RcInfoConfig.setRcAccountInfo(result);
   }
 
   async requestRcExtensionInfo() {
     const result = await RcInfoApi.requestRcExtensionInfo();
-    this._rcInfoDao.put(RC_EXTENSION_INFO, result);
+    RcInfoConfig.setRcExtensionInfo(result);
   }
 
   async requestRcRolePermission() {
     const result = await RcInfoApi.requestRcRolePermission();
-    this._rcInfoDao.put(RC_ROLE_PERMISSION, result);
+    RcInfoConfig.setRcRolePermissions(result);
+  }
+
+  async requestRcPhoneData() {
+    const phoneDataVersion: string =
+      PhoneParserUtility.getPhoneDataFileVersion() || '';
+    const result = await TelephonyApi.getPhoneParserData(phoneDataVersion);
+    RcInfoConfig.setRcPhoneData(result);
   }
 }
 

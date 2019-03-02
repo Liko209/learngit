@@ -14,21 +14,25 @@ type RegionalInfo = {
 };
 
 type ServiceCodeType = {
-  enPDSFTUnknown: { value: any };
-  enPDSFTBlockCLID: { value: any };
-  enPDSFTCallback: { value: any };
-  enPDSFTMainMenu: { value: any };
-  enPDSFTSetAgentStatus: { value: any };
-  enPDSFTIntercom: { value: any };
-  enPDSFTParkPickup: { value: any };
-  enPDSFTPaging: { value: any };
-  enPDSFTMonitoring: { value: any };
-  enPDSFTWhisper: { value: any };
-  enPDSFTBargeIn: { value: any };
-  enPDSFTTakeOver: { value: any };
-  enPDSFTHotDeskLogin: { value: any };
-  enPDSFTHotDeskLogout: { value: any };
-  enPDSPTIVRScript: { value: any };
+  value: any;
+};
+
+type ServiceCodeTypeEnum = {
+  enPDSFTUnknown: ServiceCodeType;
+  enPDSFTBlockCLID: ServiceCodeType;
+  enPDSFTCallback: ServiceCodeType;
+  enPDSFTMainMenu: ServiceCodeType;
+  enPDSFTSetAgentStatus: ServiceCodeType;
+  enPDSFTIntercom: ServiceCodeType;
+  enPDSFTParkPickup: ServiceCodeType;
+  enPDSFTPaging: ServiceCodeType;
+  enPDSFTMonitoring: ServiceCodeType;
+  enPDSFTWhisper: ServiceCodeType;
+  enPDSFTBargeIn: ServiceCodeType;
+  enPDSFTTakeOver: ServiceCodeType;
+  enPDSFTHotDeskLogin: ServiceCodeType;
+  enPDSFTHotDeskLogout: ServiceCodeType;
+  enPDSPTIVRScript: ServiceCodeType;
 };
 
 type PhoneParser = {
@@ -67,7 +71,8 @@ type ModuleType = {
   ReadRootNodeByString: (xmlFile: string, pString: string) => boolean;
   // SetDefaultPhoneDataDirectory: (path: PhoneParserPath) => void; // will extension
   GetPhoneDataFileVersion: () => string;
-  GetStationCountryArea: (country: string, area: string) => void;
+  GetStationCountryCode: () => string;
+  GetStationAreaCode: () => string;
   SetStationLocation: (
     szCountryCode: string,
     szAreaCode: string,
@@ -80,7 +85,7 @@ type ModuleType = {
   ) => void;
   GetStationSettingsKey: () => SettingsKey;
   GetRegionalInfo: (countryId: number, areaCode: string) => RegionalInfo;
-  EnPDServiceCodeType: ServiceCodeType;
+  EnPDServiceCodeType: ServiceCodeTypeEnum;
 };
 
 export {
