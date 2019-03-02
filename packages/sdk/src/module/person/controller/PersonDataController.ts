@@ -8,14 +8,14 @@ import { Person } from '../entity';
 import { daoManager } from '../../../dao';
 import { PersonDao } from '../dao';
 import { Raw } from '../../../framework/model';
-import { UserConfig } from '../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../service/account/config';
 import { transform, baseHandleData } from '../../../service/utils';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, ENTITY } from '../../../service/eventKey';
 
 class PersonDataController {
   handleTeamRemovedIds = async (people: any[]) => {
-    const userId: Number = UserConfig.getCurrentUserId();
+    const userId: Number = AccountGlobalConfig.getCurrentUserId();
     if (userId) {
       let ids: number[] = [];
       people.some((person: Person) => {

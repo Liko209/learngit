@@ -29,11 +29,11 @@ interface IStateService {
 
   handleGroupChangeForTotalUnread(
     payload: NotificationEntityPayload<Group>,
-  ): Promise<void>;
+  ): void;
 
   handleProfileChangeForTotalUnread(
     payload: NotificationEntityPayload<Profile>,
-  ): Promise<void>;
+  ): void;
 
   getSingleUnreadInfo(id: number): SectionUnread | undefined;
 }

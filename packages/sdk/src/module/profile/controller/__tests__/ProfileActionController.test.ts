@@ -8,12 +8,11 @@ import { IPartialModifyController } from '../../../../framework/controller/inter
 import { ProfileDataController } from '../ProfileDataController';
 import { Raw } from '../../../../framework/model';
 import { ProfileActionController } from '../ProfileActionController';
-import { UserConfig } from '../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../service/account/config';
 import { PersonDao } from '../../../person/dao/PersonDao';
 import { daoManager } from '../../../../dao';
 
 jest.mock('../ProfileDataController');
-jest.mock('../../../../service/account/UserConfig');
 
 jest.mock('../../../person/dao/PersonDao');
 jest.mock('../../../../dao');
@@ -160,7 +159,7 @@ describe('ProfileActionController', () => {
         id: 2,
         favorite_group_ids: [],
       } as Profile;
-      UserConfig.mockReturnValueOnce(1);
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValueOnce(1);
       personDao.get.mockResolvedValueOnce({
         me_group_id: 111,
       });

@@ -30,6 +30,7 @@ type AttachmentsViewProps = {
   showDuplicateFiles: boolean;
   autoUploadFiles: (
     files: File[],
+    checkDuplicate?: boolean,
     callback?: DidUploadFileCallback,
   ) => Promise<void>;
   cancelUploadFile: (info: ItemInfo) => void;

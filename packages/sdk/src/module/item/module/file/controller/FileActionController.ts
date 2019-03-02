@@ -7,10 +7,9 @@
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 import { Item } from '../../../entity';
 import { FileItemUtils } from '../utils';
-import { daoManager, AuthDao } from '../../../../../dao';
-import { AUTH_GLIP_TOKEN } from '../../../../../dao/auth/constants';
 import { Api } from '../../../../../api';
 import { FileItem } from '../entity';
+import { AuthGlobalConfig } from '../../../../../service/auth/config';
 
 class FileActionController {
   constructor(private _sourceController: IEntitySourceController<Item>) {}
@@ -42,8 +41,7 @@ class FileActionController {
         break;
       }
 
-      const autoDao = daoManager.getKVDao(AuthDao);
-      const glipAccessToken = autoDao.get(AUTH_GLIP_TOKEN);
+      const glipAccessToken = AuthGlobalConfig.getGlipToken();
       if (!glipAccessToken) {
         break;
       }

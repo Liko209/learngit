@@ -1,4 +1,4 @@
-import { daoManager, ConfigDao } from '../../dao';
+import { NewGlobalConfig } from './NewGlobalConfig';
 
 function handleLogout() {
   // When logout, ConfigDao was cleared, but we don't want to loose
@@ -6,8 +6,7 @@ function handleLogout() {
   // get the env from sessionStorage and put it back to ConfigDao
   const env = sessionStorage.getItem('env');
   if (!env) return;
-  const configDao = daoManager.getKVDao(ConfigDao);
-  configDao.putEnv(env);
+  NewGlobalConfig.setEnv(env);
 }
 
 export { handleLogout };

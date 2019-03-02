@@ -5,7 +5,7 @@
  */
 
 import { Profile } from '../entity';
-import { UserConfig } from '../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../service/account/config';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { JSdkError } from '../../../error/sdk/JSdkError';
 import { ERROR_CODES_SDK } from '../../../error/sdk/types';
@@ -38,7 +38,7 @@ class ProfileDataController {
   }
 
   getCurrentProfileId(): number {
-    return UserConfig.getCurrentUserProfileId();
+    return AccountGlobalConfig.getCurrentUserProfileId();
   }
 
   async getProfile(): Promise<Profile> {

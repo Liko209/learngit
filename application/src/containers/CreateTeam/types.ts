@@ -3,7 +3,6 @@
  * @Date: 2018-09-30 10:49:07
  * Copyright © RingCentral. All rights reserved.
  */
-import { RouteComponentProps } from 'react-router-dom';
 import { WithNamespaces } from 'react-i18next';
 import { Group, TeamSetting } from 'sdk/module/group';
 
@@ -26,6 +25,6 @@ type ViewProps = WithNamespaces & {
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchContactChange: (items: any) => void;
-} & RouteComponentProps;
+};
 
 export { ViewProps };

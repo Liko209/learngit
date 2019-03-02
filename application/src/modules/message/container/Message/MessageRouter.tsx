@@ -126,13 +126,13 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.mentions}`}
-            render={props => (
+            render={(props: MessagesWrapperPops) => (
               <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
             )}
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.bookmarks}`}
-            render={props => (
+            render={(props: MessagesWrapperPops) => (
               <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
             )}
           />
