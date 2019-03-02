@@ -9,6 +9,7 @@ import visibilityChangeEvent from './visibilityChangeEvent';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
+import IUsedCache from './IUsedCache';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -24,6 +25,8 @@ export default class MultiEntityMapStore<
   private _getService: Function | [Function, string];
   private _maxCacheCount: number;
   private _service: BaseService<T>;
+
+  private _usedCacheArr: IUsedCache[] = [];
 
   constructor(
     entityName: ENTITY_NAME,
@@ -81,12 +84,18 @@ export default class MultiEntityMapStore<
   }
 
   @action
-  set(data: T) {
+  set(data: T, refreshCache: boolean = false) {
     const model = this.createModel(data);
     const { id } = model;
 
     this._data[id] = model;
     this._registerHook(id);
+
+    if (refreshCache) {
+      setTimeout(() => {
+        this._refreshCache();
+      },         100);
+    }
   }
 
   @action
@@ -117,6 +126,9 @@ export default class MultiEntityMapStore<
         this._partialUpdate(entity, entity.id);
       }
     });
+    setTimeout(() => {
+      this._refreshCache();
+    },         100);
   }
 
   @action
@@ -245,6 +257,14 @@ export default class MultiEntityMapStore<
     });
   }
 
+  addUsedCache(cache: IUsedCache) {
+    this._usedCacheArr.push(cache);
+  }
+
+  removeUsedCache(cache: IUsedCache) {
+    _.remove(this._usedCacheArr, (element: IUsedCache) => element === cache);
+  }
+
   private _registerHook(id: number) {
     onBecomeObserved(this._data, `${id}`, this._addUsedIds(id));
     onBecomeUnobserved(this._data, `${id}`, this._delUsedIds(id));
@@ -267,7 +287,11 @@ export default class MultiEntityMapStore<
       return;
     }
     const existKeys = Object.keys(this._data).map(Number);
-    const diffKeys = _.difference(existKeys, [...this._usedIds]);
+    let allUsedIds = [...this._usedIds];
+    this._usedCacheArr.forEach((cache: IUsedCache) => {
+      allUsedIds = _.union(allUsedIds, cache.getUsedId());
+    });
+    const diffKeys = _.difference(existKeys, allUsedIds);
     this.batchRemove(diffKeys);
   }
 }

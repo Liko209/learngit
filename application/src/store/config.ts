@@ -8,12 +8,7 @@ import { GroupService } from 'sdk/module/group';
 import { ENTITY_NAME, HANDLER_TYPE, GLOBAL_KEYS } from './constants';
 import { PersonService } from 'sdk/module/person';
 import { PermissionService } from 'sdk/module/permission';
-const {
-  CompanyService,
-  GroupConfigService,
-  PresenceService,
-  ENTITY,
-} = service;
+const { CompanyService, GroupConfigService, PresenceService, ENTITY } = service;
 
 const ENTITY_SETTING = {
   [ENTITY_NAME.GROUP]: {
@@ -108,7 +103,7 @@ const ENTITY_SETTING = {
     event: [ENTITY.POST],
     service: () => PostService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 100000,
+    cacheCount: 20,
   },
   [ENTITY_NAME.PRESENCE]: {
     event: [ENTITY.PRESENCE],

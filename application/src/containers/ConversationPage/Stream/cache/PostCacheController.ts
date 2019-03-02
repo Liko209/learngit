@@ -18,6 +18,10 @@ import { Item } from 'sdk/module/item/entity';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
 import { mainLogger } from 'sdk';
+import IUsedCache from '@/store/base/IUsedCache';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import PostModel from '@/store/models/Post';
+import _ from 'lodash';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -66,13 +70,32 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
   }
 }
 
-class PostCacheController {
+class PostCacheController implements IUsedCache {
   private _cacheMap: Map<
     number,
     FetchSortableDataListHandler<Post>
   > = new Map();
 
   private _currentGroupId: number = 0;
+
+  constructor() {
+    (storeManager.getEntityMapStore(ENTITY_NAME.POST) as MultiEntityMapStore<
+      Post,
+      PostModel
+    >).addUsedCache(this);
+  }
+
+  getUsedId(): number[] {
+    let ids: number[] = [];
+    this._cacheMap.forEach((value, key, map) => {
+      ids = _.union(
+        ids,
+        (map.get(key) as FetchSortableDataListHandler<Post>).sortableListStore
+          .getIds,
+      );
+    });
+    return ids;
+  }
 
   has(groupId: number): boolean {
     return this._cacheMap.has(groupId);
