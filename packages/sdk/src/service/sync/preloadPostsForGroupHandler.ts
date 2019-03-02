@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Group } from '../../module/group/entity';
-import GroupService from '../../service/group';
+import GroupService from '../../module/group';
 import SequenceProcessorHandler from '../../framework/processor/SequenceProcessorHandler';
 import PreloadPostsProcessor from './preloadPostsProcessor';
 import { GROUP_QUERY_TYPE } from '../constants';

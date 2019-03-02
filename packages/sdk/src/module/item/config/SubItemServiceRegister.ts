@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IItemService } from '../service/IItemService';
 import { FileItemService } from '../module/file';
 import { EventItemService } from '../module/event/service';
 import { TaskItemService } from '../module/task/service';
@@ -33,10 +32,10 @@ const itemServiceConfigs: ClassConfig[] = [
 ];
 
 class SubItemServiceRegister {
-  static buildSubItemServices(itemService: IItemService) {
+  static buildSubItemServices() {
     const serviceMap: Map<number, ISubItemService> = new Map();
     itemServiceConfigs.forEach((serviceInfo: ClassConfig) => {
-      serviceMap.set(serviceInfo.typeId, new serviceInfo.value(itemService));
+      serviceMap.set(serviceInfo.typeId, new serviceInfo.value());
     });
     return serviceMap;
   }

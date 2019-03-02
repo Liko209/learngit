@@ -37,10 +37,11 @@ type JuiModalProps = {
   cancelVariant?: JuiButtonProps['variant'];
   cancelBtnProps?: JuiButtonProps | { [attr: string]: string };
   cancelText?: string;
-  onOK?(event?: React.MouseEvent): void;
+  onOK?(event?: React.MouseEvent): void | Promise<boolean> | Promise<void>;
   onCancel?(event?: React.MouseEvent): void;
   content?: string | JSX.Element;
   fillContent?: boolean;
+  loading?: boolean;
 };
 
 type JuiDialogFuncProps = { componentProps?: any } & Omit<
@@ -52,14 +53,15 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
   defaultFooter() {
     const {
       onCancel,
-      cancelText,
       onOK,
+      cancelText,
       okText,
       okVariant = 'contained',
       okType = 'primary',
       cancelVariant = 'text',
       okBtnProps,
       cancelBtnProps,
+      loading,
     } = this.props;
     return (
       <>
@@ -69,6 +71,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
             color="primary"
             variant={cancelVariant}
             autoFocus={true}
+            disabled={loading}
             {...cancelBtnProps}
           >
             {cancelText}
@@ -79,7 +82,9 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           color={okType}
           variant={okVariant}
           autoFocus={true}
+          disabled={loading}
           {...okBtnProps}
+          loading={loading}
         >
           {okText}
         </JuiButton>
@@ -125,7 +130,9 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           {this.renderContent()}
         </JuiDialogContent>
         {contentAfter}
-        <StyledActions>{footer ? footer : this.defaultFooter()}</StyledActions>
+        <StyledActions className="modal-actions">
+          {footer ? footer : this.defaultFooter()}
+        </StyledActions>
       </JuiDialog>
     );
   }

@@ -28,6 +28,27 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
     return getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
   }
 
+  truncateNotesOrSection = (text: string, subLength: number) => {
+    if (text.length > subLength) {
+      return `${text.substr(0, subLength)}...`;
+    }
+    return text;
+  }
+
+  @computed
+  get notes() {
+    const { notes } = this.task;
+
+    return notes ? this.truncateNotesOrSection(notes, 300) : '';
+  }
+
+  @computed
+  get section() {
+    const { section } = this.task;
+
+    return section ? this.truncateNotesOrSection(section, 300) : '';
+  }
+
   @computed
   get color() {
     return accentColor[this.task.color];

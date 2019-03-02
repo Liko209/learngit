@@ -9,6 +9,7 @@ import UserPermissionType from '../../types';
 import { Api } from '../../../../api';
 import SplitIODefaultPermissions from './SplitIODefaultPermissions';
 import { notificationCenter, SERVICE } from '../../../../service';
+import { mainLogger } from 'foundation';
 
 class SplitIOController {
   private splitIOClient: SplitIOClient;
@@ -60,9 +61,11 @@ class SplitIOController {
       splitIOReady: (): void => {
         this.isClientReady = true;
         this.splitIOUpdateCallback && this.splitIOUpdateCallback();
+        mainLogger.log('incoming event splitIOReady');
       },
       splitIOUpdate: (): void => {
         this.splitIOUpdateCallback && this.splitIOUpdateCallback();
+        mainLogger.log('incoming event splitIOUpdate');
       },
     };
     this.splitIOClient = new SplitIOClient(params);

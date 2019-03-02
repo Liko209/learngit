@@ -17,10 +17,18 @@ import _ from 'lodash';
 import { IPreInsertController } from '../../../../common/controller/interface/IPreInsertController';
 import { IdModel } from '../../../../../framework/model';
 import { Post } from '../../../entity/Post';
-import { daoManager, PostDao, AccountDao } from '../../../../../dao';
+import { daoManager, AccountDao } from '../../../../../dao';
+import { PostDao } from '../../../dao/PostDao';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
+
+jest.mock('../PostActionController');
+jest.mock('../../../../../service/groupConfig');
+jest.mock('../../../../../service/notificationCenter');
+jest.mock('../../../../common/controller/impl/PreInsertController');
+jest.mock('../../../../../dao');
+jest.mock('../../../dao/PostDao');
 
 class MockPreInsertController<T extends ExtendedBaseModel>
   implements IPreInsertController {
@@ -44,11 +52,6 @@ class MockPreInsertController<T extends ExtendedBaseModel>
     return false;
   }
 }
-jest.mock('../PostActionController');
-jest.mock('../../../../../service/groupConfig');
-jest.mock('../../../../../service/notificationCenter');
-jest.mock('../../../../common/controller/impl/PreInsertController');
-jest.mock('../../../../../dao');
 
 describe('SendPostController', () => {
   let sendPostController: SendPostController;

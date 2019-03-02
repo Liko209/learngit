@@ -52,6 +52,10 @@ export abstract class BaseWebComponent {
     return this.self.getAttribute(attributeName);
   }
 
+  get findSelector() {
+    return this.self.find;
+  }
+
   getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
     const component = new ctor(this.t);
     if (root) {
@@ -104,6 +108,10 @@ export abstract class BaseWebComponent {
     return this.self.find('button').withText(name);
   }
 
+  checkboxOf(sel: Selector) {
+    return sel.find('input[type="checkbox"]');
+  }
+
   // misc
   warnFlakySelector() {
     const stack = (new Error()).stack;
@@ -125,4 +133,8 @@ export abstract class BaseWebComponent {
     return Number(text);
   }
 
+  // hover some selector will show
+  async showTooltip(text: string) {
+    await this.t.expect(this.getSelector('[role="tooltip"]').withExactText(text).exists).ok();
+  }
 }

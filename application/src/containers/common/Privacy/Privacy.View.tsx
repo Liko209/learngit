@@ -34,9 +34,9 @@ class PrivacyViewComponent extends Component<Props> {
       await handlePrivacy();
     } catch (error) {
       if (errorHelper.isNetworkConnectionError(error)) {
-        this.flashToast('teamNetError');
+        this.flashToast('people.prompt.teamNetError');
       } else {
-        this.flashToast('markPrivateServerErrorForTeam');
+        this.flashToast('people.prompt.markPrivateServerErrorForTeam');
       }
     }
   }
@@ -44,13 +44,18 @@ class PrivacyViewComponent extends Component<Props> {
   getTipText = () => {
     const { isPublic, isAdmin } = this.props;
     if (isAdmin) {
-      return isPublic ? 'setStatePrivate' : 'setStatePublic';
+      return isPublic
+        ? 'people.team.changeToPrivate'
+        : 'people.team.changeToPublic';
     }
-    return isPublic ? 'publicTeam' : 'privateTeam';
+    return isPublic ? 'people.team.publicTeam' : 'people.team.privateTeam';
   }
 
   render() {
-    const { isPublic, size, t, isAdmin } = this.props;
+    const { isPublic, size, t, isAdmin, isTeam } = this.props;
+    if (!isTeam) {
+      return null;
+    }
     const tooltipKey = this.getTipText();
     return (
       <JuiIconButton

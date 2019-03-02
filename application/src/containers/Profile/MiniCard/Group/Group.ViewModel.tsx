@@ -13,7 +13,7 @@ import {
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
-import { NewGroupService } from 'sdk/module/group';
+import { GroupService } from 'sdk/module/group';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { GlipTypeUtil } from 'sdk/utils';
 import { Notification } from '@/containers/Notification';
@@ -38,7 +38,7 @@ class ProfileMiniCardGroupViewModel
     const onError = (error: Error) => {
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToOpenThisProfile',
+          message: 'people.prompt.SorryWeWereNotAbleToOpenThisProfile',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
@@ -52,7 +52,7 @@ class ProfileMiniCardGroupViewModel
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
     if (!groupStore.hasValid(this.id)) {
-      const groupService: NewGroupService = NewGroupService.getInstance();
+      const groupService: GroupService = GroupService.getInstance();
       groupService
         .getById(this.id)
         .then((group: Group | null) => {

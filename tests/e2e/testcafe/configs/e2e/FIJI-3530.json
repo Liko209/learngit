@@ -1,0 +1,11 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Like/LikeAndUnlike.ts",
+      "./fixtures/Profile/addTeamMember.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

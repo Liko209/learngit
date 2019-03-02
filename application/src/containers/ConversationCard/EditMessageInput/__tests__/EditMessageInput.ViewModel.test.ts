@@ -15,7 +15,7 @@ import _ from 'lodash';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 const mockPostEntityData = {
   id: 1,
@@ -46,7 +46,7 @@ jest.mock('@/store/utils', () => ({
 const postService = {
   editPost: jest.fn(),
 };
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 let editMessageInputViewModel: EditMessageInputViewModel;
 let enterHandler: () => void;

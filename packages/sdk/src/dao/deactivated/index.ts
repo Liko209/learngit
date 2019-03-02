@@ -3,7 +3,7 @@
  * @Date: 2018-05-17 10:40:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { BaseDao } from '../base';
+import { BaseDao } from '../../framework/dao';
 import { IDatabase } from 'foundation';
 
 class DeactivatedDao extends BaseDao<any> {

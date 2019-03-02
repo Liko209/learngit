@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, observable } from 'mobx';
-import { NewGroupService } from 'sdk/module/group';
+import { GroupService } from 'sdk/module/group';
 import { AbstractViewModel } from '@/base';
 import { ViewModuleProps } from './types';
 
@@ -35,7 +35,7 @@ class AddMembersViewModel extends AbstractViewModel<ViewModuleProps> {
   @action
   addTeamMembers = async () => {
     const { group } = this.props;
-    const groupService: NewGroupService = NewGroupService.getInstance();
+    const groupService: GroupService = GroupService.getInstance();
     await groupService.addTeamMembers(this.members, group.id);
   }
 }

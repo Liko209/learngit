@@ -15,8 +15,8 @@ import {
 } from 'jui/pattern/RightShelf';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
-import { TAB_CONFIG } from './ItemList/config';
+import { ItemList } from './ItemList';
+import { TAB_CONFIG, TabConfig } from './ItemList/config';
 import ReactResizeDetector from 'react-resize-detector';
 
 type Props = {
@@ -37,7 +37,9 @@ const HEIGHT_FIX = HEIGHT_CONVERSATION_HEADER + HEIGHT_TABS;
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
-    return isOpen ? 'conversationDetailsHide' : 'conversationDetailsShow';
+    return isOpen
+      ? 'message.conversationDetailsHide'
+      : 'message.conversationDetailsShow';
   }
 
   private _getIconKey = () => {
@@ -69,7 +71,7 @@ class RightRailComponent extends React.Component<Props> {
     return (
       <JuiRightShelfHeader>
         <JuiRightShelfHeaderText>
-          {t('conversationDetails')}
+          {t('message.conversationDetails')}
         </JuiRightShelfHeaderText>
       </JuiRightShelfHeader>
     );
@@ -90,23 +92,14 @@ class RightRailComponent extends React.Component<Props> {
             tag="right-shelf"
             width={width}
             onChangeTab={this._handleTabChanged}
-            moreText={t('more')}
+            moreText={t('common.more')}
           >
             {TAB_CONFIG.map(
-              (
-                {
-                  title,
-                  type,
-                }: {
-                  title: string;
-                  type: RIGHT_RAIL_ITEM_TYPE;
-                },
-                index: number,
-              ) => (
+              ({ title, type, automationID }: TabConfig, index: number) => (
                 <JuiTab
                   key={index}
                   title={t(title)}
-                  automationId={`right-shelf-${title}`}
+                  automationId={`right-shelf-${automationID}`}
                 >
                   <ItemList
                     type={type}

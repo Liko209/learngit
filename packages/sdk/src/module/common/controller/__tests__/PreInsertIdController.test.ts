@@ -5,9 +5,11 @@
  */
 
 import PreInsertIdController from '../impl/PreInsertIdController';
-import { PostDao, daoManager, ConfigDao } from '../../../../dao';
+import { daoManager, ConfigDao } from '../../../../dao';
+import { PostDao } from '../../../post/dao';
 
 jest.mock('../../../../dao');
+jest.mock('../../../post/dao');
 
 function getController() {
   const postDao = new PostDao(null);

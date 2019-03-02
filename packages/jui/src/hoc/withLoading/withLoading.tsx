@@ -19,7 +19,6 @@ const StyledLoadingPage = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
-  pointer-events: none;
   justify-content: center;
   top: 0px;
   left: 0px;
@@ -27,13 +26,13 @@ const StyledLoadingPage = styled.div`
   z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
-const DefaultLoading = () => (
+const DefaultLoadingWithDelay = withDelay(() => (
   <StyledLoadingPage>
     <JuiCircularProgress />
   </StyledLoadingPage>
-);
+));
 
-const MAP = { circular: DefaultLoading };
+const MAP = { circular: DefaultLoadingWithDelay };
 
 const withLoading = <
   P extends { loading: boolean; style?: React.CSSProperties }
@@ -41,15 +40,18 @@ const withLoading = <
   Component: ComponentType<P>,
   CustomizedLoading?: ComponentType<any>,
 ): React.SFC<P & WithLoadingProps> => {
+  const CustomizedLoadingWithDelay =
+    CustomizedLoading && withDelay(CustomizedLoading);
+
   return React.memo(({ loading, variant, ...props }: WithLoadingProps) => {
-    const LoadingWithDelay = withDelay(
-      CustomizedLoading || MAP[variant || 'circular'],
-    );
+    const LoadingWithDelay =
+      CustomizedLoadingWithDelay || MAP[variant || 'circular'];
+
     return (
       <>
         {loading ? <LoadingWithDelay delay={100} /> : null}
         <Component
-          {...props}
+          {...props as P}
           loading={loading}
           style={{ display: loading ? 'none' : '' }}
         />

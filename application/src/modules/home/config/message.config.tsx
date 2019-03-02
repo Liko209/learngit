@@ -26,7 +26,7 @@ const config: SubModuleConfig = {
     return {
       url: '/messages',
       icon: 'messages',
-      title: i18next.t('Messages'),
+      title: i18next.t('message.Messages'),
       umi: <MessageUmi />,
       placement: 'top',
     };

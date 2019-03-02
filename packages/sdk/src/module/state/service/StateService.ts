@@ -8,10 +8,13 @@ import { daoManager, GroupStateDao } from '../../../dao';
 import { EntityBaseService } from '../../../framework';
 import { IStateService } from './IStateService';
 import { GroupState, MyState, State } from '../entity';
-import { SOCKET, SERVICE } from '../../../service/eventKey';
+import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { StateController } from '../controller/StateController';
 import { Group } from '../../group/entity';
+import { Profile } from '../../profile/entity';
+import { NotificationEntityPayload } from '../../../service/notificationCenter';
+import { SectionUnread } from '../types';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
@@ -23,8 +26,10 @@ class StateService extends EntityBaseService<GroupState>
       SubscribeController.buildSubscriptionController({
         [SOCKET.STATE]: this.handleState,
         [SOCKET.PARTIAL_STATE]: this.handleState,
-        [SOCKET.PARTIAL_GROUP]: this.handlePartialGroup,
-        [SERVICE.GROUP_CURSOR]: this.handleGroupChanges,
+        [SOCKET.PARTIAL_GROUP]: this.handleGroupCursor,
+        [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
+        [ENTITY.GROUP]: this.handleGroupChangeForTotalUnread,
+        [ENTITY.PROFILE]: this.handleProfileChangeForTotalUnread,
       }),
     );
   }
@@ -80,16 +85,32 @@ class StateService extends EntityBaseService<GroupState>
       .handleState(states);
   }
 
-  handlePartialGroup = async (groups: Partial<Group>[]): Promise<void> => {
+  handleGroupCursor = async (groups: Partial<Group>[]): Promise<void> => {
     await this.getStateController()
       .getStateDataHandleController()
-      .handlePartialGroup(groups);
+      .handleGroupCursor(groups);
   }
 
-  handleGroupChanges = async (groups?: Group[]): Promise<void> => {
-    await this.getStateController()
-      .getStateDataHandleController()
-      .handleGroupChanges(groups);
+  handleGroupChangeForTotalUnread = (
+    payload: NotificationEntityPayload<Group>,
+  ): void => {
+    this.getStateController()
+      .getTotalUnreadController()
+      .handleGroup(payload);
+  }
+
+  handleProfileChangeForTotalUnread = (
+    payload: NotificationEntityPayload<Profile>,
+  ): void => {
+    this.getStateController()
+      .getTotalUnreadController()
+      .handleProfile(payload);
+  }
+
+  getSingleUnreadInfo(id: number): SectionUnread | undefined {
+    return this.getStateController()
+      .getTotalUnreadController()
+      .getSingleUnreadInfo(id);
   }
 }
 

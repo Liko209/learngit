@@ -19,6 +19,11 @@ const SITE_URL = process.env.SITE_URL || 'http://localhost:3000';
 const DEBUG_MODE = !(process.env.DEBUG_MODE === 'false');
 const QUARANTINE_MODE = (process.env.QUARANTINE_MODE === 'true');
 
+const ENABLE_MOCK_SERVER = (process.env.ENABLE_MOCK_SERVER === 'true');
+const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck01.lab.nordigy.ru";
+const MOCK_ENV = process.env.MOCK_ENV || 'XMN-MOCK';
+const MOCK_AUTH_URL = process.env.MOCK_AUTH_URL || 'https://xmn02-i01-mck01.lab.nordigy.ru/jupiter/login/api/login';
+
 const ENV_OPTS = {
   'XMN-UP': {
     ACCOUNT_POOL_BASE_URL: 'http://xia01-i01-hbt02.lab.rcch.ringcentral.com:9997',
@@ -65,6 +70,7 @@ const INCLUDE_TAGS = process.env.INCLUDE_TAGS ? parseArgs(process.env.INCLUDE_TA
 const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TAGS) : configLoader.excludeTags;
 const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
 const MAX_RESOLUTION = (process.env.MAX_RESOLUTION || '1280x720').split('x').map(n => parseInt(n, 10));
+const ASSERTION_TIMEOUT = Number(process.env.ASSERTION_TIMEOUT) || 8e3;
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -79,6 +85,7 @@ const RUNNER_OPTS = {
   QUARANTINE_MODE,
   STOP_ON_FIRST_FAIL,
   MAX_RESOLUTION,
+  ASSERTION_TIMEOUT,
 }
 
 // beat dashboard configuration
@@ -106,4 +113,9 @@ export {
   DASHBOARD_URL,
   RUN_NAME,
   BrandTire,
+
+  ENABLE_MOCK_SERVER,
+  MOCK_SERVER_URL,
+  MOCK_ENV,
+  MOCK_AUTH_URL,
 };

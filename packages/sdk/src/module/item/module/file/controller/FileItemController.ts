@@ -11,15 +11,15 @@ import {
 } from '../../../../../framework/controller';
 import { FileUploadController } from '../controller/FileUploadController';
 import { Api } from '../../../../../api';
-import { daoManager, ItemDao } from '../../../../../dao';
+import { daoManager } from '../../../../../dao';
+import { ItemDao } from '../../../dao';
 import { Item, ItemFile } from '../../../entity';
-import { IItemService } from '../../../service/IItemService';
 import { FileActionController } from './FileActionController';
 
 class FileItemController {
   private _fileActionController: FileActionController;
   private _fileUploadController: FileUploadController;
-  constructor(private _itemService: IItemService) {}
+  constructor() {}
 
   get fileActionController() {
     if (!this._fileActionController) {
@@ -65,9 +65,9 @@ class FileItemController {
       );
 
       this._fileUploadController = new FileUploadController(
-        this._itemService,
         partialModifyController,
         itemRequestController,
+        entitySourceController,
       );
     }
 

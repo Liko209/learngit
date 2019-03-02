@@ -114,16 +114,16 @@ export class SocketFSM extends StateMachine {
     this.init();
   }
 
-  public info(message: string) {
-    mainLogger.info(`${this.logPrefix} ${message}`);
+  public info(...messages: any) {
+    mainLogger.tags(this.logPrefix).info(...messages);
   }
 
-  public warn(message: string) {
-    mainLogger.warn(`${this.logPrefix} ${message}`);
+  public warn(...messages: any) {
+    mainLogger.tags(this.logPrefix).warn(...messages);
   }
 
-  public error(message: string) {
-    mainLogger.error(`${this.logPrefix} ${message}`);
+  public error(...messages: any) {
+    mainLogger.tags(this.logPrefix).error(...messages);
   }
 
   public isConnected() {
@@ -160,102 +160,101 @@ export class SocketFSM extends StateMachine {
 
   protected registerSocketEvents() {
     this.socketClient.socket.on('connect', (data: any) => {
-      this.info(`socket-> connect. ${data || ''}`);
+      this.info('socket-> connect. ', data);
       this.finishConnect();
     });
 
     this.socketClient.socket.on('connect_error', (data: any) => {
-      this.info(`socket-> connect_error. ${data || ''}`);
+      this.info('socket-> connect_error. ', data);
       this.failConnect();
     });
 
     this.socketClient.socket.on('connect_timeout', (data: any) => {
-      this.info(`socket-> connect_timeout. ${data || ''}`);
+      this.info('socket-> connect_timeout. ', data);
     });
 
     this.socketClient.socket.on('connecting', (data: any) => {
-      this.info(`socket-> connecting. ${data || ''}`);
+      this.info('socket-> connecting. ', data);
     });
 
     this.socketClient.socket.on('disconnect', (data: any) => {
-      this.info(`socket-> disconnect. ${data || ''}`);
+      this.info('socket-> disconnect. ', data);
       this.fireDisconnect();
     });
 
     this.socketClient.socket.on('error', (data: any) => {
-      this.info(`socket-> error. ${data || ''}`);
+      this.info('socket-> error. ', data);
     });
 
     this.socketClient.socket.on('reconnect', (data: any) => {
-      this.info(`socket-> reconnect. ${data || ''}`);
+      this.info('socket-> reconnect. ', data);
       notificationCenter.emit(SOCKET.RECONNECT, data);
     });
 
     this.socketClient.socket.on('reconnect_attempt', (data: any) => {
-      this.info(`socket-> reconnect_attempt. ${data || ''}`);
+      this.info('socket-> reconnect_attempt. ', data);
     });
 
     this.socketClient.socket.on('reconnect_failed', (data: any) => {
-      this.info(`socket-> reconnect_failed. ${data || ''}`);
+      this.info('socket-> reconnect_failed. ', data);
     });
 
     this.socketClient.socket.on('reconnect_error', (data: any) => {
-      this.info(`socket-> reconnect_error. ${data || ''}`);
+      this.info('socket-> reconnect_error. ', data);
     });
 
     this.socketClient.socket.on('reconnecting', (data: any) => {
-      this.info(`socket-> reconnecting. ${data || ''}`);
+      this.info('socket-> reconnecting. ', data);
       this.fireTryReconnect();
     });
 
     this.socketClient.socket.on('ping', (data: any) => {
-      this.info(`socket-> ping. ${data || ''}`);
+      this.info('socket-> ping. ', data);
     });
 
     this.socketClient.socket.on('pong', (data: any) => {
-      this.info(`socket-> pong. ${data || ''}`);
+      this.info('socket-> pong. ', data);
       this.latestPongTime = new Date().getTime();
       this.info(`latestPongTime ${this.latestPongTime}`);
     });
 
     this.socketClient.socket.on('presence_unified', (data: any) => {
-      this.info(`socket-> presence_unified. ${data || ''}`);
       dataDispatcher.onPresenceArrived(data);
     });
 
     this.socketClient.socket.on('message', (data: any) => {
-      this.info(`socket-> message. ${data || ''}`);
+      this.info('socket-> message. ', data);
       dataDispatcher.onDataArrived(data);
     });
 
     this.socketClient.socket.on('partial', (data: any) => {
       dataDispatcher.onDataArrived(data, true);
-      this.info(`socket-> partial. ${data || ''}`);
+      this.info('socket-> partial. ', data);
     });
 
     this.socketClient.socket.on('response', (data: any) => {
-      this.info(`socket-> response. ${data || ''}`);
+      this.info('socket-> response. ', data);
     });
 
     this.socketClient.socket.on('typing', (data: any) => {
-      this.info(`socket-> typing. ${data || ''}`);
+      this.info('socket-> typing. ', data);
     });
 
     this.socketClient.socket.on('system_message', (data: any) => {
       dataDispatcher.onDataArrived(data);
-      this.info(`socket-> system_message. ${data || ''}`);
+      this.info('socket-> system_message. ', data);
     });
 
     this.socketClient.socket.on('client_config', (data: any) => {
-      this.info(`socket-> client_config. ${data || ''}`);
+      this.info('socket-> client_config. ', data);
     });
 
     this.socketClient.socket.on('glip_ping', (data: any) => {
-      this.info(`socket-> glip_ping. ${data || ''}`);
+      this.info('socket-> glip_ping. ', data);
     });
 
     this.socketClient.socket.on('glip_pong', (data: any) => {
-      this.info(`socket-> glip_pong. ${data || ''}`);
+      this.info('socket-> glip_pong. ', data);
     });
   }
 }

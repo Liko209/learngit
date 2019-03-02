@@ -12,23 +12,23 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('Team/PublicTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-// skip due to join button css does not change to display when testcafe hover a public team of search result
-test.skip(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PublicTeam', 'Potar.He']), async t => {
+test(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PublicTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
+  const users = h(t).rcData.mainCompany.users
+  const loginUser = users[4];
+  const otherUser = users[5];
   await h(t).platform(otherUser).init();
   await h(t).glip(otherUser).init();
   const otherUserName = await h(t).glip(otherUser).getPerson()
     .then(res => res.data.display_name);
 
   const publicTeamName = uuid();
-  console.log(publicTeamName);
   const joinedTeamName = uuid();
 
   let publicTeamId, joinedTeamId;
@@ -52,12 +52,7 @@ test.skip(formalName(`Display Join button for public team which login user doesn
 
     await h(t).platform(otherUser).createGroup({
       type: 'Group',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
-
-    await h(t).platform(otherUser).createGroup({
-      type: 'Group',
-      members: [otherUser.rcId],
+      members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
     });
   });
 
@@ -69,30 +64,27 @@ test.skip(formalName(`Display Join button for public team which login user doesn
   const search = app.homePage.header.search;
 
   await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500    
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(publicTeamId).self);
+    await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
+    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await t.hover(search.getSearchItemByCid(publicTeamId).self);
   });
 
   await h(t).withLog(`Then the join button should be showed `, async () => {
-    await search.itemEntryByCid(publicTeamId).shouldHasJoinButton();
+    await search.getSearchItemByCid(publicTeamId).shouldHaveJoinButton();
   })
 
   await h(t).withLog(`When I search and hover the joined team B ${joinedTeamName}`, async () => {
-    await search.typeText(joinedTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(joinedTeamId).self);
+    await search.typeSearchKeyword(joinedTeamName, { replace: true, paste: true });
+    await t.hover(search.getSearchItemByCid(joinedTeamId).self);
   });
 
   await h(t).withLog(`Then the join button should not be showed `, async () => {
-    await search.itemEntryByCid(joinedTeamId).shouldNotHasJoinButton();
+    await search.getSearchItemByCid(joinedTeamId).shouldNotHaveJoinButton();
   });
 
   let peopleCount, groupCount;
   await h(t).withLog(`When I search the people ${otherUserName}`, async () => {
-    await search.typeText(otherUserName, { replace: true, paste: true });
+    await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
 
   });
   await h(t).withLog(`Then at least one people and one group should be showed`, async () => {
@@ -104,79 +96,69 @@ test.skip(formalName(`Display Join button for public team which login user doesn
 
   for (let i of _.range(peopleCount)) {
     const item = search.nthPeople(i);
-    await h(t).withLog(`When I hover each one group result ${i}/${peopleCount}`, async () => {
+    await h(t).withLog(`When I hover each one group result ${i+1}/${peopleCount}`, async () => {
       await t.hover(item.self);
     });
 
     await h(t).withLog(`Then the join button should not be showed`, async () => {
-      await item.shouldNotHasJoinButton();
+      await item.shouldNotHaveJoinButton();
     });
   }
   for (let i of _.range(groupCount)) {
     const item = search.nthGroup(i);
-    await h(t).withLog(`When I hover each one people result ${i}/${groupCount}`, async () => {
+    await h(t).withLog(`When I hover each one people result ${i+1}/${groupCount}`, async () => {
       await t.hover(item.self);
     });
 
     await h(t).withLog(`Then the join button should not be showed`, async () => {
-      await item.shouldNotHasJoinButton();
+      await item.shouldNotHaveJoinButton();
     });
   }
 });
 
 test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'JPT-704', 'PublicTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(otherUser).init();
-  await h(t).glip(otherUser).init()
+  const me = h(t).rcData.mainCompany.users[4];
+  const anotherUser = h(t).rcData.mainCompany.users[5];
 
-  const publicTeamName = uuid();
-  const newTeamName = uuid();
+  const searchKeyword = uuid();
 
-  let publicTeamId;
-  await h(t).withLog('Given I have a public team A but loginUser did not join it', async () => {
-    publicTeamId = await h(t).platform(otherUser).createAndGetGroupId({
-      name: publicTeamName,
-      type: 'Team',
-      members: [otherUser.rcId],
-    });
-    await h(t).glip(otherUser).updateGroup(publicTeamId, {
-      privacy: 'protected',
-      is_public: true
-    });
+  let publicTeamWithoutMe = <IGroup>{
+    type: 'Team', isPublic: true,
+    name: `${searchKeyword} PublicTeamWithoutMe`,
+    owner: anotherUser,
+    members: [anotherUser],
+  };
+
+  await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
+  await h(t).withLog(`And there is a public team named "${publicTeamWithoutMe.name}" without me`, async () => {
+    await h(t).scenarioHelper.createTeam(publicTeamWithoutMe);
   });
 
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
+  await h(t).withLog(`When I login Jupiter with the extension`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, me);
     await app.homePage.ensureLoaded();
   });
 
   const search = app.homePage.header.search;
 
-  await h(t).withLog(`When I search the public team A ${publicTeamName}`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.wait(3e3);
-    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500 
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.wait(3e3); // wait search result show;
+  await h(t).withLog(`When I search the public team ${searchKeyword}`, async () => {
+    await search.typeSearchKeyword(searchKeyword, { replace: true, paste: true });
   });
-  await h(t).withLog(`And I click join button of the public team A`, async () => {
-    await t.hover(search.itemEntryByCid(publicTeamId).self)
 
-    await search.itemEntryByCid(publicTeamId).join();
+  await h(t).withLog(`And I click join button of the public team A`, async () => {
+    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await search.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
   });
 
   await h(t).withLog(`Then search result list dismiss`, async () => {
-    await t.expect(search.itemEntryByCid(publicTeamId).exists).notOk();
+    await t.expect(search.getSearchItemByCid(publicTeamWithoutMe.glipId).exists).notOk();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
   await h(t).withLog(`And display a confirmation`, async () => {
     await t.expect(joinTeamDialog.title.exists).ok();
-    await joinTeamDialog.shouldBeTeam(publicTeamName);
+    await joinTeamDialog.shouldBeTeam(publicTeamWithoutMe.name);
     await t.expect(joinTeamDialog.joinButton.exists).ok();
     await t.expect(joinTeamDialog.cancelButton.exists).ok();
   });
@@ -196,7 +178,7 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
 
   await h(t).withLog(`And The confirmation dismiss, loginUser did not join team A`, async () => {
     await t.expect(joinTeamDialog.exists).notOk();
-    await t.expect(app.homePage.messageTab.teamsSection.conversationEntryById(publicTeamId).exists).notOk();
+    await t.expect(app.homePage.messageTab.teamsSection.conversationEntryById(publicTeamWithoutMe.glipId).exists).notOk();
   });
 });
 
@@ -230,13 +212,9 @@ test.skip(formalName(`Joined team successful after clicking join button in confi
 
   const search = app.homePage.header.search;
   await h(t).withLog(`When I search the public team A ${publicTeamName}, and click Join button of team A`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    // reload and research due to there is a bug: https://jira.ringcentral.com/browse/FIJI-2500    
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.wait(3e3); // wait search result show;
-    await search.itemEntryByCid(publicTeamId).join();
+    await search.typeSearchKeyword(publicTeamName, { replace: true, paste: true });
+    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await search.getSearchItemByCid(publicTeamId).join();
   });
 
 

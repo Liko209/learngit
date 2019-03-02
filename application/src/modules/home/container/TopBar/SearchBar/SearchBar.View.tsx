@@ -12,42 +12,29 @@ import {
   JuiSearchList,
   JuiSearchInput,
   JuiSearchTitle,
-  JuiSearchItem,
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
-import { JuiButton } from 'jui/components/Buttons';
-import { Avatar, GroupAvatar } from '@/containers/Avatar';
 import { goToConversation } from '@/common/goToConversation';
 import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
+import GroupModel from '@/store/models/Group';
 import { joinTeam } from '@/common/joinPublicTeam';
-// import { MiniCard } from '@/containers/MiniCard';
-import {
-  ViewProps,
-  SearchResult,
-  SearchSection,
-  SortableModel,
-  Person,
-  Group,
-} from './types';
 
-const SEARCH_DELAY = 100;
+import { ViewProps, SectionTypeMap } from './types';
+
+import { SearchSectionsConfig } from './config';
+
+const SEARCH_DELAY = 50;
+
+type SearchItems = {
+  ids: number[];
+  name: SectionTypeMap;
+  hasMore: boolean;
+};
 
 type State = {
   terms: string[];
-  persons: SearchResult['persons'];
-  groups: SearchResult['groups'];
-  teams: SearchResult['teams'];
+  data: SearchItems[];
   selectIndex: number[];
-};
-
-const defaultSection = {
-  sortableModel: [],
-  hasMore: false,
-};
-
-type SectionType = {
-  data: any;
-  name: string;
 };
 
 const InvalidIndexPath: number[] = [-1, -1];
@@ -62,10 +49,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
 
   state = {
     terms: [],
-    focus: false,
-    persons: defaultSection,
-    groups: defaultSection,
-    teams: defaultSection,
+    data: [],
     selectIndex: InvalidIndexPath,
   };
 
@@ -74,12 +58,26 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     const { search } = this.props;
     this._debounceSearch = debounce(async (value: string) => {
       const ret = await search(value);
-      const { terms, persons, groups, teams } = ret;
+      if (!ret) return;
+
+      const { terms, people, groups, teams } = ret;
+      const data: SearchItems[] = [
+        {
+          ...people,
+          name: SectionTypeMap.PEOPLE,
+        },
+        {
+          ...groups,
+          name: SectionTypeMap.GROUPS,
+        },
+        {
+          ...teams,
+          name: SectionTypeMap.TEAMS,
+        },
+      ];
       this.setState({
         terms,
-        groups,
-        persons,
-        teams,
+        data,
         selectIndex: InvalidIndexPath,
       });
     },                              SEARCH_DELAY);
@@ -98,9 +96,7 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   private _resetData() {
     this.setState({
       terms: [],
-      persons: defaultSection,
-      groups: defaultSection,
-      teams: defaultSection,
+      data: [],
       selectIndex: InvalidIndexPath,
     });
   }
@@ -143,113 +139,17 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     });
   }
 
-  // private _openMiniCard = (uid: number) => (
-  //   e: React.MouseEvent<HTMLElement>,
-  // ) => {
-  //   e.stopPropagation();
-  //   MiniCard.showProfile({ anchor: e.target as HTMLElement, id: uid });
-  // }
-
-  private _Avatar(uid: number) {
-    const { isTeamOrGroup } = this.props;
-
-    return isTeamOrGroup(uid) ? (
-      <GroupAvatar cid={uid} size="small" />
-    ) : (
-      <Avatar uid={uid} size="small" />
-    );
-  }
-
   private _goToConversation = async (id: number) => {
     this.onClear();
     this.onClose();
     await goToConversation({ id });
   }
 
-  searchItemClickHandler = (id: number) => async () => {
-    await this._goToConversation(id);
-  }
-
-  handleJoinTeam = (item: SortableModel<Group>) => async () => {
+  handleJoinTeam = async (item: GroupModel) => {
     const joinTeamByItem = joinTeam(item);
     this.onClear();
     this.onClose();
     await joinTeamByItem();
-  }
-
-  private _Actions = (item: SortableModel<Group>) => {
-    return (
-      <JuiButton
-        data-test-automation-id="joinButton"
-        variant="round"
-        size="small"
-      >
-        {i18next.t('join')}
-      </JuiButton>
-    );
-  }
-
-  goToContacts = () => (e: React.MouseEvent<HTMLElement>) => {
-    e.stopPropagation();
-  }
-
-  private _renderSuggestion<T>(
-    type: SearchSection<T>,
-    title: string,
-    sectionIndex: number,
-  ) {
-    const { terms, selectIndex } = this.state;
-    const { currentUserId } = this.props;
-    return (
-      <>
-        {type.sortableModel.length > 0 && (
-          <JuiSearchTitle
-            key={`showMore-${sectionIndex}`}
-            isShowMore={type.hasMore}
-            showMore={i18next.t('showMore')}
-            title={title}
-            data-test-automation-id={`search-${title}`}
-          />
-        )}
-        {type.sortableModel.length > 0 &&
-          type.sortableModel.map((item: any, cellIndex: number) => {
-            const { id, displayName, entity } = item;
-            const { is_team, privacy, members } = entity;
-            const canJoinTeam =
-              is_team &&
-              privacy === 'protected' &&
-              !members.includes(currentUserId);
-
-            const Actions = canJoinTeam ? this._Actions(item) : null;
-            const hovered =
-              sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
-            return (
-              <JuiSearchItem
-                onMouseEnter={this.mouseAddHighlight(sectionIndex, cellIndex)}
-                onMouseLeave={this.mouseLeaveItem}
-                hovered={hovered}
-                key={id}
-                onClick={
-                  canJoinTeam
-                    ? this.handleJoinTeam(item)
-                    : this.searchItemClickHandler(id)
-                }
-                Avatar={this._Avatar(id)}
-                value={displayName}
-                terms={terms}
-                data-test-automation-id={`search-${title}-item`}
-                Actions={Actions}
-                isPrivate={entity.is_team && entity.privacy === 'private'}
-                isJoined={
-                  is_team &&
-                  privacy === 'protected' &&
-                  members.includes(currentUserId)
-                }
-              />
-            );
-          })}
-      </>
-    );
   }
 
   private _setSelectIndex(section: number, cellIndex: number) {
@@ -258,18 +158,13 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     });
   }
 
-  private _getDataSections = () => {
-    const { persons, groups, teams } = this.state;
-    return [persons, groups, teams];
-  }
-
-  private _findNextValidSectionLength<T>(
+  private _findNextValidSectionLength(
     section: number,
     offset: number,
   ): number[] {
-    const data = this._getDataSections();
+    const { data } = this.state;
     for (let i = section; i >= 0 && i < data.length; i += offset) {
-      const { length } = (data[i] as SearchSection<T>).sortableModel;
+      const { length } = (data[i] as SearchItems).ids;
       if (length > 0) {
         return [i, length];
       }
@@ -298,10 +193,14 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   onKeyDown = () => {
     const { selectIndex } = this.state;
     const [section, cell] = selectIndex;
-    const data = this._getDataSections();
+    const { data } = this.state;
     const currentSection = section < 0 ? 0 : section;
-    const currentSectionLength = (data[currentSection] as any).sortableModel
-      .length;
+    const searchItem: SearchItems = data[currentSection];
+
+    if (!searchItem) {
+      return;
+    }
+    const currentSectionLength = searchItem.ids.length;
     if (cell < currentSectionLength - 1) {
       this._setSelectIndex(currentSection, cell + 1);
     } else {
@@ -314,26 +213,41 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     }
   }
 
-  onEnter = async () => {
-    const { persons, groups, teams, selectIndex } = this.state;
-    const [section, cell] = selectIndex;
-    const searchItems = [
-      persons.sortableModel,
-      groups.sortableModel,
-      teams.sortableModel,
-    ];
-    if (section < 0 || cell < 0) {
+  // if search item removed need update selectIndex
+  selectIndexChange = (sectionIndex: number, cellIndex: number) => {
+    const [section, cell] = this.state.selectIndex;
+
+    let { data } = this.state;
+    data = data.slice(0);
+
+    const items: SearchItems = data[sectionIndex];
+    items.ids.splice(cellIndex, 1);
+    this.setState({ data });
+
+    // remove current select item
+    if (sectionIndex === section && cell === cellIndex) {
+      this._setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
       return;
     }
-    const selectItem = searchItems[section][cell] as SortableModel<
-      Person | Group
-    >;
-    if (selectItem) {
-      await this._goToConversation(selectItem.id);
+
+    // remove before current select item
+    if (sectionIndex === section && cellIndex < cell) {
+      this._setSelectIndex(section, cell - 1);
     }
   }
 
-  onKeyEsc = () => this.onClose();
+  addHighlight = (sectionIndex: number, cellIndex: number) => () => {
+    this._setSelectIndex(sectionIndex, cellIndex);
+  }
+
+  mouseLeaveItem = () => {
+    this._setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
+  }
+
+  onKeyEsc = () => {
+    this.textInput.current!.blurTextInput();
+    this.onClose();
+  }
 
   searchBarBlur = () => {
     this.timer = setTimeout(() => {
@@ -345,36 +259,45 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     clearTimeout(this.timer);
   }
 
-  mouseAddHighlight = (sectionIndex: number, cellIndex: number) => () => {
-    this._setSelectIndex(sectionIndex, cellIndex);
-  }
-
-  mouseLeaveItem = () => {
-    this._setSelectIndex(-1, -1);
-  }
-
   render() {
-    const { persons, groups, teams } = this.state;
+    const { data, terms, selectIndex } = this.state;
     const { searchValue, focus } = this.props;
-    const sections: SectionType[] = [
-      {
-        data: persons,
-        name: 'People',
+    const cells: ReactNode[] = data.map(
+      ({ ids, name, hasMore }: SearchItems, sectionIndex: number) => {
+        if (ids.length === 0) return null;
+
+        const { SearchItem, title } = SearchSectionsConfig[name];
+
+        return (
+          <React.Fragment key={name}>
+            <JuiSearchTitle
+              isShowMore={hasMore}
+              showMore={i18next.t('home.showMore')}
+              title={i18next.t(title)}
+              data-test-automation-id={`search-${title}`}
+            />
+            {ids.map((id: number, cellIndex: number) => (
+              <SearchItem
+                cellIndex={cellIndex}
+                selectIndex={selectIndex}
+                sectionIndex={sectionIndex}
+                onMouseEnter={this.addHighlight}
+                onMouseLeave={this.mouseLeaveItem}
+                hasMore={hasMore}
+                title={title}
+                goToConversation={this._goToConversation}
+                handleJoinTeam={this.handleJoinTeam}
+                didChange={this.selectIndexChange}
+                terms={terms}
+                id={id}
+                key={id}
+              />
+            ))}
+          </React.Fragment>
+        );
       },
-      {
-        data: groups,
-        name: 'Groups',
-      },
-      {
-        data: teams,
-        name: 'Teams',
-      },
-    ];
-    let cells: ReactNode[] = [];
-    sections.forEach(
-      ({ data, name }: SectionType, sectionIndex: number) =>
-        (cells = cells.concat(this._renderSuggestion(data, name, sectionIndex))),
     );
+
     return (
       <JuiSearchBar
         onClose={this.onClose}
@@ -385,7 +308,6 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
       >
         <HotKeys
           keyMap={{
-            enter: this.onEnter,
             up: this.onKeyUp,
             down: this.onKeyDown,
             esc: this.onKeyEsc,
@@ -394,11 +316,11 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
           <JuiSearchInput
             ref={this.textInput}
             focus={focus}
-            onFocus={this.onFocus}
+            onClick={this.onFocus}
             onClear={this.onClear}
             value={searchValue}
             onChange={this.onChange}
-            placeholder={i18next.t('search')}
+            placeholder={i18next.t('home.search')}
             showCloseBtn={!!searchValue}
           />
           {focus && searchValue && <JuiSearchList>{cells}</JuiSearchList>}

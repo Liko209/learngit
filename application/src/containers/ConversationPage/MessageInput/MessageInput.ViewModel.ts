@@ -21,18 +21,19 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
+import { FileItem } from 'sdk/module/item/module/file/entity';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
 enum ERROR_TYPES {
-  CONTENT_LENGTH = 'contentLength',
-  CONTENT_ILLEGAL = 'contentIllegal',
+  CONTENT_LENGTH = 'message.prompt.contentLength',
+  CONTENT_ILLEGAL = 'message.prompt.contentIllegal',
 }
 
 class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
-  private _postService: NewPostService;
+  private _postService: PostService;
   private _itemService: ItemService;
 
   private _onPostCallbacks: OnPostCallback[] = [];
@@ -64,7 +65,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   constructor(props: MessageInputProps) {
     super(props);
-    this._postService = NewPostService.getInstance();
+    this._postService = PostService.getInstance();
 
     this._itemService = ItemService.getInstance();
     this._groupConfigService = GroupConfigService.getInstance();
@@ -110,6 +111,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
+    });
+  }
+
+  cleanDraft = () => {
+    this._groupConfigService.updateDraft({
+      draft: '',
+      id: this._oldId,
+      attachment_item_ids: [],
     });
   }
 
@@ -180,7 +189,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private async _sendPost(content: string, ids: number[]) {
     this.contentChange('');
-    this.forceSaveDraft();
+    this.cleanDraft();
     const items = this.items;
     try {
       let realContent: string = content;
@@ -191,17 +200,18 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       await this._postService.sendPost({
         text: realContent,
         groupId: this.id,
-        itemIds: items.map(item => item.id),
-        mentionIds: ids,
+        itemIds: items.map((item: FileItem) => item.id),
+        mentionNonItemIds: ids,
       });
       // clear context (attachments) after post
       //
-      const onPostHandler = this.props.onPost;
-      onPostHandler && onPostHandler();
-      this._onPostCallbacks.forEach(callback => callback());
+      this._onPostCallbacks.forEach((callback: OnPostCallback) => callback());
     } catch (e) {
       mainLogger.error(`send post error ${e}`);
       // You do not need to handle the error because the message will display a resend
+    } finally {
+      const onPostHandler = this.props.onPost;
+      onPostHandler && onPostHandler();
     }
   }
 

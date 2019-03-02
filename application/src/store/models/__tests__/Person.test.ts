@@ -4,11 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PersonModel from '../../../store/models/Person';
-import { Person } from 'sdk/models';
-import PersonService, {
+import {
+  Person,
   PhoneNumberInfo,
   PHONE_NUMBER_TYPE,
-} from 'sdk/service/person';
+} from 'sdk/module/person/entity';
+
+import { PersonService } from 'sdk/module/person';
+
+jest.mock('sdk/api');
 
 type UserInfo = {
   firstName?: string;

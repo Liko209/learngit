@@ -58,7 +58,7 @@ class AccountManager extends EventEmitter2 {
     const isValid = await this.sanitizeUser(mailboxID);
     if (!isValid) {
       this.logout();
-      mainLogger.warn('[Auth]User not in the white list --');
+      mainLogger.warn('[Auth]User not in the white list');
       window.location.href = '/';
     }
   }

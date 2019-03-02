@@ -7,20 +7,18 @@ import i18next from 'i18next';
 import { goToConversation } from '@/common/goToConversation';
 import { Dialog } from '@/containers/Dialog';
 import { errorHelper } from 'sdk/error';
-import { NewGroupService } from 'sdk/module/group';
+import { GroupService } from 'sdk/module/group';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { Notification } from '@/containers/Notification';
 import GroupModel from '@/store/models/Group';
-import { SortableModel } from 'sdk/models';
-import { Group } from 'sdk/module/group/entity';
 import {
   ToastMessageAlign,
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 
 const joinHander = async (conversationId: number) => {
-  const nGroupService: NewGroupService = NewGroupService.getInstance();
+  const nGroupService: GroupService = GroupService.getInstance();
   const useId = await getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   try {
     await nGroupService.joinTeam(useId, conversationId);
@@ -28,7 +26,7 @@ const joinHander = async (conversationId: number) => {
     const e = error;
     if (errorHelper.isAuthenticationError(e)) {
       Notification.flashToast({
-        message: 'JoinTeamNotAuthorizedError',
+        message: 'people.prompt.JoinTeamNotAuthorizedError',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
@@ -39,15 +37,15 @@ const joinHander = async (conversationId: number) => {
   }
 };
 
-const joinTeam = (item: GroupModel | SortableModel<Group>) => (
-  e?: React.MouseEvent<HTMLElement>,
-) => {
+const joinTeam = (item: GroupModel) => (e?: React.MouseEvent<HTMLElement>) => {
   e && e.stopPropagation();
   Dialog.confirm({
-    title: i18next.t('joinTeamTitle'),
-    content: i18next.t('joinTeamContent', { teamName: item.displayName }),
-    okText: i18next.t('join'),
-    cancelText: i18next.t('Cancel'),
+    title: i18next.t('people.team.joinTeamTitle'),
+    content: i18next.t('people.team.joinTeamContent', {
+      teamName: item.displayName,
+    }),
+    okText: i18next.t('people.team.joinTeamSubmit'),
+    cancelText: i18next.t('common.dialog.cancel'),
     onOK: () =>
       goToConversation({
         id: item.id,

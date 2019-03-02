@@ -15,7 +15,8 @@ import {
 } from '../../../utils';
 import { Progress } from '../../progress';
 import { Post } from '../../post/entity';
-import { ItemDao, daoManager } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { ItemDao } from '../dao';
 import { SOCKET, ENTITY } from '../../../service/eventKey';
 import { FileItemService } from '../module/file';
 import { Api } from '../../../api';
@@ -52,8 +53,6 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       return;
     }
     const transformedData = items.map(item => transform<Item>(item));
-    // handle deactivated data and normal data
-    this.handleSanitizedItems(transformedData);
     return baseHandleData({
       data: transformedData,
       dao: daoManager.getDao(ItemDao),
@@ -94,22 +93,9 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return result;
   }
 
-  async createItem(item: Item) {
-    return await this.itemServiceController.createItem(item);
-  }
-
-  async updateItem(item: Item) {
-    return await this.itemServiceController.updateItem(item);
-  }
-
   async deleteItem(itemId: number) {
-    return await this.itemServiceController.deleteItem(itemId);
-  }
-
-  async deleteItemData(itemId: number) {
     return await this.itemServiceController.itemActionController.deleteItem(
       itemId,
-      this,
     );
   }
 
@@ -148,6 +134,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   getUploadItems(groupId: number): ItemFile[] {
     return this.fileService.getUploadItems(groupId);
+  }
+
+  async initialUploadItemsFromDraft(groupId: number) {
+    return await this.fileService.initialUploadItemsFromDraft(groupId);
   }
 
   async canResendFailedItems(itemIds: number[]) {
@@ -240,10 +230,6 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     );
   }
 
-  async handleSanitizedItems(items: Item[]) {
-    return await this.itemServiceController.handleSanitizedItems(items);
-  }
-
   async requestSyncGroupItems(groupId: number) {
     await this.itemServiceController.itemSyncController.requestSyncGroupItems(
       groupId,
@@ -252,6 +238,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
     return this.fileService.getThumbsUrlWithSize(itemId, width, height);
+  }
+
+  hasUploadingFiles() {
+    return this.fileService.hasUploadingFiles();
   }
 }
 

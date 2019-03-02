@@ -39,14 +39,14 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
   }
 
   async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
-    return this.entityCacheController.getEntities(filterFunc);
+    return await this.entityCacheController.getEntities(filterFunc);
   }
 
   async searchEntities(
     genSortableModelFunc: (
       entity: T,
       terms: string[],
-    ) => SortableModel<T> | null,
+    ) => Promise<SortableModel<T> | null>,
     searchKey?: string,
     arrangeIds?: number[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
@@ -68,11 +68,16 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
       entities = await this.getEntities();
     }
 
-    entities.forEach((entity: T) => {
-      const result = genSortableModelFunc(entity, terms);
-      if (result) {
-        sortableEntities.push(result);
-      }
+    const promises = entities.map(async (entity: T) => {
+      return await genSortableModelFunc(entity, terms);
+    });
+
+    await Promise.all(promises).then((results: any[]) => {
+      results.forEach((result: any) => {
+        if (result) {
+          sortableEntities.push(result);
+        }
+      });
     });
 
     if (sortFunc) {
@@ -92,8 +97,23 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
       : false;
   }
 
-  protected getTermsFromSearchKey(searchKey: string) {
+  isStartWithMatched(srcText: string, terms: string[]): boolean {
+    if (srcText.length > 0) {
+      for (let i = 0; i < terms.length; ++i) {
+        if (new RegExp(`^${terms[i]}`, 'i').test(srcText)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  getTermsFromSearchKey(searchKey: string) {
     return searchKey.split(/[\s,]+/);
+  }
+
+  isInitialized(): boolean {
+    return this.entityCacheController.isInitialized();
   }
 }
 

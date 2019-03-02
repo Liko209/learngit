@@ -189,7 +189,6 @@ class PartialModifyController<T extends IdModel = IdModel>
         return transform(item);
       },
     );
-
     await this.entitySourceController.bulkUpdate(transformedModels);
     if (doPartialNotify) {
       doPartialNotify(originalEntities, updatedEntities, partialEntities);

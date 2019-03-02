@@ -8,6 +8,7 @@ import ReactDOM from 'react-dom';
 import React from 'react';
 import { Sdk, LogControlManager, service } from 'sdk';
 import { UserConfig } from 'sdk/service/account';
+import { SectionUnread, UMI_SECTION_TYPE } from 'sdk/module/state';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
 import storeManager from '@/store';
@@ -34,6 +35,7 @@ class AppModule extends AbstractModule {
   @inject(HomeService) private _homeService: HomeService;
   @inject(AppStore) private _appStore: AppStore;
   private _subModuleRegistered: boolean = false;
+  private _umiEventKeyMap: Map<UMI_SECTION_TYPE, GLOBAL_KEYS>;
 
   async bootstrap() {
     try {
@@ -117,6 +119,17 @@ class AppModule extends AbstractModule {
       }
     };
 
+    const setStaticHttpServer = (url?: string) => {
+      let staticHttpServer = url;
+      if (!staticHttpServer) {
+        const configService: service.ConfigService = ConfigService.getInstance();
+        staticHttpServer = configService.getStaticHttpServer();
+      }
+      globalStore.set(GLOBAL_KEYS.STATIC_HTTP_SERVER, staticHttpServer || '');
+    };
+
+    setStaticHttpServer(); // When the browser refreshes, it needs to be fetched locally
+
     notificationCenter.on(SERVICE.LOGIN, () => {
       updateAccountInfoForGlobalStore();
     });
@@ -125,15 +138,40 @@ class AppModule extends AbstractModule {
       updateAccountInfoForGlobalStore();
     });
 
-    notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, () => {
-      const configService: service.ConfigService = ConfigService.getInstance();
-      const staticHttpServer = configService.getStaticHttpServer();
-      globalStore.set(GLOBAL_KEYS.STATIC_HTTP_SERVER, staticHttpServer);
+    notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, (url: string) => {
+      setStaticHttpServer(url);
     });
 
     notificationCenter.on(SOCKET.NETWORK_CHANGE, (data: any) => {
       globalStore.set(GLOBAL_KEYS.NETWORK, data.state);
     });
+
+    // subscribe total_unread_count notification to global store
+    this._umiEventKeyMap = new Map<UMI_SECTION_TYPE, GLOBAL_KEYS>();
+    this._umiEventKeyMap.set(UMI_SECTION_TYPE.ALL, GLOBAL_KEYS.TOTAL_UNREAD);
+    this._umiEventKeyMap.set(
+      UMI_SECTION_TYPE.FAVORITE,
+      GLOBAL_KEYS.FAVORITE_UNREAD,
+    );
+    this._umiEventKeyMap.set(
+      UMI_SECTION_TYPE.DIRECT_MESSAGE,
+      GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD,
+    );
+    this._umiEventKeyMap.set(UMI_SECTION_TYPE.TEAM, GLOBAL_KEYS.TEAM_UNREAD);
+    const setTotalUnread = (
+      totalUnreadMap: Map<UMI_SECTION_TYPE, SectionUnread>,
+    ) => {
+      totalUnreadMap.forEach((sectionUnread: SectionUnread) => {
+        const eventKey = this._umiEventKeyMap.get(sectionUnread.section);
+        if (eventKey) {
+          globalStore.set(eventKey, {
+            unreadCount: sectionUnread.unreadCount,
+            mentionCount: sectionUnread.mentionCount,
+          });
+        }
+      });
+    };
+    notificationCenter.on(SERVICE.TOTAL_UNREAD, setTotalUnread);
 
     notificationCenter.on(SERVICE.SYNC_SERVICE.START_CLEAR_DATA, () => {
       // 1. show loading

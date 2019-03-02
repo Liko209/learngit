@@ -11,8 +11,8 @@ const mockPersonService = {
   doFuzzySearchPersons: jest.fn(),
 };
 
-jest.mock('sdk/service/person', () => ({
-  default: {
+jest.mock('sdk/module/person', () => ({
+  PersonService: {
     getInstance: () => mockPersonService,
   },
 }));

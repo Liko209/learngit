@@ -10,8 +10,7 @@ import i18next from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
-  JuiTaskSection,
-  JuiTaskNotes,
+  JuiTaskSectionOrDescription,
   JuiTaskAvatarNames,
   JuiTaskContent,
   JuiTimeMessage,
@@ -35,7 +34,7 @@ const downloadBtn = (downloadUrl: string) => (
     download={true}
     href={downloadUrl}
     variant="plain"
-    tooltipTitle={i18next.t('download')}
+    tooltipTitle={i18next.t('common.download')}
   >
     download
   </JuiIconButton>
@@ -52,8 +51,8 @@ const FILE_COMPS = {
           key={id}
           previewUrl={previewUrl}
           fileName={name}
-          i18UnfoldLess={i18next.t('collapse')}
-          i18UnfoldMore={i18next.t('expand')}
+          i18UnfoldLess={i18next.t('common.collapse')}
+          i18UnfoldMore={i18next.t('common.expand')}
           Actions={downloadBtn(downloadUrl)}
           ImageActions={downloadBtn(downloadUrl)}
         />
@@ -111,11 +110,19 @@ class Task extends React.Component<taskViewProps> {
   }
 
   render() {
-    const { task, files, startTime, endTime, hasTime, color, t } = this.props;
     const {
-      section,
-      text,
+      task,
+      files,
+      startTime,
+      endTime,
+      hasTime,
+      color,
+      t,
       notes,
+      section,
+    } = this.props;
+    const {
+      text,
       complete,
       assignedToIds,
       repeat,
@@ -138,7 +145,7 @@ class Task extends React.Component<taskViewProps> {
         Icon={<JuiTaskCheckbox checked={complete || false} />}
       >
         {endTime && (
-          <JuiTaskContent title={t('due')}>
+          <JuiTaskContent title={t('item.due')}>
             <JuiTimeMessage
               time={`${startTime} ${hasTime ? '-' : ''} ${endTime} ${timeText}`}
             />
@@ -146,10 +153,10 @@ class Task extends React.Component<taskViewProps> {
         )}
 
         {assignedToIds && assignedToIds.length > 0 && (
-          <JuiTaskContent title={t('assignee')}>
+          <JuiTaskContent title={t('item.assignee')}>
             <JuiTaskAvatarNames
               count={assignedToIds && assignedToIds.length}
-              otherText={t('avatarnamesWithOthers', {
+              otherText={t('item.avatarNamesWithOthers', {
                 count: assignedToIds.length - 2,
               })}
             >
@@ -158,17 +165,17 @@ class Task extends React.Component<taskViewProps> {
           </JuiTaskContent>
         )}
         {section && (
-          <JuiTaskContent title={t('section')}>
-            <JuiTaskSection section={section} />
+          <JuiTaskContent title={t('item.section')}>
+            <JuiTaskSectionOrDescription text={section} />
           </JuiTaskContent>
         )}
         {notes && (
-          <JuiTaskContent title={t('descriptionNotes')}>
-            <JuiTaskNotes notes={notes} />
+          <JuiTaskContent title={t('item.descriptionNotes')}>
+            <JuiTaskSectionOrDescription text={notes} />
           </JuiTaskContent>
         )}
         {files && files.length > 0 && (
-          <JuiTaskContent title={t('Attachments')}>
+          <JuiTaskContent title={t('item.attachments')}>
             {files.map((file: ExtendFileItem) => {
               return FILE_COMPS[file.type](file, this.props);
             })}

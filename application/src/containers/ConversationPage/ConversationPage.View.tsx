@@ -54,9 +54,8 @@ class ConversationPageViewComponent extends Component<
       return;
     }
     if (stream.props.hasMoreDown) {
-      return this.remountStream();
+      this.remountStream();
     }
-    return stream.scrollToBottom();
   }
 
   @action.bound
@@ -141,9 +140,16 @@ class ConversationPageViewComponent extends Component<
             />
           </JuiDropZone>
         ) : (
-          <JuiDisabledInput text={t('disabledText')} />
+          <JuiDisabledInput
+            data-test-automation-id="disabled-message-input"
+            text={t('message.prompt.disabledText')}
+          />
         )}
-        <AttachmentManager id={groupId} viewRef={this._attachmentManagerRef} />
+        <AttachmentManager
+          id={groupId}
+          viewRef={this._attachmentManagerRef}
+          forceSaveDraft={false}
+        />
       </JuiConversationPage>
     ) : null;
   }

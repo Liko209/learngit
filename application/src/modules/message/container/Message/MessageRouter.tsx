@@ -118,21 +118,21 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
             render={() => (
               <JuiConversationLoading
                 showTip={messageError}
-                tip={i18next.t('messageLoadingErrorTip')}
-                linkText={i18next.t('tryAgain')}
+                tip={i18next.t('message.prompt.MessageLoadingErrorTip')}
+                linkText={i18next.t('common.prompt.tryAgain')}
                 onClick={this.retryMessage}
               />
             )}
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.mentions}`}
-            render={props => (
+            render={(props: MessagesWrapperPops) => (
               <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
             )}
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.bookmarks}`}
-            render={props => (
+            render={(props: MessagesWrapperPops) => (
               <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
             )}
           />

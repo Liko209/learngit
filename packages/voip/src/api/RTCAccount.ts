@@ -8,19 +8,20 @@ import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
+import { kRTCAnonymous } from '../account/constants';
+
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import {
   REGISTRATION_EVENT,
   RTCSipProvisionInfo,
   RTC_PROV_EVENT,
 } from '../account/types';
-import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { v4 as uuid } from 'uuid';
-import { RTC_ACCOUNT_STATE } from './types';
+import { RTC_ACCOUNT_STATE, RTCCallOptions } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
-import { rtcNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
+import { RTCNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCenter';
 import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
 import { Listener } from 'eventemitter2';
 
@@ -58,7 +59,7 @@ class RTCAccount implements IRTCAccount {
   }
 
   destroy() {
-    rtcNetworkNotificationCenter.removeListener(
+    RTCNetworkNotificationCenter.instance().removeListener(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
     );
@@ -71,22 +72,43 @@ class RTCAccount implements IRTCAccount {
   public makeCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
-  ): RTCCall | null {
+    options?: RTCCallOptions,
+  ) {
     if (toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
-      return null;
+      return;
     }
-    if (!this._callManager.allowCall()) {
-      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
-      return null;
+    let callOption: RTCCallOptions;
+    if (options) {
+      callOption = options;
+    } else {
+      callOption = {};
     }
-    const call = new RTCCall(false, toNumber, null, this, delegate);
-    this._callManager.addCall(call);
-    return call;
+    this._regManager.makeCall(toNumber, delegate, callOption);
+  }
+
+  public makeAnonymousCall(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+    options?: RTCCallOptions,
+  ) {
+    let optionsWithAnonymous: RTCCallOptions;
+    if (options) {
+      optionsWithAnonymous = options;
+      optionsWithAnonymous.fromNumber = kRTCAnonymous;
+    } else {
+      optionsWithAnonymous = { fromNumber: kRTCAnonymous };
+    }
+    rtcLogger.error(LOG_TAG, 'make anonymous call');
+    this.makeCall(toNumber, delegate, optionsWithAnonymous);
   }
 
   isReady(): boolean {
     return this._state === RTC_ACCOUNT_STATE.REGISTERED;
+  }
+
+  state(): RTC_ACCOUNT_STATE {
+    return this._state;
   }
 
   callList(): RTCCall[] {
@@ -101,8 +123,12 @@ class RTCAccount implements IRTCAccount {
     return this._callManager.getCallByUuid(uuid);
   }
 
-  createOutgoingCallSession(toNum: string): any {
-    return this._regManager.createOutgoingCallSession(toNum, {});
+  logout() {
+    this._regManager.logout();
+  }
+
+  createOutgoingCallSession(toNum: string, options: RTCCallOptions): any {
+    return this._regManager.createOutgoingCallSession(toNum, options);
   }
 
   removeCallFromCallManager(uuid: string): void {
@@ -111,7 +137,17 @@ class RTCAccount implements IRTCAccount {
 
   private _initListener() {
     this._regManager.on(
-      REGISTRATION_EVENT.RECEIVER_INCOMING_SESSION,
+      REGISTRATION_EVENT.MAKE_OUTGOING_CALL,
+      (
+        toNumber: string,
+        delegate: IRTCCallDelegate,
+        options: RTCCallOptions,
+      ) => {
+        this._onMakeOutgoingCall(toNumber, delegate, options);
+      },
+    );
+    this._regManager.on(
+      REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE,
       (session: any) => {
         this._onReceiveInvite(session);
       },
@@ -122,11 +158,16 @@ class RTCAccount implements IRTCAccount {
         this._onAccountStateChanged(state);
       },
     );
+
+    this._regManager.on(REGISTRATION_EVENT.LOGOUT_ACTION, () => {
+      this._onLogoutAction();
+    });
+
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
     });
 
-    rtcNetworkNotificationCenter.on(
+    RTCNetworkNotificationCenter.instance().on(
       RTC_NETWORK_EVENT.NETWORK_CHANGE,
       this._networkListener,
     );
@@ -142,6 +183,27 @@ class RTCAccount implements IRTCAccount {
     }
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
+    }
+  }
+
+  private _onLogoutAction() {
+    this._callManager.endAllCalls();
+    this._provManager.clearProvInfo();
+  }
+
+  private _onMakeOutgoingCall(
+    toNumber: string,
+    delegate: IRTCCallDelegate,
+    options: RTCCallOptions,
+  ) {
+    if (!this._callManager.allowCall()) {
+      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
+      return;
+    }
+    const call = new RTCCall(false, toNumber, null, this, delegate, options);
+    this._callManager.addCall(call);
+    if (this._delegate) {
+      this._delegate.onMadeOutgoingCall(call);
     }
   }
 
@@ -176,10 +238,6 @@ class RTCAccount implements IRTCAccount {
       endPointId: uuid(),
       audioHelper: options.audioHelper,
       logLevel: options.logLevel,
-      media: {
-        remote: rtcMediaManager.getRemoteAudio(),
-        local: rtcMediaManager.getLocalAudio(),
-      },
     };
     this._regManager.provisionReady(sipProv, info);
   }

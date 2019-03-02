@@ -14,6 +14,7 @@ import { Group } from 'sdk/module/group/entity';
 import { errorHelper } from 'sdk/error';
 import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
+
 import {
   onScrollToTop,
   onScroll,
@@ -23,7 +24,7 @@ import {
 } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps } from './types';
+import { StreamProps, StreamItemType } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -38,11 +39,11 @@ import { generalErrorHandler } from '@/utils/error';
 import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
-  private _postService: NewPostService = NewPostService.getInstance();
+  private _postService: PostService = PostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
@@ -87,8 +88,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
-  get postIds() {
+  get postIds(): number[] {
     return _(this.items)
+      .filter({ type: StreamItemType.POST })
       .flatMap('value')
       .compact()
       .value();
@@ -146,6 +148,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.props.groupId,
     );
   }
+  @computed
+  get lastPost() {
+    const lastPostId = _.last(this.postIds);
+    return lastPostId && getEntity(ENTITY_NAME.POST, lastPostId);
+  }
 
   updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
@@ -165,7 +172,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToTop
+  @onScrollToTop((vm: StreamViewModel) => vm.hasMoreUp)
   @loadingTop
   @action
   async loadPrevPosts() {
@@ -178,7 +185,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToBottom
+  @onScrollToBottom((vm: StreamViewModel) => vm.hasMoreDown)
   @loadingBottom
   @action
   async loadNextPosts() {
@@ -292,19 +299,33 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _handleLoadMoreError(err: Error, direction: QUERY_DIRECTION) {
     if (this._canHandleError(err)) {
-      Notification.flashToast({
-        message: `SorryWeWereNotAbleToLoad${
-          direction === QUERY_DIRECTION.OLDER ? 'Older' : 'Newer'
-        }Messages`,
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
+      this._debouncedToast(direction);
     } else {
       generalErrorHandler(err);
     }
   }
+
+  private _debouncedToast = _.wrap(
+    _.debounce(
+      (direction: QUERY_DIRECTION) => {
+        Notification.flashToast({
+          message:
+            direction === QUERY_DIRECTION.OLDER
+              ? 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages'
+              : 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
+          fullWidth: false,
+          dismissible: false,
+        });
+      },
+      1000,
+      { trailing: false, leading: true },
+    ),
+    (func, direction: QUERY_DIRECTION) => {
+      return func(direction);
+    },
+  );
 }
 
 export { StreamViewModel };

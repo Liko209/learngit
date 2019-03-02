@@ -5,6 +5,7 @@
  */
 
 import { mainLogger } from 'sdk';
+import { ItemService } from 'sdk/module/item/service';
 const logTag = '[Upgrade]';
 
 class Upgrade {
@@ -76,6 +77,12 @@ class Upgrade {
 
     if (this._editorIsOnFocusAndNotEmpty()) {
       mainLogger.info(`${logTag}Forbidden to reload due to editor is focused`);
+      return false;
+    }
+
+    const itemService = ItemService.getInstance() as ItemService;
+    if (itemService.hasUploadingFiles()) {
+      mainLogger.info(`${logTag}Forbidden to reload due to uploading file`);
       return false;
     }
 

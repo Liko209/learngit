@@ -5,9 +5,7 @@
  */
 
 import { MoreViewModel } from '../More.ViewModel';
-import { service } from 'sdk';
-
-const { GroupService } = service;
+import { GroupService } from 'sdk/module/group';
 
 const groupService = {
   getGroupEmail: jest.fn(),

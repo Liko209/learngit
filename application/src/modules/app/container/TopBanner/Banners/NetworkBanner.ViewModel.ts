@@ -17,7 +17,7 @@ type BannerMap = {
 const BANNER_MAP: BannerMap = {
   online: null,
   offline: {
-    message: 'NoInternetConnection',
+    message: 'common.prompt.NoInternetConnection',
     type: ToastType.ERROR,
   },
 };

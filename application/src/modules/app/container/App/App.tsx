@@ -54,12 +54,7 @@ class App extends React.Component {
     const { globalLoading } = this._appStore;
     return (
       <>
-        <link
-          rel="stylesheet"
-          type="text/css"
-          href={config.get('iconLink')}
-          crossOrigin="anonymous"
-        />
+        <link rel="stylesheet" type="text/css" href={config.get('iconLink')} />
         <ThemeProvider>
           {globalLoading ? (
             <JuiContentLoader />

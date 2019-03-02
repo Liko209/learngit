@@ -3,7 +3,8 @@
  * @Date: 2019-01-16 13:25:57
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostDao, ConfigDao, daoManager } from '../../../../dao';
+import { ConfigDao, daoManager } from '../../../../dao';
+import { PostDao } from '../../../post/dao';
 import { PreInsertController } from '../impl/PreInsertController';
 import { ProgressService, PROGRESS_STATUS } from '../../../progress';
 import notificationCenter from '../../../../service/notificationCenter';
@@ -11,6 +12,7 @@ import notificationCenter from '../../../../service/notificationCenter';
 jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao');
+jest.mock('../../../post/dao');
 
 describe('PreInsertController', () => {
   let preInsertController: PreInsertController;

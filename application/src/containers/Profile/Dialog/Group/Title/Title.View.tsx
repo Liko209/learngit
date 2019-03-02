@@ -16,24 +16,26 @@ import { Favorite } from '@/containers/common/Favorite';
 import { Privacy } from '@/containers/common/Privacy';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { More } from './More';
-import portalManager from '@/common/PortalManager';
 import { TeamSettingButton } from '@/containers/common/TeamSettingButton';
+import { DialogContext } from '@/containers/Dialog';
 
 @observer
 class ProfileDialogGroupTitleViewComponent extends Component<
   WithNamespaces & ProfileDialogGroupTitleViewProps
 > {
-  dismiss = () => portalManager.dismiss();
+  static contextType = DialogContext;
+
+  dismiss = this.context;
 
   render() {
     const { id, t, group } = this.props;
     return (
       <>
         <JuiDialogTitleWithActionLeft>
-          {t('Profile')}
+          {t('people.team.profile')}
         </JuiDialogTitleWithActionLeft>
         <JuiDialogTitleWithActionRight>
-          {group.isTeam && <Privacy id={id} size="medium" />}
+          <Privacy id={id} size="medium" />
           <Favorite id={id} size="medium" />
           {group.isTeam && group.isMember && (
             <TeamSettingButton id={id} size="medium" />
@@ -41,8 +43,8 @@ class ProfileDialogGroupTitleViewComponent extends Component<
           {group.isTeam && <More id={id} size="medium" />}
           <JuiIconButton
             onClick={this.dismiss}
-            tooltipTitle={t('close')}
-            ariaLabel={t('close')}
+            tooltipTitle={t('common.dialog.close')}
+            ariaLabel={t('common.dialog.close')}
           >
             close
           </JuiIconButton>

@@ -13,9 +13,9 @@ import { grey, typography } from '../../foundation/utils/styles';
 const TipsText = styled(MuiTypography)`
   && {
     color: ${grey('700')};
-    ${typography('caption')};
+    ${typography('caption1')};
     * {
-      ${typography('caption')};
+      ${typography('caption1')};
     }
   }
 `;

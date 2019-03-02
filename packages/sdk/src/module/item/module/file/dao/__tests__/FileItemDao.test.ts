@@ -89,4 +89,79 @@ describe('Event Item Dao', () => {
       expect(result).toHaveLength(0);
     });
   });
+
+  describe('toSanitizedItem', () => {
+    function setUpData() {
+      const fileItem = {
+        company_id: 139265,
+        created_at: 1546857116347,
+        creator_id: 7307267,
+        deactivated: false,
+        function_id: 'file',
+        group_ids: [842096646],
+        id: 536412170,
+        is_new: false,
+        model_size: 0,
+        modified_at: 1546857116623,
+        name: '人月神话（CN）.pdf',
+        post_ids: [3361800196],
+        source: 'upload',
+        type: 'application/pdf',
+        type_id: 10,
+        version: 2271038454890496,
+        versions: [],
+      };
+      return {
+        fileItem,
+      };
+    }
+
+    const { fileItem } = setUpData();
+    it('should return sanitized item', () => {
+      expect(dao.toSanitizedItem(fileItem)).toEqual({
+        id: fileItem.id,
+        group_ids: fileItem.group_ids,
+        created_at: fileItem.created_at,
+        name: fileItem.name,
+        type: fileItem.type,
+      });
+    });
+  });
+
+  describe('toPartialSanitizedItem', () => {
+    const item = {
+      company_id: 139265,
+      created_at: 1546857116347,
+      creator_id: 7307267,
+      deactivated: false,
+      function_id: 'file',
+      group_ids: [842096646],
+      id: 536412170,
+      is_new: false,
+      model_size: 0,
+      modified_at: 1546857116623,
+      name: '人月神话（CN）.pdf',
+      post_ids: [3361800196],
+      source: 'upload',
+      type: 'application/pdf',
+      type_id: 10,
+      version: 2271038454890496,
+      versions: [],
+    };
+
+    const itemResult = {
+      id: 536412170,
+      created_at: 1546857116347,
+      group_ids: [842096646],
+      name: '人月神话（CN）.pdf',
+      type: 'application/pdf',
+    };
+
+    it.each`
+      partialItem | result        | comments
+      ${item}     | ${itemResult} | ${'all properties'}
+    `(' should return object $comments', ({ partialItem, result }) => {
+      expect(dao.toPartialSanitizedItem(partialItem)).toEqual(result);
+    });
+  });
 });

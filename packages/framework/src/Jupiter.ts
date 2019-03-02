@@ -3,8 +3,9 @@
  * @Date: 2019-01-07 10:31:32
  * Copyright © RingCentral. All rights reserved.
  */
+import getDecorators from 'inversify-inject-decorators';
 import { AbstractModule } from './AbstractModule';
-import { Container, container, decorate, injectable, interfaces } from './ioc';
+import { Container, decorate, injectable, interfaces } from './ioc';
 import { ModuleConfig } from './types';
 
 /**
@@ -90,4 +91,24 @@ class Jupiter {
   }
 }
 
-export { Jupiter };
+const container = new Container({
+  defaultScope: 'Singleton',
+  skipBaseClassChecks: true,
+});
+
+container.bind<Jupiter>(Jupiter).to(Jupiter);
+const {
+  lazyInject,
+  lazyInjectNamed,
+  lazyInjectTagged,
+  lazyMultiInject,
+} = getDecorators(container, false);
+
+export {
+  Jupiter,
+  container,
+  lazyInject,
+  lazyInjectNamed,
+  lazyInjectTagged,
+  lazyMultiInject,
+};

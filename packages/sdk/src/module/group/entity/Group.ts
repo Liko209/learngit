@@ -55,6 +55,7 @@ type GroupCommon = {
   _delta?: { add?: object; remove?: object; set?: object };
   is_public?: boolean;
   description?: string;
+  is_company_team: boolean;
   __send_failure_post_ids?: number[];
   __draft?: string;
   __last_accessed_at?: number;
@@ -65,7 +66,7 @@ type Group = ExtendedBaseModel & {
 } & GroupCommon;
 
 type TeamPermissionParams = {
-  members: number[];
+  members?: number[];
   is_team?: boolean;
   guest_user_company_ids?: number[];
   permissions?: TeamPermission;

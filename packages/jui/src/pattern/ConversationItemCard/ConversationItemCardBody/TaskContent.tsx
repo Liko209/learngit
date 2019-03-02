@@ -5,16 +5,12 @@
  */
 import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
-import { typography, grey, spacing } from '../../../foundation/utils/styles';
+import { typography, grey } from '../../../foundation/utils/styles';
 
 type Props = {
   children: React.ReactNode;
   title?: string;
 };
-
-const StyledWrapper = styled.div`
-  margin-top: ${spacing(2)};
-`;
 
 const StyledTitle = styled.div`
   ${typography('caption1')};
@@ -24,10 +20,10 @@ const StyledTitle = styled.div`
 `;
 
 const JuiTaskContent = memo((props: Props) => (
-  <StyledWrapper>
+  <div>
     {props.title && <StyledTitle>{props.title}</StyledTitle>}
     {props.children}
-  </StyledWrapper>
+  </div>
 ));
 
 JuiTaskContent.displayName = 'JuiTaskContent';

@@ -3,12 +3,13 @@
  * @Date: 2018-03-01 14:02:24
  */
 /// <reference path="../../../__tests__/types.d.ts" />
-import { ResultOk } from 'foundation';
 import AccountService from '..';
-import { daoManager, AccountDao, PersonDao } from '../../../dao';
+import { daoManager, AccountDao } from '../../../dao';
+import { PersonDao } from '../../../module/person/dao';
 import { refreshToken } from '../../../api';
 
 jest.mock('../../../dao');
+jest.mock('../../../module/person/dao');
 jest.mock('../../../api');
 
 describe('AccountService', () => {
@@ -66,13 +67,13 @@ describe('AccountService', () => {
 
   describe('refreshRCToken()', () => {
     it('should refresh rc roken if api return data', () => {
-      const result = new ResultOk({
+      const result = {
         timestamp: 1,
         accessTokenExpireIn: 6001,
         refreshTokenExpireIn: 6001,
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
-      });
+      };
       refreshToken.mockResolvedValue(result);
       expect.assertions(1);
       const token = accountService.refreshRCToken();
@@ -86,13 +87,13 @@ describe('AccountService', () => {
     });
 
     it('should refresh rc token if api return data', () => {
-      const result = new ResultOk({
+      const result = {
         timestamp: 1,
         accessTokenExpireIn: 6001,
         refreshTokenExpireIn: 6001,
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
-      });
+      };
       refreshToken.mockResolvedValueOnce(result);
       expect.assertions(1);
       const token = accountService.refreshRCToken();

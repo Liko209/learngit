@@ -7,7 +7,6 @@ import { TaskDto, SceneDto } from "../models";
 import { sceneConfigFactory } from "./config/SceneConfigFactory";
 import { LoginGatherer } from "../gatherers/LoginGatherer";
 import { SwitchConversationGatherer } from "../gatherers/SwitchConversationGatherer";
-import { mockHelper } from "../mock";
 import { metriceService } from "../services/MetricService";
 
 class SwitchConversationScene extends Scene {
@@ -27,8 +26,6 @@ class SwitchConversationScene extends Scene {
     this.config.passes[0].gatherers.unshift({
       instance: new SwitchConversationGatherer(this.convrsationIds)
     });
-
-    mockHelper.open();
   }
 
   async saveMetircsIntoDb(): Promise<SceneDto> {
@@ -39,6 +36,9 @@ class SwitchConversationScene extends Scene {
       SwitchConversationGatherer.name
     );
     return sceneDto;
+  }
+
+  async saveMetircsIntoDisk() {
   }
 }
 

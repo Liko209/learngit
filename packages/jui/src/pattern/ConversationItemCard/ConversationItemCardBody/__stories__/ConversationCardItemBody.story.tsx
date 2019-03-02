@@ -11,11 +11,10 @@ import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import {
   JuiEventLocation,
   JuiEventDescription,
-  JuiTaskSection,
-  JuiTaskNotes,
-  JuiTaskAvatarName,
+  JuiTaskSectionOrDescription,
   JuiAvatarName,
   JuiTimeMessage,
+  JuiTaskAvatarNames,
 } from '..';
 
 import { JuiAvatar } from '../../../../components/Avatar';
@@ -35,32 +34,27 @@ storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
   });
 
 storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
-  .addDecorator(withInfoDecorator(JuiTaskNotes, { inline: true }))
-  .add('TaskNotes', () => {
-    return <JuiTaskNotes notes="notes" />;
-  });
-
-storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
-  .addDecorator(withInfoDecorator(JuiTaskNotes, { inline: true }))
-  .add('TaskSection', () => {
-    return <JuiTaskSection section="section" />;
+  .addDecorator(
+    withInfoDecorator(JuiTaskSectionOrDescription, { inline: true }),
+  )
+  .add('JuiTaskSectionOrDescription', () => {
+    return <JuiTaskSectionOrDescription text="notes" />;
   });
 
 const Avatar = <JuiAvatar src={avatar} size="small" />;
 
-const AvatarName1 = <JuiAvatarName avatar={Avatar} name="zigoErbi1" key="1" />;
+const AvatarName1 = <JuiAvatarName Avatar={Avatar} name="zigoErbi1" key="1" />;
 
-const AvatarName2 = <JuiAvatarName avatar={Avatar} name="zigoErbi2" key="2" />;
+const AvatarName2 = <JuiAvatarName Avatar={Avatar} name="zigoErbi2" key="2" />;
 
 storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
-  .addDecorator(withInfoDecorator(JuiTaskAvatarName, { inline: true }))
+  .addDecorator(withInfoDecorator(JuiTaskAvatarNames, { inline: true }))
   .add('TaskAvatarName', () => {
     return (
-      <JuiTaskAvatarName
-        avatarNames={[AvatarName1, AvatarName2]}
-        count={13}
-        tOther="and other 11 people"
-      />
+      <JuiTaskAvatarNames count={13}>
+        {AvatarName1}
+        {AvatarName2}
+      </JuiTaskAvatarNames>
     );
   });
 

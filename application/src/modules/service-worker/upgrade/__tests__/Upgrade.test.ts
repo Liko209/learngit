@@ -6,6 +6,18 @@
 
 import { Upgrade } from '../Upgrade';
 
+jest.mock('sdk/module/item/service', () => ({
+  ItemService: {
+    getInstance: () => {
+      return {
+        hasUploadingFiles: () => {
+          return false;
+        },
+      };
+    },
+  },
+}));
+
 describe('Upgrade', async () => {
   let upgradeHandler: Upgrade | undefined;
 
