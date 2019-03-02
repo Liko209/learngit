@@ -17,6 +17,7 @@ import { ENTITY } from 'sdk/service';
 import { Item } from 'sdk/module/item/entity';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
+import { mainLogger } from 'sdk';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -103,20 +104,45 @@ class PostCacheController {
 
       if (!jump2PostId) {
         this.set(groupId, listHandler);
+        listHandler.maintainMode = true;
       }
     }
     return listHandler;
   }
 
   setCurrentConversation(groupId: number) {
-    this._currentGroupId = groupId;
+    if (this._currentGroupId !== groupId) {
+      if (this.has(this._currentGroupId)) {
+        mainLogger.debug(
+          `PostCacheController: setCurrentConversation original =>  ${
+            this._currentGroupId
+          }`,
+        );
+        this.get(this._currentGroupId).maintainMode = true;
+      }
+
+      if (this.has(groupId)) {
+        mainLogger.debug(
+          `PostCacheController: setCurrentConversation new => ${groupId}`,
+        );
+        this.get(groupId).maintainMode = false;
+      }
+
+      this._currentGroupId = groupId;
+    }
   }
 
   releaseCurrentConversation(groupId: number) {
     if (this._currentGroupId === groupId) {
-      this.get(groupId).dispose();
-      this._cacheMap.delete(groupId);
+      this._remove(groupId);
       this._currentGroupId = 0;
+    } else {
+      if (this.has(groupId)) {
+        mainLogger.debug(
+          `PostCacheController: releaseCurrentConversation =>  ${groupId}`,
+        );
+        this.get(groupId).maintainMode = true;
+      }
     }
   }
 
@@ -127,10 +153,14 @@ class PostCacheController {
   remove(groupId: number) {
     if (this.has(groupId)) {
       if (this._currentGroupId !== groupId) {
-        this.get(groupId).dispose();
-        this._cacheMap.delete(groupId);
+        this._remove(groupId);
       }
     }
+  }
+
+  private _remove(groupId: number) {
+    this.get(groupId).dispose();
+    this._cacheMap.delete(groupId);
   }
 }
 
