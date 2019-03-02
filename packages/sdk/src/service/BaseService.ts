@@ -340,6 +340,7 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
 
   private _subscribe() {
     Object.entries(this._subscriptions).forEach(([eventName, fn]) => {
+      mainLogger.info('base service _subscribe eventName:', eventName);
       if (eventName.startsWith('SOCKET')) {
         return dataDispatcher.register(eventName as SOCKET, fn);
       }
