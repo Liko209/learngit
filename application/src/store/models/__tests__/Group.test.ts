@@ -5,24 +5,28 @@
  */
 import GroupModel from '../Group';
 import { Group } from 'sdk/models';
-import { UserConfig } from 'sdk/service/account/UserConfig';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
+import { GlobalConfigService } from 'sdk/module/config';
+import { AccountGlobalConfig } from 'sdk/service/account/config';
 
 jest.mock('sdk/api');
-jest.mock('sdk/service/account/UserConfig');
+jest.mock('sdk/service/account/config');
 jest.mock('@/store/utils/entities');
+jest.mock('sdk/module/config');
+jest.mock('sdk/service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 describe('GroupModel', () => {
   const mockUserId = 1;
   const mockUserCompanyId = 11;
   beforeEach(() => {
     jest.resetAllMocks();
-    UserConfig.getCurrentUserId = jest
+    AccountGlobalConfig.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
-    UserConfig.getCurrentCompanyId = jest
+    AccountGlobalConfig.getCurrentCompanyId = jest
       .fn()
       .mockImplementation(() => mockUserCompanyId);
 
@@ -33,6 +37,13 @@ describe('GroupModel', () => {
         };
       }
     });
+
+    AccountGlobalConfig.getCurrentUserId = jest
+      .fn()
+      .mockReturnValue(mockUserId);
+    AccountGlobalConfig.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(mockUserCompanyId);
   });
   describe('isThePersonGuest()', () => {
     it('should return result base on whether person company is in guest_user_company_ids', () => {

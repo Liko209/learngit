@@ -36,4 +36,14 @@ function getGlobalValue(key: keyof typeof GLOBAL_VALUES) {
   return store.get(key);
 }
 
-export { getEntity, getSingleEntity, getGlobalValue };
+function hasValidEntity<T extends IdModel, K extends Entity>(
+  entityName: ENTITY_NAME,
+  id: number,
+) {
+  const store = storeManager.getEntityMapStore(
+    entityName,
+  ) as MultiEntityMapStore<T, K>;
+  return store.hasValid(id);
+}
+
+export { hasValidEntity, getEntity, getSingleEntity, getGlobalValue };

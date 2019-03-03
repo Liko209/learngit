@@ -113,6 +113,10 @@ class Search extends BaseWebComponent {
     await this.t.expect(this.teams.withText(team.name).exists).ok({ timeout });
   }
 
+  async quit() {
+    await this.t.pressKey('ESC');
+  }
+
 }
 
 class SearchItem extends BaseWebComponent {

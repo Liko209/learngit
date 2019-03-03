@@ -94,7 +94,7 @@ export class FetchSortableDataListHandler<
     if (!this._sortableDataProvider) {
       return mainLogger.warn('data fetcher should be defined ');
     }
-    const { data, hasMore } = await this._sortableDataProvider.fetchData(
+    const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
       direction,
       pageSize,
       anchor,

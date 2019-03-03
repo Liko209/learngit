@@ -11,7 +11,6 @@ import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
 import { GroupState, PartialWithKey } from '../../../models';
 import { GroupDao } from '../../../module/group/dao';
-import { UserConfig } from '../../../service/account';
 import { EVENT_TYPES } from '../../../service/constants';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
 import notificationCenter, {
@@ -23,6 +22,7 @@ import { Post } from '../../post/entity';
 import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
+import { AccountGlobalConfig } from '../../../service/account/config';
 
 class GroupHandleDataController {
   getExistedAndTransformDataFromPartial = async (
@@ -131,7 +131,7 @@ class GroupHandleDataController {
         const beRemovedAsGuest =
           transformed.removed_guest_user_ids &&
           transformed.removed_guest_user_ids.includes(
-            UserConfig.getCurrentUserId(),
+            AccountGlobalConfig.getCurrentUserId(),
           );
 
         if (beRemovedAsGuest) {
@@ -339,9 +339,10 @@ class GroupHandleDataController {
     await groupDao.doInTransaction(async () => {
       const groups: (null | Partial<Raw<Group>>)[] = await Promise.all(
         uniqMaxPosts.map(async (post: Post) => {
+          // for index data flow, group will processed first, so all posts are not newer than most recent post, we still need to update hidden flag
+          ids.push(post.group_id);
           const group: null | Group = await groupDao.get(post.group_id);
           if (group && this.isNeedToUpdateMostRecent4Group(post, group)) {
-            ids.push(post.group_id);
             const pg: Partial<Raw<Group>> = {
               _id: post.group_id,
               most_recent_post_created_at: post.created_at,
@@ -383,7 +384,7 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
         return true;

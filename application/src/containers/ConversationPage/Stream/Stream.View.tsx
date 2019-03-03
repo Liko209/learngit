@@ -24,6 +24,7 @@ import { StreamItem, StreamItemType, StreamViewProps } from './types';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { toTitleCase } from '@/utils/string';
 import { translate, WithNamespaces } from 'react-i18next';
+import { getGlobalValue } from '@/store/utils';
 
 const VISIBILITY_SENSOR_OFFSET = { top: 80 };
 const LOADING_DELAY = 500;
@@ -44,6 +45,7 @@ class StreamViewComponent extends Component<Props> {
   private _ro: ResizeObserver[] = [];
   private _globalStore = storeManager.getGlobalStore();
   private _listLastWidth = 0;
+  private _currentUser = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   @observable
   private _hideList = true;
   state = { _jumpToPostId: 0 };
@@ -91,34 +93,46 @@ class StreamViewComponent extends Component<Props> {
   }
 
   async componentDidUpdate(prevProps: StreamViewProps) {
-    const { hasMoreDown, hasMoreUp, postIds: prevPostIds } = prevProps;
-    const { postIds, mostRecentPostId } = this.props;
+    const {
+      hasMoreDown,
+      hasMoreUp,
+      postIds: prevPostIds,
+      lastPost: prevLastPost,
+    } = prevProps;
+    const { postIds, mostRecentPostId, lastPost: currentLastPost } = this.props;
     const prevSize = prevPostIds.length;
     const currSize = postIds.length;
-    const prevLastPost = _(prevPostIds).last();
-    const currentLastPost = _(postIds).last();
     if (postIds.length && mostRecentPostId) {
       if (!postIds.includes(mostRecentPostId)) {
         storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
       }
     }
-    if (prevSize === 0) return;
-    if (prevSize < currSize) {
-      // scroll bottom and load post
-      if (prevLastPost !== currentLastPost) {
-        if (this._isAtBottom && !hasMoreDown) {
-          return this.scrollToBottom();
-        }
-      }
-      // scroll TOP and load posts
-      if (this._isAtTop && hasMoreUp && this._listRef.current) {
-        const parent = getScrollParent(this._listRef.current);
-        parent.scrollTop =
-          this._scrollTop + parent.scrollHeight - this._scrollHeight;
-        return;
+
+    if (prevSize === 0 || !currentLastPost) return;
+    const PostAdded = prevSize <= currSize;
+
+    if (!PostAdded) {
+      return;
+    }
+
+    // scroll bottom and load post
+    const newPostAddedAtBottom = prevLastPost !== currentLastPost;
+
+    if (newPostAddedAtBottom) {
+      const receivePostWhenAtBottom = this._isAtBottom && !hasMoreDown;
+      const receivePostFromCurrentUser =
+        currentLastPost.creatorId === this._currentUser;
+      if (receivePostWhenAtBottom || receivePostFromCurrentUser) {
+        return this.scrollToBottom();
       }
     }
-    return;
+
+    // scroll TOP and load posts
+    if (this._isAtTop && hasMoreUp && this._listRef.current) {
+      const parent = getScrollParent(this._listRef.current);
+      parent.scrollTop =
+        this._scrollTop + parent.scrollHeight - this._scrollHeight;
+    }
   }
 
   private async _stickToBottom() {
