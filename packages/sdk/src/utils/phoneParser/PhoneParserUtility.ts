@@ -363,6 +363,5 @@ class PhoneParserUtility {
 }
 
 // PhoneParserUtility.moduleLoaded = false; // todo: check false
-PhoneParserUtility.loadModule(); // todo: load when login
 
 export { PhoneParserUtility };
