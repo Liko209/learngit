@@ -4,28 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { RcInfoConfig } from '../../config';
+import { NewGlobalConfig } from '../../../../service/config/NewGlobalConfig';
 import { RcInfoController } from '../RcInfoController';
-import { RcInfoApi } from '../../../../api/ringcentral/RcInfoApi';
-import { daoManager } from '../../../../dao';
+import { RcInfoApi, TelephonyApi } from '../../../../api/ringcentral';
+import { PhoneParserUtility } from '../../../../utils/phoneParser';
+
+jest.mock('../../config');
 
 describe('RcInfoController', () => {
   let rcInfoController: RcInfoController;
-  let mockPut = jest.fn();
-  let mockGet = jest.fn();
   beforeEach(() => {
     jest.clearAllMocks();
-    mockPut = jest.fn();
-    mockGet = jest.fn();
-    daoManager.getKVDao = jest.fn().mockReturnValue({
-      put: mockPut,
-      get: mockGet,
-    });
     rcInfoController = new RcInfoController();
   });
 
   describe('requestRcInfo()', () => {
     it('should call correct function', () => {
-      mockGet.mockReturnValue('RC');
+      NewGlobalConfig.getAccountType = jest.fn().mockReturnValue('RC');
       rcInfoController.requestRcClientInfo = jest.fn();
       rcInfoController.requestRcAccountInfo = jest.fn();
       rcInfoController.requestRcExtensionInfo = jest.fn();
@@ -38,7 +34,7 @@ describe('RcInfoController', () => {
     });
 
     it('should call correct function', () => {
-      mockGet.mockReturnValue('GLIP');
+      NewGlobalConfig.getAccountType = jest.fn().mockReturnValue('GLIP');
       rcInfoController.requestRcClientInfo = jest.fn();
       rcInfoController.requestRcAccountInfo = jest.fn();
       rcInfoController.requestRcExtensionInfo = jest.fn();
@@ -56,7 +52,7 @@ describe('RcInfoController', () => {
       RcInfoApi.requestRcClientInfo = jest.fn().mockReturnValue('rcClientInfo');
       await rcInfoController.requestRcClientInfo();
       expect(RcInfoApi.requestRcClientInfo).toBeCalledTimes(1);
-      expect(mockPut).toBeCalledWith('client_info', 'rcClientInfo');
+      expect(RcInfoConfig.setRcClientInfo).toBeCalledWith('rcClientInfo');
     });
   });
 
@@ -67,7 +63,7 @@ describe('RcInfoController', () => {
         .mockReturnValue('rcAccountInfo');
       await rcInfoController.requestRcAccountInfo();
       expect(RcInfoApi.requestRcAccountInfo).toBeCalledTimes(1);
-      expect(mockPut).toBeCalledWith('account_info', 'rcAccountInfo');
+      expect(RcInfoConfig.setRcAccountInfo).toBeCalledWith('rcAccountInfo');
     });
   });
 
@@ -78,7 +74,7 @@ describe('RcInfoController', () => {
         .mockReturnValue('rcExtensionInfo');
       await rcInfoController.requestRcExtensionInfo();
       expect(RcInfoApi.requestRcExtensionInfo).toBeCalledTimes(1);
-      expect(mockPut).toBeCalledWith('extension_info', 'rcExtensionInfo');
+      expect(RcInfoConfig.setRcExtensionInfo).toBeCalledWith('rcExtensionInfo');
     });
   });
 
@@ -89,7 +85,20 @@ describe('RcInfoController', () => {
         .mockReturnValue('rcRolePermission');
       await rcInfoController.requestRcRolePermission();
       expect(RcInfoApi.requestRcRolePermission).toBeCalledTimes(1);
-      expect(mockPut).toBeCalledWith('role_permission', 'rcRolePermission');
+      expect(RcInfoConfig.setRcRolePermissions).toBeCalledWith(
+        'rcRolePermission',
+      );
+    });
+  });
+
+  describe('requestRcPhoneData()', () => {
+    it('should send request and save to storage', async () => {
+      TelephonyApi.getPhoneParserData = jest
+        .fn()
+        .mockReturnValue('rcPhoneData');
+      await rcInfoController.requestRcPhoneData();
+      expect(TelephonyApi.getPhoneParserData).toBeCalledTimes(1);
+      expect(RcInfoConfig.setRcPhoneData).toBeCalledWith('rcPhoneData');
     });
   });
 });

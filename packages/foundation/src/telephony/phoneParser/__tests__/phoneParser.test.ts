@@ -44,7 +44,7 @@ describe('PhoneParser', () => {
         ).toEqual(2);
 
         resolve();
-      },         1000);
+      },         4000);
     }).catch(err => console.error(err));
 
     await waiter;

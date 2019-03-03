@@ -2,7 +2,7 @@ import ConfigChangeNotifier from '../configChangeNotifier';
 import FeatureFlag from '../FeatureFlag';
 import FlagCalculator from '../FlagCalculator';
 import { BETA_FEATURE, IFlag } from '../interface';
-import { daoManager } from '../../../dao';
+import { RcInfoConfig } from '../../../module/rcInfo/config';
 import { RcInfoApi } from '../../../api/ringcentral/RcInfoApi';
 
 jest.mock('../FlagCalculator');
@@ -62,13 +62,11 @@ describe('FeatureFlag', () => {
 
   describe('getServicePermission()', () => {
     it('should get correct permission when dao has extension info', async () => {
-      daoManager.getKVDao = jest.fn().mockReturnValue({
-        get: jest.fn().mockReturnValue({
-          serviceFeatures: [
-            { featureName: 'log', enabled: true },
-            { featureName: 'call', enabled: false },
-          ],
-        }),
+      RcInfoConfig.getRcExtensionInfo = jest.fn().mockReturnValue({
+        serviceFeatures: [
+          { featureName: 'log', enabled: true },
+          { featureName: 'call', enabled: false },
+        ],
       });
       RcInfoApi.requestRcExtensionInfo = jest.fn();
       featureFlag.handleData = jest.fn();
@@ -81,9 +79,7 @@ describe('FeatureFlag', () => {
     });
 
     it('should get correct permission when dao does not have extension info', async () => {
-      daoManager.getKVDao = jest.fn().mockReturnValue({
-        get: jest.fn().mockReturnValue(undefined),
-      });
+      RcInfoConfig.getRcExtensionInfo = jest.fn().mockReturnValue(undefined);
       RcInfoApi.requestRcExtensionInfo = jest.fn().mockReturnValue({
         serviceFeatures: [],
       });
