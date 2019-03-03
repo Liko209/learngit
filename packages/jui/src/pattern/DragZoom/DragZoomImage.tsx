@@ -7,7 +7,12 @@ import React, { Component, createRef, RefObject } from 'react';
 
 import { JuiButton } from '../../components/Buttons';
 import { JuiImageView } from '../../components/ImageView';
-import { ElementRect, JuiZoomComponent } from '../../components/ZoomArea';
+import {
+  ElementRect,
+  JuiZoomComponent,
+  Transform,
+  Position,
+} from '../../components/ZoomArea';
 import styled from '../../foundation/styled-components';
 import {
   DEFAULT_OPTIONS as DEFAULT_DRAG_ZOOM_OPTIONS,
@@ -18,12 +23,15 @@ import {
 type JuiDragZoomImageProps = {
   src: string;
   options?: Partial<JuiDragZoomImageOptions>;
+  positions?: Position[];
 };
 
 type JuiDragZoomImageState = {
   scale: number;
   minScale: number;
   maxScale: number;
+  transform: Transform;
+  contentRect: ElementRect;
 };
 
 type JuiDragZoomImageOptions = {
@@ -31,7 +39,7 @@ type JuiDragZoomImageOptions = {
   maxPixel: number;
 } & JuiDragZoomOptions;
 
-const DEFAULT_OPTIONS: JuiDragZoomImageOptions = {
+const DEFAULT_DRAG_ZOOM_IMAGE_OPTIONS: JuiDragZoomImageOptions = {
   ...DEFAULT_DRAG_ZOOM_OPTIONS,
   step: 0.1,
   minPixel: 10,
@@ -63,10 +71,10 @@ function ensureOptions(
 ): JuiDragZoomImageOptions {
   return options
     ? {
-      ...DEFAULT_OPTIONS,
+      ...DEFAULT_DRAG_ZOOM_IMAGE_OPTIONS,
       ...options,
     }
-    : DEFAULT_OPTIONS;
+    : DEFAULT_DRAG_ZOOM_IMAGE_OPTIONS;
 }
 
 function formatScaleText(scale: number) {
@@ -80,6 +88,7 @@ class JuiDragZoomImage extends Component<
   private _dragZoomRef: RefObject<JuiDragZoom> = createRef();
   private _zoomRef: RefObject<JuiZoomComponent> = createRef();
   private _imageRef: RefObject<any> = createRef();
+  private _containerRef: RefObject<any> = createRef();
 
   constructor(props: JuiDragZoomImageProps) {
     super(props);
@@ -87,10 +96,41 @@ class JuiDragZoomImage extends Component<
       scale: 1,
       minScale: 0,
       maxScale: Number.MAX_SAFE_INTEGER,
+      transform: {
+        scale: 1,
+        translateX: 0,
+        translateY: 0,
+      },
+      contentRect: {
+        left: 0,
+        top: 0,
+        width: 0,
+        height: 0,
+      },
     };
   }
 
-  updateScale(
+  onTransformChange = (info: { transform: Transform; canDrag: boolean }) => {
+    this.setState({
+      transform: info.transform,
+      scale: info.transform.scale,
+    });
+  }
+
+  onAutoFitContentRectChange = (autoFitContentRect: ElementRect) => {
+    const { minPixel, maxPixel } = ensureOptions(this.props.options);
+    this._updateScale(
+      autoFitContentRect.width,
+      autoFitContentRect.height,
+      minPixel,
+      maxPixel,
+    );
+    this.setState({
+      contentRect: autoFitContentRect,
+    });
+  }
+
+  private _updateScale(
     contentWidth: number,
     contentHeight: number,
     minPixel: number,
@@ -113,7 +153,7 @@ class JuiDragZoomImage extends Component<
       maxScale = rest.maxScale,
     } = this.state;
     return (
-      <Container>
+      <Container ref={this._containerRef}>
         <JuiDragZoom
           ref={this._dragZoomRef}
           options={{
@@ -124,30 +164,19 @@ class JuiDragZoomImage extends Component<
           }}
           zoomRef={this._zoomRef}
           contentRef={this._imageRef}
-          onScaleChange={({ scale }) => {
-            this.setState({
-              scale,
-            });
-          }}
-          onAutoFitContentRectChange={(autoFitContentRect: ElementRect) => {
-            this.updateScale(
-              autoFitContentRect.width,
-              autoFitContentRect.height,
-              minPixel,
-              maxPixel,
-            );
-          }}
+          onTransformChange={this.onTransformChange}
+          onAutoFitContentRectChange={this.onAutoFitContentRectChange}
         >
           {({
             autoFitContentRect,
             notifyContentRectChange: onContentRectChange,
-            canDrag: draggable,
+            canDrag,
           }) => {
             return (
               <ImageView
                 viewRef={this._imageRef}
                 src={src}
-                draggable={draggable}
+                draggable={canDrag}
                 width={autoFitContentRect ? autoFitContentRect.width : 0}
                 height={autoFitContentRect ? autoFitContentRect.height : 0}
                 onSizeLoad={onContentRectChange}
@@ -190,5 +219,5 @@ export {
   JuiDragZoomImage,
   JuiDragZoomImageProps,
   JuiDragZoomImageOptions,
-  DEFAULT_OPTIONS,
+  DEFAULT_DRAG_ZOOM_IMAGE_OPTIONS,
 };

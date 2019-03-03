@@ -12,6 +12,7 @@ import {
   JuiZoomOptions,
   DEFAULT_OPTIONS as DEFAULT_ZOOM_OPTIONS,
 } from '../../components/ZoomArea';
+
 type JuiWithDragZoomProps = {
   autoFitContentRect?: ElementRect;
   notifyContentRectChange: () => void;
@@ -23,7 +24,10 @@ type JuiDragZoomProps = {
   contentRef?: RefObject<any>;
   options?: Partial<JuiDragZoomOptions>;
   onAutoFitContentRectChange?: (contentRect: ElementRect) => void;
-  onScaleChange?: (info: { scale: number; canDrag: boolean }) => void;
+  onTransformChange?: (info: {
+    transform: Transform;
+    canDrag: boolean;
+  }) => void;
   children: (withDragZoomProps: JuiWithDragZoomProps) => JSX.Element;
 };
 
@@ -34,14 +38,17 @@ type JuiDragZoomState = {
   canZoomIn: boolean;
   canZoomOut: boolean;
 };
+
 type Padding = [number, number, number, number];
+
 type JuiDragZoomOptions = JuiZoomOptions & {
   padding: Padding; // left, top, right, bottom
 };
 
-const DEFAULT_OPTIONS: JuiDragZoomOptions = {
+const DEFAULT_DRAG_ZOOM_OPTIONS: JuiDragZoomOptions = {
   ...DEFAULT_ZOOM_OPTIONS,
-  padding: [0, 0, 0, 0],
+  wheel: true,
+  padding: [10, 10, 10, 10],
 };
 
 function ensureOptions(
@@ -49,10 +56,10 @@ function ensureOptions(
 ): JuiDragZoomOptions {
   return options
     ? {
-      ...DEFAULT_OPTIONS,
+      ...DEFAULT_DRAG_ZOOM_OPTIONS,
       ...options,
     }
-    : DEFAULT_OPTIONS;
+    : DEFAULT_DRAG_ZOOM_OPTIONS;
 }
 
 function calculateFitSize(
@@ -182,15 +189,15 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       contentRef.current.naturalHeight ||
       contentRef.current.clientHeight ||
       boundingRect.height;
-    const centerPoint = {
+    const centerPosition = {
       left: boundingRect.left + boundingRect.width / 2,
       top: boundingRect.left + boundingRect.height / 2,
     };
     return {
       width,
       height,
-      left: centerPoint.left - width / 2,
-      top: centerPoint.top - height / 2,
+      left: centerPosition.left - width / 2,
+      top: centerPosition.top - height / 2,
     };
   }
 
@@ -250,10 +257,10 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       transform,
       canDrag,
     });
-    this.props.onScaleChange &&
-      this.props.onScaleChange({
+    this.props.onTransformChange &&
+      this.props.onTransformChange({
+        transform,
         canDrag,
-        scale: transform.scale,
       });
   }
 
@@ -309,5 +316,5 @@ export {
   JuiDragZoomProps,
   JuiWithDragZoomProps,
   JuiDragZoomOptions,
-  DEFAULT_OPTIONS,
+  DEFAULT_DRAG_ZOOM_OPTIONS as DEFAULT_OPTIONS,
 };

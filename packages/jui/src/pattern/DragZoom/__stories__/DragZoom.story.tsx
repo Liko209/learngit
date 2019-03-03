@@ -9,12 +9,12 @@ import { boolean, number, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiDragZoom } from '../DragZoom';
+import { JuiDragZoom, JuiWithDragZoomProps } from '../DragZoom';
 
 const knobs = {
   open: () => boolean('open', true),
   src: () =>
-    text('src', 'https://fengyuanchen.github.io/viewerjs/images/tibet-3.jpg'),
+    text('src', 'https://fengyuanchen.github.io/viewerjs/images/tibet-2.jpg'),
   containerWidth: () => number('containerWidth', 600),
   containerHeight: () => number('containerHeight', 400),
 };
@@ -28,7 +28,8 @@ storiesOf('Pattern/DragZoom', module)
       }}
     >
       <JuiDragZoom>
-        {({ autoFitContentRect }) => {
+        {(props: JuiWithDragZoomProps) => {
+          const { autoFitContentRect } = props;
           if (autoFitContentRect) {
             return (
               <img

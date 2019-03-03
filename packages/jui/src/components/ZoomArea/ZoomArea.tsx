@@ -9,8 +9,8 @@ import ReactResizeDetector from 'react-resize-detector';
 
 import styled from '../../foundation/styled-components';
 import { Omit } from '../../foundation/utils/typeHelper';
-import { ElementRect, Point, Transform } from './types';
-import { getCenterPoint } from './utils';
+import { ElementRect, Position, Transform } from './types';
+import { getCenterPosition } from './utils';
 
 type JuiZoomProps = {
   transform: Transform;
@@ -22,8 +22,8 @@ type JuiZoomProps = {
 };
 
 type JuiWithZoomProps = Pick<JuiZoomProps, 'transform'> & {
-  zoomIn: (zoomCenter?: Point) => void;
-  zoomOut: (zoomCenter?: Point) => void;
+  zoomIn: (zoomCenter?: Position) => void;
+  zoomOut: (zoomCenter?: Position) => void;
 };
 
 type JuiZoomState = {
@@ -95,10 +95,10 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     return this.props.viewRef || this._viewRef;
   }
 
-  zoomStep = (scaleStep: number, zoomCenterPoint?: Point) => {
+  zoomStep = (scaleStep: number, zoomCenterPosition?: Position) => {
     const { scale } = this.props.transform;
     const newScale = scale + scaleStep;
-    this.zoomTo(newScale, zoomCenterPoint);
+    this.zoomTo(newScale, zoomCenterPosition);
   }
 
   zoomIn = () => {
@@ -109,7 +109,7 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     this.zoomStep(-ensureOptions(this.props.zoomOptions).step);
   }
 
-  zoomTo = (newScale: number, zoomCenterPoint?: Point) => {
+  zoomTo = (newScale: number, zoomCenterPosition?: Position) => {
     const { scale, translateX, translateY } = this.props.transform;
     const { accuracy, maxScale, minScale } = ensureOptions(
       this.props.zoomOptions,
@@ -124,11 +124,11 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     // fixNewScale = Math.max(minScale, Math.min(maxScale, fixNewScale));
     let translateOffsetX = 0;
     let translateOffsetY = 0;
-    if (zoomCenterPoint) {
+    if (zoomCenterPosition) {
       const rect = this.getViewRef().current.getBoundingClientRect();
-      const rectCenter = getCenterPoint(rect);
-      translateOffsetX = zoomCenterPoint.left - rectCenter.left;
-      translateOffsetY = zoomCenterPoint.top - rectCenter.top;
+      const rectCenter = getCenterPosition(rect);
+      translateOffsetX = zoomCenterPosition.left - rectCenter.left;
+      translateOffsetY = zoomCenterPosition.top - rectCenter.top;
     }
     this.props.onTransformChange({
       scale: fixNewScale,
@@ -149,15 +149,15 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     });
   }
 
-  throttleZoom(scaleStep: number, zoomCenterPoint?: Point) {
-    this.zoomStep(scaleStep, zoomCenterPoint);
+  throttleZoom(scaleStep: number, zoomCenterPosition?: Position) {
+    this.zoomStep(scaleStep, zoomCenterPosition);
   }
 
   onWheel = (ev: React.WheelEvent) => {
     const { step, wheel } = ensureOptions(this.props.zoomOptions);
     if (!wheel) return;
     ev.preventDefault();
-    const point: Point = {
+    const point: Position = {
       left: ev.pageX,
       top: ev.pageY,
     };

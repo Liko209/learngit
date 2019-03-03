@@ -5,7 +5,7 @@
  */
 import React from 'react';
 
-import { number, text, array } from '@storybook/addon-knobs';
+import { number, text } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
@@ -22,14 +22,15 @@ const knobs = {
   // accuracy: () =>
   //   number('accuracy', 2, { step: 1, max: 10, min: 1, range: false }),
   // wheel: () => boolean('wheel', true),
-  padding: () =>
-    array<number>('padding', [32, 32, 32, 32], ',') as [
-      number,
-      number,
-      number,
-      number
-    ],
+  // padding: () =>
+  //   array<number>('padding', [32, 32, 32, 32], ',') as [
+  //     number,
+  //     number,
+  //     number,
+  //     number
+  //   ],
 };
+
 storiesOf('Pattern/DragZoom', module)
   .addDecorator(withInfoDecorator(JuiDragZoomImage, { inline: true }))
   .add('DragZoomImage', () => (
@@ -46,7 +47,7 @@ storiesOf('Pattern/DragZoom', module)
           maxPixel: 1500,
           step: 0.1,
           wheel: true,
-          padding: knobs.padding(),
+          padding: [32, 32, 32, 32],
         }}
       />
     </div>

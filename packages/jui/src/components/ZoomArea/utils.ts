@@ -1,4 +1,4 @@
-export function getCenterPoint(react: ElementRect) {
+export function getCenterPosition(react: ElementRect) {
   return {
     left: react.left + react.width / 2,
     top: react.top + react.height / 2,
@@ -13,12 +13,12 @@ function isZoomRatio(arg: any): arg is ZoomRatio {
   );
 }
 
-import { ElementRect, ZoomRatio, Point } from './types';
+import { ElementRect, ZoomRatio, Position } from './types';
 
 export function zoom(
   ratio: number | ZoomRatio,
   rect: ElementRect,
-  center: Point,
+  center: Position,
 ): ElementRect {
   const distanceX = rect.left - center.left;
   const distanceY = rect.top - center.top;

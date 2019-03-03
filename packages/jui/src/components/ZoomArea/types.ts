@@ -5,7 +5,7 @@ type ElementRect = {
   height: number;
 };
 
-type Point = {
+type Position = {
   left: number;
   top: number;
 };
@@ -21,4 +21,4 @@ type Transform = {
   translateY: number;
 };
 
-export { ElementRect, Point, ZoomRatio, Transform };
+export { ElementRect, Position, ZoomRatio, Transform };
