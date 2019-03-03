@@ -11,25 +11,28 @@ type Options = {
 };
 import LDClient, { LDUser, LDFlagSet } from 'ldclient-js';
 import UserPermissionType from '../../types';
+import { mainLogger } from 'foundation';
 class LaunchDarklyClient {
   private _ldclient: any;
-  private _flags: LDFlagSet;
+  private _flags: LDFlagSet = {};
   constructor(options: Options) {
     this._initLDClient(options);
   }
 
   hasPermission(type: UserPermissionType) {
-    return !!this._flags[type];
+    return this._flags && !!this._flags[type];
   }
 
   private _initLDClient(options: Options) {
     this._ldclient = LDClient.initialize(options.clientId, options.user);
     this._ldclient.on('change', (settings: LDFlagSet) => {
       this._flags = this._ldclient.allFlags();
+      mainLogger.log('launchDarkly change event flags', this._flags);
       options.updateCallback(settings);
     });
     this._ldclient.on('ready', () => {
       this._flags = this._ldclient.allFlags();
+      mainLogger.log('launchDarkly ready event flags', this._flags);
       options.readyCallback();
     });
   }
