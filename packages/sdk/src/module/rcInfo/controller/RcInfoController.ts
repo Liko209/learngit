@@ -9,6 +9,7 @@ import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { RcInfoApi, TelephonyApi } from '../../../api/ringcentral';
 import { PhoneParserUtility } from '../../../utils/phoneParser';
+import { mainLogger } from 'foundation';
 
 class RcInfoController {
   constructor() {}
@@ -25,30 +26,51 @@ class RcInfoController {
   }
 
   async requestRcClientInfo() {
-    const result = await RcInfoApi.requestRcClientInfo();
-    RcInfoConfig.setRcClientInfo(result);
+    try {
+      const result = await RcInfoApi.requestRcClientInfo();
+      RcInfoConfig.setRcClientInfo(result);
+    } catch (err) {
+      mainLogger.error(`requestRcClientInfo error: ${err}`);
+    }
   }
 
   async requestRcAccountInfo() {
-    const result = await RcInfoApi.requestRcAccountInfo();
-    RcInfoConfig.setRcAccountInfo(result);
+    try {
+      const result = await RcInfoApi.requestRcAccountInfo();
+      RcInfoConfig.setRcAccountInfo(result);
+    } catch (err) {
+      mainLogger.error(`requestRcAccountInfo error: ${err}`);
+    }
   }
 
   async requestRcExtensionInfo() {
-    const result = await RcInfoApi.requestRcExtensionInfo();
-    RcInfoConfig.setRcExtensionInfo(result);
+    try {
+      const result = await RcInfoApi.requestRcExtensionInfo();
+      RcInfoConfig.setRcExtensionInfo(result);
+    } catch (err) {
+      mainLogger.error(`requestRcExtensionInfo error: ${err}`);
+    }
   }
 
   async requestRcRolePermission() {
-    const result = await RcInfoApi.requestRcRolePermission();
-    RcInfoConfig.setRcRolePermissions(result);
+    try {
+      const result = await RcInfoApi.requestRcRolePermission();
+      RcInfoConfig.setRcRolePermissions(result);
+    } catch (err) {
+      mainLogger.error(`requestRcRolePermission error: ${err}`);
+    }
   }
 
   async requestRcPhoneData() {
-    const phoneDataVersion: string =
-      PhoneParserUtility.getPhoneDataFileVersion() || '';
-    const result = await TelephonyApi.getPhoneParserData(phoneDataVersion);
-    RcInfoConfig.setRcPhoneData(result);
+    try {
+      const phoneDataVersion: string =
+        PhoneParserUtility.getPhoneDataFileVersion() || '';
+      const result = await TelephonyApi.getPhoneParserData(phoneDataVersion);
+      RcInfoConfig.setRcPhoneData(result);
+      PhoneParserUtility.initPhoneParser(true);
+    } catch (err) {
+      mainLogger.error(`requestRcPhoneData error: ${err}`);
+    }
   }
 }
 

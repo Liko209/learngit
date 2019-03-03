@@ -37,7 +37,7 @@ type ServiceCodeTypeEnum = {
 
 type PhoneParser = {
   GetE164Extended: (addDtmfPostfix: boolean) => string;
-  GetE164TAS: () => string;
+  GetE164TAS: (addDtmfPostfix: boolean) => string;
   GetCanonical: (fullView: boolean) => string;
   GetLocalCanonical: (fullView: boolean) => string;
   IsRCExtension: () => boolean;
@@ -53,7 +53,7 @@ type PhoneParser = {
   GetAreaCode: () => string;
   GetCountryId: () => number;
   GetCountryName: () => string;
-  GetDialable: (addDtmfPostfix: boolean) => string; // addDtmfPostfix = false by default
+  GetDialable: (addDtmfPostfix: boolean) => string;
   GetDtmfPostfix: () => string;
 };
 
@@ -66,10 +66,7 @@ type ModuleClass = any;
 type ModuleType = {
   NewSettingsKey: (settingsKey: string, brandId: number) => SettingsKey;
   NewPhoneParser: (szNumber: string, settingsKey: SettingsKey) => PhoneParser;
-  // NewPath: (path: string) => PhoneParserPath; // will extension
-  // ReadRootNode: (filePath: string, pString: string) => boolean; // will extension
-  ReadRootNodeByString: (xmlFile: string, pString: string) => boolean;
-  // SetDefaultPhoneDataDirectory: (path: PhoneParserPath) => void; // will extension
+  ReadRootNodeByString: (xmlFile: string) => boolean;
   GetPhoneDataFileVersion: () => string;
   GetStationCountryCode: () => string;
   GetStationAreaCode: () => string;

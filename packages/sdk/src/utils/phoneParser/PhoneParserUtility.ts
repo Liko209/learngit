@@ -63,8 +63,10 @@ class PhoneParserUtility {
         },
       };
       PhoneParserUtility._phoneParserModule = new PhoneParserModule(params);
-    } catch {
-      mainLogger.error('PhoneParserUtility: module failed to load.');
+    } catch (err) {
+      mainLogger.error(
+        `PhoneParserUtility: module failed to load, error: ${err}`,
+      );
       PhoneParserUtility._moduleLoaded = false;
     }
   }
@@ -99,22 +101,23 @@ class PhoneParserUtility {
   }
 
   static getPhoneData(fromLocal: boolean): string | undefined {
-    if (!fromLocal) {
-      const phoneData = RcInfoConfig.getRcPhoneData();
-      if (phoneData.length > 0) {
-        return phoneData;
+    if (fromLocal) {
+      try {
+        return fs.readFileSync(localPhoneDataPath).toString();
+      } catch (err) {
+        mainLogger.error(
+          `PhoneParserUtility: Can not get local phone data, error: ${err}`,
+        );
+        return undefined;
       }
-      mainLogger.debug(
-        'PhoneParserUtility: Storage phone data is invalid, will get from local.',
-      );
     }
 
-    try {
-      return fs.readFileSync(localPhoneDataPath).toString();
-    } catch {
-      mainLogger.error('PhoneParserUtility: Can not get local phone data.');
+    const phoneData = RcInfoConfig.getRcPhoneData();
+    if (phoneData.length === 0) {
+      mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
       return undefined;
     }
+    return phoneData;
   }
 
   static canGetPhoneParser(): boolean {
@@ -170,12 +173,12 @@ class PhoneParserUtility {
   static setStationLocation(
     szCountryCode: string,
     szAreaCode: string,
-    brandId: number,
-    maxShortLen: number,
-    shortPstnPossible: boolean,
-    siteCode: string,
-    shortPinLen: number,
-    outboundCallPrefix: string,
+    brandId: number = 0,
+    maxShortLen: number = -1,
+    shortPstnPossible: boolean = false,
+    siteCode: string = '',
+    shortPinLen: number = 0,
+    outboundCallPrefix: string = '',
   ): boolean {
     if (!PhoneParserUtility._moduleLoaded) {
       PhoneParserUtility.loadModule();
@@ -228,8 +231,8 @@ class PhoneParserUtility {
     return this._phoneParser.GetE164Extended(addDtmfPostfix);
   }
 
-  getE164TAS(): string {
-    return this._phoneParser.GetE164TAS();
+  getE164TAS(addDtmfPostfix: boolean = false): string {
+    return this._phoneParser.GetE164TAS(addDtmfPostfix);
   }
 
   getCanonical(fullView: boolean = true): string {
@@ -357,7 +360,7 @@ class PhoneParserUtility {
     const phoneData = PhoneParserUtility.getPhoneData(fromLocal);
     return (
       phoneData !== undefined &&
-      PhoneParserUtility._phoneParserModule.ReadRootNodeByString(phoneData, '')
+      PhoneParserUtility._phoneParserModule.ReadRootNodeByString(phoneData)
     );
   }
 }

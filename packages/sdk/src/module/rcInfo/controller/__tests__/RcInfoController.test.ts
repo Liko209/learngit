@@ -93,12 +93,16 @@ describe('RcInfoController', () => {
 
   describe('requestRcPhoneData()', () => {
     it('should send request and save to storage', async () => {
+      PhoneParserUtility.getPhoneDataFileVersion = jest.fn();
+      PhoneParserUtility.initPhoneParser = jest.fn();
       TelephonyApi.getPhoneParserData = jest
         .fn()
         .mockReturnValue('rcPhoneData');
       await rcInfoController.requestRcPhoneData();
       expect(TelephonyApi.getPhoneParserData).toBeCalledTimes(1);
       expect(RcInfoConfig.setRcPhoneData).toBeCalledWith('rcPhoneData');
+      expect(PhoneParserUtility.getPhoneDataFileVersion).toBeCalledTimes(1);
+      expect(PhoneParserUtility.initPhoneParser).toBeCalledTimes(1);
     });
   });
 });
