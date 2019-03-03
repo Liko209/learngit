@@ -111,7 +111,6 @@ class PostCacheController implements IUsedCache {
         transformFunc: (dataModel: Post) => ({
           id: dataModel.id,
           sortValue: dataModel.created_at,
-          data: dataModel,
         }),
         hasMoreUp: true,
         hasMoreDown: !!jump2PostId,
