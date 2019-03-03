@@ -362,6 +362,4 @@ class PhoneParserUtility {
   }
 }
 
-// PhoneParserUtility.moduleLoaded = false; // todo: check false
-
 export { PhoneParserUtility };
