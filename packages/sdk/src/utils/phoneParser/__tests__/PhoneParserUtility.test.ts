@@ -229,26 +229,4 @@ describe('PhoneParserUtility', () => {
       expect(PhoneParserUtility.initPhoneParser).toBeCalledTimes(0);
     });
   });
-
-  describe('getPhoneParser()', () => {});
-
-  describe('getPhoneDataFileVersion()', () => {});
-
-  describe('getStationCountryCode()', () => {});
-
-  describe('getStationAreaCode()', () => {});
-
-  describe('setStationLocation()', () => {});
-
-  describe('getStationSettingsKey()', () => {});
-
-  describe('getRegionalInfo()', () => {});
-
-  describe('isServiceFeatureNumber()', () => {});
-
-  describe('isEqualToPhoneNumber()', () => {});
-
-  describe('isInternationalDialing()', () => {});
-
-  describe('_initByPhoneData()', () => {});
 });
