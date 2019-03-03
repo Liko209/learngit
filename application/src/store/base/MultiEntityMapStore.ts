@@ -62,9 +62,7 @@ export default class MultiEntityMapStore<
         break;
       case EVENT_TYPES.REPLACE:
         {
-          payload.body.entities.forEach((entity: T) => {
-            this._replace(entity);
-          });
+          this.batchReplace([...payload.body.entities.values()]);
         }
         break;
       case EVENT_TYPES.UPDATE:
@@ -72,11 +70,9 @@ export default class MultiEntityMapStore<
           const partials = payload.body.partials;
           const entities = payload.body.entities;
           if (partials) {
-            this.batchUpdate(partials);
+            this.batchPartialUpdate(partials);
           } else {
-            entities.forEach((entity: T) => {
-              this._partialUpdate(entity, entity.id);
-            });
+            this.batchUpdate(entities);
           }
         }
         break;
@@ -84,7 +80,55 @@ export default class MultiEntityMapStore<
   }
 
   @action
+  batchPartialUpdate(partials: Map<number, Partial<Raw<T>>>) {
+    partials.forEach((partialEntity, id) => {
+      this._partialUpdate(partialEntity, id);
+    });
+  }
+
+  @action
+  batchUpdate(partials: Map<number, T>) {
+    partials.forEach((partialEntity, id) => {
+      this._partialUpdate(partialEntity, id);
+    });
+  }
+
+  @action
+  partialUpdate(partialEntity: Partial<Raw<T>> | T, id: number) {
+    this._partialUpdate(partialEntity, id);
+  }
+
+  private _partialUpdate(partialEntity: Partial<Raw<T>> | T, id: number) {
+    const model = this._data[id];
+    if (model) {
+      Object.keys(partialEntity).forEach((key: string) => {
+        model[_.camelCase(key)] = partialEntity[key];
+      });
+      model.isMocked = false;
+    }
+  }
+
+  @action
   set(data: T, refreshCache: boolean = false) {
+    this._set(data, refreshCache);
+  }
+
+  @action
+  batchSet(entities: T[]) {
+    entities.forEach((entity: T) => {
+      const model = this._data[entity.id];
+      if (!model) {
+        this._set(entity);
+      } else {
+        this._partialUpdate(entity, entity.id);
+      }
+    });
+    setTimeout(() => {
+      this._refreshCache();
+    },         100);
+  }
+
+  private _set(data: T, refreshCache: boolean = false) {
     const model = this.createModel(data);
     const { id } = model;
 
@@ -99,46 +143,12 @@ export default class MultiEntityMapStore<
   }
 
   @action
-  batchUpdate(partials: Map<number, Partial<Raw<T>>>) {
-    partials.forEach((partialEntity, id) => {
-      this._partialUpdate(partialEntity, id);
-    });
-  }
-
-  @action
-  private _partialUpdate(partialEntity: Partial<Raw<T>> | T, id: number) {
-    const model = this._data[id];
-    if (model) {
-      Object.keys(partialEntity).forEach((key: string) => {
-        model[_.camelCase(key)] = partialEntity[key];
-      });
-      model.isMocked = false;
-    }
-  }
-
-  @action
-  batchSet(entities: T[]) {
-    entities.forEach((entity: T) => {
-      const model = this._data[entity.id];
-      if (!model) {
-        this.set(entity);
-      } else {
-        this._partialUpdate(entity, entity.id);
-      }
-    });
-    setTimeout(() => {
-      this._refreshCache();
-    },         100);
-  }
-
-  @action
   batchReplace(entities: T[]) {
     entities.forEach((entity: T) => {
       this._replace(entity);
     });
   }
 
-  @action
   private _replace(entity: T) {
     if (entity && this._data[entity.id]) {
       this._partialUpdate(entity, entity.id);
@@ -148,19 +158,20 @@ export default class MultiEntityMapStore<
   @action
   remove(id: number) {
     setTimeout(() => {
-      const model = this._data[id];
-      if (model) {
-        delete this._data[id];
-      }
+      delete this._data[id];
     },         0);
   }
 
+  @action
   batchRemove(ids: number[]) {
-    ids.forEach((id: number) => {
-      this.remove(id);
-    });
+    setTimeout(() => {
+      ids.forEach((id: number) => {
+        delete this._data[id];
+      });
+    },         0);
   }
 
+  @action
   clearAll() {
     this._data = {};
   }
@@ -175,12 +186,12 @@ export default class MultiEntityMapStore<
       if (res instanceof Promise) {
         res.then((res: T & { error?: {} }) => {
           if (res && !res.error) {
-            this._partialUpdate(res as T, id);
+            this.partialUpdate(res as T, id);
           }
         });
       } else {
         if (res) {
-          this._partialUpdate(res as T, id);
+          this.partialUpdate(res as T, id);
           model = this._data[id] as K;
         }
       }
@@ -248,11 +259,11 @@ export default class MultiEntityMapStore<
       if (res instanceof Promise) {
         res.then((res: T & { error?: {} }) => {
           if (res && !res.error) {
-            this.set(res);
+            this._set(res);
           }
         });
       } else {
-        this.set(res as T);
+        this._set(res as T);
       }
     });
   }
@@ -292,6 +303,8 @@ export default class MultiEntityMapStore<
       allUsedIds = _.union(allUsedIds, cache.getUsedId());
     });
     const diffKeys = _.difference(existKeys, allUsedIds);
-    this.batchRemove(diffKeys);
+    diffKeys.forEach((id: number) => {
+      delete this._data[id];
+    });
   }
 }
