@@ -9,6 +9,7 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -19,31 +20,35 @@ test(formalName('UMI should be added received messages count in conversations', 
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
-  await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).init();
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
-  await h(t).glip(loginUser).resetProfile();
 
-  let pvtChatId, groupId, teamId, groupConversation, teamConversation;
+  let privateChat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  let groupChat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser, users[7]]
+  }
+
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
   await h(t).withLog('Given I have an extension with certain conversations', async () => {
-    pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, users[5].rcId]
-    });
-    groupId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Group',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: `My Team ${uuid()}`,
-      members: [loginUser.rcId, users[5].rcId],
-    });
+    await h(t).scenarioHelper.createTeamsOrChats([privateChat, groupChat, team]);
   });
 
   await h(t).withLog('Clear all UMIs before login', async () => {
-    await h(t).glip(loginUser).clearAllUmi();
+    await h(t).scenarioHelper.resetProfile(loginUser);
+    await h(t).scenarioHelper.clearAllUmi(loginUser);
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -53,28 +58,26 @@ test(formalName('UMI should be added received messages count in conversations', 
     },
   );
 
-  await h(t).withLog('And I click a private chat', async () => {
-    await app.homePage.messageTab.directMessagesSection.conversationEntryById(pvtChatId).enter();
-
-  });
-
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
-  await h(t).withLog(`And make preconditions: group ${groupId} and team ${teamId} both with UMI=1`, async () => {
-    await h(t).platform(otherUser).sendTextPost(`![:Person](${loginUser.rcId}), ${uuid()}`, groupId);
-    await h(t).platform(otherUser).sendTextPost(`![:Person](${loginUser.rcId}), ${uuid()}`, teamId);
-    await t.wait(3e3);
+  await h(t).withLog('And I click a private chat', async () => {
+    directMessagesSection.conversationEntryById(privateChat.glipId).enter();
+  });
+
+  let groupConversation, teamConversation;
+  await h(t).withLog(`And make preconditions: group ${groupChat.name} and team ${team.name} both with UMI=1`, async () => {
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, groupChat, otherUser);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, team, otherUser);
     await directMessagesSection.expand();
-    groupConversation = directMessagesSection.conversationEntryById(groupId);
+    groupConversation = directMessagesSection.conversationEntryById(groupChat.glipId);
     await teamsSection.expand();
-    teamConversation = teamsSection.conversationEntryById(teamId);
+    teamConversation = teamsSection.conversationEntryById(team.glipId);
     await groupConversation.umi.shouldBeNumber(1);
     await teamConversation.umi.shouldBeNumber(1);
   });
 
   await h(t).withLog('When other user send a post with @mention to the group', async () => {
-    await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, groupId);
-    await t.wait(3e3);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, groupChat, otherUser);
   });
 
   await h(t).withLog(`The group should have 2 umi`, async () => {
@@ -82,8 +85,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog('When other user send a post with @mention to the team', async () => {
-    await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, teamId);
-    await t.wait(3e3);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, team, otherUser);
   });
 
   await h(t).withLog(`Then the team should have 2 umi`, async () => {
@@ -91,8 +93,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog('When other user send a post without @mention to the group', async () => {
-    await h(t).platform(otherUser).sendTextPost(`${uuid()}`, groupId);
-    await t.wait(3e3);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, groupChat, otherUser);
   });
 
   await h(t).withLog(`Then the group should have 3 umi`, async () => {
@@ -100,8 +101,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog('When other user send a post without @mention to the team', async () => {
-    await h(t).platform(otherUser).sendTextPost(`${uuid()}`, teamId);
-    await t.wait(3e3);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, team, otherUser);
   });
 
   await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {

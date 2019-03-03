@@ -3,7 +3,8 @@
  * @Date: 2019-01-21 13:27:24
  * Copyright © RingCentral. All rights reserved.
  */
-import { UserConfig } from '../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+
 import { SplitIOClient } from './SplitIOClient';
 import UserPermissionType from '../../types';
 import { Api } from '../../../../api';
@@ -46,8 +47,8 @@ class SplitIOController {
     if (this.isClientReady) {
       return;
     }
-    const userId: number = UserConfig.getCurrentUserId();
-    const companyId: number = UserConfig.getCurrentCompanyId();
+    const userId: number = AccountGlobalConfig.getCurrentUserId();
+    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
     if (!userId || !companyId) {
       return;
     }

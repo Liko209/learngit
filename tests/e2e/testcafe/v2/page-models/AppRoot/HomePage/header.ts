@@ -71,6 +71,10 @@ class Search extends BaseWebComponent {
     return this.getSelector('.search-items');
   }
 
+  get itemsNames() {
+    return this.getSelectorByAutomationId('search-item-text')
+  }
+
   get peoples() {
     return this.getSelectorByAutomationId('search-People-item');
   }
@@ -101,8 +105,16 @@ class Search extends BaseWebComponent {
     return this.getComponent(SearchItem, root);
   }
 
+  getSearchItemByName(name: string) {
+    return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items'));
+  }
+
   async dropDownListShouldContainTeam(team: IGroup, timeout: number = 20e3) {
     await this.t.expect(this.teams.withText(team.name).exists).ok({ timeout });
+  }
+
+  async quit() {
+    await this.t.pressKey('ESC');
   }
 
 }

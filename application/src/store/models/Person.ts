@@ -121,8 +121,7 @@ export default class PersonModel extends Base<Person> {
     return '';
   }
 
-  @computed
-  get userDisplayName(): string {
+  private _getCommonName() {
     if (this.isPseudoUser) {
       let pseudoUserDisplayName = '';
       if (this.glipUserId) {
@@ -150,9 +149,24 @@ export default class PersonModel extends Base<Person> {
       }
       dName += this.lastName;
     }
+    return dName;
+  }
 
+  @computed
+  get userDisplayName(): string {
+    let dName = this._getCommonName();
     if (dName.length === 0) {
       dName = this._getEmailAsName(this.email);
+    }
+
+    return dName;
+  }
+
+  @computed
+  get userDisplayNameForGroupName(): string {
+    let dName = this._getCommonName();
+    if (dName.length === 0) {
+      dName = this.email;
     }
 
     return dName;

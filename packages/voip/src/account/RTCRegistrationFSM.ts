@@ -31,7 +31,12 @@ class RTCRegistrationFSM extends StateMachine {
       transitions: [
         {
           name: REGISTRATION_FSM_EVENT.PROVISION_READY,
-          from: REGISTRATION_FSM_STATE.IDLE,
+          from: [
+            REGISTRATION_FSM_STATE.IDLE,
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.READY,
+            REGISTRATION_FSM_STATE.FAILURE,
+          ],
           to: (provisionData: any, options: any) => {
             dependency.onProvisionReadyAction(provisionData, options);
             return REGISTRATION_FSM_STATE.IN_PROGRESS;

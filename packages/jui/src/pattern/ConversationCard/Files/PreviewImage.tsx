@@ -16,6 +16,10 @@ import {
   ThumbnailInfo,
   getThumbnailForSquareSize,
 } from '../../../foundation/utils/calculateImageSize';
+import { JuiIconography } from '../../../foundation/Iconography';
+import styled from '../../../foundation/styled-components';
+import { grey } from '../../../foundation/utils';
+import { withDelay } from '../../../hoc/withDelay';
 
 type SizeType = {
   width: number;
@@ -29,7 +33,32 @@ type JuiPreviewImageProps = {
   squareSize?: number;
   url: string;
   placeholder?: JSX.Element;
+  handleImageClick?: () => void;
+  didLoad?: Function;
 } & SizeType;
+
+const Wrapper = styled.div`
+  display: flex;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  & .image-preview:before {
+    color: ${grey('400')} !important;
+  }
+`;
+
+const Icon = withDelay(() => (
+  <JuiIconography fontSize="large">image_preview</JuiIconography>
+));
+
+const JuiDelayPlaceholder = (props: SizeType) => (
+  <Jui.ImageCard width={props.width} height={props.height}>
+    <Wrapper>
+      <Icon delay={400} />
+    </Wrapper>
+  </Jui.ImageCard>
+);
 
 class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   static SQUARE_SIZE = 180;
@@ -46,7 +75,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   private _loaded: boolean = false;
 
   private _handleImageLoad = () => {
-    const { forceSize, squareSize } = this.props;
+    const { forceSize, squareSize, didLoad } = this.props;
     const { width, height } = this._imageRef.current!;
     if (forceSize) {
       this._imageInfo = getThumbnailForSquareSize(
@@ -58,6 +87,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
       this._imageInfo = getThumbnailSize(width, height);
     }
     this._loaded = true;
+    didLoad && didLoad();
     if (this._mounted) {
       this.forceUpdate();
     }
@@ -69,7 +99,14 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     this._mounted = false;
   }
   render() {
-    const { Actions, fileName, forceSize, url, placeholder } = this.props;
+    const {
+      Actions,
+      fileName,
+      forceSize,
+      url,
+      placeholder,
+      handleImageClick,
+    } = this.props;
     let { width, height } = this.props;
     const imageProps = {} as SizeType;
     const imageStyle: CSSProperties = { position: 'absolute', display: 'none' };
@@ -87,35 +124,37 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
       } else if (justifyWidth) {
         imageProps.width = this._imageInfo.width;
       }
-    } else {
-      width = 0;
-      height = 0;
     }
-    const hasImageSize = this.props.width > 0 && this.props.height > 0;
     return (
       <>
-        {!this._loaded && !hasImageSize && placeholder}
-        {!this._loaded && hasImageSize && (
-          <Jui.ImageCard width={this.props.width} height={this.props.height}>
-            <div />
-          </Jui.ImageCard>
-        )}
-        <Jui.ImageCard width={width} height={height}>
+        {!this._loaded && placeholder}
+        {!this._loaded && url && (
           <img
-            style={imageStyle}
+            style={{ display: 'none' }}
             ref={this._imageRef}
             src={url}
             onLoad={this._handleImageLoad}
+            onClick={handleImageClick}
             {...imageProps}
           />
-          <Jui.ImageFileInfo width={width} height={height} component="div">
-            <FileName filename={fileName} />
-            <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
-          </Jui.ImageFileInfo>
-        </Jui.ImageCard>
+        )}
+        {this._loaded && (
+          <Jui.ImageCard width={width} height={height}>
+            <img
+              style={imageStyle}
+              src={url}
+              onClick={handleImageClick}
+              {...imageProps}
+            />
+            <Jui.ImageFileInfo width={width} height={height} component="div">
+              <FileName filename={fileName} />
+              <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
+            </Jui.ImageFileInfo>
+          </Jui.ImageCard>
+        )}
       </>
     );
   }
 }
 
-export { JuiPreviewImage, JuiPreviewImageProps };
+export { JuiPreviewImage, JuiPreviewImageProps, JuiDelayPlaceholder };

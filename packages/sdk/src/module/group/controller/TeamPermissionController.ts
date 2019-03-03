@@ -5,7 +5,8 @@
  */
 import _ from 'lodash';
 
-import { UserConfig } from '../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../service/account/config';
+
 import {
   DEFAULT_ADMIN_PERMISSION_LEVEL,
   DEFAULT_USER_PERMISSION_LEVEL,
@@ -21,7 +22,7 @@ class TeamPermissionController {
   constructor() {}
 
   isCurrentUserGuest(teamPermissionParams: TeamPermissionParams): boolean {
-    const companyId = UserConfig.getCurrentCompanyId();
+    const companyId = AccountGlobalConfig.getCurrentCompanyId();
     const guestUserCompanyIds = teamPermissionParams.guest_user_company_ids;
     return guestUserCompanyIds
       ? guestUserCompanyIds.includes(companyId)
@@ -42,7 +43,7 @@ class TeamPermissionController {
   getCurrentUserPermissionLevel(
     teamPermissionParams: TeamPermissionParams,
   ): number {
-    const userId = UserConfig.getCurrentUserId();
+    const userId = AccountGlobalConfig.getCurrentUserId();
 
     const {
       permissions: {
@@ -97,7 +98,9 @@ class TeamPermissionController {
       !teamPermissionParams.is_team &&
       !teamPermissionParams.permissions
     ) {
-      const defaultPermissions = this._permissionLevelToArray(PERMISSION_ENUM.TEAM_POST);
+      const defaultPermissions = this._permissionLevelToArray(
+        PERMISSION_ENUM.TEAM_POST,
+      );
       return defaultPermissions.includes(type);
     }
     const permissionList = this.getCurrentUserPermissions(teamPermissionParams);

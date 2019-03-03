@@ -108,7 +108,7 @@ export class FetchSortableDataListHandler<
         'FetchSortableDataListHandler: data fetcher should be defined ',
       );
     }
-    const { data, hasMore } = await this._sortableDataProvider.fetchData(
+    const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
       direction,
       pageSize,
       anchor,
@@ -195,6 +195,9 @@ export class FetchSortableDataListHandler<
     let matchedKeys: number[] = _.intersection(keys, existKeys);
     const matchedSortableModels: ISortableModel<T>[] = [];
     const matchedEntities: T[] = [];
+    const isReplaceAll =
+      payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll;
+    const toReplaceEntities: Map<number, T> = new Map();
 
     if (payload.type === EVENT_TYPES.REPLACE) {
       if (payload.body.isReplaceAll) {
@@ -212,6 +215,7 @@ export class FetchSortableDataListHandler<
         ) {
           matchedSortableModels.push(sortableModel);
           matchedEntities.push(model);
+          isReplaceAll && toReplaceEntities.set(key, model);
         }
       } else {
         deletedSortableModelIds.push(key);
@@ -242,8 +246,8 @@ export class FetchSortableDataListHandler<
       originalSortableModels = _.cloneDeep(this.sortableListStore.items);
     }
 
-    if (payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll) {
-      this.replaceEntityStore(matchedEntities);
+    if (isReplaceAll) {
+      this.replaceEntityStore(toReplaceEntities);
       this.sortableListStore.removeByIds(deletedSortableModelIds);
       this.sortableListStore.upsert(matchedSortableModels);
 

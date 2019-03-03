@@ -5,4 +5,3 @@
  */
 
 export { AccountService as default } from './accountService';
-export { UserConfig } from './UserConfig';

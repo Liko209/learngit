@@ -100,6 +100,10 @@ class EntitySourceController<T extends IdModel = IdModel>
     }
     return models;
   }
+
+  getRequestController(): IRequestController<T> | null {
+    return this.requestController ? this.requestController : null;
+  }
 }
 
 export { EntitySourceController };

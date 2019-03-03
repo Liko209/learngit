@@ -432,6 +432,34 @@ describe('StreamViewModel', () => {
         type: ToastType.ERROR,
       });
     });
+
+    it('should not show toast multiple times if calling error catched frequently', async () => {
+      const fetchData = jest.fn(() =>
+        Promise.reject(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.GENERAL,
+            'Backend error',
+          ),
+        ),
+      );
+      const hasMore = jest.fn().mockReturnValue(true);
+
+      const vm = setup({
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
+      });
+
+      Notification.flashToast = jest.fn();
+
+      await vm.loadNextPosts();
+      await vm.loadNextPosts();
+      await vm.loadNextPosts();
+
+      expect(Notification.flashToast).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('handleNewMessageSeparatorState()', () => {
