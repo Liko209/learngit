@@ -26,6 +26,7 @@ import {
 import {
   FetchDataListHandler,
   IFetchDataListHandlerOptions,
+  DeltaDataHandler,
 } from './FetchDataListHandler';
 import { SortableListStore } from './SortableListStore';
 import { mainLogger } from 'sdk';
@@ -97,12 +98,15 @@ export class FetchSortableDataListHandler<
       this.updateEntityStore(data);
       this.handleHasMore(hasMore, direction);
       this.handlePageData(sortableResult);
-      this._dataChangeCallBack &&
-        this._dataChangeCallBack({
-          added: sortableResult,
-          updated: [],
-          deleted: [],
-        });
+      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+        if (callback) {
+          callback({
+            added: sortableResult,
+            updated: [],
+            deleted: [],
+          });
+        }
+      });
     });
     return data;
   }
@@ -119,31 +123,37 @@ export class FetchSortableDataListHandler<
     } else {
       sortableResult = this.listStore.items;
     }
-    this._dataChangeCallBack &&
-      this._dataChangeCallBack({
-        added: sortableResult,
-        updated: [],
-        deleted: [],
-      });
+
+    this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+      if (callback) {
+        callback({
+          added: sortableResult,
+          updated: [],
+          deleted: [],
+        });
+      }
+    });
   }
 
   handleDataDeleted(payload: NotificationEntityDeletePayload) {
     let originalSortableIds: number[] = [];
 
-    if (this._dataChangeCallBack) {
+    if (this._dataChangeCallBacks.length) {
       originalSortableIds = this.sortableListStore.getIds;
     }
 
     const deletedSortableModelIds = Array.from(payload.body.ids);
     this.sortableListStore.removeByIds(deletedSortableModelIds);
 
-    if (this._dataChangeCallBack) {
-      this._dataChangeCallBack({
-        deleted: _.intersection(originalSortableIds, payload.body.ids),
-        updated: [],
-        added: [],
-      });
-    }
+    this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+      if (callback) {
+        callback({
+          deleted: _.intersection(originalSortableIds, payload.body.ids),
+          updated: [],
+          added: [],
+        });
+      }
+    });
   }
 
   handleDataUpdateReplace(
@@ -210,7 +220,7 @@ export class FetchSortableDataListHandler<
       });
     }
 
-    if (this._dataChangeCallBack) {
+    if (this._dataChangeCallBacks.length) {
       originalSortableModels = _.cloneDeep(this.sortableListStore.items);
     }
 
@@ -219,7 +229,7 @@ export class FetchSortableDataListHandler<
       this.sortableListStore.removeByIds(deletedSortableModelIds);
       this.sortableListStore.upsert(matchedSortableModels);
 
-      if (this._dataChangeCallBack) {
+      if (this._dataChangeCallBacks.length) {
         // replace models as updated models
         addedSortableModels = matchedSortableModels;
       }
@@ -228,7 +238,7 @@ export class FetchSortableDataListHandler<
       this.sortableListStore.upsert(matchedSortableModels);
       this.sortableListStore.removeByIds(deletedSortableModelIds);
 
-      if (this._dataChangeCallBack) {
+      if (this._dataChangeCallBacks.length) {
         // calculate added models
         addedSortableModels = _.differenceBy(
           matchedSortableModels,
@@ -249,12 +259,15 @@ export class FetchSortableDataListHandler<
       addedSortableModels.length ||
       updatedSortableModels.length
     ) {
-      this._dataChangeCallBack &&
-        this._dataChangeCallBack({
-          deleted: deletedSortableModelIds,
-          updated: updatedSortableModels,
-          added: addedSortableModels,
-        });
+      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+        if (callback) {
+          callback({
+            deleted: deletedSortableModelIds,
+            updated: updatedSortableModels,
+            added: addedSortableModels,
+          });
+        }
+      });
     }
   }
 

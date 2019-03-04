@@ -27,12 +27,10 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import {
-  generateModifiedImageURL,
-  RULE,
-} from '@/common/generateModifiedImageURL';
+import { RULE } from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import { UploadFileTracker } from './UploadFileTracker';
+import { getThumbnailURL } from '@/common/getThumbnailURL';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -97,14 +95,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       origHeight > 0 &&
       FileItemUtils.isSupportPreview({ type })
     ) {
-      const thumbnail = await generateModifiedImageURL({
-        id,
-        origWidth,
-        origHeight,
-        rule,
-        squareSize: 180,
-      });
-      url = thumbnail.url;
+      url = getThumbnailURL(item, { width: origWidth, height: origHeight });
     }
     if (!url) {
       url = versionUrl || '';

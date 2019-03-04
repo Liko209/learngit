@@ -5,13 +5,19 @@
  */
 
 interface IImageDownloadedListener {
-  onSuccess(url: string);
-  onFailure(url: string, errorCode: number);
+  onSuccess(
+    item: { id: number; url?: string; thumbnail?: boolean; count?: number },
+    width: number,
+    height: number,
+  ): void;
+  onFailure(url: string, errorCode: number): void;
 }
 
 interface IImageDownloader {
-  download(url, downloadListener: IImageDownloadedListener): Promise<void>;
-  getThumbnailSize(count: number): { width: number; height: number };
+  download(
+    item: { id: number; url?: string; thumbnail?: boolean; count?: number },
+    downloadListener: IImageDownloadedListener,
+  ): void;
 }
 
 export { IImageDownloadedListener, IImageDownloader };

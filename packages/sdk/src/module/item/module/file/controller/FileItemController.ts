@@ -15,13 +15,9 @@ import { daoManager } from '../../../../../dao';
 import { ItemDao } from '../../../dao';
 import { Item, ItemFile } from '../../../entity';
 import { FileActionController } from './FileActionController';
-import { FileItem } from '../entity';
-import SequenceProcessorHandler from '../../../../../framework/processor/SequenceProcessorHandler';
-
 class FileItemController {
   private _fileActionController: FileActionController;
   private _fileUploadController: FileUploadController;
-  private _sequenceProcessorHandler: SequenceProcessorHandler;
 
   constructor() {}
 
@@ -89,17 +85,6 @@ class FileItemController {
         return x.post_ids.length > 0;
       })
       : false;
-  }
-
-  handleIncomingItem(fileFileItems: FileItem[]) {
-    ...
-  }
-
-  protected get sequenceProcessorHandler() {
-    if (!this._sequenceProcessorHandler) {
-      this._sequenceProcessorHandler = new SequenceProcessorHandler('prefect images handler');
-    }
-    return this._sequenceProcessorHandler;
   }
 }
 

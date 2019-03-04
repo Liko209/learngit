@@ -55,4 +55,4 @@ class SequenceProcessorHandler extends AbstractProcessor {
   }
 }
 
-export default SequenceProcessorHandler;
+export { SequenceProcessorHandler };
