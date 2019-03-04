@@ -7,8 +7,10 @@ import { BaseDao, BaseKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import ConfigDao from './config/index';
-import { DB_SCHEMA_VERSION, LAST_INDEX_TIMESTAMP } from './config/constants';
+import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
+import { AuthGlobalConfig } from '../service/auth/config';
+import { AccountUserConfig } from '../service/account/config';
+import { NewUserConfig } from '../service/config/NewUserConfig';
 
 class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   private kvStorageManager: KVStorageManager;
@@ -33,28 +35,28 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
         this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
         await this.dbManager.deleteDatabase();
       }
-      this.getKVDao(ConfigDao).remove(LAST_INDEX_TIMESTAMP);
+      NewGlobalConfig.removeLastIndexTimestamp();
     }
 
     const db = this.dbManager.getDatabase();
-    const configDao = this.getKVDao(ConfigDao);
+
     if (db instanceof DexieDB) {
       db.db.on('ready', () => {
-        configDao.put(DB_SCHEMA_VERSION, schema.version);
+        NewGlobalConfig.setDBSchemaVersion(schema.version);
       });
       const isIEOrEdge = /(MSIE|Trident|Edge)/.test(navigator.userAgent);
       if (isIEOrEdge) {
         const BLOCK_MESSAGE_KEY = 'DB_VERSION_CHANGE';
         const BLOCK_MESSAGE_VALUE = 1;
         db.db.on('blocked', () => {
-          configDao.put(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
+          NewGlobalConfig.putConfig(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
         });
         window.addEventListener('storage', async (e: any) => {
           if (
-            e.key === configDao.getKey(BLOCK_MESSAGE_KEY) &&
+            e.key === NewGlobalConfig.getConfig(BLOCK_MESSAGE_KEY) &&
             Number(e.newValue) === BLOCK_MESSAGE_VALUE
           ) {
-            configDao.remove(BLOCK_MESSAGE_KEY);
+            NewGlobalConfig.removeConfig(BLOCK_MESSAGE_KEY);
             await this.dbManager.deleteDatabase();
           }
         });
@@ -70,8 +72,21 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
     await this.dbManager.closeDatabase();
   }
 
+  private _clearLocalStorage() {
+    // need to remove last index timestamp or can't sync data when users re-login
+    NewGlobalConfig.removeLastIndexTimestamp();
+    // need to remove glip token or can't logout
+    AuthGlobalConfig.removeGlipToken();
+    AuthGlobalConfig.removeRcToken();
+    // each module need to remove its user config when users logout
+    const accoutUserConfig = new AccountUserConfig();
+    accoutUserConfig.clear();
+    const userConfig = new NewUserConfig();
+    userConfig.clear();
+  }
+
   async deleteDatabase(): Promise<void> {
-    this.kvStorageManager.clear();
+    this._clearLocalStorage();
     await this.dbManager.deleteDatabase();
   }
 
@@ -99,9 +114,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   private _isSchemaCompatible() {
-    const currentSchemaVersion = this.getKVDao(ConfigDao).get(
-      DB_SCHEMA_VERSION,
-    );
+    const currentSchemaVersion = NewGlobalConfig.getDBSchemaVersion();
     return (
       typeof currentSchemaVersion === 'number' &&
       currentSchemaVersion === schema.version
