@@ -559,6 +559,10 @@ node(buildNode) {
                     passwordVariable: 'RC_PLATFORM_APP_SECRET')]) {
                     sh "npm run e2e"
                 }
+                if (!e2eEnableRemoteDashboard) {
+                    sh "tar -czvf allure.tar.gz -C ./allure/allure-results ."
+                    archiveArtifacts artifacts: 'allure.tar.gz', fingerprint: true
+                }
             }}
         }
         // post success actions
