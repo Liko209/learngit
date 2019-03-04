@@ -87,7 +87,7 @@ storiesOf('Pattern/ConversationRightShelf', module).add('PinnedItem', () => {
           creator="Virginia Gill"
           createTime="8/8/2019"
           content={content}
-          items={data}
+          itemLen={data.length}
         />
       </Wrapper>
     );
