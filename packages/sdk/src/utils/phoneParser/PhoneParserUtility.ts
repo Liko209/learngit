@@ -16,7 +16,7 @@ import {
   mainLogger,
 } from 'foundation';
 import fs from 'fs';
-import { RcInfoConfig } from '../../module/rcInfo/config';
+import { RcInfoUserConfig } from '../../module/rcInfo/config';
 import { RcAccountInfo } from '../../api/ringcentral/types/RcAccountInfo';
 
 const MODULE_LOADING_TIME_OUT: number = 60000; // 1 minute
@@ -115,7 +115,8 @@ class PhoneParserUtility {
       }
     }
 
-    const phoneData = RcInfoConfig.getRcPhoneData();
+    const rcInfoUserConfig = new RcInfoUserConfig();
+    const phoneData = rcInfoUserConfig.getPhoneData();
     if (!phoneData || phoneData.length === 0) {
       mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
       return undefined;
@@ -302,7 +303,8 @@ class PhoneParserUtility {
       return false;
     }
 
-    const accountInfo: RcAccountInfo = RcInfoConfig.getRcAccountInfo();
+    const rcInfoUserConfig = new RcInfoUserConfig();
+    const accountInfo: RcAccountInfo = rcInfoUserConfig.getAccountInfo();
     if (!accountInfo || !accountInfo.mainNumber) {
       mainLogger.debug('isInternationalDialing: can not get rc main number.');
       return false;

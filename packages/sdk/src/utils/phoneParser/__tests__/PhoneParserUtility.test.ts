@@ -5,8 +5,10 @@
  */
 
 import fs from 'fs';
-import { RcInfoConfig } from '../../../module/rcInfo/config';
+import { RcInfoUserConfig } from '../../../module/rcInfo/config';
 import { PhoneParserUtility } from '../PhoneParserUtility';
+
+jest.mock('../../../module/rcInfo/config');
 
 describe('PhoneParserUtility', () => {
   let phoneParserUtility: PhoneParserUtility;
@@ -176,14 +178,13 @@ describe('PhoneParserUtility', () => {
   describe('getPhoneData()', () => {
     beforeAll(() => {
       jest.spyOn(fs, 'readFileSync');
-      jest.spyOn(RcInfoConfig, 'getRcPhoneData');
     });
 
     it('should get from local when fromLocal = true', () => {
       fs.readFileSync.mockReturnValueOnce('localData');
       expect(PhoneParserUtility.getPhoneData(true)).toEqual('localData');
       expect(fs.readFileSync).toBeCalledTimes(1);
-      expect(RcInfoConfig.getRcPhoneData).toBeCalledTimes(0);
+      expect(RcInfoUserConfig.prototype.getPhoneData).toBeCalledTimes(0);
     });
 
     it('should return undefined when can not get local data', () => {
@@ -192,26 +193,26 @@ describe('PhoneParserUtility', () => {
       });
       expect(PhoneParserUtility.getPhoneData(true)).toEqual(undefined);
       expect(fs.readFileSync).toBeCalledTimes(1);
-      expect(RcInfoConfig.getRcPhoneData).toBeCalledTimes(0);
+      expect(RcInfoUserConfig.prototype.getPhoneData).toBeCalledTimes(0);
     });
 
     it('should get newest when fromLocal = false', () => {
-      RcInfoConfig.getRcPhoneData.mockReturnValueOnce('newestData');
+      RcInfoUserConfig.prototype.getPhoneData.mockReturnValueOnce('newestData');
       expect(PhoneParserUtility.getPhoneData(false)).toEqual('newestData');
       expect(fs.readFileSync).toBeCalledTimes(0);
-      expect(RcInfoConfig.getRcPhoneData).toBeCalledTimes(1);
+      expect(RcInfoUserConfig.prototype.getPhoneData).toBeCalledTimes(1);
     });
 
     it('should return undefined when can not get newest data', () => {
-      RcInfoConfig.getRcPhoneData.mockReturnValueOnce(null);
+      RcInfoUserConfig.prototype.getPhoneData.mockReturnValueOnce(null);
       expect(PhoneParserUtility.getPhoneData(false)).toEqual(undefined);
       expect(fs.readFileSync).toBeCalledTimes(0);
-      expect(RcInfoConfig.getRcPhoneData).toBeCalledTimes(1);
+      expect(RcInfoUserConfig.prototype.getPhoneData).toBeCalledTimes(1);
 
-      RcInfoConfig.getRcPhoneData.mockReturnValueOnce('');
+      RcInfoUserConfig.prototype.getPhoneData.mockReturnValueOnce('');
       expect(PhoneParserUtility.getPhoneData(false)).toEqual(undefined);
       expect(fs.readFileSync).toBeCalledTimes(0);
-      expect(RcInfoConfig.getRcPhoneData).toBeCalledTimes(2);
+      expect(RcInfoUserConfig.prototype.getPhoneData).toBeCalledTimes(2);
     });
   });
 
@@ -580,10 +581,6 @@ describe('PhoneParserUtility', () => {
   });
 
   describe('isInternationalDialing()', () => {
-    beforeAll(() => {
-      jest.spyOn(RcInfoConfig, 'getRcAccountInfo');
-    });
-
     it('should return false when is short number', () => {
       mockPhoneParser.IsRCExtension.mockReturnValueOnce(true);
       expect(phoneParserUtility.isInternationalDialing()).toBeFalsy();
@@ -602,7 +599,7 @@ describe('PhoneParserUtility', () => {
       mockPhoneParser.GetServiceCodeType.mockReturnValueOnce({
         value: 0,
       });
-      RcInfoConfig.getRcAccountInfo.mockReturnValueOnce(undefined);
+      RcInfoUserConfig.prototype.getAccountInfo.mockReturnValueOnce(undefined);
       expect(phoneParserUtility.isInternationalDialing()).toBeFalsy();
     });
 
@@ -611,7 +608,7 @@ describe('PhoneParserUtility', () => {
       mockPhoneParser.GetServiceCodeType.mockReturnValueOnce({
         value: 0,
       });
-      RcInfoConfig.getRcAccountInfo.mockReturnValueOnce({});
+      RcInfoUserConfig.prototype.getAccountInfo.mockReturnValueOnce({});
       expect(phoneParserUtility.isInternationalDialing()).toBeFalsy();
     });
 
@@ -620,7 +617,7 @@ describe('PhoneParserUtility', () => {
       mockPhoneParser.GetServiceCodeType.mockReturnValueOnce({
         value: 0,
       });
-      RcInfoConfig.getRcAccountInfo.mockReturnValueOnce({
+      RcInfoUserConfig.prototype.getAccountInfo.mockReturnValueOnce({
         mainNumber: '123456',
       });
       PhoneParserUtility.getPhoneParser.mockReturnValueOnce(undefined);
@@ -632,7 +629,7 @@ describe('PhoneParserUtility', () => {
       mockPhoneParser.GetServiceCodeType.mockReturnValueOnce({
         value: 0,
       });
-      RcInfoConfig.getRcAccountInfo.mockReturnValueOnce({
+      RcInfoUserConfig.prototype.getAccountInfo.mockReturnValueOnce({
         mainNumber: '123456',
       });
       const mockPhoneParserUtility = new PhoneParserUtility('', '');

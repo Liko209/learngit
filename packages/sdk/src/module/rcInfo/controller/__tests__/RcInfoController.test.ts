@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RcInfoConfig } from '../../config';
+import { RcInfoUserConfig } from '../../config';
 import { NewGlobalConfig } from '../../../../service/config/NewGlobalConfig';
 import { RcInfoController } from '../RcInfoController';
 import { RcInfoApi, TelephonyApi } from '../../../../api/ringcentral';
@@ -52,7 +52,9 @@ describe('RcInfoController', () => {
       RcInfoApi.requestRcClientInfo = jest.fn().mockReturnValue('rcClientInfo');
       await rcInfoController.requestRcClientInfo();
       expect(RcInfoApi.requestRcClientInfo).toBeCalledTimes(1);
-      expect(RcInfoConfig.setRcClientInfo).toBeCalledWith('rcClientInfo');
+      expect(RcInfoUserConfig.prototype.setClientInfo).toBeCalledWith(
+        'rcClientInfo',
+      );
     });
   });
 
@@ -63,7 +65,9 @@ describe('RcInfoController', () => {
         .mockReturnValue('rcAccountInfo');
       await rcInfoController.requestRcAccountInfo();
       expect(RcInfoApi.requestRcAccountInfo).toBeCalledTimes(1);
-      expect(RcInfoConfig.setRcAccountInfo).toBeCalledWith('rcAccountInfo');
+      expect(RcInfoUserConfig.prototype.setAccountInfo).toBeCalledWith(
+        'rcAccountInfo',
+      );
     });
   });
 
@@ -74,7 +78,9 @@ describe('RcInfoController', () => {
         .mockReturnValue('rcExtensionInfo');
       await rcInfoController.requestRcExtensionInfo();
       expect(RcInfoApi.requestRcExtensionInfo).toBeCalledTimes(1);
-      expect(RcInfoConfig.setRcExtensionInfo).toBeCalledWith('rcExtensionInfo');
+      expect(RcInfoUserConfig.prototype.setExtensionInfo).toBeCalledWith(
+        'rcExtensionInfo',
+      );
     });
   });
 
@@ -85,7 +91,7 @@ describe('RcInfoController', () => {
         .mockReturnValue('rcRolePermission');
       await rcInfoController.requestRcRolePermission();
       expect(RcInfoApi.requestRcRolePermission).toBeCalledTimes(1);
-      expect(RcInfoConfig.setRcRolePermissions).toBeCalledWith(
+      expect(RcInfoUserConfig.prototype.setRolePermission).toBeCalledWith(
         'rcRolePermission',
       );
     });
@@ -100,7 +106,9 @@ describe('RcInfoController', () => {
         .mockReturnValue('rcPhoneData');
       await rcInfoController.requestRcPhoneData();
       expect(TelephonyApi.getPhoneParserData).toBeCalledTimes(1);
-      expect(RcInfoConfig.setRcPhoneData).toBeCalledWith('rcPhoneData');
+      expect(RcInfoUserConfig.prototype.setPhoneData).toBeCalledWith(
+        'rcPhoneData',
+      );
       expect(PhoneParserUtility.getPhoneDataFileVersion).toBeCalledTimes(1);
       expect(PhoneParserUtility.initPhoneParser).toBeCalledTimes(1);
     });

@@ -1,7 +1,9 @@
 /*
- * @Author: Rito.Xiao (rito.xiao@ringcentral.com)
- * @Date: 2019-02-18 13:07:00
+ * @Author: Lewi Li (lewi.li@ringcentral.com)
+ * @Date: 2019-03-03 11:40:59
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { RcInfoConfig } from './RcInfoConfig';
+import { RcInfoUserConfig } from './RcInfoUserConfig';
+
+export { RcInfoUserConfig };

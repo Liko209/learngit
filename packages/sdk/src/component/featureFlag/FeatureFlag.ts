@@ -4,7 +4,7 @@ import IFlagCalculator from './FlagCalculator';
 import { strictDiff } from './utils';
 import dataDispatcher from '../DataDispatcher';
 import { SOCKET } from '../../service';
-import { RcInfoConfig } from '../../module/rcInfo/config';
+import { RcInfoUserConfig } from '../../module/rcInfo/config';
 import {
   RcExtensionInfo,
   RcServiceFeature,
@@ -44,7 +44,8 @@ class FeatureFlag {
   }
 
   async getServicePermission() {
-    let rcExtensionInfo: RcExtensionInfo = RcInfoConfig.getRcExtensionInfo();
+    const rcInfoUserConfig = new RcInfoUserConfig();
+    let rcExtensionInfo: RcExtensionInfo = rcInfoUserConfig.getExtensionInfo();
     if (!rcExtensionInfo || !rcExtensionInfo.serviceFeatures) {
       rcExtensionInfo = await RcInfoApi.requestRcExtensionInfo();
     }

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RcInfoConfig } from '../config';
+import { RcInfoUserConfig } from '../config';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { RcInfoApi, TelephonyApi } from '../../../api/ringcentral';
@@ -12,7 +12,11 @@ import { PhoneParserUtility } from '../../../utils/phoneParser';
 import { mainLogger } from 'foundation';
 
 class RcInfoController {
-  constructor() {}
+  private _rcInfoUserConfig: RcInfoUserConfig;
+
+  constructor() {
+    this._rcInfoUserConfig = new RcInfoUserConfig();
+  }
 
   async requestRcInfo() {
     const accountType = NewGlobalConfig.getAccountType();
@@ -28,7 +32,7 @@ class RcInfoController {
   async requestRcClientInfo() {
     try {
       const result = await RcInfoApi.requestRcClientInfo();
-      RcInfoConfig.setRcClientInfo(result);
+      this._rcInfoUserConfig.setClientInfo(result);
     } catch (err) {
       mainLogger.error(`requestRcClientInfo error: ${err}`);
     }
@@ -37,7 +41,7 @@ class RcInfoController {
   async requestRcAccountInfo() {
     try {
       const result = await RcInfoApi.requestRcAccountInfo();
-      RcInfoConfig.setRcAccountInfo(result);
+      this._rcInfoUserConfig.setAccountInfo(result);
     } catch (err) {
       mainLogger.error(`requestRcAccountInfo error: ${err}`);
     }
@@ -46,7 +50,7 @@ class RcInfoController {
   async requestRcExtensionInfo() {
     try {
       const result = await RcInfoApi.requestRcExtensionInfo();
-      RcInfoConfig.setRcExtensionInfo(result);
+      this._rcInfoUserConfig.setExtensionInfo(result);
     } catch (err) {
       mainLogger.error(`requestRcExtensionInfo error: ${err}`);
     }
@@ -55,7 +59,7 @@ class RcInfoController {
   async requestRcRolePermission() {
     try {
       const result = await RcInfoApi.requestRcRolePermission();
-      RcInfoConfig.setRcRolePermissions(result);
+      this._rcInfoUserConfig.setRolePermission(result);
     } catch (err) {
       mainLogger.error(`requestRcRolePermission error: ${err}`);
     }
@@ -66,7 +70,7 @@ class RcInfoController {
       const phoneDataVersion: string =
         PhoneParserUtility.getPhoneDataFileVersion() || '';
       const result = await TelephonyApi.getPhoneParserData(phoneDataVersion);
-      RcInfoConfig.setRcPhoneData(result);
+      this._rcInfoUserConfig.setPhoneData(result);
       PhoneParserUtility.initPhoneParser(true);
     } catch (err) {
       mainLogger.error(`requestRcPhoneData error: ${err}`);
