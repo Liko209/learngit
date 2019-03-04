@@ -46,7 +46,6 @@ function getKnobs() {
 }
 
 const Wrapper = styled.div`
-  background-color: ${grey('700')};
   .buttonWrapper {
     margin-right: 20px;
   }
@@ -90,10 +89,18 @@ storiesOf('Components/Buttons', module)
     const { content, ...rest } = knobs;
     return (
       <Wrapper>
-        <JuiFabButton {...rest} className="buttonWrapper">
+        <JuiFabButton
+          {...rest}
+          className="buttonWrapper"
+          tooltipTitle="pervious"
+        >
           <JuiIconography color="grey.900">pervious</JuiIconography>
         </JuiFabButton>
-        <JuiFabButton {...rest} className="buttonWrapper">
+        <JuiFabButton
+          {...rest}
+          className="buttonWrapper"
+          tooltipTitle="forward"
+        >
           <JuiIconography color="grey.900">forward</JuiIconography>
         </JuiFabButton>
       </Wrapper>

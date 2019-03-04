@@ -13,14 +13,16 @@ import {
   width,
   rippleEnter,
   height,
-  grey,
 } from '../../../foundation/utils/styles';
+import { JuiArrowTip } from '../../Tooltip/ArrowTip';
 import { Omit } from '../../../foundation/utils/typeHelper';
 
 type JuiButtonColor = 'primary' | 'secondary' | 'negative';
 
 type ButtonProps = {
   size?: 'small' | 'large';
+  tooltipTitle?: string;
+  disableToolTip?: boolean;
   disabled?: boolean;
   color?: JuiButtonColor;
   loading?: boolean;
@@ -47,12 +49,12 @@ const StyledFabButton = styled<JuiFabProps>(WrappedMuiFab)`
     background-color: ${palette('common', 'white')};
     height: ${({ theme }) => height(15)({ theme })};
     width: ${({ theme }) => width(15)({ theme })};
+    box-shadow: ${props => props.theme.shadows[2]};
     ${typography('caption1')};
-    &:hover {
-      background-color: ${grey('50')};
-    }
+    &:hover,
     &:active {
-      background-color: ${grey('100')};
+      opacity: ${({ theme }) =>
+        1 - (theme.palette.action.hoverOpacity * 2) / 3};
     }
     .rippleVisible {
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
@@ -72,7 +74,17 @@ const StyledFabButton = styled<JuiFabProps>(WrappedMuiFab)`
 
 const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
   props: JuiFabProps,
-) => <StyledFabButton {...props} />;
+) => {
+  const { disableToolTip, tooltipTitle } = props;
+  if (!disableToolTip) {
+    return (
+      <JuiArrowTip title={tooltipTitle}>
+        {<StyledFabButton {...props} />}
+      </JuiArrowTip>
+    );
+  }
+  return <StyledFabButton {...props} />;
+};
 
 JuiFabButtonComponent.defaultProps = {
   size: 'large',
