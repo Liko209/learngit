@@ -11,7 +11,7 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { v4 as uuid } from 'uuid';
 import { BrandTire } from '../../config'
 
-fixture('LikeAndUnlike')
+fixture('ActionBar/LikeAndUnlike')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 

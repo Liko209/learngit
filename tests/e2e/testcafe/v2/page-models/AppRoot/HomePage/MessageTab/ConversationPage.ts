@@ -239,7 +239,7 @@ export class ConversationPage extends BaseConversationPage {
   get publicTeamIcon() {
     return this.getSelectorByIcon('lock_open', this.privateButton);
   }
-  
+
   get favoriteButton() {
     return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
   }
@@ -455,6 +455,40 @@ export class PostItem extends BaseWebComponent {
   get unBookmarkIcon() {
 
     return this.getSelectorByIcon('bookmark_border', this.self);
+  }
+
+  get pinToggle() {
+    return this.getSelectorByAutomationId('actionBarPin', this.self);
+  }
+
+  get pinStatusIcon() {
+    return this.pinToggle.withAttribute('aria-label', 'pin'); // fixme
+  }
+
+  get unpinStatusIcon() {
+    return this.pinToggle.withAttribute('aria-label', 'unpin');  // fixme
+  }
+
+  async clickPinToggle() {
+    await this.t.click(this.pinToggle);
+  }
+
+  get isPinned() {
+    return this.pinStatusIcon.exists;
+  }
+
+  async pinPost() {
+    if (!await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
+  }
+
+  async unpinPost() {
+    if (await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
   }
 
   get moreMenu() {
