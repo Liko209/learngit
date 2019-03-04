@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
+import ReactResizeDetector from 'react-resize-detector';
 import { translate, WithNamespaces } from 'react-i18next';
 import {
   JuiRightShelf,
@@ -34,7 +35,6 @@ type TriggerButtonProps = {
 const HEIGHT_CONVERSATION_HEADER = 48;
 const HEIGHT_TABS = 33;
 const HEIGHT_FIX = HEIGHT_CONVERSATION_HEADER + HEIGHT_TABS;
-const MIN_WIDTH = 200;
 
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
@@ -83,49 +83,53 @@ class RightRailComponent extends React.Component<Props> {
     this.setState({ tabIndex: index });
   }
 
-  private _renderTabs = (w: number, h: number) => {
+  private _renderTabs = () => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
-    const width = Number.isNaN(w) ? MIN_WIDTH : w;
-    const height = Number.isNaN(h) ? MIN_WIDTH : h;
     return (
-      <JuiTabs
-        defaultActiveIndex={0}
-        tag="right-shelf"
-        width={width}
-        onChangeTab={this._handleTabChanged}
-        moreText={t('common.more')}
-      >
-        {TAB_CONFIG.map(
-          ({ title, type, automationID }: TabConfig, index: number) => (
-            <JuiTab
-              key={`${id}-${index}`}
-              title={t(title)}
-              automationId={`right-shelf-${automationID}`}
+      <ReactResizeDetector handleHeight={true} handleWidth={true}>
+        {(width: number, height: number) => {
+          return (
+            <JuiTabs
+              defaultActiveIndex={0}
+              tag="right-shelf"
+              width={width}
+              onChangeTab={this._handleTabChanged}
+              moreText={t('common.more')}
             >
-              <ItemList
-                type={type}
-                groupId={id}
-                width={width}
-                height={height - HEIGHT_FIX}
-                active={tabIndex === index}
-              />
-            </JuiTab>
-          ),
-        )}
-      </JuiTabs>
+              {TAB_CONFIG.map(
+                ({ title, type, automationID }: TabConfig, index: number) => (
+                  <JuiTab
+                    key={`${id}-${index}`}
+                    title={t(title)}
+                    automationId={`right-shelf-${automationID}`}
+                  >
+                    <ItemList
+                      type={type}
+                      groupId={id}
+                      width={width}
+                      height={height - HEIGHT_FIX}
+                      active={tabIndex === index}
+                    />
+                  </JuiTab>
+                ),
+              )}
+            </JuiTabs>
+          );
+        }}
+      </ReactResizeDetector>
     );
   }
 
   render() {
-    const { id, width, height } = this.props;
+    const { id } = this.props;
     if (!id) {
       return null;
     }
     return (
       <JuiRightShelf data-test-automation-id="rightRail">
         {this._renderHeader()}
-        {this._renderTabs(width, height)}
+        {this._renderTabs()}
       </JuiRightShelf>
     );
   }
