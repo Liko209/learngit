@@ -269,7 +269,7 @@ def reportChannels = [
 // send report to owner if gitlabUserEmail is provided
 if (gitlabUserEmail) {
     reportChannels.push(gitlabUserEmail)
-    reportChannels.push(gitlabUserEmail.replaceAll('ringcentral.com', 'ringcentral.gliprc.com'))
+    reportChannels.push(gitlabUserEmail.replaceAll('ringcentral.com', 'ringcentral.glip.com'))
 }
 
 
