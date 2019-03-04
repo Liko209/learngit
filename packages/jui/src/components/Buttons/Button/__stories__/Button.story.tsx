@@ -13,7 +13,6 @@ import {
 import { JuiFabButton, JuiButton } from '../';
 import { JuiIconography } from '../../../../foundation/Iconography';
 import styled from '../../../../foundation/styled-components';
-import { grey } from '../../../../foundation/utils/styles';
 
 function getKnobs() {
   const content = text('content', 'button');
