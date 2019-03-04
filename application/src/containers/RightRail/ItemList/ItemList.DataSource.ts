@@ -40,7 +40,10 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
       offsetItemId: anchor && anchor.id,
       filterFunc: this._filterFunc,
     });
-
+    console.log('TCL: GroupItemDataProvider -> result', {
+      data: result,
+      hasMore: result.length === pageSize,
+    });
     return { data: result, hasMore: result.length === pageSize };
   }
 }
@@ -121,7 +124,7 @@ class ItemListDataSource implements IVirtualListDataSource<any, number> {
       return {
         id: model.id,
         sortValue: model.id,
-        data: model,
+        data: { id: model.id, [sortKey]: model[sortKey] },
       } as ISortableModel<Item>;
     };
 
