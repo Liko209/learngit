@@ -47,7 +47,7 @@ class RcInfoUserConfig extends UserConfig {
     this.put(RCINFO_KEYS.PHONE_DATA, info);
   }
 
-  getPhoneData(): string {
+  getPhoneData() {
     return this.get(RCINFO_KEYS.PHONE_DATA);
   }
 
