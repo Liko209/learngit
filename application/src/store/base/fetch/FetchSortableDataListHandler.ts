@@ -151,7 +151,9 @@ export class FetchSortableDataListHandler<
     } else {
       sortableResult = this.listStore.items;
     }
-    this._dataChangeCallBack &&
+
+    !this._maintainMode &&
+      this._dataChangeCallBack &&
       this._dataChangeCallBack({
         added: sortableResult,
         updated: [],
