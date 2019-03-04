@@ -5,15 +5,13 @@
  */
 
 import fs from 'fs';
-import path from 'path';
 import Module from '../phoneParser';
 import { ModuleParams, ModuleClass, ModuleType } from '../types';
+import { localPhoneDataPath } from '../../';
 
 describe('PhoneParser', () => {
   it('should create phoneParser', async () => {
-    const defaultPhoneData = fs
-      .readFileSync(path.resolve(__dirname, '../phoneData.xml'))
-      .toString();
+    const defaultPhoneData = fs.readFileSync(localPhoneDataPath).toString();
 
     const initParams: ModuleParams = {
       onRuntimeInitialized: () => {},
