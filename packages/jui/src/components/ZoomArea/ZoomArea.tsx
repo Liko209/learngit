@@ -121,7 +121,6 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     ) {
       return;
     }
-    // fixNewScale = Math.max(minScale, Math.min(maxScale, fixNewScale));
     let translateOffsetX = 0;
     let translateOffsetY = 0;
     if (zoomCenterPosition) {

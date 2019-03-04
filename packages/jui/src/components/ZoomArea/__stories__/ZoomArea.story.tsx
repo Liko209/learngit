@@ -1,10 +1,18 @@
-import React, { RefObject, createRef } from 'react';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-03-04 12:42:23
+ * Copyright © RingCentral. All rights reserved.
+ */
+import React, { createRef, RefObject } from 'react';
+
+import { boolean, number } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
-import { number, boolean } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiZoomComponent, JuiZoomArea, JuiWithZoomProps } from '../ZoomArea';
+
 import styled from '../../../foundation/styled-components';
+import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { Transform } from '../types';
+import { JuiWithZoomProps, JuiZoomArea, JuiZoomComponent } from '../ZoomArea';
+
 const knobs = {
   step: () => number('step', 0.2),
   wheel: () => boolean('wheel', true),

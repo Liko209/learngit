@@ -28,6 +28,7 @@ type JuiImageProps = React.DetailedHTMLProps<
 };
 
 type JuiImageState = {
+  src?: string;
   loading: boolean;
   error: boolean;
   naturalWidth: number;
@@ -35,31 +36,38 @@ type JuiImageState = {
 };
 
 class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
+  static initState: JuiImageState = {
+    loading: true,
+    error: false,
+    naturalWidth: 0,
+    naturalHeight: 0,
+  };
+
   private _imageRef: RefObject<HTMLImageElement> = createRef();
 
   constructor(props: JuiImageProps) {
     super(props);
     this.state = {
-      loading: true,
-      error: false,
-      naturalWidth: 0,
-      naturalHeight: 0,
+      ...JuiImageView.initState,
+      src: props.src,
     };
+  }
+
+  static getDerivedStateFromProps(
+    nextProps: JuiImageProps,
+    prevState: JuiImageState,
+  ) {
+    if (nextProps.src !== prevState.src) {
+      return {
+        ...JuiImageView.initState,
+        src: nextProps.src,
+      };
+    }
+    return null;
   }
 
   getImageRef = (): RefObject<HTMLImageElement> => {
     return this.props.viewRef || this._imageRef;
-  }
-
-  componentWillReceiveProps(newProps: JuiImageProps) {
-    if (newProps.src !== this.props.src) {
-      this.setState({
-        loading: true,
-        error: false,
-        naturalHeight: 0,
-        naturalWidth: 0,
-      });
-    }
   }
 
   private _loadingView() {

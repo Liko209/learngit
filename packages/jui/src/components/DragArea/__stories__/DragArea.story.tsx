@@ -1,9 +1,15 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-03-04 12:41:36
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React from 'react';
+
 import { storiesOf } from '@storybook/react';
-// import { text, number, boolean } from '@storybook/addon-knobs';
+
+import styled from '../../../foundation/styled-components';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { DragArea, WithDragProps } from '../DragArea';
-import styled from '../../../foundation/styled-components';
 
 const ImageView = styled.img`
   &:hover {

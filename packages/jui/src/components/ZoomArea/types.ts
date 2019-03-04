@@ -1,3 +1,8 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-03-04 12:42:17
+ * Copyright © RingCentral. All rights reserved.
+ */
 type ElementRect = {
   left: number;
   top: number;
