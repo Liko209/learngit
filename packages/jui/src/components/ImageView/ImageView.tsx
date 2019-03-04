@@ -81,7 +81,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   private _errorView() {
     return (
       <StyledLoadingPage>
-        <JuiIconography fontSize="large" iconColor={['grey', '400']}>
+        <JuiIconography iconSize="large" iconColor={['grey', '400']}>
           image_broken
         </JuiIconography>
       </StyledLoadingPage>
