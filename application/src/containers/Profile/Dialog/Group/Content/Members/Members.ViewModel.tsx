@@ -28,7 +28,9 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       this.doFuzzySearchPersons.bind(this),
       DELAY_DEBOUNCE,
     );
-    this.autorun(this.createSortableHandler);
+    this.reaction(() => this.id, this.createSortableHandler, {
+      fireImmediately: true,
+    });
     this.reaction(
       () => this.sortedAllMemberIds,
       (ids: number[]) => (this.filteredMemberIds = ids),

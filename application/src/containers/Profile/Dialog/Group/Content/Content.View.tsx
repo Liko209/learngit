@@ -17,7 +17,6 @@ import {
   JuiProfileDialogContentSummaryName as Name,
   JuiProfileDialogContentSummaryDescription as Description,
   JuiProfileDialogContentSummaryButtons as Buttons,
-  JuiProfileDialogContentMembers as JuiMembers,
 } from 'jui/pattern/Profile/Dialog';
 import { goToConversation } from '@/common/goToConversation';
 import { Members } from './Members';
@@ -84,9 +83,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
           </Right>
         </Summary>
         <JuiDivider />
-        <JuiMembers>
-          <Members id={id} />
-        </JuiMembers>
+        <Members id={id} />
       </>
     );
   }

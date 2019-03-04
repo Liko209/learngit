@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { MembersViewProps } from './types';
 import { MemberHeader } from './MemberHeader';
 import { MemberList } from './MemberList';
+import { JuiProfileDialogContentMembers } from 'jui/pattern/Profile/Dialog';
 
 @observer
 class MembersView extends Component<MembersViewProps> {
@@ -20,14 +21,14 @@ class MembersView extends Component<MembersViewProps> {
   render() {
     const { id, sortedAllMemberIds, filteredMemberIds } = this.props;
     return (
-      <>
+      <JuiProfileDialogContentMembers>
         <MemberHeader id={id} onSearch={this.handleSearch} />
         <MemberList
           id={id}
           sortedAllMemberIds={sortedAllMemberIds}
           filteredMemberIds={filteredMemberIds}
         />
-      </>
+      </JuiProfileDialogContentMembers>
     );
   }
 }

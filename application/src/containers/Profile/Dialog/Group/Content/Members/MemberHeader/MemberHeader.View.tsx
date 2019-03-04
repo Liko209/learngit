@@ -49,12 +49,12 @@ class MemberHeader extends React.Component<
       >
         <JuiProfileDialogContentMemberHeaderTitle>
           {`${t(key)} (${members.length})`}
-          {isTeam && isCurrentUserHasPermissionAddMember ? (
+          {isTeam && isCurrentUserHasPermissionAddMember && (
             <ButtonInRight onClick={this.addTeamMembers}>
               <JuiIconography fontSize="small">add_team</JuiIconography>
               {t('people.team.AddTeamMembers')}
             </ButtonInRight>
-          ) : null}
+          )}
         </JuiProfileDialogContentMemberHeaderTitle>
         {hasSearch && (
           <JuiProfileDialogContentMemberHeaderSearch>
