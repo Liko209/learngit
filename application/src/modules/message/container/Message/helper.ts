@@ -70,7 +70,7 @@ export class MessageRouterChangeHelper {
       return this._goToDefaultConversation();
     }
     if (!this.isConversation(id)) {
-      return this._updateCurrentConversationId(this.defaultPageId);
+      return this.updateCurrentConversationId(this.defaultPageId);
     }
     this._goToConversationById(id, action);
   }
@@ -97,7 +97,7 @@ export class MessageRouterChangeHelper {
         });
         break;
     }
-    this._updateCurrentConversationId(id);
+    this.updateCurrentConversationId(id);
   }
 
   static async verifyGroup(id: number) {
@@ -110,7 +110,7 @@ export class MessageRouterChangeHelper {
     return /\d+/.test(id);
   }
 
-  private static _updateCurrentConversationId(id: string) {
+  static updateCurrentConversationId(id: string) {
     storeManager
       .getGlobalStore()
       .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, Number(id));
