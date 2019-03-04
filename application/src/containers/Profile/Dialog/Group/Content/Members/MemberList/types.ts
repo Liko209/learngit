@@ -4,12 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+// import { MembersViewProps } from '../types';
+
 type MemberListProps = {
   id: number;
+  filteredMemberIds: number[];
 };
 
-type MemberListViewProps = MemberListProps & {
-  memberIds: number[];
+type MemberListViewProps = {
   onScrollEvent: (event: { scrollTop: number }) => void;
 };
 

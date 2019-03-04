@@ -73,7 +73,7 @@ const StyledInput = styled<CompositeInputProps>(CompositeInput)`
   }
   &.disabled {
     /* Need the UI to provide the design */
-    background-color: ${palette('common', 'white')};
+    background-color: ${grey('100')};
   }
 `;
 

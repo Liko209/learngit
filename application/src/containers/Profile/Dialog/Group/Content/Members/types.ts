@@ -4,10 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ProfileDialogGroupViewProps } from '../../types';
+import {
+  ProfileDialogGroupProps,
+  ProfileDialogGroupViewProps,
+} from '../../types';
+
+type MembersProps = ProfileDialogGroupProps;
 
 type MembersViewProps = ProfileDialogGroupViewProps & {
-  sortedAllMemberIds: number[];
+  filteredMemberIds: number[];
+  doFuzzySearchPersons: (keywords: string) => void;
 };
 
-export { MembersViewProps };
+export { MembersProps, MembersViewProps };

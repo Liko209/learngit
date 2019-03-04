@@ -15,32 +15,42 @@ import {
   JuiProfileDialogContentSummaryButtonInRight as ButtonInRight,
 } from 'jui/pattern/Profile/Dialog';
 import { JuiOutlineTextField } from 'jui/src/components';
+import portalManager from '@/common/PortalManager';
+import { Dialog } from '@/containers/Dialog';
+import { AddMembers } from '../../AddMembers';
 
 @observer
 class MemberHeader extends React.Component<
   WithNamespaces & MemberHeaderViewProps & MemberHeaderProps
 > {
+  addTeamMembers = () => {
+    const { group } = this.props;
+    portalManager.dismissLast();
+    Dialog.simple(<AddMembers group={group} />, {
+      size: 'medium',
+    });
+  }
+
   render() {
     const {
       group,
       t,
       hasShadow,
-      AddTeamMembers,
       isCurrentUserHasPermissionAddMember,
-      sortedAllMemberIds,
+      onSearch,
     } = this.props;
-    const { isTeam } = group;
+    const { isTeam, members = [] } = group;
     const key = isTeam ? 'people.team.teamMembers' : 'people.team.groupMembers';
-    const hasSearch = sortedAllMemberIds.length > 10;
+    const hasSearch = members.length > 10;
     return (
       <JuiProfileDialogContentMemberHeader
         className={hasShadow ? 'shadow' : ''}
         data-test-automation-id="profileDialogMemberHeader"
       >
         <JuiProfileDialogContentMemberHeaderTitle>
-          {`${t(key)} (${group.members && group.members.length})`}
+          {`${t(key)} (${members.length})`}
           {isTeam && isCurrentUserHasPermissionAddMember ? (
-            <ButtonInRight onClick={AddTeamMembers}>
+            <ButtonInRight onClick={this.addTeamMembers}>
               <JuiIconography fontSize="small">add_team</JuiIconography>
               {t('people.team.AddTeamMembers')}
             </ButtonInRight>
@@ -53,6 +63,7 @@ class MemberHeader extends React.Component<
               iconName="search"
               iconPosition="left"
               maxLength={30}
+              onChange={onSearch}
               data-test-automation-id="profileDialogMemberSearch"
             />
           </JuiProfileDialogContentMemberHeaderSearch>
