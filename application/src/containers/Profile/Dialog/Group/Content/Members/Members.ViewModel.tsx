@@ -28,14 +28,14 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       this.doFuzzySearchPersons.bind(this),
       DELAY_DEBOUNCE,
     );
-    this.autorun(this._createSortableHandler);
+    this.autorun(this.createSortableHandler);
     this.reaction(
       () => this.sortedAllMemberIds,
       (ids: number[]) => (this.filteredMemberIds = ids),
     );
   }
 
-  private _createSortableHandler = async () => {
+  createSortableHandler = async () => {
     // This handler need observable
     this._sortableGroupMemberHandler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
       this.id,
@@ -66,6 +66,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
       );
       this.filteredMemberIds = ids;
     }
+    return result;
   }
 }
 export { MembersViewModel };
