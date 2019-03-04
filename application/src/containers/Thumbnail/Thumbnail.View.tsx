@@ -42,7 +42,9 @@ class ThumbnailView extends React.Component<ViewProps & Props> {
           <PreloadImg
             url={url}
             placeholder={
-              <JuiIconography fontSize="large">image_preview</JuiIconography>
+              <JuiIconography iconSize="extraLarge">
+                image_preview
+              </JuiIconography>
             }
           >
             <JuiThumbnail url={url} />
