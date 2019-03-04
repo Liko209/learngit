@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable } from 'mobx';
+import { computed, action, observable } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PinnedListProps, PinnedListViewProps } from './types';
 import { Group } from 'sdk/module/group/entity';
@@ -19,7 +19,7 @@ import { DiscontinuousPosListHandler } from '@/store/handler/DiscontinuousPosLis
 class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   implements PinnedListViewProps {
   @observable discontinuousPosListHandler: DiscontinuousPosListHandler;
-  @observable firstInit: boolean = true;
+  firstInit: boolean = true;
 
   constructor(props: PinnedListProps) {
     super(props);
@@ -27,10 +27,8 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
       () => this._groupId,
       () => {
         this.firstInit = true;
-        console.log('nello change group Id');
         this.discontinuousPosListHandler.dispose();
         this.build(this.group.pinnedPostIds || []);
-        console.log('nello change group Id222');
       },
     );
 
@@ -48,15 +46,30 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
     }
 
     if (this.firstInit) {
-      console.log('nello init discount');
       this.discontinuousPosListHandler = new DiscontinuousPosListHandler(
         pinnedPostIds,
       );
-      this.discontinuousPosListHandler.loadMorePosts(QUERY_DIRECTION.NEWER, 20);
+      this.loadInitialData();
       this.firstInit = false;
     } else {
       this.discontinuousPosListHandler.onSourceIdsChanged(pinnedPostIds);
     }
+  }
+
+  @action
+  async loadInitialData() {
+    await this.discontinuousPosListHandler.loadMorePosts(
+      QUERY_DIRECTION.NEWER,
+      20,
+    );
+  }
+
+  @action
+  loadMore = async (startIndex: number, stopIndex: number) => {
+    await this.discontinuousPosListHandler.loadMorePosts(
+      QUERY_DIRECTION.NEWER,
+      stopIndex - startIndex + 1,
+    );
   }
 
   @computed
@@ -71,7 +84,8 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
 
   @computed
   get totalCount() {
-    return this.ids.length;
+    const { pinnedPostIds = [] } = this.group;
+    return pinnedPostIds.length;
   }
 
   @computed

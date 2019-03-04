@@ -35,12 +35,15 @@ class PinnedListView
   }
 
   size() {
-    const { totalCount } = this.props;
-    return totalCount;
+    return this.props.ids.length;
   }
 
   get(index: number) {
     return this.props.ids[index];
+  }
+
+  total() {
+    return this.props.totalCount;
   }
 
   rowRenderer = ({
@@ -60,13 +63,13 @@ class PinnedListView
     return emptyView(RIGHT_RAIL_ITEM_TYPE.PIN_POSTS);
   }
 
-  isRowLoaded = (index: number) => {
-    const { ids } = this.props;
-    const result = typeof ids[index] !== 'undefined';
-    return result;
+  loadMore = async (startIndex: number, stopIndex: number) => {
+    await this.props.loadMore(startIndex, stopIndex);
   }
 
-  loadMore = async () => {};
+  hasMore() {
+    return this.size() !== this.props.totalCount;
+  }
 
   firstLoader = () => {
     return <JuiRightRailContentLoading />;
@@ -79,6 +82,7 @@ class PinnedListView
   render() {
     const { totalCount, ids, width, height } = this.props;
     const firstLoaded = true;
+    console.log(77777, this.size());
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
