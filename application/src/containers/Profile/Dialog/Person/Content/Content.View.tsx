@@ -66,7 +66,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
   }
 
   renderIcon = (key: string) => {
-    return <JuiIconography fontSize="small">{key}</JuiIconography>;
+    return <JuiIconography iconSize="small">{key}</JuiIconography>;
   }
 
   renderCopy = (value: string, aria?: string) => {
