@@ -109,7 +109,7 @@ class Search extends BaseWebComponent {
   nthAllResults(n: number) {
     return this.getComponent(SearchItem, this.allResultItems.nth(n));
   }
-  
+
   getSearchItemByCid(cid: string) {
     this.warnFlakySelector();
     const root = this.allResultItems.child().find(`[cid="${cid}"]`).parent('.search-items');
@@ -145,7 +145,7 @@ class Search extends BaseWebComponent {
   }
 
   async shouldShowRecentlyHistory() {
-    await  this.t.expect(this.historyContainer.exists).ok();
+    await this.t.expect(this.historyContainer.exists).ok();
   }
 
   async shouldShowSearchResults() {
@@ -210,6 +210,10 @@ class SearchItem extends BaseWebComponent {
     return this.avatar.find("div").withAttribute('cid').getAttribute('cid');
   }
 
+  async getName() {
+    return await this.name.textContent;
+  }
+  
   async getId() {
     if (await this.avatar.find('div').withAttribute('uid').exists) {
       return await this.uid;
@@ -267,6 +271,18 @@ class SearchItem extends BaseWebComponent {
 
   async clickName() {
     await this.t.click(this.name);
+  }
+
+  get messageButton() {
+    return this.getSelectorByAutomationId('goToConversationIcon', this.self);
+  }
+
+  get messageIcon() {
+    return this.getSelectorByIcon('messages', this.messageButton);
+  }
+
+  async clickMessageButton() {
+    await this.t.hover(this.self).click(this.messageButton);
   }
 }
 

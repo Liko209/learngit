@@ -264,6 +264,10 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.currentGroupId).eql(id.toString());
   }
 
+  async titleShouldBe(title: string) {
+    await this.t.expect(this.title.withExactText(title).exists).ok();
+  }
+
   get messageFilesArea() {
     return this.getSelectorByAutomationId('attachment-list');
   }
