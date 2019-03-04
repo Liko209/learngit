@@ -34,6 +34,7 @@ class PinnedCellView extends Component<PinnedCellViewProps & PinnedCellProps> {
     } = this.props;
 
     const itemLen = itemIds.length;
+
     return (
       <JuiPinnedCell
         onClick={this.jumpToPost}
@@ -41,6 +42,7 @@ class PinnedCellView extends Component<PinnedCellViewProps & PinnedCellProps> {
         createTime={createTime}
         content={textContent}
         postId={post.id}
+        itemLen={itemLen}
       >
         {itemIds.slice(0, MAX_ITEM_LENGTH).map((id: number) => (
           <PinnedItem key={id} id={id} />

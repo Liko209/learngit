@@ -15,13 +15,12 @@ import {
   ellipsis,
   lineClamp,
 } from '../../../foundation/utils';
-import { JuiPinnedItemProps } from './PinnedItem';
 
 type JuiPinnedCellProps = {
   creator: string;
   createTime: string;
   postId: number;
-  items?: JuiPinnedItemProps[];
+  itemLen: number;
   content?: string;
   onClick?: () => void;
 };
@@ -82,12 +81,12 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
     const {
       creator,
       createTime,
-      items = [],
+      itemLen,
       onClick,
       content,
       postId,
     } = this.props;
-    const lineCount = items.length > 0 ? 1 : 2;
+    const lineCount = itemLen > 0 ? 1 : 2;
 
     return (
       <CellWrapper

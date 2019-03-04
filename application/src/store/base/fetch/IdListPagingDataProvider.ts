@@ -86,6 +86,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     const range = this._getCursorRange();
     const oldInRangeIds = this._getInCursorRangeIds(this._sourceIds, range);
     const newInRangeIds = this._getInCursorRangeIds(newSourceId, range);
+
     if (newInRangeIds === oldInRangeIds) {
       return;
     }

@@ -103,6 +103,10 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
     id: model.id,
     sortValue: model.id,
   })
+
+  dispose() {
+    this._foc && this._foc.dispose();
+  }
 }
 
 export { IdListPaginationHandler, IdListPaginationOptions };
