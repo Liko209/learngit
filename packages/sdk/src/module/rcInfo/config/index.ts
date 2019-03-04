@@ -1,0 +1,9 @@
+/*
+ * @Author: Lewi Li (lewi.li@ringcentral.com)
+ * @Date: 2019-03-03 11:40:59
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { RcInfoUserConfig } from './RcInfoUserConfig';
+
+export { RcInfoUserConfig };
