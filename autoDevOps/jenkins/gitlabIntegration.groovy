@@ -561,7 +561,7 @@ node(buildNode) {
                 }
                 if (!e2eEnableRemoteDashboard) {
                     try {
-                        sh "tar -czvf allure.tar.gz -C ./allure/allure-results ."
+                        sh "tar -czvf allure.tar.gz -C ./allure/allure-results . || true"
                         archiveArtifacts artifacts: 'allure.tar.gz', fingerprint: true
                     } catch (e) {}
                 }
