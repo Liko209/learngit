@@ -203,10 +203,15 @@ describe('PhoneParserUtility', () => {
     });
 
     it('should return undefined when can not get newest data', () => {
-      RcInfoConfig.getRcPhoneData.mockReturnValueOnce('');
+      RcInfoConfig.getRcPhoneData.mockReturnValueOnce(null);
       expect(PhoneParserUtility.getPhoneData(false)).toEqual(undefined);
       expect(fs.readFileSync).toBeCalledTimes(0);
       expect(RcInfoConfig.getRcPhoneData).toBeCalledTimes(1);
+
+      RcInfoConfig.getRcPhoneData.mockReturnValueOnce('');
+      expect(PhoneParserUtility.getPhoneData(false)).toEqual(undefined);
+      expect(fs.readFileSync).toBeCalledTimes(0);
+      expect(RcInfoConfig.getRcPhoneData).toBeCalledTimes(2);
     });
   });
 

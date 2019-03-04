@@ -92,11 +92,14 @@ class PhoneParserUtility {
 
     if (PhoneParserUtility._initByPhoneData(false)) {
       PhoneParserUtility._initialized = true;
+      mainLogger.debug(
+        'PhoneParserUtility: init successful by newest phone data.',
+      );
       return true;
     }
     const result = PhoneParserUtility._initByPhoneData(true);
     PhoneParserUtility._initialized = result;
-    mainLogger.debug('PhoneParserUtility: init result => ', result);
+    mainLogger.debug('PhoneParserUtility: local init result => ', result);
     return result;
   }
 
@@ -113,7 +116,7 @@ class PhoneParserUtility {
     }
 
     const phoneData = RcInfoConfig.getRcPhoneData();
-    if (phoneData.length === 0) {
+    if (!phoneData || phoneData.length === 0) {
       mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
       return undefined;
     }
