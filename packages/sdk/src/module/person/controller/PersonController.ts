@@ -382,7 +382,7 @@ class PersonController {
   }
 
   async matchContactByPhoneNumber(
-    phoneNumner: string,
+    phoneNumber: string,
     contactType: ContactType,
   ): Promise<{
     terms: string[];
@@ -392,7 +392,7 @@ class PersonController {
       async (person: Person, terms: string[]) => {
         if (
           person.sanitized_rc_extension &&
-          person.sanitized_rc_extension.extensionNumber === phoneNumner
+          person.sanitized_rc_extension.extensionNumber === phoneNumber
         ) {
           return {
             id: person.id,
@@ -403,7 +403,7 @@ class PersonController {
 
         if (person.rc_phone_numbers) {
           for (const index in person.rc_phone_numbers) {
-            if (person.rc_phone_numbers[index].phoneNumber === phoneNumner) {
+            if (person.rc_phone_numbers[index].phoneNumber === phoneNumber) {
               return {
                 id: person.id,
                 displayName: name,

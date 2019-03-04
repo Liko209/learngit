@@ -15,6 +15,8 @@ import {
   HeadShotModel,
 } from '../entity';
 
+import { ContactType } from '../types';
+
 interface IPersonService {
   handleIncomingData(persons: Raw<Person>[]): Promise<void>;
 
@@ -54,6 +56,14 @@ interface IPersonService {
     phoneNumbersData?: PhoneNumberModel[],
     extensionData?: SanitizedExtensionModel,
   ): PhoneNumberInfo[];
+
+  matchContactByPhoneNumber(
+    phoneNumber: string,
+    contactType: ContactType,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Person>[];
+  } | null>;
 }
 
 export { IPersonService };
