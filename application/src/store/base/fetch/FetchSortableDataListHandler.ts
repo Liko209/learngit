@@ -31,6 +31,8 @@ import {
 import { SortableListStore } from './SortableListStore';
 import { mainLogger } from 'sdk';
 
+type CountChangeCallback = (count: number) => void;
+
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
   isMatchFunc: IMatchFunc<T>;
@@ -44,6 +46,9 @@ export interface IFetchSortableDataProvider<T> {
     pageSize: number,
     anchor?: ISortableModel<T>,
   ): Promise<{ data: T[]; hasMore: boolean }>;
+
+  totalCount?(): number;
+  fetchTotalCount?(): Promise<number>;
 }
 
 export class FetchSortableDataListHandler<
@@ -53,6 +58,7 @@ export class FetchSortableDataListHandler<
   private _transformFunc: ITransformFunc<T>;
   private _sortFun?: ISortFunc<ISortableModel<T>>;
   private _sortableDataProvider?: IFetchSortableDataProvider<T>;
+  protected _totalCountChangeCallback?: CountChangeCallback;
 
   constructor(
     dataProvider: IFetchSortableDataProvider<T> | undefined,
@@ -71,6 +77,10 @@ export class FetchSortableDataListHandler<
         this.onDataChanged({ type, body });
       });
     }
+  }
+
+  setTotalCountChangeCallback(cb: CountChangeCallback) {
+    this._totalCountChangeCallback = cb;
   }
 
   get sortableListStore() {
@@ -154,6 +164,8 @@ export class FetchSortableDataListHandler<
         });
       }
     });
+
+    this._updateTotalCount();
   }
 
   handleDataUpdateReplace(
@@ -269,6 +281,10 @@ export class FetchSortableDataListHandler<
         }
       });
     }
+
+    if (entities.size > 0) {
+      this._updateTotalCount();
+    }
   }
 
   onDataChanged(payload: NotificationEntityPayload<T>) {
@@ -371,5 +387,20 @@ export class FetchSortableDataListHandler<
       type: EVENT_TYPES.REPLACE,
       body: notificationBody,
     });
+  }
+
+  private async _updateTotalCount() {
+    if (
+      this._sortableDataProvider &&
+      this._sortableDataProvider.fetchTotalCount &&
+      this._sortableDataProvider.totalCount &&
+      this._totalCountChangeCallback
+    ) {
+      const oldTotal = this._sortableDataProvider.totalCount();
+      const newTotal = await this._sortableDataProvider.fetchTotalCount();
+      if (oldTotal !== newTotal) {
+        this._totalCountChangeCallback(newTotal);
+      }
+    }
   }
 }

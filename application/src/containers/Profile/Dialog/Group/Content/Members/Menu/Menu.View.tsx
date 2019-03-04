@@ -89,7 +89,7 @@ class MenuViewComponent extends Component<Props, State> {
 
   private _Anchor = () => {
     return (
-      <JuiIconography data-test-automation-id="moreIcon" fontSize="small">
+      <JuiIconography data-test-automation-id="moreIcon" iconSize="small">
         more_horiz
       </JuiIconography>
     );

@@ -10,7 +10,7 @@ import { JuiDialog } from '../Dialog';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiModal } from '../Modal';
 
-storiesOf('Components/Dialog 🔜', module)
+storiesOf('Components/Dialog', module)
   .addDecorator(withInfoDecorator(JuiDialog))
   .add('JuiAlert', () => {
     const open = boolean('open', true);

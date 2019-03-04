@@ -8,21 +8,12 @@ import MuiCircularProgress, {
   CircularProgressProps as MuiCircularProgressProps,
 } from '@material-ui/core/CircularProgress';
 import styled from '../../foundation/styled-components';
-import { palette } from '../../foundation/utils';
 
-type JuiCircularProgressProps = MuiCircularProgressProps & {
-  white?: boolean;
-};
+type JuiCircularProgressProps = MuiCircularProgressProps;
 
 const JuiCircularProgress = styled<JuiCircularProgressProps>(
-  ({ white, ...rest }: JuiCircularProgressProps) => (
-    <MuiCircularProgress {...rest} />
-  ),
-)`
-  && {
-    color: ${({ white }) => (white ? 'white' : palette('primary', 'main'))};
-  }
-`;
+  ({ ...rest }: JuiCircularProgressProps) => <MuiCircularProgress {...rest} />,
+)``;
 
 JuiCircularProgress.defaultProps = {
   size: 24,
