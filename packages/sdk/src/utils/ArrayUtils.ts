@@ -41,7 +41,9 @@ class ArrayUtils {
           ? startIndex + limit > idArray.length
             ? idArray.length
             : limit
-          : 0;
+          : idArray.length;
+      startIndex = direction !== QUERY_DIRECTION.OLDER ? 0 : endIndex - limit;
+      console.error(`startIndex:${startIndex}  endIndex:${endIndex}`);
     }
 
     // Slice ids
