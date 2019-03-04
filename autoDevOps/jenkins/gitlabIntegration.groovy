@@ -267,7 +267,11 @@ def reportChannels = [
     getMessageChannel(gitlabSourceBranch, gitlabTargetBranch)
 ]
 // send report to owner if gitlabUserEmail is provided
-gitlabUserEmail && reportChannels.push(gitlabUserEmail)
+if (gitlabUserEmail) {
+    reportChannels.push(gitlabUserEmail)
+    reportChannels.push(gitlabUserEmail.replaceAll('ringcentral.com', 'ringcentral.gliprc.com'))
+}
+
 
 // report
 Map report = [:]
@@ -445,7 +449,7 @@ node(buildNode) {
                             report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
                             report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
                             if (exitCode > 0) {
-                                throw new Exception('coverage drop!')
+                                // throw new Exception('coverage drop!')
                             }
                         }
                     }
