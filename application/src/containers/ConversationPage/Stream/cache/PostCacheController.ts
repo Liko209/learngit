@@ -22,6 +22,14 @@ import IUsedCache from '@/store/base/IUsedCache';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
 import _ from 'lodash';
+import FileItemModel from '@/store/models/FileItem';
+import TaskItemModel from '@/store/models/TaskItem';
+import LinkItemModel from '@/store/models/LinkItem';
+import NoteItemModel from '@/store/models/NoteItem';
+import CodeItemModel from '@/store/models/CodeItem';
+import EventItemModel from '@/store/models/EventItem';
+import ConferenceItemModel from '@/store/models/ConferenceItem';
+import ItemModel from '@/store/models/Item';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -30,6 +38,7 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
   private _itemStoreMap = new Map<number, ENTITY_NAME>();
 
   constructor(private _groupId: number) {
+    // fix me: FIJI-3958 Item store refactoring
     this._itemStoreMap.set(TypeDictionary.TYPE_ID_FILE, ENTITY_NAME.FILE_ITEM);
     this._itemStoreMap.set(TypeDictionary.TYPE_ID_TASK, ENTITY_NAME.TASK_ITEM);
     this._itemStoreMap.set(TypeDictionary.TYPE_ID_LINK, ENTITY_NAME.LINK_ITEM);
@@ -70,6 +79,25 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
   }
 }
 
+class PostUsedItemCache implements IUsedCache {
+  getUsedId(): number[] {
+    let usedItemId: number[] = [];
+    const data = (storeManager.getEntityMapStore(
+      ENTITY_NAME.POST,
+    ) as MultiEntityMapStore<Post, PostModel>).getData();
+
+    usedItemId = [
+      ...new Set(
+        Object.values(data)
+          .map(a => a.id)
+          .flat(),
+      ),
+    ];
+
+    return usedItemId;
+  }
+}
+
 class PostCacheController implements IUsedCache {
   private _cacheMap: Map<
     number,
@@ -78,11 +106,61 @@ class PostCacheController implements IUsedCache {
 
   private _currentGroupId: number = 0;
 
+  private _postUsedItemCache = new PostUsedItemCache();
+
   constructor() {
     (storeManager.getEntityMapStore(ENTITY_NAME.POST) as MultiEntityMapStore<
       Post,
       PostModel
     >).addUsedCache(this);
+
+    // fix me: FIJI-3958 Item store refactoring
+    (storeManager.getEntityMapStore(
+      ENTITY_NAME.FILE_ITEM,
+    ) as MultiEntityMapStore<Item, FileItemModel>).addUsedCache(
+      this._postUsedItemCache,
+    );
+
+    (storeManager.getEntityMapStore(
+      ENTITY_NAME.TASK_ITEM,
+    ) as MultiEntityMapStore<Item, TaskItemModel>).addUsedCache(
+      this._postUsedItemCache,
+    );
+
+    (storeManager.getEntityMapStore(
+      ENTITY_NAME.LINK_ITEM,
+    ) as MultiEntityMapStore<Item, LinkItemModel>).addUsedCache(
+      this._postUsedItemCache,
+    );
+
+    (storeManager.getEntityMapStore(
+      ENTITY_NAME.NOTE_ITEM,
+    ) as MultiEntityMapStore<Item, NoteItemModel>).addUsedCache(
+      this._postUsedItemCache,
+    );
+
+    (storeManager.getEntityMapStore(
+      ENTITY_NAME.CODE_ITEM,
+    ) as MultiEntityMapStore<Item, CodeItemModel>).addUsedCache(
+      this._postUsedItemCache,
+    );
+
+    (storeManager.getEntityMapStore(
+      ENTITY_NAME.EVENT_ITEM,
+    ) as MultiEntityMapStore<Item, EventItemModel>).addUsedCache(
+      this._postUsedItemCache,
+    );
+
+    (storeManager.getEntityMapStore(
+      ENTITY_NAME.CONFERENCE_ITEM,
+    ) as MultiEntityMapStore<Item, ConferenceItemModel>).addUsedCache(
+      this._postUsedItemCache,
+    );
+
+    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
+      Item,
+      ItemModel
+    >).addUsedCache(this._postUsedItemCache);
   }
 
   getUsedId(): number[] {
