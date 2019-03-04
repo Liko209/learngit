@@ -11,6 +11,7 @@ import * as http from 'http';
 import * as lighthouse from "lighthouse";
 import * as reportGenerater from "lighthouse/lighthouse-core/report/report-generator";
 import * as gatherers from './gatherer';
+import * as kill from 'kill-port';
 
 const logger = LogUtils.getLogger(__filename);
 
@@ -44,8 +45,16 @@ const stopBlankServer = () => {
   });
 }
 
+const closeElectron = async () => {
+  try {
+    await kill(Config.electronDebugPort)
+  } catch (err) {
+  }
+}
+
 export {
   hackLightHouse,
+  closeElectron,
   ElectronConnection,
   LightHouseConfig,
   lighthouse,

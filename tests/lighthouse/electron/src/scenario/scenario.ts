@@ -14,7 +14,8 @@ import {
   lighthouse,
   reportGenerater,
   ElectronConnection,
-  gatherers
+  gatherers,
+  closeElectron
 } from '../lighthouse';
 
 class Scenario {
@@ -80,6 +81,7 @@ class Scenario {
   }
 
   protected async launchBrowser() {
+    await closeElectron();
     this.browser = await PptrUtils.launch();
   }
 
