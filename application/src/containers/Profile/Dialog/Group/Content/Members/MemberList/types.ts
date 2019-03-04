@@ -9,6 +9,7 @@
 type MemberListProps = {
   id: number;
   filteredMemberIds: number[];
+  sortedAllMemberIds: number[];
 };
 
 type MemberListViewProps = {

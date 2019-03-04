@@ -18,11 +18,15 @@ class MembersView extends Component<MembersViewProps> {
   }
 
   render() {
-    const { id, filteredMemberIds } = this.props;
+    const { id, sortedAllMemberIds, filteredMemberIds } = this.props;
     return (
       <>
         <MemberHeader id={id} onSearch={this.handleSearch} />
-        <MemberList id={id} filteredMemberIds={filteredMemberIds} />
+        <MemberList
+          id={id}
+          sortedAllMemberIds={sortedAllMemberIds}
+          filteredMemberIds={filteredMemberIds}
+        />
       </>
     );
   }

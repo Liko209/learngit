@@ -30,7 +30,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
     );
     this.autorun(this._createSortableHandler);
     this.reaction(
-      () => this._sortedAllMemberIds,
+      () => this.sortedAllMemberIds,
       (ids: number[]) => (this.filteredMemberIds = ids),
     );
   }
@@ -43,7 +43,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   }
 
   @computed
-  get _sortedAllMemberIds() {
+  get sortedAllMemberIds() {
     if (this._sortableGroupMemberHandler === null) {
       return [];
     }
@@ -56,7 +56,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
     const result = await this._personService.doFuzzySearchPersons(
       keywords,
       false,
-      this._sortedAllMemberIds,
+      this.sortedAllMemberIds,
       true,
       true,
     );

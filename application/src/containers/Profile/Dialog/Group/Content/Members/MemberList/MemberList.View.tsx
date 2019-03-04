@@ -55,8 +55,8 @@ class MemberList
   }
 
   render() {
-    const { filteredMemberIds } = this.props;
-    const memberIdsLength = filteredMemberIds.length;
+    const { sortedAllMemberIds } = this.props;
+    const memberIdsLength = sortedAllMemberIds.length;
     const dialogHeight =
       memberIdsLength >= MAX_ITEM_NUMBER
         ? MAX_ITEM_NUMBER * ITEM_HEIGHT
