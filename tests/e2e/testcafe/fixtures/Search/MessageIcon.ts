@@ -17,7 +17,7 @@ fixture('Search/Icon')
   .afterEach(teardownCase());
 
 
-test(formalName('Check can open conversation when click message icon in the search list', ['P1', 'JPT-1213', 'Icon', 'Search', 'Potar.He']), async (t) => {
+test(formalName('Check can open conversation when click message icon in the search list', ['P1', 'JPT-1223', 'Icon', 'Search', 'Potar.He']), async (t) => {
   const me = h(t).rcData.mainCompany.users[5];
   const anotherUser = h(t).rcData.mainCompany.users[6];
   await h(t).glip(me).init();
