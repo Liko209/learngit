@@ -8,7 +8,8 @@ module.exports = {
     `${process.env.APP}/src/**/*.{js,jsx,ts,tsx}`,
     `!${process.env.APP}/src/**/__tests__/*`,
     `!${process.env.APP}/src/**/*.d.ts`,
-    `!${process.env.APP}/src/**/*.View.tsx`
+    `!${process.env.APP}/src/**/*.View.tsx`,
+    `!**/jui/**`,
   ],
   coverageThreshold: require('./config/coverage-threshold.json'),
   coverageReporters: ['lcov', 'text-summary', 'json-summary', 'clover'],
