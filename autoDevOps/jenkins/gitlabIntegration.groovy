@@ -352,6 +352,11 @@ node(buildNode) {
             echo "appHeadShaDir=${appHeadShaDir}"
             // build jui only when packages/jui has change
             juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
+            if (isMerge && head == juiHeadSha) {
+                // same as appHeadSha
+                echo "generate stable sha1 key from ${juiHeadSha}"
+                juiHeadSha = stableSha1(juiHeadSha)
+            }
             echo "juiHeadSha=${juiHeadSha}"
             assert juiHeadSha, 'juiHeadSha is invalid'
             juiHeadShaDir += juiHeadSha
