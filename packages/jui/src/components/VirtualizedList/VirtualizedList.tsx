@@ -15,8 +15,9 @@ import React, {
   RefForwardingComponent,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
+import { noop } from '../../foundation/utils';
 import { createRange, createRangeFromAnchor } from './util/createRange';
-import { VirtualizedListProps } from './VirtualizedListProps';
+import { JuiVirtualizedListProps } from './VirtualizedListProps';
 import { useScroll, ScrollPosition } from './useScroll';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
@@ -39,14 +40,17 @@ const useRange = (
 
 const JuiVirtualizedList: RefForwardingComponent<
   JuiVirtualizedListHandles,
-  VirtualizedListProps
+  JuiVirtualizedListProps
 > = (
   {
-    initialScrollToIndex,
-    initialRangeSize,
     height,
     children,
-  }: VirtualizedListProps,
+    initialScrollToIndex = 0,
+    initialRangeSize = 11,
+    onScroll = noop,
+    before = null,
+    after = null,
+  }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
   const getChildKey = (i: number) => {
@@ -173,7 +177,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   const prevStartChildRef = useRef(children[_startIndex]);
   const prevStartIndexRef = useRef(_startIndex);
   const prevChildrenCountRef = useRef(childrenCount);
-  const totalOffsetRef = useRef(0);
+  const totalOffsetRef = useRef(0); // TODO apply offset each time and remove totalOffsetRef
 
   let startIndex: number = _startIndex;
   let stopIndex: number = _stopIndex;
@@ -196,38 +200,10 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   }
 
-  console.log('currentOffset: ', totalOffsetRef.current);
-  console.log('_startIndex: ', _startIndex, _stopIndex);
-  console.log('startIndex: ', startIndex, stopIndex);
-  console.log('scrollPosition: ', scrollPosition);
-
   prevStartChildRef.current = children[_startIndex];
   prevStartIndexRef.current = _startIndex;
   prevChildrenCountRef.current = children.length;
   // ------------------------------------------------------------
-
-  const heightBeforeStartRow = getRowsHeight(0, startIndex - 1);
-  const heightAfterStopRow = getRowsHeight(stopIndex + 1, childrenCount - 1);
-
-  const childrenToDisplay: ReactNode[] = children.filter((_, i) => {
-    return startIndex <= i && i <= stopIndex;
-  });
-
-  //
-  // Update height cache
-  //
-  useLayoutEffect(() => {
-    if (contentRef.current) {
-      const contentEl = contentRef.current;
-      const displayedRowsEls: HTMLElement[] = getChildrenEls(contentEl);
-      displayedRowsEls.forEach((el, i) => {
-        const { diff } = updateRowHeightCache(el, startIndex + i);
-        if (diff !== 0 && i + startIndex < scrollPosition.index) {
-          scrollToPosition(scrollPosition);
-        }
-      });
-    }
-  },              [getChildKey(startIndex), getChildKey(stopIndex)]);
 
   //
   // Handle scroll to
@@ -237,21 +213,25 @@ const JuiVirtualizedList: RefForwardingComponent<
   },              [scrollEffectTriggerRef.current]);
 
   //
-  // Observe dynamic rows
+  // Update height cache and observe dynamic rows
   //
   useLayoutEffect(() => {
+    const handleSizeChange = (el: HTMLElement, i: number) => {
+      const { diff } = updateRowHeightCache(el, startIndex + i);
+      const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
+      if (diff !== 0 && beforeFirstVisibleRow) {
+        scrollToPosition(scrollPosition);
+      }
+    };
+
     const resizeObservers: ResizeObserver[] = [];
+
     if (contentRef.current) {
       const contentEl = contentRef.current;
-
       const displayedRowsEls: HTMLElement[] = getChildrenEls(contentEl);
       displayedRowsEls.forEach((el, i) => {
-        const ro = new ResizeObserver((entities: ResizeObserverEntry[]) => {
-          const { diff } = updateRowHeightCache(el, startIndex + i);
-          if (diff !== 0 && i + startIndex < scrollPosition.index) {
-            scrollToPosition(scrollPosition);
-          }
-        });
+        handleSizeChange(el, i);
+        const ro = new ResizeObserver(() => handleSizeChange(el, i));
         ro.observe(el);
         resizeObservers.push(ro);
       });
@@ -265,7 +245,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   // Scrolling
   //
-  const handleScroll = () => {
+  const handleScroll = (event: React.UIEvent) => {
     if (ref.current) {
       const scrollTop = ref.current.scrollTop;
       const anchor = getRowIndexFromPosition(scrollTop + height / 2);
@@ -279,14 +259,21 @@ const JuiVirtualizedList: RefForwardingComponent<
 
       // Update display range
       const range = createDisplayRangeFromAnchor({ anchor });
-      setDisplayRange(createDisplayRangeFromAnchor({ anchor }));
+      setDisplayRange(range);
       prevStartChildRef.current = children[range.startIndex];
       prevStartIndexRef.current = range.startIndex;
       prevChildrenCountRef.current = children.length;
       totalOffsetRef.current = 0;
+
+      onScroll(event);
     }
   };
 
+  const heightBeforeStartRow = getRowsHeight(0, startIndex - 1);
+  const heightAfterStopRow = getRowsHeight(stopIndex + 1, childrenCount - 1);
+  const childrenToDisplay: ReactNode[] = children.filter((_, i) => {
+    return startIndex <= i && i <= stopIndex;
+  });
   return (
     <div
       ref={ref}
@@ -300,16 +287,29 @@ const JuiVirtualizedList: RefForwardingComponent<
         overflowAnchor: 'none',
       }}
     >
+      {before}
       <div style={{ height: heightBeforeStartRow }} />
       <div ref={contentRef}>{childrenToDisplay}</div>
       <div style={{ height: heightAfterStopRow }} />
+      {after}
     </div>
   );
 };
 
-JuiVirtualizedList.defaultProps = {
-  initialRangeSize: 10,
-};
+const MemoList = memo(
+  forwardRef(JuiVirtualizedList),
+) as React.MemoExoticComponent<
+  React.ForwardRefExoticComponent<
+    {
+      initialScrollToIndex?: number;
+      initialRangeSize?: number;
+      onScroll?: (event: React.UIEvent) => void;
+      before?: React.ReactNode;
+      after?: React.ReactNode;
+      height: number;
+      children: JSX.Element[];
+    } & React.RefAttributes<JuiVirtualizedListHandles>
+  >
+>;
 
-const MemoList = memo(forwardRef(JuiVirtualizedList));
 export { MemoList as JuiVirtualizedList, JuiVirtualizedListHandles };

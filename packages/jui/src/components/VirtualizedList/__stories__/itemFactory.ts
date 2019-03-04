@@ -3,6 +3,14 @@
  * @Date: 2019-02-28 14:59:28
  * Copyright © RingCentral. All rights reserved.
  */
+
+type ItemModel = {
+  id: number;
+  text: string;
+  imageUrl?: string;
+  crazy?: boolean;
+};
+
 const itemFactory = {
   buildItem(id: number) {
     return {
@@ -25,6 +33,18 @@ const itemFactory = {
       imageUrl: `https://via.placeholder.com/500x${height}`,
     };
   },
+
+  buildItems(startId: number, count: number) {
+    const items: ItemModel[] = [];
+
+    console.log('startId: ', startId);
+    console.log('count: ', count);
+    for (let i = startId; i < startId + count; i++) {
+      items.push(itemFactory.buildImageItem(i, true));
+    }
+
+    return items;
+  },
 };
 
-export { itemFactory };
+export { itemFactory, ItemModel };

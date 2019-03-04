@@ -10,14 +10,8 @@ import {
   JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from '../VirtualizedList';
-import { itemFactory } from './itemFactory';
-
-type ItemModel = {
-  id: number;
-  text: string;
-  imageUrl?: string;
-  crazy?: boolean;
-};
+import { JuiDataLoader } from '../DataLoader';
+import { itemFactory, ItemModel } from './itemFactory';
 
 const Item = ({ item }: { item: ItemModel }) => {
   const [crazyHeight, setCrazyHeight] = useState(10);
@@ -85,89 +79,131 @@ const useItems = (defaultItems: ItemModel[] | (() => ItemModel[])) => {
   return { items, appendItem, prependItem, removeItem };
 };
 
-storiesOf('Components/VirtualizedList', module).add('VirtualizedList', () => {
-  const dataCount = number('dataCount', 100);
-  const initialScrollToIndex = number('initialScrollToIndex', 0);
-  const initialRangeSize = number('initialRangeSize', 7);
-  const listHeight = number('listHeight', 200);
+const useDemoHelper = (dataCount: number) => {
+  const { items, appendItem, prependItem, removeItem } = useItems(() => {
+    const startId = 1000000;
+    return itemFactory.buildItems(startId, dataCount);
+  });
 
-  const Demo = () => {
-    const ref = useRef<JuiVirtualizedListHandles>(null);
-
-    const { items, appendItem, prependItem, removeItem } = useItems(() => {
-      const items: ItemModel[] = [];
-      const startId = 100;
-      for (let i = startId; i < startId + dataCount; i++) {
-        items.push(itemFactory.buildImageItem(i, true));
-      }
-      return items;
-    });
-
-    const handlePrependClick = () => {
-      const i = items[0].id - 1;
-      prependItem({
-        id: i,
-        text: `Item-${i}`,
-        imageUrl: 'https://via.placeholder.com/200x150',
-      });
-    };
-
-    const handleAppendClick = () => {
-      const i = items[items.length - 1].id + 1;
-      appendItem({
-        id: i,
-        text: `Item-${i}`,
-        imageUrl: 'https://via.placeholder.com/200x150',
-      });
-    };
-
-    const handleAddCrazyClick = () => {
-      const i = items[0].id - 1;
-      prependItem({
-        crazy: true,
-        id: i,
-        text: `Item-${i}`,
-        imageUrl: 'https://via.placeholder.com/200x150',
-      });
-    };
-
-    const handleRemoveClick = () => {
-      removeItem(0);
-    };
-
-    const scrollToIndex = (event: React.FormEvent<HTMLInputElement>) => {
-      if (ref.current) {
-        const str = event.currentTarget.value;
-        const index = parseInt(str, 10);
-        ref.current.scrollToIndex(index);
-      }
-    };
-
-    const children = items.map(item => <Item key={item.id} item={item} />);
-    return (
-      <div>
-        <button onClick={handlePrependClick}>Prepend Item</button>
-        <button onClick={handleAppendClick}>Append Item</button>
-        <button onClick={handleAddCrazyClick}>Add Crazy Item</button>
-        <button onClick={handleRemoveClick}>Remove Item</button>
-        <br />
-        <label>
-          scrollToIndex:
-          <input onInput={scrollToIndex} type="number" />
-        </label>
-        <br />
-        <div style={{ border: '1px solid' }}>
-          <JuiVirtualizedList
-            ref={ref}
-            initialScrollToIndex={initialScrollToIndex}
-            initialRangeSize={initialRangeSize}
-            height={listHeight}
-          >
-            {children}
-          </JuiVirtualizedList>
-        </div>
-      </div>
-    );
+  const handlePrependClick = () => {
+    const i = items[0].id - 1;
+    prependItem(itemFactory.buildItem(i));
   };
-  return <Demo />;
-});
+
+  const handleAppendClick = () => {
+    const i = items[items.length - 1].id + 1;
+    appendItem(itemFactory.buildImageItem(i));
+  };
+
+  const handleAddCrazyClick = () => {
+    const i = items[0].id - 1;
+    prependItem(itemFactory.buildCrazyItem(i));
+  };
+
+  const handleRemoveClick = () => {
+    removeItem(0);
+  };
+
+  return {
+    items,
+    handlePrependClick,
+    handleAppendClick,
+    handleAddCrazyClick,
+    handleRemoveClick,
+  };
+};
+
+storiesOf('Components/VirtualizedList', module)
+  .add('VirtualizedList', () => {
+    const dataCount = number('dataCount', 100);
+    const initialScrollToIndex = number('initialScrollToIndex', 0);
+    const initialRangeSize = number('initialRangeSize', 7);
+    const listHeight = number('listHeight', 200);
+
+    const Demo = () => {
+      const ref = useRef<JuiVirtualizedListHandles>(null);
+
+      const {
+        items,
+        handlePrependClick,
+        handleAppendClick,
+        handleAddCrazyClick,
+        handleRemoveClick,
+      } = useDemoHelper(dataCount);
+
+      const handleDataChange = ({
+        currentTarget,
+      }: React.FormEvent<HTMLInputElement>) => {
+        if (ref.current) {
+          const str = currentTarget.value;
+          const index = parseInt(str, 10);
+          ref.current.scrollToIndex(index);
+        }
+      };
+
+      const children = items.map(item => <Item key={item.id} item={item} />);
+      return (
+        <div>
+          <button onClick={handlePrependClick}>Prepend Item</button>
+          <button onClick={handleAppendClick}>Append Item</button>
+          <button onClick={handleAddCrazyClick}>Add Crazy Item</button>
+          <button onClick={handleRemoveClick}>Remove Item</button>
+          <br />
+          <label>
+            scrollToIndex:
+            <input onInput={handleDataChange} type="number" />
+          </label>
+          <br />
+          <div style={{ border: '1px solid' }}>
+            <JuiVirtualizedList
+              ref={ref}
+              initialScrollToIndex={initialScrollToIndex}
+              initialRangeSize={initialRangeSize}
+              height={listHeight}
+            >
+              {children}
+            </JuiVirtualizedList>
+          </div>
+        </div>
+      );
+    };
+    return <Demo />;
+  })
+  .add('DataLoader', () => {
+    const dataCount = number('dataCount', 100);
+
+    const DataLoaderDemo = () => {
+      const { items } = useDemoHelper(dataCount);
+
+      console.log('items: ', items);
+      const children = items.map(item => <Item key={item.id} item={item} />);
+
+      return (
+        <JuiDataLoader
+          hasMore={() => true}
+          loadInitialData={async () => {
+            console.log('loadInitialData');
+          }}
+          loadMore={() => {
+            return new Promise((resolve: Function) => {
+              setTimeout(() => {
+                resolve();
+              },         3000);
+            });
+          }}
+        >
+          {({ ref, onScroll, loadingUp }) => (
+            <JuiVirtualizedList
+              ref={ref}
+              onScroll={onScroll}
+              height={200}
+              before={loadingUp ? <div>loading</div> : null}
+            >
+              {children}
+            </JuiVirtualizedList>
+          )}
+        </JuiDataLoader>
+      );
+    };
+    return <DataLoaderDemo />;
+  });
