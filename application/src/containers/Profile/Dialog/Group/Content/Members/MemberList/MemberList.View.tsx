@@ -64,8 +64,11 @@ class MemberList
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
         {(width: number = 0, height: number = dialogHeight) => {
-          const virtualListHeight =
+          let virtualListHeight =
             memberIdsLength >= MAX_ITEM_NUMBER ? height : dialogHeight;
+          if (virtualListHeight === 0) {
+            virtualListHeight = dialogHeight;
+          }
           return (
             <JuiProfileDialogContentMemberList>
               <JuiVirtualList
