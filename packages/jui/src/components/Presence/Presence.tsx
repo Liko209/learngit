@@ -76,13 +76,10 @@ const StyledPresence = styled<JuiPresenceProps, 'div'>('div')`
   align-items: center;
   width: ${props => width(sizes[props.size || 'medium'])};
   height: ${props => height(sizes[props.size || 'medium'])};
-  border: ${props =>
-    props.borderSize && borderSizes[props.borderSize]}px solid ${palette(
-  'common',
-  'white',
-)};
+  border: ${props => props.borderSize && borderSizes[props.borderSize]}px solid
+    ${palette('common', 'white')};
   background: ${props =>
-    getColor(PRESENCE_COLOR_MAP[props.presence || PRESENCE.NOTREADY])}
+    getColor(PRESENCE_COLOR_MAP[props.presence || PRESENCE.NOTREADY])};
   border-radius: 50%;
 `;
 
