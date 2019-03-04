@@ -27,6 +27,7 @@ type FormGroupType = {
   valueEmphasize?: boolean;
   copyAria?: string;
   copyValue?: string;
+  showCall?: boolean;
 };
 
 export {
