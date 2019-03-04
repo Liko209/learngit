@@ -26,6 +26,7 @@ import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { PersonDataController } from './PersonDataController';
 import { AuthGlobalConfig } from '../../../service/auth/config';
+import { ContactType } from '../types';
 
 const PersonFlags = {
   deactivated: 2,
@@ -378,6 +379,43 @@ class PersonController {
       });
     }
     return availNumbers;
+  }
+
+  async matchContactByPhoneNumber(
+    e164PhoneNumber: string,
+    contactType: ContactType,
+  ): Promise<SortableModel<Person>[] | null> {
+    const result = await this._cacheSearchController.searchEntities(
+      async (person: Person, terms: string[]) => {
+        if (
+          person.sanitized_rc_extension &&
+          person.sanitized_rc_extension.extensionNumber === e164PhoneNumber
+        ) {
+          return {
+            id: person.id,
+            displayName: name,
+            entity: person,
+          };
+        }
+
+        if (person.rc_phone_numbers) {
+          for (const index in person.rc_phone_numbers) {
+            if (
+              person.rc_phone_numbers[index].phoneNumber === e164PhoneNumber
+            ) {
+              return {
+                id: person.id,
+                displayName: name,
+                entity: person,
+              };
+            }
+          }
+        }
+        return null;
+      },
+    );
+
+    return result ? result.sortableModels : null;
   }
 }
 

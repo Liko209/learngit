@@ -25,6 +25,7 @@ import { IEntityCacheSearchController } from '../../../../framework/controller/i
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from '../../../../module/config';
 import { AccountGlobalConfig } from '../../../../service/account/config';
+import { ContactType } from '../../types';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../service/account/config');
@@ -739,6 +740,141 @@ describe('PersonService', () => {
       };
       const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(thumbsSize150);
+    });
+  });
+
+  describe('matchContactByPhoneNumber', () => {
+    async function prepareInvalidData() {
+      for (let i = 1; i <= 30; i += 1) {
+        const person: Person = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          version: i,
+          company_id: 1,
+          email: `cat${i.toString()}@ringcentral.com`,
+          first_name: `dora${i.toString()}`,
+          last_name: `bruce${i.toString()}`,
+          display_name: `dora${i.toString()} bruce${i.toString()}`,
+        };
+        await entityCacheController.put(person);
+      }
+    }
+    async function preparePhoneNumData() {
+      for (let i = 1; i <= 30; i += 1) {
+        const person: Person = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          version: i,
+          company_id: 1,
+          email: `cat${i.toString()}@ringcentral.com`,
+          first_name: `dora${i.toString()}`,
+          last_name: `bruce${i.toString()}`,
+          display_name: `dora${i.toString()} bruce${i.toString()}`,
+          sanitized_rc_extension: {
+            extensionNumber: `${i}`,
+            type: 'User',
+          },
+        };
+        await entityCacheController.put(person);
+      }
+      for (let i = 31; i <= 35; i += 1) {
+        const person: Person = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          version: i,
+          company_id: 1,
+          email: `cat${i.toString()}@ringcentral.com`,
+          first_name: `dora${i.toString()}`,
+          last_name: `bruce${i.toString()}`,
+          display_name: `dora${i.toString()} bruce${i.toString()}`,
+          rc_phone_numbers: [
+            { id: i, phoneNumber: `65022700${i}`, usageType: 'DirectNumber' },
+          ],
+        };
+        await entityCacheController.put(person);
+      }
+      for (let i = 36; i <= 37; i += 1) {
+        const person: Person = {
+          id: i,
+          created_at: i,
+          modified_at: i,
+          creator_id: i,
+          is_new: false,
+          version: i,
+          company_id: 1,
+          email: `cat${i.toString()}@ringcentral.com`,
+          first_name: `dora${i.toString()}`,
+          last_name: `bruce${i.toString()}`,
+          display_name: `dora${i.toString()} bruce${i.toString()}`,
+          rc_phone_numbers: [
+            {
+              id: i,
+              phoneNumber: '8885287464',
+              usageType: 'MainCompanyNumber',
+            },
+            { id: i, phoneNumber: `65022700${i}`, usageType: 'DirectNumber' },
+          ],
+        };
+        await entityCacheController.put(person);
+      }
+    }
+
+    beforeEach(async () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      setUp();
+    });
+    it('should return null when there is no phone number data', async () => {
+      await prepareInvalidData();
+      const result = await personController.matchContactByPhoneNumber(
+        '123',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result.length).toBe(0);
+    });
+    it('should return null when no one is matched', async () => {
+      await prepareInvalidData();
+      const result = await personController.matchContactByPhoneNumber(
+        '6502274787',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result.length).toBe(0);
+    });
+    it('should return when short number is matched', async () => {
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '21',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe(21);
+    });
+    it('should return when long number is matched', async () => {
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '6502270033',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe(33);
+    });
+    it('should return when there is two more long number and long number is matched', async () => {
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '6502270036',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result.length).toBe(1);
+      expect(result[0].id).toBe(36);
     });
   });
 });
