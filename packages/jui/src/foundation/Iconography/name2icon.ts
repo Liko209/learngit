@@ -78,6 +78,8 @@ const name2icon = {
   zoom_in: 'zoom-in',
   info: 'info',
   image_broken: 'image-broken',
+  forward: 'forward',
+  pervious: 'pervious',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

@@ -10,7 +10,9 @@ import {
   withInfoDecorator,
   alignCenterDecorator,
 } from '../../../../foundation/utils/decorators';
-import { JuiButton } from '../';
+import { JuiFabButton, JuiButton } from '../';
+import { JuiIconography } from '../../../../foundation/Iconography';
+import styled from '../../../../foundation/styled-components';
 
 function getKnobs() {
   const content = text('content', 'button');
@@ -41,6 +43,12 @@ function getKnobs() {
     loading,
   };
 }
+
+const Wrapper = styled.div`
+  .buttonWrapper {
+    margin-right: 20px;
+  }
+`;
 
 storiesOf('Components/Buttons', module)
   .addDecorator(alignCenterDecorator)
@@ -73,5 +81,27 @@ storiesOf('Components/Buttons', module)
           {content}
         </JuiButton>
       </div>
+    );
+  })
+  .add('Fab Button', () => {
+    const knobs = getKnobs();
+    const { content, ...rest } = knobs;
+    return (
+      <Wrapper>
+        <JuiFabButton
+          {...rest}
+          className="buttonWrapper"
+          tooltipTitle="pervious"
+        >
+          <JuiIconography color="grey.900">pervious</JuiIconography>
+        </JuiFabButton>
+        <JuiFabButton
+          {...rest}
+          className="buttonWrapper"
+          tooltipTitle="forward"
+        >
+          <JuiIconography color="grey.900">forward</JuiIconography>
+        </JuiFabButton>
+      </Wrapper>
     );
   });
