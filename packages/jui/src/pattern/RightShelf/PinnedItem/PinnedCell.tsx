@@ -96,7 +96,7 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
       >
         <HeadWrapper>
           <IconWrapper>
-            <JuiIconography fontSize="inherit" color="grey.500">
+            <JuiIconography iconSize="inherit" iconColor={['grey', '500']}>
               pin
             </JuiIconography>
           </IconWrapper>

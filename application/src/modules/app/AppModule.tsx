@@ -119,6 +119,17 @@ class AppModule extends AbstractModule {
       }
     };
 
+    const setStaticHttpServer = (url?: string) => {
+      let staticHttpServer = url;
+      if (!staticHttpServer) {
+        const configService: service.ConfigService = ConfigService.getInstance();
+        staticHttpServer = configService.getStaticHttpServer();
+      }
+      globalStore.set(GLOBAL_KEYS.STATIC_HTTP_SERVER, staticHttpServer || '');
+    };
+
+    setStaticHttpServer(); // When the browser refreshes, it needs to be fetched locally
+
     notificationCenter.on(SERVICE.LOGIN, () => {
       updateAccountInfoForGlobalStore();
     });
@@ -127,10 +138,8 @@ class AppModule extends AbstractModule {
       updateAccountInfoForGlobalStore();
     });
 
-    notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, () => {
-      const configService: service.ConfigService = ConfigService.getInstance();
-      const staticHttpServer = configService.getStaticHttpServer();
-      globalStore.set(GLOBAL_KEYS.STATIC_HTTP_SERVER, staticHttpServer);
+    notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, (url: string) => {
+      setStaticHttpServer(url);
     });
 
     notificationCenter.on(SOCKET.NETWORK_CHANGE, (data: any) => {

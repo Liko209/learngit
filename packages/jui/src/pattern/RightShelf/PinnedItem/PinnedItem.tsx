@@ -22,7 +22,7 @@ class JuiPinnedItem extends Component<JuiPinnedItemProps> {
     let iconElement = icon;
     if (typeof icon === 'string') {
       iconElement = (
-        <JuiIconography fontSize="inherit" color="grey.500">
+        <JuiIconography iconSize="inherit" iconColor={['grey', '500']}>
           {icon}
         </JuiIconography>
       );

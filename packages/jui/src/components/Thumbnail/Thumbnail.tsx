@@ -21,20 +21,6 @@ type JuiThumbnailWithIconProps = {
   iconType: string;
 } & JuiThumbnailProps;
 
-const WrappedMuiIcon = ({
-  iconType,
-  size,
-  ...rest
-}: JuiThumbnailWithIconProps & { children: string }) => (
-  <JuiIconography {...rest} />
-);
-
-const StyledIcon = styled(WrappedMuiIcon)`
-  && {
-    font-size: ${({ size }) => (size === 'small' ? width(5) : width(9))};
-  }
-`;
-
 const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>('span')`
   width: ${({ size }) => (size === 'small' ? width(5) : width(9))};
   height: ${({ size }) => (size === 'small' ? width(5) : width(9))};
@@ -58,9 +44,9 @@ class JuiThumbnail extends React.PureComponent<
         {url ? (
           <StyledModifyImage url={url} style={style} />
         ) : (
-          <StyledIcon size={size} iconType={iconType}>
+          <JuiIconography iconSize={size === 'small' ? 'small' : 'extraLarge'}>
             {iconType}
-          </StyledIcon>
+          </JuiIconography>
         )}
       </>
     );

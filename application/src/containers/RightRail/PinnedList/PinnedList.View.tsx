@@ -82,7 +82,7 @@ class PinnedListView
   render() {
     const { totalCount, ids, width, height } = this.props;
     const firstLoaded = true;
-    console.log(77777, this.size());
+
     return (
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
