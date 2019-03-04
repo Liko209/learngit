@@ -1,6 +1,6 @@
 /*
- * @Author: Valor Lin (valor.lin@ringcentral.com)
- * @Date: 2018-08-17 10:37:03
+ * @Author: Wayne Zhou (wayne.zhou@ringcentral.com)
+ * @Date: 2019-03-04 09:16:54
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
@@ -18,7 +18,6 @@ function loadIconList() {
       (res.data as string).replace(re, function (m: any, p1: any) {
         matches.push(p1);
       } as any);
-      console.log(matches);
       return matches;
     })
     .catch(() => {
