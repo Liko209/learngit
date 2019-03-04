@@ -35,6 +35,7 @@ type TriggerButtonProps = {
 const HEIGHT_CONVERSATION_HEADER = 48;
 const HEIGHT_TABS = 33;
 const HEIGHT_FIX = HEIGHT_CONVERSATION_HEADER + HEIGHT_TABS;
+const MIN_TAB_WIDTH = 200;
 
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
@@ -88,12 +89,16 @@ class RightRailComponent extends React.Component<Props> {
     const { tabIndex } = this.state;
     return (
       <ReactResizeDetector handleHeight={true} handleWidth={true}>
-        {(width: number, height: number) => {
+        {(w: number, h: number) => {
+          const width =
+            Number.isNaN(w) || typeof w === 'undefined' ? MIN_TAB_WIDTH : w;
+          const height =
+            Number.isNaN(h) || typeof w === 'undefined' ? HEIGHT_TABS : h;
           return (
             <JuiTabs
               defaultActiveIndex={0}
               tag="right-shelf"
-              width={width}
+              width={w}
               onChangeTab={this._handleTabChanged}
               moreText={t('common.more')}
             >
