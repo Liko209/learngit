@@ -31,7 +31,7 @@ describe('DiscontinuousPosListHandler', () => {
   let postListHandler: DiscontinuousPosListHandler;
   let postService: PostService;
   function setUp() {
-    notificationCenter.removeAllListeners([eventName]);
+    notificationCenter.removeAllListeners(eventName);
     const store = storeManager.getEntityMapStore(entityName);
     storeManager.removeStore(store);
     postListHandler = new DiscontinuousPosListHandler(sourceIds);
@@ -90,21 +90,6 @@ describe('DiscontinuousPosListHandler', () => {
         done();
       },         100);
     });
-
-    it('should update post in the list when receive in range post update', async (done: any) => {
-      postListHandler.loadMorePosts(QUERY_DIRECTION.NEWER, 10);
-
-      setTimeout(() => {
-        const newPost = { id: 3, text: 'text', deactivated: false };
-        notificationCenter.emitEntityUpdate(eventName, [newPost]);
-
-        const store = storeManager.getEntityMapStore(entityName);
-        expect(store.has(newPost.id)).toBeTruthy();
-        expect(store.get(newPost.id).text).toBe(newPost.text);
-
-        done();
-      },         100);
-    });
   });
 
   describe('onSourceIdsChanged', () => {
@@ -127,10 +112,10 @@ describe('DiscontinuousPosListHandler', () => {
     }
 
     it('should insert new ids to list store when receive new source ids with new ids', async (done: any) => {
-      const newSourceIds = [100, 101, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+      const newSourceIds = [100, 101, 1, 3, 2, 4, 5, 6, 7, 8, 9, 10];
       postListHandler.onSourceIdsChanged(newSourceIds);
       setTimeout(() => {
-        expect(postListHandler.ids).toEqual([100, 101, 1, 2, 3, 4, 5, 6, 7, 8]);
+        expect(postListHandler.ids).toEqual(newSourceIds);
         done();
       },         100);
     });
@@ -141,17 +126,6 @@ describe('DiscontinuousPosListHandler', () => {
 
       setTimeout(() => {
         expect(postListHandler.ids).toEqual(newSourceIds);
-        done();
-      },         100);
-    });
-
-    it('should  update source id list when order changed', async (done: any) => {
-      expect(postListHandler.ids).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
-      const newSourceIds = [10, 9, 2, 3, 4, 5, 6, 7, 8, 1];
-      postListHandler.onSourceIdsChanged(newSourceIds);
-
-      setTimeout(() => {
-        expect(postListHandler.ids).toEqual([10, 9, 2, 3, 4, 5, 6, 7, 8, 1]);
         done();
       },         100);
     });
