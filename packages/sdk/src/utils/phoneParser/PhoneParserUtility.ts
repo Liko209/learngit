@@ -115,8 +115,15 @@ class PhoneParserUtility {
       }
     }
 
-    const rcInfoUserConfig = new RcInfoUserConfig();
-    const phoneData = rcInfoUserConfig.getPhoneData();
+    let phoneData = undefined;
+    try {
+      const rcInfoUserConfig = new RcInfoUserConfig();
+      phoneData = rcInfoUserConfig.getPhoneData();
+    } catch (err) {
+      mainLogger.error(`getPhoneData error: ${err}`);
+      phoneData = undefined;
+    }
+
     if (!phoneData || phoneData.length === 0) {
       mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
       return undefined;
