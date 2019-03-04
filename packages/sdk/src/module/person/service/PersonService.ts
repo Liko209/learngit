@@ -124,14 +124,11 @@ class PersonService extends EntityBaseService<Person>
   }
 
   async matchContactByPhoneNumber(
-    phoneNumber: string,
+    e164PhoneNumber: string,
     contactType: ContactType,
-  ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Person>[];
-  } | null> {
+  ): Promise<SortableModel<Person>[] | null> {
     return await this.getPersonController().matchContactByPhoneNumber(
-      phoneNumber,
+      e164PhoneNumber,
       contactType,
     );
   }

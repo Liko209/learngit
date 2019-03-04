@@ -382,17 +382,14 @@ class PersonController {
   }
 
   async matchContactByPhoneNumber(
-    phoneNumber: string,
+    e164PhoneNumber: string,
     contactType: ContactType,
-  ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Person>[];
-  } | null> {
+  ): Promise<SortableModel<Person>[] | null> {
     const result = await this._cacheSearchController.searchEntities(
       async (person: Person, terms: string[]) => {
         if (
           person.sanitized_rc_extension &&
-          person.sanitized_rc_extension.extensionNumber === phoneNumber
+          person.sanitized_rc_extension.extensionNumber === e164PhoneNumber
         ) {
           return {
             id: person.id,
@@ -403,7 +400,9 @@ class PersonController {
 
         if (person.rc_phone_numbers) {
           for (const index in person.rc_phone_numbers) {
-            if (person.rc_phone_numbers[index].phoneNumber === phoneNumber) {
+            if (
+              person.rc_phone_numbers[index].phoneNumber === e164PhoneNumber
+            ) {
               return {
                 id: person.id,
                 displayName: name,
@@ -416,7 +415,7 @@ class PersonController {
       },
     );
 
-    return result;
+    return result ? result.sortableModels : null;
   }
 }
 

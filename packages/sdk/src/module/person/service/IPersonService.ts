@@ -58,12 +58,9 @@ interface IPersonService {
   ): PhoneNumberInfo[];
 
   matchContactByPhoneNumber(
-    phoneNumber: string,
+    e164PhoneNumber: string,
     contactType: ContactType,
-  ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Person>[];
-  } | null>;
+  ): Promise<SortableModel<Person>[] | null>;
 }
 
 export { IPersonService };
