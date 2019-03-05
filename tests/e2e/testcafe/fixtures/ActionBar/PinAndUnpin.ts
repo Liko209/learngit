@@ -55,7 +55,7 @@ test(formalName('Click Pin option to pin a post', ['JPT-1264', 'P1', 'Pin', 'Pot
   });
 
   await h(t).withLog(`Then I could see the pin button`, async () => {
-    await t.expect(postCard.pinButtonIcon.exists).ok();
+    await t.expect(postCard.pinButton.exists).ok();
   });
 
 
@@ -74,8 +74,8 @@ test(formalName('Click Pin option to pin a post', ['JPT-1264', 'P1', 'Pin', 'Pot
 
   await h(t).withLog(`Then the pin button should be replaced by the unpin button`, async () => {
     await t.hover(postCard.self);
-    await t.expect(postCard.pinButtonIcon.exists).notOk();
-    await t.expect(postCard.unpinButtonIcon.exists).ok();
+    await t.expect(postCard.pinButton.exists).notOk();
+    await t.expect(postCard.unpinButton.exists).ok();
   });
 
 });
@@ -121,7 +121,7 @@ test(formalName('Click Unpin option to unpin a post', ['JPT-1266', 'P1', 'Pin', 
   });
 
   await h(t).withLog(`Then I could see the unpin button`, async () => {
-    await t.expect(postCard.unpinButtonIcon.exists).ok();
+    await t.expect(postCard.unpinButton.exists).ok();
   });
 
 
@@ -140,8 +140,8 @@ test(formalName('Click Unpin option to unpin a post', ['JPT-1266', 'P1', 'Pin', 
 
   await h(t).withLog(`Then the pin button should be replaced by the unpin button`, async () => {
     await t.hover(postCard.self);
-    await t.expect(postCard.unpinButtonIcon.exists).notOk();
-    await t.expect(postCard.pinButtonIcon.exists).ok();
+    await t.expect(postCard.unpinButton.exists).notOk();
+    await t.expect(postCard.pinButton.exists).ok();
   });
 
 });

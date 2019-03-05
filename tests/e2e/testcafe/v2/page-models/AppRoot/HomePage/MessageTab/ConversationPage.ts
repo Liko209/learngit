@@ -461,11 +461,11 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('button').withAttribute('data-name', 'actionBarPin');
   }
 
-  get pinButtonIcon() {
+  get pinButton() {
     return this.pinToggle.withAttribute('aria-label', 'Pin');
   }
 
-  get unpinButtonIcon() {
+  get unpinButton() {
     return this.pinToggle.withAttribute('aria-label', 'Unpin');
   }
 
@@ -474,7 +474,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get isPinned() {
-    return this.unpinButtonIcon.exists;
+    return this.unpinButton.exists;
   }
 
   async pinPost() {
