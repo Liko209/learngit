@@ -1,4 +1,4 @@
-import { observable, action, computed } from 'mobx';
+import { observable, action, computed, comparer } from 'mobx';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
@@ -58,6 +58,15 @@ class ItemListViewModel extends StoreViewModel<Props> {
     const { groupId, type } = props;
     this.groupId = groupId;
     this.setType(type);
+
+    this.reaction(
+      () => ({ groupId: this.props.groupId, type: this.props.type }),
+      (data: { groupId: number; type: number }) => {
+        this.groupId = data.groupId;
+        this.setType(data.type);
+      },
+      { fireImmediately: true, equals: comparer.structural },
+    );
 
     this.reaction(() => this.getIds.length, () => this._loadTotalCount(), {
       fireImmediately: true,
@@ -241,7 +250,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
   }
 
   @action
-  async loadMore(startIndex: number, stopIndex: number) {
+  loadMore = async (startIndex: number, stopIndex: number) => {
     this._loadingMoreDown = true;
     await this._sortableDataHandler.fetchData(
       QUERY_DIRECTION.NEWER,

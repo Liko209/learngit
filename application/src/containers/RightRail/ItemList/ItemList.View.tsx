@@ -62,7 +62,6 @@ class ItemListView extends React.Component<ViewProps & Props> {
   render() {
     const { type, width, height, dataSource } = this.props;
     const { subheader } = getTabConfig(type);
-    console.log(77777, dataSource);
     const totalCount = dataSource.total!();
     return (
       <JuiRightShelfContent>
