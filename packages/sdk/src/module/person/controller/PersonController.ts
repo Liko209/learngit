@@ -384,7 +384,7 @@ class PersonController {
   async matchContactByPhoneNumber(
     e164PhoneNumber: string,
     contactType: ContactType,
-  ): Promise<SortableModel<Person>[] | null> {
+  ): Promise<Person | null> {
     const result = await this._cacheSearchController.searchEntities(
       async (person: Person, terms: string[]) => {
         if (
@@ -415,7 +415,9 @@ class PersonController {
       },
     );
 
-    return result ? result.sortableModels : null;
+    return result && result.sortableModels.length > 0
+      ? result.sortableModels[0].entity
+      : null;
   }
 }
 

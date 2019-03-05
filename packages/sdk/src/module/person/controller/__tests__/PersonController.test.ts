@@ -839,7 +839,7 @@ describe('PersonService', () => {
         '123',
         ContactType.GLIP_CONTACT,
       );
-      expect(result.length).toBe(0);
+      expect(result).toBeNull();
     });
     it('should return null when no one is matched', async () => {
       await prepareInvalidData();
@@ -847,7 +847,7 @@ describe('PersonService', () => {
         '6502274787',
         ContactType.GLIP_CONTACT,
       );
-      expect(result.length).toBe(0);
+      expect(result).toBeNull();
     });
     it('should return when short number is matched', async () => {
       await preparePhoneNumData();
@@ -855,8 +855,8 @@ describe('PersonService', () => {
         '21',
         ContactType.GLIP_CONTACT,
       );
-      expect(result.length).toBe(1);
-      expect(result[0].id).toBe(21);
+      expect(result).not.toBeNull();
+      expect(result.id).toBe(21);
     });
     it('should return when long number is matched', async () => {
       await preparePhoneNumData();
@@ -864,8 +864,8 @@ describe('PersonService', () => {
         '6502270033',
         ContactType.GLIP_CONTACT,
       );
-      expect(result.length).toBe(1);
-      expect(result[0].id).toBe(33);
+      expect(result).not.toBeNull();
+      expect(result.id).toBe(33);
     });
     it('should return when there is two more long number and long number is matched', async () => {
       await preparePhoneNumData();
@@ -873,8 +873,8 @@ describe('PersonService', () => {
         '6502270036',
         ContactType.GLIP_CONTACT,
       );
-      expect(result.length).toBe(1);
-      expect(result[0].id).toBe(36);
+      expect(result).not.toBeNull();
+      expect(result.id).toBe(36);
     });
   });
 });
