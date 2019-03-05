@@ -28,12 +28,12 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
       () => {
         this.firstInit = true;
         this.discontinuousPosListHandler.dispose();
-        this.build(this.group.pinnedPostIds || []);
+        this.build(this.pinnedPostIds || []);
       },
     );
 
     this.reaction(
-      () => this.group.pinnedPostIds,
+      () => this.pinnedPostIds,
       (pinnedPostIds: number[]) => {
         this.build(pinnedPostIds);
       },
@@ -60,7 +60,7 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   async loadInitialData() {
     await this.discontinuousPosListHandler.loadMorePosts(
       QUERY_DIRECTION.NEWER,
-      20,
+      1,
     );
   }
 
@@ -75,6 +75,11 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   @computed
   private get _groupId() {
     return this.props.groupId;
+  }
+
+  @computed
+  get pinnedPostIds() {
+    return (this.group.pinnedPostIds || []).filter((id: number) => id);
   }
 
   @computed
