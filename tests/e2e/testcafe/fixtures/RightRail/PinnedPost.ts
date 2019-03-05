@@ -17,7 +17,7 @@ fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPost', 'Potar', 'P2', 'JPT-1057']), async t => {
+test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPost', 'Potar', 'P1', 'JPT-1057']), async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
@@ -167,7 +167,7 @@ test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', '
   });
 });
 
-test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 'Potar', 'P1', 'JPT-1061']), async t => {
+test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 'Potar', 'P2', 'JPT-1061']), async t => {
   const app = new AppRoot(t);
 
   const loginUser = h(t).rcData.mainCompany.users[4];
