@@ -16,6 +16,7 @@ type WithLoadingProps = {
 };
 type LoaderProps = {
   mask?: boolean;
+  size?: number;
 };
 const StyledLoadingPage = styled('div')<LoaderProps>`
   position: absolute;
@@ -35,7 +36,7 @@ const StyledLoadingPage = styled('div')<LoaderProps>`
 const DefaultLoadingWithDelay = withDelay((props: LoaderProps) => {
   return (
     <StyledLoadingPage {...props}>
-      <JuiCircularProgress />
+      <JuiCircularProgress {...props} />
     </StyledLoadingPage>
   );
 });

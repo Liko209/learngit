@@ -40,7 +40,9 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
   }
 `;
 
-const createTeamLoading = () => <DefaultLoadingWithDelay mask={true} />;
+const createTeamLoading = () => (
+  <DefaultLoadingWithDelay mask={true} size={42} />
+);
 const Loading = withLoading(Fragment, createTeamLoading);
 @observer
 class CreateTeamView extends React.Component<ViewProps, State> {
@@ -195,6 +197,7 @@ class CreateTeamView extends React.Component<ViewProps, State> {
       handleSearchContactChange,
       serverError,
       errorEmail,
+      loading,
     } = this.props;
     return (
       <JuiModal
@@ -214,11 +217,7 @@ class CreateTeamView extends React.Component<ViewProps, State> {
         }
         cancelText={i18next.t('common.dialog.cancel')}
       >
-        <Loading
-          loading={this.props.loading}
-          alwaysComponentShow={true}
-          delay={0}
-        >
+        <Loading loading={loading} alwaysComponentShow={true} delay={0}>
           <JuiTextField
             id={i18next.t('people.team.teamName')}
             label={i18next.t('people.team.teamName')}
