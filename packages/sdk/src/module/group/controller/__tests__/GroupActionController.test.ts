@@ -43,13 +43,20 @@ jest.mock('../../../post');
 jest.mock('sdk/api');
 jest.mock('sdk/api/glip/group');
 jest.mock('../../../../framework/controller');
+
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
 class TestRequestController implements IRequestController<Group> {
   get = jest.fn();
   put = jest.fn();
   post = jest.fn();
 }
-const testRequestController: TestRequestController = new TestRequestController();
-buildRequestController.mockReturnValue(testRequestController);
+const testTeamRequestController: TestRequestController = new TestRequestController();
+const testGroupRequestController: TestRequestController = new TestRequestController();
 
 const profileService = new ProfileService();
 const personService = new PersonService();
@@ -58,13 +65,6 @@ const replaceArray = (value, srcValue) => {
     return srcValue;
   }
 };
-
-beforeEach(() => {
-  jest.clearAllMocks();
-
-  PersonService.getInstance = jest.fn().mockReturnValue(personService);
-  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-});
 
 describe('GroupFetchDataController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
@@ -80,9 +80,17 @@ describe('GroupFetchDataController', () => {
   const postService = new PostService();
   const mockUserId = 1;
 
-  beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
+  function setUp() {
+    PersonService.getInstance = jest.fn().mockReturnValue(personService);
+    ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+
+    buildRequestController.mockImplementation((params: any) => {
+      if (params.basePath === '/group') {
+        return testGroupRequestController;
+      }
+      return testTeamRequestController;
+    });
+
     AccountGlobalConfig.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
@@ -90,13 +98,16 @@ describe('GroupFetchDataController', () => {
 
     testEntitySourceController = new TestEntitySourceController<Group>(
       groupFactory,
-    );
+    ) as any;
+
     testEntitySourceController.get.mockImplementation((id: number) =>
       groupFactory.build({ id }),
     );
+
     testPartialModifyController = new TestPartialModifyController(
       testEntitySourceController,
     );
+
     entityCacheController = new EntityCacheController();
     testEntityCacheSearchController = new TestEntityCacheSearchController(
       entityCacheController,
@@ -108,6 +119,11 @@ describe('GroupFetchDataController', () => {
       testPartialModifyController,
       new TeamPermissionController(),
     );
+  }
+
+  beforeEach(() => {
+    clearMocks();
+    setUp();
   });
 
   it('updateGroupPartialData(object) is update success', async () => {
@@ -380,7 +396,7 @@ describe('GroupFetchDataController', () => {
     it('should call partial modify controller. [JPT-719]', async () => {
       await groupActionController.joinTeam(123, 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
-      expect(testRequestController.put).toBeCalledWith({
+      expect(testTeamRequestController.put).toBeCalledWith({
         id: 2,
         members: [123],
       });
@@ -398,7 +414,7 @@ describe('GroupFetchDataController', () => {
       );
       await groupActionController.leaveTeam(5683, 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
-      expect(testRequestController.put).toBeCalledWith({
+      expect(testTeamRequestController.put).toBeCalledWith({
         id: 2,
         members: [5683],
       });
@@ -417,7 +433,7 @@ describe('GroupFetchDataController', () => {
       );
       await groupActionController.addTeamMembers([123, 456], 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
-      expect(testRequestController.put).toBeCalledWith({
+      expect(testTeamRequestController.put).toBeCalledWith({
         id: 2,
         members: [123, 456],
       });
@@ -436,7 +452,7 @@ describe('GroupFetchDataController', () => {
       );
       await groupActionController.removeTeamMembers([540524, 5683], 2);
       expect(testPartialModifyController.updatePartially).toBeCalled();
-      expect(testRequestController.put).toBeCalledWith({
+      expect(testTeamRequestController.put).toBeCalledWith({
         id: 2,
         members: [540524, 5683],
       });
@@ -452,7 +468,7 @@ describe('GroupFetchDataController', () => {
         '/for_unit_test',
       );
 
-      expect(testRequestController.put).toBeCalledWith({
+      expect(testTeamRequestController.put).toBeCalledWith({
         id: 2,
         members: [123],
       });
@@ -485,7 +501,7 @@ describe('GroupFetchDataController', () => {
           TEAM_ADD_MEMBER: true,
         },
       });
-      expect(testRequestController.put).toBeCalledWith(
+      expect(testTeamRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
           mockTeam,
@@ -527,7 +543,7 @@ describe('GroupFetchDataController', () => {
           TEAM_ADD_MEMBER: true,
         },
       });
-      expect(testRequestController.put).toBeCalledWith(
+      expect(testTeamRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
           mockTeam,
@@ -555,7 +571,7 @@ describe('GroupFetchDataController', () => {
         mockTeam,
       );
       await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
-      expect(testRequestController.put).toBeCalledWith(
+      expect(testTeamRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
           mockTeam,
@@ -583,7 +599,7 @@ describe('GroupFetchDataController', () => {
         mockTeam,
       );
       await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
-      expect(testRequestController.put).toBeCalledWith(
+      expect(testTeamRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
           mockTeam,
@@ -611,7 +627,7 @@ describe('GroupFetchDataController', () => {
         mockTeam,
       );
       await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, true);
-      expect(testRequestController.put).not.toBeCalled();
+      expect(testTeamRequestController.put).not.toBeCalled();
     });
   });
   describe('revokeAdmin()', () => {
@@ -623,7 +639,7 @@ describe('GroupFetchDataController', () => {
         mockTeam,
       );
       await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
-      expect(testRequestController.put).toBeCalledWith(
+      expect(testTeamRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
           mockTeam,
@@ -651,7 +667,7 @@ describe('GroupFetchDataController', () => {
         mockTeam,
       );
       await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
-      expect(testRequestController.put).toBeCalledWith(
+      expect(testTeamRequestController.put).toBeCalledWith(
         _.mergeWith(
           {},
           mockTeam,
@@ -679,7 +695,7 @@ describe('GroupFetchDataController', () => {
         mockTeam,
       );
       await groupActionController.makeOrRevokeAdmin(mockTeam.id, 2, false);
-      expect(testRequestController.put).not.toBeCalled();
+      expect(testTeamRequestController.put).not.toBeCalled();
     });
   });
 
@@ -693,7 +709,7 @@ describe('GroupFetchDataController', () => {
         mockTeam,
       );
       await groupActionController.archiveTeam(mockTeam.id);
-      expect(testRequestController.put).toBeCalledWith(
+      expect(testTeamRequestController.put).toBeCalledWith(
         _.merge({}, mockTeam, {
           is_archived: true,
         }),
@@ -711,11 +727,107 @@ describe('GroupFetchDataController', () => {
         mockTeam,
       );
       await groupActionController.deleteTeam(mockTeam.id);
-      expect(testRequestController.put).toBeCalledWith(
+      expect(testTeamRequestController.put).toBeCalledWith(
         _.merge({}, mockTeam, {
           deactivated: true,
         }),
       );
+    });
+  });
+
+  describe('pinPost', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    const theGroupId = 10;
+    const partialEntity = {
+      id: theGroupId,
+      _id: theGroupId,
+    };
+
+    const theGroupEntity = {
+      id: theGroupId,
+      pinned_post_ids: [1, 2, 3],
+      modified_at: 0,
+      members: [333],
+      is_team: true,
+    };
+
+    it('should add team pinned post ids when pin a post', async () => {
+      testPartialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (
+            groupId: number,
+            preHandlePartialEntity: any,
+            doUpdateEntity: any,
+          ) => {
+            expect(theGroupId).toEqual(groupId);
+            const res = preHandlePartialEntity(partialEntity, theGroupEntity);
+            res.is_team = true;
+            doUpdateEntity(res);
+          },
+        );
+
+      await groupActionController.pinPost(4, theGroupId, true);
+
+      expect(testTeamRequestController.put).toBeCalledWith({
+        _id: theGroupId,
+        pinned_post_ids: [4, 1, 2, 3],
+        modified_at: expect.any(Number),
+      });
+    });
+
+    it('should remove team pinned post ids when un-pin a post', async () => {
+      testPartialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (
+            groupId: number,
+            preHandlePartialEntity: any,
+            doUpdateEntity: any,
+          ) => {
+            expect(theGroupId).toEqual(groupId);
+            const res = preHandlePartialEntity(partialEntity, theGroupEntity);
+            res.is_team = true;
+            doUpdateEntity(res);
+          },
+        );
+
+      await groupActionController.pinPost(2, theGroupId, false);
+
+      expect(testTeamRequestController.put).toBeCalledWith({
+        _id: theGroupId,
+        pinned_post_ids: [1, 3],
+        modified_at: expect.any(Number),
+      });
+    });
+
+    it('should update group pinned post ids when pin a post', async () => {
+      testPartialModifyController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (
+            groupId: number,
+            preHandlePartialEntity: any,
+            doUpdateEntity: any,
+          ) => {
+            expect(theGroupId).toEqual(groupId);
+            const res = preHandlePartialEntity(partialEntity, theGroupEntity);
+            res.is_team = false;
+            doUpdateEntity(res);
+          },
+        );
+
+      await groupActionController.pinPost(4, theGroupId, true);
+
+      expect(testGroupRequestController.put).toBeCalledWith({
+        _id: theGroupId,
+        pinned_post_ids: [4, 1, 2, 3],
+        modified_at: expect.any(Number),
+      });
     });
   });
 });

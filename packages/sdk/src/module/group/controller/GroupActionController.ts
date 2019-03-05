@@ -218,23 +218,31 @@ export class GroupActionController {
     await this.partialModifyController.updatePartially(
       groupId,
       (partialEntity, originalEntity) => {
+        const modifiedAt = Date.now();
         const { pinned_post_ids = [] } = originalEntity;
         if (toPin) {
           return {
             ...partialEntity,
-            pinned_post_ids: _.union(pinned_post_ids, [postId]),
+            pinned_post_ids: _.union([postId], pinned_post_ids),
+            modified_at: modifiedAt,
           };
         }
         return {
           ...partialEntity,
           pinned_post_ids: _.difference(pinned_post_ids, [postId]),
+          modified_at: modifiedAt,
         };
       },
       async (updateEntity: Group) => {
+        const partialModel = {
+          _id: updateEntity.id || updateEntity._id,
+          pinned_post_ids: updateEntity.pinned_post_ids,
+          modified_at: updateEntity.modified_at,
+        };
         if (updateEntity.is_team) {
-          return await this._getTeamRequestController().put(updateEntity);
+          return await this._getTeamRequestController().put(partialModel);
         }
-        return await this._getGroupRequestController().put(updateEntity);
+        return await this._getGroupRequestController().put(partialModel);
       },
     );
   }
