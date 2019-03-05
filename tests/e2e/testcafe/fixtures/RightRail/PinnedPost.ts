@@ -12,6 +12,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -31,13 +32,20 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
   const sitTitle = `Google`
   const postText1 = uuid();
 
-  let teamId, textPostId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  let textPostId;
+  await h(t).withLog(`Given I have a team named: ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`And I send a text post:${postText}`, async () => {
+    textPostId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -50,21 +58,14 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
   const pinnedTab = rightRail.pinnedTab;
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('When I open a team and open Pinned tab', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
     await rightRail.pinnedEntry.enter();
   });
 
-
-  await h(t).withLog('And I send the text post', async () => {
-    await conversationPage.sendMessage(postText);
-    await conversationPage.nthPostItem(-1).waitForPostToSend();
-    textPostId = await conversationPage.nthPostItem(-1).postId;
-  });
-
-
   let postIds = [Number(textPostId)];
   await h(t).withLog('And I pin the text post via API', async () => {
-    await h(t).glip(loginUser).updateGroup(teamId, {
+    await h(t).glip(loginUser).updateGroup(team.glipId, {
       "pinned_post_ids": postIds
     })
   });
@@ -88,7 +89,7 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
 
   await h(t).withLog('And I pin the text post', async () => {
     postIds.unshift(Number(toBeCheckedPostId));
-    await h(t).glip(loginUser).updateGroup(teamId, {
+    await h(t).glip(loginUser).updateGroup(team.glipId, {
       "pinned_post_ids": postIds
     })
   });
@@ -102,7 +103,7 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
     await pinnedTab.nthItem(0).postTextShouldBe(reg);
     await pinnedTab.nthItem(0).shouldHasFileOrImage(fileNames[0]);
     await pinnedTab.nthItem(0).shouldHasFileOrImage(fileNames[1]);
-    await pinnedTab.nthItem(0).shouldHasAttachmentsText(sitTitle); // title of Url is unstable. so only check link item icon
+    await pinnedTab.nthItem(0).shouldHasAttachmentsText(sitTitle);
   });
 });
 
@@ -115,13 +116,20 @@ test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', '
   const postText = uuid();
   const userName = await h(t).glip(loginUser).getPersonPartialData('display_name');
 
-  let teamId, textPostId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  let textPostId;
+  await h(t).withLog(`Given I have a team named: ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  await h(t).withLog(`And I send a text post:${postText}`, async () => {
+    textPostId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
   });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -131,23 +139,21 @@ test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', '
 
   const rightRail = app.homePage.messageTab.rightRail;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog('When I open a team and open Pinned tab and send a post', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+  await h(t).withLog('When I open a team and open Pinned tab', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
     await rightRail.pinnedEntry.enter();
-    await conversationPage.sendMessage(postText);
-    await conversationPage.nthPostItem(-1).waitForPostToSend();
-    textPostId = await conversationPage.nthPostItem(-1).postId;
   });
 
   let postIds = [Number(textPostId)];
   await h(t).withLog('And I pin the text post via api', async () => {
-    await h(t).glip(loginUser).updateGroup(teamId, {
+    await h(t).glip(loginUser).updateGroup(team.glipId, {
       "pinned_post_ids": postIds
     })
   });
 
   const pinnedTab = rightRail.pinnedTab;
-  await h(t).withLog('Then the new pinned post shows under tasks tab immediately', async () => {
+  await h(t).withLog('Then the new pinned post shows under pinned tab immediately', async () => {
     await pinnedTab.waitUntilItemsListExist();
     await pinnedTab.countOnSubTitleShouldBe(1);
     await pinnedTab.countInListShouldBe(1);
@@ -157,7 +163,7 @@ test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', '
   });
 
   await h(t).withLog('And I unpin the pinned post via api', async () => {
-    await h(t).glip(loginUser).updateGroup(teamId, {
+    await h(t).glip(loginUser).updateGroup(team.glipId, {
       "pinned_post_ids": []
     })
   });
@@ -174,23 +180,41 @@ test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  const text = uuid();
-  const postText = `${text} http://google.com`;
-  const firstUrlTitle = `Google`;
-  const reg = new RegExp(`${text}.*http://google.com`);
-  const newText = uuid();
-  const url = `http://${uuid()}.com`;
-  const newPostText = `${newText} ${url}`;
-  const newReg = new RegExp(`${newText}.*${url}`);
+  const postText = uuid();
+  const newPostText = uuid();
 
-  let teamId, textPostId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  const noteTitle = uuid();
+  const newNoteTitle = uuid();
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  let textPostId, notePostId, noteId;
+  await h(t).withLog(`Given I have a team named: ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
+
+  await h(t).withLog(`And I send a text post: ${postText}`, async () => {
+    textPostId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
+  });
+
+  await h(t).withLog(`And I send a note post: ${noteTitle}`, async () => {
+    const data = await h(t).glip(loginUser).createSimpleNote(team.glipId, noteTitle).then(res => res.data);
+    noteId = data["_id"];
+    notePostId = data["post_ids"][0].toString();
+  });
+
+  // await h(t).withLog('Given I have a team before login ', async () => {
+  //   teamId = await h(t).platform(loginUser).createAndGetGroupId({
+  //     name: uuid(),
+  //     type: 'Team',
+  //     members: [loginUser.rcId],
+  //   });
+  // });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -199,39 +223,57 @@ test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 
 
   const rightRail = app.homePage.messageTab.rightRail;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  await h(t).withLog('When I open a team and open Pinned tab and send a post with a link', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+  await h(t).withLog('When I open a team and open Pinned tab', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
     await rightRail.pinnedEntry.enter();
-    await conversationPage.sendMessage(postText);
-    await conversationPage.nthPostItem(-1).waitForPostToSend();
-    textPostId = await conversationPage.nthPostItem(-1).postId;
   });
 
   let postIds = [Number(textPostId)];
-  await h(t).withLog('And I pin the post', async () => {
-    await h(t).glip(loginUser).updateGroup(teamId, {
+  await h(t).withLog('And I pin the text post', async () => {
+    await h(t).glip(loginUser).updateGroup(team.glipId, {
       "pinned_post_ids": postIds
-    })
+    });
   });
 
   const pinnedTab = rightRail.pinnedTab;
-  await h(t).withLog('Then the new pinned post shows under tasks tab immediately', async () => {
+  await h(t).withLog('Then the new pinned post shows under pinned tab immediately', async () => {
     await pinnedTab.waitUntilItemsListExist();
     await pinnedTab.countOnSubTitleShouldBe(1);
     await pinnedTab.countInListShouldBe(1);
-    await pinnedTab.nthItem(0).shouldBePostId(textPostId);
-    await pinnedTab.nthItem(0).postTextShouldBe(reg);
-    await pinnedTab.nthItem(0).shouldHasAttachmentsText(firstUrlTitle);
+    await pinnedTab.shouldContainPostItem(textPostId);
+    await pinnedTab.itemByPostId(textPostId).postTextShouldBe(postText);
   });
 
-  await h(t).withLog(`And I Update a pinned item's following elements:  Text content Attachment's info (e.g. update link url)`, async () => {
+  await h(t).withLog(`And I Update the post text to ${newPostText}`, async () => {
     await conversationPage.postItemById(textPostId).clickMoreItemOnActionBar();
     await conversationPage.postItemById(textPostId).actionBarMoreMenu.editPost.enter();
     await conversationPage.postItemById(textPostId).editMessage(newPostText, { replace: true });
   });
 
-  await h(t).withLog('Then The unpinned item disappear from Pinned tab immediately', async () => {
-    await pinnedTab.itemByPostId(textPostId).postTextShouldBe(newReg);
-    await pinnedTab.nthItem(0).shouldHasAttachmentsText(url);
+  await h(t).withLog('Then the pinned item should be updated immediately', async () => {
+    await pinnedTab.itemByPostId(textPostId).postTextShouldBe(newPostText);
+  });
+
+  await h(t).withLog(`When I pin the note post title: ${noteTitle}`, async () => {
+    postIds = postIds.concat(Number(notePostId))
+    await h(t).glip(loginUser).updateGroup(team.glipId, {
+      "pinned_post_ids": postIds
+    });
+  });
+
+  await h(t).withLog('Then the new pinned post shows under pinned tab immediately', async () => {
+    await pinnedTab.countOnSubTitleShouldBe(2);
+    await pinnedTab.countInListShouldBe(2);
+    await pinnedTab.shouldContainPostItem(notePostId);
+    await pinnedTab.itemByPostId(notePostId).shouldHasAttachmentsText(noteTitle);
+  });
+
+  await h(t).withLog(`And I Update the note title to ${newNoteTitle}`, async () => {
+    await h(t).glip(loginUser).updateNote(noteId, { title: newNoteTitle });
+  });
+
+  await h(t).withLog('Then the pinned item should be updated immediately', async () => {
+    await pinnedTab.itemByPostId(notePostId).shouldHasAttachmentsText(newNoteTitle);
   });
 });

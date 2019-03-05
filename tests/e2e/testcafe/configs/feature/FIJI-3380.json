@@ -1,6 +1,23 @@
 {
+<<<<<<< HEAD
   "on_merge": {
     "fixtures": ["./fixtures/Logout.ts"],
     "browsers": ["selenium:chrome"]
   }
 }
+=======
+    "on_merge": {
+        "fixtures": [
+            "./fixtures/**/*.ts"
+        ],
+        "include_tags": [
+            "P0",
+            "P1",
+            "JPT-1061"
+        ],
+        "browsers": [
+            "selenium:chrome"
+        ]
+    }
+}
+>>>>>>> fecea0d40a872111e7c1741f80977ff3ae598c46
