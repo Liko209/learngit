@@ -46,6 +46,11 @@ class PinViewComponent extends Component<Props> {
               ? i18next.t('message.action.unpin')
               : i18next.t('message.action.pin')
           }
+          ariaLabel={
+            isPin
+              ? i18next.t('message.action.unpin')
+              : i18next.t('message.action.pin')
+          }
           color={isPin ? 'primary' : undefined}
           onClick={this._handlePinButton}
           disabled={shouldDisablePinOption}

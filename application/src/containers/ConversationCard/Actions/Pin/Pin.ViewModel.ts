@@ -23,6 +23,7 @@ const PIN_OPTION_EXCLUDE_VERBS = [
   'reassigned',
   'completed',
   'updated',
+  'marked',
 ];
 
 class PinViewModel extends StoreViewModel<PinProps> implements PinViewProps {
