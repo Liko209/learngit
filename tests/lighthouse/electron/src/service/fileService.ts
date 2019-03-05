@@ -1,7 +1,8 @@
 /*
  * @Author: doyle.wu
- * @Date: 2018-12-12 20:14:14
+ * @Date: 2019-02-25 14:25:17
  */
+
 import * as fs from 'fs';
 import { LogUtils } from '../utils';
 import { Config } from '../config';
@@ -20,21 +21,37 @@ class FileService {
    * @description: generate lighthouse report index
    */
   static async generateReportIndex() {
-    let files = fs.readdirSync(REPORT_DIR_PATH), names = [];
+    let files = fs.readdirSync(REPORT_DIR_PATH), names = [], tracesFiles = [];
     if (!files || files.length === 0) {
       return;
     }
     let html = fs.readFileSync(`${process.cwd()}/src/index.template.html`, 'utf8');
-
     for (let file of files) {
-      if (file.endsWith('.html') && file !== 'index.html') {
+      if (file.endsWith('.html') && file !== 'index.html' && file !== 'Traces.html') {
         names.push(file.substr(0, file.length - 5));
+      }
+
+      if (file.endsWith('.traces.json')) {
+        tracesFiles.push(file);
       }
     }
     if (names.length === 0) {
       return;
     }
+
     names.sort();
+
+    if (tracesFiles.length !== 0) {
+      names.push('Traces');
+      let htmlArray = ['<!doctype html><html><head></head><body>'];
+      for (let t of tracesFiles) {
+        htmlArray.push('<div style="margin:15px 130px">', `<a href="${t}" download="${t}" target="_blank">`, t, '</a>', '</div>');
+      }
+      htmlArray.push('</body></html>');
+
+      let tracesPath = `${REPORT_DIR_PATH}/Traces.html`;
+      fs.writeFileSync(tracesPath, htmlArray.join(''));
+    }
 
     html = html.replace('$$FILE_LIST$$', JSON.stringify(names));
     html = html.replace('$$DASHBOARD_URL$$', Config.dashboardUrl);
@@ -61,6 +78,17 @@ class FileService {
     let artifactsPath = `${REPORT_DIR_PATH}/${fileName}.artifacts.json`;
     fs.writeFileSync(artifactsPath, JSON.stringify(artifacts));
     logger.info(`artifacts has saved.[${artifactsPath}]`);
+  }
+
+  /**
+   * @description: save artifacts into disk
+   */
+  static async saveTracesIntoDisk(artifacts: any, fileName: string) {
+    if (artifacts.traces && artifacts.traces.defaultPass && artifacts.traces.defaultPass.traceEvents) {
+      let tracesPath = `${REPORT_DIR_PATH}/${fileName}.traces.json`;
+      fs.writeFileSync(tracesPath, JSON.stringify(artifacts.traces.defaultPass.traceEvents));
+      logger.info(`traces has saved.[${tracesPath}]`);
+    }
   }
 
   /**

@@ -5,7 +5,7 @@
 import { Scenario } from './scenario';
 import { TaskDto, SceneDto } from '../model';
 import { ScenarioConfigFactory, gatherers } from '../lighthouse';
-import { MetricService } from '../service';
+import { MetricService, FileService } from '../service';
 
 class SearchScenario extends Scenario {
   private keywords: Array<string>;
@@ -30,6 +30,9 @@ class SearchScenario extends Scenario {
   }
 
   async saveMetircsIntoDisk() {
+    if (this.artifacts) {
+      await FileService.saveTracesIntoDisk(this.artifacts, this.scenarioName());
+    }
   }
 }
 

@@ -5,7 +5,7 @@
 import { Scenario } from './scenario';
 import { TaskDto, SceneDto } from '../model';
 import { ScenarioConfigFactory, gatherers } from '../lighthouse';
-import { MetricService } from '../service';
+import { MetricService, FileService } from '../service';
 
 class SwitchConversationScenario extends Scenario {
   private convrsationIds: Array<string>;
@@ -30,6 +30,9 @@ class SwitchConversationScenario extends Scenario {
   }
 
   async saveMetircsIntoDisk() {
+    if (this.artifacts) {
+      await FileService.saveTracesIntoDisk(this.artifacts, this.scenarioName());
+    }
   }
 }
 

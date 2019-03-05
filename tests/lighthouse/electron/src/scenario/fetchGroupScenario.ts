@@ -5,7 +5,7 @@
 import { Scenario } from './scenario';
 import { SceneDto } from '../model';
 import { ScenarioConfigFactory, gatherers } from '../lighthouse';
-import { MetricService } from '../service';
+import { MetricService, FileService } from '../service';
 
 class FetchGroupScenario extends Scenario {
 
@@ -24,6 +24,9 @@ class FetchGroupScenario extends Scenario {
   }
 
   async saveMetircsIntoDisk() {
+    if (this.artifacts) {
+      await FileService.saveTracesIntoDisk(this.artifacts, this.scenarioName());
+    }
   }
 }
 

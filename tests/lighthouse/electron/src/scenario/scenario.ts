@@ -231,6 +231,7 @@ class Scenario {
     }
     if (this.artifacts) {
       await FileService.saveArtifactsIntoDisk(this.artifacts, fileName);
+      await FileService.saveTracesIntoDisk(this.artifacts, fileName);
     }
     if (this.data) {
       await FileService.saveDataIntoDisk(this.data, fileName);
