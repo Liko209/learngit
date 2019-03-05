@@ -6,16 +6,17 @@
 
 import { computed } from 'mobx';
 import { ProfileService } from 'sdk/module/profile';
-import { StateService } from 'sdk/module/state';
+import { StateService, GroupState } from 'sdk/module/state';
 import { Profile } from 'sdk/module/profile/entity';
 import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';
 import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
-import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
 import { GLOBAL_KEYS } from '@/store/constants';
+import GroupStateModel from '@/store/models/GroupState';
+import { Group } from 'sdk/module/group/entity';
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   private _profileService: ProfileService = ProfileService.getInstance();
@@ -67,7 +68,10 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
 
   @computed
   private get _groupState() {
-    return getEntity(ENTITY_NAME.GROUP_STATE, this.groupId) as GroupStateModel;
+    return getEntity<GroupState, GroupStateModel>(
+      ENTITY_NAME.GROUP_STATE,
+      this.groupId,
+    );
   }
 
   @computed
@@ -90,7 +94,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
 
   @computed
   private get _group() {
-    return getEntity(ENTITY_NAME.GROUP, this.groupId) as GroupModel;
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.groupId);
   }
 
   toggleFavorite = () => {
