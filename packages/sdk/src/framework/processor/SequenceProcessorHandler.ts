@@ -37,7 +37,7 @@ class SequenceProcessorHandler extends AbstractProcessor {
           this.execute();
         })
         .catch((error: Error) => {
-          mainLogger.error(
+          mainLogger.info(
             `SequenceProcessorHandler (${this.name}): ${JSON.stringify(
               error,
             )}: `,
