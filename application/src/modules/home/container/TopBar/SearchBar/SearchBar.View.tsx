@@ -76,9 +76,10 @@ class SearchBarView extends React.Component<ViewProps & Props> {
   }
 
   onClear = () => {
-    const { setValue, resetData } = this.props;
+    const { setValue, resetData, getRecent } = this.props;
     setValue('');
     resetData();
+    getRecent();
   }
 
   onClose = () => {
