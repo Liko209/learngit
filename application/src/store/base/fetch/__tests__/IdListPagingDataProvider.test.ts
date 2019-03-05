@@ -16,7 +16,6 @@ import notificationCenter from 'sdk/service/notificationCenter';
 import storeManager from '@/store/base/StoreManager';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { hasValidEntity } from '@/store/utils';
-import { doesNotReject } from 'assert';
 
 jest.mock('sdk/service/notificationCenter');
 
@@ -109,12 +108,16 @@ describe('IdListPagingDataProvider', () => {
     });
 
     it.each`
-      sourceIds    | newIds                                | updatedIds                | cursors
-      ${sourceIds} | ${[6, 7, 8, 9, 10]}                   | ${[6, 7, 8, 9, 10]}       | ${{ front: 5, end: 11 }}
-      ${sourceIds} | ${[4, 5, 6, 7, 8, 9, 10, 11, 12, 13]} | ${[4, 5, 6, 7, 8, 9, 10]} | ${{ front: 5, end: 11 }}
+      sourceIds    | newIds                                | updatedIds                   | deletedIds    | cursors
+      ${sourceIds} | ${[6, 7, 8, 9, 10]}                   | ${[]}                        | ${[5, 11]}    | ${{ front: 5, end: 11 }}
+      ${sourceIds} | ${[4, 5, 6, 7, 8, 9, 10, 11, 12, 13]} | ${[4, 12, 13]}               | ${[]}         | ${{ front: 5, end: 11 }}
+      ${sourceIds} | ${[5, 6, 7, 8, 9, 11, 10]}            | ${[5, 6, 7, 8, 9, 11, 10]}   | ${[]}         | ${{ front: 5, end: 11 }}
+      ${sourceIds} | ${[5, 7, 6, 11, 10, 15, 16]}          | ${[5, 7, 6, 11, 10]}         | ${[8, 9]}     | ${{ front: 5, end: 9 }}
+      ${sourceIds} | ${[5, 7, 6, 11, 15, 8, 16]}           | ${[5, 7, 6, 11, 15, 8]}      | ${[9, 10]}    | ${{ front: 5, end: 9 }}
+      ${sourceIds} | ${[11, 7, 6, 11, 15, 16, 5]}          | ${[11, 7, 6, 11, 15, 16, 5]} | ${[8, 9, 10]} | ${{ front: 5, end: 9 }}
     `(
       'should send right notification when source ids changed, new ids: $newIds',
-      async ({ sourceIds, newIds, updatedIds, cursors }) => {
+      async ({ sourceIds, newIds, updatedIds, deletedIds, cursors }) => {
         Object.assign(idsDataProvider, { _cursors: cursors });
         postProvider.getByIds = jest
           .fn()
@@ -122,16 +125,6 @@ describe('IdListPagingDataProvider', () => {
             return toIdModels(ids);
           });
 
-        let receivedEvent = '';
-        let receivedPayload: any = {};
-        let receivedReplaceAll = false;
-        notificationCenter.emitEntityReplace.mockImplementation(
-          (event: string, changeMap: any, isReplaceAll: boolean) => {
-            receivedEvent = event;
-            receivedPayload = changeMap;
-            receivedReplaceAll = isReplaceAll;
-          },
-        );
         idsDataProvider.onSourceIdsChanged(newIds);
 
         const promise = new Promise((resolve: any, reject: any) => {
@@ -139,16 +132,21 @@ describe('IdListPagingDataProvider', () => {
             resolve();
           },         100);
         });
-        await Promise.all([promise]);
+        await promise;
 
-        expect(notificationCenter.emitEntityReplace).toBeCalled();
-        expect(receivedEvent).toBe(receivedEvent);
-        expect(receivedReplaceAll).toBeTruthy();
-        const ids = Array.from(receivedPayload.keys());
-        const values = Array.from(receivedPayload.values());
-        const valueIds = values.map((x: any) => x.id);
-        expect(valueIds).toEqual(updatedIds);
-        // expect(ids).toEqual([]);
+        if (deletedIds.length > 0) {
+          expect(notificationCenter.emitEntityDelete).toBeCalledWith(
+            ENTITY.DISCONTINUOUS_POST,
+            deletedIds,
+          );
+        }
+
+        if (updatedIds.length > 0) {
+          expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
+            ENTITY.DISCONTINUOUS_POST,
+            toIdModels(updatedIds),
+          );
+        }
       },
     );
   });
