@@ -11,6 +11,7 @@ import { ENTITY_NAME } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { PostService } from 'sdk/module/post';
 import notificationCenter from 'sdk/service/notificationCenter';
+import items from '@/containers/ConversationCard/Activity/handler/items';
 
 jest.mock('sdk/module/post');
 
@@ -111,23 +112,19 @@ describe('DiscontinuousPosListHandler', () => {
       await Promise.all([promise]);
     }
 
-    it('should insert new ids to list store when receive new source ids with new ids', async (done: any) => {
-      const newSourceIds = [100, 101, 1, 3, 2, 4, 5, 6, 7, 8, 9, 10];
-      postListHandler.onSourceIdsChanged(newSourceIds);
-      setTimeout(() => {
-        expect(postListHandler.ids).toEqual(newSourceIds);
-        done();
-      },         100);
-    });
-
-    it('should delete ids not existed in new source ids', async (done: any) => {
-      const newSourceIds = [2, 3, 4, 5, 6];
-      postListHandler.onSourceIdsChanged(newSourceIds);
-
-      setTimeout(() => {
-        expect(postListHandler.ids).toEqual(newSourceIds);
-        done();
-      },         100);
-    });
+    it.each`
+      newSourceIds                                 | expectedRes
+      ${[100, 101, 1, 3, 2, 4, 5, 6, 7, 8, 9, 10]} | ${[100, 101, 1, 3, 2, 4, 5, 6, 7, 8, 9, 10]}
+      ${[2, 3, 4, 5, 6]}                           | ${[2, 3, 4, 5, 6]}
+      ${[10, 9, 2, 3, 5, 4, 6, 7, 8, 1]}           | ${[10, 9, 2, 3, 5, 4, 6, 7, 8, 1]}
+      ${[10, 9, 2, 3, 5, 6, 7, 8, 1]}              | ${[10, 9, 2, 3, 5, 6, 7, 8, 1]}
+    `(
+      'should return expected ids: $newSourceIds,  $expectedRes',
+      async ({ newSourceIds, expectedRes }) => {
+        postListHandler.onSourceIdsChanged(newSourceIds);
+        await waitFunc();
+        expect(postListHandler.ids).toEqual(expectedRes);
+      },
+    );
   });
 });
