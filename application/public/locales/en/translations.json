@@ -31,6 +31,8 @@
     "more": "More",
     "copy": "Copy",
     "ariaCopy": "Copy this {{value}}",
+    "call": "Call",
+    "ariaCall": "Call {{value}}",
     "download": "Download",
     "expand": "Expand",
     "collapse": "Collapse",
