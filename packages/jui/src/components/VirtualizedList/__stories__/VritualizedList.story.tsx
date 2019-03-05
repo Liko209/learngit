@@ -31,8 +31,6 @@ const LoadingMore = () => (
 );
 
 const Item = ({ item }: { item: ItemModel }) => {
-  console.log('Item', item.id);
-
   const [crazyHeight, setCrazyHeight] = useState(10);
   useLayoutEffect(() => {
     if (item.crazy) {
