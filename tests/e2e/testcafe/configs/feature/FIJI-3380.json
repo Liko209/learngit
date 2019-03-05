@@ -5,7 +5,8 @@
         ],
         "include_tags": [
             "P0",
-            "P1"
+            "P1",
+            "JPT-1061"
         ],
         "browsers": [
             "selenium:chrome"
