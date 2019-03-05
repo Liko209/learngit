@@ -77,15 +77,21 @@ class PostCacheController {
   > = new Map();
 
   private _cacheDeltaDataHandlerMap: Map<number, DeltaDataHandler> = new Map();
-  private _thumbnailPreloadController: ThumbnailPreloadController = new ThumbnailPreloadController();
-
+  private _thumbnailPreloadController: ThumbnailPreloadController;
   private _currentGroupId: number = 0;
+
+  getThumbnailPreloadController() {
+    if (!this._thumbnailPreloadController) {
+      this._thumbnailPreloadController = new ThumbnailPreloadController();
+    }
+    return this._thumbnailPreloadController;
+  }
 
   has(groupId: number): boolean {
     return this._cacheMap.has(groupId);
   }
 
-  handlePost = async (post: Post) => {
+  handlePost(post: Post) {
     let itemIds: number[] = [];
     if (post.item_ids && post.item_ids[0]) {
       itemIds = itemIds.concat(post.item_ids);
@@ -98,7 +104,7 @@ class PostCacheController {
       return TypeDictionary.TYPE_ID_FILE === GlipTypeUtil.extractTypeId(id);
     });
 
-    this._thumbnailPreloadController.handleFileItems(itemIds);
+    this.getThumbnailPreloadController().handleFileItems(itemIds);
   }
 
   get(
@@ -114,7 +120,7 @@ class PostCacheController {
               delta.added.map(async (sortableModel: ISortableModel<Post>) => {
                 if (sortableModel.data) {
                   const post = sortableModel.data as Post;
-                  await this.handlePost(post);
+                  this.handlePost(post);
                 }
               }),
             );

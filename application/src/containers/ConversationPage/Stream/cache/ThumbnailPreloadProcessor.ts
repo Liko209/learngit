@@ -113,7 +113,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
       }
     }
 
-    if (fileItem.versions[0].url) {
+    if (fileItem.versions.length && fileItem.versions[0].url) {
       return {
         url: fileItem.versions[0].url,
         thumbnail: false,
@@ -122,6 +122,23 @@ class ThumbnailPreloadProcessor implements IProcessor {
 
     return null;
   }
+
+  protected preload(item: {
+    id: number;
+    url?: string;
+    thumbnail?: boolean;
+    count?: number;
+  }) {
+    return new Promise((resolve: any, reject: any) => {
+      Pal.instance
+        .getImageDownloader()
+        .download(
+          item,
+          new ImageDownloadedListener(this._sequenceProcessorHandler, resolve),
+        );
+    });
+  }
+
   async process(): Promise<boolean> {
     const itemService = ItemService.getInstance() as ItemService;
     const item = await itemService.getById(this._item.id);
@@ -134,16 +151,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
       this._item.url = url.url;
       this._item.thumbnail = url.thumbnail;
 
-      const p = new Promise((resolve: any, reject: any) => {
-        Pal.instance
-          .getImageDownloader()
-          .download(
-            this._item,
-            new ImageDownloadedListener(this._sequenceProcessorHandler, resolve),
-          );
-      });
-
-      await p;
+      await this.preload(this._item);
     }
 
     return true;

@@ -13,10 +13,13 @@ import { notificationCenter, ENTITY } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
 jest.mock('sdk/framework/processor/SequenceProcessorHandler', () => {
-  return () => ({
+  const SequenceProcessorHandler = () => ({
     addProcessor: jest.fn(),
     execute: jest.fn(),
   });
+  return {
+    SequenceProcessorHandler,
+  };
 });
 jest.mock('sdk/api');
 jest.mock('sdk/module/profile');
