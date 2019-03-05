@@ -81,27 +81,26 @@ class ThumbnailPreloadProcessor implements IProcessor {
   }
 
   private _getVersionsValue(file: FileItem, type: string) {
-    return file.versions[0][type] ? file.versions[0][type] : null;
+    return file.versions[0][type];
   }
 
   private _getOrigHeight(file: FileItem) {
-    if (!this._hasVersions(file)) return null;
-    return this._getVersionsValue(file, 'orig_height');
+    return this._hasVersions(file)
+      ? this._getVersionsValue(file, 'orig_height')
+      : null;
   }
 
   private _getOrigWidth(file: FileItem) {
-    if (!this._hasVersions(file)) return null;
-    return this._getVersionsValue(file, 'orig_width');
+    return this._hasVersions(file)
+      ? this._getVersionsValue(file, 'orig_width')
+      : null;
   }
 
   private _getOrigSize(fileItem: FileItem) {
-    let origWidth: number = 0;
-    let origHeight: number = 0;
-
-    origWidth = this._getOrigWidth(fileItem);
-    origHeight = this._getOrigHeight(fileItem);
-
-    return { origWidth, origHeight };
+    return {
+      origWidth: this._getOrigWidth(fileItem),
+      origHeight: this._getOrigHeight(fileItem),
+    };
   }
 
   toThumbnailUrl(fileItem: FileItem) {
