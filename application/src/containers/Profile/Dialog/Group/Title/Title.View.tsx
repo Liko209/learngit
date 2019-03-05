@@ -9,8 +9,8 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { ProfileDialogGroupTitleViewProps } from './types';
 import {
-  JuiDialogTitleWithActionLeft,
-  JuiDialogTitleWithActionRight,
+  JuiDialogHeaderTitle,
+  JuiDialogHeaderActions,
 } from 'jui/components/Dialog';
 import { Favorite } from '@/containers/common/Favorite';
 import { Privacy } from '@/containers/common/Privacy';
@@ -31,10 +31,8 @@ class ProfileDialogGroupTitleViewComponent extends Component<
     const { id, t, group } = this.props;
     return (
       <>
-        <JuiDialogTitleWithActionLeft>
-          {t('people.team.profile')}
-        </JuiDialogTitleWithActionLeft>
-        <JuiDialogTitleWithActionRight>
+        <JuiDialogHeaderTitle>{t('people.team.profile')}</JuiDialogHeaderTitle>
+        <JuiDialogHeaderActions>
           <Privacy id={id} size="medium" />
           <Favorite id={id} size="medium" />
           {group.isTeam && group.isMember && (
@@ -48,7 +46,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
           >
             close
           </JuiIconButton>
-        </JuiDialogTitleWithActionRight>
+        </JuiDialogHeaderActions>
       </>
     );
   }
