@@ -110,14 +110,9 @@ export class GroupFetchDataController {
       : result.slice(0, result.length > 50 ? 50 : result.length);
   }
 
-  async getGroupsByIds(ids: number[]): Promise<Group[]> {
+  async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     if (ids.length) {
-      const groups = await Promise.all(
-        ids.map(async (id: number) => {
-          const group = await this.entitySourceController.get(id);
-          return group;
-        }),
-      );
+      const groups = await this.entitySourceController.batchGet(ids, order);
       return groups.filter(group => group !== null) as Group[];
     }
     return [];
@@ -526,18 +521,11 @@ export class GroupFetchDataController {
       );
       const hiddenIds = extractHiddenGroupIds(profile);
       favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);
-      if (this.entityCacheSearchController.isInitialized()) {
-        return await this.entityCacheSearchController.getMultiEntities(
-          favoriteGroupIds,
-          (item: Group) => this.groupService.isValid(item),
-        );
-      }
-      const dao = daoManager.getDao(GroupDao);
-      const result = await dao.queryGroupsByIds(favoriteGroupIds);
-      return this.groupHandleDataController.sortFavoriteGroups(
+      const groups = await this.groupService.getGroupsByIds(
         favoriteGroupIds,
-        result,
+        true,
       );
+      return groups.filter((item: Group) => this.groupService.isValid(item));
     }
     return [];
   }

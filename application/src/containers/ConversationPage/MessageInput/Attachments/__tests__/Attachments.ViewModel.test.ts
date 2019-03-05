@@ -7,7 +7,7 @@
 import { Notification } from '@/containers/Notification';
 import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
-import { GroupConfigService } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemFile } from 'sdk/module/item/entity';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
