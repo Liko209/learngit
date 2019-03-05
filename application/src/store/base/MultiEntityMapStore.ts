@@ -111,9 +111,7 @@ export default class MultiEntityMapStore<
   @action
   set(data: T, refreshCache: boolean = false) {
     this._set(data, refreshCache);
-    setTimeout(() => {
-      this._refreshCache();
-    },         100);
+    this._refreshCache();
   }
 
   @action
@@ -121,9 +119,8 @@ export default class MultiEntityMapStore<
     entities.forEach((entity: T) => {
       this._setOrUpdate(entity);
     });
-    setTimeout(() => {
-      this._refreshCache();
-    },         100);
+
+    this._refreshCache();
   }
 
   private _set(data: T, refreshCache: boolean = false) {

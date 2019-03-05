@@ -81,12 +81,12 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
 
 class PostUsedItemCache implements IUsedCache {
   getUsedId(): number[] {
-    let usedItemId: number[] = [];
+    let usedItemIds: number[] = [];
     const data = (storeManager.getEntityMapStore(
       ENTITY_NAME.POST,
     ) as MultiEntityMapStore<Post, PostModel>).getData();
 
-    usedItemId = [
+    usedItemIds = [
       ...new Set(
         Object.values(data)
           .map(a => a.id)
@@ -94,7 +94,7 @@ class PostUsedItemCache implements IUsedCache {
       ),
     ];
 
-    return usedItemId;
+    return usedItemIds;
   }
 }
 
