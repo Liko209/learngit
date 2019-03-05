@@ -49,7 +49,7 @@ class GroupHandler {
 }
 
 export class MessageRouterChangeHelper {
-  static defaultPageId = 0;
+  static defaultPageId = '';
   static isIndexDone = false;
   static async getLastGroupId() {
     const stateService: StateService = StateService.getInstance();
@@ -64,9 +64,26 @@ export class MessageRouterChangeHelper {
     const lastGroupId = await this.getLastGroupId();
     this._goToConversation(lastGroupId, 'REPLACE');
   }
-  static async goToConversation(id: string, action?: Action) {
+
+  static async goToConversation(id?: string, action?: Action) {
+    if (!id) {
+      return this._goToDefaultConversation();
+    }
+    if (!this.isConversation(id)) {
+      return this.updateCurrentConversationId(this.defaultPageId);
+    }
+    this._goToConversationById(id, action);
+  }
+
+  private static async _goToDefaultConversation() {
+    const id = this.defaultPageId;
+    await this._goToConversation(id);
+  }
+
+  private static async _goToConversationById(id: string, action?: Action) {
     const validId = await this.verifyGroup(Number(id));
-    return this._goToConversation(validId, action);
+    await this._goToConversation(validId, action);
+    this.handleSourceOfRouter(Number(id));
   }
 
   private static async _goToConversation(id: string, action?: Action) {
@@ -94,13 +111,9 @@ export class MessageRouterChangeHelper {
   }
 
   static updateCurrentConversationId(id: string) {
-    const groupId = this.isConversation(id) ? id : this.defaultPageId;
-    if (this.isConversation(id)) {
-      this.handleSourceOfRouter(Number(groupId));
-    }
     storeManager
       .getGlobalStore()
-      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, Number(groupId));
+      .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, Number(id));
   }
 
   static handleSourceOfRouter(id: number) {

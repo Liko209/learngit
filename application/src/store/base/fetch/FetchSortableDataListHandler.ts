@@ -30,6 +30,8 @@ import {
 import { SortableListStore } from './SortableListStore';
 import { mainLogger } from 'sdk';
 
+type CountChangeCallback = (count: number) => void;
+
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
   isMatchFunc: IMatchFunc<T>;
@@ -43,6 +45,9 @@ export interface IFetchSortableDataProvider<T> {
     pageSize: number,
     anchor?: ISortableModel<T>,
   ): Promise<{ data: T[]; hasMore: boolean }>;
+
+  totalCount?(): number;
+  fetchTotalCount?(): Promise<number>;
 }
 
 export class FetchSortableDataListHandler<
@@ -52,6 +57,7 @@ export class FetchSortableDataListHandler<
   private _transformFunc: ITransformFunc<T>;
   private _sortFun?: ISortFunc<ISortableModel<T>>;
   private _sortableDataProvider?: IFetchSortableDataProvider<T>;
+  protected _totalCountChangeCallback?: CountChangeCallback;
 
   constructor(
     dataProvider: IFetchSortableDataProvider<T> | undefined,
@@ -72,6 +78,10 @@ export class FetchSortableDataListHandler<
     }
   }
 
+  setTotalCountChangeCallback(cb: CountChangeCallback) {
+    this._totalCountChangeCallback = cb;
+  }
+
   get sortableListStore() {
     return this.listStore as SortableListStore<T>;
   }
@@ -84,7 +94,7 @@ export class FetchSortableDataListHandler<
     if (!this._sortableDataProvider) {
       return mainLogger.warn('data fetcher should be defined ');
     }
-    const { data, hasMore } = await this._sortableDataProvider.fetchData(
+    const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
       direction,
       pageSize,
       anchor,
@@ -144,6 +154,8 @@ export class FetchSortableDataListHandler<
         added: [],
       });
     }
+
+    this._updateTotalCount();
   }
 
   handleDataUpdateReplace(
@@ -163,6 +175,9 @@ export class FetchSortableDataListHandler<
     let matchedKeys: number[] = _.intersection(keys, existKeys);
     const matchedSortableModels: ISortableModel<T>[] = [];
     const matchedEntities: T[] = [];
+    const isReplaceAll =
+      payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll;
+    const toReplaceEntities: Map<number, T> = new Map();
 
     if (payload.type === EVENT_TYPES.REPLACE) {
       if (payload.body.isReplaceAll) {
@@ -180,6 +195,7 @@ export class FetchSortableDataListHandler<
         ) {
           matchedSortableModels.push(sortableModel);
           matchedEntities.push(model);
+          isReplaceAll && toReplaceEntities.set(key, model);
         }
       } else {
         deletedSortableModelIds.push(key);
@@ -210,8 +226,8 @@ export class FetchSortableDataListHandler<
       originalSortableModels = _.cloneDeep(this.sortableListStore.items);
     }
 
-    if (payload.type === EVENT_TYPES.REPLACE && payload.body.isReplaceAll) {
-      this.replaceEntityStore(matchedEntities);
+    if (isReplaceAll) {
+      this.replaceEntityStore(toReplaceEntities);
       this.sortableListStore.removeByIds(deletedSortableModelIds);
       this.sortableListStore.upsert(matchedSortableModels);
 
@@ -251,6 +267,10 @@ export class FetchSortableDataListHandler<
           updated: updatedSortableModels,
           added: addedSortableModels,
         });
+    }
+
+    if (entities.size > 0) {
+      this._updateTotalCount();
     }
   }
 
@@ -354,5 +374,20 @@ export class FetchSortableDataListHandler<
       type: EVENT_TYPES.REPLACE,
       body: notificationBody,
     });
+  }
+
+  private async _updateTotalCount() {
+    if (
+      this._sortableDataProvider &&
+      this._sortableDataProvider.fetchTotalCount &&
+      this._sortableDataProvider.totalCount &&
+      this._totalCountChangeCallback
+    ) {
+      const oldTotal = this._sortableDataProvider.totalCount();
+      const newTotal = await this._sortableDataProvider.fetchTotalCount();
+      if (oldTotal !== newTotal) {
+        this._totalCountChangeCallback(newTotal);
+      }
+    }
   }
 }

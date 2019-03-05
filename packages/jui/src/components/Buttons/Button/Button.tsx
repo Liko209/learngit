@@ -67,11 +67,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       variant={_variant}
       {...restProps}
     >
-      {loading ? (
-        <JuiCircularProgress size={20} white={_variant === 'contained'} />
-      ) : (
-        children
-      )}
+      {loading ? <JuiCircularProgress size={20} color="inherit" /> : children}
     </MuiButton>
   );
 };
@@ -93,12 +89,13 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       color: ${palette('common', 'white')};
       ${shadow(3)}
       background-color: ${({ color = 'primary' }) =>
-        palette(ColorMap[color][0], ColorMap[color][1])}
+        palette(ColorMap[color][0], ColorMap[color][1])};
       &:hover {
         opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity}
       }
       &.disabled {
-        background-color: ${palette('accent', 'ash')};
+        background-color: ${({ theme, loading }) =>
+          loading ? '' : palette('accent', 'ash')({ theme })};
         color: ${palette('common', 'while')};
       }
       &:active {
@@ -108,7 +105,8 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
 
     &.textButtonStyle {
       &.disabled {
-        color: ${palette('accent', 'ash')};
+        color: ${({ theme, loading }) =>
+          loading ? '' : palette('accent', 'ash')({ theme })};
       }
       &:hover {
         background-color: ${palette('primary', 'main', 1)};

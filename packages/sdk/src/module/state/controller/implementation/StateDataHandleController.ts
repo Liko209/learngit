@@ -5,14 +5,7 @@
  */
 
 import _ from 'lodash';
-import {
-  daoManager,
-  StateDao,
-  AccountDao,
-  ConfigDao,
-  MY_STATE_ID,
-  ACCOUNT_USER_ID,
-} from '../../../../dao';
+import { daoManager, StateDao } from '../../../../dao';
 import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';
@@ -23,6 +16,8 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { StateFetchDataController } from './StateFetchDataController';
 import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+import { NewUserConfig } from '../../../../service/config';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 
@@ -36,25 +31,25 @@ class StateDataHandleController {
     this._taskArray = [];
   }
 
-  handleState(states: Partial<State>[]): void {
+  async handleState(states: Partial<State>[]): Promise<void> {
     const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
       data: states,
     };
     this._taskArray.push(stateTask);
     if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
+      await this._startDataHandleTask(this._taskArray[0]);
     }
   }
 
-  handleGroupCursor(groups: Partial<Group>[]): void {
+  async handleGroupCursor(groups: Partial<Group>[]): Promise<void> {
     const groupTask: DataHandleTask = {
       type: TASK_DATA_TYPE.GROUP_CURSOR,
       data: groups,
     };
     this._taskArray.push(groupTask);
     if (this._taskArray.length === 1) {
-      this._startDataHandleTask(this._taskArray[0]);
+      await this._startDataHandleTask(this._taskArray[0]);
     }
   }
 
@@ -67,9 +62,7 @@ class StateDataHandleController {
     }
     const updatedState = await this._generateUpdatedState(transformedState);
     await this._updateEntitiesAndDoNotification(updatedState);
-    await this._totalUnreadController.handleGroupState(
-      updatedState.groupStates,
-    );
+    this._totalUnreadController.handleGroupState(updatedState.groupStates);
 
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
@@ -92,9 +85,7 @@ class StateDataHandleController {
           switch (key) {
             case '__trigger_ids': {
               const triggerIds = group[key];
-              const currentUserId: number = daoManager
-                .getKVDao(AccountDao)
-                .get(ACCOUNT_USER_ID);
+              const currentUserId: number = AccountGlobalConfig.getCurrentUserId();
               if (
                 triggerIds &&
                 currentUserId &&
@@ -333,7 +324,8 @@ class StateDataHandleController {
     if (transformedState.myState) {
       const myState = transformedState.myState;
       await daoManager.getDao(StateDao).update(myState);
-      await daoManager.getKVDao(ConfigDao).put(MY_STATE_ID, myState.id);
+      const newConfig = new NewUserConfig();
+      await newConfig.setMyStateId(myState.id);
       notificationCenter.emitEntityUpdate(
         ENTITY.MY_STATE,
         [myState],

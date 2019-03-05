@@ -66,17 +66,26 @@ class ItemServiceController {
   }
 
   async getItems(options: ItemQueryOptions) {
-    let ids: number[] = [];
-    const subItemService = this.getSubItemService(options.typeId);
-    if (subItemService) {
-      ids = await subItemService.getSortedIds(options);
-    }
-
+    const ids: number[] = await this._getSortedItemIds(options);
     if (ids.length === 0) {
       return [];
     }
 
     return await this._entitySourceController.batchGet(ids, true);
+  }
+
+  async getItemIndexInfo(itemId: number, options: ItemQueryOptions) {
+    const itemIds = await this._getSortedItemIds(options);
+    return { index: itemIds.indexOf(itemId), totalCount: itemIds.length };
+  }
+
+  private async _getSortedItemIds(options: ItemQueryOptions) {
+    let ids: number[] = [];
+    const subItemService = this.getSubItemService(options.typeId);
+    if (subItemService) {
+      ids = await subItemService.getSortedIds(options);
+    }
+    return ids;
   }
 }
 

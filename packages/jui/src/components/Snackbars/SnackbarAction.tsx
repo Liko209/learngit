@@ -10,6 +10,7 @@ const CLOSE_ICON_SIZE_FIX = { transform: 'scale(1.7142857142857142)' };
 
 type JuiSnackbarActionProps = MuiButtonBaseProps & {
   variant?: 'text' | 'icon';
+  children: string;
 };
 
 const JuiSnackbarAction = styled(
@@ -19,7 +20,7 @@ const JuiSnackbarAction = styled(
 
       return (
         <StyledIconButton {...rest}>
-          <JuiIconography fontSize="inherit" style={style}>
+          <JuiIconography iconSize="inherit" style={style}>
             {children}
           </JuiIconography>
         </StyledIconButton>

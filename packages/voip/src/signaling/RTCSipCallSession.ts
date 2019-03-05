@@ -11,10 +11,14 @@ import { RTC_CALL_ACTION, RTCCallActionSuccessOptions } from '../api/types';
 import {
   WEBPHONE_SESSION_STATE,
   WEBPHONE_SESSION_EVENT,
+  WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
 } from '../signaling/types';
 import { rtcMediaManager } from '../utils/RTCMediaManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+const {
+  MediaStreams,
+} = require('ringcentral-web-phone/src/ringcentral-web-phone-media-engine');
 
 const LOG_TAG = 'RTCSipCallSession';
 class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
@@ -33,6 +37,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       return;
     }
     this._session.removeAllListeners();
+    this._releaseMediaStreams();
     if (this._session.sessionDescriptionHandler) {
       this._session.sessionDescriptionHandler.removeAllListeners();
     }
@@ -83,6 +88,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.REINVITE_FAILED, (session: any) => {
       this._onSessionReinviteFailed(session);
     });
+    this._session.onMediaConnectionStateChange = this._onMediaConnectionStateChange;
   }
 
   private _onSessionAccepted() {
@@ -167,6 +173,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         rtcLogger.error(LOG_TAG, 'Failed to play local media element');
       });
     }
+
+    if (local_stream && remote_stream) {
+      this._session.mediaStreams = new MediaStreams(this._session);
+    }
   }
 
   private _onSessionReinviteAccepted(session: any) {
@@ -175,6 +185,21 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   private _onSessionReinviteFailed(session: any) {
     this.emit(CALL_SESSION_STATE.REINVITE_FAILED, session);
+  }
+
+  private _onMediaConnectionStateChange(session: any, event: any) {
+    rtcLogger.debug(LOG_TAG, `WebRTC media connection state = ${event}`);
+    switch (event) {
+      case WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_FAILED:
+        rtcLogger.error(LOG_TAG, `Reconnecting media. State = ${event}`);
+        break;
+    }
+  }
+
+  private _releaseMediaStreams() {
+    if (this._session && this._session.mediaStreams) {
+      this._session.mediaStreams.release();
+    }
   }
 
   hangup() {
@@ -321,6 +346,39 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   getSession() {
     return this._session;
+  }
+
+  reconnectMedia(options: any) {
+    if (this._session && this._session.mediaStreams) {
+      this._session.mediaStreams
+        .reconnectMedia(options)
+        .then(() => {
+          if (options && options.eventHandlers) {
+            options.eventHandlers.succeeded(this._session);
+          }
+        })
+        .catch((error: any) => {
+          if (options && options.eventHandlers) {
+            options.eventHandlers.failed(error, this._session);
+          }
+        });
+    }
+  }
+
+  getMediaStats(callback: any, interval: number) {
+    if (this._session && this._session.mediaStreams) {
+      let timerInterval = interval;
+      if (!interval || interval < 0) {
+        timerInterval = 1000;
+      }
+      this._session.mediaStreams.getMediaStats(callback, timerInterval);
+    }
+  }
+
+  stopMediaStats() {
+    if (this._session && this._session.mediaStreams) {
+      this._session.mediaStreams.stopMediaStats();
+    }
   }
 }
 

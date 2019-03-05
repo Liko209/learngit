@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationStream/ConversationStream.ts"
+    ],
+    "include_tags": [
+      "JPT-106"
+    ],
+    "EXCLUDE_TAGS": [],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

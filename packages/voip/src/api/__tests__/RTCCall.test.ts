@@ -12,6 +12,7 @@ import { CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_STATE, RTC_CALL_ACTION, RTCCallOptions } from '../types';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
 import { kRTCHangupInvalidCallInterval } from '../../account/constants';
+import { rtcLogger } from '../../utils/RTCLoggerProxy';
 
 describe('RTC call', () => {
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
@@ -46,7 +47,6 @@ describe('RTC call', () => {
       ],
     };
   }
-  
   class MockResponse {
     public headers: any = {
       'P-Rc-Api-Ids': [
@@ -76,14 +76,32 @@ describe('RTC call', () => {
     }
   }
 
+  class MediaStreams extends EventEmitter2 {
+    public onMediaConnectionStateChange: any;
+
+    constructor(session: any) {
+      super();
+    }
+
+    public reconnectMedia(options: any) {}
+
+    getMediaStats(callback: any, interval: any) {}
+
+    stopMediaStats() {}
+
+    release() {}
+  }
+
   class MockSession extends EventEmitter2 {
     public sessionDescriptionHandler: SessionDescriptionHandler;
+    mediaStreams: MediaStreams;
     constructor() {
       super();
       this.remoteIdentity = {
         displayName: 'test',
         uri: { aor: 'test@ringcentral.com' },
       };
+      this.mediaStreams = new MediaStreams(this);
       this.sessionDescriptionHandler = new SessionDescriptionHandler();
     }
 
@@ -457,7 +475,7 @@ describe('RTC call', () => {
       session.stopRecord.mockResolvedValue(null);
       call.onAccountReady();
       session.mockSignal('accepted');
-      call._recordState = "recording";
+      call._recordState = 'recording';
       call.stopRecord();
       setImmediate(() => {
         call._callSession.emit(
@@ -1930,6 +1948,58 @@ describe('RTC call', () => {
         expect(call._fsm.state()).toBe('disconnected');
         expect(session.dtmf).toBeCalledTimes(0);
         done();
+      });
+    });
+  });
+
+  describe('getStats', async () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(false, '123', null, account, account);
+      session = new MockSession();
+      call.setCallSession(session);
+      call.onAccountReady();
+      session.mockSignal(WEBPHONE_SESSION_STATE.ACCEPTED);
+    }
+
+    it('should get media statics per 2s and print log to console when call enter connected state. [JPT-997]', done => {
+      setup();
+      jest.spyOn(rtcLogger, 'info');
+      jest.spyOn(session.mediaStreams, 'getMediaStats');
+      call._rtcMediaStatsManager.setMediaStatsReport('report');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('connected');
+        expect(session.mediaStreams.getMediaStats.mock.calls[0][1]).toBe(2000);
+        expect(rtcLogger.info).toHaveBeenCalledTimes(1);
+        done();
+      });
+    });
+    describe('should stop get media stats when call leave connected state. [JPT-998]', () => {
+      it('should stop get media stats when call enter disconnected state from connected state', done => {
+        setup();
+        jest.spyOn(session.mediaStreams, 'stopMediaStats');
+        call.hangup();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('disconnected');
+          expect(session.mediaStreams.stopMediaStats).toBeCalled();
+          done();
+        });
+      });
+
+      it('should stop get media stats when enter holded state from connected state.', done => {
+        setup();
+        jest.spyOn(session.mediaStreams, 'stopMediaStats');
+        session.hold.mockResolvedValue(null);
+        call.hold();
+        session.emitSessionReinviteAccepted();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('holded');
+          expect(session.mediaStreams.stopMediaStats).toBeCalled();
+          done();
+        });
       });
     });
   });

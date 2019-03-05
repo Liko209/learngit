@@ -52,23 +52,8 @@ test(formalName(`Turn on/off Post message toggle should/shouldn't be able to pos
   const conversationPage = app.homePage.messageTab.conversationPage;
   const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(teamId);
 
-  await h(t).withLog(`When admin turn Post message toggle on and save`, async () => {
-    await teamEntry.openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
-    await profileDialog.clickSetting();
-    await teamSettingDialog.allowMemberPostMessage();
-    await teamSettingDialog.save();
-  });
-
-  await h(t).withLog(`Then the member should be able to post message in the team`, async () => {
-    await t.useRole(roleMember);
-    await teamEntry.enter();
-    await conversationPage.sendMessage(postText);
-    await t.expect(conversationPage.nthPostItem(-1).text.withText(postText).exists).ok();
-  });
 
   await h(t).withLog(`When admin turn Post message toggle off and save`, async () => {
-    await t.useRole(roleAdmin);
     await app.homePage.ensureLoaded();
     await teamEntry.openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
@@ -84,4 +69,22 @@ test(formalName(`Turn on/off Post message toggle should/shouldn't be able to pos
     await conversationPage.shouldBeReadOnly();
     await t.expect(conversationPage.readOnlyDiv.withText(readOnlyText).exists).ok();
   });
+
+  await h(t).withLog(`When admin turn Post message toggle on and save`, async () => {
+    await t.useRole(roleAdmin);
+    await app.homePage.ensureLoaded();
+    await teamEntry.openMoreMenu();
+    await app.homePage.messageTab.moreMenu.profile.enter();
+    await profileDialog.clickSetting();
+    await teamSettingDialog.allowMemberPostMessage();
+    await teamSettingDialog.save();
+  });
+
+  await h(t).withLog(`Then the member should be able to post message in the team`, async () => {
+    await t.useRole(roleMember);
+    await teamEntry.enter();
+    await conversationPage.sendMessage(postText);
+    await t.expect(conversationPage.nthPostItem(-1).text.withText(postText).exists).ok();
+  });
+
 });

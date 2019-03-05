@@ -82,11 +82,14 @@ class PostFetchController {
           result.posts,
         );
         const serverResult = await this.getRemotePostsByGroupId({
-          direction,
           groupId,
           limit,
           shouldSaveToDb,
           postId: validAnchorPostId ? validAnchorPostId : postId,
+          direction:
+            shouldSaveToDb && direction === QUERY_DIRECTION.BOTH
+              ? QUERY_DIRECTION.OLDER
+              : direction,
         });
         if (serverResult) {
           result.posts = this._handleDuplicatePosts(
@@ -197,6 +200,15 @@ class PostFetchController {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
+    const result: IPostResult = {
+      limit,
+      posts: [],
+      items: [],
+      hasMore: true,
+    };
+    if (!postId && direction === QUERY_DIRECTION.NEWER) {
+      return result;
+    }
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
@@ -206,12 +218,10 @@ class PostFetchController {
     );
 
     const itemService: ItemService = ItemService.getInstance();
-    const result: IPostResult = {
-      limit,
-      posts,
-      hasMore: true,
-      items: posts.length === 0 ? [] : await itemService.getByPosts(posts),
-    };
+    result.limit = limit;
+    result.posts = posts;
+    result.items =
+      posts.length === 0 ? [] : await itemService.getByPosts(posts);
     return result;
   }
 

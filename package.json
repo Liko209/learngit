@@ -1,6 +1,6 @@
 {
   "name": "fiji",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "private": true,
   "engines": {
     "node": ">=10.0.0",
@@ -36,6 +36,7 @@
     "raise-coverage": "node scripts/raise-coverage",
     "generate": "plop --plopfile scripts/generators/index.js",
     "tsc": "concurrently \"tsc -p application/tsconfig.dev.json\" \"tsc -p packages/sdk/tsconfig.dev.json\" \"tsc -p packages/jui/tsconfig.dev.json\" \"tsc -p packages/voip/tsconfig.dev.json\" \"tsc -p packages/foundation/tsconfig.dev.json\"",
+    "version": "npx lerna version --no-git-tag-version --exact --yes",
     "webpack": "cd application && npm run webpack",
     "terser": "3.14.1",
     "fixed:version": "ts-node fixedVersion.ts"
@@ -46,7 +47,8 @@
     "@types/jest": "23.3.8",
     "@types/node": "10.12.1",
     "@types/react-transition-group": "2.0.15",
-    "@types/react": "16.8.3",
+    "@types/react": "16.8.5",
+    "@types/react-dom": "16.8.2",
     "@types/webpack-env": "1.13.6",
     "async": "2.6.1",
     "chalk": "2.4.1",
@@ -65,8 +67,8 @@
     "mkdirp": "0.5.1",
     "plop": "2.1.0",
     "raf": "3.4.0",
-    "react": "16.7.0",
-    "react-dom": "16.7.0",
+    "react": "16.8.3",
+    "react-dom": "16.8.3",
     "resize-observer-polyfill": "1.5.1",
     "resolve": "1.8.1",
     "rimraf": "2.6.2",

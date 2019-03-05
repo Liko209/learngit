@@ -32,7 +32,7 @@ module.exports = [
   //   handler: "staleWhileRevalidate"
   // }
   {
-    urlPattern: new RegExp("https://i.icomoon.io/public/6483cc0f53/Jupiter/*"),
+    urlPattern: new RegExp("https://s3.amazonaws.com/icomoon.io/*"),
     handler: "staleWhileRevalidate",
     options: {
       cacheableResponse: {

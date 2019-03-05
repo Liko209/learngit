@@ -94,6 +94,7 @@ interface IRequest {
   timeout: number;
   requestConfig: object;
   readonly authFree: boolean;
+  ignoreLocalRetryAfter?: boolean;
 
   callback?: (response: IResponse) => void;
   needAuth(): boolean;
@@ -121,6 +122,7 @@ enum HTTP_STATUS_CODE {
   DEFAULT = 0,
   UNAUTHORIZED = 401,
   FORBIDDEN = 403,
+  TOO_MANY_REQUESTS = 429,
   BAD_GATEWAY = 502,
   SERVICE_UNAVAILABLE = 503,
   GATEWAY_TIME_OUT = 504,
