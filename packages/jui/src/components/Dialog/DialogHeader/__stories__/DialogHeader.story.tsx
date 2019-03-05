@@ -107,6 +107,7 @@ storiesOf('Components/Dialog/DialogHeader', module)
           margin: '10px auto',
         }}
       >
+        <h4>One line: </h4>
         <JuiDialogHeader>
           <JuiDialogHeaderMeta>
             <JuiDialogHeaderMetaLeft>
@@ -149,6 +150,7 @@ storiesOf('Components/Dialog/DialogHeader', module)
         </JuiDialogHeader>
         <br />
         <br />
+        <h4>Break line: </h4>
         <JuiDialogHeader>
           <JuiDialogHeaderMeta>
             <JuiDialogHeaderMetaLeft>
