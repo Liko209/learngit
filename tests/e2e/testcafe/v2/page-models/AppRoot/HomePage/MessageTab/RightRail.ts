@@ -305,6 +305,10 @@ class PinnedTab extends BaseTab {
   itemByPostId(postId: string) {
     return this.getComponent(PinnedItem, this.items.filter(`[data-postid="${postId}"]`));
   }
+
+  async shouldContainPostItem(postId: string) {
+    await this.t.expect(this.items.withAttribute('data-postid', postId).exists).ok();
+  }
 }
 
 class PinnedItem extends BaseWebComponent {

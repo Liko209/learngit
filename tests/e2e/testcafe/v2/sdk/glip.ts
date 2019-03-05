@@ -616,12 +616,11 @@ export class GlipSdk {
     });
   }
 
-  async createSimpleNote(groupIds: string[] | string, title: string, body: string, options?: object) {
-    if (typeof groupIds == "string") { groupIds = [groupIds] };
+  async createSimpleNote(groupIds: string[] | string, title: string, options?: object) {
+    const group_ids = [].concat(groupIds);
     const data = _.assign({
       title,
-      body,
-      group_ids: groupIds
+      group_ids
     },
       options
     )
