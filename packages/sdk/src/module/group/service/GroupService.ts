@@ -93,7 +93,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   isValid(group: Group): boolean {
-    return !group.is_archived && !group.deactivated && !!group.members;
+    return group && !group.is_archived && !group.deactivated && !!group.members;
   }
 
   isInTeam(userId: number, team: Group) {
