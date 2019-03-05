@@ -9,4 +9,4 @@ interface ITelephonyAccountDelegate {
   onAccountStateChanged(state: RTC_ACCOUNT_STATE): void;
 }
 
-export { ITelephonyAccountDelegate };
+export { ITelephonyAccountDelegate, RTC_ACCOUNT_STATE };
