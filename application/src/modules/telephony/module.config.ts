@@ -5,10 +5,11 @@
  */
 import { TelephonyModule } from './TelephonyModule';
 import { TelephonyService } from './service';
+import { TelephonyStore } from './store';
 
 const config = {
   entry: TelephonyModule,
-  provides: { TelephonyService },
+  provides: { TelephonyService, TelephonyStore },
 };
 
 export { config };

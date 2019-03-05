@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './container';
 export * from './TelephonyModule';
+export * from './store';
 export * from './module.config';
+export * from './container';

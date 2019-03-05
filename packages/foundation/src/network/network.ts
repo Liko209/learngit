@@ -94,6 +94,7 @@ interface IRequest {
   timeout: number;
   requestConfig: object;
   readonly authFree: boolean;
+  ignoreLocalRetryAfter?: boolean;
 
   callback?: (response: IResponse) => void;
   needAuth(): boolean;
