@@ -67,6 +67,7 @@ class GroupItemComponent extends React.Component<
         data-test-automation-id="joinButton"
         variant="round"
         size="small"
+        onClick={this.handleJoinTeam}
       >
         {t('people.team.joinButtonTitle')}
       </JuiButton>
