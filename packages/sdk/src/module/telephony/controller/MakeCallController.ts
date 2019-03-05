@@ -111,13 +111,13 @@ class MakeCallController {
           phoneNumber,
           ContactType.GLIP_CONTACT,
         );
-        if (result && result.length > 0) {
+        if (result) {
           break;
         }
         if (this._isLoggedInRcOnlyMode()) {
           break;
         }
-        errorCode = MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUBMER;
+        errorCode = MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER;
       } while (0);
     }
     return errorCode;

@@ -8,9 +8,11 @@ import { MakeCallController } from '../MakeCallController';
 import { GlobalConfigService } from '../../../../module/config';
 import { MAKE_CALL_ERROR_CODE, E911_STATUS } from '../../types';
 import { PhoneParserUtility } from '../../../../utils/phoneParser';
+import { PersonService } from '../../../person';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../utils/phoneParser');
+jest.mock('../../../person');
 
 GlobalConfigService.getInstance = jest.fn();
 
@@ -246,5 +248,19 @@ describe('MakeCallController', () => {
     });
     const result = await makeCallController.tryMakeCall('+8618950150021');
     expect(result).toBe(MAKE_CALL_ERROR_CODE.NO_INTERNATIONAL_CALLS_PERMISSION);
+  });
+
+  it('should return error when contact is not matched ', async () => {
+    PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+      isInternationalDialing: jest.fn().mockReturnValue(true),
+      getE164: jest.fn(),
+      isShortNumber: jest.fn().mockReturnValue(true),
+    });
+
+    PersonService.getInstance = jest.fn().mockReturnValue({
+      matchContactByPhoneNumber: jest.fn().mockReturnValue(null),
+    });
+    const result = await makeCallController.tryMakeCall('213');
+    expect(result).toBe(MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER);
   });
 });
