@@ -74,14 +74,14 @@ class ItemListViewModel extends StoreViewModel<Props> {
   }
 
   @action
-  setType(type: RIGHT_RAIL_ITEM_TYPE) {
+  setType = (type: RIGHT_RAIL_ITEM_TYPE) => {
     this.type = type;
     const { sortKey, desc } = this.getSort();
     this._buildSortableMemberListHandler(this.groupId, type, sortKey, desc);
   }
 
   @action
-  private async _loadTotalCount() {
+  private _loadTotalCount = async () => {
     const itemService: ItemService = ItemService.getInstance();
     this._total = await itemService.getGroupItemsCount(
       this.groupId,
@@ -103,12 +103,12 @@ class ItemListViewModel extends StoreViewModel<Props> {
   }
 
   @action
-  private _buildSortableMemberListHandler(
+  private _buildSortableMemberListHandler = async (
     groupId: number,
     type: number,
     sortKey: ITEM_SORT_KEYS,
     desc: boolean,
-  ) {
+  ) => {
     const typeId = this._getTypeId(type);
 
     const isMatchFunc = (model: Item) => {
@@ -222,11 +222,11 @@ class ItemListViewModel extends StoreViewModel<Props> {
     return this._total;
   }
 
-  hasMore() {
+  hasMore = () => {
     return this._sortableDataHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
-  isLoadingContent() {
+  isLoadingContent = () => {
     return this._loadingContent;
   }
 
@@ -237,9 +237,9 @@ class ItemListViewModel extends StoreViewModel<Props> {
     return false;
   }
 
-  isLoading() {
+  isLoading = () => {
     return (
-      this.isLoadingContent ||
+      this.isLoadingContent() ||
       this.isLoadingMore('up') ||
       this.isLoadingMore('down')
     );
