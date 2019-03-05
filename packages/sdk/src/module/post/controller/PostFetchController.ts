@@ -255,8 +255,8 @@ class PostFetchController {
     if (posts && posts.length) {
       const validAnchorPost =
         direction === QUERY_DIRECTION.OLDER
-          ? _.findLast(posts, (p: Post) => p.id > 0)
-          : _.find(posts, (p: Post) => p.id > 0);
+          ? _.find(posts, (p: Post) => p.id > 0)
+          : _.findLast(posts, (p: Post) => p.id > 0);
       return validAnchorPost ? validAnchorPost.id : 0;
     }
     return 0;
