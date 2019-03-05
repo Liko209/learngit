@@ -94,7 +94,7 @@ storiesOf('Components/Dialog/DialogHeader', module)
     );
   })
   .add('Title with avatar and information', () => {
-    const title = text('title', 'Bulldog friendship.jpeg');
+    const title = text('title', 'Bulldog friendship.jpegdddddddddddddddddddd');
     const point = text('point', '(1 / 20)');
     const width = number('width', 640);
     const name = text('user name', 'Jessica Lewis');

@@ -14,6 +14,7 @@ import {
   ellipsis,
   palette,
 } from '../../../foundation/utils/styles';
+import ReactResizeDetector from 'react-resize-detector';
 
 type JuiDialogHeaderTitleProps = MuiDialogTitleProps & {
   variant?: 'regular' | 'responsive';
@@ -27,12 +28,9 @@ class WrappedDialogTitle extends React.PureComponent<
     overflow: false,
   };
 
-  rootRef: React.RefObject<HTMLElement> = React.createRef();
+  containerWidth: number = 0;
 
-  componentDidMount() {
-    this.checkWidth();
-    window.addEventListener('resize', this.checkWidth.bind(this));
-  }
+  rootRef: React.RefObject<HTMLElement> = React.createRef();
 
   componentDidUpdate(prevProps: JuiDialogHeaderTitleProps) {
     if (prevProps.children !== this.props.children) {
@@ -40,33 +38,27 @@ class WrappedDialogTitle extends React.PureComponent<
     }
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.checkWidth.bind(this));
-  }
-
   checkWidth() {
     if (this.rootRef.current) {
       const h2 = this.rootRef.current.querySelector('h2');
       if (h2) {
-        const width = Array.from(h2.children).reduce(
+        const childrenWidth = Array.from(h2.children).reduce(
           (a, b) => a + b.getBoundingClientRect().width,
           0,
         );
-        const overflow = width > h2.getBoundingClientRect().width;
+        const overflow = childrenWidth > this.containerWidth;
         this.setState({
           overflow,
         });
         if (overflow) {
           Array.from(h2.children).forEach((child: HTMLElement) => {
             child.style.alignSelf =
-              child.getBoundingClientRect().width >
-              h2.getBoundingClientRect().width
+              child.getBoundingClientRect().width > this.containerWidth
                 ? 'normal'
                 : 'center';
             if (
               child.style.alignSelf === 'center' &&
-              child.getBoundingClientRect().width >
-                h2.getBoundingClientRect().width
+              child.getBoundingClientRect().width > this.containerWidth
             ) {
               child.style.alignSelf = 'normal';
             }
@@ -76,14 +68,25 @@ class WrappedDialogTitle extends React.PureComponent<
     }
   }
 
+  onContainerResize = (width: number) => {
+    this.containerWidth = width;
+    this.checkWidth();
+  }
+
   render() {
-    const { variant, className, ...rest } = this.props;
+    const { variant, className, children, ...rest } = this.props;
     const classNames = this.state.overflow
       ? `${className} vertical`
       : className;
     return (
       <RootRef rootRef={this.rootRef}>
-        <MuiDialogTitle {...rest} className={classNames} />
+        <MuiDialogTitle {...rest} className={classNames}>
+          {children}
+          <ReactResizeDetector
+            handleWidth={true}
+            onResize={this.onContainerResize}
+          />
+        </MuiDialogTitle>
       </RootRef>
     );
   }
