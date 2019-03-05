@@ -31,50 +31,54 @@ const JuiDataLoader = ({
   const [loadingUp, setLoadingUp] = useState(false);
   const [loadingDown, setLoadingDown] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(false);
+  const loading = loadingUp || loadingDown || loadingInitial;
+
+  const map = {
+    up: {
+      setLoading: setLoadingUp,
+      load: () => loadMore('up'),
+    },
+    down: {
+      setLoading: setLoadingDown,
+      load: () => loadMore('down'),
+    },
+    initial: {
+      setLoading: setLoadingInitial,
+      load: () => loadInitialData(),
+    },
+  };
 
   useEffect(() => {
-    _loadInitialData();
+    loadData('initial');
   },        []);
 
-  const _loadInitialData = async () => {
-    setLoadingInitial(true);
-    await loadInitialData();
-    setLoadingInitial(false);
-  };
-
-  const _loadMoreUp = async () => {
-    setLoadingUp(true);
-    await loadMore('up');
-    setLoadingUp(false);
-  };
-
-  const _loadMoreDown = async () => {
-    setLoadingDown(true);
-    await loadMore('down');
-    setLoadingDown(false);
+  const loadData = async (type: 'initial' | 'up' | 'down') => {
+    const { setLoading, load } = map[type];
+    setLoading(true);
+    await load();
+    setLoading(false);
   };
 
   const handleScroll = ({ currentTarget }: React.UIEvent) => {
+    if (loading) {
+      return;
+    }
+
     const { scrollTop, scrollHeight, clientHeight } = currentTarget;
     const atTop = 0 === scrollTop;
     const atBottom = scrollHeight === scrollTop + clientHeight;
     const direction = scrollTop - prevScrollTopRef.current > 0 ? 'down' : 'up';
-
-    if (loadingUp) {
-      return;
-    }
+    prevScrollTopRef.current = currentTarget.scrollTop;
 
     if (atTop && direction === 'up') {
       if (hasMore('up')) {
-        _loadMoreUp();
+        loadData('up');
       }
     } else if (atBottom && direction === 'down') {
       if (hasMore('down')) {
-        _loadMoreDown();
+        loadData('down');
       }
     }
-
-    prevScrollTopRef.current = currentTarget.scrollTop;
   };
 
   return children({
