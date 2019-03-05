@@ -49,7 +49,7 @@ const Wrapper = styled.div`
 `;
 
 const Icon = withDelay(() => (
-  <JuiIconography fontSize="large">image_preview</JuiIconography>
+  <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>
 ));
 
 const JuiDelayPlaceholder = (props: SizeType) => (
