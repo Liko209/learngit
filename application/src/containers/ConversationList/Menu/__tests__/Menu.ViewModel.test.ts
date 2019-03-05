@@ -6,10 +6,19 @@
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
 import { service } from 'sdk';
+import storeManager from '@/store/base/StoreManager';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { StateService } from 'sdk/module/state';
+// import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 
 jest.mock('sdk/service');
 jest.mock('@/store/utils');
 jest.mock('sdk/api');
+
+const stateService = {
+  updateReadStatus: jest.fn(),
+};
+StateService.getInstance = jest.fn().mockReturnValue(stateService);
 
 describe('MenuViewModel', () => {
   describe('shouldSkipCloseConfirmation()', () => {
@@ -86,6 +95,73 @@ describe('MenuViewModel', () => {
       const model = new MenuViewModel();
       groupState.isFavorite = false;
       expect(model.favoriteText).toBe('people.team.favorite');
+    });
+  });
+
+  describe('isUnread', () => {
+    let groupState: any;
+    beforeEach(() => {
+      groupState = {
+        unreadCount: 0,
+      };
+      jest.clearAllMocks();
+      jest.spyOn(utils, 'getEntity').mockImplementation(() => groupState);
+    });
+    it('should be true when conversation has unread post [JPT-1270]', () => {
+      const model = new MenuViewModel();
+      groupState.unreadCount = 10;
+      expect(model.isUnread).toBe(true);
+    });
+    it('should be false when conversation has not unread post [JPT-1271]', () => {
+      const model = new MenuViewModel();
+      groupState.unreadCount = 0;
+      expect(model.isUnread).toBe(false);
+    });
+  });
+
+  describe('disabledReadOrUnread', () => {
+    let group: any;
+    beforeEach(() => {
+      group = {
+        mostRecentPostId: undefined,
+      };
+      jest.clearAllMocks();
+      jest.spyOn(utils, 'getEntity').mockImplementation(() => group);
+    });
+    it('should be true when conversation not post or network is offline [JPT-1269]', () => {
+      const model = new MenuViewModel();
+      group.mostRecentPostId = undefined;
+      storeManager.getGlobalStore().set(GLOBAL_KEYS.NETWORK, 'offline');
+      expect(model.disabledReadOrUnread).toBe(true);
+    });
+    it('should be false when conversation has post and network is online [JPT-1269]', () => {
+      const model = new MenuViewModel();
+      group.mostRecentPostId = 1;
+      storeManager.getGlobalStore().set(GLOBAL_KEYS.NETWORK, 'online');
+      expect(model.disabledReadOrUnread).toBe(false);
+    });
+  });
+
+  describe('toggleRead()', () => {
+    let group: any;
+    beforeEach(() => {
+      group = {
+        unreadCount: undefined,
+      };
+      jest.clearAllMocks();
+      jest.spyOn(utils, 'getEntity').mockImplementation(() => group);
+    });
+    it('should be call service interface is one time when invoke vm toggleRead method [JPT-1282]', async () => {
+      const model = new MenuViewModel({
+        groupId: 1,
+        personId: 2,
+        anchorEl: null,
+        onClose: () => {},
+      });
+      storeManager.getGlobalStore().set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, 1);
+      await model.toggleRead();
+      expect(utils.getGlobalValue(GLOBAL_KEYS.SHOULD_SHOW_UMI)).toBe(true);
+      expect(stateService.updateReadStatus).toHaveBeenCalledTimes(1);
     });
   });
 });
