@@ -60,7 +60,7 @@ interface IPersonService {
   matchContactByPhoneNumber(
     e164PhoneNumber: string,
     contactType: ContactType,
-  ): Promise<SortableModel<Person>[] | null>;
+  ): Promise<Person | null>;
 }
 
 export { IPersonService };
