@@ -294,5 +294,20 @@ describe('MoreVM', () => {
 
       expect(ViewModel.showMoreAction).toBe(true);
     });
+
+    it('should not show quote & delete & edit action buttons [JPT-440, JPT-475, JPT-482, JPT-472]', () => {
+      (getEntity as jest.Mock).mockImplementation((type: string) => {
+        if (type === ENTITY_NAME.POST) {
+          return {
+            text: 'test',
+            itemTypeIds: { [TypeDictionary.TYPE_ID_TASK]: [1] },
+          };
+        }
+        return null;
+      });
+      ViewModel = new MoreViewModel({ id: 1 });
+
+      expect(ViewModel.showMoreAction).toBe(false);
+    });
   });
 });
