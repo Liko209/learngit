@@ -6,14 +6,33 @@
 import React, { useState, useLayoutEffect, useRef } from 'react';
 import { storiesOf } from '@storybook/react';
 import { number } from '@storybook/addon-knobs';
+import { spacing } from '../../../foundation/utils';
+import styled from '../../../foundation/styled-components';
+import { JuiCircularProgress } from '../../Progress';
 import {
   JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from '../VirtualizedList';
-import { JuiDataLoader } from '../DataLoader';
 import { itemFactory, ItemModel } from './itemFactory';
+import { JuiInfiniteList } from '../InfiniteList';
+
+const StyledLoadingMore = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: ${spacing(15, 0)};
+`;
+
+const LoadingMore = () => (
+  <StyledLoadingMore>
+    <JuiCircularProgress />
+  </StyledLoadingMore>
+);
 
 const Item = ({ item }: { item: ItemModel }) => {
+  console.log('Item', item.id);
+
   const [crazyHeight, setCrazyHeight] = useState(10);
   useLayoutEffect(() => {
     if (item.crazy) {
@@ -55,7 +74,7 @@ const Item = ({ item }: { item: ItemModel }) => {
   }
 
   return (
-    <div style={{ padding: '10px 0', height: 20, borderBottom: '1px dashed' }}>
+    <div style={{ padding: '10px 0', height: 19, borderBottom: '1px dashed' }}>
       {item.text}
     </div>
   );
@@ -106,6 +125,9 @@ const useDemoHelper = (dataCount: number) => {
 
   return {
     items,
+    prependItem,
+    appendItem,
+    removeItem,
     handlePrependClick,
     handleAppendClick,
     handleAddCrazyClick,
@@ -169,40 +191,65 @@ storiesOf('Components/VirtualizedList', module)
     };
     return <Demo />;
   })
-  .add('DataLoader', () => {
-    const dataCount = number('dataCount', 100);
+  .add('InfiniteList', () => {
+    const initialDataCount = number('initialDataCount', 10);
+    const initialLoadTime = number('initialLoadTime', 0);
+    const moreLoadTime = number('moreLoadTime', 500);
+    const totalDataCount = number('totalDataCount', 100);
 
     const DataLoaderDemo = () => {
-      const { items } = useDemoHelper(dataCount);
-
-      console.log('items: ', items);
+      const { items, prependItem, appendItem } = useDemoHelper(0);
       const children = items.map(item => <Item key={item.id} item={item} />);
 
+      const startId = 10000;
+      const pageSize = 10;
+
+      const hasMore = (direction: 'up' | 'down') =>
+        totalDataCount > items.length;
+
+      const sleep = function (time: number) {
+        return new Promise((resolve: Function) => {
+          setTimeout(() => {
+            resolve();
+          },         time);
+        });
+      };
+
+      const loadInitialData = async () => {
+        await sleep(initialLoadTime);
+        prependItem(
+          ...itemFactory.buildItems(
+            startId,
+            Math.min(initialDataCount, totalDataCount),
+          ),
+        );
+      };
+
+      const loadMore = async (direction: 'up' | 'down') => {
+        await sleep(moreLoadTime);
+        if (direction === 'up') {
+          prependItem(
+            ...itemFactory.buildItems(items[0].id - pageSize, pageSize),
+          );
+        } else {
+          appendItem(
+            ...itemFactory.buildItems(items[items.length - 1].id + 1, pageSize),
+          );
+        }
+      };
+
       return (
-        <JuiDataLoader
-          hasMore={() => true}
-          loadInitialData={async () => {
-            console.log('loadInitialData');
-          }}
-          loadMore={() => {
-            return new Promise((resolve: Function) => {
-              setTimeout(() => {
-                resolve();
-              },         3000);
-            });
-          }}
+        <JuiInfiniteList
+          hasMore={hasMore}
+          height={400}
+          loadInitialData={loadInitialData}
+          loadMore={loadMore}
+          loadingMoreRenderer={<LoadingMore />}
+          loadingRenderer={<div>loading initial</div>}
+          noRowsRenderer={<div>Empty</div>}
         >
-          {({ ref, onScroll, loadingUp }) => (
-            <JuiVirtualizedList
-              ref={ref}
-              onScroll={onScroll}
-              height={200}
-              before={loadingUp ? <div>loading</div> : null}
-            >
-              {children}
-            </JuiVirtualizedList>
-          )}
-        </JuiDataLoader>
+          {children}
+        </JuiInfiniteList>
       );
     };
     return <DataLoaderDemo />;

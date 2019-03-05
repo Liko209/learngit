@@ -36,9 +36,6 @@ const itemFactory = {
 
   buildItems(startId: number, count: number) {
     const items: ItemModel[] = [];
-
-    console.log('startId: ', startId);
-    console.log('count: ', count);
     for (let i = startId; i < startId + count; i++) {
       items.push(itemFactory.buildImageItem(i, true));
     }
