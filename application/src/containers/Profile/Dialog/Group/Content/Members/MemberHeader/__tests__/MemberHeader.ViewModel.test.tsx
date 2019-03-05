@@ -43,24 +43,24 @@ describe('MemberHeaderViewModel', () => {
 
   describe('hasShadow', () => {
     it('should be get true when invoke class instance property hasShadow', () => {
-      getGlobalValue = jest.fn().mockReturnValue(true);
+      (getGlobalValue as jest.Mock).mockReturnValue(true);
       expect(vm.hasShadow).toEqual(true);
     });
 
     it('should be get false when invoke class instance property hasShadow', () => {
-      getGlobalValue = jest.fn().mockReturnValue(false);
+      (getGlobalValue as jest.Mock).mockReturnValue(false);
       expect(vm.hasShadow).toEqual(false);
     });
   });
 
   describe('isCurrentUserHasPermissionAddMember', () => {
     it('should be get true when invoke group entity property isCurrentUserHasPermissionAddMember', () => {
-      vm.group.isCurrentUserHasPermissionAddMember = true;
+      mockGroup.isCurrentUserHasPermissionAddMember = true;
       expect(vm.isCurrentUserHasPermissionAddMember).toEqual(true);
     });
 
     it('should be get false when invoke group entity property isCurrentUserHasPermissionAddMember', () => {
-      vm.group.isCurrentUserHasPermissionAddMember = false;
+      mockGroup.isCurrentUserHasPermissionAddMember = false;
       expect(vm.isCurrentUserHasPermissionAddMember).toEqual(false);
     });
   });

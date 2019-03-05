@@ -53,20 +53,25 @@ describe('MemberListViewModel', () => {
   });
 
   describe('sortedAllMemberIds', () => {
-    it('should be get sorted member ids when invoke service order', async () => {
+    it('should be get sorted member ids when invoke service order [JPT-1263]', async () => {
       await vm.createSortableHandler();
       expect(vm.sortedAllMemberIds).toEqual(mockMembers);
     });
   });
 
   describe('doFuzzySearchPersons()', () => {
-    it('should be invoke one count when use debounce', () => {
-      vm.doFuzzySearchPersons = jest.fn();
-      const _debounce = debounce(vm.doFuzzySearchPersons, 300);
+    it('should be invoke one count when use debounce [JPT-1263]', () => {
+      vm.handleSearch = jest.fn();
+      const _debounce = debounce(vm.handleSearch, 300);
       _debounce('a');
       _debounce('ab');
       jest.runAllTimers();
-      expect(vm.doFuzzySearchPersons).toHaveBeenCalledTimes(1);
+      expect(vm.handleSearch).toHaveBeenCalledTimes(1);
+    });
+
+    it('should be get mock result when invoke service fuzzy search interface [JPT-1263]', async () => {
+      const result = await vm.handleSearch('ab');
+      expect(result).toEqual(mockResult);
     });
   });
 });

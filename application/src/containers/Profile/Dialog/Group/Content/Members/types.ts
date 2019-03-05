@@ -14,7 +14,7 @@ type MembersProps = ProfileDialogGroupProps;
 type MembersViewProps = ProfileDialogGroupViewProps & {
   sortedAllMemberIds: number[];
   filteredMemberIds: number[];
-  doFuzzySearchPersons: (keywords: string) => void;
+  handleSearchDebounce: (keywords: string) => void;
 };
 
 export { MembersProps, MembersViewProps };

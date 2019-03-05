@@ -14,8 +14,8 @@ import { JuiProfileDialogContentMembers } from 'jui/pattern/Profile/Dialog';
 @observer
 class MembersView extends Component<MembersViewProps> {
   handleSearch = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { doFuzzySearchPersons } = this.props;
-    await doFuzzySearchPersons(event.target.value);
+    const { handleSearchDebounce } = this.props;
+    await handleSearchDebounce(event.target.value);
   }
 
   render() {

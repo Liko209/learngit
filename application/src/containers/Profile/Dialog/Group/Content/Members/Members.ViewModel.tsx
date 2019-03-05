@@ -21,11 +21,12 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   private _personService = PersonService.getInstance<PersonService>();
   @observable
   filteredMemberIds: number[] = [];
+  handleSearchDebounce: () => void;
 
   constructor(props: MembersProps) {
     super(props);
-    this.doFuzzySearchPersons = debounce(
-      this.doFuzzySearchPersons.bind(this),
+    this.handleSearchDebounce = debounce(
+      this.handleSearch.bind(this),
       DELAY_DEBOUNCE,
     );
     this.reaction(() => this.id, this.createSortableHandler, {
@@ -54,7 +55,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   }
 
   @action
-  doFuzzySearchPersons = async (keywords: string) => {
+  handleSearch = async (keywords: string) => {
     const result = await this._personService.doFuzzySearchPersons(
       keywords,
       false,
