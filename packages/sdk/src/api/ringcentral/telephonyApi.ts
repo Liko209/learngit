@@ -13,7 +13,7 @@ import {
   IDialingPlanResponse,
   IPhoneNumberRequest,
   IPhoneNumberResponse,
-} from './types';
+} from './types/common';
 
 class TelephonyApi extends Api {
   static getSpecialNumbers(request?: ISpecialServiceRequest) {
@@ -39,7 +39,7 @@ class TelephonyApi extends Api {
       via: NETWORK_VIA.HTTP,
       headers: extraHeaders,
     };
-    return Api.rcNetworkClient.http(query);
+    return Api.rcNetworkClient.http<string>(query);
   }
 
   static getAccountDialingPlan(request?: IDialingPlanRequest) {
