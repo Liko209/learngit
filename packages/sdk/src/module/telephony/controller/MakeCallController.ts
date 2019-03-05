@@ -10,7 +10,10 @@ import {
   MAKE_CALL_ERROR_CODE,
   E911_STATUS,
 } from '../types';
-import { ISpecialServiceNumberResponse } from '../../../api/ringcentral/types';
+import { ISpecialServiceNumberResponse } from '../../../api/ringcentral/types/common';
+import { PhoneParserUtility } from '../../../utils/phoneParser';
+import { PersonService } from '../../person';
+import { ContactType } from '../../person/types';
 
 enum RCN11Reason {
   N11_101 = 'N11-101',
@@ -19,6 +22,7 @@ enum RCN11Reason {
 
 class MakeCallController {
   private _rcInfo: RcInfoUserConfig;
+
   constructor() {
     this._rcInfo = new RcInfoUserConfig();
   }
@@ -30,7 +34,6 @@ class MakeCallController {
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
-  // private _getE164() {}
   private _isRcFeaturePermissionEnabled(permission: FEATURE_PERMISSIONS) {
     const extInfo: RcExtensionInfo = this._rcInfo.getExtensionInfo();
     if (extInfo) {
@@ -62,7 +65,7 @@ class MakeCallController {
     }
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
-  // private _checkBetaFlag() {}
+
   private _checkVoipN11Number(phoneNumber: string) {
     let errorCode = MAKE_CALL_ERROR_CODE.NO_ERROR;
     const specialNumber: ISpecialServiceNumberResponse = this._rcInfo.getSpecialNumberRule();
@@ -89,25 +92,26 @@ class MakeCallController {
     return errorCode;
   }
 
-  private _isShortNumber() {
-    return false;
-  }
-
-  private _matchContactByPhoneNumber() {
-    return true;
-  }
-
   private _isLoggedInRcOnlyMode() {
     // It's not implemented right now
+    // TODO FIJI-3967
     return false;
   }
 
-  private _checkNormalPhoneNumber() {
-    // isShortNumber need to match contact
+  private async _checkNormalPhoneNumber(phoneNumber: string) {
     let errorCode = MAKE_CALL_ERROR_CODE.NO_ERROR;
-    if (this._isShortNumber()) {
+    const phoneParserUtility = PhoneParserUtility.getPhoneParser(
+      phoneNumber,
+      true,
+    );
+    if (phoneParserUtility && phoneParserUtility.isShortNumber()) {
       do {
-        if (this._matchContactByPhoneNumber()) {
+        const personService: PersonService = PersonService.getInstance();
+        const result = await personService.matchContactByPhoneNumber(
+          phoneNumber,
+          ContactType.GLIP_CONTACT,
+        );
+        if (result && result.length > 0) {
           break;
         }
         if (this._isLoggedInRcOnlyMode()) {
@@ -119,14 +123,13 @@ class MakeCallController {
     return errorCode;
   }
 
-  private _isInternationalDialing() {
-    return true;
-  }
+  private _checkInternationalCallsPermission(phoneNumber: string) {
+    const phoneParserUtility = PhoneParserUtility.getPhoneParser(
+      phoneNumber,
+      true,
+    );
 
-  private _checkInternationalCallsPermission() {
-    // phone parser isInternationalDialing
-    // isRcFeaturePermissionEnabled(ERcServiceFeaturePermission::INTERNATIONAL_CALLING))
-    if (this._isInternationalDialing()) {
+    if (phoneParserUtility && phoneParserUtility.isInternationalDialing()) {
       if (
         !this._isRcFeaturePermissionEnabled(
           FEATURE_PERMISSIONS.INTERNATIONAL_CALLING,
@@ -141,13 +144,22 @@ class MakeCallController {
   private _checkVoipStatusAndCallSetting() {
     // countryBlock & unavailable this will be provided by Voip team.
     // No Ringout feature
+    // TODO FIJI-3837
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
-  // private _checkTryVoIPCall() {}
+  getE164PhoneNumber(phoneNumber: string) {
+    const phoneParserUtility = PhoneParserUtility.getPhoneParser(
+      phoneNumber,
+      true,
+    );
+    const e164PhoneNumber = phoneParserUtility
+      ? phoneParserUtility.getE164()
+      : phoneNumber;
+    return e164PhoneNumber;
+  }
 
-  tryMakeCall(phoneNumber: string): MAKE_CALL_ERROR_CODE {
-    // getE164
+  async tryMakeCall(e164PhoneNumber: string): Promise<MAKE_CALL_ERROR_CODE> {
     let errorCode = MAKE_CALL_ERROR_CODE.NO_ERROR;
     do {
       errorCode = this._checkInternetConnection();
@@ -162,15 +174,15 @@ class MakeCallController {
       if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      errorCode = this._checkVoipN11Number(phoneNumber);
+      errorCode = this._checkVoipN11Number(e164PhoneNumber);
       if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      errorCode = this._checkNormalPhoneNumber();
+      errorCode = await this._checkNormalPhoneNumber(e164PhoneNumber);
       if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      errorCode = this._checkInternationalCallsPermission();
+      errorCode = this._checkInternationalCallsPermission(e164PhoneNumber);
       if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }

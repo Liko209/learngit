@@ -7,8 +7,11 @@
 import { MakeCallController } from '../MakeCallController';
 import { GlobalConfigService } from '../../../../module/config';
 import { MAKE_CALL_ERROR_CODE, E911_STATUS } from '../../types';
+import { PhoneParserUtility } from '../../../../utils/phoneParser';
 
 jest.mock('../../../../module/config');
+jest.mock('../../../../utils/phoneParser');
+
 GlobalConfigService.getInstance = jest.fn();
 
 describe('MakeCallController', () => {
@@ -23,16 +26,15 @@ describe('MakeCallController', () => {
     clearMocks();
     makeCallController = new MakeCallController();
   });
-  it('should return error when there is no internet connection', () => {
+  it('should return error when there is no internet connection', async () => {
     jest
       .spyOn(makeCallController, '_checkInternetConnection')
       .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION);
-    expect(makeCallController.tryMakeCall('123')).toBe(
-      MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION,
-    );
+    const result = await makeCallController.tryMakeCall('123');
+    expect(result).toBe(MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION);
   });
 
-  it('should return error when users have no voip calling permission ', () => {
+  it('should return error when users have no voip calling permission ', async () => {
     const extInfo = {
       serviceFeatures: [{ featureName: 'VoipCalling', enabled: false }],
     };
@@ -50,28 +52,11 @@ describe('MakeCallController', () => {
     Object.assign(makeCallController, {
       _rcInfo: mockRcInfo,
     });
-    const result = makeCallController.tryMakeCall('102');
+    const result = await makeCallController.tryMakeCall('102');
     expect(result).toBe(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
   });
 
-  it('should return error when E911 is declined ', () => {
-    // jest
-    //   .spyOn(makeCallController, '_isRcFeaturePermissionEnabled')
-    //   .mockReturnValue(true);
-    // jest
-    //   .spyOn(makeCallController, '_getRcE911Status')
-    //   .mockReturnValue(E911_STATUS.DISCLINED);
-    // jest
-    //   .spyOn(makeCallController, 'isRcFeaturePermissionEnabled')
-    //   .mockReturnValue(false);
-    // makeCallController.isRcFeaturePermissionEnabled = jest
-    //   .fn()
-    //   .mockReturnValue(false);
-    // const result = makeCallController.tryMakeCall('102');
-    // expect(result).toBe(MAKE_CALL_ERROR_CODE.E911_ACCEPT_REQUIRED);
-  });
-
-  it('should return error when N11 is declined with N11 101', () => {
+  it('should return error when N11 is declined with N11 101', async () => {
     const specialNumberRule = {
       records: [
         {
@@ -123,11 +108,11 @@ describe('MakeCallController', () => {
     Object.assign(makeCallController, {
       _rcInfo: mockRcInfo,
     });
-    const result = makeCallController.tryMakeCall('211');
+    const result = await makeCallController.tryMakeCall('211');
     expect(result).toBe(MAKE_CALL_ERROR_CODE.N11_101);
   });
 
-  it('should return error when N11 is declined with N11 102', () => {
+  it('should return error when N11 is declined with N11 102', async () => {
     const specialNumberRule = {
       records: [
         {
@@ -179,11 +164,11 @@ describe('MakeCallController', () => {
     Object.assign(makeCallController, {
       _rcInfo: mockRcInfo,
     });
-    const result = makeCallController.tryMakeCall('511');
+    const result = await makeCallController.tryMakeCall('511');
     expect(result).toBe(MAKE_CALL_ERROR_CODE.N11_102);
   });
 
-  it('should return error when N11 is declined with N11 102', () => {
+  it('should return error when N11 is declined with N11 102', async () => {
     const specialNumberRule = {
       records: [
         {
@@ -235,13 +220,31 @@ describe('MakeCallController', () => {
     Object.assign(makeCallController, {
       _rcInfo: mockRcInfo,
     });
-    const result = makeCallController.tryMakeCall('511');
+    const result = await makeCallController.tryMakeCall('511');
     expect(result).toBe(MAKE_CALL_ERROR_CODE.N11_OTHERS);
   });
 
-  it('should return error when ', () => {});
-  it('should return error when ', () => {});
-  it('should return error when ', () => {});
-  it('should return error when ', () => {});
-  it('should return error when ', () => {});
+  it('should return error when users try to make an international call without permission ', async () => {
+    const extInfo = {
+      serviceFeatures: [
+        { featureName: 'VoipCalling', enabled: false },
+        { featureName: 'InternationalCalling', enabled: false },
+      ],
+    };
+    const mockRcInfo = {
+      getExtensionInfo: jest.fn().mockReturnValue(extInfo),
+      getSpecialNumberRule: jest.fn(),
+    };
+
+    PhoneParserUtility.getPhoneParser = jest.fn().mockReturnValue({
+      isInternationalDialing: jest.fn().mockReturnValue(true),
+      getE164: jest.fn(),
+      isShortNumber: jest.fn(),
+    });
+    Object.assign(makeCallController, {
+      _rcInfo: mockRcInfo,
+    });
+    const result = await makeCallController.tryMakeCall('+8618950150021');
+    expect(result).toBe(MAKE_CALL_ERROR_CODE.NO_INTERNATIONAL_CALLS_PERMISSION);
+  });
 });
