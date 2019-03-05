@@ -98,7 +98,6 @@ function refreshToken(data: ITokenModel) {
       NETWORK_VIA.HTTP,
     );
 
-    Api.rcNetworkClient.networkManager.handlers;
     const executor = new NetworkRequestExecutor(request, client);
     executor.execute();
   });
