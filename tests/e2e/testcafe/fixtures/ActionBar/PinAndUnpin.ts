@@ -50,6 +50,7 @@ test(formalName('Click Pin option to pin a post', ['JPT-1264', 'P1', 'Pin', 'Pot
 
   await h(t).withLog(`When I enter team: "${team.name}" and hover the post`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryByName(team.name).enter();
+    await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await t.hover(postCard.self);
   });
 
@@ -66,7 +67,8 @@ test(formalName('Click Pin option to pin a post', ['JPT-1264', 'P1', 'Pin', 'Pot
     // TODO: using checking on Ring Shelf instead API method
     await H.retryUntilPass(async () => {
       const pinnedPostIds = await h(t).glip(loginUser).getGroup(team.glipId).then(res => res.data.pinned_post_ids);
-      assert.ok(_.includes(pinnedPostIds, postId), `pin post failure`);
+      console.log(pinnedPostIds)
+      assert.ok(_.includes(pinnedPostIds, Number(postId)), `pin post failure`);
     });
   });
 
@@ -114,6 +116,7 @@ test(formalName('Click Unpin option to unpin a post', ['JPT-1266', 'P1', 'Pin', 
 
   await h(t).withLog(`When I enter team: "${team.name}" and hover the post`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryByName(team.name).enter();
+    await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await t.hover(postCard.self);
   });
 
@@ -130,7 +133,8 @@ test(formalName('Click Unpin option to unpin a post', ['JPT-1266', 'P1', 'Pin', 
     // TODO: using checking on Ring Shelf instead API method
     await H.retryUntilPass(async () => {
       const pinnedPostIds = await h(t).glip(loginUser).getGroup(team.glipId).then(res => res.data.pinned_post_ids);
-      assert.ok(!_.includes(pinnedPostIds, postId), `unpin post failure`);
+      console.log(pinnedPostIds)
+      assert.ok(!_.includes(pinnedPostIds, Number(postId)), `unpin post failure`);
     });
   });
 

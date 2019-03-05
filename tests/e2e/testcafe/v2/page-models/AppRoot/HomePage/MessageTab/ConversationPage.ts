@@ -458,15 +458,15 @@ export class PostItem extends BaseWebComponent {
   }
 
   get pinToggle() {
-    return this.getSelectorByAutomationId('actionBarPin', this.self);
+    return this.self.find('button').withAttribute('data-name', 'actionBarPin');
   }
 
   get pinButtonIcon() {
-    return this.pinToggle.withAttribute('aria-label', 'pin'); // fixme
+    return this.pinToggle.withAttribute('aria-label', 'Pin');
   }
 
   get unpinButtonIcon() {
-    return this.pinToggle.withAttribute('aria-label', 'unpin');  // fixme
+    return this.pinToggle.withAttribute('aria-label', 'Unpin');
   }
 
   async clickPinToggle() {
