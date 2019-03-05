@@ -15,7 +15,7 @@ class RcInfoService extends EntityBaseService {
     super(false);
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SERVICE.LOGIN]: this.requestRcInfo,
+        [SERVICE.FETCH_INDEX_DATA_DONE]: this.requestRcInfo,
       }),
     );
     this.requestRcInfo();
