@@ -42,10 +42,7 @@ class MakeCallController {
         if (feature.featureName !== permission) {
           continue;
         }
-        if (feature.enabled) {
-          return true;
-        }
-        return false;
+        return feature.enabled;
       }
     }
     return false;
@@ -67,7 +64,7 @@ class MakeCallController {
   }
 
   private _checkVoipN11Number(phoneNumber: string) {
-    let errorCode = MAKE_CALL_ERROR_CODE.NO_ERROR;
+    let result = MAKE_CALL_ERROR_CODE.NO_ERROR;
     const specialNumber: ISpecialServiceNumberResponse = this._rcInfo.getSpecialNumberRule();
     if (specialNumber) {
       for (const index in specialNumber.records) {
@@ -79,17 +76,17 @@ class MakeCallController {
           break;
         }
         if (record.features.voip.reason.id === RCN11Reason.N11_101) {
-          errorCode = MAKE_CALL_ERROR_CODE.N11_101;
+          result = MAKE_CALL_ERROR_CODE.N11_101;
           break;
         }
         if (record.features.voip.reason.id === RCN11Reason.N11_102) {
-          errorCode = MAKE_CALL_ERROR_CODE.N11_102;
+          result = MAKE_CALL_ERROR_CODE.N11_102;
           break;
         }
-        errorCode = MAKE_CALL_ERROR_CODE.N11_OTHERS;
+        result = MAKE_CALL_ERROR_CODE.N11_OTHERS;
       }
     }
-    return errorCode;
+    return result;
   }
 
   private _isLoggedInRcOnlyMode() {
@@ -98,8 +95,8 @@ class MakeCallController {
     return false;
   }
 
-  private async _checkNormalPhoneNumber(phoneNumber: string) {
-    let errorCode = MAKE_CALL_ERROR_CODE.NO_ERROR;
+  private async _checkShortPhoneNumber(phoneNumber: string) {
+    let res = MAKE_CALL_ERROR_CODE.NO_ERROR;
     const phoneParserUtility = PhoneParserUtility.getPhoneParser(
       phoneNumber,
       true,
@@ -117,10 +114,10 @@ class MakeCallController {
         if (this._isLoggedInRcOnlyMode()) {
           break;
         }
-        errorCode = MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER;
+        res = MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER;
       } while (0);
     }
-    return errorCode;
+    return res;
   }
 
   private _checkInternationalCallsPermission(phoneNumber: string) {
@@ -160,35 +157,35 @@ class MakeCallController {
   }
 
   async tryMakeCall(e164PhoneNumber: string): Promise<MAKE_CALL_ERROR_CODE> {
-    let errorCode = MAKE_CALL_ERROR_CODE.NO_ERROR;
+    let result = MAKE_CALL_ERROR_CODE.NO_ERROR;
     do {
-      errorCode = this._checkInternetConnection();
-      if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      result = this._checkInternetConnection();
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      errorCode = this._checkE911Status();
-      if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      result = this._checkE911Status();
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      errorCode = this._checkVoipStatusAndCallSetting();
-      if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      result = this._checkVoipStatusAndCallSetting();
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      errorCode = this._checkVoipN11Number(e164PhoneNumber);
-      if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      result = this._checkVoipN11Number(e164PhoneNumber);
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      errorCode = await this._checkNormalPhoneNumber(e164PhoneNumber);
-      if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      result = await this._checkShortPhoneNumber(e164PhoneNumber);
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      errorCode = this._checkInternationalCallsPermission(e164PhoneNumber);
-      if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      result = this._checkInternationalCallsPermission(e164PhoneNumber);
+      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
     } while (false);
 
-    return errorCode;
+    return result;
   }
 }
 
