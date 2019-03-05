@@ -108,10 +108,7 @@ class MakeCallController {
           phoneNumber,
           ContactType.GLIP_CONTACT,
         );
-        if (result) {
-          break;
-        }
-        if (this._isLoggedInRcOnlyMode()) {
+        if (result || this._isLoggedInRcOnlyMode()) {
           break;
         }
         res = MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER;

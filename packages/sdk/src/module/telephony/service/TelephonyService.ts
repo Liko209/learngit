@@ -37,14 +37,14 @@ class TelephonyService extends EntityBaseService {
 
   async makeCall(toNumber: string, callDelegate: ITelephonyCallDelegate) {
     const e164ToNumber = this._makeCallController.getE164PhoneNumber(toNumber);
-    const errorCode = await this._makeCallController.tryMakeCall(e164ToNumber);
-    if (errorCode !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-      return errorCode;
+    const result = await this._makeCallController.tryMakeCall(e164ToNumber);
+    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      return result;
     }
     this.telephonyController
       .getAccountController()
       .makeCall(toNumber, callDelegate);
-    return errorCode;
+    return result;
   }
 
   hangUp(callId: string) {
