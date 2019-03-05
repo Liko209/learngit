@@ -4,8 +4,7 @@ import IFlagCalculator from './FlagCalculator';
 import { strictDiff } from './utils';
 import dataDispatcher from '../DataDispatcher';
 import { SOCKET } from '../../service';
-import { daoManager } from '../../dao';
-import { RcInfoDao, RC_EXTENSION_INFO } from '../../module/rcInfo/dao';
+import { RcInfoUserConfig } from '../../module/rcInfo/config';
 import {
   RcExtensionInfo,
   RcServiceFeature,
@@ -45,8 +44,8 @@ class FeatureFlag {
   }
 
   async getServicePermission() {
-    const rcInfoDao = daoManager.getKVDao(RcInfoDao);
-    let rcExtensionInfo: RcExtensionInfo = rcInfoDao.get(RC_EXTENSION_INFO);
+    const rcInfoUserConfig = new RcInfoUserConfig();
+    let rcExtensionInfo: RcExtensionInfo = rcInfoUserConfig.getExtensionInfo();
     if (!rcExtensionInfo || !rcExtensionInfo.serviceFeatures) {
       rcExtensionInfo = await RcInfoApi.requestRcExtensionInfo();
     }

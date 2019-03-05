@@ -8,8 +8,7 @@ import GroupAPI from '../../../../api/glip/group';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
 import { EVENT_TYPES } from '../../../../service';
-import { UserConfig } from '../../../../service/account';
-import { ENTITY } from '../../../../service/eventKey';
+import { ENTITY, SERVICE } from '../../../../service/eventKey';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PersonService } from '../../../person';
@@ -19,6 +18,12 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
+import { GlobalConfigService } from '../../../../module/config';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+
+jest.mock('../../../../module/config');
+jest.mock('../../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
@@ -66,10 +71,6 @@ jest.mock('../../../../api/glip/group', () => {
     requestGroupById: jest.fn(),
   };
 });
-
-type GenerateFakeGroupOptions = {
-  hasPost: boolean;
-};
 
 function generateFakeGroups(
   count: number,
@@ -123,7 +124,10 @@ beforeEach(() => {
 });
 
 describe('GroupHandleDataController', () => {
-  const groupHandleDataController = new GroupHandleDataController();
+  let groupHandleDataController: GroupHandleDataController;
+  beforeEach(() => {
+    groupHandleDataController = new GroupHandleDataController();
+  });
   describe('handleData()', () => {
     it('passing an empty array', async () => {
       const result = await groupHandleDataController.handleData([]);
@@ -132,7 +136,7 @@ describe('GroupHandleDataController', () => {
 
     it('passing an array', async () => {
       expect.assertions(7);
-      UserConfig.getCurrentUserId.mockReturnValueOnce(1);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
       daoManager.getDao(GroupDao).get.mockReturnValue(1);
       const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
         {
@@ -321,7 +325,6 @@ describe('GroupHandleDataController', () => {
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
     });
-
     it('group has most_recent_post_created_at and greater then post created_at should not update group recent modified time', async () => {
       daoManager
         .getDao(GroupDao)
@@ -341,9 +344,53 @@ describe('GroupHandleDataController', () => {
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
     });
+    it('should emit NEW_POST_TO_GROUP with correct ids always', async () => {
+      const map = new Map();
+      map.set(11, {
+        id: 11,
+        modified_at: 100,
+        created_at: 100,
+        group_id: 21,
+      });
+      map.set(12, {
+        id: 12,
+        modified_at: 200,
+        created_at: 200,
+        group_id: 21,
+      });
+      map.set(13, {
+        id: 13,
+        modified_at: 300,
+        created_at: 300,
+        group_id: 22,
+      });
+      daoManager.getDao = jest.fn().mockReturnValue({
+        doInTransaction: jest.fn().mockImplementation(async (fn: Function) => {
+          await fn();
+        }),
+        get: jest.fn().mockReturnValue(null),
+      });
+      groupHandleDataController.handlePartialData = jest.fn();
+      await groupHandleDataController.handleGroupMostRecentPostChanged({
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: map,
+        },
+      });
+      expect(groupHandleDataController.handlePartialData).toBeCalledTimes(1);
+      expect(groupHandleDataController.handlePartialData).toBeCalledWith([]);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emit).toBeCalledWith(
+        SERVICE.POST_SERVICE.NEW_POST_TO_GROUP,
+        [21, 22],
+      );
+    });
   });
 
   describe('filterGroups()', () => {
+    beforeEach(() => {
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(99);
+    });
     it('should remove extra, when limit < total teams', async () => {
       const LIMIT = 2;
       const TOTAL_GROUPS = 5;
@@ -352,7 +399,7 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
+
       const filteredGroups = await groupHandleDataController.filterGroups(
         groups,
         LIMIT,
@@ -368,7 +415,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       const filteredGroups = await groupHandleDataController.filterGroups(
         teams,
         LIMIT,
@@ -384,7 +430,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       const filteredGroups = await groupHandleDataController.filterGroups(
         teams,
         LIMIT,
@@ -400,7 +445,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
 
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1, is_team: true },
@@ -418,7 +462,6 @@ describe('GroupHandleDataController', () => {
       const TOTAL_GROUPS = 5;
 
       const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1, is_team: true },
       ]);
@@ -438,7 +481,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1 },
       ]);
@@ -458,7 +500,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_mentions_count: 1 },
         { id: 3, unread_mentions_count: 1 },
@@ -479,7 +520,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValue([
         { id: 4, unread_count: 1 },
         { id: 3, unread_count: 1 },
@@ -501,7 +541,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
       const filteredGroups = await groupHandleDataController.filterGroups(
@@ -519,7 +558,6 @@ describe('GroupHandleDataController', () => {
         members: [99, 10],
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
       const filteredGroups = await groupHandleDataController.filterGroups(
@@ -568,7 +606,7 @@ describe('GroupHandleDataController', () => {
         },
       ] as Group[];
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
-      UserConfig.getCurrentUserId.mockReturnValue(2);
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(2);
       const filteredGroups = await groupHandleDataController.filterGroups(
         group,
         2,
@@ -677,7 +715,7 @@ describe('GroupHandleDataController', () => {
 
   describe('getTransformData()', () => {
     it('should return deactivated group when removed_guest_user_ids includes current user', async () => {
-      UserConfig.getCurrentUserId.mockReturnValue(123);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValue(123);
       const groups = generateFakeGroups(3, {
         deactivated: false,
       });

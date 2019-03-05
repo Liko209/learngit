@@ -14,6 +14,7 @@ export const kRTCRegisterRetryTimerMin = 2;
 export const kRTCRegisterRetryTimerMax = 3600;
 export const kRTCAnonymous = 'anonymous';
 export const kRTCHangupInvalidCallInterval = 10;
+export const kRTCGetStatsInterval = 2;
 export const kRTCProvisioningOptions = {
   appKey: 'YCWFuqW8T7-GtSTb6KBS6g',
   appName: 'RingCentral',

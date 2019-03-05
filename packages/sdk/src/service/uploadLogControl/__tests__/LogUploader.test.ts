@@ -1,25 +1,37 @@
 import { LogUploader } from '../LogUploader';
 import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import AccountService, { UserConfig } from '../../account';
+import AccountService from '../../account';
 import { Api } from 'sdk/api';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
+import { AccountGlobalConfig } from '../../account/config';
+
 jest.mock('sdk/api');
 jest.mock('../../account');
 jest.mock('axios');
+jest.mock('../../account/config');
 
+function createError(status: number): AxiosError {
+  return (status
+    ? {
+      response: {
+        status,
+      },
+    }
+    : {}) as AxiosError;
+}
 describe('LogUploader', () => {
   const accountService = new AccountService();
   beforeEach(() => {
     Api.httpConfig = {
       sumologic: {
-        server: 'url',
+        server: 'url/',
         uniqueHttpCollectorCode: 'code',
       },
     };
     (axios.post as jest.Mock).mockResolvedValue({});
     AccountService.getInstance = jest.fn().mockReturnValue(accountService);
     (accountService.getUserEmail as jest.Mock).mockResolvedValue('abc@rc.com');
-    (UserConfig.getCurrentUserId as jest.Mock).mockReturnValue(12345);
+    (AccountGlobalConfig.getCurrentUserId as jest.Mock).mockReturnValue(12345);
     (accountService.getClientId as jest.Mock).mockReturnValue('54321');
   });
   describe('upload()', () => {
@@ -53,9 +65,11 @@ describe('LogUploader', () => {
     it('should call post correctly when get userId error', async () => {
       const logUploader = new LogUploader();
       const mockLog = new LogEntity();
-      (UserConfig.getCurrentUserId as jest.Mock).mockImplementation(() => {
-        throw new Error('');
-      });
+      (AccountGlobalConfig.getCurrentUserId as jest.Mock).mockImplementation(
+        () => {
+          throw new Error('');
+        },
+      );
       mockLog.sessionId = 'sessionA';
       jest.spyOn(logUploader, 'transform').mockReturnValue('mm');
       await logUploader.upload([mockLog]);
@@ -81,35 +95,15 @@ describe('LogUploader', () => {
   describe('errorHandler()', () => {
     it('should return retry when retry able error occur', () => {
       const logUploader = new LogUploader();
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, ''),
-        ),
-      ).toEqual('retry');
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.UNAUTHORIZED, ''),
-        ),
-      ).toEqual('retry');
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.TOO_MANY_REQUESTS, ''),
-        ),
-      ).toEqual('retry');
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.SERVICE_UNAVAILABLE, ''),
-        ),
-      ).toEqual('retry');
-      expect(
-        logUploader.errorHandler(
-          new JNetworkError(ERROR_CODES_NETWORK.GATEWAY_TIMEOUT, ''),
-        ),
-      ).toEqual('retry');
+      expect(logUploader.errorHandler(createError(0))).toEqual('abortAll');
+      expect(logUploader.errorHandler(createError(401))).toEqual('retry');
+      expect(logUploader.errorHandler(createError(429))).toEqual('retry');
+      expect(logUploader.errorHandler(createError(503))).toEqual('retry');
+      expect(logUploader.errorHandler(createError(504))).toEqual('retry');
     });
     it('should ignore other error', () => {
       const logUploader = new LogUploader();
-      expect(logUploader.errorHandler(new Error('sss'))).toEqual('ignore');
+      expect(logUploader.errorHandler(createError(500))).toEqual('ignore');
     });
   });
 });

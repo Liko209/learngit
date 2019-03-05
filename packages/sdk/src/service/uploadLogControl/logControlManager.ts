@@ -17,7 +17,7 @@ class LogControlManager implements IAccessor {
   private constructor() {
     this._enabledLog = true;
     this._isDebugMode = true;
-    this._isOnline = true;
+    this._isOnline = window.navigator.onLine;
     logManager.config({
       logUploader: new LogUploader(),
       uploadAccessor: this,

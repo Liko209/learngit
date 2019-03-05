@@ -158,7 +158,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
     if (shouldAdd) {
       const groupService = GroupService.getInstance<GroupService>();
-      const groups: Group[] = await groupService.getGroupsByIds(ids);
+      const groups: Group[] = (await groupService.getGroupsByIds(ids)) || [];
       const validGroups = groups.filter(group => groupService.isValid(group));
       this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(validGroups);
       this._handlersMap[SECTION_TYPE.TEAM].upsert(validGroups);
@@ -442,7 +442,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         performanceKey,
         logId,
       );
-      const groups = await this._handlersMap[sectionType].fetchData(direction);
+      const groups =
+        (await this._handlersMap[sectionType].fetchData(direction)) || [];
       if (sectionType === SECTION_TYPE.FAVORITE) {
         groups.forEach((group: Group) => {
           const processor = new PrefetchPostProcessor(group.id);
@@ -620,9 +621,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   getGroupIdsByType(type: SECTION_TYPE) {
-    const ids = this._handlersMap[type]
-      ? this._handlersMap[type].sortableListStore.getIds
-      : [];
+    const ids =
+      this._handlersMap[type] && this._handlersMap[type].sortableListStore
+        ? this._handlersMap[type].sortableListStore.getIds
+        : [];
     return ids;
   }
 }

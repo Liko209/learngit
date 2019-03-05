@@ -7,7 +7,7 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
-import { JuiPreviewImage } from '../';
+import { JuiPreviewImage, JuiDelayPlaceholder } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 
 storiesOf('Pattern/ConversationCard', module)
@@ -60,6 +60,7 @@ storiesOf('Pattern/ConversationCard', module)
             </JuiIconButton>
           }
         />
+        <JuiDelayPlaceholder width={400} height={400} />
       </div>
     );
   });

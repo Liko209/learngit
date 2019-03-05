@@ -9,7 +9,7 @@ import { mainLogger, Container } from 'foundation';
 import { fetchWhiteList } from './helper';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
-import { daoManager, ConfigDao } from '../../dao';
+import { NewGlobalConfig } from '../../service/config/NewGlobalConfig';
 
 import {
   IAccountInfo,
@@ -120,8 +120,7 @@ class AccountManager extends EventEmitter2 {
   }
 
   async sanitizeUser(mailboxID: string) {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const env = configDao.getEnv();
+    const env = NewGlobalConfig.getEnv();
     const whiteList = await fetchWhiteList();
     const allAccount = whiteList[env];
     if (allAccount !== undefined) {

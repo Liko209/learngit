@@ -88,7 +88,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @computed
-  get postIds() {
+  get postIds(): number[] {
     return _(this.items)
       .filter({ type: StreamItemType.POST })
       .flatMap('value')
@@ -148,6 +148,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.props.groupId,
     );
   }
+  @computed
+  get lastPost() {
+    const lastPostId = _.last(this.postIds);
+    return lastPostId && getEntity(ENTITY_NAME.POST, lastPostId);
+  }
 
   updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
@@ -167,7 +172,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToTop
+  @onScrollToTop((vm: StreamViewModel) => vm.hasMoreUp)
   @loadingTop
   @action
   async loadPrevPosts() {
@@ -180,7 +185,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToBottom
+  @onScrollToBottom((vm: StreamViewModel) => vm.hasMoreDown)
   @loadingBottom
   @action
   async loadNextPosts() {

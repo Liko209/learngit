@@ -6,11 +6,13 @@
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
+import { RTCMediaStatsManager } from '../signaling/RTCMediaStatsManager';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import {
   kRTCAnonymous,
   kRTCHangupInvalidCallInterval,
+  kRTCGetStatsInterval,
 } from '../account/constants';
 
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
@@ -59,6 +61,7 @@ class RTCCall {
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
+  private _rtcMediaStatsManager: RTCMediaStatsManager;
 
   constructor(
     isIncoming: boolean,
@@ -91,6 +94,7 @@ class RTCCall {
       this._callInfo.toNum = toNumber;
       this._startOutCallFSM();
     }
+    this._rtcMediaStatsManager = new RTCMediaStatsManager();
     this._prepare();
   }
 
@@ -295,6 +299,9 @@ class RTCCall {
         clearTimeout(this._hangupInvalidCallTimer);
         this._hangupInvalidCallTimer = null;
       }
+      this._callSession.getMediaStats((report: any, session: any) => {
+        this._rtcMediaStatsManager.setMediaStatsReport(report);
+      },                              kRTCGetStatsInterval * 1000);
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
@@ -302,6 +309,9 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
       this._account.removeCallFromCallManager(this._callInfo.uuid);
       this._destroy();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.LEAVE_CONNECTED, () => {
+      this._callSession.stopMediaStats();
     });
     this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
       this._onHangupAction();
