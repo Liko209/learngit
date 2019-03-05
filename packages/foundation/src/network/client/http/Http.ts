@@ -13,6 +13,8 @@ import {
 import BaseClient from '../BaseClient';
 import HttpResponseBuilder from './HttpResponseBuilder';
 
+const RETRY_AFTER = 'Retry-After';
+
 class Http extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
     super.request(request, listener);
@@ -36,7 +38,7 @@ class Http extends BaseClient {
       withCredentials: false,
       data: {},
       params: {},
-      cancelToken: new CancelToken((cancel) => {
+      cancelToken: new CancelToken((cancel: any) => {
         this.tasks[request.id].cancel = cancel;
       }),
     };
@@ -52,7 +54,7 @@ class Http extends BaseClient {
     }
 
     axios(options)
-      .then((res) => {
+      .then((res: any) => {
         delete this.tasks[request.id];
         const { data, status, statusText } = res;
         const response = HttpResponseBuilder.builder
@@ -64,7 +66,7 @@ class Http extends BaseClient {
           .build();
         listener.onSuccess(response);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         delete this.tasks[request.id];
         const { response = {}, code, message } = err;
         const { data } = response;
@@ -77,12 +79,20 @@ class Http extends BaseClient {
           status = 0;
           statusText = NETWORK_FAIL_TYPE.CANCELLED;
         }
+
+        let retryAfter = response.retryAfter;
+        if (request.ignoreLocalRetryAfter) {
+          const hasRetryAfter =
+            response.headers && response.headers.hasOwnProperty(RETRY_AFTER);
+          retryAfter = hasRetryAfter ? response.headers[RETRY_AFTER] : 0;
+        }
         const res = HttpResponseBuilder.builder
           .setData(data)
           .setStatus(status)
           .setStatusText(statusText || message)
           .setHeaders(response.headers)
           .setRequest(request)
+          .setRetryAfter(retryAfter)
           .build();
         listener.onFailure(res);
       });

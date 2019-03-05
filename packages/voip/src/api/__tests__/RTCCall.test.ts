@@ -11,9 +11,7 @@ import { RTCCall } from '../RTCCall';
 import { CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_STATE, RTC_CALL_ACTION, RTCCallOptions } from '../types';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
-import {
-  kRTCHangupInvalidCallInterval,
-} from '../../account/constants';
+import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 import { rtcLogger } from '../../utils/RTCLoggerProxy';
 
 describe('RTC call', () => {
@@ -38,10 +36,7 @@ describe('RTC call', () => {
       return this.isReadyReturnValue;
     }
   }
-  class MediaStreams {
-    getMediaStats = jest.fn();
-    stopMediaStats = jest.fn();
-  }
+
   class MockRequest {
     public headers: any = {
       'P-Rc-Api-Ids': [
@@ -81,6 +76,22 @@ describe('RTC call', () => {
     }
   }
 
+  class MediaStreams extends EventEmitter2 {
+    public onMediaConnectionStateChange: any;
+
+    constructor(session: any) {
+      super();
+    }
+
+    public reconnectMedia(options: any) {}
+
+    getMediaStats(callback: any, interval: any) {}
+
+    stopMediaStats() {}
+
+    release() {}
+  }
+
   class MockSession extends EventEmitter2 {
     public sessionDescriptionHandler: SessionDescriptionHandler;
     mediaStreams: MediaStreams;
@@ -90,7 +101,7 @@ describe('RTC call', () => {
         displayName: 'test',
         uri: { aor: 'test@ringcentral.com' },
       };
-      this.mediaStreams = new MediaStreams();
+      this.mediaStreams = new MediaStreams(this);
       this.sessionDescriptionHandler = new SessionDescriptionHandler();
     }
 
@@ -464,7 +475,7 @@ describe('RTC call', () => {
       session.stopRecord.mockResolvedValue(null);
       call.onAccountReady();
       session.mockSignal('accepted');
-      call._recordState = "recording";
+      call._recordState = 'recording';
       call.stopRecord();
       setImmediate(() => {
         call._callSession.emit(

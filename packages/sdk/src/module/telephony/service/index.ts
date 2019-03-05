@@ -5,3 +5,5 @@
  */
 
 export { TelephonyService } from './TelephonyService';
+export * from './ITelephonyAccountDelegate';
+export * from './ITelephonyCallDelegate';
