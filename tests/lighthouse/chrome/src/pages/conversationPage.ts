@@ -3,8 +3,8 @@
  * @Date: 2019-01-11 10:11:03
  */
 import { Page } from "./page";
-import { PptrUtils } from "../utils";
 import * as bluebird from "bluebird";
+import { PptrUtils } from '../utils';
 
 class ConversationPage extends Page {
   private progressbar: string =

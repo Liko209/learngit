@@ -1,8 +1,7 @@
 /*
  * @Author: doyle.wu
- * @Date: 2019-02-25 14:25:17
+ * @Date: 2018-12-12 20:14:14
  */
-
 import * as fs from 'fs';
 import { LogUtils } from '../utils';
 import { Config } from '../config';
@@ -11,11 +10,15 @@ const logger = LogUtils.getLogger(__filename);
 
 const REPORT_DIR_PATH = `${process.cwd()}/${Config.reportUri}`;
 
-if (!fs.existsSync(REPORT_DIR_PATH)) {
-  fs.mkdirSync(REPORT_DIR_PATH);
-}
-
 class FileService {
+  /**
+   * @description: check report path, not exist will create
+   */
+  static async checkReportPath() {
+    if (!fs.existsSync(REPORT_DIR_PATH)) {
+      fs.mkdirSync(REPORT_DIR_PATH);
+    }
+  }
 
   /**
    * @description: generate lighthouse report index
@@ -26,6 +29,7 @@ class FileService {
       return;
     }
     let html = fs.readFileSync(`${process.cwd()}/src/index.template.html`, 'utf8');
+
     for (let file of files) {
       if (file.endsWith('.html') && file !== 'index.html' && file !== 'Traces.html') {
         names.push(file.substr(0, file.length - 5));
@@ -38,7 +42,6 @@ class FileService {
     if (names.length === 0) {
       return;
     }
-
     names.sort();
 
     if (tracesFiles.length !== 0) {

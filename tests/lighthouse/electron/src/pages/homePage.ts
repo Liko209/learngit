@@ -3,7 +3,7 @@
  * @Date: 2019-02-25 13:36:37
  */
 
-import { Page } from './Page';
+import { Page } from './page';
 import { PptrUtils } from '../utils';
 import * as bluebird from 'bluebird';
 

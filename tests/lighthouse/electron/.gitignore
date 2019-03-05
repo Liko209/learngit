@@ -3,6 +3,7 @@ node_modules
 .env
 # auto generate file
 reports
+targets
 
 # Mac
 .DS_Store
