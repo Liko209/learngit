@@ -22,6 +22,8 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   @observable
   filteredMemberIds: number[] = [];
   handleSearchDebounce: () => void;
+  @observable
+  keywords: string = '';
 
   constructor(props: MembersProps) {
     super(props);
@@ -34,7 +36,9 @@ class MembersViewModel extends ProfileDialogGroupViewModel
     });
     this.reaction(
       () => this.sortedAllMemberIds,
-      (ids: number[]) => (this.filteredMemberIds = ids),
+      () => {
+        this.handleSearch(this.keywords);
+      },
     );
   }
 
@@ -56,6 +60,7 @@ class MembersViewModel extends ProfileDialogGroupViewModel
 
   @action
   handleSearch = async (keywords: string) => {
+    this.keywords = keywords; // Temporary keywords, sortedAllMemberIds will research if it changes
     const result = await this._personService.doFuzzySearchPersons(
       keywords,
       false,
