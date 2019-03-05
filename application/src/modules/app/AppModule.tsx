@@ -25,6 +25,7 @@ import { HomeService } from '@/modules/home';
 import './index.css';
 import { generalErrorHandler } from '@/utils/error';
 import { AccountGlobalConfig } from 'sdk/service/account/config';
+import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 
 /**
  * The root module, we call it AppModule,
@@ -193,6 +194,9 @@ class AppModule extends AbstractModule {
       api,
       db,
     });
+
+    // load phone parser module
+    PhoneParserUtility.loadModule();
   }
 }
 

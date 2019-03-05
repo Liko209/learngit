@@ -35,7 +35,6 @@ jest.mock('../../../state');
 jest.mock('../../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),
-    queryGroupsByIds: jest.fn(),
     bulkDelete: jest.fn(),
     bulkPut: jest.fn(),
     doInTransaction: jest.fn(),
@@ -114,6 +113,10 @@ function generateFakeGroups(
 const stateService: StateService = new StateService();
 const personService = new PersonService();
 const profileService = new ProfileService();
+const groupService = {
+  getGroupsByIds: jest.fn(),
+  isValid: jest.fn(),
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -126,7 +129,7 @@ beforeEach(() => {
 describe('GroupHandleDataController', () => {
   let groupHandleDataController: GroupHandleDataController;
   beforeEach(() => {
-    groupHandleDataController = new GroupHandleDataController();
+    groupHandleDataController = new GroupHandleDataController(groupService);
   });
   describe('handleData()', () => {
     it('passing an empty array', async () => {
@@ -220,9 +223,8 @@ describe('GroupHandleDataController', () => {
       jest.clearAllMocks();
     });
     it('params', async () => {
-      daoManager
-        .getDao(GroupDao)
-        .queryGroupsByIds.mockResolvedValue([{ id: 1, is_team: true }]);
+      groupService.isValid.mockResolvedValue(true);
+      groupService.getGroupsByIds.mockResolvedValue([{ id: 1, is_team: true }]);
       const oldProfile: any = {
         person_id: 0,
         favorite_group_ids: [1, 2],
@@ -243,9 +245,8 @@ describe('GroupHandleDataController', () => {
       jest.clearAllMocks();
     });
     it('params are arry empty', async () => {
-      daoManager
-        .getDao(GroupDao)
-        .queryGroupsByIds.mockResolvedValueOnce([{ is_team: true }]);
+      groupService.getGroupsByIds.mockResolvedValueOnce([{ is_team: true }]);
+
       const oldProfile: any = {
         person_id: 0,
         favorite_group_ids: [1, 2],
