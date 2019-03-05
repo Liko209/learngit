@@ -21,6 +21,8 @@ import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
 
 import { ThumbnailPreloadController } from './ThumbnailPreloadController';
+import PostModel from '@/store/models/Post';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -87,20 +89,14 @@ class PostCacheController {
     return this._thumbnailPreloadController;
   }
 
-  private _preloadThumbnail(post: Post) {
-    let itemIds: number[] = [];
-    if (post.item_ids && post.item_ids[0]) {
-      itemIds = itemIds.concat(post.item_ids);
-    }
-    if (post.at_mention_item_ids && post.at_mention_item_ids[0]) {
-      itemIds = itemIds.concat(post.at_mention_item_ids);
-    }
-
-    itemIds = itemIds.filter((id: number) => {
+  private _preloadThumbnail(postModel: PostModel) {
+    const itemIds: number[] = postModel.itemIds.filter((id: number) => {
       return TypeDictionary.TYPE_ID_FILE === GlipTypeUtil.extractTypeId(id);
     });
 
-    this.getThumbnailPreloadController().preload(itemIds);
+    if (itemIds && itemIds.length) {
+      this.getThumbnailPreloadController().preload(itemIds);
+    }
   }
 
   has(groupId: number): boolean {
@@ -125,12 +121,15 @@ class PostCacheController {
           }
 
           if (sortableModels.length) {
+            const postStore = storeManager.getEntityMapStore(
+              ENTITY_NAME.POST,
+            ) as MultiEntityMapStore<Post, PostModel>;
+
             await Promise.all(
               sortableModels.map(
                 async (sortableModel: ISortableModel<Post>) => {
-                  if (sortableModel.data) {
-                    const post = sortableModel.data as Post;
-                    this._preloadThumbnail(post);
+                  if (sortableModel) {
+                    this._preloadThumbnail(postStore.get(sortableModel.id));
                   }
                 },
               ),
