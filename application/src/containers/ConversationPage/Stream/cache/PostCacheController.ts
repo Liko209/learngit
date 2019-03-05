@@ -87,11 +87,7 @@ class PostCacheController {
     return this._thumbnailPreloadController;
   }
 
-  has(groupId: number): boolean {
-    return this._cacheMap.has(groupId);
-  }
-
-  handlePost(post: Post) {
+  private _preloadThumbnail(post: Post) {
     let itemIds: number[] = [];
     if (post.item_ids && post.item_ids[0]) {
       itemIds = itemIds.concat(post.item_ids);
@@ -104,7 +100,11 @@ class PostCacheController {
       return TypeDictionary.TYPE_ID_FILE === GlipTypeUtil.extractTypeId(id);
     });
 
-    this.getThumbnailPreloadController().handleFileItems(itemIds);
+    this.getThumbnailPreloadController().preload(itemIds);
+  }
+
+  has(groupId: number): boolean {
+    return this._cacheMap.has(groupId);
   }
 
   get(
@@ -113,22 +113,33 @@ class PostCacheController {
   ): FetchSortableDataListHandler<Post> {
     let listHandler = !!jump2PostId ? undefined : this._cacheMap.get(groupId);
     if (!listHandler) {
-      const preloadThumbnail = async (delta: TDelta) => {
+      const fetchDataCallback = async (delta: TDelta) => {
         if (delta) {
-          if (delta.added) {
+          let sortableModels: ISortableModel[] = [];
+          if (delta.added && delta.added.length) {
+            sortableModels = sortableModels.concat(delta.added);
+          }
+
+          if (delta.updated && delta.updated.length) {
+            sortableModels = sortableModels.concat(delta.updated);
+          }
+
+          if (sortableModels.length) {
             await Promise.all(
-              delta.added.map(async (sortableModel: ISortableModel<Post>) => {
-                if (sortableModel.data) {
-                  const post = sortableModel.data as Post;
-                  this.handlePost(post);
-                }
-              }),
+              sortableModels.map(
+                async (sortableModel: ISortableModel<Post>) => {
+                  if (sortableModel.data) {
+                    const post = sortableModel.data as Post;
+                    this._preloadThumbnail(post);
+                  }
+                },
+              ),
             );
           }
         }
       };
 
-      this._cacheDeltaDataHandlerMap.set(groupId, preloadThumbnail);
+      this._cacheDeltaDataHandlerMap.set(groupId, fetchDataCallback);
 
       const options = {
         transformFunc: (dataModel: Post) => ({
@@ -141,7 +152,7 @@ class PostCacheController {
         isMatchFunc: isMatchedFunc(groupId),
         entityName: ENTITY_NAME.POST,
         eventName: ENTITY.POST,
-        dataChangeCallBack: preloadThumbnail,
+        dataChangeCallBack: fetchDataCallback,
       };
 
       listHandler = new FetchSortableDataListHandler(

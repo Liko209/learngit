@@ -7,6 +7,8 @@
 import { ThumbnailPreloadController } from '../ThumbnailPreloadController';
 import { SequenceProcessorHandler } from 'sdk/framework/processor';
 
+jest.mock('sdk/service/notificationCenter');
+
 describe('ThumbnailPreloadController', () => {
   let thumbnailPreloadController: ThumbnailPreloadController;
   let sequenceProcessorHandler: SequenceProcessorHandler;
@@ -21,12 +23,23 @@ describe('ThumbnailPreloadController', () => {
     });
   });
 
-  describe('handleFileItems()', () => {
+  describe('clear()', () => {
+    it('should call clear of sequenceProcessorHandler', () => {
+      jest
+        .spyOn(sequenceProcessorHandler, 'clear')
+        .mockImplementationOnce(() => {});
+      thumbnailPreloadController.clear();
+
+      expect(sequenceProcessorHandler.clear).toBeCalled();
+    });
+  });
+
+  describe('preload()', () => {
     it('should addProcessor of sequenceProcessorHandler', () => {
       jest
         .spyOn(sequenceProcessorHandler, 'addProcessor')
         .mockImplementationOnce(() => {});
-      thumbnailPreloadController.handleFileItems([1, 2, 3]);
+      thumbnailPreloadController.preload([1, 2, 3]);
 
       expect(sequenceProcessorHandler.addProcessor).toBeCalledTimes(3);
     });
