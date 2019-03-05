@@ -6,17 +6,20 @@
 
 import { computed } from 'mobx';
 import { ProfileService } from 'sdk/module/profile';
+import { StateService } from 'sdk/module/state';
 import { Profile } from 'sdk/module/profile/entity';
-import { getEntity, getSingleEntity } from '@/store/utils';
+import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 import { MenuProps, MenuViewProps } from './types';
-import { ENTITY_NAME } from '@/store';
+import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 import GroupStateModel from '@/store/models/GroupState';
 import GroupModel from '@/store/models/Group';
 import ProfileModel from '@/store/models/Profile';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   private _profileService: ProfileService = ProfileService.getInstance();
+  private _stateService: StateService = StateService.getInstance();
   @computed
   get personId() {
     return this.props.personId;
@@ -63,12 +66,26 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   @computed
+  private get _groupState() {
+    return getEntity(ENTITY_NAME.GROUP_STATE, this.groupId) as GroupStateModel;
+  }
+
+  @computed
   get closable() {
-    const groupState = getEntity(
-      ENTITY_NAME.GROUP_STATE,
-      this.groupId,
-    ) as GroupStateModel;
-    return !(groupState.unreadCount || this.isFavorite);
+    return !(this._groupState.unreadCount || this.isFavorite);
+  }
+
+  @computed
+  get isUnread() {
+    const { unreadCount = 0 } = this._groupState;
+    return unreadCount > 0;
+  }
+
+  @computed
+  get disabledReadOrUnread() {
+    const { mostRecentPostId } = this._group; // Not post message
+    const offline = getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline'; // Network offline
+    return !mostRecentPostId || offline;
   }
 
   @computed
@@ -89,6 +106,16 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
       true,
       shouldSkipNextTime,
     );
+  }
+
+  toggleRead = async () => {
+    if (this.groupId === getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID)) {
+      if (!this.isUnread) {
+        const globalStore = storeManager.getGlobalStore();
+        globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
+      }
+    }
+    await this._stateService.updateReadStatus(this.groupId, !this.isUnread);
   }
 }
 export { MenuViewModel };

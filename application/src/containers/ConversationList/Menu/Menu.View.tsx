@@ -49,6 +49,44 @@ class MenuViewComponent extends Component<Props, State> {
     );
   }
 
+  private _getKeyReadOrUnread = () => {
+    const { isUnread } = this.props;
+    return isUnread ? 'markAsRead' : 'markAsUnread';
+  }
+
+  private _renderReadOrUnreadMenuItem = () => {
+    const { t, disabledReadOrUnread } = this.props;
+    return (
+      <JuiMenuItem
+        data-test-automation-id="readOrUnreadConversation"
+        onClick={this._handleReadOrUnreadConversation}
+        disabled={disabledReadOrUnread}
+      >
+        {t(`people.team.${this._getKeyReadOrUnread()}`)}
+      </JuiMenuItem>
+    );
+  }
+
+  private _handleReadOrUnreadConversation = async (
+    event: MouseEvent<HTMLElement>,
+  ) => {
+    const { onClose, toggleRead } = this.props;
+    try {
+      event.stopPropagation();
+      onClose(event);
+      await toggleRead();
+    } catch {
+      const message = `people.prompt.${this._getKeyReadOrUnread()}`;
+      Notification.flashToast({
+        message,
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+    }
+  }
+
   private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
     event.stopPropagation();
     const { isFavorite } = this.props;
@@ -154,6 +192,7 @@ class MenuViewComponent extends Component<Props, State> {
         open={!!anchorEl}
         onClose={onClose}
       >
+        {this._renderReadOrUnreadMenuItem()}
         <JuiMenuItem
           data-test-automation-id="favToggler"
           onClick={this._handleToggleFavorite}
