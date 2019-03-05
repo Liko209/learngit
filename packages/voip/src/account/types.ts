@@ -13,7 +13,15 @@ type RTCSipProvisionInfo = {
     authorizationId: string;
     outboundProxy: string;
   }[];
-  sipFlags: object;
+  sipFlags: {
+    voipFeatureEnabled: boolean;
+    voipCountryBlocked: boolean;
+    outboundCallsEnabled: boolean;
+    dscpEnabled: boolean;
+    dscpSignaling: boolean;
+    dscpVoice: boolean;
+    dscpVideo: boolean;
+  }[];
 };
 
 type RTCRegisterAsyncTask = {

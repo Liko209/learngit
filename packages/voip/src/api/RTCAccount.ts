@@ -255,6 +255,19 @@ class RTCAccount implements IRTCAccount {
       this._regManager.networkChangeToOnline();
     }
   }
+
+  getSipProvisionInfo(): object | null {
+    const SipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
+
+    if (SipProvisionInfo) {
+      return {
+        voipFeatureEnabled: SipProvisionInfo.sipFlags['voipFeatureEnabled'],
+        voipCountryBlocked: SipProvisionInfo.sipFlags['voipCountryBlocked'],
+      };
+    }
+
+    return null;
+  }
 }
 
 export { RTCAccount };
