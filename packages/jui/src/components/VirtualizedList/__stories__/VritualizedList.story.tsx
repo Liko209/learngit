@@ -193,9 +193,9 @@ storiesOf('Components/VirtualizedList', module)
   })
   .add('InfiniteList', () => {
     const initialDataCount = number('initialDataCount', 10);
+    const totalDataCount = number('totalDataCount', 1000);
     const initialLoadTime = number('initialLoadTime', 0);
     const moreLoadTime = number('moreLoadTime', 500);
-    const totalDataCount = number('totalDataCount', 100);
 
     const DataLoaderDemo = () => {
       const { items, prependItem, appendItem } = useDemoHelper(0);
