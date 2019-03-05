@@ -206,7 +206,7 @@ class PostFetchController {
       items: [],
       hasMore: true,
     };
-    if (postId === 0 && direction === QUERY_DIRECTION.NEWER) {
+    if (!postId && direction === QUERY_DIRECTION.NEWER) {
       return result;
     }
     const postDao = daoManager.getDao(PostDao);
