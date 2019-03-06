@@ -7,8 +7,10 @@
 import { AbstractProcessor } from './AbstractProcessor';
 import { IProcessor } from './IProcessor';
 import { mainLogger } from 'foundation';
+
 class SequenceProcessorHandler extends AbstractProcessor {
   private _isExecuting: boolean = false;
+  private _isOnLine = true;
 
   constructor(name: string) {
     super(name);
@@ -18,6 +20,18 @@ class SequenceProcessorHandler extends AbstractProcessor {
     const result = super.addProcessor(processor);
     this.execute();
     return result;
+  }
+
+  onNetWorkChanged(onLine: boolean) {
+    this._isOnLine = onLine;
+    if (this._isOnLine) {
+      mainLogger.info(
+        `SequenceProcessorHandler app into online, continue processor handle, isExecuting:${
+          this._isExecuting
+        }`,
+      );
+      this.execute();
+    }
   }
 
   async execute(): Promise<boolean> {
@@ -43,7 +57,13 @@ class SequenceProcessorHandler extends AbstractProcessor {
             )}: `,
           );
           this._isExecuting = false;
-          this.execute();
+          if (this._isOnLine) {
+            this.execute();
+          } else {
+            mainLogger.info(
+              'SequenceProcessorHandler app into offline, pause processor handle',
+            );
+          }
         });
     } else {
       mainLogger.info(`SequenceProcessorHandler (${this.name()}): is done`);
