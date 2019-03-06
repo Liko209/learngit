@@ -13,6 +13,8 @@ import { GroupConfigService } from 'sdk/module/groupConfig';
 const { ENTITY } = service;
 import { CompanyService } from 'sdk/module/company';
 
+const CACHE_COUNT = 1000;
+
 const ENTITY_SETTING = {
   [ENTITY_NAME.GROUP]: {
     event: [
@@ -34,91 +36,91 @@ const ENTITY_SETTING = {
       };
     },
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PERSON]: {
     event: [ENTITY.PERSON],
     service: () => PersonService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.GROUP_STATE]: {
     event: [ENTITY.GROUP_STATE],
     service: () => StateService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.MY_STATE]: {
     event: [ENTITY.MY_STATE],
     service: () => StateService.getInstance(),
     type: HANDLER_TYPE.SINGLE_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.FILE_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 10000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.TASK_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 10000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.EVENT_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 10000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.LINK_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 10000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.NOTE_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 10000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.CODE_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 10000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.CONFERENCE_ITEM]: {
     event: [ENTITY.ITEM],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 10000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.POST]: {
     event: [ENTITY.POST],
     service: () => PostService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 100000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PRESENCE]: {
     event: [ENTITY.PRESENCE],
     service: () => PresenceService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.COMPANY]: {
     event: [ENTITY.COMPANY],
     service: () => CompanyService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PROGRESS]: {
     event: [ENTITY.PROGRESS],
@@ -129,26 +131,26 @@ const ENTITY_SETTING = {
       };
     },
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PROFILE]: {
     event: [ENTITY.PROFILE],
     service: () => ProfileService.getInstance(),
     type: HANDLER_TYPE.SINGLE_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
 
   [ENTITY_NAME.GROUP_CONFIG]: {
     event: [ENTITY.GROUP_CONFIG],
     service: () => GroupConfigService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.USER_PERMISSION]: {
     event: [ENTITY.USER_PERMISSION],
     service: () => PermissionService.getInstance(),
     type: HANDLER_TYPE.SINGLE_ENTITY,
-    cacheCount: 1000,
+    cacheCount: CACHE_COUNT,
   },
 };
 
