@@ -29,7 +29,7 @@ function addOrderIndicatorForPosts(
   posts: (Post | PostModel)[],
   sourceIdArr: number[],
 ) {
-  return posts.forEach((post: Post) => {
+  posts.forEach((post: Post) => {
     (post as OrderedPost)._index = sourceIdArr.findIndex(id => id === post.id);
   });
 }
@@ -187,8 +187,13 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       if (type !== EVENT_TYPES.UPDATE) {
         return;
       }
+      const posts: Post[] = Array.from(body.entities.values());
+      addOrderIndicatorForPosts(posts, this._postIds);
       this._sortableListHandler.onDataChanged({
-        body,
+        body: {
+          ids: body.ids,
+          entities: transform2Map(posts),
+        },
         type: EVENT_TYPES.UPDATE,
       });
     });
