@@ -110,11 +110,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
       }
     }
 
-    if (
-      (this._item.autoPreload === undefined || this._item.autoPreload) &&
-      fileItem.versions.length &&
-      fileItem.versions[0].url
-    ) {
+    if (fileItem.versions.length && fileItem.versions[0].url) {
       return {
         url: fileItem.versions[0].url,
         thumbnail: false,
