@@ -21,12 +21,14 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   private _personService = PersonService.getInstance<PersonService>();
   @observable
   filteredMemberIds: number[] = [];
-  handleSearchDebounce: () => void;
+  @observable
+  keywords: string = '';
+  changeSearchInputDebounce: () => void;
 
   constructor(props: MembersProps) {
     super(props);
-    this.handleSearchDebounce = debounce(
-      this.handleSearch.bind(this),
+    this.changeSearchInputDebounce = debounce(
+      this.changeSearchInput.bind(this),
       DELAY_DEBOUNCE,
     );
     this.reaction(() => this.id, this.createSortableHandler, {
@@ -34,7 +36,15 @@ class MembersViewModel extends ProfileDialogGroupViewModel
     });
     this.reaction(
       () => this.sortedAllMemberIds,
-      (ids: number[]) => (this.filteredMemberIds = ids),
+      () => {
+        this.handleSearch();
+      },
+    );
+    this.reaction(
+      () => this.keywords,
+      () => {
+        this.handleSearch();
+      },
     );
   }
 
@@ -55,9 +65,14 @@ class MembersViewModel extends ProfileDialogGroupViewModel
   }
 
   @action
-  handleSearch = async (keywords: string) => {
+  changeSearchInput = (keywords: string) => {
+    this.keywords = keywords;
+  }
+
+  @action
+  handleSearch = async () => {
     const result = await this._personService.doFuzzySearchPersons(
-      keywords,
+      this.keywords,
       false,
       this.sortedAllMemberIds,
       true,
