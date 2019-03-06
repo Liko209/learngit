@@ -16,8 +16,6 @@ abstract class AbstractProcessor {
 
   abstract async execute(): Promise<boolean>;
 
-  onNetWorkChanged(onLine: boolean) {}
-
   name(): string {
     return this._name;
   }
