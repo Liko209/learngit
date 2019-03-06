@@ -20,7 +20,14 @@ class PersonItemViewModel extends StoreViewModel<Props>
 
     this.reaction(
       () => this.person,
-      () => this.props.didChange(sectionIndex, cellIndex),
+      () => (person: PersonModel) => {
+        this.props.didChange(sectionIndex, cellIndex);
+        if (person.deactivated) {
+          SearchService.getInstance().removeRecentSearchRecords(
+            new Set([person.id]),
+          );
+        }
+      },
     );
   }
 

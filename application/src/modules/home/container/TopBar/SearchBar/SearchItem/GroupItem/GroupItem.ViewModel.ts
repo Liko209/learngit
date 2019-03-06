@@ -20,7 +20,14 @@ class GroupItemViewModel extends StoreViewModel<Props>
 
     this.reaction(
       () => this.group,
-      () => this.props.didChange(sectionIndex, cellIndex),
+      (group: GroupModel) => {
+        this.props.didChange(sectionIndex, cellIndex);
+        if (group.isArchived || group.deactivated) {
+          SearchService.getInstance().removeRecentSearchRecords(
+            new Set([group.id]),
+          );
+        }
+      },
     );
   }
 
@@ -55,8 +62,8 @@ class GroupItemViewModel extends StoreViewModel<Props>
 
   @computed
   get shouldHidden() {
-    const { isMember, deactivated } = this.group;
-    return deactivated || (!isMember && this.isPrivate);
+    const { isMember, deactivated, isArchived } = this.group;
+    return deactivated || isArchived || (!isMember && this.isPrivate);
   }
 
   addRecentRecord = () => {
