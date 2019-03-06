@@ -110,20 +110,17 @@ class ConversationPageViewComponent extends Component<
         data-test-automation-id="messagePanel"
       >
         <Header id={groupId} />
-        {canPost ? (
-          <JuiDropZone
-            accepts={[NativeTypes.FILE]}
-            onDrop={this._handleDropFileInStream}
-            dropzoneClass={StreamDropZoneClasses}
-            detectedFolderDrop={this._preventStreamFolderDrop}
-            hasDroppedFolder={() => this._folderDetectMap[STREAM]}
-            clearFolderDetection={() => delete this._folderDetectMap[STREAM]}
-          >
-            {streamNode}
-          </JuiDropZone>
-        ) : (
-          streamNode
-        )}
+        <JuiDropZone
+          disabled={!canPost}
+          accepts={[NativeTypes.FILE]}
+          onDrop={this._handleDropFileInStream}
+          dropzoneClass={StreamDropZoneClasses}
+          detectedFolderDrop={this._preventStreamFolderDrop}
+          hasDroppedFolder={() => this._folderDetectMap[STREAM]}
+          clearFolderDetection={() => delete this._folderDetectMap[STREAM]}
+        >
+          {streamNode}
+        </JuiDropZone>
         {canPost ? (
           <JuiDropZone
             accepts={[NativeTypes.FILE]}
