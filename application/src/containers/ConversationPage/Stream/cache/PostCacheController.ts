@@ -116,9 +116,9 @@ class PostCacheController {
             sortableModels = sortableModels.concat(delta.added);
           }
 
-          if (delta.updated && delta.updated.length) {
-            sortableModels = sortableModels.concat(delta.updated);
-          }
+          // if (delta.updated && delta.updated.length) {
+          //   sortableModels = sortableModels.concat(delta.updated);
+          // }
 
           if (sortableModels.length) {
             const postStore = storeManager.getEntityMapStore(

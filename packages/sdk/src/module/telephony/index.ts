@@ -1,2 +1,2 @@
-export { TelephonyService } from './service';
+export * from './service';
 export { TelephonyEngineController } from './controller';

@@ -110,25 +110,6 @@ describe('RTCRegistrationFSM', () => {
     });
   });
 
-  describe('regTimeOut', () => {
-    it('Should transition from regInProgress state to regFailure state when time out [JPT-526]', () => {
-      const mockHandler = new MockHandler();
-      const fsm = new RTCRegistrationFSM(mockHandler);
-      fsm.provisionReady(provisionData, options);
-      fsm.regTimeout();
-      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.FAILURE);
-    });
-
-    it('Should transition from ready state to regFailure state when time out [JPT-785]', () => {
-      const mockHandler = new MockHandler();
-      const fsm = new RTCRegistrationFSM(mockHandler);
-      fsm.provisionReady(provisionData, options);
-      fsm.regSuccess();
-      fsm.regTimeout();
-      expect(fsm.state).toBe(REGISTRATION_FSM_STATE.FAILURE);
-    });
-  });
-
   describe('regError', () => {
     it('Should transition from regInProgress state to regFailure state when error [JPT-560]', () => {
       const mockHandler = new MockHandler();

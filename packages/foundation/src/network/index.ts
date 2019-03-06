@@ -12,6 +12,7 @@ export { default as Token } from './Token';
 export { default as AbstractHandleType } from './AbstractHandleType';
 export { default as BaseResponse } from './BaseResponse';
 export { default as BaseRequest } from './BaseRequest';
+export { NetworkRequestExecutor } from './NetworkRequestExecutor';
 export * from './client';
 export * from './Constants';
 export * from './network';
