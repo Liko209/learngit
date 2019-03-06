@@ -106,14 +106,6 @@ class Config {
     const value = configService.getEnv() || this.defaultEnv();
     this._env = value;
     this._config = loadFileConfigs(value);
-    this._config.iconLink = this._selectIconLink(this._config.iconLinkSet);
-  }
-
-  private _selectIconLink(iconLinkSet: any) {
-    if (this.isProductionBuild) {
-      return iconLinkSet.production;
-    }
-    return iconLinkSet.development;
   }
 
   public isProductionBuild() {

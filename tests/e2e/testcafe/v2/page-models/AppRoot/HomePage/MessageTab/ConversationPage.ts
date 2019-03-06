@@ -239,7 +239,7 @@ export class ConversationPage extends BaseConversationPage {
   get publicTeamIcon() {
     return this.getSelectorByIcon('lock_open', this.privateButton);
   }
-  
+
   get favoriteButton() {
     return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
   }
@@ -253,11 +253,11 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   async favorite() {
-    await this.t.click(this.unFavoriteStatusIcon.parent('button'));
+    await this.t.click(this.leftWrapper.find('.icon.star').nextSibling('input'));
   }
 
   async unFavorite() {
-    await this.t.click(this.favoriteStatusIcon.parent('button'));
+    await this.t.click(this.leftWrapper.find('.icon.star_border').nextSibling('input'));
   }
 
   async groupIdShouldBe(id: string | number) {

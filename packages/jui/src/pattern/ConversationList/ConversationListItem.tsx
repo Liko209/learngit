@@ -11,7 +11,10 @@ import MuiMenuItem, {
 
 import styled, { keyframes } from '../../foundation/styled-components';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
-import { JuiIconography } from '../../foundation/Iconography';
+import {
+  JuiIconography,
+  JuiIconographyProps,
+} from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 import { Theme } from '../../foundation/theme/theme';
@@ -34,7 +37,7 @@ const rippleEnter = (theme: Theme) => keyframes`
     opacity: ${1 - theme.palette.action.hoverOpacity};
   }
 `;
-const StyledIconographyMore = styled(JuiIconography)``;
+const StyledIconographyMore = styled(JuiIconography)<JuiIconographyProps>``;
 
 const StyledListItem = styled(MuiMenuItem)`
   && {
@@ -70,7 +73,7 @@ const StyledListItem = styled(MuiMenuItem)`
   &&&:hover {
     background-color: ${grey('50')};
     ${StyledIconographyMore} {
-      display: inline-block;
+      display: inline-flex;
     }
     ${StyledIconographyDraft}, ${StyledIconographyFailure} {
       display: none;
