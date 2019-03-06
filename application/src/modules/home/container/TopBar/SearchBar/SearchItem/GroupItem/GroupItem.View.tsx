@@ -20,7 +20,8 @@ class GroupItemComponent extends React.Component<
   handleJoinTeam = async (e: React.MouseEvent | KeyboardEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    const { handleJoinTeam, group } = this.props;
+    const { handleJoinTeam, group, addRecentRecord } = this.props;
+    addRecentRecord();
     await handleJoinTeam(group);
   }
 
