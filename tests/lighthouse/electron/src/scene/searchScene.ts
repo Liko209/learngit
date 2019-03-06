@@ -2,40 +2,40 @@
  * @Author: doyle.wu
  * @Date: 2019-02-27 10:18:13
  */
-import { Scenario } from './scenario';
+import { Scene } from './scene';
 import { TaskDto, SceneDto } from '../model';
 import { ScenarioConfigFactory, gatherers } from '../lighthouse';
 import { MetricService, FileService } from '../service';
 
-class SwitchConversationScenario extends Scenario {
-  private convrsationIds: Array<string>;
+class SearchScene extends Scene {
+  private keywords: Array<string>;
 
-  constructor(taskDto: TaskDto, convrsationIds: Array<string>, url?: string) {
+  constructor(taskDto: TaskDto, keywords: Array<string>, url?: string) {
     super(taskDto, url);
-    this.convrsationIds = convrsationIds;
+    this.keywords = keywords;
   }
 
   async preHandle() {
     this.lightHouseConfig = ScenarioConfigFactory.getSimplifyConfig();
 
     this.lightHouseConfig.passes[0].gatherers.unshift({
-      instance: new gatherers.SwitchConversationGatherer(this.convrsationIds)
+      instance: new gatherers.SearchGatherer(this.keywords)
     });
   }
 
   async saveMetircsIntoDb(): Promise<SceneDto> {
     let sceneDto = await super.saveMetircsIntoDb();
-    await MetricService.createLoadingTime(sceneDto, this, gatherers.SwitchConversationGatherer.name);
+    await MetricService.createLoadingTime(sceneDto, this, gatherers.SearchGatherer.name);
     return sceneDto;
   }
 
   async saveMetircsIntoDisk() {
     if (this.artifacts) {
-      await FileService.saveTracesIntoDisk(this.artifacts, this.scenarioName());
+      await FileService.saveTracesIntoDisk(this.artifacts, this.name());
     }
   }
 }
 
 export {
-  SwitchConversationScenario
+  SearchScene
 }

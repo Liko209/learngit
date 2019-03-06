@@ -34,6 +34,7 @@ class MetriceService {
   }
 
   static async createScene(taskDto: TaskDto, scene: Scene): Promise<SceneDto> {
+    let platform = 'chrome';
     let data = scene.getData();
     let timing = scene.getTiming();
     let { uri, aliasUri, categories } = data;
@@ -67,6 +68,7 @@ class MetriceService {
       name,
       uri,
       aliasUri,
+      platform,
       performance,
       accessibility,
       bestPractices,

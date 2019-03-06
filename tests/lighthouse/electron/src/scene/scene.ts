@@ -18,7 +18,7 @@ import {
   closeElectron
 } from '../lighthouse';
 
-class Scenario {
+class Scene {
   protected browser;
   protected url: string;
   protected timing: Timing;
@@ -39,7 +39,7 @@ class Scenario {
   }
 
   async run(): Promise<boolean> {
-    this.logger.info(`start run scene --> ${this.scenarioName()}`);
+    this.logger.info(`start run scene --> ${this.name()}`);
     for (let i = 0; i < ScenearioRetryCount; i++) {
       try {
         const startTime = new Date();
@@ -67,7 +67,7 @@ class Scenario {
       }
 
       if (this.isSuccess()) {
-        this.logger.info(`start run scene --> ${this.scenarioName()} run successed.`);
+        this.logger.info(`start run scene --> ${this.name()} run successed.`);
         await this.saveMetircsIntoDisk();
 
         await this.saveMetircsIntoDb();
@@ -225,7 +225,7 @@ class Scenario {
   }
 
   protected async saveMetircsIntoDisk() {
-    let fileName = this.scenarioName();
+    let fileName = this.name();
     if (this.report) {
       await FileService.saveReportIntoDisk(this.report, fileName);
     }
@@ -252,11 +252,11 @@ class Scenario {
     return this.url;
   }
 
-  scenarioName(): string {
+  name(): string {
     if (this.lightHouseConfig && this.lightHouseConfig.name !== "") {
-      return `Electron.${this.constructor.name}.${this.lightHouseConfig.name}`;
+      return `${this.constructor.name}.${this.lightHouseConfig.name}`;
     } else {
-      return `Electron.${this.constructor.name}`;
+      return `${this.constructor.name}`;
     }
   }
 
@@ -274,6 +274,6 @@ class Scenario {
 }
 
 export {
-  Scenario
+  Scene
 }
 

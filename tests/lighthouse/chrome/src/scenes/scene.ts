@@ -217,10 +217,10 @@ class Scene {
    * @description: get scene name
    */
   name(): string {
-    if (this.config.name === "") {
-      return `${this.constructor.name}`;
+    if (this.config && this.config.name !== "") {
+      return `${this.constructor.name}.${this.config.name}`;
     } else {
-      return `${this.constructor.name} ${this.config.name}`;
+      return `${this.constructor.name}`;
     }
   }
 

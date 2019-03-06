@@ -2,10 +2,10 @@
  * @Author: doyle.wu
  * @Date: 2019-02-27 10:18:13
  */
-import { Scenario } from './scenario';
+import { Scene } from './scene';
 import { ScenarioConfigFactory, gatherers } from '../lighthouse';
 
-class OfflineScenario extends Scenario {
+class OfflineScene extends Scene {
   async preHandle() {
     this.lightHouseConfig = ScenarioConfigFactory.getOfflineConfig();
 
@@ -24,5 +24,5 @@ class OfflineScenario extends Scenario {
 }
 
 export {
-  OfflineScenario
+  OfflineScene
 }
