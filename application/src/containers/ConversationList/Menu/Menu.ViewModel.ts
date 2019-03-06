@@ -113,11 +113,12 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   }
 
   toggleRead = async () => {
-    if (this.groupId === getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID)) {
-      if (!this.isUnread) {
-        const globalStore = storeManager.getGlobalStore();
-        globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
-      }
+    const currentConversationId = getGlobalValue(
+      GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+    );
+    if (this.groupId === currentConversationId && !this.isUnread) {
+      const globalStore = storeManager.getGlobalStore();
+      globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     }
     await this._stateService.updateReadStatus(this.groupId, !this.isUnread);
   }
