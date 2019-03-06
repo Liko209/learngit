@@ -333,11 +333,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (updated.length) {
       updated.forEach((group: ISortableModel) => {
         if (!postCacheController.has(group.id)) {
-          const processor = new PrefetchPostProcessor(
-            group.id,
-            postCacheController.fetchDataFunc,
-          );
-          this._prefetchHandler.addProcessor(processor);
+          this._addToFetchProcessor(group.id);
         }
       });
     }
@@ -346,11 +342,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const truelyAdded = _.differenceBy(addedIds, deleted);
       truelyAdded.forEach((groupId: number) => {
         if (!postCacheController.has(groupId)) {
-          const processor = new PrefetchPostProcessor(
-            groupId,
-            postCacheController.fetchDataFunc,
-          );
-          this._prefetchHandler.addProcessor(processor);
+          this._addToFetchProcessor(groupId);
         }
       });
     }
@@ -451,22 +443,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const groups = await this._handlersMap[sectionType].fetchData(direction);
       if (sectionType === SECTION_TYPE.FAVORITE) {
         groups.forEach((group: Group) => {
-          const processor = new PrefetchPostProcessor(
-            group.id,
-            postCacheController.fetchDataFunc,
-          );
-          this._prefetchHandler.addProcessor(processor);
+          this._addToFetchProcessor(group.id);
         });
       } else if (sectionType === SECTION_TYPE.DIRECT_MESSAGE) {
         groups.forEach(async (group: Group) => {
           const stateService: StateService = StateService.getInstance();
           const state = await stateService.getById(group.id);
           if (state && state.unread_count) {
-            const processor = new PrefetchPostProcessor(
-              group.id,
-              postCacheController.fetchDataFunc,
-            );
-            this._prefetchHandler.addProcessor(processor);
+            this._addToFetchProcessor(group.id);
           }
         });
       } else {
@@ -474,16 +458,20 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           const stateService: StateService = StateService.getInstance();
           const state = await stateService.getById(group.id);
           if (state && state.unread_mentions_count) {
-            const processor = new PrefetchPostProcessor(
-              group.id,
-              postCacheController.fetchDataFunc,
-            );
-            this._prefetchHandler.addProcessor(processor);
+            this._addToFetchProcessor(group.id);
           }
         });
       }
       PerformanceTracerHolder.getPerformanceTracer().end(logId);
     }
+  }
+
+  private async _addToFetchProcessor(groupId: number) {
+    const processor = new PrefetchPostProcessor(
+      groupId,
+      postCacheController.fetchDataFunc,
+    );
+    this._prefetchHandler.addProcessor(processor);
   }
 
   private _getPerformanceKey(sectionType: SECTION_TYPE): string {

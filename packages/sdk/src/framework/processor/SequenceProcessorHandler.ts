@@ -36,7 +36,6 @@ class SequenceProcessorHandler extends AbstractProcessor {
         .then(() => {
           this._isExecuting = false;
           this.execute();
-          mainLogger.info('SequenceProcessorHandler do fetch');
         })
         .catch((error: Error) => {
           mainLogger.info(
