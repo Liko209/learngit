@@ -166,7 +166,7 @@ export class FetchSortableDataListHandler<
       sortableResult = this.listStore.items;
     }
 
-    this._maintainMode &&
+    !this._maintainMode &&
       this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
         if (callback) {
           callback({
@@ -265,7 +265,7 @@ export class FetchSortableDataListHandler<
       });
     }
 
-    if (this._dataChangeCallBacks.length) {
+    if (this._needToCalculateDifference()) {
       originalSortableModels = _.cloneDeep(this.sortableListStore.items);
     }
 
@@ -274,7 +274,7 @@ export class FetchSortableDataListHandler<
       this.sortableListStore.removeByIds(deletedSortableModelIds);
       this.sortableListStore.upsert(matchedSortableModels);
 
-      if (this._dataChangeCallBacks.length) {
+      if (this._needToCalculateDifference()) {
         // replace models as updated models
         addedSortableModels = matchedSortableModels;
       }
@@ -283,7 +283,7 @@ export class FetchSortableDataListHandler<
       this.sortableListStore.upsert(matchedSortableModels);
       this.sortableListStore.removeByIds(deletedSortableModelIds);
 
-      if (this._dataChangeCallBacks.length) {
+      if (this._needToCalculateDifference()) {
         // calculate added models
         addedSortableModels = _.differenceBy(
           matchedSortableModels,
@@ -300,9 +300,10 @@ export class FetchSortableDataListHandler<
     }
 
     if (
-      deletedSortableModelIds.length ||
-      addedSortableModels.length ||
-      updatedSortableModels.length
+      this._needToCalculateDifference() &&
+      (deletedSortableModelIds.length ||
+        addedSortableModels.length ||
+        updatedSortableModels.length)
     ) {
       this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
         if (callback) {
@@ -313,6 +314,10 @@ export class FetchSortableDataListHandler<
           });
         }
       });
+
+      if (addedSortableModels.length) {
+        this._releaseDataInMaintainMode();
+      }
     }
 
     if (entities.size > 0) {
@@ -330,6 +335,10 @@ export class FetchSortableDataListHandler<
         this.handleDataUpdateReplace(payload);
         break;
     }
+  }
+
+  private _needToCalculateDifference() {
+    return this.maintainMode || this._dataChangeCallBacks.length;
   }
 
   private _isInRange(newData: ISortableModel<T>) {

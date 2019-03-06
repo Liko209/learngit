@@ -16,7 +16,8 @@ import {
   ISortFunc,
 } from '../types';
 
-import { BaseModel, Group } from 'sdk/models';
+import { IdModel } from 'sdk/framework/model';
+import { Group } from 'sdk/module/group/entity';
 import storeManager from '../../../index';
 import { ENTITY_NAME } from '@/store';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
@@ -30,7 +31,7 @@ const PAGE_SIZE = 2;
 
 jest.mock('sdk/api');
 
-type SimpleItem = BaseModel & {
+type SimpleItem = IdModel & {
   value: number;
 };
 
@@ -153,6 +154,8 @@ function setup(
   { originalItems }: { originalItems: SimpleItem[] },
   pageSize: number = PAGE_SIZE,
   customSortFunc?: ISortFunc<any>,
+  eventName?: string,
+  entityName?: ENTITY_NAME,
 ) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
   const listStore = new SortableListStore<SimpleItem>(customSortFunc);
@@ -164,6 +167,8 @@ function setup(
   const fetchSortableDataHandler = new FetchSortableDataListHandler(
     dataProvider,
     {
+      entityName,
+      eventName,
       transformFunc,
       pageSize,
       sortFunc: customSortFunc,
@@ -180,14 +185,23 @@ function setup(
 }
 
 class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
+  mockTotalCount: number;
   mockData: { data: T[]; hasMore: boolean } = { data: [], hasMore: false };
-
+  private _totalCount: number;
   fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor?: ISortableModel<T>,
   ): Promise<{ data: T[]; hasMore: boolean }> {
     return Promise.resolve(this.mockData);
+  }
+
+  totalCount() {
+    return this._totalCount;
+  }
+
+  async fetchTotalCount() {
+    return this.mockTotalCount;
   }
 }
 
@@ -199,24 +213,24 @@ function matchFunc<T>(arg: T): boolean {
   return true;
 }
 
-function numberTransformFunc(data: BaseModel): ISortableModel<BaseModel> {
+function numberTransformFunc(data: IdModel): ISortableModel<IdModel> {
   return { data, id: data.id, sortValue: data.id };
 }
 describe('FetchSortableDataListHandler', () => {
   describe('fetchData()', () => {
-    let fetchSortableDataHandler: FetchSortableDataListHandler<BaseModel>;
-    let dataProvider: TestFetchSortableDataHandler<BaseModel>;
-    const transformFunc: ITransformFunc<BaseModel> = numberTransformFunc;
+    let fetchSortableDataHandler: FetchSortableDataListHandler<IdModel>;
+    let dataProvider: TestFetchSortableDataHandler<IdModel>;
+    const transformFunc: ITransformFunc<IdModel> = numberTransformFunc;
     const sortFunc: ISortFunc<any> = (
       first: ISortableModel,
       second: ISortableModel,
     ) => first.sortValue - second.sortValue;
 
-    const isMatchFunc: IMatchFunc<BaseModel> = notMatchFunc;
+    const isMatchFunc: IMatchFunc<IdModel> = notMatchFunc;
 
     beforeEach(() => {
       dataProvider = new TestFetchSortableDataHandler();
-      fetchSortableDataHandler = new FetchSortableDataListHandler<BaseModel>(
+      fetchSortableDataHandler = new FetchSortableDataListHandler<IdModel>(
         dataProvider,
         { isMatchFunc, transformFunc, sortFunc, pageSize: 2 },
       );
@@ -549,7 +563,7 @@ describe('FetchSortableDataListHandler', () => {
       };
     }
 
-    const group: Group = {
+    const group: any = {
       id: 123,
       most_recent_post_created_at: 1000,
       created_at: 1000,
@@ -649,7 +663,7 @@ describe('FetchSortableDataListHandler', () => {
         { originalItems },
         PAGE_SIZE_10,
       );
-      fetchSortableDataHandler.setDataChangeCallback(() => {});
+      fetchSortableDataHandler.addDataChangeCallback(() => {});
       foc = fetchSortableDataHandler;
       dProvider = dataProvider;
     });
