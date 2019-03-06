@@ -11,12 +11,9 @@ import { StyledMenuWithLogo } from './StyledMenuWithLogo';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { StyledLeft } from './StyledLeft';
 import { StyledRight } from './StyledRight';
-// import { StyledMoreIconButton } from './StyledMoreIconButton';
-import { JuiIconButtonProps } from '../../components/Buttons/IconButton';
-// import { MenuListCompositionProps } from '../MenuListComposition';
 
 type Props = {
-  MainMenu: ComponentType<JuiIconButtonProps>;
+  MainMenu: ComponentType<any>;
   Logo: ComponentType;
   // Search: ComponentType,
   AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
