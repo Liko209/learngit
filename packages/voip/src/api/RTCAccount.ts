@@ -169,6 +169,7 @@ class RTCAccount implements IRTCAccount {
 
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
+      this._delegate.onReceiveNewProvisioningFlags(info.sipFlags);
     });
 
     RTCNetworkNotificationCenter.instance().on(
@@ -256,14 +257,11 @@ class RTCAccount implements IRTCAccount {
     }
   }
 
-  getSipProvisionInfo(): object | null {
+  getSipFlags(): object | null {
     const SipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
 
     if (SipProvisionInfo) {
-      return {
-        voipFeatureEnabled: SipProvisionInfo.sipFlags['voipFeatureEnabled'],
-        voipCountryBlocked: SipProvisionInfo.sipFlags['voipCountryBlocked'],
-      };
+      return SipProvisionInfo.sipFlags;
     }
 
     return null;
