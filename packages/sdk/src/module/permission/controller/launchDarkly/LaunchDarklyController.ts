@@ -39,6 +39,10 @@ class LaunchDarklyController {
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
       this._initClient();
     });
+    notificationCenter.on(SERVICE.LOGOUT, () => {
+      this.launchDarklyClient && this.launchDarklyClient.shutdown();
+      this.isClientReady = false;
+    });
   }
   private _initClient() {
     if (this.isClientReady) {
