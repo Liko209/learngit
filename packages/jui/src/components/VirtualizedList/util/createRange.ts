@@ -11,11 +11,11 @@ type BaseCreateRangeParams = {
   /**
    * Min index of range
    */
-  min: number;
+  min?: number;
   /**
    * Max index of range
    */
-  max: number;
+  max?: number;
 };
 
 type CreateRangeFromAnchorParams = BaseCreateRangeParams & {
@@ -38,8 +38,8 @@ type CreateRangeFromStartIndexParams = BaseCreateRangeParams & {
 const createRange = ({
   startIndex,
   size,
-  min,
-  max,
+  min = -Infinity,
+  max = Infinity,
 }: CreateRangeFromStartIndexParams) => {
   let resultStartIndex = startIndex;
 
@@ -61,8 +61,8 @@ const createRange = ({
 const createRangeFromAnchor = ({
   anchor,
   size,
-  min,
-  max,
+  min = -Infinity,
+  max = Infinity,
 }: CreateRangeFromAnchorParams) => {
   return createRange({
     size,
