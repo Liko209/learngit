@@ -46,10 +46,12 @@ class ImageDownloadedListener implements IImageDownloadedListener {
             id: item.id,
             url: result.url,
             thumbnail: true,
+            autoPreload: true,
           }),
         );
       });
     }
+
     this._waiter();
   }
   onFailure(url: string, errorCode: number): void {
@@ -63,6 +65,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
     url?: string;
     thumbnail?: boolean;
     count?: number;
+    autoPreload?: boolean;
   };
   constructor(
     private _sequenceProcessorHandler: SequenceProcessorHandler,
@@ -71,6 +74,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
       url?: string;
       thumbnail?: boolean;
       count?: number;
+      autoPreload?: boolean;
     },
   ) {
     this._item = item;
@@ -96,23 +100,21 @@ class ThumbnailPreloadProcessor implements IProcessor {
       : null;
   }
 
-  private _getOrigSize(fileItem: FileItem) {
-    return {
-      origWidth: this._getOrigWidth(fileItem),
-      origHeight: this._getOrigHeight(fileItem),
-    };
-  }
-
   toThumbnailUrl(fileItem: FileItem) {
-    const originalSize = this._getOrigSize(fileItem);
-    if (originalSize.origHeight && originalSize.origWidth) {
+    const originalWidth = this._getOrigWidth(fileItem);
+    const originalHeight = this._getOrigHeight(fileItem);
+    if (originalWidth && originalHeight) {
       const url = getThumbnailURL(fileItem);
       if (url && url.length) {
         return { url, thumbnail: true };
       }
     }
 
-    if (fileItem.versions.length && fileItem.versions[0].url) {
+    if (
+      (this._item.autoPreload === undefined || this._item.autoPreload) &&
+      fileItem.versions.length &&
+      fileItem.versions[0].url
+    ) {
       return {
         url: fileItem.versions[0].url,
         thumbnail: false,
@@ -142,13 +144,13 @@ class ThumbnailPreloadProcessor implements IProcessor {
     const itemService = ItemService.getInstance() as ItemService;
     const item = await itemService.getById(this._item.id);
     if (item) {
-      const url = this.toThumbnailUrl(item);
-      if (!url) {
+      const thumbnail = this.toThumbnailUrl(item);
+      if (!thumbnail) {
         return true;
       }
 
-      this._item.url = url.url;
-      this._item.thumbnail = url.thumbnail;
+      this._item.url = thumbnail.url;
+      this._item.thumbnail = thumbnail.thumbnail;
 
       await this.preload(this._item);
     }
