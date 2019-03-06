@@ -25,6 +25,9 @@ import { ENTITY, notificationCenter, EVENT_TYPES } from 'sdk/service';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { SortableListStore } from '../SortableListStore';
+
+const PAGE_SIZE = 2;
+
 jest.mock('sdk/api');
 
 type SimpleItem = BaseModel & {
@@ -47,11 +50,15 @@ function matchInRange(target: SimpleItem) {
   return target.id >= 2 && target.id <= 10;
 }
 
+function expectFocResult(
+  listHandler: FetchSortableDataListHandler<SimpleItem>,
+  expectedId: number[],
+) {
+  expect(listHandler.listStore.items.map(item => item.id)).toEqual(expectedId);
+  expect(listHandler.size).toEqual(expectedId.length);
+}
+
 const transformFunc: ITransformFunc<SimpleItem> = sortableTransformFunc;
-const sortFunc: ISortFunc<any> = (
-  first: ISortableModel,
-  second: ISortableModel,
-) => first.sortValue - second.sortValue;
 
 const sortByDescFunc: ISortFunc<any> = (
   first: ISortableModel,
@@ -144,6 +151,7 @@ function buildPayload(
 
 function setup(
   { originalItems }: { originalItems: SimpleItem[] },
+  pageSize: number = PAGE_SIZE,
   customSortFunc?: ISortFunc<any>,
 ) {
   const dataProvider = new TestFetchSortableDataHandler<SimpleItem>();
@@ -157,9 +165,9 @@ function setup(
     dataProvider,
     {
       transformFunc,
+      pageSize,
       sortFunc: customSortFunc,
       isMatchFunc: matchInRange,
-      pageSize: 2,
     },
     listStore,
   );
@@ -484,6 +492,7 @@ describe('FetchSortableDataListHandler', () => {
           {
             originalItems,
           },
+          PAGE_SIZE,
           sortByDescFunc,
         );
 
@@ -620,6 +629,116 @@ describe('FetchSortableDataListHandler', () => {
         456,
         123,
       ]);
+    });
+  });
+
+  describe('maintainMode', () => {
+    let originalItems: SimpleItem[] = [];
+    let foc: FetchSortableDataListHandler<SimpleItem>;
+    let dProvider: TestFetchSortableDataHandler<SimpleItem>;
+    const PAGE_SIZE_10 = 10;
+    beforeEach(() => {
+      originalItems = [];
+      let pageSize = PAGE_SIZE_10;
+      while (pageSize > 0) {
+        originalItems.push(buildItem(pageSize));
+        pageSize--;
+      }
+
+      const { fetchSortableDataHandler, dataProvider } = setup(
+        { originalItems },
+        PAGE_SIZE_10,
+      );
+      fetchSortableDataHandler.setDataChangeCallback(() => {});
+      foc = fetchSortableDataHandler;
+      dProvider = dataProvider;
+    });
+    it('Should return true when enter maintain mode', () => {
+      expect(foc.maintainMode).toBeFalsy();
+      foc.maintainMode = true;
+      expect(foc.maintainMode).toBeTruthy();
+    });
+    it('Should keep the first page data when receive new data in maintainMode', () => {
+      foc.maintainMode = true;
+      foc.onDataChanged(
+        buildPayload(EVENT_TYPES.UPDATE, [buildItem(2.5), buildItem(2.6)]),
+      );
+
+      expectFocResult(foc, [2.5, 2.6, 3, 4, 5, 6, 7, 8, 9, 10]);
+
+      foc.maintainMode = false;
+      foc.onDataChanged(buildPayload(EVENT_TYPES.UPDATE, [buildItem(3.5)]));
+
+      expectFocResult(foc, [2.5, 2.6, 3, 3.5, 4, 5, 6, 7, 8, 9, 10]);
+    });
+
+    it('Should keep all data when fetching new page data NOT in maintainMode', async () => {
+      dProvider.mockData = {
+        data: [buildItem(PAGE_SIZE_10 + 1), buildItem(PAGE_SIZE_10 + 2)],
+        hasMore: true,
+      };
+      await foc.fetchData(QUERY_DIRECTION.OLDER);
+      expectFocResult(foc, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    });
+
+    it('Should keep the first page data when fetching a new page data in maintainMode', async () => {
+      dProvider.mockData = {
+        data: [buildItem(PAGE_SIZE_10 + 1), buildItem(PAGE_SIZE_10 + 2)],
+        hasMore: true,
+      };
+      foc.maintainMode = true;
+      await foc.fetchData(QUERY_DIRECTION.OLDER);
+      expectFocResult(foc, [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+    });
+
+    it('Should keep all data  when receive a new data NOT in maintainMode', () => {
+      foc.onDataChanged(buildPayload(EVENT_TYPES.UPDATE, [buildItem(2.5)]));
+      expect(foc.size).toEqual(PAGE_SIZE_10 + 1);
+    });
+  });
+
+  describe('totalCountCallback', () => {
+    let fetchSortableDataHandler: FetchSortableDataListHandler<SimpleItem>;
+    let dataProvider: TestFetchSortableDataHandler<SimpleItem>;
+    const eventName = 'SIMPLE_ITEM';
+    const entityName: any = 'SIMPLE_ENTITY_ITEM';
+
+    let callbackFunc: any;
+    beforeEach(() => {
+      const result = setup(
+        {
+          originalItems: [],
+        },
+        PAGE_SIZE,
+        undefined,
+        eventName,
+        ENTITY_NAME.GROUP,
+      );
+      fetchSortableDataHandler = result.fetchSortableDataHandler;
+      dataProvider = result.dataProvider;
+      callbackFunc = jest.fn();
+      fetchSortableDataHandler.setTotalCountChangeCallback(callbackFunc);
+    });
+
+    it('should notify total count changed when receive item deleted', async (done: any) => {
+      const id = [10];
+      dataProvider.mockTotalCount = 11;
+      notificationCenter.emitEntityDelete(eventName, id);
+      setTimeout(() => {
+        expect(callbackFunc).toBeCalledWith(11);
+        done();
+      },         100);
+    });
+
+    it('should notify total count changed when receive item updated/replaced', async (done: any) => {
+      const simpleItem = { id: 10 };
+      dataProvider.mockTotalCount = 12;
+      notificationCenter.emitEntityUpdate(eventName, [simpleItem]);
+
+      setTimeout(() => {
+        expect(callbackFunc).toBeCalledWith(12);
+        done();
+      },         100);
     });
   });
 

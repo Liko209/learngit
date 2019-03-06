@@ -35,7 +35,7 @@ export class ListStore<T> extends BaseNotificationSubscribe {
 
   @action
   replaceAll(newItems: T[]) {
-    newItems.length && this._items.replace(newItems);
+    this._items.replace(newItems);
   }
 
   @action

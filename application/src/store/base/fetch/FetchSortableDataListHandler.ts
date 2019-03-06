@@ -60,6 +60,8 @@ export class FetchSortableDataListHandler<
   private _sortableDataProvider?: IFetchSortableDataProvider<T>;
   protected _totalCountChangeCallback?: CountChangeCallback;
 
+  private _maintainMode: boolean = false;
+
   constructor(
     dataProvider: IFetchSortableDataProvider<T> | undefined,
     options: IFetchSortableDataListHandlerOptions<T>,
@@ -87,13 +89,35 @@ export class FetchSortableDataListHandler<
     return this.listStore as SortableListStore<T>;
   }
 
+  set maintainMode(mode: boolean) {
+    if (this._maintainMode !== mode) {
+      mainLogger.debug(
+        `FetchSortableDataListHandler: change maintain mode, ${mode}`,
+      );
+      this._maintainMode = mode;
+      this._releaseDataInMaintainMode();
+    }
+  }
+
+  get maintainMode() {
+    return this._maintainMode;
+  }
+
+  private _releaseDataInMaintainMode() {
+    if (this._maintainMode) {
+      this.refreshData();
+    }
+  }
+
   protected async fetchDataInternal(
     direction: QUERY_DIRECTION,
     pageSize: number,
     anchor: ISortableModel<T>,
   ) {
     if (!this._sortableDataProvider) {
-      return mainLogger.warn('data fetcher should be defined ');
+      return mainLogger.warn(
+        'FetchSortableDataListHandler: data fetcher should be defined ',
+      );
     }
     const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
       direction,
@@ -117,11 +141,19 @@ export class FetchSortableDataListHandler<
           });
         }
       });
+
+      if (sortableResult.length) {
+        this._releaseDataInMaintainMode();
+      }
     });
     return data;
   }
 
   refreshData() {
+    mainLogger.debug(
+      `FetchSortableDataListHandler: refreshData: ${this.listStore.items
+        .length - this._pageSize}`,
+    );
     let sortableResult: ISortableModel<T>[];
     if (this.listStore.items.length > this._pageSize) {
       sortableResult = this.listStore.items.slice(
@@ -134,15 +166,16 @@ export class FetchSortableDataListHandler<
       sortableResult = this.listStore.items;
     }
 
-    this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
-      if (callback) {
-        callback({
-          added: sortableResult,
-          updated: [],
-          deleted: [],
-        });
-      }
-    });
+    this._maintainMode &&
+      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+        if (callback) {
+          callback({
+            added: sortableResult,
+            updated: [],
+            deleted: [],
+          });
+        }
+      });
   }
 
   handleDataDeleted(payload: NotificationEntityDeletePayload) {
