@@ -1,32 +1,34 @@
 /*
- * @Author: Lip Wang (lip.wang@ringcentral.com)
- * @Date: 2018-12-25 11:12:46
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-02-25 17:22:48
  * Copyright © RingCentral. All rights reserved.
  */
-import { GroupConfig } from '../../models';
-import BaseService from '../../service/BaseService';
-import { ErrorParserHolder } from '../../error';
-import { daoManager, GroupConfigDao } from '../../dao';
-import notificationCenter from '../notificationCenter';
-import { ENTITY } from '../eventKey';
-class GroupConfigService extends BaseService<GroupConfig> {
+
+import { GroupConfig } from '../entity';
+import { ErrorParserHolder } from '../../../error';
+import notificationCenter from '../../../service/notificationCenter';
+import { ENTITY } from '../../../service/eventKey';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { buildPartialModifyController } from '../../../framework/controller';
+import { Raw } from '../../../framework/model';
+class GroupConfigController {
   static serviceName = 'GroupConfigService';
 
-  constructor() {
-    super(GroupConfigDao, null, null, {});
-  }
+  constructor(public entitySourceController: IEntitySourceController) {}
 
-  async getById(id: number): Promise<GroupConfig | null> {
-    const dao = daoManager.getDao(GroupConfigDao);
-    return await dao.get(id);
-  }
-
-  // update partial groupConfig data
-  async updateGroupConfigPartialData(params: object): Promise<boolean> {
+  async updateGroupConfigPartialData(params: GroupConfig): Promise<boolean> {
     try {
-      await this.handlePartialUpdate(
-        params,
-        undefined,
+      const partialModifyController = buildPartialModifyController<GroupConfig>(
+        this.entitySourceController,
+      );
+      await partialModifyController.updatePartially(
+        params.id,
+        (
+          partialModel: Partial<Raw<GroupConfig>>,
+          originalModel: GroupConfig,
+        ) => {
+          return params;
+        },
         async (updatedModel: GroupConfig) => {
           return updatedModel;
         },
@@ -37,13 +39,13 @@ class GroupConfigService extends BaseService<GroupConfig> {
     }
   }
   async saveAndDoNotify(params: GroupConfig) {
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    const original = await groupConfigDao.get(params.id);
+    const original = await this.entitySourceController.get(params.id);
     // this is because of updateGroupConfigPartialData won't support a model to to parital update if it does exist
     if (original) {
       return this.updateGroupConfigPartialData(params);
     }
-    groupConfigDao.update(params);
+
+    this.entitySourceController.update(params);
     notificationCenter.emitEntityUpdate(
       ENTITY.GROUP_CONFIG,
       [params],
@@ -61,9 +63,8 @@ class GroupConfigService extends BaseService<GroupConfig> {
   }
 
   async getDraft(groupId: number): Promise<string> {
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
     const config: GroupConfig | null = groupId
-      ? await groupConfigDao.get(groupId)
+      ? await this.entitySourceController.get(groupId)
       : null;
     if (config && config.draft) {
       return config.draft;
@@ -72,9 +73,8 @@ class GroupConfigService extends BaseService<GroupConfig> {
   }
 
   async getDraftAttachmentItemIds(groupId: number): Promise<number[]> {
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
     const config: GroupConfig | null = groupId
-      ? await groupConfigDao.get(groupId)
+      ? await this.entitySourceController.get(groupId)
       : null;
     if (config && config.attachment_item_ids) {
       return config.attachment_item_ids;
@@ -93,7 +93,7 @@ class GroupConfigService extends BaseService<GroupConfig> {
   // get group data, for send failure post ids
   async getGroupSendFailurePostIds(id: number): Promise<number[]> {
     try {
-      const group = (await this.getById(id)) as GroupConfig;
+      const group = (await this.entitySourceController.get(id)) as GroupConfig;
       return (group && group.send_failure_post_ids) || [];
     } catch (error) {
       throw ErrorParserHolder.getErrorParser().parse(error);
@@ -122,4 +122,4 @@ class GroupConfigService extends BaseService<GroupConfig> {
   }
 }
 
-export { GroupConfigService };
+export { GroupConfigController };

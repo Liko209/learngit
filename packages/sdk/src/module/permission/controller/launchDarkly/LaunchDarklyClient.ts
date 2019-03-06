@@ -23,6 +23,12 @@ class LaunchDarklyClient {
     return this._flags && !!this._flags[type];
   }
 
+  shutdown() {
+    this._ldclient && this._ldclient.off('change');
+    this._ldclient && this._ldclient.off('ready');
+    this._ldclient && this._ldclient.setStreaming(false);
+  }
+
   private _initLDClient(options: Options) {
     this._ldclient = LDClient.initialize(options.clientId, options.user);
     this._ldclient.on('change', (settings: LDFlagSet) => {

@@ -3,10 +3,10 @@
  * @Date: 2018-11-07 14:19:15
  * Copyright © RingCentral. All rights reserved.
  */
-import { BaseDao } from '../../framework/dao';
-import { GroupConfig } from '../../models';
+import { BaseDao } from '../../../framework/dao';
+import { GroupConfig } from '../entity';
 import { IDatabase } from 'foundation';
-import { QUERY_DIRECTION } from '../constants';
+import { QUERY_DIRECTION } from '../../../dao/constants';
 
 class GroupConfigDao extends BaseDao<GroupConfig> {
   static COLLECTION_NAME = 'groupConfig';
@@ -32,4 +32,4 @@ class GroupConfigDao extends BaseDao<GroupConfig> {
   }
 }
 
-export default GroupConfigDao;
+export { GroupConfigDao };

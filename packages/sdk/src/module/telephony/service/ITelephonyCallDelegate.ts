@@ -9,4 +9,4 @@ interface ITelephonyCallDelegate {
   onCallStateChange(callId: string, state: RTC_CALL_STATE): void;
 }
 
-export { ITelephonyCallDelegate };
+export { ITelephonyCallDelegate, RTC_CALL_STATE };
