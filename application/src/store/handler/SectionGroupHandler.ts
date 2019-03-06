@@ -333,7 +333,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (updated.length) {
       updated.forEach((group: ISortableModel) => {
         if (!postCacheController.has(group.id)) {
-          const processor = new PrefetchPostProcessor(group.id);
+          const processor = new PrefetchPostProcessor(
+            group.id,
+            postCacheController.fetchDataFunc,
+          );
           this._prefetchHandler.addProcessor(processor);
         }
       });
@@ -343,7 +346,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const truelyAdded = _.differenceBy(addedIds, deleted);
       truelyAdded.forEach((groupId: number) => {
         if (!postCacheController.has(groupId)) {
-          const processor = new PrefetchPostProcessor(groupId);
+          const processor = new PrefetchPostProcessor(
+            groupId,
+            postCacheController.fetchDataFunc,
+          );
           this._prefetchHandler.addProcessor(processor);
         }
       });
@@ -445,7 +451,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const groups = await this._handlersMap[sectionType].fetchData(direction);
       if (sectionType === SECTION_TYPE.FAVORITE) {
         groups.forEach((group: Group) => {
-          const processor = new PrefetchPostProcessor(group.id);
+          const processor = new PrefetchPostProcessor(
+            group.id,
+            postCacheController.fetchDataFunc,
+          );
           this._prefetchHandler.addProcessor(processor);
         });
       } else if (sectionType === SECTION_TYPE.DIRECT_MESSAGE) {
@@ -453,7 +462,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           const stateService: StateService = StateService.getInstance();
           const state = await stateService.getById(group.id);
           if (state && state.unread_count) {
-            const processor = new PrefetchPostProcessor(group.id);
+            const processor = new PrefetchPostProcessor(
+              group.id,
+              postCacheController.fetchDataFunc,
+            );
             this._prefetchHandler.addProcessor(processor);
           }
         });
@@ -462,7 +474,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           const stateService: StateService = StateService.getInstance();
           const state = await stateService.getById(group.id);
           if (state && state.unread_mentions_count) {
-            const processor = new PrefetchPostProcessor(group.id);
+            const processor = new PrefetchPostProcessor(
+              group.id,
+              postCacheController.fetchDataFunc,
+            );
             this._prefetchHandler.addProcessor(processor);
           }
         });

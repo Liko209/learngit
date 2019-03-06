@@ -5,7 +5,6 @@
  */
 
 import { IProcessor } from './IProcessor';
-import { notificationCenter, WINDOW } from '../../service';
 
 abstract class AbstractProcessor {
   private _name: string;
@@ -13,9 +12,6 @@ abstract class AbstractProcessor {
 
   constructor(name: string) {
     this._name = name;
-    notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
-      this.onNetWorkChanged(onLine);
-    });
   }
 
   abstract async execute(): Promise<boolean>;
