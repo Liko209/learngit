@@ -141,18 +141,22 @@ class ThumbnailPreloadProcessor implements IProcessor {
   }
 
   async process(): Promise<boolean> {
-    const itemService = ItemService.getInstance() as ItemService;
-    const item = await itemService.getById(this._item.id);
-    if (item) {
-      const thumbnail = this.toThumbnailUrl(item);
-      if (!thumbnail) {
-        return true;
-      }
-
-      this._item.url = thumbnail.url;
-      this._item.thumbnail = thumbnail.thumbnail;
-
+    if (this._item.autoPreload) {
       await this.preload(this._item);
+    } else {
+      const itemService = ItemService.getInstance() as ItemService;
+      const item = await itemService.getById(this._item.id);
+      if (item) {
+        const thumbnail = this.toThumbnailUrl(item);
+        if (!thumbnail) {
+          return true;
+        }
+
+        this._item.url = thumbnail.url;
+        this._item.thumbnail = thumbnail.thumbnail;
+
+        await this.preload(this._item);
+      }
     }
 
     return true;
