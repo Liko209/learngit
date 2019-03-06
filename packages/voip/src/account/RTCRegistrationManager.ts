@@ -240,22 +240,23 @@ class RTCRegistrationManager extends EventEmitter2
     });
   }
 
-  private _onUARegFailed(response: any, cause: any) {
-    if (REGISTRATION_ERROR_CODE.TIME_OUT === cause) {
-      this._eventQueue.push(
-        { name: REGISTRATION_EVENT.UA_REGISTER_TIMEOUT },
-        () => {
-          this._fsm.regTimeout();
-        },
-      );
-    } else {
-      this._eventQueue.push(
-        { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
-        () => {
-          this._fsm.regFailed();
-        },
-      );
+  private _onUARegFailed(response?: any, cause?: any) {
+    if (
+      response &&
+      response.status_code &&
+      (REGISTRATION_ERROR_CODE.FORBIDDEN === response.status_code ||
+        REGISTRATION_ERROR_CODE.UNAUTHORIZED === response.status_code ||
+        REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED ===
+          response.status_code)
+    ) {
+      this.emit(REGISTRATION_EVENT.REFRESH_PROV);
     }
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
+      () => {
+        this._fsm.regFailed();
+      },
+    );
   }
 
   private _onUATransportError() {

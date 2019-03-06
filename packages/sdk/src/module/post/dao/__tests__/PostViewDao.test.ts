@@ -240,7 +240,7 @@ describe('PostViewDao', () => {
         QUERY_DIRECTION.OLDER,
         3,
       );
-      expect(result).toHaveLength(0);
+      expect(result).toHaveLength(3);
     });
 
     it('should return empty when direction is newer and post id === 0', async () => {

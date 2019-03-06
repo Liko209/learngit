@@ -33,7 +33,7 @@ describe('ArrayUtils', () => {
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${9}         | ${[6, 7, 8]}    | ${QUERY_DIRECTION.OLDER} | ${3}
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${undefined} | ${[1, 2, 3]}    | ${QUERY_DIRECTION.NEWER} | ${3}
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${undefined} | ${[1, 2, 3]}    | ${QUERY_DIRECTION.BOTH}  | ${3}
-      ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${undefined} | ${[]}           | ${QUERY_DIRECTION.OLDER} | ${3}
+      ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${undefined} | ${[7, 8, 9]}    | ${QUERY_DIRECTION.OLDER} | ${3}
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${1}         | ${[1, 2, 3, 4]} | ${QUERY_DIRECTION.BOTH}  | ${4}
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${2}         | ${[1, 2, 3, 4]} | ${QUERY_DIRECTION.BOTH}  | ${4}
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${3}         | ${[1, 2, 3, 4]} | ${QUERY_DIRECTION.BOTH}  | ${4}
@@ -42,6 +42,7 @@ describe('ArrayUtils', () => {
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${8}         | ${[6, 7, 8, 9]} | ${QUERY_DIRECTION.BOTH}  | ${4}
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${9}         | ${[6, 7, 8, 9]} | ${QUERY_DIRECTION.BOTH}  | ${4}
       ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${undefined} | ${[1, 2, 3, 4]} | ${QUERY_DIRECTION.BOTH}  | ${4}
+      ${[1, 2, 3, 4, 5, 6, 7, 8, 9]} | ${0}         | ${[6, 7, 8, 9]} | ${QUERY_DIRECTION.OLDER} | ${4}
     `(
       'should slice array at $anchor, return $result, direction: $direction',
       ({ originalArray, anchor, result, direction, limit }) => {

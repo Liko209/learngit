@@ -37,6 +37,7 @@ import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/module/person/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
+import { Call } from '@/modules/telephony';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
@@ -69,7 +70,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <JuiIconography iconSize="small">{key}</JuiIconography>;
   }
 
-  renderCopy = (value: string, aria?: string) => {
+  renderIcons = (value: string, aria?: string, showCall?: boolean) => {
     const { t } = this.props;
     return (
       <FormCopy>
@@ -83,6 +84,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
         >
           copy
         </JuiIconButton>
+        {showCall && <Call phone={value} />}
       </FormCopy>
     );
   }
@@ -98,6 +100,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     valueEmphasize = false,
     copyAria,
     copyValue,
+    showCall,
   }: FormGroupType) => {
     return (
       <FormGroup key={value}>
@@ -106,7 +109,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copyValue && this.renderCopy(copyValue, copyAria)}
+        {copyValue && this.renderIcons(copyValue, copyAria, showCall)}
       </FormGroup>
     );
   }
@@ -192,6 +195,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   valueEmphasize: true,
                   copyAria: t('people.profile.ariaExtensionNumber'),
                   copyValue: info.phoneNumber,
+                  showCall: true,
                 });
               })}
               {directNumbers.map((info: PhoneNumberInfo, index: number) => {
@@ -205,6 +209,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   valueEmphasize: true,
                   copyAria: t('people.profile.ariaDirectNumber'),
                   copyValue: info.phoneNumber,
+                  showCall: true,
                 });
               })}
               {person.email &&
