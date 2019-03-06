@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { createRef } from 'react';
+import React, { createRef, Fragment } from 'react';
 import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
@@ -13,6 +13,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiSnackbarContent } from 'jui/components/Banners';
+import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
 import { Notification } from '@/containers/Notification';
 import {
   JuiListToggleButton,
@@ -39,6 +40,10 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
   }
 `;
 
+const createTeamLoading = () => (
+  <DefaultLoadingWithDelay mask={true} size={42} />
+);
+const Loading = withLoading(Fragment, createTeamLoading);
 @observer
 class CreateTeamView extends React.Component<ViewProps, State> {
   static contextType = DialogContext;
@@ -192,6 +197,7 @@ class CreateTeamView extends React.Component<ViewProps, State> {
       handleSearchContactChange,
       serverError,
       errorEmail,
+      loading,
     } = this.props;
     return (
       <JuiModal
@@ -211,44 +217,45 @@ class CreateTeamView extends React.Component<ViewProps, State> {
         }
         cancelText={i18next.t('common.dialog.cancel')}
       >
-        <JuiTextField
-          id={i18next.t('people.team.teamName')}
-          label={i18next.t('people.team.teamName')}
-          fullWidth={true}
-          error={nameError}
-          inputProps={{
-            maxLength: 200,
-            'data-test-automation-id': 'CreateTeamName',
-          }}
-          inputRef={this.teamNameRef}
-          helperText={nameError && i18next.t(errorMsg)}
-          onChange={handleNameChange}
-        />
-        <ContactSearch
-          onSelectChange={handleSearchContactChange}
-          label={i18next.t('people.team.Members')}
-          placeholder={i18next.t('people.team.SearchContactPlaceholder')}
-          error={emailError}
-          helperText={emailError ? i18next.t(emailErrorMsg) : ''}
-          errorEmail={errorEmail}
-          isExcludeMe={true}
-        />
-        <JuiTextarea
-          id={i18next.t('people.team.teamDescription')}
-          label={i18next.t('people.team.teamDescription')}
-          inputProps={{
-            'data-test-automation-id': 'CreateTeamDescription',
-            maxLength: 1000,
-          }}
-          fullWidth={true}
-          onChange={handleDescChange}
-        />
-        <JuiListToggleButton
-          data-test-automation-id="CreateTeamToggleList"
-          items={items}
-          onChange={this.handleSwitchChange}
-        />
-        {/* <JuiTextWithLink
+        <Loading loading={loading} alwaysComponentShow={true} delay={0}>
+          <JuiTextField
+            id={i18next.t('people.team.teamName')}
+            label={i18next.t('people.team.teamName')}
+            fullWidth={true}
+            error={nameError}
+            inputProps={{
+              maxLength: 200,
+              'data-test-automation-id': 'CreateTeamName',
+            }}
+            inputRef={this.teamNameRef}
+            helperText={nameError && i18next.t(errorMsg)}
+            onChange={handleNameChange}
+          />
+          <ContactSearch
+            onSelectChange={handleSearchContactChange}
+            label={i18next.t('people.team.Members')}
+            placeholder={i18next.t('people.team.SearchContactPlaceholder')}
+            error={emailError}
+            helperText={emailError ? i18next.t(emailErrorMsg) : ''}
+            errorEmail={errorEmail}
+            isExcludeMe={true}
+          />
+          <JuiTextarea
+            id={i18next.t('people.team.teamDescription')}
+            label={i18next.t('people.team.teamDescription')}
+            inputProps={{
+              'data-test-automation-id': 'CreateTeamDescription',
+              maxLength: 1000,
+            }}
+            fullWidth={true}
+            onChange={handleDescChange}
+          />
+          <JuiListToggleButton
+            data-test-automation-id="CreateTeamToggleList"
+            items={items}
+            onChange={this.handleSwitchChange}
+          />
+          {/* <JuiTextWithLink
           TypographyProps={{
             align: 'center',
           }}
@@ -256,6 +263,7 @@ class CreateTeamView extends React.Component<ViewProps, State> {
           linkText={t('people.prompt.LearnAboutTeamAdministration')}
           href=""
         /> */}
+        </Loading>
       </JuiModal>
     );
   }
