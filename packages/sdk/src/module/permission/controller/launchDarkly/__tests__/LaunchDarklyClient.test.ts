@@ -32,4 +32,23 @@ describe('LaunchDarklyClient', () => {
       expect(result).toBeTruthy();
     });
   });
+  describe('shutdown', () => {
+    it('should call off twice when shutdown', () => {
+      class MockClient {
+        on() {}
+        off() {}
+        setStreaming() {}
+      }
+      const mc = new MockClient();
+      jest.spyOn(mc, 'off').mockImplementation(() => {});
+      jest.spyOn(mc, 'setStreaming').mockImplementation(() => {});
+      const ld = new LaunchDarklyClient(null);
+      Object.assign(ld, {
+        _ldclient: mc,
+      });
+      ld.shutdown();
+      expect(mc.off).toHaveBeenCalledTimes(2);
+      expect(mc.setStreaming).toHaveBeenCalledTimes(1);
+    });
+  });
 });
