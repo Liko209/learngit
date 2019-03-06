@@ -60,7 +60,7 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   async loadInitialData() {
     await this.discontinuousPosListHandler.loadMorePosts(
       QUERY_DIRECTION.NEWER,
-      1,
+      30,
     );
   }
 
