@@ -44,6 +44,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   onReceiveIncomingCall(call: RTCCall) {}
+
+  onReceiveNewProvFlags(sipFlags: object) {}
 }
 
 export { TelephonyAccountController };
