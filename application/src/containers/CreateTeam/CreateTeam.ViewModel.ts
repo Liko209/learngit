@@ -35,6 +35,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   members: (number | string)[] = [];
   @observable
   errorEmail: string;
+  @observable
+  loading: boolean = false;
 
   @computed
   get isOffline() {
@@ -73,8 +75,16 @@ class CreateTeamViewModel extends AbstractViewModel {
     const groupService: GroupService = GroupService.getInstance();
     const creatorId = Number(AccountGlobalConfig.getCurrentUserId());
     try {
-      return await groupService.createTeam(creatorId, memberIds, options);
+      this.loading = true;
+      const result = await groupService.createTeam(
+        creatorId,
+        memberIds,
+        options,
+      );
+      this.loading = false;
+      return result;
     } catch (error) {
+      this.loading = false;
       const unkonwnError = this.createErrorHandler(error);
       if (unkonwnError) {
         throw new Error();
