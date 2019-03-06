@@ -14,7 +14,7 @@ type MembersProps = ProfileDialogGroupProps;
 type MembersViewProps = ProfileDialogGroupViewProps & {
   sortedAllMemberIds: number[];
   filteredMemberIds: number[];
-  handleSearchDebounce: (keywords: string) => void;
+  changeSearchInputDebounce: (keywords: string) => void;
 };
 
 export { MembersProps, MembersViewProps };

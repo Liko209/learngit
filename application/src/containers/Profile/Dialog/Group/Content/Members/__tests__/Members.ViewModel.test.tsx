@@ -61,16 +61,16 @@ describe('MemberListViewModel', () => {
 
   describe('doFuzzySearchPersons()', () => {
     it('should be invoke one count when use debounce [JPT-1263]', () => {
-      vm.handleSearch = jest.fn();
-      const _debounce = debounce(vm.handleSearch, 300);
+      vm.changeSearchInput = jest.fn();
+      const _debounce = debounce(vm.changeSearchInput, 300);
       _debounce('a');
       _debounce('ab');
       jest.runAllTimers();
-      expect(vm.handleSearch).toHaveBeenCalledTimes(1);
+      expect(vm.changeSearchInput).toHaveBeenCalledTimes(1);
     });
 
     it('should be get mock result when invoke service fuzzy search interface [JPT-1263]', async () => {
-      const result = await vm.handleSearch('ab');
+      const result = await vm.handleSearch();
       expect(result).toEqual(mockResult);
     });
   });
