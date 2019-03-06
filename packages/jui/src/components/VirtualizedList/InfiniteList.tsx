@@ -3,7 +3,7 @@
  * @Date: 2019-03-05 15:35:27
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { JuiDataLoader } from './DataLoader';
 import { JuiVirtualizedList } from './VirtualizedList';
 
@@ -17,6 +17,7 @@ type JuiInfiniteListProps = {
   loadingRenderer: JSX.Element;
   loadingMoreRenderer: JSX.Element;
   children: JSX.Element[];
+  stickToBottom?: boolean;
 };
 
 const JuiInfiniteList = ({
@@ -28,13 +29,22 @@ const JuiInfiniteList = ({
   noRowsRenderer,
   loadingRenderer,
   loadingMoreRenderer,
+  stickToBottom,
   children,
 }: JuiInfiniteListProps) => {
+  const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
+
+  const _loadMore = async (direction: 'up' | 'down') => {
+    enableStickToBottom(false);
+    await loadMore(direction);
+    enableStickToBottom(true);
+  };
+
   return (
     <JuiDataLoader
       hasMore={hasMore}
       loadInitialData={loadInitialData}
-      loadMore={loadMore}
+      loadMore={_loadMore}
     >
       {({ ref, onScroll, loadingInitial, loadingUp, loadingDown }) => {
         if (loadingInitial) {
@@ -46,7 +56,6 @@ const JuiInfiniteList = ({
         if (isEmpty) {
           return noRowsRenderer;
         }
-
         return (
           <JuiVirtualizedList
             ref={ref}
@@ -55,6 +64,7 @@ const JuiInfiniteList = ({
             height={height}
             before={loadingUp ? loadingMoreRenderer : null}
             after={loadingDown ? loadingMoreRenderer : null}
+            stickToBottom={stickToBottom && isStickToBottomEnabled}
           >
             {children}
           </JuiVirtualizedList>

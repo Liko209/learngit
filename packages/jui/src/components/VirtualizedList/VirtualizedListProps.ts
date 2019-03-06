@@ -7,6 +7,7 @@ type JuiVirtualizedListProps = {
   height: number;
   initialScrollToIndex: number;
   initialRangeSize: number;
+  stickToBottom?: boolean;
   onScroll: (event: React.UIEvent) => void;
   before?: React.ReactNode;
   after?: React.ReactNode;
