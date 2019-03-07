@@ -54,9 +54,9 @@ type RTCSipFlags = {
   voipCountryBlocked: boolean;
   outboundCallsEnabled: boolean;
   dscpEnabled: boolean;
-  dscpSignaling: boolean;
-  dscpVoice: boolean;
-  dscpVideo: boolean;
+  dscpSignaling: Number;
+  dscpVoice: Number;
+  dscpVideo: Number;
 };
 
 export {
