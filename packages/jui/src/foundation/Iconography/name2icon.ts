@@ -78,7 +78,6 @@ const name2icon = {
   zoom_out: 'zoom-out',
   zoom_in: 'zoom-in',
   info: 'info',
-  pin: 'pin',
   image_broken: 'image-broken',
   forward: 'forward',
   pervious: 'pervious',
