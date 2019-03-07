@@ -69,6 +69,7 @@ test(formalName('Should remains where it is when click a conversation in the con
   },
 );
 
+// skip due to bug: https://jira.ringcentral.com/browse/FIJI-3278
 test(formalName('Should display in the top when open a closed conversation from URL', ['P2', 'JPT-563', 'ConversationList', 'Yilia Hong']), async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users

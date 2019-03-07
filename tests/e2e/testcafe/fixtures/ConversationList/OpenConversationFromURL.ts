@@ -125,8 +125,8 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
 });
 
 
-// bug: https://jira.ringcentral.com/browse/FIJI-3278
-test(formalName('Should display in the top of conversation list when opening a conversation and it is out of the left list', ['P2', 'JPT-463', 'Potar.He', 'ConversationList',]), async (t: TestController) => {
+// skip due to bug: https://jira.ringcentral.com/browse/FIJI-3278
+test.skip(formalName('Should display in the top of conversation list when opening a conversation and it is out of the left list', ['P2', 'JPT-463', 'Potar.He', 'ConversationList',]), async (t: TestController) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users
   const loginUser = users[7];
