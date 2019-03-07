@@ -63,7 +63,7 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
     }
 
     if (arrangeIds) {
-      entities = await this.entityCacheController.batchGet(arrangeIds);
+      entities = await this.entityCacheController.batchGet(arrangeIds, true);
     } else {
       entities = await this.getEntities();
     }

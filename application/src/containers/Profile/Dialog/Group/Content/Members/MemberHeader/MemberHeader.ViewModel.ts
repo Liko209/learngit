@@ -7,9 +7,9 @@ import { computed } from 'mobx';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { MemberHeaderViewProps } from './types';
-import { ProfileDialogGroupViewModel } from '../../../Group.ViewModel';
+import { MembersViewModel } from '../Members.ViewModel';
 
-class MemberHeaderViewModel extends ProfileDialogGroupViewModel
+class MemberHeaderViewModel extends MembersViewModel
   implements MemberHeaderViewProps {
   @computed
   get hasShadow() {

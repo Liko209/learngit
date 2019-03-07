@@ -190,6 +190,7 @@ class PersonController {
     excludeSelf?: boolean,
     arrangeIds?: number[],
     fetchAllIfSearchKeyEmpty?: boolean,
+    asIdsOrder?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
@@ -202,6 +203,28 @@ class PersonController {
     let currentUserId: number | null = null;
     if (excludeSelf) {
       currentUserId = AccountGlobalConfig.getCurrentUserId();
+    }
+
+    let sortFunc = undefined;
+    if (!arrangeIds || !asIdsOrder) {
+      sortFunc = (
+        personA: SortableModel<Person>,
+        personB: SortableModel<Person>,
+      ) => {
+        if (personA.firstSortKey > personB.firstSortKey) {
+          return -1;
+        }
+        if (personA.firstSortKey < personB.firstSortKey) {
+          return 1;
+        }
+        if (personA.secondSortKey < personB.secondSortKey) {
+          return -1;
+        }
+        if (personA.secondSortKey > personB.secondSortKey) {
+          return 1;
+        }
+        return 0;
+      };
     }
 
     const result = await this._cacheSearchController.searchEntities(
@@ -219,8 +242,7 @@ class PersonController {
           }
 
           let name: string = this.getName(person);
-          let sortValue = 0;
-
+          let sortValue: number = 0;
           if (terms.length > 0) {
             if (this._cacheSearchController.isFuzzyMatched(name, terms)) {
               sortValue = SortingOrder.FullNameMatching;
@@ -268,27 +290,11 @@ class PersonController {
       },
       searchKey,
       arrangeIds,
-      (personA: SortableModel<Person>, personB: SortableModel<Person>) => {
-        if (personA.firstSortKey > personB.firstSortKey) {
-          return -1;
-        }
-        if (personA.firstSortKey < personB.firstSortKey) {
-          return 1;
-        }
-
-        if (personA.secondSortKey < personB.secondSortKey) {
-          return -1;
-        }
-        if (personA.secondSortKey > personB.secondSortKey) {
-          return 1;
-        }
-        return 0;
-      },
+      sortFunc,
     );
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
-
   getName(person: Person) {
     if (person.display_name) {
       return person.display_name;
