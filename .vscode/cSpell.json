@@ -121,7 +121,8 @@
     "uids",
     "snackbars",
     "dismissible",
-    "moize"
+    "moize",
+    "overscan"
   ],
   "flagWords": []
 }

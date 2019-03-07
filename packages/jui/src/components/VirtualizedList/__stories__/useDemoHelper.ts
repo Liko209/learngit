@@ -29,6 +29,14 @@ const useDemoHelper = ({ initialDataCount }: { initialDataCount: number }) => {
     const startId = 1000000;
     return itemFactory.buildItems(startId, initialDataCount);
   });
+  const [visibleRange, setVisibleRange] = useState({
+    startIndex: 0,
+    stopIndex: 0,
+  });
+  const [renderedRange, setRenderedRange] = useState({
+    startIndex: 0,
+    stopIndex: 0,
+  });
 
   const handlePrependClick = () => {
     const i = items[0].id - 1;
@@ -58,6 +66,10 @@ const useDemoHelper = ({ initialDataCount }: { initialDataCount: number }) => {
     handleAppendClick,
     handleAddCrazyClick,
     handleRemoveClick,
+    visibleRange,
+    setVisibleRange,
+    renderedRange,
+    setRenderedRange,
   };
 };
 

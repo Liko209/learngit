@@ -151,6 +151,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     });
   };
 
+  const isRangeEqual = (left: IndexRange, right: IndexRange) => {
+    return (
+      left.startIndex === right.startIndex || left.stopIndex === right.stopIndex
+    );
+  };
+
   const getVisibleRange = (scrollTop: number) => {
     return {
       startIndex: getRowIndexFromPosition(scrollTop),
@@ -203,16 +209,23 @@ const JuiVirtualizedList: RefForwardingComponent<
   const { startIndex: _startIndex, stopIndex: _stopIndex } = renderedRange;
 
   // ------------------------------------------------------------
-  const prevStartChildRef = useRef(children[_startIndex]);
+  const prevStartChildRef = useRef<JSX.Element | undefined>(
+    children[_startIndex],
+  );
   const prevStartIndexRef = useRef(_startIndex);
   const prevChildrenCountRef = useRef(childrenCount);
-
-  let startIndex: number = _startIndex;
-  let stopIndex: number = _stopIndex;
+  const prevVisibleRangeRef = useRef<IndexRange>({
+    startIndex: 0,
+    stopIndex: 0,
+  });
   const scrollEffectTriggerRef = useRef(0);
 
-  if (prevChildrenCountRef.current !== children.length) {
-    const prevStartChild = prevStartChildRef.current;
+  const prevStartChild = prevStartChildRef.current;
+  const prevChildrenCount = prevChildrenCountRef.current;
+  let startIndex: number = _startIndex;
+  let stopIndex: number = _stopIndex;
+
+  if (prevChildrenCount !== children.length && prevStartChild) {
     const offset =
       children.findIndex(child => child.key === prevStartChild.key) -
       prevStartIndexRef.current;
@@ -318,33 +331,40 @@ const JuiVirtualizedList: RefForwardingComponent<
       }
 
       // Update rendered range
-      let renderedRange: IndexRange;
+      let newRenderedRange: IndexRange;
       const prevScrollTop = prevScrollTopRef.current;
       const direction = scrollTop > prevScrollTop ? 'down' : 'up';
       if ('up' === direction) {
-        renderedRange = {
+        newRenderedRange = {
           startIndex: Math.max(visibleRange.startIndex - overscan, 0),
           stopIndex: visibleRange.stopIndex,
         };
       } else if ('down' === direction) {
-        renderedRange = {
+        newRenderedRange = {
           startIndex: visibleRange.startIndex,
           stopIndex: visibleRange.stopIndex + overscan,
         };
       } else {
-        renderedRange = { ...visibleRange };
+        newRenderedRange = { ...visibleRange };
       }
-      setRenderedRange(renderedRange);
+
+      if (!isRangeEqual(renderedRange, newRenderedRange)) {
+        setRenderedRange(newRenderedRange);
+        onRenderedRangeChange(newRenderedRange);
+      }
+
+      if (!isRangeEqual(prevVisibleRangeRef.current, visibleRange)) {
+        onVisibleRangeChange(visibleRange);
+        prevVisibleRangeRef.current = visibleRange;
+      }
 
       // Emit events
       onScroll(event);
-      onVisibleRangeChange(visibleRange);
-      onRenderedRangeChange(renderedRange);
 
       // Remember startChild/startIndex/childrenCount which would been
       // used for detect list change when re-rendering
-      prevStartChildRef.current = children[renderedRange.startIndex];
-      prevStartIndexRef.current = renderedRange.startIndex;
+      prevStartChildRef.current = children[newRenderedRange.startIndex];
+      prevStartIndexRef.current = newRenderedRange.startIndex;
       prevChildrenCountRef.current = children.length;
       // Remember scrollTop to check scroll direction
       prevScrollTopRef.current = scrollTop;
