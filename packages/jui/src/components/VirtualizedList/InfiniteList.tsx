@@ -4,8 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import { JuiVirtualizedList } from './VirtualizedList';
+import { IndexRange } from './VirtualizedListProps';
 
 type JuiInfiniteListProps = {
   height: number;
@@ -13,6 +15,7 @@ type JuiInfiniteListProps = {
   loadInitialData: () => Promise<void>;
   loadMore: (direction: 'up' | 'down') => Promise<void>;
   initialScrollToIndex: number;
+  onVisibleRangeChange: (visibleRange: IndexRange) => void;
   noRowsRenderer: JSX.Element;
   loadingRenderer: JSX.Element;
   loadingMoreRenderer: JSX.Element;
@@ -28,6 +31,7 @@ const JuiInfiniteList = ({
   noRowsRenderer,
   loadingRenderer,
   loadingMoreRenderer,
+  onVisibleRangeChange,
   children,
 }: JuiInfiniteListProps) => {
   return (
@@ -52,6 +56,7 @@ const JuiInfiniteList = ({
             ref={ref}
             initialScrollToIndex={initialScrollToIndex}
             onScroll={onScroll}
+            onVisibleRangeChange={onVisibleRangeChange}
             height={height}
             before={loadingUp ? loadingMoreRenderer : null}
             after={loadingDown ? loadingMoreRenderer : null}
@@ -66,6 +71,7 @@ const JuiInfiniteList = ({
 
 JuiInfiniteList.defaultProps = {
   initialScrollToIndex: 0,
+  onVisibleRangeChange: noop,
 };
 
 export { JuiInfiniteList, JuiInfiniteListProps };

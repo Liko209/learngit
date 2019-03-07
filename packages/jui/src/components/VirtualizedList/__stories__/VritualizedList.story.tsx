@@ -3,18 +3,21 @@
  * @Date: 2019-02-28 14:59:26
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useState, useLayoutEffect, useRef } from 'react';
-import { storiesOf } from '@storybook/react';
+import React, { useRef, useState } from 'react';
 import { number } from '@storybook/addon-knobs';
-import { spacing } from '../../../foundation/utils';
+import { storiesOf } from '@storybook/react';
 import styled from '../../../foundation/styled-components';
+import { spacing } from '../../../foundation/utils';
 import { JuiCircularProgress } from '../../Progress';
+import { JuiInfiniteList } from '../InfiniteList';
 import {
   JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from '../VirtualizedList';
-import { itemFactory, ItemModel } from './itemFactory';
-import { JuiInfiniteList } from '../InfiniteList';
+import { IndexRange } from '../VirtualizedListProps';
+import { DemoItem } from './DemoItem';
+import { itemFactory } from './itemFactory';
+import { useDemoHelper } from './useDemoHelper';
 
 const StyledLoadingMore = styled.div`
   display: flex;
@@ -24,113 +27,62 @@ const StyledLoadingMore = styled.div`
   padding: ${spacing(15, 0)};
 `;
 
+const ListWrapper = styled.div`
+  width: 515px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+`;
+
 const LoadingMore = () => (
   <StyledLoadingMore>
     <JuiCircularProgress />
   </StyledLoadingMore>
 );
-
-const Item = ({ item }: { item: ItemModel }) => {
-  const [crazyHeight, setCrazyHeight] = useState(10);
-  useLayoutEffect(() => {
-    if (item.crazy) {
-      const interval = setInterval(() => {
-        if (crazyHeight < 100) {
-          setCrazyHeight(crazyHeight + 10);
-        } else {
-          setCrazyHeight(50);
-        }
-      },                           1000);
-      return () => {
-        clearInterval(interval);
-      };
-    }
-    return () => {};
-  },              [crazyHeight]);
-
-  if (item.crazy) {
-    return (
-      <div
-        style={{
-          height: crazyHeight,
-          background: '#fdd',
-          borderBottom: '1px dashed',
-        }}
-      >
-        I am CRAZY
-      </div>
-    );
-  }
-
-  if (item.imageUrl) {
-    return (
-      <div style={{ padding: '10px 0', borderBottom: '1px dashed' }}>
-        {item.text} <br />
-        <img src={item.imageUrl} />
-      </div>
-    );
-  }
-
+const DebugTableRow = ({
+  name,
+  range,
+}: {
+  name: string;
+  range: IndexRange;
+}) => {
   return (
-    <div style={{ padding: '10px 0', height: 19, borderBottom: '1px dashed' }}>
-      {item.text}
-    </div>
+    <tr>
+      <td>{name}</td>
+      <td>
+        {range.startIndex}-{range.stopIndex}
+      </td>
+      <td>{range.stopIndex - range.startIndex + 1}</td>
+    </tr>
   );
 };
 
-const useItems = (defaultItems: ItemModel[] | (() => ItemModel[])) => {
-  const [items, setItems] = useState(defaultItems);
-
-  const prependItem = (...newItems: ItemModel[]) => {
-    setItems([...newItems, ...items]);
-  };
-
-  const appendItem = (...newItems: ItemModel[]) => {
-    setItems([...items, ...newItems]);
-  };
-
-  const removeItem = (removeIndex: number) => {
-    setItems(items.filter((_, index) => removeIndex !== index));
-  };
-
-  return { items, appendItem, prependItem, removeItem };
-};
-
-const useDemoHelper = (dataCount: number) => {
-  const { items, appendItem, prependItem, removeItem } = useItems(() => {
-    const startId = 1000000;
-    return itemFactory.buildItems(startId, dataCount);
-  });
-
-  const handlePrependClick = () => {
-    const i = items[0].id - 1;
-    prependItem(itemFactory.buildItem(i));
-  };
-
-  const handleAppendClick = () => {
-    const i = items[items.length - 1].id + 1;
-    appendItem(itemFactory.buildImageItem(i));
-  };
-
-  const handleAddCrazyClick = () => {
-    const i = items[0].id - 1;
-    prependItem(itemFactory.buildCrazyItem(i));
-  };
-
-  const handleRemoveClick = () => {
-    removeItem(0);
-  };
-
-  return {
-    items,
-    prependItem,
-    appendItem,
-    removeItem,
-    handlePrependClick,
-    handleAppendClick,
-    handleAddCrazyClick,
-    handleRemoveClick,
-  };
+const DebugTable = ({
+  visibleRange,
+  renderedRange,
+  loadedRange,
+}: {
+  visibleRange: IndexRange;
+  renderedRange?: IndexRange;
+  loadedRange?: IndexRange;
+}) => {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <td>Type</td>
+          <td>Range</td>
+          <td>Count</td>
+        </tr>
+      </thead>
+      <tbody>
+        <DebugTableRow name="visible" range={visibleRange} />
+        {renderedRange && (
+          <DebugTableRow name="rendered" range={renderedRange} />
+        )}
+        {loadedRange && <DebugTableRow name="loaded" range={loadedRange} />}
+      </tbody>
+    </table>
+  );
 };
 
 storiesOf('Components/VirtualizedList', module)
@@ -138,10 +90,14 @@ storiesOf('Components/VirtualizedList', module)
     const dataCount = number('dataCount', 100);
     const initialScrollToIndex = number('initialScrollToIndex', 0);
     const initialRangeSize = number('initialRangeSize', 7);
-    const listHeight = number('listHeight', 200);
+    const listHeight = number('listHeight', 400);
 
     const Demo = () => {
       const ref = useRef<JuiVirtualizedListHandles>(null);
+      const [visibleRange, setVisibleRange] = useState({
+        startIndex: 0,
+        stopIndex: 0,
+      });
 
       const {
         items,
@@ -149,7 +105,7 @@ storiesOf('Components/VirtualizedList', module)
         handleAppendClick,
         handleAddCrazyClick,
         handleRemoveClick,
-      } = useDemoHelper(dataCount);
+      } = useDemoHelper({ initialDataCount: dataCount });
 
       const handleDataChange = ({
         currentTarget,
@@ -161,7 +117,9 @@ storiesOf('Components/VirtualizedList', module)
         }
       };
 
-      const children = items.map(item => <Item key={item.id} item={item} />);
+      const children = items.map(item => (
+        <DemoItem key={item.id} item={item} />
+      ));
       return (
         <div>
           <button onClick={handlePrependClick}>Prepend Item</button>
@@ -174,16 +132,19 @@ storiesOf('Components/VirtualizedList', module)
             <input onInput={handleDataChange} type="number" />
           </label>
           <br />
-          <div style={{ border: '1px solid' }}>
+          <ListWrapper>
             <JuiVirtualizedList
               ref={ref}
               initialScrollToIndex={initialScrollToIndex}
               initialRangeSize={initialRangeSize}
               height={listHeight}
+              onVisibleRangeChange={setVisibleRange}
             >
               {children}
             </JuiVirtualizedList>
-          </div>
+          </ListWrapper>
+          <br />
+          <DebugTable visibleRange={visibleRange} />
         </div>
       );
     };
@@ -195,9 +156,17 @@ storiesOf('Components/VirtualizedList', module)
     const initialLoadTime = number('initialLoadTime', 0);
     const moreLoadTime = number('moreLoadTime', 500);
 
-    const DataLoaderDemo = () => {
-      const { items, prependItem, appendItem } = useDemoHelper(0);
-      const children = items.map(item => <Item key={item.id} item={item} />);
+    const InfiniteListDemo = () => {
+      const { items, prependItem, appendItem } = useDemoHelper({
+        initialDataCount: 0,
+      });
+      const [visibleRange, setVisibleRange] = useState({
+        startIndex: 0,
+        stopIndex: 0,
+      });
+      const children = items.map(item => (
+        <DemoItem key={item.id} item={item} />
+      ));
 
       const startId = 10000;
       const pageSize = 10;
@@ -237,18 +206,25 @@ storiesOf('Components/VirtualizedList', module)
       };
 
       return (
-        <JuiInfiniteList
-          hasMore={hasMore}
-          height={400}
-          loadInitialData={loadInitialData}
-          loadMore={loadMore}
-          loadingMoreRenderer={<LoadingMore />}
-          loadingRenderer={<div>loading initial</div>}
-          noRowsRenderer={<div>Empty</div>}
-        >
-          {children}
-        </JuiInfiniteList>
+        <>
+          <ListWrapper>
+            <JuiInfiniteList
+              hasMore={hasMore}
+              height={400}
+              loadInitialData={loadInitialData}
+              loadMore={loadMore}
+              loadingMoreRenderer={<LoadingMore />}
+              loadingRenderer={<div>loading initial</div>}
+              noRowsRenderer={<div>Empty</div>}
+              onVisibleRangeChange={setVisibleRange}
+            >
+              {children}
+            </JuiInfiniteList>
+          </ListWrapper>
+          <br />
+          <DebugTable visibleRange={visibleRange} />
+        </>
       );
     };
-    return <DataLoaderDemo />;
+    return <InfiniteListDemo />;
   });
