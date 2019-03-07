@@ -522,7 +522,7 @@ describe('FetchSortableDataListHandler', () => {
           originalItems,
         });
         const dataChangeCallback = jest.fn();
-        fetchSortableDataHandler.setDataChangeCallback(dataChangeCallback);
+        fetchSortableDataHandler.addDataChangeCallback(dataChangeCallback);
         fetchSortableDataHandler.onDataChanged(payload);
         if (callbackMuted) {
           return expect(dataChangeCallback).not.toHaveBeenCalled();
@@ -663,7 +663,7 @@ describe('FetchSortableDataListHandler', () => {
         { originalItems },
         PAGE_SIZE_10,
       );
-      fetchSortableDataHandler.setDataChangeCallback(() => {});
+      fetchSortableDataHandler.addDataChangeCallback(() => {});
       foc = fetchSortableDataHandler;
       dProvider = dataProvider;
     });
@@ -762,7 +762,7 @@ describe('FetchSortableDataListHandler', () => {
         originalItems: [buildItem(1), buildItem(2)],
       });
       const dataChangeCallback = jest.fn();
-      fetchSortableDataHandler.setDataChangeCallback(dataChangeCallback);
+      fetchSortableDataHandler.addDataChangeCallback(dataChangeCallback);
       fetchSortableDataHandler.refreshData();
       expect(dataChangeCallback).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -787,7 +787,7 @@ describe('FetchSortableDataListHandler', () => {
         5,
       );
       const dataChangeCallback = jest.fn();
-      fetchSortableDataHandler.setDataChangeCallback(dataChangeCallback);
+      fetchSortableDataHandler.addDataChangeCallback(dataChangeCallback);
 
       fetchSortableDataHandler.refreshData();
       expect(dataChangeCallback).toHaveBeenCalledWith(
