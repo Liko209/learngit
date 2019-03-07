@@ -88,6 +88,7 @@ const DebugTable = ({
 storiesOf('Components/VirtualizedList', module)
   .add('VirtualizedList', () => {
     const dataCount = number('dataCount', 100);
+    const overscan = number('overscan', 5);
     const initialScrollToIndex = number('initialScrollToIndex', 0);
     const listHeight = number('listHeight', 300);
 
@@ -139,6 +140,7 @@ storiesOf('Components/VirtualizedList', module)
             <JuiVirtualizedList
               ref={ref}
               height={listHeight}
+              overscan={overscan}
               minRowHeight={40}
               initialScrollToIndex={initialScrollToIndex}
               onVisibleRangeChange={setVisibleRange}
@@ -223,6 +225,7 @@ storiesOf('Components/VirtualizedList', module)
               hasMore={hasMore}
               height={300}
               minRowHeight={40}
+              overscan={5}
               loadInitialData={loadInitialData}
               loadMore={loadMore}
               loadingMoreRenderer={<LoadingMore />}
