@@ -43,9 +43,12 @@ export default class GroupModel extends Base<Group> {
   mostRecentPostId?: number;
   @observable
   deactivated: boolean;
-  isCompanyTeam: boolean;
+  @observable
+  isArchived?: boolean;
 
+  isCompanyTeam: boolean;
   latestTime: number;
+
   constructor(data: Group) {
     super(data);
     const {
@@ -63,6 +66,7 @@ export default class GroupModel extends Base<Group> {
       permissions,
       deactivated,
       is_company_team,
+      is_archived,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -81,6 +85,7 @@ export default class GroupModel extends Base<Group> {
     this.mostRecentPostId = most_recent_post_id;
 
     this.deactivated = deactivated;
+    this.isArchived = is_archived;
     this.isCompanyTeam = is_company_team;
   }
 

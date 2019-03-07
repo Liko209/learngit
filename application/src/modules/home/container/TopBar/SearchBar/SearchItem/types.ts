@@ -5,6 +5,11 @@
  */
 import PersonModel from '@/store/models/Person';
 import GroupModel from '@/store/models/Group';
+import { RecentSearchTypes } from 'sdk/module/search/entity';
+
+interface ISearchItemModel {
+  addRecentRecord: () => void;
+}
 
 type Props = {
   id: number;
@@ -28,6 +33,13 @@ type BaseViewProps = {
   sectionIndex: number;
   cellIndex: number;
   hovered: boolean;
+  addRecentRecord: () => void;
 };
 
-export { Props, BaseViewProps, PersonModel };
+export {
+  Props,
+  BaseViewProps,
+  PersonModel,
+  ISearchItemModel,
+  RecentSearchTypes,
+};
