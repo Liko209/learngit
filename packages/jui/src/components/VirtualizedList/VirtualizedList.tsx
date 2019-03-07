@@ -13,6 +13,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
   RefForwardingComponent,
+  useEffect,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
@@ -50,6 +51,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     onScroll = noop,
     before = null,
     after = null,
+    stickToBottom,
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
@@ -146,12 +148,27 @@ const JuiVirtualizedList: RefForwardingComponent<
     return Array.prototype.slice.call(contentEl.children, 0);
   };
 
-  const scrollToPosition = (position: ScrollPosition) => {
+  const scrollToPosition = ({
+    index,
+    offset,
+    options = true,
+  }: ScrollPosition) => {
     if (ref.current) {
-      ref.current.scrollTop = getRowOffsetTop(position.index) + position.offset;
+      if (options === true) {
+        ref.current.scrollTop = getRowOffsetTop(index) + offset;
+      }
+      if (options === false) {
+        ref.current.scrollTop = getRowOffsetTop(index + 1) - height - offset;
+      }
     }
   };
-
+  const scrollToBottom = () => {
+    return scrollToPosition({
+      index: childrenCount - 1,
+      offset: 99999,
+      options: true,
+    });
+  };
   //
   // Forward ref
   //
@@ -177,7 +194,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     offset: 0,
   });
   const [cache] = useState(new Map());
-  const [estimateRowHeight] = useState(60);
+  const [estimateRowHeight] = useState(40);
   const [displayRange, setDisplayRange] = useRange(
     createDisplayRange({ startIndex: initialScrollToIndex - 5 }),
   );
@@ -187,6 +204,8 @@ const JuiVirtualizedList: RefForwardingComponent<
   const prevStartChildRef = useRef(children[_startIndex]);
   const prevStartIndexRef = useRef(_startIndex);
   const prevChildrenCountRef = useRef(childrenCount);
+  const prevAtBottomRef = useRef(false);
+  const shouldScrollToBottom = () => prevAtBottomRef.current && stickToBottom;
 
   let startIndex: number = _startIndex;
   let stopIndex: number = _stopIndex;
@@ -195,8 +214,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   if (prevChildrenCountRef.current !== children.length) {
     const prevStartChild = prevStartChildRef.current;
     const offset =
-      children.findIndex(child => child.key === prevStartChild.key) -
-      prevStartIndexRef.current;
+      children.findIndex(
+        (child: JSX.Element) => child.key === prevStartChild.key,
+      ) - prevStartIndexRef.current;
 
     if (offset !== 0) {
       startIndex += offset;
@@ -216,13 +236,15 @@ const JuiVirtualizedList: RefForwardingComponent<
   useLayoutEffect(() => {
     if (beforeRef.current) {
       updateBeforeHeight(beforeRef.current);
-    } else {
     }
   },              [!!before]);
 
   useLayoutEffect(() => {
+    if (shouldScrollToBottom()) {
+      return scrollToBottom();
+    }
     scrollToPosition(scrollPosition);
-  },              [!!before, scrollEffectTriggerRef.current]);
+  },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
   // Update height cache and observe dynamic rows
@@ -230,8 +252,15 @@ const JuiVirtualizedList: RefForwardingComponent<
   useLayoutEffect(() => {
     const handleSizeChange = (el: HTMLElement, i: number) => {
       const { diff } = updateRowHeightCache(el, startIndex + i);
+      if (diff === 0) {
+        return;
+      }
+
+      if (shouldScrollToBottom()) {
+        return scrollToBottom();
+      }
       const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
-      if (diff !== 0 && beforeFirstVisibleRow) {
+      if (beforeFirstVisibleRow) {
         scrollToPosition(scrollPosition);
       }
     };
@@ -250,24 +279,35 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
 
     return () => {
-      resizeObservers.forEach(ro => ro.disconnect());
+      resizeObservers.forEach((ro: ResizeObserver) => ro.disconnect());
     };
-  },              [getChildKey(startIndex), getChildKey(stopIndex)]);
+  },              [
+    getChildKey(startIndex),
+    getChildKey(Math.min(stopIndex, childrenCount - 1)),
+  ]);
 
+  useEffect(() => {
+    if (ref.current) {
+      const { scrollTop } = ref.current;
+      prevAtBottomRef.current =
+        height >= getRowOffsetTop(childrenCount) - scrollTop;
+    }
+  });
   //
   // Scrolling
   //
   const handleScroll = (event: React.UIEvent) => {
     if (ref.current) {
-      const scrollTop = ref.current.scrollTop;
+      const { scrollTop } = ref.current;
       const anchor = getRowIndexFromPosition(scrollTop + height / 2);
       const index = getRowIndexFromPosition(scrollTop);
 
       if (cache.has(getChildKey(index))) {
         // Remember the position
+        const offset = scrollTop - getRowOffsetTop(index);
         setScrollPosition({
           index,
-          offset: scrollTop - getRowOffsetTop(index),
+          offset,
         });
       }
 
@@ -277,7 +317,6 @@ const JuiVirtualizedList: RefForwardingComponent<
       prevStartChildRef.current = children[range.startIndex];
       prevStartIndexRef.current = range.startIndex;
       prevChildrenCountRef.current = children.length;
-
       onScroll(event);
     }
   };
@@ -321,6 +360,7 @@ const MemoList = memo(
       before?: React.ReactNode;
       after?: React.ReactNode;
       height: number;
+      stickToBottom?: boolean;
       children: JSX.Element[];
     } & React.RefAttributes<JuiVirtualizedListHandles>
   >
