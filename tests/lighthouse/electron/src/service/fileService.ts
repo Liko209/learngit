@@ -4,6 +4,9 @@
  */
 
 import * as fs from 'fs';
+import * as path from 'path';
+import axios from 'axios';
+import * as FormData from 'form-data';
 import { LogUtils } from '../utils';
 import { Config } from '../config';
 
@@ -14,6 +17,8 @@ const REPORT_DIR_PATH = `${process.cwd()}/${Config.reportUri}`;
 if (!fs.existsSync(REPORT_DIR_PATH)) {
   fs.mkdirSync(REPORT_DIR_PATH);
 }
+
+const fileServerUrl = "http://xmn02-i01-mck01.lab.nordigy.ru:9000";
 
 class FileService {
 
@@ -45,7 +50,15 @@ class FileService {
       names.push('Traces');
       let htmlArray = ['<!doctype html><html><head></head><body>'];
       for (let t of tracesFiles) {
-        htmlArray.push('<div style="margin:15px 130px">', `<a href="${t}" download="${t}" target="_blank">`, t, '</a>', '</div>');
+        const stream = fs.createReadStream(path.join(REPORT_DIR_PATH, t));
+
+        const form = new FormData();
+        form.append('file', stream);
+        const response = await axios.post(`${fileServerUrl}/api/upload`, form, {
+          headers: form.getHeaders(),
+          maxContentLength: Infinity
+        });
+        htmlArray.push('<div style="margin:15px 130px">', `<a href="${fileServerUrl}/download/${response.data.fileName}" target="_blank">`, t, '</a>', '</div>');
       }
       htmlArray.push('</body></html>');
 
