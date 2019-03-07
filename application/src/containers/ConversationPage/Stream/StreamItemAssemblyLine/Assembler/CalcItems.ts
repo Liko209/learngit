@@ -20,8 +20,7 @@ export class SingletonTagChecker extends Assembler {
     const items = streamItemList
       .sortBy('id')
       .sortedUniqBy('id')
-      .reverse()
-      .reduce(this.filterDuplicateTags, []);
+      .reduceRight(this.filterDuplicateTags, []);
     return { ...args, streamItemList: _(items) };
   }
 
@@ -30,8 +29,7 @@ export class SingletonTagChecker extends Assembler {
     const items = streamItemList
       .sortBy('id')
       .sortedUniqBy('id')
-      .reverse()
-      .reduce(this.filterDuplicateTags, []);
+      .reduceRight(this.filterDuplicateTags, []);
     return {
       ...args,
       deleted: [],

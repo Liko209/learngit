@@ -104,10 +104,11 @@ class NewMessageSeparatorHandler extends Assembler {
     const { deleted, postList, streamItemList } = args;
     const latestDeletedPostId = _.max(deleted) as number;
     const postNext = _.find(postList, ({ id }) => id >= latestDeletedPostId);
+    let filteredStreamItemList = streamItemList;
     if (!postNext) {
-      streamItemList.remove((item: StreamItem) => this.separatorId === item.id);
+      filteredStreamItemList = streamItemList.filter((item: StreamItem) => this.separatorId !== item.id);
     }
-    return { ...args, streamItemList };
+    return { ...args, streamItemList: filteredStreamItemList };
   }
 
   updateReadThrough(readThrough: number) {
