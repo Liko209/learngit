@@ -12,10 +12,13 @@ type Props = {
   More: React.ReactNode;
   Like: React.ReactNode;
   Bookmark: React.ReactNode;
+  Pin: React.ReactNode;
 };
 
 const StyledWrapper = styled('div')`
   && {
+    display: flex;
+    align-items: center;
     position: absolute;
     right: ${spacing(2)};
     top: ${spacing(1.5)};
@@ -33,8 +36,6 @@ const StyledWrapper = styled('div')`
       height: ${height(7)};
       justify-content: center;
     }
-    display: flex;
-    align-items: center;
   }
 `;
 
@@ -49,11 +50,12 @@ class JuiConversationActionBar extends PureComponent<Props> {
   }
 
   render() {
-    const { More, Like, Bookmark } = this.props;
+    const { More, Like, Bookmark, Pin } = this.props;
     return (
       <StyledWrapper onClick={this.clickHandler}>
         {Like}
         {Bookmark}
+        {Pin}
         {More}
       </StyledWrapper>
     );
