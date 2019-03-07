@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/OpenConversationFromURL.ts"
+    ],
+    "include_tags": [
+      "JPT-872"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
