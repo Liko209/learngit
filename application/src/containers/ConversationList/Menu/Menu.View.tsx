@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component, MouseEvent } from 'react';
-// import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
@@ -25,13 +24,6 @@ type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
 @observer
 class MenuViewComponent extends Component<Props> {
   checked: boolean = false;
-
-  constructor(props: Props) {
-    super(props);
-    this._handleToggleFavorite = this._handleToggleFavorite.bind(this);
-    this._handleCloseConversation = this._handleCloseConversation.bind(this);
-    this._checkboxChange = this._checkboxChange.bind(this);
-  }
 
   renderCloseMenuItem() {
     const { t, closable } = this.props;
@@ -84,7 +76,7 @@ class MenuViewComponent extends Component<Props> {
     }
   }
 
-  private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
+  private _handleToggleFavorite = async (event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     const { isFavorite } = this.props;
     this.props.onClose(event);
@@ -105,11 +97,14 @@ class MenuViewComponent extends Component<Props> {
     }
   }
 
-  private _checkboxChange(event: React.ChangeEvent<{}>, checked: boolean) {
+  private _checkboxChange = (
+    event: React.ChangeEvent<{}>,
+    checked: boolean,
+  ) => {
     this.checked = checked;
   }
 
-  private _handleCloseConversation(event: MouseEvent<HTMLElement>) {
+  private _handleCloseConversation = (event: MouseEvent<HTMLElement>) => {
     const { t } = this.props;
     event.stopPropagation();
     this.props.onClose(event);
