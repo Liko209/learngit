@@ -275,7 +275,7 @@ class CloseConversationModal extends BaseWebComponent {
 
   get dontAskAgainCheckbox() {
     this.warnFlakySelector();
-    return this.self.find('input');
+    return this.self.find('label');
   }
 
   get confirmButton() {
