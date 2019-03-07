@@ -28,7 +28,11 @@ class StateActionController {
     );
   }
 
-  async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
+  async updateReadStatus(
+    groupId: number,
+    isUnread: boolean,
+    ignoreError: boolean,
+  ): Promise<void> {
     const groupService: GroupService = GroupService.getInstance();
     let group;
     try {
@@ -93,7 +97,10 @@ class StateActionController {
             );
           } catch (e) {
             mainLogger.error('updateReadStatus: send request failed');
-            return updatedEntity;
+            if (ignoreError) {
+              return updatedEntity;
+            }
+            throw e;
           }
         },
       );

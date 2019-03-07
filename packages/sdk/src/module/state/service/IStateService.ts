@@ -11,7 +11,11 @@ import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
 
 interface IStateService {
-  updateReadStatus(groupId: number, isUnread: boolean): Promise<void>;
+  updateReadStatus(
+    groupId: number,
+    isUnread: boolean,
+    ignoreError: boolean,
+  ): Promise<void>;
 
   updateLastGroup(groupId: number): Promise<void>;
 

@@ -131,13 +131,11 @@ describe('MenuViewModel', () => {
     it('should be true when conversation not post or network is offline [JPT-1269]', () => {
       const model = new MenuViewModel();
       group.mostRecentPostId = undefined;
-      storeManager.getGlobalStore().set(GLOBAL_KEYS.NETWORK, 'offline');
       expect(model.disabledReadOrUnread).toBe(true);
     });
     it('should be false when conversation has post and network is online [JPT-1269]', () => {
       const model = new MenuViewModel();
       group.mostRecentPostId = 1;
-      storeManager.getGlobalStore().set(GLOBAL_KEYS.NETWORK, 'online');
       expect(model.disabledReadOrUnread).toBe(false);
     });
   });

@@ -41,10 +41,14 @@ class StateService extends EntityBaseService<GroupState>
     return this._stateController;
   }
 
-  async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
+  async updateReadStatus(
+    groupId: number,
+    isUnread: boolean,
+    ignoreError: boolean,
+  ): Promise<void> {
     await this.getStateController()
       .getStateActionController()
-      .updateReadStatus(groupId, isUnread);
+      .updateReadStatus(groupId, isUnread, ignoreError);
   }
 
   async updateLastGroup(groupId: number): Promise<void> {

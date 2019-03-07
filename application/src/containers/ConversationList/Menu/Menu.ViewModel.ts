@@ -88,8 +88,7 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
   @computed
   get disabledReadOrUnread() {
     const { mostRecentPostId } = this._group; // Not post message
-    const offline = getGlobalValue(GLOBAL_KEYS.NETWORK) === 'offline'; // Network offline
-    return !mostRecentPostId || offline;
+    return !mostRecentPostId;
   }
 
   @computed
@@ -120,7 +119,11 @@ class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
       const globalStore = storeManager.getGlobalStore();
       globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
     }
-    await this._stateService.updateReadStatus(this.groupId, !this.isUnread);
+    await this._stateService.updateReadStatus(
+      this.groupId,
+      !this.isUnread,
+      false,
+    );
   }
 }
 export { MenuViewModel };
