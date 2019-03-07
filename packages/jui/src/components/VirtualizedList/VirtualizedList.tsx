@@ -139,7 +139,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const createRenderRange = ({
     startIndex,
-    size = displayRangeSize,
+    size = renderedRangeSize,
   }: {
     startIndex: number;
     size?: number;
@@ -195,12 +195,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     offset: 0,
   });
   const [estimateRowHeight] = useState(60);
-  const displayRangeSize = Math.ceil(height / getEstimateRowHeight());
-  const [displayRange, setRenderedRange] = useRange(
+  const renderedRangeSize = Math.ceil(height / getEstimateRowHeight());
+  const [renderedRange, setRenderedRange] = useRange(
     createRenderRange({ startIndex: initialScrollToIndex - 5 }),
   );
   const childrenCount = children.length;
-  const { startIndex: _startIndex, stopIndex: _stopIndex } = displayRange;
+  const { startIndex: _startIndex, stopIndex: _stopIndex } = renderedRange;
 
   // ------------------------------------------------------------
   const prevStartChildRef = useRef(children[_startIndex]);
@@ -222,8 +222,8 @@ const JuiVirtualizedList: RefForwardingComponent<
       stopIndex += offset;
 
       // TODO avoid change state this way
-      displayRange.startIndex = startIndex;
-      displayRange.stopIndex = stopIndex;
+      renderedRange.startIndex = startIndex;
+      renderedRange.stopIndex = stopIndex;
       scrollPosition.index = Math.max(scrollPosition.index + offset, 0);
       scrollEffectTriggerRef.current++; // Trigger scroll after render
     }
@@ -291,9 +291,9 @@ const JuiVirtualizedList: RefForwardingComponent<
       observers.forEach(ro => ro.disconnect());
     };
 
-    const displayedRowsEls = getRowsEls(contentRef.current);
-    handleRowsSizeChange(displayedRowsEls);
-    const resizeObservers = observeDynamicRows(displayedRowsEls);
+    const renderedRowsEls = getRowsEls(contentRef.current);
+    handleRowsSizeChange(renderedRowsEls);
+    const resizeObservers = observeDynamicRows(renderedRowsEls);
 
     return () => unobserveDynamicRows(resizeObservers);
   },              [getChildKey(startIndex), getChildKey(stopIndex)]);
@@ -317,7 +317,7 @@ const JuiVirtualizedList: RefForwardingComponent<
         });
       }
 
-      // Update display range
+      // Update rendered range
       let renderedRange: IndexRange;
       const prevScrollTop = prevScrollTopRef.current;
       const direction = scrollTop > prevScrollTop ? 'down' : 'up';
