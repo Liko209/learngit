@@ -219,6 +219,7 @@
     "notes": "Notes",
     "events": "Events",
     "integrations": "Integrations",
+    "pinnedListSubheader": "Pinned Posts",
     "fileListSubheader": "Files",
     "taskListSubheader": "Tasks",
     "noteListSubheader": "Notes",
@@ -249,6 +250,7 @@
     "networkErrorEventsPrompt": "Sorry, we weren't able to load more events.",
     "networkErrorNotesPrompt": "Sorry, we weren't able to load more notes.",
     "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations.",
+    "pinnedMore": "and {{num}} more",
 
     "prompt": {
       "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed.",
