@@ -467,10 +467,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private async _addToFetchProcessor(groupId: number) {
-    const processor = new PrefetchPostProcessor(
-      groupId,
-      postCacheController.fetchDataFunc,
-    );
+    const processor = new PrefetchPostProcessor(groupId, postCacheController);
     this._prefetchHandler.addProcessor(processor);
   }
 

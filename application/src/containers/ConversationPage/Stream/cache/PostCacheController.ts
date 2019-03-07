@@ -19,6 +19,7 @@ import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
 import SequenceProcessorHandler from 'sdk/framework/processor/SequenceProcessorHandler';
 import PrefetchPostProcessor from '@/store/handler/PrefetchPostProcessor';
+import { ICacheController } from './ICacheController';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -67,7 +68,7 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
   }
 }
 
-class PostCacheController {
+class PostCacheController implements ICacheController<Post> {
   private _cacheMap: Map<number, FetchSortableDataListHandler<Post>>;
   private _prefetchHandler: SequenceProcessorHandler;
 
@@ -87,28 +88,10 @@ class PostCacheController {
   onNetWorkChanged(onLine: boolean) {
     if (onLine) {
       for (const groupId of this._cacheMap.keys()) {
-        const processor = new PrefetchPostProcessor(
-          groupId,
-          this.fetchDataFunc,
-        );
+        const processor = new PrefetchPostProcessor(groupId, this);
         this._prefetchHandler.addProcessor(processor);
       }
     }
-  }
-
-  fetchDataFunc = async (groupId: number) => {
-    if (this._shouldDoPreload(groupId, QUERY_DIRECTION.OLDER)) {
-      await this.get(groupId).fetchData(QUERY_DIRECTION.OLDER);
-    }
-    return Promise.resolve(true);
-  }
-
-  private _shouldDoPreload(groupId: number, direction: QUERY_DIRECTION) {
-    if (this.has(groupId)) {
-      const listHandler = this.get(groupId);
-      return listHandler.hasMore(direction) && listHandler.listStore.size === 0;
-    }
-    return true;
   }
 
   has(groupId: number): boolean {
