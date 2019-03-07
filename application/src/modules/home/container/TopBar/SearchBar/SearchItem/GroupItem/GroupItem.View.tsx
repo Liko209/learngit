@@ -10,7 +10,6 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { GroupAvatar } from '@/containers/Avatar';
 import { JuiButton, JuiIconButton } from 'jui/components/Buttons';
-import { HotKeys } from 'jui/hoc/HotKeys';
 import { ViewProps } from './types';
 
 @observer
@@ -18,23 +17,11 @@ class GroupItemComponent extends React.Component<
   ViewProps & WithNamespaces,
   {}
 > {
-  onEnter = async (e: KeyboardEvent) => {
-    const { hovered, canJoinTeam } = this.props;
-    if (!hovered) {
-      return;
-    }
-
-    if (canJoinTeam) {
-      await this.handleJoinTeam(e);
-    } else {
-      await this.goToConversation();
-    }
-  }
-
   handleJoinTeam = async (e: React.MouseEvent | KeyboardEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    const { handleJoinTeam, group } = this.props;
+    const { handleJoinTeam, group, addRecentRecord } = this.props;
+    addRecentRecord();
     await handleJoinTeam(group);
   }
 
@@ -42,10 +29,19 @@ class GroupItemComponent extends React.Component<
     const { goToConversation, group } = this.props;
     await goToConversation(group.id);
   }
+
+  onClick = () => {
+    const { addRecentRecord } = this.props;
+    addRecentRecord();
+  }
+
   handleGoToConversation = (evt: React.MouseEvent) => {
+    const { addRecentRecord } = this.props;
     evt.stopPropagation();
+    addRecentRecord();
     this.goToConversation();
   }
+
   render() {
     const {
       t,
@@ -72,6 +68,7 @@ class GroupItemComponent extends React.Component<
         data-test-automation-id="joinButton"
         variant="round"
         size="small"
+        onClick={this.handleJoinTeam}
       >
         {t('people.team.joinButtonTitle')}
       </JuiButton>
@@ -88,25 +85,19 @@ class GroupItemComponent extends React.Component<
       </JuiIconButton>
     );
     return (
-      <HotKeys
-        keyMap={{
-          enter: this.onEnter,
-        }}
-      >
-        <JuiSearchItem
-          onMouseEnter={onMouseEnter(sectionIndex, cellIndex)}
-          onMouseLeave={onMouseLeave}
-          hovered={hovered}
-          onClick={canJoinTeam ? this.handleJoinTeam : this.goToConversation}
-          Avatar={<GroupAvatar cid={id} size="small" />}
-          value={displayName}
-          terms={terms}
-          data-test-automation-id={`search-${title}-item`}
-          Actions={canJoinTeam ? joinTeamBtn : goToConversationIcon}
-          isPrivate={isPrivate}
-          isJoined={isJoined}
-        />
-      </HotKeys>
+      <JuiSearchItem
+        onMouseEnter={onMouseEnter(sectionIndex, cellIndex)}
+        onMouseLeave={onMouseLeave}
+        hovered={hovered}
+        onClick={this.onClick}
+        Avatar={<GroupAvatar cid={id} size="small" />}
+        value={displayName}
+        terms={terms}
+        data-test-automation-id={`search-${title}-item`}
+        Actions={canJoinTeam ? joinTeamBtn : goToConversationIcon}
+        isPrivate={isPrivate}
+        isJoined={isJoined}
+      />
     );
   }
 }
