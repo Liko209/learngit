@@ -12,13 +12,9 @@ import {
   SelectFile,
   DidUploadFileCallback,
 } from './types';
-import {
-  notificationCenter,
-  ENTITY,
-  EVENT_TYPES,
-  GroupConfigService,
-} from 'sdk/service';
+import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
@@ -122,7 +118,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     }
   }
 
-  autoUploadFiles = async (files: File[], callback?: DidUploadFileCallback) => {
+  autoUploadFiles = async (
+    files: File[],
+    checkDuplicate: boolean = true,
+    callback?: DidUploadFileCallback,
+  ) => {
     const canUpload = await this.canUploadFiles(files);
     if (!canUpload) {
       Notification.flashToast({
@@ -137,10 +137,12 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       return;
     }
     if (files.length > 0) {
-      const exists = await Promise.all(
-        files.map(file => this.isFileExists(file)),
-      );
-      const hasDuplicate = exists.some(value => value);
+      let hasDuplicate = false;
+      let exists: boolean[] = [];
+      if (checkDuplicate) {
+        exists = await Promise.all(files.map(file => this.isFileExists(file)));
+        hasDuplicate = exists.some(value => value);
+      }
       const result = files.map(
         (file, i: number) =>
           ({ data: file, duplicate: exists[i] } as SelectFile),

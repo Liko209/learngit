@@ -199,6 +199,15 @@ class PostFetchController {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
+    const result: IPostResult = {
+      limit,
+      posts: [],
+      items: [],
+      hasMore: true,
+    };
+    if (!postId && direction === QUERY_DIRECTION.NEWER) {
+      return result;
+    }
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
@@ -208,12 +217,10 @@ class PostFetchController {
     );
 
     const itemService: ItemService = ItemService.getInstance();
-    const result: IPostResult = {
-      limit,
-      posts,
-      hasMore: true,
-      items: posts.length === 0 ? [] : await itemService.getByPosts(posts),
-    };
+    result.limit = limit;
+    result.posts = posts;
+    result.items =
+      posts.length === 0 ? [] : await itemService.getByPosts(posts);
     return result;
   }
 
@@ -221,8 +228,8 @@ class PostFetchController {
     if (posts && posts.length) {
       const validAnchorPost =
         direction === QUERY_DIRECTION.OLDER
-          ? _.findLast(posts, (p: Post) => p.id > 0)
-          : _.find(posts, (p: Post) => p.id > 0);
+          ? _.find(posts, (p: Post) => p.id > 0)
+          : _.findLast(posts, (p: Post) => p.id > 0);
       return validAnchorPost ? validAnchorPost.id : 0;
     }
     return 0;

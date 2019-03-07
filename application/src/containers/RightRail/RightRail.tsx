@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
+import ReactResizeDetector from 'react-resize-detector';
 import { translate, WithNamespaces } from 'react-i18next';
 import {
   JuiRightShelf,
@@ -15,12 +16,15 @@ import {
 } from 'jui/pattern/RightShelf';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { ItemList } from './ItemList';
+import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
 import { TAB_CONFIG, TabConfig } from './ItemList/config';
-import ReactResizeDetector from 'react-resize-detector';
+
+import { PinnedList } from './PinnedList';
 
 type Props = {
   id: number;
+  width: number;
+  height: number;
 } & WithNamespaces;
 
 type TriggerButtonProps = {
@@ -33,6 +37,7 @@ type TriggerButtonProps = {
 const HEIGHT_CONVERSATION_HEADER = 48;
 const HEIGHT_TABS = 33;
 const HEIGHT_FIX = HEIGHT_CONVERSATION_HEADER + HEIGHT_TABS;
+const MIN_TAB_WIDTH = 200;
 
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
@@ -81,38 +86,65 @@ class RightRailComponent extends React.Component<Props> {
     this.setState({ tabIndex: index });
   }
 
+  private _renderListView = (
+    type: RIGHT_RAIL_ITEM_TYPE,
+    id: number,
+    active: boolean,
+    width: number,
+    height: number,
+  ) => {
+    if (type === RIGHT_RAIL_ITEM_TYPE.PIN_POSTS) {
+      return <PinnedList groupId={id} width={width} height={height} />;
+    }
+    return (
+      <ItemList
+        type={type}
+        groupId={id}
+        active={active}
+        width={width}
+        height={height}
+      />
+    );
+  }
+
   private _renderTabs = () => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {(width: number, height: number) => (
-          <JuiTabs
-            defaultActiveIndex={0}
-            tag="right-shelf"
-            width={width}
-            onChangeTab={this._handleTabChanged}
-            moreText={t('common.more')}
-          >
-            {TAB_CONFIG.map(
-              ({ title, type, automationID }: TabConfig, index: number) => (
-                <JuiTab
-                  key={index}
-                  title={t(title)}
-                  automationId={`right-shelf-${automationID}`}
-                >
-                  <ItemList
-                    type={type}
-                    groupId={id}
-                    width={width}
-                    height={height - HEIGHT_FIX}
-                    active={tabIndex === index}
-                  />
-                </JuiTab>
-              ),
-            )}
-          </JuiTabs>
-        )}
+        {(w: number, h: number) => {
+          const width =
+            Number.isNaN(w) || typeof w === 'undefined' ? MIN_TAB_WIDTH : w;
+          const height =
+            Number.isNaN(h) || typeof w === 'undefined' ? HEIGHT_TABS : h;
+          return (
+            <JuiTabs
+              defaultActiveIndex={0}
+              tag="right-shelf"
+              width={w}
+              onChangeTab={this._handleTabChanged}
+              moreText={t('common.more')}
+            >
+              {TAB_CONFIG.map(
+                ({ title, type, automationID }: TabConfig, index: number) => (
+                  <JuiTab
+                    key={index}
+                    title={t(title)}
+                    automationId={`right-shelf-${automationID}`}
+                  >
+                    {this._renderListView(
+                      type,
+                      id,
+                      tabIndex === index,
+                      width,
+                      height - HEIGHT_FIX,
+                    )}
+                  </JuiTab>
+                ),
+              )}
+            </JuiTabs>
+          );
+        }}
       </ReactResizeDetector>
     );
   }

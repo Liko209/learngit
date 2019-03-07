@@ -30,6 +30,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
   retryCount: number = 0;
   authFree: boolean;
   timeout: number = config.timeout;
+  ignoreLocalRetryAfter: boolean = false;
   handlerType: IHandleType;
   priority: REQUEST_PRIORITY = REQUEST_PRIORITY.NORMAL;
   via: NETWORK_VIA = NETWORK_VIA.HTTP;
@@ -175,6 +176,11 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
    */
   public setAuthfree(value: boolean) {
     this.authFree = value;
+    return this;
+  }
+
+  public setIgnoreLocalRetryAfter(value: boolean) {
+    this.ignoreLocalRetryAfter = value;
     return this;
   }
 

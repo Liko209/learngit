@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
-import { ItemListDataSource } from './ItemList.DataSource';
+import { IVirtualListDataSource } from 'jui/pattern/VirtualList';
 
 type LoadStatus = {
   firstLoaded: boolean;
@@ -25,7 +25,7 @@ type Props = {
 };
 
 type ViewProps = {
-  dataSource: ItemListDataSource;
+  dataSource: IVirtualListDataSource<any, number>;
 };
 
 export { Props, ViewProps, LoadStatus, InitLoadStatus };

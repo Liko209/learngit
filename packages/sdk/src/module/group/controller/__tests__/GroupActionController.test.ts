@@ -4,7 +4,8 @@ import _ from 'lodash';
 
 import { groupFactory } from '../../../../__tests__/factories';
 import GroupAPI from '../../../../api/glip/group';
-import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../../dao';
+import { GroupConfigDao } from '../../../groupConfig/dao';
 import { ERROR_CODES_SERVER, JServerError } from '../../../../error';
 import { TestEntityCacheSearchController } from '../../../../framework/__mocks__/controller/TestEntityCacheSearchController';
 import { TestEntitySourceController } from '../../../../framework/__mocks__/controller/TestEntitySourceController';
@@ -15,7 +16,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { Raw } from '../../../../framework/model';
 import { buildRequestController } from '../../../../framework/controller';
-import { UserConfig } from '../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../service/account/config';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
@@ -32,11 +33,12 @@ import { PERMISSION_ENUM } from '../../../../service';
 
 jest.mock('../GroupHandleDataController');
 jest.mock('../../../../dao');
+jest.mock('../../../groupConfig/dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../service/account/UserConfig');
+jest.mock('../../../../service/account/config');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../module/company');
 jest.mock('../../../post');
@@ -83,7 +85,7 @@ describe('GroupFetchDataController', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
-    UserConfig.getCurrentUserId = jest
+    AccountGlobalConfig.getCurrentUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
     PostService.getInstance = jest.fn().mockReturnValue(postService);

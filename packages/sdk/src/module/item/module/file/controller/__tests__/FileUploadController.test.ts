@@ -16,7 +16,7 @@ import notificationCenter from '../../../../../../service/notificationCenter';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
 import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
-import { UserConfig } from '../../../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../../../service/account/config';
 import { isInBeta } from '../../../../../../service/account/clientConfig';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
@@ -32,9 +32,9 @@ import {
   ERROR_CODES_SDK,
 } from '../../../../../../error';
 import { IPartialModifyController } from '../../../../../../framework/controller/interface/IPartialModifyController';
-import { GroupConfigService } from '../../../../../../service/groupConfig';
+import { GroupConfigService } from '../../../../../groupConfig';
 
-jest.mock('../../../../../../service/groupConfig');
+jest.mock('../../../../../groupConfig');
 jest.mock('../../../../service/ItemService');
 jest.mock(
   '../../../../../../framework/controller/impl/PartialModifyController',
@@ -42,7 +42,7 @@ jest.mock(
 jest.mock('../../../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../service/account/clientConfig');
-jest.mock('../../../../../../service/account/UserConfig');
+jest.mock('../../../../../../service/account/config');
 jest.mock('../../../../../../api/glip/item');
 jest.mock('../../../../dao');
 jest.mock('../../../../../../dao');
@@ -76,8 +76,8 @@ describe('fileUploadController', () => {
 
     daoManager.getDao = jest.fn().mockReturnValue(itemDao);
 
-    UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
-    UserConfig.getCurrentUserId.mockReturnValue(userId);
+    AccountGlobalConfig.getCurrentCompanyId.mockReturnValue(companyId);
+    AccountGlobalConfig.getCurrentUserId.mockReturnValue(userId);
 
     notificationCenter.emitEntityReplace.mockImplementation(() => {});
     GroupConfigService.getInstance = jest
@@ -1406,7 +1406,6 @@ describe('fileUploadController', () => {
         },
       ]);
 
-   
       const res = await fileUploadController.initialUploadItemsFromDraft(
         groupId,
       );

@@ -78,6 +78,13 @@ class MessageInputViewComponent extends Component<
     }
   }
 
+  handleCopyPasteFile = (files: File[]) => {
+    const { current } = this._attachmentsRef;
+    if (current && files && files.length > 0) {
+      current.vm.autoUploadFiles(files, false);
+    }
+  }
+
   handleDropFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
     if (current && files && files.length > 0) {
@@ -108,7 +115,7 @@ class MessageInputViewComponent extends Component<
         id={id}
         toolbarNode={toolbarNode}
         attachmentsNode={attachmentsNode}
-        didDropFile={this.handleDropFile}
+        didDropFile={this.handleCopyPasteFile}
       >
         <Mention id={id} ref={this._mentionRef} />
       </JuiMessageInput>

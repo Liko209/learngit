@@ -23,7 +23,7 @@ import { ItemService } from './module/item';
 import { PersonService } from './module/person';
 import { PresenceService } from './module/presence';
 import { ProfileService } from './module/profile';
-import GroupConfigService from './service/groupConfig';
+import { GroupConfigService } from './module/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
 import { StateService } from './module/state';
@@ -34,11 +34,14 @@ import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
 import { RcInfoService } from './module/rcInfo';
+import { GlobalConfigService, UserConfigService } from './module/config';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
 const registerConfigs = {
   classes: [
+    { name: GlobalConfigService.name, value: GlobalConfigService },
+    { name: UserConfigService.name, value: UserConfigService },
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     {

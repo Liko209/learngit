@@ -6,7 +6,7 @@
 
 import { LaunchDarklyClient } from './LaunchDarklyClient';
 import { notificationCenter, SERVICE } from '../../../../service';
-import { UserConfig } from '../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../service/account/config';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyDefaultPermissions';
 import UserPermissionType from '../../types';
 import { LDFlagSet } from 'ldclient-js';
@@ -39,13 +39,17 @@ class LaunchDarklyController {
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
       this._initClient();
     });
+    notificationCenter.on(SERVICE.LOGOUT, () => {
+      this.launchDarklyClient && this.launchDarklyClient.shutdown();
+      this.isClientReady = false;
+    });
   }
   private _initClient() {
     if (this.isClientReady) {
       return;
     }
-    const userId: number = UserConfig.getCurrentUserId();
-    const companyId: number = UserConfig.getCurrentCompanyId();
+    const userId: number = AccountGlobalConfig.getCurrentUserId();
+    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
     if (!userId || !companyId) {
       return;
     }

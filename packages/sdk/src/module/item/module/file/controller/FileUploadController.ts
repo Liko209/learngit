@@ -18,7 +18,7 @@ import { versionHash } from '../../../../../utils/mathUtils';
 import { FILE_FORM_DATA_KEYS } from '../constants';
 import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
-import { UserConfig } from '../../../../../service/account/UserConfig';
+import { AccountGlobalConfig } from '../../../../../service/account/config';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 
@@ -27,7 +27,7 @@ import {
   isInBeta,
   EBETA_FLAG,
 } from '../../../../../service/account/clientConfig';
-import { GroupConfigService } from '../../../../../service/groupConfig';
+import { GroupConfigService } from '../../../../groupConfig';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -732,8 +732,8 @@ class FileUploadController {
     file: File,
     isUpdate: boolean,
   ): ItemFile {
-    const companyId: number = UserConfig.getCurrentCompanyId();
-    const userId: number = UserConfig.getCurrentUserId();
+    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
+    const userId: number = AccountGlobalConfig.getCurrentUserId();
     const now = Date.now();
     const id = GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE);
     return {

@@ -24,6 +24,7 @@ type FilesViewProps = {
   removeFile: (id: number) => void;
   dispose: () => void;
   urlMap: Map<number, string>;
+  getShowDialogPermission: () => boolean;
   getCropImage: () => Promise<void>;
   isRecentlyUploaded: (id: number) => boolean;
 };

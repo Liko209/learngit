@@ -138,17 +138,23 @@ class ScenarioHelper {
   }
 
   // glip
-  public async clearAllUmi(operator: IUser) {
-    assert(operator, "require operator");
-    const glip = await this.sdkHelper.sdkManager.getGlip(operator);
-    await glip.clearAllUmi(operator.rcId);
+  public async clearAllUmi(me: IUser) {
+    assert(me, "require me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.clearAllUmi(me.rcId);
   }
 
 
-  public async resetProfile(operator: IUser) {
-    assert(operator, "require operator");
-    const glip = await this.sdkHelper.sdkManager.getGlip(operator);
-    await glip.resetProfile(operator.rcId);
+  public async resetProfile(me: IUser) {
+    assert(me, "require me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.resetProfile(me.rcId);
+  }
+
+  public async likePost(postId: string, me: IUser) {
+    assert(postId && me, "require postId and me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.likePost(postId);
   }
 }
 

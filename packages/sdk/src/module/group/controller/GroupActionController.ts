@@ -8,7 +8,8 @@ import { mainLogger } from 'foundation';
 
 import { Api } from '../../../api';
 import GroupAPI from '../../../api/glip/group';
-import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
+import { GroupConfigDao } from '../../groupConfig/dao';
 import { ErrorParserHolder } from '../../../error';
 import { buildRequestController } from '../../../framework/controller';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
@@ -16,7 +17,6 @@ import { IPartialModifyController } from '../../../framework/controller/interfac
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
 import { Raw } from '../../../framework/model';
 import { GroupApiType } from '../../../models';
-import { UserConfig } from '../../../service/account/UserConfig';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { ProfileService } from '../../profile';
@@ -27,10 +27,12 @@ import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { PermissionFlags, TeamSetting } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
+import { AccountGlobalConfig } from '../../../service/account/config';
 
 export class GroupActionController {
   teamRequestController: IRequestController<Group>;
   groupRequestController: IRequestController<Group>;
+
   constructor(
     public groupService: IGroupService,
     public entitySourceController: IEntitySourceController<Group>,
@@ -392,7 +394,7 @@ export class GroupActionController {
     }
     if (group) {
       isValid = this.groupService.isValid(group);
-      const currentUserId = UserConfig.getCurrentUserId();
+      const currentUserId = AccountGlobalConfig.getCurrentUserId();
       isIncludeSelf = group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;

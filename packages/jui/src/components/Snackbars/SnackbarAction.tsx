@@ -20,7 +20,7 @@ const JuiSnackbarAction = styled(
 
       return (
         <StyledIconButton {...rest}>
-          <JuiIconography fontSize="inherit" style={style}>
+          <JuiIconography iconSize="inherit" style={style}>
             {children}
           </JuiIconography>
         </StyledIconButton>
