@@ -47,9 +47,9 @@ const mockProvisionData = {
     voipCountryBlocked: false,
     outboundCallsEnabled: true,
     dscpEnabled: true,
-    dscpSignaling: true,
-    dscpVoice: true,
-    dscpVideo: true,
+    dscpSignaling: 100,
+    dscpVoice: 100,
+    dscpVideo: 100,
   },
 };
 
