@@ -7,5 +7,12 @@ import { UserConfigService } from './service/UserConfigService';
 import { GlobalConfigService } from './service/GlobalConfigService';
 import { GlobalConfig } from './GlobalConfig';
 import { UserConfig } from './UserConfig';
+import { DataMigration } from './DataMigration';
 
-export { GlobalConfig, UserConfig, UserConfigService, GlobalConfigService };
+export {
+  GlobalConfig,
+  UserConfig,
+  UserConfigService,
+  GlobalConfigService,
+  DataMigration,
+};

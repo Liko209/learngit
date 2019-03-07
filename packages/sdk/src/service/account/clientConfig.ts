@@ -101,7 +101,7 @@ function isInBetaDomainList(flagName: string): boolean {
 }
 
 function getFlagValue(flagName: string): string {
-  const clientConfig = AccountGlobalConfig.getClientId();
+  const clientConfig = AccountGlobalConfig.getClientConfig();
   if (clientConfig && clientConfig[flagName]) {
     return clientConfig[flagName];
   }

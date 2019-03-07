@@ -44,6 +44,14 @@ class AccountGlobalConfig extends GlobalConfig {
   static setClientId(id: number) {
     this.put(ACCOUNT_KEYS.CLIENT_ID, id);
   }
+
+  static setClientConfig(config: any) {
+    this.put(ACCOUNT_KEYS.ACCOUNT_CLIENT_CONFIG, config);
+  }
+
+  static getClientConfig() {
+    return this.get(ACCOUNT_KEYS.ACCOUNT_CLIENT_CONFIG);
+  }
 }
 
 export { AccountGlobalConfig };

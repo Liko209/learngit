@@ -10,7 +10,7 @@ import {
   ACCOUNT_CLIENT_CONFIG,
 } from '../../dao/account/constants';
 import notificationCenter from '../../service/notificationCenter';
-import { AccountGlobalConfig, AccountUserConfig } from './config';
+import { AccountGlobalConfig } from './config';
 
 export interface IHandleData {
   userId?: number;
@@ -39,8 +39,7 @@ const accountHandleData = ({
   }
   if (clientConfig) {
     notificationCenter.emitKVChange(ACCOUNT_CLIENT_CONFIG, clientConfig);
-    const accountConfig = new AccountUserConfig();
-    accountConfig.setClientConfig(clientConfig);
+    AccountGlobalConfig.setClientConfig(clientConfig);
   }
 };
 
