@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component, MouseEvent } from 'react';
+// import { action } from 'mobx';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
@@ -20,14 +21,10 @@ import {
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
-type State = {
-  checked: boolean;
-};
+
 @observer
-class MenuViewComponent extends Component<Props, State> {
-  state = {
-    checked: false,
-  };
+class MenuViewComponent extends Component<Props> {
+  checked: boolean = false;
 
   constructor(props: Props) {
     super(props);
@@ -109,9 +106,7 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private _checkboxChange(event: React.ChangeEvent<{}>, checked: boolean) {
-    this.setState({
-      checked,
-    });
+    this.checked = checked;
   }
 
   private _handleCloseConversation(event: MouseEvent<HTMLElement>) {
@@ -121,9 +116,6 @@ class MenuViewComponent extends Component<Props, State> {
     if (this.props.shouldSkipCloseConfirmation) {
       this._closeConversationWithoutConfirmDialog();
     } else {
-      this.setState({
-        checked: false,
-      });
       Dialog.alert({
         title: t('people.prompt.closeConfirmDialogHeader'),
         content: (
@@ -133,7 +125,7 @@ class MenuViewComponent extends Component<Props, State> {
             </JuiTypography>
             <JuiCheckboxLabel
               label={t('people.prompt.closeConfirmDialogDontAskMeAgain')}
-              checked={false}
+              checked={this.checked}
               handleChange={this._checkboxChange}
             />
           </>
@@ -148,8 +140,7 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private async _closeConversationWithConfirm() {
-    const { checked } = this.state;
-    this._closeConversation(checked);
+    this._closeConversation(this.checked);
   }
 
   private async _closeConversationWithoutConfirmDialog() {
