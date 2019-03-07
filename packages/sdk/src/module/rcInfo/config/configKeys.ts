@@ -9,7 +9,6 @@ const RCINFO_KEYS = {
   CLIENT_INFO: 'client_info',
   EXTENSION_INFO: 'extension_info',
   ROLE_PERMISSION: 'role_permission',
-  PHONE_DATA: 'phone_data',
   SPECIAL_NUMBER_RULE: 'special_number_rule',
 };
 

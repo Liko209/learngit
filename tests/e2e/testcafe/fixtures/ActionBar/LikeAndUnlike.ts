@@ -12,7 +12,7 @@ import { v4 as uuid } from 'uuid';
 import { BrandTire, SITE_URL } from '../../config'
 import { IGroup } from '../../v2/models';
 
-fixture('LikeAndUnlike')
+fixture('ActionBar/LikeAndUnlike')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 

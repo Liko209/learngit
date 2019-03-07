@@ -18,7 +18,6 @@ class RcInfoService extends EntityBaseService {
         [SERVICE.FETCH_INDEX_DATA_DONE]: this.requestRcInfo,
       }),
     );
-    this.requestRcInfo();
   }
 
   private get rcInfoController(): RcInfoController {

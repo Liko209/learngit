@@ -481,6 +481,40 @@ export class PostItem extends BaseWebComponent {
     return this.getSelectorByIcon('bookmark_border', this.self);
   }
 
+  get pinToggle() {
+    return this.self.find('button').withAttribute('data-name', 'actionBarPin');
+  }
+
+  get pinButton() {
+    return this.pinToggle.withAttribute('aria-label', 'Pin');
+  }
+
+  get unpinButton() {
+    return this.pinToggle.withAttribute('aria-label', 'Unpin');
+  }
+
+  async clickPinToggle() {
+    await this.t.click(this.pinToggle);
+  }
+
+  get isPinned() {
+    return this.unpinButton.exists;
+  }
+
+  async pinPost() {
+    if (!await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
+  }
+
+  async unpinPost() {
+    if (await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
+  }
+
   get moreMenu() {
     return this.self.find(`[data-name="actionBarMore"]`);
   }
