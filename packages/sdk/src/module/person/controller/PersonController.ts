@@ -206,7 +206,7 @@ class PersonController {
     }
 
     const result = await this._cacheSearchController.searchEntities(
-      async (person: Person, terms: string[]) => {
+      (person: Person, terms: string[]) => {
         do {
           if (
             !this._isValid(person) ||

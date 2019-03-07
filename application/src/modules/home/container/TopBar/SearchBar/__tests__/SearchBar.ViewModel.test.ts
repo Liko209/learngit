@@ -5,8 +5,11 @@
  */
 import { GroupService } from 'sdk/module/group';
 import { PersonService } from 'sdk/module/person';
+import storeManager from '../../../../../../store/base/StoreManager';
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
+
 jest.mock('../../../../../../store/utils');
+// jest.mock('../../../../../../store/base/StoreManager');
 jest.mock('@/containers/Notification');
 
 jest.mock('sdk/api');
@@ -96,6 +99,17 @@ describe('SearchBarViewModel', () => {
       );
       expect(section).toEqual({
         ids: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+        models: [
+          { id: 1 },
+          { id: 2 },
+          { id: 3 },
+          { id: 4 },
+          { id: 5 },
+          { id: 6 },
+          { id: 7 },
+          { id: 8 },
+          { id: 9 },
+        ],
         hasMore: true,
       });
     });
@@ -114,6 +128,7 @@ describe('SearchBarViewModel', () => {
       );
       expect(section1).toEqual({
         ids: [1, 2, 3],
+        models: [{ id: 1 }, { id: 2 }, { id: 3 }],
         hasMore: true,
       });
     });
@@ -127,6 +142,7 @@ describe('SearchBarViewModel', () => {
       expect(section2).toEqual({
         ids: [1, 2],
         hasMore: false,
+        models: [{ id: 1 }, { id: 2 }],
       });
     });
     it('If search result is empty ids should be empty array', () => {
@@ -134,6 +150,7 @@ describe('SearchBarViewModel', () => {
       expect(section).toEqual({
         ids: [],
         hasMore: false,
+        models: [],
       });
     });
   });
@@ -243,7 +260,6 @@ describe('SearchBarViewModel', () => {
       expect(existCount).toBe(3);
     });
   });
-
   // describe('search()', async () => {
   //   // jest.spyOn(searchBarViewModel, 'calculateSectionCount');
   //   // jest.spyOn(searchBarViewModel, 'getSection');
