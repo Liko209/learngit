@@ -36,6 +36,7 @@ class SplitIOController {
     });
     notificationCenter.on(SERVICE.LOGOUT, () => {
       this.splitIOClient && this.splitIOClient.shutdown();
+      this.isClientReady = false;
     });
   }
 

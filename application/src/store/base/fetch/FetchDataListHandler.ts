@@ -48,11 +48,13 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
       hasMoreDown = false,
       hasMoreUp = false,
       entityName,
+      dataChangeCallBack,
     } = options;
     this._pageSize = pageSize;
     this._entityName = entityName;
     this.listStore._hasMoreUp = hasMoreUp;
     this.listStore._hasMoreDown = hasMoreDown;
+    this._dataChangeCallBack = dataChangeCallBack;
   }
 
   get listStore() {

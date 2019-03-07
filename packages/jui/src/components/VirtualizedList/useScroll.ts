@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { useState } from 'react';
-import { useForceUpdate } from './useForceUpdate';
 
 type ScrollPosition = {
   index: number;
@@ -21,27 +20,16 @@ const useScroll = ({ index, offset = 0 }: PartialScrollPosition) => {
     index,
     offset,
   });
-  const {
-    updateTrigger: scrollTopUpdateTrigger,
-    forceUpdate: forceUpdateScrollTop,
-  } = useForceUpdate();
 
   const setScrollPosition = ({ index, offset = 0 }: PartialScrollPosition) => {
     _setScrollPosition({ index, offset });
-  };
-
-  const scrollTo = (scrollPosition: PartialScrollPosition) => {
-    setScrollPosition(scrollPosition);
-    forceUpdateScrollTop();
   };
 
   return {
     scrollPosition,
     setScrollPosition,
     scrollTo,
-    scrollTopUpdateTrigger,
-    forceUpdateScrollTop,
   };
 };
 
-export { useScroll };
+export { useScroll, ScrollPosition };

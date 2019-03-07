@@ -86,7 +86,15 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
     atBottom: false,
   };
 
+  static getDerivedStateFromProps<K, V>(nextProps: JuiVirtualListProps<K, V>) {
+    if (nextProps.dataSource) {
+      return { dataSource: nextProps.dataSource };
+    }
+    return null;
+  }
+
   componentDidMount() {
+    this._unmounted = false;
     this.loadInitialData();
   }
 

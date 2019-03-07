@@ -62,7 +62,7 @@ interface IGroupService {
     _limit?: number,
   ): Promise<Group[]>;
 
-  getGroupsByIds(ids: number[]): Promise<Group[]>;
+  getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]>;
 
   getLocalGroup(personIds: number[]): Promise<Group | null>;
 

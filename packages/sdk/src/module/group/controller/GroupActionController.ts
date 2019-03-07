@@ -8,7 +8,8 @@ import { mainLogger } from 'foundation';
 
 import { Api } from '../../../api';
 import GroupAPI from '../../../api/glip/group';
-import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
+import { GroupConfigDao } from '../../groupConfig/dao';
 import { ErrorParserHolder } from '../../../error';
 import { buildRequestController } from '../../../framework/controller';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';

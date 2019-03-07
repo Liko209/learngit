@@ -42,7 +42,7 @@ const StyledListItemText = styled<JuiListItemTextProps>(WrappedListItemText)`
 `;
 
 const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
-  const { primary, primaryColor, secondary } = props;
+  const { primary, primaryColor, secondary, ...rest } = props;
   return (
     <StyledListItemText
       primaryColor={primaryColor}
@@ -52,6 +52,7 @@ const JuiListItemTextComponent = (props: JuiListItemTextProps) => {
         primary: 'list-item-primary',
         secondary: 'list-item-secondary',
       }}
+      {...rest}
     />
   );
 };

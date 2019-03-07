@@ -15,10 +15,10 @@ import React, {
   RefForwardingComponent,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
+import { noop } from '../../foundation/utils';
 import { createRange, createRangeFromAnchor } from './util/createRange';
-import { VirtualizedListProps } from './VirtualizedListProps';
-import { useForceUpdate } from './useForceUpdate';
-import { useScroll } from './useScroll';
+import { JuiVirtualizedListProps } from './VirtualizedListProps';
+import { useScroll, ScrollPosition } from './useScroll';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 
@@ -40,42 +40,45 @@ const useRange = (
 
 const JuiVirtualizedList: RefForwardingComponent<
   JuiVirtualizedListHandles,
-  VirtualizedListProps
+  JuiVirtualizedListProps
 > = (
   {
-    initialScrollToIndex,
-    initialRangeSize,
     height,
     children,
-  }: VirtualizedListProps,
+    initialScrollToIndex = 0,
+    initialRangeSize = 11,
+    onScroll = noop,
+    before = null,
+    after = null,
+  }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
-  const getCacheKey = (i: number) => {
-    const child = children[i] as { key: string };
+  const getChildKey = (i: number) => {
+    const child = children[i];
     if (!child) return '';
     return child.key;
   };
 
-  const updateRowHeightCache = (element: Element, i: number) => {
+  const updateRowHeightCache = (element: HTMLElement, i: number) => {
     let diff = 0;
     let newHeight = 0;
     let oldHeight = 0;
 
-    if (element.clientHeight !== 0) {
-      newHeight = element.clientHeight;
+    if (element.offsetHeight !== 0) {
+      newHeight = element.offsetHeight;
       oldHeight = getRowHeight(i);
       diff = newHeight - oldHeight;
 
       if (diff !== 0) {
-        cache.set(getCacheKey(i), newHeight);
+        cache.set(getChildKey(i), newHeight);
       }
     }
 
     return { newHeight, oldHeight, diff };
   };
 
-  const getRowHeight = (i: number) => {
-    const key = getCacheKey(i);
+  const getRowHeight = (index: number) => {
+    const key = getChildKey(index);
     return cache.has(key) ? cache.get(key) : estimateRowHeight;
   };
 
@@ -88,11 +91,23 @@ const JuiVirtualizedList: RefForwardingComponent<
     return heightBeforeIndex;
   };
 
+  const getRowOffsetTop = (index: number) => {
+    return getBeforeHeight() + getRowsHeight(0, index - 1);
+  };
+
+  const updateBeforeHeight = (element: HTMLElement) => {
+    cache.set('before', element.offsetHeight);
+  };
+
+  const getBeforeHeight = () => {
+    return before ? cache.get('before') || 0 : 0;
+  };
+
   const getRowIndexFromPosition = (position: number) => {
-    let rowsHeight = 0;
+    let rowsHeight = getBeforeHeight();
     for (let index = 0; index < childrenCount; index++) {
       rowsHeight += getRowHeight(index);
-      if (position <= rowsHeight) {
+      if (position < rowsHeight) {
         return index;
       }
     }
@@ -110,7 +125,6 @@ const JuiVirtualizedList: RefForwardingComponent<
       startIndex,
       size,
       min: 0,
-      max: childrenCount - 1,
     });
   };
 
@@ -125,19 +139,18 @@ const JuiVirtualizedList: RefForwardingComponent<
       anchor,
       size,
       min: 0,
-      max: childrenCount - 1,
     });
   };
 
-  const getChildrenEls = (contentEl: Element) => {
+  const getChildrenEls = (contentEl: HTMLElement) => {
     return Array.prototype.slice.call(contentEl.children, 0);
   };
 
-  const [displayRangeSize] = useState(initialRangeSize);
-  const childrenCount = children.length;
-
-  const ref: DivRefObject = useRef(null);
-  const contentRef: DivRefObject = useRef(null);
+  const scrollToPosition = (position: ScrollPosition) => {
+    if (ref.current) {
+      ref.current.scrollTop = getRowOffsetTop(position.index) + position.offset;
+    }
+  };
 
   //
   // Forward ref
@@ -145,79 +158,92 @@ const JuiVirtualizedList: RefForwardingComponent<
   useImperativeHandle(forwardRef, () => ({
     scrollToIndex: (index: number) => {
       setDisplayRange(createDisplayRange({ startIndex: index - 5 }));
-      scrollTo({ index });
+      setScrollPosition({ index });
+      scrollEffectTriggerRef.current++; // Trigger scroll after next render
     },
   }));
+
+  const ref: DivRefObject = useRef(null);
+  const beforeRef: DivRefObject = useRef(null);
+  const contentRef: DivRefObject = useRef(null);
 
   //
   // State
   //
-  const {
-    scrollPosition,
-    setScrollPosition,
-    scrollTo,
-    scrollTopUpdateTrigger,
-    forceUpdateScrollTop,
-  } = useScroll({
+  const [displayRangeSize] = useState(initialRangeSize);
+  const childrenCount = children.length;
+  const { scrollPosition, setScrollPosition } = useScroll({
     index: initialScrollToIndex,
     offset: 0,
   });
-  const { forceUpdate } = useForceUpdate();
   const [cache] = useState(new Map());
-  const [estimateRowHeight] = useState(20);
-  const [{ startIndex, stopIndex }, setDisplayRange] = useRange(
+  const [estimateRowHeight] = useState(60);
+  const [displayRange, setDisplayRange] = useRange(
     createDisplayRange({ startIndex: initialScrollToIndex - 5 }),
   );
+  const { startIndex: _startIndex, stopIndex: _stopIndex } = displayRange;
 
-  const heightBeforeStartRow = getRowsHeight(0, startIndex - 1);
-  const heightAfterStopRow = getRowsHeight(stopIndex + 1, childrenCount - 1);
+  // ------------------------------------------------------------
+  const prevStartChildRef = useRef(children[_startIndex]);
+  const prevStartIndexRef = useRef(_startIndex);
+  const prevChildrenCountRef = useRef(childrenCount);
 
-  const childrenToDisplay: ReactNode[] = children.filter((_, i) => {
-    return startIndex <= i && i <= stopIndex;
-  });
+  let startIndex: number = _startIndex;
+  let stopIndex: number = _stopIndex;
+  const scrollEffectTriggerRef = useRef(0);
 
-  //
-  // Update height cache
-  //
-  useLayoutEffect(() => {
-    if (contentRef.current) {
-      const contentEl = contentRef.current;
-      const displayedRowsEls: Element[] = getChildrenEls(contentEl);
-      displayedRowsEls.forEach((el, i) => {
-        const { diff } = updateRowHeightCache(el, startIndex + i);
-        if (diff !== 0 && i + startIndex < scrollPosition.index) {
-          forceUpdate();
-        }
-      });
+  if (prevChildrenCountRef.current !== children.length) {
+    const prevStartChild = prevStartChildRef.current;
+    const offset =
+      children.findIndex(child => child.key === prevStartChild.key) -
+      prevStartIndexRef.current;
+
+    if (offset !== 0) {
+      startIndex += offset;
+      stopIndex += offset;
+      displayRange.startIndex = startIndex;
+      displayRange.stopIndex = stopIndex;
+      scrollPosition.index = Math.max(scrollPosition.index + offset, 0);
+      scrollEffectTriggerRef.current++; // Trigger scroll after render
     }
-  },              [getCacheKey(startIndex), getCacheKey(stopIndex)]);
+  }
 
-  //
-  // Handle scroll to
-  //
+  prevStartChildRef.current = children[_startIndex];
+  prevStartIndexRef.current = _startIndex;
+  prevChildrenCountRef.current = children.length;
+  // ------------------------------------------------------------
+
   useLayoutEffect(() => {
-    if (ref.current) {
-      ref.current.scrollTop =
-        getRowsHeight(0, scrollPosition.index - 1) + scrollPosition.offset;
+    if (beforeRef.current) {
+      updateBeforeHeight(beforeRef.current);
+    } else {
     }
-  },              [scrollTopUpdateTrigger]);
+  },              [!!before]);
+
+  useLayoutEffect(() => {
+    scrollToPosition(scrollPosition);
+  },              [!!before, scrollEffectTriggerRef.current]);
 
   //
-  // Observe dynamic rows
+  // Update height cache and observe dynamic rows
   //
   useLayoutEffect(() => {
+    const handleSizeChange = (el: HTMLElement, i: number) => {
+      const { diff } = updateRowHeightCache(el, startIndex + i);
+      const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
+      if (diff !== 0 && beforeFirstVisibleRow) {
+        scrollToPosition(scrollPosition);
+      }
+    };
+
     const resizeObservers: ResizeObserver[] = [];
+
     if (contentRef.current) {
       const contentEl = contentRef.current;
-
-      const displayedRowsEls: Element[] = getChildrenEls(contentEl);
+      const displayedRowsEls: HTMLElement[] = getChildrenEls(contentEl);
       displayedRowsEls.forEach((el, i) => {
-        const ro = new ResizeObserver((entities: ResizeObserverEntry[]) => {
-          const { diff } = updateRowHeightCache(el, startIndex + i);
-          if (diff !== 0 && i + startIndex < scrollPosition.index) {
-            forceUpdateScrollTop();
-          }
-        });
+        handleSizeChange(el, i);
+        const ro = new ResizeObserver(() => handleSizeChange(el, i));
         ro.observe(el);
         resizeObservers.push(ro);
       });
@@ -226,27 +252,42 @@ const JuiVirtualizedList: RefForwardingComponent<
     return () => {
       resizeObservers.forEach(ro => ro.disconnect());
     };
-  },              [getCacheKey(startIndex), getCacheKey(stopIndex)]);
+  },              [getChildKey(startIndex), getChildKey(stopIndex)]);
 
   //
   // Scrolling
   //
-  const handleScroll = () => {
+  const handleScroll = (event: React.UIEvent) => {
     if (ref.current) {
       const scrollTop = ref.current.scrollTop;
       const anchor = getRowIndexFromPosition(scrollTop + height / 2);
+      const index = getRowIndexFromPosition(scrollTop);
 
-      // Remember the position
-      setScrollPosition({
-        index: anchor,
-        offset: scrollTop - getRowsHeight(0, anchor - 1),
-      });
+      if (cache.has(getChildKey(index))) {
+        // Remember the position
+        setScrollPosition({
+          index,
+          offset: scrollTop - getRowOffsetTop(index),
+        });
+      }
 
       // Update display range
-      setDisplayRange(createDisplayRangeFromAnchor({ anchor }));
+      const range = createDisplayRangeFromAnchor({ anchor });
+      setDisplayRange(range);
+      prevStartChildRef.current = children[range.startIndex];
+      prevStartIndexRef.current = range.startIndex;
+      prevChildrenCountRef.current = children.length;
+
+      onScroll(event);
     }
   };
 
+  const wrappedBefore = before ? <div ref={beforeRef}>{before}</div> : null;
+  const heightBeforeStartRow = getRowsHeight(0, startIndex - 1);
+  const heightAfterStopRow = getRowsHeight(stopIndex + 1, childrenCount - 1);
+  const childrenToDisplay: ReactNode[] = children.filter((_, i) => {
+    return startIndex <= i && i <= stopIndex;
+  });
   return (
     <div
       ref={ref}
@@ -260,16 +301,29 @@ const JuiVirtualizedList: RefForwardingComponent<
         overflowAnchor: 'none',
       }}
     >
+      {wrappedBefore}
       <div style={{ height: heightBeforeStartRow }} />
       <div ref={contentRef}>{childrenToDisplay}</div>
       <div style={{ height: heightAfterStopRow }} />
+      {after}
     </div>
   );
 };
 
-JuiVirtualizedList.defaultProps = {
-  initialRangeSize: 10,
-};
+const MemoList = memo(
+  forwardRef(JuiVirtualizedList),
+) as React.MemoExoticComponent<
+  React.ForwardRefExoticComponent<
+    {
+      initialScrollToIndex?: number;
+      initialRangeSize?: number;
+      onScroll?: (event: React.UIEvent) => void;
+      before?: React.ReactNode;
+      after?: React.ReactNode;
+      height: number;
+      children: JSX.Element[];
+    } & React.RefAttributes<JuiVirtualizedListHandles>
+  >
+>;
 
-const MemoList = memo(forwardRef(JuiVirtualizedList));
 export { MemoList as JuiVirtualizedList, JuiVirtualizedListHandles };

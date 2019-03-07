@@ -20,7 +20,6 @@ import {
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
-import ReactResizeDetector from 'react-resize-detector';
 import { getTabConfig } from './utils';
 
 const HEADER_HEIGHT = 36;
@@ -61,43 +60,30 @@ class ItemListView extends React.Component<ViewProps & Props> {
   moreLoader = () => <JuiRightRailLoadingMore />;
 
   render() {
-    const { dataSource, groupId, type } = this.props;
+    const { type, width, height, dataSource } = this.props;
     const { subheader } = getTabConfig(type);
-    const totalCount = dataSource.total();
-
+    const totalCount = dataSource.total!();
     return (
       <JuiRightShelfContent>
-        {dataSource.isLoadingContent() && this.firstLoader()}
-        {!dataSource.isLoadingContent() &&
+        {dataSource.isLoadingContent!() && this.firstLoader()}
+        {!dataSource.isLoadingContent!() &&
           totalCount > 0 &&
           dataSource.size() > 0 && (
             <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
               {i18next.t(subheader)}
             </JuiListSubheader>
           )}
-        {
-          <ReactResizeDetector
-            key={groupId}
-            handleWidth={true}
-            handleHeight={true}
-          >
-            {(width: number = 0, height: number = HEADER_HEIGHT) => {
-              return (
-                <JuiVirtualList
-                  overscan={5}
-                  threshold={40}
-                  dataSource={dataSource}
-                  rowRenderer={this.rowRenderer}
-                  noContentRenderer={this.noContentRenderer}
-                  moreLoader={this.moreLoader}
-                  fixedCellHeight={ITEM_HEIGHT}
-                  width={width}
-                  height={height - HEADER_HEIGHT}
-                />
-              );
-            }}
-          </ReactResizeDetector>
-        }
+        <JuiVirtualList
+          overscan={5}
+          threshold={40}
+          dataSource={dataSource}
+          rowRenderer={this.rowRenderer}
+          noContentRenderer={this.noContentRenderer}
+          moreLoader={this.moreLoader}
+          fixedCellHeight={ITEM_HEIGHT}
+          width={width}
+          height={height - HEADER_HEIGHT}
+        />
       </JuiRightShelfContent>
     );
   }

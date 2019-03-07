@@ -6,6 +6,8 @@
 
 import { MemberListViewModel } from '../MemberList.ViewModel';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 jest.mock('../../../../../../../../store/handler/SectionGroupHandler');
 
@@ -25,16 +27,21 @@ describe('MemberListViewModel', () => {
     jest.restoreAllMocks();
   });
 
-  describe('memberIds', () => {
-    it('should be get correct memberIds when scrolling [JPT-405]', () => {
+  describe('onScrollEvent()', () => {
+    it('should be true when scrollTop is greater than 20', () => {
       const vm = new MemberListViewModel();
-      const getSortedGroupMembersIds = jest.fn();
-      // @ts-ignore
-      vm._memberListHandler = {
-        getSortedGroupMembersIds,
-      };
-      getSortedGroupMembersIds.mockReturnValue(allMembersIds);
-      expect(vm.memberIds).toEqual(allMembersIds);
+      vm.onScrollEvent({ scrollTop: 40 });
+      expect(
+        getGlobalValue(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW),
+      ).toBe(true);
+    });
+
+    it('should be true when scrollTop is less than 20', () => {
+      const vm = new MemberListViewModel();
+      vm.onScrollEvent({ scrollTop: 10 });
+      expect(
+        getGlobalValue(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW),
+      ).toBe(false);
     });
   });
 });
