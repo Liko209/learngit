@@ -167,6 +167,10 @@ class RTCAccount implements IRTCAccount {
       this._onLogoutAction();
     });
 
+    this._regManager.on(REGISTRATION_EVENT.REFRESH_PROV, () => {
+      this._refreshProv();
+    });
+
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
     });
@@ -184,6 +188,7 @@ class RTCAccount implements IRTCAccount {
     this._state = state;
     if (this._state === RTC_ACCOUNT_STATE.REGISTERED) {
       this._callManager.notifyAccountReady();
+      this._provManager.initRefreshState();
     }
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
@@ -254,6 +259,10 @@ class RTCAccount implements IRTCAccount {
     if (RTC_NETWORK_STATE.ONLINE === params.state) {
       this._regManager.networkChangeToOnline();
     }
+  }
+
+  private _refreshProv() {
+    this._provManager.refreshSipProv();
   }
 }
 

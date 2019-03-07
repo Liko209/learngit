@@ -86,11 +86,6 @@ describe('GroupDao', () => {
       expect(teams.map((t: Group) => t.id)).toEqual([2, 3]);
     });
 
-    it('query favorite groups', async () => {
-      const teams = await groupDao.queryGroupsByIds([1, 2, 3]);
-      expect(teams.map((t: Group) => t.id).sort()).toEqual([3, 2, 1].sort());
-    });
-
     it('query all groups', async () => {
       const teams = await groupDao.queryAllGroups();
       expect(teams.map((t: Group) => t.id)).toEqual([5, 4, 3, 2, 1]);
@@ -111,6 +106,5 @@ describe('GroupDao', () => {
         groupDao.queryGroupByMemberList([123, 234]),
       ).resolves.toMatchObject(groups[3]);
     });
-
   });
 });

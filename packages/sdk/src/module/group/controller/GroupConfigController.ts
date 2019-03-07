@@ -3,7 +3,8 @@
  * @Date: 2019-01-28 13:34:04
  * Copyright © RingCentral. All rights reserved.
  */
-import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
+import { GroupConfigDao } from '../../groupConfig/dao';
 
 class GroupConfigController {
   constructor() {}

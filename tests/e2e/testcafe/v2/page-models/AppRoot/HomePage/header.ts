@@ -189,6 +189,10 @@ class Search extends BaseWebComponent {
   }
 
 
+  async quit() {
+    await this.t.pressKey('ESC');
+  }
+
 }
 
 class SearchItem extends BaseWebComponent {
@@ -213,7 +217,7 @@ class SearchItem extends BaseWebComponent {
   async getName() {
     return await this.name.textContent;
   }
-  
+
   async getId() {
     if (await this.avatar.find('div').withAttribute('uid').exists) {
       return await this.uid;

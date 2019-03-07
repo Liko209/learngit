@@ -8,7 +8,7 @@ import GroupAPI from '../../../../api/glip/group';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
 import { EVENT_TYPES } from '../../../../service';
-import { ENTITY } from '../../../../service/eventKey';
+import { ENTITY, SERVICE } from '../../../../service/eventKey';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PersonService } from '../../../person';
@@ -35,7 +35,6 @@ jest.mock('../../../state');
 jest.mock('../../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),
-    queryGroupsByIds: jest.fn(),
     bulkDelete: jest.fn(),
     bulkPut: jest.fn(),
     doInTransaction: jest.fn(),
@@ -71,10 +70,6 @@ jest.mock('../../../../api/glip/group', () => {
     requestGroupById: jest.fn(),
   };
 });
-
-type GenerateFakeGroupOptions = {
-  hasPost: boolean;
-};
 
 function generateFakeGroups(
   count: number,
@@ -118,6 +113,10 @@ function generateFakeGroups(
 const stateService: StateService = new StateService();
 const personService = new PersonService();
 const profileService = new ProfileService();
+const groupService = {
+  getGroupsByIds: jest.fn(),
+  isValid: jest.fn(),
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -128,7 +127,10 @@ beforeEach(() => {
 });
 
 describe('GroupHandleDataController', () => {
-  const groupHandleDataController = new GroupHandleDataController();
+  let groupHandleDataController: GroupHandleDataController;
+  beforeEach(() => {
+    groupHandleDataController = new GroupHandleDataController(groupService);
+  });
   describe('handleData()', () => {
     it('passing an empty array', async () => {
       const result = await groupHandleDataController.handleData([]);
@@ -221,9 +223,8 @@ describe('GroupHandleDataController', () => {
       jest.clearAllMocks();
     });
     it('params', async () => {
-      daoManager
-        .getDao(GroupDao)
-        .queryGroupsByIds.mockResolvedValue([{ id: 1, is_team: true }]);
+      groupService.isValid.mockResolvedValue(true);
+      groupService.getGroupsByIds.mockResolvedValue([{ id: 1, is_team: true }]);
       const oldProfile: any = {
         person_id: 0,
         favorite_group_ids: [1, 2],
@@ -244,9 +245,8 @@ describe('GroupHandleDataController', () => {
       jest.clearAllMocks();
     });
     it('params are arry empty', async () => {
-      daoManager
-        .getDao(GroupDao)
-        .queryGroupsByIds.mockResolvedValueOnce([{ is_team: true }]);
+      groupService.getGroupsByIds.mockResolvedValueOnce([{ is_team: true }]);
+
       const oldProfile: any = {
         person_id: 0,
         favorite_group_ids: [1, 2],
@@ -326,7 +326,6 @@ describe('GroupHandleDataController', () => {
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
     });
-
     it('group has most_recent_post_created_at and greater then post created_at should not update group recent modified time', async () => {
       daoManager
         .getDao(GroupDao)
@@ -345,6 +344,47 @@ describe('GroupHandleDataController', () => {
         },
       });
       expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+    });
+    it('should emit NEW_POST_TO_GROUP with correct ids always', async () => {
+      const map = new Map();
+      map.set(11, {
+        id: 11,
+        modified_at: 100,
+        created_at: 100,
+        group_id: 21,
+      });
+      map.set(12, {
+        id: 12,
+        modified_at: 200,
+        created_at: 200,
+        group_id: 21,
+      });
+      map.set(13, {
+        id: 13,
+        modified_at: 300,
+        created_at: 300,
+        group_id: 22,
+      });
+      daoManager.getDao = jest.fn().mockReturnValue({
+        doInTransaction: jest.fn().mockImplementation(async (fn: Function) => {
+          await fn();
+        }),
+        get: jest.fn().mockReturnValue(null),
+      });
+      groupHandleDataController.handlePartialData = jest.fn();
+      await groupHandleDataController.handleGroupMostRecentPostChanged({
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          entities: map,
+        },
+      });
+      expect(groupHandleDataController.handlePartialData).toBeCalledTimes(1);
+      expect(groupHandleDataController.handlePartialData).toBeCalledWith([]);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emit).toBeCalledWith(
+        SERVICE.POST_SERVICE.NEW_POST_TO_GROUP,
+        [21, 22],
+      );
     });
   });
 

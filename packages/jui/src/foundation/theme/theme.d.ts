@@ -200,6 +200,11 @@ type Theme = {
   maxHeight: {
     dialog: string;
   };
+  transitions: {
+    easing: {
+      openCloseDialog: string;
+    };
+  };
 } & Omit<MuiTheme, 'typography'>;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;

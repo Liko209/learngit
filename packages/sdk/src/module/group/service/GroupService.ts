@@ -93,7 +93,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   isValid(group: Group): boolean {
-    return !group.is_archived && !group.deactivated && !!group.members;
+    return group && !group.is_archived && !group.deactivated && !!group.members;
   }
 
   isInTeam(userId: number, team: Group) {
@@ -214,10 +214,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .getGroupsByType(groupType, offset, _limit);
   }
 
-  async getGroupsByIds(ids: number[]): Promise<Group[]> {
+  async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     return await this.getGroupController()
       .getGroupFetchDataController()
-      .getGroupsByIds(ids);
+      .getGroupsByIds(ids, order);
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {

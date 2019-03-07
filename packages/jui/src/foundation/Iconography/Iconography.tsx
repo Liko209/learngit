@@ -13,15 +13,16 @@ type IconColor = [keyof Palette, string];
 
 const sizes = {
   small: 4,
-  default: 6,
-  large: 9,
+  medium: 5,
+  large: 6,
+  extraLarge: 9,
 };
 
-type FontSize = 'small' | 'default' | 'large' | 'inherit';
+type IconSize = 'small' | 'medium' | 'large' | 'inherit' | 'extraLarge';
 
 type JuiIconographyProps = {
   iconColor?: IconColor;
-  fontSize?: FontSize;
+  iconSize?: IconSize;
   children: string;
 } & React.HTMLAttributes<HTMLElement>;
 
@@ -29,14 +30,14 @@ const StyledSpan = styled('span')`
   display: inline-flex;
 `;
 
-const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: FontSize }>`
+const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
   display: inline-block;
   width: 1em;
   height: 1em;
   stroke-width: 0;
   stroke: currentColor;
   fill: currentColor;
-  font-size: ${({ size = 'default' }) =>
+  font-size: ${({ size = 'large' }) =>
     size !== 'inherit' ? width(sizes[size]) : 'inherit'};
   ${({ theme, iconColor }) => {
     if (!iconColor) {
@@ -53,13 +54,13 @@ const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: FontSize }>`
 const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
   props: JuiIconographyProps,
 ) => {
-  const { children, className, iconColor, fontSize, ...rest } = props;
+  const { children, className, iconColor, iconSize, ...rest } = props;
   const iconName = name2icon[children as string];
   const _className = `${className || ''} ${children} icon`;
   return (
     <StyledSpan className={_className} {...rest}>
-      <StyledSvg iconColor={iconColor} size={fontSize}>
-        <use xlinkHref={`#icon-${iconName}`} />
+      <StyledSvg iconColor={iconColor} size={iconSize}>
+        <use xlinkHref={`#icon-${iconName}`} href={`#icon-${iconName}`} />
       </StyledSvg>
     </StyledSpan>
   );

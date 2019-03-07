@@ -4,55 +4,77 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  RcInfoDao,
-  RC_CLIENT_INFO,
-  RC_ACCOUNT_INFO,
-  RC_EXTENSION_INFO,
-  RC_ROLE_PERMISSION,
-} from '../dao';
-import { daoManager, ConfigDao } from '../../../dao';
-import {
-  ACCOUNT_TYPE,
-  ACCOUNT_TYPE_ENUM,
-} from '../../../authenticator/constants';
-import { RcInfoApi } from '../../../api/ringcentral/RcInfoApi';
+import { RcInfoUserConfig } from '../config';
+import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
+import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
+import { RcInfoApi, TelephonyApi } from '../../../api/ringcentral';
+import { PhoneParserUtility } from '../../../utils/phoneParser';
+import { mainLogger } from 'foundation';
 
 class RcInfoController {
-  private _rcInfoDao: RcInfoDao;
+  private _rcInfoUserConfig: RcInfoUserConfig;
+
   constructor() {
-    this._rcInfoDao = daoManager.getKVDao(RcInfoDao);
+    this._rcInfoUserConfig = new RcInfoUserConfig();
   }
 
   async requestRcInfo() {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const accountType = configDao.get(ACCOUNT_TYPE);
+    const accountType = NewGlobalConfig.getAccountType();
     if (accountType === ACCOUNT_TYPE_ENUM.RC) {
       this.requestRcClientInfo();
       this.requestRcAccountInfo();
       this.requestRcExtensionInfo();
       this.requestRcRolePermission();
+      this.requestRcPhoneData();
     }
   }
 
   async requestRcClientInfo() {
-    const result = await RcInfoApi.requestRcClientInfo();
-    this._rcInfoDao.put(RC_CLIENT_INFO, result);
+    try {
+      const result = await RcInfoApi.requestRcClientInfo();
+      this._rcInfoUserConfig.setClientInfo(result);
+    } catch (err) {
+      mainLogger.error(`requestRcClientInfo error: ${err}`);
+    }
   }
 
   async requestRcAccountInfo() {
-    const result = await RcInfoApi.requestRcAccountInfo();
-    this._rcInfoDao.put(RC_ACCOUNT_INFO, result);
+    try {
+      const result = await RcInfoApi.requestRcAccountInfo();
+      this._rcInfoUserConfig.setAccountInfo(result);
+    } catch (err) {
+      mainLogger.error(`requestRcAccountInfo error: ${err}`);
+    }
   }
 
   async requestRcExtensionInfo() {
-    const result = await RcInfoApi.requestRcExtensionInfo();
-    this._rcInfoDao.put(RC_EXTENSION_INFO, result);
+    try {
+      const result = await RcInfoApi.requestRcExtensionInfo();
+      this._rcInfoUserConfig.setExtensionInfo(result);
+    } catch (err) {
+      mainLogger.error(`requestRcExtensionInfo error: ${err}`);
+    }
   }
 
   async requestRcRolePermission() {
-    const result = await RcInfoApi.requestRcRolePermission();
-    this._rcInfoDao.put(RC_ROLE_PERMISSION, result);
+    try {
+      const result = await RcInfoApi.requestRcRolePermission();
+      this._rcInfoUserConfig.setRolePermission(result);
+    } catch (err) {
+      mainLogger.error(`requestRcRolePermission error: ${err}`);
+    }
+  }
+
+  async requestRcPhoneData() {
+    try {
+      const phoneDataVersion: string =
+        PhoneParserUtility.getPhoneDataFileVersion() || '';
+      const result = await TelephonyApi.getPhoneParserData(phoneDataVersion);
+      this._rcInfoUserConfig.setPhoneData(result);
+      PhoneParserUtility.initPhoneParser(true);
+    } catch (err) {
+      mainLogger.error(`requestRcPhoneData error: ${err}`);
+    }
   }
 }
 

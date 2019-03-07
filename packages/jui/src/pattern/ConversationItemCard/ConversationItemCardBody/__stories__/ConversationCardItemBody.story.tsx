@@ -11,8 +11,7 @@ import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import {
   JuiEventLocation,
   JuiEventDescription,
-  JuiTaskSection,
-  JuiTaskNotes,
+  JuiTaskSectionOrDescription,
   JuiAvatarName,
   JuiTimeMessage,
   JuiTaskAvatarNames,
@@ -35,15 +34,11 @@ storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
   });
 
 storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
-  .addDecorator(withInfoDecorator(JuiTaskNotes, { inline: true }))
-  .add('TaskNotes', () => {
-    return <JuiTaskNotes notes="notes" />;
-  });
-
-storiesOf('Pattern/ConversationItemCard/ConversationItemCardBody', module)
-  .addDecorator(withInfoDecorator(JuiTaskNotes, { inline: true }))
-  .add('TaskSection', () => {
-    return <JuiTaskSection section="section" />;
+  .addDecorator(
+    withInfoDecorator(JuiTaskSectionOrDescription, { inline: true }),
+  )
+  .add('JuiTaskSectionOrDescription', () => {
+    return <JuiTaskSectionOrDescription text="notes" />;
   });
 
 const Avatar = <JuiAvatar src={avatar} size="small" />;

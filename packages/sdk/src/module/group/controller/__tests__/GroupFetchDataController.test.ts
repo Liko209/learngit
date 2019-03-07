@@ -5,7 +5,8 @@ import _ from 'lodash';
 import { groupFactory } from '../../../../__tests__/factories';
 import { Api } from '../../../../api';
 import GroupAPI from '../../../../api/glip/group';
-import { daoManager, GroupConfigDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { GroupConfigDao } from '../../../groupConfig/dao';
 import { TestEntityCacheSearchController } from '../../../../framework/__mocks__/controller/TestEntityCacheSearchController';
 import { TestEntitySourceController } from '../../../../framework/__mocks__/controller/TestEntitySourceController';
 import { TestPartialModifyController } from '../../../../framework/__mocks__/controller/TestPartialModifyController';
@@ -29,6 +30,7 @@ import { GroupFetchDataController } from '../GroupFetchDataController';
 import { GroupHandleDataController } from '../GroupHandleDataController';
 
 jest.mock('../../../../dao');
+jest.mock('../../../groupConfig/dao');
 jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
@@ -60,12 +62,12 @@ describe('GroupFetchDataController', () => {
   let groupFetchDataController: GroupFetchDataController;
   let testPartialModifyController: IPartialModifyController<Group>;
   let testRequestController: TestRequestController;
+
   let entityCacheController: EntityCacheController;
   let testEntityCacheSearchController: IEntityCacheSearchController<Group>;
   let groupService: GroupService;
 
   const groupDao = new GroupDao(null);
-  const groupConfigDao = new GroupConfigDao(null);
   const postService = new PostService();
   const mockUserId = 1;
 
@@ -97,7 +99,7 @@ describe('GroupFetchDataController', () => {
       testEntitySourceController,
       testPartialModifyController,
       testEntityCacheSearchController,
-      new GroupHandleDataController(),
+      new GroupHandleDataController(groupService),
     );
   });
 
@@ -142,14 +144,14 @@ describe('GroupFetchDataController', () => {
   });
 
   it('getGroupsByIds()', async () => {
-    const mock = { id: 1 };
-    testEntitySourceController.get.mockResolvedValue(mock);
+    const mock = [{ id: 1 }];
+    testEntitySourceController.batchGet.mockResolvedValue(mock);
 
     const result1 = await groupFetchDataController.getGroupsByIds([]);
     expect(result1).toEqual([]);
 
     const result2 = await groupFetchDataController.getGroupsByIds([1]);
-    expect(result2).toEqual([mock]);
+    expect(result2).toEqual(mock);
   });
 
   describe('getLocalGroup()', () => {
@@ -243,8 +245,7 @@ describe('GroupFetchDataController', () => {
   describe('get left rail conversations', () => {
     it('get left rail conversations', async () => {
       const mock = [{ id: 1 }, { id: 2 }];
-      daoManager.getDao.mockReturnValue(groupDao);
-      groupDao.queryGroupsByIds.mockResolvedValue(mock);
+      testEntitySourceController.batchGet.mockResolvedValue(mock);
       groupDao.queryGroups.mockResolvedValue([{ id: 3 }]);
       jest.spyOn(
         groupFetchDataController.groupHandleDataController,

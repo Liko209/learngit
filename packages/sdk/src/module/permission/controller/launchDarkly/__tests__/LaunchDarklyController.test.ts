@@ -21,7 +21,7 @@ describe('LaunchDarklyController', () => {
   describe('constructor', () => {
     it('should call notificationCenter.on three times', () => {
       new LaunchDarklyController(() => {});
-      expect(notificationCenter.on).toHaveBeenCalledTimes(2);
+      expect(notificationCenter.on).toHaveBeenCalledTimes(3);
     });
   });
   describe('hasPermission', () => {

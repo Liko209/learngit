@@ -22,6 +22,8 @@ type IdListDataProviderOptions<T, K> = {
   filterFunc: IMatchFunc<K>;
 };
 
+const DEFAULT_PAGE_SIZE = 20;
+
 class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   implements IFetchSortableDataProvider<T> {
   private _cursors: { front: number | undefined; end: number | undefined } = {
@@ -49,7 +51,6 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
       ? this._getRightAnchor(direction, anchor.id)
       : undefined;
     const pageData = this._getIdsByPage(direction, pageSize, realAnchorId);
-
     await this._fetchAndSaveModels(pageData.ids);
     const validModels: K[] = [];
     pageData.ids.forEach((id: number) => {
@@ -75,63 +76,98 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
           : nextPageData.data.concat(idModels);
       hasMore = nextPageData.hasMore;
     }
-
     return {
       hasMore,
       data: idModels,
     };
   }
 
-  onSourceIdsChanged(newSourceId: number[]) {
-    const range = this._getCursorRange();
-    const oldInRangeIds = this._getInCursorRangeIds(this._sourceIds, range);
-    const newInRangeIds = this._getInCursorRangeIds(newSourceId, range);
-    if (newInRangeIds === oldInRangeIds) {
-      return;
+  onSourceIdsChanged(newSourceIds: number[]) {
+    const oldSourceIds = _.cloneDeep(this._sourceIds);
+    const newIds = new Set(_.difference(newSourceIds, oldSourceIds));
+    const deletedIds = new Set(_.difference(oldSourceIds, newSourceIds));
+    const newIdsWithoutNew = newSourceIds.filter(
+      (value: number) => !newIds.has(value),
+    );
+    const oldIdsWithoutOld = oldSourceIds.filter(
+      (value: number) => !deletedIds.has(value),
+    );
+
+    if (!_.isEqual(newIdsWithoutNew, oldIdsWithoutOld)) {
+      const range = this._getCursorRange();
+      const oldInRangeIds = this._getInCursorRangeIds(oldSourceIds, range);
+      const idPosMap: Map<number, number> = new Map();
+      newSourceIds.forEach((value: number, index: number) => {
+        idPosMap.set(value, index);
+      });
+
+      let endPos = 0;
+      let frontPos = 0;
+      oldInRangeIds.forEach((id: number) => {
+        const pos = idPosMap.get(id);
+        if (pos) {
+          frontPos = pos < frontPos ? pos : frontPos;
+          endPos = pos > endPos ? pos : endPos;
+        }
+      });
+
+      const rangeLength = range.end - range.front;
+      if (endPos - frontPos < rangeLength) {
+        endPos = frontPos + rangeLength;
+      }
+
+      const mightChangedIds = this._getInCursorRangeIds(newSourceIds, {
+        front: frontPos,
+        end: endPos,
+      });
+
+      mightChangedIds.length > 0 && this._notifyUpdates(mightChangedIds);
+    } else {
+      newIds.size > 0 && this._notifyUpdates(Array.from(newIds));
     }
 
-    this._handleIdSourceChanged(newInRangeIds, oldInRangeIds);
+    deletedIds.size > 0 && this._notifyDeletes(Array.from(deletedIds));
+
+    this._sourceIds = newSourceIds;
   }
 
-  private async _handleIdSourceChanged(
-    newInRangeIds: number[],
-    oldInRangeIds: number[],
-  ) {
-    const changeMap: Map<number, IdModel> = new Map();
-    const entities = await this._options.entityDataProvider.getByIds(
-      newInRangeIds,
+  private _notifyDeletes(deletedIds: number[]) {
+    deletedIds.length > 0 &&
+      notificationCenter.emitEntityDelete(this._options.eventName, deletedIds);
+  }
+
+  private async _notifyUpdates(updatedIds: number[]) {
+    const updateEntities = await this._options.entityDataProvider.getByIds(
+      updatedIds,
     );
-    const entityMap: Map<number, T> = new Map();
-    entities.forEach((entity: T) => {
-      entityMap.set(entity.id, entity);
-    });
-    let pos = 0;
-    while (newInRangeIds.length > pos) {
-      changeMap.set(oldInRangeIds[pos], entityMap.get(newInRangeIds[pos]) as T);
-      ++pos;
-    }
-    notificationCenter.emitEntityReplace(
+    notificationCenter.emitEntityUpdate(
       this._options.eventName,
-      changeMap,
-      true,
+      updateEntities,
     );
   }
 
   private _getCursorRange() {
     const range = { front: -1, end: -1 };
-    let pos = 0;
-    for (const id of this._sourceIds) {
-      range.front =
-        range.front === -1 && id === this._cursors.front ? pos : range.front;
 
-      range.end =
-        range.end === -1 && id === this._cursors.end ? pos : range.end;
-      pos++;
+    if (this._cursors.front === undefined || this._cursors.end === undefined) {
+      range.front = 0;
+      range.end = DEFAULT_PAGE_SIZE;
+    } else {
+      let pos = 0;
+      for (const id of this._sourceIds) {
+        range.front =
+          range.front === -1 && id === this._cursors.front ? pos : range.front;
 
-      if (range.front !== -1 && range.end !== -1) {
-        break;
+        range.end =
+          range.end === -1 && id === this._cursors.end ? pos : range.end;
+        pos++;
+
+        if (range.front !== -1 && range.end !== -1) {
+          break;
+        }
       }
     }
+
     return range;
   }
 

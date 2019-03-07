@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { QUERY_DIRECTION } from '../../dao/constants';
 type ItemFilterFunction = (value: any, index?: number) => boolean;
 
 type ItemQueryOptions = {
@@ -14,6 +15,7 @@ type ItemQueryOptions = {
   limit: number;
   offsetItemId: number | undefined;
   filterFunc?: ItemFilterFunction;
+  direction?: QUERY_DIRECTION;
 };
 
 export { ItemQueryOptions, ItemFilterFunction };
