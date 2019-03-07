@@ -5,7 +5,7 @@
  */
 import { TypeDictionary } from '../../../../utils';
 import ItemApi from '../../../../api/glip/item';
-import { GroupConfigService } from '../../../../service/groupConfig';
+import { GroupConfigService } from '../../../groupConfig';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ItemSyncController } from '../ItemSyncController';
 import { Listener } from 'eventemitter2';
@@ -14,7 +14,7 @@ import { JServerError, ERROR_CODES_SERVER } from '../../../../error';
 
 jest.mock('../../../../api/glip/item');
 jest.mock('../../service/IItemService');
-jest.mock('../../../../service/groupConfig');
+jest.mock('../../../groupConfig');
 jest.mock('../../../../service/notificationCenter');
 
 function clearMocks() {

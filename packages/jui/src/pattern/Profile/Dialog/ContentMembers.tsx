@@ -29,15 +29,25 @@ const JuiProfileDialogContentMemberHeader = styled('div')`
   ${typography('subheading1')};
   color: ${grey('900')};
   padding: ${spacing(4, 6, 3)};
-  flex-basis: ${height(12.5)};
   flex-shrink: 0;
   box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   &.shadow {
     box-shadow: ${({ theme }) => theme.boxShadow.val3};
     z-index: ${({ theme }) => theme.zIndex.memberListHeader};
   }
+`;
+
+const JuiProfileDialogContentMemberHeaderTitle = styled('div')`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const JuiProfileDialogContentMemberHeaderSearch = styled('div')`
+  margin-top: ${spacing(2)};
 `;
 
 const JuiProfileDialogContentMemberList = styled('ul')`
@@ -122,6 +132,8 @@ const JuiProfileDialogContentMemberShadow = styled('div')`
 export {
   JuiProfileDialogContentMembers,
   JuiProfileDialogContentMemberHeader,
+  JuiProfileDialogContentMemberHeaderTitle,
+  JuiProfileDialogContentMemberHeaderSearch,
   JuiProfileDialogContentMemberList,
   JuiProfileDialogContentMemberListItem,
   JuiProfileDialogContentMemberListItemName,

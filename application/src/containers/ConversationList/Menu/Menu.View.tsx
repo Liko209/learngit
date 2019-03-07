@@ -160,7 +160,7 @@ class MenuViewComponent extends Component<Props, State> {
         >
           {t(`${favoriteText}`)}
         </JuiMenuItem>
-        <OpenProfileDialog id={groupId || personId} beforeClick={onClose}>
+        <OpenProfileDialog id={personId || groupId} beforeClick={onClose}>
           <JuiMenuItem data-test-automation-id="profileEntry">
             {t('people.team.profile')}
           </JuiMenuItem>

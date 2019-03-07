@@ -62,7 +62,9 @@ class GroupController {
 
   getHandleDataController(): GroupHandleDataController {
     if (!this.groupHandleDataController) {
-      this.groupHandleDataController = new GroupHandleDataController();
+      this.groupHandleDataController = new GroupHandleDataController(
+        this.groupService,
+      );
     }
     return this.groupHandleDataController;
   }

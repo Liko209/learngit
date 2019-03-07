@@ -11,11 +11,10 @@ import {
 import { SendPostController } from '../SendPostController';
 import { PostActionController } from '../PostActionController';
 
-import { GroupConfigService } from '../../../../../service/groupConfig';
+import { GroupConfigService } from '../../../../groupConfig';
 
 import _ from 'lodash';
 import { IPreInsertController } from '../../../../common/controller/interface/IPreInsertController';
-import { IdModel } from '../../../../../framework/model';
 import { Post } from '../../../entity/Post';
 import { daoManager, AccountDao } from '../../../../../dao';
 import { PostDao } from '../../../dao/PostDao';
@@ -30,10 +29,11 @@ jest.mock('../../../../../service/account/config');
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../PostActionController');
-jest.mock('../../../../../service/groupConfig');
+jest.mock('../../../../groupConfig');
 jest.mock('../../../../../service/notificationCenter');
 jest.mock('../../../../common/controller/impl/PreInsertController');
 jest.mock('../../../../../dao');
+jest.mock('../../../../groupConfig/dao');
 jest.mock('../../../dao/PostDao');
 
 class MockPreInsertController<T extends ExtendedBaseModel>

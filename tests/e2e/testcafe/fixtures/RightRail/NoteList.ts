@@ -53,7 +53,7 @@ test(formalName('Check the the sum of the shared notes displayed when add note',
 
   // step 2 create a note
   await h(t).withLog('When User create a note', async () => {
-    await h(t).glip(loginUser).createSimpleNote(teamId, noteTitle, uuid());
+    await h(t).glip(loginUser).createSimpleNote(teamId, noteTitle);
   });
 
   await h(t).withLog('Then The notes Tab number should be 1', async () => {
@@ -65,7 +65,7 @@ test(formalName('Check the the sum of the shared notes displayed when add note',
 
   // step 2 create a note
   await h(t).withLog('When User create a new note', async () => {
-    await h(t).glip(loginUser).createSimpleNote(teamId, secondNoteTitle, uuid());
+    await h(t).glip(loginUser).createSimpleNote(teamId, secondNoteTitle);
   });
 
   await h(t).withLog('Then The notes Tab number should be 2', async () => {

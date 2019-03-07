@@ -14,20 +14,29 @@ storiesOf('Components/Forms', module)
   .addDecorator(withInfoDecorator(JuiOutlineTextField, { inline: true }))
   .add('OutlineTextField', () => {
     return (
-      <div style={{ padding: '0 10%' }}>
+      <div style={{ padding: '0 30%' }}>
+        <JuiOutlineTextField />
+        <br />
+        <JuiOutlineTextField placeholder="Typing keywords" />
+        <br />
         <JuiOutlineTextField
-          placeholder="Search member"
+          placeholder="Only tying 3 characters"
+          maxLength={3}
+        />
+        <br />
+        <JuiOutlineTextField value="Disabled typing" disabled={true} />
+        <br />
+        <JuiOutlineTextField
+          placeholder="Search members"
           iconName="search"
           iconPosition="left"
         />
         <br />
         <JuiOutlineTextField
-          placeholder="MM/DD/YYYY"
-          iconName="calendar"
+          placeholder="Password"
+          iconName="lock"
           iconPosition="right"
         />
-        <br />
-        <JuiOutlineTextField placeholder="Typing keywords" />
       </div>
     );
   });

@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { service } from 'sdk';
 import {
   MessageInputViewModel,
   ERROR_TYPES,
@@ -13,12 +12,12 @@ import {
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
-import { GroupConfigService } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 
 jest.mock('sdk/module/post');
-jest.mock('sdk/service/groupConfig');
+jest.mock('sdk/module/groupConfig');
 jest.mock('sdk/api');
 
 const postService = new PostService();

@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
-import { GroupConfigService, notificationCenter } from 'sdk/service';
+import { computed, action } from 'mobx';
+import { notificationCenter } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -18,13 +19,8 @@ import PersonModel from '@/store/models/Person';
 
 class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
-  private get _id() {
-    return this.props.id;
-  }
-
-  @computed
   private get _post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._id);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.id);
   }
 
   @computed
@@ -37,7 +33,6 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
     return this._post.creatorId;
   }
 
-  @computed
   private get _creator() {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this._creatorId);
   }
@@ -52,6 +47,7 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
     return this._post.groupId;
   }
 
+  @action
   getQuoteText = () => {
     let quoteText = this._text;
 
@@ -63,9 +59,10 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
       ($0: string, $1: string, $2: string) => `> ${$2}<br/>`,
     );
 
-    return `${quoteText}<br/><br/>`;
+    return `${quoteText}<br/><br/><br/>`;
   }
 
+  @action
   getQuoteHead = () => {
     const { userDisplayName: name, id } = this._creator;
     // tslint:disable-next-line
@@ -73,25 +70,30 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
     return quoteHead;
   }
 
-  @computed
   private get _renderedText() {
     return `${this.getQuoteHead()}${this.getQuoteText()}`;
   }
 
+  @action
   quote = () => {
-    this.updateDraft(this._renderedText);
+    this._groupId && this.updateDraft(this._renderedText);
   }
 
-  updateDraft = (draft: string) => {
+  @action
+  updateDraft = async (draft: string) => {
     notificationCenter.emit(UI_NOTIFICATION_KEY.QUOTE, {
       quote: draft,
       groupId: this._groupId,
     });
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
-    groupConfigService.updateDraft({
-      draft,
-      id: this._groupId,
-    });
+    try {
+      await groupConfigService.updateDraft({
+        draft,
+        id: this._groupId,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 

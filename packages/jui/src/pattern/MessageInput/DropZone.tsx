@@ -79,6 +79,9 @@ const ThemedBox = withTheme(TargetBox);
 
 const boxTarget = {
   canDrop(props: ITargetBoxProps) {
+    if (props.disabled) {
+      return false;
+    }
     if (props.hasDroppedFolder && props.hasDroppedFolder()) {
       return false;
     }
@@ -93,6 +96,7 @@ const boxTarget = {
 
 export interface ITargetBoxProps {
   accepts: string[];
+  disabled?: boolean;
   onDrop: (props: ITargetBoxProps, monitor: DropTargetMonitor) => void;
   detectedFolderDrop?: () => void;
   hasDroppedFolder?: () => boolean;
