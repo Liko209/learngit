@@ -27,6 +27,7 @@ import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './service';
 import { AuthGlobalConfig } from './service/auth/config';
+import { DataMigration } from './module/config';
 
 const AM = AccountManager;
 
@@ -61,6 +62,9 @@ class Sdk {
     });
 
     Api.init(apiConfig, this.networkManager);
+
+    DataMigration.migrateKVStorage();
+
     await this.daoManager.initDatabase();
 
     // Sync service should always start before login
