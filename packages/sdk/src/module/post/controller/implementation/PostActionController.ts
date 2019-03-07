@@ -11,7 +11,8 @@ import { IRequestController } from '../../../../framework/controller/interface/I
 import { daoManager } from '../../../../dao';
 import { PostDao } from '../../dao';
 import { EditPostType } from '../../types';
-import { notificationCenter, ENTITY } from '../../../../service';
+import notificationCenter from '../../../../service/notificationCenter';
+import { ENTITY } from '../../../../service/eventKey';
 import { GroupConfigService } from '../../../groupConfig';
 import { IPostActionController } from '../interface/IPostActionController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';

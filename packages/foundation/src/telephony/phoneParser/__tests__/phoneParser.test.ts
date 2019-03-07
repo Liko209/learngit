@@ -5,16 +5,25 @@
  */
 
 import fs from 'fs';
+import path from 'path';
 import Module from '../phoneParser';
 import { ModuleParams, ModuleClass, ModuleType } from '../types';
 import { localPhoneDataPath } from '../../';
 
 describe('PhoneParser', () => {
   it('should create phoneParser', async () => {
-    const defaultPhoneData = fs.readFileSync(localPhoneDataPath).toString();
+    const defaultPhoneData = fs
+      .readFileSync(path.resolve(__dirname, `.${localPhoneDataPath}`))
+      .toString();
 
     const initParams: ModuleParams = {
       onRuntimeInitialized: () => {},
+      readBinary: (wasmBinaryFile: string) => {
+        const binary = fs.readFileSync(
+          path.resolve(__dirname, `./${wasmBinaryFile}`),
+        );
+        return new Uint8Array(binary);
+      },
     };
     const PhoneParserModule: ModuleClass = Module;
     const phoneParserModule: ModuleType = new PhoneParserModule(initParams);

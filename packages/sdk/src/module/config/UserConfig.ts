@@ -28,6 +28,10 @@ class UserConfig {
     this._configService.put(this._moduleName, key, value);
   }
 
+  protected remove(key: string) {
+    this._configService.remove(this._moduleName, key);
+  }
+
   clear() {
     this._configService.clear(this._moduleName);
   }
