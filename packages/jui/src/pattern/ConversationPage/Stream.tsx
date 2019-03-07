@@ -15,6 +15,7 @@ type JuiStreamProps = {
 const StyledDiv = styled<JuiStreamProps, 'div'>('div')`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   height: 100%;
 `;
 
