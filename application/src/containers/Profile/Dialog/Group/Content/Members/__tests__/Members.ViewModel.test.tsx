@@ -8,11 +8,11 @@ import { getEntity } from '../../../../../../../store/utils';
 import { MembersViewModel } from '../Members.ViewModel';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
 import { PersonService } from 'sdk/module/person';
-// import debounce from 'lodash/debounce';
+import debounce from 'lodash/debounce';
 
 jest.mock('../../../../../../../store/utils');
 
-// jest.useFakeTimers();
+jest.useFakeTimers();
 
 const mockMembers = [1, 2, 3];
 
@@ -60,14 +60,14 @@ describe('MembersViewModel', () => {
   });
 
   describe('doFuzzySearchPersons()', () => {
-    // it('should be invoke one count when use debounce [JPT-1263]', () => {
-    //   vm.changeSearchInput = jest.fn();
-    //   const _debounce = debounce(vm.changeSearchInput, 300);
-    //   _debounce('a');
-    //   _debounce('ab');
-    //   jest.runAllTimers();
-    //   expect(vm.changeSearchInput).toHaveBeenCalledTimes(1);
-    // });
+    it.skip('should be invoke one count when use debounce [JPT-1263]', () => {
+      vm.changeSearchInput = jest.fn();
+      const _debounce = debounce(vm.changeSearchInput, 300);
+      _debounce('a');
+      _debounce('ab');
+      jest.runAllTimers();
+      expect(vm.changeSearchInput).toHaveBeenCalledTimes(1);
+    });
 
     it('should be get mock result when invoke service fuzzy search interface [JPT-1263]', async () => {
       const result = await vm.handleSearch();
