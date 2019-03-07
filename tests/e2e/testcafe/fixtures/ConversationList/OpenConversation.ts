@@ -127,32 +127,13 @@ test(formalName('Should display in the top when open a closed conversation from 
     await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
   });
 
-  async function stepsToCheckPositionOnTop(chatId: string, teamName: string) {
-    await h(t).withLog(`Then ${teamName} should be on the top in DirectMessage section`, async () => {
-      await conversationPage.groupIdShouldBe(chatId);
-      await directMessagesSection.nthConversationEntry(0).groupIdShouldBe(chatId);
-      await conversationPage.waitUntilPostsBeLoaded();
-    });
-
-    await h(t).withLog(`When I refresh page`, async () => {
-      await h(t).reload();
-      await app.homePage.ensureLoaded();
-    });
-
-    await h(t).withLog(`Then ${teamName} should be still opened and on the top in DirectMessage section`, async () => {
-      await conversationPage.groupIdShouldBe(chatId);
-      await directMessagesSection.nthConversationEntry(0).groupIdShouldBe(chatId);
-    });
-  }
-
   await h(t).withLog(`Given I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-
   // open via mentions
-  await h(t).withLog(`Given I close the conversation A: "${otherUserName}":`, async () => {
+  await h(t).withLog(`And I close the conversation A: "${otherUserName}":`, async () => {
     await directMessagesSection.conversationEntryById(topChat.glipId).openMoreMenu();
     await moreMenu.close.enter();
   });
@@ -212,7 +193,6 @@ test(formalName('Should display in the top when open a closed conversation from 
 
   await stepsToCheckPositionOnTop(topChat.glipId, otherUserName);
 
-  // skip this entry due to a bug: https://jira.ringcentral.com/browse/FIJI-3278
   // open via URL
   await h(t).withLog(`Given I close the conversation A: "${otherUserName}"`, async () => {
     await directMessagesSection.conversationEntryById(topChat.glipId).openMoreMenu();
@@ -227,6 +207,24 @@ test(formalName('Should display in the top when open a closed conversation from 
   });
 
   await stepsToCheckPositionOnTop(topChat.glipId, otherUserName);
+
+  async function stepsToCheckPositionOnTop(chatId: string, teamName: string) {
+    await h(t).withLog(`Then ${teamName} should be on the top in DirectMessage section`, async () => {
+      await conversationPage.groupIdShouldBe(chatId);
+      await directMessagesSection.nthConversationEntry(0).groupIdShouldBe(chatId);
+      await conversationPage.waitUntilPostsBeLoaded();
+    });
+
+    await h(t).withLog(`When I refresh page`, async () => {
+      await h(t).reload();
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog(`Then ${teamName} should be still opened and on the top in DirectMessage section`, async () => {
+      await conversationPage.groupIdShouldBe(chatId);
+      await directMessagesSection.nthConversationEntry(0).groupIdShouldBe(chatId);
+    });
+  }
 
 });
 
