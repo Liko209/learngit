@@ -100,6 +100,9 @@ class AppModule extends AbstractModule {
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
 
         if (!this._subModuleRegistered) {
+          // load phone parser module
+          PhoneParserUtility.loadModule();
+
           // TODO register subModule according to account profile
           this._homeService.registerSubModules([
             'dashboard',
@@ -194,9 +197,6 @@ class AppModule extends AbstractModule {
       api,
       db,
     });
-
-    // load phone parser module
-    PhoneParserUtility.loadModule();
   }
 }
 

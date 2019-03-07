@@ -15,7 +15,7 @@ import { DEFAULT_PAGE_SIZE } from '../constant';
 import { ProfileService } from '../../profile';
 import { Item } from '../../../module/item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { SOCKET } from '../../../service';
+import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 
