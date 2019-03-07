@@ -7,17 +7,27 @@ import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { Props } from './types';
 import { Group } from 'sdk/module/group/entity';
 import GroupModel from '@/store/models/Group';
+import { SearchService } from 'sdk/module/search';
+import { Props, RecentSearchTypes, ISearchItemModel } from '../types';
 
-class GroupItemViewModel extends StoreViewModel<Props> {
+class GroupItemViewModel extends StoreViewModel<Props>
+  implements ISearchItemModel {
   constructor(props: Props) {
     super(props);
     const { sectionIndex, cellIndex } = props;
+
     this.reaction(
       () => this.group,
-      () => this.props.didChange(sectionIndex, cellIndex),
+      (group: GroupModel) => {
+        this.props.didChange(sectionIndex, cellIndex);
+        if (group.isArchived || group.deactivated) {
+          SearchService.getInstance().removeRecentSearchRecords(
+            new Set([group.id]),
+          );
+        }
+      },
     );
   }
 
@@ -52,8 +62,17 @@ class GroupItemViewModel extends StoreViewModel<Props> {
 
   @computed
   get shouldHidden() {
-    const { isMember, deactivated } = this.group;
-    return deactivated || (!isMember && this.isPrivate);
+    const { isMember, deactivated, isArchived } = this.group;
+    return deactivated || isArchived || (!isMember && this.isPrivate);
+  }
+
+  addRecentRecord = () => {
+    const { isTeam } = this.group;
+
+    SearchService.getInstance().addRecentSearchRecord(
+      isTeam ? RecentSearchTypes.TEAM : RecentSearchTypes.GROUP,
+      this.props.id,
+    );
   }
 }
 

@@ -27,7 +27,7 @@ import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './service';
 import { AuthGlobalConfig } from './service/auth/config';
-import { DataMigration } from './module/config';
+import { DataMigration, UserConfigService } from './module/config';
 
 const AM = AccountManager;
 
@@ -127,6 +127,7 @@ class Sdk {
   }
 
   async onLogout() {
+    await UserConfigService.getInstance().clear();
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     await this.daoManager.deleteDatabase();

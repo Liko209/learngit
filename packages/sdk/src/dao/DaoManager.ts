@@ -9,8 +9,6 @@ import Manager from '../Manager';
 import { INewable } from '../types';
 import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
 import { AuthGlobalConfig } from '../service/auth/config';
-import { AccountUserConfig } from '../service/account/config';
-import { NewUserConfig } from '../service/config/NewUserConfig';
 
 class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   private kvStorageManager: KVStorageManager;
@@ -78,11 +76,6 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
     // need to remove glip token or can't logout
     AuthGlobalConfig.removeGlipToken();
     AuthGlobalConfig.removeRcToken();
-    // each module need to remove its user config when users logout
-    const accoutUserConfig = new AccountUserConfig();
-    accoutUserConfig.clear();
-    const userConfig = new NewUserConfig();
-    userConfig.clear();
   }
 
   async deleteDatabase(): Promise<void> {

@@ -163,5 +163,15 @@ describe('GroupItemViewModel', () => {
       const groupItemViewModel = new GroupItemViewModel({} as Props);
       expect(groupItemViewModel.shouldHidden).toBeFalsy();
     });
+    it('If group or team is archived  should be hidden', () => {
+      (getEntity as jest.Mock).mockReturnValue({
+        isTeam: true,
+        isMember: true,
+        privacy: 'private',
+        isArchived: true,
+      });
+      const groupItemViewModel = new GroupItemViewModel({} as Props);
+      expect(groupItemViewModel.shouldHidden).toBeTruthy();
+    });
   });
 });

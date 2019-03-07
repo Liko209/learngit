@@ -27,10 +27,6 @@ class UserConfig {
   protected put(key: string, value: any) {
     this._configService.put(this._moduleName, key, value);
   }
-
-  clear() {
-    this._configService.clear(this._moduleName);
-  }
 }
 
 export { UserConfig };
