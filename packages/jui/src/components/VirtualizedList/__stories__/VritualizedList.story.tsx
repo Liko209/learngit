@@ -89,12 +89,15 @@ storiesOf('Components/VirtualizedList', module)
   .add('VirtualizedList', () => {
     const dataCount = number('dataCount', 100);
     const initialScrollToIndex = number('initialScrollToIndex', 0);
-    const initialRangeSize = number('initialRangeSize', 7);
-    const listHeight = number('listHeight', 400);
+    const listHeight = number('listHeight', 300);
 
     const Demo = () => {
       const ref = useRef<JuiVirtualizedListHandles>(null);
       const [visibleRange, setVisibleRange] = useState({
+        startIndex: 0,
+        stopIndex: 0,
+      });
+      const [renderedRange, setRenderedRange] = useState({
         startIndex: 0,
         stopIndex: 0,
       });
@@ -135,16 +138,20 @@ storiesOf('Components/VirtualizedList', module)
           <ListWrapper>
             <JuiVirtualizedList
               ref={ref}
-              initialScrollToIndex={initialScrollToIndex}
-              initialRangeSize={initialRangeSize}
               height={listHeight}
+              minRowHeight={40}
+              initialScrollToIndex={initialScrollToIndex}
               onVisibleRangeChange={setVisibleRange}
+              onRenderedRangeChange={setRenderedRange}
             >
               {children}
             </JuiVirtualizedList>
           </ListWrapper>
           <br />
-          <DebugTable visibleRange={visibleRange} />
+          <DebugTable
+            visibleRange={visibleRange}
+            renderedRange={renderedRange}
+          />
         </div>
       );
     };
@@ -161,6 +168,10 @@ storiesOf('Components/VirtualizedList', module)
         initialDataCount: 0,
       });
       const [visibleRange, setVisibleRange] = useState({
+        startIndex: 0,
+        stopIndex: 0,
+      });
+      const [renderedRange, setRenderedRange] = useState({
         startIndex: 0,
         stopIndex: 0,
       });
@@ -210,19 +221,24 @@ storiesOf('Components/VirtualizedList', module)
           <ListWrapper>
             <JuiInfiniteList
               hasMore={hasMore}
-              height={400}
+              height={300}
+              minRowHeight={40}
               loadInitialData={loadInitialData}
               loadMore={loadMore}
               loadingMoreRenderer={<LoadingMore />}
               loadingRenderer={<div>loading initial</div>}
               noRowsRenderer={<div>Empty</div>}
               onVisibleRangeChange={setVisibleRange}
+              onRenderedRangeChange={setRenderedRange}
             >
               {children}
             </JuiInfiniteList>
           </ListWrapper>
           <br />
-          <DebugTable visibleRange={visibleRange} />
+          <DebugTable
+            visibleRange={visibleRange}
+            renderedRange={renderedRange}
+          />
         </>
       );
     };

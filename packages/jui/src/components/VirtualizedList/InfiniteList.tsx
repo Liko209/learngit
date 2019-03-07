@@ -11,11 +11,14 @@ import { IndexRange } from './VirtualizedListProps';
 
 type JuiInfiniteListProps = {
   height: number;
+  minRowHeight: number;
+  overscan?: number;
   hasMore: (direction: 'up' | 'down') => boolean;
   loadInitialData: () => Promise<void>;
   loadMore: (direction: 'up' | 'down') => Promise<void>;
   initialScrollToIndex: number;
-  onVisibleRangeChange: (visibleRange: IndexRange) => void;
+  onVisibleRangeChange?: (range: IndexRange) => void;
+  onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer: JSX.Element;
   loadingRenderer: JSX.Element;
   loadingMoreRenderer: JSX.Element;
@@ -24,6 +27,8 @@ type JuiInfiniteListProps = {
 
 const JuiInfiniteList = ({
   height,
+  minRowHeight,
+  overscan,
   hasMore,
   loadInitialData,
   loadMore,
@@ -32,6 +37,7 @@ const JuiInfiniteList = ({
   loadingRenderer,
   loadingMoreRenderer,
   onVisibleRangeChange,
+  onRenderedRangeChange,
   children,
 }: JuiInfiniteListProps) => {
   return (
@@ -54,12 +60,15 @@ const JuiInfiniteList = ({
         return (
           <JuiVirtualizedList
             ref={ref}
-            initialScrollToIndex={initialScrollToIndex}
-            onScroll={onScroll}
-            onVisibleRangeChange={onVisibleRangeChange}
             height={height}
+            minRowHeight={minRowHeight}
+            initialScrollToIndex={initialScrollToIndex}
+            overscan={overscan}
             before={loadingUp ? loadingMoreRenderer : null}
             after={loadingDown ? loadingMoreRenderer : null}
+            onScroll={onScroll}
+            onVisibleRangeChange={onVisibleRangeChange}
+            onRenderedRangeChange={onRenderedRangeChange}
           >
             {children}
           </JuiVirtualizedList>

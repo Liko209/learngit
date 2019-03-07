@@ -11,10 +11,12 @@ type IndexRange = {
 
 type JuiVirtualizedListProps = {
   height: number;
+  minRowHeight: number;
+  overscan: number;
   initialScrollToIndex: number;
-  initialRangeSize: number;
   onScroll: (event: React.UIEvent) => void;
-  onVisibleRangeChange: (visibleRange: IndexRange) => void;
+  onVisibleRangeChange: (range: IndexRange) => void;
+  onRenderedRangeChange: (range: IndexRange) => void;
   before?: React.ReactNode;
   after?: React.ReactNode;
   children: JSX.Element[];
