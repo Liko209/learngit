@@ -15,7 +15,7 @@ import {
 } from '../api';
 import { daoManager } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
-import { GlobalConfigService } from '../module/config';
+import { GlobalConfigService, UserConfigService } from '../module/config';
 import { AuthGlobalConfig } from '../service/auth/config';
 import { SyncService } from '../module/sync';
 
@@ -90,6 +90,9 @@ describe('Sdk', () => {
 
   describe('onLogout()', () => {
     beforeEach(async () => {
+      UserConfigService.getInstance = jest
+        .fn()
+        .mockReturnValue({ clear: jest.fn() });
       await sdk.onLogout();
     });
 
