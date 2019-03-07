@@ -659,20 +659,16 @@ describe('RTCAccount', async () => {
       account._provManager.emit(RTC_PROV_EVENT.NEW_PROV, {
         info: mockProvisionData,
       });
-      expect(mockListener.onReceiveNewProvFlags).toBeCalledWith({
-        voipCountryBlocked: false,
-        voipFeatureEnabled: true,
-      });
+      expect(mockListener.onReceiveNewProvFlags).toBeCalledWith(
+        mockProvisionData.sipFlags,
+      );
     });
 
     it('Should return voipCountryBlocked and voipFeatureEnabled when call getSipFlags api and has Sip provision [JPT-1314]', () => {
       setupAccount();
       account._provManager._sipProvisionInfo = mockProvisionData;
       const expectSipFlags = account.getSipProvFlags();
-      expect(expectSipFlags).toEqual({
-        voipCountryBlocked: false,
-        voipFeatureEnabled: true,
-      });
+      expect(expectSipFlags).toEqual(mockProvisionData.sipFlags);
     });
 
     it('Should return null when call getSipFlags api and but no Sip provision [JPT-1315]', () => {

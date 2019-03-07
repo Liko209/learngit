@@ -16,7 +16,7 @@ import {
   RTCSipProvisionInfo,
   RTC_PROV_EVENT,
 } from '../account/types';
-import { RTC_ACCOUNT_STATE, RTCCallOptions } from './types';
+import { RTC_ACCOUNT_STATE, RTCCallOptions, RTCSipFlags } from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
@@ -173,10 +173,7 @@ class RTCAccount implements IRTCAccount {
 
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
-      this._delegate.onReceiveNewProvFlags({
-        voipFeatureEnabled: info.sipFlags['voipFeatureEnabled'],
-        voipCountryBlocked: info.sipFlags['voipCountryBlocked'],
-      });
+      this._delegate.onReceiveNewProvFlags(info.sipFlags);
     });
 
     RTCNetworkNotificationCenter.instance().on(
@@ -265,14 +262,10 @@ class RTCAccount implements IRTCAccount {
     }
   }
 
-  getSipProvFlags(): object | null {
+  getSipProvFlags(): RTCSipFlags | null {
     const SipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
-
     if (SipProvisionInfo) {
-      return {
-        voipFeatureEnabled: SipProvisionInfo.sipFlags['voipFeatureEnabled'],
-        voipCountryBlocked: SipProvisionInfo.sipFlags['voipCountryBlocked'],
-      };
+      return SipProvisionInfo.sipFlags;
     }
 
     return null;

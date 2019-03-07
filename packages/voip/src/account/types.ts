@@ -3,6 +3,8 @@
  * @Date: 2018-12-27 17:42:00
  * Copyright © RingCentral. All rights reserved.
  */
+import { RTCSipFlags } from '../api/types';
+
 type RTCSipProvisionInfo = {
   device: object;
   sipInfo: {
@@ -13,15 +15,7 @@ type RTCSipProvisionInfo = {
     authorizationId: string;
     outboundProxy: string;
   }[];
-  sipFlags: {
-    voipFeatureEnabled: boolean;
-    voipCountryBlocked: boolean;
-    outboundCallsEnabled: boolean;
-    dscpEnabled: boolean;
-    dscpSignaling: boolean;
-    dscpVoice: boolean;
-    dscpVideo: boolean;
-  }[];
+  sipFlags: RTCSipFlags;
 };
 
 type RTCRegisterAsyncTask = {
