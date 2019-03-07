@@ -342,7 +342,9 @@
       "addToFavorites": "Add to Favorites",
       "removeFromFavorites": "Remove from Favorites",
       "profile": "Profile",
-      "close": "Close"
+      "close": "Close",
+      "markAsRead": "Mark as read",
+      "markAsUnread": "Mark as unread"
     },
     "company": {},
     "prompt": {
@@ -383,7 +385,10 @@
       "makeTeamAdminBackendError": "Sorry, we weren't able to make this member team admin. Try again.",
       "revokeTeamAdminBackendError": "Sorry, we weren't able to revoke team admin for this member. Try again.",
 
-      "InvalidEmail": "Invalid Email"
+      "InvalidEmail": "Invalid Email",
+
+      "markAsRead": "Failed to mark this conversation as read. Try again later.",
+      "markAsUnread": "Failed to mark this conversation as unread. Try again later."
     }
   },
   "contact": {
