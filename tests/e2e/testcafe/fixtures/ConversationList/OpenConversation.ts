@@ -10,6 +10,7 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('ConversationList/OpenConversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -76,10 +77,9 @@ test(formalName('Should display in the top when open a closed conversation from 
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfile();
 
-  const topTeamName = `top-${uuid()}`;
-  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name',otherUser.rcId);
+  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
 
-  const teamSection = app.homePage.messageTab.teamsSection;
+  // const teamSection = app.homePage.messageTab.teamsSection;
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const mentionPageEntry = app.homePage.messageTab.mentionsEntry;
   const bookmarkEntry = app.homePage.messageTab.bookmarksEntry;
@@ -89,65 +89,48 @@ test(formalName('Should display in the top when open a closed conversation from 
   const search = app.homePage.header.search;
   const createTeamModal = app.homePage.createTeamModal;
   const moreMenu = app.homePage.messageTab.moreMenu;
+  let topChat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
 
-  let teamId, directMessageChatId, teamMentionPostId, directMessageMentionPostId;
-  await h(t).withLog(`Given I have Team conversation A  and directMessage conversation B and other conversations`, async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: topTeamName,
-      type: 'Team',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
-
-    await h(t).platform(loginUser).createGroup({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
-
-    await h(t).platform(loginUser).createGroup({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
-
-    directMessageChatId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
-
-    await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, users[1].rcId],
-    });
-
-    await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, users[0].rcId],
-    });
+  let chat1 = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, users[1]]
+  }
+  let chat2 = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, users[2]]
+  }
+  let chat3 = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, users[3]]
+  }
+  let postId;
+  await h(t).withLog(`Given I have directMessage conversation A: "${otherUserName}" and other directMessage conversations`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([topChat, chat1, chat2, chat3])
   })
 
-  await h(t).withLog(`And conversation A and B with mention and bookmark post`, async () => {
-    teamMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
+  await h(t).withLog(`And conversation A: "${otherUserName}" with mention and bookmark post`, async () => {
+    postId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `${uuid()}, ![:Person](${loginUser.rcId})`,
-      teamId
+      topChat.glipId
     );
-
-    directMessageMentionPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-      `${uuid()}, ![:Person](${loginUser.rcId})`,
-      directMessageChatId
-    );
-
     await h(t).glip(loginUser).updateProfile({
-      favorite_post_ids: [+teamMentionPostId, +directMessageMentionPostId]
+      favorite_post_ids: [+postId]
     });
     await h(t).glip(loginUser).clearAllUmi();
     await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
   });
 
-  async function stepsToCheckPositionOnTop(section, chatId: string, teamName: string, sectionName: string) {
-    await h(t).withLog(`Then ${teamName} should be on the top in ${sectionName} section`, async () => {
+  async function stepsToCheckPositionOnTop(chatId: string, teamName: string) {
+    await h(t).withLog(`Then ${teamName} should be on the top in DirectMessage section`, async () => {
       await conversationPage.groupIdShouldBe(chatId);
-      await section.nthConversationEntry(0).groupIdShouldBe(chatId);
+      await directMessagesSection.nthConversationEntry(0).groupIdShouldBe(chatId);
       await conversationPage.waitUntilPostsBeLoaded();
     });
 
@@ -156,9 +139,9 @@ test(formalName('Should display in the top when open a closed conversation from 
       await app.homePage.ensureLoaded();
     });
 
-    await h(t).withLog(`Then ${teamName} should be still opened and on the top in ${sectionName} section`, async () => {
+    await h(t).withLog(`Then ${teamName} should be still opened and on the top in DirectMessage section`, async () => {
       await conversationPage.groupIdShouldBe(chatId);
-      await section.nthConversationEntry(0).groupIdShouldBe(chatId);
+      await directMessagesSection.nthConversationEntry(0).groupIdShouldBe(chatId);
     });
   }
 
@@ -167,96 +150,38 @@ test(formalName('Should display in the top when open a closed conversation from 
     await app.homePage.ensureLoaded();
   });
 
-  // open via mentions
-  await h(t).withLog(`And I close the conversation A`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
-    await moreMenu.close.enter();
-  });
-
-  await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A`, async () => {
-    await mentionPageEntry.enter();
-    await mentionPage.waitUntilPostsBeLoaded();
-    await mentionPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
-
-  });
-
-  await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
-
-  // open via bookmark
-  await h(t).withLog(`And I close the conversation A`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
-    await moreMenu.close.enter();
-  });
-
-  await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A`, async () => {
-    await bookmarkEntry.enter();
-    await bookmarkPage.waitUntilPostsBeLoaded();
-    await bookmarkPage.postItemById(teamMentionPostId).jumpToConversationByClickPost();
-  });
-
-  await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
-
-  // open via search team name
-  await h(t).withLog(`And I close the conversation A`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
-    await moreMenu.close.enter();;
-  });
-
-  await h(t).withLog(`When I search the hide team ${topTeamName} and click it`, async () => {
-    await search.typeSearchKeyword(topTeamName, { replace: true, paste: true });
-    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
-    await search.nthTeam(0).enter();
-  });
-
-  await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
-
-  // skip this entry due to a bug: https://jira.ringcentral.com/browse/FIJI-3278
-  // open via URL
-  // await h(t).withLog(`And I close the conversation A`, async () => {
-  //   await teamSection.conversationEntryById(teamId).openMoreMenu();
-  //   await moreMenu.close.enter();
-  // });
-
-  // await h(t).withLog(`When I open conversation A via URL `, async () => {
-  //   const url = new URL(SITE_URL)
-  //   const NEW_URL = `${url.protocol}//${url.hostname}/messages/${teamId}`;
-  //   await t.navigateTo(NEW_URL);
-  //   await app.homePage.ensureLoaded();
-  // });
-
-  // await stepsToCheckPositionOnTop(teamSection, teamId, 'conversation A', 'team');
 
   // open via mentions
-  await h(t).withLog(`Given I close the conversation B`, async () => {
-    await directMessagesSection.conversationEntryById(directMessageChatId).openMoreMenu();
+  await h(t).withLog(`Given I close the conversation A: "${otherUserName}":`, async () => {
+    await directMessagesSection.conversationEntryById(topChat.glipId).openMoreMenu();
     await moreMenu.close.enter();
   });
 
-  await h(t).withLog(`When I open mention page and click mention post which belongs to conversation B`, async () => {
+  await h(t).withLog(`When I open mention page and click mention post which belongs to conversation A: "${otherUserName}"`, async () => {
     await mentionPageEntry.enter();
     await mentionPage.waitUntilPostsBeLoaded();
-    await mentionPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
+    await mentionPage.postItemById(postId).jumpToConversationByClickPost();
   });
 
-  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(topChat.glipId, otherUserName);
 
   // open via bookmark
-  await h(t).withLog(`Given I close the conversation B`, async () => {
-    await directMessagesSection.conversationEntryById(directMessageChatId).openMoreMenu();
+  await h(t).withLog(`Given I close the conversation A: "${otherUserName}"`, async () => {
+    await directMessagesSection.conversationEntryById(topChat.glipId).openMoreMenu();
     await moreMenu.close.enter();
   });
 
-  await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation B`, async () => {
+  await h(t).withLog(`When I open bookmark page and click bookmark post which belongs to conversation A: "${otherUserName}"`, async () => {
     await bookmarkEntry.enter();
     await bookmarkPage.waitUntilPostsBeLoaded();
-    await bookmarkPage.postItemById(directMessageMentionPostId).jumpToConversationByClickPost();
+    await bookmarkPage.postItemById(postId).jumpToConversationByClickPost();
   });
 
-  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(topChat.glipId, otherUserName);
 
   // open via search other user name
-  await h(t).withLog(`Given I close the conversation B`, async () => {
-    await directMessagesSection.conversationEntryById(directMessageChatId).openMoreMenu();
+  await h(t).withLog(`Given I close the conversation A: "${otherUserName}"`, async () => {
+    await directMessagesSection.conversationEntryById(topChat.glipId).openMoreMenu();
     await moreMenu.close.enter();
   });
 
@@ -266,11 +191,11 @@ test(formalName('Should display in the top when open a closed conversation from 
     await search.nthPeople(0).enter();
   });
 
-  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(topChat.glipId, otherUserName);
 
   // open via send new message entry
-  await h(t).withLog(`Given I close the conversation B`, async () => {
-    await directMessagesSection.conversationEntryById(directMessageChatId).openMoreMenu();
+  await h(t).withLog(`Given I close the conversation A: "${otherUserName}"`, async () => {
+    await directMessagesSection.conversationEntryById(topChat.glipId).openMoreMenu();
     await moreMenu.close.enter();
   });
 
@@ -285,23 +210,23 @@ test(formalName('Should display in the top when open a closed conversation from 
     await sendNewMessageModal.clickSendButton();
   });
 
-  await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(topChat.glipId, otherUserName);
 
   // skip this entry due to a bug: https://jira.ringcentral.com/browse/FIJI-3278
   // open via URL
-  // await h(t).withLog(`Given I close the conversation B`, async () => {
-  //   await directMessagesSection.conversationEntryById(directMessageChatId).openMoreMenu();
-  //   await moreMenu.close.enter();
-  // });
+  await h(t).withLog(`Given I close the conversation A: "${otherUserName}"`, async () => {
+    await directMessagesSection.conversationEntryById(topChat.glipId).openMoreMenu();
+    await moreMenu.close.enter();
+  });
 
-  // await h(t).withLog(`When I open conversation B via URL `, async () => {
-  //   const url = new URL(SITE_URL)
-  //   const NEW_URL = `${url.protocol}//${url.hostname}/messages/${directMessageChatId}`;
-  //   await t.navigateTo(NEW_URL);
-  //   await app.homePage.ensureLoaded();
-  // });
+  await h(t).withLog(`When I open conversation A: "${otherUserName}" via URL `, async () => {
+    const url = new URL(SITE_URL)
+    const NEW_URL = `${url.protocol}//${url.hostname}/messages/${topChat.glipId}`;
+    await t.navigateTo(NEW_URL);
+    await app.homePage.ensureLoaded();
+  });
 
-  // await stepsToCheckPositionOnTop(directMessagesSection, directMessageChatId, 'conversation B', 'directMessage');
+  await stepsToCheckPositionOnTop(topChat.glipId, otherUserName);
 
 });
 
