@@ -87,7 +87,7 @@ class PinnedListView
       <JuiRightShelfContent>
         {firstLoaded && totalCount > 0 && ids.length > 0 && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {i18next.t('item.pinnedListSubheader')} ({totalCount})
+            {i18next.t('item.pinnedListSubheader')}
           </JuiListSubheader>
         )}
         {firstLoaded && (
