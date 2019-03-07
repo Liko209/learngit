@@ -8,6 +8,8 @@ import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
   ISortableModel,
+  TDelta,
+  DeltaDataHandler,
 } from '@/store/base';
 import { Post } from 'sdk/module/post/entity';
 import { PostService } from 'sdk/module/post';
@@ -30,6 +32,8 @@ import CodeItemModel from '@/store/models/CodeItem';
 import EventItemModel from '@/store/models/EventItem';
 import ConferenceItemModel from '@/store/models/ConferenceItem';
 import ItemModel from '@/store/models/Item';
+
+import { ThumbnailPreloadController } from './ThumbnailPreloadController';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -75,6 +79,7 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
         storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, [item]);
       }
     });
+
     return { hasMore, data: posts };
   }
 }
@@ -104,6 +109,8 @@ class PostCacheController implements IUsedCache {
     FetchSortableDataListHandler<Post>
   > = new Map();
 
+  private _cacheDeltaDataHandlerMap: Map<number, DeltaDataHandler> = new Map();
+  private _thumbnailPreloadController: ThumbnailPreloadController;
   private _currentGroupId: number = 0;
 
   private _postUsedItemCache = new PostUsedItemCache();
@@ -163,6 +170,23 @@ class PostCacheController implements IUsedCache {
     >).addUsedCache(this._postUsedItemCache);
   }
 
+  getThumbnailPreloadController() {
+    if (!this._thumbnailPreloadController) {
+      this._thumbnailPreloadController = new ThumbnailPreloadController();
+    }
+    return this._thumbnailPreloadController;
+  }
+
+  private _preloadThumbnail(postModel: PostModel) {
+    const itemIds: number[] = postModel.itemIds.filter((id: number) => {
+      return TypeDictionary.TYPE_ID_FILE === GlipTypeUtil.extractTypeId(id);
+    });
+
+    if (itemIds && itemIds.length) {
+      this.getThumbnailPreloadController().preload(itemIds);
+    }
+  }
+
   getUsedId(): number[] {
     let ids: number[] = [];
     this._cacheMap.forEach((value, key, map) => {
@@ -185,6 +209,37 @@ class PostCacheController implements IUsedCache {
   ): FetchSortableDataListHandler<Post> {
     let listHandler = !!jump2PostId ? undefined : this._cacheMap.get(groupId);
     if (!listHandler) {
+      const fetchDataCallback = async (delta: TDelta) => {
+        if (delta) {
+          let sortableModels: ISortableModel[] = [];
+          if (delta.added && delta.added.length) {
+            sortableModels = sortableModels.concat(delta.added);
+          }
+
+          if (delta.updated && delta.updated.length) {
+            sortableModels = sortableModels.concat(delta.updated);
+          }
+
+          if (sortableModels.length) {
+            const postStore = storeManager.getEntityMapStore(
+              ENTITY_NAME.POST,
+            ) as MultiEntityMapStore<Post, PostModel>;
+
+            await Promise.all(
+              sortableModels.map(
+                async (sortableModel: ISortableModel<Post>) => {
+                  if (sortableModel) {
+                    this._preloadThumbnail(postStore.get(sortableModel.id));
+                  }
+                },
+              ),
+            );
+          }
+        }
+      };
+
+      this._cacheDeltaDataHandlerMap.set(groupId, fetchDataCallback);
+
       const options = {
         transformFunc: (dataModel: Post) => ({
           id: dataModel.id,
@@ -195,6 +250,7 @@ class PostCacheController implements IUsedCache {
         isMatchFunc: isMatchedFunc(groupId),
         entityName: ENTITY_NAME.POST,
         eventName: ENTITY.POST,
+        dataChangeCallBack: fetchDataCallback,
       };
 
       listHandler = new FetchSortableDataListHandler(
@@ -259,6 +315,12 @@ class PostCacheController implements IUsedCache {
   }
 
   private _remove(groupId: number) {
+    const preloadThumbnail = this._cacheDeltaDataHandlerMap.get(groupId);
+    if (preloadThumbnail) {
+      this.get(groupId).removeDataChangeCallback(preloadThumbnail);
+      this._cacheDeltaDataHandlerMap.delete(groupId);
+    }
+
     this.get(groupId).dispose();
     this._cacheMap.delete(groupId);
   }

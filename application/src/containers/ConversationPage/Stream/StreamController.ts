@@ -68,7 +68,7 @@ export class StreamController {
     );
     postCacheController.setCurrentConversation(this._groupId);
     this._orderListHandler = listHandler;
-    this._orderListHandler.setDataChangeCallback(this.handlePostsChanged);
+    this._orderListHandler.addDataChangeCallback(this.handlePostsChanged);
 
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this._streamListHandler = new FetchSortableDataListHandler<StreamItem>(
@@ -108,7 +108,7 @@ export class StreamController {
 
   dispose() {
     if (this._orderListHandler) {
-      this._orderListHandler.setDataChangeCallback();
+      this._orderListHandler.removeDataChangeCallback(this.handlePostsChanged);
     }
     if (this._streamListHandler) {
       this._streamListHandler.dispose();

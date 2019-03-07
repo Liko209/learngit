@@ -5,9 +5,10 @@
  */
 
 import FileItemModel from '@/store/models/FileItem';
+import { FileItem } from 'sdk/module/item/module/file/entity';
 
 function getThumbnailURL(
-  item: FileItemModel,
+  item: FileItemModel | FileItem,
   size: { width: number; height: number } = { width: 1000, height: 200 },
 ) {
   const { versions } = item;
