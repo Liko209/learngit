@@ -7,7 +7,7 @@ import React from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import { JuiVirtualizedList } from './VirtualizedList';
-import { IndexRange } from './VirtualizedListProps';
+import { IndexRange } from './types';
 
 type JuiInfiniteListProps = {
   height: number;

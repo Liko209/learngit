@@ -14,7 +14,7 @@ import {
   JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from '../VirtualizedList';
-import { IndexRange } from '../VirtualizedListProps';
+import { IndexRange } from '../types';
 import { DemoItem } from './DemoItem';
 import { itemFactory } from './itemFactory';
 import { useDemoHelper } from './useDemoHelper';
