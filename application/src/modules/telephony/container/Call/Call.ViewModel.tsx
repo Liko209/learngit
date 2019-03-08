@@ -13,9 +13,9 @@ class CallViewModel extends AbstractViewModel<CallProps>
   implements CallViewProps {
   private _telephonyService: TelephonyService = container.get(TelephonyService);
 
-  makeCall = () => {
+  directCall = () => {
     const { phone } = this.props;
-    this._telephonyService.makeCall(phone);
+    this._telephonyService.directCall(phone);
   }
 }
 
