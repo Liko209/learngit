@@ -17,12 +17,9 @@ import {
   JuiProfileDialogContentSummaryName as Name,
   JuiProfileDialogContentSummaryDescription as Description,
   JuiProfileDialogContentSummaryButtons as Buttons,
-  JuiProfileDialogContentMembers as Members,
 } from 'jui/pattern/Profile/Dialog';
 import { goToConversation } from '@/common/goToConversation';
-import { MemberHeader, MemberList } from './Members';
-import { AddMembers } from './AddMembers';
-import { Dialog } from '@/containers/Dialog';
+import { Members } from './Members';
 import { joinTeam } from '@/common/joinPublicTeam';
 import portalManager from '@/common/PortalManager';
 import { renderButton } from './common/button';
@@ -41,14 +38,6 @@ class ProfileDialogGroupContentViewComponent extends Component<
     const { id } = this.props;
     await goToConversation({ id });
     portalManager.dismissLast();
-  }
-
-  addTeamMembers = () => {
-    const { group } = this.props;
-    portalManager.dismissLast();
-    Dialog.simple(<AddMembers group={group} />, {
-      size: 'medium',
-    });
   }
 
   render() {
@@ -94,10 +83,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
           </Right>
         </Summary>
         <JuiDivider />
-        <Members>
-          <MemberHeader id={id} AddTeamMembers={this.addTeamMembers} />
-          <MemberList id={id} />
-        </Members>
+        <Members id={id} />
       </>
     );
   }

@@ -50,6 +50,8 @@
     "menu": "Menu",
     "search": "Search",
     "showMore": "Show more",
+    "ClearHistory": "Clear History",
+    "RecentSearches": "Recent searches",
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
     "aboutRingCentral": "About RingCentral"
@@ -87,6 +89,8 @@
       "bookmark": "Bookmark",
       "removeBookmark": "Remove bookmark",
       "quote": "Quote",
+      "pin": "Pin",
+      "unpin": "Unpin",
       "editPost": "Edit post",
       "deletePost": "Delete post",
       "resendPost": "Resend post",
@@ -117,6 +121,8 @@
       "SorryWeWereNotAbleToUnlikeTheMessage": "Sorry, we weren't able to unlike this message. Try again.",
       "SorryWeWereNotAbleToRemoveYourBookmark": "Sorry, we weren't able to remove your bookmark. Try again.",
       "SorryWeWereNotAbleToBookmarkThisMessage": "Sorry, we weren't able to bookmark this message. Try again.",
+      "SorryWeWereNotAbleToPinTheMessage": "Sorry, we weren't able to pin this message. Try again.",
+      "SorryWeWereNotAbleToUnpinTheMessage": "Sorry, we weren't able to unpin this message. Try again.",
       "SorryWeWereNotAbleToLoadOlderMessages": "Sorry, we weren't able to load older messages. Try again.",
       "SorryWeWereNotAbleToLoadNewerMessages": "Sorry, we weren't able to load newer messages. Try again.",
       "MessageLoadingErrorTip": "We weren't able to open this conversation.",
@@ -219,6 +225,7 @@
     "notes": "Notes",
     "events": "Events",
     "integrations": "Integrations",
+    "pinnedListSubheader": "Pinned Posts",
     "fileListSubheader": "Files",
     "taskListSubheader": "Tasks",
     "noteListSubheader": "Notes",
@@ -249,6 +256,7 @@
     "networkErrorEventsPrompt": "Sorry, we weren't able to load more events.",
     "networkErrorNotesPrompt": "Sorry, we weren't able to load more notes.",
     "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations.",
+    "pinnedMore": "and {{num}} more",
 
     "prompt": {
       "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed.",
@@ -318,6 +326,7 @@
       "privateTeam": "This is a private team",
       "teamMembers": "Team members",
       "groupMembers": "Group members",
+      "searchMembers": "Search members",
       "makeTeamAdmin": "Make team admin",
       "revokeTeamAdmin": "Revoke team admin",
 
@@ -339,7 +348,9 @@
       "addToFavorites": "Add to Favorites",
       "removeFromFavorites": "Remove from Favorites",
       "profile": "Profile",
-      "close": "Close"
+      "close": "Close",
+      "markAsRead": "Mark as read",
+      "markAsUnread": "Mark as unread"
     },
     "company": {},
     "prompt": {
@@ -380,7 +391,10 @@
       "makeTeamAdminBackendError": "Sorry, we weren't able to make this member team admin. Try again.",
       "revokeTeamAdminBackendError": "Sorry, we weren't able to revoke team admin for this member. Try again.",
 
-      "InvalidEmail": "Invalid Email"
+      "InvalidEmail": "Invalid Email",
+
+      "markAsRead": "Failed to mark this conversation as read. Try again later.",
+      "markAsUnread": "Failed to mark this conversation as unread. Try again later."
     }
   },
   "contact": {

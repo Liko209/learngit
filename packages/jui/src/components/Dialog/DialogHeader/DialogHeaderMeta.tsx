@@ -55,6 +55,9 @@ const JuiDialogHeaderMetaRight = styled<JuiDialogHeaderMetaRightProps>(
 )`
   margin-left: ${spacing(2)};
   max-width: ${width(40)};
+  @media screen and (max-width: 640px) {
+    display: none;
+  }
 `;
 
 export {

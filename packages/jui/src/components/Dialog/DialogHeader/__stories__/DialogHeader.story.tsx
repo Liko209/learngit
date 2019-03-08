@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { text } from '@storybook/addon-knobs';
+import { text, number, boolean } from '@storybook/addon-knobs';
 import { JuiDialogHeader } from '../DialogHeader';
 import { JuiDialogHeaderTitle } from '../DialogHeaderTitle';
 import { JuiDialogHeaderActions } from '../DialogHeaderActions';
@@ -29,8 +29,15 @@ storiesOf('Components/Dialog/DialogHeader', module)
   .addDecorator(withInfoDecorator(JuiDialogHeader))
   .add('Title only', () => {
     const title = text('title', 'Title');
+    const width = number('width', 640);
+    const fullscreen = boolean('fullscreen', false);
     return (
-      <div style={{ width: '640px', margin: '10px auto' }}>
+      <div
+        style={{
+          width: fullscreen ? '100%' : `${width}px`,
+          margin: '10px auto',
+        }}
+      >
         <JuiDialogHeader>
           <JuiDialogHeaderTitle>{title}</JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
@@ -44,8 +51,15 @@ storiesOf('Components/Dialog/DialogHeader', module)
   })
   .add('Title with action icons', () => {
     const title = text('title', 'Title');
+    const width = number('width', 640);
+    const fullscreen = boolean('fullscreen', false);
     return (
-      <div style={{ width: '640px', margin: '10px auto' }}>
+      <div
+        style={{
+          width: fullscreen ? '100%' : `${width}px`,
+          margin: '10px auto',
+        }}
+      >
         <JuiDialogHeader>
           <JuiDialogHeaderTitle>{title}</JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
@@ -80,11 +94,20 @@ storiesOf('Components/Dialog/DialogHeader', module)
     );
   })
   .add('Title with avatar and information', () => {
-    const title = text('title', 'Bulldog friendship.jpeg (1 / 20)');
+    const title = text('title', 'Bulldog friendship.jpegdddddddddddddddddddd');
+    const point = text('point', '(1 / 20)');
+    const width = number('width', 640);
     const name = text('user name', 'Jessica Lewis');
     const time = text('time', '1/23/2019 10:02 AM');
+    const fullscreen = boolean('fullscreen', false);
     return (
-      <div style={{ width: '640px', margin: '10px auto' }}>
+      <div
+        style={{
+          width: fullscreen ? '100%' : `${width}px`,
+          margin: '10px auto',
+        }}
+      >
+        <h4>One line: </h4>
         <JuiDialogHeader>
           <JuiDialogHeaderMeta>
             <JuiDialogHeaderMetaLeft>
@@ -95,7 +118,51 @@ storiesOf('Components/Dialog/DialogHeader', module)
             <JuiDialogHeaderMetaRight title={name} subtitle={time} />
           </JuiDialogHeaderMeta>
           <JuiDialogHeaderTitle variant="responsive">
-            {title}
+            {title} {point}
+          </JuiDialogHeaderTitle>
+          <JuiDialogHeaderActions>
+            <JuiButtonBar overlapSize={2.5}>
+              <JuiIconButton color="accent.gold" tooltipTitle="Favorite">
+                star
+              </JuiIconButton>
+              <JuiIconButton tooltipTitle="Settings">settings</JuiIconButton>
+              <JuiPopoverMenu
+                Anchor={() => (
+                  <JuiIconButton tooltipTitle="More">more_horiz</JuiIconButton>
+                )}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+              >
+                <JuiMenuList>
+                  <JuiMenuItem>Copy url</JuiMenuItem>
+                  <JuiMenuItem>Copy email</JuiMenuItem>
+                </JuiMenuList>
+              </JuiPopoverMenu>
+              <JuiIconButton tooltipTitle="Close">close</JuiIconButton>
+            </JuiButtonBar>
+          </JuiDialogHeaderActions>
+        </JuiDialogHeader>
+        <br />
+        <br />
+        <h4>Break line: </h4>
+        <JuiDialogHeader>
+          <JuiDialogHeaderMeta>
+            <JuiDialogHeaderMetaLeft>
+              <JuiAvatar size="medium" color="lake">
+                SH
+              </JuiAvatar>
+            </JuiDialogHeaderMetaLeft>
+            <JuiDialogHeaderMetaRight title={name} subtitle={time} />
+          </JuiDialogHeaderMeta>
+          <JuiDialogHeaderTitle variant="responsive">
+            <span>{title}</span>
+            <span> {point}</span>
           </JuiDialogHeaderTitle>
           <JuiDialogHeaderActions>
             <JuiButtonBar overlapSize={2.5}>

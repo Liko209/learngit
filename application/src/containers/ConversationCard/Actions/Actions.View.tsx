@@ -11,6 +11,7 @@ import { JuiConversationActionBar } from 'jui/pattern/ConversationActionBar';
 import { Like } from '@/containers/ConversationCard/Actions/Like';
 import { Bookmark } from '@/containers/ConversationCard/Actions/Bookmark';
 import { More } from '@/containers/ConversationCard/Actions/More';
+import { Pin } from '@/containers/ConversationCard/Actions/Pin';
 import { ActionsViewProps } from './types';
 
 type Props = ActionsViewProps & WithNamespaces;
@@ -18,12 +19,13 @@ type Props = ActionsViewProps & WithNamespaces;
 @observer
 class ActionsViewComponent extends Component<Props> {
   render() {
-    const { id } = this.props;
+    const { postId, groupId } = this.props;
 
     const props = {
-      Like: <Like id={id} />,
-      Bookmark: <Bookmark id={id} />,
-      More: <More id={id} />,
+      Like: <Like id={postId} />,
+      Bookmark: <Bookmark id={postId} />,
+      Pin: <Pin postId={postId} groupId={groupId} />,
+      More: <More id={postId} />,
     };
     return <JuiConversationActionBar {...props} />;
   }

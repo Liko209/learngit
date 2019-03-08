@@ -6,8 +6,19 @@
 import React, { useState, useLayoutEffect } from 'react';
 import { DemoItemModel } from './itemFactory';
 
+const ItemFooter = () => {
+  const [liked, setLiked] = useState(false);
+  return (
+    <div>
+      <button onClick={() => setLiked(!liked)}>Toggle Like</button>
+      {liked && <div>I like this post</div>}
+    </div>
+  );
+};
+
 const DemoItem = ({ item }: { item: DemoItemModel }) => {
   const [crazyHeight, setCrazyHeight] = useState(10);
+
   useLayoutEffect(() => {
     if (item.crazy) {
       const interval = setInterval(() => {
@@ -43,6 +54,7 @@ const DemoItem = ({ item }: { item: DemoItemModel }) => {
       <div style={{ padding: '10px 0', borderBottom: '1px dashed #ddd' }}>
         {item.text} <br />
         <img src={item.imageUrl} />
+        <ItemFooter />
       </div>
     );
   }
@@ -52,6 +64,7 @@ const DemoItem = ({ item }: { item: DemoItemModel }) => {
       style={{ padding: '10px 0', height: 19, borderBottom: '1px dashed #ddd' }}
     >
       {item.text}
+      <ItemFooter />
     </div>
   );
 };

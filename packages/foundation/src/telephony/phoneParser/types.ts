@@ -59,6 +59,8 @@ type PhoneParser = {
 
 type ModuleParams = {
   onRuntimeInitialized: () => void;
+  readBinary?: (wasmBinaryFile: string) => any;
+  locateFile?: (path: string, scriptDirectory: string) => string;
 };
 
 type ModuleClass = any;

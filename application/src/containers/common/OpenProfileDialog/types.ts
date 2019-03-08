@@ -12,8 +12,6 @@ type OpenProfileDialogProps = {
   afterClick?: (event: MouseEvent<HTMLElement>) => void;
 };
 
-type OpenProfileDialogViewProps = {
-  typeId: number;
-};
+type OpenProfileDialogViewProps = {};
 
 export { OpenProfileDialogProps, OpenProfileDialogViewProps };

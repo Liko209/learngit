@@ -32,6 +32,11 @@ input::-webkit-contacts-auto-fill-button {
   right: 0;
 }
 
+/*  fix edge input default clear button */
+input::-ms-clear {
+  display: none;
+}
+
 .ReactVirtualized__Grid,
 .ReactVirtualized__List {
   outline: 0;

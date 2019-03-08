@@ -264,6 +264,10 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.currentGroupId).eql(id.toString());
   }
 
+  async titleShouldBe(title: string) {
+    await this.t.expect(this.title.withExactText(title).exists).ok();
+  }
+
   get messageFilesArea() {
     return this.getSelectorByAutomationId('attachment-list');
   }
@@ -375,6 +379,10 @@ export class BookmarkPage extends BaseConversationPage {
 }
 
 export class PostItem extends BaseWebComponent {
+  get postId() {
+    return this.self.getAttribute('data-id');
+  }
+
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
   }
@@ -408,7 +416,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('[data-placeholder="Type new message"]');
   }
 
-  async editMessage(message: string, options?) {
+  async editMessage(message: string, options?: TypeActionOptions) {
     await this.t
       .wait(1e3) // need time to wait edit text area loaded
       .typeText(this.editTextArea, message, options)
@@ -450,7 +458,7 @@ export class PostItem extends BaseWebComponent {
   get likeIconOnFooter() {
     return this.getSelectorByIcon('thumbup_border', this.likeButtonOnFooter);
   }
-  
+
   get unlikeIconOnFooter() {
     return this.getSelectorByIcon('thumbup', this.likeButtonOnFooter);
   }
@@ -471,6 +479,40 @@ export class PostItem extends BaseWebComponent {
   get unBookmarkIcon() {
 
     return this.getSelectorByIcon('bookmark_border', this.self);
+  }
+
+  get pinToggle() {
+    return this.self.find('button').withAttribute('data-name', 'actionBarPin');
+  }
+
+  get pinButton() {
+    return this.pinToggle.withAttribute('aria-label', 'Pin');
+  }
+
+  get unpinButton() {
+    return this.pinToggle.withAttribute('aria-label', 'Unpin');
+  }
+
+  async clickPinToggle() {
+    await this.t.click(this.pinToggle);
+  }
+
+  get isPinned() {
+    return this.unpinButton.exists;
+  }
+
+  async pinPost() {
+    if (!await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
+  }
+
+  async unpinPost() {
+    if (await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
   }
 
   get moreMenu() {

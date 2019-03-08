@@ -101,8 +101,12 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
 
   protected defaultTransformFunc = (model: T) => ({
     id: model.id,
-    sortValue: model.id,
+    sortValue: this._sourceIds.indexOf(model.id),
   })
+
+  dispose() {
+    this._foc && this._foc.dispose();
+  }
 }
 
 export { IdListPaginationHandler, IdListPaginationOptions };
