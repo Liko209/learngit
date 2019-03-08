@@ -104,6 +104,8 @@ class RTCCall {
 
   private _addHangupTimer(): void {
     this._hangupInvalidCallTimer = setTimeout(() => {
+      rtcLogger.info(LOG_TAG, 'call time out and be hangup');
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.CALL_TIME_OUT);
       this.hangup();
     },                                        kRTCHangupInvalidCallInterval * 1000);
   }
