@@ -37,9 +37,9 @@ function runOnDelete(args: AssemblerDelFuncArgs) {
   return separator.onDelete(args);
 }
 
-describe('DataSeparator', () => {
+describe('DateSeparator', () => {
 
-  describe('onAdd', () => {
+  describe('onAdd()', () => {
     it('should have separator for each day', () => {
       const separator = runOnAdd(<AssemblerAddFuncArgs>{
         added: [
@@ -107,7 +107,7 @@ describe('DataSeparator', () => {
     });
   });
 
-  describe('onDelete', () => {
+  describe('onDelete()', () => {
     it('should return arguments for next pipeline', () => {
       const args: AssemblerDelFuncArgs = {
         deleted: [],

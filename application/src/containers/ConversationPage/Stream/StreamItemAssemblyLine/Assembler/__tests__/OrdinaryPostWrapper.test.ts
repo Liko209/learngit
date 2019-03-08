@@ -31,7 +31,7 @@ function runOnDelete(args: AssemblerDelFuncArgs) {
 
 describe('OrdinaryPostWrapper', () => {
 
-  describe('onAdd', () => {
+  describe('onAdd()', () => {
     it('should wrap all the post as StreamItem', () => {
       const separator = runOnAdd(<AssemblerAddFuncArgs>{
         added: [
@@ -57,7 +57,7 @@ describe('OrdinaryPostWrapper', () => {
     });
   });
 
-  describe('onDelete', () => {
+  describe('onDelete()', () => {
     it('should delete the post in StreamItem', () => {
       const separator = runOnDelete(<AssemblerDelFuncArgs>{
         deleted: [620232708],

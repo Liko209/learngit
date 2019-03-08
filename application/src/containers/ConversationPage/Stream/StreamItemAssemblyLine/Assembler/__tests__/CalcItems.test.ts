@@ -24,7 +24,7 @@ function runOnDelete(args: AssemblerDelFuncArgs) {
 
 describe('CalcItems', () => {
 
-  describe('onAdd', () => {
+  describe('onAdd()', () => {
     it('should remove Date separator when it was followed by new message separator', () => {
       const newMegSeparator: StreamItem = {
         id: 1000,
@@ -82,7 +82,7 @@ describe('CalcItems', () => {
     });
   });
 
-  describe('onDelete', () => {
+  describe('onDelete()', () => {
     it('should remove Date separator when it was followed by new message separator', () => {
       const newMegSeparator: StreamItem = {
         id: 1000,

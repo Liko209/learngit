@@ -77,7 +77,7 @@ function runOnDelete({
 
 describe('NewMessageSeparator', () => {
 
-  describe('onAdd', () => {
+  describe('onAdd()', () => {
     it('should have a separator next to the readThrough post', () => {
       const firstUnreadPost = { id: 620257284, sortValue: 1540461970776, data: { created_at: 1540461970776 } };
       const separator = runOnAdd(<OnAddCaseConfig>{
@@ -169,23 +169,23 @@ describe('NewMessageSeparator', () => {
       expect(separator.streamItemList.size()).toEqual(0);
     });
 
-    // it('should not add separator when the post is send by current user', () => {
-    //   const separator = runOnAdd(<OnAddCaseConfig>{
-    //     postCreatorId: 1,
-    //     currentUserId: 1,
-    //     streamItemList: _([]),
-    //     allPosts: [
-    //       { id: 620232708, sortValue: 1540461821422, data: { creator_id: 1 } },
-    //       { id: 620240900, sortValue: 1540461830617, data: { creator_id: 1 } },
-    //       { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } },
-    //       { id: 620265476, sortValue: 1540461970958, data: { creator_id: 1 } },
-    //       { id: 620273668, sortValue: 1540461971175, data: { creator_id: 1 } },
-    //       { id: 620281860, sortValue: 1540461972285, data: { creator_id: 1 } },
-    //     ],
-    //   });
-    //
-    //   expect(separator.streamItemList.size()).toEqual(0);
-    // });
+    it.skip('should not add separator when the post is send by current user', () => {
+      const separator = runOnAdd(<OnAddCaseConfig>{
+        postCreatorId: 1,
+        currentUserId: 1,
+        streamItemList: _([]),
+        allPosts: [
+          { id: 620232708, sortValue: 1540461821422, data: { creator_id: 1 } },
+          { id: 620240900, sortValue: 1540461830617, data: { creator_id: 1 } },
+          { id: 620249092, sortValue: 1540461830964, data: { creator_id: 1 } },
+          { id: 620265476, sortValue: 1540461970958, data: { creator_id: 1 } },
+          { id: 620273668, sortValue: 1540461971175, data: { creator_id: 1 } },
+          { id: 620281860, sortValue: 1540461972285, data: { creator_id: 1 } },
+        ],
+      });
+
+      expect(separator.streamItemList.size()).toEqual(0);
+    });
 
     it('should have not separator when readThrough is empty and hasMore=true', () => {
       // In this case separator not in current page
@@ -320,7 +320,7 @@ describe('NewMessageSeparator', () => {
     });
   });
 
-  describe('onDelete', () => {
+  describe('onDelete()', () => {
     it('should do nothing when no message separator exists already',  () => {
       const separator = runOnDelete(<OnDeleteCaseConfig>{
         deleted: [620232708, 620273668],
