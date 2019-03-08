@@ -27,19 +27,27 @@ class PostListPageViewModel extends AbstractViewModel {
     [POST_LIST_TYPE.mentions]: {
       caption: 'message.@mentionsTitle',
       idListProvider: () => {
-        return getSingleEntity<MyState, MyStateModel>(
+        const atMentionPostIds = getSingleEntity<MyState, MyStateModel>(
           ENTITY_NAME.MY_STATE,
           'atMentionPostIds',
         );
+        if (Array.isArray(atMentionPostIds)) {
+          return atMentionPostIds.sort((a: number, b: number) => b - a);
+        }
+        return [];
       },
     },
     [POST_LIST_TYPE.bookmarks]: {
       caption: 'message.bookmarksTitle',
       idListProvider: () => {
-        return getSingleEntity<Profile, ProfileModel>(
+        const favoritePostIds = getSingleEntity<Profile, ProfileModel>(
           ENTITY_NAME.PROFILE,
           'favoritePostIds',
         );
+        if (Array.isArray(favoritePostIds)) {
+          return favoritePostIds.reverse();
+        }
+        return [];
       },
     },
   };
