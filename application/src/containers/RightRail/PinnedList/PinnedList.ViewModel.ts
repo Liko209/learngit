@@ -4,13 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import {
-  computed,
-  action,
-  observable,
-  comparer,
-  IReactionDisposer,
-} from 'mobx';
+import { computed, action, observable, comparer } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PinnedListProps, PinnedListViewProps } from './types';
 import { Group } from 'sdk/module/group/entity';
@@ -27,13 +21,11 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   @observable discontinuousPosListHandler: DiscontinuousPosListHandler;
   firstInit: boolean = true;
 
-  disposer: IReactionDisposer;
-
   constructor(props: PinnedListProps) {
     super(props);
     // url change need build first
     this.build(this.pinnedPostIds);
-    this.disposer = this.reaction(
+    this.reaction(
       () => ({
         id: this._groupId,
         pinnedPostIds: this.pinnedPostIds,
@@ -48,10 +40,6 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
       },
       { equals: comparer.structural },
     );
-  }
-
-  dispose() {
-    this.disposer();
   }
 
   @action
