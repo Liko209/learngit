@@ -16,6 +16,7 @@ import { Post } from '../../entity';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
 import _ from 'lodash';
+import { ENTITY } from '../../../../service/eventKey';
 
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../item');
@@ -430,6 +431,45 @@ describe('PostDataController', () => {
 
       result = _.orderBy(result, 'id', 'asc');
       expect(result).toEqual(posts);
+    });
+  });
+
+  describe('filterFunc()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should return correct order', async () => {
+      const data = [
+        { id: 3, group_id: 1, deactivated: true },
+        { id: 4, group_id: 2, deactivated: true },
+        { id: 1, group_id: 2, deactivated: true },
+        { id: 2, group_id: 3, deactivated: false },
+        { id: 5, group_id: 1, deactivated: true },
+      ];
+      const result = await postDataController.filterFunc(data);
+      const group1 = {
+        eventKey: `${ENTITY.POST}.1`,
+        entities: [
+          { id: 3, group_id: 1, deactivated: true },
+          { id: 5, group_id: 1, deactivated: true },
+        ],
+      };
+      const group2 = {
+        eventKey: `${ENTITY.POST}.2`,
+        entities: [
+          { id: 4, group_id: 2, deactivated: true },
+          { id: 1, group_id: 2, deactivated: true },
+        ],
+      };
+      const group3 = {
+        eventKey: `${ENTITY.POST}.3`,
+        entities: [{ id: 2, group_id: 3, deactivated: false }],
+      };
+      const target = [group1, group2, group3];
+
+      expect(result).toEqual(target);
     });
   });
 
