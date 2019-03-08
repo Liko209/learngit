@@ -11,6 +11,7 @@ class ConfigWrapper {
   public blankUrl: string;
   public dashboardUrl: string;
   public blankServerPort: number;
+  public fileServerUrl: string;
   /* basic config */
 
   /* mock config */
@@ -56,6 +57,7 @@ class ConfigWrapper {
     this.blankUrl = this.getValue("BLANK_URL", "http://localhost:3000");
     this.dashboardUrl = this.getValue("DASHBOARD_URL", "http://xmn145.rcoffice.ringcentral.com:9005/dashboard/15");
     this.blankServerPort = parseInt(this.getValue("BLANK_SERVER_PORT", "3000"));
+    this.fileServerUrl = this.getValue("FILE_SERVER_URL", "http://10.32.46.212:9000");
     /* basic config */
 
     /* mock config */

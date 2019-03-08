@@ -13,7 +13,7 @@ const logger = LogUtils.getLogger(__filename);
 
 const REPORT_DIR_PATH = `${process.cwd()}/${Config.reportUri}`;
 
-const fileServerUrl = "http://xmn02-i01-mck01.lab.nordigy.ru:9000";
+const fileServerUrl = Config.fileServerUrl;
 class FileService {
   /**
    * @description: check report path, not exist will create

@@ -18,7 +18,7 @@ if (!fs.existsSync(REPORT_DIR_PATH)) {
   fs.mkdirSync(REPORT_DIR_PATH);
 }
 
-const fileServerUrl = "http://xmn02-i01-mck01.lab.nordigy.ru:9000";
+const fileServerUrl = Config.fileServerUrl;
 
 class FileService {
 
