@@ -81,6 +81,14 @@ const name2icon = {
   image_broken: 'image-broken',
   forward: 'forward',
   pervious: 'pervious',
+  tear_off: 'tear-off',
+  minimize: 'minimize',
+  signal_2: 'signal-2',
+  hand_up: 'hand-up',
+  mic: 'mic',
+  keypad: 'keypad',
+  hold: 'hold',
+  record: 'record',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

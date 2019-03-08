@@ -101,6 +101,7 @@ type Theme = {
     toast: number;
     floatButton: number;
     codeEditor: number;
+    modal: number;
   };
   size: {
     width: number;
@@ -196,6 +197,7 @@ type Theme = {
     val1: string;
     val2: string;
     val3: string;
+    val16: string;
   };
   maxHeight: {
     dialog: string;

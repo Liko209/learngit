@@ -19,7 +19,7 @@ import { Theme, Palette } from '../../../foundation/theme/theme';
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 type IconButtonVariant = 'round' | 'plain';
-type IconButtonSize = 'small' | 'medium' | 'large';
+type IconButtonSize = 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
 
 type JuiIconButtonProps = {
   tooltipTitle?: string;
@@ -38,6 +38,8 @@ type JuiIconButtonProps = {
   Omit<JuiIconographyProps, 'color' | 'children'>;
 
 const iconSizes = {
+  xxlarge: 8,
+  xlarge: 7,
   large: 6,
   medium: 5,
   small: 4,
