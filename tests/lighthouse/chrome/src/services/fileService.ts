@@ -28,7 +28,7 @@ class FileService {
    * @description: generate lighthouse report index
    */
   static async generateReportIndex() {
-    let files = fs.readdirSync(REPORT_DIR_PATH), names = [], tracesFiles = [];
+    let files = fs.readdirSync(REPORT_DIR_PATH), names = [], tracesFiles = [], memoryFiles = [];
     if (!files || files.length === 0) {
       return;
     }
@@ -41,6 +41,10 @@ class FileService {
 
       if (file.endsWith('.traces.json')) {
         tracesFiles.push(file);
+      }
+
+      if (file.endsWith('.heapsnapshot')) {
+        memoryFiles.push(file);
       }
     }
     if (names.length === 0) {
@@ -66,6 +70,26 @@ class FileService {
 
       let tracesPath = `${REPORT_DIR_PATH}/Traces.html`;
       fs.writeFileSync(tracesPath, htmlArray.join(''));
+    }
+
+    if (memoryFiles.length !== 0) {
+      names.push('Heap');
+      let htmlArray = ['<!doctype html><html><head></head><body>'];
+      for (let m of memoryFiles) {
+        const stream = fs.createReadStream(path.join(REPORT_DIR_PATH, m));
+
+        const form = new FormData();
+        form.append('file', stream);
+        const response = await axios.post(`${fileServerUrl}/api/upload`, form, {
+          headers: form.getHeaders(),
+          maxContentLength: Infinity
+        });
+        htmlArray.push('<div style="margin:15px 130px">', `<a href="${fileServerUrl}/download/${response.data.fileName}" target="_blank">`, m, '</a>', '</div>');
+      }
+      htmlArray.push('</body></html>');
+
+      let memoryPath = `${REPORT_DIR_PATH}/Heap.html`;
+      fs.writeFileSync(memoryPath, htmlArray.join(''));
     }
 
     html = html.replace('$$FILE_LIST$$', JSON.stringify(names));
@@ -103,6 +127,19 @@ class FileService {
       let tracesPath = `${REPORT_DIR_PATH}/${fileName}.traces.json`;
       fs.writeFileSync(tracesPath, JSON.stringify(artifacts.traces.defaultPass.traceEvents));
       logger.info(`traces has saved.[${tracesPath}]`);
+    }
+  }
+
+  /**
+   * @description: save memory into disk
+   */
+  static async saveMemoryIntoDisk(artifacts: any, fileName: string) {
+    let gatherer = artifacts['MemoryGatherer'];
+    if (gatherer && gatherer.data) {
+      let conent = gatherer.data.join('');
+      let memoryPath = `${REPORT_DIR_PATH}/${fileName}.heapsnapshot`;
+      fs.writeFileSync(memoryPath, conent);
+      logger.info(`memory has saved.[${memoryPath}]`);
     }
   }
 
