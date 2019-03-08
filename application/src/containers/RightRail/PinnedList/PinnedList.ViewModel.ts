@@ -30,13 +30,13 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
         id: this._groupId,
         pinnedPostIds: this.pinnedPostIds,
       }),
-      ({ id }) => {
+      ({ id, pinnedPostIds }) => {
         if (id) {
           this.firstInit = true;
           this.discontinuousPosListHandler &&
             this.discontinuousPosListHandler.dispose();
         }
-        this.build(this.pinnedPostIds);
+        this.build(pinnedPostIds);
       },
       { equals: comparer.structural },
     );
