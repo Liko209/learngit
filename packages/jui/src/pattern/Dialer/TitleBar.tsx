@@ -27,7 +27,7 @@ const StyledTitleBar = styled('div')`
 
 const StyledLeft = styled('div')`
   && {
-    ${typography('body2')};
+    ${typography('body1')};
     display: flex;
     align-items: center;
   }

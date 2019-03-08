@@ -27,15 +27,16 @@ const StyledBack = styled('div')`
 
 const StyledInfoContainer = styled('div')`
   margin-left: ${spacing(3)};
+  ${ellipsis()};
 `;
 
 const StyledName = styled('div')`
-  ${typography('body1')};
+  ${typography('body2')};
   ${ellipsis()};
 `;
 
 const StyledPhone = styled('div')`
-  ${typography('caption2')};
+  ${typography('caption1')};
   ${ellipsis()};
 `;
 
@@ -56,6 +57,7 @@ const StyledLeft = styled('div')`
     ${typography('body2')};
     display: flex;
     align-items: center;
+    width: 100%;
   }
   && caption {
     ${typography('caption2')};

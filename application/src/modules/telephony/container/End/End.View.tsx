@@ -26,6 +26,7 @@ class EndViewComponent extends Component<Props> {
         color="semantic.negative"
         tooltipTitle={t('telephony.action.end')}
         onClick={this._handleEnd}
+        size="xxlarge"
       >
         hand_up
       </JuiIconButton>

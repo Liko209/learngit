@@ -17,7 +17,7 @@ class DialerViewComponent extends React.Component {
     return (
       <JuiDialer>
         <DialerTitleBar />
-        <DialerHeader phoneNumber="(650) 555-12345" />
+        <DialerHeader />
         <DialerContainer />
       </JuiDialer>
     );
