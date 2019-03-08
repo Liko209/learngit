@@ -7,4 +7,5 @@ export * from './Modal';
 export * from './Dialog';
 export * from './DialogTitleWithAction';
 export * from './DialogContentWithFill';
+export * from './DraggableDialog';
 export * from './DialogHeader';

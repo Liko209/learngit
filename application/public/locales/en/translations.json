@@ -404,7 +404,19 @@
     "Calendar": "Calendar"
   },
   "telephony": {
-    "Phone": "Phone"
+    "Phone": "Phone",
+    "action": {
+      "minimize": "Minimize",
+      "detach": "Detach",
+      "attach": "Attach",
+      "mute": "Mute",
+      "keypad": "Keypad",
+      "hold": "Hold",
+      "add": "Add",
+      "record": "Record",
+      "callActions": "Call Actions",
+      "end": "End"
+    }
   },
   "meeting": {
     "Meetings": "Meetings"

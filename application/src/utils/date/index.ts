@@ -185,6 +185,34 @@ function handerTimeZoneOffset(
   const MINUTE = 60 * 1000;
   return timestamp + (localTimezoneOffset - timezoneOffset) * MINUTE;
 }
+
+function twoDigit(n: number) {
+  return (n < 10 ? '0' : '') + n;
+}
+
+function formatSeconds(seconds: number) {
+  let secondTime = seconds;
+  let minuteTime = 0;
+  let hourTime = 0;
+  if (secondTime > 60) {
+    // @ts-ignore
+    minuteTime = parseInt(secondTime / 60, 10);
+    // @ts-ignore
+    secondTime = parseInt(secondTime % 60, 10);
+    if (minuteTime > 60) {
+      // @ts-ignore
+      hourTime = parseInt(minuteTime / 60, 10);
+      // @ts-ignore
+      minuteTime = parseInt(minuteTime % 60, 10);
+    }
+  }
+  return {
+    secondTime: twoDigit(secondTime),
+    minuteTime: twoDigit(minuteTime),
+    hourTime: twoDigit(hourTime),
+  };
+}
+
 export {
   getDateTimeStamp,
   getDateMessage,
@@ -193,6 +221,7 @@ export {
   postTimestamp,
   dateFormatter,
   handerTimeZoneOffset,
+  formatSeconds,
 };
 
 // 7 days inside
