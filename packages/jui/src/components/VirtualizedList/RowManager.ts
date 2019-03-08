@@ -10,11 +10,10 @@ class RowManager {
   private _heightMap = new Map<React.Key, number>();
   private _beforeHeight: number = 0;
   private _minRowHeight: number;
-  private _keyMapper: KeyMapper;
+  private _keyMapper: KeyMapper = (index: number) => index;
 
   constructor({ minRowHeight }: { minRowHeight: number }) {
     this._minRowHeight = minRowHeight;
-    Object.assign(window, { rowManager: this });
   }
 
   setKeyMapper(keyMapper: KeyMapper) {
@@ -41,16 +40,10 @@ class RowManager {
   }
 
   setRowHeight(index: number, newHeight: number) {
-    let diff = 0;
-    let oldHeight = 0;
-
-    if (newHeight !== 0) {
-      oldHeight = this.getRowHeight(index);
-      diff = newHeight - oldHeight;
-      const key = this._keyMapper(index);
-      this._heightMap.set(key, newHeight);
-    }
-
+    const oldHeight = this.getRowHeight(index);
+    const diff = newHeight - oldHeight;
+    const key = this._keyMapper(index);
+    this._heightMap.set(key, newHeight);
     return { newHeight, oldHeight, diff };
   }
 
@@ -73,10 +66,6 @@ class RowManager {
     return this.getBeforeHeight() + this.getRowsHeight(0, index - 1);
   }
 
-  setBeforeHeight(height: number) {
-    this._beforeHeight = height;
-  }
-
   getRowIndexFromPosition(position: number, stopIndex: number) {
     let rowsHeight = this.getBeforeHeight();
     for (let index = 0; index <= stopIndex; index++) {
@@ -85,7 +74,11 @@ class RowManager {
         return index;
       }
     }
-    return stopIndex - 1;
+    return stopIndex;
+  }
+
+  setBeforeHeight(height: number) {
+    this._beforeHeight = height;
   }
 
   getBeforeHeight() {

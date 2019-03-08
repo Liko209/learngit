@@ -225,12 +225,12 @@ storiesOf('Components/VirtualizedList', module)
         <>
           <ListWrapper>
             <JuiInfiniteList
-              hasMore={hasMore}
               height={300}
               minRowHeight={40}
               overscan={5}
               loadInitialData={loadInitialData}
               loadMore={loadMore}
+              hasMore={hasMore}
               loadingMoreRenderer={loadingMoreRenderer}
               loadingRenderer={loadingRenderer}
               noRowsRenderer={noRowsRenderer}

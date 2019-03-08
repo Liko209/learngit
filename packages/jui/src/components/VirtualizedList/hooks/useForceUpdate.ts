@@ -6,9 +6,9 @@
 import { useReducer } from 'react';
 
 const useForceUpdate = () => {
-  const [updateTrigger, setValue] = useReducer(x => x + 1, 0);
+  const [updateTrigger, dispatch] = useReducer(x => x + 1, 0);
   const forceUpdate = () => {
-    setValue({});
+    dispatch({});
   };
   return { updateTrigger, forceUpdate };
 };

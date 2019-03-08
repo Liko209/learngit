@@ -5,8 +5,8 @@
  */
 const slice = Array.prototype.slice;
 
-const getChildren = (contentEl: HTMLElement | null): HTMLElement[] => {
-  return contentEl !== null ? slice.call(contentEl.children, 0) : [];
+const getChildren = (element: HTMLElement | null): HTMLElement[] => {
+  return element !== null ? slice.call(element.children, 0) : [];
 };
 
 export { getChildren };

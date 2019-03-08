@@ -6,11 +6,6 @@
 import React from 'react';
 import { createKeyMapper } from '../createKeyMapper';
 
-function setup(keys: React.Key[]) {
-  const elements = keys.map(key => <div key={key} />);
-  const keyMapper = createKeyMapper(elements);
-  return { keyMapper };
-}
 describe('createKeyMapper()', () => {
   it('should return key of the element', () => {
     const keyMapper = createKeyMapper([
@@ -33,7 +28,14 @@ describe('createKeyMapper()', () => {
   });
 
   it("should return '' when elements is empty", () => {
-    const { keyMapper } = setup([]);
+    const keyMapper = createKeyMapper([]);
     expect(keyMapper(0)).toBe('');
+  });
+
+  it("should throw error when element's key was not given", () => {
+    const elements: any[] = [];
+    elements.push(<div />);
+    const keyMapper = createKeyMapper(elements);
+    expect(() => keyMapper(0)).toThrow();
   });
 });

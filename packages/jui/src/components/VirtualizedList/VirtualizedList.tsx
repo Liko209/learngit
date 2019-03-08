@@ -156,7 +156,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   const renderedRangeSize = Math.ceil(
     height / rowManager.getEstimateRowHeight(),
   );
-  const [renderedRange, setRenderedRange] = useRange(
+  const { range: renderedRange, setRange: setRenderedRange } = useRange(
     createRenderRange({ startIndex: initialScrollToIndex - 5 }),
   );
 
