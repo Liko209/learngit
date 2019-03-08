@@ -114,7 +114,7 @@ class PostCacheController implements ICacheController<Post> {
         hasMoreDown: !!jump2PostId,
         isMatchFunc: isMatchedFunc(groupId),
         entityName: ENTITY_NAME.POST,
-        eventName: ENTITY.POST,
+        eventName: `${ENTITY.POST}.${groupId}`,
       };
 
       listHandler = new FetchSortableDataListHandler(
