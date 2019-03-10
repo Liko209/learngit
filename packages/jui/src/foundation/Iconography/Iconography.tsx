@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import name2icon from './name2icon';
+import { name2icon } from './name2icon';
 import styled, { css } from '../../foundation/styled-components';
 import { Palette } from '../theme/theme';
 import { palette, width } from '../../foundation/utils/styles';
