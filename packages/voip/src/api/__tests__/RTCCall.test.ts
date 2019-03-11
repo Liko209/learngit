@@ -1817,7 +1817,7 @@ describe('RTC call', () => {
       expect(call._hangupInvalidCallTimer).toEqual(null);
     });
 
-    it('should clear timer when session emit progress event [JPT-988]', done => {
+    it('should clear timer and notify call delegate when session emit progress event [JPT-988]', done => {
       jest.useFakeTimers();
       setup();
       jest.spyOn(call, 'hangup');
