@@ -49,7 +49,6 @@ test.skip(formalName('Resize windows', ['P0', 'JPT-24', 'LeftRail']), async (t: 
     await t.expect(app.homePage.messageTab.leftRail.visible).ok();
     await t.expect(app.homePage.messageTab.rightRail.visible).ok();
     await t.resizeWindow(750, 700);
-    await t.debug();
     await t.expect(app.homePage.messageTab.leftRail.visible).notOk();
     await t.expect(app.homePage.messageTab.rightRail.visible).notOk();
   }, true);

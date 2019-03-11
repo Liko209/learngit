@@ -8,23 +8,35 @@ import { useRef } from 'react';
 type ScrollPosition = {
   index: number;
   offset: number;
+  options?: ScrollIntoViewOptions | boolean;
 };
 
 type PartialScrollPosition = {
   index: number;
   offset?: number;
+  options?: boolean | ScrollIntoViewOptions;
 };
 
-const useScroll = ({ index, offset = 0 }: PartialScrollPosition) => {
+const useScroll = ({
+  index,
+  offset = 0,
+  options = false,
+}: PartialScrollPosition) => {
   const scrollPositionRef = useRef({
     index,
     offset,
+    options,
   });
   const scrollPosition = scrollPositionRef.current;
 
-  const setScrollPosition = ({ index, offset = 0 }: PartialScrollPosition) => {
+  const setScrollPosition = ({
+    index,
+    offset = 0,
+    options = true,
+  }: PartialScrollPosition) => {
     scrollPositionRef.current.index = index;
     scrollPositionRef.current.offset = offset;
+    scrollPositionRef.current.options = options;
   };
 
   return {

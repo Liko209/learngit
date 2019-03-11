@@ -10,6 +10,7 @@ import {
   getThumbnailForSquareSize as square,
 } from 'jui/foundation/utils/calculateImageSize';
 import { ItemService } from 'sdk/module/item/service';
+import { Omit } from 'jui/foundation/utils/typeHelper';
 
 enum RULE {
   SQUARE_IMAGE,
@@ -28,13 +29,12 @@ type Result = ThumbnailInfo & {
   url: string;
 };
 
-const generateModifiedImageURL = async ({
-  id,
+const getModifiedImageSize = ({
   origWidth,
   origHeight,
   rule,
   squareSize = 36,
-}: Request): Promise<Result> => {
+}: Omit<Request, 'id'>): Result => {
   let result: Result = {
     width: origWidth,
     height: origHeight,
@@ -74,10 +74,30 @@ const generateModifiedImageURL = async ({
         width = newWidth;
       }
     }
+  }
+  return result;
+};
+
+const generateModifiedImageURL = async ({
+  id,
+  origWidth,
+  origHeight,
+  rule,
+  squareSize = 36,
+}: Request): Promise<Result> => {
+  const result: Result = getModifiedImageSize({
+    origWidth,
+    origHeight,
+    rule,
+    squareSize,
+  });
+  // fetch crop image url
+  const { width, height } = result;
+  if (width > 0 && height > 0) {
     const itemService = ItemService.getInstance() as ItemService;
     result.url = await itemService.getThumbsUrlWithSize(id, width, height);
   }
   return result;
 };
 
-export { generateModifiedImageURL, RULE, Result };
+export { generateModifiedImageURL, getModifiedImageSize, RULE, Result };

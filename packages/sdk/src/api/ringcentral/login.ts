@@ -65,9 +65,8 @@ function loginGlip2ByPassword(data: object) {
 
 function refreshToken(data: ITokenModel) {
   const model = {
+    ...data,
     grant_type: 'refresh_token',
-    refresh_token: data.refresh_token,
-    client_id: Api.httpConfig.rc.clientId,
   };
 
   const query = {

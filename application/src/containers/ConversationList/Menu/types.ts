@@ -19,11 +19,14 @@ type MenuViewProps = {
   groupId: number;
   anchorEl: HTMLElement | null;
   isFavorite: boolean;
+  isUnread: boolean;
+  disabledReadOrUnread: boolean;
   favoriteText: string;
   shouldSkipCloseConfirmation: boolean;
   closable: boolean;
   onClose: (event: MouseEvent<HTMLElement>) => void;
   toggleFavorite: () => Promise<Profile | null>;
+  toggleRead: () => Promise<void>;
   closeConversation: (shouldSkipNextTime: boolean) => Promise<Profile | null>;
 };
 

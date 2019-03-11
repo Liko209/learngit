@@ -21,14 +21,14 @@ describe('Client Config', () => {
   });
 
   function setS3UploadBeta() {
-    AccountGlobalConfig.getClientId = jest.fn().mockReturnValue({
+    AccountGlobalConfig.getClientConfig = jest.fn().mockReturnValue({
       beta_s3_direct_uploads_emails: '123,234,456',
       beta_s3_direct_uploads_domains: '1,2,3,4',
     });
   }
 
   it('beta log', async () => {
-    AccountGlobalConfig.getClientId = jest.fn().mockReturnValue({
+    AccountGlobalConfig.getClientConfig = jest.fn().mockReturnValue({
       beta_enable_log_emails: '123,234,456',
       beta_enable_log_domains: '1,2,3,4',
     });
@@ -79,7 +79,7 @@ describe('Client Config', () => {
   });
 
   it('should return true when beta flag is on for all', async () => {
-    AccountGlobalConfig.getClientId = jest.fn().mockReturnValue({
+    AccountGlobalConfig.getClientConfig = jest.fn().mockReturnValue({
       beta_s3_direct_uploads_emails: '123,234,456',
       beta_s3_direct_uploads_domains: '1,2,3,4',
       beta_s3_direct_uploads: 'true',

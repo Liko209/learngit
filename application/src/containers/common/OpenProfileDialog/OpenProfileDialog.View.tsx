@@ -6,12 +6,8 @@
 
 import React, { Component, MouseEvent } from 'react';
 import { OpenProfileDialogProps, OpenProfileDialogViewProps } from './types';
-import { TypeDictionary } from 'sdk/utils';
-import {
-  ProfileDialogGroup,
-  ProfileDialogPerson,
-} from '@/containers/Profile/Dialog';
-import { Dialog } from '@/containers/Dialog';
+
+import { OpenProfile } from '@/common/OpenProfile';
 
 type Props = OpenProfileDialogProps & OpenProfileDialogViewProps;
 
@@ -22,22 +18,15 @@ class OpenProfileDialogView extends Component<Props> {
 
   private _onClickOpenProfileDialog = (event: MouseEvent<HTMLElement>) => {
     const { id, beforeClick, afterClick } = this.props;
-    const ProfileDialog = this._getProfileDialogComponent();
-    beforeClick && beforeClick(event);
-    Dialog.simple(<ProfileDialog id={id} />, {
-      size: 'medium',
-    });
-    afterClick && afterClick(event);
-  }
-
-  private _getProfileDialogComponent = () => {
-    const { typeId } = this.props;
-    const MappingComponent = {
-      [TypeDictionary.TYPE_ID_PERSON]: ProfileDialogPerson,
-      [TypeDictionary.TYPE_ID_GROUP]: ProfileDialogGroup,
-      [TypeDictionary.TYPE_ID_TEAM]: ProfileDialogGroup,
-    };
-    return MappingComponent[typeId];
+    OpenProfile.show(
+      id,
+      () => {
+        beforeClick && beforeClick(event);
+      },
+      () => {
+        afterClick && afterClick(event);
+      },
+    );
   }
 
   render() {

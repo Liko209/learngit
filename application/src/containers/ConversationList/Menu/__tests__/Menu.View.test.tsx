@@ -105,5 +105,63 @@ describe('MenuView', () => {
         done();
       },         0);
     }, 2);
+
+    it('should display flash toast notification when read conversation failed [JPT-1272]', (done: jest.DoneCallback) => {
+      const props: any = {
+        isUnread: true,
+        onClose: () => {},
+        toggleRead: () => {
+          throw new JSdkError(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to read conversation',
+          );
+        },
+      };
+
+      const wrapper = shallow(<MenuViewComponent {...props} />);
+
+      wrapper
+        .find('[data-test-automation-id="readOrUnreadConversation"]')
+        .simulate('click', { stopPropagation: () => undefined });
+
+      setTimeout(() => {
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'people.prompt.markAsRead',
+            type: ToastType.ERROR,
+          }),
+        );
+        done();
+      },         0);
+    }, 2);
+
+    it('should display flash toast notification when unread conversation failed [JPT-1272]', (done: jest.DoneCallback) => {
+      const props: any = {
+        isUnread: false,
+        onClose: () => {},
+        toggleRead: () => {
+          throw new JSdkError(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to unread conversation',
+          );
+        },
+      };
+
+      const wrapper = shallow(<MenuViewComponent {...props} />);
+
+      wrapper
+        .find('[data-test-automation-id="readOrUnreadConversation"]')
+        .simulate('click', { stopPropagation: () => undefined });
+
+      setTimeout(() => {
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'people.prompt.markAsUnread',
+            type: ToastType.ERROR,
+          }),
+        );
+        done();
+      },         0);
+    }, 2);
   });
 });

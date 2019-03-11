@@ -14,6 +14,8 @@ type JuiVirtualizedListProps = {
   minRowHeight: number;
   overscan: number;
   initialScrollToIndex: number;
+  initialRangeSize: number;
+  stickToBottom?: boolean;
   onScroll: (event: React.UIEvent) => void;
   onVisibleRangeChange: (range: IndexRange) => void;
   onRenderedRangeChange: (range: IndexRange) => void;

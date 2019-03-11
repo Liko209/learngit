@@ -209,7 +209,7 @@ describe('StreamViewModel', () => {
       const vm = setup({ groupId });
       vm.markAsRead();
 
-      expect(spy).toBeCalledWith(groupId, false);
+      expect(spy).toBeCalledWith(groupId, false, true);
 
       spy.mockRestore();
     });

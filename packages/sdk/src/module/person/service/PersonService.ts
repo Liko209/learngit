@@ -86,6 +86,7 @@ class PersonService extends EntityBaseService<Person>
     excludeSelf?: boolean,
     arrangeIds?: number[],
     fetchAllIfSearchKeyEmpty?: boolean,
+    asIdsOrder?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
@@ -95,6 +96,7 @@ class PersonService extends EntityBaseService<Person>
       excludeSelf,
       arrangeIds,
       fetchAllIfSearchKeyEmpty,
+      asIdsOrder,
     );
   }
 

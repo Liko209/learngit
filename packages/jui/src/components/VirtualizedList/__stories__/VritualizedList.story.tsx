@@ -3,7 +3,7 @@
  * @Date: 2019-02-28 14:59:26
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { number } from '@storybook/addon-knobs';
 import { storiesOf } from '@storybook/react';
 import styled from '../../../foundation/styled-components';
@@ -18,6 +18,14 @@ import { IndexRange } from '../types';
 import { DemoItem } from './DemoItem';
 import { itemFactory } from './itemFactory';
 import { useDemoHelper } from './useDemoHelper';
+
+const sleep = function (time: number) {
+  return new Promise((resolve: Function) => {
+    setTimeout(() => {
+      resolve();
+    },         time);
+  });
+};
 
 const StyledLoadingMore = styled.div`
   display: flex;
@@ -111,7 +119,7 @@ storiesOf('Components/VirtualizedList', module)
       }: React.FormEvent<HTMLInputElement>) => {
         if (ref.current) {
           const str = currentTarget.value;
-          const index = parseInt(str, 10);
+          const index = parseInt(str, 10) || 0;
           ref.current.scrollToIndex(index);
         }
       };
@@ -127,11 +135,13 @@ storiesOf('Components/VirtualizedList', module)
           <button onClick={handleAppendClick}>Append Item</button>
           <button onClick={handleAddCrazyClick}>Add Crazy Item</button>
           <button onClick={handleRemoveClick}>Remove Item</button>
+
           <br />
           <label>
             scrollToIndex:
             <input onInput={handleDataChange} type="number" />
           </label>
+
           <br />
           <ListWrapper>
             <JuiVirtualizedList
@@ -142,6 +152,7 @@ storiesOf('Components/VirtualizedList', module)
               initialScrollToIndex={initialScrollToIndex}
               onVisibleRangeChange={setVisibleRange}
               onRenderedRangeChange={setRenderedRange}
+              stickToBottom={true}
             >
               {children}
             </JuiVirtualizedList>
@@ -176,23 +187,16 @@ storiesOf('Components/VirtualizedList', module)
         initialDataCount: 0,
       });
 
-      const children = items.map(item => (
-        <DemoItem key={item.id} item={item} />
-      ));
+      const children = useMemo(
+        () => items.map(item => <DemoItem key={item.id} item={item} />),
+        [items],
+      );
 
       const startId = 10000;
       const pageSize = 10;
 
       const hasMore = (direction: 'up' | 'down') =>
         totalDataCount > items.length;
-
-      const sleep = function (time: number) {
-        return new Promise((resolve: Function) => {
-          setTimeout(() => {
-            resolve();
-          },         time);
-        });
-      };
 
       const loadInitialData = async () => {
         await sleep(initialLoadTime);
@@ -245,4 +249,95 @@ storiesOf('Components/VirtualizedList', module)
       );
     };
     return <InfiniteListDemo />;
+  })
+  .add('stickToBottom', () => {
+    const initialDataCount = 10;
+    const totalDataCount = 100;
+    const initialLoadTime = 500;
+    const moreLoadTime = 500;
+
+    const StickToBottomDemo = () => {
+      const ref = useRef(null);
+
+      const [listHeight, setHeight] = useState(200);
+      const { items, prependItem, appendItem } = useDemoHelper({
+        initialDataCount: 0,
+      });
+
+      const children = useMemo(
+        () => items.map(item => <DemoItem key={item.id} item={item} />),
+        [items],
+      );
+
+      const startId = 10000;
+      const pageSize = 10;
+
+      const hasMore = (direction: 'up' | 'down') => {
+        if (direction === 'up') {
+          return totalDataCount > items.length;
+        }
+        return false;
+      };
+
+      const handleAppendClick = () => {
+        const i = items[items.length - 1].id + 1;
+        appendItem(itemFactory.buildImageItem(i, true));
+      };
+      const loadInitialData = async () => {
+        await sleep(initialLoadTime);
+        prependItem(
+          ...itemFactory.buildItems(
+            startId,
+            Math.min(initialDataCount, totalDataCount),
+          ),
+        );
+      };
+
+      const handleHeightChange = ({
+        currentTarget,
+      }: React.FormEvent<HTMLInputElement>) => {
+        if (ref.current) {
+          const str = currentTarget.value;
+          setHeight(parseInt(str, 10));
+        }
+      };
+      const loadMore = async (direction: 'up' | 'down') => {
+        await sleep(moreLoadTime);
+        if (direction === 'up') {
+          prependItem(
+            ...itemFactory.buildItems(items[0].id - pageSize, pageSize),
+          );
+        }
+      };
+
+      return (
+        <>
+          <label>
+            listHeight:
+            <input
+              ref={ref}
+              onInput={handleHeightChange}
+              type="number"
+              defaultValue={`${listHeight}`}
+            />
+          </label>
+          <button onClick={handleAppendClick}>Append Item</button>
+          <JuiInfiniteList
+            hasMore={hasMore}
+            height={listHeight}
+            minRowHeight={40}
+            initialScrollToIndex={initialDataCount - 1}
+            loadInitialData={loadInitialData}
+            loadMore={loadMore}
+            stickToBottom={true}
+            loadingMoreRenderer={<LoadingMore />}
+            loadingRenderer={<div>loading initial</div>}
+            noRowsRenderer={<div>Empty</div>}
+          >
+            {children}
+          </JuiInfiniteList>
+        </>
+      );
+    };
+    return <StickToBottomDemo />;
   });

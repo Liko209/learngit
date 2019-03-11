@@ -36,7 +36,11 @@ const CompositeInput = ({ iconPosition, ...rest }: CompositeInputProps) => (
   <InputBase {...rest} />
 );
 
-const CLASSES_INPUT_BASE = { root: 'root', focused: 'focused' };
+const CLASSES_INPUT_BASE = {
+  root: 'root',
+  focused: 'focused',
+  disabled: 'disabled',
+};
 const StyledInput = styled<CompositeInputProps>(CompositeInput)`
   &.root {
     flex: 1;
@@ -67,6 +71,10 @@ const StyledInput = styled<CompositeInputProps>(CompositeInput)`
     background-color: ${palette('common', 'white')};
     border: 1px solid ${grey('400')};
   }
+  &.disabled {
+    /* Need the UI to provide the design */
+    background-color: ${grey('100')};
+  }
 `;
 
 const StyledIcon = styled(JuiIconography)`
@@ -84,22 +92,29 @@ const StyledIconRight = styled(StyledIcon)`
   right: ${spacing(3)};
 `;
 
-type Props = {
-  placeholder: string;
+type Props = InputBaseProps & {
   iconPosition?: IconPosition;
   iconName?: string;
+  maxLength?: number;
 };
 
 class JuiOutlineTextField extends PureComponent<Props> {
   render() {
-    const { placeholder, iconName = '', iconPosition } = this.props;
+    const {
+      iconPosition,
+      iconName = '',
+      maxLength = 999999,
+      ...rest
+    } = this.props;
+    const inputProps = { maxLength };
     return (
       <StyledPaper elevation={0} classes={CLASSES_PAPER}>
         {iconPosition === 'left' && <StyledIconLeft>{iconName}</StyledIconLeft>}
         <StyledInput
-          placeholder={placeholder}
           classes={CLASSES_INPUT_BASE}
           iconPosition={iconPosition}
+          inputProps={inputProps}
+          {...rest}
         />
         {iconPosition === 'right' && (
           <StyledIconRight>{iconName}</StyledIconRight>

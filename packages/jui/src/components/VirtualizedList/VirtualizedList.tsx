@@ -10,6 +10,7 @@ import React, {
   ReactNode,
   RefForwardingComponent,
   useImperativeHandle,
+  useEffect,
   useLayoutEffect,
   useRef,
 } from 'react';
@@ -45,6 +46,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     onRenderedRangeChange = noop,
     before = null,
     after = null,
+    stickToBottom,
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
@@ -123,11 +125,28 @@ const JuiVirtualizedList: RefForwardingComponent<
     return { startIndex, stopIndex };
   };
 
-  const scrollToPosition = (position: ScrollPosition) => {
+  const scrollToPosition = ({
+    index,
+    offset,
+    options = true,
+  }: ScrollPosition) => {
     if (ref.current) {
-      ref.current.scrollTop =
-        rowManager.getRowOffsetTop(position.index) + position.offset;
+      if (options === true) {
+        ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
+      }
+      if (options === false) {
+        ref.current.scrollTop =
+          rowManager.getRowOffsetTop(index + 1) - height - offset;
+      }
     }
+  };
+
+  const scrollToBottom = () => {
+    return scrollToPosition({
+      index: childrenCount - 1,
+      offset: 99999,
+      options: true,
+    });
   };
 
   const keyMapper = createKeyMapper(children);
@@ -172,6 +191,8 @@ const JuiVirtualizedList: RefForwardingComponent<
       min: 0,
     }),
   );
+  const prevAtBottomRef = useRef(false);
+  const shouldScrollToBottom = () => prevAtBottomRef.current && stickToBottom;
 
   const scrollEffectTriggerRef = useRef(0);
   const prevScrollTopRef = useRef(0);
@@ -200,8 +221,15 @@ const JuiVirtualizedList: RefForwardingComponent<
   useLayoutEffect(() => {
     const handleRowSizeChange = (el: HTMLElement, i: number) => {
       const { diff } = rowManager.setRowHeight(startIndex + i, el.offsetHeight);
+      if (diff === 0) {
+        return;
+      }
+
+      if (shouldScrollToBottom()) {
+        return scrollToBottom();
+      }
       const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
-      if (diff !== 0 && beforeFirstVisibleRow) {
+      if (beforeFirstVisibleRow) {
         scrollToPosition(scrollPosition);
       }
       return diff;
@@ -227,8 +255,12 @@ const JuiVirtualizedList: RefForwardingComponent<
   // The position was remembered in handleScroll() function
   //
   useLayoutEffect(() => {
-    scrollToPosition(scrollPosition);
-  },              [!!before, scrollEffectTriggerRef.current]);
+    if (shouldScrollToBottom()) {
+      scrollToBottom();
+    } else {
+      scrollToPosition(scrollPosition);
+    }
+  },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
   // Emit visible range change when component mounted
@@ -239,6 +271,13 @@ const JuiVirtualizedList: RefForwardingComponent<
     onRenderedRangeChange(visibleRange);
   },              []);
 
+  useEffect(() => {
+    if (ref.current) {
+      const { scrollTop } = ref.current;
+      prevAtBottomRef.current =
+        height >= rowManager.getRowOffsetTop(childrenCount) - scrollTop;
+    }
+  });
   //
   // Scrolling
   //
@@ -323,6 +362,7 @@ const MemoList = memo(
       height: number;
       minRowHeight: number;
       overscan?: number;
+      stickToBottom?: boolean;
       children: JSX.Element[];
     } & React.RefAttributes<JuiVirtualizedListHandles>
   >

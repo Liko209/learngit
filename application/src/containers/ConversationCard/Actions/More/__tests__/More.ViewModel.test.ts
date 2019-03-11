@@ -294,5 +294,35 @@ describe('MoreVM', () => {
 
       expect(ViewModel.showMoreAction).toBe(true);
     });
+
+    it('should not show quote & delete & edit action buttons on task post', () => {
+      (getEntity as jest.Mock).mockImplementation((type: string) => {
+        if (type === ENTITY_NAME.POST) {
+          return {
+            text: 'test',
+            itemTypeIds: { [TypeDictionary.TYPE_ID_TASK]: [1] },
+          };
+        }
+        return null;
+      });
+      ViewModel = new MoreViewModel({ id: 1 });
+
+      expect(ViewModel.showMoreAction).toBe(false);
+    });
+
+    it('should not show quote & delete & edit action buttons on event post', () => {
+      (getEntity as jest.Mock).mockImplementation((type: string) => {
+        if (type === ENTITY_NAME.POST) {
+          return {
+            text: 'test',
+            itemTypeIds: { [TypeDictionary.TYPE_ID_EVENT]: [1] },
+          };
+        }
+        return null;
+      });
+      ViewModel = new MoreViewModel({ id: 1 });
+
+      expect(ViewModel.showMoreAction).toBe(false);
+    });
   });
 });

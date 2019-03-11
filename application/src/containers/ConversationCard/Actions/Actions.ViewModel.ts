@@ -11,8 +11,12 @@ import { ActionsProps, ActionsViewProps } from './types';
 class ActionsViewModel extends StoreViewModel<ActionsProps>
   implements ActionsViewProps {
   @computed
-  get id() {
-    return this.props.id;
+  get postId() {
+    return this.props.postId;
+  }
+  @computed
+  get groupId() {
+    return this.props.groupId;
   }
 }
 
