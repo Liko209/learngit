@@ -14,7 +14,6 @@ type MessageInputProps = {
 };
 
 type MessageInputViewProps = {
-  id: number;
   draft: string;
   error: string;
   forceSaveDraft(): void;
