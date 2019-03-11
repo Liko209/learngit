@@ -5,3 +5,4 @@
  */
 
 export { Viewer } from './Viewer';
+export { showImageViewer } from './creator';

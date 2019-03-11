@@ -19,7 +19,7 @@ import { DiscontinuousPosListHandler } from '@/store/handler/DiscontinuousPosLis
 class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   implements PinnedListViewProps {
   @observable discontinuousPosListHandler: DiscontinuousPosListHandler;
-  firstInit: boolean = true;
+  @observable firstInit: boolean = true;
 
   constructor(props: PinnedListProps) {
     super(props);

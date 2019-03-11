@@ -6,7 +6,7 @@
 
 import React, { Component, RefObject, createRef } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { MessageInputViewProps } from './types';
+import { MessageInputViewProps, MessageInputProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 import { Mention } from './Mention';
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
@@ -16,9 +16,10 @@ import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
 
+type Props = MessageInputProps & MessageInputViewProps & WithNamespaces;
 @observer
 class MessageInputViewComponent extends Component<
-  MessageInputViewProps & WithNamespaces,
+  Props,
   {
     modules: object;
   }
@@ -44,7 +45,7 @@ class MessageInputViewComponent extends Component<
     this.props.forceSaveDraft();
   }
 
-  componentWillReceiveProps(nextProps: MessageInputViewProps) {
+  componentWillReceiveProps(nextProps: Props) {
     if (this.props.id !== nextProps.id) {
       this.props.cellWillChange(nextProps.id, this.props.id);
     }

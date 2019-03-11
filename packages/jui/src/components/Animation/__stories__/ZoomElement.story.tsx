@@ -28,6 +28,7 @@ class Test extends React.Component {
   };
 
   imageRef: React.RefObject<HTMLImageElement> = React.createRef();
+  targetImageRef: React.RefObject<HTMLImageElement> = React.createRef();
 
   toggleShow = () => {
     this.setState({ show: !this.state.show });
@@ -75,19 +76,18 @@ class Test extends React.Component {
         {this.state.open && (
           <JuiZoomElement
             originalElement={this.imageRef.current}
+            targetElement={this.targetImageRef.current}
             show={this.state.show}
             duration="standard"
             easing="openCloseDialog"
             onExited={this.hide}
           >
-            {(registerChild: Function) => (
-              <StyledImage
-                ref={element => registerChild(element)}
-                position={{ width: '70%', height: '70%' }}
-                src="https://placeimg.com/100/100/any"
-                onClick={this.close}
-              />
-            )}
+            <StyledImage
+              viewRef={this.targetImageRef}
+              position={{ width: '70%', height: '70%' }}
+              src="https://placeimg.com/100/100/any"
+              onClick={this.close}
+            />
           </JuiZoomElement>
         )}
         <div>
