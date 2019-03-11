@@ -6,27 +6,28 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { ViewerViewProps } from './types';
-import {
-  JuiDialogTitleWithAction,
-  JuiDialogContentWithFill,
-} from 'jui/components/Dialog';
+import { ViewerViewProps, ViewerViewModelProps } from './types';
 import { ViewerTitle } from './Title';
 import { ViewerContent } from './Content';
+import { JuiViewerBackground } from 'jui/pattern/ImageViewer';
 
 @observer
-class ViewerView extends Component<ViewerViewProps> {
+class ViewerView extends Component<ViewerViewProps & ViewerViewModelProps> {
+  async componentDidMount() {
+    await this.props.init();
+  }
+
   render() {
-    const { itemId, containComponent } = this.props;
+    const { itemId, contentLeftRender, ...rest } = this.props;
     return (
-      <>
-        <JuiDialogTitleWithAction data-test-automation-id="ViewerTitle">
-          <ViewerTitle itemId={itemId} />
-        </JuiDialogTitleWithAction>
-        <JuiDialogContentWithFill data-test-automation-id="ViewerContent">
-          <ViewerContent itemId={itemId} containComponent={containComponent} />
-        </JuiDialogContentWithFill>
-      </>
+      <JuiViewerBackground>
+        <ViewerTitle itemId={itemId} {...rest} />
+        <ViewerContent
+          data-test-automation-id="ViewerContent"
+          left={contentLeftRender({ ...rest, itemId })}
+          right={<div>commitBlock</div>}
+        />
+      </JuiViewerBackground>
     );
   }
 }

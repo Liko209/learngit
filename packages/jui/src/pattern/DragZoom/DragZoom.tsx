@@ -12,11 +12,19 @@ import {
   JuiZoomOptions,
   DEFAULT_OPTIONS as DEFAULT_ZOOM_OPTIONS,
 } from '../../components/ZoomArea';
+import styled from '../../foundation/styled-components';
+
+const StyledZoomComponent = styled(JuiZoomComponent)<{ transition?: string }>`
+  div {
+    ${({ transition }) => (transition ? `transition: ${transition};` : null)}
+  }
+`;
 
 type JuiWithDragZoomProps = {
   autoFitContentRect?: ElementRect;
   notifyContentRectChange: () => void;
   canDrag: boolean;
+  isDragging: boolean;
 };
 
 type JuiDragZoomProps = {
@@ -37,6 +45,7 @@ type JuiDragZoomState = {
   canDrag: boolean;
   canZoomIn: boolean;
   canZoomOut: boolean;
+  isDragging: boolean;
 };
 
 type Padding = [number, number, number, number];
@@ -151,6 +160,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
   constructor(props: JuiDragZoomProps) {
     super(props);
     this.state = {
+      isDragging: false,
       transform: {
         scale: 1,
         translateX: 0,
@@ -266,13 +276,14 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
 
   render() {
     const { children } = this.props;
-    const { autoFitContentRect, transform, canDrag } = this.state;
+    const { autoFitContentRect, transform, canDrag, isDragging } = this.state;
     const { ...zoomOptions } = ensureOptions(this.props.options);
     return (
-      <JuiZoomComponent
+      <StyledZoomComponent
         ref={this.getZoomRef()}
         zoomOptions={zoomOptions}
         transform={transform}
+        transition={isDragging ? undefined : 'all ease 0.3s'}
         onTransformChange={(transform: Transform) => {
           this.applyNewTransform(transform);
         }}
@@ -282,7 +293,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       >
         {() => (
           <DragArea
-            onDragMove={({ distance, delta }) => {
+            onDragMove={({ isDragging, delta }) => {
               const [deltaX, deltaY] = delta;
               const newTransform = {
                 ...transform,
@@ -290,23 +301,29 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
                 translateY: transform.translateY + deltaY / transform.scale,
               };
               this.applyNewTransform(newTransform);
+              if (this.state.isDragging !== isDragging) {
+                this.setState({ isDragging });
+              }
+            }}
+            onDragEnd={() => {
+              this.setState({ isDragging: false });
             }}
           >
-            {() =>
+            {({ isDragging }) =>
               React.cloneElement(
                 children({
                   autoFitContentRect,
                   canDrag,
+                  isDragging,
                   notifyContentRectChange: this.updateRect,
                 }),
                 {
                   ref: this._contentRef,
                 },
-              )
-            }
+              )}
           </DragArea>
         )}
-      </JuiZoomComponent>
+      </StyledZoomComponent>
     );
   }
 }

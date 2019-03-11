@@ -10,7 +10,7 @@ import styled from '../../styled-components';
 
 function loadIconList() {
   return Axios.get(
-    'https://s3.amazonaws.com/icomoon.io/79019/Jupiter/symbol-defs.svg',
+    `https://s3.amazonaws.com/icomoon.io/79019/Jupiter/symbol-defs.svg?${Math.random()}`,
   )
     .then((res: any) => {
       const re = /<title>(.+?)<\/title>/g;

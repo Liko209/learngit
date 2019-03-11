@@ -243,6 +243,13 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   hasUploadingFiles() {
     return this.fileService.hasUploadingFiles();
   }
+
+  async getItemIndexInfo(
+    itemId: number,
+    options: ItemQueryOptions,
+  ): Promise<{ index: number; totalCount: number }> {
+    return this.itemServiceController.getItemIndexInfo(itemId, options);
+  }
 }
 
 export { ItemService };

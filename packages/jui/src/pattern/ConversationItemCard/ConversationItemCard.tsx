@@ -63,7 +63,8 @@ const ItemCardHeader = styled.div<{
   position: relative;
   padding: ${spacing(4, 4, 4, 4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
-  display: flex ${typography('body1')};
+  display: flex;
+  ${typography('body1')};
   color: ${({ titleColor }) => getAccentColor(titleColor)};
   word-break: break-word;
   svg {

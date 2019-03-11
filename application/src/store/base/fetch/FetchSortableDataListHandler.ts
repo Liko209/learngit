@@ -103,6 +103,14 @@ export class FetchSortableDataListHandler<
     return this._maintainMode;
   }
 
+  async fetchDataByAnchor(
+    direction: QUERY_DIRECTION,
+    pageSize: number,
+    anchor: ISortableModel<T>,
+  ) {
+    return this.fetchDataInternal(direction, pageSize, anchor);
+  }
+
   private _releaseDataInMaintainMode() {
     if (this._maintainMode) {
       this.refreshData();
