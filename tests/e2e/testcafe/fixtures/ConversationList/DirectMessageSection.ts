@@ -21,7 +21,7 @@ test(formalName('Show the 1:1 conversation and group conversation in the Direct 
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     let chatId, groupId;
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat', async () => {

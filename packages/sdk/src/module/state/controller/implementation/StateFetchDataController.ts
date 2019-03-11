@@ -5,7 +5,8 @@
  */
 
 import _ from 'lodash';
-import { daoManager, StateDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { StateDao } from '../../dao';
 import { GroupState, MyState } from '../../entity/State';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { NewUserConfig } from '../../../../service/config';

@@ -12,7 +12,7 @@ import { computed, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { ENTITY_NAME } from '@/store';
 
-import { GroupState } from 'sdk/models';
+import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
 import postCacheController from './cache/PostCacheController';
@@ -68,7 +68,7 @@ export class StreamController {
     );
     postCacheController.setCurrentConversation(this._groupId);
     this._orderListHandler = listHandler;
-    this._orderListHandler.setDataChangeCallback(this.handlePostsChanged);
+    this._orderListHandler.addDataChangeCallback(this.handlePostsChanged);
 
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this._streamListHandler = new FetchSortableDataListHandler<StreamItem>(
@@ -108,7 +108,7 @@ export class StreamController {
 
   dispose() {
     if (this._orderListHandler) {
-      this._orderListHandler.setDataChangeCallback();
+      this._orderListHandler.removeDataChangeCallback(this.handlePostsChanged);
     }
     if (this._streamListHandler) {
       this._streamListHandler.dispose();

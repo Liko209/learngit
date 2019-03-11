@@ -21,6 +21,7 @@ import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 
 import { PersonController } from '../controller/PersonController';
 import { SOCKET } from '../../../service/eventKey';
+import { ContactType } from '../types';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -86,6 +87,7 @@ class PersonService extends EntityBaseService<Person>
     excludeSelf?: boolean,
     arrangeIds?: number[],
     fetchAllIfSearchKeyEmpty?: boolean,
+    asIdsOrder?: boolean,
   ): Promise<{
     terms: string[];
     sortableModels: SortableModel<Person>[];
@@ -95,6 +97,7 @@ class PersonService extends EntityBaseService<Person>
       excludeSelf,
       arrangeIds,
       fetchAllIfSearchKeyEmpty,
+      asIdsOrder,
     );
   }
 
@@ -119,6 +122,16 @@ class PersonService extends EntityBaseService<Person>
       companyId,
       phoneNumbersData,
       extensionData,
+    );
+  }
+
+  async matchContactByPhoneNumber(
+    e164PhoneNumber: string,
+    contactType: ContactType,
+  ): Promise<Person | null> {
+    return await this.getPersonController().matchContactByPhoneNumber(
+      e164PhoneNumber,
+      contactType,
     );
   }
 }

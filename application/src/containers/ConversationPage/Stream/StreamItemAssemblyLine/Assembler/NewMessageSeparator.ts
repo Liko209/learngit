@@ -5,11 +5,7 @@
  */
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
-import { Post } from 'sdk/module/post/entity';
 import { ISortableModel } from '@/store/base';
-
-import { GLOBAL_KEYS } from '@/store/constants';
-import { getGlobalValue } from '@/store/utils';
 
 import { StreamItemType, StreamItem } from '../../types';
 import { Assembler } from './Assembler';
@@ -23,9 +19,8 @@ import {
 class NewMessageSeparatorHandler extends Assembler {
   private _readThrough: number = 0;
   private _disabled?: boolean;
-  private _userId?: number;
   private separatorId?: number;
-  _oldestPost?: ISortableModel<Post>;
+  _oldestPost?: ISortableModel;
 
   @observable
   private _hasNewMessagesSeparator = false;
@@ -40,7 +35,6 @@ class NewMessageSeparatorHandler extends Assembler {
 
   constructor() {
     super();
-    this._userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 
   onAdd: AssemblerAddFunc = (args: AssemblerAddFuncArgs) => {
@@ -91,12 +85,12 @@ class NewMessageSeparatorHandler extends Assembler {
     );
     let items = streamItemList;
     if (firstUnreadPost) {
-      const separatorId = firstUnreadPost.data!.created_at - 1;
+      const separatorId = firstUnreadPost.sortValue - 1;
       this._setSeparator(firstUnreadPost.id, separatorId);
       items = items.concat({
         id: separatorId,
         type: StreamItemType.NEW_MSG_SEPARATOR,
-        timeStart: firstUnreadPost.data!.created_at - 1,
+        timeStart: firstUnreadPost.sortValue - 1,
       });
       return { ...args, streamItemList: items };
     }
@@ -137,19 +131,12 @@ class NewMessageSeparatorHandler extends Assembler {
     this._disabled = false;
   }
 
-  private _findNextOthersPost(
-    allPosts: ISortableModel<Post>[],
-    postId: number,
-  ) {
+  private _findNextOthersPost(allPosts: ISortableModel[], postId: number) {
     const len = allPosts.length;
     let targetPost;
     for (let i = 0; i < len; i++) {
       const post = allPosts[i];
-      if (
-        post.id > postId &&
-        post.data &&
-        post.data.creator_id !== this._userId
-      ) {
+      if (post.id > postId) {
         targetPost = post;
         break;
       }

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { Component, ReactElement } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import {
@@ -13,28 +13,40 @@ import {
   VISUAL_MODE,
 } from 'jui/foundation/Layout/Responsive';
 import { ViewerContentViewProps } from './types';
+type ResponsiveProps = {
+  content: ReactElement;
+};
 
-const LeftResponsive = withResponsive(props => props.children, {
-  minWidth: 480,
-});
-
-const RightResponsive = withResponsive(() => <div>commitBlock</div>, {
-  visualMode: VISUAL_MODE.BOTH,
-  enable: {
-    left: true,
+const LeftResponsive = withResponsive(
+  (props: ResponsiveProps) => {
+    return React.cloneElement(props.content);
   },
-});
+  {
+    minWidth: 480,
+  },
+);
+
+const RightResponsive = withResponsive(
+  (props: ResponsiveProps) => {
+    return React.cloneElement(props.content);
+  },
+  {
+    visualMode: VISUAL_MODE.BOTH,
+    enable: {
+      left: true,
+    },
+  },
+);
 
 @observer
 class ViewerContentViewComponent extends Component<
   WithNamespaces & ViewerContentViewProps
 > {
   render() {
-    const { containComponent } = this.props;
     return (
       <JuiResponsiveLayout>
-        <LeftResponsive>{containComponent}</LeftResponsive>
-        <RightResponsive />
+        <LeftResponsive content={this.props.left} />
+        <RightResponsive content={this.props.right} />
       </JuiResponsiveLayout>
     );
   }

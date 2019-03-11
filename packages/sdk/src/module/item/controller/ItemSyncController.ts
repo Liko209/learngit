@@ -83,7 +83,7 @@ class ItemSyncController {
       [GroupItemKeyMap[typeId]]: Date.now(),
     };
 
-    await groupConfigService.updateGroupConfigPartialData(partialData);
+    await groupConfigService.saveAndDoNotify(partialData);
   }
 }
 

@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
+import portalManager from '@/common/PortalManager';
 import { CallViewProps, CallProps } from './types';
 
 type Props = WithNamespaces & CallViewProps & CallProps;
@@ -15,8 +16,9 @@ type Props = WithNamespaces & CallViewProps & CallProps;
 @observer
 class CallViewComponent extends Component<Props> {
   handleClick = () => {
-    const { makeCall } = this.props;
-    makeCall();
+    const { directCall } = this.props;
+    portalManager.dismissLast();
+    directCall();
   }
 
   render() {

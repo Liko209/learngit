@@ -57,7 +57,7 @@ export class LogUploader implements ILogUploader {
       id = AccountGlobalConfig.getCurrentUserId();
       email = await accountService.getUserEmail();
     } catch (error) {
-      mainLogger.error(error);
+      mainLogger.warn(error);
     }
     const userId = id ? id.toString() : '';
     const clientId = accountService.getClientId();

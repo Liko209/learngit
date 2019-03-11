@@ -17,7 +17,7 @@ test(formalName('Jump to post position when click button or clickable area of po
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();

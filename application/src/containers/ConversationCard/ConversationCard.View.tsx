@@ -112,7 +112,9 @@ export class ConversationCard extends React.Component<
           notification={showActivityStatus && activity}
         >
           {showProgressActions && <ProgressActions id={id} />}
-          {!showProgressActions && isHover && <Actions id={id} />}
+          {!showProgressActions && isHover && (
+            <Actions postId={id} groupId={post.groupId} />
+          )}
         </JuiConversationCardHeader>
         <JuiConversationCardBody data-name="body">
           {!hideText && !isEditMode && <TextMessage id={id} />}

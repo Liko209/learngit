@@ -14,7 +14,7 @@ import {
   JuiVirtualCellWrapper,
   JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
-import { MemberListViewProps } from './types';
+import { MemberListProps, MemberListViewProps } from './types';
 import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
@@ -22,7 +22,10 @@ const ITEM_HEIGHT = 48;
 const MAX_ITEM_NUMBER = 8;
 
 @observer
-class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
+class MemberList
+  extends React.Component<
+    WithNamespaces & MemberListProps & MemberListViewProps
+  >
   implements IVirtualListDataSource<number, number> {
   componentWillUnmount() {
     const globalStore = storeManager.getGlobalStore();
@@ -30,12 +33,12 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
   }
 
   get(index: number) {
-    return this.props.memberIds[index];
+    return this.props.filteredMemberIds[index];
   }
 
   size() {
-    const { memberIds } = this.props;
-    return memberIds.length;
+    const { filteredMemberIds } = this.props;
+    return filteredMemberIds.length;
   }
 
   rowRenderer = ({ style, item: memberId }: JuiVirtualCellProps<number>) => {
@@ -52,8 +55,8 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
   }
 
   render() {
-    const { memberIds } = this.props;
-    const memberIdsLength = memberIds.length;
+    const { sortedAllMemberIds } = this.props;
+    const memberIdsLength = sortedAllMemberIds.length;
     const dialogHeight =
       memberIdsLength >= MAX_ITEM_NUMBER
         ? MAX_ITEM_NUMBER * ITEM_HEIGHT
@@ -61,8 +64,11 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
         {(width: number = 0, height: number = dialogHeight) => {
-          const virtualListHeight =
+          let virtualListHeight =
             memberIdsLength >= MAX_ITEM_NUMBER ? height : dialogHeight;
+          if (virtualListHeight === 0) {
+            virtualListHeight = dialogHeight;
+          }
           return (
             <JuiProfileDialogContentMemberList>
               <JuiVirtualList

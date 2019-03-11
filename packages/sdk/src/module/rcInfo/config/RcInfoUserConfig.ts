@@ -43,14 +43,6 @@ class RcInfoUserConfig extends UserConfig {
     return this.get(RCINFO_KEYS.ROLE_PERMISSION);
   }
 
-  setPhoneData(info: any) {
-    this.put(RCINFO_KEYS.PHONE_DATA, info);
-  }
-
-  getPhoneData() {
-    return this.get(RCINFO_KEYS.PHONE_DATA);
-  }
-
   setSpecialNumberRule(info: any) {
     this.put(RCINFO_KEYS.SPECIAL_NUMBER_RULE, info);
   }

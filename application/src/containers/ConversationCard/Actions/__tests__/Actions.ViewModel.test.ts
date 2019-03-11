@@ -9,11 +9,12 @@ import { ActionsViewModel } from '../Actions.ViewModel';
 let actionsViewModel: ActionsViewModel;
 
 beforeAll(() => {
-  actionsViewModel = new ActionsViewModel({ id: 1 });
+  actionsViewModel = new ActionsViewModel({ postId: 1, groupId: 2 });
 });
 
 describe('ActionsViewModel', () => {
   it('lifecycle method', () => {
-    expect(actionsViewModel.id).toBe(1);
+    expect(actionsViewModel.postId).toBe(1);
+    expect(actionsViewModel.groupId).toBe(2);
   });
 });

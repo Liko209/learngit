@@ -4,10 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ViewerViewProps } from '../types';
+import { ViewerViewModelProps } from '../types';
+import ItemModel from '@/store/models/Item';
+import PersonModel from '@/store/models/Person';
 
 type ViewerTitleProps = { itemId: number };
 
-type ViewerTitleViewProps = ViewerViewProps;
+type ViewerTitleViewModelProps = ViewerViewModelProps;
 
-export { ViewerTitleProps, ViewerTitleViewProps };
+type ViewerTitleViewProps = ViewerViewModelProps & {
+  item: ItemModel;
+  person: PersonModel;
+};
+
+export { ViewerTitleProps, ViewerTitleViewProps, ViewerTitleViewModelProps };

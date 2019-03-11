@@ -101,9 +101,9 @@ describe('login', () => {
         {
           authFree: true,
           data: {
+            access_token: 'access_token',
             grant_type: 'refresh_token',
             refresh_token: 'refresh_token',
-            client_id: 'rc_id',
           },
           method: 'post',
           via: NETWORK_VIA.HTTP,

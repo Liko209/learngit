@@ -20,21 +20,10 @@ import {
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
-type State = {
-  checked: boolean;
-};
-@observer
-class MenuViewComponent extends Component<Props, State> {
-  state = {
-    checked: false,
-  };
 
-  constructor(props: Props) {
-    super(props);
-    this._handleToggleFavorite = this._handleToggleFavorite.bind(this);
-    this._handleCloseConversation = this._handleCloseConversation.bind(this);
-    this._checkboxChange = this._checkboxChange.bind(this);
-  }
+@observer
+class MenuViewComponent extends Component<Props> {
+  checked: boolean = false;
 
   renderCloseMenuItem() {
     const { t, closable } = this.props;
@@ -49,7 +38,45 @@ class MenuViewComponent extends Component<Props, State> {
     );
   }
 
-  private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
+  private _getKeyReadOrUnread = () => {
+    const { isUnread } = this.props;
+    return isUnread ? 'markAsRead' : 'markAsUnread';
+  }
+
+  private _renderReadOrUnreadMenuItem = () => {
+    const { t, disabledReadOrUnread } = this.props;
+    return (
+      <JuiMenuItem
+        data-test-automation-id="readOrUnreadConversation"
+        onClick={this._handleReadOrUnreadConversation}
+        disabled={disabledReadOrUnread}
+      >
+        {t(`people.team.${this._getKeyReadOrUnread()}`)}
+      </JuiMenuItem>
+    );
+  }
+
+  private _handleReadOrUnreadConversation = async (
+    event: MouseEvent<HTMLElement>,
+  ) => {
+    const { onClose, toggleRead } = this.props;
+    try {
+      event.stopPropagation();
+      onClose(event);
+      await toggleRead();
+    } catch {
+      const message = `people.prompt.${this._getKeyReadOrUnread()}`;
+      Notification.flashToast({
+        message,
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+    }
+  }
+
+  private _handleToggleFavorite = async (event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     const { isFavorite } = this.props;
     this.props.onClose(event);
@@ -70,22 +97,20 @@ class MenuViewComponent extends Component<Props, State> {
     }
   }
 
-  private _checkboxChange(event: React.ChangeEvent<{}>, checked: boolean) {
-    this.setState({
-      checked,
-    });
+  private _checkboxChange = (
+    event: React.ChangeEvent<{}>,
+    checked: boolean,
+  ) => {
+    this.checked = checked;
   }
 
-  private _handleCloseConversation(event: MouseEvent<HTMLElement>) {
+  private _handleCloseConversation = (event: MouseEvent<HTMLElement>) => {
     const { t } = this.props;
     event.stopPropagation();
     this.props.onClose(event);
     if (this.props.shouldSkipCloseConfirmation) {
       this._closeConversationWithoutConfirmDialog();
     } else {
-      this.setState({
-        checked: false,
-      });
       Dialog.alert({
         title: t('people.prompt.closeConfirmDialogHeader'),
         content: (
@@ -95,7 +120,7 @@ class MenuViewComponent extends Component<Props, State> {
             </JuiTypography>
             <JuiCheckboxLabel
               label={t('people.prompt.closeConfirmDialogDontAskMeAgain')}
-              checked={false}
+              checked={this.checked}
               handleChange={this._checkboxChange}
             />
           </>
@@ -110,8 +135,7 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private async _closeConversationWithConfirm() {
-    const { checked } = this.state;
-    this._closeConversation(checked);
+    this._closeConversation(this.checked);
   }
 
   private async _closeConversationWithoutConfirmDialog() {
@@ -154,6 +178,7 @@ class MenuViewComponent extends Component<Props, State> {
         open={!!anchorEl}
         onClose={onClose}
       >
+        {this._renderReadOrUnreadMenuItem()}
         <JuiMenuItem
           data-test-automation-id="favToggler"
           onClick={this._handleToggleFavorite}

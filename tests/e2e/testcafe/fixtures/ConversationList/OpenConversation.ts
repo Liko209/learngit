@@ -76,7 +76,7 @@ test(formalName('Should display in the top when open a closed conversation from 
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
 
   const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
 
@@ -111,11 +111,12 @@ test(formalName('Should display in the top when open a closed conversation from 
     owner: loginUser,
     members: [loginUser, users[3]]
   }
-  let postId;
+
   await h(t).withLog(`Given I have directMessage conversation A: "${otherUserName}" and other directMessage conversations`, async () => {
     await h(t).scenarioHelper.createTeamsOrChats([topChat, chat1, chat2, chat3])
   })
 
+  let postId;
   await h(t).withLog(`And conversation A: "${otherUserName}" with mention and bookmark post`, async () => {
     postId = await h(t).platform(otherUser).sentAndGetTextPostId(
       `${uuid()}, ![:Person](${loginUser.rcId})`,

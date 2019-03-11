@@ -9,7 +9,7 @@ type CallProps = {
 };
 
 type CallViewProps = {
-  makeCall: () => void;
+  directCall: () => void;
 };
 
 export { CallProps, CallViewProps };

@@ -16,8 +16,10 @@ import {
 } from 'jui/pattern/RightShelf';
 import { JuiTabs, JuiTab } from 'jui/components/Tabs';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { ItemList } from './ItemList';
+import { ItemList, RIGHT_RAIL_ITEM_TYPE } from './ItemList';
 import { TAB_CONFIG, TabConfig } from './ItemList/config';
+
+import { PinnedList } from './PinnedList';
 
 type Props = {
   id: number;
@@ -84,11 +86,32 @@ class RightRailComponent extends React.Component<Props> {
     this.setState({ tabIndex: index });
   }
 
+  private _renderListView = (
+    type: RIGHT_RAIL_ITEM_TYPE,
+    id: number,
+    active: boolean,
+    width: number,
+    height: number,
+  ) => {
+    if (type === RIGHT_RAIL_ITEM_TYPE.PIN_POSTS) {
+      return <PinnedList groupId={id} width={width} height={height} />;
+    }
+    return (
+      <ItemList
+        type={type}
+        groupId={id}
+        active={active}
+        width={width}
+        height={height}
+      />
+    );
+  }
+
   private _renderTabs = () => {
     const { t, id } = this.props;
     const { tabIndex } = this.state;
     return (
-      <ReactResizeDetector handleHeight={true} handleWidth={true}>
+      <ReactResizeDetector handleWidth={true} handleHeight={true}>
         {(w: number, h: number) => {
           const width =
             Number.isNaN(w) || typeof w === 'undefined' ? MIN_TAB_WIDTH : w;
@@ -105,17 +128,17 @@ class RightRailComponent extends React.Component<Props> {
               {TAB_CONFIG.map(
                 ({ title, type, automationID }: TabConfig, index: number) => (
                   <JuiTab
-                    key={`${id}-${index}`}
+                    key={index}
                     title={t(title)}
                     automationId={`right-shelf-${automationID}`}
                   >
-                    <ItemList
-                      type={type}
-                      groupId={id}
-                      width={width}
-                      height={height - HEIGHT_FIX}
-                      active={tabIndex === index}
-                    />
+                    {this._renderListView(
+                      type,
+                      id,
+                      tabIndex === index,
+                      width,
+                      height - HEIGHT_FIX,
+                    )}
                   </JuiTab>
                 ),
               )}

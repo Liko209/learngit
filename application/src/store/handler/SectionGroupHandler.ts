@@ -15,7 +15,7 @@ import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
-import { GroupState } from 'sdk/models';
+import { GroupState } from 'sdk/module/state/entity';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
@@ -30,7 +30,7 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
 import { ProfileService } from 'sdk/module/profile';
-import SequenceProcessorHandler from 'sdk/framework/processor/SequenceProcessorHandler';
+import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
 import PrefetchPostProcessor from './PrefetchPostProcessor';
 import { TDelta } from '../base/fetch/types';
 import postCacheController from '@/containers/ConversationPage/Stream/cache/PostCacheController';
@@ -360,7 +360,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       dataProvider,
       config,
     );
-    this._handlersMap[sectionType].setDataChangeCallback(
+    this._handlersMap[sectionType].addDataChangeCallback(
       this._handleGroupChanged,
     );
     return this.fetchGroups(sectionType, QUERY_DIRECTION.NEWER);

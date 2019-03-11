@@ -36,10 +36,6 @@ class AttachmentManagerViewComponent extends Component<
     return null;
   }
 
-  componentWillMount() {
-    this.props.reloadFiles();
-  }
-
   componentWillUnmount() {
     this.props.cleanFiles();
   }

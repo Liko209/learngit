@@ -7,11 +7,11 @@
 import { buildContainer } from '@/base';
 import { ViewerContentView } from './Content.View';
 import { ViewerContentViewModel } from './Content.ViewModel';
-import { ViewerContentProps } from './types';
+import { ViewerContentViewProps } from './types';
 
-const ViewerContent = buildContainer<ViewerContentProps>({
+const ViewerContent = buildContainer<ViewerContentViewProps>({
   View: ViewerContentView,
   ViewModel: ViewerContentViewModel,
 });
 
-export { ViewerContent, ViewerContentProps };
+export { ViewerContent, ViewerContentViewProps };
