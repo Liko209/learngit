@@ -207,6 +207,11 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     return progress.progressStatus;
   }
 
+  @computed
+  get groupId() {
+    return this.post && this.post.groupId;
+  }
+
   removeFile = async (id: number) => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {

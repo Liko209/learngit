@@ -5,6 +5,7 @@
  */
 
 import FileItemModel from '@/store/models/FileItem';
+import _ from 'lodash';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 
 function getThumbnailURL(
@@ -19,10 +20,59 @@ function getThumbnailURL(
     const key = `${version.stored_file_id}size=${width}x${height}`;
     const { thumbs } = version;
     if (thumbs) {
-      return thumbs[key];
+      return <string>thumbs[key];
     }
   }
   return '';
 }
 
-export { getThumbnailURL };
+function getMaxThumbnailURLInfo(item: FileItemModel) {
+  if (item.thumbs && item.storeFileId) {
+    const urlKeys = Object.keys(item.thumbs).filter((key: string) =>
+      key.startsWith(`${item.storeFileId}`),
+    );
+    // {storeFileId}size={width}x{height}
+    const maxInfo = {
+      urlKey: '',
+      width: 0,
+      height: 0,
+    };
+    const getWidthKey = (width: number, height: number) =>
+      `width-${item.storeFileId}size=${width}x${height}`;
+    const getHeightKey = (width: number, height: number) =>
+      `height-${item.storeFileId}size=${width}x${height}`;
+    const toNumber = (value: number | string) => {
+      if (_.isNumber(value)) {
+        return value;
+      }
+      return Number(value);
+    };
+    urlKeys.forEach((urlKey: string) => {
+      const [width, height] = urlKey
+        .split('=')[1]
+        .split('x')
+        .map(Number);
+      // width-{storeFileId}size={width}x{height}
+      // height-{storeFileId}size={width}x{height}
+      const realWidth = toNumber(item.thumbs![getWidthKey(width, height)]);
+      const realHeight = toNumber(item.thumbs![getHeightKey(width, height)]);
+      if (maxInfo.width * maxInfo.height < realWidth * realHeight) {
+        maxInfo.urlKey = urlKey;
+        maxInfo.height = realHeight;
+        maxInfo.width = realWidth;
+      }
+    });
+    return {
+      url: item.thumbs[maxInfo.urlKey],
+      width: maxInfo.width,
+      height: maxInfo.height,
+    };
+  }
+  return {
+    url: '',
+    width: 0,
+    height: 0,
+  };
+}
+
+export { getThumbnailURL, getMaxThumbnailURLInfo };

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import FileItemModel from '../../store/models/FileItem';
-import { getThumbnailURL } from '../getThumbnailURL';
+import { getThumbnailURL, getMaxThumbnailURLInfo } from '../getThumbnailURL';
 
 describe('getThumbnailURL', () => {
   beforeEach(() => {
@@ -44,5 +44,43 @@ describe('getThumbnailURL', () => {
       versions: [version0, version1],
     } as FileItemModel;
     expect(getThumbnailURL(model)).toBe('');
+  });
+});
+
+describe('getMaxThumbnailURLInfo', () => {
+  it('should get max thumbnail', () => {
+    const model = {
+      storeFileId: 1208836108,
+      thumbs: {
+        '1208836108size=1000x200': 'url1',
+        '1208836108size=360x272': 'url2',
+        'width-1208836108size=1000x200': 265,
+        'height-1208836108size=1000x200': '200',
+        'width-1208836108size=360x272': 360,
+        'height-1208836108size=360x272': '272',
+      },
+    };
+    const info = getMaxThumbnailURLInfo(model as FileItemModel);
+    expect(info.url).toEqual('url2');
+    expect(info.width).toEqual(360);
+    expect(info.height).toEqual(272);
+  });
+  it('should get empty url when thumbnail not exist', () => {
+    const model = {
+      storeFileId: 1208836108,
+    };
+    const info = getMaxThumbnailURLInfo(model as FileItemModel);
+    expect(info.url).toEqual('');
+    expect(info.width).toEqual(0);
+    expect(info.height).toEqual(0);
+  });
+  it('should get empty url when storeFileId not exist', () => {
+    const model = {
+      thumbs: {},
+    };
+    const info = getMaxThumbnailURLInfo(model as FileItemModel);
+    expect(info.url).toEqual('');
+    expect(info.width).toEqual(0);
+    expect(info.height).toEqual(0);
   });
 });

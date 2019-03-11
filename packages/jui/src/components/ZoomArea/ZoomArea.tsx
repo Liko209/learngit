@@ -16,6 +16,7 @@ type JuiZoomProps = {
   transform: Transform;
   onTransformChange: (newTransform: Transform) => void;
   children: (withZoomProps: JuiWithZoomProps) => JSX.Element;
+  className?: string;
   viewRef?: RefObject<HTMLDivElement>;
   zoomOptions?: Partial<JuiZoomOptions>;
   onZoomRectChange?: (newZoomRect: ElementRect) => void;
@@ -168,7 +169,7 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
   }
 
   render() {
-    const { children, transform, onZoomRectChange } = this.props;
+    const { children, transform, onZoomRectChange, className } = this.props;
     const zoomProps: JuiWithZoomProps = {
       transform,
       zoomIn: this.zoomIn,
@@ -180,7 +181,7 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
       }px, ${transform.translateY}px)`,
     };
     return (
-      <Container ref={this.getViewRef()}>
+      <Container ref={this.getViewRef()} className={className}>
         <div style={divStyle} onWheel={this.onWheel}>
           {children(zoomProps)}
         </div>
