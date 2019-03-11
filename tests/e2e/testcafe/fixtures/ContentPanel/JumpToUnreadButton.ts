@@ -17,12 +17,12 @@ fixture('ContentPanel/JumpToUnreadButton')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-function getLineFeedString(lineNumber: number, preText: string = '', endText: string = '') {
+function getMultilineString(lineNumber: number, prefixText: string = '', suffixText: string = '') {
   let code = '\n'
   for (let i = 1; i < lineNumber + 1; i++) {
     code += `line${i}\n`;
   }
-  return preText + code + endText;
+  return prefixText + code + suffixText;
 }
 
 test(formalName('Unread button will disappear when resizing window then full screen can show all new messages', ['JPT-208', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
@@ -47,7 +47,7 @@ test(formalName('Unread button will disappear when resizing window then full scr
   });
 
   await h(t).withLog('And ensured unread message in the conversation', async () => {
-    const msgs = _.range(5)
+    const msgs = _.range(5);
     for (let msg of msgs) {
       await h(t).scenarioHelper.sentAndGetTextPostId(`${msg} ${uuid()}`, team, otherUser);
     }
@@ -155,9 +155,9 @@ test(formalName('The count of the unread button (up) should display correct', ['
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];
-  const umiCount = 3;
 
-  const msgList = _.range(umiCount).map(i => `msg-${i}-${getLineFeedString(10)}-${uuid()}`);
+  const umiCount = 3;
+  const msgList = _.range(umiCount).map(i => getMultilineString(10, `No. ${i}`, uuid()));
 
   let team = <IGroup>{
     type: "Team",
@@ -255,31 +255,29 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];
-  await h(t).platform(loginUser).init();
-  await h(t).platform(otherUser).init();
-  let conversationA;
-  let conversationB;
 
-  await h(t).withLog('Given I have an extension with two conversation', async () => {
-    conversationA = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
+  let teamA = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
 
-    conversationB = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
+  let teamB = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog('Given I have an extension with two conversation A and B', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([teamA, teamB]);
   });
 
-  await h(t).withLog('And another user send 20 message in conversationA', async () => {
-    const msgs = _.range(20)
-    for (let msg of msgs) {
-      await h(t).platform(otherUser).createPost({ text: `${msg} ${uuid()}` }, conversationA)
+  await h(t).withLog('And conversationA has more than 1 screen unread messages', async () => {
+    const msgList = _.range(3).map(i => getMultilineString(10, `No. ${i}`, uuid()));
+    for (const msg of msgList) {
+      await h(t).scenarioHelper.sentAndGetTextPostId(msg, teamA, otherUser);
     }
   })
 
@@ -291,9 +289,9 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
   });
 
   const teamsSection = app.homePage.messageTab.teamsSection;
-  await h(t).withLog('And I enter conversationA', async () => {
+  await h(t).withLog(`And I enter conversationA named ${teamA.name}`, async () => {
     await teamsSection.expand();
-    await teamsSection.conversationEntryById(conversationA).enter();
+    await teamsSection.conversationEntryById(teamA.glipId).enter();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -302,8 +300,8 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
   });
 
   await h(t).withLog('When I navigate to conversationB then back to conversationA', async () => {
-    await teamsSection.conversationEntryById(conversationB).enter();
-    await teamsSection.conversationEntryById(conversationA).enter();
+    await teamsSection.conversationEntryById(teamB.glipId).enter();
+    await teamsSection.conversationEntryById(teamA.glipId).enter();
   });
 
   await h(t).withLog('Then I should not see unread button', async () => {
@@ -316,25 +314,24 @@ test(formalName(`The unread button (up) shouldn't dismiss when opening one conve
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];
-  await h(t).platform(loginUser).init();
-  await h(t).platform(otherUser).init();
 
-  let conversation;
-  await h(t).withLog('Given I have an extension with one conversation', async () => {
-    conversation = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  await h(t).withLog(`Given I have an extension with one conversation named ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog('And another user send 15 message in the conversation', async () => {
-    const msgs = _.range(15)
-    for (let msg of msgs) {
-      await h(t).platform(otherUser).createPost({ text: `${msg} ${uuid()}` }, conversation);
+  await h(t).withLog('And conversationA has more than 1 screen unread messages', async () => {
+    const msgList = _.range(3).map(i => getMultilineString(10, `No. ${i}`, uuid()));
+    for (const msg of msgList) {
+      await h(t).scenarioHelper.sentAndGetTextPostId(msg, team, otherUser);
     }
-  });
+  })
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -344,7 +341,7 @@ test(formalName(`The unread button (up) shouldn't dismiss when opening one conve
   await h(t).withLog('And I enter the conversation', async () => {
     const teamsSection = app.homePage.messageTab.teamsSection;
     await teamsSection.expand();
-    await teamsSection.conversationEntryById(conversation).enter();
+    await teamsSection.conversationEntryById(team.glipId).enter();
     await teamsSection.ensureLoaded();
   });
 
