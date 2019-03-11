@@ -12,7 +12,7 @@ import { computed, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { ENTITY_NAME } from '@/store';
 
-import { GroupState } from 'sdk/models';
+import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
 import postCacheController from './cache/PostCacheController';
