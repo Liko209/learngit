@@ -27,17 +27,27 @@ const itemFactory = {
   },
 
   buildImageItem(id: number, randomSize = false) {
-    const height = randomSize ? Math.floor(Math.random() * 10) * 10 : 53;
+    const height = randomSize ? Math.floor(Math.random() * 10) * 10 : 56;
     return {
       ...itemFactory.buildItem(id),
       imageUrl: `https://via.placeholder.com/500x${height}`,
     };
   },
 
-  buildItems(startId: number, count: number) {
+  buildItems(startId: number, count: number, type: 'item' | 'image' = 'image') {
     const items: DemoItemModel[] = [];
     for (let i = startId; i < startId + count; i++) {
-      items.push(itemFactory.buildImageItem(i, true));
+      let item: DemoItemModel;
+      switch (type) {
+        default:
+        case 'item':
+          item = itemFactory.buildItem(i);
+          break;
+        case 'image':
+          item = itemFactory.buildImageItem(i, true);
+          break;
+      }
+      items.push(item);
     }
 
     return items;

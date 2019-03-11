@@ -21,17 +21,15 @@ class RowManager {
   }
 
   getEstimateRowHeight() {
-    let result: number;
-    if (this._heightMap.size > 0) {
-      let totalHeight = 0;
-      for (const [, height] of this._heightMap) {
-        totalHeight += height;
-      }
-      result = totalHeight / this._heightMap.size;
-    } else {
-      result = this._minRowHeight;
+    return this._minRowHeight;
+  }
+
+  getAverageHeight() {
+    let totalHeight = 0;
+    for (const [, height] of this._heightMap) {
+      totalHeight += height;
     }
-    return result;
+    return Math.floor(totalHeight / this._heightMap.size);
   }
 
   hasRowHeight(index: number) {

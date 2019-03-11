@@ -96,10 +96,10 @@ storiesOf('Components/VirtualizedList', module)
       const ref = useRef<JuiVirtualizedListHandles>(null);
       const {
         items,
-        handlePrependClick,
         handleAppendClick,
         handleAddCrazyClick,
         handleRemoveClick,
+        prependItems,
         visibleRange,
         setVisibleRange,
         renderedRange,
@@ -123,7 +123,7 @@ storiesOf('Components/VirtualizedList', module)
 
       return (
         <div>
-          <button onClick={handlePrependClick}>Prepend Item</button>
+          <button onClick={() => prependItems(10)}>Prepend Item</button>
           <button onClick={handleAppendClick}>Append Item</button>
           <button onClick={handleAddCrazyClick}>Add Crazy Item</button>
           <button onClick={handleRemoveClick}>Remove Item</button>
@@ -166,7 +166,8 @@ storiesOf('Components/VirtualizedList', module)
       const {
         items,
         prependItem,
-        appendItem,
+        prependItems,
+        appendItems,
         visibleRange,
         setVisibleRange,
         renderedRange,
@@ -175,10 +176,9 @@ storiesOf('Components/VirtualizedList', module)
         initialDataCount: 0,
       });
 
-      const children = useMemo(
-        () => items.map(item => <DemoItem key={item.id} item={item} />),
-        [items],
-      );
+      const children = items.map(item => (
+        <DemoItem key={item.id} item={item} />
+      ));
 
       const startId = 10000;
       const pageSize = 10;
@@ -207,13 +207,9 @@ storiesOf('Components/VirtualizedList', module)
       const loadMore = async (direction: 'up' | 'down') => {
         await sleep(moreLoadTime);
         if (direction === 'up') {
-          prependItem(
-            ...itemFactory.buildItems(items[0].id - pageSize, pageSize),
-          );
+          prependItems(pageSize);
         } else {
-          appendItem(
-            ...itemFactory.buildItems(items[items.length - 1].id + 1, pageSize),
-          );
+          appendItems(pageSize);
         }
       };
 

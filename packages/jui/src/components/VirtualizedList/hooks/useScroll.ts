@@ -3,7 +3,7 @@
  * @Date: 2019-02-28 16:35:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { useState } from 'react';
+import { useRef } from 'react';
 
 type ScrollPosition = {
   index: number;
@@ -16,19 +16,20 @@ type PartialScrollPosition = {
 };
 
 const useScroll = ({ index, offset = 0 }: PartialScrollPosition) => {
-  const [scrollPosition, _setScrollPosition] = useState<ScrollPosition>({
+  const scrollPositionRef = useRef({
     index,
     offset,
   });
+  const scrollPosition = scrollPositionRef.current;
 
   const setScrollPosition = ({ index, offset = 0 }: PartialScrollPosition) => {
-    _setScrollPosition({ index, offset });
+    scrollPositionRef.current.index = index;
+    scrollPositionRef.current.offset = offset;
   };
 
   return {
     scrollPosition,
     setScrollPosition,
-    scrollTo,
   };
 };
 

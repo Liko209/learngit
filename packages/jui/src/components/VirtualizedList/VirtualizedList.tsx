@@ -48,21 +48,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
-  const createRenderRange = ({
-    startIndex,
-    size = renderedRangeSize,
-  }: {
-    startIndex: number;
-    size?: number;
-  }) => {
-    return createRange({
-      startIndex,
-      size,
-      min: 0,
-    });
-  };
-
-  const getVisibleRange = () => {
+  const computeVisibleRange = () => {
     let result: IndexRange;
     if (ref.current) {
       const { scrollTop } = ref.current;
@@ -78,6 +64,26 @@ const JuiVirtualizedList: RefForwardingComponent<
     return result;
   };
 
+  const computeRenderedRange = (
+    visibleRange: IndexRange,
+    overscanDirection: 'up' | 'down',
+  ) => {
+    const renderedRange: IndexRange = { ...visibleRange };
+
+    if ('up' === overscanDirection) {
+      renderedRange.startIndex = Math.max(
+        visibleRange.startIndex - overscan,
+        0,
+      );
+    }
+
+    if ('down' === overscanDirection) {
+      renderedRange.stopIndex = visibleRange.stopIndex + overscan;
+    }
+
+    return renderedRange;
+  };
+
   const fixIndexWhenChildrenChanged = (
     renderedRange: IndexRange,
     prevChildrenCount: number | null,
@@ -90,6 +96,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     } = renderedRange;
     let startIndex: number = unfixedStartIndex;
     let stopIndex: number = unfixedStopIndex;
+
     if (
       prevChildrenCount !== null &&
       prevStartIndex !== null &&
@@ -132,7 +139,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   useImperativeHandle(forwardRef, () => ({
     scrollToIndex: (index: number) => {
-      setRenderedRange(createRenderRange({ startIndex: index - 5 }));
+      setRenderedRange(
+        createRange({ startIndex: index - 5, size: renderedRangeSize, min: 0 }),
+      );
       setScrollPosition({ index });
       scrollEffectTriggerRef.current++; // Trigger scroll after next render
     },
@@ -157,12 +166,16 @@ const JuiVirtualizedList: RefForwardingComponent<
     height / rowManager.getEstimateRowHeight(),
   );
   const { range: renderedRange, setRange: setRenderedRange } = useRange(
-    createRenderRange({ startIndex: initialScrollToIndex - 5 }),
+    createRange({
+      startIndex: initialScrollToIndex - 5,
+      size: renderedRangeSize,
+      min: 0,
+    }),
   );
 
   const scrollEffectTriggerRef = useRef(0);
   const prevScrollTopRef = useRef(0);
-  const prevVisibleRange = usePrevious(() => getVisibleRange()) || {
+  const prevVisibleRange = usePrevious(() => computeVisibleRange()) || {
     startIndex: 0,
     stopIndex: 0,
   };
@@ -182,23 +195,6 @@ const JuiVirtualizedList: RefForwardingComponent<
   },              [!!before]);
 
   //
-  // Scroll to last remembered position,
-  // The position was remembered in handleScroll() function
-  //
-  useLayoutEffect(() => {
-    scrollToPosition(scrollPosition);
-  },              [!!before, scrollEffectTriggerRef.current]);
-
-  //
-  // Emit visible range change when component mounted
-  //
-  useLayoutEffect(() => {
-    const visibleRange = getVisibleRange();
-    onVisibleRangeChange(visibleRange);
-    onRenderedRangeChange(visibleRange);
-  },              []);
-
-  //
   // Update height cache and observe dynamic rows
   //
   useLayoutEffect(() => {
@@ -208,10 +204,13 @@ const JuiVirtualizedList: RefForwardingComponent<
       if (diff !== 0 && beforeFirstVisibleRow) {
         scrollToPosition(scrollPosition);
       }
+      return diff;
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
-      const observer = new ResizeObserver(() => handleRowSizeChange(el, i));
+      const observer = new ResizeObserver(() => {
+        handleRowSizeChange(el, i);
+      });
       observer.observe(el);
       return observer;
     };
@@ -224,12 +223,30 @@ const JuiVirtualizedList: RefForwardingComponent<
   },              [keyMapper(startIndex), keyMapper(stopIndex)]);
 
   //
+  // Scroll to last remembered position,
+  // The position was remembered in handleScroll() function
+  //
+  useLayoutEffect(() => {
+    scrollToPosition(scrollPosition);
+  },              [!!before, scrollEffectTriggerRef.current]);
+
+  //
+  // Emit visible range change when component mounted
+  //
+  useLayoutEffect(() => {
+    const visibleRange = computeVisibleRange();
+    onVisibleRangeChange(visibleRange);
+    onRenderedRangeChange(visibleRange);
+  },              []);
+
+  //
   // Scrolling
   //
   const handleScroll = (event: React.UIEvent) => {
     if (ref.current) {
       const scrollTop = ref.current.scrollTop;
-      const visibleRange = getVisibleRange();
+      const prevScrollTop = prevScrollTopRef.current;
+      const visibleRange = computeVisibleRange();
 
       if (rowManager.hasRowHeight(visibleRange.startIndex)) {
         // If we know the real height of this row
@@ -242,25 +259,16 @@ const JuiVirtualizedList: RefForwardingComponent<
       }
 
       // Update rendered range
-      let newRenderedRange: IndexRange;
-      const prevScrollTop = prevScrollTopRef.current;
-      const direction = scrollTop > prevScrollTop ? 'down' : 'up';
-      if ('up' === direction) {
-        newRenderedRange = {
-          startIndex: Math.max(visibleRange.startIndex - overscan, 0),
-          stopIndex: visibleRange.stopIndex,
-        };
-      } else if ('down' === direction) {
-        newRenderedRange = {
-          startIndex: visibleRange.startIndex,
-          stopIndex: visibleRange.stopIndex + overscan,
-        };
-      } else {
-        newRenderedRange = { ...visibleRange };
-      }
+      const newRenderedRange = computeRenderedRange(
+        visibleRange,
+        scrollTop > prevScrollTop ? 'down' : 'up',
+      );
+      setRenderedRange(newRenderedRange);
+
+      // Remember scrollTop to check scroll direction
+      prevScrollTopRef.current = scrollTop;
 
       if (!isRangeEqual(renderedRange, newRenderedRange)) {
-        setRenderedRange(newRenderedRange);
         onRenderedRangeChange(newRenderedRange);
       }
 
@@ -270,9 +278,6 @@ const JuiVirtualizedList: RefForwardingComponent<
 
       // Emit events
       onScroll(event);
-
-      // Remember scrollTop to check scroll direction
-      prevScrollTopRef.current = scrollTop;
     }
   };
 
