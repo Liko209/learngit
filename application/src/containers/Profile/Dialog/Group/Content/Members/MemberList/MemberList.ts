@@ -16,7 +16,6 @@ const MemberList = buildContainer<MemberListProps>({
     return {
       loadingMorePlugin: new LoadingMorePlugin({
         thresholdDown: 300,
-        initialScrollTop: 0,
         stickTo: 'top',
       }),
       loadingPlugin: new LoadingPlugin(),

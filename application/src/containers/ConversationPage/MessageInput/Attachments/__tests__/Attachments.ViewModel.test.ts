@@ -202,7 +202,7 @@ describe('AttachmentsViewModel', () => {
       await vm.uploadFile(info, false);
       expect(vm.items.size).toBe(1);
       expect(itemService.sendItemFile).toBeCalledTimes(1);
-      const exists = await itemService.isFileExists(vm.id, file.name);
+      const exists = await itemService.isFileExists(vm.props.id, file.name);
       expect(exists).toBe(true);
     });
   });
@@ -210,11 +210,11 @@ describe('AttachmentsViewModel', () => {
   describe('cancelUploadFile()', () => {
     it('should cancel uploading file', async () => {
       await vm.autoUploadFiles([file]);
-      let exists = await itemService.isFileExists(vm.id, file.name);
+      let exists = await itemService.isFileExists(vm.props.id, file.name);
       expect(exists).toBe(true);
       expect(vm.files.length).toBe(1);
       expect(vm.items.size).toBe(1);
-      const items = itemService.getUploadItems(vm.id);
+      const items = itemService.getUploadItems(vm.props.id);
       const item = items[0];
       await vm.cancelUploadFile({
         id: item.id,
@@ -223,7 +223,7 @@ describe('AttachmentsViewModel', () => {
       } as ItemInfo);
       expect(itemService.cancelUpload).toBeCalledTimes(1);
 
-      exists = await itemService.isFileExists(vm.id, file.name);
+      exists = await itemService.isFileExists(vm.props.id, file.name);
       expect(exists).toBe(false);
     });
   });

@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/RightRail/PinnedPost.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

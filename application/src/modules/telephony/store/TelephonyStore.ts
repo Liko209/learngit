@@ -5,7 +5,7 @@
  */
 
 import { LifeCycle } from 'ts-javascript-state-machine';
-import { observable } from 'mobx';
+import { observable, computed } from 'mobx';
 import {
   CALL_STATE,
   CALL_WINDOW_STATUS,
@@ -136,6 +136,14 @@ class TelephonyStore {
 
   connected = () => {
     this._callFSM[CALL_TRANSITION_NAMES.HAS_CONNECTED]();
+  }
+
+  @computed
+  get isDetached() {
+    if (this.callWindowState === CALL_WINDOW_STATUS.FLOATING) {
+      return false;
+    }
+    return true;
   }
 }
 

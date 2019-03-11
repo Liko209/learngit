@@ -4,3 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './ZoomGroup';
+export * from './ImageViewer';
+export * from './viewerBackground';

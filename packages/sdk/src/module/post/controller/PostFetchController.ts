@@ -114,6 +114,11 @@ class PostFetchController {
     limit,
     direction,
   }: IPostQuery): Promise<IRawPostResult | null> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_SERVER,
+      logId,
+    );
     const result: IRawPostResult = {
       posts: [],
       items: [],
@@ -135,7 +140,7 @@ class PostFetchController {
       result.items = data.items;
       result.hasMore = result.posts.length === limit;
     }
-
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 
@@ -200,6 +205,11 @@ class PostFetchController {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
+      logId,
+    );
     const result: IPostResult = {
       limit,
       posts: [],
@@ -222,6 +232,7 @@ class PostFetchController {
     result.posts = posts;
     result.items =
       posts.length === 0 ? [] : await itemService.getByPosts(posts);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 

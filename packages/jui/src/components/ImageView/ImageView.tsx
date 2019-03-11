@@ -10,6 +10,7 @@ import { JuiIconography } from '../../foundation/Iconography';
 import styled from '../../foundation/styled-components';
 
 const StyledLoadingPage = styled.div`
+  position: absolute;
   width: 100%;
   height: 100%;
   display: flex;
@@ -22,7 +23,7 @@ type JuiImageProps = React.DetailedHTMLProps<
   React.ImgHTMLAttributes<HTMLImageElement>,
   HTMLImageElement
 > & {
-  viewRef?: RefObject<HTMLImageElement>;
+  imageRef?: RefObject<HTMLImageElement>;
   loadingPlaceHolder?: ComponentType<any>;
   onSizeLoad?: (naturalWidth: number, naturalHeight: number) => void;
 };
@@ -67,7 +68,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   }
 
   getImageRef = (): RefObject<HTMLImageElement> => {
-    return this.props.viewRef || this._imageRef;
+    return this.props.imageRef || this._imageRef;
   }
 
   private _loadingView() {
@@ -90,7 +91,12 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
 
   render() {
     const { loading, error } = this.state;
-    const { onSizeLoad, loadingPlaceHolder, viewRef, ...rest } = this.props;
+    const {
+      onSizeLoad,
+      loadingPlaceHolder,
+      imageRef: viewRef,
+      ...rest
+    } = this.props;
     return (
       <>
         {loading && this._loadingView()}

@@ -39,7 +39,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   constructor(props: AttachmentsProps) {
     super(props);
     this.reaction(
-      () => this.id,
+      () => this.props.id,
       () => {
         this.reloadFiles();
       },
@@ -68,7 +68,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       const { ids, entities } = data.body;
       ids.forEach((looper: number) => {
         const record = this.items.get(looper);
-        if (record && record.item.group_ids.includes(this.id)) {
+        if (record && record.item.group_ids.includes(this.props.id)) {
           this.items.delete(looper);
           const newItem: ItemFile = entities.get(looper);
           this.items.set(newItem.id, {
@@ -78,11 +78,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         }
       });
     }
-  }
-
-  @computed
-  get id() {
-    return this.props.id;
   }
 
   @computed
@@ -108,7 +103,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   reloadFiles = async () => {
     this.cleanFiles();
     const itemService = ItemService.getInstance() as ItemService;
-    const uploadItems = await itemService.initialUploadItemsFromDraft(this.id);
+    const uploadItems = await itemService.initialUploadItemsFromDraft(
+      this.props.id,
+    );
     if (uploadItems && uploadItems.length > 0) {
       uploadItems.forEach((element: ItemFile) => {
         this.items.set(element.id, {
@@ -165,7 +162,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     if (files.length === 0) {
       return true;
     }
-    return itemService.canUploadFiles(this.id, files, true); // TODO: The third parameter should be false for drag and drop files.
+    return itemService.canUploadFiles(this.props.id, files, true); // TODO: The third parameter should be false for drag and drop files.
   }
 
   private _uploadFiles = async (files: SelectFile[], isUpdate: boolean) => {
@@ -264,7 +261,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       });
       await postService.sendPost({
         text: '',
-        groupId: this.id,
+        groupId: this.props.id,
         itemIds: ids,
       });
       this.items.clear();
@@ -279,7 +276,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     });
     groupConfigService.updateDraft({
       attachment_item_ids: draftItemsIds,
-      id: this.id,
+      id: this.props.id,
     });
   }
 

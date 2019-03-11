@@ -4,4 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+export * from './Dialer';
 export * from './Call';

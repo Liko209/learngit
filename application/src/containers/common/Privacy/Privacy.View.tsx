@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { PrivacyViewProps } from './types';
+import { PrivacyViewProps, PrivacyProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
@@ -15,7 +15,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
-type Props = PrivacyViewProps & WithNamespaces;
+type Props = PrivacyViewProps & WithNamespaces & PrivacyProps;
 
 class PrivacyViewComponent extends Component<Props> {
   flashToast = (message: string) => {

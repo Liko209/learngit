@@ -228,6 +228,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       if (shouldScrollToBottom()) {
         return scrollToBottom();
       }
+
       const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
       if (beforeFirstVisibleRow) {
         scrollToPosition(scrollPosition);
@@ -248,7 +249,10 @@ const JuiVirtualizedList: RefForwardingComponent<
     const observers = rowElements.map(observeDynamicRow);
 
     return () => observers.forEach(ro => ro.disconnect());
-  },              [keyMapper(startIndex), keyMapper(stopIndex)]);
+  },              [
+    keyMapper(startIndex),
+    keyMapper(Math.min(stopIndex, childrenCount - 1)),
+  ]);
 
   //
   // Scroll to last remembered position,
@@ -283,17 +287,18 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   const handleScroll = (event: React.UIEvent) => {
     if (ref.current) {
-      const scrollTop = ref.current.scrollTop;
+      const { scrollTop } = ref.current;
       const prevScrollTop = prevScrollTopRef.current;
       const visibleRange = computeVisibleRange();
 
       if (rowManager.hasRowHeight(visibleRange.startIndex)) {
         // If we know the real height of this row
         // Remember current scroll position
+        const offset =
+          scrollTop - rowManager.getRowOffsetTop(visibleRange.startIndex);
         setScrollPosition({
+          offset,
           index: visibleRange.startIndex,
-          offset:
-            scrollTop - rowManager.getRowOffsetTop(visibleRange.startIndex),
         });
       }
 

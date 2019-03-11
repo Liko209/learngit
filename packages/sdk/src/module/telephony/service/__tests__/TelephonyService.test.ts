@@ -6,15 +6,21 @@
 import { TelephonyService } from '../TelephonyService';
 import { TelephonyEngineController } from '../../controller/TelephonyEngineController';
 import { ITelephonyAccountDelegate } from '../ITelephonyAccountDelegate';
-import { TELEPHONY_ACCOUNT_STATE } from '../../types';
+import { TELEPHONY_ACCOUNT_STATE, MAKE_CALL_ERROR_CODE } from '../../types';
+import { GlobalConfigService } from '../../../config';
+import { MakeCallController } from '../../controller/MakeCallController';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
+jest.mock('../../controller/MakeCallController');
+jest.mock('../../../config');
+GlobalConfigService.getInstance = jest.fn();
 
 describe('TelephonyService', () => {
   let telephonyService: TelephonyService;
   let engineController: TelephonyEngineController;
   let accountController;
+  let makeCallController: MakeCallController;
 
   class MockAcc implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: TELEPHONY_ACCOUNT_STATE) {}
@@ -37,8 +43,10 @@ describe('TelephonyService', () => {
     engineController.getAccountController = jest
       .fn()
       .mockReturnValue(accountController);
+    makeCallController = new MakeCallController();
     Object.assign(telephonyService, {
       _telephonyEngineController: engineController,
+      _makeCallController: makeCallController,
     });
   }
 
@@ -54,10 +62,31 @@ describe('TelephonyService', () => {
       expect(engineController.createAccount).toHaveBeenCalledWith(mockAcc);
     });
   });
-  describe('makeCall', () => {
-    it('should call account controller to make call', () => {
-      telephonyService.makeCall('123', null);
+  describe.only('makeCall', () => {
+    it('should call account controller to make call', async () => {
+      jest
+        .spyOn(makeCallController, 'getE164PhoneNumber')
+        .mockReturnValue('123');
+      jest
+        .spyOn(makeCallController, 'tryMakeCall')
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      const res = await telephonyService.makeCall('123', null);
+      expect(makeCallController.getE164PhoneNumber).toHaveBeenCalled();
       expect(accountController.makeCall).toHaveBeenCalledWith('123', null);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
+    });
+
+    it('should not call account controller to make call when getting errors', async () => {
+      jest
+        .spyOn(makeCallController, 'getE164PhoneNumber')
+        .mockReturnValue('123');
+      jest
+        .spyOn(makeCallController, 'tryMakeCall')
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.N11_101);
+      const res = await telephonyService.makeCall('123', null);
+      expect(makeCallController.getE164PhoneNumber).toHaveBeenCalled();
+      expect(accountController.makeCall).not.toHaveBeenCalledWith('123', null);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.N11_101);
     });
   });
   describe('hangUp', () => {

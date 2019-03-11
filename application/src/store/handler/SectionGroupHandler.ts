@@ -15,7 +15,7 @@ import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
-import { GroupState } from 'sdk/models';
+import { GroupState } from 'sdk/module/state/entity';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';

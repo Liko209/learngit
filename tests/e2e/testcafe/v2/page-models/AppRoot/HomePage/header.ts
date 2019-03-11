@@ -190,7 +190,7 @@ class Search extends BaseWebComponent {
 
 
   async quit() {
-    await this.t.pressKey('ESC');
+    await this.t.pressKey('esc');
   }
 
 }

@@ -29,6 +29,7 @@ const Dialog = styled(
 
     const classes = {
       paper: 'paper',
+      root: 'root',
     };
 
     return <MuiDialog classes={classes} {...restProps} />;

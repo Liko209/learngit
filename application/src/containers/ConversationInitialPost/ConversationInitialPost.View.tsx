@@ -20,14 +20,12 @@ import { ConversationInitialPostViewProps } from '@/containers/ConversationIniti
 import image from './img/illustrator.svg';
 import { MiniCard } from '../MiniCard';
 import { Profile, PROFILE_TYPE } from '@/containers/Profile';
+import { observer } from 'mobx-react';
 
+@observer
 class ConversationInitialPost extends React.Component<
   ConversationInitialPostViewProps
 > {
-  constructor(props: ConversationInitialPostViewProps) {
-    super(props);
-  }
-
   showProfile = (event: React.MouseEvent) => {
     const { creator } = this.props;
     const target = event.target as HTMLElement;

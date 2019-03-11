@@ -72,7 +72,7 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
 
   await h(t).withLog('Then the new pinned post shows under tasks tab immediately', async () => {
     await pinnedTab.waitUntilItemsListExist();
-    await pinnedTab.countOnSubTitleShouldBe(1);
+    // await pinnedTab.countOnSubTitleShouldBe(1);
     await pinnedTab.countInListShouldBe(1);
     await pinnedTab.nthItem(0).shouldBePostId(textPostId);
     await pinnedTab.nthItem(0).shouldBeCreator(userName);
@@ -95,7 +95,7 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
   });
 
   await h(t).withLog('Then The new pinned post include the text and attachments show  as an item under tasks tab immediately', async () => {
-    await pinnedTab.countOnSubTitleShouldBe(2);
+    // await pinnedTab.countOnSubTitleShouldBe(2);
     await pinnedTab.countInListShouldBe(2);
     await pinnedTab.nthItem(0).shouldBePostId(toBeCheckedPostId);
     await pinnedTab.nthItem(0).shouldBeCreator(userName);
@@ -155,7 +155,7 @@ test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', '
   const pinnedTab = rightRail.pinnedTab;
   await h(t).withLog('Then the new pinned post shows under pinned tab immediately', async () => {
     await pinnedTab.waitUntilItemsListExist();
-    await pinnedTab.countOnSubTitleShouldBe(1);
+    // await pinnedTab.countOnSubTitleShouldBe(1);
     await pinnedTab.countInListShouldBe(1);
     await pinnedTab.nthItem(0).shouldBePostId(textPostId);
     await pinnedTab.nthItem(0).shouldBeCreator(userName);
@@ -239,7 +239,7 @@ test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 
   const pinnedTab = rightRail.pinnedTab;
   await h(t).withLog('Then the new pinned post shows under pinned tab immediately', async () => {
     await pinnedTab.waitUntilItemsListExist();
-    await pinnedTab.countOnSubTitleShouldBe(1);
+    // await pinnedTab.countOnSubTitleShouldBe(1);
     await pinnedTab.countInListShouldBe(1);
     await pinnedTab.shouldContainPostItem(textPostId);
     await pinnedTab.itemByPostId(textPostId).postTextShouldBe(postText);
@@ -263,7 +263,7 @@ test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 
   });
 
   await h(t).withLog('Then the new pinned post shows under pinned tab immediately', async () => {
-    await pinnedTab.countOnSubTitleShouldBe(2);
+    // await pinnedTab.countOnSubTitleShouldBe(2);
     await pinnedTab.countInListShouldBe(2);
     await pinnedTab.shouldContainPostItem(notePostId);
     await pinnedTab.itemByPostId(notePostId).shouldHasAttachmentsText(noteTitle);
