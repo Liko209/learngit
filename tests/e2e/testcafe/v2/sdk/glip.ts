@@ -210,7 +210,7 @@ export class GlipSdk {
     });
   }
 
-  async removeTeamMembers(groupId: string | number, rcIds: string |string[]) {
+  async removeTeamMembers(groupId: string | number, rcIds: string | string[]) {
     const uri = `api/remove_team_members/${groupId}`;
     const members = [].concat(await this.toPersonId(rcIds))
     const data = {
@@ -221,7 +221,7 @@ export class GlipSdk {
     });
   }
 
-  async addTeamMembers(groupId: string | number, rcIds: string |string[]) {
+  async addTeamMembers(groupId: string | number, rcIds: string | string[]) {
     const uri = `api/add_team_members/${groupId}`;
     const members = [].concat(await this.toPersonId(rcIds))
     const data = {
@@ -418,6 +418,27 @@ export class GlipSdk {
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
+  }
+
+  async resetState(rcId?: string) {
+    const initData = {
+      "model_size": 0,
+      "is_new": true,
+      "tour_complete": true,
+      "deactivated": false,
+      "applied_patches": { "clean_unused_keys": true },
+      "do_kip_bot": true,
+      "_csrf": null,
+      "first_time_users_ensured": true,
+      "desktop_banner_dismissed": true,
+    }
+    await this.clearAllUmi();
+    return await this.partialUpdateState(initData, rcId);
+  }
+
+  async resetProfileAndState(rcId?: string) {
+    await this.resetProfile(rcId);
+    await this.resetState(rcId);
   }
 
   /* high level API */

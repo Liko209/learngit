@@ -22,7 +22,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
@@ -96,7 +96,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init(); 
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
  
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
@@ -249,7 +249,7 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init(); 
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     let meChatId;
     await h(t).withLog('Given I have an extension with a me conversation', async () => {

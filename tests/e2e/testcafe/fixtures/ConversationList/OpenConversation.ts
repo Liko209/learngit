@@ -74,21 +74,11 @@ test(formalName('Should display in the top when open a closed conversation from 
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
 
   const topTeamName = `top-${uuid()}`;
   const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name',otherUser.rcId);
 
-  const teamSection = app.homePage.messageTab.teamsSection;
-  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-  const mentionPageEntry = app.homePage.messageTab.mentionsEntry;
-  const bookmarkEntry = app.homePage.messageTab.bookmarksEntry;
-  const mentionPage = app.homePage.messageTab.mentionPage;
-  const bookmarkPage = app.homePage.messageTab.bookmarkPage;
-  const conversationPage = app.homePage.messageTab.conversationPage;
-  const search = app.homePage.header.search;
-  const createTeamModal = app.homePage.createTeamModal;
-  const moreMenu = app.homePage.messageTab.moreMenu;
 
   let teamId, directMessageChatId, teamMentionPostId, directMessageMentionPostId;
   await h(t).withLog(`Given I have Team conversation A  and directMessage conversation B and other conversations`, async () => {
@@ -143,6 +133,17 @@ test(formalName('Should display in the top when open a closed conversation from 
     await h(t).glip(loginUser).clearAllUmi();
     await h(t).glip(loginUser).skipCloseConversationConfirmation(true);
   });
+
+  const teamSection = app.homePage.messageTab.teamsSection;
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  const mentionPageEntry = app.homePage.messageTab.mentionsEntry;
+  const bookmarkEntry = app.homePage.messageTab.bookmarksEntry;
+  const mentionPage = app.homePage.messageTab.mentionPage;
+  const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const search = app.homePage.header.search;
+  const createTeamModal = app.homePage.createTeamModal;
+  const moreMenu = app.homePage.messageTab.moreMenu;
 
   async function stepsToCheckPositionOnTop(section, chatId: string, teamName: string, sectionName: string) {
     await h(t).withLog(`Then ${teamName} should be on the top in ${sectionName} section`, async () => {
