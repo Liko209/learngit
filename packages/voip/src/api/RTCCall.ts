@@ -297,10 +297,7 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
-      if (this._hangupInvalidCallTimer) {
-        clearTimeout(this._hangupInvalidCallTimer);
-        this._hangupInvalidCallTimer = null;
-      }
+      this._clearHangupTimer();
       this._callSession.getMediaStats((report: any, session: any) => {
         this._rtcMediaStatsManager.setMediaStatsReport(report);
       },                              kRTCGetStatsInterval * 1000);
@@ -308,6 +305,7 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
+      this._clearHangupTimer();
       this._onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
       this._account.removeCallFromCallManager(this._callInfo.uuid);
       this._destroy();
@@ -429,6 +427,13 @@ class RTCCall {
     }
   }
 
+  private _clearHangupTimer() {
+    if (this._hangupInvalidCallTimer) {
+      clearTimeout(this._hangupInvalidCallTimer);
+      this._hangupInvalidCallTimer = null;
+    }
+  }
+
   // session listener
   private _onSessionAccepted() {
     this._fsm.sessionAccepted();
@@ -446,9 +451,8 @@ class RTCCall {
   }
 
   private _onSessionProgress(response: any) {
-    if (response.status_code === 183 && this._hangupInvalidCallTimer) {
-      clearTimeout(this._hangupInvalidCallTimer);
-      this._hangupInvalidCallTimer = null;
+    if (response.status_code === 183) {
+      this._clearHangupTimer();
     }
   }
 
