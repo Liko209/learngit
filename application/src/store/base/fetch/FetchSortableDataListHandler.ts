@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { transaction } from 'mobx';
+import { transaction, action } from 'mobx';
 import { IdModel } from 'sdk/framework/model';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import {
@@ -186,7 +186,8 @@ export class FetchSortableDataListHandler<
       });
   }
 
-  handleDataDeleted(payload: NotificationEntityDeletePayload) {
+  @action
+  handleDataDeleted = (payload: NotificationEntityDeletePayload) => {
     let originalSortableIds: number[] = [];
 
     if (this._dataChangeCallBacks.length) {
@@ -209,11 +210,12 @@ export class FetchSortableDataListHandler<
     this._updateTotalCount();
   }
 
-  handleDataUpdateReplace(
+  @action
+  handleDataUpdateReplace = (
     payload:
       | NotificationEntityUpdatePayload<T>
       | NotificationEntityReplacePayload<T>,
-  ) {
+  ) => {
     let originalSortableModels: ISortableModel[] = [];
     let deletedSortableModelIds: number[] = [];
     let addedSortableModels: ISortableModel[] = [];

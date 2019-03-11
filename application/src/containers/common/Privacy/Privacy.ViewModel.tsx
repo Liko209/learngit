@@ -21,18 +21,13 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
   private _groupService: GroupService = GroupService.getInstance();
 
   @computed
-  get id() {
-    return this.props.id; // teamId
-  }
-
-  @computed
   get size(): IconButtonSize {
     return this.props.size || 'small';
   }
 
   @computed
   private get _group() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
   @computed
@@ -53,7 +48,7 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
   handlePrivacy = () => {
     const newData = this._group.privacy === 'private' ? 'protected' : 'private';
     return this._groupService.updateGroupPrivacy({
-      id: this.id,
+      id: this.props.id,
       privacy: newData,
     });
   }

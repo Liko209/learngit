@@ -216,7 +216,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  private _syncGroupItems() {
+  @action
+  private _syncGroupItems = () => {
     this._itemService.requestSyncGroupItems(this.props.groupId);
   }
 
