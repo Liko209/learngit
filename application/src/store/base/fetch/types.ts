@@ -18,7 +18,6 @@ export interface ISortFunc<T> {
 export interface IMatchFunc<T> {
   (model: T): Boolean;
 }
-
 export interface ITransformFunc<T> {
   (model: T): ISortableModel<T>;
 }

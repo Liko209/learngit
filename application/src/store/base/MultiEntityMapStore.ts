@@ -160,17 +160,23 @@ export default class MultiEntityMapStore<
     if (!model) {
       this.set({ id, isMocked: true } as T);
       model = this._data[id] as K;
-      const res = this.getByService(id);
-      if (res instanceof Promise) {
-        res.then((res: T & { error?: {} }) => {
-          if (res && !res.error) {
-            this._partialUpdate(res as T, id);
-          }
-        });
+      const found = this.getByServiceSynchronously(id);
+      if (found) {
+        this._partialUpdate(found, id);
+        model = this._data[id] as K;
       } else {
-        if (res) {
-          this._partialUpdate(res as T, id);
-          model = this._data[id] as K;
+        const res = this.getByService(id);
+        if (res instanceof Promise) {
+          res.then((res: T & { error?: {} }) => {
+            if (res && !res.error) {
+              this._partialUpdate(res as T, id);
+            }
+          });
+        } else {
+          if (res) {
+            this._partialUpdate(res as T, id);
+            model = this._data[id] as K;
+          }
         }
       }
     }
@@ -211,7 +217,16 @@ export default class MultiEntityMapStore<
     if (Array.isArray(this._getService)) {
       return this._service[this._getService[1]](id);
     }
+
     return this._service.getById(id);
+  }
+
+  getByServiceSynchronously(id: number): T | null {
+    if (this._service && this._service.getSynchronously) {
+      return this._service.getSynchronously(id);
+    }
+
+    return null;
   }
 
   createModel(model: T | K): K {
@@ -233,6 +248,12 @@ export default class MultiEntityMapStore<
   @action
   reload() {
     this._usedIds.forEach((id: number) => {
+      const found = this.getByServiceSynchronously(id);
+      if (found) {
+        this.set(found);
+        return;
+      }
+
       const res = this.getByService(id);
       if (res instanceof Promise) {
         res.then((res: T & { error?: {} }) => {

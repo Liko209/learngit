@@ -19,7 +19,7 @@ class LaunchDarklyClient {
   }
 
   hasPermission(type: UserPermissionType) {
-    return !!this._flags[type];
+    return this._flags && !!this._flags[type];
   }
 
   private _initLDClient(options: Options) {

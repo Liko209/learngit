@@ -1,6 +1,7 @@
 import { daoManager } from '../../../dao';
 
 import { fetchIndexData } from '../fetchIndexData';
+import ConfigDao from '../../../dao/config';
 
 jest.mock('../../../dao');
 jest.mock('../../../dao/config');
@@ -34,6 +35,17 @@ describe('SyncService ', () => {
       const spy = jest.spyOn(syncService, '_syncIndexData');
       await syncService.syncData();
       expect(spy).toBeCalled();
+    });
+
+    it('should call _fetchRemaining when has lastIndexTimestamp but remaining has not fetched', async () => {
+      fetchIndexData.mockResolvedValueOnce({});
+      const configDao = new ConfigDao(null);
+      daoManager.getKVDao.mockReturnValue(configDao);
+      configDao.get.mockReturnValueOnce(1);
+      configDao.get.mockReturnValueOnce(null);
+      jest.spyOn(syncService, '_fetchRemaining').mockResolvedValueOnce();
+      await syncService.syncData();
+      expect(syncService._fetchRemaining).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -13,10 +13,13 @@ import { Post } from 'sdk/module/post/entity';
 import { PostService } from 'sdk/module/post';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager, { ENTITY_NAME } from '@/store';
-import { ENTITY } from 'sdk/service';
+import { ENTITY, notificationCenter, WINDOW } from 'sdk/service';
 import { Item } from 'sdk/module/item/entity';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
+import SequenceProcessorHandler from 'sdk/framework/processor/SequenceProcessorHandler';
+import PrefetchPostProcessor from '@/store/handler/PrefetchPostProcessor';
+import { ICacheController } from './ICacheController';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -65,13 +68,31 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
   }
 }
 
-class PostCacheController {
-  private _cacheMap: Map<
-    number,
-    FetchSortableDataListHandler<Post>
-  > = new Map();
+class PostCacheController implements ICacheController<Post> {
+  private _cacheMap: Map<number, FetchSortableDataListHandler<Post>>;
+  private _prefetchHandler: SequenceProcessorHandler;
 
   private _currentGroupId: number = 0;
+
+  constructor() {
+    this._cacheMap = new Map();
+    this._prefetchHandler = new SequenceProcessorHandler(
+      'SequenceProcessorHandler',
+    );
+
+    notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
+      this.onNetWorkChanged(onLine);
+    });
+  }
+
+  onNetWorkChanged(onLine: boolean) {
+    if (onLine) {
+      for (const groupId of this._cacheMap.keys()) {
+        const processor = new PrefetchPostProcessor(groupId, this);
+        this._prefetchHandler.addProcessor(processor);
+      }
+    }
+  }
 
   has(groupId: number): boolean {
     return this._cacheMap.has(groupId);
@@ -93,7 +114,7 @@ class PostCacheController {
         hasMoreDown: !!jump2PostId,
         isMatchFunc: isMatchedFunc(groupId),
         entityName: ENTITY_NAME.POST,
-        eventName: ENTITY.POST,
+        eventName: `${ENTITY.POST}.${groupId}`,
       };
 
       listHandler = new FetchSortableDataListHandler(

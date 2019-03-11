@@ -302,7 +302,7 @@ describe('GroupFetchDataController', () => {
         display_name: 'tu1 tu1',
       };
 
-      personService.getById = jest
+      personService.getSynchronously = jest
         .fn()
         .mockImplementation((id: number) => (id <= 12000 ? person1 : person2));
 
