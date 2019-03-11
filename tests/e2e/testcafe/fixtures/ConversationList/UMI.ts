@@ -115,7 +115,6 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -137,7 +136,7 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   );
 
   await h(t).withLog('Clear all UMIs before login', async () => {
-    await h(t).glip(loginUser).clearAllUmi();
+    await h(t).glip(loginUser).resetProfileAndState();
   });
 
   await h(t).withLog('Have other user send a post with mention to the team before I login', async () => {
@@ -182,7 +181,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -190,7 +189,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
 
-  let pvtChatId, teamId, pvtChat, team;
+  let pvtChatId, teamId;
   await h(t).withLog('Given I have an extension with a team and a private chat', async () => {
     pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
@@ -210,8 +209,8 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     },
   );
 
+  const pvtChat = directMessagesSection.conversationEntryById(pvtChatId);
   await h(t).withLog('Then I can open the private chat', async () => {
-    pvtChat = directMessagesSection.conversationEntryById(pvtChatId);
     await pvtChat.enter();
   });
 
@@ -234,8 +233,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
     await pvtChat.umi.shouldBeNumber(0);
   });
-},
-);
+});
 
 test(formalName('Should not display UMI when section is expended & Should display UMI when section is collapsed',
   ['JPT-98', 'JPT-99', 'P2', 'P1', 'ConversationList']),
@@ -245,7 +243,6 @@ test(formalName('Should not display UMI when section is expended & Should displa
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
@@ -289,12 +286,12 @@ test(formalName('Should not display UMI when section is expended & Should displa
       });
     });
 
-    await h(t).withLog('And favorite 2 conversation before login', async () => {
-      await h(t).glip(loginUser).favoriteGroups([+favPrivateChatId, +favTeamId]);
+    await h(t).withLog('Clear all UMIs before login', async () => {
+      await h(t).glip(loginUser).resetProfileAndState();
     });
 
-    await h(t).withLog('Clear all UMIs before login', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
+    await h(t).withLog('And favorite 2 conversation before login', async () => {
+      await h(t).glip(loginUser).favoriteGroups([+favPrivateChatId, +favTeamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -395,7 +392,6 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -428,7 +424,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   });
 
   await h(t).withLog('Clear all UMIs before login', async () => {
-    await h(t).glip(loginUser).clearAllUmi();
+    await h(t).glip(loginUser).resetProfileAndState();
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -523,7 +519,6 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
@@ -542,7 +537,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
+      await h(t).glip(loginUser).resetProfileAndState();
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -579,7 +574,6 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
@@ -597,7 +591,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
+      await h(t).glip(loginUser).resetProfileAndState();
     });
 
     await h(t).withLog(`Given I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -633,7 +627,7 @@ test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P
 
     let pvtChatId;
     await h(t).withLog('Given I have an extension with at least one conversation', async () => {
-      await h(t).glip(loginUser).resetProfile();
+      await h(t).glip(loginUser).resetProfileAndState();
       pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
         members: [loginUser.rcId, users[5].rcId]

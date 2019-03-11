@@ -20,7 +20,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
   const secondTeamName = `second-${uuid()}`;
   const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', otherUser.rcId);
 
@@ -199,7 +199,7 @@ test.skip(formalName('Should display in the top of conversation list when openin
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
   await h(t).glip(loginUser).setMaxTeamDisplay(3); // if use hide group, no show last Group
 
   const topTeamName = `top-${uuid()}`;

@@ -18,7 +18,6 @@ test(formalName('Close current conversation directly, and navigate to blank page
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
 
     let privateChat = <IGroup>{
       type: 'DirectMessage',
@@ -38,13 +37,13 @@ test(formalName('Close current conversation directly, and navigate to blank page
     }
 
     let currentGroupId;
+    await h(t).withLog(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}, (reset profile and state)`, async () => {
+      await h(t).glip(loginUser).resetProfileAndState();
+    });
+
     await h(t).withLog('Given I have an extension with 1 private chat and 1 group chat (in favorite) and I team chat', async () => {
       await h(t).scenarioHelper.createTeamsOrChats([privateChat, favoriteChat, team]);
       await h(t).glip(loginUser).favoriteGroups([+favoriteChat.glipId]);
-    });
-
-    await h(t).withLog('And I clean all UMI before login', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
@@ -63,8 +62,6 @@ test(formalName('Close current conversation directly, and navigate to blank page
       await h(t).directLoginWithUser(SITE_URL, loginUser);
       await app.homePage.ensureLoaded();
     });
-
-
 
     await h(t).withLog('Then I can find the 3 conversations in conversation list', async () => {
       await directMessagesSection.expand();
@@ -122,7 +119,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     let privateChat = <IGroup>{
       type: 'DirectMessage',
@@ -196,7 +193,6 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
 
   let privateChat = <IGroup>{
     type: 'DirectMessage',
@@ -215,7 +211,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
   });
 
   await h(t).withLog('And I clean all UMI before login', async () => {
-    await h(t).glip(loginUser).clearAllUmi();
+    await h(t).glip(loginUser).resetProfileAndState();
   });
 
   await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
@@ -285,9 +281,6 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
-
-
 
   let privateChat = <IGroup>{
     type: 'DirectMessage',
@@ -307,7 +300,7 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
   });
 
   await h(t).withLog('And I clean all UMI before login', async () => {
-    await h(t).glip(loginUser).clearAllUmi();
+    await h(t).glip(loginUser).resetProfileAndState();
   });
 
   await h(t).withLog('And I set user skip_close_conversation_confirmation is False before login', async () => {
@@ -381,10 +374,10 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
 
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).platform(otherUser).init();
-  await h(t).glip(loginUser).resetProfile();
-  const meChatId = await h(t).glip(loginUser).getPersonPartialData('me_group_id');
+  await h(t).glip(loginUser).resetProfileAndState();
 
+  await h(t).platform(otherUser).init();
+  const meChatId = await h(t).glip(loginUser).getPersonPartialData('me_group_id');
 
   let privateChat = <IGroup>{
     type: "DirectMessage",
@@ -406,10 +399,6 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
   await h(t).withLog('Given I have an extension with 1 private chat, 2 team chat, and 1 group team(in favorite)', async () => {
     await h(t).scenarioHelper.createTeamsOrChats([privateChat, favoriteChat, team]);
     await h(t).glip(loginUser).favoriteGroups([+favoriteChat.glipId, +meChatId]);
-  });
-
-  await h(t).withLog('And clear all umi', async () => {
-    await h(t).glip(loginUser).clearAllUmi();
   });
 
   const app = new AppRoot(t);
@@ -476,7 +465,6 @@ test(formalName('JPT-138 Can display conversation history when receiving message
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
 
@@ -516,7 +504,7 @@ test(formalName('JPT-138 Can display conversation history when receiving message
     });
 
     await h(t).withLog('And Clear all UMI for 2 conversations', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
+      await h(t).glip(loginUser).resetProfileAndState();
     });
 
     await h(t).withLog('And I set user skip_close_conversation_confirmation is true before login', async () => {
