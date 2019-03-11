@@ -10,14 +10,18 @@ import { useScroll } from '../useScroll';
 describe('useScroll()', () => {
   describe('init', () => {
     it('should init position', () => {
-      const initialPosition = { index: 0, offset: 10 };
+      const initialPosition = { index: 0, offset: 10, options: true };
       const hookRef = renderHook(() => useScroll(initialPosition));
       expect(hookRef.current.scrollPosition).toEqual(initialPosition);
     });
-    it('should init position with default offset', () => {
+    it('should init position with default offset and options', () => {
       const initialPosition = { index: 0 };
       const hookRef = renderHook(() => useScroll(initialPosition));
-      expect(hookRef.current.scrollPosition).toEqual({ index: 0, offset: 0 });
+      expect(hookRef.current.scrollPosition).toEqual({
+        index: 0,
+        offset: 0,
+        options: true,
+      });
     });
   });
 
@@ -27,15 +31,23 @@ describe('useScroll()', () => {
 
       const hookRef = renderHook(() => useScroll(initialPosition));
       act(() => hookRef.current.setScrollPosition({ index: 10, offset: 20 }));
-      expect(hookRef.current.scrollPosition).toEqual({ index: 10, offset: 20 });
+      expect(hookRef.current.scrollPosition).toEqual({
+        index: 10,
+        offset: 20,
+        options: true,
+      });
     });
 
     it('should update index with default offset', () => {
-      const initialPosition = { index: 0, offset: 10 };
+      const initialPosition = { index: 0, offset: 10, options: true };
 
       const hookRef = renderHook(() => useScroll(initialPosition));
       act(() => hookRef.current.setScrollPosition({ index: 10 }));
-      expect(hookRef.current.scrollPosition).toEqual({ index: 10, offset: 0 });
+      expect(hookRef.current.scrollPosition).toEqual({
+        index: 10,
+        offset: 0,
+        options: true,
+      });
     });
   });
 });

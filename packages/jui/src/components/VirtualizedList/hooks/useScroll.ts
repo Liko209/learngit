@@ -20,7 +20,7 @@ type PartialScrollPosition = {
 const useScroll = ({
   index,
   offset = 0,
-  options = false,
+  options = true,
 }: PartialScrollPosition) => {
   const scrollPositionRef = useRef({
     index,

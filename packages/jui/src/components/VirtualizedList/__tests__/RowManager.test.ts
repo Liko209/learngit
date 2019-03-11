@@ -33,21 +33,9 @@ describe('RowManager', () => {
   });
 
   describe('getEstimateRowHeight()', () => {
-    it("should return minRowHeight when we don't know any row height", () => {
+    it('should return minRowHeight', () => {
       const rowManager = new RowManager({ minRowHeight: 40 });
       expect(rowManager.getEstimateRowHeight()).toBe(40);
-    });
-
-    it('should return avg of all known rows height', () => {
-      const { rowManager } = setup({
-        rowInfos: [
-          { index: 0, height: 40 },
-          { index: 1, height: 50 },
-          { index: 2, height: 60 },
-        ],
-      });
-
-      expect(rowManager.getEstimateRowHeight()).toBe(50);
     });
   });
 
@@ -112,9 +100,9 @@ describe('RowManager', () => {
     describe('when computing unknown rows height', () => {
       it.each`
         startIndex | stopIndex | expected
-        ${3}       | ${3}      | ${50}
-        ${3}       | ${4}      | ${100}
-        ${0}       | ${4}      | ${250}
+        ${3}       | ${3}      | ${40}
+        ${3}       | ${4}      | ${80}
+        ${0}       | ${4}      | ${230}
       `(
         'should return $expected - getRowsHeight($startIndex, $stopIndex)',
         ({ startIndex, stopIndex, expected }) => {
@@ -149,7 +137,7 @@ describe('RowManager', () => {
       expect(rowManager.getRowOffsetTop(1)).toBe(40);
       expect(rowManager.getRowOffsetTop(2)).toBe(90);
       expect(rowManager.getRowOffsetTop(3)).toBe(150);
-      expect(rowManager.getRowOffsetTop(4)).toBe(200);
+      expect(rowManager.getRowOffsetTop(4)).toBe(190);
     });
   });
 
