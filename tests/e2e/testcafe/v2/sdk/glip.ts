@@ -433,7 +433,7 @@ export class GlipSdk {
       "desktop_banner_dismissed": true,
     }
     await this.clearAllUmi();
-    return await this.updateProfile(initData, rcId);
+    return await this.partialUpdateState(initData, rcId);
   }
 
   async resetProfileAndState(rcId?: string) {
