@@ -133,8 +133,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (ref.current) {
       if (options === true) {
         ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
-      }
-      if (options === false) {
+      } else {
         ref.current.scrollTop =
           rowManager.getRowOffsetTop(index + 1) - height - offset;
       }
@@ -151,6 +150,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const keyMapper = createKeyMapper(children);
   const childrenCount = children.length;
+  const minIndex = 0;
   const maxIndex = childrenCount - 1;
 
   //
@@ -184,13 +184,16 @@ const JuiVirtualizedList: RefForwardingComponent<
   const renderedRangeSize = Math.ceil(
     height / rowManager.getEstimateRowHeight(),
   );
+
   const { range: renderedRange, setRange: setRenderedRange } = useRange(
     createRange({
-      startIndex: initialScrollToIndex - 5,
+      startIndex: initialScrollToIndex,
       size: renderedRangeSize,
-      min: 0,
+      min: minIndex,
+      max: maxIndex,
     }),
   );
+
   const prevAtBottomRef = useRef(false);
   const shouldScrollToBottom = () => prevAtBottomRef.current && stickToBottom;
 
