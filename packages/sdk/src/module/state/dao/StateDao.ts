@@ -1,14 +1,15 @@
 /*
- * @Author: Chris Zhan (chris.zhan@ringcentral.com)
- * @Date: 2018-03-06 13:22:43
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-03-08 15:55:02
+ * Copyright © RingCentral. All rights reserved.
  */
-import { BaseDao } from '../../framework/dao';
-import { MyState } from '../../models';
+
+import { BaseDao } from '../../../framework/dao';
+import { MyState } from '../entity';
 import { IDatabase } from 'foundation';
 
 class StateDao extends BaseDao<MyState> {
   static COLLECTION_NAME = 'state';
-  // TODO, use IDatabase after import foundation module in
   constructor(db: IDatabase) {
     super(StateDao.COLLECTION_NAME, db);
   }
@@ -18,4 +19,4 @@ class StateDao extends BaseDao<MyState> {
   }
 }
 
-export default StateDao;
+export { StateDao };

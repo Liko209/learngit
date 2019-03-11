@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, GroupStateDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { GroupStateDao } from '../dao';
 import { EntityBaseService } from '../../../framework';
 import { IStateService } from './IStateService';
 import { GroupState, MyState, State } from '../entity';
