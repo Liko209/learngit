@@ -50,7 +50,7 @@ const StyledContainer = styled('div')<{
 
 type Props = TransitionAnimationProps & {
   animation: Keyframes;
-} & Partial<ThemeProps>;
+} & ThemeProps;
 class TransitionAnimation extends React.PureComponent<Props> {
   render() {
     const {
@@ -86,6 +86,6 @@ class TransitionAnimation extends React.PureComponent<Props> {
   }
 }
 
-const JuiTransition = withTheme(TransitionAnimation);
+const JuiTransition = withTheme<Props>(TransitionAnimation);
 
 export { JuiTransition };

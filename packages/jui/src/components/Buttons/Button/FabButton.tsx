@@ -49,7 +49,7 @@ const StyledFabButton = styled<JuiFabProps>(WrappedMuiFab)`
     background-color: ${palette('common', 'white')};
     height: ${({ theme }) => height(15)({ theme })};
     width: ${({ theme }) => width(15)({ theme })};
-    box-shadow: ${props => props.theme.shadows[2]};
+    box-shadow: ${props => props.theme.shadows[16]};
     ${typography('caption1')};
     &:hover,
     &:active {
@@ -65,25 +65,21 @@ const StyledFabButton = styled<JuiFabProps>(WrappedMuiFab)`
       background-color: ${palette('common', 'white')};
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
     }
-    .icon {
-      opacity: ${({ theme, disabled }) =>
-        disabled ? theme.palette.action.hoverOpacity : 1};
-    }
   }
 `;
 
 const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
   props: JuiFabProps,
 ) => {
-  const { disableToolTip, tooltipTitle } = props;
-  if (!disableToolTip) {
+  const { disableToolTip, tooltipTitle, disabled, ...rest } = props;
+  if (!disableToolTip && !disabled) {
     return (
       <JuiArrowTip title={tooltipTitle}>
-        {<StyledFabButton {...props} />}
+        <StyledFabButton disabled={disabled} {...rest} />
       </JuiArrowTip>
     );
   }
-  return <StyledFabButton {...props} />;
+  return <StyledFabButton disabled={disabled} {...rest} />;
 };
 
 JuiFabButtonComponent.defaultProps = {

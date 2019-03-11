@@ -18,8 +18,7 @@ import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
-import { Dialog } from '@/containers/Dialog';
-import { Viewer } from '@/containers/Viewer';
+import { showImageViewer } from '@/containers/Viewer';
 import { getFileSize } from './helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
@@ -78,18 +77,18 @@ class FilesView extends React.Component<FilesViewProps> {
     );
   }
 
-  _handleImageClick = (id: number) => async () => {
+  _handleImageClick = (
+    groupId: number,
+    id: number,
+    origWidth: number,
+    origHeight: number,
+  ) => async (ev: React.MouseEvent, loaded?: boolean) => {
+    const target = ev.currentTarget as HTMLElement;
     const canShowDialogPermission = await this.props.getShowDialogPermission();
-    console.log('canShowDialogPermission', canShowDialogPermission);
     if (!canShowDialogPermission) {
       return;
     }
-    Dialog.simple(
-      <Viewer itemId={id} containComponent={<div>imageViewer</div>} />,
-      {
-        fullScreen: true,
-      },
-    );
+    showImageViewer(groupId, id, target);
   }
 
   async componentDidMount() {
@@ -102,7 +101,7 @@ class FilesView extends React.Component<FilesViewProps> {
   }
 
   render() {
-    const { files, progresses, urlMap } = this.props;
+    const { files, progresses, urlMap, groupId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -125,7 +124,6 @@ class FilesView extends React.Component<FilesViewProps> {
                 <JuiPreviewImage
                   key={id}
                   didLoad={() => this._handleImageDidLoad(id, callback)}
-                  handleImageClick={this._handleImageClick(id)}
                   placeholder={placeholder}
                   width={size.width}
                   height={size.height}
@@ -141,8 +139,20 @@ class FilesView extends React.Component<FilesViewProps> {
           return (
             <JuiPreviewImage
               key={id}
-              placeholder={placeholder}
-              handleImageClick={this._handleImageClick(id)}
+              placeholder={React.cloneElement(placeholder, {
+                onClick: this._handleImageClick(
+                  groupId,
+                  id,
+                  origWidth,
+                  origHeight,
+                ),
+              })}
+              handleImageClick={this._handleImageClick(
+                groupId,
+                id,
+                origWidth,
+                origHeight,
+              )}
               width={size.width}
               height={size.height}
               forceSize={!singleImage}

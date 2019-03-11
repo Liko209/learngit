@@ -20,9 +20,9 @@ const DEBUG_MODE = !(process.env.DEBUG_MODE === 'false');
 const QUARANTINE_MODE = (process.env.QUARANTINE_MODE === 'true');
 
 const ENABLE_MOCK_SERVER = (process.env.ENABLE_MOCK_SERVER === 'true');
-const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck01.lab.nordigy.ru";
+const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck02.lab.nordigy.ru";
 const MOCK_ENV = process.env.MOCK_ENV || 'XMN-MOCK';
-const MOCK_AUTH_URL = process.env.MOCK_AUTH_URL || 'https://xmn02-i01-mck01.lab.nordigy.ru/jupiter/login/api/login';
+const MOCK_AUTH_URL = process.env.MOCK_AUTH_URL || 'https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/login/api/login';
 
 const ENV_OPTS = {
   'XMN-UP': {

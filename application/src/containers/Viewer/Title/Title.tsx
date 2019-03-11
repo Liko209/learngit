@@ -6,12 +6,12 @@
 
 import { buildContainer } from '@/base';
 import { ViewerTitleView } from './Title.View';
-import { ViewerViewModel } from '../Viewer.ViewModel';
+import { ViewerTitleViewModel } from './Title.ViewModel';
 import { ViewerTitleProps } from './types';
 
 const ViewerTitle = buildContainer<ViewerTitleProps>({
   View: ViewerTitleView,
-  ViewModel: ViewerViewModel,
+  ViewModel: ViewerTitleViewModel,
 });
 
 export { ViewerTitle, ViewerTitleProps };

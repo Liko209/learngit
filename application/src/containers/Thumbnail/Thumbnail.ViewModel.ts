@@ -97,11 +97,11 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
     };
 
     if (file && file.type) {
-      let url;
+      let url: string;
       if (FileItemUtils.isGifItem(file)) {
-        url = file.versionUrl;
+        url = file.versionUrl!;
       } else {
-        url = getThumbnailURL(file, this._size);
+        url = getThumbnailURL(file, this._size) as string;
       }
       if (
         !url &&
@@ -112,7 +112,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
         url = this._thumbsUrlWithSize;
       }
       if (!url) {
-        url = file.versionUrl;
+        url = file.versionUrl!;
       }
       thumb.url = url;
     }

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type ItemModel = {
+type DemoItemModel = {
   id: number;
   text: string;
   imageUrl?: string;
@@ -35,7 +35,7 @@ const itemFactory = {
   },
 
   buildItems(startId: number, count: number) {
-    const items: ItemModel[] = [];
+    const items: DemoItemModel[] = [];
     for (let i = startId; i < startId + count; i++) {
       items.push(itemFactory.buildImageItem(i, true));
     }
@@ -44,4 +44,4 @@ const itemFactory = {
   },
 };
 
-export { itemFactory, ItemModel };
+export { itemFactory, DemoItemModel };

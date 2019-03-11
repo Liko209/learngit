@@ -33,7 +33,7 @@ type JuiPreviewImageProps = {
   squareSize?: number;
   url: string;
   placeholder?: JSX.Element;
-  handleImageClick?: () => void;
+  handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
   didLoad?: Function;
 } & SizeType;
 
@@ -53,7 +53,7 @@ const Icon = withDelay(() => (
 ));
 
 const JuiDelayPlaceholder = (props: SizeType) => (
-  <Jui.ImageCard width={props.width} height={props.height}>
+  <Jui.ImageCard {...props}>
     <Wrapper>
       <Icon delay={400} />
     </Wrapper>
@@ -92,6 +92,12 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
       this.forceUpdate();
     }
   }
+
+  private _handleImageClick = (ev: React.MouseEvent) => {
+    this.props.handleImageClick &&
+      this.props.handleImageClick(ev, this._loaded);
+  }
+
   componentDidMount() {
     this._mounted = true;
   }
@@ -99,14 +105,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     this._mounted = false;
   }
   render() {
-    const {
-      Actions,
-      fileName,
-      forceSize,
-      url,
-      placeholder,
-      handleImageClick,
-    } = this.props;
+    const { Actions, fileName, forceSize, url, placeholder } = this.props;
     let { width, height } = this.props;
     const imageProps = {} as SizeType;
     const imageStyle: CSSProperties = { position: 'absolute', display: 'none' };
@@ -134,7 +133,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
             ref={this._imageRef}
             src={url}
             onLoad={this._handleImageLoad}
-            onClick={handleImageClick}
+            onClick={this._handleImageClick}
             {...imageProps}
           />
         )}
@@ -143,7 +142,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
             <img
               style={imageStyle}
               src={url}
-              onClick={handleImageClick}
+              onClick={this._handleImageClick}
               {...imageProps}
             />
             <Jui.ImageFileInfo width={width} height={height} component="div">

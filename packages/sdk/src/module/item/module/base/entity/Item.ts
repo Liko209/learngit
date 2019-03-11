@@ -8,7 +8,7 @@ import { ExtendedBaseModel } from '../../../../models';
 import { Raw } from '../../../../../framework/model';
 
 export type Thumbs = {
-  string: string | number;
+  [key: string]: string | number;
 };
 
 export type ItemVersionPage = {
