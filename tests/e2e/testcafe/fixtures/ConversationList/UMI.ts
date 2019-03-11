@@ -697,47 +697,44 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
   },
 );
 
-test(formalName('Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']),
-  async (t: TestController) => {
-    const app = new AppRoot(t);
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[4];
-    await h(t).platform(loginUser).init();
+test(formalName('Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']), async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+
+  let chat = <IGroup> {
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  await h(t).withLog('Given closed one DirectMessage conversation', async () => {
     await h(t).glip(loginUser).init();
-    const otherUser = users[5];
-    await h(t).platform(otherUser).init();
-    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-    const post = uuid();
-
-    let privateChatId;
-    await h(t).withLog('Given closed one conversation', async () => {
-      privateChatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat',
-        members: [loginUser.rcId, otherUser.rcId]
-      });
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
-      await h(t).glip(loginUser).hideGroups(privateChatId);
-    });
-
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
-
-    await h(t).withLog('And the conversation received one unread post from other members', async () => {
-      await h(t).platform(otherUser).sendTextPost(post, privateChatId);
-    });
-
-    await h(t).withLog('Then the conversation should not be opened automatically', async () => {
-      await t.expect(h(t).href).notContains(privateChatId);
-    });
-
-    await h(t).withLog('And the conversation should show in the conversation list', async () => {
-      await t.expect(directMessagesSection.conversationEntryById(privateChatId).exists).ok();
-    });
-
-    // bug https://jira.ringcentral.com/browse/FIJI-2766
-    // await h(t).withLog('And the conversation should be unread', async () => {
-    //   await directMessagesSection.conversationEntryById(pvtChatId).expectUmi(1);
-    // });
+    await h(t).glip(loginUser).resetProfileAndState();
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+    await h(t).glip(loginUser).hideGroups(chat.glipId);
   });
+
+  const app = new AppRoot(t);
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And the conversation received one unread post from other members', async () => {
+    await h(t).scenarioHelper.sendTextPost(uuid(),chat, otherUser);
+  });
+
+  await h(t).withLog('Then the conversation should not be opened automatically', async () => {
+    await t.expect(h(t).href).notContains(chat.glipId);
+  });
+
+  await h(t).withLog('And the conversation should show in the conversation list', async () => {
+    await t.expect(directMessagesSection.conversationEntryById(chat.glipId).exists).ok();
+  });
+
+  await h(t).withLog('And the conversation should be unread', async () => {
+    await directMessagesSection.conversationEntryById(chat.glipId).umi.shouldBeNumber(1);
+  });
+});
