@@ -243,8 +243,7 @@ export class FetchSortableDataListHandler<
         const sortableModel = this._transformFunc(model);
         if (
           payload.type === EVENT_TYPES.REPLACE ||
-          sortableModel.sortValue !==
-            (this.sortableListStore.getById(key) as ISortableModel).sortValue
+          this._isPosChanged(sortableModel)
         ) {
           matchedSortableModels.push(sortableModel);
           matchedEntities.push(model);
@@ -389,6 +388,35 @@ export class FetchSortableDataListHandler<
       );
     }
     return inRange;
+  }
+
+  private _isPosChanged(newModel: ISortableModel<T>) {
+    let isPosChanged = false;
+
+    const oldModel = this.sortableListStore.getById(
+      newModel.id,
+    ) as ISortableModel;
+    isPosChanged = newModel.sortValue !== oldModel.sortValue;
+
+    if (!isPosChanged && this._sortFun) {
+      const currentAllItems = this.sortableListStore.items;
+      const pos = currentAllItems.findIndex((value: ISortableModel<T>) => {
+        return value.id === newModel.id;
+      });
+
+      const leftModel = pos - 1 >= 0 ? currentAllItems[pos - 1] : undefined;
+      const rightModel =
+        pos + 1 < currentAllItems.length ? currentAllItems[pos + 1] : undefined;
+
+      isPosChanged =
+        (leftModel && this._sortFun(newModel, leftModel) < 0) || false; // if smaller then left
+
+      isPosChanged = !isPosChanged
+        ? (rightModel && this._sortFun(newModel, rightModel) > 0) || false // if bigger then right
+        : isPosChanged;
+    }
+
+    return isPosChanged;
   }
 
   protected handleHasMore(hasMore: boolean, direction: QUERY_DIRECTION) {
