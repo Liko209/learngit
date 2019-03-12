@@ -49,6 +49,16 @@ enum RTC_CALL_ACTION {
   PARK = 'park',
 }
 
+type RTCSipFlags = {
+  voipFeatureEnabled: boolean;
+  voipCountryBlocked: boolean;
+  outboundCallsEnabled: boolean;
+  dscpEnabled: boolean;
+  dscpSignaling: Number;
+  dscpVoice: Number;
+  dscpVideo: Number;
+};
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
@@ -56,4 +66,5 @@ export {
   RTC_CALL_ACTION,
   RTCCallOptions,
   RTCCallActionSuccessOptions,
+  RTCSipFlags,
 };
