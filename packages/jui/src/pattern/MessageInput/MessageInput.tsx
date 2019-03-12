@@ -138,8 +138,26 @@ class JuiMessageInput extends React.PureComponent<Props> {
 
   componentDidMount() {
     setTimeout(this.focusEditor, 0);
+    setTimeout(this._addMatcher, 0);
   }
-
+  private _addMatcher = () => {
+    if (this._inputRef.current) {
+      const quill = this._inputRef.current.getEditor();
+      quill.clipboard.addMatcher(
+        Node.ELEMENT_NODE,
+        (node: Node, delta: Delta) => {
+          if (delta.ops) {
+            delta.ops = delta.ops.map((op: any) => {
+              return {
+                insert: op.insert,
+              };
+            });
+          }
+          return delta;
+        },
+      );
+    }
+  }
   componentDidUpdate(prevProps: Props) {
     if (
       this._inputRef.current &&
