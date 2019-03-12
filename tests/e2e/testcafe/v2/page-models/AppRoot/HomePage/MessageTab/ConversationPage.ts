@@ -175,12 +175,22 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async isVisible(el: Selector) {
+    await this.t.expect(el.exists).ok();
     const wrapper = this.streamWrapper;
     const itemTop = await el.getBoundingClientRectProperty('top');
     const itemBottom = await el.getBoundingClientRectProperty('bottom');
     const wrapperTop = await wrapper.getBoundingClientRectProperty('top');
     const wrapperBottom = await wrapper.getBoundingClientRectProperty('bottom');
     return itemTop >= wrapperTop && itemBottom <= wrapperBottom;
+  }
+
+  async postByIdExpectVisible(postId: string, visible: boolean) {
+    await H.retryUntilPass(async () => {
+      const postCard = this.posts.filter(`[data-id="${postId}"]`)
+      const result = await this.isVisible(postCard);
+      console.log(result)
+      assert.strictEqual(result, visible, `This post expect visible: ${visible}, but actual: ${result}`);
+    });
   }
 
   async nthPostExpectVisible(n: number, isVisible: boolean = true) {
@@ -190,10 +200,10 @@ class BaseConversationPage extends BaseWebComponent {
     });
   }
 
-  async newMessageDeadLineExpectVisible(isVisible: boolean) {
+  async newMessageDeadLineExpectVisible(visible: boolean) {
     await H.retryUntilPass(async () => {
       const result = await this.isVisible(this.newMessageDeadLine);
-      assert.strictEqual(result, isVisible, `This 'New Messages' deadline expect visible: ${isVisible}, but actual: ${result}`);
+      assert.strictEqual(result, visible, `This 'New Messages' deadline expect visible: ${visible}, but actual: ${result}`);
     });
   }
 }

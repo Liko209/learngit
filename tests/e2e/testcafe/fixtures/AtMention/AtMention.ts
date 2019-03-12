@@ -1,7 +1,8 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-13 13:26:25
- * Copyright © RingCentral. All rights reserved.
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-03-12 18:11:42
  */
 
 import * as _ from 'lodash';
@@ -142,80 +143,79 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
   }
 });
 
-test(formalName('Remove UMI when jump to conversation which have unread messages.', ['P2', 'JPT-380', 'zack']),
-  async (t: TestController) => {
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[7];
-    const otherUser = users[5];
+test(formalName('Remove UMI when jump to conversation which have unread messages.', ['P2', 'JPT-380', 'zack']), async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+  const otherUser = users[5];
 
-    let chat = <IGroup>{
-      type: "DirectMessage",
-      owner: loginUser,
-      members: [loginUser, otherUser]
-    }
-
-    await h(t).withLog('Given I have an DirectMessage conversation and clear all Umi', async () => {
-      await h(t).glip(loginUser).init();
-      await h(t).glip(loginUser).resetProfileAndState();
-      await h(t).scenarioHelper.createOrOpenChat(chat);
-    });
-
-    let postId;
-    await h(t).withLog('And I have an AtMention post in the conversation', async () => {
-      postId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi AtMention, ![:Person](${loginUser.rcId})`, chat, otherUser);
-    });
-
-    await h(t).withLog('And I set last open group is me chat', async () => {
-      await h(t).glip(loginUser).setLastGroupIdIsMeChatId();
-    });
-
-    const app = new AppRoot(t);
-    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
-    const mentionPage = app.homePage.messageTab.mentionPage;
-    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-
-    await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
-
-    await h(t).withLog('When I enter AtMention page and find the AtMention posts', async () => {
-      await mentionsEntry.enter();
-    }, true);
-
-    await h(t).withLog('Then the UMI should exist', async () => {
-      await directMessagesSection.fold();
-      await directMessagesSection.headerUmi.shouldBeNumber(1);
-    })
-
-    await h(t).withLog('When I click the post and jump to the conversation', async () => {
-      await mentionPage.postItemById(postId).jumpToConversationByClickPost();
-    });
-
-    await h(t).withLog('And the UMI should dismiss', async () => {
-      await directMessagesSection.headerUmi.shouldBeNumber(0);
-    }, true);
-
-    await h(t).withLog('Then I navigate away from conversation and refresh browser', async () => {
-      await mentionsEntry.enter();
-      await h(t).reload();
-      await app.homePage.ensureLoaded();
-    });
-
-    await h(t).withLog('Then the UMI count should still no UMI', async () => {
-      await directMessagesSection.fold();
-      await directMessagesSection.headerUmi.shouldBeNumber(0);
-    }, true);
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
   }
-);
 
-// skip by bug: 
+  await h(t).withLog('Given I have an DirectMessage conversation and clear all Umi', async () => {
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfileAndState();
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+  });
+
+  let postId;
+  await h(t).withLog('And I have an AtMention post in the conversation', async () => {
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi AtMention, ![:Person](${loginUser.rcId})`, chat, otherUser);
+  });
+
+  await h(t).withLog('And I set last open group is me chat', async () => {
+    await h(t).glip(loginUser).setLastGroupIdIsMeChatId();
+  });
+
+  const app = new AppRoot(t);
+  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+  const mentionPage = app.homePage.messageTab.mentionPage;
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+
+  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('When I enter AtMention page and find the AtMention posts', async () => {
+    await mentionsEntry.enter();
+  }, true);
+
+  await h(t).withLog('Then the UMI should exist', async () => {
+    await directMessagesSection.fold();
+    await directMessagesSection.headerUmi.shouldBeNumber(1);
+  })
+
+  await h(t).withLog('When I click the post and jump to the conversation', async () => {
+    await mentionPage.postItemById(postId).jumpToConversationByClickPost();
+  });
+
+  await h(t).withLog('And the UMI should dismiss', async () => {
+    await directMessagesSection.headerUmi.shouldBeNumber(0);
+  }, true);
+
+  await h(t).withLog('Then I navigate away from conversation and refresh browser', async () => {
+    await mentionsEntry.enter();
+    await h(t).reload();
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then the UMI count should still no UMI', async () => {
+    await directMessagesSection.fold();
+    await directMessagesSection.headerUmi.shouldBeNumber(0);
+  }, true);
+});
+
+// skip by bug:https://jira.ringcentral.com/browse/FIJI-3933 
 test.skip(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
   const otherUser = users[5];
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
+
   let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
@@ -290,117 +290,116 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
 });
 
+// skip by bug:https://jira.ringcentral.com/browse/FIJI-3933 
+test.skip(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'AtMention']), async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
 
-test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'AtMention']),
-  async (t: TestController) => {
-    const app = new AppRoot(t);
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[4];
-    const otherUser = users[5];
-    await h(t).platform(loginUser).init();
-    await h(t).platform(otherUser).init();
-    await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
 
-    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
-    const postMentionPage = app.homePage.messageTab.mentionPage;
-    const conversationPage = app.homePage.messageTab.conversationPage;
+  let atMentionTeamPostId, atMentionChatPostId;
+  await h(t).withLog('Given I have 1 AtMention post in team ,one in group.(out of screen)', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([team, chat]);
 
-    let verifyTextTeam = uuid();
-    let verifyTextChat = uuid();
+    atMentionTeamPostId = await h(t).scenarioHelper.sentAndGetTextPostId(
+      `${uuid()}, ![:Person](${loginUser.rcId})`,
+      team, otherUser
+    );
+    atMentionChatPostId = await h(t).scenarioHelper.sentAndGetTextPostId(
+      `${uuid()}, ![:Person](${loginUser.rcId})`,
+      chat, otherUser
+    );
 
-    let teamId, pvChatId, atMentionTeamPostId, atMentionChatPostId;
-    await h(t).withLog('Given I have 1 AtMention post in team ,one in group', async () => {
-      teamId = await h(t).platform(loginUser).createAndGetGroupId({
-        isPublic: true,
-        name: `Team ${uuid()}`,
-        type: 'Team',
-        members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
-      });
-      pvChatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat',
-        members: [loginUser.rcId, otherUser.rcId],
-      });
+    for (const i of _.range(3)) {
+      await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, otherUser);
+      await h(t).scenarioHelper.sendTextPost(H.multilineString(), chat, otherUser);
+    }
 
-      atMentionTeamPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        `${verifyTextTeam}, ![:Person](${loginUser.rcId})`,
-        teamId,
-      );
-      atMentionChatPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        `${verifyTextChat}, ![:Person](${loginUser.rcId})`,
-        pvChatId,
-      );
-
-    });
-
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
-
-    await h(t).withLog('And I enter AtMentions page', async () => {
-      await mentionsEntry.enter();
-    });
-
-    await h(t).withLog('And I click the post item', async () => {
-      await postMentionPage.postItemById(atMentionTeamPostId).jumpToConversationByClickPost();
-    });
-
-    await h(t).withLog('Then I can see the AtMention post in the team', async () => {
-      await t
-        .expect(conversationPage.postItemById(atMentionTeamPostId).body.withText(verifyTextTeam).exists)
-        .ok({ timeout: 5e3 });
-    }, true);
-
-    await h(t).withLog('When I back to AtMention page', async () => {
-      await mentionsEntry.enter();
-    });
-
-    await h(t).withLog('And I click AtMention post item from pvChat', async () => {
-      await postMentionPage.postItemById(atMentionChatPostId).clickConversationByButton();
-    });
-
-    await h(t).withLog('Then I can see the AtMention post in the pvChat', async () => {
-      await t
-        .expect(conversationPage.postItemById(atMentionChatPostId).body.withText(verifyTextChat).exists)
-        .ok({ timeout: 5e3 });
-    });
   });
+
+  const app = new AppRoot(t);
+  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+  const postMentionPage = app.homePage.messageTab.mentionPage;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And I enter AtMentions page', async () => {
+    await mentionsEntry.enter();
+  });
+
+  await h(t).withLog('And I click the post item', async () => {
+    await postMentionPage.postItemById(atMentionTeamPostId).jumpToConversationByClickPost();
+  });
+
+  await h(t).withLog('Then I can see the AtMention post in the team', async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.groupIdShouldBe(team.glipId);
+    await conversationPage.postByIdExpectVisible(atMentionTeamPostId, true);
+  }, true);
+
+  await h(t).withLog('When I back to AtMention page', async () => {
+    await mentionsEntry.enter();
+  });
+
+  await h(t).withLog('And I click AtMention post item from pvChat', async () => {
+    await postMentionPage.postItemById(atMentionChatPostId).clickConversationByButton();
+  });
+
+  await h(t).withLog('Then I can see the AtMention post in the pvChat', async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.groupIdShouldBe(chat.glipId);
+    await conversationPage.postByIdExpectVisible(atMentionChatPostId, true);
+  });
+});
 
 test(formalName('JPT-733 Can\'t show all received posts when open mentions page', ['P2', 'JPT-733', 'Mia.Cai', 'AtMention']), async (t: TestController) => {
-  const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
-  const user = users[4];
+  const loginUser = users[4];
   const otherUser = users[5];
-  await h(t).platform(user).init();
-  await h(t).platform(otherUser).init();
-  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
-  const mentionPage = app.homePage.messageTab.mentionPage;
 
-  let teamId;
-  await h(t).withLog(`Given I create one new teams`, async () => {
-    teamId = await h(t).platform(user).createAndGetGroupId({
-      type: 'Team',
-      name: uuid(),
-      members: [user.rcId, otherUser.rcId],
-    });
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  await h(t).withLog(`Given I create one directMessage conversation`, async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
   });
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, user);
+  const app = new AppRoot(t);
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   await h(t).withLog('And I open mentions page', async () => {
-    await mentionsEntry.enter();
+    await app.homePage.messageTab.mentionsEntry.enter();
   });
 
-  let message = uuid(), newPostId;
+  let newPostId;
   await h(t).withLog('And I received new message', async () => {
-    newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(message, teamId);
+    await h(t).platform(otherUser).init();
+    newPostId = await h(t).platform(otherUser).sentAndGetTextPostId(uuid(), chat.glipId);
   });
 
   await h(t).withLog('Then I can\'t find the posts in the mentions page', async () => {
+    const mentionPage = app.homePage.messageTab.mentionPage;
     await t.expect(mentionPage.postItemById(newPostId).exists).notOk({ timeout: 10e3 });
   }, true);
 
