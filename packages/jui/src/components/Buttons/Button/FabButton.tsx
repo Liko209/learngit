@@ -67,7 +67,9 @@ const WrappedMuiFab = (props: StyledFabButtonProps) => {
   );
 };
 
-const StyledFabButton = styled<StyledFabButtonProps>(WrappedMuiFab)`
+const StyledFabButton = styled<StyledFabButtonProps>(
+  ({ showShadow, ...rest }) => <WrappedMuiFab {...rest} />,
+)`
   && {
     background-color: ${({ theme, colorScope, colorName }) =>
       palette(colorScope, colorName)({ theme })};
@@ -123,7 +125,6 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
     tooltipTitle,
     tooltipPlacement,
     color,
-    showShadow,
     disabled,
     ...rest
   } = props;
@@ -154,7 +155,12 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
     );
   }
   return (
-    <StyledFabButton disabled={disabled} colorScope={colorScope} colorName={colorName} {...rest} />
+    <StyledFabButton
+      disabled={disabled}
+      colorScope={colorScope}
+      colorName={colorName}
+      {...rest}
+    />
   );
 };
 
