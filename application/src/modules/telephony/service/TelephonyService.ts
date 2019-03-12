@@ -64,21 +64,25 @@ class TelephonyService {
       onCallStateChange: this._onCallStateChange,
     });
 
-    // tslint:disable-next-line:no-this-assignment
-    const serviceThis = this;
     // TODO: There is a LeaveBlockerService, but it can't support multi-blocker. When it can support, we should use that service.
     if (!this._registeredOnbeforeunload) {
       // If makeCall return success, register this handle
-      window.onbeforeunload = function () {
-        if (serviceThis._callCount > 0) {
-          mainLogger.info(
-            `Notify user has call count: ${serviceThis._callCount}`,
-          );
-          return true;
-        }
-        // if we return nothing here (just calling return;) then there will be no pop-up question at all
-        return;
-      };
+      window.addEventListener(
+        'beforeunload',
+        (e: Event) => {
+          e.preventDefault();
+          if (this._callCount > 0) {
+            mainLogger.info(`Notify user has call count: ${this._callCount}`);
+            const confirmationMessage = true;
+
+            (e || window.event).returnValue = confirmationMessage; // Gecko + IE
+            return confirmationMessage;
+          }
+          // if we return nothing here (just calling return;) then there will be no pop-up question at all
+          return;
+        },
+        false,
+      );
       this._registeredOnbeforeunload = true;
     }
   }
