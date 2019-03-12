@@ -20,6 +20,7 @@ import {
   JuiFileWithExpand,
   JuiExpandImage,
 } from 'jui/pattern/ConversationCard/Files';
+import { showImageViewer } from '@/containers/Viewer';
 
 import { AvatarName } from './AvatarName';
 import { getDurationTimeText } from '../helper';
@@ -41,9 +42,27 @@ const downloadBtn = (downloadUrl: string) => (
 );
 
 const FILE_COMPS = {
-  [FileType.image]: (file: ExtendFileItem, props: ViewProps) => {
+  [FileType.image]: (
+    file: ExtendFileItem,
+    props: ViewProps,
+    handleImageClick: (
+      groupId: number,
+      id: number,
+      origWidth: number,
+      origHeight: number,
+    ) => (ev: React.MouseEvent, loaded: boolean) => void,
+  ) => {
     const { item, previewUrl } = file;
-    const { id, name, downloadUrl, deactivated, type } = item;
+    const { groupId } = props;
+    const {
+      origHeight,
+      id,
+      origWidth,
+      name,
+      downloadUrl,
+      deactivated,
+      type,
+    } = item;
     return (
       !deactivated && (
         <JuiExpandImage
@@ -54,6 +73,12 @@ const FILE_COMPS = {
           i18UnfoldLess={i18next.t('common.collapse')}
           i18UnfoldMore={i18next.t('common.expand')}
           Actions={downloadBtn(downloadUrl)}
+          handleImageClick={handleImageClick(
+            groupId,
+            id,
+            origWidth,
+            origHeight,
+          )}
           ImageActions={downloadBtn(downloadUrl)}
         />
       )
@@ -86,6 +111,20 @@ class Task extends React.Component<taskViewProps> {
     return assignedIds.map((assignedId: number) => (
       <AvatarName key={assignedId} id={assignedId} />
     ));
+  }
+
+  _handleImageClick = (
+    groupId: number,
+    id: number,
+    origWidth: number,
+    origHeight: number,
+  ) => async (ev: React.MouseEvent, loaded?: boolean) => {
+    const target = ev.currentTarget as HTMLElement;
+    const canShowDialogPermission = await this.props.getShowDialogPermission();
+    if (!canShowDialogPermission) {
+      return;
+    }
+    showImageViewer(groupId, id, target);
   }
 
   private _getTitleText(text: string) {
@@ -177,7 +216,11 @@ class Task extends React.Component<taskViewProps> {
         {files && files.length > 0 && (
           <JuiTaskContent title={t('item.attachments')}>
             {files.map((file: ExtendFileItem) => {
-              return FILE_COMPS[file.type](file, this.props);
+              return FILE_COMPS[file.type](
+                file,
+                this.props,
+                this._handleImageClick,
+              );
             })}
           </JuiTaskContent>
         )}

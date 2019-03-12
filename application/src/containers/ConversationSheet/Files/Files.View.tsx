@@ -124,6 +124,12 @@ class FilesView extends React.Component<FilesViewProps> {
                 <JuiPreviewImage
                   key={id}
                   didLoad={() => this._handleImageDidLoad(id, callback)}
+                  handleImageClick={this._handleImageClick(
+                    groupId,
+                    id,
+                    origWidth,
+                    origHeight,
+                  )}
                   placeholder={placeholder}
                   width={size.width}
                   height={size.height}
