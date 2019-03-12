@@ -22,6 +22,9 @@ class TelephonyService {
 
   private _accountState?: RTC_ACCOUNT_STATE;
 
+  private _callCount: number = 0;
+  private _registeredOnbeforeunload: boolean = false;
+
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(`[Telephony_Service_Account_State]: ${state}`);
     this._accountState = state;
@@ -32,12 +35,21 @@ class TelephonyService {
 
     this._callId = callId;
     switch (state) {
-      case RTC_CALL_STATE.CONNECTED:
+      case RTC_CALL_STATE.CONNECTING: {
+        mainLogger.info(`Add one call to call count: ${this._callCount}`);
+        this._callCount += 1;
+        break;
+      }
+      case RTC_CALL_STATE.CONNECTED: {
         this._telephonyStore.connected();
         break;
-      case RTC_CALL_STATE.DISCONNECTED:
+      }
+      case RTC_CALL_STATE.DISCONNECTED: {
         this._telephonyStore.end();
+        mainLogger.info(`Minus one call from call count: ${this._callCount}`);
+        this._callCount = this._callCount - 1 > 0 ? this._callCount - 1 : 0;
         break;
+      }
     }
   }
 
@@ -51,6 +63,24 @@ class TelephonyService {
     this._serverTelephonyService.makeCall(toNumber, {
       onCallStateChange: this._onCallStateChange,
     });
+
+    // tslint:disable-next-line:no-this-assignment
+    const serviceThis = this;
+    // TODO: There is a LeaveBlockerService, but it can't support multi-blocker. When it can support, we should use that service.
+    if (!this._registeredOnbeforeunload) {
+      // If makeCall return success, register this handle
+      window.onbeforeunload = function () {
+        if (serviceThis._callCount > 0) {
+          mainLogger.info(
+            `Notify user has call count: ${serviceThis._callCount}`,
+          );
+          return true;
+        }
+        // if we return nothing here (just calling return;) then there will be no pop-up question at all
+        return;
+      };
+      this._registeredOnbeforeunload = true;
+    }
   }
 
   directCall = (toNumber: string) => {
