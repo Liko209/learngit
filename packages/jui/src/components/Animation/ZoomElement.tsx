@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { ReactElement } from 'react';
 import styled, {
   css,
   keyframes,
@@ -20,13 +20,14 @@ import { AnimationOptions } from './types';
 import { ThemeProps } from '../../foundation/theme/theme';
 
 type ZoomElementProps = {
-  children: (cb: Function) => any;
   show: boolean;
   originalElement: HTMLElement | null;
+  targetElement: HTMLElement | null;
   duration: string;
   easing: string;
   onExited?: ExitHandler;
   onEntered?: EnterHandler;
+  children: ReactElement;
 };
 
 function genStyle(
@@ -114,16 +115,8 @@ const StyledAnimation = styled('div')<
 class ZoomElementAnimation extends React.PureComponent<
   ZoomElementProps & ThemeProps
 > {
-  childRef: HTMLElement;
-
   componentDidMount() {
     this.forceUpdate();
-  }
-
-  registerRef = (element: HTMLElement) => {
-    if (!this.childRef && element) {
-      this.childRef = element;
-    }
   }
 
   handleEntered = (node: HTMLElement, isAppearing: boolean) => {
@@ -141,10 +134,17 @@ class ZoomElementAnimation extends React.PureComponent<
   }
 
   render() {
-    const { show, duration, easing, children, originalElement } = this.props;
+    const {
+      show,
+      duration,
+      easing,
+      children,
+      originalElement,
+      targetElement,
+    } = this.props;
     const startPosition =
       originalElement && originalElement.getBoundingClientRect();
-    const endPosition = this.childRef && this.childRef.getBoundingClientRect();
+    const endPosition = targetElement && targetElement.getBoundingClientRect();
 
     return (
       <Transition
@@ -160,7 +160,7 @@ class ZoomElementAnimation extends React.PureComponent<
             endPosition={endPosition}
             option={{ duration, easing }}
           >
-            {children(this.registerRef)}
+            {React.cloneElement(children)}
           </StyledAnimation>
         )}
       </Transition>

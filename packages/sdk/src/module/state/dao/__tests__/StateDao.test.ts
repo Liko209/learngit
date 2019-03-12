@@ -1,10 +1,12 @@
 /*
- * @Author: Chris Zhan (chris.zhan@ringcentral.com)
- * @Date: 2018-03-06 13:47:47
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-03-08 15:57:10
+ * Copyright © RingCentral. All rights reserved.
  */
-import StateDao from '../index';
-import { setup } from '../../__tests__/utils';
-import { myStateFactory } from '../../../__tests__/factories';
+
+import { StateDao } from '../index';
+import { setup } from '../../../../dao/__tests__/utils';
+import { myStateFactory } from '../../../../__tests__/factories';
 
 describe('Save State', () => {
   let stateDao: StateDao;

@@ -4,15 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { useState } from 'react';
+import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
 import { JuiVirtualizedList } from './VirtualizedList';
+import { IndexRange } from './VirtualizedListProps';
 
 type JuiInfiniteListProps = {
   height: number;
+  minRowHeight: number;
+  overscan?: number;
   hasMore: (direction: 'up' | 'down') => boolean;
   loadInitialData: () => Promise<void>;
   loadMore: (direction: 'up' | 'down') => Promise<void>;
   initialScrollToIndex: number;
+  onVisibleRangeChange?: (range: IndexRange) => void;
+  onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer: JSX.Element;
   loadingRenderer: JSX.Element;
   loadingMoreRenderer: JSX.Element;
@@ -22,6 +28,8 @@ type JuiInfiniteListProps = {
 
 const JuiInfiniteList = ({
   height,
+  minRowHeight,
+  overscan,
   hasMore,
   loadInitialData,
   loadMore,
@@ -29,6 +37,8 @@ const JuiInfiniteList = ({
   noRowsRenderer,
   loadingRenderer,
   loadingMoreRenderer,
+  onVisibleRangeChange,
+  onRenderedRangeChange,
   stickToBottom,
   children,
 }: JuiInfiniteListProps) => {
@@ -59,11 +69,15 @@ const JuiInfiniteList = ({
         return (
           <JuiVirtualizedList
             ref={ref}
-            initialScrollToIndex={initialScrollToIndex}
-            onScroll={onScroll}
             height={height}
+            minRowHeight={minRowHeight}
+            initialScrollToIndex={initialScrollToIndex}
+            overscan={overscan}
             before={loadingUp ? loadingMoreRenderer : null}
             after={loadingDown ? loadingMoreRenderer : null}
+            onScroll={onScroll}
+            onVisibleRangeChange={onVisibleRangeChange}
+            onRenderedRangeChange={onRenderedRangeChange}
             stickToBottom={stickToBottom && isStickToBottomEnabled}
           >
             {children}
@@ -76,6 +90,7 @@ const JuiInfiniteList = ({
 
 JuiInfiniteList.defaultProps = {
   initialScrollToIndex: 0,
+  onVisibleRangeChange: noop,
 };
 
 export { JuiInfiniteList, JuiInfiniteListProps };

@@ -67,14 +67,23 @@ describe('PinnedList ViewModel', () => {
       pinnedListViewModel.build(null as any);
       expect(pinnedListViewModel.loadInitialData).not.toHaveBeenCalled();
     });
-    it('If fitst init should loadInitalData', () => {
+    it('If first init should loadInitialData', () => {
       let pinnedListViewModel;
       pinnedListViewModel = setup({ pinnedPostIds: [] });
       jest.spyOn(pinnedListViewModel, 'loadInitialData');
+
+      // setup new pinned  will build first need reset firstInit
+      // in order test loadInitialData
+      Object.assign(pinnedListViewModel, {
+        firstInit: true,
+      });
+
       pinnedListViewModel.build([1]);
+
+      expect(pinnedListViewModel.firstInit).toBeFalsy();
       expect(pinnedListViewModel.loadInitialData).toHaveBeenCalled();
     });
-    it('If fitst init should loadInitalData', () => {
+    it('If first init should loadInitialData', () => {
       let pinnedListViewModel;
       pinnedListViewModel = setup({ pinnedPostIds: [] });
       const discontinuousPosListHandler = {

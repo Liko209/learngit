@@ -14,7 +14,7 @@ const fadeAnimation = keyframes`
       opacity: 0;
     }
     to {
-      transform: opacity: 1;
+      opacity: 1;
     }
 `;
 

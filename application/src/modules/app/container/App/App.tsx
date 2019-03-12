@@ -52,21 +52,19 @@ class App extends React.Component {
   public render() {
     const { globalLoading } = this._appStore;
     return (
-      <>
-        <ThemeProvider>
-          {globalLoading ? (
-            <JuiContentLoader />
-          ) : (
-            <>
-              <Title />
-              <TopBanner />
-              <Router />
-              <AboutView />
-              {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
-            </>
-          )}
-        </ThemeProvider>
-      </>
+      <ThemeProvider>
+        {globalLoading ? (
+          <JuiContentLoader />
+        ) : (
+          <>
+            <Title />
+            <TopBanner />
+            <Router />
+            <AboutView />
+            {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
+          </>
+        )}
+      </ThemeProvider>
     );
   }
 

@@ -48,13 +48,13 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
 
     sanitizedItems = sanitizedItems.sort(sortFunc);
     const allItemIds = sanitizedItems.map((x: T) => x.id);
+
     const itemIds = ArrayUtils.sliceIdArray(
       allItemIds,
       limit,
       offsetItemId,
       direction,
     );
-
     return itemIds;
   }
 
@@ -78,6 +78,7 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
       id: item.id,
       group_ids: item.group_ids,
       created_at: item.created_at,
+      modified_at: item.modified_at,
     };
   }
 

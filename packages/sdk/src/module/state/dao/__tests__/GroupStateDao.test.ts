@@ -1,10 +1,11 @@
 /*
- * @Author: Chris Zhan (chris.zhan@ringcentral.com)
- * @Date: 2018-05-31 18:05:21
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-03-08 15:17:20
  * Copyright © RingCentral. All rights reserved.
  */
-import GroupStateDao from '..';
-import { setup } from '../../__tests__/utils';
+
+import { GroupStateDao } from '../index';
+import { setup } from '../../../../dao/__tests__/utils';
 
 describe('groupState Dao', () => {
   let groupStateDao: GroupStateDao;

@@ -23,7 +23,7 @@ test(formalName('Show massage draft when switching conversation', ['P0', 'JPT-13
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     let teamId1, teamId2, conversation1, conversation2;
     await h(t).withLog('Given I have an extension with 1 private chat A and 1 group chat B', async () => {
