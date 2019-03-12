@@ -93,30 +93,7 @@ const StyledError = styled.div`
   }
 `;
 
-const formats = [
-  'background',
-  'bold',
-  'color',
-  'font',
-  'code',
-  'italic',
-  'link',
-  'size',
-  'strike',
-  'script',
-  'underline',
-  'blockquote',
-  'header',
-  'indent',
-  'list',
-  'align',
-  'direction',
-  'code-block',
-  'formula',
-  'mention',
-  // 'image',
-  // 'video',
-];
+const formats = ['mention'];
 
 type Props = {
   value?: string | Delta;
@@ -138,26 +115,8 @@ class JuiMessageInput extends React.PureComponent<Props> {
 
   componentDidMount() {
     setTimeout(this.focusEditor, 0);
-    setTimeout(this._addMatcher, 0);
   }
-  private _addMatcher = () => {
-    if (this._inputRef.current) {
-      const quill = this._inputRef.current.getEditor();
-      quill.clipboard.addMatcher(
-        Node.ELEMENT_NODE,
-        (node: Node, delta: Delta) => {
-          if (delta.ops) {
-            delta.ops = delta.ops.map((op: any) => {
-              return {
-                insert: op.insert,
-              };
-            });
-          }
-          return delta;
-        },
-      );
-    }
-  }
+
   componentDidUpdate(prevProps: Props) {
     if (
       this._inputRef.current &&
