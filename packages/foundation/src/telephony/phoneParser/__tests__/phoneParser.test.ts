@@ -99,5 +99,5 @@ describe('PhoneParser', () => {
     const regionalInfo = phoneParserModule.GetRegionalInfo(1, '650');
     expect(regionalInfo.areaCode).toEqual('650');
     expect(regionalInfo.HasBan()).toEqual(false);
-  }, 15000);
+  }, 30000);
 });
