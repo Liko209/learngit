@@ -22,7 +22,6 @@ class TelephonyService {
 
   private _accountState?: RTC_ACCOUNT_STATE;
 
-  private _callCount: number = 0;
   private _registeredOnbeforeunload: boolean = false;
 
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
@@ -35,19 +34,12 @@ class TelephonyService {
 
     this._callId = callId;
     switch (state) {
-      case RTC_CALL_STATE.CONNECTING: {
-        mainLogger.info(`Add one call to call count: ${this._callCount}`);
-        this._callCount += 1;
-        break;
-      }
       case RTC_CALL_STATE.CONNECTED: {
         this._telephonyStore.connected();
         break;
       }
       case RTC_CALL_STATE.DISCONNECTED: {
         this._telephonyStore.end();
-        mainLogger.info(`Minus one call from call count: ${this._callCount}`);
-        this._callCount = this._callCount - 1 > 0 ? this._callCount - 1 : 0;
         break;
       }
     }
@@ -71,8 +63,10 @@ class TelephonyService {
         'beforeunload',
         (e: Event) => {
           e.preventDefault();
-          if (this._callCount > 0) {
-            mainLogger.info(`Notify user has call count: ${this._callCount}`);
+          if (this._serverTelephonyService.getAllCallCount() > 0) {
+            mainLogger.info(
+              `Notify user has call count: ${this._serverTelephonyService.getAllCallCount()}`,
+            );
             const confirmationMessage = true;
 
             (e || window.event).returnValue = confirmationMessage; // Gecko + IE
