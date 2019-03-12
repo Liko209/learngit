@@ -36,11 +36,11 @@ class FileService {
         names.push(file.substr(0, file.length - 5));
       }
 
-      if (file.endsWith('.traces.json')) {
+      if (Config.fileUpload && file.endsWith('.traces.json')) {
         tracesFiles.push(file);
       }
 
-      if (file.endsWith('.heapsnapshot')) {
+      if (Config.fileUpload && file.endsWith('.heapsnapshot')) {
         memoryFiles.push(file);
       }
     }

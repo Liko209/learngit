@@ -3,17 +3,13 @@
  * @Date: 2019-02-27 10:18:13
  */
 import { Scene } from './scene';
-import { TaskDto, SceneDto } from '../model';
+import { Config } from '../config';
+import { SceneDto } from '../model';
 import { ScenarioConfigFactory, gatherers } from '../lighthouse';
 import { MetricService, FileService } from '../service';
 
 class SwitchConversationScene extends Scene {
-  private convrsationIds: Array<string>;
-
-  constructor(taskDto: TaskDto, convrsationIds: Array<string>, url?: string) {
-    super(taskDto, url);
-    this.convrsationIds = convrsationIds;
-  }
+  private convrsationIds: Array<string> = Config.switchConversationIds;
 
   async preHandle() {
     this.lightHouseConfig = ScenarioConfigFactory.getSimplifyConfig();

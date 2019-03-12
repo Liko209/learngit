@@ -3,17 +3,13 @@
  * @Date: 2019-02-27 10:18:13
  */
 import { Scene } from './scene';
-import { TaskDto, SceneDto } from '../model';
+import { Config } from '../config';
+import { SceneDto } from '../model';
 import { ScenarioConfigFactory, gatherers } from '../lighthouse';
 import { MetricService, FileService } from '../service';
 
 class SearchScene extends Scene {
-  private keywords: Array<string>;
-
-  constructor(taskDto: TaskDto, keywords: Array<string>, url?: string) {
-    super(taskDto, url);
-    this.keywords = keywords;
-  }
+  private keywords: Array<string> = Config.searchKeywords;
 
   async preHandle() {
     this.lightHouseConfig = ScenarioConfigFactory.getSimplifyConfig();
