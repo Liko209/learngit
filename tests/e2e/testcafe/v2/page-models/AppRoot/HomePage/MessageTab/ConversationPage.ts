@@ -188,7 +188,6 @@ class BaseConversationPage extends BaseWebComponent {
     await H.retryUntilPass(async () => {
       const postCard = this.posts.filter(`[data-id="${postId}"]`)
       const result = await this.isVisible(postCard);
-      console.log(result)
       assert.strictEqual(result, visible, `This post expect visible: ${visible}, but actual: ${result}`);
     });
   }

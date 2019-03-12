@@ -395,6 +395,14 @@ export class GlipSdk {
     return await this.updateProfile(data, rcId);
   }
 
+  async bookmarkPosts(postIds: string | string[], rcId?: string) {
+    const posts = [].concat(postIds)
+    const data = {
+      favorite_post_ids: posts
+    }
+    await this.updateProfile(data, rcId);
+  }
+
   /* state */
   getState(rcId?: string) {
     const stateId = rcId ? this.toStateId(rcId) : this.myState._id;

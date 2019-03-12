@@ -2,7 +2,7 @@
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-13 13:26:25
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-12 18:11:42
+ * @Last Modified time: 2019-03-12 20:06:23
  */
 
 import * as _ from 'lodash';
@@ -61,7 +61,7 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
     await t.expect(mentionPage.postItemById(newPostId).exists).ok({ timeout: 10e3 });
   }, true);
 
-  await h(t).withLog('Then the sender delete the new post', async () => {
+  await h(t).withLog('When the sender delete the new post', async () => {
     await h(t).glip(otherUser).init();
     await h(t).glip(otherUser).deletePost(newPostId, chat.glipId);
   });
@@ -179,11 +179,16 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('When I enter AtMention page and find the AtMention posts', async () => {
+  await h(t).withLog('When I enter AtMention page', async () => {
     await mentionsEntry.enter();
   }, true);
 
-  await h(t).withLog('Then the UMI should exist', async () => {
+
+  await h(t).withLog('Then I should find the AtMention posts', async () => {
+    await t.expect(mentionPage.postItemById(postId).exists).ok()
+  });
+
+  await h(t).withLog('And the UMI should exist', async () => {
     await directMessagesSection.fold();
     await directMessagesSection.headerUmi.shouldBeNumber(1);
   })
@@ -249,7 +254,14 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
     await postMentionPage.postItemById(newPostId).jumpToConversationByClickPost();
   });
 
-  await h(t).withLog('Then the conversation should have no UMI', async () => {
+  await h(t).withLog('Then the at mention post should be visible', async () => {
+    await conversationPage.groupIdShouldBe(chat.glipId);
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.postByIdExpectVisible(newPostId, true);
+  });
+
+  await h(t).withLog('And the conversation should have no UMI', async () => {
+
     await chatEntry.umi.shouldBeNumber(0);
   });
 
@@ -346,7 +358,7 @@ test.skip(formalName('Jump to post position when click button or clickable area 
     await postMentionPage.postItemById(atMentionTeamPostId).jumpToConversationByClickPost();
   });
 
-  await h(t).withLog('Then I can see the AtMention post in the team', async () => {
+  await h(t).withLog('Then I should jump to the AtMention post position in the team', async () => {
     await conversationPage.waitUntilPostsBeLoaded();
     await conversationPage.groupIdShouldBe(team.glipId);
     await conversationPage.postByIdExpectVisible(atMentionTeamPostId, true);
@@ -357,10 +369,10 @@ test.skip(formalName('Jump to post position when click button or clickable area 
   });
 
   await h(t).withLog('And I click AtMention post item from pvChat', async () => {
-    await postMentionPage.postItemById(atMentionChatPostId).clickConversationByButton();
+    await postMentionPage.postItemById(atMentionChatPostId).jumpToConversationByClickName();
   });
 
-  await h(t).withLog('Then I can see the AtMention post in the pvChat', async () => {
+  await h(t).withLog('Then I should jump to the AtMention post position in the pvChat', async () => {
     await conversationPage.waitUntilPostsBeLoaded();
     await conversationPage.groupIdShouldBe(chat.glipId);
     await conversationPage.postByIdExpectVisible(atMentionChatPostId, true);
