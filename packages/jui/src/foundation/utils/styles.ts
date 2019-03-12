@@ -131,6 +131,13 @@ function disabledOpacity() {
   `;
 }
 
+function disabled() {
+  return css`
+    background-color: rgba(0, 0, 0, 0.12);
+    color: rgba(0, 0, 0, 0.26);
+  `;
+}
+
 /********************************************
  *              Typography                  *
  ********************************************/
@@ -206,6 +213,7 @@ export {
   grey,
   activeOpacity,
   disabledOpacity,
+  disabled,
   typography,
   ellipsis,
   lineClamp,
