@@ -11,7 +11,7 @@ import { SERVICE, CONFIG, SOCKET } from '../../../service/eventKey';
 import SocketIO from '../__mocks__/socket';
 import { SocketClient } from 'foundation';
 import { GlobalConfigService } from '../../../module/config';
-import { SyncUserConfig } from '../../../module/sync/config';
+import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
 
 jest.mock('../../../module/config');
 
@@ -25,14 +25,13 @@ SocketFSM.prototype = {
   setReconnection: mockedSetReconnection,
 };
 
-jest.mock('../../../module/sync/config', () => {
+jest.mock('../../../module/sync/config/SyncUserConfig', () => {
   const config = {
-    setSocketServerHost: jest.fn(),
     getSocketServerHost: jest.fn(),
+    setSocketServerHost: jest.fn(),
   };
   return {
-    SocketUserConfig: () => {
-      console.error('xxxxxxxxxxxxx');
+    SyncUserConfig: () => {
       return config;
     },
   };
