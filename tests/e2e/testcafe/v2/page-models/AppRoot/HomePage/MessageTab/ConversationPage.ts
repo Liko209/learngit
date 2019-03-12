@@ -49,6 +49,11 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
 
+  async countOnUnreadButtonShouldBe(n: string | number) {
+    const reg = new RegExp(`^\\D*${n}\\D+$`)
+    await this.t.expect(this.jumpToFirstUnreadButtonWrapper.find('span').textContent).match(reg);
+  }
+
   async clickJumpToFirstUnreadButton() {
     await this.t.click(this.jumpToFirstUnreadButtonWrapper);
   }

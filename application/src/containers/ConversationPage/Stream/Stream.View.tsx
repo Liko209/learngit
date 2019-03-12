@@ -45,6 +45,7 @@ class StreamViewComponent extends Component<Props> {
   private _ro: ResizeObserver[] = [];
   private _globalStore = storeManager.getGlobalStore();
   private _listLastWidth = 0;
+  private _scrollParent?: HTMLElement;
   private _currentUser = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   @observable
   private _hideList = true;
@@ -71,22 +72,31 @@ class StreamViewComponent extends Component<Props> {
     window.removeEventListener('blur', this._blurHandler);
     this._ro.forEach((i: RO) => i.disconnect());
     this._detachScrollHandlerToContainer();
+    this._scrollParent = undefined;
+  }
+
+  private _getScrollParent = () => {
+    if (!this._scrollParent) {
+      const { current } = this._listRef;
+      if (current) {
+        this._scrollParent = getScrollParent(current);
+      }
+    }
+    return this._scrollParent;
   }
 
   private _detachScrollHandlerToContainer() {
-    if (this._listRef.current) {
-      getScrollParent(this._listRef.current).removeEventListener(
-        'scroll',
-        this._recordPosition,
-      );
+    const parent = this._getScrollParent();
+    if (parent) {
+      parent.removeEventListener('scroll', this._recordPosition);
     }
   }
 
   getSnapshotBeforeUpdate() {
-    if (this._listRef.current) {
-      const parentEl = getScrollParent(this._listRef.current);
-      this._scrollHeight = parentEl.scrollHeight;
-      this._scrollTop = parentEl.scrollTop;
+    const parent = this._getScrollParent();
+    if (parent) {
+      this._scrollHeight = parent.scrollHeight;
+      this._scrollTop = parent.scrollTop;
     }
 
     return {};
@@ -128,8 +138,8 @@ class StreamViewComponent extends Component<Props> {
     }
 
     // scroll TOP and load posts
-    if (this._isAtTop && hasMoreUp && this._listRef.current) {
-      const parent = getScrollParent(this._listRef.current);
+    const parent = this._getScrollParent();
+    if (this._isAtTop && hasMoreUp && parent) {
       parent.scrollTop =
         this._scrollTop + parent.scrollHeight - this._scrollHeight;
     }
@@ -353,17 +363,14 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _attachScrollHandlerToContainer() {
-    if (!this._listRef.current) {
+    const parent = this._getScrollParent();
+    if (!parent) {
       return;
     }
-    getScrollParent(this._listRef.current).addEventListener(
-      'scroll',
-      this._recordPosition,
-      {
-        capture: true,
-        passive: true,
-      },
-    );
+    parent.addEventListener('scroll', this._recordPosition, {
+      capture: true,
+      passive: true,
+    });
   }
 
   @action
