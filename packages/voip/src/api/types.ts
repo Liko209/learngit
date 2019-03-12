@@ -47,7 +47,18 @@ enum RTC_CALL_ACTION {
   MUTE = 'mute',
   UNMUTE = 'unmute',
   PARK = 'park',
+  CALL_TIME_OUT = 'callTimeOut',
 }
+
+type RTCSipFlags = {
+  voipFeatureEnabled: boolean;
+  voipCountryBlocked: boolean;
+  outboundCallsEnabled: boolean;
+  dscpEnabled: boolean;
+  dscpSignaling: Number;
+  dscpVoice: Number;
+  dscpVideo: Number;
+};
 
 export {
   RTC_ACCOUNT_STATE,
@@ -56,4 +67,5 @@ export {
   RTC_CALL_ACTION,
   RTCCallOptions,
   RTCCallActionSuccessOptions,
+  RTCSipFlags,
 };

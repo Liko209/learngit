@@ -46,8 +46,6 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
 }
 
 class ItemListViewModel extends StoreViewModel<Props> {
-  @observable groupId: number;
-  @observable type: RIGHT_RAIL_ITEM_TYPE;
   @observable private _sortableDataHandler: FetchSortableDataListHandler<Item>;
   @observable private _total: number = Infinity;
   @observable private _loadingContent = false;
@@ -55,15 +53,12 @@ class ItemListViewModel extends StoreViewModel<Props> {
 
   constructor(props: Props) {
     super(props);
-    const { groupId, type } = props;
-    this.groupId = groupId;
-    this.setType(type);
-
     this.reaction(
-      () => ({ groupId: this.props.groupId, type: this.props.type }),
-      (data: { groupId: number; type: number }) => {
-        this.groupId = data.groupId;
-        this.setType(data.type);
+      () => ({ groupID: this._groupID, active: this._active }),
+      () => {
+        this.setType(this._type);
+        this._loadTotalCount();
+        this.loadInitialData();
       },
       { fireImmediately: true, equals: comparer.structural },
     );
@@ -73,20 +68,39 @@ class ItemListViewModel extends StoreViewModel<Props> {
     });
   }
 
+  @computed
+  get _type() {
+    return this.props.type;
+  }
+
+  @computed
+  get _groupID() {
+    return this.props.groupId;
+  }
+
+  @computed
+  get _active() {
+    return this.props.active;
+  }
+
   @action
   setType = (type: RIGHT_RAIL_ITEM_TYPE) => {
-    this.type = type;
     const { sortKey, desc } = this.getSort();
-    this._buildSortableMemberListHandler(this.groupId, type, sortKey, desc);
+    this._buildSortableMemberListHandler(
+      this.props.groupId,
+      type,
+      sortKey,
+      desc,
+    );
   }
 
   @action
   private _loadTotalCount = async () => {
     const itemService: ItemService = ItemService.getInstance();
     this._total = await itemService.getGroupItemsCount(
-      this.groupId,
-      this._getTypeId(this.type),
-      this._getFilterFunc(this.groupId, this.type),
+      this.props.groupId,
+      this._getTypeId(this._type),
+      this._getFilterFunc(this.props.groupId, this._type),
     );
   }
 
@@ -98,7 +112,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
     return {
       sortKey: ITEM_SORT_KEYS.CREATE_TIME,
       desc: false,
-      ...this._getTabConfig(this.type).sort,
+      ...this._getTabConfig(this._type).sort,
     };
   }
 

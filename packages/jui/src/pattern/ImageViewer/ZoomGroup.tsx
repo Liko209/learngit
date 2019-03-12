@@ -5,18 +5,26 @@
  */
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
-import { height, width, grey, spacing } from '../../foundation/utils/styles';
+import {
+  height,
+  width,
+  grey,
+  spacing,
+  palette,
+} from '../../foundation/utils/styles';
 
 type JuiZoomGroupProps = {
   disabled?: boolean;
   ZoomIn: React.ReactNode;
   ZoomOut: React.ReactNode;
   centerText: string;
+  className?: string;
 };
 const StylesContain = styled.div`
   && {
     display: flex;
     align-items: center;
+    background-color: ${palette('common', 'white')};
     height: ${({ theme }) => height(10)({ theme })};
     width: ${({ theme }) => width(24.5)({ theme })};
     border-radius: ${({ theme }) => width(5)({ theme })};
@@ -46,12 +54,12 @@ const StyledTextContain = styled.div`
 
 class JuiFabGroup extends PureComponent<JuiZoomGroupProps> {
   render() {
-    const { ZoomIn, ZoomOut, centerText } = this.props;
+    const { ZoomIn, ZoomOut, centerText, className } = this.props;
     return (
-      <StylesContain>
-        <StyledZoom>{ZoomIn}</StyledZoom>
-        <StyledTextContain>{centerText}</StyledTextContain>
+      <StylesContain className={className}>
         <StyledZoom>{ZoomOut}</StyledZoom>
+        <StyledTextContain>{centerText}</StyledTextContain>
+        <StyledZoom>{ZoomIn}</StyledZoom>
       </StylesContain>
     );
   }

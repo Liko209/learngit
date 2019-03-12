@@ -13,6 +13,7 @@ type FilesProps = {
 
 type FilesViewProps = {
   postId: number;
+  groupId: number;
   post: Post;
   files: {
     [FileType.image]: ExtendFileItem[];

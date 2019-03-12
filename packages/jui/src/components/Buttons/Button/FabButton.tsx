@@ -111,7 +111,6 @@ const StyledFabButton = styled<StyledFabButtonProps>(WrappedMuiFab)`
         )};
       box-shadow: ${({ showShadow, theme }) =>
         showShadow ? theme.boxShadow.val16 : 'none'};
-      opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
     }
   }
 `;
@@ -125,6 +124,7 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
     tooltipPlacement,
     color,
     showShadow,
+    disabled,
     ...rest
   } = props;
   let colorScope: keyof Palette = 'primary';
@@ -140,7 +140,7 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
     }
   }
 
-  if (!disableToolTip && tooltipTitle) {
+  if (!disabled && !disableToolTip && tooltipTitle) {
     return (
       <JuiArrowTip title={tooltipTitle} placement={tooltipPlacement}>
         {
@@ -154,7 +154,7 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
     );
   }
   return (
-    <StyledFabButton colorScope={colorScope} colorName={colorName} {...rest} />
+    <StyledFabButton disabled={disabled} colorScope={colorScope} colorName={colorName} {...rest} />
   );
 };
 

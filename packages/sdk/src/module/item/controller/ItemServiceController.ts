@@ -74,7 +74,10 @@ class ItemServiceController {
     return await this._entitySourceController.batchGet(ids, true);
   }
 
-  async getItemIndexInfo(itemId: number, options: ItemQueryOptions) {
+  async getItemIndexInfo(
+    itemId: number,
+    options: ItemQueryOptions,
+  ): Promise<{ index: number; totalCount: number }> {
     const itemIds = await this._getSortedItemIds(options);
     return { index: itemIds.indexOf(itemId), totalCount: itemIds.length };
   }

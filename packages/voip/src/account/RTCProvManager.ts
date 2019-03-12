@@ -245,6 +245,10 @@ class RTCProvManager extends EventEmitter2 {
     }
     return paramsCorrect;
   }
+
+  getCurrentSipProvisionInfo(): RTCSipProvisionInfo | null {
+    return this._sipProvisionInfo;
+  }
 }
 
 export { RTCProvManager };

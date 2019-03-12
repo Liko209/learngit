@@ -95,4 +95,4 @@ const name2icon = {
 
 export type ICON_NAME = keyof typeof name2icon;
 
-export default name2icon;
+export { name2icon };
