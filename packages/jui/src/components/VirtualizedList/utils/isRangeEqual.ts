@@ -7,7 +7,7 @@ import { IndexRange } from '../types';
 
 const isRangeEqual = (left: IndexRange, right: IndexRange) => {
   return (
-    left.startIndex === right.startIndex || left.stopIndex === right.stopIndex
+    left.startIndex === right.startIndex && left.stopIndex === right.stopIndex
   );
 };
 

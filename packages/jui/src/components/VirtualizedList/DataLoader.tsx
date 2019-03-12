@@ -3,7 +3,16 @@
  * @Date: 2019-03-04 10:14:48
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useRef, useState, useEffect } from 'react';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useImperativeHandle,
+  RefForwardingComponent,
+  memo,
+  forwardRef,
+} from 'react';
+import { noop } from 'jui/src/foundation/utils';
 
 type Direction = 'up' | 'down';
 
@@ -16,35 +25,39 @@ type JuiDataLoaderProps = {
     loadingInitial: boolean;
     loadingUp: boolean;
     loadingDown: boolean;
+    loadingInitialFailed: boolean;
     onScroll: (event: React.UIEvent) => void;
   }) => JSX.Element;
 };
+type ExoticProps = { ref: any };
 
-const JuiDataLoader = ({
-  hasMore,
-  loadInitialData,
-  loadMore,
-  children,
-}: JuiDataLoaderProps) => {
+const JuiDataLoader: RefForwardingComponent<ExoticProps, JuiDataLoaderProps> = (
+  { hasMore, loadInitialData, loadMore, children }: JuiDataLoaderProps,
+  forwardRef,
+) => {
   const ref = React.createRef();
   const prevScrollTopRef = useRef(0);
   const [loadingUp, setLoadingUp] = useState(false);
   const [loadingDown, setLoadingDown] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(false);
+  const [loadingInitialFailed, setLoadingInitialFailed] = useState(false);
   const loading = loadingUp || loadingDown || loadingInitial;
 
   const map = {
     up: {
       setLoading: setLoadingUp,
       load: () => loadMore('up'),
+      onFailed: noop,
     },
     down: {
       setLoading: setLoadingDown,
       load: () => loadMore('down'),
+      onFailed: noop,
     },
     initial: {
       setLoading: setLoadingInitial,
       load: () => loadInitialData(),
+      onFailed: setLoadingInitialFailed,
     },
   };
 
@@ -52,10 +65,19 @@ const JuiDataLoader = ({
     loadData('initial');
   },        []);
 
+  useImperativeHandle(forwardRef, () => ({
+    ref: ref.current,
+  }));
+
   const loadData = async (type: 'initial' | 'up' | 'down') => {
-    const { setLoading, load } = map[type];
+    const { setLoading, load, onFailed } = map[type];
     setLoading(true);
-    await load();
+    onFailed(false);
+    try {
+      await load();
+    } catch {
+      onFailed(true);
+    }
     setLoading(false);
   };
 
@@ -86,8 +108,16 @@ const JuiDataLoader = ({
     loadingInitial,
     loadingUp,
     loadingDown,
+    loadingInitialFailed,
     onScroll: handleScroll,
   });
 };
 
-export { JuiDataLoader, JuiDataLoaderProps };
+const memoDataLoader = memo(
+  forwardRef(JuiDataLoader),
+) as React.MemoExoticComponent<
+  React.ForwardRefExoticComponent<
+    JuiDataLoaderProps & React.RefAttributes<ExoticProps>
+  >
+>;
+export { memoDataLoader as JuiDataLoader, JuiDataLoaderProps };

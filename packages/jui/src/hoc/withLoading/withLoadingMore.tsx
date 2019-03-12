@@ -24,13 +24,13 @@ const StyledLoadingMore = styled.div`
   padding: ${spacing(15, 0)};
 `;
 
-const DefaultLoadingMore = () => (
+export const DefaultLoadingMore = () => (
   <StyledLoadingMore>
     <JuiCircularProgress />
   </StyledLoadingMore>
 );
 
-export const DefaultLoadingMoreWithDelay = withDelay(DefaultLoadingMore);
+const DefaultLoadingMoreWithDelay = withDelay(DefaultLoadingMore);
 
 const withLoadingMore = (
   Component: ComponentType<any>,
