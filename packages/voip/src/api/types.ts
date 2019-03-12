@@ -47,6 +47,7 @@ enum RTC_CALL_ACTION {
   MUTE = 'mute',
   UNMUTE = 'unmute',
   PARK = 'park',
+  CALL_TIME_OUT = 'callTimeOut',
 }
 
 type RTCSipFlags = {
