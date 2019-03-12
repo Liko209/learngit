@@ -4,4 +4,5 @@ export * from './api/RTCEngine';
 export * from './api/RTCCall';
 export * from './api/IRTCAccountDelegate';
 export * from './api/IRTCCallDelegate';
+export * from './api/IRTCMediaDeviceDelegate';
 export * from './api/types';
