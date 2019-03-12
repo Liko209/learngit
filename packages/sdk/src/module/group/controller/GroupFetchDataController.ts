@@ -17,7 +17,10 @@ import { AccountGlobalConfig } from '../../../service/account/config';
 import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
-import { ProfileService, extractHiddenGroupIds } from '../../profile';
+import {
+  ProfileService,
+  extractHiddenGroupIdsWithoutUnread,
+} from '../../profile';
 import { transform } from '../../../service/utils';
 import {
   PERFORMANCE_KEYS,
@@ -79,7 +82,9 @@ export class GroupFetchDataController {
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
-      const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+      const hiddenIds = profile
+        ? await extractHiddenGroupIdsWithoutUnread(profile)
+        : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
       const userId = AccountGlobalConfig.getCurrentUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
@@ -519,7 +524,7 @@ export class GroupFetchDataController {
       let favoriteGroupIds = profile.favorite_group_ids.filter(
         (id: any) => typeof id === 'number' && !isNaN(id),
       );
-      const hiddenIds = extractHiddenGroupIds(profile);
+      const hiddenIds = await extractHiddenGroupIdsWithoutUnread(profile);
       favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);
       const groups = await this.groupService.getGroupsByIds(
         favoriteGroupIds,

@@ -352,10 +352,9 @@ class GroupHandleDataController {
     await groupDao.doInTransaction(async () => {
       const groups: (null | Partial<Raw<Group>>)[] = await Promise.all(
         uniqMaxPosts.map(async (post: Post) => {
-          // for index data flow, group will processed first, so all posts are not newer than most recent post, we still need to update hidden flag
-          ids.push(post.group_id);
           const group: null | Group = await groupDao.get(post.group_id);
           if (group && this.isNeedToUpdateMostRecent4Group(post, group)) {
+            ids.push(post.group_id);
             const pg: Partial<Raw<Group>> = {
               _id: post.group_id,
               most_recent_post_created_at: post.created_at,

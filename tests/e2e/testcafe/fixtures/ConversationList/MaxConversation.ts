@@ -28,9 +28,9 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
     const favoritesSection = app.homePage.messageTab.favoritesSection;
 
     await h(t).withLog('Given I have a new account (via resetGlipAccount)', async () => {
-      await h(t).resetGlipAccount(loginUser);
       await h(t).platform(loginUser).init();
       await h(t).glip(loginUser).init();
+      await h(t).glip(loginUser).resetProfileAndState();
       await h(t).platform(otherUser).init();    
     });
 

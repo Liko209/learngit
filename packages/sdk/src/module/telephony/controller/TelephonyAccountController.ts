@@ -9,6 +9,7 @@ import {
   IRTCAccountDelegate,
   RTC_ACCOUNT_STATE,
   RTCCall,
+  RTCSipFlags,
 } from 'voip';
 import { TelephonyCallController } from '../controller/TelephonyCallController';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
@@ -44,6 +45,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   onReceiveIncomingCall(call: RTCCall) {}
+
+  onReceiveNewProvFlags(sipFlags: RTCSipFlags) {}
 }
 
 export { TelephonyAccountController };
