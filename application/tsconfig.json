@@ -7,7 +7,8 @@
     "paths": {
       "@/*": ["src/*"],
       "sdk/*": ["node_modules/sdk/src/*"],
-      "jui/*": ["node_modules/jui/src/*"]
+      "jui/*": ["node_modules/jui/src/*"],
+      "test-util/*": ["node_modules/test-util/src/*"]
     }
   },
   "include": ["src/**/*"],
