@@ -66,7 +66,7 @@ const JuiDataLoader: RefForwardingComponent<ExoticProps, JuiDataLoaderProps> = (
   },        []);
 
   useImperativeHandle(forwardRef, () => ({
-    ref: ref.current,
+    ref,
   }));
 
   const loadData = async (type: 'initial' | 'up' | 'down') => {
