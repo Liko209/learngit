@@ -12,7 +12,7 @@ import React, {
   memo,
   forwardRef,
 } from 'react';
-import { noop } from 'jui/src/foundation/utils';
+import { noop } from 'jui/foundation/utils';
 
 type Direction = 'up' | 'down';
 
@@ -66,7 +66,7 @@ const JuiDataLoader: RefForwardingComponent<ExoticProps, JuiDataLoaderProps> = (
   },        []);
 
   useImperativeHandle(forwardRef, () => ({
-    ref,
+    ref: ref.current,
   }));
 
   const loadData = async (type: 'initial' | 'up' | 'down') => {

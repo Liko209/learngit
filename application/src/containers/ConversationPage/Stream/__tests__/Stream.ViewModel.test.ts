@@ -144,7 +144,10 @@ describe('StreamViewModel', () => {
 
       Object.assign(vm, {
         _streamController: {
-          hasMoreUp: props.hasMoreUp,
+          hasMore: (direction: QUERY_DIRECTION) => {
+            return props.hasMoreUp;
+          },
+
           items: props.id
             ? [{ id: props.id, value: [props.id], type: StreamItemType.POST }]
             : [],
@@ -186,7 +189,7 @@ describe('StreamViewModel', () => {
         _historyHandler: { update: mockUpdate },
         _streamController: {
           postIds,
-          items: postIds.map(i => ({
+          items: postIds.map((i) => ({
             id: i,
             value: i,
             type: StreamItemType.POST,

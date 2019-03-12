@@ -59,11 +59,16 @@ class BaseService<SubModel extends IdModel = IdModel> extends AbstractService {
     return result;
   }
 
-  async getByIdFromLocal(id: number): Promise<SubModel> {
+  getSynchronously(id: number): SubModel | null {
     let result: SubModel | null = null;
     if (this.isCacheInitialized()) {
       result = this.getEntityFromCache(id);
     }
+    return result;
+  }
+
+  async getByIdFromLocal(id: number): Promise<SubModel> {
+    let result: SubModel | null = this.getSynchronously(id);
     if (!result) {
       result = await this.getByIdFromDao(id);
     }

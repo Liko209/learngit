@@ -4,7 +4,7 @@
  */
 import { Pass } from './pass';
 import { Setting } from './setting';
-import { ProcessGatherer } from '../../gatherers';
+import { ProcessGatherer, MemoryGatherer } from '../../gatherers';
 import { ProcessAudit } from '../../audits';
 
 const defaultConfig = require('lighthouse/lighthouse-core/config/default-config');
@@ -28,6 +28,9 @@ class SceneConfig {
       'js-usage',
       {
         instance: new ProcessGatherer()
+      },
+      {
+        instance: new MemoryGatherer()
       }
     ],
   },

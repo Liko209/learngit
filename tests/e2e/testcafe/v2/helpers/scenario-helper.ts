@@ -119,6 +119,12 @@ class ScenarioHelper {
     }
   }
 
+  public async sendTextPost(text: string, chat: IGroup, operator: IUser) {
+    assert(text && chat && operator, "require text, chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    return await platform.sendTextPost(text, chat.glipId);
+  }
+
   public async sentAndGetTextPostId(text: string, chat: IGroup, operator: IUser) {
     assert(text && chat && operator, "require text, chat and operator");
     const platform = await this.sdkHelper.sdkManager.getPlatform(operator);

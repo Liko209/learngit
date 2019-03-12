@@ -24,23 +24,33 @@ describe('SyncController ', () => {
   });
 
   describe('syncData', () => {
-    it('should call _firstLogin if LAST_INDEX_TIMESTAMP is null', async () => {
+    beforeEach(() => {
       jest.clearAllMocks();
-
+    });
+    it('should call _firstLogin if LAST_INDEX_TIMESTAMP is null', async () => {
       NewGlobalConfig.getLastIndexTimestamp = jest.fn().mockReturnValue(null);
       const spy = jest.spyOn(syncController, '_firstLogin');
       await syncController.syncData();
       expect(spy).toBeCalled();
     });
     it('should call _syncIndexData if LAST_INDEX_TIMESTAMP is not null', async () => {
-      jest.clearAllMocks();
-
       jest.spyOn(syncController, 'fetchIndexData').mockResolvedValueOnce({});
 
       NewGlobalConfig.getLastIndexTimestamp = jest.fn().mockReturnValue(1);
-      const spy = jest.spyOn(syncController, '_syncIndexData');
+      const spy1 = jest.spyOn(syncController, '_syncIndexData');
+      const spy2 = jest.spyOn(syncController, '_fetchRemaining');
       await syncController.syncData();
-      expect(spy).toBeCalled();
+      expect(spy1).toBeCalled();
+      expect(spy2).toBeCalledTimes(1);
+    });
+    it('should not call _fetchRemaining when sync index data and remaining had ever called', async () => {
+      jest.spyOn(syncController, 'fetchIndexData').mockResolvedValueOnce({});
+
+      NewGlobalConfig.getLastIndexTimestamp = jest.fn().mockReturnValue(1);
+      NewGlobalConfig.getFetchedRemaining = jest.fn().mockReturnValue(1);
+      const spy2 = jest.spyOn(syncController, '_fetchRemaining');
+      await syncController.syncData();
+      expect(spy2).toBeCalledTimes(0);
     });
   });
 });
