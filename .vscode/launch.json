@@ -17,11 +17,7 @@
       "request": "launch",
       "name": "Jest Current File",
       "program": "${workspaceFolder}/scripts/test.js",
-      "args": [
-        "--env=jsdom",
-        "--no-cache",
-        "${relativeFile}",
-      ],
+      "args": ["--no-cache", "${relativeFile}"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
@@ -31,10 +27,7 @@
       "protocol": "inspector",
       "name": "Launch test files with TestCafe",
       "program": "${workspaceRoot}/node_modules/testcafe/bin/testcafe.js",
-      "args": [
-        "firefox",
-        "${file}"
-      ],
+      "args": ["firefox", "${file}"],
       "cwd": "${workspaceRoot}"
     }
   ]
