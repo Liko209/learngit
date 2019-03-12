@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SocketUserConfig } from '../SocketUserConfig';
+import { SyncUserConfig } from '../SyncUserConfig';
 import { AccountGlobalConfig } from '../../../../service/account/config';
-import { UserConfigService } from '../../../../module/config/service/UserConfigService';
-import { SOCKET_CONFIG_KEYS } from '../configKeys';
+import { UserConfigService } from '../../../config/service/UserConfigService';
+import { SYNC_CONFIG_KEYS } from '../configKeys';
 
 jest.mock('../../../../module/config/service/UserConfigService');
 jest.mock('../../../../service/account/config');
@@ -18,8 +18,8 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('SocketUserConfig', () => {
-  let socketUserConfig: SocketUserConfig;
+describe('SyncUserConfig', () => {
+  let syncUserConfig: SyncUserConfig;
   let userConfigService: UserConfigService;
   function setUp() {
     userConfigService = new UserConfigService();
@@ -29,7 +29,7 @@ describe('SocketUserConfig', () => {
       .mockReturnValue(userConfigService);
 
     AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(222);
-    socketUserConfig = new SocketUserConfig();
+    syncUserConfig = new SyncUserConfig();
   }
 
   beforeEach(() => {
@@ -43,22 +43,22 @@ describe('SocketUserConfig', () => {
       setUp();
     });
 
-    it('setSocketServerHost', () => {
+    it('setSocketServerHost()', () => {
       const data: any = {};
-      socketUserConfig.setSocketServerHost([data]);
+      syncUserConfig.setSocketServerHost([data]);
       expect(userConfigService.put).toBeCalledWith(
-        'socket',
-        SOCKET_CONFIG_KEYS.SOCKET_SERVER_HOST,
+        'sync',
+        SYNC_CONFIG_KEYS.SOCKET_SERVER_HOST,
         [data],
       );
     });
 
-    it('getSocketServerHost', () => {
+    it('getSocketServerHost()', () => {
       const data: any = [{}];
       userConfigService.get = jest.fn().mockImplementation(() => {
         return data;
       });
-      const res = socketUserConfig.getSocketServerHost();
+      const res = syncUserConfig.getSocketServerHost();
       expect(res).toEqual(data);
     });
   });
