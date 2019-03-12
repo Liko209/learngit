@@ -320,7 +320,7 @@ test(formalName(`The unread button (up) shouldn't dismiss when opening one conve
   });
 
   await h(t).withLog('And conversationA has more than 1 screen unread messages', async () => {
-    const msgList = _.range(3).map(i => H.multilineString(10, `No. ${i}`, uuid()));
+    const msgList = _.range(3).map(i => H.mu(10, `No. ${i}`, uuid()));
     for (const msg of msgList) {
       await h(t).scenarioHelper.sentAndGetTextPostId(msg, team, otherUser);
     }
