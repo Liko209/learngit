@@ -17,13 +17,6 @@ fixture('ContentPanel/JumpToUnreadButton')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-function getMultilineString(lineNumber: number, prefixText: string = '', suffixText: string = '') {
-  let code = '\n'
-  for (let i = 1; i < lineNumber + 1; i++) {
-    code += `line${i}\n`;
-  }
-  return prefixText + code + suffixText;
-}
 
 test(formalName('Unread button will disappear when resizing window then full screen can show all new messages', ['JPT-208', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
   if (await H.isElectron() || await H.isEdge()) {
@@ -157,7 +150,7 @@ test(formalName('The count of the unread button (up) should display correct', ['
   const otherUser = users[5];
 
   const umiCount = 3;
-  const msgList = _.range(umiCount).map(i => getMultilineString(10, `No. ${i}`, uuid()));
+  const msgList = _.range(umiCount).map(i => H.multilineString(10, `No. ${i}`, uuid()));
 
   let team = <IGroup>{
     type: "Team",
@@ -275,7 +268,7 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
   });
 
   await h(t).withLog('And conversationA has more than 1 screen unread messages', async () => {
-    const msgList = _.range(3).map(i => getMultilineString(10, `No. ${i}`, uuid()));
+    const msgList = _.range(3).map(i => H.multilineString(10, `No. ${i}`, uuid()));
     for (const msg of msgList) {
       await h(t).scenarioHelper.sentAndGetTextPostId(msg, teamA, otherUser);
     }
@@ -327,7 +320,7 @@ test(formalName(`The unread button (up) shouldn't dismiss when opening one conve
   });
 
   await h(t).withLog('And conversationA has more than 1 screen unread messages', async () => {
-    const msgList = _.range(3).map(i => getMultilineString(10, `No. ${i}`, uuid()));
+    const msgList = _.range(3).map(i => H.multilineString(10, `No. ${i}`, uuid()));
     for (const msg of msgList) {
       await h(t).scenarioHelper.sentAndGetTextPostId(msg, team, otherUser);
     }
