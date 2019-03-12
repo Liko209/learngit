@@ -8,7 +8,7 @@ import notificationCenter from '../../service/notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
 import { mainLogger } from 'foundation';
 import { AuthGlobalConfig } from '../../service/auth/config';
-import { SocketUserConfig } from '../../service/socket/config';
+import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
 
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
@@ -257,7 +257,7 @@ export class SocketManager {
 
     try {
       const body = JSON.parse(data.body);
-      const socketUserConfig = new SocketUserConfig();
+      const socketUserConfig = new SyncUserConfig();
       socketUserConfig.setSocketServerHost(body.server);
       notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, body.server);
     } catch (error) {
@@ -313,7 +313,7 @@ export class SocketManager {
   }
 
   private _getServerHost() {
-    const socketUserConfig = new SocketUserConfig();
+    const socketUserConfig = new SyncUserConfig();
     return socketUserConfig.getSocketServerHost();
   }
 }

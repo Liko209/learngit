@@ -3,4 +3,4 @@
  * @Date: 2019-03-12 10:49:16
  * Copyright © RingCentral. All rights reserved.
  */
-export { SocketUserConfig } from './SocketUserConfig';
+export { SyncUserConfig } from './SyncUserConfig';

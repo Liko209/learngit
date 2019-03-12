@@ -27,7 +27,7 @@ import { GroupService } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
-import { SocketUserConfig } from '../../../service/socket/config';
+import { SyncUserConfig } from '../config/SyncUserConfig';
 
 class SyncController {
   private _syncListener: SyncListener;
@@ -246,7 +246,7 @@ class SyncController {
       }
 
       if (scoreboard && shouldSaveScoreboard) {
-        const socketUserConfig = new SocketUserConfig();
+        const socketUserConfig = new SyncUserConfig();
         socketUserConfig.setSocketServerHost(scoreboard);
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
       }
