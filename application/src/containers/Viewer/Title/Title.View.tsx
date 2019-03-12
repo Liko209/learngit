@@ -47,7 +47,6 @@ class ViewerTitleViewComponent extends Component<
   }
 
   handleHeaderResize = (width: number) => {
-    console.log('hihihi', width);
     this.setState({ smallWindow: width < 640 });
   }
 
