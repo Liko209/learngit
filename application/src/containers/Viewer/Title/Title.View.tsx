@@ -19,8 +19,8 @@ import {
 } from 'jui/components/Dialog/DialogHeader/index';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
-import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
-import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu/PopoverMenu';
+// import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
+// import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu/PopoverMenu';
 import { Avatar } from '@/containers/Avatar';
 import { DialogContext } from '@/containers/Dialog';
 import { JuiButtonBar } from 'jui/components/Buttons/ButtonBar';
@@ -29,6 +29,8 @@ import {
   imageViewerHeaderAnimation,
 } from 'jui/components/Animation';
 import { dateFormatter } from '@/utils/date';
+import { Download } from '@/containers/common/Download';
+import ReactResizeDetector from 'react-resize-detector';
 
 @observer
 class ViewerTitleViewComponent extends Component<
@@ -38,15 +40,20 @@ class ViewerTitleViewComponent extends Component<
 
   dismiss = this.context;
 
-  state = { show: true };
+  state = { show: true, smallWindow: false };
 
   closeDialog = () => {
     this.setState({ show: false });
   }
 
+  handleHeaderResize = (width: number) => {
+    console.log('hihihi', width);
+    this.setState({ smallWindow: width < 640 });
+  }
+
   render() {
     const { item, total, currentIndex, person, t } = this.props;
-    const { name, modifiedAt } = item;
+    const { name, modifiedAt, downloadUrl } = item;
     const { userDisplayName, id } = person;
     return (
       <JuiTransition
@@ -59,6 +66,10 @@ class ViewerTitleViewComponent extends Component<
       >
         <div>
           <JuiDialogHeader>
+            <ReactResizeDetector
+              handleWidth={true}
+              onResize={this.handleHeaderResize}
+            />
             <JuiDialogHeaderMeta>
               <JuiDialogHeaderMetaLeft>
                 <Avatar uid={id} />
@@ -76,10 +87,8 @@ class ViewerTitleViewComponent extends Component<
             </JuiDialogHeaderTitle>
             <JuiDialogHeaderActions>
               <JuiButtonBar overlapSize={2.5}>
-                <JuiIconButton tooltipTitle={t('common.download')}>
-                  download
-                </JuiIconButton>
-                <JuiPopoverMenu
+                <Download url={downloadUrl} variant="round" />
+                {/* <JuiPopoverMenu
                   Anchor={() => (
                     <JuiIconButton tooltipTitle={t('common.more')}>
                       more_horiz
@@ -95,10 +104,11 @@ class ViewerTitleViewComponent extends Component<
                   }}
                 >
                   <JuiMenuList>
-                    <JuiMenuItem>{t('common.pin')}</JuiMenuItem>
-                    <JuiMenuItem>{t('message.action.bookmark')}</JuiMenuItem>
+                    {this.state.smallWindow ? (
+                      <JuiMenuItem>{t('common.download')}</JuiMenuItem>
+                    ) : null}
                   </JuiMenuList>
-                </JuiPopoverMenu>
+                </JuiPopoverMenu> */}
                 <JuiIconButton
                   onClick={this.closeDialog}
                   tooltipTitle={t('common.dialog.close')}
