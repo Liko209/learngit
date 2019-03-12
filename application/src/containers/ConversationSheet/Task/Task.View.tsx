@@ -124,7 +124,7 @@ class Task extends React.Component<taskViewProps> {
     if (!canShowDialogPermission) {
       return;
     }
-    showImageViewer(groupId, id, target);
+    return await showImageViewer(groupId, id, target);
   }
 
   private _getTitleText(text: string) {
