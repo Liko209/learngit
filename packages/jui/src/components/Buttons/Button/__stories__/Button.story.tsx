@@ -92,6 +92,7 @@ storiesOf('Components/Buttons', module)
           {...rest}
           className="buttonWrapper"
           tooltipTitle="pervious"
+          color="common.white"
         >
           <JuiIconography color="grey.900">pervious</JuiIconography>
         </JuiFabButton>

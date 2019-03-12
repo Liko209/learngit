@@ -41,7 +41,7 @@ function withDialogOrNewWindow<T>(
   class ComponentWithDialogOrNewWindow extends React.Component<T> {
     private _window: Window | null = null;
     private _div = document.createElement('div');
-    private _root = document.documentElement;
+    private _root = document.body;
 
     private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
     private _telephonyService: TelephonyService = container.get(

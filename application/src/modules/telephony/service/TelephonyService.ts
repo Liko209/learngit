@@ -22,11 +22,8 @@ class TelephonyService {
 
   private _callId?: string;
 
-  private _accountState?: RTC_ACCOUNT_STATE;
-
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(`[Telephony_Service_Account_State]: ${state}`);
-    this._accountState = state;
   }
 
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
@@ -57,10 +54,8 @@ class TelephonyService {
   }
 
   directCall = (toNumber: string) => {
-    if (this._accountState === RTC_ACCOUNT_STATE.REGISTERED) {
-      this.makeCall(toNumber);
-      this._telephonyStore.directCall();
-    }
+    this.makeCall(toNumber);
+    this._telephonyStore.directCall();
   }
 
   hangUp = () => {

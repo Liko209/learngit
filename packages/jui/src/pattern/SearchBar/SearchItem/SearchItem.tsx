@@ -21,6 +21,9 @@ import {
 const SearchItemActions = styled.div`
   display: flex;
   display: none;
+  & button {
+    margin-left: ${spacing(3)};
+  }
 `;
 
 const SearchItemWrapper = styled(MenuItem)`

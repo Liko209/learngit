@@ -16,6 +16,7 @@ import { JuiIconButton, JuiButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+import { Call } from '@/modules/telephony';
 
 @observer
 class ProfileMiniCardPersonFooter extends Component<
@@ -62,6 +63,7 @@ class ProfileMiniCardPersonFooter extends Component<
           >
             chat_bubble
           </JuiIconButton>
+          <Call color="primary" variant="plain" id={id} />
         </JuiProfileMiniCardFooterRight>
       </>
     );
