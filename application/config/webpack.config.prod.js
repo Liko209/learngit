@@ -376,8 +376,7 @@ module.exports = {
     // In production, it will be an empty string unless you specify "homepage"
     // in `package.json`, in which case it will be the pathname of that URL.
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
-      ...env.raw,
-      ICON_URL: iconUrl
+      ...env.raw
     }),
     // This gives some necessary context to module not found errors, such as
     // the requesting resource.

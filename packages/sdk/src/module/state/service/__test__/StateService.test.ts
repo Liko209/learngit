@@ -56,8 +56,8 @@ describe('StateService', () => {
     it('should call with correct params', async () => {
       const id: number = 5683;
       const isUnread: boolean = true;
-      await stateService.updateReadStatus(id, isUnread);
-      expect(mockUpdateReadStatus).toBeCalledWith(id, isUnread);
+      await stateService.updateReadStatus(id, isUnread, true);
+      expect(mockUpdateReadStatus).toBeCalledWith(id, isUnread, true);
     });
   });
 

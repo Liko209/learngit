@@ -10,7 +10,7 @@ import { ItemFile } from '../../../item/entity';
 import { Post } from '../../entity/Post';
 import { uniqueArray } from '../../../../utils';
 import { PROGRESS_STATUS } from '../../../progress';
-import { notificationCenter } from '../../../../service';
+import notificationCenter from '../../../../service/notificationCenter';
 import { SERVICE } from '../../../../service/eventKey';
 import { IPostActionController } from '../interface/IPostActionController';
 import {

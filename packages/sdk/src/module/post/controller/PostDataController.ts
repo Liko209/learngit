@@ -9,13 +9,15 @@ import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
 import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
-import { ENTITY, notificationCenter, SERVICE } from '../../../service';
+import { ENTITY, SERVICE } from '../../../service/eventKey';
+import notificationCenter from '../../../service/notificationCenter';
 import { baseHandleData, transform } from '../../../service/utils';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ItemService } from '../../item';
 import { INDEX_POST_MAX_SIZE } from '../constant';
 import { IRawPostResult, Post } from '../entity';
 import { GroupService } from '../../group';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 const TAG = 'PostDataController';
 
@@ -26,6 +28,11 @@ class PostDataController {
   ) {}
 
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
+      logId,
+    );
     const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
       await this.preInsertController.bulkDelete(transformedData);
@@ -36,6 +43,7 @@ class PostDataController {
       (await ItemService.getInstance<ItemService>().handleIncomingData(
         data.items,
       )) || [];
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return {
       posts,
       items,

@@ -12,7 +12,7 @@ import { SendPostType, PostItemsReadyCallbackType } from '../../types';
 import SendPostControllerHelper from './SendPostControllerHelper';
 import { ItemService } from '../../../item/service';
 
-import { notificationCenter } from '../../../../service';
+import notificationCenter from '../../../../service/notificationCenter';
 import { GroupConfigService } from '../../../groupConfig';
 import { ENTITY } from '../../../../service/eventKey';
 import { ErrorParserHolder } from '../../../../error';

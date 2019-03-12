@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
+import MuiListItem from '@material-ui/core/ListItem';
 import { JuiListItemText } from '../../../components/Lists';
 import { JuiIconography } from '../../../foundation/Iconography';
 import styled from '../../../foundation/styled-components';
@@ -43,8 +44,11 @@ const IconWrapper = styled.div`
   }
 `;
 
-const CellWrapper = styled.div`
-  padding: ${spacing(2)};
+const CellWrapper = styled(MuiListItem)`
+  && {
+    display: block;
+    padding: ${spacing(2)};
+  }
 `;
 
 const ContentWrapper = styled.div`
@@ -90,6 +94,7 @@ class JuiPinnedCell extends PureComponent<JuiPinnedCellProps> {
 
     return (
       <CellWrapper
+        button={true}
         data-postid={postId}
         data-test-automation-id="pinned-section"
         onClick={onClick}

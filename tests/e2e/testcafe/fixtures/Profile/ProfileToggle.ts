@@ -20,7 +20,7 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const teamsSection = app.homePage.messageTab.teamsSection;
@@ -108,7 +108,7 @@ test(formalName('Open profile via conversation list', ['JPT-450', 'P2', 'Profile
   const loginUser = users[7];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
 
   const dmSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
@@ -198,7 +198,7 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
   const loginUser = users[7];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
 
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;

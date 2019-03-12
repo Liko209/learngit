@@ -25,6 +25,14 @@ const SupportPreviewImageExtensions = new Set([
   // 'heic', // Chrome and Firefox and Safari not support. Apple macOS Mojave dynamic wallpaper.
 ]);
 
+const SupportShowRawImageExtensions = new Set([
+  'jpg',
+  'png',
+  'jpeg',
+  'bmp',
+  'gif',
+]);
+
 const ResizableExtensions = new Set([
   'bmp',
   'jpg',
@@ -163,4 +171,5 @@ export {
   GifFileExtensions,
   ResizableExtensions,
   SupportPreviewImageExtensions,
+  SupportShowRawImageExtensions,
 };

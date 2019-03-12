@@ -4,13 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import path from 'path';
 import Module from './phoneParser/phoneParser';
 
-const localPhoneDataPath: string = path.resolve(
-  __dirname,
-  './phoneParser/phoneData.xml',
-);
+const localPhoneDataPath: string = '/phoneData.xml';
 
 export * from './ITelephonyNetworkDelegate';
 export * from './ITelephonyDBDelegate';

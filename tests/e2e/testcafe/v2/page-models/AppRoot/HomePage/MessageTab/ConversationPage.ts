@@ -49,6 +49,11 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
 
+  async countOnUnreadButtonShouldBe(n: string | number) {
+    const reg = new RegExp(`^\\D*${n}\\D+$`)
+    await this.t.expect(this.jumpToFirstUnreadButtonWrapper.find('span').textContent).match(reg);
+  }
+
   async clickJumpToFirstUnreadButton() {
     await this.t.click(this.jumpToFirstUnreadButtonWrapper);
   }
@@ -264,6 +269,10 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.currentGroupId).eql(id.toString());
   }
 
+  async titleShouldBe(title: string) {
+    await this.t.expect(this.title.withExactText(title).exists).ok();
+  }
+
   get messageFilesArea() {
     return this.getSelectorByAutomationId('attachment-list');
   }
@@ -475,6 +484,40 @@ export class PostItem extends BaseWebComponent {
   get unBookmarkIcon() {
 
     return this.getSelectorByIcon('bookmark_border', this.self);
+  }
+
+  get pinToggle() {
+    return this.self.find('button').withAttribute('data-name', 'actionBarPin');
+  }
+
+  get pinButton() {
+    return this.pinToggle.withAttribute('aria-label', 'Pin');
+  }
+
+  get unpinButton() {
+    return this.pinToggle.withAttribute('aria-label', 'Unpin');
+  }
+
+  async clickPinToggle() {
+    await this.t.click(this.pinToggle);
+  }
+
+  get isPinned() {
+    return this.unpinButton.exists;
+  }
+
+  async pinPost() {
+    if (!await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
+  }
+
+  async unpinPost() {
+    if (await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
   }
 
   get moreMenu() {

@@ -5,7 +5,8 @@
  */
 
 import _ from 'lodash';
-import { daoManager, StateDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { StateDao } from '../../dao';
 import { State, GroupState, TransformedState } from '../../entity';
 import { Group } from '../../../group/entity';
 import { ENTITY } from '../../../../service/eventKey';

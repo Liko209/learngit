@@ -15,9 +15,9 @@ import {
   ModuleType,
   mainLogger,
 } from 'foundation';
-import fs from 'fs';
 import { RcInfoUserConfig } from '../../module/rcInfo/config';
 import { RcAccountInfo } from '../../api/ringcentral/types/RcAccountInfo';
+import { NewGlobalConfig } from '../../service/config';
 
 const MODULE_LOADING_TIME_OUT: number = 60000; // 1 minute
 const PhoneParserModule: ModuleClass = Module;
@@ -27,6 +27,7 @@ class PhoneParserUtility {
   private static _moduleLoadingTime: number = 0;
   private static _moduleLoaded: boolean = false;
   private static _initialized: boolean = false;
+  private static _localPhoneDataLoaded: boolean = false;
   private _phoneParser: PhoneParser;
 
   constructor(phoneNumber: string, settingsKey: SettingsKey) {
@@ -34,6 +35,28 @@ class PhoneParserUtility {
       phoneNumber,
       settingsKey,
     );
+  }
+
+  static loadLocalPhoneData(): void {
+    if (PhoneParserUtility._localPhoneDataLoaded) {
+      return;
+    }
+    if (NewGlobalConfig.getPhoneData()) {
+      return;
+    }
+    fetch(localPhoneDataPath)
+      .then(async (response: Response) => {
+        if (!response.ok) {
+          mainLogger.error('loadLocalPhoneData error', response);
+          return;
+        }
+        const result = await response.text();
+        NewGlobalConfig.setPhoneData(result);
+        PhoneParserUtility._localPhoneDataLoaded = true;
+      })
+      .catch((error: any) => {
+        mainLogger.error('loadLocalPhoneData error', error);
+      });
   }
 
   static loadModule(): void {
@@ -55,11 +78,15 @@ class PhoneParserUtility {
       );
     }
 
+    PhoneParserUtility.loadLocalPhoneData();
     try {
       PhoneParserUtility._moduleLoadingTime = Date.now();
       const params: ModuleParams = {
         onRuntimeInitialized: () => {
           PhoneParserUtility.onModuleLoaded();
+        },
+        locateFile: (fileName: string) => {
+          return `/wasm/${fileName}`;
         },
       };
       PhoneParserUtility._phoneParserModule = new PhoneParserModule(params);
@@ -90,45 +117,17 @@ class PhoneParserUtility {
       return true;
     }
 
-    if (PhoneParserUtility._initByPhoneData(false)) {
-      PhoneParserUtility._initialized = true;
-      mainLogger.debug(
-        'PhoneParserUtility: init successful by newest phone data.',
-      );
-      return true;
-    }
-    const result = PhoneParserUtility._initByPhoneData(true);
-    PhoneParserUtility._initialized = result;
-    mainLogger.debug('PhoneParserUtility: local init result => ', result);
-    return result;
-  }
-
-  static getPhoneData(fromLocal: boolean): string | undefined {
-    if (fromLocal) {
-      try {
-        return fs.readFileSync(localPhoneDataPath).toString();
-      } catch (err) {
-        mainLogger.error(
-          `PhoneParserUtility: Can not get local phone data, error: ${err}`,
-        );
-        return undefined;
-      }
-    }
-
-    let phoneData = undefined;
-    try {
-      const rcInfoUserConfig = new RcInfoUserConfig();
-      phoneData = rcInfoUserConfig.getPhoneData();
-    } catch (err) {
-      mainLogger.error(`getPhoneData error: ${err}`);
-      phoneData = undefined;
-    }
-
+    const phoneData = NewGlobalConfig.getPhoneData();
     if (!phoneData || phoneData.length === 0) {
       mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
-      return undefined;
+      return false;
     }
-    return phoneData;
+    const result = PhoneParserUtility._phoneParserModule.ReadRootNodeByString(
+      phoneData,
+    );
+    PhoneParserUtility._initialized = result;
+    mainLogger.debug('PhoneParserUtility: init result => ', result);
+    return result;
   }
 
   static canGetPhoneParser(): boolean {
@@ -366,14 +365,6 @@ class PhoneParserUtility {
   // Return DTMF postfix (part of comas and digits after first coma)
   getDtmfPostfix(): string {
     return this._phoneParser.GetDtmfPostfix();
-  }
-
-  private static _initByPhoneData(fromLocal: boolean): boolean {
-    const phoneData = PhoneParserUtility.getPhoneData(fromLocal);
-    return (
-      phoneData !== undefined &&
-      PhoneParserUtility._phoneParserModule.ReadRootNodeByString(phoneData)
-    );
   }
 }
 

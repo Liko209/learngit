@@ -53,7 +53,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       return;
     }
     const transformedData = items.map(item => transform<Item>(item));
-    return baseHandleData({
+    return await baseHandleData({
       data: transformedData,
       dao: daoManager.getDao(ItemDao),
       eventKey: ENTITY.ITEM,
@@ -242,6 +242,13 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   hasUploadingFiles() {
     return this.fileService.hasUploadingFiles();
+  }
+
+  async getItemIndexInfo(
+    itemId: number,
+    options: ItemQueryOptions,
+  ): Promise<{ index: number; totalCount: number }> {
+    return this.itemServiceController.getItemIndexInfo(itemId, options);
   }
 }
 

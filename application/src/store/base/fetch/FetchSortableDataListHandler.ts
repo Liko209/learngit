@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { transaction } from 'mobx';
+import { transaction, action } from 'mobx';
 import { IdModel } from 'sdk/framework/model';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import {
@@ -26,6 +26,7 @@ import {
 import {
   FetchDataListHandler,
   IFetchDataListHandlerOptions,
+  DeltaDataHandler,
 } from './FetchDataListHandler';
 import { SortableListStore } from './SortableListStore';
 import { mainLogger } from 'sdk';
@@ -102,6 +103,14 @@ export class FetchSortableDataListHandler<
     return this._maintainMode;
   }
 
+  async fetchDataByAnchor(
+    direction: QUERY_DIRECTION,
+    pageSize: number,
+    anchor: ISortableModel<T>,
+  ) {
+    return this.fetchDataInternal(direction, pageSize, anchor);
+  }
+
   private _releaseDataInMaintainMode() {
     if (this._maintainMode) {
       this.refreshData();
@@ -131,12 +140,15 @@ export class FetchSortableDataListHandler<
       this.updateEntityStore(data);
       this.handleHasMore(hasMore, direction);
       this.handlePageData(sortableResult);
-      this._dataChangeCallBack &&
-        this._dataChangeCallBack({
-          added: sortableResult,
-          updated: [],
-          deleted: [],
-        });
+      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+        if (callback) {
+          callback({
+            added: sortableResult,
+            updated: [],
+            deleted: [],
+          });
+        }
+      });
 
       if (sortableResult.length) {
         this._releaseDataInMaintainMode();
@@ -163,40 +175,47 @@ export class FetchSortableDataListHandler<
     }
 
     !this._maintainMode &&
-      this._dataChangeCallBack &&
-      this._dataChangeCallBack({
-        added: sortableResult,
-        updated: [],
-        deleted: [],
+      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+        if (callback) {
+          callback({
+            added: sortableResult,
+            updated: [],
+            deleted: [],
+          });
+        }
       });
   }
 
-  handleDataDeleted(payload: NotificationEntityDeletePayload) {
+  @action
+  handleDataDeleted = (payload: NotificationEntityDeletePayload) => {
     let originalSortableIds: number[] = [];
 
-    if (this._dataChangeCallBack) {
+    if (this._dataChangeCallBacks.length) {
       originalSortableIds = this.sortableListStore.getIds;
     }
 
     const deletedSortableModelIds = Array.from(payload.body.ids);
     this.sortableListStore.removeByIds(deletedSortableModelIds);
 
-    if (this._dataChangeCallBack) {
-      this._dataChangeCallBack({
-        deleted: _.intersection(originalSortableIds, payload.body.ids),
-        updated: [],
-        added: [],
-      });
-    }
+    this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+      if (callback) {
+        callback({
+          deleted: _.intersection(originalSortableIds, payload.body.ids),
+          updated: [],
+          added: [],
+        });
+      }
+    });
 
     this._updateTotalCount();
   }
 
-  handleDataUpdateReplace(
+  @action
+  handleDataUpdateReplace = (
     payload:
       | NotificationEntityUpdatePayload<T>
       | NotificationEntityReplacePayload<T>,
-  ) {
+  ) => {
     let originalSortableModels: ISortableModel[] = [];
     let deletedSortableModelIds: number[] = [];
     let addedSortableModels: ISortableModel[] = [];
@@ -296,12 +315,15 @@ export class FetchSortableDataListHandler<
         addedSortableModels.length ||
         updatedSortableModels.length)
     ) {
-      this._dataChangeCallBack &&
-        this._dataChangeCallBack({
-          deleted: deletedSortableModelIds,
-          updated: updatedSortableModels,
-          added: addedSortableModels,
-        });
+      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+        if (callback) {
+          callback({
+            deleted: deletedSortableModelIds,
+            updated: updatedSortableModels,
+            added: addedSortableModels,
+          });
+        }
+      });
 
       if (addedSortableModels.length) {
         this._releaseDataInMaintainMode();
@@ -326,7 +348,7 @@ export class FetchSortableDataListHandler<
   }
 
   private _needToCalculateDifference() {
-    return this.maintainMode || this._dataChangeCallBack;
+    return this.maintainMode || this._dataChangeCallBacks.length;
   }
 
   private _isInRange(newData: ISortableModel<T>) {

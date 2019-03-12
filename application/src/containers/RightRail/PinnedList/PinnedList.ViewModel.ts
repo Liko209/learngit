@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, action, observable } from 'mobx';
+import { computed, action, observable, comparer } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PinnedListProps, PinnedListViewProps } from './types';
 import { Group } from 'sdk/module/group/entity';
@@ -19,27 +19,30 @@ import { DiscontinuousPosListHandler } from '@/store/handler/DiscontinuousPosLis
 class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   implements PinnedListViewProps {
   @observable discontinuousPosListHandler: DiscontinuousPosListHandler;
-  firstInit: boolean = true;
+  @observable firstInit: boolean = true;
 
   constructor(props: PinnedListProps) {
     super(props);
+    // url change need build first
+    this.build(this.pinnedPostIds);
     this.reaction(
-      () => this._groupId,
-      () => {
-        this.firstInit = true;
-        this.discontinuousPosListHandler.dispose();
-        this.build(this.pinnedPostIds || []);
-      },
-    );
-
-    this.reaction(
-      () => this.pinnedPostIds,
-      (pinnedPostIds: number[]) => {
+      () => ({
+        id: this._groupId,
+        pinnedPostIds: this.pinnedPostIds,
+      }),
+      ({ id, pinnedPostIds }) => {
+        if (id) {
+          this.firstInit = true;
+          this.discontinuousPosListHandler &&
+            this.discontinuousPosListHandler.dispose();
+        }
         this.build(pinnedPostIds);
       },
+      { equals: comparer.structural },
     );
   }
 
+  @action
   build(pinnedPostIds: number[]) {
     if (!pinnedPostIds) {
       return;
@@ -60,7 +63,7 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   async loadInitialData() {
     await this.discontinuousPosListHandler.loadMorePosts(
       QUERY_DIRECTION.NEWER,
-      30,
+      15,
     );
   }
 

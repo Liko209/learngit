@@ -4,14 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ProfileDialogGroupViewProps } from '../../../types';
+import { MembersViewProps } from '../types';
 
 type MemberHeaderProps = {
   id: number;
-  AddTeamMembers: (e: React.MouseEvent<HTMLElement>) => void;
+  onSearch: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-type MemberHeaderViewProps = ProfileDialogGroupViewProps & {
+type MemberHeaderViewProps = MembersViewProps & {
   hasShadow: boolean;
   isCurrentUserHasPermissionAddMember: boolean;
 };
