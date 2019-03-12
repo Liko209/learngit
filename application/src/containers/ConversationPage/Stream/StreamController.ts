@@ -47,16 +47,6 @@ export class StreamController {
     return this._groupState.readThrough || 0;
   }
 
-  @computed
-  get hasMoreUp() {
-    return this._orderListHandler.hasMore(QUERY_DIRECTION.OLDER);
-  }
-
-  @computed
-  get hasMoreDown() {
-    return this._orderListHandler.hasMore(QUERY_DIRECTION.NEWER);
-  }
-
   constructor(
     private _groupId: number,
     private _historyHandler: HistoryHandler,
@@ -99,11 +89,20 @@ export class StreamController {
     if (!isFirstItemPost) {
       startIndex = 1;
     }
-    return _(items)
+    let chain = _(items)
       .slice(startIndex)
       .map('data')
-      .compact()
-      .value();
+      .compact();
+
+    if (!this.hasMore(QUERY_DIRECTION.OLDER)) {
+      const initialPost: StreamItem = {
+        id: 1,
+        type: StreamItemType.INITIAL_POST,
+        timeStart: 1,
+      };
+      chain = chain.unshift(initialPost);
+    }
+    return chain.value();
   }
 
   dispose() {
@@ -113,7 +112,6 @@ export class StreamController {
     if (this._streamListHandler) {
       this._streamListHandler.dispose();
     }
-
     postCacheController.releaseCurrentConversation(this._groupId);
   }
 
@@ -126,7 +124,7 @@ export class StreamController {
     const { streamItems } = this._assemblyLine.process(
       delta,
       this._orderListHandler.listStore.items,
-      this.hasMoreUp,
+      this.hasMore(QUERY_DIRECTION.OLDER),
       items,
       this._readThrough,
     );
@@ -157,6 +155,10 @@ export class StreamController {
       return this._orderListHandler.fetchData(direction, pageSize);
     }
     this._orderListHandler.refreshData();
+    console.log(
+      'andy hu length ',
+      this._orderListHandler.listStore.items.length,
+    );
     return this._orderListHandler.listStore.items;
   }
 }

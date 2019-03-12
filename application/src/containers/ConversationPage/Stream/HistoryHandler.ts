@@ -60,7 +60,7 @@ class HistoryHandler {
   getPostsOrderThanLatest(currentPostIds: number[]) {
     const newestPostId = this.latestPostId;
     if (!newestPostId) return [];
-    return currentPostIds.filter(id => id <= newestPostId);
+    return currentPostIds.filter((id: number) => id <= newestPostId);
   }
 
   getFirstUnreadPostId(currentPostIds: number[]) {

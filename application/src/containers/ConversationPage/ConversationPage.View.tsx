@@ -66,7 +66,7 @@ class ConversationPageViewComponent extends Component<
     if (!stream) {
       return;
     }
-    if (stream.props.hasMoreDown) {
+    if (stream.props.hasMore('down')) {
       this.remountStream();
     }
   }

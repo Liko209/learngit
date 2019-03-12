@@ -5,6 +5,7 @@
  */
 
 import _ from 'lodash';
+import PostModel from '@/store/models/Post';
 import { computed, action, observable } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Post } from 'sdk/module/post/entity';
@@ -15,21 +16,14 @@ import { errorHelper } from 'sdk/error';
 import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 
-import {
-  onScrollToTop,
-  onScroll,
-  loading,
-  loadingTop,
-  loadingBottom,
-} from '@/plugins/InfiniteListPlugin';
+import { onScroll, loading } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItemType } from './types';
+import { StreamProps, StreamItemType, StreamViewProps } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
-import { onScrollToBottom } from '@/plugins';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
@@ -40,8 +34,10 @@ import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
+import { mainLogger } from 'sdk/src';
 
-class StreamViewModel extends StoreViewModel<StreamProps> {
+class StreamViewModel extends StoreViewModel<StreamProps>
+  implements StreamViewProps {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
@@ -51,7 +47,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   jumpToPostId: number;
 
-  @observable loadInitialPostsError: Error | null = null;
+  @observable loadInitialPostsError?: Error;
 
   @computed
   get hasHistoryUnread() {
@@ -77,14 +73,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._streamController.items;
   }
 
-  @computed
-  get hasMoreUp() {
-    return this._streamController.hasMoreUp;
-  }
-
-  @computed
-  get hasMoreDown() {
-    return this._streamController.hasMoreDown;
+  hasMore = (direction: 'up' | 'down') => {
+    if (direction === 'up') {
+      return this._streamController.hasMore(QUERY_DIRECTION.OLDER);
+    }
+    return this._streamController.hasMore(QUERY_DIRECTION.NEWER);
   }
 
   @computed
@@ -98,13 +91,15 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get mostRecentPostId() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
-      .mostRecentPostId;
+    return (
+      getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
+        .mostRecentPostId || 0
+    );
   }
 
   @computed
   get notEmpty() {
-    return this.items.length > 0 || this.hasMoreUp;
+    return this.items.length !== 1 || this.hasMore('up');
   }
 
   @computed
@@ -115,7 +110,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get firstHistoryUnreadPostId() {
-    const firstUnreadPostId = this.hasMoreUp // !We need this to fix issues when UMI give us wrong info
+    const firstUnreadPostId = this.hasMore('up') // !We need this to fix issues when UMI give us wrong info
       ? undefined
       : _.first(this.postIds);
 
@@ -148,10 +143,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this.props.groupId,
     );
   }
+
   @computed
   get lastPost() {
     const lastPostId = _.last(this.postIds);
-    return lastPostId && getEntity(ENTITY_NAME.POST, lastPostId);
+    if (!lastPostId) {
+      return;
+    }
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, lastPostId);
   }
 
   updateHistoryHandler() {
@@ -160,7 +159,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @loading
   async loadInitialPosts() {
-    this.loadInitialPostsError = null;
+    this.loadInitialPostsError = undefined;
     try {
       if (this.jumpToPostId) {
         await this._loadSiblingPosts(this.jumpToPostId);
@@ -172,8 +171,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToTop((vm: StreamViewModel) => vm.hasMoreUp)
-  @loadingTop
   @action
   async loadPrevPosts() {
     try {
@@ -185,8 +182,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScrollToBottom((vm: StreamViewModel) => vm.hasMoreDown)
-  @loadingBottom
   @action
   async loadNextPosts() {
     try {
@@ -195,6 +190,19 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.NEWER);
       return;
+    }
+  }
+
+  loadMore = async (direction: 'up' | 'down') => {
+    switch (direction) {
+      case 'up':
+        await this.loadPrevPosts();
+        break;
+      case 'down':
+        await this.loadNextPosts();
+        break;
+      default:
+        mainLogger.warn('please nominate the direction');
     }
   }
 
@@ -222,7 +230,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   markAsRead() {
-    this._stateService.updateReadStatus(this.props.groupId, false, true);
+    false &&
+      this._stateService.updateReadStatus(this.props.groupId, false, true);
   }
 
   enableNewMessageSeparatorHandler = () => {

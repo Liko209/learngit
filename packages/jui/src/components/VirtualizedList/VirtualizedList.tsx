@@ -107,8 +107,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     ) {
       const _prevStartChild = prevStartChild;
       const offset =
-        children.findIndex(child => child.key === _prevStartChild.key) -
-        prevStartIndex;
+        children.findIndex(
+          (child: JSX.Element) => child.key === _prevStartChild.key,
+        ) - prevStartIndex;
 
       if (offset !== 0) {
         startIndex += offset;
@@ -157,7 +158,14 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Forward ref
   //
   useImperativeHandle(forwardRef, () => ({
+    scrollToBottom,
+    isAtBottom: () => {
+      return prevAtBottomRef.current;
+    },
     scrollToIndex: (index: number) => {
+      if (index + 1 > children.length) {
+        return;
+      }
       setRenderedRange(
         createRange({ startIndex: index - 5, size: renderedRangeSize, min: 0 }),
       );
@@ -247,8 +255,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     const rowElements = getChildren(contentRef.current);
     rowElements.forEach(handleRowSizeChange);
     const observers = rowElements.map(observeDynamicRow);
-
-    return () => observers.forEach(ro => ro.disconnect());
+    return () => observers.forEach((ro: ResizeObserver) => ro.disconnect());
   },              [
     keyMapper(startIndex),
     keyMapper(Math.min(stopIndex, childrenCount - 1)),
@@ -290,7 +297,6 @@ const JuiVirtualizedList: RefForwardingComponent<
       const { scrollTop } = ref.current;
       const prevScrollTop = prevScrollTopRef.current;
       const visibleRange = computeVisibleRange();
-
       if (rowManager.hasRowHeight(visibleRange.startIndex)) {
         // If we know the real height of this row
         // Remember current scroll position
