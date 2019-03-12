@@ -70,95 +70,77 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
   }, true);
 });
 
-test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314']),
-  async (t: TestController) => {
-    const app = new AppRoot(t);
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[4];
-    const otherUser = users[5];
-    await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init();
-    await h(t).platform(otherUser).init();
+test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314']), async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
 
-    const mentionsEntry = app.homePage.messageTab.mentionsEntry;
-    const mentionPage = app.homePage.messageTab.mentionPage;
-    const conversationPage = app.homePage.messageTab.conversationPage;
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+  let group = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser, users[7]]
+  }
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
 
-    let chatId, groupId, teamId;
-    let chatPostId, groupPostId, teamPostId;
-    await h(t).withLog('Given I have an extension with 3 different types of conversations and each has a post with mention', async () => {
-      chatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat', members: [loginUser.rcId, otherUser.rcId],
-      });
-      groupId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Group', members: [loginUser.rcId, otherUser.rcId, users[6].rcId],
-      });
-      teamId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'Team',
-        name: `Team ${uuid()}`,
-        members: [loginUser.rcId, otherUser.rcId],
-      });
-      chatPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        `Hi, ![:Person](${loginUser.rcId})`,
-        chatId,
-      );
-      groupPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        `Hi, ![:Person](${loginUser.rcId})`,
-        groupId,
-      );
-      teamPostId = await h(t).platform(otherUser).sentAndGetTextPostId(
-        `Hi, ![:Person](${loginUser.rcId})`,
-        teamId,
-      );
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
+  await h(t).withLog('Given I have an extension with 3 different types of conversations and each has a post with mention', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([chat, group, team]);
+  });
 
-    });
+  let postIds = []
+  const mentionGroups = [chat, group, team];
+  await h(t).withLog(`And and each has a post with mention`, async () => {
+    for (const mentionGroup of mentionGroups) {
+      const postId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi, ![:Person](${loginUser.rcId})`, mentionGroup, otherUser);
+      postIds.push(postId)
+    }
+  });
 
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
+  const app = new AppRoot(t);
 
-    await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+  const mentionPage = app.homePage.messageTab.mentionPage;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  await h(t).withLog('Then I can find 3 posts in the mentions page', async () => {
+    await mentionsEntry.enter();
+    await t.expect(mentionPage.posts.count).gte(3);
+    for (const postId of postIds) {
+      await t.expect(mentionPage.postItemById(postId).exists).ok();
+    }
+  }, true);
+
+  for (const i of _.range(postIds.length)) {
+    let conversationName;
+    await h(t).withLog(`When I enter mentions page`, async () => {
       await mentionsEntry.enter();
-      await t.expect(mentionPage.posts.count).gte(3);
-      await t.expect(mentionPage.postItemById(chatPostId).exists).ok();
-      await t.expect(mentionPage.postItemById(groupPostId).exists).ok();
-      await t.expect(mentionPage.postItemById(teamPostId).exists).ok();
-    }, true);
+      conversationName = await mentionPage.postItemById(postIds[i]).conversationName.textContent
+    });
 
-    await h(t).withLog('When I click the conversation name in the chat\'s conversation card', async () => {
-      await mentionPage.postItemById(chatPostId).jumpToConversationByClickName();
+    await h(t).withLog(`and I click the conversation name ${conversationName} in one conversation card`, async () => {
+      await mentionPage.postItemById(postIds[i]).jumpToConversationByClickName();
     });
 
     await h(t).withLog('And should jump to the chat page and scroll to bottom', async () => {
-      await conversationPage.groupIdShouldBe(chatId);
+      await conversationPage.groupIdShouldBe(mentionGroups[i].glipId);
       await conversationPage.expectStreamScrollToBottom();
     });
-
-    await h(t).withLog('When I click the conversation name in the group\'s conversation card', async () => {
-      await mentionsEntry.enter();
-      await mentionPage.postItemById(groupPostId).jumpToConversationByClickName();
-    });
-
-    await h(t).withLog('Then should jump to the group page and scroll to bottom', async () => {
-      await conversationPage.groupIdShouldBe(groupId);
-      await conversationPage.expectStreamScrollToBottom();
-    });
-
-
-    await h(t).withLog('When I click the conversation name in the team\'s conversation card', async () => {
-      await mentionsEntry.enter();
-      await mentionPage.postItemById(teamPostId).jumpToConversationByClickName();
-    });
-
-    await h(t).withLog('Then should jump to the team page and scroll to bottom', async () => {
-      await conversationPage.groupIdShouldBe(teamId);
-      await conversationPage.expectStreamScrollToBottom();
-    });
-
-  },
-);
+  }
+});
 
 test(formalName('Remove UMI when jump to conversation which have unread messages.', ['P2', 'JPT-380', 'zack']),
   async (t: TestController) => {

@@ -605,6 +605,14 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.conversation-name')
   }
 
+  get conversationSource() {
+    return this.self.find(`[data-name="cardHeaderFrom"]`);
+  }
+
+  get conversationSourceId() {
+    return this.conversationSource.getAttribute('id');
+  }
+
   async jumpToConversationByClickName() {
     await this.t.click(this.conversationName, { offsetX: 3 });
   }
