@@ -9,6 +9,7 @@ import { PptrUtils } from "../utils/pptrUtils";
 import { TaskDto, SceneDto } from "../models";
 import { FileService, MetriceService } from "../services";
 import * as reportGenerater from "lighthouse/lighthouse-core/report/report-generator";
+import { Config } from "../config";
 
 const EXTENSION_PATH = `${process.cwd()}/extension`;
 type Timing = { startTime: Date; endTime: Date; total: number };
@@ -26,8 +27,8 @@ class Scene {
   protected taskDto: TaskDto;
   protected logger = LogUtils.getLogger(__filename);
 
-  constructor(url: string, taskDto: TaskDto) {
-    this.url = url;
+  constructor(taskDto: TaskDto) {
+    this.url = Config.jupiterHost;
     this.taskDto = taskDto;
   }
 

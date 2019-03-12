@@ -10,6 +10,7 @@ class ConfigWrapper {
   public reportUri: string;
   public dashboardUrl: string;
   public fileServerUrl: string;
+  public fileUpload: boolean;
   /* basic config */
 
   /* mock config */
@@ -42,11 +43,18 @@ class ConfigWrapper {
   public dbPoolIdle: number;
   /* db connecttion config */
 
+  /* scene config */
+  public includeScene: Array<string>;
+  public switchConversationIds: Array<string>;
+  public searchKeywords: Array<string>;
+  /* scene config */
+
   constructor() {
     /* basic config */
     this.loggerLevel = this.getValue("LOGGER_NAME", "info");
     this.reportUri = this.getValue("REPORT_URI", "reports");
     this.dashboardUrl = this.getValue("DASHBOARD_URL", "http://xmn145.rcoffice.ringcentral.com:9005/dashboard/15");
+    this.fileUpload = this.getValue("FILE_UPLOAD", "true").toLowerCase() === 'true';
     this.fileServerUrl = this.getValue("FILE_SERVER_URL", "http://xmn02-i01-mck01.lab.nordigy.ru:9000");
     /* basic config */
 
@@ -79,10 +87,21 @@ class ConfigWrapper {
     this.dbPoolAcquire = parseInt(this.getValue("DB_POOL_ACQUIRE", "60000"));
     this.dbPoolIdle = parseInt(this.getValue("DB_POOL_IDLE", "10000"));
     /* db connecttion config */
+
+    /* scene config */
+    this.includeScene = this.getArray("INCLUDE_SCENE", "");
+    this.switchConversationIds = this.getArray("SWITCH_CONVERSATION_ID", "506503174,506445830");
+    this.searchKeywords = this.getArray("SEARCH_KEYWORD", "John,Doe,Team,kamino");
+    /* scene config */
   }
 
   getValue(key, defValue): string {
     return process.env[key] || defValue;
+  }
+
+  getArray(key, defValue): Array<string> {
+    const value = this.getValue(key, defValue);
+    return value ? value.split(',') : [];
   }
 }
 

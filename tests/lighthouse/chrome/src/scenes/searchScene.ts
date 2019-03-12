@@ -3,18 +3,14 @@
  * @Date: 2019-01-11 08:37:56
  */
 import { Scene } from "./scene";
-import { TaskDto, SceneDto } from "../models";
+import { Config } from "../config";
+import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
 import { LoginGatherer, SearchGatherer } from "../gatherers";
 import { MetriceService, FileService } from "../services";
 
 class SearchScene extends Scene {
-  private keywords: Array<string>;
-
-  constructor(url: string, taskDto: TaskDto, keywords: Array<string>) {
-    super(url, taskDto);
-    this.keywords = keywords;
-  }
+  private keywords: Array<string> = Config.searchKeywords;
 
   async preHandle() {
     this.config = SceneConfigFactory.getSimplifyConfig();

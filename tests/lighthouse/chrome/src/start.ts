@@ -7,15 +7,7 @@ import { Config } from './config';
 import { initModel, closeDB } from "./models";
 import { FileService, MetriceService } from "./services";
 import { LogUtils, PptrUtils } from "./utils";
-import {
-  Scene,
-  LoginScene,
-  RefreshScene,
-  OfflineScene,
-  SwitchConversationScene,
-  SearchScene,
-  FetchGroupScene
-} from "./scenes";
+import * as scenes from "./scenes";
 
 const logger = LogUtils.getLogger(__filename);
 
@@ -33,21 +25,31 @@ const logger = LogUtils.getLogger(__filename);
     await FileService.checkReportPath();
 
     // run scenes
-    let host = Config.jupiterHost;
-    let scenes: Array<Scene> = [
-      new LoginScene(`${host}`, taskDto),
-      new RefreshScene(`${host}`, taskDto),
-      new OfflineScene(`${host}`, taskDto),
-      new SwitchConversationScene(`${host}`, taskDto, [
-        "506503174",
-        "506445830"
-      ]),
-      new SearchScene(`${host}`, taskDto, ["John", "Doe", "Team", "kamino"]),
-      new FetchGroupScene(`${host}`, taskDto)
-    ];
+    const sceneNames = Object.keys(scenes).filter(name => {
+      const _name = name.toLowerCase();
+      if (_name === 'scene' || !_name.endsWith('scene')) {
+        return false;
+      }
+      const includeScene = Config.includeScene;
+      if (includeScene.length === 0) {
+        return true;
+      }
+
+      for (let s of includeScene) {
+        if (_name === s.toLowerCase()) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    const sceneArray = [];
+    for (let name of sceneNames) {
+      sceneArray.push(new scenes[name](taskDto));
+    }
 
     let result = true;
-    for (let s of scenes) {
+    for (let s of sceneArray) {
       result = (await s.run()) && result;
     }
 
