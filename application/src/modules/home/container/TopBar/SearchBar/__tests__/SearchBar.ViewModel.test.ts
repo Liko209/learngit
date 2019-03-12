@@ -5,14 +5,9 @@
  */
 import { GroupService } from 'sdk/module/group';
 import { PersonService } from 'sdk/module/person';
-<<<<<<< HEAD
 import { SearchService } from 'sdk/module/search';
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
-=======
-import storeManager from '../../../../../../store/base/StoreManager';
-import { SearchBarViewModel } from '../SearchBar.ViewModel';
->>>>>>> hotfix/1.1.1.190305
 
 jest.mock('../../../../../../store/utils');
 // jest.mock('../../../../../../store/base/StoreManager');
@@ -265,7 +260,6 @@ describe('SearchBarViewModel', () => {
       expect(existCount).toBe(3);
     });
   });
-<<<<<<< HEAD
 
   describe('setSearchResult()', () => {
     it('If search return null should be return', async () => {
@@ -460,8 +454,6 @@ describe('SearchBarViewModel', () => {
     expect(s.clearRecentSearchRecords).toHaveBeenCalled();
   });
 
-=======
->>>>>>> hotfix/1.1.1.190305
   // describe('search()', async () => {
   //   // jest.spyOn(searchBarViewModel, 'calculateSectionCount');
   //   // jest.spyOn(searchBarViewModel, 'getSection');

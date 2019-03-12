@@ -21,11 +21,7 @@ import {
 } from './types';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
-<<<<<<< HEAD
-=======
 import storeManager from '@/store/base/StoreManager';
-import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
->>>>>>> hotfix/1.1.1.190305
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -138,7 +134,6 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     };
   }
 
-<<<<<<< HEAD
   setSearchResult = async (value: string) => {
     const ret = await this.search(value);
     if (!ret) {
@@ -311,7 +306,8 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
 
   clearRecent = () => {
     SearchService.getInstance().clearRecentSearchRecords();
-=======
+  }
+
   updateStore(
     personModels: SortableModel<Person>[],
     groupModels: SortableModel<Group>[],
@@ -329,7 +325,6 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
       ENTITY_NAME.GROUP,
       teamModels.map((model: SortableModel<Group>) => model.entity),
     );
->>>>>>> hotfix/1.1.1.190305
   }
 }
 

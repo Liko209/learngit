@@ -19,7 +19,6 @@ import { ENTITY, notificationCenter, WINDOW } from 'sdk/service';
 import { Item } from 'sdk/module/item/entity';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
-<<<<<<< HEAD
 import { mainLogger } from 'sdk';
 import IUsedCache from '@/store/base/IUsedCache';
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
@@ -35,11 +34,9 @@ import ConferenceItemModel from '@/store/models/ConferenceItem';
 import ItemModel from '@/store/models/Item';
 
 import { ThumbnailPreloadController } from './ThumbnailPreloadController';
-=======
-import SequenceProcessorHandler from 'sdk/framework/processor/SequenceProcessorHandler';
+import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
 import PrefetchPostProcessor from '@/store/handler/PrefetchPostProcessor';
 import { ICacheController } from './ICacheController';
->>>>>>> hotfix/1.1.1.190305
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -90,7 +87,6 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
   }
 }
 
-<<<<<<< HEAD
 class PostUsedItemCache implements IUsedCache {
   getUsedId(): number[] {
     let usedItemIds: number[] = [];
@@ -110,25 +106,26 @@ class PostUsedItemCache implements IUsedCache {
   }
 }
 
-class PostCacheController implements IUsedCache {
-  private _cacheMap: Map<
-    number,
-    FetchSortableDataListHandler<Post>
-  > = new Map();
-=======
 class PostCacheController implements ICacheController<Post> {
   private _cacheMap: Map<number, FetchSortableDataListHandler<Post>>;
   private _prefetchHandler: SequenceProcessorHandler;
->>>>>>> hotfix/1.1.1.190305
 
   private _cacheDeltaDataHandlerMap: Map<number, DeltaDataHandler> = new Map();
   private _thumbnailPreloadController: ThumbnailPreloadController;
   private _currentGroupId: number = 0;
 
-<<<<<<< HEAD
   private _postUsedItemCache = new PostUsedItemCache();
 
   constructor() {
+    this._cacheMap = new Map();
+    this._prefetchHandler = new SequenceProcessorHandler(
+      'SequenceProcessorHandler',
+    );
+
+    notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
+      this.onNetWorkChanged(onLine);
+    });
+
     (storeManager.getEntityMapStore(ENTITY_NAME.POST) as MultiEntityMapStore<
       Post,
       PostModel
@@ -210,16 +207,6 @@ class PostCacheController implements ICacheController<Post> {
       );
     });
     return ids;
-=======
-  constructor() {
-    this._cacheMap = new Map();
-    this._prefetchHandler = new SequenceProcessorHandler(
-      'SequenceProcessorHandler',
-    );
-
-    notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
-      this.onNetWorkChanged(onLine);
-    });
   }
 
   onNetWorkChanged(onLine: boolean) {
@@ -229,7 +216,6 @@ class PostCacheController implements ICacheController<Post> {
         this._prefetchHandler.addProcessor(processor);
       }
     }
->>>>>>> hotfix/1.1.1.190305
   }
 
   has(groupId: number): boolean {
@@ -282,12 +268,8 @@ class PostCacheController implements ICacheController<Post> {
         hasMoreDown: !!jump2PostId,
         isMatchFunc: isMatchedFunc(groupId),
         entityName: ENTITY_NAME.POST,
-<<<<<<< HEAD
-        eventName: ENTITY.POST,
-        dataChangeCallBack: fetchDataCallback,
-=======
         eventName: `${ENTITY.POST}.${groupId}`,
->>>>>>> hotfix/1.1.1.190305
+        dataChangeCallBack: fetchDataCallback,
       };
 
       listHandler = new FetchSortableDataListHandler(

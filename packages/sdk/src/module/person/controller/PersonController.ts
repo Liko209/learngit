@@ -392,7 +392,7 @@ class PersonController {
     contactType: ContactType,
   ): Promise<Person | null> {
     const result = await this._cacheSearchController.searchEntities(
-      async (person: Person, terms: string[]) => {
+      (person: Person, terms: string[]) => {
         if (
           person.sanitized_rc_extension &&
           person.sanitized_rc_extension.extensionNumber === e164PhoneNumber

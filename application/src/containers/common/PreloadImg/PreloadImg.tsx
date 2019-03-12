@@ -3,13 +3,7 @@
  * @Date: 2019-01-24 13:35:29
  * Copyright © RingCentral. All rights reserved.
  */
-<<<<<<< HEAD
-import React, { Component, Fragment } from 'react';
-import { JuiFade } from 'jui/components/Animation';
-import { withDelay } from 'jui/hoc/withDelay';
-=======
 import React, { Component } from 'react';
->>>>>>> hotfix/1.1.1.190305
 
 type PreloadImgProps = {
   url?: string;
@@ -48,27 +42,6 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
     const { children, placeholder, url } = this.props;
     const { loaded, isError } = this.state;
 
-<<<<<<< HEAD
-    if (loaded && !isError) {
-      return animationForLoad ? (
-        <JuiFade appear={true} show={true} duration="standard" easing="easeIn">
-          {children}
-        </JuiFade>
-      ) : (
-        children
-      );
-    }
-
-    if (url && cacheUrl[url]) {
-      return children;
-    }
-
-    if (isError) {
-      return placeholder;
-    }
-
-=======
->>>>>>> hotfix/1.1.1.190305
     return (
       <>
         {url && !loaded && (

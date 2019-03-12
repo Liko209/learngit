@@ -183,37 +183,23 @@ export default class MultiEntityMapStore<
     if (!model) {
       this.set({ id, isMocked: true } as T);
       model = this._data[id] as K;
-<<<<<<< HEAD
-      const res = this.getByService(id);
-      if (res instanceof Promise) {
-        res.then((res: T & { error?: {} }) => {
-          if (res && !res.error) {
-            this.partialUpdate(res as T, id);
-          }
-        });
-      } else {
-        if (res) {
-          this.partialUpdate(res as T, id);
-          model = this._data[id] as K;
-=======
       const found = this.getByServiceSynchronously(id);
       if (found) {
-        this._partialUpdate(found, id);
+        this.partialUpdate(found, id);
         model = this._data[id] as K;
       } else {
         const res = this.getByService(id);
         if (res instanceof Promise) {
           res.then((res: T & { error?: {} }) => {
             if (res && !res.error) {
-              this._partialUpdate(res as T, id);
+              this.partialUpdate(res as T, id);
             }
           });
         } else {
           if (res) {
-            this._partialUpdate(res as T, id);
+            this.partialUpdate(res as T, id);
             model = this._data[id] as K;
           }
->>>>>>> hotfix/1.1.1.190305
         }
       }
     }
