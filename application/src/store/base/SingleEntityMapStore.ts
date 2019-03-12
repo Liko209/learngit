@@ -19,7 +19,7 @@ export default class SingleEntityMapStore<
   init: boolean;
   getService: Function;
   service: BaseService<T>;
-  constructor(entityName: ENTITY_NAME, { service, event }: EntitySetting) {
+  constructor(entityName: ENTITY_NAME, { service, event }: EntitySetting<K>) {
     super(entityName);
     this.init = false;
     this.getService = service as Function;

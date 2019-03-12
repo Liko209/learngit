@@ -23,7 +23,7 @@ class TaskItemViewModel extends AbstractViewModel<TaskProps> {
 
   @computed
   get task() {
-    return getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
+    return getEntity<Item, TaskItemModel>(ENTITY_NAME.ITEM, this._id);
   }
 
   @computed

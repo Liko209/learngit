@@ -12,6 +12,8 @@ import { PresenceService } from 'sdk/module/presence';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 const { ENTITY } = service;
 import { CompanyService } from 'sdk/module/company';
+import { ModelCreator } from './models/ModelCreator';
+import { IdModel } from 'sdk/framework/model';
 
 const CACHE_COUNT = 1000;
 
@@ -61,48 +63,9 @@ const ENTITY_SETTING = {
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.FILE_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.TASK_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.EVENT_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.LINK_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.NOTE_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.CODE_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.CONFERENCE_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
+    modelCreator: (model: IdModel) => {
+      return ModelCreator.createItemModel(model);
+    },
   },
   [ENTITY_NAME.POST]: {
     event: [ENTITY.POST],

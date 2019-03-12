@@ -73,7 +73,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get file() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
+    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this._id);
   }
 
   @action

@@ -23,7 +23,7 @@ const mockPerson = {
 };
 
 const mappingEntity = {
-  [ENTITY_NAME.LINK_ITEM]: mockLink,
+  [ENTITY_NAME.ITEM]: mockLink,
   [ENTITY_NAME.PERSON]: mockPerson,
 };
 

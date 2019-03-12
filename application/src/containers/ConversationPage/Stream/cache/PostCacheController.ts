@@ -39,24 +39,8 @@ const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 class PostDataProvider implements IFetchSortableDataProvider<Post> {
   private _postService: PostService = PostService.getInstance();
-  private _itemStoreMap = new Map<number, ENTITY_NAME>();
 
-  constructor(private _groupId: number) {
-    // fix me: FIJI-3958 Item store refactoring
-    this._itemStoreMap.set(TypeDictionary.TYPE_ID_FILE, ENTITY_NAME.FILE_ITEM);
-    this._itemStoreMap.set(TypeDictionary.TYPE_ID_TASK, ENTITY_NAME.TASK_ITEM);
-    this._itemStoreMap.set(TypeDictionary.TYPE_ID_LINK, ENTITY_NAME.LINK_ITEM);
-    this._itemStoreMap.set(TypeDictionary.TYPE_ID_PAGE, ENTITY_NAME.NOTE_ITEM);
-    this._itemStoreMap.set(TypeDictionary.TYPE_ID_CODE, ENTITY_NAME.CODE_ITEM);
-    this._itemStoreMap.set(
-      TypeDictionary.TYPE_ID_EVENT,
-      ENTITY_NAME.EVENT_ITEM,
-    );
-    this._itemStoreMap.set(
-      TypeDictionary.TYPE_ID_CONFERENCE,
-      ENTITY_NAME.CONFERENCE_ITEM,
-    );
-  }
+  constructor(private _groupId: number) {}
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
@@ -71,13 +55,7 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
       },
     );
     items.forEach((item: Item) => {
-      const type = GlipTypeUtil.extractTypeId(item.id);
-      const entityName = this._itemStoreMap.get(type);
-      if (entityName) {
-        storeManager.dispatchUpdatedDataModels(entityName, [item]);
-      } else {
-        storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, [item]);
-      }
+      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, [item]);
     });
 
     return { hasMore, data: posts };
@@ -122,47 +100,40 @@ class PostCacheController implements IUsedCache {
     >).addUsedCache(this);
 
     // fix me: FIJI-3958 Item store refactoring
-    (storeManager.getEntityMapStore(
-      ENTITY_NAME.FILE_ITEM,
-    ) as MultiEntityMapStore<Item, FileItemModel>).addUsedCache(
-      this._postUsedItemCache,
-    );
+    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
+      Item,
+      FileItemModel
+    >).addUsedCache(this._postUsedItemCache);
 
-    (storeManager.getEntityMapStore(
-      ENTITY_NAME.TASK_ITEM,
-    ) as MultiEntityMapStore<Item, TaskItemModel>).addUsedCache(
-      this._postUsedItemCache,
-    );
+    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
+      Item,
+      TaskItemModel
+    >).addUsedCache(this._postUsedItemCache);
 
-    (storeManager.getEntityMapStore(
-      ENTITY_NAME.LINK_ITEM,
-    ) as MultiEntityMapStore<Item, LinkItemModel>).addUsedCache(
-      this._postUsedItemCache,
-    );
+    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
+      Item,
+      LinkItemModel
+    >).addUsedCache(this._postUsedItemCache);
 
-    (storeManager.getEntityMapStore(
-      ENTITY_NAME.NOTE_ITEM,
-    ) as MultiEntityMapStore<Item, NoteItemModel>).addUsedCache(
-      this._postUsedItemCache,
-    );
+    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
+      Item,
+      NoteItemModel
+    >).addUsedCache(this._postUsedItemCache);
 
-    (storeManager.getEntityMapStore(
-      ENTITY_NAME.CODE_ITEM,
-    ) as MultiEntityMapStore<Item, CodeItemModel>).addUsedCache(
-      this._postUsedItemCache,
-    );
+    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
+      Item,
+      CodeItemModel
+    >).addUsedCache(this._postUsedItemCache);
 
-    (storeManager.getEntityMapStore(
-      ENTITY_NAME.EVENT_ITEM,
-    ) as MultiEntityMapStore<Item, EventItemModel>).addUsedCache(
-      this._postUsedItemCache,
-    );
+    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
+      Item,
+      EventItemModel
+    >).addUsedCache(this._postUsedItemCache);
 
-    (storeManager.getEntityMapStore(
-      ENTITY_NAME.CONFERENCE_ITEM,
-    ) as MultiEntityMapStore<Item, ConferenceItemModel>).addUsedCache(
-      this._postUsedItemCache,
-    );
+    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
+      Item,
+      ConferenceItemModel
+    >).addUsedCache(this._postUsedItemCache);
 
     (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
       Item,

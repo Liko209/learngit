@@ -22,6 +22,6 @@ export class CodeSnippetViewModel extends StoreViewModel<
 
   @computed
   get postItem() {
-    return getEntity<Item, CodeSnippetItem>(ENTITY_NAME.CODE_ITEM, this._id);
+    return getEntity<Item, CodeSnippetItem>(ENTITY_NAME.ITEM, this._id);
   }
 }

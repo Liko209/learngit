@@ -21,7 +21,7 @@ class EventViewModel extends StoreViewModel<EventProps>
 
   @computed
   get event() {
-    return getEntity<Item, EventItemModel>(ENTITY_NAME.EVENT_ITEM, this._id);
+    return getEntity<Item, EventItemModel>(ENTITY_NAME.ITEM, this._id);
   }
 
   @computed

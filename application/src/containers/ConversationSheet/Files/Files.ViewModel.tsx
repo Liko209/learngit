@@ -156,10 +156,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     this._ids.forEach((id: number) => {
       if (id !== this._idToDelete) {
         try {
-          const item = getEntity<Item, FileItemModel>(
-            ENTITY_NAME.FILE_ITEM,
-            id,
-          );
+          const item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, id);
           result.push(item);
         } catch (e) {}
       }

@@ -5,6 +5,7 @@ enum ENTITY_NAME {
   'GROUP_STATE' = 'groupState',
   'MY_STATE' = 'myState',
   'ITEM' = 'item',
+  /*
   'FILE_ITEM' = 'fileItem',
   'TASK_ITEM' = 'taskItem',
   'EVENT_ITEM' = 'eventItem',
@@ -12,6 +13,7 @@ enum ENTITY_NAME {
   'NOTE_ITEM' = 'noteItem',
   'CODE_ITEM' = 'codeItem',
   'CONFERENCE_ITEM' = 'conferenceItem',
+  */
   'POST' = 'post',
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',

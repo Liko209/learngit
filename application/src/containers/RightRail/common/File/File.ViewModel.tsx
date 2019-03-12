@@ -24,7 +24,7 @@ class FileViewModel extends AbstractViewModel<FileProps>
 
   @computed
   get file() {
-    return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this.id);
+    return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this.id);
   }
 
   @computed
