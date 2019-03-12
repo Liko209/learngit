@@ -11,26 +11,30 @@ const LEAVE_EVENT = 'leave';
 
 class LeaveBlockerService extends EventEmitter2
   implements ILeaveBlockerService {
-  value: boolean | undefined | null;
+  queue: (() => boolean)[] = [];
   init() {
     window.onbeforeunload = () => {
       this.emit(LEAVE_EVENT);
-      return this.value ? true : undefined;
+      return this.queue.some(handler => handler()) ? true : undefined;
     };
   }
 
   dispose() {
     window.onbeforeunload = null;
+    this.queue = [];
   }
 
-  onLeave(handler: () => boolean | undefined | null) {
+  onLeave(handler: () => boolean) {
     return this.on(LEAVE_EVENT, () => {
-      this.value = handler();
+      this.queue.push(handler);
     });
   }
 
-  offLeave(handler: () => boolean | undefined | null) {
-    return this.off(LEAVE_EVENT, handler);
+  offLeave(handler: () => boolean) {
+    return this.off(LEAVE_EVENT, () => {
+      const index = this.queue.indexOf(handler);
+      this.queue.splice(index, 1);
+    });
   }
 }
 
