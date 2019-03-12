@@ -19,9 +19,15 @@
 //     this._initLDClient(options);
 //   }
 
+<<<<<<< HEAD
 //   hasPermission(type: UserPermissionType) {
 //     return this._flags && !!this._flags[type];
 //   }
+=======
+  hasPermission(type: UserPermissionType) {
+    return this._flags && !!this._flags[type];
+  }
+>>>>>>> hotfix/1.1.1.190305
 
 //   shutdown() {
 //     this._ldclient && this._ldclient.off('change');

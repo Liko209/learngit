@@ -52,6 +52,7 @@ class App extends React.Component {
   public render() {
     const { globalLoading } = this._appStore;
     return (
+<<<<<<< HEAD
       <ThemeProvider>
         {globalLoading ? (
           <JuiContentLoader />
@@ -65,6 +66,23 @@ class App extends React.Component {
           </>
         )}
       </ThemeProvider>
+=======
+      <>
+        <ThemeProvider>
+          {globalLoading ? (
+            <JuiContentLoader />
+          ) : (
+            <>
+              <Title />
+              <TopBanner />
+              <Router />
+              <AboutView />
+              {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
+            </>
+          )}
+        </ThemeProvider>
+      </>
+>>>>>>> hotfix/1.1.1.190305
     );
   }
 

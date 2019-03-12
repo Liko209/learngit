@@ -33,7 +33,11 @@ module.exports = [
   // }
 
   {
+<<<<<<< HEAD
     urlPattern: new RegExp("jupiter-icon.svg"),
+=======
+    urlPattern: new RegExp("https://s3.amazonaws.com/icomoon.io/*"),
+>>>>>>> hotfix/1.1.1.190305
     handler: "staleWhileRevalidate",
     options: {
       cacheableResponse: {

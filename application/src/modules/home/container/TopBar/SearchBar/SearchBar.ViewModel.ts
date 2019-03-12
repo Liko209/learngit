@@ -19,8 +19,13 @@ import {
   SearchItems,
   RecentItems,
 } from './types';
-import { GLOBAL_KEYS } from '@/store/constants';
+import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
+<<<<<<< HEAD
+=======
+import storeManager from '@/store/base/StoreManager';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+>>>>>>> hotfix/1.1.1.190305
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -96,6 +101,7 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     const ids = (models || []).map((model: SortableModel<T>) => model.id);
     return {
       ids,
+      models: models || [],
       hasMore: this.hasMore<T>(section, sectionCount),
     };
   }
@@ -109,18 +115,30 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
       this.groupService.doFuzzySearchTeams(key),
     ]);
     const sectionCount = this.calculateSectionCount(persons, groups, teams);
+
+    const personSection = this.getSection<Person>(persons, sectionCount);
+    const groupSection = this.getSection<Group>(groups, sectionCount);
+    const teamSection = this.getSection<Group>(teams, sectionCount);
+
+    this.updateStore(
+      personSection.models,
+      groupSection.models,
+      teamSection.models,
+    );
+
     return {
       terms:
         (persons && persons.terms) ||
         (groups && groups.terms) ||
         (teams && teams.terms) ||
         [],
-      people: this.getSection<Person>(persons, sectionCount),
-      groups: this.getSection<Group>(groups, sectionCount),
-      teams: this.getSection<Group>(teams, sectionCount),
+      people: personSection,
+      groups: groupSection,
+      teams: teamSection,
     };
   }
 
+<<<<<<< HEAD
   setSearchResult = async (value: string) => {
     const ret = await this.search(value);
     if (!ret) {
@@ -293,6 +311,25 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
 
   clearRecent = () => {
     SearchService.getInstance().clearRecentSearchRecords();
+=======
+  updateStore(
+    personModels: SortableModel<Person>[],
+    groupModels: SortableModel<Group>[],
+    teamModels: SortableModel<Group>[],
+  ) {
+    storeManager.dispatchUpdatedDataModels(
+      ENTITY_NAME.PERSON,
+      personModels.map((model: SortableModel<Person>) => model.entity),
+    );
+    storeManager.dispatchUpdatedDataModels(
+      ENTITY_NAME.GROUP,
+      groupModels.map((model: SortableModel<Group>) => model.entity),
+    );
+    storeManager.dispatchUpdatedDataModels(
+      ENTITY_NAME.GROUP,
+      teamModels.map((model: SortableModel<Group>) => model.entity),
+    );
+>>>>>>> hotfix/1.1.1.190305
   }
 }
 

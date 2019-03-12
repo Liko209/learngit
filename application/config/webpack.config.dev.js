@@ -321,7 +321,12 @@ module.exports = {
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     // In development, this will be an empty string.
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
+<<<<<<< HEAD
       ...env.raw
+=======
+      ...env.raw,
+      ICON_URL: iconUrl
+>>>>>>> hotfix/1.1.1.190305
     }),
     // This gives some necessary context to module not found errors, such as
     // the requesting resource.
