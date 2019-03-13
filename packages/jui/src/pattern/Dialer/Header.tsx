@@ -4,7 +4,6 @@ import {
   spacing,
   typography,
   palette,
-  primary,
   height,
   ellipsis,
 } from '../../foundation/utils/styles';
@@ -43,7 +42,6 @@ const StyledPhone = styled('div')`
 const StyledHeader = styled('div')`
   && {
     color: ${palette('common', 'white')};
-    background-color: ${primary('light')};
     padding: ${spacing(1, 4, 3)};
     display: flex;
     justify-content: space-between;
