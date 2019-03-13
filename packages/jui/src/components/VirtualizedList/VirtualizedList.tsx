@@ -133,6 +133,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: ScrollPosition) => {
     if (ref.current) {
       if (options === true) {
+        console.log('scrolling', offset, index);
         ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
       } else {
         ref.current.scrollTop =
@@ -142,11 +143,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   };
 
   const scrollToBottom = () => {
-    return scrollToPosition({
-      index: childrenCount - 1,
-      offset: 99999,
-      options: true,
-    });
+    if (ref.current) {
+      ref.current.scrollTop = ref.current.scrollHeight - height;
+    }
   };
 
   const keyMapper = createKeyMapper(children);
@@ -169,7 +168,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       setRenderedRange(
         createRange({ startIndex: index - 5, size: renderedRangeSize, min: 0 }),
       );
-      setScrollPosition({ index });
+      setScrollPosition({ index, offset: 0 });
       scrollEffectTriggerRef.current++; // Trigger scroll after next render
     },
   }));
@@ -279,11 +278,11 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   // Emit visible range change when component mounted
   //
-  useLayoutEffect(() => {
+  useEffect(() => {
     const visibleRange = computeVisibleRange();
-    onVisibleRangeChange(visibleRange);
+    onVisibleRangeChange(visibleRange, true);
     onRenderedRangeChange(visibleRange);
-  },              []);
+  },        []);
 
   useEffect(() => {
     if (ref.current) {
@@ -369,7 +368,7 @@ const MemoList = memo(
     {
       initialScrollToIndex?: number;
       onScroll?: (event: React.UIEvent) => void;
-      onVisibleRangeChange?: (range: IndexRange) => void;
+      onVisibleRangeChange?: (range: IndexRange, initial?: boolean) => void;
       onRenderedRangeChange?: (range: IndexRange) => void;
       before?: React.ReactNode;
       after?: React.ReactNode;

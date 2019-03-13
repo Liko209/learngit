@@ -160,10 +160,6 @@ export class StreamController {
       return this._orderListHandler.fetchData(direction, pageSize);
     }
     this._orderListHandler.refreshData();
-    console.log(
-      'andy hu length ',
-      this._orderListHandler.listStore.items.length,
-    );
     return this._orderListHandler.listStore.items;
   }
 }

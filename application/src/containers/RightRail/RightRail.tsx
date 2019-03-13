@@ -112,7 +112,7 @@ class RightRailComponent extends React.Component<Props> {
     const { tabIndex } = this.state;
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {(w: number, h: number) => {
+        {({ width: w, height: h }: { width: number; height: number }) => {
           const width =
             Number.isNaN(w) || typeof w === 'undefined' ? MIN_TAB_WIDTH : w;
           const height =

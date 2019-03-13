@@ -75,7 +75,7 @@ function renderJumpToFirstUnreadButton({
   return { hasJumpToFirstUnreadButton };
 }
 
-describe('StreamView', () => {
+describe.skip('StreamView', () => {
   describe('render()', () => {
     it('should render <ConversationPost>', () => {
       const props = {

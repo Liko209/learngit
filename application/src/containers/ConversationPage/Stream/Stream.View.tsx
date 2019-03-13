@@ -44,9 +44,6 @@ class StreamViewComponent extends Component<Props> {
   state = { _jumpToPostId: 0 };
 
   @observable private _jumpToFirstUnreadLoading = false;
-  constructor(props: Props) {
-    super(props);
-  }
 
   static getDerivedStateFromProps(props: Props) {
     if (props.jumpToPostId) {
@@ -88,7 +85,7 @@ class StreamViewComponent extends Component<Props> {
         lastPost &&
         lastPost.creatorId === this.currentUserId;
 
-      if (sentFromCurrentUser) {
+      if (sentFromCurrentUser && this._listRef.current.ref) {
         this._listRef.current.ref.scrollToBottom();
       }
     }
@@ -147,19 +144,13 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderStreamItems() {
-    console.log('andy hu, items', this.props.items);
     return this.props.items.map(this._renderStreamItem);
   }
 
   private _renderJumpToFirstUnreadButton() {
-    const {
-      t,
-      firstHistoryUnreadInPage,
-      hasHistoryUnread,
-      historyUnreadCount,
-    } = this.props;
+    const { t, hasHistoryUnread, historyUnreadCount } = this.props;
     const shouldHaveJumpButton =
-      hasHistoryUnread && historyUnreadCount > 1 && !firstHistoryUnreadInPage;
+      hasHistoryUnread && historyUnreadCount > 1 && !this._historyViewed;
 
     const countText =
       historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
@@ -202,12 +193,13 @@ class StreamViewComponent extends Component<Props> {
       );
       return;
     }
-    debugger;
-    this._listRef.current.ref.scrollToIndex(index);
+    // jump to post to be implemented yet.
   }
 
-  handleVisibilityChanged = ({ startIndex, stopIndex }: IndexRange) => {
-    console.log('andy hu range', startIndex, stopIndex);
+  handleVisibilityChanged = (
+    { startIndex, stopIndex }: IndexRange,
+    initial?: boolean,
+  ) => {
     const {
       items,
       mostRecentPostId,
@@ -225,7 +217,7 @@ class StreamViewComponent extends Component<Props> {
     } else {
       this.handleMostRecentHidden();
     }
-    if (this._historyViewed) {
+    if (this._historyViewed || initial) {
       return;
     }
     const firstPostItem = _.find(visibleItems, this.findPost) as StreamItemPost;
@@ -249,7 +241,6 @@ class StreamViewComponent extends Component<Props> {
     if (this._mostRecentViewed) {
       return;
     }
-    console.log('andy hu viewed');
     if (document.hasFocus()) {
       this.props.markAsRead();
       this._setUmiDisplay(false);
@@ -261,7 +252,6 @@ class StreamViewComponent extends Component<Props> {
     if (!this._mostRecentViewed) {
       return;
     }
-    console.log('andy hu hidden');
     this._setUmiDisplay(true);
     this._mostRecentViewed = false;
   }
@@ -298,10 +288,9 @@ class StreamViewComponent extends Component<Props> {
               <JuiInfiniteList
                 ref={this._listRef}
                 height={height}
-                stickToBottom={false}
+                stickToBottom={true}
                 initialScrollToIndex={initialPosition}
                 minRowHeight={50} // extract to const
-                overscan={3}
                 loadInitialData={this._loadInitialPosts}
                 loadMore={loadMore}
                 loadingRenderer={defaultLoading}
@@ -319,7 +308,7 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
-  @action.bound
+  @action
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead } = this.props;
     await loadInitialPosts();
@@ -334,9 +323,11 @@ class StreamViewComponent extends Component<Props> {
 
   private _focusHandler = () => {
     const { markAsRead } = this.props;
-    const atBottom = this._listRef.current.ref.isAtBottom();
-    atBottom && markAsRead();
-    this._setUmiDisplay(false);
+    if (this._listRef.current.ref) {
+      const atBottom = this._listRef.current.ref.isAtBottom();
+      atBottom && markAsRead();
+      this._setUmiDisplay(false);
+    }
   }
 
   private _blurHandler = () => {
