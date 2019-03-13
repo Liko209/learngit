@@ -17,7 +17,7 @@ type Props = {
 const StyledContainer = styled('div')`
   && {
     background-color: ${palette('common', 'white')};
-    padding: ${spacing(12, 6, 4)};
+    padding: ${spacing(10, 6, 6)};
     box-sizing: border-box;
     height: ${height(87)};
     display: flex;
@@ -47,9 +47,8 @@ const JuiKeypadAction = styled('div')`
     flex-direction: column;
     align-items: center;
     width: ${width(16)};
-    margin-bottom: ${spacing(8)};
+    margin-bottom: ${spacing(5)};
     & > span {
-      margin-top: ${spacing(1)};
       color: ${grey('700')};
       ${typography('caption1')};
       &.disabled {

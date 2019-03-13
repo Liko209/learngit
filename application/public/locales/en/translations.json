@@ -406,6 +406,7 @@
   },
   "telephony": {
     "Phone": "Phone",
+    "Ext": "Ext.",
     "action": {
       "minimize": "Minimize",
       "detach": "Detach",
