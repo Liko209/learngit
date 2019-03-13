@@ -19,10 +19,11 @@ import { hasValidEntity } from '@/store/utils';
 
 jest.mock('sdk/service/notificationCenter');
 
-function toIdModel(id: number, deactivated?: boolean) {
+function toIdModel(id: number, deactivated?: boolean, isMocked?: boolean) {
   return {
     id,
     deactivated,
+    isMocked,
   };
 }
 
@@ -80,9 +81,14 @@ describe('IdListPagingDataProvider', () => {
     existPostIds: number[],
     needFetchPostIds: number[],
     invalidPostIds: number[],
+    mockedPostIds: number[],
   ) {
     const existPosts = existPostIds.map((x: number) => {
-      return toIdModel(x, invalidPostIds.includes(x));
+      return toIdModel(
+        x,
+        invalidPostIds.includes(x),
+        mockedPostIds.includes(x),
+      );
     });
 
     storeManager.dispatchUpdatedDataModels(entityName, existPosts);
@@ -159,16 +165,18 @@ describe('IdListPagingDataProvider', () => {
     const pageSize = 3;
 
     it.each`
-      existPosts                 | anchor                        | needFetchPosts  | invalidPosts            | expectedIds   | hasMore  | direction
-      ${[5]}                     | ${undefined}                  | ${[6, 7]}       | ${[]}                   | ${[5, 6, 7]}  | ${true}  | ${QUERY_DIRECTION.NEWER}
-      ${[9]}                     | ${{ id: 7, sortValue: -7 }}   | ${[8, 10]}      | ${[]}                   | ${[8, 9, 10]} | ${true}  | ${QUERY_DIRECTION.NEWER}
-      ${[]}                      | ${{ id: 10, sortValue: -10 }} | ${[11]}         | ${[]}                   | ${[11]}       | ${false} | ${QUERY_DIRECTION.NEWER}
-      ${[5, 10, 11]}             | ${{ id: 5, sortValue: -5 }}   | ${[6, 7, 8, 9]} | ${[6, 7, 8, 9, 11]}     | ${[10]}       | ${false} | ${QUERY_DIRECTION.NEWER}
-      ${[5, 10, 11]}             | ${undefined}                  | ${[6, 7, 8, 9]} | ${[6, 7, 8, 9, 11]}     | ${[5, 10]}    | ${false} | ${QUERY_DIRECTION.NEWER}
-      ${[5, 10, 11]}             | ${{ id: 5, sortValue: -5 }}   | ${[6, 7, 8, 9]} | ${[6, 7, 8, 9, 10, 11]} | ${[]}         | ${false} | ${QUERY_DIRECTION.NEWER}
-      ${[5, 6, 7, 8, 9, 10, 11]} | ${undefined}                  | ${[]}           | ${[]}                   | ${[]}         | ${false} | ${QUERY_DIRECTION.OLDER}
-      ${[5, 6, 7, 8, 9, 10, 11]} | ${{ id: 11, sortValue: -11 }} | ${[]}           | ${[]}                   | ${[8, 9, 10]} | ${true}  | ${QUERY_DIRECTION.OLDER}
-      ${[5, 6, 7, 8, 9, 10, 11]} | ${{ id: 9, sortValue: -9 }}   | ${[]}           | ${[7]}                  | ${[5, 6, 8]}  | ${false} | ${QUERY_DIRECTION.OLDER}
+      existPosts                 | anchor                        | needFetchPosts  | invalidPosts            | isMockedIds | expectedIds    | hasMore  | direction
+      ${[5]}                     | ${undefined}                  | ${[6, 7]}       | ${[]}                   | ${[]}       | ${[5, 6, 7]}   | ${true}  | ${QUERY_DIRECTION.NEWER}
+      ${[9]}                     | ${{ id: 7, sortValue: -7 }}   | ${[8, 10]}      | ${[]}                   | ${[]}       | ${[8, 9, 10]}  | ${true}  | ${QUERY_DIRECTION.NEWER}
+      ${[]}                      | ${{ id: 10, sortValue: -10 }} | ${[11]}         | ${[]}                   | ${[]}       | ${[11]}        | ${false} | ${QUERY_DIRECTION.NEWER}
+      ${[5, 10, 11]}             | ${{ id: 5, sortValue: -5 }}   | ${[6, 7, 8, 9]} | ${[6, 7, 8, 9, 11]}     | ${[]}       | ${[10]}        | ${false} | ${QUERY_DIRECTION.NEWER}
+      ${[5, 10, 11]}             | ${undefined}                  | ${[6, 7, 8, 9]} | ${[6, 7, 8, 9, 11]}     | ${[]}       | ${[5, 10]}     | ${false} | ${QUERY_DIRECTION.NEWER}
+      ${[5, 10, 11]}             | ${{ id: 5, sortValue: -5 }}   | ${[6, 7, 8, 9]} | ${[6, 7, 8, 9, 10, 11]} | ${[]}       | ${[]}          | ${false} | ${QUERY_DIRECTION.NEWER}
+      ${[5, 10, 11]}             | ${{ id: 5, sortValue: -5 }}   | ${[6, 7, 8, 9]} | ${[6, 7, 8, 9]}         | ${[10, 11]} | ${[]}          | ${false} | ${QUERY_DIRECTION.NEWER}
+      ${[9]}                     | ${{ id: 7, sortValue: -7 }}   | ${[8, 10, 11]}  | ${[]}                   | ${[9]}      | ${[8, 10, 11]} | ${false} | ${QUERY_DIRECTION.NEWER}
+      ${[5, 6, 7, 8, 9, 10, 11]} | ${undefined}                  | ${[]}           | ${[]}                   | ${[]}       | ${[]}          | ${false} | ${QUERY_DIRECTION.OLDER}
+      ${[5, 6, 7, 8, 9, 10, 11]} | ${{ id: 11, sortValue: -11 }} | ${[]}           | ${[]}                   | ${[]}       | ${[8, 9, 10]}  | ${true}  | ${QUERY_DIRECTION.OLDER}
+      ${[5, 6, 7, 8, 9, 10, 11]} | ${{ id: 9, sortValue: -9 }}   | ${[]}           | ${[7]}                  | ${[]}       | ${[5, 6, 8]}   | ${false} | ${QUERY_DIRECTION.OLDER}
     `(
       'should return with expected data, $expectedIds, hasMore: $hasMore, direction: $direction',
       async ({
@@ -179,8 +187,9 @@ describe('IdListPagingDataProvider', () => {
         expectedIds,
         hasMore,
         direction,
+        isMockedIds,
       }) => {
-        setUpData(existPosts, needFetchPosts, invalidPosts);
+        setUpData(existPosts, needFetchPosts, invalidPosts, isMockedIds);
 
         const {
           data,

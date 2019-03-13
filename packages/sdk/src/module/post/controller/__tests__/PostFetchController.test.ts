@@ -12,11 +12,10 @@ import { PostDao } from '../../dao';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { PostFetchController } from '../PostFetchController';
 import PostAPI from '../../../../api/glip/post';
-import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import { Post } from '../../entity/Post';
 import { PostDataController } from '../PostDataController';
 import { GroupService } from '../../../../module/group/service';
-import { GROUP_QUERY_TYPE } from '../../../../service';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
@@ -549,45 +548,6 @@ describe('PostFetchController()', () => {
       groupService.updateHasMore.mockImplementationOnce(() => {});
       expect(groupService.updateHasMore).toHaveBeenCalledTimes(1);
       expect(result.hasMore).toBeFalsy();
-    });
-  });
-
-  describe('getPostsByIds', () => {
-    it('should return all posts if there are all exist in local', async () => {
-      setup();
-      itemService.getByPosts.mockResolvedValueOnce([]);
-      postFetchController.entitySourceController.batchGet.mockResolvedValueOnce(
-        [{ id: 1 }, { id: 2 }],
-      );
-      const result = await postFetchController.getPostsByIds([1, 2]);
-      expect(result.posts.length).toEqual(2);
-    });
-    it('should request posts if there are not all exist in local', async () => {
-      setup();
-      itemService.getByPosts.mockResolvedValueOnce([]);
-      postFetchController.entitySourceController.batchGet.mockResolvedValueOnce(
-        [{ id: 1 }],
-      );
-      const data = {
-        posts: [{ _id: 2 }],
-        items: [],
-      };
-      const mockNormal = data;
-      PostAPI.requestByIds.mockResolvedValueOnce(mockNormal);
-
-      postFetchController.postDataController.filterAndSavePosts.mockResolvedValueOnce(
-        [{ id: 2 }],
-      );
-      const result = await postFetchController.getPostsByIds([1, 2]);
-      expect(result.posts).toEqual([{ id: 1 }, { id: 2 }]);
-    });
-  });
-
-  describe('getPostCountByGroupId', () => {
-    it('should return correct post count by group id', async () => {
-      postDao.groupPostCount.mockResolvedValueOnce(2);
-      const result = await postFetchController.getPostCountByGroupId(2);
-      expect(result).toEqual(2);
     });
   });
 });

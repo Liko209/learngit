@@ -3,13 +3,13 @@
  * @Date: 2019-01-17 14:03:39
  * Copyright © RingCentral. All rights reserved.
  */
+import { ReactNode } from 'react';
 import { observable } from 'mobx';
-import { MessageExtension } from '../types';
 class MessageStore {
-  @observable extensions: MessageExtension[] = [];
+  @observable conversationHeaderExtensions: ReactNode[] = [];
 
-  addExtension(extension: MessageExtension) {
-    this.extensions.push(extension);
+  addConversationHeaderExtension(extension: ReactNode) {
+    this.conversationHeaderExtensions.push(extension);
   }
 }
 

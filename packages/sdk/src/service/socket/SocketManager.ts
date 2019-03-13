@@ -8,7 +8,7 @@ import notificationCenter from '../../service/notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
 import { mainLogger } from 'foundation';
 import { AuthGlobalConfig } from '../../service/auth/config';
-import { NewGlobalConfig } from '../../service/config';
+import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
 
 const SOCKET_LOGGER = 'SOCKET';
 export class SocketManager {
@@ -148,7 +148,7 @@ export class SocketManager {
 
   private _onServerHostUpdated() {
     const hasActive = this.hasActiveFSM();
-    const serverUrl = NewGlobalConfig.getSocketServerHost();
+    const serverUrl = this._getServerHost();
     // tslint:disable-next-line:max-line-length
     this.info(
       `onServerHostUpdated: ${serverUrl}, _hasLoggedIn: ${
@@ -257,7 +257,8 @@ export class SocketManager {
 
     try {
       const body = JSON.parse(data.body);
-      NewGlobalConfig.setSocketServerHost(body.server);
+      const socketUserConfig = new SyncUserConfig();
+      socketUserConfig.setSocketServerHost(body.server);
       notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, body.server);
     } catch (error) {
       this.warn(`fail on socket reconnect: ${error}`);
@@ -266,7 +267,7 @@ export class SocketManager {
 
   private _startFSM() {
     // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
-    const serverHost = NewGlobalConfig.getSocketServerHost();
+    const serverHost = this._getServerHost();
     const glipToken = AuthGlobalConfig.getGlipToken();
     if (serverHost) {
       this.activeFSM = new SocketFSM(
@@ -309,5 +310,10 @@ export class SocketManager {
     notificationCenter.emit(SERVICE.SOCKET_STATE_CHANGE, {
       state,
     });
+  }
+
+  private _getServerHost() {
+    const socketUserConfig = new SyncUserConfig();
+    return socketUserConfig.getSocketServerHost();
   }
 }

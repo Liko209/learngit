@@ -13,6 +13,7 @@ import {
   RTCCallActionSuccessOptions,
 } from 'sdk/module/telephony';
 import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
+import { PersonService, ContactType } from 'sdk/module/person';
 import { mainLogger } from 'sdk';
 import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
@@ -21,14 +22,14 @@ class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
 
   private _serverTelephonyService: ServerTelephonyService = ServerTelephonyService.getInstance();
+  private _personService: PersonService = PersonService.getInstance();
 
   private _callId?: string;
 
-  private _accountState?: RTC_ACCOUNT_STATE;
+  private _registeredOnbeforeunload: boolean = false;
 
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(`[Telephony_Service_Account_State]: ${state}`);
-    this._accountState = state;
   }
 
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
@@ -36,12 +37,14 @@ class TelephonyService {
 
     this._callId = callId;
     switch (state) {
-      case RTC_CALL_STATE.CONNECTED:
+      case RTC_CALL_STATE.CONNECTED: {
         this._telephonyStore.connected();
         break;
-      case RTC_CALL_STATE.DISCONNECTED:
+      }
+      case RTC_CALL_STATE.DISCONNECTED: {
         this._telephonyStore.end();
         break;
+      }
     }
   }
 
@@ -67,6 +70,7 @@ class TelephonyService {
   }
 
   makeCall = async (toNumber: string) => {
+    this._telephonyStore.phoneNumber = toNumber;
     const rv = await this._serverTelephonyService.makeCall(toNumber, {
       onCallStateChange: this._onCallStateChange,
       onCallActionSuccess: this._onCallActionSuccess,
@@ -79,13 +83,34 @@ class TelephonyService {
     } else if (MAKE_CALL_ERROR_CODE.NO_ERROR !== rv) {
       ToastCallError.toastCallFailed();
     }
+    // TODO: There is a LeaveBlockerService, but it can't support multi-blocker. When it can support, we should use that service.
+    if (!this._registeredOnbeforeunload) {
+      // If makeCall return success, register this handle
+      window.addEventListener(
+        'beforeunload',
+        (e: Event) => {
+          e.preventDefault();
+          if (this._serverTelephonyService.getAllCallCount() > 0) {
+            mainLogger.info(
+              `Notify user has call count: ${this._serverTelephonyService.getAllCallCount()}`,
+            );
+            const confirmationMessage = true;
+
+            (e || window.event).returnValue = confirmationMessage; // Gecko + IE
+            return confirmationMessage;
+          }
+          // if we return nothing here (just calling return;) then there will be no pop-up question at all
+          return;
+        },
+        false,
+      );
+      this._registeredOnbeforeunload = true;
+    }
   }
 
   directCall = (toNumber: string) => {
-    if (this._accountState === RTC_ACCOUNT_STATE.REGISTERED) {
-      this.makeCall(toNumber);
-      this._telephonyStore.directCall();
-    }
+    this.makeCall(toNumber);
+    this._telephonyStore.directCall();
   }
 
   hangUp = () => {
@@ -104,6 +129,13 @@ class TelephonyService {
       return;
     }
     this._telephonyStore.detachedWindow();
+  }
+
+  matchContactByPhoneNumber = async (phone: string) => {
+    return await this._personService.matchContactByPhoneNumber(
+      phone,
+      ContactType.GLIP_CONTACT,
+    );
   }
 }
 

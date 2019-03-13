@@ -358,7 +358,6 @@
       "closeConfirmDialogHeader": "Close Conversation?",
       "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
       "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
-      "closeConversation": "Close Conversation",
       "SorryWeWereNotAbleToCloseTheConversation": "Sorry, we weren't able to close the conversation. Try again.",
       "SorryWeWereNotAbleToOpenThisProfile": "Sorry, we weren't able to open this profile. Try again.",
       "JoinTeamNotAuthorizedError": "Sorry, we weren't able to let you join the team. This team is changed to a private team, please contact the team administrator.",
@@ -406,6 +405,7 @@
   },
   "telephony": {
     "Phone": "Phone",
+    "Ext": "Ext.",
     "action": {
       "minimize": "Minimize",
       "detach": "Detach",

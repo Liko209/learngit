@@ -14,22 +14,26 @@ import {
   buildPartialModifyController,
 } from '../../../framework/controller';
 import { daoManager } from '../../../dao';
-import { PostDao } from '../dao';
+import { PostDao, PostDiscontinuousDao } from '../dao';
 import { SendPostController } from './implementation/SendPostController';
 import { PreInsertController } from '../../common/controller/impl/PreInsertController';
 import { ProgressService } from '../../progress';
 import { PostFetchController } from './PostFetchController';
+import { DiscontinuousPostController } from './DiscontinuousPostController';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ISendPostController } from './interface/ISendPostController';
 import { PostDataController } from './PostDataController';
+import { PostSearchController } from './implementation/PostSearchController';
+import { ENTITY } from '../../../service';
 
 class PostController {
   private _actionController: PostActionController;
   private _sendController: ISendPostController;
   private _preInsertController: IPreInsertController;
-  private _fetchController: PostFetchController;
+  private _postFetchController: PostFetchController;
+  private _discontinuousPostController: DiscontinuousPostController;
   private _postDataController: PostDataController;
-
+  private _postSearchController: PostSearchController;
   constructor() {}
 
   getPostActionController(): PostActionController {
@@ -72,7 +76,7 @@ class PostController {
   }
 
   getPostFetchController() {
-    if (!this._fetchController) {
+    if (!this._postFetchController) {
       const persistentController = buildEntityPersistentController<Post>(
         daoManager.getDao(PostDao),
       );
@@ -80,12 +84,28 @@ class PostController {
         persistentController,
       );
 
-      this._fetchController = new PostFetchController(
+      this._postFetchController = new PostFetchController(
         this.getPostDataController(),
         entitySourceController,
       );
     }
-    return this._fetchController;
+    return this._postFetchController;
+  }
+
+  getDiscontinuousPostFetchController() {
+    if (!this._discontinuousPostController) {
+      const persistentController = buildEntityPersistentController<Post>(
+        daoManager.getDao(PostDiscontinuousDao),
+      );
+      const entitySourceController = buildEntitySourceController<Post>(
+        persistentController,
+      );
+
+      this._discontinuousPostController = new DiscontinuousPostController(
+        entitySourceController,
+      );
+    }
+    return this._discontinuousPostController;
   }
 
   getPostDataController() {
@@ -105,12 +125,23 @@ class PostController {
     return this._postDataController;
   }
 
+  getPostSearchController() {
+    if (!this._postSearchController) {
+      this._postSearchController = new PostSearchController();
+    }
+
+    return this._postSearchController;
+  }
+
   private _getPreInsertController() {
     if (!this._preInsertController) {
       const progressService: ProgressService = ProgressService.getInstance();
       this._preInsertController = new PreInsertController<Post>(
         daoManager.getDao(PostDao),
         progressService,
+        (entity: Post) => {
+          return `${ENTITY.POST}.${entity.group_id}`;
+        },
       );
     }
     return this._preInsertController;

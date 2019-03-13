@@ -1,7 +1,8 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/Like/LikeAndUnlike.ts"
+      "./fixtures/Bookmarks/Bookmarks.ts",
+      "./fixtures/AtMention/AtMention.ts"
     ],
     "browsers": [
       "selenium:chrome"
