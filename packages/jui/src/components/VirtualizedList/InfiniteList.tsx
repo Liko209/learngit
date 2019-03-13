@@ -32,6 +32,8 @@ type JuiInfiniteListProps = {
   children: JSX.Element[];
   stickToBottom?: boolean;
   fallBackRenderer: JSX.Element;
+  classWhenUnScrollable?: string;
+  classWhenScrollable?: string;
 };
 
 const JuiInfiniteList: RefForwardingComponent<
@@ -54,6 +56,8 @@ const JuiInfiniteList: RefForwardingComponent<
     stickToBottom,
     fallBackRenderer,
     children,
+    classWhenUnScrollable,
+    classWhenScrollable,
   }: JuiInfiniteListProps,
   forwardRef,
 ) => {
@@ -69,10 +73,7 @@ const JuiInfiniteList: RefForwardingComponent<
   useImperativeHandle(forwardRef, () => ({
     ref: ref.current ? ref.current.ref : null,
   }));
-  if (!height) {
-    return loadingRenderer;
-  }
-
+  console.log('andy hu height', height);
   return (
     <JuiDataLoader
       hasMore={hasMore}
@@ -88,7 +89,7 @@ const JuiInfiniteList: RefForwardingComponent<
         loadingDown,
         loadingInitialFailed,
       }) => {
-        if (loadingInitial) {
+        if (loadingInitial || !height) {
           return loadingRenderer;
         }
         if (loadingInitialFailed) {
@@ -113,6 +114,8 @@ const JuiInfiniteList: RefForwardingComponent<
             onVisibleRangeChange={onVisibleRangeChange}
             onRenderedRangeChange={onRenderedRangeChange}
             stickToBottom={stickToBottom && isStickToBottomEnabled}
+            classWhenUnScrollable={classWhenScrollable}
+            classWhenScrollable={classWhenScrollable}
           >
             {children}
           </JuiVirtualizedList>

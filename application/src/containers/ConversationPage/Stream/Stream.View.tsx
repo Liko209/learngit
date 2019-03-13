@@ -269,6 +269,7 @@ class StreamViewComponent extends Component<Props> {
         return !!item.value && item.value.includes(_jumpToPostId);
       });
     }
+
     const defaultLoading = <DefaultLoadingWithDelay />;
     const defaultLoadingMore = <DefaultLoadingMore />;
     const onInitialDataFailed = (
@@ -279,9 +280,10 @@ class StreamViewComponent extends Component<Props> {
         onClick={this._loadInitialPosts}
       />
     );
+
     return (
       <JuiStream>
-        <ReactResizeDetector handleHeight={true} refreshMode={'debounce'}>
+        <ReactResizeDetector handleHeight={true}>
           {({ height }: { height: number }) => (
             <div style={{ height: '100%' }}>
               {this._renderJumpToFirstUnreadButton()}
