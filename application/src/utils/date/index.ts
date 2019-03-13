@@ -176,7 +176,7 @@ function getDateTimeStamp(timestamp: number) {
     .startOf('day')
     .valueOf();
 }
-function handerTimeZoneOffset(
+function handleTimeZoneOffset(
   timestamp: number,
   timezoneOffset: number,
 ): number {
@@ -219,7 +219,7 @@ export {
   dividerTimestamp,
   postTimestamp,
   dateFormatter,
-  handerTimeZoneOffset,
+  handleTimeZoneOffset,
   formatSeconds,
 };
 
