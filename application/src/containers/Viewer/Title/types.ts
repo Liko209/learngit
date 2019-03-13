@@ -5,7 +5,7 @@
  */
 
 import { ViewerViewModelProps } from '../types';
-import ItemModel from '@/store/models/Item';
+import FileItemModel from '@/store/models/FileItem';
 import PersonModel from '@/store/models/Person';
 
 type ViewerTitleProps = { itemId: number };
@@ -13,7 +13,7 @@ type ViewerTitleProps = { itemId: number };
 type ViewerTitleViewModelProps = ViewerViewModelProps;
 
 type ViewerTitleViewProps = ViewerViewModelProps & {
-  item: ItemModel;
+  item: FileItemModel;
   person: PersonModel;
 };
 

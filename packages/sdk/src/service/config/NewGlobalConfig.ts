@@ -76,6 +76,14 @@ class NewGlobalConfig extends GlobalConfig {
   static removeConfig(key: string) {
     this.remove(key);
   }
+
+  static setFetchedRemaining(value: boolean) {
+    this.put(CONFIG_KEYS.FETCHED_REMAINING, value);
+  }
+
+  static getFetchedRemaining() {
+    return this.get(CONFIG_KEYS.FETCHED_REMAINING);
+  }
 }
 
 export { NewGlobalConfig };
