@@ -58,7 +58,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       const bottom = scrollTop + height;
       result = {
         startIndex: rowManager.getRowIndexFromPosition(top, maxIndex),
-        stopIndex: rowManager.getRowIndexFromPosition(bottom, maxIndex),
+        stopIndex: rowManager.getRowIndexFromPosition(bottom, maxIndex, true),
       };
     } else {
       result = { startIndex: 0, stopIndex: 0 };

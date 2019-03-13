@@ -64,11 +64,15 @@ class RowManager {
     return this.getBeforeHeight() + this.getRowsHeight(0, index - 1);
   }
 
-  getRowIndexFromPosition(position: number, stopIndex: number) {
+  getRowIndexFromPosition(
+    position: number,
+    stopIndex: number,
+    getUpper: boolean = false,
+  ) {
     let rowsHeight = this.getBeforeHeight();
     for (let index = 0; index <= stopIndex; index++) {
       rowsHeight += this.getRowHeight(index);
-      if (position < rowsHeight) {
+      if (position < rowsHeight || (getUpper && position === rowsHeight)) {
         return index;
       }
     }
