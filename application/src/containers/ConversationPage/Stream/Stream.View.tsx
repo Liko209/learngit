@@ -268,7 +268,6 @@ class StreamViewComponent extends Component<Props> {
     if (this._mostRecentViewed) {
       return;
     }
-    console.log('andy hu viewed');
     if (document.hasFocus()) {
       this.props.markAsRead();
       this._setUmiDisplay(false);
@@ -280,7 +279,6 @@ class StreamViewComponent extends Component<Props> {
     if (!this._mostRecentViewed) {
       return;
     }
-    console.log('andy hu hidden');
     this._setUmiDisplay(true);
     this._mostRecentViewed = false;
   }
