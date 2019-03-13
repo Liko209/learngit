@@ -756,7 +756,7 @@ export class GlipSdk {
 
     return await this.createCodeSnippet(data);
   }
-  
+
   async deleteCodeSnippet(taskId: string) {
     await this.updateCodeSnippet(taskId, {
       deactivated: true
@@ -780,5 +780,30 @@ export class GlipSdk {
       options
     )
     return await this.createAudioConference(data);
+  }
+
+  /* file */
+  async getFilesIdsFromPostId(postId: string) {
+    const res = await this.getPost(postId);
+    return res.data.items;
+  }
+
+  updateFile(fileId: string, data: object) {
+    const uri = `/api/file/${fileId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async updateFileName(fileId: string, name: string) {
+    return await this.updateFile(fileId, {
+      name
+    });
+  }
+
+  async deleteFile(fileId: string) {
+    return await this.updateFile(fileId, {
+      deactivated: true
+    });
   }
 }
