@@ -273,8 +273,7 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
     await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
     await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
   });
-},
-);
+});
 
 test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation in confirm alert(without UMI)`, ['JPT-134', 'JPT-130', 'P2', 'ConversationList']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
