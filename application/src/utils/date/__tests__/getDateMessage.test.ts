@@ -14,7 +14,7 @@ jest.mock('i18next', () => ({
 describe('handerTimeZoneOffset()', () => {
   it('should equal when get local timezone offset', () => {
     const timestamp = Number(moment());
-    const localTimezoneOffset = new Date().getTimezoneOffset();
+    const localTimezoneOffset = moment().utcOffset();
     const result = handerTimeZoneOffset(timestamp, localTimezoneOffset);
     expect(result).toEqual(timestamp);
   });

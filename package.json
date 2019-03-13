@@ -102,6 +102,7 @@
     }
   },
   "dependencies": {
-    "ldclient-js": "2.9.3"
+    "ldclient-js": "2.9.3",
+    "moment-timezone": "0.5.23"
   }
 }

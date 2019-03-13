@@ -53,8 +53,7 @@ const dateFormatter = {
     return i18next.t('common.time.yesterday');
   },
   weekday: (m: Moment) => {
-    const date = new Date(m.format());
-    return i18next.t(WEEKDAY[date.getDay()]);
+    return i18next.t(WEEKDAY[m.day()]);
   },
   exactDate: (m: Moment) => {
     return `${dateFormatter.weekday(m).slice(0, 3)}, ${m.format('l')}`;
@@ -181,7 +180,7 @@ function handerTimeZoneOffset(
   timestamp: number,
   timezoneOffset: number,
 ): number {
-  const localTimezoneOffset = new Date().getTimezoneOffset();
+  const localTimezoneOffset = moment().utcOffset();
   const MINUTE = 60 * 1000;
   return timestamp + (localTimezoneOffset - timezoneOffset) * MINUTE;
 }
