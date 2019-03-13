@@ -74,4 +74,16 @@ describe('PrefetchPostProcessor', () => {
       expect(spy).toHaveBeenCalledTimes(0);
     });
   });
+  describe('canContinue()', () => {
+    it('should return true', () => {
+      const result = prefetchPostProcessor.canContinue();
+      expect(result).toBeTruthy();
+    });
+  });
+  describe('name()', () => {
+    it('should return 2 when groupId is 2', () => {
+      const result = prefetchPostProcessor.name();
+      expect(result).toBe('2');
+    });
+  });
 });
