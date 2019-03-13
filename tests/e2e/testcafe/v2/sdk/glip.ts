@@ -782,11 +782,22 @@ export class GlipSdk {
     return await this.createAudioConference(data);
   }
 
-  /* file */
-  async getFilesIdsFromPostId(postId: string | number) {
+  async getPostItemsByTypeId(postId: string | number, typeId: number | string): Promise<string[]> {
     const items = await this.getPost(postId).then(res => res.data.items);
-    const ids = items.filter(item => item.type_id == '10').map(item => item.id);
+    const ids = items.filter(item => item.type_id == `${typeId}`).map(item => item.id);
     return ids;
+  }
+
+  /* file and image */
+  async getFilesIdsFromPostId(postId: string | number): Promise<string[]> {
+    return this.getPostItemsByTypeId(postId, 10);
+  }
+
+  getFile(fileId: string | number) {
+    const uri = `/api/file/${fileId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
   }
 
   updateFile(fileId: string | number, data: object) {
@@ -805,4 +816,35 @@ export class GlipSdk {
       deactivated: true
     });
   }
+
+  /* links */
+  async getLinksIdsFromPostId(postId: string | number): Promise<string[]> {
+    return this.getPostItemsByTypeId(postId, 17);
+  }
+
+  getLink(linkId: string | number) {
+    const uri = `/api/link/${linkId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  updateLink(linkId: string | number, data: object) {
+    const uri = `/api/link/${linkId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async updateLinkUrlTitle(linkId: string, data: { url?: string, title?: string }) {
+    return await this.updateFile(linkId, data);
+  }
+
+  async deleteLink(linkId: string | number) {
+    return await this.updateFile(linkId, {
+      deactivated: true
+    });
+  }
+
+
 }
