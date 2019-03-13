@@ -34,7 +34,7 @@ import { StreamController } from './StreamController';
 
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
-import { mainLogger } from 'sdk/src';
+import { mainLogger } from 'sdk';
 
 class StreamViewModel extends StoreViewModel<StreamProps>
   implements StreamViewProps {
@@ -99,7 +99,7 @@ class StreamViewModel extends StoreViewModel<StreamProps>
 
   @computed
   get notEmpty() {
-    return this.items.length !== 1 || this.hasMore('up');
+    return this.postIds.length !== 0 || this.hasMore('up');
   }
 
   @computed
@@ -122,7 +122,6 @@ class StreamViewModel extends StoreViewModel<StreamProps>
 
   constructor(props: StreamProps) {
     super(props);
-
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
@@ -192,7 +191,7 @@ class StreamViewModel extends StoreViewModel<StreamProps>
       return;
     }
   }
-
+  @action
   loadMore = async (direction: 'up' | 'down') => {
     switch (direction) {
       case 'up':
@@ -230,8 +229,7 @@ class StreamViewModel extends StoreViewModel<StreamProps>
   }
 
   markAsRead() {
-    false &&
-      this._stateService.updateReadStatus(this.props.groupId, false, true);
+    this._stateService.updateReadStatus(this.props.groupId, false, true);
   }
 
   enableNewMessageSeparatorHandler = () => {

@@ -15,7 +15,6 @@ import {
   JuiTaskContent,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import {
   JuiFileWithExpand,
   JuiExpandImage,
@@ -25,20 +24,9 @@ import { AvatarName } from './AvatarName';
 import { getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
+import { Download } from '@/containers/common/Download';
 
 type taskViewProps = WithNamespaces & ViewProps;
-
-const downloadBtn = (downloadUrl: string) => (
-  <JuiIconButton
-    component="a"
-    download={true}
-    href={downloadUrl}
-    variant="plain"
-    tooltipTitle={i18next.t('common.download')}
-  >
-    download
-  </JuiIconButton>
-);
 
 const FILE_COMPS = {
   [FileType.image]: (file: ExtendFileItem, props: ViewProps) => {
@@ -53,8 +41,8 @@ const FILE_COMPS = {
           fileName={name}
           i18UnfoldLess={i18next.t('common.collapse')}
           i18UnfoldMore={i18next.t('common.expand')}
-          Actions={downloadBtn(downloadUrl)}
-          ImageActions={downloadBtn(downloadUrl)}
+          Actions={<Download url={downloadUrl} />}
+          ImageActions={<Download url={downloadUrl} />}
         />
       )
     );
@@ -68,7 +56,7 @@ const FILE_COMPS = {
           icon={getFileIcon(type)}
           key={id}
           fileName={name}
-          Actions={downloadBtn(downloadUrl)}
+          Actions={<Download url={downloadUrl} />}
         />
       )
     );

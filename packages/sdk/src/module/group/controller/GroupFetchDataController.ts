@@ -17,7 +17,10 @@ import { AccountGlobalConfig } from '../../../service/account/config';
 import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
-import { ProfileService, extractHiddenGroupIds } from '../../profile';
+import {
+  ProfileService,
+  extractHiddenGroupIdsWithoutUnread,
+} from '../../profile';
 import { transform } from '../../../service/utils';
 import {
   PERFORMANCE_KEYS,
@@ -79,7 +82,9 @@ export class GroupFetchDataController {
       const profile = await profileService.getProfile();
       const favoriteGroupIds =
         profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
-      const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
+      const hiddenIds = profile
+        ? await extractHiddenGroupIdsWithoutUnread(profile)
+        : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
       const userId = AccountGlobalConfig.getCurrentUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
@@ -207,12 +212,12 @@ export class GroupFetchDataController {
       return null;
     }
 
-    const sortFunc = async (
+    const sortFunc = (
       group: Group,
       terms: string[],
-    ): Promise<SortableModel<Group> | null> => {
+    ): SortableModel<Group> | null => {
       if (this._isValidGroup(group) && group.members.length > 2) {
-        const groupName = await this.getGroupNameByMultiMembers(
+        const groupName = this.getGroupNameByMultiMembers(
           group.members,
           currentUserId,
         );
@@ -275,7 +280,7 @@ export class GroupFetchDataController {
     const kSortingRateWithFirstAndPositionMatched: number = 1.1;
 
     const result = await this.entityCacheSearchController.searchEntities(
-      async (team: Group, terms: string[]) => {
+      (team: Group, terms: string[]) => {
         let isMatched: boolean = false;
         let sortValue: number = 0;
 
@@ -361,28 +366,28 @@ export class GroupFetchDataController {
     return result;
   }
 
-  async getGroupNameByMultiMembers(members: number[], currentUserId: number) {
+  getGroupNameByMultiMembers(members: number[], currentUserId: number) {
     const names: string[] = [];
     const emails: string[] = [];
-
+    const allPersons: Person[] = [];
     const personService: PersonService = PersonService.getInstance();
     const diffMembers = _.difference(members, [currentUserId]);
-
-    const promises = diffMembers.map(async (id: number) => {
-      return personService.getById(id);
+    diffMembers.forEach((id: number) => {
+      const person = personService.getSynchronously(id);
+      if (person) {
+        allPersons.push(person);
+      }
     });
 
-    await Promise.all(promises).then((persons: any[]) => {
-      persons.forEach((person: Person) => {
-        if (person) {
-          const name = personService.getName(person);
-          if (name.length > 0) {
-            names.push(name);
-          } else {
-            emails.push(person.email);
-          }
+    allPersons.forEach((person: Person) => {
+      if (person) {
+        const name = personService.getName(person);
+        if (name.length > 0) {
+          names.push(name);
+        } else {
+          emails.push(person.email);
         }
-      });
+      }
     });
 
     return names
@@ -519,7 +524,7 @@ export class GroupFetchDataController {
       let favoriteGroupIds = profile.favorite_group_ids.filter(
         (id: any) => typeof id === 'number' && !isNaN(id),
       );
-      const hiddenIds = extractHiddenGroupIds(profile);
+      const hiddenIds = await extractHiddenGroupIdsWithoutUnread(profile);
       favoriteGroupIds = _.difference(favoriteGroupIds, hiddenIds);
       const groups = await this.groupService.getGroupsByIds(
         favoriteGroupIds,

@@ -56,7 +56,10 @@ export class StreamController {
       this._groupId,
       this._jumpToPostId,
     );
-    postCacheController.setCurrentConversation(this._groupId);
+    if (!this._jumpToPostId) {
+      postCacheController.setCurrentConversation(this._groupId);
+    }
+
     this._orderListHandler = listHandler;
     this._orderListHandler.addDataChangeCallback(this.handlePostsChanged);
 
@@ -112,7 +115,9 @@ export class StreamController {
     if (this._streamListHandler) {
       this._streamListHandler.dispose();
     }
-    postCacheController.releaseCurrentConversation(this._groupId);
+    if (!this._jumpToPostId) {
+      postCacheController.releaseCurrentConversation(this._groupId);
+    }
   }
 
   @action
@@ -155,10 +160,6 @@ export class StreamController {
       return this._orderListHandler.fetchData(direction, pageSize);
     }
     this._orderListHandler.refreshData();
-    console.log(
-      'andy hu length ',
-      this._orderListHandler.listStore.items.length,
-    );
     return this._orderListHandler.listStore.items;
   }
 }

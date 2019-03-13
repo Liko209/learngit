@@ -3,7 +3,7 @@
  * @Date: 2018-12-27 10:01:32
  */
 import { SceneConfig } from "./sceneConfig";
-import { ProcessGatherer } from "../../gatherers";
+import { ProcessGatherer, MemoryGatherer } from "../../gatherers";
 import { ProcessAudit } from "../../audits";
 
 class SceneConfigFactory {
@@ -14,6 +14,9 @@ class SceneConfigFactory {
     config.passes[0].gatherers = [
       {
         instance: new ProcessGatherer()
+      },
+      {
+        instance: new MemoryGatherer()
       }
     ];
     config.audits = [

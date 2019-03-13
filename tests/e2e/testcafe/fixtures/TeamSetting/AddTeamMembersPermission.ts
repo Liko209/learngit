@@ -25,7 +25,7 @@ test(formalName(`Only admin and member have add members permission when add team
   const memberUser = h(t).rcData.mainCompany.users[4];
   const adminUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(memberUser).init();
-  await h(t).glip(memberUser).resetProfile();
+  await h(t).glip(memberUser).resetProfileAndState();
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init()
 
@@ -105,7 +105,7 @@ test(formalName(`Only admin has add member permission when add team members togg
   const memberUser = h(t).rcData.mainCompany.users[4];
   const adminUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(memberUser).init();
-  await h(t).glip(memberUser).resetProfile();
+  await h(t).glip(memberUser).resetProfileAndState();
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init()
 

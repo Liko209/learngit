@@ -9,6 +9,7 @@ import { LoginGatherer } from './loginGatherer';
 import { OfflineGatherer } from './offlineGatherer';
 import { SearchGatherer } from './searchGatherer';
 import { SwitchConversationGatherer } from './switchConversationGatherer';
+import { MemoryGatherer } from './memoryGatherer';
 
 export {
   ProcessGatherer,
@@ -18,5 +19,6 @@ export {
   LoginGatherer,
   OfflineGatherer,
   SearchGatherer,
-  SwitchConversationGatherer
+  SwitchConversationGatherer,
+  MemoryGatherer
 }

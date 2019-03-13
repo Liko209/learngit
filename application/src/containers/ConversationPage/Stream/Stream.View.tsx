@@ -50,9 +50,6 @@ class StreamViewComponent extends Component<Props> {
   state = { _jumpToPostId: 0 };
 
   @observable private _jumpToFirstUnreadLoading = false;
-  constructor(props: Props) {
-    super(props);
-  }
 
   static getDerivedStateFromProps(props: Props) {
     if (props.jumpToPostId) {
@@ -215,10 +212,10 @@ class StreamViewComponent extends Component<Props> {
     });
   }
 
-  private _handleVisibilityChanged = ({
-    startIndex,
-    stopIndex,
-  }: IndexRange) => {
+  private _handleVisibilityChanged = (
+    { startIndex, stopIndex }: IndexRange,
+    initial?: boolean,
+  ) => {
     const {
       items,
       mostRecentPostId,
@@ -236,7 +233,7 @@ class StreamViewComponent extends Component<Props> {
     } else {
       this.handleMostRecentHidden();
     }
-    if (this._historyViewed) {
+    if (this._historyViewed || initial) {
       return;
     }
     const firstPostItem = _.find(visibleItems, this.findPost) as StreamItemPost;
@@ -307,10 +304,9 @@ class StreamViewComponent extends Component<Props> {
               <JuiInfiniteList
                 ref={this._listRef}
                 height={height}
-                stickToBottom={false}
+                stickToBottom={true}
                 initialScrollToIndex={initialPosition}
                 minRowHeight={50} // extract to const
-                overscan={3}
                 loadInitialData={this._loadInitialPosts}
                 loadMore={loadMore}
                 loadingRenderer={defaultLoading}
@@ -328,7 +324,7 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
-  @action.bound
+  @action
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead } = this.props;
     await loadInitialPosts();

@@ -9,6 +9,7 @@ import { ProcessGatherer, PerformanceMetric } from './processGatherer';
 import { SearchGatherer } from './searchGatherer';
 import { SwitchConversationGatherer } from './switchConversationGatherer';
 import { FetchGroupGatherer } from './fetchGroupGatherer';
+import { MemoryGatherer } from './memoryGatherer';
 
 export {
   HomePageGatherer,
@@ -18,5 +19,6 @@ export {
   PerformanceMetric,
   SearchGatherer,
   SwitchConversationGatherer,
-  FetchGroupGatherer
+  FetchGroupGatherer,
+  MemoryGatherer
 }

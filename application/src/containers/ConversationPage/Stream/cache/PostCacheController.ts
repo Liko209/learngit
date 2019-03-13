@@ -15,7 +15,7 @@ import { Post } from 'sdk/module/post/entity';
 import { PostService } from 'sdk/module/post';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager, { ENTITY_NAME } from '@/store';
-import { ENTITY } from 'sdk/service';
+import { ENTITY, notificationCenter, WINDOW } from 'sdk/service';
 import { Item } from 'sdk/module/item/entity';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
@@ -34,6 +34,9 @@ import ConferenceItemModel from '@/store/models/ConferenceItem';
 import ItemModel from '@/store/models/Item';
 
 import { ThumbnailPreloadController } from './ThumbnailPreloadController';
+import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
+import PrefetchPostProcessor from '@/store/handler/PrefetchPostProcessor';
+import { ICacheController } from './ICacheController';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -103,11 +106,9 @@ class PostUsedItemCache implements IUsedCache {
   }
 }
 
-class PostCacheController implements IUsedCache {
-  private _cacheMap: Map<
-    number,
-    FetchSortableDataListHandler<Post>
-  > = new Map();
+class PostCacheController implements ICacheController<Post> {
+  private _cacheMap: Map<number, FetchSortableDataListHandler<Post>>;
+  private _prefetchHandler: SequenceProcessorHandler;
 
   private _cacheDeltaDataHandlerMap: Map<number, DeltaDataHandler> = new Map();
   private _thumbnailPreloadController: ThumbnailPreloadController;
@@ -116,6 +117,15 @@ class PostCacheController implements IUsedCache {
   private _postUsedItemCache = new PostUsedItemCache();
 
   constructor() {
+    this._cacheMap = new Map();
+    this._prefetchHandler = new SequenceProcessorHandler(
+      'SequenceProcessorHandler',
+    );
+
+    notificationCenter.on(WINDOW.ONLINE, ({ onLine }) => {
+      this.onNetWorkChanged(onLine);
+    });
+
     (storeManager.getEntityMapStore(ENTITY_NAME.POST) as MultiEntityMapStore<
       Post,
       PostModel
@@ -199,6 +209,15 @@ class PostCacheController implements IUsedCache {
     return ids;
   }
 
+  onNetWorkChanged(onLine: boolean) {
+    if (onLine) {
+      for (const groupId of this._cacheMap.keys()) {
+        const processor = new PrefetchPostProcessor(groupId, this);
+        this._prefetchHandler.addProcessor(processor);
+      }
+    }
+  }
+
   has(groupId: number): boolean {
     return this._cacheMap.has(groupId);
   }
@@ -249,7 +268,7 @@ class PostCacheController implements IUsedCache {
         hasMoreDown: !!jump2PostId,
         isMatchFunc: isMatchedFunc(groupId),
         entityName: ENTITY_NAME.POST,
-        eventName: ENTITY.POST,
+        eventName: `${ENTITY.POST}.${groupId}`,
         dataChangeCallBack: fetchDataCallback,
       };
 

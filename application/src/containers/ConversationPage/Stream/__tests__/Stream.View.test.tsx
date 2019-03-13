@@ -106,7 +106,7 @@ function mountStream(otherProps: Partial<StreamViewProps>) {
   };
 }
 
-describe('StreamView', () => {
+describe.skip('StreamView', () => {
   describe('render()', () => {
     it('should render <ConversationPost>', () => {
       PostService.getInstance.mockReturnValue(new PostService());

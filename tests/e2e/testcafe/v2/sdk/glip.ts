@@ -210,7 +210,7 @@ export class GlipSdk {
     });
   }
 
-  async removeTeamMembers(groupId: string | number, rcIds: string |string[]) {
+  async removeTeamMembers(groupId: string | number, rcIds: string | string[]) {
     const uri = `api/remove_team_members/${groupId}`;
     const members = [].concat(await this.toPersonId(rcIds))
     const data = {
@@ -221,7 +221,7 @@ export class GlipSdk {
     });
   }
 
-  async addTeamMembers(groupId: string | number, rcIds: string |string[]) {
+  async addTeamMembers(groupId: string | number, rcIds: string | string[]) {
     const uri = `api/add_team_members/${groupId}`;
     const members = [].concat(await this.toPersonId(rcIds))
     const data = {
@@ -366,7 +366,7 @@ export class GlipSdk {
       .filter((key: string) => {
         return (/hide_group_/.test(key)) && (currentProfile[key] == true);
       });
-    const meChatId = await this.getPerson(rcId).then(res => res.data.me_group_id);
+    const meChatId = await this.getMeChatId();
 
     const initData = {
       model_size: 0,
@@ -395,6 +395,14 @@ export class GlipSdk {
     return await this.updateProfile(data, rcId);
   }
 
+  async bookmarkPosts(postIds: string | string[], rcId?: string) {
+    const posts = [].concat(postIds)
+    const data = {
+      favorite_post_ids: posts
+    }
+    await this.updateProfile(data, rcId);
+  }
+
   /* state */
   getState(rcId?: string) {
     const stateId = rcId ? this.toStateId(rcId) : this.myState._id;
@@ -418,6 +426,27 @@ export class GlipSdk {
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
+  }
+
+  async resetState(rcId?: string) {
+    const initData = {
+      "model_size": 0,
+      "is_new": true,
+      "tour_complete": true,
+      "deactivated": false,
+      "applied_patches": { "clean_unused_keys": true },
+      "do_kip_bot": true,
+      "_csrf": null,
+      "first_time_users_ensured": true,
+      "desktop_banner_dismissed": true,
+    }
+    await this.clearAllUmi();
+    return await this.partialUpdateState(initData, rcId);
+  }
+
+  async resetProfileAndState(rcId?: string) {
+    await this.resetProfile(rcId);
+    await this.resetState(rcId);
   }
 
   /* high level API */
@@ -478,6 +507,15 @@ export class GlipSdk {
     await this.partialUpdateState({ last_group_id: +groupId }, rcId);
   }
 
+  async getMeChatId(rcId?: string) {
+    return await this.getPersonPartialData('me_group_id', rcId);
+  }
+
+  async setLastGroupIdIsMeChatId() {
+    const meChatId = await this.getMeChatId();
+    await this.setLastGroupId(meChatId);
+  }
+
   async showAllGroups(rcId?: string) {
     const groupList = await this.getTeamsIds();
     const data = _.assign(
@@ -534,7 +572,7 @@ export class GlipSdk {
   }
 
   async clearFavoriteGroupsRemainMeChat(rcId?: string) {
-    const meChatId = await this.getPerson(rcId).then(res => res.data.me_group_id);
+    const meChatId = await this.getMeChatId();
     await this.favoriteGroups([+meChatId], rcId);
   }
 

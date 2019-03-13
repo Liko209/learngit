@@ -21,6 +21,6 @@ describe('isRangeEqual()', () => {
         { startIndex: 0, stopIndex: 10 },
         { startIndex: 0, stopIndex: 9 },
       ),
-    ).toBeTruthy();
+    ).toBeFalsy();
   });
 });
