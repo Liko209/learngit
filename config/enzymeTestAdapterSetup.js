@@ -6,7 +6,7 @@
 import faker from 'faker';
 import { configure } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-
+import 'reflect-metadata';
 // Use fixed seed to make UT stable
 faker.seed(1);
 

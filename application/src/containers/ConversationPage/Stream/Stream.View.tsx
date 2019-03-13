@@ -169,14 +169,6 @@ class StreamViewComponent extends Component<Props> {
       historyUnreadCount > 1 &&
       (!firstHistoryUnreadInPage || !this._historyViewed);
 
-    console.table({
-      shouldHaveJumpButton,
-      hasHistoryUnread,
-      historyUnreadCount,
-      firstHistoryUnreadInPage,
-      historyViewed: !this._historyViewed,
-    });
-
     const countText =
       historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
 
