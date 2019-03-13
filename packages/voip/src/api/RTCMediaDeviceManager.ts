@@ -38,8 +38,6 @@ class RTCMediaDeviceManager {
     this._delegate = delegate;
   }
 
-  protected constructor() {}
-
   public subscribeDeviceChange() {
     if (navigator.mediaDevices) {
       navigator.mediaDevices.ondevicechange = () => {
