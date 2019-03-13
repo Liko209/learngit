@@ -81,13 +81,8 @@ class UnifiedLogin extends React.Component<Props, IStates> {
       history.replace('/messages');
     }
   }
-  private _handleAboutPage = (
-    event: React.MouseEvent<HTMLElement>,
-    appVersion: string,
-    electronVersion: string,
-  ) => {
+  private _handleAboutPage = (appVersion: string, electronVersion: string) => {
     const { isShowDialog } = this.state;
-    globalStore.set(GLOBAL_KEYS.APP_VERSION, appVersion || '');
     globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isShowDialog);
   }

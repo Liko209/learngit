@@ -33,7 +33,6 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
 
   @action
   toggleAboutPage = (appVersion?: string, electronVersion?: string) => {
-    globalStore.set(GLOBAL_KEYS.APP_VERSION, appVersion || '');
     globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !this._isShowDialog);
   }
