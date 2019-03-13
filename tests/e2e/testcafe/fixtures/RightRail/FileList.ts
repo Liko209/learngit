@@ -83,10 +83,11 @@ test(formalName('Check the upload file and display on the right rail', ['Allen',
 
 
 test(formalName('Deleted file will NOT show under Files/Images tab', ['P1', 'JPT-1341', 'Potar', 'RightRail']), async t => {
-  const filesPath = ['../../sources/1.txt', '../../sources/1.png'];
-  const filesNames = ['1.txt', '1.png']
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).glip(loginUser).init();
+
+  const filesPath = ['../../sources/1.txt', '../../sources/1.png'];
+  const filesNames = ['1.txt', '1.png']
 
   let team = <IGroup>{
     type: "Team",

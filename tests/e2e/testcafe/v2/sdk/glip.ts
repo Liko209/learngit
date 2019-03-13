@@ -782,14 +782,14 @@ export class GlipSdk {
     return await this.createAudioConference(data);
   }
 
-  async getPostItemsByTypeId(postId: string | number, typeId: number | string): Promise<string[]> {
+  async getPostItemsByTypeId(postId: string | number, typeId: number | string) {
     const items = await this.getPost(postId).then(res => res.data.items);
     const ids = items.filter(item => item.type_id == `${typeId}`).map(item => item.id);
     return ids;
   }
 
   /* file and image */
-  async getFilesIdsFromPostId(postId: string | number): Promise<string[]> {
+  async getFilesIdsFromPostId(postId: string | number) {
     return this.getPostItemsByTypeId(postId, 10);
   }
 
@@ -818,7 +818,7 @@ export class GlipSdk {
   }
 
   /* links */
-  async getLinksIdsFromPostId(postId: string | number): Promise<string[]> {
+  async getLinksIdsFromPostId(postId: string | number) {
     return this.getPostItemsByTypeId(postId, 17);
   }
 
@@ -837,14 +837,13 @@ export class GlipSdk {
   }
 
   async updateLinkUrlTitle(linkId: string, data: { url?: string, title?: string }) {
-    return await this.updateFile(linkId, data);
+    return await this.updateLink(linkId, data);
   }
 
   async deleteLink(linkId: string | number) {
-    return await this.updateFile(linkId, {
+    return await this.updateLink(linkId, {
       deactivated: true
     });
   }
-
 
 }

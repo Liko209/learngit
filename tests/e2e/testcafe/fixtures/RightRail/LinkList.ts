@@ -10,6 +10,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -74,4 +75,60 @@ test(formalName('Send message for link and display on the right rail', ['Skye', 
     // await linkTab.countOnSubTitleShouldBe(1);
     await linkTab.countInListShouldBe(1);
   });
+});
+
+
+test(formalName('Deleted link will NOT show under Links tab', ['P1', 'JPT-1342', 'Potar.He', 'RightRail']), async t => {
+
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).glip(loginUser).init();
+
+  const textWithUrl = `${uuid()} https://www.google.com`
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const app = new AppRoot(t);
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const rightRail = app.homePage.messageTab.rightRail;
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I open a team and send post with a link ${textWithUrl}`, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.sendMessage(textWithUrl);
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+  });
+
+  const linkTab = rightRail.linksTab;
+  await h(t).withLog('And I click Links Tab', async () => {
+    await rightRail.openMore();
+    await rightRail.linksEntry.enter();
+    await rightRail.linksEntry.shouldBeOpened();
+  })
+
+  await h(t).withLog('Then The links number is correct: 1', async () => {
+    // await linkTab.countOnSubTitleShouldBe(1);
+    await linkTab.countInListShouldBe(1);
+  });
+
+  await h(t).withLog('When I delte the link (via api)', async () => {
+    const postId = await conversationPage.nthPostItem(-1).postId;
+    const linkIds = await h(t).glip(loginUser).getLinksIdsFromPostId(postId);
+    await h(t).glip(loginUser).deleteLink(linkIds[0]);
+  });
+
+  await h(t).withLog('Then the link is removed from Files tab immediately', async () => {
+    await linkTab.countInListShouldBe(0);
+  })
 });
