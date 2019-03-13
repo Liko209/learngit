@@ -20,7 +20,7 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     const otherUser = users[5];
     await h(t).glip(otherUser).init();

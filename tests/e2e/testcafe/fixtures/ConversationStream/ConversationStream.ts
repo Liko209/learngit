@@ -168,7 +168,7 @@ test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 
   const loginUser= users[6];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
   const meChatId = await h(t).glip(loginUser).getPersonPartialData('me_group_id');
 
   const imagePaths = ['../../sources/1.png','../../sources/2.png'];
