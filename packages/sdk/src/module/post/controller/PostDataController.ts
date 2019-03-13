@@ -189,6 +189,28 @@ class PostDataController {
     );
   }
 
+  filterFunc = (data: Post[]): { eventKey: string; entities: Post[] }[] => {
+    const postGroupMap: Map<
+      number,
+      { eventKey: string; entities: Post[] }
+    > = new Map();
+    data.forEach((post: Post) => {
+      if (post) {
+        const itemInMap = postGroupMap.get(post.group_id);
+        if (itemInMap) {
+          itemInMap.entities.push(post);
+        } else {
+          postGroupMap.set(post.group_id, {
+            eventKey: `${ENTITY.POST}.${post.group_id}`,
+            entities: [post],
+          });
+        }
+      }
+    });
+
+    return Array.from(postGroupMap.values());
+  }
+
   async filterAndSavePosts(posts: Post[], save: boolean): Promise<Post[]> {
     if (!posts || !posts.length) {
       return posts;
@@ -198,12 +220,15 @@ class PostDataController {
     const normalPosts = _.flatten(
       await Promise.all(
         Object.values(groups).map(async (posts: Post[]) => {
-          const normalPosts = await baseHandleData({
-            data: posts,
-            dao: postDao,
-            eventKey: ENTITY.POST,
-            noSavingToDB: !save,
-          });
+          const normalPosts = await baseHandleData(
+            {
+              data: posts,
+              dao: postDao,
+              eventKey: ENTITY.POST,
+              noSavingToDB: !save,
+            },
+            this.filterFunc,
+          );
           return normalPosts;
         }),
       ),

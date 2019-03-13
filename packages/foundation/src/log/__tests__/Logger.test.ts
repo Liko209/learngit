@@ -289,34 +289,6 @@ describe('Logger', () => {
       logger.doLog(mockLog);
       expect(spyDoLog).toBeCalledTimes(1);
     });
-    it('should ignore consumer.enabled when loglevel>=warning [JPT-1170]', () => {
-      const logger = new Logger();
-      const mockProcess = jest
-        .spyOn(logger['_logEntityProcessor'], 'process')
-        .mockImplementation(item => item);
-      const mockConsumer = new LogConsumer();
-      logger.setConsumer(mockConsumer);
-      const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
-      const mockLog = logEntityFactory.build({
-        level: LOG_LEVEL.WARN,
-      });
-
-      // consumerEnabled = false
-      configManager.setConfig(
-        logConfigFactory.build({
-          level: LOG_LEVEL.ALL,
-          filter: jest.fn().mockReturnValue(true),
-          consumer: consumerConfigFactory.build({
-            enabled: false,
-          }),
-          browser: {
-            enabled: false,
-          },
-        }),
-      );
-      logger.doLog(mockLog);
-      expect(spyConsumerOnLog).toBeCalledTimes(1);
-    });
     it('Log prettier format should correct [JPT-538]', () => {
       const logger = new Logger();
       const mockPrettier = jest

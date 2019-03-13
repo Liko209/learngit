@@ -23,6 +23,7 @@ import { DiscontinuousPostController } from './DiscontinuousPostController';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ISendPostController } from './interface/ISendPostController';
 import { PostDataController } from './PostDataController';
+import { ENTITY } from '../../../service';
 
 class PostController {
   private _actionController: PostActionController;
@@ -129,6 +130,9 @@ class PostController {
       this._preInsertController = new PreInsertController<Post>(
         daoManager.getDao(PostDao),
         progressService,
+        (entity: Post) => {
+          return `${ENTITY.POST}.${entity.group_id}`;
+        },
       );
     }
     return this._preInsertController;

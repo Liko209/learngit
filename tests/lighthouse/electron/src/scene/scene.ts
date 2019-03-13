@@ -232,6 +232,7 @@ class Scene {
     if (this.artifacts) {
       await FileService.saveArtifactsIntoDisk(this.artifacts, fileName);
       await FileService.saveTracesIntoDisk(this.artifacts, fileName);
+      await FileService.saveMemoryIntoDisk(this.artifacts, fileName);
     }
     if (this.data) {
       await FileService.saveDataIntoDisk(this.data, fileName);

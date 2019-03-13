@@ -34,6 +34,7 @@ const StyledDraggableDialog = styled(JuiDialog)`
     width: auto;
     margin: ${spacing(8)};
     border-radius: 0;
+    height: auto;
   }
 `;
 
@@ -44,6 +45,9 @@ class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       <StyledDraggableDialog
         PaperComponent={PaperComponent(x, y)}
         disableBackdropClick={true}
+        disableEscapeKeyDown={true}
+        disableEnforceFocus={true}
+        disableRestoreFocus={true}
         hideBackdrop={true}
         {...rest}
       />
