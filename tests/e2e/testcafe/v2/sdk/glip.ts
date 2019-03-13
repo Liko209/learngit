@@ -671,8 +671,8 @@ export class GlipSdk {
     return await this.createNote(data);
   }
 
-  async deleteNote(taskId: string) {
-    await this.updateNote(taskId, {
+  async deleteNote(noteId: string | number) {
+    await this.updateNote(noteId, {
       deactivated: true
     });
   }
@@ -722,8 +722,8 @@ export class GlipSdk {
     return await this.createEvent(data);
   }
 
-  async deleteEvent(taskId: string) {
-    await this.updateEvent(taskId, {
+  async deleteEvent(eventId: string | number) {
+    await this.updateEvent(eventId, {
       deactivated: true
     });
   }
@@ -757,8 +757,8 @@ export class GlipSdk {
     return await this.createCodeSnippet(data);
   }
 
-  async deleteCodeSnippet(taskId: string) {
-    await this.updateCodeSnippet(taskId, {
+  async deleteCodeSnippet(codeSnippetId: string | number) {
+    await this.updateCodeSnippet(codeSnippetId, {
       deactivated: true
     });
   }
@@ -783,12 +783,13 @@ export class GlipSdk {
   }
 
   /* file */
-  async getFilesIdsFromPostId(postId: string) {
-    const res = await this.getPost(postId);
-    return res.data.items;
+  async getFilesIdsFromPostId(postId: string | number) {
+    const items = await this.getPost(postId).then(res => res.data.items);
+    const ids = items.filter(item => item.type_id == '10').map(item => item.id);
+    return ids;
   }
 
-  updateFile(fileId: string, data: object) {
+  updateFile(fileId: string | number, data: object) {
     const uri = `/api/file/${fileId}`;
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
@@ -796,12 +797,10 @@ export class GlipSdk {
   }
 
   async updateFileName(fileId: string, name: string) {
-    return await this.updateFile(fileId, {
-      name
-    });
+    return await this.updateFile(fileId, { name });
   }
 
-  async deleteFile(fileId: string) {
+  async deleteFile(fileId: string | number) {
     return await this.updateFile(fileId, {
       deactivated: true
     });
