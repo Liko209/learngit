@@ -23,7 +23,7 @@ test(formalName(`Turn on/off Post message toggle should/shouldn't be able to pos
   const memberUser = h(t).rcData.mainCompany.users[5];
 
   await h(t).glip(memberUser).init();
-  await h(t).glip(memberUser).resetProfile();
+  await h(t).glip(memberUser).resetProfileAndState();
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 

@@ -119,6 +119,12 @@ class ScenarioHelper {
     }
   }
 
+  public async sendTextPost(text: string, chat: IGroup, operator: IUser) {
+    assert(text && chat && operator, "require text, chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    return await platform.sendTextPost(text, chat.glipId);
+  }
+
   public async sentAndGetTextPostId(text: string, chat: IGroup, operator: IUser) {
     assert(text && chat && operator, "require text, chat and operator");
     const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
@@ -144,6 +150,11 @@ class ScenarioHelper {
     await glip.clearAllUmi(me.rcId);
   }
 
+  public async resetProfileAndState(me: IUser) {
+    assert(me, "require me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.resetProfileAndState(me.rcId);
+  }
 
   public async resetProfile(me: IUser) {
     assert(me, "require me");
@@ -151,11 +162,18 @@ class ScenarioHelper {
     await glip.resetProfile(me.rcId);
   }
 
+  public async resetState(me: IUser) {
+    assert(me, "require me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.resetState(me.rcId);
+  }
+
   public async likePost(postId: string, me: IUser) {
     assert(postId && me, "require postId and me");
     const glip = await this.sdkHelper.sdkManager.getGlip(me);
     await glip.likePost(postId);
   }
+
 }
 
 

@@ -6,27 +6,23 @@
 
 import React from 'react';
 import i18next from 'i18next';
-import { JuiListItemSecondaryAction } from 'jui/components/Lists';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { DownloadViewProps } from './types';
 
-type Props = {
-  url: string;
-};
-
-const Download = React.memo(({ url }: Props) => {
-  return (
-    <JuiListItemSecondaryAction>
+const DownloadView = React.memo(
+  ({ url, variant = 'plain' }: DownloadViewProps) => {
+    return (
       <JuiIconButton
         component="a"
         download={true}
         href={url}
-        variant="plain"
+        variant={variant}
         tooltipTitle={i18next.t('common.download')}
       >
         download
       </JuiIconButton>
-    </JuiListItemSecondaryAction>
-  );
-});
+    );
+  },
+);
 
-export { Download };
+export { DownloadView };

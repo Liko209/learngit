@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export const LAST_INDEX_TIMESTAMP = 'LAST_INDEX_TIMESTAMP';
+export const FETCHED_REMAINING = 'REMAINING_FETCHED';
 export const SOCKET_SERVER_HOST = 'SOCKET_SERVER_HOST';
 export const STATIC_HTTP_SERVER = 'STATIC_HTTP_SERVER';
 export const CONFIG_KEYS = [LAST_INDEX_TIMESTAMP, SOCKET_SERVER_HOST];
