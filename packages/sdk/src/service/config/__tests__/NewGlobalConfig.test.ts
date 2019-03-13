@@ -90,23 +90,6 @@ describe('NewGlobalConfig', () => {
     );
   });
 
-  it('should call get when try to getSocketServerHost', () => {
-    NewGlobalConfig.getSocketServerHost();
-    expect(mockConfigService.get).toHaveBeenCalledWith(
-      MODULE,
-      CONFIG_KEYS.SOCKET_SERVER_HOST,
-    );
-  });
-
-  it('should call put when try to setSocketServerHost', () => {
-    NewGlobalConfig.setSocketServerHost(TEST);
-    expect(mockConfigService.put).toHaveBeenCalledWith(
-      MODULE,
-      CONFIG_KEYS.SOCKET_SERVER_HOST,
-      TEST,
-    );
-  });
-
   it('should call get when try to getStaticHttpServer', () => {
     NewGlobalConfig.getStaticHttpServer();
     expect(mockConfigService.get).toHaveBeenCalledWith(

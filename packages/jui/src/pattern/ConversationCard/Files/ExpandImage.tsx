@@ -15,6 +15,7 @@ type Props = {
   i18UnfoldMore: string;
   i18UnfoldLess: string;
   ImageActions?: JSX.Element;
+  handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
 };
 
 type State = {
@@ -45,6 +46,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
       i18UnfoldMore,
       i18UnfoldLess,
       icon,
+      handleImageClick,
     } = this.props;
 
     return (
@@ -68,6 +70,7 @@ class JuiExpandImage extends React.PureComponent<Props, State> {
         <JuiPreviewImage
           url={previewUrl}
           fileName={fileName}
+          handleImageClick={handleImageClick}
           width={360}
           height={202}
           Actions={

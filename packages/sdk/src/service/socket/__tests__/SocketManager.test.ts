@@ -10,10 +10,9 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, CONFIG, SOCKET } from '../../../service/eventKey';
 import SocketIO from '../__mocks__/socket';
 import { SocketClient } from 'foundation';
-import { NewGlobalConfig } from '../../config/NewGlobalConfig';
 import { GlobalConfigService } from '../../../module/config';
+import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
 
-jest.mock('../../../service/config/NewGlobalConfig');
 jest.mock('../../../module/config');
 
 GlobalConfigService.getInstance = jest.fn();
@@ -26,9 +25,27 @@ SocketFSM.prototype = {
   setReconnection: mockedSetReconnection,
 };
 
-describe('Socket Manager', () => {
-  const socketManager = SocketManager.getInstance();
+jest.mock('../../../module/sync/config/SyncUserConfig', () => {
+  const config = {
+    getSocketServerHost: jest.fn(),
+    setSocketServerHost: jest.fn(),
+  };
+  return {
+    SyncUserConfig: () => {
+      return config;
+    },
+  };
+});
 
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
+describe('Socket Manager', () => {
+  let syncUserConfig: SyncUserConfig;
+  const socketManager = SocketManager.getInstance();
   const test_url = 'test_url';
   const mock = {
     type: '',
@@ -39,11 +56,17 @@ describe('Socket Manager', () => {
     SocketClient.prototype.socket = new SocketIO();
   });
 
-  beforeEach(() => {
+  function setUp() {
+    syncUserConfig = new SyncUserConfig();
     mockedSetReconnection.mockRestore();
-    NewGlobalConfig.getSocketServerHost = jest.fn().mockReturnValue(test_url);
+    syncUserConfig.getSocketServerHost = jest.fn().mockReturnValue(test_url);
     mock.payload = test_url;
     notificationCenter.emitKVChange(SERVICE.LOGOUT);
+  }
+
+  beforeEach(() => {
+    clearMocks();
+    setUp();
   });
 
   describe('logger: function is normal operation', () => {
@@ -136,8 +159,7 @@ describe('Socket Manager', () => {
       it('not login', () => {
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
         expect(socketManager.hasActiveFSM()).toBeFalsy();
-
-        NewGlobalConfig.getSocketServerHost = jest
+        syncUserConfig.getSocketServerHost = jest
           .fn()
           .mockReturnValue('new_url_server_host_updated');
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
@@ -171,8 +193,7 @@ describe('Socket Manager', () => {
         const fsmName1 = socketManager.activeFSM.name;
 
         socketManager.activeFSM.finishConnect();
-
-        NewGlobalConfig.getSocketServerHost = jest
+        syncUserConfig.getSocketServerHost = jest
           .fn()
           .mockReturnValue('new_url_changed');
 
@@ -182,8 +203,7 @@ describe('Socket Manager', () => {
         expect(fsmName1).not.toEqual(fsmName2);
 
         socketManager.activeFSM.finishConnect();
-
-        NewGlobalConfig.getSocketServerHost = jest
+        syncUserConfig.getSocketServerHost = jest
           .fn()
           .mockReturnValue(test_url);
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST);
