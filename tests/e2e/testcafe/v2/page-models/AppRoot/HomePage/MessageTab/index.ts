@@ -278,17 +278,26 @@ class CloseConversationModal extends BaseWebComponent {
     return this.self.find('label');
   }
 
-  get confirmButton() {
+  get cancelButton() {
     this.warnFlakySelector();
-    return this.self.find('button');
+    return this.button('Cancel');
+  }
+
+  get closeButton() {
+    this.warnFlakySelector();
+    return this.button('Close');
   }
 
   async toggleDontAskAgain() {
     await this.t.click(this.dontAskAgainCheckbox);
   }
 
-  async confirm() {
-    await this.t.click(this.confirmButton);
+  async clickCancelButton() {
+    await this.t.click(this.cancelButton);
+  }
+
+  async clickCloseButton() {
+    await this.t.click(this.closeButton);
   }
 }
 
