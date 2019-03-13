@@ -25,7 +25,11 @@ import {
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { toTitleCase } from '@/utils/string';
 import { translate, WithNamespaces } from 'react-i18next';
-import { JuiInfiniteList, IndexRange } from 'jui/components/VirtualizedList';
+import {
+  JuiInfiniteList,
+  IndexRange,
+  JuiVirtualizedListHandles,
+} from 'jui/components/VirtualizedList';
 import ReactResizeDetector from 'react-resize-detector';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
@@ -36,7 +40,9 @@ const LOADING_DELAY = 500;
 @observer
 class StreamViewComponent extends Component<Props> {
   private currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-  private _listRef: React.RefObject<any> = React.createRef();
+  private _listRef: React.RefObject<
+    JuiVirtualizedListHandles
+  > = React.createRef();
   private _globalStore = storeManager.getGlobalStore();
   private _historyViewed = false;
   private _mostRecentViewed = false;
@@ -88,8 +94,8 @@ class StreamViewComponent extends Component<Props> {
         lastPost &&
         lastPost.creatorId === this.currentUserId;
 
-      if (sentFromCurrentUser) {
-        this._listRef.current.ref.scrollToBottom();
+      if (sentFromCurrentUser && this._listRef.current) {
+        this._listRef.current.scrollToBottom();
       }
     }
   }
@@ -202,7 +208,7 @@ class StreamViewComponent extends Component<Props> {
       );
       return;
     }
-    this._listRef.current.ref.scrollToIndex(index);
+    this._listRef.current && this._listRef.current.scrollToIndex(index);
   }
 
   handleVisibilityChanged = ({ startIndex, stopIndex }: IndexRange) => {
@@ -290,7 +296,7 @@ class StreamViewComponent extends Component<Props> {
     );
     return (
       <JuiStream>
-        <ReactResizeDetector handleHeight={true} refreshMode={'debounce'}>
+        <ReactResizeDetector handleHeight={true}>
           {({ height }: { height: number }) => (
             <div style={{ height: '100%' }}>
               {this._renderJumpToFirstUnreadButton()}
@@ -333,7 +339,9 @@ class StreamViewComponent extends Component<Props> {
 
   private _focusHandler = () => {
     const { markAsRead } = this.props;
-    const atBottom = this._listRef.current.isAtBottom();
+
+    const atBottom =
+      this._listRef.current && this._listRef.current.isAtBottom();
     atBottom && markAsRead();
     this._setUmiDisplay(false);
   }

@@ -28,6 +28,8 @@ import { usePrevious } from './hooks/usePrevious';
 
 type DivRefObject = MutableRefObject<HTMLDivElement | null>;
 type JuiVirtualizedListHandles = {
+  scrollToBottom: () => void;
+  isAtBottom: () => boolean;
   scrollToIndex: (index: number) => void;
 };
 
