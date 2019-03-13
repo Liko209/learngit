@@ -15,4 +15,4 @@ const JuiCheckbox = memo((props: CheckboxProps) => {
 
 JuiCheckbox.displayName = 'JuiCheckbox';
 
-export { JuiCheckbox };
+export { JuiCheckbox, CheckboxProps };
