@@ -141,7 +141,6 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: ScrollPosition) => {
     if (ref.current) {
       if (options === true) {
-        console.log('scrolling', offset, index);
         ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
       } else {
         ref.current.scrollTop =
@@ -286,7 +285,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   useEffect(() => {
     const visibleRange = computeVisibleRange();
-    onVisibleRangeChange(visibleRange, true);
+    onVisibleRangeChange(visibleRange);
     onRenderedRangeChange(visibleRange);
   },        []);
 
@@ -378,7 +377,7 @@ const MemoList = memo(
     {
       initialScrollToIndex?: number;
       onScroll?: (event: React.UIEvent) => void;
-      onVisibleRangeChange?: (range: IndexRange, initial?: boolean) => void;
+      onVisibleRangeChange?: (range: IndexRange) => void;
       onRenderedRangeChange?: (range: IndexRange) => void;
       before?: React.ReactNode;
       after?: React.ReactNode;

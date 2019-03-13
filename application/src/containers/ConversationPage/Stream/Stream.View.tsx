@@ -212,10 +212,11 @@ class StreamViewComponent extends Component<Props> {
     });
   }
 
-  private _handleVisibilityChanged = (
-    { startIndex, stopIndex }: IndexRange,
-    initial?: boolean,
-  ) => {
+  private _handleVisibilityChanged = ({
+    startIndex,
+    stopIndex,
+  }: IndexRange) => {
+    if (startIndex === -1 || stopIndex === -1) return;
     const {
       items,
       mostRecentPostId,
@@ -233,7 +234,7 @@ class StreamViewComponent extends Component<Props> {
     } else {
       this.handleMostRecentHidden();
     }
-    if (this._historyViewed || initial) {
+    if (this._historyViewed) {
       return;
     }
     const firstPostItem = _.find(visibleItems, this.findPost) as StreamItemPost;

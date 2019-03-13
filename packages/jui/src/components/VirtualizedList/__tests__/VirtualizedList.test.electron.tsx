@@ -64,22 +64,35 @@ const buildExpectRangeToBe = (
   handleVisibleRangeChange: jest.Mock,
   handleRenderedRangeChange: jest.Mock,
 ) => {
-  return (startIndex: number, stopIndex: number) => {
+  return (startIndex: number, stopIndex: number, changed = true) => {
     expect(getRenderedItemIds(wrapper)).toEqual(
       _.range(startIndex, stopIndex + 1),
     );
-    expect(handleVisibleRangeChange).toHaveBeenCalledWith({
-      startIndex,
-      stopIndex,
-    });
-    expect(handleRenderedRangeChange).toHaveBeenCalledWith({
-      startIndex,
-      stopIndex,
-    });
+
+    if (changed) {
+      expect(handleVisibleRangeChange).toBeCalledWith({
+        startIndex,
+        stopIndex,
+      });
+      expect(handleRenderedRangeChange).toBeCalledWith({
+        startIndex,
+        stopIndex,
+      });
+    } else {
+      expect(handleVisibleRangeChange).not.toBeCalled();
+      expect(handleRenderedRangeChange).not.toBeCalled();
+    }
+
+    handleVisibleRangeChange.mockClear();
+    handleRenderedRangeChange.mockClear();
   };
 };
 
 describe('JuiVirtualizedList', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('basic', () => {
     let wrapper: ReactWrapper;
     const handleVisibleRangeChange = jest.fn();
@@ -121,6 +134,10 @@ describe('JuiVirtualizedList', () => {
         handleRenderedRangeChange,
       );
 
+      expect.assertions(6 * 3);
+
+      // Scroll to top
+      scrollTo(0);
       expectRangeToBe(0, 4);
 
       // Item 5 1px visible
@@ -129,7 +146,7 @@ describe('JuiVirtualizedList', () => {
 
       // Item 0 has 1px visible
       scrollTo(19);
-      expectRangeToBe(0, 5);
+      expectRangeToBe(0, 5, false);
 
       // Item 0 invisible
       // Item 6 invisible
