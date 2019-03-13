@@ -18,7 +18,7 @@ export default {
     glip2: { clientId: '', clientSecret: '' },
   },
   beforeExpired: 5 * 60 * 1000,
-  timeout: 600 * 1000,
+  timeout: 60 * 1000,
   dbAdapter: 'dexie',
   survivalModeUris: {},
 };

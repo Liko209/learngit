@@ -11,6 +11,7 @@ import {
   NETWORK_VIA,
   NetworkManager,
   NetworkRequestBuilder,
+  DEFAULT_TIMEOUT_INTERVAL,
 } from 'foundation';
 import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
@@ -26,6 +27,7 @@ export interface IQuery {
   authFree?: boolean;
   retryCount?: number;
   requestConfig?: object;
+  timeout?: number;
 }
 
 export interface IResponse<T> {
@@ -163,6 +165,7 @@ export default class NetworkClient {
       authFree,
       requestConfig,
       retryCount,
+      timeout,
     } = query;
     const versionPath = this.apiPlatformVersion
       ? `/${this.apiPlatformVersion}`
@@ -179,6 +182,7 @@ export default class NetworkClient {
       .setAuthfree(authFree || false)
       .setRequestConfig(requestConfig || {})
       .setRetryCount(retryCount || 0)
+      .setTimeout(timeout || DEFAULT_TIMEOUT_INTERVAL)
       .setVia(via)
       .setNetworkManager(this.networkManager)
       .build();
@@ -202,6 +206,7 @@ export default class NetworkClient {
     requestConfig?: object,
     headers = {},
     retryCount?: number,
+    timeout?: number,
   ) {
     return this.http<T>({
       path,
@@ -210,6 +215,7 @@ export default class NetworkClient {
       via,
       requestConfig,
       retryCount,
+      timeout,
       method: NETWORK_METHOD.GET,
     });
   }
@@ -221,10 +227,11 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  post<T>(path: string, data = {}, headers = {}) {
+  post<T>(path: string, data = {}, headers = {}, timeout?: number) {
     return this.request<T>({
       path,
       headers,
+      timeout,
       data: omitLocalProperties(data),
       method: NETWORK_METHOD.POST,
     });
@@ -237,10 +244,11 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  put<T>(path: string, data = {}, headers = {}) {
+  put<T>(path: string, data = {}, headers = {}, timeout?: number) {
     return this.http<T>({
       path,
       headers,
+      timeout,
       data: omitLocalProperties(data),
       method: NETWORK_METHOD.PUT,
     });
@@ -253,11 +261,12 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  delete<T>(path: string, params = {}, headers = {}) {
+  delete<T>(path: string, params = {}, headers = {}, timeout?: number) {
     return this.http<T>({
       path,
       params,
       headers,
+      timeout,
       method: NETWORK_METHOD.DELETE,
     });
   }

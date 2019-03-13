@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
+import {
+  NETWORK_VIA,
+  NETWORK_METHOD,
+  TEN_MINUTE_TIMEOUT,
+  DEFAULT_RETRY_COUNT,
+} from 'foundation';
 import Api from '../api';
 import { GLIP_API } from './constants';
 import { Raw } from '../../framework/model';
@@ -54,6 +59,7 @@ function loginGlip(authData: object) {
     method: NETWORK_METHOD.PUT,
     data: model,
     authFree: true,
+    timeout: TEN_MINUTE_TIMEOUT,
   };
   return Api.glipNetworkClient.rawRequest<Object>({
     ...query,
@@ -74,6 +80,8 @@ function indexData(params: object, requestConfig = {}, headers = {}) {
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    DEFAULT_RETRY_COUNT,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
@@ -84,6 +92,8 @@ function initialData(params: object, requestConfig = {}, headers = {}) {
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    DEFAULT_RETRY_COUNT,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
@@ -94,6 +104,8 @@ function remainingData(params: object, requestConfig = {}, headers = {}) {
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    DEFAULT_RETRY_COUNT,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
