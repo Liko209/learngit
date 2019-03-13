@@ -25,23 +25,13 @@ describe('RTCMediaManager', async () => {
     expect(RTCMediaManager.instance().getVolume()).toBe(1);
   });
 
-  it("should not set volume in element when there's no video element. [JPT-1281]", () => {
-    RTCMediaManager.instance().destroy();
-    jest.spyOn(RTCMediaManager.instance(), '_setVolumeInVideioElement');
-    expect(RTCMediaManager.instance().getVolume()).toBe(1);
-    RTCMediaManager.instance().setVolume(0.5);
-    expect(
-      RTCMediaManager.instance()._setVolumeInVideioElement,
-    ).not.toBeCalled();
-  });
-
   it("should not set volume in element when there's no video element. [JPT-1283]", () => {
     RTCMediaManager.instance().destroy();
-    jest.spyOn(RTCMediaManager.instance(), '_setVolumeInVideioElement');
+    jest.spyOn(RTCMediaManager.instance(), '_setVolumeInVideoElement');
     expect(RTCMediaManager.instance().getVolume()).toBe(1);
     RTCMediaManager.instance().setVolume(0.5);
     expect(
-      RTCMediaManager.instance()._setVolumeInVideioElement,
+      RTCMediaManager.instance()._setVolumeInVideoElement,
     ).not.toBeCalled();
   });
 
@@ -49,9 +39,9 @@ describe('RTCMediaManager', async () => {
     document.body.innerHTML = '<div><video class="rc-phone-audio"></div>';
 
     RTCMediaManager.instance().destroy();
-    jest.spyOn(RTCMediaManager.instance(), '_setVolumeInVideioElement');
+    jest.spyOn(RTCMediaManager.instance(), '_setVolumeInVideoElement');
     expect(RTCMediaManager.instance().getVolume()).toBe(1);
     RTCMediaManager.instance().setVolume(0.5);
-    expect(RTCMediaManager.instance()._setVolumeInVideioElement).toBeCalled();
+    expect(RTCMediaManager.instance()._setVolumeInVideoElement).toBeCalled();
   });
 });

@@ -38,7 +38,7 @@ class RTCMediaManager {
       '.rc-phone-audio',
     );
     audioList.forEach((element: HTMLVideoElement) => {
-      this._setVolumeInVideioElement(element, volume);
+      this._setVolumeInVideoElement(element, volume);
     });
   }
 
@@ -108,7 +108,7 @@ class RTCMediaManager {
     }
   }
 
-  private _setVolumeInVideioElement(element: HTMLVideoElement, volume: number) {
+  private _setVolumeInVideoElement(element: HTMLVideoElement, volume: number) {
     element.volume = volume;
   }
 }
