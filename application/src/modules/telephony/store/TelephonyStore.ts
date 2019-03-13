@@ -22,6 +22,8 @@ class TelephonyStore {
   callWindowState: CALL_WINDOW_STATUS = CALL_WINDOW_STATUS.MINIMIZED;
   @observable
   callState: CALL_STATE = CALL_STATE.IDLE;
+  @observable
+  phoneNumber?: string;
 
   private _callFSM = new CallFSM();
   private _callWindowFSM = new CallWindowFSM();

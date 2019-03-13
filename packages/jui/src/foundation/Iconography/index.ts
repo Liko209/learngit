@@ -4,3 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './Iconography';
+export * from './name2icon';

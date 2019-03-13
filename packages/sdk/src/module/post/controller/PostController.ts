@@ -22,6 +22,8 @@ import { PostFetchController } from './PostFetchController';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ISendPostController } from './interface/ISendPostController';
 import { PostDataController } from './PostDataController';
+import { PostSearchController } from './implementation/PostSearchController';
+import { ENTITY } from '../../../service';
 
 class PostController {
   private _actionController: PostActionController;
@@ -29,7 +31,7 @@ class PostController {
   private _preInsertController: IPreInsertController;
   private _fetchController: PostFetchController;
   private _postDataController: PostDataController;
-
+  private _postSearchController: PostSearchController;
   constructor() {}
 
   getPostActionController(): PostActionController {
@@ -105,12 +107,23 @@ class PostController {
     return this._postDataController;
   }
 
+  getPostSearchController() {
+    if (!this._postSearchController) {
+      this._postSearchController = new PostSearchController();
+    }
+
+    return this._postSearchController;
+  }
+
   private _getPreInsertController() {
     if (!this._preInsertController) {
       const progressService: ProgressService = ProgressService.getInstance();
       this._preInsertController = new PreInsertController<Post>(
         daoManager.getDao(PostDao),
         progressService,
+        (entity: Post) => {
+          return `${ENTITY.POST}.${entity.group_id}`;
+        },
       );
     }
     return this._preInsertController;

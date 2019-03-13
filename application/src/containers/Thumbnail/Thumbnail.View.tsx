@@ -12,25 +12,6 @@ import { ViewProps, Props } from './types';
 
 @observer
 class ThumbnailView extends React.Component<ViewProps & Props> {
-  shouldComponentUpdate(nextProps: ViewProps & Props) {
-    const {
-      fileTypeOrUrl: { icon, url },
-      type,
-      id,
-    } = nextProps;
-    const current = this.props.fileTypeOrUrl;
-    if (
-      id === this.props.id &&
-      icon === current.icon &&
-      type === this.props.type
-    ) {
-      if (current.url) {
-        return false;
-      }
-      return url !== current.url;
-    }
-    return true;
-  }
   render() {
     const {
       fileTypeOrUrl: { icon, url },

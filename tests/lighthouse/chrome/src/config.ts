@@ -9,6 +9,7 @@ class ConfigWrapper {
   public loggerLevel: string;
   public reportUri: string;
   public dashboardUrl: string;
+  public fileServerUrl: string;
   /* basic config */
 
   /* mock config */
@@ -46,6 +47,7 @@ class ConfigWrapper {
     this.loggerLevel = this.getValue("LOGGER_NAME", "info");
     this.reportUri = this.getValue("REPORT_URI", "reports");
     this.dashboardUrl = this.getValue("DASHBOARD_URL", "http://xmn145.rcoffice.ringcentral.com:9005/dashboard/15");
+    this.fileServerUrl = this.getValue("FILE_SERVER_URL", "http://xmn02-i01-mck01.lab.nordigy.ru:9000");
     /* basic config */
 
     /* mock config */

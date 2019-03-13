@@ -8,6 +8,7 @@ import i18next from 'i18next';
 import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { Avatar } from '@/containers/Avatar';
+import { Call } from '@/modules/telephony';
 
 import { ViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -41,6 +42,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
       onMouseLeave,
       sectionIndex,
       hovered,
+      onClose,
     } = this.props;
     const { id, userDisplayName, deactivated } = person;
 
@@ -54,10 +56,21 @@ class PersonItemView extends React.Component<ViewProps, {}> {
         onClick={this.handleGoToConversation}
         variant="plain"
         size="small"
+        key="search item go to conversation icon"
       >
         messages
       </JuiIconButton>
     );
+    const callIcon = (
+      <Call
+        key="search item call icon"
+        variant="plain"
+        id={id}
+        onClick={onClose}
+        size="small"
+      />
+    );
+
     return (
       <JuiSearchItem
         onMouseEnter={onMouseEnter(sectionIndex, cellIndex)}
@@ -69,7 +82,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
         value={userDisplayName}
         terms={terms}
         data-test-automation-id={`search-${title}-item`}
-        Actions={goToConversationIcon}
+        Actions={[goToConversationIcon, callIcon]}
         isPrivate={false}
         isJoined={false}
       />

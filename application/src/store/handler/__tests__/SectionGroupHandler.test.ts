@@ -3,7 +3,7 @@
  * @Date: 2018-10-29 10:47:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { getGlobalValue } from '../../utils/entities';
+import { getGlobalValue, getEntity } from '../../utils/entities';
 import SectionGroupHandler from '../SectionGroupHandler';
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ProfileService } from 'sdk/module/profile';
@@ -40,6 +40,7 @@ beforeEach(() => {
   Object.assign(SectionGroupHandler, { _instance: undefined });
   (profileService.getProfile as jest.Mock).mockResolvedValue({});
   (getGlobalValue as jest.Mock).mockReturnValue(1);
+  getEntity.mockReturnValue({ unreadCount: 0 });
 });
 
 afterEach(() => {
@@ -47,6 +48,27 @@ afterEach(() => {
 });
 
 describe('SectionGroupHandler', () => {
+  describe('_removeGroupsIfExistedInHiddenGroups', () => {
+    it('should not remove unread conversation', () => {
+      SectionGroupHandler.getInstance()['_hiddenGroupIds'] = [123, 456];
+      SectionGroupHandler.getInstance()['_handlersMap'] = {};
+      SectionGroupHandler.getInstance()['_handlersMap'][
+        SECTION_TYPE.DIRECT_MESSAGE
+] = {};
+      getEntity.mockReturnValueOnce({ unreadCount: 1 });
+      jest
+        .spyOn(SectionGroupHandler.getInstance(), 'getGroupIdsByType')
+        .mockReturnValueOnce([123, 456, 789]);
+      SectionGroupHandler.getInstance()['_removeByIds'] = jest.fn();
+      SectionGroupHandler.getInstance()['_updateUrl'] = jest.fn();
+      SectionGroupHandler.getInstance()['_removeGroupsIfExistedInHiddenGroups']();
+      expect(SectionGroupHandler.getInstance()['_removeByIds']).toBeCalledWith(
+        SECTION_TYPE.DIRECT_MESSAGE,
+        [456],
+      );
+    });
+  });
+
   describe('Basic functions/configs', () => {
     it('getInstance', () => {
       expect(SectionGroupHandler.getInstance() !== undefined).toBeTruthy();

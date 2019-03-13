@@ -17,6 +17,7 @@ import { ItemService } from '../../item';
 import { INDEX_POST_MAX_SIZE } from '../constant';
 import { IRawPostResult, Post } from '../entity';
 import { GroupService } from '../../group';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 const TAG = 'PostDataController';
 
@@ -27,6 +28,11 @@ class PostDataController {
   ) {}
 
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
+      logId,
+    );
     const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
       await this.preInsertController.bulkDelete(transformedData);
@@ -37,6 +43,7 @@ class PostDataController {
       (await ItemService.getInstance<ItemService>().handleIncomingData(
         data.items,
       )) || [];
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return {
       posts,
       items,
@@ -152,6 +159,28 @@ class PostDataController {
     );
   }
 
+  filterFunc = (data: Post[]): { eventKey: string; entities: Post[] }[] => {
+    const postGroupMap: Map<
+      number,
+      { eventKey: string; entities: Post[] }
+    > = new Map();
+    data.forEach((post: Post) => {
+      if (post) {
+        const itemInMap = postGroupMap.get(post.group_id);
+        if (itemInMap) {
+          itemInMap.entities.push(post);
+        } else {
+          postGroupMap.set(post.group_id, {
+            eventKey: `${ENTITY.POST}.${post.group_id}`,
+            entities: [post],
+          });
+        }
+      }
+    });
+
+    return Array.from(postGroupMap.values());
+  }
+
   async filterAndSavePosts(posts: Post[], save: boolean): Promise<Post[]> {
     if (!posts || !posts.length) {
       return posts;
@@ -161,12 +190,15 @@ class PostDataController {
     const normalPosts = _.flatten(
       await Promise.all(
         Object.values(groups).map(async (posts: Post[]) => {
-          const normalPosts = await baseHandleData({
-            data: posts,
-            dao: postDao,
-            eventKey: ENTITY.POST,
-            noSavingToDB: !save,
-          });
+          const normalPosts = await baseHandleData(
+            {
+              data: posts,
+              dao: postDao,
+              eventKey: ENTITY.POST,
+              noSavingToDB: !save,
+            },
+            this.filterFunc,
+          );
           return normalPosts;
         }),
       ),

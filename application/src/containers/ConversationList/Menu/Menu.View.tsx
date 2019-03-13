@@ -20,21 +20,10 @@ import {
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
 type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
-type State = {
-  checked: boolean;
-};
-@observer
-class MenuViewComponent extends Component<Props, State> {
-  state = {
-    checked: false,
-  };
 
-  constructor(props: Props) {
-    super(props);
-    this._handleToggleFavorite = this._handleToggleFavorite.bind(this);
-    this._handleCloseConversation = this._handleCloseConversation.bind(this);
-    this._checkboxChange = this._checkboxChange.bind(this);
-  }
+@observer
+class MenuViewComponent extends Component<Props> {
+  checked: boolean = false;
 
   renderCloseMenuItem() {
     const { t, closable } = this.props;
@@ -87,7 +76,7 @@ class MenuViewComponent extends Component<Props, State> {
     }
   }
 
-  private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
+  private _handleToggleFavorite = async (event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     const { isFavorite } = this.props;
     this.props.onClose(event);
@@ -108,22 +97,20 @@ class MenuViewComponent extends Component<Props, State> {
     }
   }
 
-  private _checkboxChange(event: React.ChangeEvent<{}>, checked: boolean) {
-    this.setState({
-      checked,
-    });
+  private _checkboxChange = (
+    event: React.ChangeEvent<{}>,
+    checked: boolean,
+  ) => {
+    this.checked = checked;
   }
 
-  private _handleCloseConversation(event: MouseEvent<HTMLElement>) {
+  private _handleCloseConversation = (event: MouseEvent<HTMLElement>) => {
     const { t } = this.props;
     event.stopPropagation();
     this.props.onClose(event);
     if (this.props.shouldSkipCloseConfirmation) {
       this._closeConversationWithoutConfirmDialog();
     } else {
-      this.setState({
-        checked: false,
-      });
       Dialog.alert({
         title: t('people.prompt.closeConfirmDialogHeader'),
         content: (
@@ -133,13 +120,15 @@ class MenuViewComponent extends Component<Props, State> {
             </JuiTypography>
             <JuiCheckboxLabel
               label={t('people.prompt.closeConfirmDialogDontAskMeAgain')}
-              checked={false}
+              checked={this.checked}
               handleChange={this._checkboxChange}
             />
           </>
         ),
-        okText: t('people.prompt.closeConversation'),
-        okVariant: 'text',
+        okText: t('people.team.close'),
+        cancelText: t('common.dialog.cancel'),
+        okVariant: 'contained',
+        okType: 'primary',
         onOK: () => {
           this._closeConversationWithConfirm();
         },
@@ -148,8 +137,7 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private async _closeConversationWithConfirm() {
-    const { checked } = this.state;
-    this._closeConversation(checked);
+    this._closeConversation(this.checked);
   }
 
   private async _closeConversationWithoutConfirmDialog() {

@@ -16,7 +16,7 @@ test(formalName('Jump to post position when click button or clickable area of po
   const user = users[4];
   await h(t).platform(user).init();
   await h(t).glip(user).init();
-  await h(t).glip(user).resetProfile();
+  await h(t).glip(user).resetProfileAndState();
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   const teamsSection = app.homePage.messageTab.teamsSection;

@@ -13,14 +13,6 @@ class NewGlobalConfig extends GlobalConfig {
     return this.get(CONFIG_KEYS.ACCOUNT_TYPE);
   }
 
-  static getSocketServerHost() {
-    return this.get(CONFIG_KEYS.SOCKET_SERVER_HOST);
-  }
-
-  static setSocketServerHost(server: string) {
-    this.put(CONFIG_KEYS.SOCKET_SERVER_HOST, server);
-  }
-
   static getStaticHttpServer() {
     return this.get(CONFIG_KEYS.STATIC_HTTP_SERVER);
   }
@@ -75,6 +67,14 @@ class NewGlobalConfig extends GlobalConfig {
 
   static removeConfig(key: string) {
     this.remove(key);
+  }
+
+  static setFetchedRemaining(value: boolean) {
+    this.put(CONFIG_KEYS.FETCHED_REMAINING, value);
+  }
+
+  static getFetchedRemaining() {
+    return this.get(CONFIG_KEYS.FETCHED_REMAINING);
   }
 }
 

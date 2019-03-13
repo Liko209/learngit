@@ -89,8 +89,10 @@ const name2icon = {
   keypad: 'keypad',
   hold: 'hold',
   record: 'record',
+  call_add: 'call-add',
+  call_more: 'call-more',
 };
 
 export type ICON_NAME = keyof typeof name2icon;
 
-export default name2icon;
+export { name2icon };

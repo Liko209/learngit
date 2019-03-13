@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { transaction } from 'mobx';
+import { transaction, action } from 'mobx';
 import { IdModel } from 'sdk/framework/model';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import {
@@ -55,6 +55,7 @@ export class FetchSortableDataListHandler<
   T extends IdModel
 > extends FetchDataListHandler<ISortableModel<T>> {
   private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
+
   private _transformFunc: ITransformFunc<T>;
   private _sortFun?: ISortFunc<ISortableModel<T>>;
   private _sortableDataProvider?: IFetchSortableDataProvider<T>;
@@ -186,7 +187,8 @@ export class FetchSortableDataListHandler<
       });
   }
 
-  handleDataDeleted(payload: NotificationEntityDeletePayload) {
+  @action
+  handleDataDeleted = (payload: NotificationEntityDeletePayload) => {
     let originalSortableIds: number[] = [];
 
     if (this._dataChangeCallBacks.length) {
@@ -209,11 +211,12 @@ export class FetchSortableDataListHandler<
     this._updateTotalCount();
   }
 
-  handleDataUpdateReplace(
+  @action
+  handleDataUpdateReplace = (
     payload:
       | NotificationEntityUpdatePayload<T>
       | NotificationEntityReplacePayload<T>,
-  ) {
+  ) => {
     let originalSortableModels: ISortableModel[] = [];
     let deletedSortableModelIds: number[] = [];
     let addedSortableModels: ISortableModel[] = [];
@@ -241,8 +244,7 @@ export class FetchSortableDataListHandler<
         const sortableModel = this._transformFunc(model);
         if (
           payload.type === EVENT_TYPES.REPLACE ||
-          sortableModel.sortValue !==
-            (this.sortableListStore.getById(key) as ISortableModel).sortValue
+          this._isPosChanged(sortableModel)
         ) {
           matchedSortableModels.push(sortableModel);
           matchedEntities.push(model);
@@ -387,6 +389,35 @@ export class FetchSortableDataListHandler<
       );
     }
     return inRange;
+  }
+
+  private _isPosChanged(newModel: ISortableModel<T>) {
+    let isPosChanged = false;
+
+    const oldModel = this.sortableListStore.getById(
+      newModel.id,
+    ) as ISortableModel;
+    isPosChanged = newModel.sortValue !== oldModel.sortValue;
+
+    if (!isPosChanged && this._sortFun) {
+      const currentAllItems = this.sortableListStore.items;
+      const pos = currentAllItems.findIndex((value: ISortableModel<T>) => {
+        return value.id === newModel.id;
+      });
+
+      const leftModel = pos - 1 >= 0 ? currentAllItems[pos - 1] : undefined;
+      const rightModel =
+        pos + 1 < currentAllItems.length ? currentAllItems[pos + 1] : undefined;
+
+      isPosChanged =
+        (leftModel && this._sortFun(newModel, leftModel) < 0) || false; // if smaller then left
+
+      isPosChanged = !isPosChanged
+        ? (rightModel && this._sortFun(newModel, rightModel) > 0) || false // if bigger then right
+        : isPosChanged;
+    }
+
+    return isPosChanged;
   }
 
   protected handleHasMore(hasMore: boolean, direction: QUERY_DIRECTION) {

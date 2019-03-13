@@ -9,7 +9,7 @@ import { computed, action, observable } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Post } from 'sdk/module/post/entity';
 import { StateService } from 'sdk/module/state';
-import { GroupState } from 'sdk/models';
+import { GroupState } from 'sdk/module/state/entity';
 import { Group } from 'sdk/module/group/entity';
 import { errorHelper } from 'sdk/error';
 import storeManager, { ENTITY_NAME } from '@/store';
@@ -216,7 +216,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  private _syncGroupItems() {
+  @action
+  private _syncGroupItems = () => {
     this._itemService.requestSyncGroupItems(this.props.groupId);
   }
 

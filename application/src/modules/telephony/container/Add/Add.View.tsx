@@ -28,10 +28,10 @@ class AddViewComponent extends Component<Props> {
           color="grey.900"
           disableToolTip={true}
           onClick={this._handleAdd}
-          size="xlarge"
+          size="xxlarge"
           disabled={true}
         >
-          zoom_in
+          call_add
         </JuiIconButton>
         <span className="disabled">{t('telephony.action.add')}</span>
       </JuiKeypadAction>
