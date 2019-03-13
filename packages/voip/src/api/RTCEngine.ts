@@ -11,6 +11,7 @@ import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCRestApiManager } from '../utils/RTCRestApiManager';
 import { RTCDaoManager } from '../utils/RTCDaoManager';
 import { ITelephonyNetworkDelegate, ITelephonyDaoDelegate } from 'foundation';
+import { RTCMediaManager } from '../utils/RTCMediaManager';
 
 class RTCEngine {
   private static instance: RTCEngine;
@@ -38,6 +39,14 @@ class RTCEngine {
 
   public setTelephonyDaoDelegate(delegate: ITelephonyDaoDelegate): void {
     RTCDaoManager.instance().setDaoDelegate(delegate);
+  }
+
+  public setVolume(volume: number): void {
+    RTCMediaManager.instance().setVolume(volume);
+  }
+
+  public getVolume(): number {
+    return RTCMediaManager.instance().getVolume();
   }
 }
 
