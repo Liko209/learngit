@@ -175,12 +175,21 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async isVisible(el: Selector) {
+    await this.t.expect(el.exists).ok();
     const wrapper = this.streamWrapper;
     const itemTop = await el.getBoundingClientRectProperty('top');
     const itemBottom = await el.getBoundingClientRectProperty('bottom');
     const wrapperTop = await wrapper.getBoundingClientRectProperty('top');
     const wrapperBottom = await wrapper.getBoundingClientRectProperty('bottom');
     return itemTop >= wrapperTop && itemBottom <= wrapperBottom;
+  }
+
+  async postByIdExpectVisible(postId: string, visible: boolean) {
+    await H.retryUntilPass(async () => {
+      const postCard = this.posts.filter(`[data-id="${postId}"]`)
+      const result = await this.isVisible(postCard);
+      assert.strictEqual(result, visible, `This post expect visible: ${visible}, but actual: ${result}`);
+    });
   }
 
   async nthPostExpectVisible(n: number, isVisible: boolean = true) {
@@ -190,10 +199,10 @@ class BaseConversationPage extends BaseWebComponent {
     });
   }
 
-  async newMessageDeadLineExpectVisible(isVisible: boolean) {
+  async newMessageDeadLineExpectVisible(visible: boolean) {
     await H.retryUntilPass(async () => {
       const result = await this.isVisible(this.newMessageDeadLine);
-      assert.strictEqual(result, isVisible, `This 'New Messages' deadline expect visible: ${isVisible}, but actual: ${result}`);
+      assert.strictEqual(result, visible, `This 'New Messages' deadline expect visible: ${visible}, but actual: ${result}`);
     });
   }
 }
@@ -258,11 +267,11 @@ export class ConversationPage extends BaseConversationPage {
   }
 
   async favorite() {
-    await this.t.click(this.unFavoriteStatusIcon.parent('button'));
+    await this.t.click(this.leftWrapper.find('.icon.star').nextSibling('input'));
   }
 
   async unFavorite() {
-    await this.t.click(this.favoriteStatusIcon.parent('button'));
+    await this.t.click(this.leftWrapper.find('.icon.star_border').nextSibling('input'));
   }
 
   async groupIdShouldBe(id: string | number) {
@@ -603,6 +612,14 @@ export class PostItem extends BaseWebComponent {
   // --- mention and bookmark page only ---
   get conversationName() {
     return this.self.find('.conversation-name')
+  }
+
+  get conversationSource() {
+    return this.self.find(`[data-name="cardHeaderFrom"]`);
+  }
+
+  get conversationSourceId() {
+    return this.conversationSource.getAttribute('id');
   }
 
   async jumpToConversationByClickName() {

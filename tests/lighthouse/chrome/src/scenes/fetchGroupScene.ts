@@ -33,6 +33,7 @@ class FetchGroupScene extends Scene {
   async saveMetircsIntoDisk() {
     if (this.artifacts) {
       await FileService.saveTracesIntoDisk(this.artifacts, this.name());
+      await FileService.saveMemoryIntoDisk(this.artifacts, this.name());
     }
   }
 }

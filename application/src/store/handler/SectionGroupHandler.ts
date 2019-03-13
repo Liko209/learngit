@@ -20,8 +20,9 @@ import { GroupState } from 'sdk/module/state/entity';
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { autorun, observable, computed, reaction, action } from 'mobx';
-import { getSingleEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
+import GroupStateModel from '@/store/models/GroupState';
 import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/history';
@@ -133,11 +134,18 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _removeGroupsIfExistedInHiddenGroups() {
-    Object.keys(this._handlersMap).forEach((key: SECTION_TYPE) => {
-      const inters = _.intersection(
-        this._hiddenGroupIds,
-        this.getGroupIdsByType(key),
+    const removeIds: number[] = [];
+    this._hiddenGroupIds.forEach((groupId: number) => {
+      const groupState: GroupStateModel = getEntity(
+        ENTITY_NAME.GROUP_STATE,
+        groupId,
       );
+      if (!groupState.unreadCount || groupState.unreadCount <= 0) {
+        removeIds.push(groupId);
+      }
+    });
+    Object.keys(this._handlersMap).forEach((key: SECTION_TYPE) => {
+      const inters = _.intersection(removeIds, this.getGroupIdsByType(key));
       if (inters.length) {
         this._removeByIds(key, inters);
       }
@@ -333,8 +341,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (updated.length) {
       updated.forEach((group: ISortableModel) => {
         if (!postCacheController.has(group.id)) {
-          const processor = new PrefetchPostProcessor(group.id);
-          this._prefetchHandler.addProcessor(processor);
+          this._addToFetchProcessor(group.id);
         }
       });
     }
@@ -343,8 +350,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const truelyAdded = _.differenceBy(addedIds, deleted);
       truelyAdded.forEach((groupId: number) => {
         if (!postCacheController.has(groupId)) {
-          const processor = new PrefetchPostProcessor(groupId);
-          this._prefetchHandler.addProcessor(processor);
+          this._addToFetchProcessor(groupId);
         }
       });
     }
@@ -367,12 +373,21 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private async _addFavoriteSection() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
-      const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      const includesMe = userId && _.includes(model.members, userId);
+      const groupState: GroupStateModel = getEntity(
+        ENTITY_NAME.GROUP_STATE,
+        model.id,
+      );
+      const hasUnread =
+        groupState && groupState.unreadCount
+          ? groupState.unreadCount > 0
+          : false;
+      const includesMe =
+        currentUserId && _.includes(model.members, currentUserId);
       return (
         this._oldFavGroupIds.indexOf(model.id) !== -1 &&
-        this._hiddenGroupIds.indexOf(model.id) === -1 &&
+        (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         includesMe &&
         !model.is_archived
       );
@@ -394,14 +409,23 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _addDirectMessageSection() {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
-      const notInFav =
-        this._oldFavGroupIds.indexOf(model.id) === -1 &&
-        this._hiddenGroupIds.indexOf(model.id) === -1;
-      const isDirectInDirectSection = !model.is_team;
+      const groupState: GroupStateModel = getEntity(
+        ENTITY_NAME.GROUP_STATE,
+        model.id,
+      );
+      const hasUnread =
+        groupState && groupState.unreadCount
+          ? groupState.unreadCount > 0
+          : false;
       const createdByMeOrHasPostTime: boolean =
         model.most_recent_post_created_at !== undefined ||
         model.creator_id === currentUserId;
-      return notInFav && isDirectInDirectSection && createdByMeOrHasPostTime;
+      return (
+        this._oldFavGroupIds.indexOf(model.id) === -1 &&
+        (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
+        !model.is_team &&
+        createdByMeOrHasPostTime
+      );
     };
     return this._addSection(
       SECTION_TYPE.DIRECT_MESSAGE,
@@ -416,14 +440,23 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
   private async _addTeamSection() {
     const isMatchFun = (model: Group) => {
-      const notInFav =
-        this._oldFavGroupIds.indexOf(model.id) === -1 &&
-        this._hiddenGroupIds.indexOf(model.id) === -1;
+      const groupState: GroupStateModel = getEntity(
+        ENTITY_NAME.GROUP_STATE,
+        model.id,
+      );
+      const hasUnread =
+        groupState && groupState.unreadCount
+          ? groupState.unreadCount > 0
+          : false;
       const isTeamInTeamSection = model.is_team as boolean;
       const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       const includesMe = userId && _.includes(model.members, userId);
       return (
-        notInFav && isTeamInTeamSection && includesMe && !model.is_archived
+        this._oldFavGroupIds.indexOf(model.id) === -1 &&
+        (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
+        isTeamInTeamSection &&
+        includesMe &&
+        !model.is_archived
       );
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
@@ -446,16 +479,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         (await this._handlersMap[sectionType].fetchData(direction)) || [];
       if (sectionType === SECTION_TYPE.FAVORITE) {
         groups.forEach((group: Group) => {
-          const processor = new PrefetchPostProcessor(group.id);
-          this._prefetchHandler.addProcessor(processor);
+          this._addToFetchProcessor(group.id);
         });
       } else if (sectionType === SECTION_TYPE.DIRECT_MESSAGE) {
         groups.forEach(async (group: Group) => {
           const stateService: StateService = StateService.getInstance();
           const state = await stateService.getById(group.id);
           if (state && state.unread_count) {
-            const processor = new PrefetchPostProcessor(group.id);
-            this._prefetchHandler.addProcessor(processor);
+            this._addToFetchProcessor(group.id);
           }
         });
       } else {
@@ -463,13 +494,17 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           const stateService: StateService = StateService.getInstance();
           const state = await stateService.getById(group.id);
           if (state && state.unread_mentions_count) {
-            const processor = new PrefetchPostProcessor(group.id);
-            this._prefetchHandler.addProcessor(processor);
+            this._addToFetchProcessor(group.id);
           }
         });
       }
       PerformanceTracerHolder.getPerformanceTracer().end(logId);
     }
+  }
+
+  private async _addToFetchProcessor(groupId: number) {
+    const processor = new PrefetchPostProcessor(groupId, postCacheController);
+    this._prefetchHandler.addProcessor(processor);
   }
 
   private _getPerformanceKey(sectionType: SECTION_TYPE): string {

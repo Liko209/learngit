@@ -5,14 +5,12 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import i18next from 'i18next';
 import {
   JuiFileWithoutPreview,
   JuiFileWithPreview,
   JuiPreviewImage,
   JuiDelayPlaceholder,
 } from 'jui/pattern/ConversationCard/Files';
-import { JuiIconButton } from 'jui/components/Buttons';
 import { getThumbnailSize } from 'jui/foundation/utils';
 import {
   AttachmentItem,
@@ -24,21 +22,10 @@ import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
 import { UploadFileTracker } from './UploadFileTracker';
+import { Download } from '@/containers/common/Download';
 
 const SQUARE_SIZE = 180;
 const FutureAttachmentItem = withFuture(AttachmentItem);
-
-const downloadBtn = (downloadUrl: string) => (
-  <JuiIconButton
-    component="a"
-    download={true}
-    href={downloadUrl}
-    variant="plain"
-    tooltipTitle={i18next.t('common.download')}
-  >
-    download
-  </JuiIconButton>
-);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
@@ -137,7 +124,7 @@ class FilesView extends React.Component<FilesViewProps> {
                   squareSize={SQUARE_SIZE}
                   fileName={name}
                   url={urlMap.get(id) || ''}
-                  Actions={downloadBtn(downloadUrl)}
+                  Actions={<Download url={downloadUrl} />}
                 />
               ),
             );
@@ -165,7 +152,7 @@ class FilesView extends React.Component<FilesViewProps> {
               squareSize={SQUARE_SIZE}
               fileName={name}
               url={urlMap.get(id) || ''}
-              Actions={downloadBtn(downloadUrl)}
+              Actions={<Download url={downloadUrl} />}
             />
           );
         })}
@@ -183,7 +170,7 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               url={previewUrl}
               iconType={iconType}
-              Actions={downloadBtn(downloadUrl)}
+              Actions={<Download url={downloadUrl} />}
             />
           );
         })}
@@ -200,7 +187,7 @@ class FilesView extends React.Component<FilesViewProps> {
               fileName={name}
               size={`${getFileSize(size)}`}
               iconType={iconType}
-              Actions={downloadBtn(downloadUrl)}
+              Actions={<Download url={downloadUrl} />}
             />
           );
         })}
