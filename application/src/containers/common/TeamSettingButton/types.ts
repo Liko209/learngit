@@ -5,12 +5,15 @@
  */
 
 import { IconButtonSize } from 'jui/components/Buttons';
+import GroupModel from '@/store/models/Group';
 
 type TeamSettingButtonProps = {
   id: number; // teamId
   size?: IconButtonSize;
 };
 
-type TeamSettingButtonViewProps = TeamSettingButtonProps;
+type TeamSettingButtonViewProps = TeamSettingButtonProps & {
+  group: GroupModel;
+};
 
 export { TeamSettingButtonProps, TeamSettingButtonViewProps };

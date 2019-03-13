@@ -10,14 +10,20 @@ import { JuiIconButton } from 'jui/components/Buttons';
 import { toTitleCase } from '@/utils/string';
 import portalManager from '@/common/PortalManager';
 import { TeamSettings } from '@/containers/TeamSettings';
+import { GroupSettings } from '@/containers/GroupSettings';
+import { CONVERSATION_TYPES } from '@/constants';
 
 type Props = TeamSettingButtonViewProps & WithNamespaces;
 
 class TeamSettingButtonViewComponent extends Component<Props> {
   onClickSettingButton = async () => {
-    const { id } = this.props;
+    const { id, group } = this.props;
     portalManager.dismissLast();
-    TeamSettings.show({ id });
+    if (group.type === CONVERSATION_TYPES.TEAM) {
+      TeamSettings.show({ id });
+    } else if (group.type === CONVERSATION_TYPES.NORMAL_GROUP) {
+      GroupSettings.show({ id });
+    }
   }
 
   render() {

@@ -8,6 +8,10 @@ import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { TeamSettingButtonProps, TeamSettingButtonViewProps } from './types';
 import { IconButtonSize } from 'jui/components/Buttons';
+import { getEntity } from '@/store/utils';
+import GroupModel from '@/store/models/Group';
+import { Group } from 'sdk/module/group/entity';
+import { ENTITY_NAME } from '@/store';
 
 class TeamSettingButtonViewModel
   extends AbstractViewModel<TeamSettingButtonProps>
@@ -20,6 +24,11 @@ class TeamSettingButtonViewModel
   @computed
   get size(): IconButtonSize {
     return this.props.size || 'small';
+  }
+
+  @computed
+  get group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 }
 

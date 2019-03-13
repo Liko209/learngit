@@ -351,7 +351,8 @@
       "profile": "Profile",
       "close": "Close",
       "markAsRead": "Mark as read",
-      "markAsUnread": "Mark as unread"
+      "markAsUnread": "Mark as unread",
+      "convertToTeam": "Convert to team"
     },
     "company": {},
     "prompt": {
