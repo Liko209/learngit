@@ -40,6 +40,10 @@ class GroupAPI extends Api {
     return this.glipNetworkClient.post<Raw<Group>>('/team', data);
   }
 
+  static convertToTeam(data: Partial<GroupApiType>) {
+    return this.glipNetworkClient.post<Raw<Group>>('/convert_to_team', data);
+  }
+
   static putTeamById(id: number, group: Partial<GroupApiType>) {
     group._id = group.id;
     delete group.id;

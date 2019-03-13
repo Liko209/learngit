@@ -253,33 +253,24 @@ export class GroupActionController {
     memberIds: (number | string)[],
     teamSetting: TeamSetting = {},
   ): Promise<Group> {
-    const {
-      isPublic = false,
-      name,
-      description,
-      permissionFlags = {},
-    } = teamSetting;
-    const privacy = isPublic ? 'protected' : 'private';
-    const permissionLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
-      permissionFlags,
-      0,
-    );
-    const team: Partial<GroupApiType> = {
-      privacy,
-      description,
-      set_abbreviation: name,
-      members: memberIds.concat(creator),
-      permissions: {
-        admin: {
-          uids: [creator],
-        },
-        user: {
-          uids: [],
-          level: permissionLevel,
-        },
-      },
-    };
+    const team = this._generateTeamParameters(creator, memberIds, teamSetting);
     const result = await GroupAPI.createTeam(team);
+    return await this.handleRawGroup(result);
+  }
+
+  async convertToTeam(
+    groupId: number,
+    memberIds: number[],
+    teamSetting: TeamSetting = {},
+  ): Promise<Group> {
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const team: Partial<GroupApiType> = this._generateTeamParameters(
+      currentUserId,
+      memberIds,
+      teamSetting,
+    );
+    team['group_id'] = groupId;
+    const result = await GroupAPI.convertToTeam(team);
     return await this.handleRawGroup(result);
   }
 
@@ -406,6 +397,43 @@ export class GroupActionController {
       isIncludeSelf = group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;
+  }
+
+  private _generateTeamParameters(
+    creatorId: number,
+    memberIds: (number | string)[],
+    teamSetting: TeamSetting = {},
+  ) {
+    const {
+      isPublic = false,
+      name,
+      description,
+      permissionFlags = {},
+    } = teamSetting;
+    const privacy = isPublic ? 'protected' : 'private';
+    const permissionLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
+      permissionFlags,
+      0,
+    );
+    const members = memberIds.includes(creatorId)
+      ? memberIds
+      : memberIds.concat(creatorId);
+    const team: Partial<GroupApiType> = {
+      privacy,
+      description,
+      members,
+      set_abbreviation: name,
+      permissions: {
+        admin: {
+          uids: [creatorId],
+        },
+        user: {
+          uids: [],
+          level: permissionLevel,
+        },
+      },
+    };
+    return team;
   }
 
   private _getGroupRequestController() {
