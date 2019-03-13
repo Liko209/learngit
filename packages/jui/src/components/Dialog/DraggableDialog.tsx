@@ -8,7 +8,7 @@ import { spacing } from '../../foundation/utils/styles';
 type JuiDraggableDialogProps = {
   x: number;
   y: number;
-  dragRef: React.RefObject<any>;
+  dragRef?: React.RefObject<any>;
 } & JuiDialogProps;
 
 const PaperComponent = (
