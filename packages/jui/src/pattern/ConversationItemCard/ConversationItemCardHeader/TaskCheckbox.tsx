@@ -22,7 +22,7 @@ const StyledTaskCheckbox = styled<Props>(WrapperCheckbox)`
   && {
     padding: 0;
     color: ${({ customColor }) => {
-      return customColor ? palette(customColor[0], customColor[1]) : '';
+      return customColor ? palette(customColor[0], customColor[1]) : null;
     }};
     &.checked {
       color: ${palette('primary', 'main')};
