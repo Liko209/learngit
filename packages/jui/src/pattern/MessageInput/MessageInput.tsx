@@ -93,30 +93,7 @@ const StyledError = styled.div`
   }
 `;
 
-const formats = [
-  'background',
-  'bold',
-  'color',
-  'font',
-  'code',
-  'italic',
-  'link',
-  'size',
-  'strike',
-  'script',
-  'underline',
-  'blockquote',
-  'header',
-  'indent',
-  'list',
-  'align',
-  'direction',
-  'code-block',
-  'formula',
-  'mention',
-  // 'image',
-  // 'video',
-];
+const formats = ['mention'];
 
 type Props = {
   value?: string | Delta;
