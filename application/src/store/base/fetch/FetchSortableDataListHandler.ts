@@ -299,13 +299,13 @@ export class FetchSortableDataListHandler<
         addedSortableModels = _.differenceBy(
           matchedSortableModels,
           originalSortableModels,
-          (item: any) => item.id,
+          (item: ISortableModel<T>) => item.id,
         );
 
         updatedSortableModels = _.intersectionBy(
           matchedSortableModels,
           originalSortableModels,
-          (item: any) => item.id,
+          (item: ISortableModel<T>) => item.id,
         );
       }
     }

@@ -191,7 +191,7 @@ class StreamViewModel extends StoreViewModel<StreamProps>
       return;
     }
   }
-
+  @action
   loadMore = async (direction: 'up' | 'down') => {
     switch (direction) {
       case 'up':

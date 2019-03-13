@@ -44,9 +44,6 @@ class StreamViewComponent extends Component<Props> {
   state = { _jumpToPostId: 0 };
 
   @observable private _jumpToFirstUnreadLoading = false;
-  constructor(props: Props) {
-    super(props);
-  }
 
   static getDerivedStateFromProps(props: Props) {
     if (props.jumpToPostId) {
@@ -236,7 +233,6 @@ class StreamViewComponent extends Component<Props> {
   }
 
   handleFirstUnreadViewed = () => {
-    debugger;
     this._historyViewed = true;
     this.props.clearHistoryUnread();
   }
@@ -312,7 +308,7 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
-  @action.bound
+  @action
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead } = this.props;
     await loadInitialPosts();

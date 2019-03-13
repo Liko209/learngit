@@ -133,6 +133,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: ScrollPosition) => {
     if (ref.current) {
       if (options === true) {
+        console.log('scrolling', offset, index);
         ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
       }
       if (options === false) {
@@ -164,14 +165,11 @@ const JuiVirtualizedList: RefForwardingComponent<
       if (index + 1 > children.length) {
         return;
       }
-      scrollToPosition({ index, offset: 0 });
-      // scrollPosition.index = index;
-      // scrollPosition.offset = 0;
-      // setRenderedRange(
-      //   createRange({ startIndex: index - 5, size: renderedRangeSize, min: 0 }),
-      // );
-      // setScrollPosition({ index, offset: 0 });
-      // scrollEffectTriggerRef.current++; // Trigger scroll after next render
+      setRenderedRange(
+        createRange({ startIndex: index - 5, size: renderedRangeSize, min: 0 }),
+      );
+      setScrollPosition({ index, offset: 0 });
+      scrollEffectTriggerRef.current++; // Trigger scroll after next render
     },
   }));
 
