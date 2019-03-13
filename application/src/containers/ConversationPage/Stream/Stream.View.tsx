@@ -202,7 +202,6 @@ class StreamViewComponent extends Component<Props> {
       );
       return;
     }
-    debugger;
     this._listRef.current.ref.scrollToIndex(index);
   }
 
@@ -279,7 +278,7 @@ class StreamViewComponent extends Component<Props> {
         return !!item.value && item.value.includes(_jumpToPostId);
       });
     }
-    const defaultLoading = <DefaultLoadingWithDelay />;
+    const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
     const onInitialDataFailed = (
       <JuiStreamLoading
@@ -334,7 +333,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _focusHandler = () => {
     const { markAsRead } = this.props;
-    const atBottom = this._listRef.current.ref.isAtBottom();
+    const atBottom = this._listRef.current.isAtBottom();
     atBottom && markAsRead();
     this._setUmiDisplay(false);
   }

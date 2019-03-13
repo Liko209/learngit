@@ -232,19 +232,15 @@ const JuiVirtualizedList: RefForwardingComponent<
   useLayoutEffect(() => {
     const handleRowSizeChange = (el: HTMLElement, i: number) => {
       const { diff } = rowManager.setRowHeight(startIndex + i, el.offsetHeight);
-      if (diff === 0) {
-        return;
-      }
 
       if (shouldScrollToBottom()) {
-        return scrollToBottom();
+        scrollToBottom();
+      } else {
+        const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
+        if (diff !== 0 && beforeFirstVisibleRow) {
+          scrollToPosition(scrollPosition);
+        }
       }
-
-      const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
-      if (beforeFirstVisibleRow) {
-        scrollToPosition(scrollPosition);
-      }
-      return diff;
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
@@ -285,6 +281,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     onRenderedRangeChange(visibleRange);
   },              []);
 
+  //
+  // Update prevAtBottom
+  //
   useEffect(() => {
     if (ref.current) {
       const { scrollTop } = ref.current;
@@ -292,6 +291,7 @@ const JuiVirtualizedList: RefForwardingComponent<
         height >= rowManager.getRowOffsetTop(childrenCount) - scrollTop;
     }
   });
+
   //
   // Scrolling
   //

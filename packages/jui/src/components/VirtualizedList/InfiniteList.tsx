@@ -5,15 +5,16 @@
  */
 import React, {
   useState,
-  createRef,
-  useImperativeHandle,
   RefForwardingComponent,
   memo,
   forwardRef,
 } from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
-import { JuiVirtualizedList } from './VirtualizedList';
+import {
+  JuiVirtualizedList,
+  JuiVirtualizedListHandles,
+} from './VirtualizedList';
 import { IndexRange } from './types';
 
 type JuiInfiniteListProps = {
@@ -23,19 +24,19 @@ type JuiInfiniteListProps = {
   hasMore: (direction: 'up' | 'down') => boolean;
   loadInitialData: () => Promise<void>;
   loadMore: (direction: 'up' | 'down') => Promise<void>;
-  initialScrollToIndex: number;
+  initialScrollToIndex?: number;
   onVisibleRangeChange?: (range: IndexRange) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer?: JSX.Element;
   loadingRenderer: JSX.Element;
+  fallBackRenderer?: JSX.Element;
   loadingMoreRenderer: JSX.Element;
   children: JSX.Element[];
   stickToBottom?: boolean;
-  fallBackRenderer: JSX.Element;
 };
 
 const JuiInfiniteList: RefForwardingComponent<
-  { ref: any },
+  JuiVirtualizedListHandles,
   JuiInfiniteListProps
 > = (
   {
@@ -50,15 +51,13 @@ const JuiInfiniteList: RefForwardingComponent<
     loadingRenderer,
     loadingMoreRenderer,
     onVisibleRangeChange = noop,
-    onRenderedRangeChange,
+    onRenderedRangeChange = noop,
     stickToBottom,
     fallBackRenderer,
     children,
   }: JuiInfiniteListProps,
   forwardRef,
 ) => {
-  const ref = createRef() as any;
-
   const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
 
   const _loadMore = async (direction: 'up' | 'down') => {
@@ -66,9 +65,7 @@ const JuiInfiniteList: RefForwardingComponent<
     await loadMore(direction);
     enableStickToBottom(true);
   };
-  useImperativeHandle(forwardRef, () => ({
-    ref: ref.current ? ref.current.ref : null,
-  }));
+
   if (!height) {
     return loadingRenderer;
   }
@@ -78,10 +75,8 @@ const JuiInfiniteList: RefForwardingComponent<
       hasMore={hasMore}
       loadInitialData={loadInitialData}
       loadMore={_loadMore}
-      ref={ref}
     >
       {({
-        ref,
         onScroll,
         loadingInitial,
         loadingUp,
@@ -97,12 +92,12 @@ const JuiInfiniteList: RefForwardingComponent<
 
         const isEmpty =
           children.length === 0 && !hasMore('up') && !hasMore('down');
-        if (isEmpty && noRowsRenderer) {
+        if (isEmpty) {
           return noRowsRenderer;
         }
         return (
           <JuiVirtualizedList
-            ref={ref}
+            ref={forwardRef}
             height={height}
             minRowHeight={minRowHeight}
             initialScrollToIndex={initialScrollToIndex}
@@ -126,7 +121,7 @@ const memoInfiniteList = memo(
   forwardRef(JuiInfiniteList),
 ) as React.MemoExoticComponent<
   React.ForwardRefExoticComponent<
-    JuiInfiniteListProps & React.RefAttributes<{ ref: any }>
+    JuiInfiniteListProps & React.RefAttributes<JuiVirtualizedListHandles>
   >
 >;
 export { memoInfiniteList as JuiInfiniteList, JuiInfiniteListProps };
