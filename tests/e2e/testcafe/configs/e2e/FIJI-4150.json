@@ -2,7 +2,7 @@
   "on_merge": {
     "fixtures": [
       "./fixtures/ContentPanel/CodeSnippet.ts",
-      "./fixtures/Profile/RemoveTeamMember.t"
+      "./fixtures/Profile/RemoveTeamMember.ts"
     ],
     "include_tags": [
       "JPT-958",
