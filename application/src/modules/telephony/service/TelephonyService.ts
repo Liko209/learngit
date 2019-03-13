@@ -9,9 +9,13 @@ import {
   TelephonyService as ServerTelephonyService,
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCCallActionSuccessOptions,
 } from 'sdk/module/telephony';
+import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { mainLogger } from 'sdk';
 import { TelephonyStore } from '../store';
+import { ToastCallError } from './ToastCallError';
 
 class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
@@ -41,16 +45,40 @@ class TelephonyService {
     }
   }
 
+  private _onCallActionSuccess = (
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions,
+  ) => {
+    mainLogger.info(`Call action: ${callAction} succeed, options: ${options}`);
+  }
+
+  private _onCallActionFailed = (callAction: RTC_CALL_ACTION): void => {
+    switch (callAction) {
+      case RTC_CALL_ACTION.CALL_TIME_OUT: {
+        ToastCallError.toastCallTimeout();
+      }
+    }
+  }
+
   constructor() {
     this._serverTelephonyService.createAccount({
       onAccountStateChanged: this._onAccountStateChanged,
     });
   }
 
-  makeCall = (toNumber: string) => {
-    this._serverTelephonyService.makeCall(toNumber, {
+  makeCall = async (toNumber: string) => {
+    const rv = await this._serverTelephonyService.makeCall(toNumber, {
       onCallStateChange: this._onCallStateChange,
+      onCallActionSuccess: this._onCallActionSuccess,
+      onCallActionFailed: this._onCallActionFailed,
     });
+
+    // TODO: When it reaches the max call count, we should not show new call UI
+    if (MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv) {
+      ToastCallError.toastNoNetwork();
+    } else if (MAKE_CALL_ERROR_CODE.NO_ERROR !== rv) {
+      ToastCallError.toastCallFailed();
+    }
   }
 
   directCall = (toNumber: string) => {

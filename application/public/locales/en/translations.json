@@ -417,6 +417,11 @@
       "record": "Record",
       "callActions": "Call Actions",
       "end": "End"
+    },
+    "prompt": {
+      "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
+      "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
+      "CallTimeout": "Sorry, we weren't able to place the call. Try again later."
     }
   },
   "meeting": {
