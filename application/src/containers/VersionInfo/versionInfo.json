@@ -1,9 +1,9 @@
 {
   "data": {
-    "buildTime": "0000000000000",
+    "buildTime": "0",
     "buildCommit": "---buildCommit",
     "buildVersion": "0.0.0",
-    "deployTime": "0000000000000",
+    "deployTime": "0",
     "deployCommit": "---deployCommit",
     "deployVersion": "0.0.0"
   }
