@@ -14,7 +14,7 @@ type JuiDraggableDialogProps = {
 const PaperComponent = (
   x: number,
   y: number,
-  dragRef: React.RefObject<any>,
+  dragRef?: React.RefObject<any>,
 ) => (props: JuiPaperProps) => {
   return (
     <Draggable bounds="body" defaultPosition={{ x, y }} ref={dragRef}>
