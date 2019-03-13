@@ -35,6 +35,7 @@ const StyledLeft = styled<Props, 'div'>('div')`
     }
     ${JuiLogo} {
       display: ${({ isShowSearchBar }) => (isShowSearchBar ? 'none' : 'block')};
+      width: 95px;
     }
   }
   @media (min-width: 601px) {
