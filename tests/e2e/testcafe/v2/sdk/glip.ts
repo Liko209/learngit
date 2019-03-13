@@ -625,6 +625,12 @@ export class GlipSdk {
     return await this.createTask(data);
   }
 
+  async deleteTask(taskId: string) {
+    await this.updateTask(taskId, {
+      deactivated: true
+    });
+  }
+
   /* note */
   createNote(data: object) {
     const uri = `api/page`;
@@ -663,6 +669,12 @@ export class GlipSdk {
       options
     )
     return await this.createNote(data);
+  }
+
+  async deleteNote(taskId: string) {
+    await this.updateNote(taskId, {
+      deactivated: true
+    });
   }
 
   /* event */
@@ -710,6 +722,12 @@ export class GlipSdk {
     return await this.createEvent(data);
   }
 
+  async deleteEvent(taskId: string) {
+    await this.updateEvent(taskId, {
+      deactivated: true
+    });
+  }
+
   /* code snippet */
   createCodeSnippet(data: object) {
     const uri = `api/code`
@@ -737,6 +755,12 @@ export class GlipSdk {
     )
 
     return await this.createCodeSnippet(data);
+  }
+  
+  async deleteCodeSnippet(taskId: string) {
+    await this.updateCodeSnippet(taskId, {
+      deactivated: true
+    });
   }
 
   /* audio conference */
