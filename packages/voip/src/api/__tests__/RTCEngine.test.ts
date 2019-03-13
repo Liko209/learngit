@@ -20,7 +20,7 @@ describe('Engine', async () => {
       expect(RTCMediaDeviceManager.instance().updateMediaDevices).toBeCalled();
     });
 
-    it("should subscribe 'ondevicechange' when engine start. [JPT-1277]", async () => {
+    it("should subscribe 'ondevicechange' when engine start. [JPT-1278]", async () => {
       RTCEngine.getInstance().destroy();
       jest.spyOn(RTCMediaDeviceManager.instance(), 'subscribeDeviceChange');
       const engine = RTCEngine.getInstance();
