@@ -8,6 +8,7 @@ import { PinnedListViewModel } from '../PinnedList.ViewModel';
 // import { ENTITY_NAME } from '../../../../store';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 
+jest.mock('sdk/api');
 jest.mock('../../../../store/utils');
 
 function setup(groupModel: any) {
@@ -21,10 +22,17 @@ function setup(groupModel: any) {
   return pinnedListViewModel;
 }
 
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
 describe('PinnedList ViewModel', () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
+    clearMocks();
   });
+
   it('Check the sum of pinned when pin/unpin [JPT-1058]', () => {
     let pinnedListViewModel;
     pinnedListViewModel = setup({ pinnedPostIds: [] });
@@ -60,6 +68,10 @@ describe('PinnedList ViewModel', () => {
   });
 
   describe('build()', () => {
+    beforeEach(() => {
+      clearMocks();
+    });
+
     it('If pinnedPostIds is null should return undefined', () => {
       let pinnedListViewModel;
       pinnedListViewModel = setup({ pinnedPostIds: [] });
@@ -67,6 +79,31 @@ describe('PinnedList ViewModel', () => {
       pinnedListViewModel.build(null as any);
       expect(pinnedListViewModel.loadInitialData).not.toHaveBeenCalled();
     });
+
+    it('If pinnedPostIds is empty and is first init should return undefined', () => {
+      let pinnedListViewModel;
+      pinnedListViewModel = setup({ pinnedPostIds: [] });
+      pinnedListViewModel.firstInit = true;
+      jest.spyOn(pinnedListViewModel, 'loadInitialData');
+      pinnedListViewModel.build([] as any);
+      expect(pinnedListViewModel.loadInitialData).not.toHaveBeenCalled();
+    });
+
+    it('If pinnedPostIds is empty and is not first init should update source ids', () => {
+      const discontinuousPosListHandler = {
+        onSourceIdsChanged: jest.fn(),
+      } as any;
+      let pinnedListViewModel;
+      pinnedListViewModel = setup({ pinnedPostIds: [] });
+      pinnedListViewModel.discontinuousPosListHandler = discontinuousPosListHandler;
+      pinnedListViewModel.firstInit = false;
+
+      jest.spyOn(pinnedListViewModel, 'loadInitialData');
+      pinnedListViewModel.build([] as any);
+      expect(pinnedListViewModel.loadInitialData).not.toHaveBeenCalled();
+      expect(discontinuousPosListHandler.onSourceIdsChanged).toHaveBeenCalled();
+    });
+
     it('If first init should loadInitialData', () => {
       let pinnedListViewModel;
       pinnedListViewModel = setup({ pinnedPostIds: [] });
