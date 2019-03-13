@@ -35,7 +35,7 @@ const StyledTaskCheckbox = styled<Props>(WrapperCheckbox)`
 
 const JuiTaskCheckbox = memo((props: Props) => {
   const { customColor, checked, ...rest } = props;
-  console.log(customColor, '----nello');
+
   return (
     <StyledTaskCheckbox
       classes={{
