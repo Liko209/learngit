@@ -1,10 +1,10 @@
 {
   "data": {
-    "buildTime": "0",
-    "buildCommit": "---buildCommit",
-    "buildVersion": "0.0.0",
-    "deployTime": "0",
-    "deployCommit": "---deployCommit",
-    "deployVersion": "0.0.0"
+    "buildTime": "{{buildTime}}",
+    "buildCommit": "{{buildCommit}}",
+    "buildVersion": "{{buildVersion}}",
+    "deployTime": "{{deployTime}}",
+    "deployCommit": "{{deployCommit}}",
+    "deployVersion": "{{deployVersion}}"
   }
 }

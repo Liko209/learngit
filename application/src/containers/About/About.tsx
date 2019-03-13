@@ -91,11 +91,15 @@ class About extends Component<Props> {
         onOK={this._handleAboutPage}
       >
         <Param>
-          Version: {appVersion ? appVersion : pkg.version}{' '}
+          {t('home.version')}: {appVersion ? appVersion : pkg.version}{' '}
           {electronVersion ? `(E. ${electronVersion})` : null}
         </Param>
-        <Param>Last Commit: {deployCommit}</Param>
-        <Param>Deploy Time: {deployTime || ''}</Param>
+        <Param>
+          {t('home.lastCommit')}: {deployCommit}
+        </Param>
+        <Param>
+          {t('home.deployTime')}: {deployTime || ''}
+        </Param>
         <Param>
           Copyright © 1999-
           {new Date().getFullYear()} RingCentral, Inc. All rights reserved.

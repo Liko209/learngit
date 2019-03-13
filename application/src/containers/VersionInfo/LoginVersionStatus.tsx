@@ -5,11 +5,14 @@
  */
 import React from 'react';
 import styled from 'styled-components';
+import { translate, WithNamespaces } from 'react-i18next';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { fetchVersionInfo } from './helper';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+
+type Props = WithNamespaces;
 
 type versionInfoType = {
   deployTime: string;
@@ -27,7 +30,7 @@ const Wrapper = styled.div`
 const globalStore = storeManager.getGlobalStore();
 
 @observer
-class LoginVersionStatus extends React.Component {
+class LoginVersionStatusView extends React.Component<Props> {
   @observable versionInfo: versionInfoType = {
     deployTime: '',
     deployCommit: '',
@@ -50,10 +53,11 @@ class LoginVersionStatus extends React.Component {
   }
 
   render() {
-    const { deployVersion, deployTime } = this.versionInfo;
+    const { t } = this.props;
+    const { deployVersion, deployCommit, deployTime } = this.versionInfo;
 
-    const version = `Version: ${deployVersion}`;
-    const time = `Deploy Time: ${deployTime}`;
+    const version = `${t('home.version')}: ${deployVersion} ${deployCommit}`;
+    const time = `${t('home.deployTime')}: ${deployTime}`;
 
     return (
       <Wrapper>
@@ -63,5 +67,7 @@ class LoginVersionStatus extends React.Component {
     );
   }
 }
+
+const LoginVersionStatus = translate('translations')(LoginVersionStatusView);
 
 export default LoginVersionStatus;
