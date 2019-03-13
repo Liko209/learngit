@@ -1,4 +1,5 @@
 const name2icon = {
+  member_count: 'member-count',
   phone: 'phone',
   meetings: 'videocam',
   star: 'star',

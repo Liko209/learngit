@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import i18next from 'i18next';
-import { JuiIconButton } from 'jui/src/components/Buttons';
+import { JuiIconButton } from 'jui/components/Buttons';
 
 const TelephonyButton = () => {
   return (
