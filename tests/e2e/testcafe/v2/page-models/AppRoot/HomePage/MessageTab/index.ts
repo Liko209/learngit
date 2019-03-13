@@ -184,7 +184,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 }
 
-class ConversationListSection extends BaseWebComponent {
+class ConversationSection extends BaseWebComponent {
   ensureLoaded() {
     return this.waitUntilExist(this.self);
   }
@@ -300,7 +300,7 @@ export class MessageTab extends BaseWebComponent {
 
   private getSection(name: string) {
     return this.getComponent(
-      ConversationListSection,
+      ConversationSection,
       this.getSelector(`*[data-name="${name}"]`),
     );
   }
