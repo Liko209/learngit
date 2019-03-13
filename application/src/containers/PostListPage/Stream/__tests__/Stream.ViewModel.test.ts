@@ -1,8 +1,7 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-12 20:31:07
- * @Last Modified by: Chris Zhan (chris.zhan@ringcentral.com)
- * @Last Modified time: 2019-02-28 22:31:14
+ * Copyright © RingCentral. All rights reserved.
  */
 import { StreamViewModel } from '../Stream.ViewModel';
 import { POST_LIST_TYPE } from '../../types';
@@ -185,7 +184,7 @@ describe('Posts order', () => {
     jest
       .spyOn(vm._sortableListHandler, 'onDataChanged')
       .mockImplementationOnce(() => {});
-    notificationCenter.emitEntityUpdate(ENTITY.POST, [
+    notificationCenter.emitEntityUpdate(`${ENTITY.POST}.*`, [
       { id: 1 },
       { id: 2 },
       { id: 4 },

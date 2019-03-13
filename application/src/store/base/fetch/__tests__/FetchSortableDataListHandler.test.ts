@@ -371,6 +371,18 @@ describe('FetchSortableDataListHandler', () => {
       },
     ],
     [
+      'when update item without update sort value',
+      {
+        originalItems: [buildItem(1), buildItem(2)],
+        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(2)]),
+        expectedOrder: [1, 2],
+        callbackMuted: true,
+      },
+    ],
+    /**
+     * REPLACE
+     */
+    [
       'when existed but not match',
       {
         originalItems: [
@@ -388,18 +400,6 @@ describe('FetchSortableDataListHandler', () => {
         },
       },
     ],
-    [
-      'when update item without update sort value',
-      {
-        originalItems: [buildItem(1), buildItem(2)],
-        payload: buildPayload(EVENT_TYPES.UPDATE, [buildItem(2)]),
-        expectedOrder: [1, 2],
-        callbackMuted: true,
-      },
-    ],
-    /**
-     * REPLACE
-     */
     [
       'when replace a preinsert model',
       {
@@ -798,5 +798,67 @@ describe('FetchSortableDataListHandler', () => {
         }),
       );
     });
+  });
+
+  describe('handle data order changed', () => {
+    function toItems(ids: number[]) {
+      return ids.map((id: number) => {
+        return buildItem(id);
+      });
+    }
+    function update(arr: number[]) {
+      const items = toItems(arr);
+      return buildPayload(EVENT_TYPES.UPDATE, items);
+    }
+
+    it.each`
+      originalItemsIds   | payloadIds      | olderOrder         | expectedOrder      | sortOrder
+      ${[2, 3, 4, 5]}    | ${[2]}          | ${[2, 3, 4, 5]}    | ${[3, 2, 4, 5]}    | ${[3, 2, 4, 5]}
+      ${[2, 3, 4, 5]}    | ${[2, 3]}       | ${[2, 3, 4, 5]}    | ${[4, 5, 2, 3]}    | ${[4, 5, 2, 3]}
+      ${[1, 2, 3, 4, 5]} | ${[2]}          | ${[1, 2, 3, 4, 5]} | ${[1, 3, 2, 4, 5]} | ${[1, 3, 2, 4, 5]}
+      ${[1, 2, 3, 4, 5]} | ${[3]}          | ${[1, 2, 3, 4, 5]} | ${[1, 3, 2, 4, 5]} | ${[1, 3, 2, 4, 5]}
+      ${[1, 2, 3, 4, 5]} | ${[3]}          | ${[1, 2, 3, 4, 5]} | ${[5, 4, 3, 2, 1]} | ${[5, 4, 3, 2, 1]}
+      ${[1, 2, 3, 4, 5]} | ${[4]}          | ${[1, 2, 3, 4, 5]} | ${[1, 2, 3, 5, 4]} | ${[1, 2, 3, 5, 4]}
+      ${[1, 2, 3, 4, 5]} | ${[5]}          | ${[1, 2, 3, 4, 5]} | ${[1, 2, 3, 5, 4]} | ${[1, 2, 3, 5, 4]}
+      ${[1, 2, 3, 4, 5]} | ${[1, 2]}       | ${[1, 2, 3, 4, 5]} | ${[2, 3, 4, 5]}    | ${[1, 2, 3, 5, 4]}
+      ${[1, 2, 3, 4, 5]} | ${[1, 2, 4, 5]} | ${[1, 2, 3, 4, 5]} | ${[5, 4, 3, 2]}    | ${[5, 4, 3, 2, 1]}
+      ${[1, 2, 3, 4, 5]} | ${[3]}          | ${[1, 2, 3, 4, 5]} | ${[1, 2, 4, 5, 3]} | ${[1, 2, 4, 5, 3]}
+      ${[1, 2, 3, 4, 5]} | ${[5]}          | ${[1, 2, 3, 4, 5]} | ${[1, 2, 3, 4, 5]} | ${[1, 2, 4, 5, 3]}
+      ${[1, 2, 3, 4, 5]} | ${[2, 3, 4, 5]} | ${[1, 2, 3, 4, 5]} | ${[1, 2, 3, 4, 5]} | ${[1, 2, 3, 4, 5]}
+    `(
+      'should update item list when order changed, expectedOrder : $expectedOrder',
+      ({
+        originalItemsIds,
+        payloadIds,
+        olderOrder,
+        expectedOrder,
+        sortOrder,
+      }) => {
+        const originalItems = toItems(originalItemsIds);
+        const payload = update(payloadIds);
+        let sources = olderOrder;
+        const customSortFunc = (
+          first: ISortableModel,
+          second: ISortableModel,
+        ) => {
+          return sources.indexOf(first.id) - sources.indexOf(second.id);
+        };
+        const { fetchSortableDataHandler } = setup(
+          {
+            originalItems,
+          },
+          20,
+          customSortFunc,
+        );
+
+        const dataChangeCallback = jest.fn();
+        fetchSortableDataHandler.addDataChangeCallback(dataChangeCallback);
+        sources = sortOrder;
+        fetchSortableDataHandler.onDataChanged(payload);
+        expect(
+          fetchSortableDataHandler.listStore.items.map(item => item.id),
+        ).toEqual(expectedOrder);
+      },
+    );
   });
 });

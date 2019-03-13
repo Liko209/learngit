@@ -55,6 +55,7 @@ class SyncController {
     try {
       if (lastIndexTimestamp) {
         await this._syncIndexData(lastIndexTimestamp);
+        this._checkFetchedRemaining(lastIndexTimestamp);
       } else {
         await this._firstLogin();
       }
@@ -64,32 +65,48 @@ class SyncController {
   }
 
   private async _firstLogin() {
-    const {
-      onInitialLoaded,
-      onInitialHandled,
-      onRemainingLoaded,
-      onRemainingHandled,
-    } = this._syncListener;
-
     progressBar.start();
     try {
       const currentTime = Date.now();
-      const initialResult = await this.fetchInitialData(currentTime);
-
-      onInitialLoaded && (await onInitialLoaded(initialResult));
-      await this._handleIncomingData(initialResult);
-      onInitialHandled && (await onInitialHandled());
-
-      const remainingResult = await this.fetchRemainingData(currentTime);
-      onRemainingLoaded && (await onRemainingLoaded(remainingResult));
-      await this._handleIncomingData(remainingResult);
-      onRemainingHandled && (await onRemainingHandled());
+      await this._fetchInitial(currentTime);
+      await this._fetchRemaining(currentTime);
       mainLogger.info('fetch initial data or remaining data success');
     } catch (e) {
       mainLogger.error('fetch initial data or remaining data error');
+      // actually, should only do sign out when initial failed
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
     progressBar.stop();
+  }
+
+  private async _fetchInitial(time: number) {
+    const { onInitialLoaded, onInitialHandled } = this._syncListener;
+    const initialResult = await this.fetchInitialData(time);
+    onInitialLoaded && (await onInitialLoaded(initialResult));
+    await this._handleIncomingData(initialResult);
+    notificationCenter.emitKVChange(SERVICE.FETCH_INITIAL_DONE);
+    onInitialHandled && (await onInitialHandled());
+    mainLogger.log('fetch initial data and handle success');
+  }
+
+  private async _checkFetchedRemaining(time: number) {
+    if (!NewGlobalConfig.getFetchedRemaining()) {
+      try {
+        this._fetchRemaining(time);
+      } catch (e) {
+        mainLogger.error('fetch remaining data error');
+      }
+    }
+  }
+
+  private async _fetchRemaining(time: number) {
+    const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
+    const remainingResult = await this.fetchRemainingData(time);
+    onRemainingLoaded && (await onRemainingLoaded(remainingResult));
+    await this._handleIncomingData(remainingResult);
+    onRemainingHandled && (await onRemainingHandled());
+    NewGlobalConfig.setFetchedRemaining(true);
+    mainLogger.log('fetch remaining data and handle success');
   }
 
   private async _syncIndexData(timeStamp: number) {

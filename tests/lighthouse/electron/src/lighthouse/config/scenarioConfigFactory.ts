@@ -4,7 +4,7 @@
  */
 import { LightHouseConfig } from "./lightHouseConfig";
 import { ProcessAudit } from '../audit';
-import { ProcessGatherer } from '../gatherer';
+import { ProcessGatherer, MemoryGatherer } from '../gatherer';
 
 class ScenarioConfigFactory {
   static getSimplifyConfig(): LightHouseConfig {
@@ -14,6 +14,9 @@ class ScenarioConfigFactory {
     config.passes[0].gatherers = [
       {
         instance: new ProcessGatherer()
+      },
+      {
+        instance: new MemoryGatherer()
       }
     ];
     config.audits = [

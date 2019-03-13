@@ -80,7 +80,7 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        async (entity: TestModel, terms: string[]) => {
+        (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
             entityCacheSearchController.isFuzzyMatched(entity.name, terms)
@@ -113,7 +113,7 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        async (entity: TestModel, terms: string[]) => {
+        (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
             entityCacheSearchController.isFuzzyMatched(entity.name, terms)
@@ -145,7 +145,7 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        async (entity: TestModel, terms: string[]) => {
+        (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
             entityCacheSearchController.isFuzzyMatched(entity.name, terms)
@@ -178,7 +178,7 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        async (entity: TestModel, terms: string[]) => {
+        (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
             entityCacheSearchController.isFuzzyMatched(entity.name, terms)
@@ -211,7 +211,7 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        async (entity: TestModel, terms: string[]) => {
+        (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
             entityCacheSearchController.isFuzzyMatched(entity.name, terms)
@@ -245,7 +245,7 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        async (entity: TestModel, terms: string[]) => {
+        (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
             entityCacheSearchController.isFuzzyMatched(entity.name, terms)
@@ -278,7 +278,7 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        async (entity: TestModel, terms: string[]) => {
+        (entity: TestModel, terms: string[]) => {
           if (
             entity.name &&
             entityCacheSearchController.isFuzzyMatched(entity.name, terms)
