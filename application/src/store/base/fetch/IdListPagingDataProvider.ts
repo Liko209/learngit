@@ -54,8 +54,10 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
     await this._fetchAndSaveModels(pageData.ids);
     const validModels: K[] = [];
     pageData.ids.forEach((id: number) => {
-      const model = getEntity(this._options.entityName, id) as K;
-      this._options.filterFunc(model) && validModels.push(model);
+      if (hasValidEntity(this._options.entityName, id)) {
+        const model = getEntity(this._options.entityName, id) as K;
+        this._options.filterFunc(model) && validModels.push(model);
+      }
     });
 
     let hasMore = pageData.hasMore;

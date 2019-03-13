@@ -4,3 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export { PostDao } from './PostDao';
+export { PostDiscontinuousDao } from './PostDiscontinuousDao';

@@ -90,7 +90,7 @@ class PostService extends EntityBaseService<Post> {
     ids: number[],
   ): Promise<{ posts: Post[]; items: Item[] }> {
     return this.getPostController()
-      .getPostFetchController()
+      .getDiscontinuousPostFetchController()
       .getPostsByIds(ids);
   }
 
