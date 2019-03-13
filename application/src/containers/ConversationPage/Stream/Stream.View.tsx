@@ -153,7 +153,6 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderStreamItems() {
-    console.log('andy hu, items', this.props.items);
     return this.props.items.map(this._renderStreamItem);
   }
 
@@ -164,8 +163,19 @@ class StreamViewComponent extends Component<Props> {
       hasHistoryUnread,
       historyUnreadCount,
     } = this.props;
+
     const shouldHaveJumpButton =
-      hasHistoryUnread && historyUnreadCount > 1 && !firstHistoryUnreadInPage;
+      hasHistoryUnread &&
+      historyUnreadCount > 1 &&
+      (!firstHistoryUnreadInPage || !this._historyViewed);
+
+    console.table({
+      shouldHaveJumpButton,
+      hasHistoryUnread,
+      historyUnreadCount,
+      firstHistoryUnreadInPage,
+      historyViewed: !this._historyViewed,
+    });
 
     const countText =
       historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
@@ -208,11 +218,15 @@ class StreamViewComponent extends Component<Props> {
       );
       return;
     }
-    this._listRef.current && this._listRef.current.scrollToIndex(index);
+    requestAnimationFrame(() => {
+      this._listRef.current && this._listRef.current.scrollToIndex(index);
+    });
   }
 
-  handleVisibilityChanged = ({ startIndex, stopIndex }: IndexRange) => {
-    console.log('andy hu range', startIndex, stopIndex);
+  private _handleVisibilityChanged = ({
+    startIndex,
+    stopIndex,
+  }: IndexRange) => {
     const {
       items,
       mostRecentPostId,
@@ -313,7 +327,7 @@ class StreamViewComponent extends Component<Props> {
                 hasMore={hasMore}
                 loadingMoreRenderer={defaultLoadingMore}
                 fallBackRenderer={onInitialDataFailed}
-                onVisibleRangeChange={this.handleVisibilityChanged}
+                onVisibleRangeChange={this._handleVisibilityChanged}
               >
                 {this._renderStreamItems()}
               </JuiInfiniteList>
@@ -328,9 +342,6 @@ class StreamViewComponent extends Component<Props> {
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead } = this.props;
     await loadInitialPosts();
-    if (!this._listRef.current) {
-      return; // the current component is unmounted
-    }
     runInAction(() => {
       this.props.updateHistoryHandler();
       markAsRead();

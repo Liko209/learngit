@@ -17,7 +17,13 @@ import React, {
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
 import { IndexRange, JuiVirtualizedListProps } from './types';
-import { useRange, useRowManager, useScroll, ScrollPosition } from './hooks';
+import {
+  useRange,
+  useRowManager,
+  useScroll,
+  ScrollPosition,
+  useForceUpdate,
+} from './hooks';
 import {
   createKeyMapper,
   createRange,
@@ -169,10 +175,11 @@ const JuiVirtualizedList: RefForwardingComponent<
         return;
       }
       setRenderedRange(
-        createRange({ startIndex: index - 5, size: renderedRangeSize, min: 0 }),
+        createRange({ startIndex: index, size: renderedRangeSize, min: 0 }),
       );
       setScrollPosition({ index });
       scrollEffectTriggerRef.current++; // Trigger scroll after next render
+      forceUpdate();
     },
   }));
 
@@ -187,6 +194,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   // State
   //
   const rowManager = useRowManager({ minRowHeight, keyMapper });
+  const { forceUpdate } = useForceUpdate();
   const { scrollPosition, setScrollPosition } = useScroll({
     index: initialScrollToIndex,
     offset: 0,
@@ -277,11 +285,11 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   // Emit visible range change when component mounted
   //
-  useLayoutEffect(() => {
+  useEffect(() => {
     const visibleRange = computeVisibleRange();
     onVisibleRangeChange(visibleRange);
     onRenderedRangeChange(visibleRange);
-  },              []);
+  },        []);
 
   //
   // Update prevAtBottom
