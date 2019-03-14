@@ -38,6 +38,7 @@ describe('TelephonyService', () => {
     accountController = {
       makeCall: jest.fn(),
       hangUp: jest.fn(),
+      getCallCount: jest.fn(),
     };
 
     engineController.getAccountController = jest
@@ -62,7 +63,7 @@ describe('TelephonyService', () => {
       expect(engineController.createAccount).toHaveBeenCalledWith(mockAcc);
     });
   });
-  describe.only('makeCall', () => {
+  describe('makeCall', () => {
     it('should call account controller to make call', async () => {
       jest
         .spyOn(makeCallController, 'getE164PhoneNumber')
@@ -93,6 +94,12 @@ describe('TelephonyService', () => {
     it('should call account controller to hang up ', () => {
       telephonyService.hangUp('123');
       expect(accountController.hangUp).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('getAllCallCount', () => {
+    it('should call account controller to get call count', () => {
+      telephonyService.getAllCallCount();
+      expect(accountController.getCallCount).toHaveBeenCalled();
     });
   });
 });

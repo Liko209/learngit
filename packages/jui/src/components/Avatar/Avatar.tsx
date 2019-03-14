@@ -13,6 +13,7 @@ import {
   height,
   typography,
   palette,
+  grey,
 } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
@@ -51,7 +52,7 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     height: ${({ size = 'medium' }) => height(sizes[size])};
     ${({ size = 'medium' }) => typography(fonts[size])};
     background-color: ${({ color }) =>
-      color ? palette('avatar', color) : palette('common', 'white')};
+      color ? palette('avatar', color) : grey('100')};
     &:hover {
       opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
       cursor: pointer;

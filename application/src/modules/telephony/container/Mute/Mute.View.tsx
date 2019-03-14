@@ -28,7 +28,7 @@ class MuteViewComponent extends Component<Props> {
           color="grey.900"
           disableToolTip={true}
           onClick={this._handleMute}
-          size="xlarge"
+          size="xxlarge"
           disabled={true}
         >
           mic

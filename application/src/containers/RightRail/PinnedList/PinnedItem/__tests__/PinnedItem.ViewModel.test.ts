@@ -7,11 +7,9 @@ import { getEntity } from '../../../../../store/utils';
 import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
 import { PinnedItemViewModel } from '../PinnedItem.ViewModel';
 import { ENTITY_NAME } from '@/store';
-import { getFileIcon } from '@/common/getFileIcon';
 
 jest.mock('../../../../../store/utils');
 jest.mock('sdk/utils');
-jest.mock('@/common/getFileIcon');
 
 describe('PinnedItemViewModel', () => {
   let pinnedItemViewModel: PinnedItemViewModel;

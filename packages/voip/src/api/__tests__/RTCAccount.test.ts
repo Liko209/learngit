@@ -21,6 +21,7 @@ import {
 import {
   REGISTRATION_FSM_STATE,
   RTCSipProvisionInfo,
+  RTC_PROV_EVENT,
 } from '../../account/types';
 import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { RTCNetworkNotificationCenter } from '../../utils/RTCNetworkNotificationCenter';
@@ -41,7 +42,15 @@ const mockProvisionData = {
       outboundProxy: 'proxy',
     },
   ],
-  sipFlags: { flag: 'sipFlags' },
+  sipFlags: {
+    voipFeatureEnabled: true,
+    voipCountryBlocked: false,
+    outboundCallsEnabled: true,
+    dscpEnabled: true,
+    dscpSignaling: 100,
+    dscpVoice: 100,
+    dscpVideo: 100,
+  },
 };
 
 const mockProvisionData2 = {
@@ -63,6 +72,7 @@ class MockAccountListener implements IRTCAccountDelegate {
   onAccountStateChanged = jest.fn();
   onReceiveIncomingCall = jest.fn();
   onMadeOutgoingCall = jest.fn();
+  onReceiveNewProvFlags = jest.fn();
 }
 
 class MockCallListener implements IRTCCallDelegate {
@@ -643,6 +653,31 @@ describe('RTCAccount', async () => {
     });
   });
 
+  describe('get new sip flags', () => {
+    it('Should notify delegate with voipCountryBlocked and voipFeatureEnabled when get new sip provision [JPT-1313]', () => {
+      setupAccount();
+      account._provManager.emit(RTC_PROV_EVENT.NEW_PROV, {
+        info: mockProvisionData,
+      });
+      expect(mockListener.onReceiveNewProvFlags).toBeCalledWith(
+        mockProvisionData.sipFlags,
+      );
+    });
+
+    it('Should return voipCountryBlocked and voipFeatureEnabled when call getSipFlags api and has Sip provision [JPT-1314]', () => {
+      setupAccount();
+      account._provManager._sipProvisionInfo = mockProvisionData;
+      const expectSipFlags = account.getSipProvFlags();
+      expect(expectSipFlags).toEqual(mockProvisionData.sipFlags);
+    });
+
+    it('Should return null when call getSipFlags api and but no Sip provision [JPT-1315]', () => {
+      setupAccount();
+      const expectSipFlags = account.getSipProvFlags();
+      expect(expectSipFlags).toBeNull();
+    });
+  });
+
   describe('refreshProv', () => {
     const cause = 'connection error';
     const response = { status_code: 401 };
@@ -722,7 +757,7 @@ describe('RTCAccount', async () => {
       });
     });
 
-    it.only('Should set _isAcquireProvWhenTimeArrived false, set _isRefreshedWithinTime false and clear timer when registration FSM state enter ready after register failed with 401/403/407 [JPT-1187]', done => {
+    it('Should set _isAcquireProvWhenTimeArrived false, set _isRefreshedWithinTime false and clear timer when registration FSM state enter ready after register failed with 401/403/407 [JPT-1187]', done => {
       setupAccount();
       jest.spyOn(account, '_refreshProv');
       jest.spyOn(account._provManager, '_sendSipProvRequest');

@@ -28,7 +28,7 @@ interface IEntityCacheSearchController<T extends IdModel = IdModel> {
     genSortableModelFunc: (
       entity: T,
       terms: string[],
-    ) => Promise<SortableModel<T> | null>,
+    ) => SortableModel<T> | null,
     searchKey?: string,
     arrangeIds?: number[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,

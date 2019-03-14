@@ -7,7 +7,6 @@ jest.mock('sdk/module/state');
 jest.mock('sdk/module/profile');
 jest.mock('sdk/module/group');
 jest.mock('@/history');
-jest.mock('@/store');
 jest.mock('@/store/handler/SectionGroupHandler');
 
 import { ProfileService } from 'sdk/module/profile';

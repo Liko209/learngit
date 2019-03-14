@@ -6,7 +6,6 @@
 import { ENTITY_NAME } from '../../../../store';
 import { getEntity } from '../../../../store/utils';
 import { TaskItemViewModel } from '../TaskItem.ViewModel';
-import { handerTimeZoneOffset } from '../../../../utils/date';
 
 jest.mock('../../../../store/utils');
 
@@ -15,11 +14,10 @@ const taskItemViewModel = new TaskItemViewModel();
 const mockPersonReturnValue = {
   userDisplayName: 'name',
 };
-const CHINATIMEZONEOFFSET = -480;
 const mockTaskReturnValue: any = {
   assignedToIds: [1, 2],
   complete: false,
-  due: handerTimeZoneOffset(1547086968632, CHINATIMEZONEOFFSET),
+  due: 1547086968632,
 };
 
 describe('taskItemViewModel', () => {
@@ -59,7 +57,7 @@ describe('taskItemViewModel', () => {
     expect(taskItemViewModel.dueTime).toBe('');
 
     (getEntity as jest.Mock).mockReturnValue({
-      due: handerTimeZoneOffset(1547631484105, CHINATIMEZONEOFFSET),
+      due: 1547631484105,
     });
 
     expect(taskItemViewModel.dueTime).toBe('1/16/2019');

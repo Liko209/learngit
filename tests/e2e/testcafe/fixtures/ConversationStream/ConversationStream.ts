@@ -161,8 +161,8 @@ test(formalName('Should be able to read the newest posts once open a conversatio
   }
 );
 
-
-test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
+// skip by a bug: https://jira.ringcentral.com/browse/FIJI-3309
+test.skip(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser= users[6];

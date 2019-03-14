@@ -4,7 +4,6 @@ import {
   spacing,
   typography,
   palette,
-  primary,
   height,
 } from '../../foundation/utils/styles';
 
@@ -17,7 +16,6 @@ type Props = {
 const StyledTitleBar = styled('div')`
   && {
     color: ${palette('common', 'white')};
-    background-color: ${primary('light')};
     padding: ${spacing(0, 4)};
     display: flex;
     justify-content: space-between;
@@ -27,7 +25,7 @@ const StyledTitleBar = styled('div')`
 
 const StyledLeft = styled('div')`
   && {
-    ${typography('body2')};
+    ${typography('body1')};
     display: flex;
     align-items: center;
   }
