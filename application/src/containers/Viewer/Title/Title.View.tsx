@@ -112,6 +112,7 @@ class ViewerTitleViewComponent extends Component<
                     </JuiPopoverMenu> */}
                     <JuiIconButton
                       onClick={viewerContext.closeViewer}
+                      aria-label={t('common.dialog.close')}
                       tooltipTitle={t('common.dialog.close')}
                     >
                       close
