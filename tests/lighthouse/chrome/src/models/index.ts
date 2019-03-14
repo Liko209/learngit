@@ -7,6 +7,7 @@ import { TaskDto } from "./task";
 import { SceneDto } from "./scene";
 import { PerformanceDto, PerformanceItemDto } from "./performance";
 import { LoadingTimeSummaryDto, LoadingTimeItemDto } from "./loadingTime";
+import { FpsDto } from "./fps";
 import { Config } from "../config";
 import { LogUtils } from "../utils/logUtils";
 
@@ -42,7 +43,8 @@ const initModel = async () => {
     PerformanceDto,
     PerformanceItemDto,
     LoadingTimeSummaryDto,
-    LoadingTimeItemDto
+    LoadingTimeItemDto,
+    FpsDto
   ];
 
   sequelize.addModels(models);
@@ -70,5 +72,6 @@ export {
   PerformanceDto,
   PerformanceItemDto,
   LoadingTimeSummaryDto,
-  LoadingTimeItemDto
+  LoadingTimeItemDto,
+  FpsDto
 };

@@ -7,8 +7,9 @@ import * as lighthouse from "lighthouse";
 import { LogUtils } from "../utils/logUtils";
 import { PptrUtils } from "../utils/pptrUtils";
 import { TaskDto, SceneDto } from "../models";
-import { FileService, MetriceService } from "../services";
+import { FileService, MetricService } from "../services";
 import * as reportGenerater from "lighthouse/lighthouse-core/report/report-generator";
+import { Config } from "../config";
 
 const EXTENSION_PATH = `${process.cwd()}/extension`;
 type Timing = { startTime: Date; endTime: Date; total: number };
@@ -24,10 +25,11 @@ class Scene {
   protected report;
   protected artifacts;
   protected taskDto: TaskDto;
+  protected fpsMode: boolean = false;
   protected logger = LogUtils.getLogger(__filename);
 
-  constructor(url: string, taskDto: TaskDto) {
-    this.url = url;
+  constructor(taskDto: TaskDto) {
+    this.url = Config.jupiterHost;
     this.taskDto = taskDto;
   }
 
@@ -72,13 +74,18 @@ class Scene {
   }
 
   async launchBrowser() {
-    this.browser = await PptrUtils.launch({
-      args: [
-        `--disable-extensions-except=${EXTENSION_PATH}`,
-        `--load-extension=${EXTENSION_PATH}`,
-        "--enable-experimental-extension-apis"
-      ]
-    });
+    let args = [
+      `--disable-extensions-except=${EXTENSION_PATH}`,
+      `--load-extension=${EXTENSION_PATH}`,
+      "--enable-experimental-extension-apis"
+    ];
+
+    if (this.fpsMode) {
+      args.push("--show-fps-counter",
+        "--enable-logging=stderr",
+        "--vmodule=heads_up_display_layer_*=1");
+    }
+    this.browser = await PptrUtils.launch({ args });
   }
 
   /**
@@ -174,11 +181,15 @@ class Scene {
    * @description: save performance metrics into db
    */
   async saveMetircsIntoDb(): Promise<SceneDto> {
-    let sceneDto = await MetriceService.createScene(this.taskDto, this);
+    let sceneDto = await MetricService.createScene(this.taskDto, this);
 
-    await MetriceService.createPerformance(sceneDto, this);
+    await MetricService.createPerformance(sceneDto, this);
 
-    await MetriceService.createPerformanceItem(sceneDto, this);
+    await MetricService.createPerformanceItem(sceneDto, this);
+
+    if (this.fpsMode) {
+      await MetricService.createFpsItem(sceneDto, this);
+    }
 
     return sceneDto;
   }
@@ -215,13 +226,23 @@ class Scene {
   }
 
   /**
+   * @description avoid nodeJS out of memory
+   */
+  clearReportCache() {
+    delete this.data;
+    delete this.report;
+    delete this.artifacts;
+  }
+
+  /**
    * @description: get scene name
    */
   name(): string {
+    let prefix = this.fpsMode ? "FPS." : "";
     if (this.config && this.config.name !== "") {
-      return `${this.constructor.name}.${this.config.name}`;
+      return `${prefix}${this.constructor.name}.${this.config.name}`;
     } else {
-      return `${this.constructor.name}`;
+      return `${prefix}${this.constructor.name}`;
     }
   }
 
@@ -239,6 +260,16 @@ class Scene {
 
   getTiming(): Timing {
     return this.timing;
+  }
+
+  supportFps(): boolean {
+    return false;
+  }
+
+  openFpsMode() {
+    if (this.supportFps()) {
+      this.fpsMode = true;
+    }
   }
 }
 
