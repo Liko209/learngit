@@ -5,9 +5,9 @@
  */
 import { computed, observable } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { ITEM_SORT_KEYS, ItemService } from 'sdk/module/item';
+import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
-import { ENTITY, EVENT_TYPES, notificationCenter } from 'sdk/service';
+import { EVENT_TYPES, notificationCenter } from 'sdk/service';
 import {
   NotificationEntityPayload,
   NotificationEntityUpdatePayload,
@@ -37,7 +37,12 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     const { groupId, type, itemId } = props;
     this._currentItemId = itemId;
     this._itemListDataSource = new ItemListDataSource({ groupId, type });
-    notificationCenter.on(ENTITY.ITEM, this._onItemDataChange);
+
+    const itemNotificationKey = ItemNotification.getItemNotificationKey(
+      ViewerItemTypeIdMap[this.props.type],
+      groupId,
+    );
+    notificationCenter.on(itemNotificationKey, this._onItemDataChange);
   }
 
   init = () => {
@@ -46,7 +51,11 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   }
 
   dispose() {
-    notificationCenter.off(ENTITY.ITEM, this._onItemDataChange);
+    const itemNotificationKey = ItemNotification.getItemNotificationKey(
+      ViewerItemTypeIdMap[this.props.type],
+      this.props.groupId,
+    );
+    notificationCenter.off(itemNotificationKey, this._onItemDataChange);
     this._itemListDataSource.dispose();
   }
 

@@ -56,7 +56,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       },
     );
 
-    notificationCenter.on(ENTITY.ITEM, this._handleItemChanged);
+    notificationCenter.on(`${ENTITY.ITEM}.*`, this._handleItemChanged);
   }
 
   private _handleItemChanged = (
@@ -281,7 +281,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   dispose = () => {
-    notificationCenter.off(ENTITY.ITEM, this._handleItemChanged);
+    notificationCenter.off(`${ENTITY.ITEM}.*`, this._handleItemChanged);
   }
 }
 

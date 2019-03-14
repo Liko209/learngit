@@ -24,7 +24,7 @@ class UploadFileTracker {
   private _idMap: Map<number, number> = new Map();
 
   constructor() {
-    notificationCenter.on(ENTITY.ITEM, this._handleItemReplace);
+    notificationCenter.on(`${ENTITY.ITEM}.*`, this._handleItemReplace);
   }
 
   private _handleItemReplace = (
