@@ -11,6 +11,7 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
+import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
 
 class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   implements ConvertToTeamViewProps {
@@ -19,11 +20,24 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   @observable
   description: string = '';
   @observable
-  disabledOkBtn: boolean = true;
-  @observable
   nameErrorKey: string = '';
   @observable
+  disabledOkBtn: boolean = true;
+  @observable
   saving: boolean = false;
+
+  constructor(props: ConvertToTeamProps) {
+    super(props);
+    this.reaction(
+      () => this.group,
+      (group: GroupModel) => {
+        this.name = group.displayName;
+      },
+      {
+        fireImmediately: true,
+      },
+    );
+  }
 
   @computed
   get group() {
@@ -42,11 +56,40 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   }
 
   save = async (teamSetting: TeamSetting): Promise<Group | null> => {
-    const groupService: GroupService = GroupService.getInstance();
-    this.saving = true;
-    const result = await groupService.createTeam(1, [1], teamSetting);
-    this.saving = false;
-    return result;
+    try {
+      const { id } = this.props;
+      const groupService: GroupService = GroupService.getInstance();
+      this.saving = true;
+      const result = await groupService.convertToTeam(
+        id,
+        this.group.members,
+        teamSetting,
+      );
+      this.saving = false;
+      return result;
+    } catch (error) {
+      this.saving = false;
+      const unknownError = this._createErrorHandler(error);
+      if (unknownError) {
+        throw new Error();
+      }
+      return null;
+    }
+  }
+
+  private _createErrorHandler(error: JError) {
+    let serverUnknownError = false;
+    if (
+      error.isMatch({
+        type: ERROR_TYPES.SERVER,
+        codes: [ERROR_CODES_SERVER.ALREADY_TAKEN],
+      })
+    ) {
+      this.nameErrorKey = 'people.prompt.alreadyTaken';
+    } else {
+      serverUnknownError = true;
+    }
+    return serverUnknownError;
   }
 }
 

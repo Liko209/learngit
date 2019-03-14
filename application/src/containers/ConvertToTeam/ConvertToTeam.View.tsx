@@ -102,7 +102,7 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
     this.focusTimer = setTimeout(() => {
       const node = this.teamNameRef.current;
       if (node) {
-        node.focus();
+        node.select();
       }
     },                           300);
   }
@@ -118,7 +118,6 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
   private _handleOk = async () => {
     const { items } = this.state;
     const { name, description, save } = this.props;
-
     const uiSetting = items.reduce((options, option) => {
       options[option.type] = option.checked;
       return options;
@@ -128,7 +127,6 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
       canPost: boolean;
       canPin: boolean;
     };
-
     const teamSetting: TeamSetting = {
       name,
       description,
@@ -185,6 +183,7 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
   render() {
     const { items } = this.state;
     const {
+      name,
       nameErrorKey,
       handleNameChange,
       handleDescriptionChange,
@@ -208,6 +207,7 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
             {i18next.t('people.team.convertToTeamPreviousMessageHandle')}
           </JuiTopText>
           <JuiTextField
+            value={name}
             id={i18next.t('people.team.teamName')}
             label={i18next.t('people.team.teamName')}
             fullWidth={true}
