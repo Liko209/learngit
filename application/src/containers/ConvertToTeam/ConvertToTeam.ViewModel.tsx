@@ -22,8 +22,6 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   @observable
   nameErrorKey: string = '';
   @observable
-  disabledOkBtn: boolean = true;
-  @observable
   saving: boolean = false;
 
   constructor(props: ConvertToTeamProps) {
@@ -32,7 +30,6 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
       () => this.group,
       (group: GroupModel, reaction: Reaction) => {
         this.name = group.displayName;
-        this.disabledOkBtn = this.name === '';
         reaction.dispose();
       },
       {
@@ -42,14 +39,17 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   }
 
   @computed
+  get disabledOkBtn() {
+    return this.name === '';
+  }
+
+  @computed
   get group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.value.trim();
-    this.name = name;
-    this.disabledOkBtn = name === '';
+    this.name = e.target.value.trim();
     this.nameErrorKey = '';
   }
 
