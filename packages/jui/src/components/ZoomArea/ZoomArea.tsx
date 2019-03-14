@@ -3,7 +3,7 @@
  * @Date: 2019-02-28 15:16:18
  * Copyright © RingCentral. All rights reserved.
  */
-import _, { throttle } from 'lodash';
+import _ from 'lodash';
 import React, { RefObject } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 
@@ -79,9 +79,6 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
         height: 0,
       },
     };
-    this.throttleZoom = throttle(this.zoomStep.bind(this), 50, {
-      leading: true,
-    });
   }
 
   getBoundingClientRect(): ElementRect {
@@ -149,23 +146,16 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     });
   }
 
-  throttleZoom(scaleStep: number, zoomCenterPosition?: Position) {
-    this.zoomStep(scaleStep, zoomCenterPosition);
-  }
-
   onWheel = (ev: React.WheelEvent) => {
     const { step, wheel } = ensureOptions(this.props.zoomOptions);
     if (!wheel) return;
     ev.preventDefault();
+    ev.stopPropagation();
     const point: Position = {
       left: ev.pageX,
       top: ev.pageY,
     };
-    if (ev.deltaY > 0) {
-      this.throttleZoom(-step, point);
-    } else if (ev.deltaY < -0) {
-      this.throttleZoom(+step, point);
-    }
+    this.zoomStep(-step * ev.deltaY * 0.1, point);
   }
 
   render() {
@@ -176,9 +166,9 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
       zoomOut: this.zoomOut,
     };
     const divStyle = {
-      transform: `scale(${transform.scale}) translate(${
+      transform: `scale(${transform.scale}) translate3d(${
         transform.translateX
-      }px, ${transform.translateY}px)`,
+      }px, ${transform.translateY}px, 0)`,
     };
     return (
       <Container ref={this.getViewRef()} className={className}>
