@@ -5,6 +5,7 @@
  */
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
+import { JuiConversationInitialPost } from '../ConversationInitialPost';
 
 type JuiStreamProps = {
   className?: string;
@@ -13,10 +14,18 @@ type JuiStreamProps = {
 };
 
 const StyledDiv = styled<JuiStreamProps, 'div'>('div')`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  min-height: 100%;
+  height: 100%;
+  & .un-scrollable {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative;
+    ${JuiConversationInitialPost} {
+      position: absolute;
+      top: 0px;
+      width: 100%;
+    }
+  }
 `;
 
 const JuiStream = React.memo((props: JuiStreamProps) => (

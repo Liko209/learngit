@@ -18,7 +18,6 @@ import _ from 'lodash';
 import { GroupService } from '../../../module/group';
 import { IRemotePostRequest } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
-import { Item } from '../../../module/item/entity';
 
 const TAG = 'PostFetchController';
 
@@ -233,32 +232,6 @@ class PostFetchController {
     result.items =
       posts.length === 0 ? [] : await itemService.getByPosts(posts);
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
-    return result;
-  }
-
-  async getPostsByIds(
-    ids: number[],
-  ): Promise<{ posts: Post[]; items: Item[] }> {
-    const itemService: ItemService = ItemService.getInstance();
-    const localPosts = await this.entitySourceController.batchGet(ids);
-    const result = {
-      posts: localPosts,
-      items: await itemService.getByPosts(localPosts),
-    };
-    const restIds = _.difference(ids, localPosts.map(({ id }) => id));
-    if (restIds.length) {
-      const remoteData = await PostAPI.requestByIds(restIds);
-      const posts: Post[] =
-        (await this.postDataController.filterAndSavePosts(
-          this.postDataController.transformData(remoteData.posts),
-          false,
-        )) || [];
-      const itemService = ItemService.getInstance() as ItemService;
-      const items =
-        (await itemService.handleIncomingData(remoteData.items)) || [];
-      result.posts.push(...posts);
-      result.items.push(...items);
-    }
     return result;
   }
 

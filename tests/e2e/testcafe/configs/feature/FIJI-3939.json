@@ -6,9 +6,10 @@
     "include_tags": [
       "P0",
       "P1",
-      "JPT-1099",
-      "JPT-1096",
-      "JPT-1103"
+      "JPT-130",
+      "JPT-114",
+      "JPT-138",
+      "JPT-1360"
     ],
     "browsers": [
       "selenium:chrome"

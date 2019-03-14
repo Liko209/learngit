@@ -68,8 +68,8 @@ class DataMigration {
     ];
     this._doMigrateKVStorage('global', configOldKey, configNewKey);
 
-    const userOldKey = ['config/MY_STATE_ID'];
-    const userNewKey = ['config.MY_STATE_ID'];
+    const userOldKey = ['config/MY_STATE_ID', 'config/SOCKET_SERVER_HOST'];
+    const userNewKey = ['config.MY_STATE_ID', 'sync.socket_server_host'];
     this._doMigrateKVStorage(userId, userOldKey, userNewKey);
   }
 }

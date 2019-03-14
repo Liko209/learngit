@@ -13,6 +13,7 @@ import React, {
   useEffect,
   useLayoutEffect,
   useRef,
+  useState,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
@@ -47,6 +48,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     before = null,
     after = null,
     stickToBottom,
+    classWhenScrollable = 'scrollable',
+    classWhenUnScrollable = 'un-scrollable',
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
@@ -114,7 +117,6 @@ const JuiVirtualizedList: RefForwardingComponent<
       if (offset !== 0) {
         startIndex += offset;
         stopIndex += offset;
-
         // TODO avoid change state this way
         renderedRange.startIndex = startIndex;
         renderedRange.stopIndex = stopIndex;
@@ -179,6 +181,8 @@ const JuiVirtualizedList: RefForwardingComponent<
   const ref: DivRefObject = useRef(null);
   const beforeRef: DivRefObject = useRef(null);
   const contentRef: DivRefObject = useRef(null);
+  const prevScrollable: React.MutableRefObject<boolean> = useRef(true);
+  const [listStyle, setListStyle] = useState(classWhenScrollable);
 
   //
   // State
@@ -205,7 +209,6 @@ const JuiVirtualizedList: RefForwardingComponent<
   const shouldScrollToBottom = () => prevAtBottomRef.current && stickToBottom;
 
   const scrollEffectTriggerRef = useRef(0);
-  const prevScrollTopRef = useRef(0);
   const prevVisibleRange = usePrevious(() => computeVisibleRange()) || {
     startIndex: 0,
     stopIndex: 0,
@@ -216,6 +219,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     usePrevious(() => startIndex),
     usePrevious(() => children[startIndex]),
   );
+  const childrenToRender: ReactNode[] = children.filter((_, i) => {
+    return startIndex <= i && i <= stopIndex;
+  });
 
   //
   // Update before content height when before content changed
@@ -275,6 +281,17 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
 
+  // scrollable <--> unScrollable
+
+  useEffect(() => {
+    const contentHeight = rowManager.getRowsHeight(0, childrenCount - 1);
+    const scrollable = height < contentHeight;
+    if (prevScrollable.current !== scrollable) {
+      prevScrollable.current = scrollable;
+      setListStyle(scrollable ? classWhenScrollable : classWhenUnScrollable);
+    }
+  });
+
   //
   // Emit visible range change when component mounted
   //
@@ -297,48 +314,52 @@ const JuiVirtualizedList: RefForwardingComponent<
   const handleScroll = (event: React.UIEvent) => {
     if (ref.current) {
       const { scrollTop } = ref.current;
-      const prevScrollTop = prevScrollTopRef.current;
       const visibleRange = computeVisibleRange();
-      if (rowManager.hasRowHeight(visibleRange.startIndex)) {
-        // If we know the real height of this row
-        // Remember current scroll position
-        const offset =
-          scrollTop - rowManager.getRowOffsetTop(visibleRange.startIndex);
-        setScrollPosition({
-          offset,
-          index: visibleRange.startIndex,
-        });
+      const offset =
+        scrollTop - rowManager.getRowOffsetTop(visibleRange.startIndex);
+      const visibleStartIndex = visibleRange.startIndex;
+      const prevScrollIndex = scrollPosition.index;
+      const prevScrollOffset = scrollPosition.offset;
+      const isUserScrolling =
+        prevScrollIndex !== visibleStartIndex ||
+        (prevScrollIndex === visibleStartIndex && prevScrollOffset !== offset);
+      if (isUserScrolling) {
+        if (rowManager.hasRowHeight(visibleRange.startIndex)) {
+          // If we know the real height of this row
+          // Remember current scroll position
+          setScrollPosition({
+            offset,
+            index: visibleRange.startIndex,
+          });
+        }
+        const isScrollUp =
+          prevScrollIndex > visibleStartIndex ||
+          (prevScrollIndex === visibleStartIndex && prevScrollOffset > offset);
+        // Update rendered range
+        const newRenderedRange = computeRenderedRange(
+          visibleRange,
+          isScrollUp ? 'up' : 'down',
+        );
+        setRenderedRange(newRenderedRange);
+        // Remember scrollTop to check scroll direction
+
+        if (!isRangeEqual(renderedRange, newRenderedRange)) {
+          onRenderedRangeChange(newRenderedRange);
+        }
+
+        if (!isRangeEqual(prevVisibleRange, visibleRange)) {
+          onVisibleRangeChange(visibleRange);
+        }
+        // Emit events
+        onScroll(event);
       }
-
-      // Update rendered range
-      const newRenderedRange = computeRenderedRange(
-        visibleRange,
-        scrollTop > prevScrollTop ? 'down' : 'up',
-      );
-      setRenderedRange(newRenderedRange);
-
-      // Remember scrollTop to check scroll direction
-      prevScrollTopRef.current = scrollTop;
-
-      if (!isRangeEqual(renderedRange, newRenderedRange)) {
-        onRenderedRangeChange(newRenderedRange);
-      }
-
-      if (!isRangeEqual(prevVisibleRange, visibleRange)) {
-        onVisibleRangeChange(visibleRange);
-      }
-
-      // Emit events
-      onScroll(event);
     }
   };
 
   const wrappedBefore = before ? <div ref={beforeRef}>{before}</div> : null;
   const heightBeforeStartRow = rowManager.getRowsHeight(0, startIndex - 1);
   const heightAfterStopRow = rowManager.getRowsHeight(stopIndex + 1, maxIndex);
-  const childrenToRender: ReactNode[] = children.filter((_, i) => {
-    return startIndex <= i && i <= stopIndex;
-  });
+
   return (
     <div
       ref={ref}
@@ -354,7 +375,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     >
       {wrappedBefore}
       <div style={{ height: heightBeforeStartRow }} />
-      <div ref={contentRef}>{childrenToRender}</div>
+      <div style={{ minHeight: height }} ref={contentRef} className={listStyle}>
+        {childrenToRender}
+      </div>
       <div style={{ height: heightAfterStopRow }} />
       {after}
     </div>
@@ -367,6 +390,8 @@ const MemoList = memo(
   React.ForwardRefExoticComponent<
     {
       initialScrollToIndex?: number;
+      classWhenUnScrollable?: string;
+      classWhenScrollable?: string;
       onScroll?: (event: React.UIEvent) => void;
       onVisibleRangeChange?: (range: IndexRange, initial?: boolean) => void;
       onRenderedRangeChange?: (range: IndexRange) => void;

@@ -18,7 +18,7 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
-
+import { ContentSearchParams } from '../../../api/glip/search';
 class PostService extends EntityBaseService<Post> {
   static serviceName = 'PostService';
   postController: PostController;
@@ -90,7 +90,7 @@ class PostService extends EntityBaseService<Post> {
     ids: number[],
   ): Promise<{ posts: Post[]; items: Item[] }> {
     return this.getPostController()
-      .getPostFetchController()
+      .getDiscontinuousPostFetchController()
       .getPostsByIds(ids);
   }
 
@@ -140,6 +140,30 @@ class PostService extends EntityBaseService<Post> {
     this.getPostController()
       .getPostDataController()
       .handleSexioPosts(data);
+  }
+
+  async searchPosts(params: ContentSearchParams) {
+    return await this.getPostController()
+      .getPostSearchController()
+      .searchPosts(params);
+  }
+
+  async scrollSearchPosts(requestId: number) {
+    return await this.getPostController()
+      .getPostSearchController()
+      .scrollSearchPosts(requestId);
+  }
+
+  async endPostSearch(requestId: number) {
+    return await this.getPostController()
+      .getPostSearchController()
+      .endPostSearch(requestId);
+  }
+
+  async getSearchContentsCount(params: ContentSearchParams) {
+    return await this.getPostController()
+      .getPostSearchController()
+      .getContentsCount(params);
   }
 }
 
