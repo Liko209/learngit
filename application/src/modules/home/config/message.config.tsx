@@ -7,6 +7,7 @@ import React from 'react';
 import i18next from 'i18next';
 import { container } from 'framework';
 import { MessageService } from '@/modules/message/service/MessageService';
+import { Call } from '@/modules/telephony/container';
 import { MessageUmi } from '../container/MessageUmi';
 import Message from './lazy/Message';
 import { SubModuleConfig } from '../types';
@@ -36,9 +37,7 @@ const config: SubModuleConfig = {
   afterBootstrap: () => {
     const messageService = container.get(MessageService);
     // Check user permission and register extensions
-    messageService.registerExtension({
-      'CONVERSATION_PAGE.HEADER.BUTTONS': [], // [TelephonyButton, MeetingButton]
-    });
+    messageService.registerConversationHeaderExtension(Call); // [TelephonyButton, MeetingButton]
   },
 };
 

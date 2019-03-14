@@ -78,4 +78,18 @@ describe('GlipTypeUtil', () => {
       });
     });
   });
+
+  describe('isExpectedType', () => {
+    it('should return true when is expected type', () => {
+      expect(
+        GlipTypeUtil.isExpectedType(10, TypeDictionary.TYPE_ID_FILE),
+      ).toBeTruthy();
+    });
+
+    it('should return false when is not expected type', () => {
+      expect(
+        GlipTypeUtil.isExpectedType(11, TypeDictionary.TYPE_ID_FILE),
+      ).toBeFalsy();
+    });
+  });
 });

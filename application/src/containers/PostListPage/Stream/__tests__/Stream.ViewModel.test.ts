@@ -12,8 +12,6 @@ import * as utils from '@/store/utils';
 import { PostService } from 'sdk/module/post';
 import { notificationCenter, ENTITY } from 'sdk/service';
 
-jest.mock('@/store');
-jest.mock('@/store/utils');
 jest.mock('sdk/module/post');
 
 function setup(obj: any) {

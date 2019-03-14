@@ -144,6 +144,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
         hasMore={hasMore}
         title={title}
         goToConversation={this._goToConversation}
+        onClose={this.onClose}
         handleJoinTeam={this.handleJoinTeam}
         didChange={this.selectIndexChange}
         terms={terms}

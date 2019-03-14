@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import { JuiDialer } from 'jui/pattern/Dialer';
+import { JuiDialer, JuiHeaderContainer } from 'jui/pattern/Dialer';
 import { DialerTitleBar } from '../DialerTitleBar';
 import { DialerHeader } from '../DialerHeader';
 import { DialerContainer } from '../DialerContainer';
@@ -16,8 +16,10 @@ class DialerViewComponent extends React.Component {
   render() {
     return (
       <JuiDialer>
-        <DialerTitleBar />
-        <DialerHeader phoneNumber="(650) 555-12345" />
+        <JuiHeaderContainer>
+          <DialerTitleBar />
+          <DialerHeader />
+        </JuiHeaderContainer>
         <DialerContainer />
       </JuiDialer>
     );

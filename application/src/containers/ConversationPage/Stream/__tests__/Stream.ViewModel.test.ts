@@ -5,10 +5,10 @@
  */
 
 /// <reference path="../../../../../__tests__/types.d.ts" />
+import React from 'react';
 import { notificationCenter } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { StreamViewModel } from '../Stream.ViewModel';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import _ from 'lodash';
@@ -24,17 +24,20 @@ import { ItemService } from 'sdk/module/item';
 import * as SCM from '../StreamController';
 import { PostService } from 'sdk/module/post';
 import { StreamProps, StreamItemType } from '../types';
+import { StreamViewModel } from '../Stream.ViewModel';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
-jest.mock('@/store');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 const postService = new PostService();
 
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
-  const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
+  const vm = new StreamViewModel({
+    viewRef: React.createRef(),
+    groupId: obj.groupId || 1,
+  });
   delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
