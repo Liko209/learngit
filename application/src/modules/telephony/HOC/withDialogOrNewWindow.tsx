@@ -5,6 +5,7 @@
  */
 
 import React, { ComponentType, ComponentClass } from 'react';
+import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import { JuiDraggableDialog } from 'jui/components/Dialog';
 import { container } from 'framework';
@@ -34,6 +35,20 @@ function copyStyles(sourceDoc: Document, targetDoc: Document) {
   });
 }
 
+function createMouseEvent(type: string) {
+  return new MouseEvent(type, {
+    bubbles: true,
+    cancelable: true,
+    view: window,
+  });
+}
+
+const MOUSE_EVENT = {
+  DOWN: createMouseEvent('mousedown'),
+  UP: createMouseEvent('mouseup'),
+  MOVE: createMouseEvent('mousemove'),
+};
+
 function withDialogOrNewWindow<T>(
   Component: ComponentType<T>,
 ): ComponentClass<T> {
@@ -42,6 +57,8 @@ function withDialogOrNewWindow<T>(
     private _window: Window | null = null;
     private _div = document.createElement('div');
     private _root = document.body;
+    private _dragRef = React.createRef<any>();
+    private _handleResize = () => {};
 
     private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
     private _telephonyService: TelephonyService = container.get(
@@ -71,6 +88,22 @@ function withDialogOrNewWindow<T>(
       }
     }
 
+    componentDidUpdate() {
+      setTimeout(() => {
+        if (this._dragRef.current) {
+          const dragEl = ReactDOM.findDOMNode(this._dragRef.current) as Element;
+          this._handleResize = () => {
+            dragEl.dispatchEvent(MOUSE_EVENT.DOWN);
+            dragEl.dispatchEvent(MOUSE_EVENT.MOVE);
+            dragEl.dispatchEvent(MOUSE_EVENT.UP);
+          };
+          window.addEventListener('resize', this._handleResize);
+        } else {
+          window.removeEventListener('resize', this._handleResize);
+        }
+      },         300);
+    }
+
     render() {
       const { callWindowState } = this._telephonyStore;
       const open =
@@ -89,6 +122,7 @@ function withDialogOrNewWindow<T>(
           open={open}
           x={(document.body.clientWidth - 344) / 2}
           y={(document.body.clientHeight - 504) / 2}
+          dragRef={this._dragRef}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>

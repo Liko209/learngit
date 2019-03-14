@@ -92,7 +92,6 @@ class RTCCall {
     } else {
       this._addHangupTimer();
       this._callInfo.toNum = toNumber;
-      this._startOutCallFSM();
     }
     this._rtcMediaStatsManager = new RTCMediaStatsManager();
     this._prepare();
@@ -210,8 +209,12 @@ class RTCCall {
     this._fsm.dtmf(digits);
   }
 
-  onAccountReady(): void {
+  onAccountReady() {
     this._fsm.accountReady();
+  }
+
+  onAccountNotReady() {
+    this._fsm.accountNotReady();
   }
 
   setCallSession(session: any): void {
@@ -224,14 +227,6 @@ class RTCCall {
     ) {
       // Update party id and session id in incoming call sip message
       this._parseRcApiIds(session.request.headers);
-    }
-  }
-
-  private _startOutCallFSM(): void {
-    if (this._account.isReady()) {
-      this._fsm.accountReady();
-    } else {
-      this._fsm.accountNotReady();
     }
   }
 

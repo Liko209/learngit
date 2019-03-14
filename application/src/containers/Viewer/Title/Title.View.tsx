@@ -30,6 +30,7 @@ import {
   imageViewerHeaderAnimation,
 } from 'jui/components/Animation';
 import { dateFormatter } from '@/utils/date';
+import ViewerContext from '../ViewerContext';
 import { Download } from '@/containers/common/Download';
 import ReactResizeDetector from 'react-resize-detector';
 
@@ -56,74 +57,77 @@ class ViewerTitleViewComponent extends Component<
     const { name, modifiedAt, downloadUrl } = item;
     const { userDisplayName, id } = person;
     return (
-      <JuiTransition
-        appear={true}
-        show={this.state.show}
-        duration="standard"
-        easing="openCloseDialog"
-        onExited={this.dismiss}
-        animation={imageViewerHeaderAnimation}
-      >
-        <div>
-          <JuiDialogHeader>
-            <ReactResizeDetector
-              handleWidth={true}
-              onResize={this.handleHeaderResize}
-            />
-            <JuiDialogHeaderMeta>
-              <JuiDialogHeaderMetaLeft>
-                <Avatar uid={id} />
-              </JuiDialogHeaderMetaLeft>
-              <JuiDialogHeaderMetaRight
-                title={userDisplayName}
-                subtitle={dateFormatter.dateAndTimeWithoutWeekday(
-                  moment(modifiedAt),
-                )}
-              />
-            </JuiDialogHeaderMeta>
-            <JuiDialogHeaderTitle variant="responsive">
-              <span>{name}</span>
-              <JuiDialogHeaderSubtitle>
-                {' '}
-                {`(${currentIndex + 1}/${total})`}
-              </JuiDialogHeaderSubtitle>
-            </JuiDialogHeaderTitle>
-            <JuiDialogHeaderActions>
-              <JuiButtonBar overlapSize={2.5}>
-                <Download url={downloadUrl} variant="round" />
-                {/* <JuiPopoverMenu
-                  Anchor={() => (
-                    <JuiIconButton tooltipTitle={t('common.more')}>
-                      more_horiz
+      <ViewerContext.Consumer>
+        {viewerContext => (
+          <JuiTransition
+            appear={true}
+            show={viewerContext.show}
+            duration="standard"
+            easing="openCloseDialog"
+            animation={imageViewerHeaderAnimation}
+          >
+            <div>
+              <JuiDialogHeader>
+                <ReactResizeDetector
+                  handleWidth={true}
+                  onResize={this.handleHeaderResize}
+                />
+                <JuiDialogHeaderMeta>
+                  <JuiDialogHeaderMetaLeft>
+                    <Avatar uid={id} />
+                  </JuiDialogHeaderMetaLeft>
+                  <JuiDialogHeaderMetaRight
+                    title={userDisplayName}
+                    subtitle={dateFormatter.dateAndTimeWithoutWeekday(
+                      moment(modifiedAt),
+                    )}
+                  />
+                </JuiDialogHeaderMeta>
+                <JuiDialogHeaderTitle variant="responsive">
+                  <span>{name}</span>
+                  <JuiDialogHeaderSubtitle>
+                    {' '}
+                    {`(${currentIndex + 1}/${total})`}
+                  </JuiDialogHeaderSubtitle>
+                </JuiDialogHeaderTitle>
+                <JuiDialogHeaderActions>
+                  <JuiButtonBar overlapSize={2.5}>
+                    <Download url={downloadUrl} variant="round" />
+                    {/* <JuiPopoverMenu
+                      Anchor={() => (
+                        <JuiIconButton tooltipTitle={t('common.more')}>
+                          more_horiz
+                        </JuiIconButton>
+                      )}
+                      anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'center',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'center',
+                      }}
+                    >
+                      <JuiMenuList>
+                        {this.state.smallWindow ? (
+                          <JuiMenuItem>{t('common.download')}</JuiMenuItem>
+                        ) : null}
+                      </JuiMenuList>
+                    </JuiPopoverMenu> */}
+                    <JuiIconButton
+                      onClick={viewerContext.closeViewer}
+                      tooltipTitle={t('common.dialog.close')}
+                    >
+                      close
                     </JuiIconButton>
-                  )}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                  }}
-                >
-                  <JuiMenuList>
-                    {this.state.smallWindow ? (
-                      <JuiMenuItem>{t('common.download')}</JuiMenuItem>
-                    ) : null}
-                  </JuiMenuList>
-                </JuiPopoverMenu> */}
-                <JuiIconButton
-                  onClick={this.closeDialog}
-                  tooltipTitle={t('common.dialog.close')}
-                >
-                  close
-                </JuiIconButton>
-              </JuiButtonBar>
-            </JuiDialogHeaderActions>
-          </JuiDialogHeader>
-          <JuiDivider key="divider-filters" />
-        </div>
-      </JuiTransition>
+                  </JuiButtonBar>
+                </JuiDialogHeaderActions>
+              </JuiDialogHeader>
+              <JuiDivider key="divider-filters" />
+            </div>
+          </JuiTransition>
+        )}
+      </ViewerContext.Consumer>
     );
   }
 }

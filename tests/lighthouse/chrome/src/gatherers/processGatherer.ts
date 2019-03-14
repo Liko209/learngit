@@ -62,10 +62,9 @@ class ProcessGatherer extends Gatherer {
   }
   async afterPass(passContext) {
     await bluebird.delay(5000);
+
     clearInterval(this.intervalId);
-    if (this.browser) {
-      await this.browser.disconnect();
-    }
+
     return { metrics: this.metrics };
   }
 
