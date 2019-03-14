@@ -24,7 +24,7 @@ function requireAll(requireContext) {
 }
 
 function loadStories() {
-  requireAll(requireAll(require.context('../src', true, /\.story\.tsx?$/)));
+  requireAll(require.context('../src', true, /\.story\.tsx?$/));
 }
 
 addDecorator(withKnobs);
