@@ -7,18 +7,15 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { JuiIconography } from '../../../foundation/Iconography';
-import { secondary, spacing } from '../../../foundation/utils';
 
-const StyledIconographyDraft = styled(JuiIconography)`
-  && {
-    color: ${secondary('600')};
-    font-size: ${spacing(3.5)};
-    margin: ${spacing(0.5)};
-  }
-`;
+const StyledIconographyDraft = styled(JuiIconography)``;
 
 const JuiIndicatorDraft = () => {
-  return <StyledIconographyDraft>draft</StyledIconographyDraft>;
+  return (
+    <JuiIconography iconSize="medium" iconColor={['secondary', '600']}>
+      draft
+    </JuiIconography>
+  );
 };
 
 export { StyledIconographyDraft, JuiIndicatorDraft };
