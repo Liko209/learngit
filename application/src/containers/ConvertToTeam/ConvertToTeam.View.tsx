@@ -41,6 +41,13 @@ const createTeamLoading = () => (
 );
 const Loading = withLoading(Fragment, createTeamLoading);
 
+type Setting = {
+  isPublic: boolean;
+  canAddMember: boolean;
+  canPost: boolean;
+  canPin: boolean;
+};
+
 type State = {
   items: JuiListToggleItemProps[];
 };
@@ -121,12 +128,7 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
     const uiSetting = items.reduce((options, option) => {
       options[option.type] = option.checked;
       return options;
-    },                             {}) as {
-      isPublic: boolean;
-      canAddMember: boolean;
-      canPost: boolean;
-      canPin: boolean;
-    };
+    },                             {}) as Setting;
     const teamSetting: TeamSetting = {
       name,
       description,
