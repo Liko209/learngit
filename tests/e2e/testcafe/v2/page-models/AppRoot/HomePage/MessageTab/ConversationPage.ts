@@ -367,6 +367,18 @@ export class DuplicatePromptPage extends BaseWebComponent {
     await this.t.click(this.duplicateCreateButton);
   }
 
+  /* 1:1 */
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.click(this.telephonyButton);
+  }
 }
 
 export class MentionPage extends BaseConversationPage {

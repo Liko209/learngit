@@ -110,6 +110,18 @@ export class MiniProfile extends BaseWebComponent {
   get favoriteStatusIcon() {
     return this.getSelectorByIcon("star", this.header);
   }
+
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
 }
 
 export class ProfileDialog extends BaseWebComponent {
@@ -381,6 +393,17 @@ class Member extends BaseWebComponent {
     await this.t.hover(this.self).click(this.moreButton);
   }
 
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
 }
 
 class MoreMenu extends BaseWebComponent {
