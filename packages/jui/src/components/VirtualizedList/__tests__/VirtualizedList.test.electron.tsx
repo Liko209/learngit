@@ -138,7 +138,7 @@ describe('JuiVirtualizedList', () => {
 
       // Scroll to top
       scrollTo(0);
-      expectRangeToBe(0, 4);
+      expectRangeToBe(0, 4, false);
 
       // Item 5 1px visible
       scrollTo(1);
