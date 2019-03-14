@@ -91,7 +91,7 @@ const JuiInfiniteList: RefForwardingComponent<
           return loadingRenderer;
         }
         if (loadingInitialFailed) {
-          return fallBackRenderer;
+          return fallBackRenderer || <></>;
         }
 
         const isEmpty =
