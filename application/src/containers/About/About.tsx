@@ -94,7 +94,7 @@ class About extends Component<Props> {
           {t('home.lastCommit')}: {deployedCommit}
         </Param>
         <Param>
-          {t('home.deployedTime')}: {deployedTime || ''}
+          {t('home.deployedTime')}: {deployedTime}
         </Param>
         <Param>
           Copyright © 1999-
