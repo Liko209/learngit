@@ -1,0 +1,62 @@
+import React, { Component } from 'react';
+import styled from '../../foundation/styled-components';
+import { spacing, shape, grey, palette } from '../../foundation/utils';
+import { JuiConversationPostLikeProps } from './types';
+import { JuiArrowTip } from '../../components';
+import { JuiIconButton } from '../../components/Buttons';
+
+const StyleConversationPostLike = styled.div`
+  border: ${shape('border1')};
+  border-color: ${grey('300')};
+  border-radius: ${shape('borderRadius')};
+  padding: ${spacing(1, 1.5)};
+  display: inline-block;
+  transition: all 0.1s ease-in;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  color: ${palette('primary', '700')};
+
+  & > button {
+    margin-right: ${spacing(1)};
+  }
+
+  & > span {
+    color: ${grey('700')};
+    font-size: ${spacing(3)};
+  }
+
+  &:hover {
+    border-color: ${palette('primary', '700')};
+  }
+
+  &:active {
+    background-color: ${palette('primary', '50')};
+  }
+`;
+
+class JuiConversationPostLike extends Component<JuiConversationPostLikeProps> {
+  render() {
+    const { likedCount, title, iLiked, onClick } = this.props;
+
+    const elEntity = (
+      <StyleConversationPostLike data-name="footerLikeButton" onClick={onClick}>
+        <JuiIconButton
+          size="small"
+          color={iLiked ? 'primary' : undefined}
+          variant="plain"
+          disableToolTip={true}
+        >
+          {iLiked ? 'thumbup' : 'thumbup_border'}
+        </JuiIconButton>
+        <span>{likedCount}</span>
+      </StyleConversationPostLike>
+    );
+
+    if (!title) return elEntity;
+
+    return <JuiArrowTip title={title}>{elEntity}</JuiArrowTip>;
+  }
+}
+
+export { JuiConversationPostLike };
