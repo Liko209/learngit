@@ -27,9 +27,9 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   constructor(props: ConvertToTeamProps) {
     super(props);
     this.reaction(
-      () => this.group,
-      (group: GroupModel, reaction: Reaction) => {
-        this.name = group.displayName;
+      () => this.group.displayName,
+      (displayName: string, reaction: Reaction) => {
+        this.name = displayName;
         reaction.dispose();
       },
       {
