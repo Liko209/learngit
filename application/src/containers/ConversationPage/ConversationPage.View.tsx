@@ -24,14 +24,11 @@ import { Header } from './Header';
 import { MessageInput } from './MessageInput';
 import { MessageInputViewComponent } from './MessageInput/MessageInput.View';
 import { ConversationPageViewProps } from './types';
-import { action, observable, reaction } from 'mobx';
-import { getGlobalValue } from '@/store/utils';
-import { GLOBAL_KEYS } from '@/store/constants';
-
 import { StreamViewComponent } from './Stream/Stream.View';
 import { Stream } from './Stream';
 import { AttachmentManager } from './MessageInput/Attachments';
 import { AttachmentManagerViewComponent } from './MessageInput/Attachments/AttachmentManager.View';
+import { withRouter } from 'react-router';
 
 const STREAM = 'stream';
 const INPUT = 'input';
@@ -47,20 +44,8 @@ class ConversationPageViewComponent extends Component<
   > = createRef();
   private _folderDetectMap: { string: boolean } = {} as { string: boolean };
 
-  @observable
   streamKey = 0;
-  constructor(props: ConversationPageViewProps) {
-    super(props);
-    reaction(
-      () => getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID),
-      () => {
-        const id = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
-        if (id !== 0) {
-          this.remountStream();
-        }
-      },
-    );
-  }
+
   sendHandler = () => {
     const stream = this._streamRef.current;
     if (!stream) {
@@ -71,9 +56,9 @@ class ConversationPageViewComponent extends Component<
     }
   }
 
-  @action.bound
-  remountStream() {
-    return this.streamKey++;
+  remountStream = () => {
+    this.streamKey++;
+    this.forceUpdate();
   }
 
   _handleDropFileInStream = (item: any, monitor: DropTargetMonitor) => {
@@ -105,13 +90,17 @@ class ConversationPageViewComponent extends Component<
   }
 
   render() {
-    const { t, groupId, canPost } = this.props;
+    const { t, groupId, canPost, location } = this.props;
     const streamNode = (
       <JuiStreamWrapper>
         <Stream
           groupId={groupId}
           viewRef={this._streamRef}
           key={`Stream_${groupId}_${this.streamKey}`}
+          refresh={this.remountStream}
+          jumpToPostId={
+            location.state ? location.state.jumpToPostId : undefined
+          }
         />
         <div id="jumpToFirstUnreadButtonRoot" />
       </JuiStreamWrapper>
@@ -166,7 +155,7 @@ class ConversationPageViewComponent extends Component<
 }
 
 const ConversationPageView = withDragDropContext(
-  translate('translations')(ConversationPageViewComponent),
+  withRouter(translate('translations')(ConversationPageViewComponent)),
 );
 
 export { ConversationPageView };

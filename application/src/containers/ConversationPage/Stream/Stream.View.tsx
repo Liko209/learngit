@@ -31,6 +31,7 @@ import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 
 type Props = WithNamespaces & StreamViewProps & StreamProps;
+
 type StreamItemPost = StreamItem & { value: number[] };
 const LOADING_DELAY = 500;
 @observer
@@ -41,16 +42,9 @@ class StreamViewComponent extends Component<Props> {
   private _historyViewed = false;
   private _mostRecentViewed = false;
   private _timeout: NodeJS.Timeout | null;
-  state = { _jumpToPostId: 0 };
+  private _remountListTrigger = 0;
 
   @observable private _jumpToFirstUnreadLoading = false;
-
-  static getDerivedStateFromProps(props: Props) {
-    if (props.jumpToPostId) {
-      return { _jumpToPostId: props.jumpToPostId };
-    }
-    return null;
-  }
 
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
@@ -62,12 +56,20 @@ class StreamViewComponent extends Component<Props> {
     window.removeEventListener('blur', this._blurHandler);
   }
 
-  async componentDidUpdate(prevProps: StreamViewProps) {
+  async componentDidUpdate(prevProps: Props) {
     const {
       postIds: prevPostIds,
       lastPost: prevLastPost = { id: NaN },
+      jumpToPostId: prevJumpToPostId,
     } = prevProps;
-    const { postIds, mostRecentPostId, hasMore, lastPost } = this.props;
+    const {
+      postIds,
+      mostRecentPostId,
+      hasMore,
+      lastPost,
+      jumpToPostId,
+    } = this.props;
+
     if (postIds.length && mostRecentPostId) {
       if (!postIds.includes(mostRecentPostId)) {
         storeManager.getGlobalStore().set(GLOBAL_KEYS.SHOULD_SHOW_UMI, true);
@@ -89,6 +91,22 @@ class StreamViewComponent extends Component<Props> {
         this._listRef.current.ref.scrollToBottom();
       }
     }
+
+    jumpToPostId && this._handleJumpToIdChanged(jumpToPostId, prevJumpToPostId);
+  }
+
+  private _handleJumpToIdChanged(currentId: number, prevId?: number) {
+    const { refresh, postIds } = this.props;
+    // handle hight and jump to post Id
+    if (currentId === prevId) {
+      return;
+    }
+    if (postIds.includes(currentId)) {
+      const index = this._findStreamItemIndexByPostId(currentId);
+      this._listRef.current.ref.scrollToIndex(index);
+    } else {
+      refresh();
+    }
   }
 
   private _renderPost(streamItem: StreamItem & { value: number[] }) {
@@ -98,7 +116,7 @@ class StreamViewComponent extends Component<Props> {
           <ConversationPost
             id={postId}
             key={`ConversationPost${postId}`}
-            highlight={postId === this.state._jumpToPostId}
+            highlight={postId === this.props.jumpToPostId}
           />
         ))}
       </div>
@@ -260,15 +278,17 @@ class StreamViewComponent extends Component<Props> {
     return i.type === StreamItemType.POST;
   }
 
+  private _findStreamItemIndexByPostId = (id: number) => {
+    return this.props.items.findIndex((i: StreamItemPost) => {
+      return i.type === StreamItemType.POST && i.value.includes(id);
+    });
+  }
+
   render() {
     const { t, loadMore, hasMore, items } = this.props;
-    let initialPosition = items.length - 1;
-    const { _jumpToPostId } = this.state;
-    if (_jumpToPostId) {
-      initialPosition = _.findIndex(items, (item: StreamItem) => {
-        return !!item.value && item.value.includes(_jumpToPostId);
-      });
-    }
+    const initialPosition = this.props.jumpToPostId
+      ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
+      : items.length - 1;
 
     const defaultLoading = <DefaultLoadingWithDelay />;
     const defaultLoadingMore = <DefaultLoadingMore />;
@@ -288,6 +308,7 @@ class StreamViewComponent extends Component<Props> {
             <div style={{ height: '100%' }}>
               {this._renderJumpToFirstUnreadButton()}
               <JuiInfiniteList
+                key={this._remountListTrigger}
                 ref={this._listRef}
                 height={height}
                 stickToBottom={true}
@@ -341,7 +362,7 @@ class StreamViewComponent extends Component<Props> {
     this._globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, value);
   }
 }
-const view = extractView<WithNamespaces & StreamViewProps>(StreamViewComponent);
+const view = extractView<Props>(StreamViewComponent);
 const StreamView = translate('translations')(view);
 
 export { StreamView, StreamViewComponent };
