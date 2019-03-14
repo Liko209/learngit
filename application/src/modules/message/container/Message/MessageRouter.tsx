@@ -41,7 +41,7 @@ const LeftRailResponsive = withResponsive(LeftRail, {
 });
 
 const SwitchResponsive = withResponsive(Switch, {
-  minWidth: 320,
+  minWidth: 400,
   priority: 2,
 });
 
