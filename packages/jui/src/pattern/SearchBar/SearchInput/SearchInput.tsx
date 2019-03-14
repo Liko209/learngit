@@ -82,6 +82,7 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
         <Jui.SearchIcon
           data-test-automation-id="search-icon"
           disableToolTip={true}
+          color="common.white"
         >
           search
         </Jui.SearchIcon>

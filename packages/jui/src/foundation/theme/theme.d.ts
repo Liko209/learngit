@@ -102,6 +102,7 @@ type Theme = {
     floatButton: number;
     codeEditor: number;
     modal: number;
+    makeZIndexStackingContext: number;
   };
   size: {
     width: number;

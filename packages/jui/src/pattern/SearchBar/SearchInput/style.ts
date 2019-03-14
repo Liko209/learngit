@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import MuiTextField from '@material-ui/core/TextField';
-import { JuiIconButton } from '../../../components/Buttons/IconButton';
+import { JuiIconButton } from '../../../components/Buttons';
 import styled, { css } from '../../../foundation/styled-components';
 import {
   spacing,
@@ -14,6 +14,7 @@ import {
   palette,
 } from '../../../foundation/utils/styles';
 import { JuiTextField } from '../../../components/Forms';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 
 type SearchWrapperType = {
   focus: boolean;
@@ -27,8 +28,9 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   display: flex;
   position: relative;
   box-sizing: border-box;
-  background: ${({ focus }) =>
-    focus ? palette('common', 'white') : grey('100')};
+  background: ${({ theme }) =>
+    fade(palette('common', 'white')({ theme }), 0.22)};
+
   ${({ hasValue, focus }) => {
     return hasValue && focus
       ? css`
@@ -39,22 +41,22 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
           border-radius: ${spacing(1)};
         `;
   }};
+
   ${({ focus }) =>
     focus
       ? css`
           border-bottom: 1px solid ${grey('200')};
         `
       : null};
+
   z-index: ${({ theme }) => theme.zIndex.drawer + 12};
   &:hover {
-    background: ${({ focus }) =>
-      focus ? palette('common', 'white') : grey('300')};
+    background: ${({ focus, theme }) =>
+      focus ? undefined : fade(palette('common', 'white')({ theme }), 0.32)};
   }
 `;
 
-const SearchIcon = styled(JuiIconButton)`
-  color: ${grey('500')};
-`;
+const SearchIcon = JuiIconButton;
 
 const CloseBtn = styled(SearchIcon)`
   cursor: pointer;
@@ -65,22 +67,10 @@ const SearchInput = styled(JuiTextField)`
     width: 100%;
     margin: 0 ${spacing(2)};
     ${typography('body1')};
-    color: ${grey('500')};
     .search-input {
-      ::-webkit-input-placeholder {
-        color: ${grey('500')};
-      }
-
-      ::-moz-placeholder {
-        color: ${grey('500')};
-      }
-
-      ::-ms-placeholder {
-        color: ${grey('500')};
-      }
-
+      color: white;
       ::placeholder {
-        color: ${grey('500')};
+        color: white;
       }
     }
   }

@@ -57,6 +57,7 @@ class TowardIcons extends PureComponent<IconsProps> {
         data-test-automation-id={tooltipTitle}
         onMouseDown={this.handlePress}
         onMouseUp={this.handleRelease}
+        color="common.white"
       >
         {iconDirection}
       </JuiIconButton>
