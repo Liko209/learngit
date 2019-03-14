@@ -299,7 +299,7 @@ class StreamViewComponent extends Component<Props> {
 
     return (
       <JuiSizeMeasurer>
-        {({ ref, height }: { ref: React.RefObject<any>; height: number }) => (
+        {({ ref, height }) => (
           <JuiStream ref={ref}>
             {this._renderJumpToFirstUnreadButton()}
             <JuiInfiniteList

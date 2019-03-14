@@ -7,6 +7,10 @@ import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiConversationInitialPost } from '../ConversationInitialPost';
 
+// FIXME
+// Use any due to issues with type of styled-component
+type RefType = React.RefObject<any>;
+
 type JuiStreamProps = {
   className?: string;
   children?: React.ReactNode[] | React.ReactNode;
@@ -29,17 +33,15 @@ const StyledDiv = styled.div`
 `;
 
 const JuiStream = React.memo(
-  React.forwardRef(
-    (props: JuiStreamProps, forwardRef: React.RefObject<any>) => {
-      return (
-        <StyledDiv
-          ref={forwardRef}
-          {...props}
-          data-test-automation-id="jui-stream"
-        />
-      );
-    },
-  ),
+  React.forwardRef((props: JuiStreamProps, forwardRef: RefType) => {
+    return (
+      <StyledDiv
+        ref={forwardRef}
+        {...props}
+        data-test-automation-id="jui-stream"
+      />
+    );
+  }),
 );
 
 export { JuiStream, JuiStreamProps };

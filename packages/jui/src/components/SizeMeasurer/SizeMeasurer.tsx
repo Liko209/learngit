@@ -14,7 +14,7 @@ type Size = {
 type JuiSizeMeasurerProps = {
   children: (
     size: Partial<Size> & { ref: React.RefObject<HTMLElement> },
-  ) => any;
+  ) => JSX.Element;
 };
 
 const JuiSizeMeasurer = ({ children }: JuiSizeMeasurerProps) => {
