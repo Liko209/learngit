@@ -1,0 +1,10 @@
+{
+  "on_push": {
+    "fixtures": [
+      "./fixtures/ActionBar/PinAndUnpin.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
