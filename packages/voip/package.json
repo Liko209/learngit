@@ -14,6 +14,6 @@
     "@types/async": "^2.0.50",
     "@types/lodash": "4.14.120",
     "@types/uuid": "^3.4.4",
-    "typescript": "3.3.3"
+    "typescript": "3.3.3333"
   }
 }
