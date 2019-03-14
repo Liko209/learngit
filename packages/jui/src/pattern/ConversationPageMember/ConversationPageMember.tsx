@@ -3,33 +3,28 @@ import styled from '../../foundation/styled-components';
 import { JuiConversationPageMemberProps } from './types';
 import { JuiArrowTip } from '../../components';
 import { JuiIconography } from '../../foundation/Iconography';
-import { spacing } from '../../foundation/utils/styles';
+import { spacing, grey, typography } from '../../foundation/utils/styles';
 import { darken } from '@material-ui/core/styles/colorManipulator';
-import i18next from 'i18next';
 
 const StyledConversationPageMember = styled.div`
   display: inline-flex;
   flex: none;
   align-self: center;
   align-items: center;
-  padding: ${spacing(1)} ${spacing(3)};
-  color: ${({
-    theme: {
-      palette: { grey },
-    },
-  }) => grey['500']};
+  padding: ${spacing(1, 3)};
+  color: ${grey('500')};
   cursor: pointer;
 
   > span {
-    ${({ theme: { typography } }) => typography['caption1']};
+    ${typography('caption1')};
   }
 
   :hover {
     color: ${({
       theme: {
-        palette: { grey },
+        palette: { tonalOffset, grey },
       },
-    }) => darken(grey['500'], 0.2)};
+    }) => darken(grey['500'], tonalOffset)};
   }
 `;
 
@@ -37,15 +32,11 @@ class JuiConversationPageMember extends React.Component<
   JuiConversationPageMemberProps
 > {
   render() {
-    const { onClick, children } = this.props;
+    const { onClick, ariaLabel, title, children } = this.props;
 
     return (
-      <JuiArrowTip title={i18next.t('people.team.Members')}>
-        <StyledConversationPageMember
-          data-test="conversation-"
-          aria-label={i18next.t('people.team.Members')}
-          onClick={onClick}
-        >
+      <JuiArrowTip title={title}>
+        <StyledConversationPageMember aria-label={ariaLabel} onClick={onClick}>
           <JuiIconography iconSize="medium">member_count</JuiIconography>
           {children}
         </StyledConversationPageMember>

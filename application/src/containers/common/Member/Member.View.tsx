@@ -7,6 +7,7 @@ import React from 'react';
 import { JuiConversationPageMember } from 'jui/pattern/ConversationPageMember';
 import { MemberViewProps } from './types';
 import { OpenProfile } from '@/common/OpenProfile';
+import i18next from 'i18next';
 
 class MemberView extends React.Component<MemberViewProps> {
   openProfile = () => {
@@ -19,7 +20,11 @@ class MemberView extends React.Component<MemberViewProps> {
     if (!showMembersCount) return null;
 
     return (
-      <JuiConversationPageMember onClick={this.openProfile}>
+      <JuiConversationPageMember
+        ariaLabel={i18next.t('people.team.Members')}
+        title={i18next.t('people.team.Members')}
+        onClick={this.openProfile}
+      >
         <span>{membersCount}</span>
       </JuiConversationPageMember>
     );
