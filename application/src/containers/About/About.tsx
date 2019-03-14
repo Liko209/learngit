@@ -87,8 +87,8 @@ class About extends Component<Props> {
         onOK={this._handleAboutPage}
       >
         <Param>
-          {t('home.version')}: {appVersion ? appVersion : pkg.version}{' '}
-          {electronAppVersion ? `(E. ${electronAppVersion})` : null}
+          {t('home.version')}: {appVersion ? appVersion : pkg.version}
+          {electronAppVersion ? ` (E. ${electronAppVersion})` : null}
         </Param>
         <Param>
           {t('home.lastCommit')}: {deployedCommit}
