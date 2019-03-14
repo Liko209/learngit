@@ -11,7 +11,7 @@ const StyledWrapper = styled('div')`
   height: 100%;
   width: 100%;
   overflow: hidden;
-  overflow-x: scroll;
+  overflow-x: auto;
   position: relative;
 `;
 
