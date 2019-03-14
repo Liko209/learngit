@@ -533,6 +533,32 @@ describe('TotalUnreadController', () => {
         totalUnreadController['_updateTotalUnreadByFavoriteChanges'],
       ).toHaveBeenCalledWith([789], false);
     });
+
+    it('should update correctly when profile is invalid', async () => {
+      totalUnreadController['_updateTotalUnreadByFavoriteChanges'] = jest.fn();
+      totalUnreadController['_favoriteGroupIds'] = [123, 789];
+      const entityMap = new Map<number, Profile>();
+      entityMap.set(1, {} as Profile);
+      const payload: NotificationEntityPayload<Profile> = {
+        type: EVENT_TYPES.UPDATE,
+        body: {
+          ids: [1, 2],
+          entities: entityMap,
+        },
+      };
+      await totalUnreadController['_updateTotalUnreadByProfileChanges'](
+        payload,
+      );
+      expect(
+        totalUnreadController['_updateTotalUnreadByFavoriteChanges'],
+      ).toBeCalledTimes(2);
+      expect(
+        totalUnreadController['_updateTotalUnreadByFavoriteChanges'],
+      ).toHaveBeenCalledWith([], true);
+      expect(
+        totalUnreadController['_updateTotalUnreadByFavoriteChanges'],
+      ).toHaveBeenCalledWith([123, 789], false);
+    });
   });
 
   describe('_updateTotalUnreadByFavoriteChanges()', () => {
@@ -631,6 +657,50 @@ describe('TotalUnreadController', () => {
   });
 
   describe('_initializeTotalUnread()', () => {
+    it('should initialize correctly when profile is invalid', async () => {
+      totalUnreadController.reset = jest.fn();
+      totalUnreadController['_addNewGroupUnread'] = jest.fn();
+
+      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
+      GroupService.getInstance = jest.fn().mockReturnValue({
+        getEntitySource: jest.fn().mockReturnValue({
+          getEntities: jest
+            .fn()
+            .mockReturnValue([
+              { members: [0] },
+              { members: [1, 5683] },
+              { members: [123, 5683] },
+            ]),
+        }),
+        isValid: jest
+          .fn()
+          .mockReturnValueOnce(true)
+          .mockReturnValueOnce(true)
+          .mockReturnValueOnce(false),
+      });
+      ProfileService.getInstance = jest.fn().mockReturnValue({
+        getFavoriteGroupIds: jest.fn().mockReturnValue(undefined),
+      });
+      await totalUnreadController['_initializeTotalUnread']();
+      expect(totalUnreadController.reset).toBeCalledTimes(1);
+      expect(
+        ProfileService.getInstance<ProfileService>().getFavoriteGroupIds,
+      ).toBeCalledTimes(1);
+      expect(
+        GroupService.getInstance<GroupService>().getEntitySource().getEntities,
+      ).toBeCalledTimes(1);
+      expect(GroupService.getInstance<GroupService>().isValid).toBeCalledTimes(
+        3,
+      );
+      expect(AccountGlobalConfig.getCurrentUserId).toBeCalledTimes(2);
+      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
+      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({
+        members: [1, 5683],
+      });
+      expect(totalUnreadController['_unreadInitialized']).toEqual(true);
+      expect(totalUnreadController['_favoriteGroupIds']).toEqual([]);
+    });
+
     it('should initialize correctly', async () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
