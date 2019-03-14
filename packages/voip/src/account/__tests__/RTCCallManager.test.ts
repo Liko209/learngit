@@ -31,7 +31,7 @@ class MockAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
   }
 }
 
-describe('RTCCallManager', async () => {
+describe('RTCCallManager', () => {
   it('should allowCall() return true when current call count < 1 [JPT-803]', () => {
     const callManager = new RTCCallManager();
     expect(callManager.allowCall()).toBe(true);

@@ -11,7 +11,6 @@ import { ENTITY_NAME } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { PostService } from 'sdk/module/post';
 import notificationCenter from 'sdk/service/notificationCenter';
-import items from '@/containers/ConversationCard/Activity/handler/items';
 
 jest.mock('sdk/module/post');
 

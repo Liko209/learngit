@@ -38,7 +38,7 @@ const options = 'options';
 const phoneNumber = 'phoneNumber';
 
 describe('RTCRegistrationManager', () => {
-  describe('reRegister()', async () => {
+  describe('reRegister()', () => {
     function initRegManager(regManager: RTCRegistrationManager) {
       jest
         .spyOn(regManager, 'onProvisionReadyAction')
@@ -95,7 +95,7 @@ describe('RTCRegistrationManager', () => {
       });
     });
   });
-  describe('Registration failed retry', async () => {
+  describe('Registration failed retry', () => {
     let regManager: RTCRegistrationManager;
     let ua: MockUserAgent;
     function setup() {

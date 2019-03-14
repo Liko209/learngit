@@ -5,14 +5,11 @@
  */
 import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
-import { service } from 'sdk';
 import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { StateService } from 'sdk/module/state';
-// import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 
 jest.mock('sdk/service');
-jest.mock('@/store/utils');
 jest.mock('sdk/api');
 
 const stateService = {
@@ -149,6 +146,7 @@ describe('MenuViewModel', () => {
       jest.clearAllMocks();
       jest.spyOn(utils, 'getEntity').mockImplementation(() => group);
     });
+
     it('should be call service interface is one time when invoke vm toggleRead method [JPT-1282]', async () => {
       const model = new MenuViewModel({
         groupId: 1,

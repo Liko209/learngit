@@ -28,7 +28,7 @@ class RecordViewComponent extends Component<Props> {
           color="grey.900"
           disableToolTip={true}
           onClick={this._handleRecord}
-          size="xlarge"
+          size="xxlarge"
           disabled={true}
         >
           record
