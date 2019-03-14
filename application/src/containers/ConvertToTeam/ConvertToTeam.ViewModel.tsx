@@ -71,7 +71,7 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
       this.saving = false;
       const unknownError = this._createErrorHandler(error);
       if (unknownError) {
-        throw new Error();
+        throw new Error(error.message);
       }
       return null;
     }
