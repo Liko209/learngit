@@ -268,6 +268,123 @@ describe('GroupFetchDataController', () => {
     });
   });
 
+  describe.only('convertToTeam()', () => {
+    const data = {
+      group_id: 1323,
+      set_abbreviation: 'some team',
+      members: [1, 2, 3],
+      description: 'abc',
+      privacy: 'private',
+      permissions: {
+        admin: {
+          uids: [1],
+        },
+        user: {
+          uids: [],
+          level: 100,
+        },
+      },
+    };
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      jest.clearAllMocks();
+    });
+
+    it('should return error object if duplicate name', async () => {
+      const error = new JServerError(
+        ERROR_CODES_SERVER.ALREADY_TAKEN,
+        'Already taken',
+      );
+      GroupAPI.convertToTeam.mockRejectedValue(error);
+
+      await expect(
+        groupActionController.convertToTeam(1323, [], {
+          name: 'some team',
+          description: 'abc',
+        }),
+      ).rejects.toEqual(error);
+    });
+
+    it('should call dependency apis with correct data user Id has already in members', async () => {
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.convertToTeam.mockResolvedValue(group);
+
+      const result = await groupActionController.convertToTeam(
+        1323,
+        [1, 2, 3],
+        {
+          name: 'some team',
+          description: 'abc',
+        },
+      );
+      expect(result).toEqual(group);
+
+      expect(GroupAPI.convertToTeam).toHaveBeenCalledWith({
+        ...data,
+        permissions: {
+          ...data.permissions,
+          user: {
+            uids: data.permissions.user.uids,
+            level: 0,
+          },
+        },
+      });
+    });
+    it('should call dependency apis with correct data user Id has already in members', async () => {
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.convertToTeam.mockResolvedValue(group);
+
+      const result = await groupActionController.convertToTeam(
+        1323,
+        [1, 2, 3],
+        {
+          name: 'some team',
+          description: 'abc',
+        },
+      );
+      expect(result).toEqual(group);
+
+      expect(GroupAPI.convertToTeam).toHaveBeenCalledWith({
+        ...data,
+        permissions: {
+          ...data.permissions,
+          user: {
+            uids: data.permissions.user.uids,
+            level: 0,
+          },
+        },
+      });
+    });
+    it('should call dependency apis with correct data user Id has not in members', async () => {
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      data.members = [2, 3, 4, 1];
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.convertToTeam.mockResolvedValue(group);
+
+      const result = await groupActionController.convertToTeam(
+        1323,
+        [2, 3, 4],
+        {
+          name: 'some team',
+          description: 'abc',
+        },
+      );
+      expect(result).toEqual(group);
+      expect(GroupAPI.convertToTeam).toHaveBeenCalledWith({
+        ...data,
+        permissions: {
+          ...data.permissions,
+          user: {
+            uids: data.permissions.user.uids,
+            level: 0,
+          },
+        },
+      });
+    });
+  });
+
   describe('updateGroupLastAccessedTime', () => {
     it('test', async () => {
       jest.spyOn(groupActionController, 'updateGroupPartialData');
