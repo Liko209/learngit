@@ -131,10 +131,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                       transform: `scale(${transform.scale}) translate(${
                         transform.translateX
                       }px, ${transform.translateY}px)`,
-                      // transition:
-                      //   isDragging || value.isAnimating
-                      //     ? undefined
-                      //     : 'all ease 0.3s',
                       cursor: canDrag ? 'move' : undefined,
                     };
                     return (
