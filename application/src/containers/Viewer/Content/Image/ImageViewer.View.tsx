@@ -3,7 +3,6 @@
  * @Date: 2019-03-04 15:28:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { JuiIconography } from 'jui/foundation/Iconography';
 import { withTheme } from 'jui/foundation/styled-components';
 import { ThemeProps } from 'jui/foundation/theme/theme';
 import { HotKeys } from 'jui/hoc/HotKeys';
@@ -96,18 +95,18 @@ class ImageViewerComponent extends Component<ImageViewerProps> {
             aria-label={t('viewer.PreviousFile')}
             disabled={!this._canSwitchPrevious()}
             onClick={() => this.props.switchPreImage()}
-          >
-            <JuiIconography color="grey.900">pervious</JuiIconography>
-          </JuiImageViewerPreviousButton>
+            iconColor={['grey', '900']}
+            iconName="previous"
+          />
           <JuiImageViewerForwardButton
             className="buttonWrapper"
             tooltipTitle={t('viewer.NextFile')}
             aria-label={t('viewer.NextFile')}
             disabled={!this._canSwitchNext()}
             onClick={() => this.props.switchNextImage()}
-          >
-            <JuiIconography color="grey.900">forward</JuiIconography>
-          </JuiImageViewerForwardButton>
+            iconColor={['grey', '900']}
+            iconName="forward"
+          />
         </JuiImageViewerContainer>
       </HotKeys>
     );

@@ -19,11 +19,18 @@ import {
 } from '../../../foundation/utils/styles';
 import { JuiArrowTip } from '../../Tooltip/ArrowTip';
 import { Omit } from '../../../foundation/utils/typeHelper';
+import {
+  ICON_NAME,
+  JuiIconography,
+  IconSize,
+  IconColor,
+} from '../../../foundation/Iconography';
 
 type IconButtonSize = 'small' | 'medium' | 'large';
 
 type ButtonProps = {
   size?: IconButtonSize;
+  iconName: ICON_NAME;
   tooltipTitle?: string;
   disableToolTip?: boolean;
   disabled?: boolean;
@@ -31,25 +38,43 @@ type ButtonProps = {
   loading?: boolean;
   showShadow?: boolean;
   tooltipPlacement?: TooltipProps['placement'];
+  iconColor?: IconColor;
 };
 
 type JuiFabProps = Omit<MuiFabProps, 'innerRef' | 'variant' | 'color'> &
   ButtonProps;
 
-type StyledFabButtonProps = JuiFabProps & {
+type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
   colorName: string;
   colorScope: keyof Palette;
 };
 
-const iconSizes = {
-  large: 8,
-  medium: 7.5,
-  small: 6,
+type Size = 'medium' | 'large';
+
+const buttonSizes: { [k in Size]: number } = {
+  large: 15,
+  medium: 8,
+};
+
+const buttonShadows: { [k in Size]: string } = {
+  large: 'val16',
+  medium: 'val1',
+};
+
+const iconSizesMap: { [k in Size]: IconSize } = {
+  large: 'large',
+  medium: 'extraSmall',
 };
 
 const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
+
+const StyledMuiFab = styled(Fab)`
+  && {
+    min-height: 0;
+  }
+`;
 
 const WrappedMuiFab = (props: StyledFabButtonProps) => {
   const {
@@ -61,9 +86,12 @@ const WrappedMuiFab = (props: StyledFabButtonProps) => {
     ...restProps
   } = props;
   return (
-    <Fab TouchRippleProps={{ classes: touchRippleClasses }} {...restProps}>
+    <StyledMuiFab
+      TouchRippleProps={{ classes: touchRippleClasses }}
+      {...restProps}
+    >
       {loading ? <JuiCircularProgress size={20} /> : children}
-    </Fab>
+    </StyledMuiFab>
   );
 };
 
@@ -73,16 +101,12 @@ const StyledFabButton = styled<StyledFabButtonProps>(
   && {
     background-color: ${({ theme, colorScope, colorName }) =>
       palette(colorScope, colorName)({ theme })};
-    width: ${({ size = 'medium', theme }) =>
-      width(iconSizes[size] * 2)({
-        theme,
-      })};
-    height: ${({ size = 'medium', theme }) =>
-      height(iconSizes[size] * 2)({
-        theme,
-      })};
-    box-shadow: ${({ showShadow, theme }) =>
-      showShadow ? theme.boxShadow.val16 : 'none'};
+    width: ${({ size = 'large', theme }) =>
+      width(buttonSizes[size])({ theme })};
+    height: ${({ size = 'large', theme }) =>
+      height(buttonSizes[size])({ theme })};
+    box-shadow: ${({ showShadow, theme, size = 'large' }) =>
+      showShadow ? theme.boxShadow[buttonShadows[size]] : 'none'};
     ${typography('caption1')};
     color: ${({ theme, colorScope, colorName }) =>
       theme.palette.getContrastText(palette(colorScope, colorName)({ theme }))};
@@ -97,12 +121,6 @@ const StyledFabButton = styled<StyledFabButtonProps>(
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
       transform: scale(1);
       animation-name: ${({ theme }) => rippleEnter(theme)};
-    }
-    .icon {
-      svg {
-        font-size: ${({ size = 'medium', theme }) =>
-          width(iconSizes[size])({ theme })};
-      }
     }
     &[disabled] {
       background-color: ${({ theme, colorScope, colorName }) =>
@@ -126,6 +144,9 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
     tooltipPlacement,
     color,
     disabled,
+    iconName,
+    iconColor,
+    size = 'large',
     ...rest
   } = props;
   let colorScope: keyof Palette = 'primary';
@@ -148,8 +169,13 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
           <StyledFabButton
             colorScope={colorScope}
             colorName={colorName}
+            size={size}
             {...rest}
-          />
+          >
+            <JuiIconography iconColor={iconColor} iconSize={iconSizesMap[size]}>
+              {iconName}
+            </JuiIconography>
+          </StyledFabButton>
         }
       </JuiArrowTip>
     );
@@ -159,13 +185,18 @@ const JuiFabButtonComponent: React.StatelessComponent<JuiFabProps> = (
       disabled={disabled}
       colorScope={colorScope}
       colorName={colorName}
+      size={size}
       {...rest}
-    />
+    >
+      <JuiIconography iconColor={iconColor} iconSize={iconSizesMap[size]}>
+        {iconName}
+      </JuiIconography>
+    </StyledFabButton>
   );
 };
 
 JuiFabButtonComponent.defaultProps = {
-  size: 'medium',
+  size: 'large',
   color: 'common.white',
   disabled: false,
   tooltipTitle: '',

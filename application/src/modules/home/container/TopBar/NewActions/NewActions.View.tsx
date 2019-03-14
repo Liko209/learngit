@@ -12,7 +12,6 @@ import { JuiNewActions } from 'jui/pattern/TopBar';
 import { JuiFabButton } from 'jui/components/Buttons';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { NewMessage } from '@/containers/NewMessage';
-import { JuiIconography } from 'jui/foundation/Iconography';
 
 type NewActionsProps = WithNamespaces & ViewProps;
 
@@ -27,12 +26,11 @@ class NewActions extends React.Component<NewActionsProps> {
     const { t } = this.props;
     return (
       <JuiFabButton
-        size="small"
+        size="medium"
         tooltipTitle={t('home.newActions')}
         data-test-automation-id="addMenuBtn"
-      >
-        <JuiIconography>new_actions</JuiIconography>
-      </JuiFabButton>
+        iconName="new_actions"
+      />
     );
   }
 
