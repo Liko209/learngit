@@ -11,13 +11,18 @@ import GroupModel from '@/store/models/Group';
 import { StoreViewModel } from '@/store/ViewModel';
 import { MemberProps, MemberViewProps } from './types';
 import { CONVERSATION_TYPES } from '@/constants';
-import { OpenProfile } from '@/common/OpenProfile';
 
-class ViewModel extends StoreViewModel<MemberProps> implements MemberViewProps {
+class MemberViewModel extends StoreViewModel<MemberProps>
+  implements MemberViewProps {
   private _showTypes = [
     CONVERSATION_TYPES.TEAM,
     CONVERSATION_TYPES.NORMAL_GROUP,
   ];
+
+  @computed
+  get groupId() {
+    return this.props.id;
+  }
 
   @computed
   private get _group() {
@@ -35,10 +40,6 @@ class ViewModel extends StoreViewModel<MemberProps> implements MemberViewProps {
   get showMembersCount() {
     return this._showTypes.includes(this._group.type);
   }
-
-  onClick = () => {
-    OpenProfile.show(this.props.id);
-  }
 }
 
-export default ViewModel;
+export { MemberViewModel };

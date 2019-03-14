@@ -4,30 +4,26 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
-import { JuiArrowTip } from 'jui/components';
-import { JuiIconography } from 'jui/foundation/Iconography';
 import { JuiConversationPageMember } from 'jui/pattern/ConversationPageMember';
 import { MemberViewProps } from './types';
+import { OpenProfile } from '@/common/OpenProfile';
 
-class View extends React.Component<MemberViewProps> {
+class MemberView extends React.Component<MemberViewProps> {
+  openProfile = () => {
+    OpenProfile.show(this.props.groupId);
+  }
+
   render() {
-    const { membersCount, showMembersCount, onClick } = this.props;
+    const { membersCount, showMembersCount } = this.props;
 
     if (!showMembersCount) return null;
 
     return (
-      <JuiArrowTip
-        title={i18next.t('people.team.Members')}
-        aria-label={i18next.t('people.team.Members')}
-      >
-        <JuiConversationPageMember onClick={onClick}>
-          <JuiIconography iconSize="medium">member_count</JuiIconography>
-          <span>{membersCount}</span>
-        </JuiConversationPageMember>
-      </JuiArrowTip>
+      <JuiConversationPageMember onClick={this.openProfile}>
+        <span>{membersCount}</span>
+      </JuiConversationPageMember>
     );
   }
 }
 
-export default View;
+export { MemberView };

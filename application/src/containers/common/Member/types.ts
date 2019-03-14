@@ -3,12 +3,14 @@
  * @Date: 2019-03-11 16:25:35,
  * Copyright © RingCentral. All rights reserved.
  */
-export type MemberProps = {
+type MemberProps = {
   id: number;
 };
 
-export type MemberViewProps = {
-  onClick(): void;
+type MemberViewProps = {
+  groupId: number;
   membersCount: number;
   showMembersCount: boolean;
 };
+
+export { MemberProps, MemberViewProps };

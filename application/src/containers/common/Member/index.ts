@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { default as Member } from './Member';
+export * from './Member';

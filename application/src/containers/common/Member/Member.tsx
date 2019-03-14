@@ -5,8 +5,13 @@
  */
 
 import { buildContainer } from '@/base';
-import View from './Member.View';
-import ViewModel from './Member.ViewModel';
+import { MemberView } from './Member.View';
+import { MemberViewModel } from './Member.ViewModel';
 import { MemberProps } from './types';
 
-export default buildContainer<MemberProps>({ View, ViewModel });
+const Member = buildContainer<MemberProps>({
+  View: MemberView,
+  ViewModel: MemberViewModel,
+});
+
+export { Member };
