@@ -32,7 +32,7 @@ type JuiInfiniteListProps = {
   loadingMoreRenderer: JSX.Element;
   children: JSX.Element[];
   stickToBottom?: boolean;
-  fallBackRenderer: JSX.Element;
+  fallBackRenderer?: JSX.Element;
   classWhenUnScrollable?: string;
   classWhenScrollable?: string;
 };
