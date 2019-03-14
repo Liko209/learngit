@@ -98,7 +98,8 @@ class About extends Component<Props> {
         </Param>
         <Param>
           Copyright © 1999-
-          {new Date().getFullYear()} RingCentral, Inc. All rights reserved.
+          {new Date().getFullYear()} RingCentral, Inc.{' '}
+          {t('home.allRightsReserved')}.
         </Param>
       </JuiModal>
     );
