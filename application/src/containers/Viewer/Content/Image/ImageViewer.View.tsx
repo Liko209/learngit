@@ -142,14 +142,12 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                         imageRef={this._imageRef}
                         src={imageUrl}
                         width={
-                          autoFitContentRect
-                            ? autoFitContentRect.width
-                            : imageWidth
+                          (autoFitContentRect && autoFitContentRect.width) ||
+                          imageWidth
                         }
                         height={
-                          autoFitContentRect
-                            ? autoFitContentRect.height
-                            : imageHeight
+                          (autoFitContentRect && autoFitContentRect.height) ||
+                          imageHeight
                         }
                         style={imageStyle}
                         onSizeLoad={notifyContentSizeChange}

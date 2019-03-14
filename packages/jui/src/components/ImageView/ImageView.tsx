@@ -108,6 +108,8 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   constructor(props: JuiImageProps) {
     super(props);
     this.state = getInitState(props);
+    const { width, height, onSizeLoad } = this.props;
+    width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
   }
 
   static getDerivedStateFromProps(
@@ -118,11 +120,6 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
       return getInitState(nextProps);
     }
     return null;
-  }
-
-  componentDidMount() {
-    const { width, height, onSizeLoad } = this.props;
-    width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
   }
 
   getImageRef = (): RefObject<HTMLImageElement> => {
