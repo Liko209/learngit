@@ -7,6 +7,8 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { action, observable, runInAction } from 'mobx';
+import { observer } from 'mobx-react';
+import ReactResizeDetector from 'react-resize-detector';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -15,7 +17,6 @@ import { JuiLozengeButton } from 'jui/components/Buttons';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
-import { observer } from 'mobx-react';
 import {
   StreamItem,
   StreamItemType,
@@ -30,13 +31,14 @@ import {
   IndexRange,
   JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
-import ReactResizeDetector from 'react-resize-detector';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 
 type Props = WithNamespaces & StreamViewProps & StreamProps;
 type StreamItemPost = StreamItem & { value: number[] };
+
 const LOADING_DELAY = 500;
+
 @observer
 class StreamViewComponent extends Component<Props> {
   private currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -207,9 +209,7 @@ class StreamViewComponent extends Component<Props> {
       );
       return;
     }
-    requestAnimationFrame(() => {
-      this._listRef.current && this._listRef.current.scrollToIndex(index);
-    });
+    this._listRef.current && this._listRef.current.scrollToIndex(index);
   }
 
   private _handleVisibilityChanged = ({
@@ -297,31 +297,29 @@ class StreamViewComponent extends Component<Props> {
       />
     );
     return (
-      <JuiStream>
-        <ReactResizeDetector handleHeight={true}>
-          {({ height }: { height: number }) => (
-            <div style={{ height: '100%' }}>
-              {this._renderJumpToFirstUnreadButton()}
-              <JuiInfiniteList
-                ref={this._listRef}
-                height={height}
-                stickToBottom={true}
-                initialScrollToIndex={initialPosition}
-                minRowHeight={50} // extract to const
-                loadInitialData={this._loadInitialPosts}
-                loadMore={loadMore}
-                loadingRenderer={defaultLoading}
-                hasMore={hasMore}
-                loadingMoreRenderer={defaultLoadingMore}
-                fallBackRenderer={onInitialDataFailed}
-                onVisibleRangeChange={this._handleVisibilityChanged}
-              >
-                {this._renderStreamItems()}
-              </JuiInfiniteList>
-            </div>
-          )}
-        </ReactResizeDetector>
-      </JuiStream>
+      <ReactResizeDetector handleHeight={true}>
+        {({ height }: { height: number }) => (
+          <JuiStream>
+            {this._renderJumpToFirstUnreadButton()}
+            <JuiInfiniteList
+              ref={this._listRef}
+              height={height}
+              stickToBottom={true}
+              initialScrollToIndex={initialPosition}
+              minRowHeight={50} // extract to const
+              loadInitialData={this._loadInitialPosts}
+              loadMore={loadMore}
+              loadingRenderer={defaultLoading}
+              hasMore={hasMore}
+              loadingMoreRenderer={defaultLoadingMore}
+              fallBackRenderer={onInitialDataFailed}
+              onVisibleRangeChange={this._handleVisibilityChanged}
+            >
+              {this._renderStreamItems()}
+            </JuiInfiniteList>
+          </JuiStream>
+        )}
+      </ReactResizeDetector>
     );
   }
 

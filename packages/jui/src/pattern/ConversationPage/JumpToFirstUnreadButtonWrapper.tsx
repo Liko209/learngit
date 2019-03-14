@@ -7,9 +7,8 @@ type JuiJumpToFirstUnreadButtonWrapperProps = HTMLAttributes<HTMLElement>;
 const StyledDiv = styled.div`
   position: absolute;
   top: ${spacing(4)};
-  left: 0;
-  right: 0;
-  text-align: center;
+  transform: translateX(-50%);
+  left: 50%;
 `;
 
 const JuiJumpToFirstUnreadButtonWrapper = memo(

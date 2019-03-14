@@ -18,7 +18,7 @@ import {
 import { IndexRange } from './types';
 
 type JuiInfiniteListProps = {
-  height: number;
+  height?: number;
   minRowHeight: number;
   overscan?: number;
   hasMore: (direction: 'up' | 'down') => boolean;

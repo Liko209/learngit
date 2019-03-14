@@ -2,6 +2,7 @@ import React from 'react';
 import { mount, ReactWrapper } from 'enzyme';
 import i18next from 'i18next';
 import { ThemeProvider } from 'styled-components';
+import { AutoSizerProps } from 'jui/components/AutoSizer';
 import { LoadingMorePlugin } from '@/plugins';
 import GroupStateModel from '@/store/models/GroupState';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
@@ -14,14 +15,8 @@ import { StreamItemType, StreamViewProps } from '../types';
 import { PostService } from 'sdk/module/post';
 PostService.getInstance = jest.fn();
 
-jest.mock('react-resize-detector', () => {
-  type Props = {
-    children: ({ height }: { height: number }) => React.ReactNode;
-  };
-
-  return ({ children }: Props) => {
-    return children({ height: 200 });
-  };
+jest.mock('jui/components/AutoSizer', () => {
+  return ({ children }: AutoSizerProps) => children({ height: 200 });
 });
 jest.mock('sdk/module/post');
 jest.mock('../../../ConversationSheet', () => ({}));

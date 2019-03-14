@@ -17,13 +17,7 @@ import React, {
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
 import { IndexRange, JuiVirtualizedListProps } from './types';
-import {
-  useRange,
-  useRowManager,
-  useScroll,
-  ScrollPosition,
-  useForceUpdate,
-} from './hooks';
+import { useRange, useRowManager, useScroll, ScrollPosition } from './hooks';
 import {
   createKeyMapper,
   createRange,
@@ -169,15 +163,15 @@ const JuiVirtualizedList: RefForwardingComponent<
       return prevAtBottomRef.current;
     },
     scrollToIndex: (index: number) => {
-      if (index + 1 > children.length) {
-        return;
-      }
       setRenderedRange(
-        createRange({ startIndex: index, size: renderedRangeSize, min: 0 }),
+        createRange({
+          startIndex: index,
+          size: renderedRangeSize,
+          min: minIndex,
+          max: maxIndex,
+        }),
       );
-      setScrollPosition({ index, offset: 0 });
-      scrollEffectTriggerRef.current++; // Trigger scroll after next render
-      forceUpdate();
+      scrollToPosition({ index, offset: 0 });
     },
   }));
 
@@ -192,7 +186,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   // State
   //
   const rowManager = useRowManager({ minRowHeight, keyMapper });
-  const { forceUpdate } = useForceUpdate();
+
   const { scrollPosition, setScrollPosition } = useScroll({
     index: initialScrollToIndex,
     offset: 0,
@@ -295,6 +289,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   useEffect(() => {
     if (ref.current) {
       const { scrollTop } = ref.current;
+      prevScrollTopRef.current = scrollTop;
       prevAtBottomRef.current =
         height >= rowManager.getRowOffsetTop(childrenCount) - scrollTop;
     }
@@ -328,6 +323,8 @@ const JuiVirtualizedList: RefForwardingComponent<
 
       // Remember scrollTop to check scroll direction
       prevScrollTopRef.current = scrollTop;
+      prevAtBottomRef.current =
+        height >= rowManager.getRowOffsetTop(childrenCount) - scrollTop;
 
       if (!isRangeEqual(renderedRange, newRenderedRange)) {
         onRenderedRangeChange(newRenderedRange);
@@ -348,6 +345,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   const childrenToRender: ReactNode[] = children.filter((_, i) => {
     return startIndex <= i && i <= stopIndex;
   });
+
   return (
     <div
       ref={ref}
