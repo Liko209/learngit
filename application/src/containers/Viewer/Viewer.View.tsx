@@ -20,8 +20,12 @@ class ViewerView extends Component<ViewerViewProps & ViewerViewModelProps> {
   render() {
     const { itemId, contentLeftRender, ...rest } = this.props;
     return (
-      <JuiViewerBackground>
-        <ViewerTitle itemId={itemId} {...rest} />
+      <JuiViewerBackground data-test-automation-id="Viewer">
+        <ViewerTitle
+          data-test-automation-id="ViewerTitle"
+          itemId={itemId}
+          {...rest}
+        />
         <ViewerContent
           data-test-automation-id="ViewerContent"
           left={contentLeftRender({ ...rest, itemId })}
