@@ -47,9 +47,11 @@ const logger = LogUtils.getLogger(__filename);
       sceneArray.push(new scenes[name](taskDto));
     }
 
-    let result = true;
-    for (let s of sceneArray) {
-      result = (await s.run()) && result;
+    let result = true, scene;
+    while (sceneArray.length > 0) {
+      scene = sceneArray.shift();
+      result = (await scene.run()) && result;
+      scene.clearReportCache();
     }
 
     if (result) {

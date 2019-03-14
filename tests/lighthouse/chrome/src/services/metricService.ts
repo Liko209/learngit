@@ -11,10 +11,11 @@ import {
   PerformanceDto,
   PerformanceItemDto,
   LoadingTimeSummaryDto,
-  LoadingTimeItemDto
+  LoadingTimeItemDto,
+  FpsDto
 } from "../models";
 
-class MetriceService {
+class MetricService {
   static async createTask(): Promise<TaskDto> {
     return await TaskDto.create({
       host: Config.jupiterHost,
@@ -169,6 +170,30 @@ class MetriceService {
     }
   }
 
+  static async createFpsItem(sceneDto: SceneDto, scene: Scene) {
+    let dtoArr = new Array();
+    let sceneId = sceneDto.id;
+    let artifacts = scene.getArtifacts();
+    let { FpsGatherer } = artifacts;
+    let metrics: Array<any>;
+    if (FpsGatherer) {
+      metrics = FpsGatherer.metrics;
+    }
+
+    if (!metrics || metrics.length == 0) {
+      return;
+    }
+
+    let idx = 1;
+    for (let item of metrics) {
+      dtoArr.push(Object.assign(item, { sceneId, index: idx++ }));
+    }
+
+    if (dtoArr.length > 0) {
+      await FpsDto.bulkCreate(dtoArr);
+    }
+  }
+
   static async createLoadingTime(sceneDto: SceneDto, scene: Scene, name: string) {
     let sceneId = sceneDto.id;
     let artifacts = scene.getArtifacts();
@@ -245,4 +270,4 @@ class MetriceService {
   }
 }
 
-export { MetriceService };
+export { MetricService };

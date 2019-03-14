@@ -7,13 +7,13 @@ import { Config } from "../config";
 import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
 import { LoginGatherer, SearchGatherer } from "../gatherers";
-import { MetriceService, FileService } from "../services";
+import { MetricService, FileService } from "../services";
 
 class SearchScene extends Scene {
   private keywords: Array<string> = Config.searchKeywords;
 
   async preHandle() {
-    this.config = SceneConfigFactory.getSimplifyConfig();
+    this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
 
     this.config.passes[0].gatherers.unshift({
       instance: new LoginGatherer()
@@ -25,15 +25,19 @@ class SearchScene extends Scene {
 
   async saveMetircsIntoDb(): Promise<SceneDto> {
     let sceneDto = await super.saveMetircsIntoDb();
-    await MetriceService.createLoadingTime(sceneDto, this, SearchGatherer.name);
+    await MetricService.createLoadingTime(sceneDto, this, SearchGatherer.name);
     return sceneDto;
   }
 
   async saveMetircsIntoDisk() {
-    if (this.artifacts) {
+    if (this.artifacts && !this.fpsMode) {
       await FileService.saveTracesIntoDisk(this.artifacts, this.name());
       await FileService.saveMemoryIntoDisk(this.artifacts, this.name());
     }
+  }
+
+  supportFps(): boolean {
+    return true;
   }
 }
 
