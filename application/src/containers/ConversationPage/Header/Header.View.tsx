@@ -48,7 +48,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
   private _renderMenu = () => {
     const { groupId } = this.props;
-    return <Menu id={groupId} />;
+    return <Menu id={groupId} key={groupId} />;
   }
 
   @computed
