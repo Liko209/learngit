@@ -6,7 +6,7 @@
 import { RTCCallFsm } from '../RTCCallFsm';
 import { CALL_FSM_NOTIFY } from '../types';
 
-describe('Call FSM UT', async () => {
+describe('Call FSM UT', () => {
   class MockCallFsmLisener {
     private _fsm: RTCCallFsm;
     constructor(fsm: RTCCallFsm) {
@@ -54,7 +54,7 @@ describe('Call FSM UT', async () => {
     return ret;
   }
 
-  describe('Idle state transitions', async () => {
+  describe('Idle state transitions', () => {
     it("should state transition from Idle to Pending when receive 'Account not ready' event [JPT-580]", done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
@@ -201,7 +201,7 @@ describe('Call FSM UT', async () => {
     });
   });
 
-  describe('Pending state transitions', async () => {
+  describe('Pending state transitions', () => {
     it("should state  transition from Pending to Connecting when receive 'Account ready' event [JPT-583]", done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
@@ -231,7 +231,7 @@ describe('Call FSM UT', async () => {
     });
   });
 
-  describe('Connecting state transitions', async () => {
+  describe('Connecting state transitions', () => {
     it("should state transition from Connecting to Connected when receive 'Session confirmed' event [JPT-585]", done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
@@ -281,7 +281,7 @@ describe('Call FSM UT', async () => {
     });
   });
 
-  describe('Connected state transitions', async () => {
+  describe('Connected state transitions', () => {
     it("should state transition from Connected to Disconnected when receive 'Hang up' event [JPT-589]", done => {
       const fsm = createFsm();
       const listener = new MockCallFsmLisener(fsm);
@@ -316,7 +316,7 @@ describe('Call FSM UT', async () => {
       });
     });
 
-    describe('flip()', async () => {
+    describe('flip()', () => {
       it("should state transition from Connected to Connected when receive 'flip' event", done => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onFlipAction');
@@ -331,7 +331,7 @@ describe('Call FSM UT', async () => {
       });
     });
 
-    describe('startRecord()', async () => {
+    describe('startRecord()', () => {
       it("should state transition from Connected to Connected when receive 'startRecord' event", done => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onStartRecordAction');
@@ -346,7 +346,7 @@ describe('Call FSM UT', async () => {
       });
     });
 
-    describe('stopRecord()', async () => {
+    describe('stopRecord()', () => {
       it("should state transition from Connected to Connected when receive 'stopRecord' event", done => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onStopRecordAction');
@@ -361,7 +361,7 @@ describe('Call FSM UT', async () => {
       });
     });
 
-    describe('stopRecord()', async () => {
+    describe('stopRecord()', () => {
       it('should notify transfer failed when transfer call in idle state [JPT-672]', done => {
         const callFsm = new RTCCallFsm();
         jest.spyOn(callFsm, 'onReportCallActionFailed');
@@ -425,7 +425,7 @@ describe('Call FSM UT', async () => {
     });
   });
 
-  describe('park()', async () => {
+  describe('park()', () => {
     it('should call park api when fsm in connected state [JPT-821]', done => {
       const callFsm = new RTCCallFsm();
       jest.spyOn(callFsm, 'onParkAction');
