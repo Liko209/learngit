@@ -19,7 +19,7 @@ fixture('Profile/RemoveTeamMember')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test.skip(formalName('Only admin has the ability to remove members from the team', ['JPT-1081', 'RemoveTeamMember', 'P1', 'Potar.he']), async (t) => {
+test(formalName('Only admin has the ability to remove members from the team', ['JPT-1081', 'RemoveTeamMember', 'P1', 'Potar.he']), async (t) => {
   const app = new AppRoot(t);
 
   const users = h(t).rcData.mainCompany.users
@@ -141,7 +141,7 @@ test.skip(formalName('Only admin has the ability to remove members from the team
 
 });
 
-test.skip(formalName('The remove team member permission should sync dynamically', ['JPT-1086', 'P1', 'RemoveTeamMember', 'Potar.he']), async (t) => {
+test(formalName('The remove team member permission should sync dynamically', ['JPT-1086', 'P1', 'RemoveTeamMember', 'Potar.he']), async (t) => {
   const app = new AppRoot(t);
 
   const users = h(t).rcData.mainCompany.users

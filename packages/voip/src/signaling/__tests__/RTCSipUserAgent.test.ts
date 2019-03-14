@@ -43,7 +43,7 @@ const provisionData = 'provisionData';
 const options: ProvisionDataOptions = {};
 const phoneNumber = 'phoneNumber';
 
-describe('RTCSipUserAgent', async () => {
+describe('RTCSipUserAgent', () => {
   it('should emit registered event when web-phone tells register is successful. [JPT-599]', () => {
     const userAgent = new RTCSipUserAgent();
     userAgent._createWebPhone(provisionData, options);

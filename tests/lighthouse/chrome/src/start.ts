@@ -5,17 +5,9 @@
 require("dotenv").config();
 import { Config } from './config';
 import { initModel, closeDB } from "./models";
-import { FileService, MetriceService } from "./services";
+import { FileService, MetricService } from "./services";
 import { LogUtils, PptrUtils } from "./utils";
-import {
-  Scene,
-  LoginScene,
-  RefreshScene,
-  OfflineScene,
-  SwitchConversationScene,
-  SearchScene,
-  FetchGroupScene
-} from "./scenes";
+import * as scenes from "./scenes";
 
 const logger = LogUtils.getLogger(__filename);
 
@@ -27,28 +19,45 @@ const logger = LogUtils.getLogger(__filename);
   try {
     let startTime = Date.now();
 
-    let taskDto = await MetriceService.createTask();
+    let taskDto = await MetricService.createTask();
 
     // check report dir
     await FileService.checkReportPath();
 
     // run scenes
-    let host = Config.jupiterHost;
-    let scenes: Array<Scene> = [
-      new LoginScene(`${host}`, taskDto),
-      new RefreshScene(`${host}`, taskDto),
-      new OfflineScene(`${host}`, taskDto),
-      new SwitchConversationScene(`${host}`, taskDto, [
-        "506503174",
-        "506445830"
-      ]),
-      new SearchScene(`${host}`, taskDto, ["John", "Doe", "Team", "kamino"]),
-      new FetchGroupScene(`${host}`, taskDto)
-    ];
+    const sceneNames = Object.keys(scenes).filter(name => {
+      const _name = name.toLowerCase();
+      if (_name === 'scene' || !_name.endsWith('scene')) {
+        return false;
+      }
+      const includeScene = Config.includeScene;
+      if (includeScene.length === 0) {
+        return true;
+      }
 
-    let result = true;
-    for (let s of scenes) {
-      result = (await s.run()) && result;
+      for (let s of includeScene) {
+        if (_name === s.toLowerCase()) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    const sceneArray = [];
+    for (let name of sceneNames) {
+      sceneArray.push(new scenes[name](taskDto));
+    }
+
+    let result = true, scene;
+    while (sceneArray.length > 0) {
+      scene = sceneArray.shift();
+      result = (await scene.run()) && result;
+      scene.clearReportCache();
+      if (scene.supportFps()) {
+        scene.openFpsMode();
+        result = (await scene.run()) && result;
+        scene.clearReportCache();
+      }
     }
 
     if (result) {
@@ -60,7 +69,7 @@ const logger = LogUtils.getLogger(__filename);
     let endTime = Date.now();
 
     // 1: success  0: failure
-    await MetriceService.updateTaskForEnd(taskDto, result ? "1" : "0");
+    await MetricService.updateTaskForEnd(taskDto, result ? "1" : "0");
 
     logger.info(`total cost ${endTime - startTime}ms, result: ${result}`);
   } catch (err) {

@@ -35,7 +35,10 @@ class FileService {
     let html = fs.readFileSync(`${process.cwd()}/src/index.template.html`, 'utf8');
 
     for (let file of files) {
-      if (file.endsWith('.html') && file !== 'index.html' && file !== 'Traces.html') {
+      if (file.endsWith('.html')
+        && file !== 'index.html'
+        && file !== 'Traces.html'
+        && file !== 'Heap.html') {
         names.push(file.substr(0, file.length - 5));
       }
 
@@ -47,24 +50,25 @@ class FileService {
         memoryFiles.push(file);
       }
     }
-    if (names.length === 0) {
-      return;
-    }
-    names.sort();
 
     if (tracesFiles.length !== 0) {
       names.push('Traces');
       let htmlArray = ['<!doctype html><html><head></head><body>'];
       for (let t of tracesFiles) {
-        const stream = fs.createReadStream(path.join(REPORT_DIR_PATH, t));
+        if (Config.fileUpload) {
 
-        const form = new FormData();
-        form.append('file', stream);
-        const response = await axios.post(`${fileServerUrl}/api/upload`, form, {
-          headers: form.getHeaders(),
-          maxContentLength: Infinity
-        });
-        htmlArray.push('<div style="margin:15px 130px">', `<a href="${fileServerUrl}/download/${response.data.fileName}" target="_blank">`, t, '</a>', '</div>');
+          const stream = fs.createReadStream(path.join(REPORT_DIR_PATH, t));
+
+          const form = new FormData();
+          form.append('file', stream);
+          const response = await axios.post(`${fileServerUrl}/api/upload`, form, {
+            headers: form.getHeaders(),
+            maxContentLength: Infinity
+          });
+          htmlArray.push('<div style="margin:15px 130px">', `<a href="${fileServerUrl}/download/${response.data.fileName}" target="_blank">`, t, '</a>', '</div>');
+        } else {
+          htmlArray.push('<div style="margin:15px 130px">', `<a href="${t}" target="_blank">`, t, '</a>', '</div>');
+        }
       }
       htmlArray.push('</body></html>');
 
@@ -76,21 +80,31 @@ class FileService {
       names.push('Heap');
       let htmlArray = ['<!doctype html><html><head></head><body>'];
       for (let m of memoryFiles) {
-        const stream = fs.createReadStream(path.join(REPORT_DIR_PATH, m));
+        if (Config.fileUpload) {
 
-        const form = new FormData();
-        form.append('file', stream);
-        const response = await axios.post(`${fileServerUrl}/api/upload`, form, {
-          headers: form.getHeaders(),
-          maxContentLength: Infinity
-        });
-        htmlArray.push('<div style="margin:15px 130px">', `<a href="${fileServerUrl}/download/${response.data.fileName}" target="_blank">`, m, '</a>', '</div>');
+          const stream = fs.createReadStream(path.join(REPORT_DIR_PATH, m));
+
+          const form = new FormData();
+          form.append('file', stream);
+          const response = await axios.post(`${fileServerUrl}/api/upload`, form, {
+            headers: form.getHeaders(),
+            maxContentLength: Infinity
+          });
+          htmlArray.push('<div style="margin:15px 130px">', `<a href="${fileServerUrl}/download/${response.data.fileName}" target="_blank">`, m, '</a>', '</div>');
+        } else {
+          htmlArray.push('<div style="margin:15px 130px">', `<a href="${m}" target="_blank">`, m, '</a>', '</div>');
+        }
       }
       htmlArray.push('</body></html>');
 
       let memoryPath = `${REPORT_DIR_PATH}/Heap.html`;
       fs.writeFileSync(memoryPath, htmlArray.join(''));
     }
+
+    if (names.length === 0) {
+      return;
+    }
+    names.sort();
 
     html = html.replace('$$FILE_LIST$$', JSON.stringify(names));
     html = html.replace('$$DASHBOARD_URL$$', Config.dashboardUrl);

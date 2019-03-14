@@ -844,7 +844,12 @@ class FileUploadController {
     const uploadingFiles = Array.from(this._progressCaches.values());
     for (let i = 0; i < uploadingFiles.length; i++) {
       const fileStatus = uploadingFiles[i];
-      if (fileStatus && this._isFileInUploading(fileStatus)) {
+      if (
+        fileStatus &&
+        this._isFileInUploading(fileStatus) &&
+        fileStatus.itemFile &&
+        !this._hasValidStoredFile(fileStatus.itemFile)
+      ) {
         hasUploading = true;
         break;
       }

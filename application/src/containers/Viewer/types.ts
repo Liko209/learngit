@@ -18,6 +18,8 @@ type ViewerViewModelProps = CommonProps & {
   init: () => Promise<void>;
   currentItemId: number;
   currentIndex: number;
+  getCurrentItemId: () => number;
+  getCurrentIndex: () => number;
   total: number;
   ids: number[];
   updateCurrentItemIndex: (index: number, itemId: number) => void;
@@ -31,6 +33,7 @@ type ViewerViewModelProps = CommonProps & {
 
 type ViewerViewProps = CommonProps & {
   contentLeftRender: (props: ViewerViewModelProps) => ReactElement;
+  viewerDestroyer: Function;
 };
 
 export { ViewerViewModelProps, ViewerViewProps };

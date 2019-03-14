@@ -5,8 +5,8 @@
  */
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
-import { daoManager, QUERY_DIRECTION } from '../../../dao';
-import { PostDao } from '../dao';
+import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
+import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
@@ -60,6 +60,9 @@ class PostDataController {
   async handleIndexPosts(data: Raw<Post>[], maxPostsExceed: boolean) {
     if (data.length) {
       let posts = this.transformData(data);
+      this._handleModifiedDiscontinuousPosts(
+        posts.filter((post: Post) => post.created_at !== post.modified_at),
+      );
       await this.handelPostsOverThreshold(posts, maxPostsExceed);
       await this.preInsertController.bulkDelete(posts);
       posts = await this.handleIndexModifiedPosts(posts);
@@ -76,11 +79,38 @@ class PostDataController {
   async handleSexioPosts(data: Raw<Post>[]) {
     if (data.length) {
       let posts = this.transformData(data);
+      this._handleModifiedDiscontinuousPosts(
+        posts.filter((post: Post) => post.created_at !== post.modified_at),
+      );
       posts = await this.handleSexioModifiedPosts(posts);
       await this.preInsertController.bulkDelete(posts);
       return await this.filterAndSavePosts(posts, true);
     }
     return data;
+  }
+
+  /**
+   * For bookmark/@mentions/pin post/reply
+   */
+  private async _handleModifiedDiscontinuousPosts(posts: Post[]) {
+    const postDiscontinuousDao = daoManager.getDao(PostDiscontinuousDao);
+    const deactivatedPosts: Post[] = [];
+    const normalPosts: Post[] = [];
+    posts.forEach((post: Post) => {
+      post.deactivated ? deactivatedPosts.push(post) : normalPosts.push(post);
+    });
+    if (deactivatedPosts.length > 0) {
+      await Promise.all([
+        daoManager.getDao(DeactivatedDao).bulkPut(deactivatedPosts),
+        postDiscontinuousDao.bulkDelete(
+          deactivatedPosts.map((post: Post) => post.id),
+        ),
+      ]);
+    }
+    if (normalPosts.length > 0) {
+      await postDiscontinuousDao.bulkUpdate(normalPosts, false);
+    }
+    notificationCenter.emitEntityUpdate(ENTITY.DISCONTINUOUS_POST, posts);
   }
 
   /**

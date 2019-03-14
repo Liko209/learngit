@@ -67,6 +67,7 @@ class FilesView extends React.Component<FilesViewProps> {
   _handleImageClick = (
     groupId: number,
     id: number,
+    thumbnailSrc: string,
     origWidth: number,
     origHeight: number,
   ) => async (ev: React.MouseEvent, loaded?: boolean) => {
@@ -75,7 +76,12 @@ class FilesView extends React.Component<FilesViewProps> {
     if (!canShowDialogPermission) {
       return;
     }
-    showImageViewer(groupId, id, target);
+    showImageViewer(groupId, id, {
+      thumbnailSrc,
+      initialWidth: origWidth,
+      initialHeight: origHeight,
+      originElement: target,
+    });
   }
 
   async componentDidMount() {
@@ -111,6 +117,13 @@ class FilesView extends React.Component<FilesViewProps> {
                 <JuiPreviewImage
                   key={id}
                   didLoad={() => this._handleImageDidLoad(id, callback)}
+                  handleImageClick={this._handleImageClick(
+                    groupId,
+                    id,
+                    urlMap.get(id) || '',
+                    origWidth,
+                    origHeight,
+                  )}
                   placeholder={placeholder}
                   width={size.width}
                   height={size.height}
@@ -130,15 +143,17 @@ class FilesView extends React.Component<FilesViewProps> {
                 onClick: this._handleImageClick(
                   groupId,
                   id,
-                  origWidth,
-                  origHeight,
+                  urlMap.get(id) || '',
+                  size.width,
+                  size.height,
                 ),
               })}
               handleImageClick={this._handleImageClick(
                 groupId,
                 id,
-                origWidth,
-                origHeight,
+                urlMap.get(id) || '',
+                size.width,
+                size.height,
               )}
               width={size.width}
               height={size.height}
