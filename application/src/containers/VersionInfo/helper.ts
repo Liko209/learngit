@@ -6,18 +6,44 @@
 import moment from 'moment';
 import { gitCommitInfo } from './commitInfo';
 
+type versionInfoType = {
+  buildTime: string | number;
+  buildCommit: string;
+  buildVersion: string;
+  deployedTime: string | number;
+  deployedCommit: string;
+  deployedVersion: string;
+};
+
 async function fetchVersionInfo() {
-  const versionInfos = (await import(/*
+  const versionInfo = (await import(/*
     webpackChunkName: "versionInfo" */ './versionInfo.json'))
     .data;
+  return formatVersionInfo(versionInfo);
+}
 
-  let { buildTime, buildVersion, deployedTime, deployedVersion } = versionInfos;
+function formatVersionInfo(versionInfo: versionInfoType) {
+  let {
+    buildTime,
+    buildCommit,
+    buildVersion,
+    deployedTime,
+    deployedCommit,
+    deployedVersion,
+  } = versionInfo;
 
-  let { buildCommit, deployedCommit } = versionInfos;
+  let commitInfo = {
+    date: '',
+    commitHash: '',
+  };
 
-  const envBuildTime = process
+  if (gitCommitInfo.commitInfo && gitCommitInfo.commitInfo.length) {
+    commitInfo = gitCommitInfo.commitInfo[0];
+  }
+
+  const envBuildTime = process.env.BUILD_TIME
     ? formatDate(process.env.BUILD_TIME as string)
-    : +new Date();
+    : commitInfo.date;
 
   buildTime =
     buildTime !== '{{buildTime}}'
@@ -28,26 +54,24 @@ async function fetchVersionInfo() {
       ? (formatDate(Number(deployedTime)) as string)
       : (envBuildTime as string);
 
-  let lastCommitHash: string = '';
-  if (gitCommitInfo.commitInfo && gitCommitInfo.commitInfo.length) {
-    lastCommitHash = gitCommitInfo.commitInfo[0].commitHash;
-  }
+  const lastCommitHash: string = commitInfo.commitHash;
 
   buildCommit =
     buildCommit !== '{{buildCommit}}' ? buildCommit : lastCommitHash;
   deployedCommit =
     deployedCommit !== '{{deployedCommit}}' ? deployedCommit : lastCommitHash;
 
-  const envBuildVersion = process ? (process.env.APP_VERSION as string) : '';
+  const envBuildVersion = process.env.APP_VERSION
+    ? (process.env.APP_VERSION as string)
+    : '';
 
-  if (envBuildVersion !== '') {
-    buildVersion =
-      buildVersion !== '{{buildVersion}}' ? buildVersion : envBuildVersion;
-    deployedVersion =
-      deployedVersion !== '{{deployedVersion}}'
-        ? deployedVersion
-        : envBuildVersion;
-  }
+  buildVersion =
+    buildVersion !== '{{buildVersion}}' ? buildVersion : envBuildVersion;
+  deployedVersion =
+    deployedVersion !== '{{deployedVersion}}'
+      ? deployedVersion
+      : envBuildVersion;
+
   return {
     buildCommit,
     buildVersion,
@@ -59,7 +83,7 @@ async function fetchVersionInfo() {
 }
 
 function formatDate(date: string | number) {
-  return moment(date).format('YYYY-DD-MM hh:mm:ss');
+  return moment(date).format('YYYY-MM-DD HH:mm:ss');
 }
 
-export { formatDate, fetchVersionInfo };
+export { formatDate, fetchVersionInfo, formatVersionInfo };
