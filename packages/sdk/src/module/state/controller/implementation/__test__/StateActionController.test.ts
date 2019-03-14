@@ -101,7 +101,7 @@ describe('StateActionController', () => {
       jest
         .spyOn(mockEntitySourceController, 'get')
         .mockImplementationOnce(() => {
-          return originalModel;
+          return originalModel as any;
         });
       mockStateFetchDataController.getMyStateId = jest
         .fn()
@@ -161,7 +161,7 @@ describe('StateActionController', () => {
       jest
         .spyOn(mockEntitySourceController, 'get')
         .mockImplementationOnce(() => {
-          return originalModel;
+          return originalModel as any;
         });
 
       const mockPartialModifyController = new MockPartialModifyController(
@@ -171,7 +171,8 @@ describe('StateActionController', () => {
         _partialModifyController: mockPartialModifyController,
       });
       mockTotalUnreadController.handleGroupState = jest.fn();
-      stateActionController['_buildUpdateReadStatusParams'] = jest.fn().mockImplementationOnce(() => {
+      stateActionController[ '_buildUpdateReadStatusParams'
+] = jest.fn().mockImplementationOnce(() => {
         throw 'err';
       });
 
