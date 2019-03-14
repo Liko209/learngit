@@ -103,16 +103,8 @@ const StyledFabButton = styled<StyledFabButtonProps>(
         font-size: ${({ size = 'medium', theme }) =>
           width(iconSizes[size])({ theme })};
       }
-    }
-    &[disabled] {
-      background-color: ${({ theme, colorScope, colorName }) =>
-        palette(colorScope, colorName)({ theme })};
-      color: ${({ theme, colorScope, colorName }) =>
-        theme.palette.getContrastText(
-          palette(colorScope, colorName)({ theme }),
-        )};
-      box-shadow: ${({ showShadow, theme }) =>
-        showShadow ? theme.boxShadow.val16 : 'none'};
+      opacity: ${({ theme, disabled }) =>
+        disabled ? theme.palette.action.hoverOpacity : 1};
     }
   }
 `;
