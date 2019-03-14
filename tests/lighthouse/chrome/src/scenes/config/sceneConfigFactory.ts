@@ -3,22 +3,32 @@
  * @Date: 2018-12-27 10:01:32
  */
 import { SceneConfig } from "./sceneConfig";
-import { ProcessGatherer, MemoryGatherer } from "../../gatherers";
+import { ProcessGatherer, MemoryGatherer, FpsGatherer } from "../../gatherers";
 import { ProcessAudit } from "../../audits";
 
 class SceneConfigFactory {
-  static getSimplifyConfig(): SceneConfig {
+  static getSimplifyConfig(options: { fpsMode: boolean }): SceneConfig {
     let config = new SceneConfig();
 
     config.passes = config.passes.splice(0, 1);
-    config.passes[0].gatherers = [
+    let gatherers = [];
+
+    if (options.fpsMode) {
+      gatherers.push({
+        instance: new FpsGatherer()
+      });
+    }
+
+    gatherers.push(
       {
         instance: new ProcessGatherer()
       },
       {
         instance: new MemoryGatherer()
       }
-    ];
+    );
+
+    config.passes[0].gatherers = gatherers;
     config.audits = [
       {
         implementation: ProcessAudit

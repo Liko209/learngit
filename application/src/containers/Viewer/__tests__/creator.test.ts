@@ -10,7 +10,7 @@ import { showImageViewer } from '../creator';
 jest.mock('@/containers/Dialog', () => {
   return {
     Dialog: {
-      simple: jest.fn(),
+      simple: jest.fn().mockReturnValue({ dismiss: () => {} }),
     },
   };
 });
