@@ -60,6 +60,8 @@ describe('Viewer.ViewModel', () => {
       expect(vm).toHaveProperty('props');
       expect(vm.currentIndex).toEqual(0);
       expect(vm.currentItemId).toEqual(props.itemId);
+      expect(vm.getCurrentIndex()).toEqual(0);
+      expect(vm.getCurrentItemId()).toEqual(props.itemId);
       expect(vm.total).toEqual(0);
       expect(vm.ids).toEqual([1, 2]);
       vm.dispose();

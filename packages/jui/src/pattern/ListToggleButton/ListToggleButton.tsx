@@ -34,6 +34,7 @@ const ListItem = styled(MuiListItem)`
 const ListItemSecondaryAction = styled(MuiListItemSecondaryAction)`
   && {
     right: 0;
+    transform: translate3d(0, -50%, 0);
   }
 `;
 
