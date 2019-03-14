@@ -13,7 +13,6 @@ import {
 } from '../../signaling/types';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_ACTION } from '../../api/types';
-import { any } from 'async';
 import { rtcLogger } from '../../utils/RTCLoggerProxy';
 
 describe('sip call session', () => {
