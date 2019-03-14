@@ -16,7 +16,7 @@ import { errorHelper } from 'sdk/error';
 import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 
-import { onScroll, loading } from '@/plugins/InfiniteListPlugin';
+import { onScroll } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
 import { StreamProps, StreamItemType, StreamViewProps } from './types';
@@ -156,7 +156,7 @@ class StreamViewModel extends StoreViewModel<StreamProps>
     this._historyHandler.update(this._groupState, this.postIds);
   }
 
-  @loading
+  @action
   async loadInitialPosts() {
     this.loadInitialPostsError = undefined;
     try {
