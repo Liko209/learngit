@@ -171,10 +171,14 @@ describe('StateActionController', () => {
         _partialModifyController: mockPartialModifyController,
       });
       mockTotalUnreadController.handleGroupState = jest.fn();
-      stateActionController[ '_buildUpdateReadStatusParams'
-] = jest.fn().mockImplementationOnce(() => {
-        throw 'err';
-      });
+
+      // fix prettier lint error
+      const jestMockImpl = jest.fn().mockImplementationOnce;
+      stateActionController['_buildUpdateReadStatusParams'] = jestMockImpl(
+        () => {
+          throw 'err';
+        },
+      );
 
       try {
         await stateActionController.updateReadStatus(groupId, isUnread, false);
@@ -196,6 +200,7 @@ describe('StateActionController', () => {
           unread_deactivated_count: 0,
         },
       ]);
+
       expect(
         stateActionController['_buildUpdateReadStatusParams'],
       ).toBeCalled();
