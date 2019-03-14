@@ -27,7 +27,7 @@ const getClientEnvironment = require('./env');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const paths = require('./paths');
 const appPackage = require(paths.appPackageJson);
-
+const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
 // Webpack uses `publicPath` to determine where the app is being served from.
 // In development, we always serve from the root. This makes config easier.
 const publicPath = '/';
@@ -349,7 +349,7 @@ module.exports = {
       typescript: resolve.sync('typescript', {
         basedir: paths.appNodeModules
       }),
-      async: true,
+      async: false, // in order to show tslint error. [improvement] Need to use pre loader
       useTypescriptIncrementalApi: true,
       checkSyntacticErrors: true,
       tsconfig: paths.appTsConfig,
@@ -363,9 +363,9 @@ module.exports = {
         '!**/src/setupTests.*'
       ],
       watch: paths.appSrc,
-      silent: true
+      silent: true,
       // The formatter is invoked directly in WebpackDevServerUtils during development
-      // formatter: typescriptFormatter,
+      formatter: typescriptFormatter
     }),
     // Detect circular dependencies
     new CircularDependencyPlugin({
