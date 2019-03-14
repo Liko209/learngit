@@ -63,13 +63,11 @@ test(formalName('Click Pin option to pin a post', ['JPT-1264', 'P1', 'Pin', 'Pot
     await postCard.clickPinToggle();
   });
 
+  const rightRail = app.homePage.messageTab.rightRail;
   await h(t).withLog(`Then the post should be displayed in the pinned section on the right shelf`, async () => {
-    // TODO: using checking on Ring Shelf instead API method
-    await H.retryUntilPass(async () => {
-      const pinnedPostIds = await h(t).glip(loginUser).getGroup(team.glipId).then(res => res.data.pinned_post_ids);
-      console.log(pinnedPostIds)
-      assert.ok(_.includes(pinnedPostIds, Number(postId)), `pin post failure`);
-    });
+    await rightRail.pinnedEntry.enter();
+    await rightRail.pinnedEntry.shouldBeOpened();
+    await rightRail.pinnedTab.countInListShouldBe(1);
   });
 
   await h(t).withLog(`Then the pin button should be replaced by the unpin button`, async () => {
@@ -129,13 +127,11 @@ test(formalName('Click Unpin option to unpin a post', ['JPT-1266', 'P1', 'Pin', 
     await postCard.clickPinToggle();
   });
 
+  const rightRail = app.homePage.messageTab.rightRail;
   await h(t).withLog(`The message should be unpinned and removed from the pinned posts list on right shelf`, async () => {
-    // TODO: using checking on Ring Shelf instead API method
-    await H.retryUntilPass(async () => {
-      const pinnedPostIds = await h(t).glip(loginUser).getGroup(team.glipId).then(res => res.data.pinned_post_ids);
-      console.log(pinnedPostIds)
-      assert.ok(!_.includes(pinnedPostIds, Number(postId)), `unpin post failure`);
-    });
+    await rightRail.pinnedEntry.enter();
+    await rightRail.pinnedEntry.shouldBeOpened();
+    await rightRail.pinnedTab.countInListShouldBe(0);
   });
 
   await h(t).withLog(`Then the pin button should be replaced by the unpin button`, async () => {
