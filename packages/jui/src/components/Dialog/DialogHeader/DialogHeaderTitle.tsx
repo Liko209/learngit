@@ -120,4 +120,12 @@ const JuiDialogHeaderTitle = styled<JuiDialogHeaderTitleProps>(
   }
 `;
 
-export { JuiDialogHeaderTitle, JuiDialogHeaderTitleProps };
+const JuiDialogHeaderSubtitle = styled.span`
+  color: ${palette('grey', '500')};
+`;
+
+export {
+  JuiDialogHeaderTitle,
+  JuiDialogHeaderTitleProps,
+  JuiDialogHeaderSubtitle,
+};
