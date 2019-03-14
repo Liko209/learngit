@@ -288,6 +288,18 @@ class SearchItem extends BaseWebComponent {
   async clickMessageButton() {
     await this.t.hover(this.self).click(this.messageButton);
   }
+
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
 }
 
 
