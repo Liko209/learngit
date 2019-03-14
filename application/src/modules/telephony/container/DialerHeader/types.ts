@@ -4,14 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type DialerHeaderProps = {
-  phoneNumber: string;
-};
+type DialerHeaderProps = {};
 
 type DialerHeaderViewProps = {
+  isExt: boolean;
   name: string;
-  phone: string;
-  uid: number;
+  phone?: string;
+  uid?: number;
 };
 
 export { DialerHeaderProps, DialerHeaderViewProps };

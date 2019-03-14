@@ -296,6 +296,7 @@ class StreamViewComponent extends Component<Props> {
         onClick={this._loadInitialPosts}
       />
     );
+
     return (
       <ReactResizeDetector handleHeight={true}>
         {({ height }: { height: number }) => (

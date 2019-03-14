@@ -13,6 +13,7 @@ enum ENTITY_NAME {
   'CODE_ITEM' = 'codeItem',
   'CONFERENCE_ITEM' = 'conferenceItem',
   'POST' = 'post',
+  'DISCONTINUOUS_POST' = 'discontinuousPost',
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',
   'PROFILE' = 'profile',
