@@ -17,13 +17,13 @@ import { JuiVirtualizedList } from './VirtualizedList';
 import { IndexRange } from './types';
 
 type JuiInfiniteListProps = {
-  height: number;
+  height?: number;
   minRowHeight: number;
   overscan?: number;
   hasMore: (direction: 'up' | 'down') => boolean;
   loadInitialData: () => Promise<void>;
   loadMore: (direction: 'up' | 'down') => Promise<void>;
-  initialScrollToIndex: number;
+  initialScrollToIndex?: number;
   onVisibleRangeChange?: (range: IndexRange) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer?: JSX.Element;
@@ -31,7 +31,7 @@ type JuiInfiniteListProps = {
   loadingMoreRenderer: JSX.Element;
   children: JSX.Element[];
   stickToBottom?: boolean;
-  fallBackRenderer: JSX.Element;
+  fallBackRenderer?: JSX.Element;
   classWhenUnScrollable?: string;
   classWhenScrollable?: string;
 };
@@ -93,7 +93,7 @@ const JuiInfiniteList: RefForwardingComponent<
           return loadingRenderer;
         }
         if (loadingInitialFailed) {
-          return fallBackRenderer;
+          return fallBackRenderer || <></>;
         }
 
         const isEmpty =

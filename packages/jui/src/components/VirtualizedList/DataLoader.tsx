@@ -12,7 +12,7 @@ import React, {
   memo,
   forwardRef,
 } from 'react';
-import { noop } from 'jui/foundation/utils';
+import { noop } from '../../foundation/utils';
 
 type Direction = 'up' | 'down';
 
