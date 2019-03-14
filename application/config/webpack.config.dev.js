@@ -35,8 +35,6 @@ const publicPath = '/';
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_PATH%/xyz looks better than %PUBLIC_PATH%xyz.
 const publicUrl = '';
-const iconUrl =
-  'https://s3.amazonaws.com/icomoon.io/79019/Jupiter/symbol-defs.svg';
 
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
@@ -370,25 +368,25 @@ module.exports = {
       // formatter: typescriptFormatter,
     }),
     // Detect circular dependencies
-    // new CircularDependencyPlugin({
-    //   exclude: /node_modules/,
-    //   onStart({ compilation }) {
-    //     numCyclesDetected = 0;
-    //   },
-    //   onDetected({ module: webpackModuleRecord, paths, compilation }) {
-    //     numCyclesDetected++;
-    //     compilation.warnings.push(new Error(paths.join(" -> ")));
-    //   },
-    //   onEnd({ compilation }) {
-    //     if (numCyclesDetected > MAX_CYCLES) {
-    //       compilation.errors.push(
-    //         new Error(
-    //           `[circular dependency] Detected ${numCyclesDetected} cycles which exceeds configured limit of ${MAX_CYCLES}`
-    //         )
-    //       );
-    //     }
-    //   }
-    // }),
+    new CircularDependencyPlugin({
+      exclude: /node_modules/,
+      onStart({ compilation }) {
+        numCyclesDetected = 0;
+      },
+      onDetected({ module: webpackModuleRecord, paths, compilation }) {
+        numCyclesDetected++;
+        compilation.warnings.push(new Error(paths.join(' -> ')));
+      },
+      onEnd({ compilation }) {
+        if (numCyclesDetected > MAX_CYCLES) {
+          compilation.errors.push(
+            new Error(
+              `[circular dependency] Detected ${numCyclesDetected} cycles which exceeds configured limit of ${MAX_CYCLES}`
+            )
+          );
+        }
+      }
+    }),
     // Generate a manifest file which contains a mapping of all asset filenames
     // to their corresponding output file so that tools can pick it up without
     // having to parse `index.html`.

@@ -41,8 +41,7 @@ const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
 const publicUrl = publicPath.slice(0, -1);
-const iconUrl =
-  'https://s3.amazonaws.com/icomoon.io/79019/Jupiter/symbol-defs.svg';
+
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
 
