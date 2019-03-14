@@ -15,6 +15,7 @@ import {
   RULE,
   Result,
 } from '../../../../common/generateModifiedImageURL';
+import { mainLogger } from 'sdk';
 
 class ImageDownloadedListener implements IImageDownloadedListener {
   constructor(
@@ -140,23 +141,31 @@ class ThumbnailPreloadProcessor implements IProcessor {
     if (this._item.autoPreload) {
       await this.preload(this._item);
     } else {
-      const itemService = ItemService.getInstance() as ItemService;
-      const item = await itemService.getById(this._item.id);
-      if (item) {
-        const thumbnail = this.toThumbnailUrl(item);
-        if (!thumbnail) {
-          return true;
+      try {
+        const itemService = ItemService.getInstance() as ItemService;
+        const item = await itemService.getById(this._item.id);
+        if (item && item.id > 0) {
+          const thumbnail = this.toThumbnailUrl(item);
+          if (!thumbnail) {
+            return true;
+          }
+
+          this._item.url = thumbnail.url;
+          this._item.thumbnail = thumbnail.thumbnail;
+
+          await this.preload(this._item);
         }
-
-        this._item.url = thumbnail.url;
-        this._item.thumbnail = thumbnail.thumbnail;
-
-        await this.preload(this._item);
+      } catch (err) {
+        mainLogger.warn(
+          'ThumbnailPreloadProcessor: process(): error=',
+          err.message,
+        );
       }
     }
 
     return true;
   }
+
   canContinue(): boolean {
     return true;
   }
