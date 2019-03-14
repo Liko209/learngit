@@ -135,6 +135,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: ScrollPosition) => {
     if (ref.current) {
       if (options === true) {
+        console.log('scrolling', offset, index);
         ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
       }
       if (options === false) {
