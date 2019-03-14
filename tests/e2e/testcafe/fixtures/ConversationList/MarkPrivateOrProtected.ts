@@ -206,7 +206,6 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
     await t.expect(conversationPage.privateTeamIcon.exists).ok();
     await t.expect(conversationPage.publicTeamIcon.exists).notOk();;
   }, true);
-
 });
 
 

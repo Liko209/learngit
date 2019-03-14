@@ -183,7 +183,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   hackPostChange() {
-    this.subscribeNotification(ENTITY.POST, ({ type, body }) => {
+    this.subscribeNotification(`${ENTITY.POST}.*`, ({ type, body }) => {
       if (type !== EVENT_TYPES.UPDATE) {
         return;
       }

@@ -77,7 +77,7 @@ export class Logger implements ILogger, ILoggerCore {
     if (!this._isLogEnabled(logEntity)) return;
     this._isBrowserEnabled(logEntity) &&
       this._consoleLoggerCore.doLog(logEntity);
-    this._isConsumerEnabled(logEntity) &&
+    this._isConsumerEnabled() &&
       this._logConsumer.onLog(this._logEntityProcessor.process(logEntity));
   }
 
@@ -88,11 +88,11 @@ export class Logger implements ILogger, ILoggerCore {
     return enabled;
   }
 
-  private _isConsumerEnabled(logEntity: LogEntity) {
+  private _isConsumerEnabled() {
     const {
       consumer: { enabled },
     } = configManager.getConfig();
-    return logEntity.level >= LOG_LEVEL.WARN || enabled;
+    return enabled;
   }
 
   private _isBrowserEnabled(logEntity: LogEntity) {

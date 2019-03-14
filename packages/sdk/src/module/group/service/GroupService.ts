@@ -35,7 +35,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.GROUP]: this.handleData,
-        [ENTITY.POST]: this.handleGroupMostRecentPostChanged,
+        [`${ENTITY.POST}.*`]: this.handleGroupMostRecentPostChanged,
         [SERVICE.PERSON_SERVICE.TEAMS_REMOVED_FROM]: this
           .deleteAllTeamInformation,
         [SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE]: this

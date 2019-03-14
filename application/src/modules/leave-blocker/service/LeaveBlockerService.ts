@@ -4,18 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { EventEmitter2 } from 'eventemitter2';
 import { ILeaveBlockerService } from '../interface';
 
-const LEAVE_EVENT = 'leave';
+type LeaveHandler = () => boolean;
 
-class LeaveBlockerService extends EventEmitter2
-  implements ILeaveBlockerService {
-  value: boolean | undefined | null;
+class LeaveBlockerService implements ILeaveBlockerService {
+  handlers: LeaveHandler[] = [];
+
   init() {
     window.onbeforeunload = () => {
-      this.emit(LEAVE_EVENT);
-      return this.value ? true : undefined;
+      return this.handlers.some(handler => handler()) ? true : undefined;
     };
   }
 
@@ -23,15 +21,13 @@ class LeaveBlockerService extends EventEmitter2
     window.onbeforeunload = null;
   }
 
-  onLeave(handler: () => boolean | undefined | null) {
-    return this.on(LEAVE_EVENT, () => {
-      this.value = handler();
-    });
+  onLeave(handler: LeaveHandler) {
+    this.handlers.push(handler);
   }
 
-  offLeave(handler: () => boolean | undefined | null) {
-    return this.off(LEAVE_EVENT, handler);
+  offLeave(handler: LeaveHandler) {
+    _.remove(this.handlers, handler);
   }
 }
 
-export { LeaveBlockerService };
+export { LeaveBlockerService, LeaveHandler };

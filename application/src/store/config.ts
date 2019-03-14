@@ -105,7 +105,13 @@ const ENTITY_SETTING = {
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.POST]: {
-    event: [ENTITY.POST],
+    event: [`${ENTITY.POST}.*`],
+    service: () => PostService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
+  [ENTITY_NAME.DISCONTINUOUS_POST]: {
+    event: [ENTITY.DISCONTINUOUS_POST],
     service: () => PostService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,

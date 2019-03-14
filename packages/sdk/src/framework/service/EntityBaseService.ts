@@ -74,6 +74,21 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     throw new Error('entitySourceController is null');
   }
 
+  async batchGet(ids: number[]): Promise<T[]> {
+    if (this._entitySourceController) {
+      return await this._entitySourceController.batchGet(ids);
+    }
+
+    throw new Error('entitySourceController is null');
+  }
+
+  getSynchronously(id: number): T | null {
+    if (this._entityCacheController) {
+      return this._entityCacheController.getSynchronously(id);
+    }
+    return null;
+  }
+
   isCacheInitialized() {
     return this.isCacheEnable() && this._entityCacheController.isInitialized();
   }

@@ -78,6 +78,10 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   async get(key: number): Promise<T | null> {
+    return this.getSynchronously(key);
+  }
+
+  getSynchronously(key: number): T | null {
     const result = this._entities.get(key);
     return result ? result : null;
   }

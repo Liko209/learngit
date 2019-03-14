@@ -137,7 +137,7 @@ describe('RTC call', () => {
     public remoteIdentity: any;
   }
 
-  describe('constructor()', async () => {
+  describe('constructor()', () => {
     it('should set UUID when use constructor() ', async () => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
@@ -145,7 +145,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('setCallSession()', async () => {
+  describe('setCallSession()', () => {
     it('should call._callSession.setSession() is called when ues setCallSession()', async () => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
@@ -155,7 +155,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('flip()', async () => {
+  describe('flip()', () => {
     it('should report flip success when FSM in connected state and flip success [JPT-682]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
@@ -205,7 +205,7 @@ describe('RTC call', () => {
       });
     });
 
-    describe('should report flip failed when FSM not in connected state [JPT-676]', async () => {
+    describe('should report flip failed when FSM not in connected state [JPT-676]', () => {
       it('should report flip failed when FSM in idle state', done => {
         const account = new VirturlAccountAndCallObserver();
         const call = new RTCCall(false, '123', null, account, account);
@@ -226,6 +226,7 @@ describe('RTC call', () => {
       it('should report flip failed when FSM in pending state', done => {
         const account = new VirturlAccountAndCallObserver();
         const call = new RTCCall(false, '123', null, account, account);
+        call.onAccountNotReady();
         const session = new MockSession();
         call.setCallSession(session);
         session.flip.mockResolvedValue(null);
@@ -296,7 +297,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('startRecord()', async () => {
+  describe('startRecord()', () => {
     it('should report startRecord success when FSM in connected state and startRecord success [JPT-686]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
@@ -376,7 +377,7 @@ describe('RTC call', () => {
       });
     });
 
-    describe('should report startRecord failed when FSM not in connected state [JPT-684]', async () => {
+    describe('should report startRecord failed when FSM not in connected state [JPT-684]', () => {
       it('should report startRecord failed when FSM in idle state', done => {
         const account = new VirturlAccountAndCallObserver();
         const session = new MockSession();
@@ -396,6 +397,7 @@ describe('RTC call', () => {
       it('should report startRecord failed when FSM in pending state', done => {
         const account = new VirturlAccountAndCallObserver();
         const call = new RTCCall(false, '123', null, account, account);
+        call.onAccountNotReady();
         const session = new MockSession();
         call.setCallSession(session);
         session.startRecord.mockResolvedValue(null);
@@ -465,7 +467,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('stopRecord()', async () => {
+  describe('stopRecord()', () => {
     it('should report stopRecord success when FSM in connected state and stopRecord success [JPT-690]', done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
@@ -543,7 +545,7 @@ describe('RTC call', () => {
       });
     });
 
-    describe('should report stopRecord failed when FSM not in connected state [JPT-688]', async () => {
+    describe('should report stopRecord failed when FSM not in connected state [JPT-688]', () => {
       it('should report stopRecord failed when FSM in idle state', done => {
         const account = new VirturlAccountAndCallObserver();
         const session = new MockSession();
@@ -564,6 +566,7 @@ describe('RTC call', () => {
       it('should report stopRecord failed when FSM in pending state', done => {
         const account = new VirturlAccountAndCallObserver();
         const call = new RTCCall(false, '123', null, account, account);
+        call.onAccountNotReady();
         const session = new MockSession();
         call.setCallSession(session);
         session.stopRecord.mockResolvedValue(null);
@@ -637,7 +640,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('Transfer call', async () => {
+  describe('Transfer call', () => {
     it('should notify transfer failed when transfer to empty number. [JPT-673]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
@@ -814,12 +817,13 @@ describe('RTC call', () => {
     });
   });
 
-  describe('Idle state transitions', async () => {
+  describe('Idle state transitions', () => {
     it('should state transition from Idle to Pending when account not ready [JPT-601]', done => {
       const account = new VirturlAccountAndCallObserver();
       jest.spyOn(account, 'createOutgoingCallSession');
       account.isReadyReturnValue = false;
       const call = new RTCCall(false, '123', null, account, account);
+      call.onAccountNotReady();
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.callState).toBe(RTC_CALL_STATE.CONNECTING);
@@ -833,6 +837,7 @@ describe('RTC call', () => {
       jest.spyOn(account, 'createOutgoingCallSession');
       account.isReadyReturnValue = true;
       const call = new RTCCall(false, '123', null, account, account);
+      call.onAccountReady();
       setImmediate(() => {
         expect(call.getCallState()).toBe(RTC_CALL_STATE.CONNECTING);
         expect(account.callState).toBe(RTC_CALL_STATE.CONNECTING);
@@ -843,7 +848,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('Pending state transitions', async () => {
+  describe('Pending state transitions', () => {
     it("should state transition from Pending to Connecting when receive 'Account ready' event [JPT-603]", done => {
       const account = new VirturlAccountAndCallObserver();
       jest.spyOn(account, 'createOutgoingCallSession');
@@ -875,7 +880,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('Connecting state transitions', async () => {
+  describe('Connecting state transitions', () => {
     it("should state transition from Connecting to Connected when receive 'Session confirmed' event [JPT-605]", done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
@@ -935,7 +940,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('Connected state transitions', async () => {
+  describe('Connected state transitions', () => {
     it("should state transition from Connected to Disconnected when receive 'Hang up' event [JPT-609]", done => {
       const account = new VirturlAccountAndCallObserver();
       const call = new RTCCall(false, '123', null, account, account);
@@ -983,7 +988,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('park()', async () => {
+  describe('park()', () => {
     let account = null;
     let call = null;
     let session = null;
@@ -993,6 +998,7 @@ describe('RTC call', () => {
       call = new RTCCall(false, '123', null, account, account);
       session = new MockSession();
       call.setCallSession(session);
+      call.onAccountNotReady();
     }
 
     it('should report park success with msg when FSM in connected state and park success [JPT-835]', done => {
@@ -1495,7 +1501,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('Hold / Unhold Call', async () => {
+  describe('Hold / Unhold Call', () => {
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;
     let session: MockSession;
@@ -1727,7 +1733,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('new call with options', async () => {
+  describe('new call with options', () => {
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;
     let session: MockSession;
@@ -1750,7 +1756,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('setHangupTimeout', async () => {
+  describe('setHangupTimeout', () => {
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;
     let session: MockSession;
@@ -1824,19 +1830,22 @@ describe('RTC call', () => {
       jest.advanceTimersByTime(kRTCHangupInvalidCallInterval * 1000);
       setImmediate(() => {
         expect(call.hangup).toBeCalled();
-        expect(account.onCallActionFailed).toBeCalledWith(RTC_CALL_ACTION.CALL_TIME_OUT);
+        expect(account.onCallActionFailed).toBeCalledWith(
+          RTC_CALL_ACTION.CALL_TIME_OUT,
+        );
         done();
       });
     });
   });
 
-  describe('DTMF', async () => {
+  describe('DTMF', () => {
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;
     let session: MockSession;
     function setup() {
       account = new VirturlAccountAndCallObserver();
       call = new RTCCall(false, '123', null, account, account);
+      call.onAccountNotReady();
       session = new MockSession();
       call.setCallSession(session);
       session.hold.mockResolvedValue(null);
@@ -1955,7 +1964,7 @@ describe('RTC call', () => {
     });
   });
 
-  describe('getStats', async () => {
+  describe('getStats', () => {
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;
     let session: MockSession;

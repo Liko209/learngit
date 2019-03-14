@@ -58,6 +58,20 @@ class PostActionController implements IPostActionController {
       async (newPost: Post) => {
         return this.requestController.put(newPost);
       },
+      this._doPartialNotify.bind(this),
+    );
+  }
+
+  private _doPartialNotify(
+    originalEntities: Post[],
+    updatedEntities: Post[],
+    partialEntities: Partial<Raw<Post>>[],
+  ) {
+    const groupId = originalEntities[0].group_id;
+    notificationCenter.emitEntityUpdate(
+      `${ENTITY.POST}.${groupId}`,
+      updatedEntities,
+      partialEntities,
     );
   }
 
@@ -82,6 +96,7 @@ class PostActionController implements IPostActionController {
       async (newPost: Post) => {
         return this.requestController.put(newPost);
       },
+      this._doPartialNotify.bind(this),
     );
   }
 
@@ -146,6 +161,7 @@ class PostActionController implements IPostActionController {
 
           return newPost;
         },
+        this._doPartialNotify.bind(this),
       );
     }
 
@@ -182,6 +198,7 @@ class PostActionController implements IPostActionController {
       async (newPost: Post) => {
         return this.requestController.put(newPost);
       },
+      this._doPartialNotify.bind(this),
     );
   }
 }

@@ -15,7 +15,7 @@ import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { ITelephonyDaoDelegate } from 'foundation';
 import { RTCSipProvisionInfo } from '../types';
 
-describe('RTCProvManager', async () => {
+describe('RTCProvManager', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -55,7 +55,7 @@ describe('RTCProvManager', async () => {
     }
   }
 
-  describe('save / read provisioning from local storage', async () => {
+  describe('save / read provisioning from local storage', () => {
     let provManager: RTCProvManager;
     let localStorage: MockLocalStorage;
     function setupMockLocalStorage() {
@@ -122,7 +122,7 @@ describe('RTCProvManager', async () => {
     });
   });
 
-  describe('acquireSipProv()', async () => {
+  describe('acquireSipProv()', () => {
     it('should do nothing when it is in retry timer', async () => {
       const pm = new RTCProvManager();
       pm._canAcquireSipProv = false;
@@ -291,7 +291,7 @@ describe('RTCProvManager', async () => {
     });
   });
 
-  describe('_checkSipProvInfoParams()', async () => {
+  describe('_checkSipProvInfoParams()', () => {
     it('should The provision response be invalid when Transport filed is missed JPT-634', async () => {
       const pm = new RTCProvManager();
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);

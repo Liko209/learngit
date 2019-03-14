@@ -46,7 +46,7 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
     genSortableModelFunc: (
       entity: T,
       terms: string[],
-    ) => Promise<SortableModel<T> | null>,
+    ) => SortableModel<T> | null,
     searchKey?: string,
     arrangeIds?: number[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
@@ -68,19 +68,14 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
       entities = await this.getEntities();
     }
 
-    const promises = entities.map(async (entity: T) => {
-      return await genSortableModelFunc(entity, terms);
+    entities.forEach((entity: T) => {
+      const result = genSortableModelFunc(entity, terms);
+      if (result) {
+        sortableEntities.push(result);
+      }
     });
 
-    await Promise.all(promises).then((results: any[]) => {
-      results.forEach((result: any) => {
-        if (result) {
-          sortableEntities.push(result);
-        }
-      });
-    });
-
-    if (sortFunc) {
+    if (sortFunc && sortableEntities.length) {
       sortableEntities.sort(sortFunc);
     }
 

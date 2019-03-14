@@ -11,7 +11,7 @@ import { ModuleParams, ModuleClass, ModuleType } from '../types';
 import { localPhoneDataPath } from '../../';
 
 describe('PhoneParser', () => {
-  it('should create phoneParser', async () => {
+  it.skip('should create phoneParser', async () => {
     const defaultPhoneData = fs
       .readFileSync(path.resolve(__dirname, `.${localPhoneDataPath}`))
       .toString();
@@ -99,5 +99,5 @@ describe('PhoneParser', () => {
     const regionalInfo = phoneParserModule.GetRegionalInfo(1, '650');
     expect(regionalInfo.areaCode).toEqual('650');
     expect(regionalInfo.HasBan()).toEqual(false);
-  });
+  }, 30000);
 });

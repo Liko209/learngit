@@ -55,6 +55,7 @@ export class FetchSortableDataListHandler<
   T extends IdModel
 > extends FetchDataListHandler<ISortableModel<T>> {
   private _isMatchFunc: IMatchFunc<T | TReplacedData<T>>;
+
   private _transformFunc: ITransformFunc<T>;
   private _sortFun?: ISortFunc<ISortableModel<T>>;
   private _sortableDataProvider?: IFetchSortableDataProvider<T>;

@@ -18,6 +18,10 @@ export default class GlipTypeUtil {
     return objectId > 0 ? objectId & TYPE_ID_MASK : -objectId & TYPE_ID_MASK; // eslint-disable-line no-bitwise
   }
 
+  static isExpectedType(objectId: number, typeId: number): boolean {
+    return this.extractTypeId(objectId) === typeId;
+  }
+
   static generatePseudoIdByType(typeId: number) {
     return -((Math.floor(Math.random() * MAX_PSEUDO_ID) << 13) + typeId);
   }

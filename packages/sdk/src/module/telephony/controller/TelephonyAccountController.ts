@@ -46,7 +46,12 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   onReceiveIncomingCall(call: RTCCall) {}
 
+  getCallCount() {
+    return this._rtcAccount.callCount();
+  }
+
   onReceiveNewProvFlags(sipFlags: RTCSipFlags) {}
+
 }
 
 export { TelephonyAccountController };

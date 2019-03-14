@@ -27,6 +27,7 @@ import { GroupService } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
+import { SyncUserConfig } from '../config/SyncUserConfig';
 
 class SyncController {
   private _syncListener: SyncListener;
@@ -55,6 +56,7 @@ class SyncController {
     try {
       if (lastIndexTimestamp) {
         await this._syncIndexData(lastIndexTimestamp);
+        this._checkFetchedRemaining(lastIndexTimestamp);
       } else {
         await this._firstLogin();
       }
@@ -64,32 +66,48 @@ class SyncController {
   }
 
   private async _firstLogin() {
-    const {
-      onInitialLoaded,
-      onInitialHandled,
-      onRemainingLoaded,
-      onRemainingHandled,
-    } = this._syncListener;
-
     progressBar.start();
     try {
       const currentTime = Date.now();
-      const initialResult = await this.fetchInitialData(currentTime);
-
-      onInitialLoaded && (await onInitialLoaded(initialResult));
-      await this._handleIncomingData(initialResult);
-      onInitialHandled && (await onInitialHandled());
-
-      const remainingResult = await this.fetchRemainingData(currentTime);
-      onRemainingLoaded && (await onRemainingLoaded(remainingResult));
-      await this._handleIncomingData(remainingResult);
-      onRemainingHandled && (await onRemainingHandled());
+      await this._fetchInitial(currentTime);
+      await this._fetchRemaining(currentTime);
       mainLogger.info('fetch initial data or remaining data success');
     } catch (e) {
       mainLogger.error('fetch initial data or remaining data error');
+      // actually, should only do sign out when initial failed
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
     progressBar.stop();
+  }
+
+  private async _fetchInitial(time: number) {
+    const { onInitialLoaded, onInitialHandled } = this._syncListener;
+    const initialResult = await this.fetchInitialData(time);
+    onInitialLoaded && (await onInitialLoaded(initialResult));
+    await this._handleIncomingData(initialResult);
+    notificationCenter.emitKVChange(SERVICE.FETCH_INITIAL_DONE);
+    onInitialHandled && (await onInitialHandled());
+    mainLogger.log('fetch initial data and handle success');
+  }
+
+  private async _checkFetchedRemaining(time: number) {
+    if (!NewGlobalConfig.getFetchedRemaining()) {
+      try {
+        this._fetchRemaining(time);
+      } catch (e) {
+        mainLogger.error('fetch remaining data error');
+      }
+    }
+  }
+
+  private async _fetchRemaining(time: number) {
+    const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
+    const remainingResult = await this.fetchRemainingData(time);
+    onRemainingLoaded && (await onRemainingLoaded(remainingResult));
+    await this._handleIncomingData(remainingResult);
+    onRemainingHandled && (await onRemainingHandled());
+    NewGlobalConfig.setFetchedRemaining(true);
+    mainLogger.log('fetch remaining data and handle success');
   }
 
   private async _syncIndexData(timeStamp: number) {
@@ -238,8 +256,15 @@ class SyncController {
         static_http_server: staticHttpServer = '',
       } = result;
 
+      await this._dispatchIncomingData(result);
+      if (timestamp) {
+        NewGlobalConfig.setLastIndexTimestamp(timestamp);
+        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
+      }
+
       if (scoreboard && shouldSaveScoreboard) {
-        NewGlobalConfig.setSocketServerHost(scoreboard);
+        const socketUserConfig = new SyncUserConfig();
+        socketUserConfig.setSocketServerHost(scoreboard);
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
       }
 
@@ -249,14 +274,6 @@ class SyncController {
           CONFIG.STATIC_HTTP_SERVER,
           staticHttpServer,
         );
-      }
-
-      // logger.time('handle index data');
-      await this._dispatchIncomingData(result);
-      // logger.timeEnd('handle index data');
-      if (timestamp) {
-        NewGlobalConfig.setLastIndexTimestamp(timestamp);
-        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
       }
 
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);

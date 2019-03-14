@@ -138,6 +138,17 @@ class SendPostController implements ISendPostController {
         async (newPost: Post) => {
           return newPost;
         },
+        (
+          originalEntities: Post[],
+          updatedEntities: Post[],
+          partialEntities: Partial<Raw<Post>>[],
+        ) => {
+          notificationCenter.emitEntityUpdate(
+            `${ENTITY.POST}.${post.group_id}`,
+            updatedEntities,
+            partialEntities,
+          );
+        },
       );
     }
     throw new Error('updateLocalPost error invalid id');
@@ -169,7 +180,10 @@ class SendPostController implements ISendPostController {
     const replacePosts = new Map<number, Post>();
     replacePosts.set(originalPost.id, post);
 
-    notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
+    notificationCenter.emitEntityReplace(
+      `${ENTITY.POST}.${post.group_id}`,
+      replacePosts,
+    );
     const dao = daoManager.getDao(PostDao);
 
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();

@@ -9,6 +9,8 @@ import { IEntityPersistentController } from './IEntityPersistentController';
 
 interface IEntityCacheController<T extends IdModel = IdModel>
   extends IEntityPersistentController<T> {
+  getSynchronously(key: number): T | null;
+
   initialize(entities: T[]): void;
 
   isInitialized(): boolean;

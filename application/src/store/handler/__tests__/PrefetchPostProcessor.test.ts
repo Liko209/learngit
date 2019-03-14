@@ -12,7 +12,7 @@ beforeEach(() => {
 });
 describe('PrefetchPostProcessor', () => {
   describe('process()', () => {
-    it('should call fetchData once when postCacheController has groupId', () => {
+    it.skip('should call fetchData once when postCacheController has groupId', () => {
       const prefetchPostProcessor = new PrefetchPostProcessor(2);
       const spy = jest
         .spyOn(

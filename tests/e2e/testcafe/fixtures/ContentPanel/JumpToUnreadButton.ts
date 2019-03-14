@@ -17,13 +17,6 @@ fixture('ContentPanel/JumpToUnreadButton')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-function getMultilineString(lineNumber: number, prefixText: string = '', suffixText: string = '') {
-  let code = '\n'
-  for (let i = 1; i < lineNumber + 1; i++) {
-    code += `line${i}\n`;
-  }
-  return prefixText + code + suffixText;
-}
 
 test(formalName('Unread button will disappear when resizing window then full screen can show all new messages', ['JPT-208', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
   if (await H.isElectron() || await H.isEdge()) {
@@ -91,8 +84,6 @@ test.skip(formalName('Click the unread button (up) then jump to first unread pos
   const loginUser = users[6];
   const otherUser = users[5];
 
-  const msgList = _.range(19).map(i => `${i} ${uuid()}`);
-
   let team = <IGroup>{
     type: "Team",
     name: uuid(),
@@ -104,13 +95,17 @@ test.skip(formalName('Click the unread button (up) then jump to first unread pos
     await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog('And has old message in it', async () => {
-    await h(t).scenarioHelper.sentAndGetTextPostId('initial message', team, loginUser);
+  await h(t).withLog('And has one  old message in it', async () => {
+    await h(t).scenarioHelper.sendTextPost('initial message', team, loginUser);
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).markAsRead([team.glipId]);
   });
 
-  await h(t).withLog(`And has ${msgList.length} unread messages`, async () => {
-    for (const msg of msgList) {
-      await h(t).scenarioHelper.sentAndGetTextPostId(msg, team, otherUser);
+  let firstUnreadPostId;
+  await h(t).withLog(`And has more one  screen unread messages`, async () => {
+    firstUnreadPostId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, otherUser);
+    for (const i of _.range(3)) {
+      await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, otherUser);
     }
   });
 
@@ -130,7 +125,7 @@ test.skip(formalName('Click the unread button (up) then jump to first unread pos
     await teamsSection.ensureLoaded();
   });
 
-  await h(t).withLog('Then I should see unread button', async () => {
+  await h(t).withLog('Then I should see unread button', async () => { 
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
   });
 
@@ -139,9 +134,7 @@ test.skip(formalName('Click the unread button (up) then jump to first unread pos
   });
 
   await h(t).withLog('Then I should see the first post', async () => {
-    const postItem = conversationPage.nthPostItem(-msgList.length);
-    await conversationPage.nthPostExpectVisible(-msgList.length);
-    await t.expect(postItem.text.withText(msgList[0]).exists).ok();
+    await conversationPage.postByIdExpectVisible(firstUnreadPostId, true);
   });
 
   await h(t).withLog('And New Messages indicator exist and can not be seen', async () => {
@@ -157,7 +150,7 @@ test(formalName('The count of the unread button (up) should display correct', ['
   const otherUser = users[5];
 
   const umiCount = 3;
-  const msgList = _.range(umiCount).map(i => getMultilineString(10, `No. ${i}`, uuid()));
+  const msgList = _.range(umiCount).map(i => H.multilineString(10, `No. ${i}`, uuid()));
 
   let team = <IGroup>{
     type: "Team",
@@ -275,7 +268,7 @@ test(formalName('Unread button (up) will dismiss when back and open the conversa
   });
 
   await h(t).withLog('And conversationA has more than 1 screen unread messages', async () => {
-    const msgList = _.range(3).map(i => getMultilineString(10, `No. ${i}`, uuid()));
+    const msgList = _.range(3).map(i => H.multilineString(10, `No. ${i}`, uuid()));
     for (const msg of msgList) {
       await h(t).scenarioHelper.sentAndGetTextPostId(msg, teamA, otherUser);
     }
@@ -327,7 +320,7 @@ test(formalName(`The unread button (up) shouldn't dismiss when opening one conve
   });
 
   await h(t).withLog('And conversationA has more than 1 screen unread messages', async () => {
-    const msgList = _.range(3).map(i => getMultilineString(10, `No. ${i}`, uuid()));
+    const msgList = _.range(3).map(i => H.multilineString(10, `No. ${i}`, uuid()));
     for (const msg of msgList) {
       await h(t).scenarioHelper.sentAndGetTextPostId(msg, team, otherUser);
     }

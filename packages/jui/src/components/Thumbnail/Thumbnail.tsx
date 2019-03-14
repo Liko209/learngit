@@ -5,7 +5,8 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import { width, shape } from '../../foundation/utils/styles';
+import { width, shape, grey } from '../../foundation/utils/styles';
+// import { preloadImg } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 
 type JuiThumbnailProps = {
@@ -26,6 +27,7 @@ const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>('span')`
   height: ${({ size }) => (size === 'small' ? width(5) : width(9))};
   border-radius: ${({ size }) =>
     size === 'small' ? shape('borderRadius', 0.5) : shape('borderRadius')};
+  background-color: ${grey('100')};
   background-image: url(${({ url }) => url});
   background-size: cover;
   background-repeat: no-repeat;
