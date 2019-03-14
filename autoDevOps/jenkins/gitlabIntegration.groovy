@@ -51,7 +51,7 @@ def condStage(Map args, Closure block) {
 
 // generate sha1 hash from a git treeish object, ensure stability by only taking parent and tree object into account
 def stableSha1(String treeish) {
-    String cmd = "git cat-file commit ${treeish} | grep -e ^tree -e ^parent | openssl sha1 |  grep -oE '[^ ]+\$'".toString()
+    String cmd = "git cat-file commit ${treeish} | grep -e ^tree | openssl sha1 |  grep -oE '[^ ]+\$'".toString()
     return sh(returnStdout: true, script: cmd).trim()
 }
 
@@ -292,7 +292,7 @@ node(buildNode) {
     try {
         // start to build
         stage ('Collect Facts') {
-            cleanWs()
+            // cleanWs()
             sh 'env'
             sh 'df -h'
             sh 'uptime'
@@ -302,7 +302,9 @@ node(buildNode) {
             sh 'grep --version'
             sh 'which tr'
             sh 'which xargs'
-            sh 'npm cache verify'
+            // we need this to work around a typescript bug: https://github.com/Microsoft/TypeScript/pull/30078
+            // or else we have to clean whole workspace, which will make git clone much longer
+            sh 'find . -type d -name node_modules | xargs rm -rf || true'
         }
 
         stage ('Checkout') {
@@ -413,7 +415,7 @@ node(buildNode) {
             'Unit Test': {
                 report.coverage = 'skip'
                 condStage(name: 'Unit Test', enable: !skipSaAndUt) {
-                    sh 'npm run test:cover'
+                    sh 'npm run test -- --coverage -w 4'
                     publishHTML([
                         allowMissing: false,
                         alwaysLinkToLastBuild: false,
@@ -515,6 +517,17 @@ node(buildNode) {
             }
         )
 
+        // FIXME: it is better to provide a stage for all external jobs
+        // Telephony automation automation
+        try {
+            if (!isMerge && 'POC/FIJI-1302' == gitlabSourceBranch) {
+                build(job: 'Jupiter-telephony-automation', parameters: [
+                    [$class: 'StringParameterValue', name: 'BRANCH', value: 'POC/FIJI-2808'],
+                    [$class: 'StringParameterValue', name: 'JUPITER_URL', value: appUrl],
+                ])
+            }
+        } catch (e) {}
+
         condStage (name: 'E2E Automation', timeout: 3600, enable: !skipEndToEnd) {
             String hostname =  sh(returnStdout: true, script: 'hostname -f').trim()
             String startTime = sh(returnStdout: true, script: "TZ=UTC-8 date +'%F %T'").trim()
@@ -557,13 +570,15 @@ node(buildNode) {
                     credentialsId: rcCredentialId,
                     usernameVariable: 'RC_PLATFORM_APP_KEY',
                     passwordVariable: 'RC_PLATFORM_APP_SECRET')]) {
-                    sh "npm run e2e"
-                }
-                if (!e2eEnableRemoteDashboard) {
                     try {
-                        sh "tar -czvf allure.tar.gz -C ./allure/allure-results . || true"
-                        archiveArtifacts artifacts: 'allure.tar.gz', fingerprint: true
-                    } catch (e) {}
+                        sh "npm run e2e"
+                    } finally {
+                        if (!e2eEnableRemoteDashboard) {
+                            sh "tar -czvf allure.tar.gz -C ./allure/allure-results . || true"
+                            archiveArtifacts artifacts: 'allure.tar.gz', fingerprint: true
+                        }
+                        // TODO: else: close beat report properly
+                    }
                 }
             }}
         }
