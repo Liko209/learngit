@@ -95,14 +95,14 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private _isEmpty = (content: string) => {
     const commentText = content.trim();
-    const re = /^<p>(<br>|<br\/>|<br\s\/>|\s+|)<\/p>$/gm;
+    const re = /^(<p>(<br>|<br\/>|<br\s\/>|\s+|)<\/p>)+$/gm;
     return re.test(commentText);
   }
 
   @action
   contentChange = (draft: string) => {
     this.error = '';
-    this.draft = this._isEmpty(draft) ? '' : draft;
+    this.draft = draft;
   }
 
   @action
@@ -118,6 +118,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   forceSaveDraft = () => {
     const draft = this._isEmpty(this.draft) ? '' : this.draft;
+    this._memoryDraftMap.set(this.props.id, draft);
     this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
