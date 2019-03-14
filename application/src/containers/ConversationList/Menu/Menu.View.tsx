@@ -125,8 +125,10 @@ class MenuViewComponent extends Component<Props> {
             />
           </>
         ),
-        okText: t('people.prompt.closeConversation'),
-        okVariant: 'text',
+        okText: t('people.team.close'),
+        cancelText: t('common.dialog.cancel'),
+        okVariant: 'contained',
+        okType: 'primary',
         onOK: () => {
           this._closeConversationWithConfirm();
         },

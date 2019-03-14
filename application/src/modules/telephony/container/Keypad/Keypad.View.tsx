@@ -28,7 +28,7 @@ class KeypadViewComponent extends Component<Props> {
           color="grey.900"
           disableToolTip={true}
           onClick={this._handleKeypad}
-          size="xlarge"
+          size="xxlarge"
           disabled={true}
         >
           keypad

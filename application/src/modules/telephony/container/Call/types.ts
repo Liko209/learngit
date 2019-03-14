@@ -5,11 +5,18 @@
  */
 
 type CallProps = {
-  phone: string;
+  phone?: string;
+  variant?: 'round' | 'plain';
+  id?: number;
+  groupId?: number;
+  size?: 'small' | 'medium' | 'large';
+  color?: string;
+  onClick?: () => void;
 };
 
 type CallViewProps = {
   directCall: () => void;
+  showIcon: boolean;
 };
 
 export { CallProps, CallViewProps };

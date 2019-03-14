@@ -30,6 +30,7 @@
     "mobx-react": "5.4.3",
     "moize": "5.4.1",
     "moment": "2.22.2",
+    "moment-timezone": "0.5.23",
     "react": "16.8.3",
     "react-dom": "16.8.3",
     "react-i18next": "9.0.10",

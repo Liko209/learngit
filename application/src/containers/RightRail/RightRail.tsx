@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import ReactResizeDetector from 'react-resize-detector';
 import { translate, WithNamespaces } from 'react-i18next';
@@ -39,6 +40,11 @@ const HEIGHT_TABS = 33;
 const HEIGHT_FIX = HEIGHT_CONVERSATION_HEADER + HEIGHT_TABS;
 const MIN_TAB_WIDTH = 200;
 
+const CONTAINER_IDS = {
+  CONVERSATION_HEADER: 'conversation-header-right-wrapper',
+  RIGHT_RAIL_HEADER: 'right-rail-header',
+};
+
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
     const { isOpen } = this.props;
@@ -53,8 +59,16 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   }
 
   render() {
-    const { t, onClick } = this.props;
-    return (
+    const { t, isOpen, onClick } = this.props;
+    const container = document.getElementById(
+      isOpen
+        ? CONTAINER_IDS.RIGHT_RAIL_HEADER
+        : CONTAINER_IDS.CONVERSATION_HEADER,
+    );
+    if (!container) {
+      return null;
+    }
+    return ReactDOM.createPortal(
       <JuiRightShelfHeaderIcon>
         <JuiIconButton
           tooltipTitle={t(this._getTooltipKey())}
@@ -63,7 +77,8 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
         >
           {this._getIconKey()}
         </JuiIconButton>
-      </JuiRightShelfHeaderIcon>
+      </JuiRightShelfHeaderIcon>,
+      container,
     );
   }
 }
@@ -74,7 +89,7 @@ class RightRailComponent extends React.Component<Props> {
   private _renderHeader = () => {
     const { t } = this.props;
     return (
-      <JuiRightShelfHeader>
+      <JuiRightShelfHeader id="right-rail-header">
         <JuiRightShelfHeaderText>
           {t('message.conversationDetails')}
         </JuiRightShelfHeaderText>

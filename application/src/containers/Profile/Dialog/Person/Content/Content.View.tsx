@@ -71,10 +71,10 @@ class ProfileDialogPersonContentViewComponent extends Component<
   }
 
   renderIcons = (value: string, aria?: string, showCall?: boolean) => {
-    const { t } = this.props;
+    const { t, id } = this.props;
     return (
       <FormCopy>
-        {showCall && <Call phone={value} />}
+        {showCall && <Call phone={value} size="small" id={id} />}
         <JuiIconButton
           size="small"
           onClick={this.onClickCopy.bind(this, value)}

@@ -41,7 +41,7 @@ function withDialogOrNewWindow<T>(
   class ComponentWithDialogOrNewWindow extends React.Component<T> {
     private _window: Window | null = null;
     private _div = document.createElement('div');
-    // private _root = document.documentElement;
+    private _root = document.body;
 
     private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
     private _telephonyService: TelephonyService = container.get(
@@ -53,7 +53,7 @@ function withDialogOrNewWindow<T>(
         this._window = window.open(
           '',
           'Call',
-          'width=280,height=440,centerscreen,dialog,chrome',
+          'width=280,height=440,centerscreen,dialog',
         );
       }
       if (this._window) {
@@ -73,11 +73,9 @@ function withDialogOrNewWindow<T>(
 
     render() {
       const { callWindowState } = this._telephonyStore;
-      if (callWindowState === CALL_WINDOW_STATUS.MINIMIZED) {
-        this._closeWindow();
-        return null;
-      }
-      let container = undefined;
+      const open =
+        callWindowState === CALL_WINDOW_STATUS.MINIMIZED ? false : true;
+      let container = this._root;
       if (callWindowState === CALL_WINDOW_STATUS.DETACHED) {
         container = this._div;
         this._createWindow();
@@ -88,7 +86,7 @@ function withDialogOrNewWindow<T>(
       return (
         <JuiDraggableDialog
           container={container}
-          open={true}
+          open={open}
           x={(document.body.clientWidth - 344) / 2}
           y={(document.body.clientHeight - 504) / 2}
         >
