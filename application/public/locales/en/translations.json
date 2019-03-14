@@ -58,7 +58,7 @@
     "aboutRingCentral": "About RingCentral",
     "version": "Version",
     "lastCommit": "Last Commit",
-    "deployTime": "Deploy Time"
+    "deployedTime": "Deploy Time"
   },
   "dashboard": {
     "Dashboard": "Dashboard"

@@ -11,45 +11,50 @@ async function fetchVersionInfo() {
     webpackChunkName: "versionInfo" */ './versionInfo.json'))
     .data;
 
-  let {
-    buildTime,
-    buildVersion,
-    deployTime,
-    deployVersion,
-  } = versionInfos;
+  let { buildTime, buildVersion, deployedTime, deployedVersion } = versionInfos;
 
-  let { buildCommit, deployCommit } = versionInfos;
+  let { buildCommit, deployedCommit } = versionInfos;
 
-  const envBuildTime = process ? formatDate(process.env.BUILD_TIME as string) : +new Date();
+  const envBuildTime = process
+    ? formatDate(process.env.BUILD_TIME as string)
+    : +new Date();
 
-  buildTime = buildTime !== '{{buildTime}}' ?
-    formatDate(Number(buildTime)) as string : envBuildTime as string;
-  deployTime = deployTime !== '{{deployTime}}' ?
-    formatDate(Number(deployTime)) as string : envBuildTime as string;
+  buildTime =
+    buildTime !== '{{buildTime}}'
+      ? (formatDate(Number(buildTime)) as string)
+      : (envBuildTime as string);
+  deployedTime =
+    deployedTime !== '{{deployedTime}}'
+      ? (formatDate(Number(deployedTime)) as string)
+      : (envBuildTime as string);
 
   let lastCommitHash: string = '';
   if (gitCommitInfo.commitInfo && gitCommitInfo.commitInfo.length) {
     lastCommitHash = gitCommitInfo.commitInfo[0].commitHash;
   }
 
-  buildCommit = buildCommit !== '{{buildCommit}}' ? buildCommit : lastCommitHash;
-  deployCommit = deployCommit !== '{{deployCommit}}' ? deployCommit : lastCommitHash;
+  buildCommit =
+    buildCommit !== '{{buildCommit}}' ? buildCommit : lastCommitHash;
+  deployedCommit =
+    deployedCommit !== '{{deployedCommit}}' ? deployedCommit : lastCommitHash;
 
-  const envBuildVersion = process ? process.env.APP_VERSION as string : '';
+  const envBuildVersion = process ? (process.env.APP_VERSION as string) : '';
 
   if (envBuildVersion !== '') {
-    buildVersion = buildVersion !== '{{buildVersion}}' ?
-      buildVersion : envBuildVersion;
-    deployVersion = deployVersion !== '{{deployVersion}}' ?
-      deployVersion : envBuildVersion;
+    buildVersion =
+      buildVersion !== '{{buildVersion}}' ? buildVersion : envBuildVersion;
+    deployedVersion =
+      deployedVersion !== '{{deployedVersion}}'
+        ? deployedVersion
+        : envBuildVersion;
   }
   return {
     buildCommit,
     buildVersion,
-    deployCommit,
-    deployVersion,
+    deployedCommit,
+    deployedVersion,
     buildTime,
-    deployTime,
+    deployedTime,
   };
 }
 

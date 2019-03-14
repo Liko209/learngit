@@ -19,9 +19,9 @@ import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 type Props = WithNamespaces;
 
 type versionInfoType = {
-  deployTime: string;
-  deployCommit: string;
-  deployVersion: string;
+  deployedTime: string;
+  deployedCommit: string;
+  deployedVersion: string;
 };
 
 const Param = styled.p`
@@ -40,9 +40,9 @@ class About extends Component<Props> {
   }
 
   @observable versionInfo: versionInfoType = {
-    deployTime: '',
-    deployCommit: '',
-    deployVersion: '',
+    deployedTime: '',
+    deployedCommit: '',
+    deployedVersion: '',
   };
 
   constructor(props: any) {
@@ -68,21 +68,15 @@ class About extends Component<Props> {
   @action
   async fetchVersionInfo() {
     this.versionInfo = await fetchVersionInfo();
-    const globalStore = storeManager.getGlobalStore();
-    this.versionInfo.deployVersion &&
-      globalStore.set(
-        GLOBAL_KEYS.APP_VERSION,
-        this.versionInfo.deployVersion || '',
-      );
   }
 
   render() {
     const { t } = this.props;
     const { isShowDialog, electronAppVersion } = this.dialogInfo;
     const {
-      deployTime,
-      deployCommit,
-      deployVersion: appVersion,
+      deployedTime,
+      deployedCommit,
+      deployedVersion: appVersion,
     } = this.versionInfo;
 
     return (
@@ -97,10 +91,10 @@ class About extends Component<Props> {
           {electronAppVersion ? `(E. ${electronAppVersion})` : null}
         </Param>
         <Param>
-          {t('home.lastCommit')}: {deployCommit}
+          {t('home.lastCommit')}: {deployedCommit}
         </Param>
         <Param>
-          {t('home.deployTime')}: {deployTime || ''}
+          {t('home.deployedTime')}: {deployedTime || ''}
         </Param>
         <Param>
           Copyright © 1999-

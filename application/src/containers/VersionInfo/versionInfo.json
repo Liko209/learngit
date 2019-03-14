@@ -3,8 +3,8 @@
     "buildTime": "{{buildTime}}",
     "buildCommit": "{{buildCommit}}",
     "buildVersion": "{{buildVersion}}",
-    "deployTime": "{{deployTime}}",
-    "deployCommit": "{{deployCommit}}",
-    "deployVersion": "{{deployVersion}}"
+    "deployedTime": "{{deployedTime}}",
+    "deployedCommit": "{{deployedCommit}}",
+    "deployedVersion": "{{deployedVersion}}"
   }
 }

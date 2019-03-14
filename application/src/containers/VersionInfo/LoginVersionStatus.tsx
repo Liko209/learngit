@@ -9,15 +9,13 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { fetchVersionInfo } from './helper';
-import storeManager from '@/store';
-import { GLOBAL_KEYS } from '@/store/constants';
 
 type Props = WithNamespaces;
 
 type versionInfoType = {
-  deployTime: string;
-  deployCommit: string;
-  deployVersion: string;
+  deployedTime: string;
+  deployedCommit: string;
+  deployedVersion: string;
 };
 
 const Wrapper = styled.div`
@@ -27,14 +25,12 @@ const Wrapper = styled.div`
   width: 400px;
 `;
 
-const globalStore = storeManager.getGlobalStore();
-
 @observer
 class LoginVersionStatusView extends React.Component<Props> {
   @observable versionInfo: versionInfoType = {
-    deployTime: '',
-    deployCommit: '',
-    deployVersion: '',
+    deployedTime: '',
+    deployedCommit: '',
+    deployedVersion: '',
   };
 
   constructor(props: any) {
@@ -45,19 +41,16 @@ class LoginVersionStatusView extends React.Component<Props> {
   @action
   async fetchVersion() {
     this.versionInfo = await fetchVersionInfo();
-    this.versionInfo.deployVersion &&
-      globalStore.set(
-        GLOBAL_KEYS.APP_VERSION,
-        this.versionInfo.deployVersion || '',
-      );
   }
 
   render() {
     const { t } = this.props;
-    const { deployVersion, deployCommit, deployTime } = this.versionInfo;
+    const { deployedVersion, deployedCommit, deployedTime } = this.versionInfo;
 
-    const version = `${t('home.version')}: ${deployVersion} ${deployCommit}`;
-    const time = `${t('home.deployTime')}: ${deployTime}`;
+    const version = `${t(
+      'home.version',
+    )}: ${deployedVersion} ${deployedCommit}`;
+    const time = `${t('home.deployedTime')}: ${deployedTime}`;
 
     return (
       <Wrapper>
