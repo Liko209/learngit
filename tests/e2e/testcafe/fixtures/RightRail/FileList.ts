@@ -17,30 +17,31 @@ fixture('RightRail')
   .afterEach(teardownCase());
 
 test(formalName('Check the upload file and display on the right rail', ['Allen', 'Isaac', 'P1', 'JPT-907']), async t => {
-  const app = new AppRoot(t);
-  const conversationPage = app.homePage.messageTab.conversationPage;
-  const rightRail = app.homePage.messageTab.rightRail;
   const filesPath = ['../../sources/1.txt', '../../sources/3.txt'];
   const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
-  await h(t).platform(loginUser).init();
 
-  let teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
+  const app = new AppRoot(t);
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const rightRail = app.homePage.messageTab.rightRail;
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
   await h(t).withLog('When I open a team and  upload a text file', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath[0]);
     await conversationPage.sendMessage(message);
     await conversationPage.nthPostItem(-1).waitForPostToSend();
