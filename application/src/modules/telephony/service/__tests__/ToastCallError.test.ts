@@ -24,7 +24,7 @@ describe('ToastCallError', () => {
     );
   });
 
-  it('should display call error: No network', () => {
+  it('should display call error: No network [JPT-1406]', () => {
     ToastCallError.toast = jest.fn();
     ToastCallError.toastNoNetwork();
     const i18nkey = 'telephony.prompt.NoNetwork';
@@ -32,7 +32,7 @@ describe('ToastCallError', () => {
     expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
-  it('should display call error: Call failed', () => {
+  it('should display call error: Call failed [JPT-1393]', () => {
     ToastCallError.toast = jest.fn();
     const i18nkey = 'telephony.prompt.CallFailed';
     ToastCallError.toastCallFailed();
@@ -40,7 +40,7 @@ describe('ToastCallError', () => {
     expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
-  it('should display call error: time out', () => {
+  it('should display call error: time out [JPT-1407]', () => {
     ToastCallError.toast = jest.fn();
     const i18nkey = 'telephony.prompt.CallTimeout';
     ToastCallError.toastCallTimeout();
