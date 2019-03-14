@@ -122,7 +122,7 @@ test(formalName('Deleted link will NOT show under Links tab', ['P1', 'JPT-1342',
     await linkTab.countInListShouldBe(1);
   });
 
-  await h(t).withLog('When I delte the link (via api)', async () => {
+  await h(t).withLog('When I delete the link (via api)', async () => {
     const postId = await conversationPage.nthPostItem(-1).postId;
     const linkIds = await h(t).glip(loginUser).getLinksIdsFromPostId(postId);
     await h(t).glip(loginUser).deleteLink(linkIds[0]);
@@ -130,5 +130,5 @@ test(formalName('Deleted link will NOT show under Links tab', ['P1', 'JPT-1342',
 
   await h(t).withLog('Then the link is removed from Files tab immediately', async () => {
     await linkTab.countInListShouldBe(0);
-  })
+  });
 });
