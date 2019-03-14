@@ -44,13 +44,13 @@ describe('ConvertToTeamViewModel', () => {
   });
 
   describe('group', () => {
-    it('should be get group entity when invoke class instance property group [JPT-]', () => {
+    it('should be get group entity when invoke class instance property group', () => {
       expect(vm.group).toEqual(mockEntityGroup);
     });
   });
 
   describe('handleNameChange()', () => {
-    it('should be get correct value when team name has change', () => {
+    it('should be get correct value when team name has change [JPT-1390]', () => {
       vm.handleNameChange({
         target: {
           value: '123',
@@ -115,7 +115,7 @@ describe('ConvertToTeamViewModel', () => {
       expect(result).toEqual(mockSuccess);
     });
 
-    it('should be convert to team save failure when team name duplicate', async () => {
+    it('should be convert to team save failure when team name duplicate [JPT-1392]', async () => {
       const mockError = new JServerError(
         ERROR_CODES_SERVER.ALREADY_TAKEN,
         'NAME_DUPLICATION_ERROR_MESSAGE',
@@ -125,7 +125,7 @@ describe('ConvertToTeamViewModel', () => {
       expect(result).toBeNull();
     });
 
-    it('should be convert to team save failure when service error', async () => {
+    it('should be convert to team save failure when service error [JPT-1394]', async () => {
       const mockError = new JNetworkError(
         ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
         'NETWORK_OFFLINE_ERROR_MESSAGE',

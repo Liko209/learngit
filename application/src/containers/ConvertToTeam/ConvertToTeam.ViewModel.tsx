@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable } from 'mobx';
+import { computed, observable, Reaction } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ConvertToTeamProps, ConvertToTeamViewProps } from './types';
 import { getEntity } from '@/store/utils';
@@ -30,8 +30,10 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
     super(props);
     this.reaction(
       () => this.group,
-      (group: GroupModel) => {
+      (group: GroupModel, reaction: Reaction) => {
         this.name = group.displayName;
+        this.disabledOkBtn = this.name === '';
+        reaction.dispose();
       },
       {
         fireImmediately: true,

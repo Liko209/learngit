@@ -11,7 +11,6 @@ import { MenuProps, MenuViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { ConvertToTeam } from '@/containers/ConvertToTeam';
-import { CONVERSATION_TYPES } from '@/constants';
 
 @observer
 class Menu extends React.Component<WithNamespaces & MenuProps & MenuViewProps> {
@@ -34,8 +33,7 @@ class Menu extends React.Component<WithNamespaces & MenuProps & MenuViewProps> {
   }
 
   render() {
-    const { t, group } = this.props;
-    const isGroup = group.type === CONVERSATION_TYPES.NORMAL_GROUP;
+    const { t, isGroup } = this.props;
     // Use isGroup to determine whether to display the menu,
     // Sprint 16 only one `Convert to team` menu item.
     // https://jira.ringcentral.com/browse/FIJI-3899

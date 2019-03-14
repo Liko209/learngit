@@ -4,14 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import GroupModel from '@/store/models/Group';
-
 type MenuProps = {
   id: number;
 };
 
 type MenuViewProps = {
-  group: GroupModel;
+  isGroup: boolean;
 };
 
 export { MenuProps, MenuViewProps };
