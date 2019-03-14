@@ -5,7 +5,7 @@
     "outDir": "build",
     "rootDir": "src",
     "paths": {
-      "test-util/*": ["node_modules/test-util/src/*"]
+      "test-util/*": ["../packages/test-util/src/*"]
     }
   },
   "include": ["src/**/*"],

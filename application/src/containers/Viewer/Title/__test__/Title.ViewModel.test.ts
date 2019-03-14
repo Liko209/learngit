@@ -19,6 +19,8 @@ const props = {
   updateCurrentItemIndex: jest.fn(),
   fetchData: jest.fn(),
   setOnCurrentItemDeletedCb: jest.fn(),
+  getCurrentItemId: jest.fn(),
+  getCurrentIndex: jest.fn(),
 };
 
 describe('TitleViewModel', () => {
