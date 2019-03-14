@@ -63,25 +63,25 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
         type: 'isPublic',
         text: i18next.t('people.team.SetAsPublicTeam'),
         checked: false,
-        automationId: 'CreateTeamIsPublic',
+        automationId: 'ConvertToTeamIsPublic',
       },
       {
         type: 'canAddMember',
         text: i18next.t('people.team.MembersMayAddOtherMembers'),
         checked: true,
-        automationId: 'CreateTeamCanAddMember',
+        automationId: 'ConvertToTeamCanAddMember',
       },
       {
         type: 'canPost',
         text: i18next.t('people.team.MembersMayPostMessages'),
         checked: true,
-        automationId: 'CreateTeamCanPost',
+        automationId: 'ConvertToTeamCanPost',
       },
       {
         type: 'canPin',
         text: i18next.t('people.team.MembersMayPinPosts'),
         checked: true,
-        automationId: 'CreateTeamCanPinPost',
+        automationId: 'ConvertToTeamCanPinPost',
       },
     ];
   }

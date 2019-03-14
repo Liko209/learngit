@@ -18,7 +18,7 @@ jest.mock('../../../store/utils');
 
 const mockEntityGroup = {
   displayName: 'Group name',
-  members: [1, 2],
+  members: [1, 2, 3],
 };
 
 const groupService = {
