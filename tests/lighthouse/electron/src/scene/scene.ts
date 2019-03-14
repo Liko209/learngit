@@ -253,6 +253,15 @@ class Scene {
     return this.url;
   }
 
+  /**
+   * @description avoid nodeJS out of memory
+   */
+  clearReportCache() {
+    delete this.data;
+    delete this.report;
+    delete this.artifacts;
+  }
+
   name(): string {
     if (this.lightHouseConfig && this.lightHouseConfig.name !== "") {
       return `${this.constructor.name}.${this.lightHouseConfig.name}`;

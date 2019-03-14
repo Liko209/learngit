@@ -8,7 +8,7 @@ import { RTCNetworkNotificationCenter } from '../RTCNetworkNotificationCenter';
 
 import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../types';
 
-describe('Network Notification Center', async () => {
+describe('Network Notification Center', () => {
   class TestListener {
     constructor() {
       this.listenEvevt();

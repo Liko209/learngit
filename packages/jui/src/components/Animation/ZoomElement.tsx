@@ -4,167 +4,152 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { ReactElement } from 'react';
-import styled, {
-  css,
-  keyframes,
-  withTheme,
-} from '../../foundation/styled-components';
-import { Transition } from 'react-transition-group';
-import {
-  TransitionStatus,
-  ExitHandler,
-  EnterHandler,
-} from 'react-transition-group/Transition';
-import { AnimationOptions } from './types';
+import React from 'react';
+import { withTheme } from '../../foundation/styled-components';
 import { ThemeProps } from '../../foundation/theme/theme';
 
 type ZoomElementProps = {
   show: boolean;
   originalElement: HTMLElement | null;
-  targetElement: HTMLElement | null;
+  targetElement: HTMLElement;
   duration: string;
   easing: string;
-  onExited?: ExitHandler;
-  onEntered?: EnterHandler;
-  children: ReactElement;
+  onExited?: Function;
+  onEntered?: Function;
 };
 
-function genStyle(
-  state: TransitionStatus,
-  startPosition: DOMRect | ClientRect | null,
-  endPosition: null | DOMRect | ClientRect,
-  option: AnimationOptions,
-) {
-  switch (state) {
-    case 'entering': {
-      return css`
-        &&& > * {
-          opacity: 0;
-        }
-      `;
-    }
-
-    case 'entered': {
-      return (
-        endPosition &&
-        css`
-          &&& > * {
-            animation: ${getAnimation(startPosition, endPosition, true)}
-              ${({ theme }) => theme.transitions.duration[option.duration]}ms
-              ${({ theme }) => theme.transitions.easing[option.easing]};
-          }
-        `
-      );
-    }
-    case 'exited': {
-      return css`
-        &&& > * {
-          animation: ${getAnimation(endPosition, startPosition, false)}
-            ${({ theme }) => theme.transitions.duration[option.duration]}ms
-            ${({ theme }) => theme.transitions.easing[option.easing]} forwards;
-        }
-      `;
-    }
-    default:
-      return '';
-  }
-}
-
-function getAnimation(inPosition: any, outPosition: any, show: boolean) {
-  if (!outPosition || !inPosition) {
-    return keyframes`
-      0%{
-        opacity: ${show ? 0 : 1};
-      }
-      100%{
-        opacity: ${show ? 1 : 0};
-      }
-    `;
-  }
-  return keyframes`
-  0% {
-    position: fix;
-    top: ${inPosition.top}px;
-    left: ${inPosition.left}px;
-    width: ${inPosition.width}px;
-    height: ${inPosition.height}px;
-  }
-  100% {
-    position: fix;
-    top: ${outPosition.top}px;
-    left: ${outPosition.left}px;
-    width: ${outPosition.width}px;
-    height: ${outPosition.height}px;
-  }
- `;
-}
-
-const StyledAnimation = styled('div')<
-  {
-    state: TransitionStatus;
-    startPosition: DOMRect | ClientRect | null;
-    endPosition: any;
-    option: AnimationOptions;
-  } & React.HTMLAttributes<HTMLElement>
->`
-  ${({ state, startPosition, endPosition, option }) =>
-    genStyle(state, startPosition, endPosition, option)}
-`;
-
+type Status = 'mounted' | 'entered' | 'exited';
 class ZoomElementAnimation extends React.PureComponent<
   ZoomElementProps & ThemeProps
 > {
+  state = {
+    status: 'mounted' as Status,
+  };
+  handleEntered = () => {
+    const {
+      targetElement,
+      originalElement,
+      onEntered,
+      theme,
+      duration,
+    } = this.props;
+    setTimeout(() => {
+      targetElement.style.cssText = '';
+      originalElement && (originalElement.style.visibility = 'visible');
+      onEntered && onEntered();
+    },         theme.transitions.duration[duration]);
+    this.setState({ status: 'entered' });
+  }
+
+  handleExited = () => {
+    const { onExited, theme, duration, originalElement } = this.props;
+    setTimeout(() => {
+      originalElement && (originalElement.style.visibility = 'visible');
+      onExited && onExited();
+    },         theme.transitions.duration[duration]);
+    this.setState({ status: 'exited' });
+  }
+
+  private _computePositionCssText(position: ClientRect | DOMRect) {
+    return `position: fixed;
+           top: ${position.top}px;
+           left: ${position.left}px;
+           width: ${position.width}px;
+           height: ${position.height}px;
+    `;
+  }
+
+  playEnterAnimation() {
+    const {
+      originalElement,
+      targetElement,
+      theme,
+      duration,
+      easing,
+    } = this.props;
+
+    if (!originalElement) return;
+    const startPosition = originalElement.getBoundingClientRect();
+    const endPosition = targetElement.getBoundingClientRect();
+    this.handleEntered();
+    requestAnimationFrame(() => {
+      originalElement.style.visibility = 'hidden';
+      targetElement.style.cssText = this._computePositionCssText(startPosition);
+
+      if (endPosition) {
+        return requestAnimationFrame(() => {
+          targetElement.style.cssText = `
+            ${this._computePositionCssText(endPosition)}
+            transition: all ${theme.transitions.duration[duration]}ms
+            ${theme.transitions.easing[easing]};
+            `;
+        });
+      }
+      return requestAnimationFrame(() => {
+        targetElement.style.cssText = `
+            opacity: 0;
+            transition: all
+            ${theme.transitions.duration[duration]}ms
+            ${theme.transitions.easing[easing]};
+            `;
+      });
+    });
+  }
+
+  playExitAnimation() {
+    const {
+      originalElement,
+      targetElement,
+      theme,
+      duration,
+      easing,
+    } = this.props;
+    const endPosition =
+      originalElement && originalElement.getBoundingClientRect();
+    const startPosition = targetElement.getBoundingClientRect();
+
+    this.handleExited();
+    if (endPosition && startPosition) {
+      return requestAnimationFrame(() => {
+        originalElement!.style.visibility = 'hidden';
+        targetElement.style.cssText = this._computePositionCssText(
+          startPosition,
+        );
+
+        requestAnimationFrame(() => {
+          targetElement.style.cssText = `
+          ${this._computePositionCssText(endPosition)}
+          transition: all ${theme.transitions.duration[duration]}ms
+          ${theme.transitions.easing[easing]};
+        `;
+        });
+      });
+    }
+    return requestAnimationFrame(() => {
+      targetElement.style.cssText = `
+        opacity: 0;
+          transition: all
+          ${theme.transitions.duration[duration]}ms
+          ${theme.transitions.easing[easing]};
+          `;
+    });
+  }
+
   componentDidMount() {
-    this.forceUpdate();
+    this.playEnterAnimation();
   }
 
-  handleEntered = (node: HTMLElement, isAppearing: boolean) => {
-    const { onEntered, theme, duration } = this.props;
-    setTimeout(() => {
-      onEntered && onEntered(node, isAppearing);
-    },         theme.transitions.duration[duration]);
-  }
-
-  handleExited = (node: HTMLElement) => {
-    const { onExited, theme, duration } = this.props;
-    setTimeout(() => {
-      onExited && onExited(node);
-    },         theme.transitions.duration[duration]);
+  componentDidUpdate() {
+    const { show } = this.props;
+    if (show && this.state.status === 'mounted') {
+      this.playEnterAnimation();
+    } else if (!show && this.state.status !== 'exited') {
+      this.playExitAnimation();
+    }
   }
 
   render() {
-    const {
-      show,
-      duration,
-      easing,
-      children,
-      originalElement,
-      targetElement,
-    } = this.props;
-    const startPosition =
-      originalElement && originalElement.getBoundingClientRect();
-    const endPosition = targetElement && targetElement.getBoundingClientRect();
-
-    return (
-      <Transition
-        in={show}
-        timeout={0}
-        onEntered={this.handleEntered}
-        onExited={this.handleExited}
-      >
-        {state => (
-          <StyledAnimation
-            state={state}
-            startPosition={startPosition}
-            endPosition={endPosition}
-            option={{ duration, easing }}
-          >
-            {React.cloneElement(children)}
-          </StyledAnimation>
-        )}
-      </Transition>
-    );
+    return <></>;
   }
 }
 
