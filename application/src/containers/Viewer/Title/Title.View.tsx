@@ -67,7 +67,7 @@ class ViewerTitleViewComponent extends Component<
             animation={imageViewerHeaderAnimation}
           >
             <div>
-              <JuiDialogHeader>
+              <JuiDialogHeader data-test-automation-id="ViewerHeader">
                 <ReactResizeDetector
                   handleWidth={true}
                   onResize={this.handleHeaderResize}

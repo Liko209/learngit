@@ -62,11 +62,7 @@ class ViewerView extends Component<
           data-test-automation-id="Viewer"
           show={this.state.contextValue.show}
         >
-          <ViewerTitle
-            data-test-automation-id="ViewerTitle"
-            itemId={rest.itemId}
-            {...rest}
-          />
+          <ViewerTitle itemId={rest.itemId} {...rest} />
           <ViewerContent
             data-test-automation-id="ViewerContent"
             left={contentLeftRender({ ...rest })}

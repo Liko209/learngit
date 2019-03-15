@@ -14,7 +14,7 @@ fixture('ImageViewer')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Image viewer behavior when the image being viewed is deleted', ['Chris.Zhan', 'P2', 'JPT-1343']), async t => {
+test(formalName('Close the viewer and toast popup when the image being viewed is deleted', ['Chris.Zhan', 'P2', 'JPT-1343']), async t => {
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
   const filesPath = ['../../sources/1.png','../../sources/2.png'];
@@ -56,7 +56,7 @@ test(formalName('Image viewer behavior when the image being viewed is deleted', 
 
   const viewerDialog = app.homePage.viewerDialog;
   await h(t).withLog('Then the image viewer dialog show up', async () => {
-    viewerDialog.shouldBePopup();
+    await viewerDialog.shouldBePopup();
   });
 
   await h(t).withLog('When I delete the post and image', async () => {
@@ -74,7 +74,7 @@ test(formalName('Image viewer behavior when the image being viewed is deleted', 
   });
 });
 
-test(formalName('Image viewer behavior when the team was deleted', ['Chris.Zhan', 'P2', 'JPT-1344']), async t => {
+test(formalName('Go to blank page and show a toast when the team was deleted', ['Chris.Zhan', 'P2', 'JPT-1344']), async t => {
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
   const filesPath = ['../../sources/1.png','../../sources/2.png'];
@@ -116,7 +116,7 @@ test(formalName('Image viewer behavior when the team was deleted', ['Chris.Zhan'
 
   const viewerDialog = app.homePage.viewerDialog;
   await h(t).withLog('Then the image viewer dialog show up', async () => {
-    viewerDialog.shouldBePopup();
+    await viewerDialog.shouldBePopup();
   });
 
   await h(t).withLog('When I delete team', async () => {
@@ -137,7 +137,7 @@ test(formalName('Image viewer behavior when the team was deleted', ['Chris.Zhan'
   });
 });
 
-test(formalName('Image viewer behavior when the team was archived', ['Chris.Zhan', 'P2', 'JPT-1344']), async t => {
+test(formalName('Go to blank page and show a toast when the team was archived', ['Chris.Zhan', 'P2', 'JPT-1344']), async t => {
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
   const filesPath = ['../../sources/1.png','../../sources/2.png'];
@@ -179,10 +179,10 @@ test(formalName('Image viewer behavior when the team was archived', ['Chris.Zhan
 
   const viewerDialog = app.homePage.viewerDialog;
   await h(t).withLog('Then the image viewer dialog show up', async () => {
-    viewerDialog.shouldBePopup();
+    await viewerDialog.shouldBePopup();
   });
 
-  await h(t).withLog('When I delete team', async () => {
+  await h(t).withLog('When I archive team', async () => {
     await h(t).platform(loginUser).archiveTeam(teamId);
   });
 
