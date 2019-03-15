@@ -17,7 +17,15 @@ const StyleConversationPostLike = styled.div`
   border-radius: ${shape('borderRadius')};
   padding: ${spacing(1, 1.5)};
   display: inline-block;
-  transition: all 0.1s ease-in;
+  transition: ${({
+    theme: {
+      transitions: {
+        duration: { shortest },
+        easing: { easeIn },
+        create,
+      },
+    },
+  }) => `${create('all', { duration: shortest, easing: easeIn })}`};
   display: inline-flex;
   align-items: center;
   cursor: pointer;
