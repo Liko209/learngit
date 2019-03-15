@@ -72,7 +72,7 @@ class RTCAccount implements IRTCAccount {
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
   ): RTC_STATUS_CODE {
-    if (toNumber.length === 0) {
+    if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
       return RTC_STATUS_CODE.NUMBER_INVALID;
     }
