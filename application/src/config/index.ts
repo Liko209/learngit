@@ -109,11 +109,15 @@ class Config {
   }
 
   public isProductionBuild() {
-    return process.env.JUPITER_ENV === 'production';
+    return (
+      process.env.JUPITER_ENV === 'production' ||
+      process.env.JUPITER_ENV === 'public'
+    );
   }
 
   public defaultEnv() {
-    return this.isProductionBuild() ? 'production' : 'GLP-DEV-XMN';
+    const productionEnv = this.isProductionBuild();
+    return productionEnv ? 'production' : 'GLP-DEV-XMN';
   }
 
   getEnv() {
