@@ -61,6 +61,7 @@ interface IPersonService {
     e164PhoneNumber: string,
     contactType: ContactType,
   ): Promise<Person | null>;
+  getPersonFromServer(personId: number): Promise<void>;
 }
 
 export { IPersonService };

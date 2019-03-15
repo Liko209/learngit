@@ -139,4 +139,11 @@ describe('PersonService', () => {
       );
     });
   });
+
+  describe('getPersonFromServer', () => {
+    it('should call controller with correct parameter', async () => {
+      personService.getPersonFromServer(111);
+      expect(personController.getPersonFromServer).toBeCalledWith(111);
+    });
+  });
 });

@@ -425,6 +425,13 @@ class PersonController {
       ? result.sortableModels[0].entity
       : null;
   }
+
+  public async getPersonFromServer(personId: number): Promise<void> {
+    const requestController = this._entitySourceController.getRequestController();
+    if (requestController) {
+      await requestController.get(personId);
+    }
+  }
 }
 
 export { PersonController };

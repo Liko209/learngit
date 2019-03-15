@@ -877,4 +877,17 @@ describe('PersonService', () => {
       expect(result.id).toBe(36);
     });
   });
+
+  describe('getPersonFromServer()', () => {
+    it('should call get once when has requestController', async () => {
+      const requestController = {
+        get: jest.fn(),
+      };
+      jest
+        .spyOn(entitySourceController, 'getRequestController')
+        .mockReturnValue(requestController);
+      personController.getPersonFromServer(1);
+      expect(requestController.get).toHaveBeenCalledTimes(1);
+    });
+  });
 });
