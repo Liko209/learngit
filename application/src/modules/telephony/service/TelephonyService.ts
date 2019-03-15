@@ -28,6 +28,8 @@ class TelephonyService {
     mainLogger.debug(`[Telephony_Service_Account_State]: ${state}`);
   }
 
+  private _onMadeOutgoingCall = (callId: string) => {};
+
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
     mainLogger.debug(`[Telephony_Service_Call_State]: ${state}`);
 
@@ -47,6 +49,7 @@ class TelephonyService {
   constructor() {
     this._serverTelephonyService.createAccount({
       onAccountStateChanged: this._onAccountStateChanged,
+      onMadeOutgoingCall: this._onMadeOutgoingCall,
     });
   }
 

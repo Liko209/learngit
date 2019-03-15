@@ -16,7 +16,8 @@ import {
   JuiDialogHeaderMeta,
   JuiDialogHeaderMetaLeft,
   JuiDialogHeaderMetaRight,
-} from 'jui/components/Dialog/DialogHeader/index';
+  JuiDialogHeaderSubtitle,
+} from 'jui/components/Dialog/DialogHeader';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 // import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
@@ -84,7 +85,10 @@ class ViewerTitleViewComponent extends Component<
                 </JuiDialogHeaderMeta>
                 <JuiDialogHeaderTitle variant="responsive">
                   <span>{name}</span>
-                  <span> {`(${currentIndex + 1}/${total})`}</span>
+                  <JuiDialogHeaderSubtitle>
+                    {' '}
+                    {`(${currentIndex + 1}/${total})`}
+                  </JuiDialogHeaderSubtitle>
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>
                   <JuiButtonBar overlapSize={2.5}>
