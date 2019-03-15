@@ -36,7 +36,11 @@ class JuiConversationPageMember extends React.Component<
 
     return (
       <JuiArrowTip title={title}>
-        <StyledConversationPageMember aria-label={ariaLabel} onClick={onClick}>
+        <StyledConversationPageMember
+          tabIndex={0}
+          aria-label={ariaLabel}
+          onClick={onClick}
+        >
           <JuiIconography iconSize="medium">member_count</JuiIconography>
           {children}
         </StyledConversationPageMember>
