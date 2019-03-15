@@ -130,11 +130,12 @@ class RcInfoController {
       PhoneParserUtility.initPhoneParser(true);
       callback(true);
     } catch (err) {
-      mainLogger.error(`requestRcPhoneData error: ${err.message}`);
       if (err.message.includes('Not Modified')) {
         callback(true);
+        mainLogger.debug(`requestRcPhoneData: ${err.message}`);
       } else {
         callback(false);
+        mainLogger.error(`requestRcPhoneData error: ${err.message}`);
       }
     }
   }

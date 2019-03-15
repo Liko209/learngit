@@ -11,6 +11,7 @@ import { EVENT_TYPES, notificationCenter } from 'sdk/service';
 import {
   NotificationEntityPayload,
   NotificationEntityUpdatePayload,
+  NotificationEntityDeletePayload,
 } from 'sdk/service/notificationCenter';
 
 import { AbstractViewModel } from '@/base';
@@ -18,6 +19,14 @@ import { AbstractViewModel } from '@/base';
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { ViewerViewProps } from './types';
 import { ItemListDataSource } from './Viewer.DataSource';
+import { Group } from 'sdk/module/group';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import portalManager from '@/common/PortalManager';
+import { ENTITY } from 'sdk/src/service/eventKey';
 
 const INIT_PAGE_SIZE = 5;
 
@@ -37,12 +46,12 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     const { groupId, type, itemId } = props;
     this.currentItemId = itemId;
     this._itemListDataSource = new ItemListDataSource({ groupId, type });
-
     const itemNotificationKey = ItemNotification.getItemNotificationKey(
       ViewerItemTypeIdMap[this.props.type],
       groupId,
     );
     notificationCenter.on(itemNotificationKey, this._onItemDataChange);
+    notificationCenter.on(ENTITY.GROUP, this._onGroupDataChange);
   }
 
   @action
@@ -57,6 +66,7 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
       this.props.groupId,
     );
     notificationCenter.off(itemNotificationKey, this._onItemDataChange);
+    notificationCenter.off(ENTITY.GROUP, this._onGroupDataChange);
     this._itemListDataSource.dispose();
   }
 
@@ -119,12 +129,34 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     }
   }
 
+  private _onExceptions(toastMessage: string) {
+    portalManager.dismissAll();
+    Notification.flashToast({
+      message: toastMessage,
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
+  }
+
   private _onItemDataChange = (
     payload: NotificationEntityPayload<FileItem>,
   ) => {
     const { type } = payload;
     const { groupId } = this.props;
+    if (type === EVENT_TYPES.DELETE) {
+      (payload as NotificationEntityDeletePayload).body.ids.forEach(
+        (id: number) => {
+          if (id === this.currentItemId) {
+            this._onExceptions('viewer.ImageDeleted');
+          }
+        },
+      );
+      return;
+    }
     let needRefreshIndex = false;
+
     if (type === EVENT_TYPES.UPDATE) {
       const detailPayload = payload as NotificationEntityUpdatePayload<
         FileItem
@@ -144,6 +176,30 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     }
     if (needRefreshIndex) {
       this._fetchIndexInfo();
+    }
+  }
+
+  private _onGroupDataChange = (payload: NotificationEntityPayload<Group>) => {
+    const { type } = payload;
+    const { groupId } = this.props;
+    if (type === EVENT_TYPES.DELETE) {
+      (payload as NotificationEntityDeletePayload).body.ids.forEach(
+        (id: number) => {
+          if (id === groupId) {
+            this._onExceptions('viewer.TeamDeleted');
+          }
+        },
+      );
+    }
+
+    if (type === EVENT_TYPES.UPDATE) {
+      (payload as NotificationEntityUpdatePayload<Group>).body.ids.forEach(
+        (id: number) => {
+          if (id === groupId) {
+            this._onExceptions('viewer.TeamArchived');
+          }
+        },
+      );
     }
   }
 }
