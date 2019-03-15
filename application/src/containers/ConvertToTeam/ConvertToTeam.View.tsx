@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, createRef, Fragment } from 'react';
+import React, { Component, createRef } from 'react';
 import { observer } from 'mobx-react';
 import i18next from 'i18next';
 import { ConvertToTeamViewProps } from './types';
@@ -37,9 +37,12 @@ const DESCRIPTION_INPUT_PROPS = {
 };
 
 const createTeamLoading = () => (
-  <DefaultLoadingWithDelay mask={true} size={42} />
+  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
 );
-const Loading = withLoading(Fragment, createTeamLoading);
+const Loading = withLoading(
+  (props: any) => <>{props.children}</>,
+  createTeamLoading,
+);
 
 type Setting = {
   isPublic: boolean;
