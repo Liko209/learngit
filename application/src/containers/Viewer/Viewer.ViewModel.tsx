@@ -7,7 +7,7 @@ import { computed, observable, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
-import { EVENT_TYPES, notificationCenter } from 'sdk/service';
+import { EVENT_TYPES, notificationCenter, ENTITY } from 'sdk/service';
 import {
   NotificationEntityPayload,
   NotificationEntityUpdatePayload,
@@ -26,7 +26,6 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import portalManager from '@/common/PortalManager';
-import { ENTITY } from 'sdk/src/service/eventKey';
 
 const INIT_PAGE_SIZE = 5;
 
