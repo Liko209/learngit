@@ -225,6 +225,11 @@ class RTCAccount implements IRTCAccount {
     if (this._delegate) {
       this._delegate.onMadeOutgoingCall(call);
     }
+    if (this.isReady()) {
+      call.onAccountReady();
+    } else {
+      call.onAccountNotReady();
+    }
   }
 
   private _onReceiveInvite(session: any) {

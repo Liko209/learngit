@@ -1,0 +1,13 @@
+{
+  "on_push": {
+    "fixtures": [
+      "./fixtures/Profile/RemoveTeamMember.ts"
+    ],
+    "include_tags": [
+      "JPT-1086"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

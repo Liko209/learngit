@@ -41,6 +41,7 @@ class TotalUnreadController {
   ) {
     this._taskArray = [];
     this._unreadInitialized = false;
+    this._favoriteGroupIds = [];
     this.reset();
   }
 
@@ -187,7 +188,7 @@ class TotalUnreadController {
         if (!profile) {
           return;
         }
-        const newFavoriteIds = profile.favorite_group_ids;
+        const newFavoriteIds = profile.favorite_group_ids || [];
         const adds = _.difference(newFavoriteIds, this._favoriteGroupIds);
         this._updateTotalUnreadByFavoriteChanges(adds, true);
         const removes = _.difference(this._favoriteGroupIds, newFavoriteIds);
@@ -253,7 +254,7 @@ class TotalUnreadController {
     const groupService: GroupService = GroupService.getInstance();
     const profileService: ProfileService = ProfileService.getInstance();
     const groups = await groupService.getEntitySource().getEntities();
-    this._favoriteGroupIds = await profileService.getFavoriteGroupIds();
+    this._favoriteGroupIds = (await profileService.getFavoriteGroupIds()) || [];
 
     await Promise.all(
       groups.map(async (group: Group) => {

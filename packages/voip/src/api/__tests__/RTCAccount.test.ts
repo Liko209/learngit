@@ -187,7 +187,7 @@ function setupAccount() {
   account._onNewProv(mockProvisionData);
 }
 
-describe('RTCAccount', async () => {
+describe('RTCAccount', () => {
   it('Should  Report registered state to upper layer when account state transient to registered [JPT-528]', done => {
     setupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
