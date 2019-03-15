@@ -9,8 +9,10 @@ import { ENTITY } from '../../../service/eventKey';
 import { GlipTypeUtil } from '../../../utils/glip-type-dictionary';
 
 class ItemNotification {
-  static getItemNotificationKey(itemType: number, groupId: number) {
-    return `${ENTITY.ITEM}.${itemType}.${groupId}`;
+  static getItemNotificationKey(itemType?: number, groupId?: number): string {
+    const typeStr = itemType ? `${itemType}` : '*';
+    const groupIdStr = groupId ? `${groupId}` : '*';
+    return `${ENTITY.ITEM}.${typeStr}.${groupIdStr}`;
   }
 
   static getItemsNotifications(
@@ -31,7 +33,10 @@ class ItemNotification {
               itemInMap.entities.push(item);
             } else {
               itemGroupMap.set(key, {
-                eventKey: this.getItemNotificationKey(type, groupId),
+                eventKey: ItemNotification.getItemNotificationKey(
+                  type,
+                  groupId,
+                ),
                 entities: [item],
               });
             }

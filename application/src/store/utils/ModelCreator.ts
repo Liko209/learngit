@@ -5,14 +5,14 @@
  */
 
 import TypeDictionary from 'sdk/utils/glip-type-dictionary/types';
-import FileItemModel from './FileItem';
-import TaskItemModel from './TaskItem';
-import LinkItemModel from './LinkItem';
-import NoteItemModel from './NoteItem';
-import CodeItemModel from './CodeItem';
-import EventItemModel from './EventItem';
-import ConferenceItemModel from './ConferenceItem';
-import ItemModel from './Item';
+import FileItemModel from '../models/FileItem';
+import TaskItemModel from '../models/TaskItem';
+import LinkItemModel from '../models/LinkItem';
+import NoteItemModel from '../models/NoteItem';
+import CodeItemModel from '../models/CodeItem';
+import EventItemModel from '../models/EventItem';
+import ConferenceItemModel from '../models/ConferenceItem';
+import ItemModel from '../models/Item';
 import { IdModel } from 'sdk/framework/model';
 
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';

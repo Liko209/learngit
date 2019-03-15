@@ -59,7 +59,7 @@ const ENTITY_SETTING = {
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.ITEM]: {
-    event: [`${ENTITY.ITEM}.*`],
+    event: [`${ENTITY.ITEM}.*.*`],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,

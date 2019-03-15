@@ -12,10 +12,10 @@ import {
   SelectFile,
   DidUploadFileCallback,
 } from './types';
-import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
+import { notificationCenter, EVENT_TYPES } from 'sdk/service';
 
 import { GroupConfigService } from 'sdk/module/groupConfig';
-import { ItemService } from 'sdk/module/item';
+import { ItemService, ItemNotification } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
@@ -56,7 +56,10 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       },
     );
 
-    notificationCenter.on(`${ENTITY.ITEM}.*`, this._handleItemChanged);
+    notificationCenter.on(
+      ItemNotification.getItemNotificationKey(),
+      this._handleItemChanged,
+    );
   }
 
   private _handleItemChanged = (
@@ -281,7 +284,10 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   dispose = () => {
-    notificationCenter.off(`${ENTITY.ITEM}.*`, this._handleItemChanged);
+    notificationCenter.off(
+      ItemNotification.getItemNotificationKey(),
+      this._handleItemChanged,
+    );
   }
 }
 

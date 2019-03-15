@@ -121,7 +121,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   dispose = () => {
-    notificationCenter.off(`${ENTITY.ITEM}.*`, this._handleItemChanged);
+    notificationCenter.off(ENTITY.PROGRESS, this._handleItemChanged);
   }
 
   @computed
