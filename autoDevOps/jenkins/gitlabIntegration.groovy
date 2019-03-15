@@ -89,7 +89,7 @@ def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget) {
 }
 
 def updateVersionInfo(String remoteUri, String appDir, String sha, int timestamp) {
-    println sshCmd(remoteUri, "sed -i 's/{{deployedCommit}}/${sha}/;s/{{deployedTime}}/${timestamp}' ${appDir}/versionInfo.*.chunk.js || true")
+    println sshCmd(remoteUri, "sed -i 's/{{deployedCommit}}/${sha}/;s/{{deployedTime}}/${timestamp}/' ${appDir}/versionInfo.*.chunk.js || true")
 }
 
 def createRemoteTarbar(String remoteUri, String sourceDir, String targetDir, String filename) {
@@ -509,7 +509,8 @@ node(buildNode) {
                         // and create copy to branch name based folder
                         updateRemoteCopy(deployUri, appHeadShaDir, appLinkDir)
                         // and update version info
-                        updateVersionInfo(deployUri, appLinkDir, headSha, Math.round(System.currentTimeMillis() / 1000L));
+                        int ts = Math.round(System.currentTimeMillis() / 1000L)
+                        updateVersionInfo(deployUri, appLinkDir, headSha, ts)
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
                             updateRemoteCopy(deployUri, appHeadShaDir, appStageLinkDir)
