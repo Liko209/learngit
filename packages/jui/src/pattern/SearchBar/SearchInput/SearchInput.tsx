@@ -82,7 +82,7 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
         <Jui.SearchIcon
           data-test-automation-id="search-icon"
           disableToolTip={true}
-          color="common.white"
+          color={focus ? 'grey.500' : 'common.white'}
         >
           search
         </Jui.SearchIcon>
@@ -108,6 +108,7 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
             disableToolTip={true}
             variant="plain"
             onClick={this.onClose}
+            color={focus ? 'grey.500' : 'common.white'}
           >
             close
           </Jui.CloseBtn>

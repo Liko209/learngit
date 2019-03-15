@@ -14,7 +14,7 @@ const config: SubModuleConfig = {
   },
   nav: () => ({
     url: '/notes',
-    icon: 'notes',
+    icon: 'leftNavNote',
     title: i18next.t('item.notes'),
     placement: 'bottom',
   }),

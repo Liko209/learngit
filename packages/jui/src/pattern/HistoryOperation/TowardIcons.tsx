@@ -4,8 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import { JuiIconButton } from '../../components/Buttons/IconButton';
+import {
+  JuiIconButton,
+  JuiIconButtonProps,
+} from '../../components/Buttons/IconButton';
 import { IconsProps, OPERATION } from './types';
+import styled from '../../foundation/styled-components';
+import { palette } from '../../foundation/utils';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+
+const StyledIconButton = styled(JuiIconButton)<JuiIconButtonProps>`
+  &&&&& .icon[disabled] {
+    color: ${({ theme }) =>
+      fade(palette('common', 'white')({ theme }), theme.opacity.p50)};
+  }
+`;
 
 class TowardIcons extends PureComponent<IconsProps> {
   private _pressTimer: NodeJS.Timer;
@@ -49,9 +62,9 @@ class TowardIcons extends PureComponent<IconsProps> {
       iconDirection = 'chevron_right';
     }
     return (
-      <JuiIconButton
+      <StyledIconButton
         tooltipTitle={tooltipTitle}
-        size="small"
+        size="medium"
         onClick={this.handleClick}
         disabled={disabled}
         data-test-automation-id={tooltipTitle}
@@ -60,7 +73,7 @@ class TowardIcons extends PureComponent<IconsProps> {
         color="common.white"
       >
         {iconDirection}
-      </JuiIconButton>
+      </StyledIconButton>
     );
   }
 }

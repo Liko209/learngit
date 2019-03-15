@@ -75,7 +75,8 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   &&&:hover {
-    background-color: ${({ theme }) => fade(grey('700')({ theme }), 0.06)};
+    background-color: ${({ theme }) =>
+      fade(grey('700')({ theme }), theme.opacity.p05)};
     ${StyledIconographyMore} {
       display: inline-flex;
     }
@@ -85,8 +86,8 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   &&.selected {
-    background-color: ${({ theme }) => fade(grey('700')({ theme }), 0.12)};
-    background: ${palette('common', 'white')};
+    background-color: ${({ theme }) =>
+      fade(grey('700')({ theme }), theme.opacity.p10)};
     p {
       color: ${palette('primary', 'main')};
     }

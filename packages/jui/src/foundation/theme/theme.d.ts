@@ -208,6 +208,13 @@ type Theme = {
       openCloseDialog: string;
     };
   };
+  opacity: {
+    p05: number;
+    p10: number;
+    p50: number;
+    p60: number;
+    p80: number;
+  };
 } & Omit<MuiTheme, 'typography'>;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;

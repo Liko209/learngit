@@ -163,18 +163,18 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                   aria-label={t('viewer.PreviousFile')}
                   disabled={!this._canSwitchPrevious()}
                   onClick={this.switchPreImage}
-                >
-                  <JuiIconography color="grey.900">pervious</JuiIconography>
-                </JuiImageViewerPreviousButton>
+                  iconName="previous"
+                  iconColor={['grey', '900']}
+                />
                 <JuiImageViewerForwardButton
                   className="buttonWrapper"
                   tooltipTitle={t('viewer.NextFile')}
                   aria-label={t('viewer.NextFile')}
                   disabled={!this._canSwitchNext()}
                   onClick={this.switchNextImage}
-                >
-                  <JuiIconography color="grey.900">forward</JuiIconography>
-                </JuiImageViewerForwardButton>
+                  iconName="forward"
+                  iconColor={['grey', '900']}
+                />
               </JuiImageViewerContainer>
             </HotKeys>
             {this._imageRef.current && (

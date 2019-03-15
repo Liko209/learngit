@@ -59,13 +59,13 @@ const StyledListItem = styled(MuiListItem)`
 
   &&:hover {
     background-color: ${({ theme }) =>
-      fade(palette('grey', '700')({ theme }), 0.06)};
+      fade(palette('grey', '700')({ theme }), theme.opacity.p05)};
   }
 
   &&.selected {
     &&:hover {
       background-color: ${({ theme }) =>
-        fade(palette('grey', '700')({ theme }), 0.12)};
+        fade(palette('grey', '700')({ theme }), theme.opacity.p10)};
     }
 
     p {

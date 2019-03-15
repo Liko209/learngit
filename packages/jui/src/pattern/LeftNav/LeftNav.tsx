@@ -98,8 +98,8 @@ const StyledListItem = styled(MuiListItem)`
   &&&:hover {
     background-color: ${({ theme, selected }) =>
       selected
-        ? fade(grey('700')({ theme }), 0.12)
-        : fade(grey('700')({ theme }), 0.06)};
+        ? fade(grey('700')({ theme }), theme.opacity.p05)
+        : fade(grey('700')({ theme }), theme.opacity.p05)};
     .nav-icon {
       color: ${grey('500')}; // 500
     }
