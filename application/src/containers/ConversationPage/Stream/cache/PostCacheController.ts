@@ -51,9 +51,10 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
         limit: pageSize,
       },
     );
-    items.forEach((item: Item) => {
-      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, [item]);
-    });
+
+    if (items && items.length) {
+      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
+    }
 
     return { hasMore, data: posts };
   }
