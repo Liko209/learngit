@@ -85,6 +85,7 @@ const SearchInput = styled(JuiTextField)`
     transition: ${colorTransition};
     .search-input {
       color: ${palette('common', 'white')};
+      transition: ${colorTransition};
       ::placeholder {
         color: ${palette('common', 'white')};
       }

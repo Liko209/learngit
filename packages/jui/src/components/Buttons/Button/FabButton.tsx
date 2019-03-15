@@ -113,7 +113,7 @@ const StyledFabButton = styled<StyledFabButtonProps>(
     &:hover,
     &:active {
       background-color: ${({ theme, colorScope, colorName }) =>
-        darken(palette(colorScope, colorName)({ theme }), 0.2)};
+        darken(palette(colorScope, colorName)({ theme }), 0.1)};
     }
     .rippleVisible {
       color: ${({ theme, colorScope, colorName }) =>
