@@ -109,42 +109,6 @@ class PostCacheController implements ICacheController<Post> {
       PostModel
     >).addUsedCache(this);
 
-    // fix me: FIJI-3958 Item store refactoring
-    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
-      Item,
-      FileItemModel
-    >).addUsedCache(this._postUsedItemCache);
-
-    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
-      Item,
-      TaskItemModel
-    >).addUsedCache(this._postUsedItemCache);
-
-    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
-      Item,
-      LinkItemModel
-    >).addUsedCache(this._postUsedItemCache);
-
-    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
-      Item,
-      NoteItemModel
-    >).addUsedCache(this._postUsedItemCache);
-
-    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
-      Item,
-      CodeItemModel
-    >).addUsedCache(this._postUsedItemCache);
-
-    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
-      Item,
-      EventItemModel
-    >).addUsedCache(this._postUsedItemCache);
-
-    (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
-      Item,
-      ConferenceItemModel
-    >).addUsedCache(this._postUsedItemCache);
-
     (storeManager.getEntityMapStore(ENTITY_NAME.ITEM) as MultiEntityMapStore<
       Item,
       ItemModel
