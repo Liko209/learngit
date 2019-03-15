@@ -28,15 +28,17 @@ class FooterViewComponent extends Component<
   private get _likedUsersNameMessage() {
     if (!this._likedUsersCount) return '';
 
+    const { t } = this.props;
+
     const names = this.props.likedUsers.reduce(
       (acc, { id, userDisplayName }) =>
         id === this._currentUserId
-          ? [this.props.t('common.You'), ...acc]
+          ? [t('common.You'), ...acc]
           : [...acc, userDisplayName],
       [],
     );
 
-    return `${names.join(', ')} Liked this.`;
+    return `${names.join(', ')} ${t('message.likedThis')}.`;
   }
 
   render() {

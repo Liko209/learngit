@@ -62,6 +62,7 @@
     "Dashboard": "Dashboard"
   },
   "message": {
+    "likedThis": "liked this",
     "showUnreads": "Show Unreads",
     "meGroup": "me",
     "mentionPosts": "Mentions",
