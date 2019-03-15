@@ -92,6 +92,10 @@ class UnifiedLogin extends React.Component<Props, IStates> {
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isShowDialog);
   }
 
+  private _isPublicBuild() {
+    return process.env.JUPITER_ENV === 'public';
+  }
+
   // onChange = (event: React.FormEvent<HTMLSelectElement>) => {
   //   this.setState({ brandId: event.currentTarget.value });
   // }
@@ -104,6 +108,19 @@ class UnifiedLogin extends React.Component<Props, IStates> {
 
   render() {
     const { t } = this.props;
+
+    const envSelect = (
+      <React.Fragment>
+        <EnvSelect />
+        <a
+          target="_blank"
+          href="https://wiki.ringcentral.com/display/XTO/Jupiter+test+account"
+        >
+          Test Account
+        </a>
+      </React.Fragment>
+    );
+
     return (
       <div>
         <Form onSubmit={this.handleSubmit}>
@@ -119,13 +136,7 @@ class UnifiedLogin extends React.Component<Props, IStates> {
             <option value="3420">AT&T</option>
             <option value="7310">TELUS</option>
           </select> */}
-          <EnvSelect />
-          <a
-            target="_blank"
-            href="https://wiki.ringcentral.com/display/XTO/Jupiter+test+account"
-          >
-            Test Account
-          </a>
+          {!this._isPublicBuild() ? envSelect : null}
         </Form>
         <LoginVersionStatus />
         <Download />

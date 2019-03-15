@@ -20,6 +20,7 @@
     "build:app": "cd application && npm run build",
     "build:ui": "cd packages/jui && npm run build-storybook",
     "build:release": "cd application && JUPITER_ENV=production npm run build",
+    "build:public": "cd application && JUPITER_ENV=public npm run build",
     "test": "node ./scripts/test.js --env=jsdom",
     "test:changed": "npm run test -- --changedSince=`node ./scripts/getSinceBranch.js`",
     "test:staged": "npm run test:cover -- --findRelatedTests",
