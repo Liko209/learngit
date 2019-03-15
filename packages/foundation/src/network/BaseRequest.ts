@@ -10,6 +10,7 @@ import {
   NETWORK_VIA,
   NETWORK_METHOD,
   Header,
+  HA_PRIORITY,
 } from './network';
 
 abstract class BaseRequest implements IRequest {
@@ -21,6 +22,7 @@ abstract class BaseRequest implements IRequest {
   timeout: number;
   requestConfig: object;
   authFree: boolean;
+  HAPriority: HA_PRIORITY;
 
   needAuth(): boolean {
     throw new Error('Method not implemented.');

@@ -39,6 +39,7 @@ const setup = () => {
       setAuthfree: jest.fn().mockReturnThis(),
       setRequestConfig: jest.fn().mockReturnThis(),
       setRetryCount: jest.fn().mockReturnThis(),
+      setHAPriority: jest.fn().mockReturnThis(),
       setVia: jest.fn().mockReturnThis(),
       build: jest.fn().mockImplementation(() => mockRequest),
     };
@@ -202,6 +203,7 @@ describe('NetworkClient', () => {
           setAuthfree: jest.fn().mockReturnThis(),
           setRequestConfig: jest.fn().mockReturnThis(),
           setRetryCount: jest.fn().mockReturnThis(),
+          setHAPriority: jest.fn().mockReturnThis(),
           setVia: jest.fn().mockReturnThis(),
           build: jest.fn().mockImplementation(() => {
             if (times === 0) {

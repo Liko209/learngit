@@ -9,7 +9,12 @@ import { daoManager } from '../../dao';
 import { PersonDao } from '../../module/person/dao';
 import { UserInfo } from '../../models';
 import { generateUUID } from '../../utils/mathUtils';
-import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
+import {
+  refreshToken,
+  IPlatformHandleDelegate,
+  ITokenModel,
+  requestServerStatus,
+} from '../../api';
 import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
@@ -23,7 +28,7 @@ import {
 import { AuthGlobalConfig } from '../../service/auth/config';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
-class AccountService extends BaseService implements ITokenRefreshDelegate {
+class AccountService extends BaseService implements IPlatformHandleDelegate {
   static serviceName = 'AccountService';
 
   constructor() {
@@ -98,6 +103,10 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   setUnreadToggleSetting(value: boolean) {
     const userConfig = new AccountUserConfig();
     userConfig.setUnreadToggleSetting(value);
+  }
+
+  checkServerStatus(callback: (success: boolean, retryAfter: number) => void) {
+    requestServerStatus(callback);
   }
 }
 

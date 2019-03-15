@@ -129,7 +129,6 @@ class RTCProvManager extends EventEmitter2 {
       .setAuthfree(false)
       .setVia(NETWORK_VIA.HTTP)
       .setData({ sipInfo: [{ transport: 'WSS' }] })
-      .setIgnoreLocalRetryAfter(true)
       .build();
 
     let response: IResponse | null = null;

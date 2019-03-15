@@ -8,8 +8,9 @@ import {
   loginGlip2ByPassword,
   refreshToken,
   ITokenModel,
+  requestServerStatus,
 } from './ringcentral/login';
-import { ITokenRefreshDelegate } from './ringcentral/ITokenRefreshDelegate';
+import { IPlatformHandleDelegate } from './ringcentral/IPlatformHandleDelegate';
 import { loginGlip, indexData, initialData, remainingData } from './glip/user';
 export { default as Api } from './api';
 export {
@@ -20,8 +21,9 @@ export {
   indexData,
   initialData,
   remainingData,
-  ITokenRefreshDelegate,
+  IPlatformHandleDelegate,
   ITokenModel,
+  requestServerStatus,
 };
 export * from './handlers';
 export * from './parser';
