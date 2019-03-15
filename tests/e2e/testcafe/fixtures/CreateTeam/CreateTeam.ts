@@ -219,13 +219,13 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
 
   const createTeamSteps = async (key: string, text: string, i: number) => {
     await h(t).withLog(`When I type ${key}: ${text}, and select the first search user`, async () => {
-      await createTeamModal.typeMember(text, { paste: true });
+      await createTeamModal.memberInput.typeMember(text, { paste: true });
       await t.wait(3e3);
-      await createTeamModal.selectMemberByNth(0);
+      await createTeamModal.memberInput.selectMemberByNth(0);
     });
 
     await h(t).withLog(`Then the selected members count should be 1`, async () => {
-      await t.expect(createTeamModal.selectedMembers.count).eql(1);
+      await t.expect(createTeamModal.memberInput.selectedMembers.count).eql(1);
     });
 
     if (i == 0) {
@@ -234,12 +234,12 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
       })
     } else {
       await h(t).withLog(`When I tap the "delete" icon of the selected contact`, async () => {
-        await createTeamModal.removeSelectedMember();
+        await createTeamModal.memberInput.removeSelectedMember();
       })
     }
 
     await h(t).withLog(`Then the last selected members should be removed`, async () => {
-      await t.expect(createTeamModal.selectedMembers.exists).notOk();
+      await t.expect(createTeamModal.memberInput.selectedMembers.exists).notOk();
     });
   }
 
@@ -328,14 +328,14 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
   const anotherUserName = await h(t).glip(adminUser).getPerson(anotherUser.rcId).then(res => res.data.display_name);
   await h(t).withLog('And I create a team that allow user to add other member', async () => {
     await createTeamModal.typeTeamName(allowToAddUserTeamName);
-    await createTeamModal.addMember(anotherUserName);
+    await createTeamModal.memberInput.addMember(anotherUserName);
     await createTeamModal.clickCreateButton();
   });
 
   await h(t).withLog('And I create a team that not allow user to add other member', async () => {
     await openCreateTeamModal();
     await createTeamModal.typeTeamName(notAllowToAddUserTeamName);
-    await createTeamModal.addMember(anotherUserName);
+    await createTeamModal.memberInput.addMember(anotherUserName);
     await createTeamModal.turnOffMayAddMember();
     await createTeamModal.clickCreateButton();
   });
