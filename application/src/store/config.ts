@@ -12,7 +12,7 @@ import { PresenceService } from 'sdk/module/presence';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 const { ENTITY } = service;
 import { CompanyService } from 'sdk/module/company';
-import { ModelCreator } from './models/ModelCreator';
+import { ModelCreator } from './utils/ModelCreator';
 import { IdModel } from 'sdk/framework/model';
 
 const CACHE_COUNT = 1000;
