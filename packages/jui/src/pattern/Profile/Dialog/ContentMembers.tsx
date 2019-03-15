@@ -21,6 +21,7 @@ const JuiProfileDialogContentMembers = styled('div')`
   padding: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   /* box-shadow: ${props => props.theme.shadows[2]}; */
   /* box-shadow: ${({ theme }) => theme.boxShadow.val2}; */
 `;
