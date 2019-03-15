@@ -11,6 +11,7 @@ import { getMaxThumbnailURLInfo } from '@/common/getThumbnailURL';
 import { ImageViewerProps } from '../types';
 import { VIEWER_ITEM_TYPE } from '../../../constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import FileItemModel from '@/store/models/FileItem';
 
 jest.mock('@/common/getThumbnailURL');
 jest.mock('sdk/module/item/module/file/utils');
@@ -34,6 +35,8 @@ describe('ImageViewer.ViewModel', () => {
     groupId: 123,
     type: VIEWER_ITEM_TYPE.IMAGE_FILES,
     itemId: 111,
+    getCurrentIndex: jest.fn().mockReturnValue(22),
+    getCurrentItemId: jest.fn().mockReturnValue(11),
 
     init: jest.fn(),
     currentItemId: 11,
@@ -43,12 +46,15 @@ describe('ImageViewer.ViewModel', () => {
     updateCurrentItemIndex: jest.fn(),
     fetchData: jest.fn(),
     setOnCurrentItemDeletedCb: jest.fn(),
+    initialOptions: {
+      thumbnailSrc: 'xxx',
+      initialWidth: 11,
+      initialHeight: 22,
+    },
   };
   describe('constructor', () => {
     it('should successfully construct', () => {
       const vm = new ImageViewerViewModel(props);
-      vm.hasNext;
-      vm.hasPrevious;
       vm.imageHeight;
       vm.imageWidth;
       vm.imageUrl;
@@ -56,6 +62,10 @@ describe('ImageViewer.ViewModel', () => {
       vm.item;
       vm.switchNextImage;
       vm.switchPreImage;
+      vm.props.getCurrentIndex.mockReturnValue(22);
+      expect(vm.hasPrevious).toEqual(true);
+      expect(vm.hasNext).toEqual(true);
+      expect(vm.thumbnailSrc).toEqual('xxx');
       expect(vm).toHaveProperty('props');
     });
   });
@@ -79,17 +89,17 @@ describe('ImageViewer.ViewModel', () => {
     it('should return raw image info when support', () => {
       const vm = new ImageViewerViewModel(props);
       const item = {
-        downloadUrl: '',
+        versionUrl: '',
         origWidth: 1,
         origHeight: 2,
-      };
+      } as FileItemModel;
       getEntity.mockReturnValue(item);
       FileItemUtils.isSupportShowRawImage.mockReturnValue(true);
       const imageInfo = vm.imageInfo;
       expect(FileItemUtils.isSupportShowRawImage).toBeCalled();
       expect(FileItemUtils.isSupportPreview).not.toBeCalled();
       expect(imageInfo).toEqual({
-        url: item.downloadUrl,
+        url: item.versionUrl,
         width: item.origWidth,
         height: item.origHeight,
       });
@@ -121,6 +131,7 @@ describe('ImageViewer.ViewModel', () => {
         ...props,
         ids: [1],
         currentIndex: 1,
+        getCurrentIndex: () => 1,
       });
       const loadMore = jest.spyOn(vm, '_loadMore').mockResolvedValueOnce({});
       const fn2 = jest.spyOn(vm, 'switchPreImage');
@@ -138,6 +149,7 @@ describe('ImageViewer.ViewModel', () => {
         ...props,
         ids: [1],
         currentIndex: 1,
+        getCurrentIndex: () => 1,
       });
       const loadMore = jest.spyOn(vm, '_loadMore').mockResolvedValueOnce(null);
       const fn2 = jest.spyOn(vm, 'switchPreImage');
@@ -158,6 +170,8 @@ describe('ImageViewer.ViewModel', () => {
         ids: [3, 2],
         currentItemId: 2,
         currentIndex: 1,
+        getCurrentIndex: () => 1,
+        getCurrentItemId: () => 2,
       });
       expect(vm.hasPrevious).toBeTruthy();
       vm.switchPreImage();
@@ -174,6 +188,7 @@ describe('ImageViewer.ViewModel', () => {
         total: 3,
         ids: [1],
         currentIndex: 1,
+        getCurrentIndex: () => 1,
       });
       const loadMore = jest.spyOn(vm, '_loadMore').mockResolvedValueOnce({});
       const fn2 = jest.spyOn(vm, 'switchNextImage');
@@ -192,6 +207,7 @@ describe('ImageViewer.ViewModel', () => {
         total: 3,
         ids: [1],
         currentIndex: 1,
+        getCurrentIndex: () => 1,
       });
       const loadMore = jest.spyOn(vm, '_loadMore').mockResolvedValueOnce(null);
       const fn2 = jest.spyOn(vm, 'switchNextImage');
@@ -213,6 +229,8 @@ describe('ImageViewer.ViewModel', () => {
         ids: [2, 3],
         currentItemId: 2,
         currentIndex: 0,
+        getCurrentIndex: () => 0,
+        getCurrentItemId: () => 2,
       });
       expect(vm.hasNext).toBeTruthy();
       vm.switchNextImage();

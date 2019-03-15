@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ViewerViewModel } from '../Viewer.ViewModel';
+import { ViewerViewProps } from '../types';
+import { AbstractViewModel } from '@/base';
 
-class ViewerContentViewModel extends ViewerViewModel {}
+class ViewerContentViewModel extends AbstractViewModel<ViewerViewProps> {}
 
 export { ViewerContentViewModel };

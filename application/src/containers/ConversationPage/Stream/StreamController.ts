@@ -115,7 +115,6 @@ export class StreamController {
     if (this._streamListHandler) {
       this._streamListHandler.dispose();
     }
-
     if (!this._jumpToPostId) {
       postCacheController.releaseCurrentConversation(this._groupId);
     }

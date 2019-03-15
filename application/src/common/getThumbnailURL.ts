@@ -63,7 +63,7 @@ function getMaxThumbnailURLInfo(item: FileItemModel) {
       }
     });
     return {
-      url: item.thumbs[maxInfo.urlKey],
+      url: item.thumbs[maxInfo.urlKey] as string,
       width: maxInfo.width,
       height: maxInfo.height,
     };

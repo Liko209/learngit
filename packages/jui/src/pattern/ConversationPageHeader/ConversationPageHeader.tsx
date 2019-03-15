@@ -57,7 +57,8 @@ const StyledPageHeader = styled<JuiConversationPageHeaderProps>(MuiAppBar)`
     padding-left: 0;
     padding-right: 0;
     background-color: white;
-    > div {
+
+    > .mui-toolbar {
       min-height: ${height(12)};
       padding-left: ${spacing(4)};
       padding-right: ${spacing(3.5)};
@@ -160,7 +161,7 @@ class JuiConversationPageHeader
         square={true}
         {...rest}
       >
-        <MuiToolbar variant="dense">
+        <MuiToolbar className="mui-toolbar" variant="dense">
           <div className="left-wrapper">
             <TitleAndStatusWrapper>
               {this.state.showTooltip ? (
