@@ -64,25 +64,25 @@ test(formalName('Check the maximum length of the Team Name input box', ['P1', 'J
     await app.homePage.ensureLoaded();
   });
 
-  // await h(t).withLog('When I can open add menu in home page', async () => {
-  //   await app.homePage.openAddActionMenu();
-  // });
+  await h(t).withLog('When I can open add menu in home page', async () => {
+    await app.homePage.openAddActionMenu();
+  });
 
-  // const createTeamModal = app.homePage.createTeamModal;
-  // await h(t).withLog('And I can open Create Team in AddActionMenu', async () => {
-  //   await app.homePage.addActionMenu.createTeamEntry.enter();
-  //   await createTeamModal.ensureLoaded();
-  // });
+  const createTeamModal = app.homePage.createTeamModal;
+  await h(t).withLog('And I can open Create Team in AddActionMenu', async () => {
+    await app.homePage.addActionMenu.createTeamEntry.enter();
+    await createTeamModal.ensureLoaded();
+  });
 
-  // await h(t).withLog('And I input team name exceeded max characters(202)', async () => {
-  //   await createTeamModal.typeRandomTeamName(202);
-  // });
+  await h(t).withLog('And I input team name exceeded max characters(202)', async () => {
+    await createTeamModal.typeRandomTeamName(202);
+  });
 
-  // await h(t).withLog('Then Just only paste 200 characters into field, other characters should be automatically truncated.', async () => {
-  //   const teamNameValue = await createTeamModal.teamNameInput.value;
-  //   await t.expect(teamNameValue.length).eql(200);
-  //   await createTeamModal.clickCancelButton();
-  // });
+  await h(t).withLog('Then Just only paste 200 characters into field, other characters should be automatically truncated.', async () => {
+    const teamNameValue = await createTeamModal.teamNameInput.value;
+    await t.expect(teamNameValue.length).eql(200);
+    await createTeamModal.clickCancelButton();
+  });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('When I open the group and open more button on the conversation page header', async () => {
