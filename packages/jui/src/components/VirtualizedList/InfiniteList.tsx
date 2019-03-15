@@ -25,6 +25,7 @@ type JuiInfiniteListProps = {
   loadInitialData: () => Promise<void>;
   loadMore: (direction: 'up' | 'down') => Promise<void>;
   initialScrollToIndex?: number;
+  onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onVisibleRangeChange?: (range: IndexRange) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer?: JSX.Element;
@@ -52,6 +53,7 @@ const JuiInfiniteList: RefForwardingComponent<
     noRowsRenderer,
     loadingRenderer,
     loadingMoreRenderer,
+    onScroll = noop,
     onVisibleRangeChange = noop,
     onRenderedRangeChange = noop,
     stickToBottom,
@@ -81,11 +83,11 @@ const JuiInfiniteList: RefForwardingComponent<
       loadMore={_loadMore}
     >
       {({
-        onScroll,
         loadingInitial,
         loadingUp,
         loadingDown,
         loadingInitialFailed,
+        onScroll: handleScroll,
       }) => {
         if (loadingInitial || !height) {
           return loadingRenderer;
@@ -108,7 +110,10 @@ const JuiInfiniteList: RefForwardingComponent<
             overscan={overscan}
             before={loadingUp ? loadingMoreRenderer : null}
             after={loadingDown ? loadingMoreRenderer : null}
-            onScroll={onScroll}
+            onScroll={(event: React.UIEvent<HTMLElement>) => {
+              handleScroll(event);
+              onScroll(event);
+            }}
             onVisibleRangeChange={onVisibleRangeChange}
             onRenderedRangeChange={onRenderedRangeChange}
             stickToBottom={stickToBottom && isStickToBottomEnabled}

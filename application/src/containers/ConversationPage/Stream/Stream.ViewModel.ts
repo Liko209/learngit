@@ -16,7 +16,6 @@ import { errorHelper } from 'sdk/error';
 import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 
-import { onScroll, loading } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
 import { StreamProps, StreamItemType, StreamViewProps } from './types';
@@ -91,10 +90,16 @@ class StreamViewModel extends StoreViewModel<StreamProps>
 
   @computed
   get mostRecentPostId() {
-    return (
-      getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
-        .mostRecentPostId || 0
-    );
+    let result: number | undefined;
+    if (this.hasMore('down')) {
+      result = getEntity<Group, GroupModel>(
+        ENTITY_NAME.GROUP,
+        this.props.groupId,
+      ).mostRecentPostId;
+    } else {
+      result = _.last(this.postIds);
+    }
+    return result || 0;
   }
 
   @computed
@@ -156,7 +161,6 @@ class StreamViewModel extends StoreViewModel<StreamProps>
     this._historyHandler.update(this._groupState, this.postIds);
   }
 
-  @loading
   async loadInitialPosts() {
     this.loadInitialPostsError = undefined;
     try {
@@ -205,10 +209,11 @@ class StreamViewModel extends StoreViewModel<StreamProps>
     }
   }
 
-  @onScroll
-  async handleNewMessageSeparatorState(event: { target?: HTMLInputElement }) {
+  handleNewMessageSeparatorState = async (
+    event: React.UIEvent<HTMLElement>,
+  ) => {
     if (!event.target) return;
-    const scrollEl = event.target;
+    const scrollEl = event.currentTarget;
     const atBottom =
       scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
     const isFocused = document.hasFocus();

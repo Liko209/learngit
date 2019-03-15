@@ -47,7 +47,6 @@ class StreamViewComponent extends Component<Props> {
   > = React.createRef();
   private _globalStore = storeManager.getGlobalStore();
   private _historyViewed = false;
-  private _mostRecentViewed = false;
   private _timeout: NodeJS.Timeout | null;
   state = { _jumpToPostId: 0 };
 
@@ -100,16 +99,13 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderPost(streamItem: StreamItem & { value: number[] }) {
+    const postId = streamItem.value[0];
     return (
-      <div key={streamItem.id}>
-        {streamItem.value.map((postId: number) => (
-          <ConversationPost
-            id={postId}
-            key={`ConversationPost${postId}`}
-            highlight={postId === this.state._jumpToPostId}
-          />
-        ))}
-      </div>
+      <ConversationPost
+        id={postId}
+        key={`ConversationPost${streamItem.id}`}
+        highlight={postId === this.state._jumpToPostId}
+      />
     );
   }
 
@@ -148,7 +144,13 @@ class StreamViewComponent extends Component<Props> {
 
   private _renderInitialPost() {
     const { groupId, notEmpty } = this.props;
-    return <ConversationInitialPost notEmpty={notEmpty} id={groupId} key={1} />;
+    return (
+      <ConversationInitialPost
+        notEmpty={notEmpty}
+        id={groupId}
+        key="ConversationInitialPost"
+      />
+    );
   }
 
   private _renderStreamItems() {
@@ -255,22 +257,14 @@ class StreamViewComponent extends Component<Props> {
   }
 
   handleMostRecentViewed = () => {
-    if (this._mostRecentViewed) {
-      return;
-    }
     if (document.hasFocus()) {
       this.props.markAsRead();
       this._setUmiDisplay(false);
     }
-    this._mostRecentViewed = true;
   }
 
   handleMostRecentHidden = () => {
-    if (!this._mostRecentViewed) {
-      return;
-    }
     this._setUmiDisplay(true);
-    this._mostRecentViewed = false;
   }
 
   findPost = (i: StreamItem) => {
@@ -278,7 +272,13 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, loadMore, hasMore, items } = this.props;
+    const {
+      t,
+      loadMore,
+      hasMore,
+      items,
+      handleNewMessageSeparatorState,
+    } = this.props;
     let initialPosition = items.length - 1;
     const { _jumpToPostId } = this.state;
     if (_jumpToPostId) {
@@ -314,6 +314,7 @@ class StreamViewComponent extends Component<Props> {
               hasMore={hasMore}
               loadingMoreRenderer={defaultLoadingMore}
               fallBackRenderer={onInitialDataFailed}
+              onScroll={handleNewMessageSeparatorState}
               onVisibleRangeChange={this._handleVisibilityChanged}
             >
               {this._renderStreamItems()}
@@ -339,8 +340,10 @@ class StreamViewComponent extends Component<Props> {
 
     const atBottom =
       this._listRef.current && this._listRef.current.isAtBottom();
-    atBottom && markAsRead();
-    this._setUmiDisplay(false);
+    if (atBottom) {
+      markAsRead();
+      this._setUmiDisplay(false);
+    }
   }
 
   private _blurHandler = () => {
