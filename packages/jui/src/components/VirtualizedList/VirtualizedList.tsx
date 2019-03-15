@@ -18,7 +18,12 @@ import React, {
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
 import { IndexRange, JuiVirtualizedListProps } from './types';
-import { useRange, useRowManager, useScroll, ScrollPosition } from './hooks';
+import {
+  useRange,
+  useRowManager,
+  useScroll,
+  PartialScrollPosition,
+} from './hooks';
 import {
   createKeyMapper,
   createRange,
@@ -80,7 +85,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     if ('up' === overscanDirection) {
       renderedRange.startIndex = Math.max(
         visibleRange.startIndex - overscan,
-        0,
+        minIndex,
       );
     }
 
@@ -132,9 +137,9 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const scrollToPosition = ({
     index,
-    offset,
+    offset = 0,
     options = true,
-  }: ScrollPosition) => {
+  }: PartialScrollPosition) => {
     if (ref.current) {
       if (options === true) {
         ref.current.scrollTop = rowManager.getRowOffsetTop(index) + offset;
@@ -143,6 +148,29 @@ const JuiVirtualizedList: RefForwardingComponent<
           rowManager.getRowOffsetTop(index + 1) - height - offset;
       }
     }
+  };
+
+  const jumpToPosition = (position: PartialScrollPosition) => {
+    setRenderedRange(
+      createRange({
+        startIndex: position.index,
+        size: renderedRangeSize,
+        min: minIndex,
+        max: maxIndex,
+      }),
+    );
+    prevAtBottomRef.current = false;
+    scrollToPosition(position);
+  };
+
+  const computeAtBottom = () => {
+    let result = false;
+    if (ref.current) {
+      result =
+        height >=
+        rowManager.getRowOffsetTop(childrenCount) - ref.current.scrollTop;
+    }
+    return result;
   };
 
   const scrollToBottom = () => {
@@ -165,15 +193,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       return prevAtBottomRef.current;
     },
     scrollToIndex: (index: number) => {
-      setRenderedRange(
-        createRange({
-          startIndex: index,
-          size: renderedRangeSize,
-          min: minIndex,
-          max: maxIndex,
-        }),
-      );
-      scrollToPosition({ index, offset: 0 });
+      jumpToPosition({ index });
     },
   }));
 
@@ -191,7 +211,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   const rowManager = useRowManager({ minRowHeight, keyMapper });
 
-  const { scrollPosition, setScrollPosition } = useScroll({
+  const { scrollPosition, rememberScrollPosition } = useScroll({
     index: initialScrollToIndex,
     offset: 0,
   });
@@ -301,11 +321,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Update prevAtBottom
   //
   useEffect(() => {
-    if (ref.current) {
-      const { scrollTop } = ref.current;
-      prevAtBottomRef.current =
-        height >= rowManager.getRowOffsetTop(childrenCount) - scrollTop;
-    }
+    prevAtBottomRef.current = computeAtBottom();
   });
 
   //
@@ -328,7 +344,7 @@ const JuiVirtualizedList: RefForwardingComponent<
         if (rowManager.hasRowHeight(visibleRange.startIndex)) {
           // If we know the real height of this row
           // Remember current scroll position
-          setScrollPosition({
+          rememberScrollPosition({
             offset,
             index: visibleRange.startIndex,
           });
@@ -342,6 +358,8 @@ const JuiVirtualizedList: RefForwardingComponent<
           visibleRange,
           isScrollUp ? 'up' : 'down',
         );
+
+        // TODO Don't re-render if range not changed
         setRenderedRange(newRenderedRange);
 
         // Emit events
@@ -352,15 +370,15 @@ const JuiVirtualizedList: RefForwardingComponent<
           onVisibleRangeChange(visibleRange);
         }
         onScroll(event);
-
-        prevAtBottomRef.current =
-          height >= rowManager.getRowOffsetTop(childrenCount) - scrollTop;
       }
     }
   };
 
   const wrappedBefore = before ? <div ref={beforeRef}>{before}</div> : null;
-  const heightBeforeStartRow = rowManager.getRowsHeight(0, startIndex - 1);
+  const heightBeforeStartRow = rowManager.getRowsHeight(
+    minIndex,
+    startIndex - 1,
+  );
   const heightAfterStopRow = rowManager.getRowsHeight(stopIndex + 1, maxIndex);
   const childrenToRender: ReactNode[] = children.filter((_, i) => {
     return startIndex <= i && i <= stopIndex;
