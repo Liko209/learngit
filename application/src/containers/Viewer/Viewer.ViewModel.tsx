@@ -3,7 +3,7 @@
  * @Date: 2019-02-26 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
@@ -23,9 +23,9 @@ const INIT_PAGE_SIZE = 5;
 
 class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   @observable
-  private _currentIndex?: number;
+  currentIndex: number = 0;
   @observable
-  private _currentItemId?: number;
+  currentItemId: number;
   private _itemListDataSource: ItemListDataSource;
   private _onCurrentItemDeletedCb: () => void;
 
@@ -35,7 +35,7 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   constructor(props: ViewerViewProps) {
     super(props);
     const { groupId, type, itemId } = props;
-    this._currentItemId = itemId;
+    this.currentItemId = itemId;
     this._itemListDataSource = new ItemListDataSource({ groupId, type });
 
     const itemNotificationKey = ItemNotification.getItemNotificationKey(
@@ -45,6 +45,7 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     notificationCenter.on(itemNotificationKey, this._onItemDataChange);
   }
 
+  @action
   init = () => {
     this._itemListDataSource.loadInitialData(this.props.itemId, INIT_PAGE_SIZE);
     this._fetchIndexInfo();
@@ -60,31 +61,26 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   }
 
   @computed
-  get currentItemId() {
-    return this._currentItemId === undefined
-      ? this.props.itemId
-      : this._currentItemId;
-  }
-
-  set currentItemId(index: number) {
-    this._currentItemId = index;
-  }
-
-  @computed
-  get currentIndex() {
-    return this._currentIndex || 0;
-  }
-
-  set currentIndex(index: number) {
-    this._currentIndex = index;
-  }
-
-  @computed
   get ids() {
     return this._itemListDataSource.getIds();
   }
 
+  @action
   updateCurrentItemIndex = (index: number, itemId: number) => {
+    this.currentIndex = index;
+    this.currentItemId = itemId;
+  }
+
+  getCurrentItemId = () => {
+    return this.currentItemId;
+  }
+
+  getCurrentIndex = () => {
+    return this.currentIndex;
+  }
+
+  @action
+  _updateCurrentItemIndex = (index: number, itemId: number) => {
     this.currentIndex = index;
     this.currentItemId = itemId;
   }
@@ -116,7 +112,7 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     );
     this.total = info.totalCount;
     if (this.currentItemId === itemId) {
-      this._currentIndex = info.index;
+      this.currentIndex = info.index;
       if (info.index < 0) {
         this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb();
       }
