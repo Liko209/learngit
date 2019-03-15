@@ -229,8 +229,7 @@ class StreamViewModel extends StoreViewModel<StreamProps>
   }
 
   markAsRead() {
-    false &&
-      this._stateService.updateReadStatus(this.props.groupId, false, true);
+    this._stateService.updateReadStatus(this.props.groupId, false, true);
   }
 
   enableNewMessageSeparatorHandler = () => {
