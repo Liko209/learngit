@@ -438,6 +438,9 @@
     "ZoomOut": "Scale file down",
     "PreviousFile": "View previous file",
     "NextFile": "View next file",
-    "DismissTip": "Sorry, the image you were viewing is deleted."
+    "DismissTip": "Sorry, the image you were viewing is deleted.",
+    "ImageDeleted": "Sorry, the image you were viewing is deleted.",
+    "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
+    "TeamArchived": "The team was archived. To know more, contact the team administrator."
   }
 }
