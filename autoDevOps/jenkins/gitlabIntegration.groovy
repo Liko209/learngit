@@ -89,7 +89,7 @@ def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget) {
 }
 
 def updateVersionInfo(String remoteUri, String appDir, String sha, int timestamp) {
-    println sshCmd(remoteUri, "sed -i 's/{{deployedCommit}}/${sha}/;s/{{}}/${timestamp}' ${appDir}/versionInfo.*.chunk.js || true")
+    println sshCmd(remoteUri, "sed -i 's/{{deployedCommit}}/${sha}/;s/{{deployedTime}}/${timestamp}' ${appDir}/versionInfo.*.chunk.js || true")
 }
 
 def createRemoteTarbar(String remoteUri, String sourceDir, String targetDir, String filename) {
