@@ -11,6 +11,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('CreateTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -43,34 +44,70 @@ test(formalName('new team popup can be open and closed', ['P1', 'JPT-86']), asyn
 
 test(formalName('Check the maximum length of the Team Name input box', ['P1', 'JPT-102']), async t => {
   const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[0];
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).glip(loginUser).init();
+  const newMemberName = h(t).glip(loginUser).getPersonPartialData('display_name', users[7].rcId);
 
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  let group = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, users[5], users[6]]
+  }
+
+  await h(t).withLog('Given I have a group type chat', async () => {
+    await h(t).scenarioHelper.createOrOpenChat(group);
+  });
+
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  // case 2
-  await h(t).withLog('Then I can open add menu in home page', async () => {
-    await app.homePage.openAddActionMenu();
+  // await h(t).withLog('When I can open add menu in home page', async () => {
+  //   await app.homePage.openAddActionMenu();
+  // });
+
+  // const createTeamModal = app.homePage.createTeamModal;
+  // await h(t).withLog('And I can open Create Team in AddActionMenu', async () => {
+  //   await app.homePage.addActionMenu.createTeamEntry.enter();
+  //   await createTeamModal.ensureLoaded();
+  // });
+
+  // await h(t).withLog('And I input team name exceeded max characters(202)', async () => {
+  //   await createTeamModal.typeRandomTeamName(202);
+  // });
+
+  // await h(t).withLog('Then Just only paste 200 characters into field, other characters should be automatically truncated.', async () => {
+  //   const teamNameValue = await createTeamModal.teamNameInput.value;
+  //   await t.expect(teamNameValue.length).eql(200);
+  //   await createTeamModal.clickCancelButton();
+  // });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('When I open the group and open more button on the conversation page header', async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.openMoreButtonOnHeader();
   });
 
-  const createTeamModal = app.homePage.createTeamModal;
-  await h(t).withLog('Then I can open Create Team in AddActionMenu', async () => {
-    await app.homePage.addActionMenu.createTeamEntry.enter();
-    await createTeamModal.ensureLoaded();
+  await h(t).withLog('And I click "Convert to team" button', async () => {
+    await conversationPage.headerMoreMenu.convertToTeam.enter()
+  }); 
+
+  const convertToTeamModal = app.homePage.convertToTeamModal;
+  await h(t).withLog('Then ConvertToTeam dialog should be popup', async () => {
+    await convertToTeamModal.ensureLoaded();
   });
 
-  await h(t).withLog('Then I input team name exceeded max characters', async () => {
-    // Here we type 202 chars, which exceeds max chars of 200
-    await createTeamModal.typeRandomTeamName(202);
+  await h(t).withLog('When I input team name exceeded max characters(202)', async () => {
+    await convertToTeamModal.typeRandomTeamName(202);
   });
 
-  await h(t).withLog('Then I can input team name with 200 character', async () => {
-    const teamNameValue = await createTeamModal.teamNameInput.value;
-    // assert only 1000 chars will be kept
+  await h(t).withLog('Then Just only paste 200 characters into field, other characters should be automatically truncated.', async () => {
+    const teamNameValue = await convertToTeamModal.teamNameInput.value;
     await t.expect(teamNameValue.length).eql(200);
-    await createTeamModal.clickCancelButton();
+    await convertToTeamModal.clickCancelButton();
   });
 });
 
@@ -341,7 +378,7 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
   });
 
   await h(t).withLog('Then I should see team created', async () => {
-     await teamsSection.expand();
+    await teamsSection.expand();
     await t.expect(teamsSection.conversations.withText(`${allowToAddUserTeamName}`).exists).ok();
     await t.expect(teamsSection.conversations.withText(`${notAllowToAddUserTeamName}`).exists).ok();
   });

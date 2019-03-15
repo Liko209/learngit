@@ -42,6 +42,19 @@ class ActionBarMoreMenu extends BaseWebComponent {
   }
 }
 
+class HeaderMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="menu"]');
+  }
+
+  private getEntry(menuName: string) {
+    return this.getComponent(Entry, this.self.find('li').withExactText(menuName));
+  }
+
+  get convertToTeam() {
+    return this.getEntry('Convert to team');
+  }
+}
 
 class BaseConversationPage extends BaseWebComponent {
 
@@ -190,6 +203,18 @@ class BaseConversationPage extends BaseWebComponent {
       const result = await this.isVisible(this.newMessageDeadLine);
       assert.strictEqual(result, isVisible, `This 'New Messages' deadline expect visible: ${isVisible}, but actual: ${result}`);
     });
+  }
+
+  get moreButtonOnHeader() {
+    return this.getSelectorByIcon('more_vert', this.header);
+  }
+
+  async openMoreButtonOnHeader() {
+    return this.t.click(this.moreButtonOnHeader);
+  }
+
+  get headerMoreMenu() {
+    return this.getComponent(HeaderMoreMenu);
   }
 }
 

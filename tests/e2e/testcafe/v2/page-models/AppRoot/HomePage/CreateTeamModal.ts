@@ -8,10 +8,16 @@ import * as _ from 'lodash';
 import * as faker from 'faker/locale/en';
 import { MemberInput } from './memberInput';
 
-class BaseCreateTeam extends BaseWebComponent {
+
+// TODO: unify create team, convert to team, team setting automation ID
+class BaseTeamSetting extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
+  }
+
+  get title() {
+    return this.self.find('h2');
   }
 
   get teamNameInput() {
@@ -29,22 +35,6 @@ class BaseCreateTeam extends BaseWebComponent {
     return this.getSelectorByAutomationId("CreateTeamDescription");
   }
 
-  async typeTeamName(teamName) {
-    await this.clickAndTypeText(this.teamNameInput, teamName, { replace: true, });
-  }
-
-  randomString(length: number) {
-    return faker.random.alphaNumeric(length);
-  }
-
-  async typeRandomTeamName(length: number) {
-    await this.typeTeamName(this.randomString(length));
-  }
-
-  async typeRandomTeamDescription(length: number) {
-    await this.clickAndTypeText(this.teamDescriptionInput, this.randomString(length), { replace: true, })
-  }
-
   get isPublicDiv() {
     return this.getSelectorByAutomationId('CreateTeamIsPublic').parent('li');
   }
@@ -59,6 +49,22 @@ class BaseCreateTeam extends BaseWebComponent {
 
   get mayPinPostDiv() {
     return this.getSelectorByAutomationId('CreateTeamCanPinPost').parent('li');
+  }
+
+  async typeTeamName(teamName) {
+    await this.clickAndTypeText(this.teamNameInput, teamName, { replace: true, });
+  }
+
+  randomString(length: number) {
+    return faker.random.alphaNumeric(length);
+  }
+
+  async typeRandomTeamName(length: number) {
+    await this.typeTeamName(this.randomString(length));
+  }
+
+  async typeRandomTeamDescription(length: number) {
+    await this.clickAndTypeText(this.teamDescriptionInput, this.randomString(length), { replace: true, })
   }
 
   get isPublicToggle() {
@@ -118,7 +124,11 @@ class BaseCreateTeam extends BaseWebComponent {
 }
 
 
-export class CreateTeamModal extends BaseCreateTeam {
+export class CreateTeamModal extends BaseTeamSetting {
+  get exists() {
+    return this.title.withExactText('Create Team').exists
+  }
+
   get cancelButton() {
     return this.getSelectorByAutomationId('createToTeamCancelButton', this.self);
   }
@@ -152,7 +162,39 @@ export class CreateTeamModal extends BaseCreateTeam {
   }
 }
 
-export class ConvertToTeamDialog extends BaseCreateTeam {
+export class ConvertToTeamDialog extends BaseTeamSetting {
+  get exists() {
+    return this.title.withExactText('Convert to team').exists
+  }
+
+  get teamNameInput() {
+    return this.getSelectorByAutomationId("ConvertToTeamTeamName");
+  }
+
+  get teamDescriptionInput() {
+    return this.getSelectorByAutomationId("ConvertToTeamTeamDescription");
+  }
+
+  get toggleList() {
+    return this.getSelectorByAutomationId("ConvertToTeamToggleList");
+  }
+
+  get isPublicDiv() {
+    return this.getSelectorByAutomationId('ConvertToTeamIsPublic').parent('li');
+  }
+
+  get mayAddMemberDiv() {
+    return this.getSelectorByAutomationId('ConvertToTeamCanAddMember').parent('li');
+  }
+
+  get mayPostMessageDiv() {
+    return this.getSelectorByAutomationId('ConvertToTeamCanPost').parent('li');
+  }
+
+  get mayPinPostDiv() {
+    return this.getSelectorByAutomationId('ConvertToTeamCanPinPost').parent('li');
+  }
+
   get cancelButton() {
     return this.getSelectorByAutomationId('convertToTeamCancelButton', this.self);
   }
