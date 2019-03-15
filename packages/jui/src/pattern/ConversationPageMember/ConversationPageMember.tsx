@@ -16,7 +16,7 @@ const StyledConversationPageMember = styled.div`
   cursor: pointer;
 
   > span {
-    ${typography('caption1')};
+    ${typography('body1')};
   }
 
   :hover {
