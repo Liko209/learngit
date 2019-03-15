@@ -39,7 +39,7 @@ const StylesContain = styled.div`
 const StyledZoom = styled.div`
   && {
     svg {
-      font-size: ${spacing(5)};
+      font-size: ${spacing(3.5)} !important;
     }
   }
 `;
@@ -47,8 +47,10 @@ const StyledZoom = styled.div`
 const StyledTextContain = styled.div`
   && {
     padding: ${spacing(0, 3)};
+    width: ${width(8.5)};
     color: ${grey('900')};
     font-size: ${spacing(3.5)};
+    text-align: center;
   }
 `;
 
