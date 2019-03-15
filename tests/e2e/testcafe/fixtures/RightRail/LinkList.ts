@@ -85,7 +85,8 @@ test(formalName('Deleted link will NOT show under Links tab', ['P1', 'JPT-1342',
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).glip(loginUser).init();
 
-  const textWithUrl = `${uuid()} https://www.google.com`
+  const url = `http://${uuid()}.com`;
+  const textWithUrl = `${uuid()} ${url}`;
 
   let team = <IGroup>{
     name: uuid(),
@@ -122,6 +123,7 @@ test(formalName('Deleted link will NOT show under Links tab', ['P1', 'JPT-1342',
   await h(t).withLog('Then The links number is correct: 1', async () => {
     // await linkTab.countOnSubTitleShouldBe(1);
     await linkTab.countInListShouldBe(1);
+    await linkTab.nthItemTitleShouldBe(0, url);
   });
 
   await h(t).withLog('When I delete the link (via api)', async () => {

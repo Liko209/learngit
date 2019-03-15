@@ -112,7 +112,7 @@ test(formalName('Deleted note will NOT show under Notes tab', ['P1', 'JPT-1338',
 
   const noteTitle = uuid();
   const secondNoteTitle = uuid();
-  // step 2 create a note
+
   let noteId;
   await h(t).withLog('When User create a note A', async () => {
     noteId = await h(t).glip(loginUser).createSimpleNote(team.glipId, noteTitle).then(
