@@ -27,8 +27,12 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { RULE } from '@/common/generateModifiedImageURL';
+import {
+  RULE,
+  generateModifiedImageURL,
+} from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { getThumbnailSize } from 'jui/foundation/utils';
 import { UploadFileTracker } from './UploadFileTracker';
 import { getThumbnailURL } from '@/common/getThumbnailURL';
 
@@ -89,13 +93,32 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     if (FileItemUtils.isGifItem({ type })) {
       url = versionUrl || '';
     }
+
+    const size = getThumbnailSize(origWidth, origHeight);
+    url = getThumbnailURL(item, {
+      width: size.imageWidth,
+      height: size.imageHeight,
+    });
+    // fallback to origin size url
+    if (!url) {
+      url = getThumbnailURL(item, {
+        width: origWidth,
+        height: origHeight,
+      });
+    }
     if (
       !url &&
       origWidth > 0 &&
       origHeight > 0 &&
       FileItemUtils.isSupportPreview({ type })
     ) {
-      url = getThumbnailURL(item, { width: origWidth, height: origHeight });
+      const result = await generateModifiedImageURL({
+        rule,
+        origHeight,
+        origWidth,
+        id: item.id,
+      });
+      url = result.url;
     }
     if (!url) {
       url = versionUrl || '';
