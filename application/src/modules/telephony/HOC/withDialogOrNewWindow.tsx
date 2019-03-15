@@ -12,6 +12,7 @@ import { container } from 'framework';
 import { TelephonyStore } from '../store';
 import { TelephonyService } from '../service';
 import { CALL_WINDOW_STATUS } from '../FSM';
+import { JuiZoomInFadeOut } from 'jui/components/Animation';
 
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
   Array.from(sourceDoc.styleSheets).forEach((styleSheet: CSSStyleSheet) => {
@@ -93,9 +94,11 @@ function withDialogOrNewWindow<T>(
         if (this._dragRef.current) {
           const dragEl = ReactDOM.findDOMNode(this._dragRef.current) as Element;
           this._handleResize = () => {
-            dragEl.dispatchEvent(MOUSE_EVENT.DOWN);
-            dragEl.dispatchEvent(MOUSE_EVENT.MOVE);
-            dragEl.dispatchEvent(MOUSE_EVENT.UP);
+            requestAnimationFrame(() => {
+              dragEl.dispatchEvent(MOUSE_EVENT.DOWN);
+              dragEl.dispatchEvent(MOUSE_EVENT.MOVE);
+              dragEl.dispatchEvent(MOUSE_EVENT.UP);
+            });
           };
           window.addEventListener('resize', this._handleResize);
         } else {
@@ -123,6 +126,7 @@ function withDialogOrNewWindow<T>(
           x={(document.body.clientWidth - 344) / 2}
           y={(document.body.clientHeight - 504) / 2}
           dragRef={this._dragRef}
+          TransitionComponent={JuiZoomInFadeOut}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>
