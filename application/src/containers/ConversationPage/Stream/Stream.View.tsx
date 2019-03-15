@@ -108,9 +108,9 @@ class StreamViewComponent extends Component<Props> {
     if (currentId === prevId) {
       return;
     }
-    if (postIds.includes(currentId)) {
+    if (postIds.includes(currentId) && this._listRef.current) {
       const index = this._findStreamItemIndexByPostId(currentId);
-      this._listRef.current.ref.scrollToIndex(index);
+      this._listRef.current.scrollToIndex(index);
     } else {
       refresh();
     }
