@@ -1,19 +1,25 @@
+/*
+ * @Author: Aaron Huo (aaron.huo@ringcentral.com)
+ * @Date: 2019-03-14 19:00:00,
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import React, { ComponentType, ComponentClass } from 'react';
-import { TWithPostLikeProps, TComponentWithLikeProps } from './types';
+import { WithPostLikeProps, WithPostLikeComponentProps } from './types';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';
 import { PostService } from 'sdk/module/post';
 import { Post } from 'sdk/module/post/entity';
-import { Person } from 'sdk/module/person/entity';
 import PostModel from '@/store/models/Post';
+import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import { computed, action } from 'mobx';
 
 function withPostLike<P>(
-  Component: ComponentType<P & TComponentWithLikeProps>,
-): ComponentClass<P & TWithPostLikeProps> {
-  class ComponentWithPostLike extends React.Component<P & TWithPostLikeProps> {
+  Component: ComponentType<P & WithPostLikeComponentProps>,
+): ComponentClass<P & WithPostLikeProps> {
+  class ComponentWithPostLike extends React.Component<P & WithPostLikeProps> {
     private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
     @computed
@@ -34,16 +40,11 @@ function withPostLike<P>(
     }
 
     @computed
-    get LikedMembers() {
-      const members = this._likes.reduce(
-        (acc, id) =>
-          this._checkedCurrentUser(id)
-            ? acc
-            : [...acc, this._composeMemberName(id)],
-        [],
-      );
+    get likedUsers(): PersonModel[] {
+      const handler = (id: number) =>
+        getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, id);
 
-      return this.iLiked ? ['You', ...members] : members;
+      return this._likes.map(handler);
     }
 
     @action
@@ -57,26 +58,13 @@ function withPostLike<P>(
       );
     }
 
-    private _checkedCurrentUser = (id: number): boolean => {
-      return id === this._currentUserId;
-    }
-
-    private _composeMemberName = (id: number): string => {
-      const { firstName, lastName } = getEntity<Person, PersonModel>(
-        ENTITY_NAME.PERSON,
-        id,
-      );
-
-      return `${firstName} ${lastName}`;
-    }
-
     render() {
       const { postId, ...rest } = this.props;
 
       return (
         <Component
           iLiked={this.iLiked}
-          likedMembers={this.LikedMembers}
+          likedUsers={this.likedUsers}
           onToggleLike={this.onToggleLike}
           {...rest as P}
         />

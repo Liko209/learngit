@@ -1,4 +1,10 @@
-import React, { Component } from 'react';
+/*
+ * @Author: Aaron Huo (aaron.huo@ringcentral.com)
+ * @Date: 2019-03-14 19:00:00,
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { spacing, shape, grey, palette } from '../../foundation/utils';
 import { JuiConversationPostLikeProps } from './types';
@@ -35,9 +41,11 @@ const StyleConversationPostLike = styled.div`
   }
 `;
 
-class JuiConversationPostLike extends Component<JuiConversationPostLikeProps> {
+class JuiConversationPostLike extends PureComponent<
+  JuiConversationPostLikeProps
+> {
   render() {
-    const { likedCount, title, iLiked, onClick } = this.props;
+    const { likedUsersCount, title, iLiked, onClick } = this.props;
 
     const elEntity = (
       <StyleConversationPostLike data-name="footerLikeButton" onClick={onClick}>
@@ -49,7 +57,7 @@ class JuiConversationPostLike extends Component<JuiConversationPostLikeProps> {
         >
           {iLiked ? 'thumbup' : 'thumbup_border'}
         </JuiIconButton>
-        <span>{likedCount}</span>
+        <span>{likedUsersCount}</span>
       </StyleConversationPostLike>
     );
 

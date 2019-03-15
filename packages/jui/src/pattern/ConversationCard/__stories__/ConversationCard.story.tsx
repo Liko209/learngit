@@ -58,7 +58,7 @@ storiesOf('Pattern', module)
           <JuiConversationPostLike
             title="like"
             iLiked={true}
-            likedCount={10}
+            likedUsersCount={10}
             onClick={() => {}}
           />
         </JuiConversationCardFooter>

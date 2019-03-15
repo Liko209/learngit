@@ -7,14 +7,14 @@
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { FooterProps } from './types';
-import { TWithPostLikeProps } from './withPostLike/types';
+import { WithPostLikeProps } from './withPostLike/types';
 import { Post } from 'sdk/module/post/entity';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 
 class FooterViewModel extends StoreViewModel<FooterProps>
-  implements TWithPostLikeProps {
+  implements WithPostLikeProps {
   @computed
   get postId() {
     return this.props.id;

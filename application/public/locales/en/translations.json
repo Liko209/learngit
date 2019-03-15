@@ -39,7 +39,8 @@
     "collapse": "Collapse",
 
     "back": "Back",
-    "forward": "Forward"
+    "forward": "Forward",
+    "You": "You"
   },
   "auth": {
     "signIn": "Sign in",
