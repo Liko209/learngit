@@ -12,9 +12,9 @@ const StyledIconographyDraft = styled(JuiIconography)``;
 
 const JuiIndicatorDraft = () => {
   return (
-    <JuiIconography iconSize="medium" iconColor={['secondary', '600']}>
+    <StyledIconographyDraft iconSize="medium" iconColor={['secondary', '600']}>
       draft
-    </JuiIconography>
+    </StyledIconographyDraft>
   );
 };
 
