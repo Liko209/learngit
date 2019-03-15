@@ -5,12 +5,7 @@
  */
 import * as Jui from './style';
 import { FileName } from './FileName';
-import React, {
-  PureComponent,
-  RefObject,
-  createRef,
-  CSSProperties,
-} from 'react';
+import React, { Component, RefObject, createRef, CSSProperties } from 'react';
 import {
   getThumbnailSize,
   ThumbnailInfo,
@@ -60,7 +55,7 @@ const JuiDelayPlaceholder = (props: SizeType) => (
   </Jui.ImageCard>
 );
 
-class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
+class JuiPreviewImage extends Component<JuiPreviewImageProps> {
   static SQUARE_SIZE = 180;
   private _imageInfo: ThumbnailInfo = {
     width: 0,
@@ -73,6 +68,13 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _mounted: boolean = false;
   private _loaded: boolean = false;
+
+  componentDidUpdate(prevProps: JuiPreviewImageProps) {
+    if (prevProps.url !== this.props.url) {
+      this._loaded = false;
+      this.forceUpdate();
+    }
+  }
 
   private _handleImageLoad = () => {
     const { forceSize, squareSize, didLoad } = this.props;
