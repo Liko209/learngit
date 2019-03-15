@@ -1,11 +1,11 @@
 process.env.APP =
   process.env.APP ||
-  '<rootDir>/{application|packages/sdk|packages/foundation|packages/voip|packages/jui}';
+  '<rootDir>/(application|packages/sdk|packages/foundation|packages/voip|packages/jui)';
 
 module.exports = {
   roots: ['application', 'packages'],
   collectCoverageFrom: [
-    `${process.env.APP}/src/**/*.{js,jsx,ts,tsx}`,
+    `${process.env.APP}/src/**/*.(js|jsx|ts|tsx)`,
     `!${process.env.APP}/src/**/__tests__/*`,
     `!${process.env.APP}/src/**/*.d.ts`,
     `!${process.env.APP}/src/**/*.View.tsx`,

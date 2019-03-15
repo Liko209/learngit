@@ -1301,33 +1301,35 @@ describe('fileUploadController', () => {
 
   describe('hasUploadingFiles', () => {
     let progressCaches: Map<number, any>;
-    const groupId = 1;
     beforeEach(() => {
       clearMocks();
       setup();
       progressCaches = new Map();
     });
 
-    function setFileCache(status: any) {
+    function setFileCache(status: any, version: any) {
       progressCaches.set(-1, {
         progress: status,
+        itemFile: { versions: [version] },
       } as ItemFileUploadStatus);
+
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
     }
 
     it.each`
-      progress                                  | expectRes
-      ${{}}                                     | ${false}
-      ${{ status: PROGRESS_STATUS.CANCELED }}   | ${false}
-      ${{ status: PROGRESS_STATUS.SUCCESS }}    | ${false}
-      ${{ status: PROGRESS_STATUS.FAIL }}       | ${false}
-      ${{ status: PROGRESS_STATUS.INPROGRESS }} | ${true}
+      progress                                  | fileVersion                        | expectRes
+      ${{}}                                     | ${undefined}                       | ${false}
+      ${{ status: PROGRESS_STATUS.CANCELED }}   | ${{ download_url: '', url: '' }}   | ${false}
+      ${{ status: PROGRESS_STATUS.SUCCESS }}    | ${{ download_url: '1', url: '1' }} | ${false}
+      ${{ status: PROGRESS_STATUS.FAIL }}       | ${{ download_url: '', url: '' }}   | ${false}
+      ${{ status: PROGRESS_STATUS.INPROGRESS }} | ${{ download_url: '1', url: '1' }} | ${false}
+      ${{ status: PROGRESS_STATUS.INPROGRESS }} | ${{ download_url: '', url: '' }}   | ${true}
     `(
       'should return true when has file in upload, progress: $progress',
-      ({ progress, expectRes }) => {
-        setFileCache(progress);
+      ({ progress, expectRes, fileVersion }) => {
+        setFileCache(progress, fileVersion);
 
         expect(fileUploadController.hasUploadingFiles()).toEqual(expectRes);
       },

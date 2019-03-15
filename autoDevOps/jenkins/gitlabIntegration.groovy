@@ -49,6 +49,13 @@ def condStage(Map args, Closure block) {
     }
 }
 
+// generate sha1 hash from a git treeish object, ensure stability by only taking parent and tree object into account
+def stableSha1(String treeish) {
+    String cmd = "git cat-file commit ${treeish} | grep -e ^tree | openssl sha1 |  grep -oE '[^ ]+\$'".toString()
+    return sh(returnStdout: true, script: cmd).trim()
+}
+
+
 // ssh helper
 def sshCmd(String remoteUri, String cmd) {
     URI uri = new URI(remoteUri)
@@ -79,6 +86,13 @@ def updateRemoteLink(String remoteUri, String linkSource, String linkTarget) {
     println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget} || true")
     // create link to new target
     println sshCmd(remoteUri, "cp -r ${linkSource} ${linkTarget}")
+}
+
+def createRemoteTarbar(String remoteUri, String sourceDir, String targetDir, String filename) {
+    // 1. ensure targetDir is existed
+    println sshCmd(remoteUri, "mkdir -p ${targetDir}")
+    // 2. cd to publishDir and create tar.gz file from deployDir
+    println sshCmd(remoteUri, "cd ${targetDir} && tar -czvf ${filename} -C ${sourceDir} .")
 }
 
 // business logic
@@ -119,23 +133,61 @@ def isStableBranch(String branchName) {
     return branchName ==~ /^(develop)|(master)|(release.*)|(stage.*)|(hotfix.*)$/
 }
 
-def buildReport(result, buildUrl, report) {
+// report helper
+def aTagToGlipLink(String html) {
+    return html.replaceAll(/<a\b[^>]*?href="(.*?)"[^>]*?>(.*?)<\/a>/, '[$2]($1)')
+}
+
+def aTagToUrl(String html) {
+    return html.replaceAll(/<a\b[^>]*?href="(.*?)"[^>]*?>(.*?)<\/a>/, '$1')
+}
+
+def urlToATag(String url) {
+    return """<a href="${url}">${url}</a>"""
+}
+
+def formatGlipReport(report) {
     List lines = []
-    lines.push("**Build Result**: ${result}")
-    lines.push("**Detail**: ${buildUrl}")
+    if (null != report.buildResult)
+        lines.push("**Build Result**: ${report.buildResult}")
+    if (null != report.description)
+        lines.push("**Description**: ${aTagToGlipLink(report.description)}")
+    if (null != report.jobUrl)
+        lines.push("**Job URL**: ${report.jobUrl}")
     if (null != report.saReport)
         lines.push("**Static Analysis**: ${report.saReport}")
-    if (null != report.appUrl)
-        lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.coverage)
         lines.push("**Coverage Report**: ${report.coverage}")
     if (null != report.coverageDiff)
         lines.push("**Coverage Changes**: ${report.coverageDiff}")
+    if (null != report.appUrl)
+        lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.juiUrl)
         lines.push("**Storybook URL**: ${report.juiUrl}")
+    if (null != report.publishUrl)
+        lines.push("**Package URL**: ${report.publishUrl}")
     if (null != report.e2eUrl)
         lines.push("**E2E Report**: ${report.e2eUrl}")
     return lines.join(' \n')
+}
+
+def formatJenkinsReport(report) {
+    List lines = []
+    if (null != report.description)
+        lines.push("Description: ${report.description}")
+    if (null != report.saReport)
+        lines.push("Static Analysis: ${report.saReport}")
+    if (null != report.coverageDiff)
+        lines.push("Coverage Changes: ${report.coverageDiff}")
+    if (null != report.appUrl)
+        lines.push("Application URL: ${urlToATag(report.appUrl)}")
+    if (null != report.juiUrl)
+        lines.push("Storybook URL: ${urlToATag(report.juiUrl)}")
+    if (null != report.publishUrl)
+        lines.push("Package URL: ${urlToATag(report.publishUrl)}")
+    if (null != report.e2eUrl)
+        lines.push("E2E Report: ${urlToATag(report.e2eUrl)}")
+    return lines.join('<br>')
 }
 
 /* job params */
@@ -173,26 +225,35 @@ Boolean e2eEnableMockServer = params.E2E_ENABLE_MOCK_SERVER
 
 /* build strategy */
 Boolean isMerge = gitlabSourceBranch != gitlabTargetBranch
-Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch) &&
-    !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
+// skip e2e when neither source or target branch is stable branch.
+// won't skip e2e when configuration file of source branch exists
+Boolean skipEndToEnd = !isStableBranch(gitlabSourceBranch) && !isStableBranch(gitlabTargetBranch)
+// update status for merge request event and new push on stable branch
 Boolean skipUpdateGitlabStatus = !isMerge && integrationBranch != gitlabTargetBranch
-Boolean buildRelease = gitlabTargetBranch.startsWith('release') || gitlabTargetBranch.endsWith('release') || releaseBranch == gitlabTargetBranch
+// create release build when targetBranch match specific name pattern
+Boolean buildRelease = gitlabTargetBranch.startsWith('release') || gitlabTargetBranch.endsWith('release') ||
+    releaseBranch == gitlabTargetBranch
 
 /* deploy params */
+// generate subDomain name from branch name, and then we can decide deploy directory and url
 String subDomain = getSubDomain(gitlabSourceBranch, gitlabTargetBranch)
 String appLinkDir = "${deployBaseDir}/${subDomain}".toString()
 String appStageLinkDir = "${deployBaseDir}/stage".toString()
 String juiLinkDir = "${deployBaseDir}/${subDomain}-jui".toString()
+String publishDir = "${deployBaseDir}/publish".toString()
 
 String appUrl = "https://${subDomain}.fiji.gliprc.com".toString()
 String juiUrl = "https://${subDomain}-jui.fiji.gliprc.com".toString()
+String publishPackageName = "${subDomain}.tar.gz".toString()
+String publishUrl = "https://publish.fiji.gliprc.com/${publishPackageName}".toString()
 
 // following params should be updated after checkout stage success
 String appHeadSha = null
 String juiHeadSha = null
 
 // update with +=
-String appHeadShaDir = "${deployBaseDir}/app-".toString()
+// release build use different build command, we should distinguish it from other build by using different name pattern
+String appHeadShaDir = "${deployBaseDir}/app-${buildRelease ? 'release-' : ''}".toString()
 String juiHeadShaDir = "${deployBaseDir}/jui-".toString()
 
 // by default we should not skip building app and jui
@@ -206,7 +267,11 @@ def reportChannels = [
     getMessageChannel(gitlabSourceBranch, gitlabTargetBranch)
 ]
 // send report to owner if gitlabUserEmail is provided
-gitlabUserEmail && reportChannels.push(gitlabUserEmail)
+if (gitlabUserEmail) {
+    reportChannels.push(gitlabUserEmail)
+    reportChannels.push(gitlabUserEmail.replaceAll('ringcentral.com', 'ringcentral.glip.com'))
+}
+
 
 // report
 Map report = [:]
@@ -227,6 +292,7 @@ node(buildNode) {
     try {
         // start to build
         stage ('Collect Facts') {
+            // cleanWs()
             sh 'env'
             sh 'df -h'
             sh 'uptime'
@@ -236,7 +302,9 @@ node(buildNode) {
             sh 'grep --version'
             sh 'which tr'
             sh 'which xargs'
-            sh 'npm cache verify'
+            // we need this to work around a typescript bug: https://github.com/Microsoft/TypeScript/pull/30078
+            // or else we have to clean whole workspace, which will make git clone much longer
+            sh 'find . -type d -name node_modules | xargs rm -rf || true'
         }
 
         stage ('Checkout') {
@@ -268,16 +336,29 @@ node(buildNode) {
                     ]
                 ]
             ])
+            // get head sha
+            String head = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             // change in tests and autoDevOps directory should not trigger application build
             // for git 1.9, there is an easy way to exclude files
             // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
             appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
+            if (isMerge && head == appHeadSha) {
+                // the reason to use stableSha here is if HEAD is generate via fast-forward, the commit will be changed when re-running the job due to timestamp changed
+                echo "generate stable sha1 key from ${appHeadSha}"
+                appHeadSha = stableSha1(appHeadSha)
+            }
+
             echo "appHeadSha=${appHeadSha}"
             assert appHeadSha, 'appHeadSha is invalid'
             appHeadShaDir += appHeadSha
             echo "appHeadShaDir=${appHeadShaDir}"
             // build jui only when packages/jui has change
             juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
+            if (isMerge && head == juiHeadSha) {
+                // same as appHeadSha
+                echo "generate stable sha1 key from ${juiHeadSha}"
+                juiHeadSha = stableSha1(juiHeadSha)
+            }
             echo "juiHeadSha=${juiHeadSha}"
             assert juiHeadSha, 'juiHeadSha is invalid'
             juiHeadShaDir += juiHeadSha
@@ -286,7 +367,7 @@ node(buildNode) {
             // check if app or jui has been built
             sshagent(credentials: [deployCredentialId]) {
                 // we should always build release version
-                skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir) && !buildRelease
+                skipBuildApp = doesRemoteDirectoryExist(deployUri, appHeadShaDir)
                 skipBuildJui = doesRemoteDirectoryExist(deployUri, juiHeadShaDir)
             }
             // since SA and UT must be passed before we build and deploy app and jui
@@ -296,6 +377,9 @@ node(buildNode) {
 
             // we can even skip install dependencies
             skipInstallDependencies = skipSaAndUt
+
+            // don't skip e2e if configuration file exists
+            skipEndToEnd = skipEndToEnd && !fileExists("tests/e2e/testcafe/configs/${gitlabSourceBranch}.json")
         }
 
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
@@ -331,7 +415,7 @@ node(buildNode) {
             'Unit Test': {
                 report.coverage = 'skip'
                 condStage(name: 'Unit Test', enable: !skipSaAndUt) {
-                    sh 'npm run test:cover'
+                    sh 'npm run test -- --coverage -w 4'
                     publishHTML([
                         allowMissing: false,
                         alwaysLinkToLastBuild: false,
@@ -347,7 +431,7 @@ node(buildNode) {
                         // push git notes to remote
                         sshagent (credentials: [scmCredentialId]) {
                             sh "git fetch -f ${gitlabSourceNamespace} refs/notes/*:refs/notes/*"
-                            sh 'git notes add -f -F coverage/coverage-summary.json'
+                            sh "git notes add -f -F coverage/coverage-summary.json ${appHeadSha}"
                             sh "git push -f ${gitlabSourceNamespace} refs/notes/*"
                         }
                     }
@@ -371,7 +455,9 @@ node(buildNode) {
                             )
                             report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
                             report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
-                            // TODO: throw exception when coverage drop
+                            if (exitCode > 0) {
+                                // throw new Exception('coverage drop!')
+                            }
                         }
                     }
                 }
@@ -420,11 +506,27 @@ node(buildNode) {
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
                             updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
+                        // for release build, we should also create a tar.gz package for deployment
+                        if (buildRelease) {
+                            createRemoteTarbar(deployUri, appHeadShaDir, publishDir, publishPackageName)
+                            report.publishUrl = publishUrl
+                        }
                     }
                 }
                 report.appUrl = appUrl
             }
         )
+
+        // FIXME: it is better to provide a stage for all external jobs
+        // Telephony automation automation
+        try {
+            if (!isMerge && 'POC/FIJI-1302' == gitlabSourceBranch) {
+                build(job: 'Jupiter-telephony-automation', parameters: [
+                    [$class: 'StringParameterValue', name: 'BRANCH', value: 'POC/FIJI-2808'],
+                    [$class: 'StringParameterValue', name: 'JUPITER_URL', value: appUrl],
+                ])
+            }
+        } catch (e) {}
 
         condStage (name: 'E2E Automation', timeout: 3600, enable: !skipEndToEnd) {
             String hostname =  sh(returnStdout: true, script: 'hostname -f').trim()
@@ -468,30 +570,35 @@ node(buildNode) {
                     credentialsId: rcCredentialId,
                     usernameVariable: 'RC_PLATFORM_APP_KEY',
                     passwordVariable: 'RC_PLATFORM_APP_SECRET')]) {
-                    sh "npm run e2e"
+                    try {
+                        sh "npm run e2e"
+                    } finally {
+                        if (!e2eEnableRemoteDashboard) {
+                            sh "tar -czvf allure.tar.gz -C ./allure/allure-results . || true"
+                            archiveArtifacts artifacts: 'allure.tar.gz', fingerprint: true
+                        }
+                        // TODO: else: close beat report properly
+                    }
                 }
             }}
         }
+        // post success actions
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'success')
-        def description = currentBuild.getDescription() + '\n' + buildReport("${SUCCESS_EMOJI} Success", buildUrl, report)
-        safeMail(
-            reportChannels,
-            "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}",
-            description,
-        )
-        currentBuild.setDescription(description)
+        report.description = currentBuild.getDescription()
+        report.jobUrl = buildUrl
+        report.buildResult = "${SUCCESS_EMOJI} Success"
+        currentBuild.setDescription(formatJenkinsReport(report))
+        safeMail(reportChannels, "Jenkins Pipeline Success: ${currentBuild.fullDisplayName}", formatGlipReport(report))
     } catch (e) {
+        // post failure actions
         skipUpdateGitlabStatus || updateGitlabCommitStatus(name: 'jenkins', state: 'failed')
-        String statusTitle = "${FAILURE_EMOJI} Failure"
+        report.description = currentBuild.getDescription()
+        report.jobUrl = buildUrl
+        report.buildResult = "${FAILURE_EMOJI} Failure"
         if (e in InterruptedException)
-            statusTitle = "${ABORTED_EMOJI} Aborted"
-        def description = currentBuild.getDescription() + '\n' + buildReport(statusTitle, buildUrl, report)
-        safeMail(
-            reportChannels,
-            "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}",
-            description,
-        )
-        currentBuild.setDescription(description)
+            report.buildResult = "${ABORTED_EMOJI} Aborted"
+        currentBuild.setDescription(formatJenkinsReport(report))
+        safeMail(reportChannels, "Jenkins Pipeline Stop: ${currentBuild.fullDisplayName}", formatGlipReport(report))
         throw e
     }
 }

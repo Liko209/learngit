@@ -21,14 +21,21 @@ const StyledImage = styled('img')<any>`
 
 class Test extends React.Component {
   state = {
-    show: false,
+    show: true,
     mounted: false,
     open: false,
     showOriginal: true,
   };
 
   imageRef: React.RefObject<HTMLImageElement> = React.createRef();
-  targetImageRef: React.RefObject<HTMLImageElement> = React.createRef();
+  targetImage = null;
+
+  setTargetImageRef = (element: any) => {
+    this.targetImage = element;
+    console.log(element);
+
+    this.forceUpdate();
+  }
 
   toggleShow = () => {
     this.setState({ show: !this.state.show });
@@ -74,21 +81,24 @@ class Test extends React.Component {
           />
         )}
         {this.state.open && (
-          <JuiZoomElement
-            originalElement={this.imageRef.current}
-            targetElement={this.targetImageRef.current}
-            show={this.state.show}
-            duration="standard"
-            easing="openCloseDialog"
-            onExited={this.hide}
-          >
+          <>
             <StyledImage
-              viewRef={this.targetImageRef}
+              ref={this.setTargetImageRef}
               position={{ width: '70%', height: '70%' }}
               src="https://placeimg.com/100/100/any"
               onClick={this.close}
             />
-          </JuiZoomElement>
+            {this.targetImage && (
+              <JuiZoomElement
+                originalElement={this.imageRef.current}
+                targetElement={this.targetImage!}
+                show={this.state.show}
+                duration="standard"
+                easing="openCloseDialog"
+                onExited={this.hide}
+              />
+            )}
+          </>
         )}
         <div>
           <Button onClick={this.update}>update</Button>

@@ -9,7 +9,7 @@ import { spacing, height } from '../../../foundation/utils/styles';
 const JuiDialogHeader = styled.div`
   background-color: white;
   padding: ${spacing(0, 6)};
-  height: ${height(16)};
+  height: ${height(13)};
   display: flex;
   align-items: center;
 `;

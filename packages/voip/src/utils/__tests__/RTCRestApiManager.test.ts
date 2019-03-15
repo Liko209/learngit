@@ -6,7 +6,7 @@
 
 import { RTCRestApiManager } from '../RTCRestApiManager';
 
-describe('rtcRestApiManager', async () => {
+describe('rtcRestApiManager', () => {
   describe('setNetworkDelegate()', () => {
     it('should _httpClientDelegate is null when initialization', () => {
       const ram = RTCRestApiManager.instance();

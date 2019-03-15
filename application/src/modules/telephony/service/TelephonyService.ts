@@ -10,6 +10,7 @@ import {
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
 } from 'sdk/module/telephony';
+import { PersonService, ContactType } from 'sdk/module/person';
 import { mainLogger } from 'sdk';
 import { TelephonyStore } from '../store';
 
@@ -17,17 +18,17 @@ class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
 
   private _serverTelephonyService: ServerTelephonyService = ServerTelephonyService.getInstance();
+  private _personService: PersonService = PersonService.getInstance();
 
   private _callId?: string;
-
-  private _accountState?: RTC_ACCOUNT_STATE;
 
   private _registeredOnbeforeunload: boolean = false;
 
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(`[Telephony_Service_Account_State]: ${state}`);
-    this._accountState = state;
   }
+
+  private _onMadeOutgoingCall = (callId: string) => {};
 
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
     mainLogger.debug(`[Telephony_Service_Call_State]: ${state}`);
@@ -48,10 +49,12 @@ class TelephonyService {
   constructor() {
     this._serverTelephonyService.createAccount({
       onAccountStateChanged: this._onAccountStateChanged,
+      onMadeOutgoingCall: this._onMadeOutgoingCall,
     });
   }
 
   makeCall = (toNumber: string) => {
+    this._telephonyStore.phoneNumber = toNumber;
     this._serverTelephonyService.makeCall(toNumber, {
       onCallStateChange: this._onCallStateChange,
     });
@@ -82,10 +85,8 @@ class TelephonyService {
   }
 
   directCall = (toNumber: string) => {
-    if (this._accountState === RTC_ACCOUNT_STATE.REGISTERED) {
-      this.makeCall(toNumber);
-      this._telephonyStore.directCall();
-    }
+    this.makeCall(toNumber);
+    this._telephonyStore.directCall();
   }
 
   hangUp = () => {
@@ -104,6 +105,13 @@ class TelephonyService {
       return;
     }
     this._telephonyStore.detachedWindow();
+  }
+
+  matchContactByPhoneNumber = async (phone: string) => {
+    return await this._personService.matchContactByPhoneNumber(
+      phone,
+      ContactType.GLIP_CONTACT,
+    );
   }
 }
 

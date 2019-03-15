@@ -184,7 +184,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 }
 
-class ConversationListSection extends BaseWebComponent {
+class ConversationSection extends BaseWebComponent {
   ensureLoaded() {
     return this.waitUntilExist(this.self);
   }
@@ -278,17 +278,26 @@ class CloseConversationModal extends BaseWebComponent {
     return this.self.find('label');
   }
 
-  get confirmButton() {
+  get cancelButton() {
     this.warnFlakySelector();
-    return this.self.find('button');
+    return this.button('Cancel');
+  }
+
+  get closeButton() {
+    this.warnFlakySelector();
+    return this.button('Close');
   }
 
   async toggleDontAskAgain() {
     await this.t.click(this.dontAskAgainCheckbox);
   }
 
-  async confirm() {
-    await this.t.click(this.confirmButton);
+  async clickCancelButton() {
+    await this.t.click(this.cancelButton);
+  }
+
+  async clickCloseButton() {
+    await this.t.click(this.closeButton);
   }
 }
 
@@ -300,7 +309,7 @@ export class MessageTab extends BaseWebComponent {
 
   private getSection(name: string) {
     return this.getComponent(
-      ConversationListSection,
+      ConversationSection,
       this.getSelector(`*[data-name="${name}"]`),
     );
   }

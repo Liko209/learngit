@@ -34,6 +34,7 @@ type BaseViewProps = {
   cellIndex: number;
   hovered: boolean;
   addRecentRecord: () => void;
+  onClose: () => void;
 };
 
 export {

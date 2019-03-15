@@ -1,0 +1,67 @@
+/*
+ * @Author: Andy Hu
+ * @Date: 2018-06-14 23:06:29
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { Raw } from '../../../../framework/model';
+import { Post } from '../../entity';
+import { Item } from '../../../item/entity';
+
+export enum ESearchContentTypes {
+  ALL = 'all',
+  CHATS = 'chats',
+  LINKS = 'links',
+  TASKS = 'tasks',
+  WEB_HOOKS = 'custom_items',
+  FILES = 'files',
+  NOTES = 'pages',
+  SNIPPETS = 'snippets',
+}
+
+export type ContentSearchParams = {
+  q: string;
+  type?: string;
+  creator_id?: number;
+  group_id?: number;
+  scroll_size?: number;
+  begin_time?: number;
+  end_time?: number;
+  for_at_mention?: boolean;
+};
+
+export interface InitialSearchResp {
+  request_id: number;
+}
+
+export type ContentTypes = {
+  [key: number]: number;
+};
+
+export type SearchResult = {
+  request_id: number;
+  query?: string;
+  results?: (Raw<Post> | Raw<Item>)[] | null;
+  response_id?: number;
+  scroll_request_id?: number;
+  client_request_id?: number;
+  content_types?: ContentTypes;
+};
+
+export type SearchedResultData = {
+  posts: Post[];
+  items: Item[];
+  hasMore: boolean;
+  requestId: number;
+};
+
+export type SearchRequestInfo = {
+  q: string;
+  responseId?: number;
+  resolve?: any;
+  reject?: any;
+  contentCountResolve?: any;
+  scrollRequestId?: number;
+  clientRequestId?: number;
+  isSearchEnded?: boolean;
+};

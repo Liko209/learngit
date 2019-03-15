@@ -1570,21 +1570,27 @@ function createWasm(env) {
     });
   }
   // Prefer streaming instantiation if available.
-  if (!Module['wasmBinary'] &&
-      typeof WebAssembly.instantiateStreaming === 'function' &&
-      !isDataURI(wasmBinaryFile) &&
-      typeof fetch === 'function') {
-    WebAssembly.instantiateStreaming(fetch(wasmBinaryFile, { credentials: 'same-origin' }), info)
-      .then(receiveInstantiatedSource, function(reason) {
-        // We expect the most common failure cause to be a bad MIME type for the binary,
-        // in which case falling back to ArrayBuffer instantiation should work.
-        err('wasm streaming compile failed: ' + reason);
-        err('falling back to ArrayBuffer instantiation');
-        instantiateArrayBuffer(receiveInstantiatedSource);
-      });
-  } else {
-    instantiateArrayBuffer(receiveInstantiatedSource);
-  }
+
+  // todo: fix it by disable instantiateStreaming
+  // will restore after this ticket finished:
+  // https://jira.ringcentral.com/browse/FIJI-4200
+  instantiateArrayBuffer(receiveInstantiatedSource);
+  // if (!Module['wasmBinary'] &&
+  //     typeof WebAssembly.instantiateStreaming === 'function' &&
+  //     !isDataURI(wasmBinaryFile) &&
+  //     typeof fetch === 'function') {
+  //   WebAssembly.instantiateStreaming(fetch(wasmBinaryFile, { credentials: 'same-origin' }), info)
+  //     .then(receiveInstantiatedSource, function(reason) {
+  //       // We expect the most common failure cause to be a bad MIME type for the binary,
+  //       // in which case falling back to ArrayBuffer instantiation should work.
+  //       err('wasm streaming compile failed: ' + reason);
+  //       err('falling back to ArrayBuffer instantiation');
+  //       instantiateArrayBuffer(receiveInstantiatedSource);
+  //     });
+  // } else {
+  //   instantiateArrayBuffer(receiveInstantiatedSource);
+  // }
+
   return {}; // no exports yet; we'll fill them in later
 }
 

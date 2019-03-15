@@ -15,6 +15,11 @@ jest.mock('@/containers/Notification');
 
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
+jest.mock('sdk/module/person');
+jest.mock('sdk/module/search');
+
+PersonService.getInstance = jest.fn();
+GroupService.getInstance = jest.fn();
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -35,13 +40,11 @@ describe('SearchBarViewModel', () => {
     jest.resetAllMocks();
     personService = new PersonService();
     searchBarViewModel = new SearchBarViewModel();
-
-    jest.spyOn(personService, 'doFuzzySearchPersons').mockImplementation(() => {
+    personService.doFuzzySearchPersons.mockImplementation(() => {
       return { terms: [], sortableModels: [{ id: 1 }] };
     });
-
-    jest.spyOn(PersonService, 'getInstance').mockReturnValue(personService);
-    jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
+    PersonService.getInstance.mockReturnValue(personService);
+    GroupService.getInstance.mockReturnValue(groupService);
   });
 
   describe('getSectionItemSize()', () => {

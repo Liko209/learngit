@@ -8,7 +8,8 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { EndViewProps } from './types';
-import { JuiIconButton } from 'jui/components/Buttons';
+import { JuiFabButton } from 'jui/components/Buttons';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 type Props = EndViewProps & WithNamespaces;
 
@@ -20,15 +21,17 @@ class EndViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t } = this.props;
     return (
-      <JuiIconButton
+      <JuiFabButton
         color="semantic.negative"
-        tooltipTitle={t('telephony.action.end')}
+        disableToolTip={true}
         onClick={this._handleEnd}
+        size="large"
+        showShadow={false}
+        tooltipPlacement="top"
       >
-        hand_up
-      </JuiIconButton>
+        <JuiIconography>hand_up</JuiIconography>
+      </JuiFabButton>
     );
   }
 }
