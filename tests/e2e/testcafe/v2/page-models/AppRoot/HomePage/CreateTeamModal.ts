@@ -115,19 +115,16 @@ class BaseCreateTeam extends BaseWebComponent {
   async turnOffMayPinPost() {
     await this.toggle(this.mayPinPostToggle, false);
   }
-
 }
-
 
 
 export class CreateTeamModal extends BaseCreateTeam {
   get cancelButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').nth(0);
+    return this.getSelectorByAutomationId('createToTeamCancelButton', this.self);
   }
 
   get createButton() {
-    return this.self.find('.modal-actions button').nth(1);
+    return this.getSelectorByAutomationId('createTeamOkButton', this.self);
   }
 
   async clickCancelButton() {
@@ -153,4 +150,35 @@ export class CreateTeamModal extends BaseCreateTeam {
   get memberInput() {
     return this.getComponent(MemberInput);
   }
+}
+
+export class ConvertToTeamDialog extends BaseCreateTeam {
+  get cancelButton() {
+    return this.getSelectorByAutomationId('convertToTeamCancelButton', this.self);
+  }
+
+  get convertToTeamButton() {
+    return this.getSelectorByAutomationId('convertToTeamOkButton', this.self);
+  }
+
+  async clickCancelButton() {
+    await this.t.click(this.cancelButton);
+  }
+
+  async clickConvertToTeamButton() {
+    await this.t.expect(this.convertToTeamButton.hasAttribute('disabled')).notOk().click(this.convertToTeamButton);
+  }
+
+  get isConvertToTeamButtonDisable(): Promise<boolean> {
+    return this.convertToTeamButton.hasAttribute('disabled');
+  }
+
+  async convertToTeamButtonShouldBeDisabled() {
+    await this.t.expect(this.isConvertToTeamButtonDisable).ok();
+  }
+
+  async convertToTeamButtonShouldBeEnabled() {
+    await this.t.expect(this.isConvertToTeamButtonDisable).notOk();
+  }
+
 }
