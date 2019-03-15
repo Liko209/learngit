@@ -206,7 +206,6 @@ class CreateTeamView extends React.Component<ViewProps, State> {
       <JuiModal
         open={true}
         size={'medium'}
-        okBtnProps={{ disabled: disabledOkBtn }}
         title={i18next.t('people.team.CreateTeam')}
         onCancel={this.onClose}
         onOK={this.createTeam}
@@ -219,6 +218,13 @@ class CreateTeamView extends React.Component<ViewProps, State> {
           )
         }
         cancelText={i18next.t('common.dialog.cancel')}
+        okBtnProps={{
+          disabled: disabledOkBtn,
+          'data-test-automation-id': 'createTeamOkButton',
+        }}
+        cancelBtnProps={{
+          'data-test-automation-id': 'createToTeamCancelButton',
+        }}
       >
         <Loading loading={loading} alwaysComponentShow={true} delay={0}>
           <JuiTextField

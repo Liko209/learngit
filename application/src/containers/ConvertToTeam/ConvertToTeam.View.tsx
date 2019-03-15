@@ -195,17 +195,22 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
       saving,
       disabledOkBtn,
     } = this.props;
-    const okBtnProps = { disabled: disabledOkBtn };
     return (
       <JuiModal
         open={true}
         size="medium"
-        okBtnProps={okBtnProps}
         title={i18next.t('people.team.convertToTeam')}
         onCancel={this._handleClose}
         onOK={this._handleOk}
         okText={i18next.t('people.team.convertToTeam')}
         cancelText={i18next.t('common.dialog.cancel')}
+        okBtnProps={{
+          disabled: disabledOkBtn,
+          'data-test-automation-id': 'convertToTeamOkButton',
+        }}
+        cancelBtnProps={{
+          'data-test-automation-id': 'convertToTeamCancelButton',
+        }}
       >
         <Loading loading={saving} alwaysComponentShow={true} delay={0}>
           <JuiTopText>
