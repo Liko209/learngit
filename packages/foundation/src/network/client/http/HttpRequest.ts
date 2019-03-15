@@ -23,6 +23,7 @@ class HttpRequest extends BaseRequest {
     this.timeout = builder.timeout;
     this.retryCount = builder.retryCount;
     this.priority = builder.priority;
+    this.HAPriority = builder.HAPriority;
     this.via = builder.via;
   }
   needAuth(): boolean {
