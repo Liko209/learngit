@@ -12,6 +12,7 @@ import {
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTCCallOptions,
+  RTC_STATUS_CODE,
 } from '../types';
 import {
   kRTCAnonymous,
@@ -248,11 +249,15 @@ describe('RTCAccount', async () => {
   it('Should return null when make call and new call is not allowed. [JPT-805]', done => {
     setupAccount();
     const listener = new MockCallListener();
-    account.makeCall('123', listener);
-    account.makeCall('234', listener);
+    const ret1 = account.makeCall('123', listener);
     setImmediate(() => {
-      expect(mockListener.onMadeOutgoingCall).toBeCalledTimes(1);
-      done();
+      const ret2 = account.makeCall('234', listener);
+      setImmediate(() => {
+        expect(mockListener.onMadeOutgoingCall).toBeCalledTimes(1);
+        expect(ret1).toBe(RTC_STATUS_CODE.OK);
+        expect(ret2).toBe(RTC_STATUS_CODE.MAX_CALLS_REACHED);
+        done();
+      });
     });
   });
 
@@ -606,6 +611,22 @@ describe('RTCAccount', async () => {
       expect(account.state()).toBe(RTC_ACCOUNT_STATE.IN_PROGRESS);
       expect(ua.restartUA).toBeCalledTimes(2);
       done();
+    });
+  });
+
+  it("should create call object and call state changes to 'pending' when make call in account idle state. [JPT-1404]", done => {
+    const mockListener = new MockAccountListener();
+    const callListener = new MockCallListener();
+    const account = new RTCAccount(mockListener);
+    const ret = account.makeCall('123', callListener);
+    setImmediate(() => {
+      expect(account.state()).toBe(RTC_ACCOUNT_STATE.IDLE);
+      expect(ret).toBe(RTC_STATUS_CODE.OK);
+      expect(account.callCount()).toBe(1);
+      setImmediate(() => {
+        expect(account.callList()[0]._fsm.state()).toBe('pending');
+        done();
+      });
     });
   });
 
