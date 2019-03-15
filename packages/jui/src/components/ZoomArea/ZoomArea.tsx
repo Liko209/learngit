@@ -97,10 +97,6 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     return this.props.viewRef || this._viewRef;
   }
 
-  throttleZoomStep = (scaleStep: number, zoomCenterPosition?: Position) => {
-    this.zoomStep(scaleStep, zoomCenterPosition);
-  }
-
   zoomStep = (scaleStep: number, zoomCenterPosition?: Position) => {
     const { scale } = this.props.transform;
     const newScale = scale + scaleStep;
@@ -166,7 +162,9 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     const sign = ev.deltaY > 0 ? -1 : 1;
     const { scale } = this.props.transform;
     const factor = Math.min(Math.abs(ev.deltaY), 10) / 10;
-    this.zoomStep(Math.max(sign * step * scale * factor, 0.005), point);
+    const { maxScale, minScale } = ensureOptions(this.props.zoomOptions);
+    const toScale = scale + sign * step * scale * factor;
+    this.zoomTo(Math.max(Math.min(toScale, maxScale), minScale), point);
   }
 
   render() {
