@@ -29,15 +29,15 @@ test(formalName('Click Pin option to pin a post', ['JPT-1264', 'P1', 'Pin', 'Pot
     members: [loginUser]
   }
 
+  const postText = uuid();
   let postId;
-
   await h(t).log(`Given I have an extension "${loginUser.company.number}#${loginUser.extension}"`);
   await h(t).withLog(`And there is a team named "${team.name}"`, async () => {
     await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And a text post in the team`, async () => {
-    postId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, loginUser);
+  await h(t).withLog(`And a text post "${postText}" in the team`, async () => {
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -68,6 +68,8 @@ test(formalName('Click Pin option to pin a post', ['JPT-1264', 'P1', 'Pin', 'Pot
     await rightRail.pinnedEntry.enter();
     await rightRail.pinnedEntry.shouldBeOpened();
     await rightRail.pinnedTab.countInListShouldBe(1);
+    await rightRail.pinnedTab.nthItem(0).shouldBePostId(postId);
+    await rightRail.pinnedTab.nthItem(0).postTextShouldBe(postText);
   });
 
   await h(t).withLog(`And the pin button should be replaced by the unpin button`, async () => {
@@ -90,15 +92,15 @@ test(formalName('Click Unpin option to unpin a post', ['JPT-1266', 'P1', 'Pin', 
     members: [loginUser]
   }
 
+  const postText = uuid();
   let postId;
-
   await h(t).log(`Given I have an extension "${loginUser.company.number}#${loginUser.extension}"`);
   await h(t).withLog(`And there is a team named "${team.name}"`, async () => {
     await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And a pinned text post in the team `, async () => {
-    postId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, loginUser);
+  await h(t).withLog(`And a pinned text post "${postText}" in the team `, async () => {
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
     await h(t).glip(loginUser).updateGroup(team.glipId, {
       "pinned_post_ids": [+postId]
     });
@@ -112,9 +114,21 @@ test(formalName('Click Unpin option to unpin a post', ['JPT-1266', 'P1', 'Pin', 
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When I enter team: "${team.name}" and hover the post`, async () => {
+  await h(t).withLog(`When I enter team: "${team.name}"`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryByName(team.name).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
+  });
+  
+  const rightRail = app.homePage.messageTab.rightRail;
+  await h(t).withLog(`Then the post should be displayed in the pinned section on the right shelf`, async () => {
+    await rightRail.pinnedEntry.enter();
+    await rightRail.pinnedEntry.shouldBeOpened();
+    await rightRail.pinnedTab.countInListShouldBe(1);
+    await rightRail.pinnedTab.nthItem(0).shouldBePostId(postId);
+    await rightRail.pinnedTab.nthItem(0).postTextShouldBe(postText);
+  });
+
+  await h(t).withLog(`When I hover the post`, async () => {
     await t.hover(postCard.self);
   });
 
@@ -127,7 +141,6 @@ test(formalName('Click Unpin option to unpin a post', ['JPT-1266', 'P1', 'Pin', 
     await postCard.clickPinToggle();
   });
 
-  const rightRail = app.homePage.messageTab.rightRail;
   await h(t).withLog(`Then The pined item disappear from Pinned tab immediately`, async () => {
     await rightRail.pinnedEntry.enter();
     await rightRail.pinnedEntry.shouldBeOpened();
@@ -153,15 +166,15 @@ test(formalName('Click Pin option to pin a post', ['JPT-1337', 'P1', 'Pin', 'Pot
     members: [loginUser]
   }
 
+  const postText = uuid();
   let postId;
-
   await h(t).log(`Given I have an extension "${loginUser.company.number}#${loginUser.extension}"`);
   await h(t).withLog(`And there is a team named "${team.name}"`, async () => {
     await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog(`And a text post in the team`, async () => {
-    postId = await h(t).scenarioHelper.sentAndGetTextPostId(uuid(), team, loginUser);
+  await h(t).withLog(`And a text post ${postText} in the team`, async () => {
+    postId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
   });
 
   const app = new AppRoot(t);
@@ -192,6 +205,8 @@ test(formalName('Click Pin option to pin a post', ['JPT-1337', 'P1', 'Pin', 'Pot
     await rightRail.pinnedEntry.enter();
     await rightRail.pinnedEntry.shouldBeOpened();
     await rightRail.pinnedTab.countInListShouldBe(1);
+    await rightRail.pinnedTab.nthItem(0).shouldBePostId(postId);
+    await rightRail.pinnedTab.nthItem(0).postTextShouldBe(postText);
   });
 
   await h(t).withLog(`When I delete the pin post`, async () => {
