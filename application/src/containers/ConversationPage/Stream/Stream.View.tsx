@@ -7,6 +7,8 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { action, observable, runInAction } from 'mobx';
+import { observer } from 'mobx-react';
+import ReactResizeDetector from 'react-resize-detector';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -15,7 +17,6 @@ import { JuiLozengeButton } from 'jui/components/Buttons';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
-import { observer } from 'mobx-react';
 import {
   StreamItem,
   StreamItemType,
@@ -25,24 +26,30 @@ import {
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { toTitleCase } from '@/utils/string';
 import { translate, WithNamespaces } from 'react-i18next';
-import { JuiInfiniteList, IndexRange } from 'jui/components/VirtualizedList';
-import ReactResizeDetector from 'react-resize-detector';
+import {
+  JuiInfiniteList,
+  IndexRange,
+  JuiVirtualizedListHandles,
+} from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 
 type Props = WithNamespaces & StreamViewProps & StreamProps;
 
 type StreamItemPost = StreamItem & { value: number[] };
+
 const LOADING_DELAY = 500;
+
 @observer
 class StreamViewComponent extends Component<Props> {
   private currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-  private _listRef: React.RefObject<any> = React.createRef();
+  private _listRef: React.RefObject<
+    JuiVirtualizedListHandles
+  > = React.createRef();
   private _globalStore = storeManager.getGlobalStore();
   private _historyViewed = false;
   private _mostRecentViewed = false;
   private _timeout: NodeJS.Timeout | null;
-  private _remountListTrigger = 0;
 
   @observable private _jumpToFirstUnreadLoading = false;
 
@@ -87,8 +94,8 @@ class StreamViewComponent extends Component<Props> {
         lastPost &&
         lastPost.creatorId === this.currentUserId;
 
-      if (sentFromCurrentUser && this._listRef.current.ref) {
-        this._listRef.current.ref.scrollToBottom();
+      if (sentFromCurrentUser && this._listRef.current) {
+        this._listRef.current.scrollToBottom();
       }
     }
 
@@ -166,9 +173,17 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _renderJumpToFirstUnreadButton() {
-    const { t, hasHistoryUnread, historyUnreadCount } = this.props;
+    const {
+      t,
+      firstHistoryUnreadInPage,
+      hasHistoryUnread,
+      historyUnreadCount,
+    } = this.props;
+
     const shouldHaveJumpButton =
-      hasHistoryUnread && historyUnreadCount > 1 && !this._historyViewed;
+      hasHistoryUnread &&
+      historyUnreadCount > 1 &&
+      (!firstHistoryUnreadInPage || !this._historyViewed);
 
     const countText =
       historyUnreadCount > 99 ? '99+' : String(historyUnreadCount);
@@ -211,13 +226,14 @@ class StreamViewComponent extends Component<Props> {
       );
       return;
     }
-    // jump to post to be implemented yet.
+    this._listRef.current && this._listRef.current.scrollToIndex(index);
   }
 
-  handleVisibilityChanged = (
-    { startIndex, stopIndex }: IndexRange,
-    initial?: boolean,
-  ) => {
+  private _handleVisibilityChanged = ({
+    startIndex,
+    stopIndex,
+  }: IndexRange) => {
+    if (startIndex === -1 || stopIndex === -1) return;
     const {
       items,
       mostRecentPostId,
@@ -235,7 +251,7 @@ class StreamViewComponent extends Component<Props> {
     } else {
       this.handleMostRecentHidden();
     }
-    if (this._historyViewed || initial) {
+    if (this._historyViewed) {
       return;
     }
     const firstPostItem = _.find(visibleItems, this.findPost) as StreamItemPost;
@@ -290,7 +306,7 @@ class StreamViewComponent extends Component<Props> {
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
 
-    const defaultLoading = <DefaultLoadingWithDelay />;
+    const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
     const onInitialDataFailed = (
       <JuiStreamLoading
@@ -302,32 +318,29 @@ class StreamViewComponent extends Component<Props> {
     );
 
     return (
-      <JuiStream>
-        <ReactResizeDetector handleHeight={true}>
-          {({ height }: { height: number }) => (
-            <div style={{ height: '100%' }}>
-              {this._renderJumpToFirstUnreadButton()}
-              <JuiInfiniteList
-                key={this._remountListTrigger}
-                ref={this._listRef}
-                height={height}
-                stickToBottom={true}
-                initialScrollToIndex={initialPosition}
-                minRowHeight={50} // extract to const
-                loadInitialData={this._loadInitialPosts}
-                loadMore={loadMore}
-                loadingRenderer={defaultLoading}
-                hasMore={hasMore}
-                loadingMoreRenderer={defaultLoadingMore}
-                fallBackRenderer={onInitialDataFailed}
-                onVisibleRangeChange={this.handleVisibilityChanged}
-              >
-                {this._renderStreamItems()}
-              </JuiInfiniteList>
-            </div>
-          )}
-        </ReactResizeDetector>
-      </JuiStream>
+      <ReactResizeDetector handleHeight={true}>
+        {({ height }: { height: number }) => (
+          <JuiStream>
+            {this._renderJumpToFirstUnreadButton()}
+            <JuiInfiniteList
+              ref={this._listRef}
+              height={height}
+              stickToBottom={true}
+              initialScrollToIndex={initialPosition}
+              minRowHeight={50} // extract to const
+              loadInitialData={this._loadInitialPosts}
+              loadMore={loadMore}
+              loadingRenderer={defaultLoading}
+              hasMore={hasMore}
+              loadingMoreRenderer={defaultLoadingMore}
+              fallBackRenderer={onInitialDataFailed}
+              onVisibleRangeChange={this._handleVisibilityChanged}
+            >
+              {this._renderStreamItems()}
+            </JuiInfiniteList>
+          </JuiStream>
+        )}
+      </ReactResizeDetector>
     );
   }
 
@@ -335,9 +348,6 @@ class StreamViewComponent extends Component<Props> {
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead } = this.props;
     await loadInitialPosts();
-    if (!this._listRef.current) {
-      return; // the current component is unmounted
-    }
     runInAction(() => {
       this.props.updateHistoryHandler();
       markAsRead();
@@ -346,11 +356,11 @@ class StreamViewComponent extends Component<Props> {
 
   private _focusHandler = () => {
     const { markAsRead } = this.props;
-    if (this._listRef.current.ref) {
-      const atBottom = this._listRef.current.ref.isAtBottom();
-      atBottom && markAsRead();
-      this._setUmiDisplay(false);
-    }
+
+    const atBottom =
+      this._listRef.current && this._listRef.current.isAtBottom();
+    atBottom && markAsRead();
+    this._setUmiDisplay(false);
   }
 
   private _blurHandler = () => {

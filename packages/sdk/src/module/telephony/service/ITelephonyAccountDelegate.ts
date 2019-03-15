@@ -7,6 +7,7 @@ import { RTC_ACCOUNT_STATE } from 'voip';
 
 interface ITelephonyAccountDelegate {
   onAccountStateChanged(state: RTC_ACCOUNT_STATE): void;
+  onMadeOutgoingCall(callId: string): void;
 }
 
 export { ITelephonyAccountDelegate, RTC_ACCOUNT_STATE };

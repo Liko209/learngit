@@ -3,16 +3,8 @@
  * @Date: 2019-03-04 10:14:48
  * Copyright © RingCentral. All rights reserved.
  */
-import React, {
-  useRef,
-  useState,
-  useEffect,
-  useImperativeHandle,
-  RefForwardingComponent,
-  memo,
-  forwardRef,
-} from 'react';
-import { noop } from 'jui/foundation/utils';
+import React, { useRef, useState, useEffect, memo } from 'react';
+import { noop } from '../../foundation/utils';
 
 type Direction = 'up' | 'down';
 
@@ -21,21 +13,20 @@ type JuiDataLoaderProps = {
   loadInitialData: () => Promise<void>;
   hasMore: (direction: Direction) => boolean;
   children: (params: {
-    ref: React.RefObject<any>;
     loadingInitial: boolean;
     loadingUp: boolean;
     loadingDown: boolean;
     loadingInitialFailed: boolean;
     onScroll: (event: React.UIEvent) => void;
-  }) => JSX.Element;
+  }) => JSX.Element | null | void;
 };
-type ExoticProps = { ref: any };
 
-const JuiDataLoader: RefForwardingComponent<ExoticProps, JuiDataLoaderProps> = (
-  { hasMore, loadInitialData, loadMore, children }: JuiDataLoaderProps,
-  forwardRef,
-) => {
-  const ref = React.createRef();
+const JuiDataLoader = ({
+  hasMore,
+  loadInitialData,
+  loadMore,
+  children,
+}: JuiDataLoaderProps) => {
   const prevScrollTopRef = useRef(0);
   const [loadingUp, setLoadingUp] = useState(false);
   const [loadingDown, setLoadingDown] = useState(false);
@@ -64,10 +55,6 @@ const JuiDataLoader: RefForwardingComponent<ExoticProps, JuiDataLoaderProps> = (
   useEffect(() => {
     loadData('initial');
   },        []);
-
-  useImperativeHandle(forwardRef, () => ({
-    ref: ref.current,
-  }));
 
   const loadData = async (type: 'initial' | 'up' | 'down') => {
     const { setLoading, load, onFailed } = map[type];
@@ -103,21 +90,15 @@ const JuiDataLoader: RefForwardingComponent<ExoticProps, JuiDataLoaderProps> = (
     }
   };
 
-  return children({
-    ref,
+  const childrenElement = children({
     loadingInitial,
     loadingUp,
     loadingDown,
     loadingInitialFailed,
     onScroll: handleScroll,
   });
+  return childrenElement || null;
 };
 
-const memoDataLoader = memo(
-  forwardRef(JuiDataLoader),
-) as React.MemoExoticComponent<
-  React.ForwardRefExoticComponent<
-    JuiDataLoaderProps & React.RefAttributes<ExoticProps>
-  >
->;
-export { memoDataLoader as JuiDataLoader, JuiDataLoaderProps };
+const MemoDataLoader = memo(JuiDataLoader);
+export { MemoDataLoader as JuiDataLoader, JuiDataLoaderProps };

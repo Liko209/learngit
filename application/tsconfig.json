@@ -6,8 +6,9 @@
     "target": "es6",
     "paths": {
       "@/*": ["src/*"],
-      "sdk/*": ["node_modules/sdk/src/*"],
-      "jui/*": ["node_modules/jui/src/*"]
+      "sdk/*": ["../packages/sdk/src/*"],
+      "jui/*": ["../packages/jui/src/*"],
+      "test-util/*": ["../packages/test-util/src/*"]
     }
   },
   "include": ["src/**/*"],

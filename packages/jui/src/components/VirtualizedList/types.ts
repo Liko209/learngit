@@ -16,7 +16,7 @@ type JuiVirtualizedListProps = {
   initialScrollToIndex: number;
   stickToBottom?: boolean;
   onScroll: (event: React.UIEvent) => void;
-  onVisibleRangeChange: (range: IndexRange, initial?: boolean) => void;
+  onVisibleRangeChange: (range: IndexRange) => void;
   onRenderedRangeChange: (range: IndexRange) => void;
   before?: React.ReactNode;
   after?: React.ReactNode;
