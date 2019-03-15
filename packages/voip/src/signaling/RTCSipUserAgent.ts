@@ -62,12 +62,15 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       label: any,
       content: any,
     ) => {
-      if (level === WEBPHONE_LOG_LEVEL.ERROR) {
-        rtcLogger.error('RC_WEBPHONE', `[${category}] ${content}`);
-      } else if (level === WEBPHONE_LOG_LEVEL.WARN) {
-        rtcLogger.warn('RC_WEBPHONE', `[${category}] ${content}`);
-      } else {
-        rtcLogger.debug('RC_WEBPHONE', `[${category}] ${content}`);
+      switch (level) {
+        case WEBPHONE_LOG_LEVEL.ERROR:
+          rtcLogger.error('RC_WEBPHONE', `[${category}] ${content}`);
+          break;
+        case WEBPHONE_LOG_LEVEL.WARN:
+          rtcLogger.warn('RC_WEBPHONE', `[${category}] ${content}`);
+          break;
+        default:
+          rtcLogger.debug('RC_WEBPHONE', `[${category}] ${content}`);
       }
     };
     this._webphone = new WebPhone(provisionData, options);
