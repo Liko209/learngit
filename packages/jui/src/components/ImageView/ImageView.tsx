@@ -32,6 +32,7 @@ const StyledImage = styled.img<{ visibility: string }>`
   display: block;
   box-shadow: ${({ theme }) => theme.shadows[7]};
   visibility: ${({ visibility }) => visibility};
+  user-select: none;
 `;
 
 const HiddenImage = styled.img`
