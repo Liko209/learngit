@@ -6,7 +6,7 @@
 import { withTheme } from 'jui/foundation/styled-components';
 import { ThemeProps } from 'jui/foundation/theme/theme';
 import { HotKeys } from 'jui/hoc/HotKeys';
-import { JuiDragZoomImage } from 'jui/pattern/DragZoom';
+import { JuiDragZoom } from 'jui/pattern/DragZoom';
 import {
   JuiImageViewerContainer,
   JuiImageViewerForwardButton,
@@ -22,25 +22,44 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { ImageViewerViewProps } from './types';
+import { JuiZoomElement } from 'jui/components/Animation';
+import ViewerContext from '../../ViewerContext';
+import { JuiImageView } from 'jui/components/ImageView';
 
 type ImageViewerProps = WithNamespaces & ImageViewerViewProps & ThemeProps;
 
 @observer
-class ImageViewerComponent extends Component<ImageViewerProps> {
+class ImageViewerComponent extends Component<ImageViewerProps, any> {
   private _imageRef: RefObject<HTMLImageElement> = createRef();
+  private _zoomRef: RefObject<JuiDragZoom> = createRef();
   static contextType = DialogContext;
   constructor(props: ImageViewerProps) {
     super(props);
-
     props.setOnCurrentItemDeletedCb(this.onCurrentItemDeleted);
+    this.state = {
+      initialOptions: this.props.initialOptions,
+      switched: false,
+    };
   }
 
   switchPreImage = () => {
-    this._canSwitchPrevious() && this.props.switchPreImage();
+    if (this._canSwitchPrevious()) {
+      this._zoomRef.current!.reset();
+      this.props.switchPreImage();
+      if (!this.state.switched) {
+        this.setState({ switched: true });
+      }
+    }
   }
 
   switchNextImage = () => {
-    this._canSwitchNext() && this.props.switchNextImage();
+    if (this._canSwitchNext()) {
+      this._zoomRef.current!.reset();
+      this.props.switchNextImage();
+      if (!this.state.switched) {
+        this.setState({ switched: true });
+      }
+    }
   }
 
   onCurrentItemDeleted = () => {
@@ -66,49 +85,116 @@ class ImageViewerComponent extends Component<ImageViewerProps> {
   }
 
   render() {
-    const { imageUrl, theme, t } = this.props;
+    const {
+      imageUrl,
+      theme,
+      t,
+      thumbnailSrc,
+      imageWidth,
+      imageHeight,
+    } = this.props;
     const padding = theme.spacing.unit * 8;
     return (
-      <HotKeys
-        keyMap={{
-          left: this.switchPreImage,
-          right: this.switchNextImage,
-        }}
-      >
-        <JuiImageViewerContainer>
-          <JuiDragZoomImage
-            imageRef={this._imageRef}
-            src={imageUrl}
-            options={{
-              minPixel: 10,
-              maxPixel: 20000,
-              step: 0.1,
-              wheel: true,
-              padding: [padding, padding, padding, padding],
-            }}
-            zoomInText={t('viewer.ZoomIn')}
-            zoomOutText={t('viewer.ZoomOut')}
-          />
-          <JuiImageViewerPreviousButton
-            className="buttonWrapper"
-            tooltipTitle={t('viewer.PreviousFile')}
-            aria-label={t('viewer.PreviousFile')}
-            disabled={!this._canSwitchPrevious()}
-            onClick={() => this.props.switchPreImage()}
-            iconColor={['grey', '900']}
-            iconName="previous"
-          />
-          <JuiImageViewerForwardButton
-            className="buttonWrapper"
-            tooltipTitle={t('viewer.NextFile')}
-            aria-label={t('viewer.NextFile')}
-            disabled={!this._canSwitchNext()}
-            onClick={() => this.props.switchNextImage()}
-            iconColor={['grey', '900']}
-            iconName="forward"
-          />
-        </JuiImageViewerContainer>
-      </HotKeys>
+      <ViewerContext.Consumer>
+        {value => (
+          <>
+            <HotKeys
+              keyMap={{
+                left: this.switchPreImage,
+                right: this.switchNextImage,
+              }}
+            >
+              <JuiImageViewerContainer>
+                <JuiDragZoom
+                  ref={this._zoomRef}
+                  contentRef={this._imageRef}
+                  options={{
+                    minPixel: 10,
+                    maxPixel: 20000,
+                    step: 0.1,
+                    wheel: true,
+                    padding: [padding, padding, padding, padding],
+                  }}
+                  zoomInText={t('viewer.ZoomIn')}
+                  zoomOutText={t('viewer.ZoomOut')}
+                >
+                  {({
+                    autoFitContentRect,
+                    notifyContentSizeChange,
+                    canDrag,
+                    isDragging,
+                    transform,
+                  }) => {
+                    const imageStyle = {
+                      opacity: value.isAnimating && value.show ? 0 : undefined,
+                      transform: `scale(${transform.scale}) translate(${
+                        transform.translateX
+                      }px, ${transform.translateY}px)`,
+                      // transition:
+                      //   isDragging || value.isAnimating
+                      //     ? undefined
+                      //     : 'all ease 0.3s',
+                      cursor: canDrag ? 'move' : undefined,
+                    };
+                    return (
+                      <JuiImageView
+                        imageRef={this._imageRef}
+                        src={imageUrl}
+                        width={
+                          autoFitContentRect
+                            ? autoFitContentRect.width
+                            : imageWidth
+                        }
+                        height={
+                          autoFitContentRect
+                            ? autoFitContentRect.height
+                            : imageHeight
+                        }
+                        style={imageStyle}
+                        onSizeLoad={notifyContentSizeChange}
+                        thumbnailSrc={thumbnailSrc}
+                      />
+                    );
+                  }}
+                </JuiDragZoom>
+                <JuiImageViewerPreviousButton
+                  className="buttonWrapper"
+                  tooltipTitle={t('viewer.PreviousFile')}
+                  aria-label={t('viewer.PreviousFile')}
+                  disabled={!this._canSwitchPrevious()}
+                  onClick={this.switchPreImage}
+                >
+                  <JuiIconography color="grey.900">pervious</JuiIconography>
+                </JuiImageViewerPreviousButton>
+                <JuiImageViewerForwardButton
+                  className="buttonWrapper"
+                  tooltipTitle={t('viewer.NextFile')}
+                  aria-label={t('viewer.NextFile')}
+                  disabled={!this._canSwitchNext()}
+                  onClick={this.switchNextImage}
+                >
+                  <JuiIconography color="grey.900">forward</JuiIconography>
+                </JuiImageViewerForwardButton>
+              </JuiImageViewerContainer>
+            </HotKeys>
+            {this._imageRef.current && (
+              <JuiZoomElement
+                originalElement={
+                  this.state.switched
+                    ? null
+                    : this.props.initialOptions.originElement!
+                }
+                targetElement={this._imageRef.current}
+                show={value.show}
+                duration="standard"
+                easing="openCloseDialog"
+                onEntered={value.onTransitionEntered}
+                onExited={value.onTransitionExited}
+              />
+            )}
+          </>
+        )}
+      </ViewerContext.Consumer>
     );
   }
 }

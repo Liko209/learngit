@@ -68,7 +68,6 @@ const right = css`
     border-color: transparent ${tooltipColor} transparent transparent;
   }
 `;
-let styleInserted = false;
 
 const GlobalToolTipStyle = createGlobalStyle`
   .popper[x-placement='right'] ${TooltipArrow}{
@@ -95,10 +94,6 @@ export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
     this.setState({
       arrowRef: node,
     });
-  }
-
-  componentDidMount() {
-    styleInserted = true;
   }
 
   render() {
@@ -135,7 +130,7 @@ export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
         >
           {children}
         </MuiTooltip>
-        {!styleInserted && <GlobalToolTipStyle />}
+        <GlobalToolTipStyle suppressMultiMountWarning={true} />
       </React.Fragment>
     );
   }

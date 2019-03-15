@@ -8,11 +8,16 @@ import { spacing } from '../../foundation/utils/styles';
 type JuiDraggableDialogProps = {
   x: number;
   y: number;
+  dragRef?: React.RefObject<any>;
 } & JuiDialogProps;
 
-const PaperComponent = (x: number, y: number) => (props: JuiPaperProps) => {
+const PaperComponent = (
+  x: number,
+  y: number,
+  dragRef?: React.RefObject<any>,
+) => (props: JuiPaperProps) => {
   return (
-    <Draggable bounds="body" defaultPosition={{ x, y }}>
+    <Draggable bounds="body" defaultPosition={{ x, y }} ref={dragRef}>
       <JuiPaper {...props} />
     </Draggable>
   );
@@ -40,10 +45,10 @@ const StyledDraggableDialog = styled(JuiDialog)`
 
 class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
   render() {
-    const { x, y, ...rest } = this.props;
+    const { x, y, dragRef, ...rest } = this.props;
     return (
       <StyledDraggableDialog
-        PaperComponent={PaperComponent(x, y)}
+        PaperComponent={PaperComponent(x, y, dragRef)}
         disableBackdropClick={true}
         disableEscapeKeyDown={true}
         disableEnforceFocus={true}
