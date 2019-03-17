@@ -10,19 +10,19 @@ export class FileAndImagePreviewer extends BaseWebComponent {
     return // todo: automationId
   }
 
-  get author() {
+  get senderName() {
     return this.self.find('h3'); // todo: automationId
   }
 
-  get createTime() {
+  get sendTime() {
     return this.self.find('h4'); // todo: automationId
   }
 
   get title() {
-    return this.self.find('h4'); // todo: automationId 
+    return this.self.find('h2'); // todo: automationId 
   }
 
-  get imageName() {
+  get fileName() {
     return this.title.find('span').nth(0); // todo: automationId 
   }
 

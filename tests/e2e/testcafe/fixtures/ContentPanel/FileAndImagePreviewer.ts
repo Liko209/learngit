@@ -175,9 +175,10 @@ test(formalName('Should scroll to the bottom automatically when reveived new mes
 
 
 
-test(formalName('Title bar should sync dinamically', ['JPT-1351', 'P2', 'Potar.He', 'FileAndImagePreviewer']), async (t) => {
-  const filesPath = '../../sources/1.png';
+test(formalName('Title bar should sync dynamically', ['JPT-1351', 'P2', 'Potar.He', 'FileAndImagePreviewer']), async (t) => {
+
   const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).glip(loginUser).init();
 
   let team = <IGroup>{
     type: "Team",
@@ -197,13 +198,18 @@ test(formalName('Title bar should sync dinamically', ['JPT-1351', 'P2', 'Potar.H
     await app.homePage.ensureLoaded();
   });
 
-  let postId: string;
+  const filesPath = '../../sources/1.png';
+  const fileName = '1.png';
+
+  let postId: string, fileId: string, senderName: string;
   await h(t).withLog('And I open a team and upload a image files', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath);
     await conversationPage.pressEnterWhenFocusOnMessageInputArea();
     await conversationPage.nthPostItem(-1).waitForPostToSend();
     postId = await conversationPage.nthPostItem(-1).postId;
+    fileId = await h(t).glip(loginUser).getFilesIdsFromPostId(postId);
+    senderName = await conversationPage.nthPostItem(-1).name.textContent;
   });
 
   await h(t).withLog('When I scroll to the first image post and click the first image', async () => {
@@ -215,21 +221,25 @@ test(formalName('Title bar should sync dinamically', ['JPT-1351', 'P2', 'Potar.H
   const previewer = app.homePage.fileAndImagePreviewer;
   await h(t).withLog('Then the image previewer should be showed', async () => {
     await previewer.ensureLoaded();
+    await t.expect(previewer.senderName.textContent).eql(senderName);
+    await t.expect(previewer.fileName.textContent).eql(fileName);
   });
 
-  const sender = previewer.author.textContent;
-  const 
+  const sendTime = await previewer.sendTime.textContent;
 
-  await h(t).withLog('When I receive a new text post', async () => {
-    await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, anotherUser);
-    await t.expect(conversationPage.posts.count).eql(4);
+  const newSenderName = uuid();
+  const newFileName = uuid();
+  await h(t).withLog('When I update sender name and file name via api', async () => {
+    await h(t).glip(loginUser).updatePerson({ 'display_name': newSenderName });
+    await h(t).glip(loginUser).updateFileName(fileId, newFileName);
   });
 
-  await h(t).withLog('and I click the close button', async () => {
-    await previewer.clickCloseButton();
+  await h(t).withLog('Then the sender name and file name should be sync dynamically ', async () => {
+    await t.expect(previewer.senderName.textContent).eql(newSenderName);
+    await t.expect(previewer.fileName.textContent).eql(newFileName);
   });
 
-  await h(t).withLog('Then Automatically scroll to the bottom of the conversation', async () => {
-    await conversationPage.expectStreamScrollToBottom();
+  await h(t).withLog('and send time is not changed', async () => {
+    await t.expect(previewer.sendTime.textContent).eql(sendTime);
   });
 });
