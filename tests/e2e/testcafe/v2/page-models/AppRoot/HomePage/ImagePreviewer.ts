@@ -3,7 +3,7 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 
 export class FileAndImagePreviewer extends BaseWebComponent {
   get self() {
-    return this.getSelector('role="document"');
+    return this.getSelector('[role="document"]');
   }
 
   get avatar() {
@@ -44,6 +44,10 @@ export class FileAndImagePreviewer extends BaseWebComponent {
 
   get closeIcon() {
     return this.getSelectorByIcon('close', this.self);
+  }
+
+  async clickCloseButton() {
+    await this.t.click(this.closeButton);
   }
 
   get perviousIcon() {
