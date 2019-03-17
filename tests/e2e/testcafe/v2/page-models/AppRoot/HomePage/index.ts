@@ -14,9 +14,9 @@ import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
 import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
-
 import { AlertDialog } from "./AlertDialog";
 import { IUser } from '../../../models';
+import { FileAndImagePreviewer } from './ImagePreviewer';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -124,4 +124,7 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(AlertDialog);
   }
 
+  get fileAndImagePreviewer() {
+    return this.getComponent(FileAndImagePreviewer);
+  }
 }
