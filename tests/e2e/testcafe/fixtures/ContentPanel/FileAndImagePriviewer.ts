@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-03-17 15:56:18 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-17 17:18:06
+ * @Last Modified time: 2019-03-17 17:20:38
  */
 
 import { formalName } from '../../libs/filter';
@@ -21,7 +21,6 @@ fixture('ContentPanel/FileAndImagePriviewer')
 
 test(formalName('Can close a full-screen image previewer by clicking close button/ESC', ['JPT-1347', 'P2', 'Potar.He', 'FileAndImagePriviewer']), async (t) => {
   const filesPath = '../../sources/1.png';
-  const message = uuid();
   const loginUser = h(t).rcData.mainCompany.users[4];
 
   let team = <IGroup>{
@@ -46,7 +45,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   await h(t).withLog('And I open a team and upload a image file', async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await conversationPage.uploadFilesToMessageAttachment(filesPath);
-    await conversationPage.sendMessage(message);
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
     await conversationPage.nthPostItem(-1).waitForPostToSend();
     postId = await conversationPage.nthPostItem(-1).postId;
   });
