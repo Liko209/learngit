@@ -604,7 +604,7 @@ describe('GroupFetchDataController', () => {
 
     const mockNormal = { id: 1 };
     const memberIDs = [1, 2];
-    const nullGroup: Group = null;
+    const nullGroup: any = null;
     it('group exist in DB already', async () => {
       // group exist in DB already
 
@@ -613,12 +613,14 @@ describe('GroupFetchDataController', () => {
       const result1 = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
+
       expect(AccountGlobalConfig.getCurrentUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(result1).toEqual(mockNormal);
     });
 
     it('group not exist in DB already, request from server', async () => {
+      testEntitySourceController.put = jest.fn();
       jest
         .spyOn(groupFetchDataController, 'requestRemoteGroupByMemberList')
         .mockResolvedValueOnce(mockNormal); // first call
@@ -627,6 +629,7 @@ describe('GroupFetchDataController', () => {
       const result2 = await groupFetchDataController.getOrCreateGroupByMemberList(
         memberIDs,
       );
+      expect(testEntitySourceController.put).toBeCalledWith(result2);
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(AccountGlobalConfig.getCurrentUserId).toBeCalled();
       expect(result2).toEqual(mockNormal);
