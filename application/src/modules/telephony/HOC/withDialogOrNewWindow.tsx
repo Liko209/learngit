@@ -65,6 +65,22 @@ function withDialogOrNewWindow<T>(
       TelephonyService,
     );
 
+    private _createBackdrop = () => {
+      const backdrop = document.createElement('div');
+      backdrop.style.cssText = `
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: fixed;
+        z-index: 999;
+      `;
+
+      return backdrop;
+    }
+
+    private _backdrop = this._createBackdrop();
+
     private _createWindow = () => {
       if (this._window == null || this._window.closed) {
         this._window = window.open(
@@ -89,37 +105,11 @@ function withDialogOrNewWindow<T>(
     }
 
     private _handleStart = () => {
-      this._scrollerElements.forEach((ele: HTMLElement) => {
-        const style = getComputedStyle(ele);
-        const overflow = style.overflow || 'initial';
-        ele.setAttribute('data-overflow', overflow);
-        ele.style.overflow = 'hidden';
-      });
+      document.body.appendChild(this._backdrop);
     }
 
     private _handleStop = () => {
-      this._scrollerElements.forEach((ele: HTMLElement) => {
-        const overflow = ele.dataset.overflow || 'initial';
-        ele.style.overflow = overflow;
-      });
-    }
-
-    private get _scrollerElements() {
-      const withScrollerElements = Array.from(
-        document.getElementsByClassName('withScroller'),
-      );
-      const leftRailMainSectionElement = document.getElementById(
-        'leftRailMainSection',
-      );
-      const reactVirtualizedListElements = Array.from(
-        document.getElementsByClassName('ReactVirtualized__List'),
-      );
-
-      return [
-        leftRailMainSectionElement,
-        ...withScrollerElements,
-        ...reactVirtualizedListElements,
-      ];
+      document.body.removeChild(this._backdrop);
     }
 
     componentDidUpdate() {

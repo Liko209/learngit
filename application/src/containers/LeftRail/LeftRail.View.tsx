@@ -47,7 +47,7 @@ class LeftRailViewComponent extends Component<
           ])}
         </JuiLeftRailStickyTop>
         <JuiDivider key="divider-filters" />
-        <JuiLeftRailMainSection id="leftRailMainSection">
+        <JuiLeftRailMainSection>
           {entries.map((entry, index) => (
             <JuiConversationListSectionHeader
               data-test-automation-id={entry.testId}
