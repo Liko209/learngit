@@ -18,7 +18,7 @@ import StoreViewModel from '@/store/ViewModel';
 
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItemType, StreamViewProps } from './types';
+import { StreamProps, StreamItemType } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -35,16 +35,13 @@ import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
 
-class StreamViewModel extends StoreViewModel<StreamProps>
-  implements StreamViewProps {
+class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
   private _initialized = false;
-
-  jumpToPostId: number;
 
   @observable loadInitialPostsError?: Error;
 
@@ -136,7 +133,7 @@ class StreamViewModel extends StoreViewModel<StreamProps>
     this._streamController = new StreamController(
       props.groupId,
       this._historyHandler,
-      this.jumpToPostId,
+      props.jumpToPostId,
     );
   }
 
@@ -161,11 +158,12 @@ class StreamViewModel extends StoreViewModel<StreamProps>
     this._historyHandler.update(this._groupState, this.postIds);
   }
 
+  @action
   async loadInitialPosts() {
     this.loadInitialPostsError = undefined;
     try {
-      if (this.jumpToPostId) {
-        await this._loadSiblingPosts(this.jumpToPostId);
+      if (this.props.jumpToPostId) {
+        await this._loadSiblingPosts(this.props.jumpToPostId);
       } else {
         await this._streamController.fetchInitialData(QUERY_DIRECTION.OLDER);
       }
@@ -288,7 +286,7 @@ class StreamViewModel extends StoreViewModel<StreamProps>
   initialize = (groupId: number) => {
     this._syncGroupItems();
     const globalStore = storeManager.getGlobalStore();
-    this.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
+    this.props.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
     globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
     this._initialized = false;

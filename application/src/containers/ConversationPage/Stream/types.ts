@@ -48,6 +48,8 @@ type StreamItem = {
 type StreamProps = {
   groupId: number;
   viewRef: React.RefObject<any>;
+  refresh: () => void;
+  jumpToPostId?: number;
 };
 
 type StreamViewProps = {
