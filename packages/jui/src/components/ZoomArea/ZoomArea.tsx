@@ -32,7 +32,6 @@ type JuiZoomState = {
 };
 
 type JuiZoomOptions = {
-  accuracy: number;
   step: number;
   minScale: number;
   maxScale: number;
@@ -40,7 +39,6 @@ type JuiZoomOptions = {
 };
 
 const DEFAULT_OPTIONS: JuiZoomOptions = {
-  accuracy: 2,
   step: 0.1,
   minScale: 0.1,
   maxScale: Number.MAX_SAFE_INTEGER,
@@ -113,13 +111,11 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
 
   zoomTo = (newScale: number, zoomCenterPosition?: Position) => {
     const { scale, translateX, translateY } = this.props.transform;
-    const { accuracy, maxScale, minScale } = ensureOptions(
-      this.props.zoomOptions,
-    );
-    const fixNewScale = Number(newScale.toFixed(accuracy));
+    const { maxScale, minScale } = ensureOptions(this.props.zoomOptions);
+    const fixNewScale = newScale;
     if (
       (fixNewScale > scale && fixNewScale > maxScale) ||
-      fixNewScale < minScale
+      (fixNewScale < scale && fixNewScale < minScale)
     ) {
       return;
     }
