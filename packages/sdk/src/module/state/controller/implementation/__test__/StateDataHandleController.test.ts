@@ -154,6 +154,42 @@ describe('StateDataHandleController', () => {
       ).toBeCalledTimes(1);
       expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
     });
+
+    it('should handle next task when crashing', async () => {
+      const task: DataHandleTask = {
+        type: TASK_DATA_TYPE.GROUP_CURSOR,
+        data: 'data' as any,
+      };
+      const task2: DataHandleTask = {
+        type: TASK_DATA_TYPE.STATE,
+        data: 'data2' as any,
+      };
+      stateDataHandleController['_taskArray'] = [task, task2];
+      stateDataHandleController['_transformStateData'] = jest.fn();
+      stateDataHandleController['_transformGroupData'] = jest.fn().mockImplementation(() => {
+        throw Error('error');
+      });
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+        groupStates: [],
+      });
+      stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
+      mockTotalUnreadController.handleGroupState = jest.fn();
+
+      await stateDataHandleController['_startDataHandleTask'](task);
+      expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
+        task2.data,
+      );
+      expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
+        task.data,
+      );
+      expect(
+        stateDataHandleController['_generateUpdatedState'],
+      ).toBeCalledTimes(1);
+      expect(
+        stateDataHandleController['_updateEntitiesAndDoNotification'],
+      ).toBeCalledTimes(1);
+      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
+    });
   });
 
   describe('_transformGroupData()', () => {
