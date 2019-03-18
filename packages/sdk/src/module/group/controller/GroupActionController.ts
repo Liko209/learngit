@@ -182,6 +182,21 @@ export class GroupActionController {
     );
   }
 
+  async deleteGroup(groupId: number): Promise<void> {
+    await this.partialModifyController.updatePartially(
+      groupId,
+      (partialEntity, originalEntity) => {
+        return {
+          ...partialEntity,
+          deactivated: true,
+        };
+      },
+      async (updateEntity: Group) => {
+        return await this._getGroupRequestController().put(updateEntity);
+      },
+    );
+  }
+
   async makeOrRevokeAdmin(teamId: number, member: number, isMake: boolean) {
     await this.partialModifyController.updatePartially(
       teamId,
@@ -271,7 +286,19 @@ export class GroupActionController {
     );
     team['group_id'] = groupId;
     const result = await GroupAPI.convertToTeam(team);
-    return await this.handleRawGroup(result);
+    const group = await this.handleRawGroup(result);
+
+    try {
+      // delete group;
+      // if delete group failed, convert to team should still be success
+      await this.deleteGroup(groupId);
+    } catch (err) {
+      mainLogger
+        .tags('GroupActionController')
+        .info(`convert to team, delete group ${groupId} fail`, err);
+    }
+
+    return group;
   }
 
   async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
