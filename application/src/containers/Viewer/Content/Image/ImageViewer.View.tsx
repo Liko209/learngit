@@ -93,6 +93,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       thumbnailSrc,
       imageWidth,
       imageHeight,
+      hasPrevious,
+      hasNext,
     } = this.props;
     const padding = theme.spacing.unit * 8;
     return (
@@ -158,7 +160,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     );
                   }}
                 </JuiDragZoom>
-                {this._canSwitchPrevious() && (
+                {hasPrevious && (
                   <JuiImageViewerPreviousButton
                     className="buttonWrapper"
                     tooltipTitle={t('viewer.PreviousFile')}
@@ -168,7 +170,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     <JuiIconography color="grey.900">pervious</JuiIconography>
                   </JuiImageViewerPreviousButton>
                 )}
-                {this._canSwitchNext() && (
+                {hasNext && (
                   <JuiImageViewerForwardButton
                     className="buttonWrapper"
                     tooltipTitle={t('viewer.NextFile')}
