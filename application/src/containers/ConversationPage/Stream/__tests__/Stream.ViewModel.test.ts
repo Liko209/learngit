@@ -536,7 +536,7 @@ describe('StreamViewModel', () => {
         expect(streamController.enableNewMessageSep).toBeCalled();
       }
 
-      it.only('should disable newMessageSeparatorHandler when at bottom and document has focus', () => {
+      it('should disable newMessageSeparatorHandler when at bottom and document has focus', () => {
         mockStoreManager();
         mockDocumentFocus(true);
         const vm = localSetup({});

@@ -210,12 +210,13 @@ class StreamViewModel extends StoreViewModel<StreamProps>
   }
 
   handleNewMessageSeparatorState = (event: React.UIEvent<HTMLElement>) => {
-    if (!event.target) return;
+    if (!event.currentTarget) return;
     const scrollEl = event.currentTarget;
     const atBottom =
       scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
     const isFocused = document.hasFocus();
     const shouldHideUmi = atBottom && isFocused;
+
     storeManager
       .getGlobalStore()
       .set(GLOBAL_KEYS.SHOULD_SHOW_UMI, !shouldHideUmi);
