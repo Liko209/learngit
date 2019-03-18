@@ -120,6 +120,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                   }}
                   zoomInText={t('viewer.ZoomIn')}
                   zoomOutText={t('viewer.ZoomOut')}
+                  zoomResetText={t('viewer.ZoomReset')}
                 >
                   {({
                     autoFitContentRect,
