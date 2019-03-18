@@ -46,7 +46,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   switchPreImage = () => {
     if (this._canSwitchPrevious()) {
       this._zoomRef.current!.reset();
-      this.props.switchPreImage();
+      this.props.switchToPrevious();
       if (!this.state.switched) {
         this.setState({ switched: true });
       }
@@ -56,7 +56,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   switchNextImage = () => {
     if (this._canSwitchNext()) {
       this._zoomRef.current!.reset();
-      this.props.switchNextImage();
+      this.props.switchToNext();
       if (!this.state.switched) {
         this.setState({ switched: true });
       }
@@ -93,6 +93,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       thumbnailSrc,
       imageWidth,
       imageHeight,
+      currentItemId,
       hasPrevious,
       hasNext,
     } = this.props;
@@ -138,6 +139,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     };
                     return (
                       <JuiImageView
+                        key={`image-${currentItemId}`}
                         imageRef={this._imageRef}
                         src={imageUrl}
                         width={

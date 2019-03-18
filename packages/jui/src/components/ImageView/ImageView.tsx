@@ -25,7 +25,6 @@ const StyledLoadingPage = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
 const StyledImage = styled.img<{ visibility: string }>`
@@ -53,7 +52,6 @@ type JuiImageProps = React.DetailedHTMLProps<
 };
 
 type JuiImageState = {
-  src?: string;
   currentShow: 'raw' | 'thumbnail';
   loadings: {
     raw: boolean;
@@ -73,12 +71,9 @@ function isThumbnailMode(props: JuiImageProps) {
 
 function getInitState(props: JuiImageProps): JuiImageState {
   if (isThumbnailMode(props)) {
-    return {
-      ..._.cloneDeep(JuiImageView.initThumbnailModeState),
-      src: props.src,
-    };
+    return _.cloneDeep(JuiImageView.initThumbnailModeState);
   }
-  return { ..._.cloneDeep(JuiImageView.initState), src: props.src };
+  return _.cloneDeep(JuiImageView.initState);
 }
 
 class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
@@ -111,16 +106,6 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
     this.state = getInitState(props);
     const { width, height, onSizeLoad } = this.props;
     width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
-  }
-
-  static getDerivedStateFromProps(
-    nextProps: JuiImageProps,
-    prevState: JuiImageState,
-  ) {
-    if (nextProps.src !== prevState.src) {
-      return getInitState(nextProps);
-    }
-    return null;
   }
 
   getImageRef = (): RefObject<HTMLImageElement> => {
