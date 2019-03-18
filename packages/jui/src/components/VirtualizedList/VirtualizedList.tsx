@@ -151,6 +151,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   };
 
   const jumpToPosition = (position: PartialScrollPosition) => {
+    rememberScrollPosition(position);
     setRenderedRange(
       createRange({
         startIndex: position.index,

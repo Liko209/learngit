@@ -65,7 +65,7 @@ export class ConversationCard extends React.Component<
       mode,
       post,
       hideText,
-      highlight,
+      cardRef,
       onAnimationStart,
       onHighlightAnimationStart,
       isEditMode,
@@ -95,9 +95,9 @@ export class ConversationCard extends React.Component<
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
         mode={mode}
-        highlight={highlight}
         onClick={onClickHandler}
         onAnimationStart={onAnimationStart}
+        ref={cardRef}
         {...rest}
       >
         <JuiConversationCardHeader
