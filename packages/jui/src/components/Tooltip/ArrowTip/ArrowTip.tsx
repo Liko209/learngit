@@ -17,13 +17,14 @@ type JuiTooltipProps = {
   show?: boolean;
 } & MuiTooltipProps;
 
+const baseSize = 7;
+
 const TooltipArrow = styled.span`
   position: absolute;
-  font-size: 7px;
-  width: 3em;
-  height: 3em;
+  width: ${3 * baseSize}px;
+  height: ${3 * baseSize}px;
   &::before {
-    content: "";
+    content: '';
     margin: auto;
     display: block;
     width: 0;
@@ -37,22 +38,23 @@ const tooltipColor = ({ theme }: any) => theme.palette['tooltip']['dark'];
 const bottom = css`
   top: 0;
   left: 0;
-  margin-top: -0.9em;
-  height: 1em;
+  margin-top: ${-0.9 * baseSize}px;
+  height: ${baseSize}px;
   &::before {
-    border-width: 0 1em 1em 1em;
+    border-width: ${baseSize}px;
+    border-top-width: 0;
     border-color: transparent transparent ${tooltipColor} transparent;
   }
 `;
 
 const top = css`
-  bottom: -1em;
+  bottom: ${-baseSize}px;
   left: 0;
-  margin-top: -0.9em;
-  width: 3em;
-  height: 1em;
+  margin-top: ${-0.9 * baseSize}px;
+  width: ${3 * baseSize}px;
+  height: ${baseSize}px;
   &::before {
-    border-width: 1em 1em 1em;
+    border-width: ${baseSize}px;
     border-color: ${tooltipColor} transparent transparent;
   }
 `;
@@ -60,11 +62,12 @@ const top = css`
 const right = css`
   top: 0;
   left: 0;
-  margin-left: -0.8em;
-  height: 1.8em;
-  width: 1em;
+  margin-left: ${-0.8 * baseSize}px;
+  height: ${2 * baseSize}px;
+  width: ${baseSize}px;
   &::before {
-    border-width: 0.6em 0.6em 0.6em 0;
+    border-width: ${baseSize}px;
+    border-left-width: 0;
     border-color: transparent ${tooltipColor} transparent transparent;
   }
 `;
@@ -76,12 +79,12 @@ const GlobalToolTipStyle = createGlobalStyle`
   }
 
   .popper[x-placement='top'] ${TooltipArrow}{
-    margin: '16px 0';
+    margin: 16px 0;
     ${top}
   }
 
   .popper[x-placement='bottom'] ${TooltipArrow}{
-    margin: '12px 0';
+    margin: 12px 0;
     ${bottom}
   }
 `;
