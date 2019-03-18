@@ -611,9 +611,9 @@ export class GlipSdk {
     let personIds = this.toPersonId(rcIds);
     let assignees;
     if (Object.prototype.toString.call(personIds) === '[object Array]') {
-      assignees = personIds.map(id => Number(id));
+      assignees = personIds.map(id => +id);
     } else {
-      assignees = [Number(personIds)];
+      assignees = [+personIds];
     }
     const data = _.assign({
       text: title,
@@ -701,9 +701,9 @@ export class GlipSdk {
       let inviteeIds: number[];
       const personIds = this.toPersonId(rcIds);
       if (Object.prototype.toString.call(personIds) === '[object Array]') {
-        inviteeIds = personIds.map(id => Number(id));
+        inviteeIds = personIds.map(id => +id);
       } else {
-        inviteeIds = [Number(personIds)];
+        inviteeIds = [+personIds];
       }
       data["invitee_ids"] = inviteeIds;
     }
