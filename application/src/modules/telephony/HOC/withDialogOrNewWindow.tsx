@@ -88,6 +88,40 @@ function withDialogOrNewWindow<T>(
       }
     }
 
+    private _handleStart = () => {
+      this._scrollerElements.forEach((ele: HTMLElement) => {
+        const style = getComputedStyle(ele);
+        const overflow = style.overflow || 'initial';
+        ele.setAttribute('data-overflow', overflow);
+        ele.style.overflow = 'hidden';
+      });
+    }
+
+    private _handleStop = () => {
+      this._scrollerElements.forEach((ele: HTMLElement) => {
+        const overflow = ele.dataset.overflow || 'initial';
+        ele.style.overflow = overflow;
+      });
+    }
+
+    private get _scrollerElements() {
+      const withScrollerElements = Array.from(
+        document.getElementsByClassName('withScroller'),
+      );
+      const leftRailMainSectionElement = document.getElementById(
+        'leftRailMainSection',
+      );
+      const reactVirtualizedListElements = Array.from(
+        document.getElementsByClassName('ReactVirtualized__List'),
+      );
+
+      return [
+        leftRailMainSectionElement,
+        ...withScrollerElements,
+        ...reactVirtualizedListElements,
+      ];
+    }
+
     componentDidUpdate() {
       setTimeout(() => {
         if (this._dragRef.current) {
@@ -123,6 +157,8 @@ function withDialogOrNewWindow<T>(
           x={(document.body.clientWidth - 344) / 2}
           y={(document.body.clientHeight - 504) / 2}
           dragRef={this._dragRef}
+          onStart={this._handleStart}
+          onStop={this._handleStop}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>

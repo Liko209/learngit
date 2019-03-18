@@ -131,7 +131,11 @@ function withScroller(Comp: ComponentType<any>) {
         ...rest
       } = this.props;
       return (
-        <StyledScroller ref={this._scrollElRef} stickTo={this.props.stickTo}>
+        <StyledScroller
+          className="withScroller"
+          ref={this._scrollElRef}
+          stickTo={this.props.stickTo}
+        >
           <Comp {...rest} atBottom={this._isAtBottom} atTop={this._isAtTop} />
         </StyledScroller>
       );
