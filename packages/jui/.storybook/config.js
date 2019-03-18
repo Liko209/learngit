@@ -13,7 +13,7 @@ import './index.css';
 
 const ThemeDecorator = storyFn => {
   return (
-    <ThemeProvider themeName='light'>
+    <ThemeProvider themeName="light">
       <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
     </ThemeProvider>
   );
