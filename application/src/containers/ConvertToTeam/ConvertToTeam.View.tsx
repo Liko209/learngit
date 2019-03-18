@@ -137,8 +137,8 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
     //   return options;
     // },                             {}) as Setting;
     const teamSetting: TeamSetting = {
-      name,
-      description,
+      name: name.trim(),
+      description: description.trim(),
       // isPublic: uiSetting.isPublic,
       // permissionFlags: {
       //   TEAM_ADD_MEMBER: uiSetting.canAddMember,

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable, Reaction } from 'mobx';
+import { computed, observable, action, Reaction } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ConvertToTeamProps, ConvertToTeamViewProps } from './types';
 import { getEntity } from '@/store/utils';
@@ -48,13 +48,15 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
+  @action
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.name = e.target.value.trim();
+    this.name = e.target.value;
     this.nameErrorKey = '';
   }
 
+  @action
   handleDescriptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.description = e.target.value.trim();
+    this.description = e.target.value;
   }
 
   save = async (teamSetting: TeamSetting): Promise<Group | null> => {
