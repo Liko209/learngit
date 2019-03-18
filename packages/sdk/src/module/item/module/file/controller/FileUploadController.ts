@@ -813,9 +813,10 @@ class FileUploadController {
     });
   }
 
-  private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile) {
+  private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile, updateModifiedAt?: boolean) {
     existItem.is_new = false;
     existItem.versions = preInsertItem.versions.concat(existItem.versions);
+    updateModifiedAt && (existItem.modified_at = Date.now());
     existItem._id = existItem.id;
     delete existItem.id;
     return await this._fileRequestController.put(existItem);

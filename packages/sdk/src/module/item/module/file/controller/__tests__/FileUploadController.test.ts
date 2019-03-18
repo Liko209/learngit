@@ -1511,4 +1511,38 @@ describe('fileUploadController', () => {
       expect(uploadInfo.progress.status).toEqual(PROGRESS_STATUS.FAIL);
     });
   });
+  describe('_updateItem()', () => {
+    it('should combine versions', async () => {
+      // jest.spyOn(fileUploadController, '_updateItem')
+      // existItem: ItemFile, preInsertItem: ItemFile, updateModifiedAt?: boolean
+      const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
+      const preInsertItem: ItemFile = {
+        group_ids: [11],
+        versions: [{ size: 11 }],
+      };
+      await fileUploadController['_updateItem'](existItem, preInsertItem);
+      expect(fileRequestController.put).toBeCalledWith(existItem);
+      expect(existItem.versions).toEqual([{ size: 11 }, { size: 10 }]);
+    });
+    it('should not update modified_at', async () => {
+      const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
+      const preInsertItem: ItemFile = {
+        group_ids: [11],
+        versions: [{ size: 11 }],
+      };
+      await fileUploadController['_updateItem'](existItem, preInsertItem);
+      expect(fileRequestController.put).toBeCalledWith(existItem);
+      expect(existItem).not.toHaveProperty('modified_at');
+    });
+    it('should update modified_at', async () => {
+      const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
+      const preInsertItem: ItemFile = {
+        group_ids: [11],
+        versions: [{ size: 11 }],
+      };
+      await fileUploadController['_updateItem'](existItem, preInsertItem, true);
+      expect(fileRequestController.put).toBeCalledWith(existItem);
+      expect(existItem).toHaveProperty('modified_at');
+    });
+  });
 });
