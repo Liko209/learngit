@@ -139,6 +139,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     };
                     return (
                       <JuiImageView
+                        data-test-automation-id={'ImageView'}
                         imageRef={this._imageRef}
                         src={imageUrl}
                         width={
