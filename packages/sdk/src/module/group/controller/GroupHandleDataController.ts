@@ -156,12 +156,19 @@ class GroupHandleDataController {
 
   doNotification = async (deactivatedData: Group[], groups: Group[]) => {
     groups.length && notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
-    const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
-      return group.id;
-    });
-    deactivatedGroupIds.length &&
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
-    groups.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, groups);
+    // https://jira.ringcentral.com/browse/FIJI-4264
+    // const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
+    //   return group.id;
+    // });
+    // deactivatedGroupIds.length &&
+    //   notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
+    groups.length &&
+      notificationCenter.emitEntityUpdate(
+        ENTITY.GROUP,
+        deactivatedData && deactivatedData.length
+          ? [...groups, ...deactivatedData]
+          : groups,
+      );
   }
 
   operateGroupDao = async (deactivatedData: Group[], normalData: Group[]) => {

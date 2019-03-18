@@ -215,15 +215,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       (payload: NotificationEntityPayload<Group>) => {
         const keys = Object.keys(this._handlersMap);
         let ids: number[] = [];
-        if (payload.type === EVENT_TYPES.DELETE) {
-          ids = payload.body!.ids!;
-        } else if (payload.type === EVENT_TYPES.UPDATE) {
+        if (payload.type === EVENT_TYPES.UPDATE) {
           ids = payload.body!.ids!;
           const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
           ids = ids.filter((id: number) => {
             const group = payload.body.entities.get(id);
             return (
               !group ||
+              group.deactivated ||
               !_.includes(group.members, currentUserId) ||
               group.is_archived
             );
