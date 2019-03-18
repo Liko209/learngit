@@ -68,7 +68,7 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
     }
   }
 
-  private _memorizeColor = moize((scope: string, name: string) => {
+  private _color = moize((scope: string, name: string) => {
     return [scope, name] as IconColor;
   });
 
@@ -88,9 +88,7 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
         <Jui.SearchIcon
           data-test-automation-id="search-icon"
           iconColor={
-            focus
-              ? this._memorizeColor('grey', '500')
-              : this._memorizeColor('common', 'white')
+            focus ? this._color('grey', '500') : this._color('common', 'white')
           }
           iconSize="small"
         >

@@ -25,6 +25,7 @@ import { ImageViewerViewProps } from './types';
 import { JuiZoomElement } from 'jui/components/Animation';
 import ViewerContext from '../../ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
+import { memoizeColor } from '@/common/memoizeFunction';
 
 type ImageViewerProps = WithNamespaces & ImageViewerViewProps & ThemeProps;
 
@@ -164,7 +165,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                   disabled={!this._canSwitchPrevious()}
                   onClick={this.switchPreImage}
                   iconName="previous"
-                  iconColor={['grey', '900']}
+                  iconColor={memoizeColor('grey', '900')}
                 />
                 <JuiImageViewerForwardButton
                   className="buttonWrapper"
@@ -173,7 +174,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                   disabled={!this._canSwitchNext()}
                   onClick={this.switchNextImage}
                   iconName="forward"
-                  iconColor={['grey', '900']}
+                  iconColor={memoizeColor('grey', '900')}
                 />
               </JuiImageViewerContainer>
             </HotKeys>
