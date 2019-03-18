@@ -1513,8 +1513,6 @@ describe('fileUploadController', () => {
   });
   describe('_updateItem()', () => {
     it('should combine versions', async () => {
-      // jest.spyOn(fileUploadController, '_updateItem')
-      // existItem: ItemFile, preInsertItem: ItemFile, updateModifiedAt?: boolean
       const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
       const preInsertItem: ItemFile = {
         group_ids: [11],
