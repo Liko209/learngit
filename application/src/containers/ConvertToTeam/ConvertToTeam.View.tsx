@@ -14,10 +14,10 @@ import { JuiTopText } from 'jui/pattern/ConvertToTeam';
 import { JuiTextField } from 'jui/components/Forms/TextField';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
-import {
-  JuiListToggleButton,
-  JuiListToggleItemProps,
-} from 'jui/pattern/ListToggleButton';
+// import {
+//   JuiListToggleButton,
+//   JuiListToggleItemProps,
+// } from 'jui/pattern/ListToggleButton';
 import history from '@/history';
 import { Notification } from '@/containers/Notification';
 import {
@@ -44,15 +44,19 @@ const Loading = withLoading(
   createTeamLoading,
 );
 
-type Setting = {
-  isPublic: boolean;
-  canAddMember: boolean;
-  canPost: boolean;
-  canPin: boolean;
-};
+// Please do not delete the commented code.
+// Now convert to team does not support permission settings.
+// They may support it later.
+
+// type Setting = {
+//   isPublic: boolean;
+//   canAddMember: boolean;
+//   canPost: boolean;
+//   canPin: boolean;
+// };
 
 type State = {
-  items: JuiListToggleItemProps[];
+  // items: JuiListToggleItemProps[];
 };
 
 @observer
@@ -62,49 +66,49 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
 
   constructor(props: ConvertToTeamViewProps) {
     super(props);
-    this.state = {
-      items: [],
-    };
+    // this.state = {
+    //   items: [],
+    // };
   }
 
-  static get initItems() {
-    return [
-      {
-        type: 'isPublic',
-        text: i18next.t('people.team.SetAsPublicTeam'),
-        checked: false,
-        automationId: 'ConvertToTeamIsPublic',
-      },
-      {
-        type: 'canAddMember',
-        text: i18next.t('people.team.MembersMayAddOtherMembers'),
-        checked: true,
-        automationId: 'ConvertToTeamCanAddMember',
-      },
-      {
-        type: 'canPost',
-        text: i18next.t('people.team.MembersMayPostMessages'),
-        checked: true,
-        automationId: 'ConvertToTeamCanPost',
-      },
-      {
-        type: 'canPin',
-        text: i18next.t('people.team.MembersMayPinPosts'),
-        checked: true,
-        automationId: 'ConvertToTeamCanPinPost',
-      },
-    ];
-  }
+  // static get initItems() {
+  //   return [
+  //     {
+  //       type: 'isPublic',
+  //       text: i18next.t('people.team.SetAsPublicTeam'),
+  //       checked: false,
+  //       automationId: 'ConvertToTeamIsPublic',
+  //     },
+  //     {
+  //       type: 'canAddMember',
+  //       text: i18next.t('people.team.MembersMayAddOtherMembers'),
+  //       checked: true,
+  //       automationId: 'ConvertToTeamCanAddMember',
+  //     },
+  //     {
+  //       type: 'canPost',
+  //       text: i18next.t('people.team.MembersMayPostMessages'),
+  //       checked: true,
+  //       automationId: 'ConvertToTeamCanPost',
+  //     },
+  //     {
+  //       type: 'canPin',
+  //       text: i18next.t('people.team.MembersMayPinPosts'),
+  //       checked: true,
+  //       automationId: 'ConvertToTeamCanPinPost',
+  //     },
+  //   ];
+  // }
 
-  static getDerivedStateFromProps(props: any, state: any) {
-    let items = ConvertToTeamView.initItems;
-    if (state.items.length) {
-      items = state.items;
-    }
-    return {
-      items,
-    };
-  }
+  // static getDerivedStateFromProps(props: any, state: any) {
+  //   let items = ConvertToTeamView.initItems;
+  //   if (state.items.length) {
+  //     items = state.items;
+  //   }
+  //   return {
+  //     items,
+  //   };
+  // }
 
   componentDidMount() {
     // because of modal is dynamic append body
@@ -126,21 +130,21 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
   }
 
   private _handleOk = async () => {
-    const { items } = this.state;
+    // const { items } = this.state;
     const { name, description, save } = this.props;
-    const uiSetting = items.reduce((options, option) => {
-      options[option.type] = option.checked;
-      return options;
-    },                             {}) as Setting;
+    // const uiSetting = items.reduce((options, option) => {
+    //   options[option.type] = option.checked;
+    //   return options;
+    // },                             {}) as Setting;
     const teamSetting: TeamSetting = {
       name,
       description,
-      isPublic: uiSetting.isPublic,
-      permissionFlags: {
-        TEAM_ADD_MEMBER: uiSetting.canAddMember,
-        TEAM_POST: uiSetting.canPost,
-        TEAM_PIN_POST: uiSetting.canPin,
-      },
+      // isPublic: uiSetting.isPublic,
+      // permissionFlags: {
+      //   TEAM_ADD_MEMBER: uiSetting.canAddMember,
+      //   TEAM_POST: uiSetting.canPost,
+      //   TEAM_PIN_POST: uiSetting.canPin,
+      // },
     };
     try {
       const team = await save(teamSetting);
@@ -160,33 +164,33 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
     }
   }
 
-  private _handleSwitchChange = (
-    item: JuiListToggleItemProps,
-    checked: boolean,
-  ) => {
-    const newItems = this.state.items.map((oldItem: JuiListToggleItemProps) => {
-      if (oldItem.text === item.text) {
-        return {
-          ...oldItem,
-          checked,
-        };
-      }
-      if (oldItem.type === 'canPin' && item.type === 'canPost') {
-        return {
-          ...oldItem,
-          checked,
-          disabled: !checked,
-        };
-      }
-      return oldItem;
-    });
-    this.setState({
-      items: newItems,
-    });
-  }
+  // private _handleSwitchChange = (
+  //   item: JuiListToggleItemProps,
+  //   checked: boolean,
+  // ) => {
+  //   const newItems = this.state.items.map((oldItem: JuiListToggleItemProps) => {
+  //     if (oldItem.text === item.text) {
+  //       return {
+  //         ...oldItem,
+  //         checked,
+  //       };
+  //     }
+  //     if (oldItem.type === 'canPin' && item.type === 'canPost') {
+  //       return {
+  //         ...oldItem,
+  //         checked,
+  //         disabled: !checked,
+  //       };
+  //     }
+  //     return oldItem;
+  //   });
+  //   this.setState({
+  //     items: newItems,
+  //   });
+  // }
 
   render() {
-    const { items } = this.state;
+    // const { items } = this.state;
     const {
       name,
       nameErrorKey,
@@ -234,11 +238,11 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
             fullWidth={true}
             onChange={handleDescriptionChange}
           />
-          <JuiListToggleButton
+          {/* <JuiListToggleButton
             data-test-automation-id="ConvertToTeamToggleList"
             items={items}
             onChange={this._handleSwitchChange}
-          />
+          /> */}
         </Loading>
       </JuiModal>
     );
