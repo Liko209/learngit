@@ -7,9 +7,14 @@
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { TransitionProps } from 'react-transition-group/Transition';
+import { Transition } from 'react-transition-group';
 
-const Wrapper = styled.div`
+const Wrapper = styled(Transition)`
   height: 100%;
+  background: transparent;
+  && > * {
+    background: transparent;
+  }
 `;
 
 const JuiDialogOpenTransition = ({
@@ -26,7 +31,7 @@ const JuiDialogOpenTransition = ({
   ...rest
 }: TransitionProps) => {
   delete rest.in;
-  return <Wrapper {...rest} />;
+  return <Wrapper timeout={0} {...rest} />;
 };
 
 export { JuiDialogOpenTransition };

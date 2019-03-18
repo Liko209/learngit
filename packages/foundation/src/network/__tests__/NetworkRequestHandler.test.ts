@@ -8,12 +8,15 @@ import {
   getFakeSurvivalMode,
 } from './utils';
 import { NETWORK_VIA, REQUEST_PRIORITY, SURVIVAL_MODE } from '../network';
-const handler = new NetworkRequestHandler(
-  getFakeTokenManager(),
-  fakeHandleType,
-);
+
+let handler: NetworkRequestHandler;
 const consumer = getFakeConsumer();
 describe('NetworkRequestHandler', () => {
+  beforeEach(() => {
+    handler = new NetworkRequestHandler(getFakeTokenManager(), fakeHandleType);
+    jest.clearAllMocks();
+  });
+
   describe('init', () => {
     it('should call initPendingTasks', () => {
       const spy = jest.spyOn(handler, 'initPendingTasks');
@@ -44,6 +47,22 @@ describe('NetworkRequestHandler', () => {
       handler.addApiRequest(getFakeRequest(), false);
       expect(spy1).toBeCalled();
       expect(spy).toBeCalled();
+    });
+
+    it('should call _callXApiResponseCallback when request is limited in survival mode', () => {
+      jest.spyOn(handler, 'isSurvivalModeEnabled').mockReturnValueOnce(true);
+      jest.spyOn(handler, 'isInSurvivalMode').mockReturnValueOnce(true);
+      jest.spyOn(handler, 'canHandleInSurvivalMode').mockReturnValueOnce(false);
+      jest.spyOn(handler, '_callXApiResponseCallback');
+      jest.spyOn(handler, 'appendTask');
+      jest.spyOn(handler, 'notifyRequestArrived');
+      handler.addApiRequest(getFakeRequest(), false);
+      expect(handler.isSurvivalModeEnabled).toBeCalled();
+      expect(handler.isInSurvivalMode).toBeCalled();
+      expect(handler.canHandleInSurvivalMode).toBeCalled();
+      expect(handler._callXApiResponseCallback).toBeCalled();
+      expect(handler.appendTask).not.toBeCalled();
+      expect(handler.notifyRequestArrived).not.toBeCalled();
     });
   });
 
@@ -79,31 +98,28 @@ describe('NetworkRequestHandler', () => {
     });
 
     it('should call onCancelRequest', () => {
-      handler.isRequestInPending = jest.fn();
-      handler.isRequestInPending.mockReturnValueOnce(false);
-      const spy = jest.spyOn(
-        handler.consumers.get(getFakeRequest().via),
-        'onCancelRequest',
-      );
+      jest.spyOn(handler, 'isRequestInPending').mockReturnValueOnce(false);
+      const consumer = getFakeConsumer();
+      consumer.onCancelRequest = jest.fn();
+      jest.spyOn(handler.consumers, 'get').mockReturnValueOnce(consumer);
       handler.cancelRequest(getFakeRequest());
-      expect(spy).toBeCalled();
+      expect(consumer.onCancelRequest).toBeCalled();
     });
 
     it('should call onCancelRequest', () => {
-      handler.isRequestInPending = jest.fn();
-      handler.isRequestInPending.mockReturnValueOnce(true);
-      const spy = jest.spyOn(handler, 'deletePendingRequest');
-      const spy1 = jest.spyOn(handler, '_callXApiResponseCallback');
+      jest.spyOn(handler, 'isRequestInPending').mockReturnValueOnce(true);
+      jest.spyOn(handler, 'deletePendingRequest');
+      jest.spyOn(handler, '_callXApiResponseCallback');
       handler.cancelRequest(getFakeRequest());
-      expect(spy1).toBeCalled();
-      expect(spy).toBeCalled();
+      expect(handler.deletePendingRequest).toBeCalled();
+      expect(handler._callXApiResponseCallback).toBeCalled();
     });
   });
 
   describe('notifyTokenRefreshed', () => {
     it('should refresh token for consumers', () => {
       const spys = [];
-      handler.consumers.forEach((consumer) => {
+      handler.consumers.forEach(consumer => {
         const spy = jest.spyOn(consumer, 'onTokenRefreshed');
         spys.push(spy);
       });
@@ -139,8 +155,9 @@ describe('NetworkRequestHandler', () => {
 
   describe('getRequestConsumer', () => {
     it('should add to consumers', () => {
-      const ori_consumer = handler.getRequestConsumer(NETWORK_VIA.HTTP);
-      expect(consumer).toEqual(ori_consumer);
+      jest.spyOn(handler.consumers, 'get');
+      handler.getRequestConsumer(NETWORK_VIA.HTTP);
+      expect(handler.consumers.get).toBeCalledWith(NETWORK_VIA.HTTP);
     });
   });
 
@@ -152,6 +169,7 @@ describe('NetworkRequestHandler', () => {
 
   describe('notifyRequestArrived', () => {
     it('should should call onConsumeArrived', () => {
+      handler.addRequestConsumer(NETWORK_VIA.HTTP, consumer);
       const spy = jest.spyOn(
         handler.consumers.get(NETWORK_VIA.HTTP),
         'onConsumeArrived',
@@ -161,8 +179,9 @@ describe('NetworkRequestHandler', () => {
     });
 
     it('should should call onConsumeArrived', () => {
+      handler.addRequestConsumer(NETWORK_VIA.ALL, consumer);
       const spy = jest.spyOn(
-        handler.consumers.get(NETWORK_VIA.HTTP),
+        handler.consumers.get(NETWORK_VIA.ALL),
         'onConsumeArrived',
       );
       handler.notifyRequestArrived(NETWORK_VIA.ALL);
@@ -220,10 +239,12 @@ describe('NetworkRequestHandler', () => {
     });
 
     it('should be SurvivalModeEnabled', () => {
+      handler.setNetworkRequestSurvivalMode(getFakeSurvivalMode());
       expect(handler.isSurvivalModeEnabled()).toBeTruthy();
     });
 
     it('should be InSurvivalMode', () => {
+      handler.setNetworkRequestSurvivalMode(getFakeSurvivalMode());
       handler.networkRequestSurvivalMode.isSurvivalMode = jest.fn();
       handler.networkRequestSurvivalMode.isSurvivalMode.mockReturnValueOnce(
         true,
@@ -232,11 +253,11 @@ describe('NetworkRequestHandler', () => {
     });
 
     it('should can HandleSurvivalMode', () => {
+      handler.setNetworkRequestSurvivalMode(getFakeSurvivalMode());
       handler.networkRequestSurvivalMode.canSupportSurvivalMode = jest.fn();
       handler.networkRequestSurvivalMode.canSupportSurvivalMode.mockReturnValueOnce(
         true,
       );
-      expect(handler.canHandleSurvivalMode()).toBeTruthy();
     });
   });
 
@@ -250,15 +271,13 @@ describe('NetworkRequestHandler', () => {
 
   describe('onSurvivalModeDetected', () => {
     it('should call setSurvivalMode and cancelAllPendingTasks', () => {
-      handler.isInSurvivalMode = jest.fn();
-      handler.isInSurvivalMode.mockReturnValueOnce(true);
+      handler.setNetworkRequestSurvivalMode(getFakeSurvivalMode());
+      jest.spyOn(handler, 'isSurvivalModeEnabled').mockReturnValueOnce(true);
       const spy = jest.spyOn(
         handler.networkRequestSurvivalMode,
         'setSurvivalMode',
       );
-      const spy1 = jest.spyOn(handler, 'cancelAllPendingTasks');
       handler.onSurvivalModeDetected(SURVIVAL_MODE.NORMAL, 1);
-      expect(spy1).toBeCalled();
       expect(spy).toBeCalled();
     });
   });

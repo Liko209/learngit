@@ -62,6 +62,7 @@ class TransitionAnimation extends React.PureComponent<Props> {
       onEntered,
       theme,
       animation,
+      appear,
       ...rest
     } = this.props;
     return (
@@ -70,10 +71,11 @@ class TransitionAnimation extends React.PureComponent<Props> {
         timeout={theme!.transitions.duration[duration]}
         onEntered={onEntered}
         onExited={onExited}
-        {...rest}
+        appear={appear}
       >
         {state => (
           <StyledContainer
+            {...rest}
             option={{ duration, easing }}
             state={state}
             animation={animation}

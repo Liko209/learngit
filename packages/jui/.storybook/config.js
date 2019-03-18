@@ -9,11 +9,11 @@ import { configure, addDecorator } from '@storybook/react';
 import { withKnobs } from '@storybook/addon-knobs';
 
 import { ThemeProvider } from '../src/foundation/theme/index';
-import './index.css'
+import './index.css';
 
 const ThemeDecorator = storyFn => {
   return (
-    <ThemeProvider themeName="light">
+    <ThemeProvider themeName='light'>
       <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
     </ThemeProvider>
   );

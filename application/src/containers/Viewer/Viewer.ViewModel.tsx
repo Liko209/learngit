@@ -3,14 +3,15 @@
  * @Date: 2019-02-26 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { ITEM_SORT_KEYS, ItemService } from 'sdk/module/item';
+import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
-import { ENTITY, EVENT_TYPES, notificationCenter } from 'sdk/service';
+import { EVENT_TYPES, notificationCenter, ENTITY } from 'sdk/service';
 import {
   NotificationEntityPayload,
   NotificationEntityUpdatePayload,
+  NotificationEntityDeletePayload,
 } from 'sdk/service/notificationCenter';
 
 import { AbstractViewModel } from '@/base';
@@ -18,14 +19,21 @@ import { AbstractViewModel } from '@/base';
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { ViewerViewProps } from './types';
 import { ItemListDataSource } from './Viewer.DataSource';
+import { Group } from 'sdk/module/group';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import portalManager from '@/common/PortalManager';
 
 const INIT_PAGE_SIZE = 5;
 
 class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   @observable
-  private _currentIndex?: number;
+  currentIndex: number = 0;
   @observable
-  private _currentItemId?: number;
+  currentItemId: number;
   private _itemListDataSource: ItemListDataSource;
   private _onCurrentItemDeletedCb: () => void;
 
@@ -35,39 +43,30 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   constructor(props: ViewerViewProps) {
     super(props);
     const { groupId, type, itemId } = props;
-    this._currentItemId = itemId;
+    this.currentItemId = itemId;
     this._itemListDataSource = new ItemListDataSource({ groupId, type });
-    notificationCenter.on(ENTITY.ITEM, this._onItemDataChange);
+    const itemNotificationKey = ItemNotification.getItemNotificationKey(
+      ViewerItemTypeIdMap[this.props.type],
+      groupId,
+    );
+    notificationCenter.on(itemNotificationKey, this._onItemDataChange);
+    notificationCenter.on(ENTITY.GROUP, this._onGroupDataChange);
   }
 
+  @action
   init = () => {
     this._itemListDataSource.loadInitialData(this.props.itemId, INIT_PAGE_SIZE);
     this._fetchIndexInfo();
   }
 
   dispose() {
-    notificationCenter.off(ENTITY.ITEM, this._onItemDataChange);
+    const itemNotificationKey = ItemNotification.getItemNotificationKey(
+      ViewerItemTypeIdMap[this.props.type],
+      this.props.groupId,
+    );
+    notificationCenter.off(itemNotificationKey, this._onItemDataChange);
+    notificationCenter.off(ENTITY.GROUP, this._onGroupDataChange);
     this._itemListDataSource.dispose();
-  }
-
-  @computed
-  get currentItemId() {
-    return this._currentItemId === undefined
-      ? this.props.itemId
-      : this._currentItemId;
-  }
-
-  set currentItemId(index: number) {
-    this._currentItemId = index;
-  }
-
-  @computed
-  get currentIndex() {
-    return this._currentIndex || 0;
-  }
-
-  set currentIndex(index: number) {
-    this._currentIndex = index;
   }
 
   @computed
@@ -75,7 +74,22 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     return this._itemListDataSource.getIds();
   }
 
+  @action
   updateCurrentItemIndex = (index: number, itemId: number) => {
+    this.currentIndex = index;
+    this.currentItemId = itemId;
+  }
+
+  getCurrentItemId = () => {
+    return this.currentItemId;
+  }
+
+  getCurrentIndex = () => {
+    return this.currentIndex;
+  }
+
+  @action
+  _updateCurrentItemIndex = (index: number, itemId: number) => {
     this.currentIndex = index;
     this.currentItemId = itemId;
   }
@@ -107,11 +121,22 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     );
     this.total = info.totalCount;
     if (this.currentItemId === itemId) {
-      this._currentIndex = info.index;
+      this.currentIndex = info.index;
       if (info.index < 0) {
         this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb();
       }
     }
+  }
+
+  private _onExceptions(toastMessage: string) {
+    portalManager.dismissAll();
+    Notification.flashToast({
+      message: toastMessage,
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
   }
 
   private _onItemDataChange = (
@@ -119,7 +144,18 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   ) => {
     const { type } = payload;
     const { groupId } = this.props;
+    if (type === EVENT_TYPES.DELETE) {
+      (payload as NotificationEntityDeletePayload).body.ids.forEach(
+        (id: number) => {
+          if (id === this.currentItemId) {
+            this._onExceptions('viewer.ImageDeleted');
+          }
+        },
+      );
+      return;
+    }
     let needRefreshIndex = false;
+
     if (type === EVENT_TYPES.UPDATE) {
       const detailPayload = payload as NotificationEntityUpdatePayload<
         FileItem
@@ -139,6 +175,30 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     }
     if (needRefreshIndex) {
       this._fetchIndexInfo();
+    }
+  }
+
+  private _onGroupDataChange = (payload: NotificationEntityPayload<Group>) => {
+    const { type } = payload;
+    const { groupId } = this.props;
+    if (type === EVENT_TYPES.DELETE) {
+      (payload as NotificationEntityDeletePayload).body.ids.forEach(
+        (id: number) => {
+          if (id === groupId) {
+            this._onExceptions('viewer.TeamDeleted');
+          }
+        },
+      );
+    }
+
+    if (type === EVENT_TYPES.UPDATE) {
+      (payload as NotificationEntityUpdatePayload<Group>).body.ids.forEach(
+        (id: number) => {
+          if (id === groupId) {
+            this._onExceptions('viewer.TeamArchived');
+          }
+        },
+      );
     }
   }
 }

@@ -3,21 +3,17 @@
  * @Date: 2019-01-11 08:37:56
  */
 import { Scene } from "./scene";
-import { TaskDto, SceneDto } from "../models";
+import { Config } from "../config";
+import { SceneDto } from "../models";
 import { SceneConfigFactory } from "./config/sceneConfigFactory";
 import { LoginGatherer, SwitchConversationGatherer } from "../gatherers";
-import { MetriceService, FileService } from "../services";
+import { MetricService, FileService } from "../services";
 
 class SwitchConversationScene extends Scene {
-  private convrsationIds: Array<string>;
-
-  constructor(url: string, taskDto: TaskDto, convrsationIds: Array<string>) {
-    super(url, taskDto);
-    this.convrsationIds = convrsationIds;
-  }
+  private convrsationIds: Array<string> = Config.switchConversationIds;
 
   async preHandle() {
-    this.config = SceneConfigFactory.getSimplifyConfig();
+    this.config = SceneConfigFactory.getSimplifyConfig({ fpsMode: this.fpsMode });
 
     this.config.passes[0].gatherers.unshift({
       instance: new LoginGatherer()
@@ -29,7 +25,7 @@ class SwitchConversationScene extends Scene {
 
   async saveMetircsIntoDb(): Promise<SceneDto> {
     let sceneDto = await super.saveMetircsIntoDb();
-    await MetriceService.createLoadingTime(
+    await MetricService.createLoadingTime(
       sceneDto,
       this,
       SwitchConversationGatherer.name
@@ -38,10 +34,14 @@ class SwitchConversationScene extends Scene {
   }
 
   async saveMetircsIntoDisk() {
-    if (this.artifacts) {
+    if (this.artifacts && !this.fpsMode) {
       await FileService.saveTracesIntoDisk(this.artifacts, this.name());
       await FileService.saveMemoryIntoDisk(this.artifacts, this.name());
     }
+  }
+
+  supportFps(): boolean {
+    return true;
   }
 }
 

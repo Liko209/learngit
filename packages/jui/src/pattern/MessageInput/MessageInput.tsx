@@ -13,6 +13,7 @@ import {
 } from '../../foundation/utils/styles';
 // import { markdownFromDelta } from './markdown';
 import { handleAtMention } from './Mention/handleAtMention';
+import './Modules';
 
 import 'react-quill/dist/quill.snow.css';
 

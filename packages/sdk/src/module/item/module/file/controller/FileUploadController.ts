@@ -28,6 +28,7 @@ import {
   EBETA_FLAG,
 } from '../../../../../service/account/clientConfig';
 import { GroupConfigService } from '../../../../groupConfig';
+import { ItemNotification } from '../../../utils/ItemNotification';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -283,8 +284,23 @@ class FileUploadController {
 
     this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
-    this._entitySourceController.delete(itemId);
-    notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
+    const item = await this._entitySourceController.get(itemId);
+
+    if (item) {
+      this._entitySourceController.delete(itemId);
+
+      const notifications = ItemNotification.getItemsNotifications([item]);
+      notifications.forEach(
+        (notification: { eventKey: string; entities: Item[] }) => {
+          notificationCenter.emitEntityDelete(
+            notification.eventKey,
+            notification.entities.map((item: Item) => {
+              return item.id;
+            }),
+          );
+        },
+      );
+    }
   }
 
   getUploadItems(groupId: number): ItemFile[] {
@@ -641,9 +657,18 @@ class FileUploadController {
     await this._entitySourceController.delete(preInsertId);
     await this._entitySourceController.update(itemFile);
 
-    const replaceItemFiles = new Map<number, ItemFile>();
-    replaceItemFiles.set(preInsertId, itemFile);
-    notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
+    const notifications = ItemNotification.getItemsNotifications([itemFile]);
+    notifications.forEach(
+      (notification: { eventKey: string; entities: Item[] }) => {
+        const replaceItemFiles = new Map<number, ItemFile>();
+        replaceItemFiles.set(preInsertId, notification.entities[0]);
+        notificationCenter.emitEntityReplace(
+          notification.eventKey,
+          replaceItemFiles,
+        );
+      },
+    );
+
     this._emitItemFileStatus(PROGRESS_STATUS.SUCCESS, preInsertId, itemFile.id);
   }
 
@@ -844,7 +869,12 @@ class FileUploadController {
     const uploadingFiles = Array.from(this._progressCaches.values());
     for (let i = 0; i < uploadingFiles.length; i++) {
       const fileStatus = uploadingFiles[i];
-      if (fileStatus && this._isFileInUploading(fileStatus)) {
+      if (
+        fileStatus &&
+        this._isFileInUploading(fileStatus) &&
+        fileStatus.itemFile &&
+        !this._hasValidStoredFile(fileStatus.itemFile)
+      ) {
         hasUploading = true;
         break;
       }

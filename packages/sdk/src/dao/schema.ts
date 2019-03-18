@@ -72,11 +72,7 @@ const schema: ISchema = {
       conferenceItem: gen('id', ['*group_ids']),
     },
     13: {
-      fileItem: gen('id', ['*group_ids']),
-      taskItem: gen('id', ['*group_ids']),
-      noteItem: gen('id', ['*group_ids']),
-      eventItem: gen('id', ['*group_ids']),
-      linkItem: gen('id', ['*group_ids']),
+      postDiscontinuous: gen(),
     },
   },
 };

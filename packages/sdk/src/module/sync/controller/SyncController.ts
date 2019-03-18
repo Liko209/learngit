@@ -27,6 +27,7 @@ import { GroupService } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
+import { SyncUserConfig } from '../config/SyncUserConfig';
 
 class SyncController {
   private _syncListener: SyncListener;
@@ -255,8 +256,15 @@ class SyncController {
         static_http_server: staticHttpServer = '',
       } = result;
 
+      await this._dispatchIncomingData(result);
+      if (timestamp) {
+        NewGlobalConfig.setLastIndexTimestamp(timestamp);
+        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
+      }
+
       if (scoreboard && shouldSaveScoreboard) {
-        NewGlobalConfig.setSocketServerHost(scoreboard);
+        const socketUserConfig = new SyncUserConfig();
+        socketUserConfig.setSocketServerHost(scoreboard);
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
       }
 
@@ -266,14 +274,6 @@ class SyncController {
           CONFIG.STATIC_HTTP_SERVER,
           staticHttpServer,
         );
-      }
-
-      // logger.time('handle index data');
-      await this._dispatchIncomingData(result);
-      // logger.timeEnd('handle index data');
-      if (timestamp) {
-        NewGlobalConfig.setLastIndexTimestamp(timestamp);
-        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
       }
 
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);

@@ -38,6 +38,8 @@ const getModifiedImageSize = ({
   let result: Result = {
     width: origWidth,
     height: origHeight,
+    imageWidth: origWidth,
+    imageHeight: origHeight,
     top: 0,
     left: 0,
     justifyWidth: false,

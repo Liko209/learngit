@@ -1,6 +1,6 @@
 import { RTCEngine } from '../RTCEngine';
 
-describe('Engine', async () => {
+describe('Engine', () => {
   describe('getInstance', () => {
     it('Should create instance', async () => {
       const engine = RTCEngine.getInstance();

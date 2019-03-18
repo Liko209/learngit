@@ -9,3 +9,4 @@ import { ItemService } from './service';
 import { ITEM_SORT_KEYS } from './constants';
 import { ItemQueryOptions } from './types';
 export { ItemService, ITEM_SORT_KEYS, ItemQueryOptions, ItemUtils };
+export { ItemNotification } from './utils/ItemNotification';

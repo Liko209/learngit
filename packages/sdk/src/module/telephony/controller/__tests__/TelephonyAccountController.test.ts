@@ -10,6 +10,7 @@ import { RTC_ACCOUNT_STATE, RTCAccount } from 'voip/src';
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: RTC_ACCOUNT_STATE) {}
+    onMadeOutgoingCall(callId: string) {}
   }
 
   function clearMocks() {
@@ -64,9 +65,13 @@ describe('TelephonyAccountController', () => {
   });
 
   describe('onMadeOutgoingCall', () => {
-    it('should call set rtcCall when callback is called', () => {
-      accountController.onMadeOutgoingCall(null);
-      expect(callController.setRtcCall).toBeCalledWith(null);
+    it('should pass call created event to delegate', () => {
+      spyOn(mockAcc, 'onMadeOutgoingCall');
+      accountController.onMadeOutgoingCall({
+        getCallInfo: jest.fn().mockReturnValue({ uuid: '123' }),
+      });
+      expect(callController.setRtcCall).toBeCalled();
+      expect(mockAcc.onMadeOutgoingCall).toBeCalledWith('123');
     });
   });
 

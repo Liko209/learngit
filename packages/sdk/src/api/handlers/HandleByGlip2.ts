@@ -7,11 +7,13 @@ import {
   ITokenHandler,
   AbstractHandleType,
   NETWORK_VIA,
+  NETWORK_HANDLE_TYPE,
 } from 'foundation';
 
 import Api from '../api';
 
 const HandleByGlip2 = new class extends AbstractHandleType {
+  name = NETWORK_HANDLE_TYPE.GLIP2;
   defaultVia = NETWORK_VIA.HTTP;
   tokenRefreshable = true;
   basic() {
