@@ -384,11 +384,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           : false;
       const includesMe =
         currentUserId && _.includes(model.members, currentUserId);
+      const groupService = GroupService.getInstance<GroupService>();
       return (
         this._oldFavGroupIds.indexOf(model.id) !== -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         includesMe &&
-        !model.is_archived
+        groupService.isValid(model)
       );
     };
     const transformFun = (model: Group) => {
@@ -419,11 +420,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const createdByMeOrHasPostTime: boolean =
         model.most_recent_post_created_at !== undefined ||
         model.creator_id === currentUserId;
+
+      const groupService = GroupService.getInstance<GroupService>();
       return (
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         !model.is_team &&
-        createdByMeOrHasPostTime
+        createdByMeOrHasPostTime &&
+        groupService.isValid(model)
       );
     };
     return this._addSection(
@@ -450,12 +454,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const isTeamInTeamSection = model.is_team as boolean;
       const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       const includesMe = userId && _.includes(model.members, userId);
+      const groupService = GroupService.getInstance<GroupService>();
       return (
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         isTeamInTeamSection &&
         includesMe &&
-        !model.is_archived
+        groupService.isValid(model)
       );
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
