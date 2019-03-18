@@ -18,6 +18,7 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MessageExtension } from '@/modules/message/types';
 import { MessageStore } from '@/modules/message/store';
+import { Menu } from './Menu';
 
 type HeaderProps = {
   title: string;
@@ -45,6 +46,11 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
     this._onUnhover = this._onUnhover.bind(this);
   }
 
+  private _renderMenu = () => {
+    const { groupId } = this.props;
+    return <Menu id={groupId} key={groupId} />;
+  }
+
   @computed
   private get _rightButtonsComponents() {
     const { extensions } = this._messageStore;
@@ -62,6 +68,8 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
     const actionButtons = this._rightButtonsComponents.map(
       (Comp: ComponentType<{}>, i: number) => <Comp key={`ACTION_${i}`} />,
     );
+
+    actionButtons.push(this._renderMenu());
 
     return <JuiButtonBar overlapSize={1}>{actionButtons}</JuiButtonBar>;
   }
