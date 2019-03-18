@@ -65,6 +65,10 @@ class SyncController {
     }
   }
 
+  handleStoppingSocketEvent() {
+    // this is for update newer than tag
+  }
+
   private async _firstLogin() {
     progressBar.start();
     try {
@@ -104,7 +108,7 @@ class SyncController {
     const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
     const remainingResult = await this.fetchRemainingData(time);
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
-    await this._handleIncomingData(remainingResult);
+    await this._handleIncomingData(remainingResult, false);
     onRemainingHandled && (await onRemainingHandled());
     NewGlobalConfig.setFetchedRemaining(true);
     mainLogger.log('fetch remaining data and handle success');
