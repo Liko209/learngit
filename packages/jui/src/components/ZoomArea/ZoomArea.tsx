@@ -3,7 +3,7 @@
  * @Date: 2019-02-28 15:16:18
  * Copyright © RingCentral. All rights reserved.
  */
-import _, { throttle } from 'lodash';
+import _ from 'lodash';
 import React, { RefObject } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 
@@ -83,9 +83,6 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
         height: 0,
       },
     };
-    this.throttleZoom = throttle(this.zoomStep.bind(this), 50, {
-      leading: true,
-    });
   }
 
   getBoundingClientRect(): ElementRect {
@@ -153,23 +150,21 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     });
   }
 
-  throttleZoom(scaleStep: number, zoomCenterPosition?: Position) {
-    this.zoomStep(scaleStep, zoomCenterPosition);
-  }
-
   onWheel = (ev: React.WheelEvent) => {
     const { step, wheel } = ensureOptions(this.props.zoomOptions);
     if (!wheel) return;
     ev.preventDefault();
+    ev.stopPropagation();
     const point: Position = {
       left: ev.pageX,
       top: ev.pageY,
     };
-    if (ev.deltaY > 0) {
-      this.throttleZoom(-step, point);
-    } else if (ev.deltaY < -0) {
-      this.throttleZoom(+step, point);
-    }
+    const sign = ev.deltaY > 0 ? -1 : 1;
+    const { scale } = this.props.transform;
+    const factor = Math.min(Math.abs(ev.deltaY), 10) / 10;
+    const { maxScale, minScale } = ensureOptions(this.props.zoomOptions);
+    const toScale = scale + sign * step * scale * factor;
+    this.zoomTo(Math.max(Math.min(toScale, maxScale), minScale), point);
   }
 
   render() {

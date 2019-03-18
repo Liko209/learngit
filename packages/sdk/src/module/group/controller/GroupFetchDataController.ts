@@ -145,7 +145,9 @@ export class GroupFetchDataController {
     if (result) {
       return result;
     }
-    return this.requestRemoteGroupByMemberList(members);
+    const group = await this.requestRemoteGroupByMemberList(members);
+    await this.entitySourceController.put(group);
+    return group;
   }
 
   async requestRemoteGroupByMemberList(members: number[]): Promise<Group> {
