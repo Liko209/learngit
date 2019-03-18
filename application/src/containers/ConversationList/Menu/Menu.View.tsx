@@ -38,6 +38,18 @@ class MenuViewComponent extends Component<Props> {
     );
   }
 
+  _handleResize = (event: UIEvent) => {
+    this.props.onClose(event);
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this._handleResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._handleResize);
+  }
+
   private _getKeyReadOrUnread = () => {
     const { isUnread } = this.props;
     return isUnread ? 'markAsRead' : 'markAsUnread';
@@ -164,6 +176,10 @@ class MenuViewComponent extends Component<Props> {
     }
   }
 
+  private _onClose = (event: MouseEvent<HTMLElement>) => {
+    this.props.onClose(event);
+  }
+
   render() {
     const {
       personId,
@@ -178,7 +194,7 @@ class MenuViewComponent extends Component<Props> {
         id="render-props-menu"
         anchorEl={anchorEl}
         open={!!anchorEl}
-        onClose={onClose}
+        onClose={this._onClose}
       >
         {this._renderReadOrUnreadMenuItem()}
         <JuiMenuItem
