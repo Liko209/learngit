@@ -378,6 +378,7 @@ const JuiVirtualizedList: RefForwardingComponent<
         // Prevent chrome's default behavior
         overflowAnchor: 'none',
       }}
+      data-test-automation-id="virtualized-list"
     >
       {wrappedBefore}
       <div style={{ height: heightBeforeStartRow }} />
