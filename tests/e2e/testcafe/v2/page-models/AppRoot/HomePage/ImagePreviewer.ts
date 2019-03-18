@@ -7,31 +7,35 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   }
 
   get avatar() {
-    return // todo: automationId
+    return this.getSelectorByAutomationId('viewerTitleAvatar');
+  }
+
+  get sender() {
+    return this.getSelectorByAutomationId('viewerTitlePerson');
   }
 
   get senderName() {
-    return this.self.find('h3'); // todo: automationId
+    return this.sender.find('h3');
   }
 
   get sendTime() {
-    return this.self.find('h4'); // todo: automationId
+    return this.sender.find('h4');
   }
 
   get title() {
-    return this.self.find('h2'); // todo: automationId 
+    return this.getSelectorByAutomationId('viewerTitleTitle');
   }
 
   get fileName() {
-    return this.title.find('span').nth(0); // todo: automationId 
+    return this.title.find('span').nth(0);
   }
 
-  get position() {
-    return this.title.find('span').nth(1); // todo: automationId 
+  get positionIndex() {
+    return this.title.find('span').nth(1);
   }
 
   get PreviewerDiv() {
-    return // todo: automationId 
+    return this.getSelectorByAutomationId('ImageView')
   }
 
   get downloadIcon() {
