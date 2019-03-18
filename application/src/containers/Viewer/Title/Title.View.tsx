@@ -35,7 +35,7 @@ import ReactResizeDetector from 'react-resize-detector';
 
 @observer
 class ViewerTitleViewComponent extends Component<
-  WithNamespaces & ViewerTitleViewProps
+WithNamespaces & ViewerTitleViewProps
 > {
   static contextType = DialogContext;
 
@@ -75,12 +75,12 @@ class ViewerTitleViewComponent extends Component<
                   <JuiDialogHeaderMetaLeft>
                     <Avatar
                       uid={id}
-                      data-test-automation-id={'viewerTitleAvatar'}
+                      data-test-automation-id={'previewerSenderAvatar'}
                     />
                   </JuiDialogHeaderMetaLeft>
                   <JuiDialogHeaderMetaRight
                     title={userDisplayName}
-                    data-test-automation-id={'viewerTitlePerson'}
+                    data-test-automation-id={'previewerSenderInfo'}
                     subtitle={dateFormatter.dateAndTimeWithoutWeekday(
                       moment(modifiedAt),
                     )}
@@ -88,7 +88,7 @@ class ViewerTitleViewComponent extends Component<
                 </JuiDialogHeaderMeta>
                 <JuiDialogHeaderTitle
                   variant="responsive"
-                  data-test-automation-id={'viewerTitleTitle'}
+                  data-test-automation-id={'previewerTitle'}
                 >
                   <span>{name}</span>
                   <span> {`(${currentIndex + 1}/${total})`}</span>

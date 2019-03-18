@@ -7,7 +7,7 @@
 import { BaseWebComponent } from '../../../BaseWebComponent';
 import * as _ from 'lodash';
 import * as assert from 'assert';
-import { ClientFunction, t } from 'testcafe';
+import { ClientFunction } from 'testcafe';
 import { H } from '../../../../helpers';
 
 import { getLogger } from 'log4js';
