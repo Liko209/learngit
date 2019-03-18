@@ -87,7 +87,9 @@ class ViewerTitleViewComponent extends Component<
                   <span>{name}</span>
                   <JuiDialogHeaderSubtitle>
                     {' '}
-                    {`(${currentIndex + 1}/${total})`}
+                    {total > -1 && currentIndex > -1
+                      ? `(${currentIndex + 1}/${total})`
+                      : ''}
                   </JuiDialogHeaderSubtitle>
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>

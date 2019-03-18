@@ -3,7 +3,7 @@
  * @Date: 2019-02-26 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable, action } from 'mobx';
+import { computed, observable, action, transaction } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
@@ -31,14 +31,14 @@ const INIT_PAGE_SIZE = 5;
 
 class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   @observable
-  currentIndex: number = 0;
+  currentIndex: number = -1;
   @observable
   currentItemId: number;
   private _itemListDataSource: ItemListDataSource;
   private _onCurrentItemDeletedCb: () => void;
 
   @observable
-  total: number = 0;
+  total: number = -1;
 
   constructor(props: ViewerViewProps) {
     super(props);
@@ -90,8 +90,10 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
 
   @action
   _updateCurrentItemIndex = (index: number, itemId: number) => {
-    this.currentIndex = index;
-    this.currentItemId = itemId;
+    transaction(() => {
+      this.currentIndex = index;
+      this.currentItemId = itemId;
+    });
   }
 
   fetchData = async (direction: QUERY_DIRECTION, pageSize: number) => {
@@ -119,13 +121,15 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
         ),
       },
     );
-    this.total = info.totalCount;
-    if (this.currentItemId === itemId) {
-      this.currentIndex = info.index;
-      if (info.index < 0) {
-        this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb();
+    transaction(() => {
+      this.total = info.totalCount;
+      if (this.currentItemId === itemId) {
+        this.currentIndex = info.index;
+        if (info.index < 0) {
+          this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb();
+        }
       }
-    }
+    });
   }
 
   private _onExceptions(toastMessage: string) {
