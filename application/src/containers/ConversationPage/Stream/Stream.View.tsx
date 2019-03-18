@@ -6,14 +6,14 @@
 import _ from 'lodash';
 import React, { Component } from 'react';
 import storeManager from '@/store/base/StoreManager';
-import { action, observable, runInAction } from 'mobx';
+import { observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
-import ReactResizeDetector from 'react-resize-detector';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { JuiLozengeButton } from 'jui/components/Buttons';
+import { JuiSizeMeasurer } from 'jui/components/SizeMeasurer';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
@@ -318,9 +318,9 @@ class StreamViewComponent extends Component<Props> {
     );
 
     return (
-      <ReactResizeDetector handleHeight={true}>
-        {({ height }: { height: number }) => (
-          <JuiStream>
+      <JuiSizeMeasurer>
+        {({ ref, height }) => (
+          <JuiStream ref={ref}>
             {this._renderJumpToFirstUnreadButton()}
             <JuiInfiniteList
               ref={this._listRef}
@@ -340,11 +340,10 @@ class StreamViewComponent extends Component<Props> {
             </JuiInfiniteList>
           </JuiStream>
         )}
-      </ReactResizeDetector>
+      </JuiSizeMeasurer>
     );
   }
 
-  @action
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead } = this.props;
     await loadInitialPosts();

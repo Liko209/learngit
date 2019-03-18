@@ -13,18 +13,20 @@ import './index.css';
 
 const ThemeDecorator = storyFn => {
   return (
-    <ThemeProvider themeName='light'>
+    <ThemeProvider themeName="light">
       <div style={{ paddingTop: '25px' }}>{storyFn()}</div>
     </ThemeProvider>
   );
 };
 
-function requireAll(requireContext) {
-  return requireContext.keys().map(requireContext);
-}
+const req = require.context(
+  '../src/components/VirtualizedList',
+  true,
+  /\.story\.tsx?$/,
+);
 
 function loadStories() {
-  requireAll(requireAll(require.context('../src', true, /\.story\.tsx?$/)));
+  req.keys().forEach(req);
 }
 
 addDecorator(withKnobs);
