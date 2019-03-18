@@ -19,6 +19,7 @@ class SyncService extends EntityBaseService {
         [SERVICE.SOCKET_STATE_CHANGE]: this.handleSocketConnectionStateChanged.bind(
           this,
         ),
+        [SERVICE.STOPPING_SOCKET]: this._handleStoppingSocketEvent.bind(this),
       }),
     );
   }
@@ -40,6 +41,10 @@ class SyncService extends EntityBaseService {
       this._syncController = new SyncController();
     }
     return this._syncController;
+  }
+
+  private _handleStoppingSocketEvent() {
+    this.getSyncController().handleStoppingSocketEvent();
   }
 }
 

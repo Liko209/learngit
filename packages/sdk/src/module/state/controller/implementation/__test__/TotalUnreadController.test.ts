@@ -257,6 +257,43 @@ describe('TotalUnreadController', () => {
       ).toBeCalledTimes(0);
       expect(totalUnreadController['_doNotification']).toBeCalledTimes(1);
     });
+
+    it('should continue handle next task and when crash', async () => {
+      const task: DataHandleTask = {
+        type: TASK_DATA_TYPE.GROUP_STATE,
+        data: 'data' as any,
+      };
+      const task2: DataHandleTask = {
+        type: TASK_DATA_TYPE.GROUP_ENTITY,
+        data: 'data2' as any,
+      };
+      totalUnreadController['_taskArray'] = [task, task2];
+      totalUnreadController['_unreadInitialized'] = true;
+      totalUnreadController['_initializeTotalUnread'] = jest.fn();
+      totalUnreadController['_updateTotalUnreadByStateChanges'] = jest
+        .fn()
+        .mockImplementation(() => {
+          throw Error('error');
+        });
+      totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
+      totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
+      totalUnreadController['_doNotification'] = jest.fn();
+
+      await totalUnreadController['_startDataHandleTask'](task);
+      expect(totalUnreadController['_initializeTotalUnread']).toBeCalledTimes(
+        0,
+      );
+      expect(
+        totalUnreadController['_updateTotalUnreadByStateChanges'],
+      ).toBeCalledWith(task.data);
+      expect(
+        totalUnreadController['_updateTotalUnreadByGroupChanges'],
+      ).toBeCalledWith(task2.data);
+      expect(
+        totalUnreadController['_updateTotalUnreadByProfileChanges'],
+      ).toBeCalledTimes(0);
+      expect(totalUnreadController['_doNotification']).toBeCalledTimes(1);
+    });
   });
 
   describe('_updateTotalUnreadByStateChanges()', () => {

@@ -137,6 +137,7 @@ describe('filesItemVM', () => {
       isNew: true,
       deactivated: false,
       versionUrl: 'a-version-url',
+      versions: [],
     } as FileItemModel;
 
     beforeEach(() => filesItemVM.urlMap.clear());
@@ -177,6 +178,7 @@ describe('filesItemVM', () => {
         type: 'gif',
         versionUrl: 'gif-url',
         id: 456,
+        versions: [],
       } as FileItemModel;
       filesItemVM.files[0] = [
         {

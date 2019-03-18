@@ -11,13 +11,21 @@ import { RcInfoApi, TelephonyApi } from '../../../../api/ringcentral';
 import { PhoneParserUtility } from '../../../../utils/phoneParser';
 import AccountService from '../../../../service/account';
 import { jobScheduler } from '../../../../framework/utils/jobSchedule';
+import { ERcServiceFeaturePermission } from '../../types';
+import { RolePermissionController } from '../RolePermissionController';
+import { PermissionService } from '../../../permission';
 
 jest.mock('../../config');
+jest.mock('../../../permission');
 
 describe('RcInfoController', () => {
   let rcInfoController: RcInfoController;
-  beforeEach(() => {
+  function clearMocks() {
     jest.clearAllMocks();
+  }
+
+  beforeEach(() => {
+    clearMocks();
     rcInfoController = new RcInfoController();
   });
 
@@ -126,6 +134,186 @@ describe('RcInfoController', () => {
       expect(mockCallback).toBeCalledWith(true);
       expect(PhoneParserUtility.getPhoneDataFileVersion).toBeCalledTimes(1);
       expect(PhoneParserUtility.initPhoneParser).toBeCalledTimes(1);
+    });
+  });
+
+  describe('isRcFeaturePermissionEnabled', () => {
+    beforeEach(() => {
+      clearMocks();
+      PermissionService.getInstance = jest.fn().mockReturnValue({
+        hasPermission: jest.fn().mockReturnValue(true),
+      });
+    });
+    it('should return true when users have calling permission', () => {
+      const extensionInfo = {
+        serviceFeatures: [
+          { featureName: 'SMS', enabled: true },
+          { featureName: 'VoipCalling', enabled: true },
+        ],
+      };
+      const rcInfoUserConfig = {
+        getExtensionInfo: jest.fn().mockReturnValue(extensionInfo),
+      };
+      Object.assign(rcInfoController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+      });
+
+      const res = rcInfoController.isRcFeaturePermissionEnabled(
+        ERcServiceFeaturePermission.VOIP_CALLING,
+      );
+      expect(res).toBe(true);
+    });
+
+    it('should return false when users dont have calling permission', () => {
+      const extensionInfo = {
+        serviceFeatures: [
+          { featureName: 'SMS', enabled: true },
+          { featureName: 'VoipCalling', enabled: false },
+        ],
+      };
+      const rcInfoUserConfig = {
+        getExtensionInfo: jest.fn().mockReturnValue(extensionInfo),
+      };
+      Object.assign(rcInfoController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+      });
+
+      const res = rcInfoController.isRcFeaturePermissionEnabled(
+        ERcServiceFeaturePermission.VOIP_CALLING,
+      );
+      expect(res).toBe(false);
+    });
+
+    it('should return true when users have permission', () => {
+      const extensionInfo = {
+        serviceFeatures: [
+          { featureName: 'SMS', enabled: true },
+          { featureName: 'VoipCalling', enabled: false },
+        ],
+      };
+      const rolePermissionInfo = {
+        permissions: [
+          { permission: { id: 'test' } },
+          { permission: { id: 'ReadCompanyCallLog' } },
+        ],
+      };
+      const rcInfoUserConfig = {
+        getExtensionInfo: jest.fn().mockReturnValue(extensionInfo),
+        getRolePermission: jest.fn().mockReturnValue(rolePermissionInfo),
+      };
+
+      const rolePermissionController = new RolePermissionController();
+      Object.assign(rolePermissionController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+      });
+
+      Object.assign(rcInfoController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+        _rolePermissionController: rolePermissionController,
+      });
+      const res = rcInfoController.isRcFeaturePermissionEnabled(
+        ERcServiceFeaturePermission.READ_COMPANY_CALLLOG,
+      );
+      expect(res).toBe(true);
+    });
+
+    it('should return false when users dont have permission', () => {
+      const extensionInfo = {
+        serviceFeatures: [
+          { featureName: 'SMS', enabled: true },
+          { featureName: 'VoipCalling', enabled: false },
+        ],
+      };
+      const rolePermissionInfo = {
+        permissions: [
+          { permission: { id: 'test' } },
+          { permission: { id: 'DND' } },
+        ],
+      };
+      const rcInfoUserConfig = {
+        getExtensionInfo: jest.fn().mockReturnValue(extensionInfo),
+        getRolePermission: jest.fn().mockReturnValue(rolePermissionInfo),
+      };
+
+      const rolePermissionController = new RolePermissionController();
+      Object.assign(rolePermissionController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+      });
+
+      Object.assign(rcInfoController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+        _rolePermissionController: rolePermissionController,
+      });
+      const res = rcInfoController.isRcFeaturePermissionEnabled(
+        ERcServiceFeaturePermission.READ_COMPANY_CALLLOG,
+      );
+      expect(res).toBe(false);
+    });
+
+    it('should return true when users have pager send permission', () => {
+      const extensionInfo = {
+        serviceFeatures: [
+          { featureName: 'SMS', enabled: true },
+          { featureName: 'Pager', enabled: true },
+        ],
+      };
+      const rolePermissionInfo = {
+        permissions: [
+          { permission: { id: 'test' } },
+          { permission: { id: 'InternalSMS' } },
+        ],
+      };
+      const rcInfoUserConfig = {
+        getExtensionInfo: jest.fn().mockReturnValue(extensionInfo),
+        getRolePermission: jest.fn().mockReturnValue(rolePermissionInfo),
+      };
+
+      const rolePermissionController = new RolePermissionController();
+      Object.assign(rolePermissionController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+      });
+
+      Object.assign(rcInfoController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+        _rolePermissionController: rolePermissionController,
+      });
+      const res = rcInfoController.isRcFeaturePermissionEnabled(
+        ERcServiceFeaturePermission.PAGER_SEND,
+      );
+      expect(res).toBe(true);
+    });
+
+    it('should return false when users dont have fax permission', () => {
+      const extensionInfo = {
+        serviceFeatures: [
+          { featureName: 'SMS', enabled: true },
+          { featureName: 'Fax', enabled: false },
+        ],
+      };
+      const rolePermissionInfo = {
+        permissions: [
+          { permission: { id: 'test' } },
+          { permission: { id: 'InternalSMS' } },
+        ],
+      };
+      const rcInfoUserConfig = {
+        getExtensionInfo: jest.fn().mockReturnValue(extensionInfo),
+        getRolePermission: jest.fn().mockReturnValue(rolePermissionInfo),
+      };
+
+      const rolePermissionController = new RolePermissionController();
+      Object.assign(rolePermissionController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+      });
+
+      Object.assign(rcInfoController, {
+        _rcInfoUserConfig: rcInfoUserConfig,
+        _rolePermissionController: rolePermissionController,
+      });
+      const res = rcInfoController.isRcFeaturePermissionEnabled(
+        ERcServiceFeaturePermission.FAX,
+      );
+      expect(res).toBe(false);
     });
   });
 });

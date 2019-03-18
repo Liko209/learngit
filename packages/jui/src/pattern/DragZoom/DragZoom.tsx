@@ -316,6 +316,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
           )}
         </JuiZoomComponent>
         <ZoomButtonGroup
+          className="zoomGroup"
           centerText={formatScaleText(transform.scale)}
           ZoomOut={
             <JuiIconButton

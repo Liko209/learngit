@@ -55,15 +55,19 @@ class StateDataHandleController {
   }
 
   private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
-    let transformedState: TransformedState;
-    if (task.type === TASK_DATA_TYPE.STATE) {
-      transformedState = this._transformStateData(task.data);
-    } else {
-      transformedState = this._transformGroupData(task.data);
+    try {
+      let transformedState: TransformedState;
+      if (task.type === TASK_DATA_TYPE.STATE) {
+        transformedState = this._transformStateData(task.data);
+      } else {
+        transformedState = this._transformGroupData(task.data);
+      }
+      const updatedState = await this._generateUpdatedState(transformedState);
+      await this._updateEntitiesAndDoNotification(updatedState);
+      this._totalUnreadController.handleGroupState(updatedState.groupStates);
+    } catch (err) {
+      mainLogger.error(`StateDataHandleController, handle task error, ${err}`);
     }
-    const updatedState = await this._generateUpdatedState(transformedState);
-    await this._updateEntitiesAndDoNotification(updatedState);
-    this._totalUnreadController.handleGroupState(updatedState.groupStates);
 
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
@@ -181,9 +185,10 @@ class StateDataHandleController {
     if (transformedState.groupStates.length > 0) {
       const groupStates = transformedState.groupStates;
       const ids = _.map(groupStates, 'id');
-      const localGroupStates = await this._stateFetchDataController.getAllGroupStatesFromLocal(
-        ids,
-      );
+      const localGroupStates =
+        (await this._stateFetchDataController.getAllGroupStatesFromLocal(
+          ids,
+        )) || [];
       updatedState.groupStates = _.compact(
         groupStates.map((groupState: GroupState) => {
           let stateChanged: boolean = false;
@@ -324,9 +329,13 @@ class StateDataHandleController {
   ): Promise<void> {
     if (transformedState.myState) {
       const myState = transformedState.myState;
-      await daoManager.getDao(StateDao).update(myState);
-      const newConfig = new NewUserConfig();
-      await newConfig.setMyStateId(myState.id);
+      try {
+        await daoManager.getDao(StateDao).update(myState);
+        const config = new NewUserConfig();
+        await config.setMyStateId(myState.id);
+      } catch (err) {
+        mainLogger.error(`StateDataHandleController, my state error, ${err}`);
+      }
       notificationCenter.emitEntityUpdate(
         ENTITY.MY_STATE,
         [myState],

@@ -5,9 +5,11 @@ import {
   ITokenHandler,
   AbstractHandleType,
   NETWORK_VIA,
+  NETWORK_HANDLE_TYPE,
 } from 'foundation';
 
 const HandleByGlip = new class extends AbstractHandleType {
+  name = NETWORK_HANDLE_TYPE.GLIP;
   rcTokenProvider?: () => string;
   defaultVia = NETWORK_VIA.ALL;
   requestDecoration(tokenHandler: ITokenHandler) {

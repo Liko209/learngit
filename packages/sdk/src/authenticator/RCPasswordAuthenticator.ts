@@ -5,11 +5,11 @@
  */
 import { loginGlip, loginRCByPassword } from '../api';
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
-import { GlipAccount, RCAccount } from '../account';
 import { ACCOUNT_TYPE_ENUM } from './constants';
 import { setRcToken } from './utils';
 import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
 import { AuthGlobalConfig } from '../service/auth/config';
+import { RCAccount, GlipAccount } from '../account';
 
 interface IRCPasswordAuthenticateParams extends IAuthParams {
   username: string;

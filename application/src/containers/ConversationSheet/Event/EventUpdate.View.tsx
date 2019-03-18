@@ -68,6 +68,7 @@ class EventUpdate extends React.Component<Props> {
       <EventUpdateViewCard
         title={text}
         titleColor={color}
+        iconColor={color}
         Icon="event"
         Footer={
           (hasOldTime || oldLocation) && (
