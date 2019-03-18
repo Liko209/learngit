@@ -73,16 +73,23 @@ class ViewerTitleViewComponent extends Component<
                 />
                 <JuiDialogHeaderMeta>
                   <JuiDialogHeaderMetaLeft>
-                    <Avatar uid={id} />
+                    <Avatar
+                      uid={id}
+                      data-test-automation-id={'viewerTitleAvatar'}
+                    />
                   </JuiDialogHeaderMetaLeft>
                   <JuiDialogHeaderMetaRight
                     title={userDisplayName}
+                    data-test-automation-id={'viewerTitlePerson'}
                     subtitle={dateFormatter.dateAndTimeWithoutWeekday(
                       moment(modifiedAt),
                     )}
                   />
                 </JuiDialogHeaderMeta>
-                <JuiDialogHeaderTitle variant="responsive">
+                <JuiDialogHeaderTitle
+                  variant="responsive"
+                  data-test-automation-id={'viewerTitleTitle'}
+                >
                   <span>{name}</span>
                   <span> {`(${currentIndex + 1}/${total})`}</span>
                 </JuiDialogHeaderTitle>
