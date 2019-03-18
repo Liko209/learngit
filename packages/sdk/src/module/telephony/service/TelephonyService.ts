@@ -9,6 +9,8 @@ import { ITelephonyCallDelegate } from './ITelephonyCallDelegate';
 import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
 import { MakeCallController } from '../controller/MakeCallController';
 import { MAKE_CALL_ERROR_CODE } from '../types';
+import { SubscribeController } from '../../base/controller/SubscribeController';
+import { SERVICE } from '../../../service/eventKey';
 
 class TelephonyService extends EntityBaseService {
   private _telephonyEngineController: TelephonyEngineController;
@@ -16,7 +18,16 @@ class TelephonyService extends EntityBaseService {
 
   constructor() {
     super(false);
+    this.setSubscriptionController(
+      SubscribeController.buildSubscriptionController({
+        [SERVICE.LOGOUT]: this.handleLogOut,
+      }),
+    );
     this._init();
+  }
+
+  handleLogOut = async () => {
+    this.telephonyController.logout();
   }
 
   protected get telephonyController() {
