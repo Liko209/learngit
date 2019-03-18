@@ -143,6 +143,7 @@ export class CreateTeamModal extends BaseTeamSetting {
 
   async clickCreateButton() {
     await this.t.expect(this.createButton.hasAttribute('disabled')).notOk().click(this.createButton);
+    await this.waitForAllSpinnersToDisappear();
   }
 
   get isCreateButtonDisable(): Promise<boolean> {
@@ -209,6 +210,7 @@ export class ConvertToTeamDialog extends BaseTeamSetting {
 
   async clickConvertToTeamButton() {
     await this.t.expect(this.convertToTeamButton.hasAttribute('disabled')).notOk().click(this.convertToTeamButton);
+    await this.waitForAllSpinnersToDisappear();
   }
 
   get isConvertToTeamButtonDisable(): Promise<boolean> {

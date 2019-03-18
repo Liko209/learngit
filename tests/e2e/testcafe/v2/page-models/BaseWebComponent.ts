@@ -18,6 +18,10 @@ export abstract class BaseWebComponent {
     await this.t.expect(this.exists).ok({ timeout });
   }
 
+  async ensureDismiss(timeout: number = 5e3) {
+    await this.t.expect(this.exists).notOk({ timeout });
+  }
+
   async waitUntilExist(selector: Selector | BaseWebComponent, timeout: number = 5e3) {
     await this.t
       .expect(selector.exists)
