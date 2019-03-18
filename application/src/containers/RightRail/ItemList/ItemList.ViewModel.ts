@@ -7,9 +7,13 @@ import {
 import { ENTITY_NAME } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { SortUtils } from 'sdk/framework/utils';
-import { ITEM_SORT_KEYS, ItemService, ItemUtils } from 'sdk/module/item';
+import {
+  ITEM_SORT_KEYS,
+  ItemService,
+  ItemUtils,
+  ItemNotification,
+} from 'sdk/module/item';
 import { Item } from 'sdk/module/item/entity';
-import { ENTITY } from 'sdk/service';
 import { GlipTypeUtil } from 'sdk/utils';
 import { StoreViewModel } from '@/store/ViewModel';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
@@ -168,7 +172,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
       transformFunc,
       sortFunc,
       entityName: ENTITY_NAME.ITEM,
-      eventName: ENTITY.ITEM,
+      eventName: ItemNotification.getItemNotificationKey(typeId, groupId),
       hasMoreDown: true,
       hasMoreUp: false,
     });

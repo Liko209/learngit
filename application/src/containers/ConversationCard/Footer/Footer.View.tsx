@@ -6,29 +6,63 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
-import { FooterViewProps } from './types';
+import { WithPostLikeComponentProps } from './withPostLike/types';
 import { JuiConversationCardFooter } from 'jui/pattern/ConversationCard';
+import { JuiConversationPostLike } from 'jui/pattern/ConversationPostLike';
 import { JuiCollapse } from 'jui/components/Collapse';
-import { Like } from '@/containers/ConversationCard/Actions/Like';
+import { withPostLike } from './withPostLike';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { translate, WithNamespaces } from 'react-i18next';
 
-type Props = FooterViewProps & WithNamespaces;
 @observer
-class FooterViewComponent extends Component<Props> {
+class FooterViewComponent extends Component<
+  WithPostLikeComponentProps & WithNamespaces
+> {
+  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+
+  private get _likedUsersCount() {
+    return this.props.likedUsers.length;
+  }
+
+  private get _likedUsersNameMessage() {
+    if (!this._likedUsersCount) return '';
+
+    const { t } = this.props;
+
+    const names = this.props.likedUsers.reduce(
+      (acc, { id, userDisplayName }) =>
+        id === this._currentUserId
+          ? [t('common.You'), ...acc]
+          : [...acc, userDisplayName],
+      [],
+    );
+
+    return `${names.join(', ')} ${t('message.likedThis')}.`;
+  }
+
   render() {
-    const { id, likeCount } = this.props;
-    const hasLike = likeCount > 0;
+    const { onToggleLike, iLiked } = this.props;
+
     return (
-      <JuiCollapse mountOnEnter={true} unmountOnExit={true} in={hasLike}>
-        <JuiConversationCardFooter
-          likeCount={likeCount}
-          Like={<Like id={id} />}
-        />
+      <JuiCollapse
+        mountOnEnter={true}
+        unmountOnExit={true}
+        in={Boolean(this._likedUsersCount)}
+      >
+        <JuiConversationCardFooter>
+          <JuiConversationPostLike
+            title={this._likedUsersNameMessage}
+            onClick={onToggleLike}
+            likedUsersCount={this._likedUsersCount}
+            iLiked={iLiked}
+          />
+        </JuiConversationCardFooter>
       </JuiCollapse>
     );
   }
 }
 
-const FooterView = translate('translations')(FooterViewComponent);
+const FooterView = translate('translations')(withPostLike(FooterViewComponent));
 
 export { FooterView };

@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
+import { notificationCenter, EVENT_TYPES } from 'sdk/service';
 import FileItemModel from '@/store/models/FileItem';
+import { ItemNotification } from 'sdk/module/item';
 
 let sharedTracker: UploadFileTracker;
 
@@ -24,7 +25,10 @@ class UploadFileTracker {
   private _idMap: Map<number, number> = new Map();
 
   constructor() {
-    notificationCenter.on(ENTITY.ITEM, this._handleItemReplace);
+    notificationCenter.on(
+      ItemNotification.getItemNotificationKey(),
+      this._handleItemReplace,
+    );
   }
 
   private _handleItemReplace = (

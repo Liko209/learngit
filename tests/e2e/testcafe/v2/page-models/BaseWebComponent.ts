@@ -134,7 +134,7 @@ export abstract class BaseWebComponent {
     if (text == '99+') {
       return 100;
     }
-    return Number(text);
+    return +text;
   }
 
   // hover some selector will show

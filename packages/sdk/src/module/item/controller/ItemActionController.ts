@@ -16,8 +16,8 @@ import {
 } from '../../../utils/glip-type-dictionary';
 import notificationCenter from '../../../service/notificationCenter';
 import { ProgressService } from '../../progress';
-import { ENTITY } from '../../../service/eventKey';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { ItemNotification } from '../utils/ItemNotification';
 
 const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_FILE, 'file'],
@@ -88,8 +88,23 @@ class ItemActionController {
         doUpdateModel,
       );
     } else {
+      const item = await this._entitySourceController.get(itemId);
       this._entitySourceController.delete(itemId);
-      notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
+
+      if (item) {
+        const notifications = ItemNotification.getItemsNotifications([item]);
+        notifications.forEach(
+          (notification: { eventKey: string; entities: Item[] }) => {
+            notificationCenter.emitEntityDelete(
+              notification.eventKey,
+              notification.entities.map((item: Item) => {
+                return item.id;
+              }),
+            );
+          },
+        );
+      }
+
       const progressService: ProgressService = ProgressService.getInstance();
       progressService.deleteProgress(itemId);
     }

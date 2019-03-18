@@ -545,6 +545,7 @@ node(buildNode) {
                 "SITE_URL=${appUrl}",
                 "SITE_ENV=${e2eSiteEnv}",
                 "SELENIUM_SERVER=${e2eSeleniumServer}",
+                "SELENIUM_CHROME_CAPABILITIES=./chrome-opts.json",
                 "ENABLE_REMOTE_DASHBOARD=${e2eEnableRemoteDashboard}",
                 "ENABLE_MOCK_SERVER=${e2eEnableMockServer}",
                 "BROWSERS=${e2eBrowsers}",
@@ -564,11 +565,19 @@ node(buildNode) {
                 "QUARANTINE_PASSED_THRESHOLD=1",
                 "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${gitlabSourceBranch}][${gitlabMergeRequestLastCommit}]",
             ]) {dir("tests/e2e/testcafe") {
+                // print environment variable to help debug
                 sh 'env'
+
+                // following configuration file is use for tuning chrome, in order to use use-data-dir and disk-cache-dir
+                // you need to ensure target dirs exist in selenium-node, and use ramdisk for better performance
+                sh '''echo '{"chromeOptions":{"args":["headless","user-data-dir=/user-data","disk-cache-dir=/user-cache"]}}' > chrome-opts.json'''
+
+                sh "mkdir -p screenshots"
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
                 sshagent (credentials: [scmCredentialId]) {
                     sh 'npm install --unsafe-perm'
                 }
+
                 if (e2eEnableRemoteDashboard){
                     sh 'npx ts-node create-run-id.ts'
                     report.e2eUrl = sh(returnStdout: true, script: 'cat reportUrl || true').trim()
