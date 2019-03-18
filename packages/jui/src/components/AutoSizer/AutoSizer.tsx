@@ -11,22 +11,22 @@ type Size = {
   height: number;
 };
 
-type AutoSizerProps = {
+type JuiAutoSizerProps = {
   handleWidth?: boolean;
   handleHeight?: boolean;
   style?: React.CSSProperties;
   children: (size: Partial<Size>) => React.ReactNode;
 };
 
-const AutoSizer = ({
+const JuiAutoSizer = ({
   handleWidth,
   handleHeight,
   style,
   children,
-}: AutoSizerProps) => (
+}: JuiAutoSizerProps) => (
   <ReactResizeDetector handleWidth={handleWidth} handleHeight={handleHeight}>
     {(size: Partial<Size>) => <div style={style}>{children(size)}</div>}
   </ReactResizeDetector>
 );
 
-export { AutoSizer, AutoSizerProps, Size };
+export { JuiAutoSizer, JuiAutoSizerProps, Size };

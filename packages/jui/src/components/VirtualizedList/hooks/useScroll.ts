@@ -29,7 +29,7 @@ const useScroll = ({
   });
   const scrollPosition = scrollPositionRef.current;
 
-  const setScrollPosition = ({
+  const rememberScrollPosition = ({
     index,
     offset = 0,
     options = true,
@@ -41,8 +41,8 @@ const useScroll = ({
 
   return {
     scrollPosition,
-    setScrollPosition,
+    rememberScrollPosition,
   };
 };
 
-export { useScroll, ScrollPosition };
+export { useScroll, ScrollPosition, PartialScrollPosition };

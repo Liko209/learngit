@@ -30,7 +30,9 @@ describe('useScroll()', () => {
       const initialPosition = { index: 0, offset: 10 };
 
       const hookRef = renderHook(() => useScroll(initialPosition));
-      act(() => hookRef.current.setScrollPosition({ index: 10, offset: 20 }));
+      act(() =>
+        hookRef.current.rememberScrollPosition({ index: 10, offset: 20 }),
+      );
       expect(hookRef.current.scrollPosition).toEqual({
         index: 10,
         offset: 20,
@@ -42,7 +44,7 @@ describe('useScroll()', () => {
       const initialPosition = { index: 0, offset: 10, options: true };
 
       const hookRef = renderHook(() => useScroll(initialPosition));
-      act(() => hookRef.current.setScrollPosition({ index: 10 }));
+      act(() => hookRef.current.rememberScrollPosition({ index: 10 }));
       expect(hookRef.current.scrollPosition).toEqual({
         index: 10,
         offset: 0,
