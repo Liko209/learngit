@@ -176,7 +176,6 @@ test(formalName('Should scroll to the bottom automatically when reveived new mes
 
 
 test(formalName('Title bar should sync dynamically', ['JPT-1351', 'P2', 'Potar.He', 'FileAndImagePreviewer']), async (t) => {
-
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).glip(loginUser).init();
 
@@ -227,10 +226,12 @@ test(formalName('Title bar should sync dynamically', ['JPT-1351', 'P2', 'Potar.H
 
   const sendTime = await previewer.sendTime.textContent;
 
-  const newSenderName = uuid();
+  const newFirstName = H.uuid();
   const newFileName = uuid();
+  let newSenderName: string;
   await h(t).withLog('When I update sender name and file name via api', async () => {
-    await h(t).glip(loginUser).updatePerson({ 'display_name': newSenderName });
+    await h(t).glip(loginUser).updatePerson({ 'first_name': newFirstName });
+    newSenderName = await h(t).glip(loginUser).getPersonPartialData('display_name');
     await h(t).glip(loginUser).updateFileName(fileId, newFileName);
   });
 
@@ -239,7 +240,11 @@ test(formalName('Title bar should sync dynamically', ['JPT-1351', 'P2', 'Potar.H
     await t.expect(previewer.fileName.textContent).eql(newFileName);
   });
 
-  await h(t).withLog('and send time is not changed', async () => {
+  await h(t).withLog('And send time is not changed', async () => {
     await t.expect(previewer.sendTime.textContent).eql(sendTime);
+  });
+
+  await h(t).withLog('Reset user name', async () => {
+    await h(t).glip(loginUser).updatePerson({ first_name: 'John' }); // reset first_name
   });
 });
