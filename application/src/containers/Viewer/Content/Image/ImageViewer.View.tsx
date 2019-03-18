@@ -93,6 +93,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       thumbnailSrc,
       imageWidth,
       imageHeight,
+      hasPrevious,
+      hasNext,
     } = this.props;
     const padding = theme.spacing.unit * 8;
     return (
@@ -152,24 +154,26 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     );
                   }}
                 </JuiDragZoom>
-                <JuiImageViewerPreviousButton
-                  className="buttonWrapper"
-                  tooltipTitle={t('viewer.PreviousFile')}
-                  aria-label={t('viewer.PreviousFile')}
-                  disabled={!this._canSwitchPrevious()}
-                  onClick={this.switchPreImage}
-                >
-                  <JuiIconography color="grey.900">pervious</JuiIconography>
-                </JuiImageViewerPreviousButton>
-                <JuiImageViewerForwardButton
-                  className="buttonWrapper"
-                  tooltipTitle={t('viewer.NextFile')}
-                  aria-label={t('viewer.NextFile')}
-                  disabled={!this._canSwitchNext()}
-                  onClick={this.switchNextImage}
-                >
-                  <JuiIconography color="grey.900">forward</JuiIconography>
-                </JuiImageViewerForwardButton>
+                {hasPrevious && (
+                  <JuiImageViewerPreviousButton
+                    className="buttonWrapper"
+                    tooltipTitle={t('viewer.PreviousFile')}
+                    aria-label={t('viewer.PreviousFile')}
+                    onClick={this.switchPreImage}
+                  >
+                    <JuiIconography color="grey.900">pervious</JuiIconography>
+                  </JuiImageViewerPreviousButton>
+                )}
+                {hasNext && (
+                  <JuiImageViewerForwardButton
+                    className="buttonWrapper"
+                    tooltipTitle={t('viewer.NextFile')}
+                    aria-label={t('viewer.NextFile')}
+                    onClick={this.switchNextImage}
+                  >
+                    <JuiIconography color="grey.900">forward</JuiIconography>
+                  </JuiImageViewerForwardButton>
+                )}
               </JuiImageViewerContainer>
             </HotKeys>
             {this._imageRef.current && (
