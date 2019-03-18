@@ -18,17 +18,12 @@ const styles = {
   entered: {
     transform: 'scale(1)',
   },
-  exit: {
-    opacity: 0,
-    transform: 'scale(1)',
-  },
   exiting: {
     opacity: 0,
     transform: 'scale(1)',
   },
   exited: {
     opacity: 0,
-    transform: 'scale(1)',
   },
 };
 
@@ -59,11 +54,11 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
       mode: 'enter',
     });
     node.style.webkitTransition = theme.transitions.create(
-      'transform',
+      ['opacity', 'transform'],
       transitionProps,
     );
     node.style.transition = theme.transitions.create(
-      'transform',
+      ['opacity', 'transform'],
       transitionProps,
     );
 
@@ -117,6 +112,7 @@ class ZoomInFadeOut extends React.PureComponent<JuiZoomProps> {
           return React.cloneElement(children, {
             style: {
               transform: 'scale(0)',
+              opacity: 1,
               visibility: state === 'exited' && !inProp ? 'hidden' : undefined,
               ...styles[state],
               ...style,
