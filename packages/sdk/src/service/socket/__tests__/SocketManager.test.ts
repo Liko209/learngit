@@ -137,6 +137,14 @@ describe('Socket Manager', () => {
 
     it('initial done event', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
+      NewGlobalConfig.getLastIndexTimestamp.mockReturnValue(null);
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
+      expect(socketManager.hasActiveFSM()).toBeFalsy();
+      expect(socketManager.ongoingFSMCount()).toEqual(0);
+    });
+
+    it('initial done event', () => {
+      expect(socketManager.hasActiveFSM()).toBeFalsy();
       NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeTruthy();
