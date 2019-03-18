@@ -34,7 +34,9 @@ class ZoomElementAnimation extends React.PureComponent<
       duration,
     } = this.props;
     setTimeout(() => {
-      targetElement.style.cssText = '';
+      if (targetElement) {
+        targetElement.style.cssText = '';
+      }
       originalElement && (originalElement.style.visibility = 'visible');
       onEntered && onEntered();
     },         theme.transitions.duration[duration]);
