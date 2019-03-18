@@ -72,7 +72,7 @@ class CallViewModel extends AbstractViewModel<CallProps>
   @computed
   private get _phoneNumberFormPerson() {
     let phoneNumber: string = '';
-    if (this._person) {
+    if (this._person && this._person.phoneNumbers.length) {
       phoneNumber = this._person.phoneNumbers[0].phoneNumber;
       this._person.phoneNumbers.some((info: PhoneNumberInfo) => {
         if (info.type === PHONE_NUMBER_TYPE.EXTENSION_NUMBER) {
@@ -95,14 +95,16 @@ class CallViewModel extends AbstractViewModel<CallProps>
 
   @computed
   get showIcon() {
-    const { id, groupId } = this.props;
-    if (id) {
-      return this._currentUserId !== id;
-    }
-    if (groupId) {
-      const group = this._group;
-      if (group) {
-        return group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
+    if (this._phoneNumber) {
+      const { id, groupId } = this.props;
+      if (id) {
+        return this._currentUserId !== id;
+      }
+      if (groupId) {
+        const group = this._group;
+        if (group) {
+          return group.type === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
+        }
       }
     }
     return false;
