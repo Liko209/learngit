@@ -9,6 +9,7 @@ import { UA_EVENT, ProvisionDataOptions, WEBPHONE_LOG_LEVEL } from './types';
 import { RTCCallOptions } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCSipProvisionInfo } from '../account/types';
+import { opusModifier } from '../utils/utils';
 
 const WebPhone = require('ringcentral-web-phone');
 const LOG_TAG = 'RTCSipUserAgent';
@@ -56,6 +57,13 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
     provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ) {
+    if (options && options.modifiers) {
+      if (!options.modifiers.find(opusModifier)) {
+        options.modifiers.push(opusModifier);
+      }
+    } else if (options) {
+      options.modifiers = [opusModifier];
+    }
     options.connector = (
       level: any,
       category: any,
