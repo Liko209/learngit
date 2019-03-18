@@ -6,7 +6,7 @@
 
 import { IProcessor, SequenceProcessorHandler } from 'sdk/framework/processor';
 import { FileItem } from 'sdk/module/item/module/file/entity';
-import { ItemService } from 'sdk/module/item';
+import { ItemService, FileItemUtils } from 'sdk/module/item';
 import { getThumbnailURL } from '@/common/getThumbnailURL';
 import { Pal, IImageDownloadedListener } from 'sdk/pal';
 
@@ -145,6 +145,10 @@ class ThumbnailPreloadProcessor implements IProcessor {
         const itemService = ItemService.getInstance() as ItemService;
         const item = await itemService.getById(this._item.id);
         if (item && item.id > 0) {
+          if (!FileItemUtils.isSupportPreview(item)) {
+            return false;
+          }
+
           const thumbnail = this.toThumbnailUrl(item);
           if (!thumbnail) {
             return true;
