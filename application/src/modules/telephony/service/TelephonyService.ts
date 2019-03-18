@@ -35,6 +35,7 @@ class TelephonyService {
 
   private _onMadeOutgoingCall = (callId: string) => {
     // TODO: This should be a list in order to support multiple call
+    // Ticket: https://jira.ringcentral.com/browse/FIJI-4274
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${callId}`,
     );
@@ -92,7 +93,6 @@ class TelephonyService {
       onCallActionFailed: this._onCallActionFailed,
     });
 
-    // TODO: When it reaches the max call count, we should not show new call UI
     if (MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv) {
       ToastCallError.toastNoNetwork();
       mainLogger.error(
@@ -107,6 +107,7 @@ class TelephonyService {
     }
     this._telephonyStore.phoneNumber = toNumber;
     // TODO: There is a LeaveBlockerService, but it can't support multi-blocker. When it can support, we should use that service.
+    // Ticket: https://jira.ringcentral.com/browse/FIJI-4273
     if (!this._registeredOnbeforeunload) {
       // If makeCall return success, register this handle
       window.addEventListener(
@@ -135,6 +136,7 @@ class TelephonyService {
 
   directCall = (toNumber: string) => {
     // TODO: SDK telephony service can't support multiple call, we need to check here. When it supports, we can remove it.
+    // Ticket: https://jira.ringcentral.com/browse/FIJI-4275
     if (this._serverTelephonyService.getAllCallCount() > 0) {
       mainLogger.warn(
         `${TelephonyService.TAG}Only allow to make one call at the same time`,
