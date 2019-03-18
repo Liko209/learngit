@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { EditMessageInputViewProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
+import { extractView } from 'jui/hoc/extractView';
 import { Mention } from '@/containers/ConversationPage/MessageInput/Mention';
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
 import { observer } from 'mobx-react';
@@ -21,6 +22,9 @@ class EditMessageInputViewComponent extends Component<
   EditMessageInputViewProps & WithNamespaces,
   State
 > {
+  private _messageInputRef: React.RefObject<
+    JuiMessageInput
+  > = React.createRef();
   private _mentionRef: React.RefObject<any> = React.createRef();
 
   state = {
@@ -45,14 +49,22 @@ class EditMessageInputViewComponent extends Component<
     });
   }
 
+  focusEditor = () => {
+    if (this._messageInputRef.current) {
+      this._messageInputRef.current.focusEditor();
+    }
+  }
+
   render() {
     const { text, error, gid, t, id } = this.props;
     const { modules } = this.state;
     return (
       <JuiMessageInput
+        ref={this._messageInputRef}
         defaultValue={text}
         error={error ? t(error) : error}
         modules={modules}
+        autofocus={false}
         isEditMode={true}
       >
         <Mention id={gid} pid={id} isEditMode={true} ref={this._mentionRef} />
@@ -61,8 +73,9 @@ class EditMessageInputViewComponent extends Component<
   }
 }
 
-const EditMessageInputView = translate('translations')(
+const View = extractView<EditMessageInputViewProps & WithNamespaces>(
   EditMessageInputViewComponent,
 );
+const EditMessageInputView = translate('translations')(View);
 
-export { EditMessageInputView };
+export { EditMessageInputView, EditMessageInputViewComponent };

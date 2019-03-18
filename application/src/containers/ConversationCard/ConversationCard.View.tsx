@@ -15,7 +15,10 @@ import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 import { From } from './From';
 import { MiniCard } from '@/containers/MiniCard';
 import { Activity } from './Activity';
-import { EditMessageInput } from './EditMessageInput';
+import {
+  EditMessageInput,
+  EditMessageInputViewComponent,
+} from './EditMessageInput';
 import { Profile, PROFILE_TYPE } from '@/containers/Profile';
 import { jumpToPost } from '@/common/jumpToPost';
 
@@ -23,10 +26,19 @@ import { jumpToPost } from '@/common/jumpToPost';
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
 > {
+  private _editMessageInputRef: React.RefObject<
+    EditMessageInputViewComponent
+  > = React.createRef();
   state = {
     isHover: false,
     isFocusMoreAction: false,
   };
+
+  componentDidUpdate(prevProps: ConversationCardViewProps) {
+    if (this.props.isEditMode && !prevProps.isEditMode) {
+      this._focusEditor();
+    }
+  }
 
   handleMouseEnter = () => {
     this.setState({
@@ -51,6 +63,14 @@ export class ConversationCard extends React.Component<
   jumpToPost = () => {
     const { id, groupId } = this.props;
     jumpToPost(id, groupId);
+  }
+
+  private _focusEditor() {
+    setTimeout(() => {
+      if (this._editMessageInputRef.current) {
+        this._editMessageInputRef.current.focusEditor();
+      }
+    },         100);
   }
 
   render() {
@@ -115,7 +135,9 @@ export class ConversationCard extends React.Component<
         </JuiConversationCardHeader>
         <JuiConversationCardBody data-name="body">
           {!hideText && !isEditMode && <TextMessage id={id} />}
-          {isEditMode && <EditMessageInput id={id} />}
+          {isEditMode && (
+            <EditMessageInput viewRef={this._editMessageInputRef} id={id} />
+          )}
           {itemTypeIds && (
             <IdsToConversationSheet itemTypeIds={itemTypeIds} postId={id} />
           )}
