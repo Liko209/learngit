@@ -757,4 +757,39 @@ export class GlipSdk {
     )
     return await this.createAudioConference(data);
   }
+
+  async getPostItemsByTypeId(postId: string | number, typeId: number | string) {
+    const items = await this.getPost(postId).then(res => res.data.items);
+    const ids = items.filter(item => item.type_id == `${typeId}`).map(item => item.id);
+    return ids;
+  }
+
+  /* file and image */
+  async getFilesIdsFromPostId(postId: string | number) {
+    return this.getPostItemsByTypeId(postId, 10);
+  }
+
+  getFile(fileId: string | number) {
+    const uri = `/api/file/${fileId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  updateFile(fileId: string | number, data: object) {
+    const uri = `/api/file/${fileId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async updateFileName(fileId: string, name: string) {
+    return await this.updateFile(fileId, { name });
+  }
+
+  async deleteFile(fileId: string | number) {
+    return await this.updateFile(fileId, {
+      deactivated: true
+    });
+  }
 }
