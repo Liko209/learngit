@@ -30,6 +30,7 @@ describe('TelephonyAccountController', () => {
     rtcAccount = {
       handleProvisioning: jest.fn(),
       makeCall: jest.fn(),
+      logout: jest.fn(),
     }; // new RTCAccount(null);
     accountController = new TelephonyAccountController(
       { createAccount: jest.fn().mockReturnValue(rtcAccount) },
@@ -56,6 +57,14 @@ describe('TelephonyAccountController', () => {
       expect(rtcAccount.makeCall).toBeCalled();
     });
   });
+
+  describe('logout', () => {
+    it('should call rtcAccount to logout', () => {
+      accountController.logout();
+      expect(rtcAccount.logout).toBeCalled();
+    });
+  });
+
   describe('hangUp', () => {
     it('should call controller to hang up', () => {
       jest.spyOn(callController, 'hangUp');

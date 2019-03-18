@@ -58,11 +58,11 @@ describe('Viewer.ViewModel', () => {
       vm.ids;
       vm.setOnCurrentItemDeletedCb(() => {});
       expect(vm).toHaveProperty('props');
-      expect(vm.currentIndex).toEqual(0);
+      expect(vm.currentIndex).toEqual(-1);
       expect(vm.currentItemId).toEqual(props.itemId);
-      expect(vm.getCurrentIndex()).toEqual(0);
+      expect(vm.getCurrentIndex()).toEqual(-1);
       expect(vm.getCurrentItemId()).toEqual(props.itemId);
-      expect(vm.total).toEqual(0);
+      expect(vm.total).toEqual(-1);
       expect(vm.ids).toEqual([1, 2]);
       vm.dispose();
     });
@@ -76,7 +76,7 @@ describe('Viewer.ViewModel', () => {
   describe('updateCurrentItemIndex()', () => {
     it('should currentIndex, currentItemId has default value when not set', () => {
       const vm = new ViewerViewModel(props);
-      expect(vm.currentIndex).toEqual(0);
+      expect(vm.currentIndex).toEqual(-1);
       expect(vm.currentItemId).toEqual(props.itemId);
       vm.dispose();
     });

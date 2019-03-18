@@ -66,16 +66,16 @@ class FilesView extends React.Component<FilesViewProps> {
 
   _handleImageClick = (
     groupId: number,
+    postId: number,
     id: number,
     thumbnailSrc: string,
     origWidth: number,
     origHeight: number,
   ) => async (ev: React.MouseEvent, loaded?: boolean) => {
+    if (postId < 0) return;
     const target = ev.currentTarget as HTMLElement;
     const canShowDialogPermission = await this.props.getShowDialogPermission();
-    if (!canShowDialogPermission) {
-      return;
-    }
+    if (!canShowDialogPermission) return;
     showImageViewer(groupId, id, {
       thumbnailSrc,
       initialWidth: origWidth,
@@ -94,7 +94,7 @@ class FilesView extends React.Component<FilesViewProps> {
   }
 
   render() {
-    const { files, progresses, urlMap, groupId } = this.props;
+    const { files, progresses, urlMap, groupId, postId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -119,6 +119,7 @@ class FilesView extends React.Component<FilesViewProps> {
                   didLoad={() => this._handleImageDidLoad(id, callback)}
                   handleImageClick={this._handleImageClick(
                     groupId,
+                    postId,
                     id,
                     urlMap.get(id) || '',
                     origWidth,
@@ -142,6 +143,7 @@ class FilesView extends React.Component<FilesViewProps> {
               placeholder={React.cloneElement(placeholder, {
                 onClick: this._handleImageClick(
                   groupId,
+                  postId,
                   id,
                   urlMap.get(id) || '',
                   size.width,
@@ -150,6 +152,7 @@ class FilesView extends React.Component<FilesViewProps> {
               })}
               handleImageClick={this._handleImageClick(
                 groupId,
+                postId,
                 id,
                 urlMap.get(id) || '',
                 size.width,
