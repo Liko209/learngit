@@ -16,6 +16,7 @@ import {
 } from '../../../foundation/utils/styles';
 import { JuiTextField } from '../../../components/Forms';
 import { fade } from '@material-ui/core/styles/colorManipulator';
+import { JuiIconography } from '../../../foundation/Iconography';
 
 type SearchWrapperType = {
   focus: boolean;
@@ -68,7 +69,7 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   }
 `;
 
-const SearchIcon = styled(JuiIconButton)`
+const SearchIcon = styled(JuiIconography)`
   transition: ${colorTransition};
 `;
 
@@ -90,7 +91,7 @@ const SearchInput = styled(JuiTextField)`
         color: ${palette('common', 'white')};
       }
       &:focus {
-        color: ${palette('grey', '500')};
+        color: ${palette('common', 'black')};
         ::placeholder {
           color: ${palette('grey', '500')};
         }
