@@ -50,6 +50,8 @@ const StyledIcon = styled.div<{ state: string }>`
   }
 `;
 
+let inserted = false;
+
 class IconList extends React.Component {
   state = {
     state: 'loading icons',
@@ -62,7 +64,10 @@ class IconList extends React.Component {
       `https://i.icomoon.io/public/6483cc0f53/Jupiter/symbol-defs.svg?${Math.random()}`,
     )
       .then((res: any) => {
-        this.insertSVG(res.data);
+        if (!inserted) {
+          this.insertSVG(res.data);
+          inserted = true;
+        }
         const icons = this.getIconList(res.data);
         this.setState({ latestCount: icons.length });
         return icons;

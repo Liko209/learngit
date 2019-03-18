@@ -43,10 +43,13 @@ const FileItem = styled(MuiListItem)`
   }
 `;
 
-const FileIcon = styled<FileIconProps>(JuiIconography)`
+const FileIcon = styled<FileIconProps>(({ size, ...rest }) => (
+  <JuiIconography
+    iconSize={size === 'small' ? 'medium' : 'extraLarge'}
+    {...rest}
+  />
+))`
   && {
-    font-size: ${({ size }) => (size === 'small' ? width(5) : width(9))};
-    background-size: cover;
     margin: ${({ size }) => (size === 'small' ? spacing(0, 2, 0, 0) : null)};
   }
 `;
