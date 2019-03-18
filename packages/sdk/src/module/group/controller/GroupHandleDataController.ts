@@ -162,7 +162,8 @@ class GroupHandleDataController {
     // });
     // deactivatedGroupIds.length &&
     //   notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
-    groups.length &&
+    ((groups && groups.length) ||
+      (deactivatedData && deactivatedData.length)) &&
       notificationCenter.emitEntityUpdate(
         ENTITY.GROUP,
         deactivatedData && deactivatedData.length
