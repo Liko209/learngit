@@ -209,9 +209,7 @@ class StreamViewModel extends StoreViewModel<StreamProps>
     }
   }
 
-  handleNewMessageSeparatorState = async (
-    event: React.UIEvent<HTMLElement>,
-  ) => {
+  handleNewMessageSeparatorState = (event: React.UIEvent<HTMLElement>) => {
     if (!event.target) return;
     const scrollEl = event.currentTarget;
     const atBottom =
