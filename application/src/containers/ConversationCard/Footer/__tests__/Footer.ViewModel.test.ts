@@ -22,7 +22,7 @@ beforeAll(() => {
 
 describe('footerViewModel', () => {
   it('lifecycle method', () => {
-    expect(footerViewModel.id).toBe(1);
+    expect(footerViewModel.postId).toBe(1);
   });
 
   it('_post', () => {

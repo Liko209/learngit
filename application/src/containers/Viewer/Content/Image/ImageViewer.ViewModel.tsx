@@ -83,7 +83,7 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
 
   @computed
   get item(): FileItemModel {
-    return getEntity(ENTITY_NAME.FILE_ITEM, this._getCurrentItemId());
+    return getEntity(ENTITY_NAME.ITEM, this._getCurrentItemId());
   }
 
   @computed

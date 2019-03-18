@@ -29,7 +29,7 @@ describe('NoteItemViewModel', () => {
       if (type === ENTITY_NAME.PERSON) {
         return { userDisplayName: 'username' };
       }
-      if (type === ENTITY_NAME.NOTE_ITEM) {
+      if (type === ENTITY_NAME.ITEM) {
         return { creatorId: 111 };
       }
       return null;

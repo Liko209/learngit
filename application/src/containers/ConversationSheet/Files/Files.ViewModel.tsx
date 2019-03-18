@@ -144,7 +144,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   dispose = () => {
-    notificationCenter.off(ENTITY.ITEM, this._handleItemChanged);
+    notificationCenter.off(ENTITY.PROGRESS, this._handleItemChanged);
   }
 
   @computed
@@ -179,10 +179,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     this._ids.forEach((id: number) => {
       if (id !== this._idToDelete) {
         try {
-          const item = getEntity<Item, FileItemModel>(
-            ENTITY_NAME.FILE_ITEM,
-            id,
-          );
+          const item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, id);
           result.push(item);
         } catch (e) {}
       }

@@ -52,6 +52,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   onReceiveNewProvFlags(sipFlags: RTCSipFlags) {}
+
+  logout() {
+    this._rtcAccount.logout();
+  }
 }
 
 export { TelephonyAccountController };
