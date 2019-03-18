@@ -5,9 +5,9 @@
  */
 import { computed, observable, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { ITEM_SORT_KEYS, ItemService } from 'sdk/module/item';
+import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
-import { ENTITY, EVENT_TYPES, notificationCenter } from 'sdk/service';
+import { EVENT_TYPES, notificationCenter, ENTITY } from 'sdk/service';
 import {
   NotificationEntityPayload,
   NotificationEntityUpdatePayload,
@@ -45,7 +45,11 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     const { groupId, type, itemId } = props;
     this.currentItemId = itemId;
     this._itemListDataSource = new ItemListDataSource({ groupId, type });
-    notificationCenter.on(ENTITY.ITEM, this._onItemDataChange);
+    const itemNotificationKey = ItemNotification.getItemNotificationKey(
+      ViewerItemTypeIdMap[this.props.type],
+      groupId,
+    );
+    notificationCenter.on(itemNotificationKey, this._onItemDataChange);
     notificationCenter.on(ENTITY.GROUP, this._onGroupDataChange);
   }
 
@@ -56,7 +60,11 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   }
 
   dispose() {
-    notificationCenter.off(ENTITY.ITEM, this._onItemDataChange);
+    const itemNotificationKey = ItemNotification.getItemNotificationKey(
+      ViewerItemTypeIdMap[this.props.type],
+      this.props.groupId,
+    );
+    notificationCenter.off(itemNotificationKey, this._onItemDataChange);
     notificationCenter.off(ENTITY.GROUP, this._onGroupDataChange);
     this._itemListDataSource.dispose();
   }
