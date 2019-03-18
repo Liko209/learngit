@@ -7,11 +7,11 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   }
 
   get avatar() {
-    return this.getSelectorByAutomationId('viewerTitleAvatar');
+    return this.getSelectorByAutomationId('previewerSenderAvatar');
   }
 
   get sender() {
-    return this.getSelectorByAutomationId('viewerTitlePerson');
+    return this.getSelectorByAutomationId('previewerSenderInfo');
   }
 
   get senderName() {
@@ -23,7 +23,7 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   }
 
   get title() {
-    return this.getSelectorByAutomationId('viewerTitleTitle');
+    return this.getSelectorByAutomationId('previewerTitle');
   }
 
   get fileName() {
@@ -35,7 +35,7 @@ export class FileAndImagePreviewer extends BaseWebComponent {
   }
 
   get PreviewerDiv() {
-    return this.getSelectorByAutomationId('ImageView')
+    return this.getSelectorByAutomationId('previewerCanvas')
   }
 
   get downloadIcon() {
