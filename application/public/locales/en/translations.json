@@ -417,6 +417,11 @@
       "record": "Record",
       "callActions": "Call Actions",
       "end": "End"
+    },
+    "prompt": {
+      "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
+      "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
+      "CallTimeout": "Sorry, we weren't able to place the call. Try again later."
     }
   },
   "meeting": {
@@ -433,6 +438,9 @@
     "ZoomOut": "Scale file down",
     "PreviousFile": "View previous file",
     "NextFile": "View next file",
-    "DismissTip": "Sorry, the image you were viewing is deleted."
+    "DismissTip": "Sorry, the image you were viewing is deleted.",
+    "ImageDeleted": "Sorry, the image you were viewing is deleted.",
+    "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
+    "TeamArchived": "The team was archived. To know more, contact the team administrator."
   }
 }
