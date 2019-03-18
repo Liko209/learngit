@@ -61,7 +61,8 @@ describe('SectionGroupHandler', () => {
         .mockReturnValueOnce([123, 456, 789]);
       SectionGroupHandler.getInstance()['_removeByIds'] = jest.fn();
       SectionGroupHandler.getInstance()['_updateUrl'] = jest.fn();
-      SectionGroupHandler.getInstance()['_removeGroupsIfExistedInHiddenGroups']();
+      SectionGroupHandler.getInstance()[ '_removeGroupsIfExistedInHiddenGroups'
+]();
       expect(SectionGroupHandler.getInstance()['_removeByIds']).toBeCalledWith(
         SECTION_TYPE.DIRECT_MESSAGE,
         [456],
@@ -94,6 +95,11 @@ describe('SectionGroupHandler', () => {
   });
 
   describe('Group change notification', () => {
+    groupService.isValid.mockImplementation((group: any) => {
+      return (
+        group && !group.is_archived && !group.deactivated && !!group.members
+      );
+    });
     it('entity put', () => {
       SectionGroupHandler.getInstance();
       const fakeData = [
@@ -291,6 +297,59 @@ describe('SectionGroupHandler', () => {
       ).toEqual([]);
       expect(
         SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
+      ).toEqual([]);
+    });
+
+    it('should not include deactivated data when update group', () => {
+      SectionGroupHandler.getInstance();
+      const fakeData = [
+        {
+          id: 1,
+          is_team: false,
+          created_at: 0,
+          most_recent_post_created_at: 1,
+          members: [1],
+        },
+        {
+          id: 2,
+          is_team: true,
+          created_at: 0,
+          most_recent_post_created_at: 1,
+          members: [1],
+        },
+      ];
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
+      expect(SectionGroupHandler.getInstance().groupIds.sort()).toEqual([1, 2]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
+      ).toEqual([2]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.DIRECT_MESSAGE,
+        ),
+      ).toEqual([1]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.FAVORITE,
+        ),
+      ).toEqual([]);
+
+      fakeData[0]['deactivated'] = true;
+      fakeData[1]['deactivated'] = true;
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
+      expect(SectionGroupHandler.getInstance().groupIds.sort()).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
+      ).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.DIRECT_MESSAGE,
+        ),
+      ).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.FAVORITE,
+        ),
       ).toEqual([]);
     });
   });
