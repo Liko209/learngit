@@ -6,6 +6,7 @@
 
 type EditMessageInputProps = {
   id: number; // post id
+  viewRef?: React.RefObject<any>;
 };
 
 type EditMessageInputViewProps = {
