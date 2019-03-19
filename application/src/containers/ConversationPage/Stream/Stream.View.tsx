@@ -229,6 +229,7 @@ class StreamViewComponent extends Component<Props> {
       return;
     }
     this._listRef.current && this._listRef.current.scrollToIndex(index);
+    this.handleFirstUnreadViewed();
   }
 
   private _handleVisibilityChanged = ({
