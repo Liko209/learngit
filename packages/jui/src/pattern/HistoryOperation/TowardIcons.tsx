@@ -67,6 +67,7 @@ class TowardIcons extends PureComponent<IconsProps> {
         size="medium"
         onClick={this.handleClick}
         disabled={disabled}
+        disableToolTip={disabled}
         data-test-automation-id={tooltipTitle}
         onMouseDown={this.handlePress}
         onMouseUp={this.handleRelease}
