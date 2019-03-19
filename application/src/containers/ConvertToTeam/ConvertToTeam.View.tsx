@@ -198,7 +198,12 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
       handleDescriptionChange,
       saving,
       disabledOkBtn,
+      firstRenderName,
     } = this.props;
+    let _name = name;
+    if (firstRenderName) {
+      _name = `${i18next.t('people.team.convertToTeamNamePrefix')}${_name}`;
+    }
     return (
       <JuiModal
         open={true}
@@ -221,7 +226,7 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
             {i18next.t('people.team.convertToTeamPreviousMessageHandle')}
           </JuiTopText>
           <JuiTextField
-            value={name}
+            value={_name}
             id={i18next.t('people.team.teamName')}
             label={i18next.t('people.team.teamName')}
             fullWidth={true}

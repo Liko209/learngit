@@ -355,6 +355,7 @@
       "markAsRead": "Mark as read",
       "markAsUnread": "Mark as unread",
       "convertToTeam": "Convert to team",
+      "convertToTeamNamePrefix": "Team: ",
       "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content."
     },
     "company": {},

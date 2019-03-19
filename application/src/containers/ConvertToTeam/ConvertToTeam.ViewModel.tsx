@@ -23,6 +23,8 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   nameErrorKey: string = '';
   @observable
   saving: boolean = false;
+  @observable
+  firstRenderName: boolean = false;
 
   constructor(props: ConvertToTeamProps) {
     super(props);
@@ -30,6 +32,7 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
       () => this.group.displayName,
       (displayName: string, reaction: Reaction) => {
         this.name = displayName;
+        this.firstRenderName = true;
         reaction.dispose();
       },
       {
@@ -51,6 +54,7 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   @action
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.name = e.target.value;
+    this.firstRenderName = false;
     this.nameErrorKey = '';
   }
 
