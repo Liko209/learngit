@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
@@ -33,6 +33,8 @@ import {
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
+import JuiConversationCard from 'jui/src/pattern/ConversationCard';
+// import { findDOMNode } from 'react-dom';
 
 type Props = WithNamespaces & StreamViewProps & StreamProps;
 
@@ -48,8 +50,8 @@ class StreamViewComponent extends Component<Props> {
   > = React.createRef();
   private _globalStore = storeManager.getGlobalStore();
   private _historyViewed = false;
-  private _mostRecentViewed = false;
   private _timeout: NodeJS.Timeout | null;
+  private _jumpToPostRef: RefObject<JuiConversationCard> = createRef();
 
   @observable private _jumpToFirstUnreadLoading = false;
 
@@ -111,22 +113,26 @@ class StreamViewComponent extends Component<Props> {
     if (postIds.includes(currentId) && this._listRef.current) {
       const index = this._findStreamItemIndexByPostId(currentId);
       this._listRef.current.scrollToIndex(index);
+      requestAnimationFrame(() => {
+        if (this._jumpToPostRef.current) {
+          this._jumpToPostRef.current.highlight();
+        }
+      });
     } else {
       refresh();
     }
   }
 
   private _renderPost(streamItem: StreamItem & { value: number[] }) {
+    const postId = streamItem.value[0];
     return (
-      <div key={streamItem.id}>
-        {streamItem.value.map((postId: number) => (
-          <ConversationPost
-            id={postId}
-            key={`ConversationPost${postId}`}
-            highlight={postId === this.props.jumpToPostId}
-          />
-        ))}
-      </div>
+      <ConversationPost
+        id={postId}
+        key={`ConversationPost${streamItem.id}`}
+        cardRef={
+          postId === this.props.jumpToPostId ? this._jumpToPostRef : undefined
+        }
+      />
     );
   }
 
@@ -165,7 +171,13 @@ class StreamViewComponent extends Component<Props> {
 
   private _renderInitialPost() {
     const { groupId, notEmpty } = this.props;
-    return <ConversationInitialPost notEmpty={notEmpty} id={groupId} key={1} />;
+    return (
+      <ConversationInitialPost
+        notEmpty={notEmpty}
+        id={groupId}
+        key="ConversationInitialPost"
+      />
+    );
   }
 
   private _renderStreamItems() {
@@ -272,22 +284,14 @@ class StreamViewComponent extends Component<Props> {
   }
 
   handleMostRecentViewed = () => {
-    if (this._mostRecentViewed) {
-      return;
-    }
     if (document.hasFocus()) {
       this.props.markAsRead();
       this._setUmiDisplay(false);
     }
-    this._mostRecentViewed = true;
   }
 
   handleMostRecentHidden = () => {
-    if (!this._mostRecentViewed) {
-      return;
-    }
     this._setUmiDisplay(true);
-    this._mostRecentViewed = false;
   }
 
   findPost = (i: StreamItem) => {
@@ -301,7 +305,13 @@ class StreamViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, loadMore, hasMore, items } = this.props;
+    const {
+      t,
+      loadMore,
+      hasMore,
+      items,
+      handleNewMessageSeparatorState,
+    } = this.props;
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
@@ -334,6 +344,7 @@ class StreamViewComponent extends Component<Props> {
               hasMore={hasMore}
               loadingMoreRenderer={defaultLoadingMore}
               fallBackRenderer={onInitialDataFailed}
+              onScroll={handleNewMessageSeparatorState}
               onVisibleRangeChange={this._handleVisibilityChanged}
             >
               {this._renderStreamItems()}
@@ -351,6 +362,11 @@ class StreamViewComponent extends Component<Props> {
       this.props.updateHistoryHandler();
       markAsRead();
     });
+    requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+      }
+    });
   }
 
   private _focusHandler = () => {
@@ -358,8 +374,10 @@ class StreamViewComponent extends Component<Props> {
 
     const atBottom =
       this._listRef.current && this._listRef.current.isAtBottom();
-    atBottom && markAsRead();
-    this._setUmiDisplay(false);
+    if (atBottom) {
+      markAsRead();
+      this._setUmiDisplay(false);
+    }
   }
 
   private _blurHandler = () => {
