@@ -71,7 +71,7 @@ class Sdk {
     this.serviceManager.startService(SyncService.name);
 
     const accountService: AccountService = AccountService.getInstance();
-    HandleByRingCentral.tokenRefreshDelegate = accountService;
+    HandleByRingCentral.platformHandleDelegate = accountService;
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,

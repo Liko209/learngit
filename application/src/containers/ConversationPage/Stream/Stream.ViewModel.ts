@@ -16,7 +16,6 @@ import { errorHelper } from 'sdk/error';
 import storeManager, { ENTITY_NAME } from '@/store';
 import StoreViewModel from '@/store/ViewModel';
 
-import { onScroll } from '@/plugins/InfiniteListPlugin';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
 import { StreamProps, StreamItemType } from './types';
@@ -88,10 +87,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get mostRecentPostId() {
-    return (
-      getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
-        .mostRecentPostId || 0
-    );
+    let result: number | undefined;
+    if (this.hasMore('down')) {
+      result = getEntity<Group, GroupModel>(
+        ENTITY_NAME.GROUP,
+        this.props.groupId,
+      ).mostRecentPostId;
+    } else {
+      result = _.last(this.postIds);
+    }
+    return result || 0;
   }
 
   @computed
@@ -202,14 +207,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  @onScroll
-  async handleNewMessageSeparatorState(event: { target?: HTMLInputElement }) {
-    if (!event.target) return;
-    const scrollEl = event.target;
+  handleNewMessageSeparatorState = (event: React.UIEvent<HTMLElement>) => {
+    if (!event.currentTarget) return;
+    const scrollEl = event.currentTarget;
     const atBottom =
       scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
     const isFocused = document.hasFocus();
     const shouldHideUmi = atBottom && isFocused;
+
     storeManager
       .getGlobalStore()
       .set(GLOBAL_KEYS.SHOULD_SHOW_UMI, !shouldHideUmi);

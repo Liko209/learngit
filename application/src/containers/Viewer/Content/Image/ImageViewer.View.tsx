@@ -93,6 +93,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       thumbnailSrc,
       imageWidth,
       imageHeight,
+      hasPrevious,
+      hasNext,
     } = this.props;
     const padding = theme.spacing.unit * 8;
     return (
@@ -131,10 +133,6 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                       transform: `scale(${transform.scale}) translate(${
                         transform.translateX
                       }px, ${transform.translateY}px)`,
-                      // transition:
-                      //   isDragging || value.isAnimating
-                      //     ? undefined
-                      //     : 'all ease 0.3s',
                       cursor: canDrag ? 'move' : undefined,
                     };
                     return (
@@ -142,14 +140,12 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                         imageRef={this._imageRef}
                         src={imageUrl}
                         width={
-                          autoFitContentRect
-                            ? autoFitContentRect.width
-                            : imageWidth
+                          (autoFitContentRect && autoFitContentRect.width) ||
+                          imageWidth
                         }
                         height={
-                          autoFitContentRect
-                            ? autoFitContentRect.height
-                            : imageHeight
+                          (autoFitContentRect && autoFitContentRect.height) ||
+                          imageHeight
                         }
                         style={imageStyle}
                         onSizeLoad={notifyContentSizeChange}
@@ -158,24 +154,26 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     );
                   }}
                 </JuiDragZoom>
-                <JuiImageViewerPreviousButton
-                  className="buttonWrapper"
-                  tooltipTitle={t('viewer.PreviousFile')}
-                  aria-label={t('viewer.PreviousFile')}
-                  disabled={!this._canSwitchPrevious()}
-                  onClick={this.switchPreImage}
-                >
-                  <JuiIconography color="grey.900">pervious</JuiIconography>
-                </JuiImageViewerPreviousButton>
-                <JuiImageViewerForwardButton
-                  className="buttonWrapper"
-                  tooltipTitle={t('viewer.NextFile')}
-                  aria-label={t('viewer.NextFile')}
-                  disabled={!this._canSwitchNext()}
-                  onClick={this.switchNextImage}
-                >
-                  <JuiIconography color="grey.900">forward</JuiIconography>
-                </JuiImageViewerForwardButton>
+                {hasPrevious && (
+                  <JuiImageViewerPreviousButton
+                    className="buttonWrapper"
+                    tooltipTitle={t('viewer.PreviousFile')}
+                    aria-label={t('viewer.PreviousFile')}
+                    onClick={this.switchPreImage}
+                  >
+                    <JuiIconography color="grey.900">pervious</JuiIconography>
+                  </JuiImageViewerPreviousButton>
+                )}
+                {hasNext && (
+                  <JuiImageViewerForwardButton
+                    className="buttonWrapper"
+                    tooltipTitle={t('viewer.NextFile')}
+                    aria-label={t('viewer.NextFile')}
+                    onClick={this.switchNextImage}
+                  >
+                    <JuiIconography color="grey.900">forward</JuiIconography>
+                  </JuiImageViewerForwardButton>
+                )}
               </JuiImageViewerContainer>
             </HotKeys>
             {this._imageRef.current && (

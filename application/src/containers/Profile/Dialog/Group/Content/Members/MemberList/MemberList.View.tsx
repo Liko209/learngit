@@ -70,7 +70,7 @@ class MemberList
             virtualListHeight = dialogHeight;
           }
           return (
-            <JuiProfileDialogContentMemberList>
+            <JuiProfileDialogContentMemberList style={{ height: dialogHeight }}>
               <JuiVirtualList
                 dataSource={this}
                 overscan={5}

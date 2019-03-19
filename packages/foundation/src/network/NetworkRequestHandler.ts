@@ -19,6 +19,7 @@ import {
   NETWORK_VIA,
   REQUEST_WEIGHT,
   SURVIVAL_MODE,
+  HA_PRIORITY,
 } from './network';
 
 class NetworkRequestHandler
@@ -54,7 +55,7 @@ class NetworkRequestHandler
     if (this.isSurvivalModeEnabled()) {
       if (
         this.isInSurvivalMode() &&
-        !this.canHandleSurvivalMode(request.path)
+        !this.canHandleInSurvivalMode(request.HAPriority)
       ) {
         this._callXApiResponseCallback(NETWORK_FAIL_TYPE.SERVER_ERROR, request);
         return;
@@ -244,11 +245,8 @@ class NetworkRequestHandler
     );
   }
 
-  canHandleSurvivalMode(uri: string) {
-    return (
-      this.networkRequestSurvivalMode &&
-      this.networkRequestSurvivalMode.canSupportSurvivalMode(uri)
-    );
+  canHandleInSurvivalMode(HAPriority: HA_PRIORITY) {
+    return HAPriority === HA_PRIORITY.HIGH;
   }
 
   onAccessTokenInvalid(handlerType: IHandleType) {
@@ -257,10 +255,8 @@ class NetworkRequestHandler
 
   onSurvivalModeDetected(mode: SURVIVAL_MODE, retryAfter: number) {
     if (this.isSurvivalModeEnabled() && this.networkRequestSurvivalMode) {
-      const interval = retryAfter ? retryAfter * 1000 : 4000;
+      const interval = retryAfter ? retryAfter * 1000 : 60000;
       this.networkRequestSurvivalMode.setSurvivalMode(mode, interval);
-
-      this.cancelAllPendingTasks();
     }
   }
 

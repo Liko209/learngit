@@ -93,12 +93,16 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
   highlight = () => {
     this.setState({ highlight: true });
   }
+  removeHighlight = () => {
+    this.setState({ highlight: false });
+  }
 
   render() {
     const { children, Avatar, mode, ...rest } = this.props;
     const { highlight } = this.state;
     return (
       <StyledConversationCard
+        onAnimationEnd={this.removeHighlight}
         className={highlight ? 'highlight' : ''}
         mode={mode}
         {...rest}

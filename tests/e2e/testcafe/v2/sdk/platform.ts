@@ -97,6 +97,13 @@ export class RcPlatformSdk {
     });
   }
 
+  async deleteTeam(chatId: string) {
+    const url = `restapi/v1.0/glip/teams/${chatId}`;
+    return await this.retryRequestOnException(async () => {
+      return await this.sdk.delete(url);
+    });
+  }
+
   async archiveTeam(chatId: string) {
     const url = `restapi/v1.0/glip/teams/${chatId}/archive`;
     return await this.retryRequestOnException(async () => {
@@ -174,7 +181,7 @@ export class RcPlatformSdk {
       return await this.sdk.post(url);
     });
   }
-  
+
   // deprecated
   async createAndGetGroupId(data: any) {
     return await this.createGroup(data).then(res => res.data.id);

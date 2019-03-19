@@ -131,7 +131,7 @@ class BaseConversationPage extends BaseWebComponent {
 
   get scrollDiv() {
     this.warnFlakySelector();
-    return this.stream.parent('div');
+    return this.getSelectorByAutomationId('virtualized-list', this.stream);
   }
 
   async expectStreamScrollToBottom() {
@@ -144,9 +144,11 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async scrollToY(y: number) {
+    const scrollDivElement=  this.scrollDiv;
     await ClientFunction((_y) => {
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"] div').scrollTop = _y;
-    })(y);
+      scrollDivElement().scrollTop = _y;
+    },
+    { dependencies: { scrollDivElement } })(y);
   }
 
   async scrollToMiddle() {

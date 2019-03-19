@@ -51,7 +51,7 @@ class MemberHeader extends React.Component<
           {`${t(key)} (${members.length})`}
           {isTeam && isCurrentUserHasPermissionAddMember && (
             <ButtonInRight onClick={this.addTeamMembers}>
-              <JuiIconography iconSize="small">add_team</JuiIconography>
+              <JuiIconography iconSize="medium">add_team</JuiIconography>
               {t('people.team.AddTeamMembers')}
             </ButtonInRight>
           )}

@@ -70,8 +70,8 @@ const IconWrapper = styled.div`
   color: ${grey('500')};
   width: ${width(5)};
   height: ${height(5)};
-  top: ${spacing(0.5)};
-  right: ${spacing(-1)};
+  top: ${spacing(0.75)};
+  right: ${spacing(-0.75)};
 `;
 
 const ProgressWrapper = styled.div`

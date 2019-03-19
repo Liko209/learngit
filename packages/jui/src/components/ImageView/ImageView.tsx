@@ -32,6 +32,7 @@ const StyledImage = styled.img<{ visibility: string }>`
   display: block;
   box-shadow: ${({ theme }) => theme.shadows[7]};
   visibility: ${({ visibility }) => visibility};
+  user-select: none;
 `;
 
 const HiddenImage = styled.img`
@@ -108,6 +109,8 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   constructor(props: JuiImageProps) {
     super(props);
     this.state = getInitState(props);
+    const { width, height, onSizeLoad } = this.props;
+    width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
   }
 
   static getDerivedStateFromProps(
@@ -118,11 +121,6 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
       return getInitState(nextProps);
     }
     return null;
-  }
-
-  componentDidMount() {
-    const { width, height, onSizeLoad } = this.props;
-    width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
   }
 
   getImageRef = (): RefObject<HTMLImageElement> => {
@@ -140,7 +138,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   private _errorView() {
     return (
       <StyledLoadingPage>
-        <JuiIconography iconSize="large" iconColor={['grey', '400']}>
+        <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
           image_broken
         </JuiIconography>
       </StyledLoadingPage>
