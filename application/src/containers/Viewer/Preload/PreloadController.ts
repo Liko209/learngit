@@ -5,14 +5,16 @@
  */
 
 import { PreloadProcessor } from './PreloadProcessor';
-import { ImageUtils } from '@/containers/Viewer/Utils';
 import FileItemModel from '@/store/models/FileItem';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { ImageDownloader } from '@/common/ImageDownloader';
 import { DownloadItemInfo, IImageDownloadedListener } from 'sdk/pal';
 import { SequenceProcessorHandler } from 'sdk/framework/processor';
+import { getMaxThumbnailURLInfo } from '@/common/getThumbnailURL';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import { mainLogger, ILogger } from 'sdk';
+import { ItemService } from 'sdk/module/item/service';
 
 class PreloadController implements IImageDownloadedListener {
   private _logger: ILogger;
@@ -36,7 +38,7 @@ class PreloadController implements IImageDownloadedListener {
     this._logger.info(`replace with ${filteredIds}`);
 
     this._pendingIds = filteredIds;
-    this._doNextPreload();
+    this._startPreload();
   }
 
   stop() {
@@ -55,21 +57,18 @@ class PreloadController implements IImageDownloadedListener {
   onSuccess(item: DownloadItemInfo, width: number, height: number): void {
     this._logger.info(`onSuccess ${item.id}`);
     this._cachedIds.add(item.id);
-    this._inProgressId = 0;
 
     this._doNextPreload();
   }
 
   onFailure(item: DownloadItemInfo, errorCode: number): void {
     this._logger.info(`onFailure ${item.id}`);
-    this._inProgressId = 0;
 
     this._doNextPreload();
   }
 
   onCancel(item: DownloadItemInfo): void {
     this._logger.info(`onCancel ${item.id}`);
-    this._inProgressId = 0;
 
     this._doNextPreload();
   }
@@ -96,27 +95,51 @@ class PreloadController implements IImageDownloadedListener {
     });
   }
 
-  private _generateProcessorWithItemId(itemId: number) {
+  private _tryPreloadWithItemId(itemId: number) {
     const item: FileItemModel = getEntity(ENTITY_NAME.ITEM, itemId);
-    if (item) {
-      const imageUrl = ImageUtils.fileImageInfo(item).url;
-      const itemInfo: DownloadItemInfo = {
-        id: item.id,
-        url: imageUrl ? imageUrl : undefined,
-      };
-      this._logger.info(`Will process itemId: ${item.id}, ${imageUrl}`);
-
-      return this._generateProcessor(itemInfo);
+    if (!item) {
+      return false;
     }
 
-    return undefined;
+    this._logger.info(`Will process itemId: ${item.id}`);
+    if (FileItemUtils.isSupportShowRawImage(item)) {
+      if (item.versionUrl) {
+        this._addToQueue(item.id, item.versionUrl);
+        return true;
+      }
+    }
+
+    if (FileItemUtils.isSupportPreview(item)) {
+      if (item.thumbs) {
+        const imageUrl = getMaxThumbnailURLInfo(item).url;
+        this._addToQueue(item.id, imageUrl);
+        return true;
+      }
+
+      ItemService.getInstance<ItemService>()
+        .getThumbsUrlWithSize(item.id, item.origWidth, item.origHeight)
+        .then((url: string) => {
+          this._addToQueue(item.id, url);
+        })
+        .catch(() => {
+          this._doNextPreload();
+        });
+      return true;
+    }
+
+    return false;
   }
 
-  private _generateProcessor(itemInfo: DownloadItemInfo) {
-    return new PreloadProcessor(itemInfo, this._downloader, this);
+  private _addToQueue(itemId: number, url: string) {
+    const itemInfo: DownloadItemInfo = {
+      url,
+      id: itemId,
+    };
+    const processor = new PreloadProcessor(itemInfo, this._downloader, this);
+    this._sequenceHandler.addProcessor(processor);
   }
 
-  private _doNextPreload() {
+  private _startPreload() {
     if (this._inProgressId) {
       this._logger.info(`In progress: ${this._inProgressId}`);
       return;
@@ -127,10 +150,15 @@ class PreloadController implements IImageDownloadedListener {
     }
     this._inProgressId = this._pendingIds.shift()!;
 
-    const processor = this._generateProcessorWithItemId(this._inProgressId);
-    if (processor) {
-      this._sequenceHandler.addProcessor(processor);
+    if (!this._tryPreloadWithItemId(this._inProgressId)) {
+      this._doNextPreload();
     }
+  }
+
+  private _doNextPreload() {
+    this._inProgressId = 0;
+
+    this._startPreload();
   }
 }
 

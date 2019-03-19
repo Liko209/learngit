@@ -5,8 +5,11 @@
  */
 
 import { PreloadController } from '../PreloadController';
-import { ImageDownloader } from '@/common/ImageDownloader';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { getEntity } from '@/store/utils';
+import FileItemModel from '@/store/models/FileItem';
 
+jest.mock('sdk/module/item/module/file/utils');
 jest.mock('sdk/api');
 jest.mock('sdk/pal');
 jest.mock('@/store/utils', () => {
@@ -24,6 +27,15 @@ jest.mock('@/common/ImageDownloader', () => {
   };
 });
 jest.mock('sdk/module/item/service');
+
+const item = {
+  versionUrl: 'about:blank',
+  origWidth: 1,
+  origHeight: 2,
+  thumbs: {},
+} as FileItemModel;
+getEntity.mockReturnValue(item);
+FileItemUtils.isSupportShowRawImage.mockReturnValue(true);
 
 describe('PreloadController', () => {
   describe('pending ids', () => {

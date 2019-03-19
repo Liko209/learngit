@@ -53,9 +53,9 @@ describe('Viewer.ViewModel', () => {
   });
   describe('constructor()', () => {
     it('should successfully construct', () => {
-      const vm = new ViewerViewModel(props);
       const dataSource = createDataSource();
       dataSource.getIds.mockReturnValue([1, 2]);
+      const vm = new ViewerViewModel(props);
       vm.setOnCurrentItemDeletedCb(() => {});
       vm.setOnItemSwitchCb(() => {});
       vm.isLoadingMore;
@@ -125,8 +125,8 @@ describe('Viewer.ViewModel', () => {
   });
   describe('init()', () => {
     it('should loadInitialData and refresh itemIndexInfo', async (done: jest.DoneCallback) => {
-      const vm = new ViewerViewModel(props);
       const dataSource = createDataSource();
+      const vm = new ViewerViewModel(props);
       const itemService: ItemService = ItemService.getInstance();
       itemService.getItemIndexInfo.mockResolvedValue({
         index: 11,
@@ -146,8 +146,8 @@ describe('Viewer.ViewModel', () => {
   });
   describe('dispose()', () => {
     it('should dispose dataSource & notification', () => {
-      const vm = new ViewerViewModel(props);
       const dataSource = createDataSource();
+      const vm = new ViewerViewModel(props);
       const notificationOff = jest.spyOn(notificationCenter, 'off');
       vm.dispose();
       expect(notificationOff).toBeCalled();
@@ -156,8 +156,8 @@ describe('Viewer.ViewModel', () => {
   });
   describe('fetchData()', () => {
     it('should dispose dataSource & notification', () => {
-      const vm = new ViewerViewModel(props);
       const dataSource = createDataSource();
+      const vm = new ViewerViewModel(props);
       vm.loadMore(QUERY_DIRECTION.NEWER);
       expect(dataSource.fetchData).lastCalledWith(QUERY_DIRECTION.NEWER, 20);
       vm.dispose();
@@ -169,12 +169,12 @@ describe('Viewer.ViewModel', () => {
       jest.resetAllMocks();
     });
     it('should load data then switch to previous', (done: jest.DoneCallback) => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2]);
       const vm = new ViewerViewModel({ ...props, itemId: 2 });
       // vm.updateCurrentItemIndex(1, props.itemId);
       vm.currentIndex = 1;
       vm.total = 3;
-      const dataSource = createDataSource();
-      dataSource.getIds.mockReturnValue([2]);
       const loadMore = jest.spyOn(vm, 'loadMore').mockResolvedValueOnce([1]);
       const fn2 = jest.spyOn(vm, 'switchToPrevious');
       expect(vm.hasPrevious).toBeTruthy();
@@ -187,11 +187,11 @@ describe('Viewer.ViewModel', () => {
       });
     });
     it('should not switch if load not more data', (done: jest.DoneCallback) => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2]);
       const vm = new ViewerViewModel({ ...props, itemId: 2 });
       vm.currentIndex = 1;
       vm.total = 3;
-      const dataSource = createDataSource();
-      dataSource.getIds.mockReturnValue([2]);
       const loadMore = jest.spyOn(vm, 'loadMore').mockResolvedValueOnce(null);
       const fn2 = jest.spyOn(vm, 'switchToPrevious');
       expect(vm.hasPrevious).toBeTruthy();
@@ -204,12 +204,12 @@ describe('Viewer.ViewModel', () => {
       });
     });
     it('should update index directly when ids has pre image', () => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([1, 2]);
       const vm = new ViewerViewModel({ ...props, itemId: 2 });
       vm.currentIndex = 1;
       vm.total = 2;
       const updateCurrentItemIndex = jest.spyOn(vm, 'updateCurrentItemIndex');
-      const dataSource = createDataSource();
-      dataSource.getIds.mockReturnValue([1, 2]);
       expect(vm.hasPrevious).toBeTruthy();
       vm.switchToPrevious();
       expect(updateCurrentItemIndex).toBeCalled();
@@ -220,11 +220,11 @@ describe('Viewer.ViewModel', () => {
       jest.resetAllMocks();
     });
     it('should load data then switch to NextImage', (done: jest.DoneCallback) => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2]);
       const vm = new ViewerViewModel({ ...props, itemId: 2 });
       vm.currentIndex = 1;
       vm.total = 3;
-      const dataSource = createDataSource();
-      dataSource.getIds.mockReturnValue([2]);
       const loadMore = jest.spyOn(vm, 'loadMore').mockResolvedValueOnce([3]);
       const fn2 = jest.spyOn(vm, 'switchToNext');
       expect(vm.hasNext).toBeTruthy();
@@ -237,11 +237,11 @@ describe('Viewer.ViewModel', () => {
       });
     });
     it('should not switch image if load not more data', (done: jest.DoneCallback) => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2]);
       const vm = new ViewerViewModel({ ...props, itemId: 2 });
       vm.currentIndex = 1;
       vm.total = 3;
-      const dataSource = createDataSource();
-      dataSource.getIds.mockReturnValue([2]);
       vm.updateCurrentItemIndex(1, props.itemId);
       const loadMore = jest.spyOn(vm, 'loadMore').mockResolvedValueOnce(null);
       const fn2 = jest.spyOn(vm, 'switchToNext');
@@ -255,11 +255,11 @@ describe('Viewer.ViewModel', () => {
       });
     });
     it('should update index directly when ids has next image', () => {
+      const dataSource = createDataSource();
+      dataSource.getIds.mockReturnValue([2, 3]);
       const vm = new ViewerViewModel({ ...props, itemId: 2 });
       vm.currentIndex = 1;
       vm.total = 3;
-      const dataSource = createDataSource();
-      dataSource.getIds.mockReturnValue([2, 3]);
       const updateCurrentItemIndex = jest.spyOn(vm, 'updateCurrentItemIndex');
       expect(vm.hasNext).toBeTruthy();
       vm.switchToNext();

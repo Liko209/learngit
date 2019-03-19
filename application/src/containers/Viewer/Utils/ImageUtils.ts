@@ -18,7 +18,9 @@ class ImageUtils {
       };
     }
     if (FileItemUtils.isSupportPreview(file)) {
-      return getMaxThumbnailURLInfo(file);
+      if (file.thumbs) {
+        return getMaxThumbnailURLInfo(file);
+      }
     }
     return {
       url: undefined,

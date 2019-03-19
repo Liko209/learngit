@@ -19,7 +19,7 @@ describe('PreloadProcessor', () => {
   };
   const downloader = new ImageDownloader();
   jest.spyOn(downloader, 'download').mockImplementation(jest.fn());
-  it('process', () => {
+  it('process should be called', () => {
     const processor = new PreloadProcessor(itemInfo, downloader, lisenterMock);
     processor.process();
     expect(downloader.download).toBeCalled();

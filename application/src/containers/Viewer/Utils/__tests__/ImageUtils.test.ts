@@ -45,7 +45,7 @@ describe('ImageUtils', () => {
     });
     it('should return raw image info when support', () => {
       const item = {
-        versionUrl: '',
+        versionUrl: 'about:blank',
         origWidth: 1,
         origHeight: 2,
       } as FileItemModel;
@@ -65,6 +65,7 @@ describe('ImageUtils', () => {
         downloadUrl: '',
         origWidth: 1,
         origHeight: 2,
+        thumbs: {},
       } as FileItemModel;
       FileItemUtils.isSupportShowRawImage.mockReturnValue(false);
       FileItemUtils.isSupportPreview.mockReturnValue(true);
