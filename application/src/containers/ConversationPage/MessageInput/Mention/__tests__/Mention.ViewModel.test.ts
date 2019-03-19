@@ -38,7 +38,7 @@ beforeAll(() => {
 describe('mentionViewModel', () => {
   it('lifecycle method', () => {
     expect(mentionViewModel._id).toBe(1);
-    expect(mentionViewModel.currentIndex).toBe(0);
+    expect(mentionViewModel.currentIndex).toBe(1);
     expect(mentionViewModel.open).toBe(false);
     expect(mentionViewModel.members).toEqual([]);
     expect(mentionViewModel.searchTerm).toBe(undefined);
@@ -95,7 +95,8 @@ describe('mentionViewModel', () => {
     handler();
     expect(quill.getModule).not.toBeCalled();
     mentionViewModel.open = true;
-    mentionViewModel.members = [1];
+    // currentIndex default will be 1 because of title will within VL
+    mentionViewModel.members = ['', 1];
     handler();
     expect(quill.getModule).toBeCalledWith('mention');
     expect(mentionModules.select).toBeCalledWith(
@@ -128,7 +129,7 @@ describe('mentionViewModel', () => {
     mentionViewModel.members = [1, 2, 3];
     mentionViewModel.currentIndex = 1;
     handler();
-    expect(mentionViewModel.currentIndex).toBe(0);
+    expect(mentionViewModel.currentIndex).toBe(3);
     handler();
     expect(mentionViewModel.currentIndex).toBe(2);
     handler();
@@ -142,7 +143,7 @@ describe('mentionViewModel', () => {
     handler();
     expect(mentionViewModel.currentIndex).toBe(2);
     handler();
-    expect(mentionViewModel.currentIndex).toBe(0);
+    expect(mentionViewModel.currentIndex).toBe(3);
     handler();
     expect(mentionViewModel.currentIndex).toBe(1);
   });

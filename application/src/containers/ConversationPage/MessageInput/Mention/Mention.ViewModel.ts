@@ -14,10 +14,11 @@ import GroupModel from '@/store/models/Group';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
-import { DiscontinuousPersonListHandler } from '@/store/handler/DiscontinuousPersonListHandler';
-import { QUERY_DIRECTION } from 'sdk/dao/constants';
-import { Person } from 'sdk/module/person/entity';
-import { SortableModel } from 'sdk/framework/model';
+
+type searchMember = {
+  displayName: string;
+  id: number;
+};
 
 const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
   if (vm.members.length && vm.open) {
@@ -25,6 +26,8 @@ const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
   }
   return true;
 };
+
+const INIT_CURRENT_INDEX = 1; // because of title will within VL
 
 const DELAY = 300;
 class MentionViewModel extends StoreViewModel<MentionProps>
@@ -36,12 +39,9 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @observable
   open: boolean = false;
   @observable
-  currentIndex: number = 0;
+  currentIndex: number = INIT_CURRENT_INDEX;
   @observable
-  members: {
-    displayName: string;
-    id: number;
-  }[] = [];
+  members: searchMember[] = [];
   @observable
   searchTerm?: string;
 
@@ -68,10 +68,6 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     },
   ];
 
-  @observable discontinuousPersonListHandler: DiscontinuousPersonListHandler;
-
-  @observable firstInit: boolean = true;
-
   constructor(props: MentionProps) {
     super(props);
     this.reaction(
@@ -96,45 +92,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   }
 
   @action
-  build(memberIds: number[]) {
-    if (!memberIds || memberIds.length === 0) {
-      return;
-    }
-
-    if (this.firstInit) {
-      this.discontinuousPersonListHandler &&
-        this.discontinuousPersonListHandler.dispose();
-      this.discontinuousPersonListHandler = new DiscontinuousPersonListHandler(
-        memberIds,
-      );
-      this.loadInitialData();
-      this.firstInit = false;
-    }
-
-    this.discontinuousPersonListHandler.onSourceIdsChanged(memberIds);
-  }
-
-  @action
-  async loadInitialData() {
-    await this.discontinuousPersonListHandler.loadMorePosts(
-      QUERY_DIRECTION.NEWER,
-      20,
-    );
-  }
-
-  @action
-  loadMore = async (startIndex: number, stopIndex: number) => {
-    await this.discontinuousPersonListHandler.loadMorePosts(
-      QUERY_DIRECTION.NEWER,
-      stopIndex - startIndex + 1,
-    );
-  }
-
-  @action
   reset() {
     this._canDoFuzzySearch = false;
     this.open = false;
-    this.currentIndex = 0;
+    this.currentIndex = INIT_CURRENT_INDEX;
     this.members = [];
   }
 
@@ -151,11 +112,6 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @computed
   get _memberIds() {
     return this._group.members || [];
-  }
-
-  @computed
-  get total() {
-    return this.members.length;
   }
 
   @action
@@ -193,12 +149,8 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     );
     if (res) {
       runInAction(() => {
-        this.currentIndex = 0;
+        this.currentIndex = INIT_CURRENT_INDEX;
         this.members = res.sortableModels;
-        const ids = res.sortableModels.map(
-          (person: SortableModel<Person>) => person.id,
-        );
-        this.build(ids);
       });
     }
   }
@@ -217,7 +169,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
         vm.members[vm.currentIndex].displayName,
         vm._denotationChar,
       );
-      vm.currentIndex = 0;
+      vm.currentIndex = INIT_CURRENT_INDEX;
       vm.open = false;
       return false;
     };
@@ -250,8 +202,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action
   private _upHandler(vm: MentionViewModel) {
     return function () {
-      vm.currentIndex =
-        (vm.currentIndex + vm.members.length - 1) % vm.members.length;
+      // because of title will within VL
+      const size = vm.members.length + 1;
+      const currentIndex = (vm.currentIndex + size - 1) % size;
+      vm.currentIndex = currentIndex === 0 ? vm.members.length : currentIndex;
       return canTriggerDefaultEventHandler(vm);
     };
   }
@@ -259,7 +213,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action
   private _downHandler(vm: MentionViewModel) {
     return function () {
-      vm.currentIndex = (vm.currentIndex + 1) % vm.members.length;
+      // because of title will within VL
+      const size = vm.members.length + 1;
+      const currentIndex = (vm.currentIndex + 1) % size;
+      vm.currentIndex = currentIndex === 0 ? INIT_CURRENT_INDEX : currentIndex;
       return canTriggerDefaultEventHandler(vm);
     };
   }
@@ -271,9 +228,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
 
   @computed
   get ids() {
-    return this.discontinuousPersonListHandler
-      ? this.discontinuousPersonListHandler.ids
-      : [];
+    return this.members.map((member: searchMember) => member.id);
   }
 
   mentionOptions = {

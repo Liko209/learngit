@@ -22,6 +22,7 @@ import {
 import { MentionItem } from './MentionItem';
 
 const ITEM_HEIGHT = 40; // jui/pattern/MessageInput/Mention/MentionPanelSectionItem
+const MAX_ITEM_NUMBER = 6;
 
 @observer
 class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
@@ -36,16 +37,8 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
     return this.props.ids.length + 1;
   }
 
-  total() {
-    return this.props.total;
-  }
-
   hasMore() {
-    return this.size() !== this.total();
-  }
-
-  loadMore = async (startIndex: number, stopIndex: number) => {
-    await this.props.loadMore(startIndex, stopIndex);
+    return false;
   }
 
   rowRenderer = (cellProps: JuiVirtualCellProps<number>) => {
@@ -87,34 +80,25 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
   }
 
   componentDidUpdate(prevProps: MentionViewProps) {
-    // Typical usage (don't forget to compare props):
-    const { currentIndex, total } = this.props;
+    const { currentIndex } = this.props;
     if (currentIndex !== prevProps.currentIndex) {
       this._listRef.current && this._listRef.current.scrollToCell(currentIndex);
-
-      console.log(currentIndex, total, '----nello');
     }
   }
 
   render() {
-    const {
-      open,
-      ids,
-      // currentIndex,
-      // t,
-      // searchTerm,
-      // groupType,
-      // selectHandler,
-      isEditMode,
-    } = this.props;
-    console.log(open, ids.length, '---nello  length');
-    if (open && ids.length > 0) {
+    const { open, ids, isEditMode } = this.props;
+    const memberIdsLength = ids.length;
+
+    if (open && memberIdsLength > 0) {
+      const mentionHeight =
+        memberIdsLength >= MAX_ITEM_NUMBER
+          ? MAX_ITEM_NUMBER * ITEM_HEIGHT
+          : ITEM_HEIGHT * memberIdsLength;
       return (
         <JuiMentionPanel isEditMode={isEditMode}>
-          <ReactResizeDetector handleHeight={true} handleWidth={true}>
-            {(width: number, height: number = 272) => {
-              console.log(width, height, '---nello');
-
+          <ReactResizeDetector handleWidth={true}>
+            {(width: number) => {
               return (
                 <JuiMentionPanelSection>
                   <JuiVirtualList
@@ -123,7 +107,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
                     overscan={5}
                     rowRenderer={this.rowRenderer}
                     width={width}
-                    height={height}
+                    height={mentionHeight + 32}
                     fixedCellHeight={ITEM_HEIGHT}
                     data-test-automation-id="mention-list"
                   />
@@ -132,8 +116,9 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
             }}
           </ReactResizeDetector>
         </JuiMentionPanel>
-
-        /* <JuiMentionPanel isEditMode={isEditMode}>
+        /*
+        S17 change to new VL will delete this comment
+        <JuiMentionPanel isEditMode={isEditMode}>
             <JuiMentionPanelSection>
               {groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ? null : (
                 <JuiMentionPanelSectionHeader
