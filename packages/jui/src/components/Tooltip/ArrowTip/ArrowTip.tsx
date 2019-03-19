@@ -113,7 +113,13 @@ export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
   }
 
   render() {
-    const { title, children, placement = 'bottom', ...rest } = this.props;
+    const {
+      title,
+      children,
+      placement = 'bottom',
+      tooltipForceHide,
+      ...rest
+    } = this.props;
     const { arrowRef } = this.state;
     return (
       <React.Fragment>
