@@ -8,7 +8,10 @@ type Props = {};
 
 type ViewProps = {
   currentUserId: number;
-  toggleAboutPage: (appVersion?: string, electronVersion?: string) => void;
+  toggleAboutPage: (
+    electronAppVersion?: string,
+    electronVersion?: string,
+  ) => void;
   handleSignOut: () => void;
 };
 

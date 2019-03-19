@@ -56,7 +56,11 @@
     "RecentSearches": "Recent searches",
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
-    "aboutRingCentral": "About RingCentral"
+    "aboutRingCentral": "About RingCentral",
+    "version": "Version",
+    "lastCommit": "Last Commit",
+    "deployedTime": "Deploy Time",
+    "allRightsReserved": "all rights reserved"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
