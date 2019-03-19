@@ -10,6 +10,7 @@ import { OfflineGatherer } from './offlineGatherer';
 import { SearchGatherer } from './searchGatherer';
 import { SwitchConversationGatherer } from './switchConversationGatherer';
 import { MemoryGatherer } from './memoryGatherer';
+import { FpsGatherer } from './fpsGatherer';
 
 export {
   ProcessGatherer,
@@ -20,5 +21,6 @@ export {
   OfflineGatherer,
   SearchGatherer,
   SwitchConversationGatherer,
-  MemoryGatherer
+  MemoryGatherer,
+  FpsGatherer
 }

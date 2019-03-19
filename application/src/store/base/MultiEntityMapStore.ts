@@ -28,14 +28,18 @@ export default class MultiEntityMapStore<
 
   private _usedCacheArr: IUsedCache[] = [];
 
+  private _modelCreator: ((model: IdModel) => K) | undefined;
+
   constructor(
     entityName: ENTITY_NAME,
-    { service, event, cacheCount }: EntitySetting,
+    { service, event, cacheCount, modelCreator }: EntitySetting<K>,
   ) {
     super(entityName);
 
     this._getService = service;
     this._maxCacheCount = cacheCount;
+    this._modelCreator = modelCreator;
+
     const callback = (payload: NotificationEntityPayload<T>) => {
       this.handleIncomingData(payload);
     };
@@ -124,7 +128,13 @@ export default class MultiEntityMapStore<
   }
 
   private _set(data: T, refreshCache: boolean = false) {
-    const model = this.createModel(data);
+    let model: K;
+    if (this._modelCreator) {
+      model = this._modelCreator(data);
+    } else {
+      model = this.createModel(data);
+    }
+
     const { id } = model;
 
     this._data[id] = model;

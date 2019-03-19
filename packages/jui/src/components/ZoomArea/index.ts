@@ -5,3 +5,4 @@
  */
 export * from './types';
 export * from './ZoomArea';
+export * from './utils';

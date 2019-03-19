@@ -146,12 +146,14 @@ const JuiConversationListSectionHeader = memo(
         onClick={onClick}
         {...rest}
       >
-        <StyledJuiIconographyLeft>{icon}</StyledJuiIconographyLeft>
+        <StyledJuiIconographyLeft iconSize="medium">
+          {icon}
+        </StyledJuiIconographyLeft>
         <ItemText disableTooltip={true}>{title}</ItemText>
         <StyledRightWrapper>
           {!expanded ? umi : null}
           {!hideArrow ? (
-            <StyledJuiIconography onClick={onArrowClick}>
+            <StyledJuiIconography iconSize="medium" onClick={onArrowClick}>
               {arrow}
             </StyledJuiIconography>
           ) : null}

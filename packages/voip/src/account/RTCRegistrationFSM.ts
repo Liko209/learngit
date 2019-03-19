@@ -68,6 +68,7 @@ class RTCRegistrationFSM extends StateMachine {
         {
           name: REGISTRATION_FSM_EVENT.MAKE_OUTGOING_CALL,
           from: [
+            REGISTRATION_FSM_STATE.IDLE,
             REGISTRATION_FSM_STATE.IN_PROGRESS,
             REGISTRATION_FSM_STATE.READY,
           ],

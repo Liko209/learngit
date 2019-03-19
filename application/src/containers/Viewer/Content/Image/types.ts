@@ -6,8 +6,14 @@
 import FileItemModel from '@/store/models/FileItem';
 import { ViewerViewModelProps } from '../../types';
 
-type ImageViewerProps = ViewerViewModelProps & {
+type ImageViewerOptions = {
   originElement?: HTMLElement;
+  thumbnailSrc?: string;
+  initialWidth?: number;
+  initialHeight?: number;
+};
+type ImageViewerProps = ViewerViewModelProps & {
+  initialOptions: ImageViewerOptions;
 };
 
 type ImageViewerViewProps = ImageViewerProps & {
@@ -16,10 +22,7 @@ type ImageViewerViewProps = ImageViewerProps & {
   imageUrl: string;
   imageWidth?: number;
   imageHeight?: number;
-  hasPrevious: boolean;
-  hasNext: boolean;
-  switchPreImage: () => void;
-  switchNextImage: () => void;
+  thumbnailSrc?: string;
 };
 
-export { ImageViewerProps, ImageViewerViewProps };
+export { ImageViewerProps, ImageViewerViewProps, ImageViewerOptions };

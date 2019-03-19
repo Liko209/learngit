@@ -9,6 +9,9 @@ import {
   NETWORK_VIA,
   BaseResponse,
   NetworkRequestExecutor,
+  SURVIVAL_MODE,
+  NETWORK_HANDLE_TYPE,
+  RESPONSE_HEADER_KEY,
 } from 'foundation';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
@@ -83,6 +86,14 @@ function refreshToken(data: ITokenModel) {
         resolve(response.data);
         return;
       }
+      if (response.status >= 500) {
+        const handler = Api.rcNetworkClient.networkManager.networkRequestHandler(
+          NETWORK_HANDLE_TYPE.RINGCENTRAL,
+        );
+        if (handler) {
+          handler.onSurvivalModeDetected(SURVIVAL_MODE.SURVIVAL, 0);
+        }
+      }
       reject(responseParser.parse(response));
     };
 
@@ -104,4 +115,39 @@ function refreshToken(data: ITokenModel) {
   return promise;
 }
 
-export { ITokenModel, loginRCByPassword, loginGlip2ByPassword, refreshToken };
+function requestServerStatus(
+  callback: (success: boolean, retryAfter: number) => void,
+) {
+  const query = {
+    path: RINGCENTRAL_API.API_Status,
+    method: NETWORK_METHOD.GET,
+    authFree: true,
+    via: NETWORK_VIA.HTTP,
+  };
+
+  const callbackFunc = (response: BaseResponse) => {
+    if (response.status >= 200 && response.status < 300) {
+      callback(true, 0);
+      return;
+    }
+    let retryAfter = 0;
+    if (
+      response.headers &&
+      response.headers.hasOwnProperty(RESPONSE_HEADER_KEY.RETRY_AFTER)
+    ) {
+      retryAfter = response.headers[RESPONSE_HEADER_KEY.RETRY_AFTER];
+    }
+    callback(false, retryAfter);
+  };
+  const request = Api.rcNetworkClient.getRequestByVia(query, query.via);
+  request.callback = callbackFunc;
+  Api.rcNetworkClient.networkManager.addApiRequest(request);
+}
+
+export {
+  ITokenModel,
+  loginRCByPassword,
+  loginGlip2ByPassword,
+  refreshToken,
+  requestServerStatus,
+};

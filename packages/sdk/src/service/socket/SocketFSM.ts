@@ -8,23 +8,24 @@ import { SOCKET } from '../../service/eventKey';
 import { mainLogger, SocketClient } from 'foundation';
 import StateMachine from 'ts-javascript-state-machine';
 import dataDispatcher from '../../component/DataDispatcher';
-
+import { GlipPingPong } from './GlipPingPong';
 const SOCKET_LOGGER = 'SOCKET';
 
 type StateHandler = (name: string, state: string) => any;
+type GlipPingPongStatusCallback = (isSuccess: boolean) => void;
 export class SocketFSM extends StateMachine {
   private static instanceID: number = 0;
   socketClient: any = null;
-
-  protected isStopped: boolean = false;
   protected latestPongTime: number = 0;
-
+  private _glipPingPong?: GlipPingPong;
+  protected isManualStopped: boolean = false;
   private logPrefix: string = '';
 
   constructor(
     public serverUrl: string,
     public glipToken: string,
     public stateHandler: StateHandler,
+    public glipPingPongStatusCallback: GlipPingPongStatusCallback,
   ) {
     super({
       transitions: [
@@ -65,8 +66,10 @@ export class SocketFSM extends StateMachine {
         },
 
         onEnterState() {
-          this.info(`onEnterState ${this.state}`);
-          if (this.stateHandler) {
+          this.info(
+            `onEnterState ${this.state} isManualStopped:${this.isManualStopped}`,
+          );
+          if (!this.isManualStopped && this.stateHandler) {
             this.stateHandler(this.name, this.state);
           }
         },
@@ -74,6 +77,10 @@ export class SocketFSM extends StateMachine {
         onInit() {
           this.info(`onInit ${this.state}`);
           this.socketClient = new SocketClient(this.serverUrl, this.glipToken);
+          this._glipPingPong = new GlipPingPong({
+            socket: this.socketClient.socket,
+            callback: this.fsmGlipPingPongCallback.bind(this),
+          });
           this.registerSocketEvents();
         },
 
@@ -82,26 +89,20 @@ export class SocketFSM extends StateMachine {
         },
 
         onStop() {
-          this.isStopped = true;
+          this.isManualStopped = true;
           setTimeout(() => {
             if (this.socketClient && this.socketClient.socket) {
               this.socketClient.socket.reconnection = false;
               this.socketClient.socket.disconnect();
             }
-            // TO-DO: to be test
-            // for connecting state, will have a follow-up socket disconnect event?
-            if (this.state === 'disconnected') {
-              this.cleanup();
-            }
+            this.cleanup();
           });
         },
 
         onFinishConnect() {},
 
         onFireDisconnect() {
-          if (this.isStopped) {
-            this.cleanup();
-          }
+          this.cleanup();
         },
       },
     });
@@ -148,14 +149,29 @@ export class SocketFSM extends StateMachine {
   }
 
   cleanup() {
+    if (this._glipPingPong) {
+      this._glipPingPong.cleanup();
+      this._glipPingPong = undefined;
+      this.info('glip ping pong cleanup done.');
+    }
     if (this.socketClient) {
       if (this.socketClient.socket) {
         this.socketClient.socket.removeAllListeners();
+        this.socketClient.socket.destroy();
+        delete this.socketClient.socket;
         this.socketClient.socket = null;
-        this.info('cleanup done.');
+        this.info('socket client cleanup done.');
       }
       this.socketClient = null;
     }
+  }
+
+  public doGlipPing() {
+    this.info('check if socket is connected');
+    this._glipPingPong &&
+      this._glipPingPong.ping((success: boolean) => {
+        this.info('check socket and it is ping result is:', success);
+      });
   }
 
   protected registerSocketEvents() {
@@ -193,6 +209,11 @@ export class SocketFSM extends StateMachine {
 
     this.socketClient.socket.on('reconnect_attempt', (data: any) => {
       this.info('socket-> reconnect_attempt. ', data);
+    });
+
+    this.socketClient.socket.on('request_timeout', (data: any) => {
+      this.info('socket-> request_timeout. ', data);
+      this.doGlipPing();
     });
 
     this.socketClient.socket.on('reconnect_failed', (data: any) => {
@@ -248,13 +269,13 @@ export class SocketFSM extends StateMachine {
     this.socketClient.socket.on('client_config', (data: any) => {
       this.info('socket-> client_config. ', data);
     });
-
-    this.socketClient.socket.on('glip_ping', (data: any) => {
-      this.info('socket-> glip_ping. ', data);
-    });
-
-    this.socketClient.socket.on('glip_pong', (data: any) => {
-      this.info('socket-> glip_pong. ', data);
-    });
+  }
+  protected fsmGlipPingPongCallback(success: boolean) {
+    this.info(
+      ` glipPingPongCallback success: ${success} state:${
+        this.state
+      } isManualStopped :${this.isManualStopped}`,
+    );
+    this.glipPingPongStatusCallback(success);
   }
 }

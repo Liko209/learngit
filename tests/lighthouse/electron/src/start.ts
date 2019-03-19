@@ -2,7 +2,8 @@
  * @Author: doyle.wu
  * @Date: 2019-02-21 13:40:12
  */
-import * as scenarios from './scene';
+import * as scenes from './scene';
+import { Config } from './config';
 import { PptrUtils, LogUtils } from './utils';
 import { initModel, closeDB } from './model';
 import { MetricService, FileService } from './service';
@@ -23,21 +24,34 @@ const logger = LogUtils.getLogger(__filename);
 
     let taskDto = await MetricService.createTask();
 
-    let list: Array<scenarios.Scene> = [
-      new scenarios.LoginScene(taskDto),
-      new scenarios.RefreshScene(taskDto),
-      new scenarios.OfflineScene(taskDto),
-      new scenarios.SearchScene(taskDto, ["John", "Doe", "Team", "kamino"]),
-      new scenarios.SwitchConversationScene(taskDto, [
-        "506503174",
-        "506445830"
-      ]),
-      new scenarios.FetchGroupScene(taskDto)
-    ];
+    const sceneNames = Object.keys(scenes).filter(name => {
+      const _name = name.toLowerCase();
+      if (_name === 'scene' || !_name.endsWith('scene')) {
+        return false;
+      }
+      const includeScene = Config.includeScene;
+      if (includeScene.length === 0) {
+        return true;
+      }
 
-    let result = true;
-    for (let s of list) {
-      result = (await s.run()) && result;
+      for (let s of includeScene) {
+        if (_name === s.toLowerCase()) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    const sceneArray = [];
+    for (let name of sceneNames) {
+      sceneArray.push(new scenes[name](taskDto));
+    }
+
+    let result = true, scene;
+    while (sceneArray.length > 0) {
+      scene = sceneArray.shift();
+      result = (await scene.run()) && result;
+      scene.clearReportCache();
     }
 
     if (result) {

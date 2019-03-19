@@ -40,17 +40,25 @@ enum WEBPHONE_MEDIA_CONNECTION_STATE_EVENT {
   MEDIA_CONNECTION_CLOSED = 'mediaConnectionStateClosed',
 }
 
+enum WEBPHONE_LOG_LEVEL {
+  DEBUG = 'debug',
+  LOG = 'log',
+  WARN = 'warn',
+  ERROR = 'error',
+}
+
 type ProvisionDataOptions = {
-  appKey?: string;
   appName?: string;
   appVersion?: string;
-  uuid?: string;
   logLevel?: string;
+  builtinEnabled?: false;
+  connector?: any;
   audioHelper?: string;
   onSession?: string;
   maxReconnectionAttempts?: number;
   reconnectionTimeout?: number;
   connectionTimeout?: number;
+  modifiers?: any;
 };
 
 type InboundRtpReport = {
@@ -82,6 +90,7 @@ export {
   UA_EVENT,
   WEBPHONE_SESSION_STATE,
   WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
+  WEBPHONE_LOG_LEVEL,
   RC_SIP_HEADER_NAME,
   WEBPHONE_SESSION_EVENT,
   ProvisionDataOptions,

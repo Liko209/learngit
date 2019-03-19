@@ -1,18 +1,44 @@
 import React, { PureComponent } from 'react';
-import Draggable from 'react-draggable';
+import Draggable, {
+  DraggableEventHandler,
+  DraggableEvent,
+} from 'react-draggable';
 import { JuiDialog, JuiDialogProps } from './Dialog';
 import { JuiPaper, JuiPaperProps } from '../Paper';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils/styles';
 
-type JuiDraggableDialogProps = {
+type JuiDraggableProps = {
   x: number;
   y: number;
-} & JuiDialogProps;
+  dragRef?: React.RefObject<any>;
+  onStart?: DraggableEventHandler;
+  onStop?: DraggableEventHandler;
+  onDrag?: DraggableEventHandler;
+  handle?: string;
+};
 
-const PaperComponent = (x: number, y: number) => (props: JuiPaperProps) => {
+type JuiDraggableDialogProps = JuiDraggableProps & JuiDialogProps;
+
+const PaperComponent = ({
+  x,
+  y,
+  dragRef,
+  onStart,
+  onStop,
+  onDrag,
+  handle,
+}: JuiDraggableProps) => (props: JuiPaperProps) => {
   return (
-    <Draggable bounds="body" defaultPosition={{ x, y }}>
+    <Draggable
+      bounds="body"
+      defaultPosition={{ x, y }}
+      ref={dragRef}
+      onStart={onStart}
+      onStop={onStop}
+      onDrag={onDrag}
+      handle={handle}
+    >
       <JuiPaper {...props} />
     </Draggable>
   );
@@ -40,10 +66,17 @@ const StyledDraggableDialog = styled(JuiDialog)`
 
 class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
   render() {
-    const { x, y, ...rest } = this.props;
+    const { x, y, dragRef, onStart, onStop, handle, ...rest } = this.props;
     return (
       <StyledDraggableDialog
-        PaperComponent={PaperComponent(x, y)}
+        PaperComponent={PaperComponent({
+          x,
+          y,
+          dragRef,
+          onStart,
+          onStop,
+          handle,
+        })}
         disableBackdropClick={true}
         disableEscapeKeyDown={true}
         disableEnforceFocus={true}
@@ -55,4 +88,4 @@ class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
   }
 }
 
-export { JuiDraggableDialog };
+export { JuiDraggableDialog, DraggableEvent };

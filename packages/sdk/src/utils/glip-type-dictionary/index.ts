@@ -60,6 +60,11 @@ function parseSocketMessage(message: string | ISystemMessage) {
     post_creator_ids = _.values(hint.post_creator_ids);
   }
   const result = {};
+
+  if (parsedMsg.body.timestamp) {
+    result['TIMESTAMP'] = parsedMsg.body.timestamp;
+  }
+
   objects.forEach((arr: any[]) => {
     arr.forEach((obj: any) => {
       if (post_creator_ids) {

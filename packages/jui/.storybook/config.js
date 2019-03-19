@@ -9,7 +9,7 @@ import { configure, addDecorator } from '@storybook/react';
 import { withKnobs } from '@storybook/addon-knobs';
 
 import { ThemeProvider } from '../src/foundation/theme/index';
-import './index.css'
+import './index.css';
 
 const ThemeDecorator = storyFn => {
   return (

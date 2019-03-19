@@ -38,6 +38,26 @@ export type IndexDataModel = {
   client_config: IFlag;
   static_http_server: string;
 };
+
+export type CanConnectModel = {
+  deployment_state?: {
+    level: number;
+    number: number;
+  };
+  scoreboard?: string;
+  socket_version?: string;
+  version?: string;
+  reconnect_retry_in?: number;
+  reconnect_in?: number;
+};
+
+export type CanConnectParasType = {
+  newer_than?: number;
+  presence: string;
+  user_id?: number;
+  uidtk: string;
+};
+
 /**
  * @param {string} rcAccessTokenData
  * @param {string} username
@@ -68,12 +88,14 @@ function loginGlip(authData: object) {
  * index data api
  */
 function indexData(params: object, requestConfig = {}, headers = {}) {
+  const retryCount = 3;
   return Api.glipNetworkClient.get<IndexDataModel>(
     '/index',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    retryCount,
   );
 }
 
@@ -99,4 +121,18 @@ function remainingData(params: object, requestConfig = {}, headers = {}) {
 
 // plugins data
 
-export { loginGlip, indexData, initialData, remainingData };
+function canConnect(
+  params: CanConnectParasType,
+  requestConfig = {},
+  headers = {},
+) {
+  return Api.glipNetworkClient.get<CanConnectModel>(
+    '/can-reconnect-v2',
+    params,
+    NETWORK_VIA.HTTP,
+    requestConfig,
+    headers,
+  );
+}
+
+export { loginGlip, indexData, initialData, remainingData, canConnect };

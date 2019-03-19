@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './DragZoom';
-export * from './DragZoomImage';
+export * from './types';

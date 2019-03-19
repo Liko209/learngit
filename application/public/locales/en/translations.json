@@ -39,7 +39,8 @@
     "collapse": "Collapse",
 
     "back": "Back",
-    "forward": "Forward"
+    "forward": "Forward",
+    "You": "You"
   },
   "auth": {
     "signIn": "Sign in",
@@ -65,6 +66,7 @@
     "Dashboard": "Dashboard"
   },
   "message": {
+    "likedThis": "liked this",
     "showUnreads": "Show Unreads",
     "meGroup": "me",
     "mentionPosts": "Mentions",
@@ -355,7 +357,9 @@
       "profile": "Profile",
       "close": "Close",
       "markAsRead": "Mark as read",
-      "markAsUnread": "Mark as unread"
+      "markAsUnread": "Mark as unread",
+      "convertToTeam": "Convert to team",
+      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content."
     },
     "company": {},
     "prompt": {
@@ -398,7 +402,8 @@
       "InvalidEmail": "Invalid Email",
 
       "markAsRead": "Failed to mark this conversation as read. Try again later.",
-      "markAsUnread": "Failed to mark this conversation as unread. Try again later."
+      "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
+      "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later."
     }
   },
   "contact": {
@@ -421,6 +426,11 @@
       "record": "Record",
       "callActions": "Call Actions",
       "end": "End"
+    },
+    "prompt": {
+      "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
+      "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
+      "CallTimeout": "Sorry, we weren't able to place the call. Try again later."
     }
   },
   "meeting": {
@@ -435,8 +445,12 @@
   "viewer": {
     "ZoomIn": "Scale file up",
     "ZoomOut": "Scale file down",
+    "ZoomReset": "Reset zoom",
     "PreviousFile": "View previous file",
     "NextFile": "View next file",
-    "DismissTip": "Sorry, the image you were viewing is deleted."
+    "DismissTip": "Sorry, the image you were viewing is deleted.",
+    "ImageDeleted": "Sorry, the image you were viewing is deleted.",
+    "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
+    "TeamArchived": "The team was archived. To know more, contact the team administrator."
   }
 }

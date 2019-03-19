@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { createRef, Fragment } from 'react';
+import React, { createRef } from 'react';
 import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
@@ -41,9 +41,12 @@ const StyledSnackbarsContent = styled(JuiSnackbarContent)`
 `;
 
 const createTeamLoading = () => (
-  <DefaultLoadingWithDelay mask={true} size={42} />
+  <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
 );
-const Loading = withLoading(Fragment, createTeamLoading);
+const Loading = withLoading(
+  (props: any) => <>{props.children}</>,
+  createTeamLoading,
+);
 @observer
 class CreateTeamView extends React.Component<ViewProps, State> {
   static contextType = DialogContext;
@@ -203,7 +206,6 @@ class CreateTeamView extends React.Component<ViewProps, State> {
       <JuiModal
         open={true}
         size={'medium'}
-        okBtnProps={{ disabled: disabledOkBtn }}
         title={i18next.t('people.team.CreateTeam')}
         onCancel={this.onClose}
         onOK={this.createTeam}
@@ -216,6 +218,13 @@ class CreateTeamView extends React.Component<ViewProps, State> {
           )
         }
         cancelText={i18next.t('common.dialog.cancel')}
+        okBtnProps={{
+          disabled: disabledOkBtn,
+          'data-test-automation-id': 'createTeamOkButton',
+        }}
+        cancelBtnProps={{
+          'data-test-automation-id': 'createToTeamCancelButton',
+        }}
       >
         <Loading loading={loading} alwaysComponentShow={true} delay={0}>
           <JuiTextField
