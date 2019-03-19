@@ -77,22 +77,14 @@ const JuiVirtualizedList: RefForwardingComponent<
     return result;
   };
 
-  const computeRenderedRange = (
-    visibleRange: IndexRange,
-    overscanDirection: 'up' | 'down',
-  ) => {
+  const computeRenderedRange = (visibleRange: IndexRange) => {
     const renderedRange: IndexRange = { ...visibleRange };
 
-    // if ('up' === overscanDirection) {
     renderedRange.startIndex = Math.max(
       visibleRange.startIndex - overscan,
       minIndex,
     );
-    // }
-
-    // if ('down' === overscanDirection) {
     renderedRange.stopIndex = visibleRange.stopIndex + overscan;
-    // }
 
     return renderedRange;
   };
@@ -181,7 +173,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
-  const recomputeRange = () => {
+  const updateRange = () => {
     if (ref.current) {
       const { scrollTop } = ref.current;
       const visibleRange = computeVisibleRange();
@@ -204,14 +196,7 @@ const JuiVirtualizedList: RefForwardingComponent<
           });
         }
 
-        // Update rendered range
-        const isScrollUp =
-          prevScrollIndex > visibleStartIndex ||
-          (prevScrollIndex === visibleStartIndex && prevScrollOffset > offset);
-        const newRenderedRange = computeRenderedRange(
-          visibleRange,
-          isScrollUp ? 'up' : 'down',
-        );
+        const newRenderedRange = computeRenderedRange(visibleRange);
 
         // TODO Don't re-render if range not changed
         setRenderedRange(newRenderedRange);
@@ -352,7 +337,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     const visibleRange = computeVisibleRange();
     if (!isRangeIn(renderedRange, visibleRange)) {
       // If visible range not in current renderedRange
-      recomputeRange();
+      updateRange();
     }
   });
 
@@ -387,7 +372,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   const handleScroll = (event: React.UIEvent) => {
     if (ref.current) {
-      recomputeRange();
+      updateRange();
       onScroll(event);
     }
   };
