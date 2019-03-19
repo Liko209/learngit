@@ -1,8 +1,9 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/ImageViewer/DeleteImage.ts"
+      "./fixtures/**/*.ts"
     ],
+    "include_tags": ["P0", "P1","JPT-1343","JPT-1344"],
     "browsers": [
       "selenium:chrome"
     ]

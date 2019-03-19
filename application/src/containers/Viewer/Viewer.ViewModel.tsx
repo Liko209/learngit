@@ -3,7 +3,7 @@
  * @Date: 2019-02-26 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable, action, transaction, reaction } from 'mobx';
+import { computed, observable, action, transaction } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
@@ -13,8 +13,6 @@ import {
   NotificationEntityUpdatePayload,
   NotificationEntityDeletePayload,
 } from 'sdk/service/notificationCenter';
-
-import { AbstractViewModel } from '@/base';
 
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { ViewerViewProps } from './types';
@@ -32,10 +30,11 @@ import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
+import StoreViewModel from '@/store/ViewModel';
 
 const PAGE_SIZE = 20;
 
-class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
+class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   @observable
   isLoadingMore: boolean = false;
   @observable
@@ -63,8 +62,7 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
       groupId,
     );
     notificationCenter.on(itemNotificationKey, this._onItemDataChange);
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
-    reaction(
+    this.reaction(
       () =>
         getSingleEntity<Profile, ProfileModel>(
           ENTITY_NAME.PROFILE,
@@ -75,23 +73,32 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
           this._onExceptions('viewer.ConversationClosed');
         }
       },
+      {
+        equals: (a: number[], b: number[]) =>
+          a.sort().toString() === b.sort().toString(),
+      },
     );
-    reaction(
-      () => group.isArchived,
+    this.reaction(
+      () => this.group.isArchived,
       (isArchived: boolean) => {
         if (isArchived) {
           this._onExceptions('viewer.TeamArchived');
         }
       },
     );
-    reaction(
-      () => group.deactivated,
+    this.reaction(
+      () => this.group.deactivated,
       (deactivated: boolean) => {
         if (deactivated) {
           this._onExceptions('viewer.TeamDeleted');
         }
       },
     );
+  }
+
+  @computed
+  get group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId);
   }
 
   @action
