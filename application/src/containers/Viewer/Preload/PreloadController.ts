@@ -44,6 +44,8 @@ class PreloadController implements IImageDownloadedListener {
   stop() {
     this._logger.info('Stop');
     this._pendingIds = [];
+
+    this._downloader.cancelLoadingImage();
   }
 
   getPendingIds() {
@@ -97,7 +99,7 @@ class PreloadController implements IImageDownloadedListener {
 
   private _tryPreloadWithItemId(itemId: number) {
     const item: FileItemModel = getEntity(ENTITY_NAME.ITEM, itemId);
-    if (!item) {
+    if (!item || item.id <= 0) {
       return false;
     }
 

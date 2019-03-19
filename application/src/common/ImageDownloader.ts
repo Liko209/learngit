@@ -44,11 +44,26 @@ class ImageDownloader implements IImageDownloader {
       `url: ${itemInfo.url}`,
     );
 
-    this._cancelLoadingImage();
+    this.cancelLoadingImage();
 
     this._itemInfo = itemInfo;
     this._downloadListener = downloadListener;
     this._imgElement.setAttribute('src', itemInfo!.url);
+  }
+
+  public cancelLoadingImage() {
+    if (this._itemInfo) {
+      this._logger.info(
+        'cancel',
+        `itemId: ${this._itemInfo.id}`,
+        `src: ${this._imgElement.getAttribute('src')}`,
+      );
+
+      const listener = this._downloadListener;
+      const itemInfo = this._itemInfo;
+      this._resetImage();
+      listener && listener.onCancel(itemInfo);
+    }
   }
 
   private _createImageElement() {
@@ -116,21 +131,6 @@ class ImageDownloader implements IImageDownloader {
     const itemInfo = this._itemInfo;
     this._resetImage();
     listener && listener.onFailure(itemInfo, 0);
-  }
-
-  private _cancelLoadingImage = () => {
-    if (this._itemInfo) {
-      this._logger.info(
-        'cancel',
-        `itemId: ${this._itemInfo.id}`,
-        `src: ${this._imgElement.getAttribute('src')}`,
-      );
-
-      const listener = this._downloadListener;
-      const itemInfo = this._itemInfo;
-      this._resetImage();
-      listener && listener.onCancel(itemInfo);
-    }
   }
 
   private _resetImage() {

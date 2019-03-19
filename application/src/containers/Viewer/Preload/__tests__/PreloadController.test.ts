@@ -22,6 +22,7 @@ jest.mock('@/common/ImageDownloader', () => {
     ImageDownloader: () => {
       return {
         download: jest.fn(),
+        cancelLoadingImage: jest.fn(),
       };
     },
   };
