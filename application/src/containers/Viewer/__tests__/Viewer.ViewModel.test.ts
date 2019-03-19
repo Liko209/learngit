@@ -126,12 +126,12 @@ describe('Viewer.ViewModel', () => {
   describe('init()', () => {
     it('should loadInitialData and refresh itemIndexInfo', async (done: jest.DoneCallback) => {
       const dataSource = createDataSource();
-      const vm = new ViewerViewModel(props);
       const itemService: ItemService = ItemService.getInstance();
       itemService.getItemIndexInfo.mockResolvedValue({
         index: 11,
         totalCount: 22,
       });
+      const vm = new ViewerViewModel(props);
       await vm.init();
       setTimeout(() => {
         expect(dataSource.loadInitialData).toBeCalled();
@@ -147,8 +147,8 @@ describe('Viewer.ViewModel', () => {
   describe('dispose()', () => {
     it('should dispose dataSource & notification', () => {
       const dataSource = createDataSource();
-      const vm = new ViewerViewModel(props);
       const notificationOff = jest.spyOn(notificationCenter, 'off');
+      const vm = new ViewerViewModel(props);
       vm.dispose();
       expect(notificationOff).toBeCalled();
       expect(dataSource.dispose).toBeCalled();
