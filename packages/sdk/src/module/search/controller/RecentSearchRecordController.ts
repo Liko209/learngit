@@ -57,6 +57,21 @@ class RecentSearchRecordController {
     this._updateRecentRecords(records);
   }
 
+  getRecentSearchRecordsByType(
+    type: RecentSearchTypes,
+  ): Map<number | string, RecentSearchModel> {
+    const searchConfig = new SearchUserConfig();
+    const records = searchConfig.getRecentSearchRecords();
+    const result = new Map<number | string, RecentSearchModel>();
+    records &&
+      records.forEach((model: RecentSearchModel) => {
+        if (model.type === type) {
+          result.set(model.value, model);
+        }
+      });
+    return result;
+  }
+
   private _updateRecentRecords(records: RecentSearchModel[]) {
     const searchConfig = new SearchUserConfig();
     searchConfig.setRecentSearchRecords(records);

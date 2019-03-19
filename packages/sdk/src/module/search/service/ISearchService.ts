@@ -14,6 +14,10 @@ interface ISearchService {
   clearRecentSearchRecords(): void;
   getRecentSearchRecords(): RecentSearchModel[];
   removeRecentSearchRecords(ids: Set<number>): void;
+
+  getRecentSearchRecordsByType(
+    type: RecentSearchTypes,
+  ): Map<number | string, RecentSearchModel>;
 }
 
 export { ISearchService };
