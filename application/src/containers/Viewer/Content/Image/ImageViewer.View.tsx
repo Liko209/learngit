@@ -23,7 +23,7 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { ImageViewerViewProps } from './types';
-import { JuiZoomElement } from 'jui/components/Animation';
+import { JuiZoomElement, ZoomElementAnimation } from 'jui/components/Animation';
 import ViewerContext from '../../ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
 
@@ -33,6 +33,7 @@ type ImageViewerProps = WithNamespaces & ImageViewerViewProps & ThemeProps;
 class ImageViewerComponent extends Component<ImageViewerProps, any> {
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _zoomRef: RefObject<JuiDragZoom> = createRef();
+  private _animateRef: RefObject<ZoomElementAnimation> = createRef();
   static contextType = DialogContext;
   constructor(props: ImageViewerProps) {
     super(props);
@@ -40,6 +41,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     this.state = {
       initialOptions: this.props.initialOptions,
       switched: false,
+      imageInited: false,
     };
   }
 
@@ -73,6 +75,14 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       dismissible: false,
     });
     this.context();
+  }
+
+  private _onZoomImageContentChange = () => {
+    if (!this.state.imageInited) {
+      this.setState({
+        imageInited: true,
+      });
+    }
   }
 
   private _canSwitchPrevious = () => {
@@ -122,9 +132,11 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                   zoomInText={t('viewer.ZoomIn')}
                   zoomOutText={t('viewer.ZoomOut')}
                   zoomResetText={t('viewer.ZoomReset')}
+                  onAutoFitContentRectChange={this._onZoomImageContentChange}
                 >
                   {({
-                    autoFitContentRect,
+                    fitWidth,
+                    fitHeight,
                     notifyContentSizeChange,
                     canDrag,
                     isDragging,
@@ -142,14 +154,8 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                         key={`image-${currentItemId}`}
                         imageRef={this._imageRef}
                         src={imageUrl}
-                        width={
-                          (autoFitContentRect && autoFitContentRect.width) ||
-                          imageWidth
-                        }
-                        height={
-                          (autoFitContentRect && autoFitContentRect.height) ||
-                          imageHeight
-                        }
+                        width={fitWidth || imageWidth}
+                        height={fitHeight || imageHeight}
                         style={imageStyle}
                         onSizeLoad={notifyContentSizeChange}
                         thumbnailSrc={thumbnailSrc}
@@ -179,8 +185,9 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                 )}
               </JuiImageViewerContainer>
             </HotKeys>
-            {this._imageRef.current && (
+            {this._imageRef.current && this.state.imageInited && (
               <JuiZoomElement
+                ref={this._animateRef}
                 originalElement={
                   this.state.switched
                     ? null

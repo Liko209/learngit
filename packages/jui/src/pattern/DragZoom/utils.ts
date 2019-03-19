@@ -3,46 +3,39 @@
  * @Date: 2019-03-13 12:19:46
  * Copyright © RingCentral. All rights reserved.
  */
-import { ElementRect, Transform } from '../../components/ZoomArea';
+import { Transform } from '../../components/ZoomArea';
 import { Padding } from './types';
 
-export function calculateFitSize(
-  containerRect: ElementRect,
-  contentRect: ElementRect,
+export function calculateFitWidthHeight(
+  contentWidth: number,
+  contentHeight: number,
+  containerWidth: number,
+  containerHeight: number,
   padding: Padding,
   minContentLength?: number,
-) {
-  if (containerRect.width === 0 || containerRect.height === 0) {
-    return containerRect;
+): [number, number] {
+  if (containerWidth === 0 || containerHeight === 0) {
+    return [contentWidth, contentHeight];
   }
+
   const [pl, pt, pr, pb] = padding;
-  const constrictWidth = containerRect.width - pl - pr;
-  const constrictHeight = containerRect.height - pt - pb;
+  const constrictWidth = containerWidth - pl - pr;
+  const constrictHeight = containerHeight - pt - pb;
   const min = minContentLength === undefined ? 100 : minContentLength;
-  const pw =
-    constrictWidth > min ? pl + pr : Math.max(0, containerRect.width - min);
+  const pw = constrictWidth > min ? pl + pr : Math.max(0, containerWidth - min);
   const ph =
-    constrictHeight > min ? pt + pb : Math.max(0, containerRect.height - min);
-  const paddingContainer = {
-    left: containerRect.left + pw / 2,
-    top: containerRect.top + ph / 2,
-    width: containerRect.width - pw,
-    height: containerRect.height - ph,
-  };
-  const widthRatio = contentRect.width / paddingContainer.width;
-  const heightRatio = contentRect.height / paddingContainer.height;
+    constrictHeight > min ? pt + pb : Math.max(0, containerHeight - min);
+  const width = containerWidth - pw;
+  const height = containerHeight - ph;
+
+  const widthRatio = contentWidth / width;
+  const heightRatio = contentHeight / height;
   const largerRatio = Math.max(widthRatio, heightRatio);
-  const result = {} as ElementRect;
+  // const result = {} as ElementRect;
   if (largerRatio <= 1) {
-    result.width = contentRect.width;
-    result.height = contentRect.height;
-  } else {
-    result.width = contentRect.width / largerRatio;
-    result.height = contentRect.height / largerRatio;
+    return [contentWidth, contentHeight];
   }
-  result.left = containerRect.left + (containerRect.width - result.width) / 2;
-  result.top = containerRect.top + (containerRect.height - result.height) / 2;
-  return result;
+  return [contentWidth / largerRatio, contentHeight / largerRatio];
 }
 
 export function fixOffset(
@@ -67,16 +60,15 @@ export function fixBoundary(
   transform: Transform,
   contentWidth: number,
   contentHeight: number,
-  containerRect: ElementRect,
+  containerWidth: number,
+  containerHeight: number,
 ): Transform {
   const scaleOffsetX = transform.scale * transform.translateX;
   const scaleOffsetY = transform.scale * transform.translateY;
-  const fixOffsetX = fixOffset(scaleOffsetX, contentWidth, containerRect.width);
-  const fixOffsetY = fixOffset(
-    scaleOffsetY,
-    contentHeight,
-    containerRect.height,
-  );
+  const newContentWidth = contentWidth * transform.scale;
+  const newContentHeight = contentHeight * transform.scale;
+  const fixOffsetX = fixOffset(scaleOffsetX, newContentWidth, containerWidth);
+  const fixOffsetY = fixOffset(scaleOffsetY, newContentHeight, containerHeight);
   if (fixOffsetX === scaleOffsetX && fixOffsetY === scaleOffsetY) {
     return transform;
   }
@@ -90,9 +82,8 @@ export function fixBoundary(
 export function isDraggable(
   contentWidth: number,
   contentHeight: number,
-  containerRect: ElementRect,
+  containerWidth: number,
+  containerHeight: number,
 ): boolean {
-  return (
-    contentWidth > containerRect.width || contentHeight > containerRect.height
-  );
+  return contentWidth > containerWidth || contentHeight > containerHeight;
 }
