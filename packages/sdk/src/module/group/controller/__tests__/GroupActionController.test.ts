@@ -945,4 +945,31 @@ describe('GroupFetchDataController', () => {
       });
     });
   });
+
+  describe('isIndividualGroup', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return true when group has 2 members and is not team', () => {
+      const group: any = { id: 2, members: [1, 2], is_team: false };
+      expect(groupActionController.isIndividualGroup(group)).toBeTruthy();
+    });
+
+    it('should return false when group has more then 2 members and is not team', () => {
+      const group: any = { id: 2, members: [1, 2, 3], is_team: false };
+      expect(groupActionController.isIndividualGroup(group)).toBeFalsy();
+    });
+
+    it('should return false when group has 1 member and is not team', () => {
+      const group: any = { id: 2, members: [1], is_team: false };
+      expect(groupActionController.isIndividualGroup(group)).toBeFalsy();
+    });
+
+    it('should return false when group has 2 member and is team', () => {
+      const group: any = { id: 2, members: [1], is_team: true };
+      expect(groupActionController.isIndividualGroup(group)).toBeFalsy();
+    });
+  });
 });

@@ -15,6 +15,7 @@ import styled, {
 type JuiTooltipProps = {
   placement?: string;
   show?: boolean;
+  tooltipForceHide?: boolean;
 } & MuiTooltipProps;
 
 const TooltipArrow = styled.span`
@@ -23,7 +24,7 @@ const TooltipArrow = styled.span`
   width: 3em;
   height: 3em;
   &::before {
-    content: "";
+    content: '';
     margin: auto;
     display: block;
     width: 0;
@@ -88,12 +89,27 @@ const GlobalToolTipStyle = createGlobalStyle`
 export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
   state = {
     arrowRef: null,
+    open: false,
   };
 
   handleArrowRef = (node: any) => {
     this.setState({
       arrowRef: node,
     });
+  }
+
+  handleTooltipClose = () => {
+    this.setState({ open: false });
+  }
+
+  handleTooltipOpen = () => {
+    this.setState({ open: true });
+  }
+
+  componentDidUpdate() {
+    if (this.props.tooltipForceHide === true) {
+      this.setState({ open: !this.props.tooltipForceHide });
+    }
   }
 
   render() {
@@ -103,6 +119,9 @@ export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
       <React.Fragment>
         <MuiTooltip
           {...rest}
+          open={this.state.open}
+          onClose={this.handleTooltipClose}
+          onOpen={this.handleTooltipOpen}
           disableFocusListener={true}
           placement={placement}
           title={

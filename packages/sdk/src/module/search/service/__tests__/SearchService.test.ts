@@ -6,6 +6,7 @@
 import { SearchService } from '../SearchService';
 import { RecentSearchRecordController } from '../../controller/RecentSearchRecordController';
 import { SearchServiceController } from '../../controller/SearchServiceController';
+import { RecentSearchTypes } from '../../entity';
 
 jest.mock('../../controller/SearchServiceController');
 jest.mock('../../controller/RecentSearchRecordController');
@@ -21,7 +22,7 @@ describe('SearchService', () => {
   let searchService: SearchService;
   function setUp() {
     searchService = new SearchService();
-    searchServiceController = new SearchServiceController();
+    searchServiceController = new SearchServiceController(searchService);
   }
   beforeEach(() => {
     clearMocks();
@@ -72,6 +73,13 @@ describe('SearchService', () => {
       expect(
         recentSearchRecordController.removeRecentSearchRecords,
       ).toBeCalledWith(idSet);
+    });
+
+    it('getRecentSearchRecordsByType', () => {
+      searchService.getRecentSearchRecordsByType(RecentSearchTypes.GROUP);
+      expect(
+        recentSearchRecordController.getRecentSearchRecordsByType,
+      ).toBeCalledWith(RecentSearchTypes.GROUP);
     });
   });
 });

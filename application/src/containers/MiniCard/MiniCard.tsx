@@ -71,6 +71,7 @@ function onFocusHandler() {
 }
 
 class MiniCard {
+  static _dismiss: Function;
   static show(component: JSX.Element, options: Options): Return {
     const Component = component;
     const { anchor } = options;
@@ -85,8 +86,12 @@ class MiniCard {
         </div>
       );
     };
+    if (this._dismiss) {
+      this._dismiss();
+    }
     const { dismiss, show } = portalManager.wrapper(Comp);
     show();
+    this._dismiss = dismiss;
     return {
       dismiss,
     };
