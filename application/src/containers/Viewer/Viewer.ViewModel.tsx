@@ -108,6 +108,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   }
 
   dispose() {
+    super.dispose();
     const itemNotificationKey = ItemNotification.getItemNotificationKey(
       ViewerItemTypeIdMap[this.props.type],
       this.props.groupId,
