@@ -13,6 +13,21 @@ import { ViewerViewProps } from '../types';
 import { ItemListDataSource } from '../Viewer.DataSource';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
+import { getEntity } from '@/store/utils';
+import FileItemModel from '@/store/models/FileItem';
+
+jest.mock('@/store/utils', () => {
+  return {
+    getEntity: jest.fn(),
+  };
+});
+const item = {
+  versionUrl: '',
+  origWidth: 1,
+  origHeight: 2,
+} as FileItemModel;
+getEntity.mockReturnValue(item);
+
 jest.mock('sdk/module/item/service', () => {
   const service: ItemService = {
     getItemIndexInfo: jest.fn().mockResolvedValue({}),
