@@ -75,7 +75,6 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   saveDraft(draft: string) {
     const draftMap = EditMessageInputViewModel._draftMap;
-    console.log('draftMap: ', draftMap);
     draftMap.set(this.props.id, draft);
   }
 
