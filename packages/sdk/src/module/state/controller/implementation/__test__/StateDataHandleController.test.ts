@@ -17,7 +17,6 @@ import { TotalUnreadController } from '../TotalUnreadController';
 import { GlobalConfigService } from '../../../../../module/config/service/GlobalConfigService';
 import { AccountGlobalConfig } from '../../../../../service/account/config/AccountGlobalConfig';
 import { SYNC_SOURCE } from '../../../../../module/sync';
-import notificationCenter from '../../../../../service/notificationCenter';
 
 jest.mock('../../../../../service/notificationCenter');
 jest.mock('../../../../../module/config/service/GlobalConfigService');
