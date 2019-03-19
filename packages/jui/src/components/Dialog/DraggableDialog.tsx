@@ -1,5 +1,8 @@
 import React, { PureComponent } from 'react';
-import Draggable from 'react-draggable';
+import Draggable, {
+  DraggableEventHandler,
+  DraggableEvent,
+} from 'react-draggable';
 import { JuiDialog, JuiDialogProps } from './Dialog';
 import { JuiPaper, JuiPaperProps } from '../Paper';
 import styled from '../../foundation/styled-components';
@@ -7,26 +10,42 @@ import Transition from 'react-transition-group/Transition';
 import { JuiFade } from '../Animation';
 import { TransitionProps } from '@material-ui/core/transitions/transition';
 
-type JuiDraggableDialogProps = JuiDialogProps & PaperProps;
-
 type PaperProps = {
   x: number;
   y: number;
   open: boolean;
   dragRef?: React.RefObject<any>;
+  onStart?: DraggableEventHandler;
+  onStop?: DraggableEventHandler;
+  onDrag?: DraggableEventHandler;
+  handle?: string;
   TransitionComponent?: React.ComponentType<TransitionProps>;
 } & JuiPaperProps;
+
+type JuiDraggableDialogProps = PaperProps & JuiDialogProps;
 
 const PaperComponent = ({
   x,
   y,
   open,
   dragRef,
+  onStart,
+  onStop,
+  onDrag,
+  handle,
   TransitionComponent = JuiFade,
   ...rest
 }: PaperProps) => {
   return (
-    <Draggable bounds="body" defaultPosition={{ x, y }} ref={dragRef}>
+    <Draggable
+      bounds="body"
+      defaultPosition={{ x, y }}
+      ref={dragRef}
+      onStart={onStart}
+      onStop={onStop}
+      onDrag={onDrag}
+      handle={handle}
+    >
       <div>
         <TransitionComponent in={open}>
           <JuiPaper {...rest} />
@@ -50,13 +69,14 @@ const StyledDraggableDialog = styled(JuiDialog)`
     top: 0;
     left: 0;
     max-height: 100%;
-    overflow-y: auto;
+    overflow: hidden;
   }
   && .paper {
     width: auto;
     background-color: transparent;
     margin: 0;
     box-shadow: none;
+    overflow: hidden;
   }
 `;
 
@@ -66,9 +86,12 @@ class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       x,
       y,
       dragRef,
+      onStart,
+      onStop,
+      handle,
+      PaperProps,
       open,
       TransitionComponent,
-      PaperProps,
       ...rest
     } = this.props;
     const paperProps = {
@@ -79,6 +102,7 @@ class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
       TransitionComponent,
       ...PaperProps,
     } as PaperProps;
+
     return (
       <StyledDraggableDialog
         PaperComponent={PaperComponent}
@@ -98,4 +122,4 @@ class JuiDraggableDialog extends PureComponent<JuiDraggableDialogProps> {
   }
 }
 
-export { JuiDraggableDialog };
+export { JuiDraggableDialog, DraggableEvent };

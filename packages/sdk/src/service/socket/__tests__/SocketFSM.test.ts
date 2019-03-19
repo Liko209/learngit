@@ -19,14 +19,19 @@ const mockLogger = {
 mockLogger.tags.mockReturnValue(mockLogger);
 mainLogger = mockLogger;
 
-describe('Socket FSM', async () => {
+describe('Socket FSM', () => {
   const serverUrl = 'aws13-g04-uds02.asialab.glip.net:11904';
   const glipToken =
     // tslint:disable-next-line:max-line-length
     'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9pZCI6MTUyOTI0OTk1OTAyNCwidHlwZSI6IndlYiIsInVpZCI6MTIyMDYxMSwiaWF0IjoxNTI5MjQ5OTU5LCJpc3MiOiJhd3MxMy1nMDQtdWRzMDIuYXNpYWxhYi5nbGlwLm5ldCIsInN1YiI6ImdsaXAifQ.0OHMMja3JnEskNxZLFw86CaV-Ph-SyZETQetLqDqLXRKBu0vI5u1_2l-dTP4eNxKHHq3nAeqUVB1IYwjCxXNzA';
 
   function fsmCreate() {
-    const fsm = new SocketFSM(serverUrl, glipToken, (name, state) => {});
+    const fsm = new SocketFSM(
+      serverUrl,
+      glipToken,
+      (name, state) => {},
+      (isSuccess: boolean) => {},
+    );
     return fsm;
   }
 
@@ -200,13 +205,14 @@ describe('Socket FSM', async () => {
           emit(fsm, 'disconnect');
           expect(fsm.state).toBe('disconnected');
           expect(fsm.isConnected()).toBeFalsy();
-          expect(spy).toHaveBeenCalledTimes(0);
+          expect(spy).toHaveBeenCalledTimes(1);
 
-          emit(fsm, 'reconnect_attempt');
-          emit(fsm, 'reconnecting');
-          emit(fsm, 'connect_error');
-          expect(fsm.state).toBe('disconnected');
-          expect(fsm.isConnected()).toBeFalsy();
+          expect(fsm.socketClient).toBeNull();
+          // emit(fsm, 'reconnect_attempt');
+          // emit(fsm, 'reconnecting');
+          // emit(fsm, 'connect_error');
+          // expect(fsm.state).toBe('disconnected');
+          // expect(fsm.isConnected()).toBeFalsy();
 
           spy.mockReset();
           spy.mockRestore();
@@ -226,22 +232,24 @@ describe('Socket FSM', async () => {
         })(),
       );
 
-      fsm.socketClient.socket.disconnect.mockResolvedValue(
-        (() => {
-          const spy = jest.spyOn(fsm, 'cleanup');
+      expect(fsm.socketClient).toBeNull();
 
-          expect(fsm.state).toBe('disconnecting');
-          expect(spy).toHaveBeenCalledTimes(0);
-          expect(fsm.socketClient).not.toBeNull();
+      // fsm.socketClient.socket.disconnect.mockResolvedValue(
+      //   (() => {
+      //     const spy = jest.spyOn(fsm, 'cleanup');
 
-          emit(fsm, 'disconnect');
-          expect(fsm.state).toBe('disconnected');
-          expect(spy).toHaveBeenCalledTimes(1);
-          expect(fsm.socketClient).toBeNull();
-          spy.mockReset();
-          spy.mockRestore();
-        })(),
-      );
+      //     expect(fsm.state).toBe('disconnecting');
+      //     expect(spy).toHaveBeenCalledTimes(0);
+      //     expect(fsm.socketClient).not.toBeNull();
+
+      //     emit(fsm, 'disconnect');
+      //     expect(fsm.state).toBe('disconnected');
+      //     expect(spy).toHaveBeenCalledTimes(1);
+      //     expect(fsm.socketClient).toBeNull();
+      //     spy.mockReset();
+      //     spy.mockRestore();
+      //   })(),
+      // );
     });
 
     it('Stop when disconnected', () => {

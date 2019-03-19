@@ -31,7 +31,7 @@ function getMaxThumbnailURLInfo(item: FileItemModel) {
     const urlKeys = Object.keys(item.thumbs).filter((key: string) =>
       key.startsWith(`${item.storeFileId}`),
     );
-    // {storeFileId}size={width}x{height}
+    // {storeFileId}[size={width}x{height}] size info is option
     const maxInfo = {
       urlKey: '',
       width: 0,
@@ -48,18 +48,22 @@ function getMaxThumbnailURLInfo(item: FileItemModel) {
       return Number(value);
     };
     urlKeys.forEach((urlKey: string) => {
-      const [width, height] = urlKey
-        .split('=')[1]
-        .split('x')
-        .map(Number);
-      // width-{storeFileId}size={width}x{height}
-      // height-{storeFileId}size={width}x{height}
-      const realWidth = toNumber(item.thumbs![getWidthKey(width, height)]);
-      const realHeight = toNumber(item.thumbs![getHeightKey(width, height)]);
-      if (maxInfo.width * maxInfo.height < realWidth * realHeight) {
+      const widthHeightInfo = urlKey.split('=')[1];
+      if (widthHeightInfo) {
+        // width-{storeFileId}size={width}x{height}
+        // height-{storeFileId}size={width}x{height}
+        const [width, height] = widthHeightInfo.split('x').map(Number);
+        const realWidth = toNumber(item.thumbs![getWidthKey(width, height)]);
+        const realHeight = toNumber(item.thumbs![getHeightKey(width, height)]);
+        if (maxInfo.width * maxInfo.height < realWidth * realHeight) {
+          maxInfo.urlKey = urlKey;
+          maxInfo.width = realWidth;
+          maxInfo.height = realHeight;
+        }
+      } else {
         maxInfo.urlKey = urlKey;
-        maxInfo.height = realHeight;
-        maxInfo.width = realWidth;
+        maxInfo.width = item.origWidth;
+        maxInfo.height = item.origHeight;
       }
     });
     return {

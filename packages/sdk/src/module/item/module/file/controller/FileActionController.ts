@@ -14,7 +14,7 @@ import { AuthGlobalConfig } from '../../../../../service/auth/config';
 class FileActionController {
   constructor(private _sourceController: IEntitySourceController<Item>) {}
 
-  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+  async getThumbsUrlWithSize(itemId: number, width?: number, height?: number) {
     const file = (await this._sourceController.get(itemId)) as FileItem;
     let url = '';
     do {
@@ -51,9 +51,21 @@ class FileActionController {
         break;
       }
 
-      url = `${cacheServer}/modify-image?size=${width}x${height}&id=${storageId}&source_type=files&source_id=${
-        file.id
-      }&t=${glipAccessToken}`;
+      const querys: { key: string; value: string | undefined }[] = [
+        {
+          key: 'size',
+          value: width && height ? `${width}x${height}` : undefined,
+        },
+        { key: 'id', value: storageId },
+        { key: 'source_type', value: 'files' },
+        { key: 'source_id', value: file.id },
+        { key: 't', value: glipAccessToken },
+      ];
+      const queryString = querys
+        .filter(({ value }) => value !== undefined)
+        .map(({ key, value }) => `${key}=${value}`)
+        .join('&');
+      url = `${cacheServer}/modify-image?${queryString}`;
     } while (false);
 
     return url;

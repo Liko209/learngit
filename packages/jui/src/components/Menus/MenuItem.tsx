@@ -26,7 +26,7 @@ type JuiMenuItemProps = {
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
   && {
     margin-right: ${spacing(2)};
-    font-size: ${typography('subheading1')};
+    ${typography('subheading1')};
     color: ${grey('700')};
   }
 `;

@@ -94,7 +94,3 @@ class MiniCard {
 }
 
 export { MiniCard };
-
-// const miniCard = MiniCard.show(<Profile id={id} type={PROFILE_TYPE.MINI_CARD} />, { anchor });
-// miniCard.dismiss();
-// miniCardPortalManager.dismiss();
