@@ -6,7 +6,7 @@
 
 import * as React from 'react';
 import styled, { keyframes } from '../../foundation/styled-components';
-import { grey } from '../../foundation/utils';
+import { grey, height } from '../../foundation/utils';
 import { JuiTransition } from '../../components/Animation';
 
 type JuiViewerBackgroundProps = {
@@ -27,13 +27,21 @@ const StyledViewerBackground = styled.div`
   display: flex;
   flex-direction: column;
   height: inherit;
+  min-height: ${height(160)};
+  > div {
+    overflow: scroll;
+  }
 `;
 
 const StyledTransition = styled(JuiTransition)`
   height: 100%;
 `;
 
-const JuiViewerBackground = ({ children, show }: JuiViewerBackgroundProps) => {
+const JuiViewerBackground = ({
+  children,
+  show,
+  ...rest
+}: JuiViewerBackgroundProps) => {
   return (
     <StyledTransition
       show={show}
@@ -42,7 +50,7 @@ const JuiViewerBackground = ({ children, show }: JuiViewerBackgroundProps) => {
       appear={true}
       animation={backgroundAnimation}
     >
-      <StyledViewerBackground>{children}</StyledViewerBackground>
+      <StyledViewerBackground {...rest}>{children}</StyledViewerBackground>
     </StyledTransition>
   );
 };

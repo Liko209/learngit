@@ -65,6 +65,8 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   private _imageInfo: ThumbnailInfo = {
     width: 0,
     height: 0,
+    imageWidth: 0,
+    imageHeight: 0,
     left: 0,
     top: 0,
     justifyHeight: false,

@@ -24,10 +24,7 @@ class ConferenceViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get conference() {
-    return getEntity<Item, ConferenceItemModel>(
-      ENTITY_NAME.CONFERENCE_ITEM,
-      this._id,
-    );
+    return getEntity<Item, ConferenceItemModel>(ENTITY_NAME.ITEM, this._id);
   }
 
   @computed

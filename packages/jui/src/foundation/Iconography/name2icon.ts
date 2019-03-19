@@ -1,4 +1,5 @@
 const name2icon = {
+  member_count: 'people',
   phone: 'phone',
   meetings: 'videocam',
   star: 'star',
@@ -80,7 +81,7 @@ const name2icon = {
   info: 'info',
   image_broken: 'image-broken',
   forward: 'forward',
-  pervious: 'pervious',
+  pervious: 'previous',
   tear_off: 'tear-off',
   minimize: 'minimize',
   signal_2: 'signal-2',
@@ -91,6 +92,7 @@ const name2icon = {
   record: 'record',
   call_add: 'call-add',
   call_more: 'call-more',
+  reset_zoom: 'reset-zoom',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

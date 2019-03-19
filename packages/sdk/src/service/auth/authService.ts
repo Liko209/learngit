@@ -97,11 +97,10 @@ class AuthService extends BaseService {
   }
 
   async logout() {
-    await this._accountManager.logout();
-
     // TODO replace all LOGOUT listen on notificationCenter
     // with accountManager.on(EVENT_LOGOUT)
     notificationCenter.emitKVChange(SERVICE.LOGOUT);
+    await this._accountManager.logout();
   }
 
   isLoggedIn(): boolean {

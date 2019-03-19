@@ -59,7 +59,9 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
     const sortableEntities: SortableModel<T>[] = [];
 
     if (searchKey) {
-      terms = this.getTermsFromSearchKey(searchKey.trim());
+      terms = this.getTermsFromSearchKey(
+        searchKey.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1').trim(),
+      );
     }
 
     if (arrangeIds) {

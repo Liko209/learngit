@@ -132,7 +132,7 @@ describe('HandleByRingCentral', () => {
   describe('refreshToken', () => {
     it('should reject if refresh fail', async () => {
       expect.assertions(1);
-      HandleByRingCentral.tokenRefreshDelegate = {
+      HandleByRingCentral.platformHandleDelegate = {
         refreshRCToken: jest.fn().mockRejectedValueOnce(null),
       };
       const originToken = {
@@ -154,7 +154,7 @@ describe('HandleByRingCentral', () => {
         access_token: 'accessToken',
         refresh_token: 'refreshToken',
       };
-      HandleByRingCentral.tokenRefreshDelegate = {
+      HandleByRingCentral.platformHandleDelegate = {
         refreshRCToken: jest.fn().mockResolvedValueOnce(fakeToken),
       };
       const originToken = {
