@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../../foundation/styled-components';
 import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 import { spacing, palette } from '../../../foundation/utils/styles';
 import isOutlinedTextFieldProps from '../isOutlinedTextFieldProps';
