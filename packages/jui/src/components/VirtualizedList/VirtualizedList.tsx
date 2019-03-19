@@ -29,6 +29,7 @@ import {
   createRange,
   getChildren,
   isRangeEqual,
+  isRangeIn,
 } from './utils';
 import { usePrevious } from './hooks/usePrevious';
 
@@ -82,16 +83,16 @@ const JuiVirtualizedList: RefForwardingComponent<
   ) => {
     const renderedRange: IndexRange = { ...visibleRange };
 
-    if ('up' === overscanDirection) {
-      renderedRange.startIndex = Math.max(
-        visibleRange.startIndex - overscan,
-        minIndex,
-      );
-    }
+    // if ('up' === overscanDirection) {
+    renderedRange.startIndex = Math.max(
+      visibleRange.startIndex - overscan,
+      minIndex,
+    );
+    // }
 
-    if ('down' === overscanDirection) {
-      renderedRange.stopIndex = visibleRange.stopIndex + overscan;
-    }
+    // if ('down' === overscanDirection) {
+    renderedRange.stopIndex = visibleRange.stopIndex + overscan;
+    // }
 
     return renderedRange;
   };
@@ -177,6 +178,52 @@ const JuiVirtualizedList: RefForwardingComponent<
   const scrollToBottom = () => {
     if (ref.current) {
       ref.current.scrollTop = ref.current.scrollHeight - height;
+    }
+  };
+
+  const recomputeRange = () => {
+    if (ref.current) {
+      const { scrollTop } = ref.current;
+      const visibleRange = computeVisibleRange();
+      const offset =
+        scrollTop - rowManager.getRowOffsetTop(visibleRange.startIndex);
+      const visibleStartIndex = visibleRange.startIndex;
+      const prevScrollIndex = scrollPosition.index;
+      const prevScrollOffset = scrollPosition.offset;
+      const isUserScrolling =
+        prevScrollIndex !== visibleStartIndex ||
+        (prevScrollIndex === visibleStartIndex && prevScrollOffset !== offset);
+
+      if (isUserScrolling) {
+        if (rowManager.hasRowHeight(visibleRange.startIndex)) {
+          // If we know the real height of this row
+          // Remember current scroll position
+          rememberScrollPosition({
+            offset,
+            index: visibleRange.startIndex,
+          });
+        }
+
+        // Update rendered range
+        const isScrollUp =
+          prevScrollIndex > visibleStartIndex ||
+          (prevScrollIndex === visibleStartIndex && prevScrollOffset > offset);
+        const newRenderedRange = computeRenderedRange(
+          visibleRange,
+          isScrollUp ? 'up' : 'down',
+        );
+
+        // TODO Don't re-render if range not changed
+        setRenderedRange(newRenderedRange);
+
+        // Emit events
+        if (!isRangeEqual(renderedRange, newRenderedRange)) {
+          onRenderedRangeChange(newRenderedRange);
+        }
+        if (!isRangeEqual(prevVisibleRange, visibleRange)) {
+          onVisibleRangeChange(visibleRange);
+        }
+      }
     }
   };
 
@@ -298,8 +345,18 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
 
-  // scrollable <--> unScrollable
+  //
+  // Ensure there are not empty space in the list
+  //
+  useLayoutEffect(() => {
+    const visibleRange = computeVisibleRange();
+    if (!isRangeIn(renderedRange, visibleRange)) {
+      // If visible range not in current renderedRange
+      recomputeRange();
+    }
+  });
 
+  // scrollable <--> unScrollable
   useEffect(() => {
     const contentHeight = rowManager.getRowsHeight(0, childrenCount - 1);
     const scrollable = height < contentHeight;
@@ -330,48 +387,8 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   const handleScroll = (event: React.UIEvent) => {
     if (ref.current) {
-      const { scrollTop } = ref.current;
-      const visibleRange = computeVisibleRange();
-      const offset =
-        scrollTop - rowManager.getRowOffsetTop(visibleRange.startIndex);
-      const visibleStartIndex = visibleRange.startIndex;
-      const prevScrollIndex = scrollPosition.index;
-      const prevScrollOffset = scrollPosition.offset;
-      const isUserScrolling =
-        prevScrollIndex !== visibleStartIndex ||
-        (prevScrollIndex === visibleStartIndex && prevScrollOffset !== offset);
-
-      if (isUserScrolling) {
-        if (rowManager.hasRowHeight(visibleRange.startIndex)) {
-          // If we know the real height of this row
-          // Remember current scroll position
-          rememberScrollPosition({
-            offset,
-            index: visibleRange.startIndex,
-          });
-        }
-
-        // Update rendered range
-        const isScrollUp =
-          prevScrollIndex > visibleStartIndex ||
-          (prevScrollIndex === visibleStartIndex && prevScrollOffset > offset);
-        const newRenderedRange = computeRenderedRange(
-          visibleRange,
-          isScrollUp ? 'up' : 'down',
-        );
-
-        // TODO Don't re-render if range not changed
-        setRenderedRange(newRenderedRange);
-
-        // Emit events
-        if (!isRangeEqual(renderedRange, newRenderedRange)) {
-          onRenderedRangeChange(newRenderedRange);
-        }
-        if (!isRangeEqual(prevVisibleRange, visibleRange)) {
-          onVisibleRangeChange(visibleRange);
-        }
-        onScroll(event);
-      }
+      recomputeRange();
+      onScroll(event);
     }
   };
 
