@@ -186,10 +186,10 @@ export function teardownCase() {
 class MockClientHook extends RequestHook {
   public requestId: string;
 
-  onRequest(event) {
+  async onRequest(event) {
     event.requestOptions.headers['x-mock-request-id'] = this.requestId;
   }
 
-  onResponse(event) {
+  async onResponse(event) {
   }
 }
