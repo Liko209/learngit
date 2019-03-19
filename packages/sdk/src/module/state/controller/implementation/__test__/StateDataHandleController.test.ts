@@ -112,8 +112,7 @@ describe('StateDataHandleController', () => {
       const task: DataHandleTask = { type: TASK_DATA_TYPE.STATE, data: [] };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController[ '_generateUpdatedState'
-] = jest.fn().mockReturnValue({
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
         groupStates: [],
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
@@ -142,8 +141,7 @@ describe('StateDataHandleController', () => {
       };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController[ '_generateUpdatedState'
-] = jest.fn().mockReturnValue({
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
         groupStates: [],
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
@@ -176,12 +174,10 @@ describe('StateDataHandleController', () => {
       };
       stateDataHandleController['_taskArray'] = [task, task2];
       stateDataHandleController['_transformStateData'] = jest.fn();
-      stateDataHandleController[ '_transformGroupData'
-] = jest.fn().mockImplementation(() => {
+      stateDataHandleController['_transformGroupData'] = jest.fn().mockImplementation(() => {
         throw Error('error');
       });
-      stateDataHandleController[ '_generateUpdatedState'
-] = jest.fn().mockReturnValue({
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
         groupStates: [],
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
