@@ -59,9 +59,12 @@ class About extends Component<Props> {
     const electronAppVersion = this._globalStore.get(
       GLOBAL_KEYS.ELECTRON_APP_VERSION,
     );
+    const electronVersion = this._globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION);
+
     return {
       isShowDialog,
       electronAppVersion,
+      electronVersion,
     };
   }
 
@@ -72,7 +75,11 @@ class About extends Component<Props> {
 
   render() {
     const { t } = this.props;
-    const { isShowDialog, electronAppVersion } = this.dialogInfo;
+    const {
+      isShowDialog,
+      electronAppVersion,
+      electronVersion,
+    } = this.dialogInfo;
     const {
       deployedTime,
       deployedCommit,
@@ -88,7 +95,9 @@ class About extends Component<Props> {
       >
         <Param>
           {t('home.version')}: {appVersion ? appVersion : pkg.version}
-          {electronAppVersion ? ` (E. ${electronAppVersion})` : null}
+          {electronAppVersion
+            ? ` (E. ${electronVersion} - ${electronAppVersion})`
+            : null}
         </Param>
         <Param>
           {t('home.lastCommit')}: {deployedCommit}
