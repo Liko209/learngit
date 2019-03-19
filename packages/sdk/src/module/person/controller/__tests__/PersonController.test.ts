@@ -878,15 +878,15 @@ describe('PersonService', () => {
     });
   });
 
-  describe('getPersonFromServer()', () => {
+  describe('refreshPersonData()', () => {
     it('should call get once when has requestController', async () => {
       const requestController = {
-        get: jest.fn(),
+        get: jest.fn().mockResolvedValue({}),
       };
       jest
         .spyOn(entitySourceController, 'getRequestController')
         .mockReturnValue(requestController);
-      personController.getPersonFromServer(1);
+      personController.refreshPersonData(1);
       expect(requestController.get).toHaveBeenCalledTimes(1);
     });
   });

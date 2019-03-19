@@ -27,6 +27,8 @@ import { IEntityCacheSearchController } from '../../../framework/controller/inte
 import { PersonDataController } from './PersonDataController';
 import { AuthGlobalConfig } from '../../../service/auth/config';
 import { ContactType } from '../types';
+import notificationCenter from '../../../service/notificationCenter';
+import { ENTITY } from '../../../service/eventKey';
 
 const PersonFlags = {
   deactivated: 2,
@@ -426,10 +428,11 @@ class PersonController {
       : null;
   }
 
-  public async getPersonFromServer(personId: number): Promise<void> {
+  public async refreshPersonData(personId: number): Promise<void> {
     const requestController = this._entitySourceController.getRequestController();
     if (requestController) {
-      await requestController.get(personId);
+      const person = await requestController.get(personId);
+      person && notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
     }
   }
 }

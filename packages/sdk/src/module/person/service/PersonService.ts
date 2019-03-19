@@ -135,8 +135,8 @@ class PersonService extends EntityBaseService<Person>
     );
   }
 
-  public async getPersonFromServer(personId: number): Promise<void> {
-    await this.getPersonController().getPersonFromServer(personId);
+  public async refreshPersonData(personId: number): Promise<void> {
+    await this.getPersonController().refreshPersonData(personId);
   }
 }
 

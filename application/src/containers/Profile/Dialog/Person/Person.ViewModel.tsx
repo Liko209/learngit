@@ -14,6 +14,7 @@ import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { ENTITY_NAME } from '@/store';
+import { PersonService } from 'sdk/module/person';
 
 class ProfileDialogPersonViewModel
   extends AbstractViewModel<ProfileDialogPersonProps>
@@ -26,6 +27,12 @@ class ProfileDialogPersonViewModel
   @computed
   get person() {
     return getEntity<Person, PersonModel>(ENTITY_NAME.PERSON, this.id);
+  }
+  refreshPersonData = async () => {
+    if (this.person && !this.person.homepage) {
+      const personService = PersonService.getInstance<PersonService>();
+      await personService.refreshPersonData(this.id);
+    }
   }
 }
 
