@@ -3,11 +3,11 @@
  * @Date: 2019-02-26 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable, action, transaction } from 'mobx';
+import { computed, observable, action, transaction, reaction } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
-import { EVENT_TYPES, notificationCenter, ENTITY } from 'sdk/service';
+import { EVENT_TYPES, notificationCenter } from 'sdk/service';
 import {
   NotificationEntityPayload,
   NotificationEntityUpdatePayload,
@@ -21,12 +21,17 @@ import { ViewerViewProps } from './types';
 import { ItemListDataSource } from './Viewer.DataSource';
 import { mainLogger } from 'sdk';
 import { Group } from 'sdk/module/group';
+import { Profile } from 'sdk/module/profile/entity';
 import { Notification } from '@/containers/Notification';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import portalManager from '@/common/PortalManager';
+import GroupModel from '@/store/models/Group';
+import { ENTITY_NAME } from '@/store';
+import { getEntity, getSingleEntity } from '@/store/utils';
+import ProfileModel from '@/store/models/Profile';
 
 const PAGE_SIZE = 20;
 
@@ -58,7 +63,35 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
       groupId,
     );
     notificationCenter.on(itemNotificationKey, this._onItemDataChange);
-    notificationCenter.on(ENTITY.GROUP, this._onGroupDataChange);
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
+    reaction(
+      () =>
+        getSingleEntity<Profile, ProfileModel>(
+          ENTITY_NAME.PROFILE,
+          'hiddenGroupIds',
+        ),
+      (hiddenGroupIds: number[]) => {
+        if (hiddenGroupIds.includes(groupId)) {
+          this._onExceptions('viewer.ConversationClosed');
+        }
+      },
+    );
+    reaction(
+      () => group.isArchived,
+      (isArchived: boolean) => {
+        if (isArchived) {
+          this._onExceptions('viewer.TeamArchived');
+        }
+      },
+    );
+    reaction(
+      () => group.deactivated,
+      (deactivated: boolean) => {
+        if (deactivated) {
+          this._onExceptions('viewer.TeamDeleted');
+        }
+      },
+    );
   }
 
   @action
@@ -73,7 +106,6 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
       this.props.groupId,
     );
     notificationCenter.off(itemNotificationKey, this._onItemDataChange);
-    notificationCenter.off(ENTITY.GROUP, this._onGroupDataChange);
     this._itemListDataSource.dispose();
   }
 
@@ -259,30 +291,6 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     }
     if (needRefreshIndex) {
       this._fetchIndexInfo();
-    }
-  }
-
-  private _onGroupDataChange = (payload: NotificationEntityPayload<Group>) => {
-    const { type } = payload;
-    const { groupId } = this.props;
-    if (type === EVENT_TYPES.DELETE) {
-      (payload as NotificationEntityDeletePayload).body.ids.forEach(
-        (id: number) => {
-          if (id === groupId) {
-            this._onExceptions('viewer.TeamDeleted');
-          }
-        },
-      );
-    }
-
-    if (type === EVENT_TYPES.UPDATE) {
-      (payload as NotificationEntityUpdatePayload<Group>).body.ids.forEach(
-        (id: number) => {
-          if (id === groupId) {
-            this._onExceptions('viewer.TeamArchived');
-          }
-        },
-      );
     }
   }
 }

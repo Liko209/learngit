@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ImageViewer/DeleteImage.ts"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
