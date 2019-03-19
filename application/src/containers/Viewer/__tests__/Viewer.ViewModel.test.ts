@@ -26,7 +26,7 @@ jest.mock('sdk/module/item/service', () => {
 jest.mock('../Viewer.DataSource', () => {
   const dataSource: ItemListDataSource = {
     loadInitialData: jest.fn(),
-    getIds: jest.fn(),
+    getIds: jest.fn().mockReturnValue([]),
     dispose: jest.fn(),
     fetchData: jest.fn(),
     getFilterFunc: jest.fn().mockReturnValue(true),
