@@ -139,7 +139,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     };
                     return (
                       <JuiImageView
-                        data-test-automation-id={'ImageView'}
+                        data-test-automation-id={'previewerCanvas'}
                         key={`image-${currentItemId}`}
                         imageRef={this._imageRef}
                         src={imageUrl}
