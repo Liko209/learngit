@@ -106,7 +106,8 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
 
 });
 
-test(formalName('Should scroll to the bottom automatically when reveived new messages then close the dialog', ['JPT-1348', 'P2', 'Potar.He', 'FileAndImagePreviewer']), async (t) => {
+// skip due to https://jira.ringcentral.com/browse/FIJI-4188
+test.skip(formalName('Should scroll to the bottom automatically when reveived new messages then close the dialog', ['JPT-1348', 'P2', 'Potar.He', 'FileAndImagePreviewer']), async (t) => {
   const filesPath = ['../../sources/1.png', '../../sources/2.png'];
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
