@@ -30,6 +30,10 @@ class ViewerView extends Component<
     };
   }
 
+  componentWillUnmount() {
+    this.props.stopPreload();
+  }
+
   closeViewer = () => {
     this.setState({
       contextValue: {
