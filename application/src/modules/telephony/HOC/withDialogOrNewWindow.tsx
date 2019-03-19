@@ -65,6 +65,22 @@ function withDialogOrNewWindow<T>(
       TelephonyService,
     );
 
+    private _createBackdrop = () => {
+      const backdrop = document.createElement('div');
+      backdrop.style.cssText = `
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: fixed;
+        z-index: 999;
+      `;
+
+      return backdrop;
+    }
+
+    private _backdrop = this._createBackdrop();
+
     private _createWindow = () => {
       if (this._window == null || this._window.closed) {
         this._window = window.open(
@@ -86,6 +102,14 @@ function withDialogOrNewWindow<T>(
       if (this._window) {
         this._window.close();
       }
+    }
+
+    private _handleStart = () => {
+      document.body.appendChild(this._backdrop);
+    }
+
+    private _handleStop = () => {
+      document.body.removeChild(this._backdrop);
     }
 
     componentDidUpdate() {
@@ -123,6 +147,8 @@ function withDialogOrNewWindow<T>(
           x={(document.body.clientWidth - 344) / 2}
           y={(document.body.clientHeight - 504) / 2}
           dragRef={this._dragRef}
+          onStart={this._handleStart}
+          onStop={this._handleStop}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>
