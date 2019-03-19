@@ -10,6 +10,8 @@ import { transform } from '../../../service/utils';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
+import { SYNC_SOURCE } from '../../sync/types';
+import { ControllerUtils } from '../../../framework/controller/ControllerUtils';
 
 class CompanyController {
   constructor(
@@ -51,13 +53,14 @@ class CompanyController {
     ) as Company[];
   }
 
-  async handleCompanyData(companies: Raw<Company>[]) {
+  async handleCompanyData(companies: Raw<Company>[], source: SYNC_SOURCE) {
     if (companies.length === 0) {
       return;
     }
     const transformedData: Company[] = await this._getTransformData(companies);
-    notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
-
+    if (ControllerUtils.shouldEmitNotification(source)) {
+      notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
+    }
     await this.entitySourceController.bulkUpdate(transformedData);
   }
 }

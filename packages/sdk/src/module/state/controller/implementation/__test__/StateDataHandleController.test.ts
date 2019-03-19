@@ -16,7 +16,10 @@ import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { TotalUnreadController } from '../TotalUnreadController';
 import { GlobalConfigService } from '../../../../../module/config/service/GlobalConfigService';
 import { AccountGlobalConfig } from '../../../../../service/account/config/AccountGlobalConfig';
+import { SYNC_SOURCE } from '../../../../../module/sync';
+import notificationCenter from '../../../../../service/notificationCenter';
 
+jest.mock('../../../../../service/notificationCenter');
 jest.mock('../../../../../module/config/service/GlobalConfigService');
 jest.mock('../../../../../service/account/config/AccountGlobalConfig');
 GlobalConfigService.getInstance = jest
@@ -34,6 +37,8 @@ describe('StateDataHandleController', () => {
   let mockTotalUnreadController: TotalUnreadController;
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
     mockEntitySourceController = new EntitySourceController<GroupState>(
       {} as IEntityPersistentController,
       {} as DeactivatedDao,
@@ -55,11 +60,14 @@ describe('StateDataHandleController', () => {
     it('should start handle task when array only has one task', async () => {
       const states: Partial<State>[] = [{ id: 123 }];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleState(states);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.STATE,
-        data: states,
-      });
+      await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
+      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith(
+        {
+          type: TASK_DATA_TYPE.STATE,
+          data: states,
+        },
+        SYNC_SOURCE.INDEX,
+      );
     });
 
     it('should only add task to array when array has more than one task', async () => {
@@ -68,7 +76,7 @@ describe('StateDataHandleController', () => {
         { type: TASK_DATA_TYPE.STATE, data: states },
       ];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleState(states);
+      await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
       expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
         0,
       );
@@ -104,7 +112,8 @@ describe('StateDataHandleController', () => {
       const task: DataHandleTask = { type: TASK_DATA_TYPE.STATE, data: [] };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+      stateDataHandleController[ '_generateUpdatedState'
+] = jest.fn().mockReturnValue({
         groupStates: [],
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
@@ -133,7 +142,8 @@ describe('StateDataHandleController', () => {
       };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+      stateDataHandleController[ '_generateUpdatedState'
+] = jest.fn().mockReturnValue({
         groupStates: [],
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
@@ -166,10 +176,12 @@ describe('StateDataHandleController', () => {
       };
       stateDataHandleController['_taskArray'] = [task, task2];
       stateDataHandleController['_transformStateData'] = jest.fn();
-      stateDataHandleController['_transformGroupData'] = jest.fn().mockImplementation(() => {
+      stateDataHandleController[ '_transformGroupData'
+] = jest.fn().mockImplementation(() => {
         throw Error('error');
       });
-      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+      stateDataHandleController[ '_generateUpdatedState'
+] = jest.fn().mockReturnValue({
         groupStates: [],
       });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();

@@ -27,6 +27,7 @@ import { IEntityCacheSearchController } from '../../../framework/controller/inte
 import { PersonDataController } from './PersonDataController';
 import { AuthGlobalConfig } from '../../../service/auth/config';
 import { ContactType } from '../types';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 const PersonFlags = {
   deactivated: 2,
@@ -55,8 +56,10 @@ class PersonController {
     this._cacheSearchController = _cacheSearchController;
   }
 
-  async handleIncomingData(persons: Raw<Person>[]) {
-    await new PersonDataController().handleIncomingData(persons);
+  async handleIncomingData(persons: Raw<Person>[], source: SYNC_SOURCE) {
+    await new PersonDataController(
+      this._entitySourceController,
+    ).handleIncomingData(persons, source);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {

@@ -25,26 +25,32 @@ import { StateService } from '../../state';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { AccountGlobalConfig } from '../../../service/account/config';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { SYNC_SOURCE } from '../../../module/sync/types';
+import { ControllerUtils } from '../../../framework/controller/ControllerUtils';
 
 class GroupHandleDataController {
-  constructor(public groupService: IGroupService) {}
+  constructor(
+    public groupService: IGroupService,
+    public entitySourceController: IEntitySourceController<Group>,
+  ) {}
   getExistedAndTransformDataFromPartial = async (
     groups: Partial<Raw<Group>>[],
   ): Promise<Group[]> => {
-    const groupDao = daoManager.getDao<GroupDao>(GroupDao);
-
     const transformedData: (Partial<Group> | null)[] = await Promise.all(
       groups.map(async (item: Partial<Raw<Group>>) => {
         if (item._id) {
           const finalItem = item;
-          const existedGroup = await groupDao.get(item._id);
+          const existedGroup = await this.entitySourceController.get(item._id);
           if (existedGroup) {
             // If existed in DB, update directly and return the updated result for notification later
             type Transformed = PartialWithKey<Group>;
             const transformed: Transformed = transform<Transformed>(finalItem);
-            await groupDao.update(transformed);
+            await this.entitySourceController.update(transformed);
             if (transformed.id) {
-              const updated = await groupDao.get(transformed.id);
+              const updated = await this.entitySourceController.get(
+                transformed.id,
+              );
               return updated;
             }
           } else {
@@ -166,20 +172,21 @@ class GroupHandleDataController {
 
   operateGroupDao = async (deactivatedData: Group[], normalData: Group[]) => {
     try {
-      const dao = daoManager.getDao(GroupDao);
       if (deactivatedData.length) {
         daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
-        dao.bulkDelete(deactivatedData.map(item => item.id));
+        this.entitySourceController.bulkDelete(
+          deactivatedData.map(item => item.id),
+        );
       }
       if (normalData.length) {
-        await dao.bulkUpdate(normalData);
+        this.entitySourceController.bulkPut(normalData);
       }
     } catch (e) {
       console.error(`operateGroupDao error ${JSON.stringify(e)}`);
     }
   }
 
-  saveDataAndDoNotification = async (groups: Group[]) => {
+  saveDataAndDoNotification = async (groups: Group[], source?: SYNC_SOURCE) => {
     const deactivatedData = groups.filter(
       (item: Group) => item && item.deactivated,
     );
@@ -187,11 +194,13 @@ class GroupHandleDataController {
       (item: Group) => item && !item.deactivated,
     );
     await this.operateGroupDao(deactivatedData, normalData);
-    await this.doNotification(deactivatedData, normalData);
+    if (ControllerUtils.shouldEmitNotification(source)) {
+      await this.doNotification(deactivatedData, normalData);
+    }
     return normalData;
   }
 
-  handleData = async (groups: Raw<Group>[]) => {
+  handleData = async (groups: Raw<Group>[], source?: SYNC_SOURCE) => {
     if (groups.length === 0) {
       return;
     }
@@ -202,7 +211,7 @@ class GroupHandleDataController {
     const data = transformData.filter(item => item);
 
     // handle deactivated data and normal data
-    await this.saveDataAndDoNotification(data);
+    await this.saveDataAndDoNotification(data, source);
     // check all group members exist in local or not if not, should get from remote
     // seems we only need check normal groups, don't need to check deactivated data
     // if (shouldCheckIncompleteMembers) {
