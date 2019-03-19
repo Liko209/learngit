@@ -62,7 +62,7 @@ storiesOf('HoC/withLoading', module).add('demo', () => {
     <StyledCustomizedLoading>🚄 Loading...</StyledCustomizedLoading>
   );
   const CustomizedLoadingWithMask = () => (
-    <DefaultLoadingWithDelay mask={true} />
+    <DefaultLoadingWithDelay backgroundType={'mask'} />
   );
 
   // Step 1, wrap your component with default loading

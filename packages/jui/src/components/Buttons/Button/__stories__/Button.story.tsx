@@ -90,7 +90,7 @@ storiesOf('Components/Buttons', module)
         <JuiFabButton
           {...rest}
           className="buttonWrapper"
-          tooltipTitle="pervious"
+          tooltipTitle="previous"
           color="common.white"
           iconColor={['grey', '900']}
           iconName="previous"

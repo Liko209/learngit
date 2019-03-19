@@ -23,7 +23,7 @@ class LinkItemViewModel extends AbstractViewModel<LinkItemProps>
 
   @computed
   get link() {
-    return getEntity<Item, LinkItemModel>(ENTITY_NAME.LINK_ITEM, this._id);
+    return getEntity<Item, LinkItemModel>(ENTITY_NAME.ITEM, this._id);
   }
 
   @computed

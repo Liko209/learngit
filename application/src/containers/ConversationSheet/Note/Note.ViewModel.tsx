@@ -18,7 +18,7 @@ class NoteViewModel extends StoreViewModel<NoteProps> implements NoteViewProps {
   get _items() {
     const items: NoteItemModel[] = [];
     this.props.ids.map((id: number) => {
-      const item = getEntity<Item, NoteItemModel>(ENTITY_NAME.NOTE_ITEM, id);
+      const item = getEntity<Item, NoteItemModel>(ENTITY_NAME.ITEM, id);
       if (item && !item.deactivated) {
         items.push(item);
       }

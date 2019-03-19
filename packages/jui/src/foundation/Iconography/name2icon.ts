@@ -105,6 +105,7 @@ const name2icon = {
   leftNavTask_border: 'task-new_border',
   leftNavFile: 'file',
   leftNavFile_border: 'file_border',
+  reset_zoom: 'reset-zoom',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

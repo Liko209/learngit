@@ -102,6 +102,10 @@ describe('ItemActionController', () => {
       const negativeId = GlipTypeUtil.generatePseudoIdByType(
         TypeDictionary.TYPE_ID_FILE,
       );
+      entitySourceController.get = jest.fn();
+      entitySourceController.get.mockImplementationOnce(() => {
+        return { id: TypeDictionary.TYPE_ID_FILE, group_ids: [1] };
+      });
       await itemActionController.deleteItem(negativeId);
       expect(entitySourceController.delete).toBeCalledWith(negativeId);
       expect(requestController.put).not.toBeCalled();
