@@ -25,9 +25,9 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   }
 
   @action
-  handleSignOut = () => {
+  handleSignOut = async () => {
     const authService: AuthService = AuthService.getInstance();
-    authService.logout();
+    await authService.logout();
     window.location.href = '/';
   }
 

@@ -154,4 +154,4 @@ JuiButtonComponent.defaultProps = {
 
 const JuiButton = styled(React.memo(JuiButtonComponent))``;
 
-export { JuiButton, JuiButtonProps, JuiButtonColor };
+export { JuiButton, JuiButtonProps, JuiButtonColor, ColorMap };

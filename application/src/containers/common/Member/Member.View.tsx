@@ -25,7 +25,7 @@ class MemberView extends React.Component<MemberViewProps> {
         title={i18next.t('people.team.Members')}
         onClick={this.openProfile}
       >
-        <span>{membersCount}</span>
+        <span>{membersCount || ''}</span>
       </JuiConversationPageMember>
     );
   }

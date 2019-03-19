@@ -8,10 +8,15 @@ import { width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
 
 const JuiImageViewerContainer = styled.div`
+  && .zoomGroup {
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
   position: relative;
   width: 100%;
   height: 100%;
-  :hover button {
+  :hover button,
+  :hover .zoomGroup {
     opacity: 1;
     transition: opacity 0.3s;
   }

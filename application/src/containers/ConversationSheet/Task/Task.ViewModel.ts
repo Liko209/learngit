@@ -38,7 +38,7 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get task() {
-    return getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
+    return getEntity<Item, TaskItemModel>(ENTITY_NAME.ITEM, this._id);
   }
 
   @computed
@@ -113,10 +113,7 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   get attachments() {
     const items: FileItemModel[] = [];
     this.attachmentIds.forEach((attachment: number) => {
-      const item = getEntity<Item, FileItemModel>(
-        ENTITY_NAME.FILE_ITEM,
-        attachment,
-      );
+      const item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, attachment);
       if (item && !item.deactivated) {
         items.push(item);
       }

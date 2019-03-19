@@ -156,52 +156,103 @@ describe('ThumbnailPreloadProcessor', () => {
   });
 
   describe('process', () => {
-    it('should preload', async () => {
-      const fileItem: FileItem = {
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        id: 1,
-        type: 'jpg',
-        type_id: 1,
-        source: 'upload',
-        company_id: 122,
-        name: 'doc.jpg',
-        post_ids: [1],
-        group_ids: [1],
-        versions: [
-          {
-            download_url: 'https://glipasialabnet-xmnup',
-            size: 613850,
-            url: 'https://glipasialabnet-xmnup',
-            stored_file_id: 11112,
-            orig_width: 1000,
-            orig_height: 200,
-            thumbs: {
-              '11112size=1000x200': 'https://glipasialabnet-xmnup66666',
+    it.each`
+      imageType
+      ${'jpg'}
+      ${'png'}
+      ${'jpeg'}
+      ${'bmp'}
+      ${'gif'}
+      ${'tif'}
+      ${'tiff'}
+    `(
+      'should call preload when imageType is $imageType',
+      async ({ imageType, expected }) => {
+        const fileItem: FileItem = {
+          created_at: 1,
+          modified_at: 1,
+          creator_id: 1,
+          is_new: false,
+          deactivated: false,
+          version: 1,
+          id: 1,
+          type: imageType,
+          type_id: 1,
+          source: 'upload',
+          company_id: 122,
+          name: `doc.${imageType}`,
+          post_ids: [1],
+          group_ids: [1],
+          versions: [
+            {
+              download_url: 'https://glipasialabnet-xmnup',
+              size: 613850,
+              url: 'https://glipasialabnet-xmnup',
+              stored_file_id: 11112,
+              orig_width: 1000,
+              orig_height: 200,
+              thumbs: {
+                '11112size=1000x200': 'https://glipasialabnet-xmnup66666',
+              },
             },
-          },
-        ],
-      };
+          ],
+        };
 
-      const itemService = {
-        getById: jest.fn(),
-      };
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-      itemService.getById.mockResolvedValue(fileItem);
+        const itemService = {
+          getById: jest.fn(),
+        };
+        ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+        itemService.getById.mockResolvedValue(fileItem);
 
-      const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
-      spy.mockImplementationOnce(() => {});
-      await thumbnailPreloadProcessor.process();
-      expect(spy).toBeCalledWith({
-        id: 1,
-        url: 'https://glipasialabnet-xmnup66666',
-        thumbnail: true,
-      });
-    });
+        const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
+        spy.mockImplementationOnce(() => {});
+        await thumbnailPreloadProcessor.process();
+        expect(spy).toBeCalledWith({
+          id: 1,
+          url: 'https://glipasialabnet-xmnup66666',
+          thumbnail: true,
+        });
+      },
+    );
+
+    it.each`
+      imageType
+      ${'giphy'}
+      ${'ps'}
+      ${'heic'}
+    `(
+      'should not call preload when imageType is $imageType',
+      async ({ imageType, expected }) => {
+        const fileItem: FileItem = {
+          created_at: 1,
+          modified_at: 1,
+          creator_id: 1,
+          is_new: false,
+          deactivated: false,
+          version: 1,
+          id: 1,
+          type: imageType,
+          type_id: 1,
+          source: 'upload',
+          company_id: 122,
+          name: `doc.${imageType}`,
+          post_ids: [1],
+          group_ids: [1],
+          versions: [],
+        };
+
+        const itemService = {
+          getById: jest.fn(),
+        };
+        ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+        itemService.getById.mockResolvedValue(fileItem);
+
+        const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
+        spy.mockImplementationOnce(() => {});
+        await thumbnailPreloadProcessor.process();
+        expect(spy).not.toBeCalled();
+      },
+    );
 
     it('should not crash', async () => {
       const fileItem: FileItem = {
@@ -253,7 +304,7 @@ describe('ThumbnailPreloadProcessor', () => {
       );
     });
 
-    it('should not call preload', async () => {
+    it('should not call preload when id < 0', async () => {
       const fileItem: FileItem = {
         created_at: 1,
         modified_at: 1,

@@ -31,26 +31,23 @@ class PinnedItemViewModel extends AbstractViewModel<PinnedItemProps> {
     let item: ITEM_MODEL_TYPES = {} as ITEM_MODEL_TYPES;
     switch (this.itemType) {
       case TypeDictionary.TYPE_ID_FILE: {
-        item = getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, this._id);
+        item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, this._id);
         break;
       }
       case TypeDictionary.TYPE_ID_TASK: {
-        item = getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
+        item = getEntity<Item, TaskItemModel>(ENTITY_NAME.ITEM, this._id);
         break;
       }
       case TypeDictionary.TYPE_ID_PAGE: {
-        item = getEntity<Item, NoteItemModel>(ENTITY_NAME.NOTE_ITEM, this._id);
+        item = getEntity<Item, NoteItemModel>(ENTITY_NAME.ITEM, this._id);
         break;
       }
       case TypeDictionary.TYPE_ID_EVENT: {
-        item = getEntity<Item, EventItemModel>(
-          ENTITY_NAME.EVENT_ITEM,
-          this._id,
-        );
+        item = getEntity<Item, EventItemModel>(ENTITY_NAME.ITEM, this._id);
         break;
       }
       case TypeDictionary.TYPE_ID_LINK: {
-        item = getEntity<Item, LinkItemModel>(ENTITY_NAME.LINK_ITEM, this._id);
+        item = getEntity<Item, LinkItemModel>(ENTITY_NAME.ITEM, this._id);
         break;
       }
       default:

@@ -102,6 +102,7 @@ type Theme = {
     floatButton: number;
     codeEditor: number;
     modal: number;
+    makeZIndexStackingContext: number;
   };
   size: {
     width: number;
@@ -206,6 +207,13 @@ type Theme = {
     easing: {
       openCloseDialog: string;
     };
+  };
+  opacity: {
+    p05: number;
+    p10: number;
+    p50: number;
+    p60: number;
+    p80: number;
   };
 } & Omit<MuiTheme, 'typography'>;
 

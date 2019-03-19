@@ -25,4 +25,4 @@ type RcRolePermissions = {
   uri?: string;
 };
 
-export { RcRolePermissions };
+export { RcRolePermissions, RcRolePermission, RcPermission };

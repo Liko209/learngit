@@ -4,13 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../../framework/model';
-import {
-  IEntityCacheSearchController,
-  SortableModel,
-} from '../interface/IEntityCacheSearchController';
+import { IdModel, SortableModel } from '../../../framework/model';
+import { IEntityCacheSearchController } from '../interface/IEntityCacheSearchController';
 
 import { IEntityCacheController } from '../interface/IEntityCacheController';
+import { SearchUtils } from '../../utils/SearchUtils';
 
 class EntityCacheSearchController<T extends IdModel = IdModel>
   implements IEntityCacheSearchController<T> {
@@ -59,7 +57,7 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
     const sortableEntities: SortableModel<T>[] = [];
 
     if (searchKey) {
-      terms = this.getTermsFromSearchKey(searchKey.trim());
+      terms = this.getTermsFromSearchKey(searchKey.toLowerCase().trim());
     }
 
     if (arrangeIds) {
@@ -83,24 +81,11 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
   }
 
   isFuzzyMatched(srcText: string, terms: string[]): boolean {
-    return srcText.length > 0
-      ? terms.reduce(
-          (prev: boolean, key: string) =>
-            prev && new RegExp(`${key}`, 'i').test(srcText),
-          true,
-        )
-      : false;
+    return SearchUtils.isFuzzyMatched(srcText, terms);
   }
 
   isStartWithMatched(srcText: string, terms: string[]): boolean {
-    if (srcText.length > 0) {
-      for (let i = 0; i < terms.length; ++i) {
-        if (new RegExp(`^${terms[i]}`, 'i').test(srcText)) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return SearchUtils.isStartWithMatched(srcText, terms);
   }
 
   getTermsFromSearchKey(searchKey: string) {

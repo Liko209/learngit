@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { IAuthResponse, ISyncAuthenticator } from '../framework';
-import { GlipAccount, RCAccount } from '../account';
 import { ACCOUNT_TYPE_ENUM } from './constants';
 import DaoManager from '../dao/DaoManager';
 import { AuthGlobalConfig } from '../service/auth/config';
 import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
+import { RCAccount, GlipAccount } from '../account';
 
 class AutoAuthenticator implements ISyncAuthenticator {
   private _accountTypeHandleMap: Map<string, any>;

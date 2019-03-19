@@ -67,7 +67,7 @@ class ViewerTitleViewComponent extends Component<
             animation={imageViewerHeaderAnimation}
           >
             <div>
-              <JuiDialogHeader>
+              <JuiDialogHeader data-test-automation-id="ViewerHeader">
                 <ReactResizeDetector
                   handleWidth={true}
                   onResize={this.handleHeaderResize}
@@ -87,7 +87,9 @@ class ViewerTitleViewComponent extends Component<
                   <span>{name}</span>
                   <JuiDialogHeaderSubtitle>
                     {' '}
-                    {`(${currentIndex + 1}/${total})`}
+                    {total > -1 && currentIndex > -1
+                      ? `(${currentIndex + 1}/${total})`
+                      : ''}
                   </JuiDialogHeaderSubtitle>
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>

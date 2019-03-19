@@ -26,6 +26,7 @@ import { transform, baseHandleData } from '../../../service/utils';
 import { Raw } from '../../../framework/model';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { mainLogger } from 'foundation';
+import { ItemNotification } from '../utils/ItemNotification';
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   static serviceName = 'ItemService';
@@ -53,11 +54,14 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       return;
     }
     const transformedData = items.map(item => transform<Item>(item));
-    return await baseHandleData({
-      data: transformedData,
-      dao: daoManager.getDao(ItemDao),
-      eventKey: ENTITY.ITEM,
-    });
+    return await baseHandleData(
+      {
+        data: transformedData,
+        dao: daoManager.getDao(ItemDao),
+        eventKey: ENTITY.ITEM,
+      },
+      ItemNotification.getItemsNotifications,
+    );
   }
 
   protected get itemServiceController() {
@@ -236,7 +240,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     );
   }
 
-  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+  async getThumbsUrlWithSize(itemId: number, width?: number, height?: number) {
     return this.fileService.getThumbsUrlWithSize(itemId, width, height);
   }
 
