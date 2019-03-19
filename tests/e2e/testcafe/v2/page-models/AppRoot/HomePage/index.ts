@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { h } from '../../../helpers';
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { CreateTeamModal } from './CreateTeamModal';
+import { CreateTeamModal, ConvertToTeamDialog } from './CreateTeamModal';
 import { SendNewMessageModal } from './SendNewMessage';
 import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
@@ -69,6 +69,9 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(CreateTeamModal);
   }
 
+  get convertToTeamModal() {
+    return this.getComponent(ConvertToTeamDialog);
+  }  
   get sendNewMessageModal() {
     return this.getComponent(SendNewMessageModal);
   }
