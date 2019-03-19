@@ -8,28 +8,37 @@ import { Padding } from './types';
 
 export function calculateFitSize(
   containerRect: ElementRect,
-  natureContentRect: ElementRect,
+  contentRect: ElementRect,
   padding: Padding,
+  minContentLength?: number,
 ) {
   if (containerRect.width === 0 || containerRect.height === 0) {
     return containerRect;
   }
+  const [pl, pt, pr, pb] = padding;
+  const constrictWidth = containerRect.width - pl - pr;
+  const constrictHeight = containerRect.height - pt - pb;
+  const min = minContentLength === undefined ? 100 : minContentLength;
+  const pw =
+    constrictWidth > min ? pl + pr : Math.max(0, containerRect.width - min);
+  const ph =
+    constrictHeight > min ? pt + pb : Math.max(0, containerRect.height - min);
   const paddingContainer = {
-    left: containerRect.left + padding[0],
-    top: containerRect.top + padding[1],
-    width: containerRect.width - padding[0] - padding[2],
-    height: containerRect.height - padding[1] - padding[3],
+    left: containerRect.left + pw / 2,
+    top: containerRect.top + ph / 2,
+    width: containerRect.width - pw,
+    height: containerRect.height - ph,
   };
-  const widthRatio = natureContentRect.width / paddingContainer.width;
-  const heightRatio = natureContentRect.height / paddingContainer.height;
+  const widthRatio = contentRect.width / paddingContainer.width;
+  const heightRatio = contentRect.height / paddingContainer.height;
   const largerRatio = Math.max(widthRatio, heightRatio);
   const result = {} as ElementRect;
   if (largerRatio <= 1) {
-    result.width = natureContentRect.width;
-    result.height = natureContentRect.height;
+    result.width = contentRect.width;
+    result.height = contentRect.height;
   } else {
-    result.width = natureContentRect.width / largerRatio;
-    result.height = natureContentRect.height / largerRatio;
+    result.width = contentRect.width / largerRatio;
+    result.height = contentRect.height / largerRatio;
   }
   result.left = containerRect.left + (containerRect.width - result.width) / 2;
   result.top = containerRect.top + (containerRect.height - result.height) / 2;
@@ -84,6 +93,6 @@ export function isDraggable(
   containerRect: ElementRect,
 ): boolean {
   return (
-    contentWidth > containerRect.height || contentHeight > containerRect.width
+    contentWidth > containerRect.width || contentHeight > containerRect.height
   );
 }

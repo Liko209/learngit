@@ -5,7 +5,6 @@
  */
 
 jest.mock('../../../../dao');
-jest.mock('../../../../dao/config');
 
 import { SyncService } from '../SyncService';
 

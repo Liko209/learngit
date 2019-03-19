@@ -10,6 +10,7 @@ import { RTC_ACCOUNT_STATE, RTCAccount } from 'voip/src';
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: RTC_ACCOUNT_STATE) {}
+    onMadeOutgoingCall(callId: string) {}
   }
 
   function clearMocks() {
@@ -29,6 +30,7 @@ describe('TelephonyAccountController', () => {
     rtcAccount = {
       handleProvisioning: jest.fn(),
       makeCall: jest.fn(),
+      logout: jest.fn(),
     }; // new RTCAccount(null);
     accountController = new TelephonyAccountController(
       { createAccount: jest.fn().mockReturnValue(rtcAccount) },
@@ -55,6 +57,14 @@ describe('TelephonyAccountController', () => {
       expect(rtcAccount.makeCall).toBeCalled();
     });
   });
+
+  describe('logout', () => {
+    it('should call rtcAccount to logout', () => {
+      accountController.logout();
+      expect(rtcAccount.logout).toBeCalled();
+    });
+  });
+
   describe('hangUp', () => {
     it('should call controller to hang up', () => {
       jest.spyOn(callController, 'hangUp');
@@ -64,9 +74,13 @@ describe('TelephonyAccountController', () => {
   });
 
   describe('onMadeOutgoingCall', () => {
-    it('should call set rtcCall when callback is called', () => {
-      accountController.onMadeOutgoingCall(null);
-      expect(callController.setRtcCall).toBeCalledWith(null);
+    it('should pass call created event to delegate', () => {
+      spyOn(mockAcc, 'onMadeOutgoingCall');
+      accountController.onMadeOutgoingCall({
+        getCallInfo: jest.fn().mockReturnValue({ uuid: '123' }),
+      });
+      expect(callController.setRtcCall).toBeCalled();
+      expect(mockAcc.onMadeOutgoingCall).toBeCalledWith('123');
     });
   });
 

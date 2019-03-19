@@ -16,7 +16,8 @@ import {
   JuiDialogHeaderMeta,
   JuiDialogHeaderMetaLeft,
   JuiDialogHeaderMetaRight,
-} from 'jui/components/Dialog/DialogHeader/index';
+  JuiDialogHeaderSubtitle,
+} from 'jui/components/Dialog/DialogHeader';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 // import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
@@ -66,7 +67,7 @@ WithNamespaces & ViewerTitleViewProps
             animation={imageViewerHeaderAnimation}
           >
             <div>
-              <JuiDialogHeader>
+              <JuiDialogHeader data-test-automation-id="ViewerHeader">
                 <ReactResizeDetector
                   handleWidth={true}
                   onResize={this.handleHeaderResize}
@@ -91,7 +92,12 @@ WithNamespaces & ViewerTitleViewProps
                   data-test-automation-id={'previewerTitle'}
                 >
                   <span>{name}</span>
-                  <span> {`(${currentIndex + 1}/${total})`}</span>
+                  <JuiDialogHeaderSubtitle>
+                    {' '}
+                    {total > -1 && currentIndex > -1
+                      ? `(${currentIndex + 1}/${total})`
+                      : ''}
+                  </JuiDialogHeaderSubtitle>
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>
                   <JuiButtonBar overlapSize={2.5}>

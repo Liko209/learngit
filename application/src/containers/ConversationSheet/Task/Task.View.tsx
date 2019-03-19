@@ -177,7 +177,8 @@ class Task extends React.Component<taskViewProps> {
         complete={complete}
         title={this._getTitleText(text)}
         titleColor={color}
-        Icon={<JuiTaskCheckbox checked={complete || false} />}
+        Icon={
+          <JuiTaskCheckbox customColor={color} checked={complete || false} />}
       >
         {endTime && (
           <JuiTaskContent title={t('item.due')}>

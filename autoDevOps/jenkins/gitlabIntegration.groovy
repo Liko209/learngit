@@ -78,14 +78,19 @@ def doesRemoteDirectoryExist(String remoteUri, String remoteDir) {
     return 'true' == sshCmd(remoteUri, "[ -d ${remoteDir} ] && echo 'true' || echo 'false'")
 }
 
-def updateRemoteLink(String remoteUri, String linkSource, String linkTarget) {
+def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget) {
     assert '/' != linkTarget, 'What the hell are you doing?'
     // remove link if exists
     println sshCmd(remoteUri, "[ -L ${linkTarget} ] && unlink ${linkTarget} || true")
     // remote directory if exists
     println sshCmd(remoteUri, "[ -d ${linkTarget} ] && rm -rf ${linkTarget} || true")
-    // create link to new target
+    // create copy to new target
     println sshCmd(remoteUri, "cp -r ${linkSource} ${linkTarget}")
+}
+
+def updateVersionInfo(String remoteUri, String appDir, String sha, int timestamp) {
+    String cmd = "sed -i 's/{{deployedCommit}}/${sha.substring(0,9)}/;s/{{deployedTime}}/${timestamp}/' ${appDir}/static/js/versionInfo.*.chunk.js || true"
+    println sshCmd(remoteUri, cmd)
 }
 
 def createRemoteTarbar(String remoteUri, String sourceDir, String targetDir, String filename) {
@@ -248,6 +253,7 @@ String publishPackageName = "${subDomain}.tar.gz".toString()
 String publishUrl = "https://publish.fiji.gliprc.com/${publishPackageName}".toString()
 
 // following params should be updated after checkout stage success
+String headSha = null
 String appHeadSha = null
 String juiHeadSha = null
 
@@ -337,12 +343,12 @@ node(buildNode) {
                 ]
             ])
             // get head sha
-            String head = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
+            headSha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             // change in tests and autoDevOps directory should not trigger application build
             // for git 1.9, there is an easy way to exclude files
             // but most slaves are centos, whose git's version is still 1.8, we use a cmd pipeline here for compatibility
             appHeadSha = sh(returnStdout: true, script: '''ls -1 | grep -Ev '^(tests|autoDevOps)$' | tr '\\n' ' ' | xargs git rev-list -1 HEAD -- ''').trim()
-            if (isMerge && head == appHeadSha) {
+            if (isMerge && headSha == appHeadSha) {
                 // the reason to use stableSha here is if HEAD is generate via fast-forward, the commit will be changed when re-running the job due to timestamp changed
                 echo "generate stable sha1 key from ${appHeadSha}"
                 appHeadSha = stableSha1(appHeadSha)
@@ -354,7 +360,7 @@ node(buildNode) {
             echo "appHeadShaDir=${appHeadShaDir}"
             // build jui only when packages/jui has change
             juiHeadSha = sh(returnStdout: true, script: '''git rev-list -1 HEAD -- packages/jui''').trim()
-            if (isMerge && head == juiHeadSha) {
+            if (isMerge && headSha == juiHeadSha) {
                 // same as appHeadSha
                 echo "generate stable sha1 key from ${juiHeadSha}"
                 juiHeadSha = stableSha1(juiHeadSha)
@@ -475,8 +481,8 @@ node(buildNode) {
                     sshagent(credentials: [deployCredentialId]) {
                         // copy to dir name with head sha when dir is not exists
                         skipBuildJui || rsyncFolderToRemote(sourceDir, deployUri, juiHeadShaDir)
-                        // and create link to branch name based folder
-                        updateRemoteLink(deployUri, juiHeadShaDir, juiLinkDir)
+                        // and create copy to branch name based folder
+                        updateRemoteCopy(deployUri, juiHeadShaDir, juiLinkDir)
                     }
                 }
                 report.juiUrl = juiUrl
@@ -501,11 +507,14 @@ node(buildNode) {
                     sshagent(credentials: [deployCredentialId]) {
                         // copy to dir name with head sha when dir is not exists
                         skipBuildApp || rsyncFolderToRemote(sourceDir, deployUri, appHeadShaDir)
-                        // and create link to branch name based folder
-                        updateRemoteLink(deployUri, appHeadShaDir, appLinkDir)
+                        // and create copy to branch name based folder
+                        updateRemoteCopy(deployUri, appHeadShaDir, appLinkDir)
+                        // and update version info
+                        int ts = System.currentTimeMillis()
+                        updateVersionInfo(deployUri, appLinkDir, headSha, ts)
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
-                            updateRemoteLink(deployUri, appHeadShaDir, appStageLinkDir)
+                            updateRemoteCopy(deployUri, appHeadShaDir, appStageLinkDir)
                         // for release build, we should also create a tar.gz package for deployment
                         if (buildRelease) {
                             createRemoteTarbar(deployUri, appHeadShaDir, publishDir, publishPackageName)
@@ -536,6 +545,7 @@ node(buildNode) {
                 "SITE_URL=${appUrl}",
                 "SITE_ENV=${e2eSiteEnv}",
                 "SELENIUM_SERVER=${e2eSeleniumServer}",
+                "SELENIUM_CHROME_CAPABILITIES=./chrome-opts.json",
                 "ENABLE_REMOTE_DASHBOARD=${e2eEnableRemoteDashboard}",
                 "ENABLE_MOCK_SERVER=${e2eEnableMockServer}",
                 "BROWSERS=${e2eBrowsers}",
@@ -555,11 +565,19 @@ node(buildNode) {
                 "QUARANTINE_PASSED_THRESHOLD=1",
                 "RUN_NAME=[Jupiter][Pipeline][Merge][${startTime}][${gitlabSourceBranch}][${gitlabMergeRequestLastCommit}]",
             ]) {dir("tests/e2e/testcafe") {
+                // print environment variable to help debug
                 sh 'env'
+
+                // following configuration file is use for tuning chrome, in order to use use-data-dir and disk-cache-dir
+                // you need to ensure target dirs exist in selenium-node, and use ramdisk for better performance
+                sh '''echo '{"chromeOptions":{"args":["headless","user-data-dir=/user-data","disk-cache-dir=/user-cache"]}}' > chrome-opts.json'''
+
+                sh "mkdir -p screenshots"
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
                 sshagent (credentials: [scmCredentialId]) {
                     sh 'npm install --unsafe-perm'
                 }
+
                 if (e2eEnableRemoteDashboard){
                     sh 'npx ts-node create-run-id.ts'
                     report.e2eUrl = sh(returnStdout: true, script: 'cat reportUrl || true').trim()

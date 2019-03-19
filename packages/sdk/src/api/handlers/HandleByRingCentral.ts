@@ -7,16 +7,19 @@ import {
   AbstractHandleType,
   IToken,
   NETWORK_VIA,
+  NETWORK_HANDLE_TYPE,
 } from 'foundation';
 import Api from '../api';
-import { ITokenRefreshDelegate } from '../ringcentral/ITokenRefreshDelegate';
+import { IPlatformHandleDelegate } from '../ringcentral/IPlatformHandleDelegate';
 
 const HandleByRingCentral = new class extends AbstractHandleType {
+  name = NETWORK_HANDLE_TYPE.RINGCENTRAL;
   defaultVia = NETWORK_VIA.HTTP;
   survivalModeSupportable = true;
   tokenExpirable = true;
   tokenRefreshable = true;
-  tokenRefreshDelegate: ITokenRefreshDelegate;
+  platformHandleDelegate: IPlatformHandleDelegate;
+
   basic() {
     const str = `${Api.httpConfig.rc.clientId}:${
       Api.httpConfig.rc.clientSecret
@@ -24,6 +27,7 @@ const HandleByRingCentral = new class extends AbstractHandleType {
 
     return this.btoa(str);
   }
+
   requestDecoration(tokenHandler: ITokenHandler) {
     const handler = tokenHandler as OAuthTokenHandler;
     return (request: IRequest) => {
@@ -52,8 +56,8 @@ const HandleByRingCentral = new class extends AbstractHandleType {
   doRefreshToken(token: IToken) {
     return new Promise<IToken>(async (resolve, reject) => {
       try {
-        if (this.tokenRefreshDelegate) {
-          const refreshedToken = await this.tokenRefreshDelegate.refreshRCToken();
+        if (this.platformHandleDelegate) {
+          const refreshedToken = await this.platformHandleDelegate.refreshRCToken();
           refreshedToken ? resolve(refreshedToken) : reject(refreshedToken);
         } else {
           reject(token);
@@ -62,6 +66,16 @@ const HandleByRingCentral = new class extends AbstractHandleType {
         reject(token);
       }
     });
+  }
+
+  checkServerStatus = (
+    callback: (success: boolean, retryAfter: number) => void,
+  ) => {
+    if (!this.platformHandleDelegate) {
+      callback(true, 0);
+      return;
+    }
+    this.platformHandleDelegate.checkServerStatus(callback);
   }
 }();
 

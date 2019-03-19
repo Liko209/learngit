@@ -33,6 +33,7 @@ describe('UserAPI', () => {
         0,
         requestConfig,
         header,
+        3,
       );
     });
   });

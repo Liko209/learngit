@@ -6,9 +6,11 @@ import {
   ITokenHandler,
   AbstractHandleType,
   NETWORK_VIA,
+  NETWORK_HANDLE_TYPE,
 } from 'foundation';
 
 const HandleByUpload = new class extends AbstractHandleType {
+  name = NETWORK_HANDLE_TYPE.UPLOAD;
   defaultVia = NETWORK_VIA.HTTP;
   survivalModeSupportable = true;
   requestDecoration(tokenHandler: ITokenHandler) {

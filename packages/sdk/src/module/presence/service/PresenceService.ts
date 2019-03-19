@@ -9,6 +9,8 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Presence, RawPresence } from '../entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PresenceController } from '../controller/PresenceController';
+import { AccountGlobalConfig } from '../../../service/account/config';
+import { PRESENCE } from '../constant/Presence';
 
 class PresenceService extends EntityBaseService {
   static key = 'PresenceService';
@@ -31,6 +33,12 @@ class PresenceService extends EntityBaseService {
 
   async getById(id: number): Promise<Presence> {
     return await this._presenceController.getById(id);
+  }
+
+  async getCurrentUserPresence(): Promise<PRESENCE | undefined> {
+    const id = AccountGlobalConfig.getCurrentUserId();
+    const result = await this.getById(id);
+    return result.presence;
   }
 
   unsubscribe(id: number) {

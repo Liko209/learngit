@@ -189,5 +189,15 @@ describe('FileActionController', () => {
       );
       expect(entitySourceController.get).toBeCalledWith(11);
     });
+    it('should return expected url', async () => {
+      const { fileItemA } = setUpData();
+      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('token');
+      entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
+      const res = await fileActionController.getThumbsUrlWithSize(11);
+      expect(res).toBe(
+        'cacheServer.com/modify-image?id=852746252&source_type=files&source_id=10&t=token',
+      );
+      expect(entitySourceController.get).toBeCalledWith(11);
+    });
   });
 });

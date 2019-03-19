@@ -24,6 +24,7 @@ import notificationCenter, {
 import { EVENT_TYPES } from '../../../../service/constants';
 import { SERVICE } from '../../../../service/eventKey';
 import _ from 'lodash';
+import { mainLogger } from 'foundation';
 
 type DataHandleTask =
   | GroupStateHandleTask
@@ -41,6 +42,7 @@ class TotalUnreadController {
   ) {
     this._taskArray = [];
     this._unreadInitialized = false;
+    this._favoriteGroupIds = [];
     this.reset();
   }
 
@@ -107,18 +109,22 @@ class TotalUnreadController {
   }
 
   private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
-    if (!this._unreadInitialized) {
-      await this._initializeTotalUnread();
-    } else {
-      if (task.type === TASK_DATA_TYPE.GROUP_STATE) {
-        await this._updateTotalUnreadByStateChanges(task.data);
-      } else if (task.type === TASK_DATA_TYPE.GROUP_ENTITY) {
-        await this._updateTotalUnreadByGroupChanges(task.data);
+    try {
+      if (!this._unreadInitialized) {
+        await this._initializeTotalUnread();
       } else {
-        await this._updateTotalUnreadByProfileChanges(task.data);
+        if (task.type === TASK_DATA_TYPE.GROUP_STATE) {
+          await this._updateTotalUnreadByStateChanges(task.data);
+        } else if (task.type === TASK_DATA_TYPE.GROUP_ENTITY) {
+          await this._updateTotalUnreadByGroupChanges(task.data);
+        } else {
+          await this._updateTotalUnreadByProfileChanges(task.data);
+        }
       }
+      this._doNotification();
+    } catch (err) {
+      mainLogger.error(`TotalUnreadController, handle task error, ${err}`);
     }
-    this._doNotification();
 
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
@@ -187,7 +193,7 @@ class TotalUnreadController {
         if (!profile) {
           return;
         }
-        const newFavoriteIds = profile.favorite_group_ids;
+        const newFavoriteIds = profile.favorite_group_ids || [];
         const adds = _.difference(newFavoriteIds, this._favoriteGroupIds);
         this._updateTotalUnreadByFavoriteChanges(adds, true);
         const removes = _.difference(this._favoriteGroupIds, newFavoriteIds);
@@ -253,7 +259,7 @@ class TotalUnreadController {
     const groupService: GroupService = GroupService.getInstance();
     const profileService: ProfileService = ProfileService.getInstance();
     const groups = await groupService.getEntitySource().getEntities();
-    this._favoriteGroupIds = await profileService.getFavoriteGroupIds();
+    this._favoriteGroupIds = (await profileService.getFavoriteGroupIds()) || [];
 
     await Promise.all(
       groups.map(async (group: Group) => {
