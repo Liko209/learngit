@@ -6,7 +6,7 @@
 import { JuiFabButton } from '../../components/Buttons';
 import { width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
-import { JuiResponsiveLayout } from 'jui/foundation/Layout/Responsive';
+import { JuiResponsiveLayout } from '../../foundation/Layout/Responsive';
 
 const JuiImageViewerContainer = styled.div`
   && .zoomGroup {
