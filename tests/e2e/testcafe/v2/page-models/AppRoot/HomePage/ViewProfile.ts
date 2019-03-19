@@ -266,7 +266,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   memberEntryById(id: string) {
-    return this.getComponent(Member, this.memberList.find(`[data-id=${id}]`));
+    return this.getComponent(Member, this.memberList.find(`[data-id="${id}"]`));
   }
 
   memberEntryByName(name: string) {
@@ -282,6 +282,14 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   // team only
+  get adminLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self);
+  }
+
+  get guestLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
+  }
+
   get privateButton() {
     return this.profileTitle.find('.privacy');
   }
