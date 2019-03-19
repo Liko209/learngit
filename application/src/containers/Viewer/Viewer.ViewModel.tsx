@@ -80,7 +80,9 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   }
 
   doPreload = () => {
-    this._preloadController.replacePreload(this.ids, this._getItemIndex());
+    if (this.ids) {
+      this._preloadController.replacePreload(this.ids, this._getItemIndex());
+    }
   }
 
   stopPreload = () => {
