@@ -5,7 +5,6 @@
  */
 import { IDao } from '../../framework/dao';
 import { JSdkError } from '../../error/sdk/JSdkError';
-import { SYNC_SOURCE } from '../../module/sync/types';
 class ControllerUtils {
   static getEntityNotificationKey<T>(dao: IDao<T>) {
     if (dao) {
@@ -17,10 +16,6 @@ class ControllerUtils {
       'ControllerUtils',
       'getEntityNotificationKey error without invalid dao',
     );
-  }
-
-  static shouldEmitNotification(source?: SYNC_SOURCE) {
-    return source !== SYNC_SOURCE.REMAINING;
   }
 }
 

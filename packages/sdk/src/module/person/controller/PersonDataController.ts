@@ -9,11 +9,11 @@ import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { transform } from '../../../service/utils';
+import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, ENTITY } from '../../../service/eventKey';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { ControllerUtils } from '../../../framework/controller/ControllerUtils';
 
 class PersonDataController {
   constructor(public entitySourceController: IEntitySourceController<Person>) {}
@@ -58,7 +58,7 @@ class PersonDataController {
     const normalData = persons.filter((item: any) => item.deactivated !== true);
 
     this._saveData(deactivatedData, normalData);
-    if (ControllerUtils.shouldEmitNotification(source)) {
+    if (shouldEmitNotification(source)) {
       notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
     }
   }

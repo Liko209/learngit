@@ -19,6 +19,7 @@ import notificationCenter, {
 } from '../../../service/notificationCenter';
 import { ProfileService, extractHiddenGroupIds } from '../../profile';
 import { transform } from '../../../service/utils';
+import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { Post } from '../../post/entity';
 import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
@@ -27,7 +28,6 @@ import { IGroupService } from '../service/IGroupService';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import { ControllerUtils } from '../../../framework/controller/ControllerUtils';
 
 class GroupHandleDataController {
   constructor(
@@ -194,7 +194,7 @@ class GroupHandleDataController {
       (item: Group) => item && !item.deactivated,
     );
     await this.operateGroupDao(deactivatedData, normalData);
-    if (ControllerUtils.shouldEmitNotification(source)) {
+    if (shouldEmitNotification(source)) {
       await this.doNotification(deactivatedData, normalData);
     }
     return normalData;

@@ -7,11 +7,11 @@
 import { Company } from '../entity';
 import { Raw } from '../../../framework/model';
 import { transform } from '../../../service/utils';
+import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { SYNC_SOURCE } from '../../sync/types';
-import { ControllerUtils } from '../../../framework/controller/ControllerUtils';
 
 class CompanyController {
   constructor(
@@ -58,7 +58,7 @@ class CompanyController {
       return;
     }
     const transformedData: Company[] = await this._getTransformData(companies);
-    if (ControllerUtils.shouldEmitNotification(source)) {
+    if (shouldEmitNotification(source)) {
       notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
     }
     await this.entitySourceController.bulkUpdate(transformedData);

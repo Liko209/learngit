@@ -20,7 +20,7 @@ import { mainLogger } from 'foundation';
 import { AccountGlobalConfig } from '../../../../service/account/config';
 import { NewUserConfig } from '../../../../service/config';
 import { SYNC_SOURCE } from '../../../../module/sync/types';
-import { ControllerUtils } from '../../../..//framework/controller/ControllerUtils';
+import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 
@@ -355,7 +355,7 @@ class StateDataHandleController {
       await this._entitySourceController.bulkUpdate(
         transformedState.groupStates,
       );
-      if (ControllerUtils.shouldEmitNotification(source)) {
+      if (shouldEmitNotification(source)) {
         notificationCenter.emitEntityUpdate(
           ENTITY.GROUP_STATE,
           transformedState.groupStates,

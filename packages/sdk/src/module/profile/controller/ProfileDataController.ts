@@ -15,8 +15,8 @@ import { mainLogger } from 'foundation';
 import { ENTITY } from '../../../service/eventKey';
 import _ from 'lodash';
 import { transform } from '../../../service/utils';
+import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import { ControllerUtils } from '../../../framework/controller/ControllerUtils';
 
 const DEFAULT_LEFTRAIL_GROUP: number = 20;
 
@@ -90,7 +90,7 @@ class ProfileDataController {
         const transformedData: Profile = transform(profile);
         if (transformedData) {
           await this.entitySourceController.put(transformedData);
-          if (ControllerUtils.shouldEmitNotification(source)) {
+          if (shouldEmitNotification(source)) {
             notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
               transformedData,
             ]);

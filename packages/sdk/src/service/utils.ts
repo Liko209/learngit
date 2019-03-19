@@ -8,7 +8,7 @@ import { daoManager, DeactivatedDao } from '../dao';
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
 import { IdModel } from '../framework/model';
-import { ControllerUtils } from '../framework/controller/ControllerUtils';
+import { shouldEmitNotification } from '../utils/notificationUtils';
 
 const isObject = (value: any) =>
   Object.prototype.toString.call(value) === '[object Object]';
@@ -65,7 +65,7 @@ const baseHandleData = async (
       }
     }
 
-    if (ControllerUtils.shouldEmitNotification(source)) {
+    if (shouldEmitNotification(source)) {
       if (filterFunc) {
         const notifications = filterFunc(data);
         notifications.forEach(
