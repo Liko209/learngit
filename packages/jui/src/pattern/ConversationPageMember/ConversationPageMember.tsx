@@ -6,7 +6,7 @@ import { JuiIconography } from '../../foundation/Iconography';
 import { spacing, grey, typography } from '../../foundation/utils/styles';
 import { darken } from '@material-ui/core/styles/colorManipulator';
 
-const StyledConversationPageMember = styled.div`
+const StyledConversationPageMember = styled.a`
   display: inline-flex;
   flex: none;
   align-self: center;
@@ -37,7 +37,7 @@ class JuiConversationPageMember extends React.Component<
     return (
       <JuiArrowTip title={title}>
         <StyledConversationPageMember
-          tabIndex={0}
+          href="javascript:void()"
           aria-label={ariaLabel}
           onClick={onClick}
         >
