@@ -7,12 +7,13 @@ import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
-import { JuiMenu, JuiMenuItem } from 'jui/components';
+import { JuiMenuItem } from 'jui/components';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { Dialog } from '@/containers/Dialog';
 import { Notification } from '@/containers/Notification';
 import { MenuViewProps } from './types';
+import { JuiMenuContain } from 'jui/pattern/ConversationList/ConversationListItem';
 import {
   ToastType,
   ToastMessageAlign,
@@ -174,7 +175,7 @@ class MenuViewComponent extends Component<Props> {
       t,
     } = this.props;
     return (
-      <JuiMenu
+      <JuiMenuContain
         id="render-props-menu"
         anchorEl={anchorEl}
         open={!!anchorEl}
@@ -193,7 +194,7 @@ class MenuViewComponent extends Component<Props> {
           </JuiMenuItem>
         </OpenProfileDialog>
         {this.renderCloseMenuItem()}
-      </JuiMenu>
+      </JuiMenuContain>
     );
   }
 }

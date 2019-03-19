@@ -8,7 +8,7 @@ import React, { memo } from 'react';
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
-
+import { JuiMenu } from '../../components';
 import styled, { keyframes } from '../../foundation/styled-components';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import {
@@ -38,6 +38,14 @@ const rippleEnter = (theme: Theme) => keyframes`
   }
 `;
 const StyledIconographyMore = styled(JuiIconography)<JuiIconographyProps>``;
+
+const JuiMenuContain = styled(JuiMenu)`
+  && {
+    li {
+      background: ${palette('common', 'white')};
+    }
+  }
+`;
 
 const StyledListItem = styled(MuiMenuItem)`
   && {
@@ -180,4 +188,8 @@ const JuiConversationListItem: IConversationListItem = memo(
 JuiConversationListItem.dependencies = [ItemText, JuiIconography];
 
 export default JuiConversationListItem;
-export { JuiConversationListItemProps, JuiConversationListItem };
+export {
+  JuiConversationListItemProps,
+  JuiConversationListItem,
+  JuiMenuContain,
+};
