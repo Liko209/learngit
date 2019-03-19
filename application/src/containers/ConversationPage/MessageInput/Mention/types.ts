@@ -12,13 +12,15 @@ type MentionProps = {
 };
 
 type MentionViewProps = {
+  ids: number[];
+  total: number;
   open: boolean;
   currentIndex: number;
-  members: object[];
   searchTerm?: string;
   groupType: CONVERSATION_TYPES;
   selectHandler: Function;
   isEditMode?: boolean;
+  loadMore: (startIndex: number, stopIndex: number) => Promise<void>;
 };
 
 export { MentionProps, MentionViewProps };

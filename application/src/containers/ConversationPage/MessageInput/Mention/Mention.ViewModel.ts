@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed, runInAction, comparer } from 'mobx';
+import { action, observable, computed, comparer, runInAction } from 'mobx';
 import { MentionProps, MentionViewProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
 import { PersonService } from 'sdk/module/person';
@@ -14,6 +14,10 @@ import GroupModel from '@/store/models/Group';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
+import { DiscontinuousPersonListHandler } from '@/store/handler/DiscontinuousPersonListHandler';
+import { QUERY_DIRECTION } from 'sdk/dao/constants';
+import { Person } from 'sdk/module/person/entity';
+import { SortableModel } from 'sdk/framework/model';
 
 const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
   if (vm.members.length && vm.open) {
@@ -64,6 +68,10 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     },
   ];
 
+  @observable discontinuousPersonListHandler: DiscontinuousPersonListHandler;
+
+  @observable firstInit: boolean = true;
+
   constructor(props: MentionProps) {
     super(props);
     this.reaction(
@@ -82,12 +90,52 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     this.reaction(
       () => this.props.id,
       () => {
-        this._canDoFuzzySearch = false;
-        this.open = false;
-        this.currentIndex = 0;
-        this.members = [];
+        this.reset();
       },
     );
+  }
+
+  @action
+  build(memberIds: number[]) {
+    if (!memberIds || memberIds.length === 0) {
+      return;
+    }
+
+    if (this.firstInit) {
+      this.discontinuousPersonListHandler &&
+        this.discontinuousPersonListHandler.dispose();
+      this.discontinuousPersonListHandler = new DiscontinuousPersonListHandler(
+        memberIds,
+      );
+      this.loadInitialData();
+      this.firstInit = false;
+    }
+
+    this.discontinuousPersonListHandler.onSourceIdsChanged(memberIds);
+  }
+
+  @action
+  async loadInitialData() {
+    await this.discontinuousPersonListHandler.loadMorePosts(
+      QUERY_DIRECTION.NEWER,
+      20,
+    );
+  }
+
+  @action
+  loadMore = async (startIndex: number, stopIndex: number) => {
+    await this.discontinuousPersonListHandler.loadMorePosts(
+      QUERY_DIRECTION.NEWER,
+      stopIndex - startIndex + 1,
+    );
+  }
+
+  @action
+  reset() {
+    this._canDoFuzzySearch = false;
+    this.open = false;
+    this.currentIndex = 0;
+    this.members = [];
   }
 
   @computed
@@ -101,8 +149,13 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   }
 
   @computed
-  private get _memberIds() {
-    return this._group.members;
+  get _memberIds() {
+    return this._group.members || [];
+  }
+
+  @computed
+  get total() {
+    return this.members.length;
   }
 
   @action
@@ -140,11 +193,12 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     );
     if (res) {
       runInAction(() => {
-        if (res.sortableModels.length > 20) {
-          res.sortableModels.length = 20;
-        }
         this.currentIndex = 0;
         this.members = res.sortableModels;
+        const ids = res.sortableModels.map(
+          (person: SortableModel<Person>) => person.id,
+        );
+        this.build(ids);
       });
     }
   }
@@ -169,7 +223,8 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     };
   }
 
-  @action selectHandler = (selectIndex: number) => {
+  @action
+  selectHandler = (selectIndex: number) => {
     return () => {
       this.currentIndex = selectIndex;
       const { pid } = this.props;
@@ -212,6 +267,13 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @computed
   get isEditMode() {
     return this.props.isEditMode;
+  }
+
+  @computed
+  get ids() {
+    return this.discontinuousPersonListHandler
+      ? this.discontinuousPersonListHandler.ids
+      : [];
   }
 
   mentionOptions = {

@@ -24,6 +24,7 @@ const Wrapper = styled.div<{
 type Props = {
   children: React.ReactChild;
   isEditMode?: boolean;
+  onKeyDown?: any;
 } & ThemeProps;
 
 class MentionPanel extends PureComponent<Props> {

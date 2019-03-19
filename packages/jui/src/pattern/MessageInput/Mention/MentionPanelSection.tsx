@@ -7,7 +7,8 @@ type Props = {
 };
 
 const Wrapper = styled.div<Props>`
-  padding: ${spacing(2, 0)};
+  // padding: ${spacing(2, 0)};
+  max-height: 272px;
 `;
 
 class JuiMentionPanelSection extends PureComponent<Props> {
