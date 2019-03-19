@@ -59,9 +59,11 @@ const StyledUmi = styled<JuiUmiProps, 'span'>('span').attrs({
   width: ${({ unreadCount }) => width(countToWidth(unreadCount))};
   height: ${height(4)};
   border-radius: 12px;
-  transition-property: font-size, height, line-height, color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+  transition: ${({ theme }) =>
+    theme.transitions.create(['font-size', 'height', 'line-height', 'color'], {
+      easing: theme.transitions.easing.easeInOut,
+      duration: theme.transitions.duration.shortest,
+    })};
   background: ${({ important }) => {
     return important ? secondary('main') : grey('500');
   }};

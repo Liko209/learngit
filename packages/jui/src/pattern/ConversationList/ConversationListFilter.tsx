@@ -18,14 +18,13 @@ import {
 const StyledListItem = styled(MuiMenuItem)`
   && {
     white-space: nowrap;
-    background: white;
     padding: ${spacing(0, 4, 0, 8)};
     height: ${height(12)};
     line-height: ${height(12)};
     color: ${grey('900')};
     ${typography('body2')};
     &:hover {
-      background: white;
+      background-color: inherit;
       cursor: initial;
     }
   }

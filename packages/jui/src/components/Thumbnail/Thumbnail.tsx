@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../foundation/styled-components';
 import { width, shape, grey } from '../../foundation/utils/styles';
-// import { preloadImg } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 
 type JuiThumbnailProps = {

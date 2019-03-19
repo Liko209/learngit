@@ -10,6 +10,8 @@ import React, {
   FocusEventHandler,
 } from 'react';
 import * as Jui from './style';
+import moize from 'moize';
+import { IconColor } from '../../../foundation/Iconography';
 
 type JuiSearchInputProps = {
   value: string;
@@ -66,6 +68,10 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
     }
   }
 
+  private _color = moize((scope: string, name: string) => {
+    return [scope, name] as IconColor;
+  });
+
   render() {
     const {
       value,
@@ -81,7 +87,10 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
       <Jui.SearchWrapper hasValue={hasValue} focus={focus}>
         <Jui.SearchIcon
           data-test-automation-id="search-icon"
-          disableToolTip={true}
+          iconColor={
+            focus ? this._color('grey', '500') : this._color('common', 'white')
+          }
+          iconSize="small"
         >
           search
         </Jui.SearchIcon>
@@ -107,6 +116,7 @@ class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
             disableToolTip={true}
             variant="plain"
             onClick={this.onClose}
+            color={focus ? 'grey.500' : 'common.white'}
           >
             close
           </Jui.CloseBtn>

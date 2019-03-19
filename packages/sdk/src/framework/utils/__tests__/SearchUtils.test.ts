@@ -1,0 +1,51 @@
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2019-03-17 12:24:36
+ * Copyright © RingCentral. All rights reserved.
+ */
+
+import { SearchUtils } from '../SearchUtils';
+
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
+describe('SearchUtils', () => {
+  beforeEach(() => {
+    clearMocks();
+  });
+
+  describe('isFuzzyMatched', () => {
+    it.each`
+      srcText        | searchKey       | expectRes
+      ${'good day'}  | ${['oo']}       | ${true}
+      ${'good day'}  | ${['da']}       | ${true}
+      ${'good day'}  | ${['oo', 'da']} | ${true}
+      ${'good day'}  | ${['o', 'da']}  | ${true}
+      ${'good day'}  | ${['od', 'da']} | ${true}
+      ${'good day'}  | ${['g']}        | ${true}
+      ${'jerry cai'} | ${['j']}        | ${true}
+    `(
+      'fuzzy match: $srcText, $searchKey, $expectRes',
+      ({ srcText, searchKey, expectRes }) => {
+        expect(SearchUtils.isFuzzyMatched(srcText, searchKey)).toBe(expectRes);
+      },
+    );
+
+    it('should return false when is not FuzzyMatched', () => {
+      expect(SearchUtils.isFuzzyMatched('good day', ['p'])).toBeFalsy();
+    });
+  });
+
+  describe('isStartWithMatched', () => {
+    it('should return true when start with matched', () => {
+      expect(SearchUtils.isStartWithMatched('good day', ['goo'])).toBeTruthy();
+    });
+
+    it('should return false when start with not matched', () => {
+      expect(SearchUtils.isStartWithMatched('good day', ['goop'])).toBeFalsy();
+    });
+  });
+});
