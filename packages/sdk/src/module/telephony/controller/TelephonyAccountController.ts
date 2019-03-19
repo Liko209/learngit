@@ -28,7 +28,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   makeCall(toNumber: string, delegate: ITelephonyCallDelegate) {
     this._callController = new TelephonyCallController(delegate);
-    this._rtcAccount.makeCall(toNumber, this._callController);
+    return this._rtcAccount.makeCall(toNumber, this._callController);
   }
 
   hangUp(callId: string) {
