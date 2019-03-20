@@ -81,7 +81,10 @@ class RTCAccount implements IRTCAccount {
       return RTC_STATUS_CODE.MAX_CALLS_REACHED;
     }
     if (this.state() === RTC_ACCOUNT_STATE.UNREGISTERED) {
-      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
+      rtcLogger.warn(
+        LOG_TAG,
+        'Failed to make call. Account is in Unregistered state',
+      );
       return RTC_STATUS_CODE.INVALID_STATE;
     }
     let callOption: RTCCallOptions;
