@@ -245,4 +245,20 @@ test(formalName('Check the default team name on “Convert to team” prompt', [
     await t.expect(endPosition).eql(teamName.length);
   });
 
+  await h(t).withLog(`Given I ensured no team name "${teamName}" exists via Api`, async () => {
+    const teamId =  await h(t).glip(loginUser).getTeamIdByName(teamName);
+    if (teamId) {
+      await h(t).glip(loginUser).modifyGroupName(teamId, uuid());
+    }
+  });
+
+  await h(t).withLog('When I click "Convert to team" button', async () => {
+    await convertToTeamDialog.clickConvertToTeamButton();
+  });
+
+  const teamSection = app.homePage.messageTab.teamsSection;
+  await h(t).withLog(`Then I should fine the new team named: "${teamName}"`, async () => {
+    await conversationPage.titleShouldBe(teamName);
+    await teamSection.nthConversationEntry(0).nameShouldBe(teamName);
+  });
 });
