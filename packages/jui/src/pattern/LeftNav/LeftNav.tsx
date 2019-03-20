@@ -41,7 +41,7 @@ const Left = styled<LeftNavProps>(CustomLeftNav)`
     overflow-x: hidden;
     width: ${props => (props.expand ? MaxWidth : MinWidth)}px;
     justify-content: space-between;
-    padding: ${spacing(6)} 0;
+    padding: ${spacing(8, 0, 6, 0)};
     box-sizing: border-box;
     transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     // this group btns will awake
