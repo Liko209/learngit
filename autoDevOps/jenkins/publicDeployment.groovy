@@ -109,7 +109,7 @@ def buildStage(Context context) {
     // update version info
     sh "sed -i 's/{{deployedCommit}}/${context.gitHead.substring(0,9)}/;s/{{deployedTime}}/${context.timestamp}/' ${context.buildDirectory}/static/js/versionInfo.*.chunk.js || true"
     // make package
-    context.buildPackageName = "${context.gitBranch}-${context.gitHead}-${context.timeLabel}.tar.gz".toString()
+    context.buildPackageName = "${context.gitBranch}-${context.timeLabel}.tar.gz".toString()
     sh "tar -czvf ${context.buildPackageName} -C ${context.buildDirectory} ."
     // archive for trace back
     archiveArtifacts artifacts: context.buildPackageName, fingerprint: true
