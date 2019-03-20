@@ -14,9 +14,9 @@ import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
 import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
-
 import { AlertDialog } from "./AlertDialog";
 import { IUser } from '../../../models';
+import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
 
 export class HomePage extends BaseWebComponent {
@@ -125,6 +125,9 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(AlertDialog);
   }
 
+  get fileAndImagePreviewer() {
+    return this.getComponent(FileAndImagePreviewer);
+  }
   get viewerDialog() {
     return this.getComponent(ViewerDialog);
   }
