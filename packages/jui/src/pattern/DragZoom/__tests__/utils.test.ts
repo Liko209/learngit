@@ -3,55 +3,47 @@
  * @Date: 2019-03-18 13:20:11
  * Copyright © RingCentral. All rights reserved.
  */
-import { ElementRect } from '../../../components/ZoomArea';
 import { Padding } from '../types';
-import { calculateFitSize, fixOffset, isDraggable } from '../utils';
+import { calculateFitWidthHeight, fixOffset, isDraggable } from '../utils';
 
 describe('utils', () => {
-  const createRect = (
-    width: number,
-    height: number,
-    left?: number,
-    top?: number,
-  ): ElementRect => {
-    return {
-      width,
-      height,
-      left: left ? left : 0,
-      top: top ? top : 0,
-    };
-  };
   const createPadding = (leftRight: number, topBottom: number): Padding => {
     return [leftRight, topBottom, leftRight, topBottom];
   };
-  describe('calculateFitSize()', () => {
+  describe('calculateFitWidthHeight()', () => {
     it('should fit by longer side', () => {
-      const result = calculateFitSize(
-        createRect(100, 100),
-        createRect(100, 200),
+      const result = calculateFitWidthHeight(
+        100,
+        200,
+        100,
+        100,
         createPadding(0, 0),
         0,
       );
-      expect(result).toEqual(createRect(50, 100, 25, 0));
+      expect(result).toEqual([50, 100]);
     });
     it('should fit by longer side with padding', () => {
-      const result = calculateFitSize(
-        createRect(100, 100),
-        createRect(100, 200),
+      const result = calculateFitWidthHeight(
+        100,
+        200,
+        100,
+        100,
         createPadding(20, 20),
         0,
       );
-      expect(result).toEqual(createRect(30, 60, 35, 20));
+      expect(result).toEqual([30, 60]);
     });
 
     it('should leave contentRect min size', () => {
-      const result = calculateFitSize(
-        createRect(100, 100),
-        createRect(100, 200),
+      const result = calculateFitWidthHeight(
+        100,
+        200,
+        100,
+        100,
         createPadding(20, 20),
         70,
       );
-      expect(result).toEqual(createRect(35, 70, 32.5, 15));
+      expect(result).toEqual([35, 70]);
     });
   });
   describe('fixOffset()', () => {
@@ -76,11 +68,11 @@ describe('utils', () => {
   });
   describe('isDraggable()', () => {
     it('should isDraggable == true', () => {
-      const result = isDraggable(100, 200, createRect(100, 100));
+      const result = isDraggable(100, 200, 100, 100);
       expect(result).toBeTruthy();
     });
     it('should isDraggable == false', () => {
-      const result = isDraggable(100, 50, createRect(100, 100));
+      const result = isDraggable(100, 50, 100, 100);
       expect(result).toBeFalsy();
     });
   });
