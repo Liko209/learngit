@@ -24,10 +24,20 @@ import { AuthGlobalConfig } from '../../../service/auth/config';
 import { ContactType } from '../types';
 
 const PersonFlags = {
+  is_webmail: 1,
   deactivated: 2,
   has_registered: 4,
+  externally_registered: 8,
+  externally_registered_password_set: 16,
+  rc_registered: 32,
+  locked: 64,
+  amazon_ses_suppressed: 128,
+  is_kip: 256,
+  has_bogus_email: 512,
   is_removed_guest: 1024,
   am_removed_guest: 2048,
+  is_hosted: 4096,
+  invited_by_me: 8192,
 };
 
 const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
@@ -236,8 +246,13 @@ class PersonController {
     );
   }
 
+  private _isUnregistered(person: Person) {
+    return person.flags === 0;
+  }
+
   isValid(person: Person) {
     return (
+      !this._isUnregistered(person) &&
       !this._isDeactivated(person) &&
       this._isVisible(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
