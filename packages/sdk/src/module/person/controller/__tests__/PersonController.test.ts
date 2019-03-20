@@ -5,11 +5,11 @@
  */
 
 import { PersonController } from '../PersonController';
-import { daoManager, AuthDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
 import { PersonDao } from '../../dao';
 import { Person, PHONE_NUMBER_TYPE } from '../../entity';
 import { personFactory } from '../../../../__tests__/factories';
-import { KVStorageManager } from 'foundation';
+
 import PersonAPI from '../../../../api/glip/person';
 
 import {
@@ -285,74 +285,18 @@ describe('PersonService', () => {
   });
 
   describe('getHeadShotWithSize()', () => {
-    const URL = 'https://glip.com/test.jpg';
+    const originalURL = 'https://glip.com/original.jpg';
     const thumbsSize64 = 'https://glip.com/thumbs64.jpg';
     const thumbsSize92 = 'https://glip.com/thumbs92.jpg';
     const thumbsSize150 = 'https://glip.com/thumbs150.jpg';
     const thumbsSizeX = 'https://glip.com/thumbsx.jpg';
-    const kvStorageManager = new KVStorageManager();
-    const kvStorage = kvStorageManager.getStorage();
-    const authDao = new AuthDao(kvStorage);
+    const serverUrl = 'https://glip.com/headurl.jpg';
 
-    beforeEach(() => {});
-    it('should return headShotUrl', () => {
-      daoManager.getKVDao.mockReturnValueOnce(authDao);
-      authDao.get = jest.fn();
-      authDao.get.mockReturnValueOnce('token');
-      const headUrl = 'mockUrl';
-      const spy = jest
-        .spyOn(PersonAPI, 'getHeadShotUrl')
-        .mockReturnValueOnce(headUrl);
-      const result = personController.getHeadShotWithSize(1, 'xxx', '', 33);
-      expect(result).toEqual(headUrl);
+    beforeEach(() => {
+      jest.spyOn(PersonAPI, 'getHeadShotUrl').mockReturnValueOnce(serverUrl);
     });
 
-    it('should return empty string when headShotVersion is empty', () => {
-      daoManager.getKVDao.mockReturnValueOnce(authDao);
-      authDao.get.mockReturnValueOnce('token');
-      const headUrl = 'mockUrl';
-      const spy = jest
-        .spyOn(PersonAPI, 'getHeadShotUrl')
-        .mockReturnValueOnce(headUrl);
-      const result = personController.getHeadShotWithSize(1, null, '', 33);
-      expect(result).toBeNull;
-    });
-
-    it('should url when the headshot is string', () => {
-      const headshot = URL;
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
-      expect(url).toBe(URL);
-    });
-
-    it('should return url when there is no thumbs', () => {
-      const headshot = {
-        url: URL,
-      };
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
-      expect(url).toBe(URL);
-    });
-
-    it('should return url when thumbs is invalid', () => {
-      const thumbsString = { 'height-13942071308size=16x16': 16 };
-      const headshot = {
-        thumbs: thumbsString,
-        url: URL,
-      };
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
-      expect(url).toBe(URL);
-    });
-
-    it('should return first key as url', () => {
-      const thumbsString = { '123size=100x100': thumbsSizeX };
-      const headshot = {
-        thumbs: thumbsString,
-        url: URL,
-      };
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
-      expect(url).toBe(thumbsSizeX);
-    });
-
-    it('should return the highest size of thumbs without stored_file_id', () => {
+    it('should return url when desired size is found in thumbs without stored_file_id', () => {
       const thumbsString = {
         'height-13942071308size=16x16': 16,
         'width-13942071308size=24x24': 24,
@@ -366,11 +310,11 @@ describe('PersonService', () => {
         thumbs: thumbsString,
         url: URL,
       };
-      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
       expect(url).toBe(thumbsSize150);
     });
 
-    it('should return the highest size of thumbs with stored_file_id', () => {
+    it('should return url when desired size is found in thumbs with stored_file_id', () => {
       const thumbsString = {
         'height-13942071308size=16x16': 16,
         'width-13942071308size=24x24': 24,
@@ -382,11 +326,91 @@ describe('PersonService', () => {
 
       const headshot = {
         thumbs: thumbsString,
-        url: URL,
+        url: originalURL,
+        stored_file_id: '123',
+      };
+      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      expect(url).toBe(thumbsSize150);
+    });
+
+    it('should return url from server when there is no thumbs', () => {
+      const headshot = {
+        url: originalURL,
+      };
+      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      expect(url).toBe(serverUrl);
+    });
+
+    it('should return url from server when thumbs is invalid', () => {
+      const thumbsString = {
+        '123size=100x100': thumbsSizeX,
+        'height-13942071308size=16x16': 16,
+      };
+      const headshot = {
+        url: originalURL,
+        thumbs: thumbsString,
+      };
+      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      expect(url).toBe(serverUrl);
+    });
+
+    it('should return url from server when desired size is not found in thumbs', () => {
+      const thumbsString = {
+        'height-13942071308size=16x16': 16,
+        'width-13942071308size=24x24': 24,
+        '123size=100x100': thumbsSizeX,
+        '123size=64': thumbsSize64,
+        '123size=92': thumbsSize92,
+      };
+
+      const headshot = {
+        thumbs: thumbsString,
+        url: originalURL,
+        stored_file_id: '123',
+      };
+      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      expect(url).toBe(serverUrl);
+    });
+
+    it('should return original url when desired size is not found in thumbs and no headshot version is specified', () => {
+      const thumbsString = {
+        'height-13942071308size=16x16': 16,
+        'width-13942071308size=24x24': 24,
+        '123size=100x100': thumbsSizeX,
+        '123size=64': thumbsSize64,
+        '123size=92': thumbsSize92,
+      };
+
+      const headshot = {
+        thumbs: thumbsString,
+        url: originalURL,
         stored_file_id: '123',
       };
       const url = personController.getHeadShotWithSize(1, '', headshot, 150);
-      expect(url).toBe(thumbsSize150);
+      expect(url).toBe(originalURL);
+    });
+
+    it('should return original url when desired size is not found in thumbs and fail to get url from server', () => {
+      const thumbsString = {
+        'height-13942071308size=16x16': 16,
+        'width-13942071308size=24x24': 24,
+        '123size=100x100': thumbsSizeX,
+        '123size=64': thumbsSize64,
+        '123size=92': thumbsSize92,
+      };
+
+      const headshot = {
+        thumbs: thumbsString,
+        url: originalURL,
+        stored_file_id: '123',
+      };
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+
+      jest.spyOn(PersonAPI, 'getHeadShotUrl').mockReturnValueOnce(null);
+
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      expect(url).toBe(originalURL);
     });
   });
 
