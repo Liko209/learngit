@@ -145,7 +145,9 @@ export class GroupFetchDataController {
     if (result) {
       return result;
     }
-    return this.requestRemoteGroupByMemberList(members);
+    const group = await this.requestRemoteGroupByMemberList(members);
+    await this.entitySourceController.put(group);
+    return group;
   }
 
   async requestRemoteGroupByMemberList(members: number[]): Promise<Group> {
@@ -225,7 +227,7 @@ export class GroupFetchDataController {
         if (
           (terms.length > 0 &&
             this.entityCacheSearchController.isFuzzyMatched(
-              groupName,
+              groupName.toLowerCase(),
               terms,
             )) ||
           (fetchAllIfSearchKeyEmpty && terms.length === 0)
@@ -299,7 +301,7 @@ export class GroupFetchDataController {
 
           if (
             !this.entityCacheSearchController.isFuzzyMatched(
-              team.set_abbreviation,
+              team.set_abbreviation.toLowerCase(),
               terms,
             )
           ) {
@@ -311,14 +313,14 @@ export class GroupFetchDataController {
           }
 
           const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
-            team.set_abbreviation,
+            team.set_abbreviation.toLowerCase(),
           );
 
           for (let i = 0; i < splitNames.length; ++i) {
             for (let j = 0; j < terms.length; ++j) {
               if (
                 this.entityCacheSearchController.isStartWithMatched(
-                  splitNames[i],
+                  splitNames[i].toLowerCase(),
                   [terms[j]],
                 )
               ) {

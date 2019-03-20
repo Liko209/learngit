@@ -5,21 +5,34 @@
  */
 import { AbstractService } from '../../../framework/service/AbstractService';
 import { ISearchService } from './ISearchService';
-import { RecentSearchTypes, RecentSearchModel } from '../entity';
+import {
+  RecentSearchTypes,
+  RecentSearchModel,
+  FuzzySearchPersonOptions,
+} from '../entity';
 import { SearchServiceController } from '../controller/SearchServiceController';
 import { container } from '../../../container';
+import { Person } from '../../person/entity';
+import { SortableModel } from '../../../framework/model';
 
 class SearchService extends AbstractService implements ISearchService {
   static serviceName = 'SearchService';
-  private _searchServiceController = new SearchServiceController();
+  private _searchServiceController: SearchServiceController = new SearchServiceController(
+    this,
+  );
+
   constructor() {
     super();
   }
   protected onStarted() {}
   protected onStopped() {}
 
-  get recentSearchRecordController() {
+  private get recentSearchRecordController() {
     return this._searchServiceController.recentSearchRecordController;
+  }
+
+  private get searchPersonController() {
+    return this._searchServiceController.searchPersonController;
   }
 
   addRecentSearchRecord(
@@ -42,12 +55,25 @@ class SearchService extends AbstractService implements ISearchService {
     return this.recentSearchRecordController.getRecentSearchRecords();
   }
 
+  getRecentSearchRecordsByType(type: RecentSearchTypes) {
+    return this.recentSearchRecordController.getRecentSearchRecordsByType(type);
+  }
+
   removeRecentSearchRecords(ids: Set<number>) {
     return this.recentSearchRecordController.removeRecentSearchRecords(ids);
   }
 
   static getInstance(): SearchService {
     return container.get(this.name);
+  }
+
+  async doFuzzySearchPersons(
+    options: FuzzySearchPersonOptions,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Person>[];
+  } | null> {
+    return await this.searchPersonController.doFuzzySearchPersons(options);
   }
 }
 

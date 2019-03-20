@@ -32,7 +32,9 @@ class DataDispatcher extends EventEmitter2 {
     const event = `${channel.toUpperCase()}${
       partial ? '.PARTIAL' : ''
     }.${eventKey.toUpperCase()}`;
-    mainLogger.info(`Data dispatched for event:${event}`);
+    if (event !== 'SOCKET.PRESENCE') {
+      mainLogger.info(`Data dispatched for event:${event}`);
+    }
     return event;
   }
 }

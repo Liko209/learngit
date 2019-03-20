@@ -24,6 +24,7 @@ import notificationCenter, {
 import { EVENT_TYPES } from '../../../../service/constants';
 import { SERVICE } from '../../../../service/eventKey';
 import _ from 'lodash';
+import { mainLogger } from 'foundation';
 
 type DataHandleTask =
   | GroupStateHandleTask
@@ -108,18 +109,22 @@ class TotalUnreadController {
   }
 
   private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
-    if (!this._unreadInitialized) {
-      await this._initializeTotalUnread();
-    } else {
-      if (task.type === TASK_DATA_TYPE.GROUP_STATE) {
-        await this._updateTotalUnreadByStateChanges(task.data);
-      } else if (task.type === TASK_DATA_TYPE.GROUP_ENTITY) {
-        await this._updateTotalUnreadByGroupChanges(task.data);
+    try {
+      if (!this._unreadInitialized) {
+        await this._initializeTotalUnread();
       } else {
-        await this._updateTotalUnreadByProfileChanges(task.data);
+        if (task.type === TASK_DATA_TYPE.GROUP_STATE) {
+          await this._updateTotalUnreadByStateChanges(task.data);
+        } else if (task.type === TASK_DATA_TYPE.GROUP_ENTITY) {
+          await this._updateTotalUnreadByGroupChanges(task.data);
+        } else {
+          await this._updateTotalUnreadByProfileChanges(task.data);
+        }
       }
+      this._doNotification();
+    } catch (err) {
+      mainLogger.error(`TotalUnreadController, handle task error, ${err}`);
     }
-    this._doNotification();
 
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
@@ -143,15 +148,7 @@ class TotalUnreadController {
   private async _updateTotalUnreadByGroupChanges(
     payload: NotificationEntityPayload<Group>,
   ): Promise<void> {
-    if (payload.type === EVENT_TYPES.DELETE) {
-      payload.body.ids.forEach((id: number) => {
-        const groupUnread = this._groupSectionUnread.get(id);
-        if (groupUnread) {
-          this._deleteFromTotalUnread(groupUnread);
-          this._groupSectionUnread.delete(id);
-        }
-      });
-    } else if (payload.type === EVENT_TYPES.UPDATE) {
+    if (payload.type === EVENT_TYPES.UPDATE) {
       const currentUserId = AccountGlobalConfig.getCurrentUserId();
       await Promise.all(
         payload.body.ids.map(async (id: number) => {

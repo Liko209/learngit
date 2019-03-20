@@ -19,7 +19,6 @@ fixture('RightRail')
   .afterEach(teardownCase());
 
 test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPost', 'Potar', 'P1', 'JPT-1057']), async t => {
-  const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
@@ -48,6 +47,7 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
     textPostId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
   });
 
+  const app = new AppRoot(t);
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -108,7 +108,6 @@ test(formalName('New pinned will show under Pinned tab immediately', ['PinnedPos
 });
 
 test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', 'Potar', 'P1', 'JPT-1059']), async t => {
-  const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
@@ -132,6 +131,7 @@ test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', '
     textPostId = await h(t).scenarioHelper.sentAndGetTextPostId(postText, team, loginUser);
   });
 
+  const app = new AppRoot(t);
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -174,7 +174,6 @@ test(formalName('Unpinned item will disappear from Pinned tab', ['PinnedPost', '
 });
 
 test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 'Potar', 'P2', 'JPT-1061']), async t => {
-  const app = new AppRoot(t);
 
   const loginUser = h(t).rcData.mainCompany.users[4];
   await h(t).platform(loginUser).init();
@@ -208,14 +207,7 @@ test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 
     notePostId = data["post_ids"][0].toString();
   });
 
-  // await h(t).withLog('Given I have a team before login ', async () => {
-  //   teamId = await h(t).platform(loginUser).createAndGetGroupId({
-  //     name: uuid(),
-  //     type: 'Team',
-  //     members: [loginUser.rcId],
-  //   });
-  // });
-
+  const app = new AppRoot(t);
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();

@@ -87,19 +87,6 @@ describe('PersonService', () => {
     });
   });
 
-  describe('doFuzzySearchPersons', () => {
-    it('should call controller with correct parameter', async () => {
-      await personService.doFuzzySearchPersons('a', true, [1], true, true);
-      expect(personController.doFuzzySearchPersons).toBeCalledWith(
-        'a',
-        true,
-        [1],
-        true,
-        true,
-      );
-    });
-  });
-
   describe('getName', () => {
     const person: Person = {
       id: 1,

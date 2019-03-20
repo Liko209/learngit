@@ -9,9 +9,10 @@ export type Entity = {
   [name: string]: any;
 };
 
-export type EntitySetting = {
+export type EntitySetting<K extends Entity> = {
   event: string[];
   service: Function | [Function, string];
   type: HANDLER_TYPE;
   cacheCount: number;
+  modelCreator?: (model: IdModel) => K;
 };

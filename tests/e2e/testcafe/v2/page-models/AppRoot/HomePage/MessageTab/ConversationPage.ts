@@ -134,13 +134,17 @@ class BaseConversationPage extends BaseWebComponent {
     return this.stream.parent('div');
   }
 
+  async expectStreamScrollToY(y: number) {
+    await this.t.expect(this.scrollDiv.scrollTop).eql(y);
+  }
+
   async expectStreamScrollToBottom() {
     await H.retryUntilPass(async () => {
       const scrollTop = await this.scrollDiv.scrollTop;
       const scrollHeight = await this.scrollDiv.scrollHeight;
       const clientHeight = await this.scrollDiv.clientHeight;
       assert.deepStrictEqual(scrollTop, scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`)
-    })
+    });
   }
 
   async scrollToY(y: number) {
@@ -437,6 +441,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get img() {
+    this.warnFlakySelector(); // todo: all specify item...
+    return this.body.find('img');
+  }
 
   get editTextArea() {
     return this.self.find('[data-placeholder="Type new message"]');
@@ -461,7 +469,7 @@ export class PostItem extends BaseWebComponent {
     return this.mentions.filter((el) => el.textContent === name);
   }
 
-  imgTitle(text) {
+  emojiTitle(text) {
     return this.text.find("img").withAttribute("title", text);
   }
 
@@ -672,6 +680,12 @@ export class PostItem extends BaseWebComponent {
     return this.getComponent(AudioConference, this.self);
   }
 
+  async scrollIntoView() {
+    await ClientFunction((_self) => {
+      const ele: any = _self()
+      ele.scrollIntoView()
+    })(this.self)
+  }
 }
 
 class AudioConference extends BaseWebComponent {

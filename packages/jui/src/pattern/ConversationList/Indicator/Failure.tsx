@@ -7,17 +7,18 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import { JuiIconography } from '../../../foundation/Iconography';
-import { palette, spacing } from '../../../foundation/utils';
 
-const StyledIconographyFailure = styled(JuiIconography)`
-  && {
-    color: ${palette('semantic', 'negative')};
-    font-size: ${spacing(4.5)};
-  }
-`;
+const StyledIconographyFailure = styled(JuiIconography)``;
 
 const JuiIndicatorFailure = () => {
-  return <StyledIconographyFailure>send_failure</StyledIconographyFailure>;
+  return (
+    <StyledIconographyFailure
+      iconSize="medium"
+      iconColor={['semantic', 'negative']}
+    >
+      send_failure
+    </StyledIconographyFailure>
+  );
 };
 
 export { StyledIconographyFailure, JuiIndicatorFailure };

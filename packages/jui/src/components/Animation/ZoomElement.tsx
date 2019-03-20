@@ -34,7 +34,9 @@ class ZoomElementAnimation extends React.PureComponent<
       duration,
     } = this.props;
     setTimeout(() => {
-      targetElement.style.cssText = '';
+      if (targetElement) {
+        targetElement.style.cssText = '';
+      }
       originalElement && (originalElement.style.visibility = 'visible');
       onEntered && onEntered();
     },         theme.transitions.duration[duration]);
@@ -155,4 +157,8 @@ class ZoomElementAnimation extends React.PureComponent<
 
 const JuiZoomElement = withTheme(ZoomElementAnimation);
 
-export { JuiZoomElement, ZoomElementProps as JuiZoomElementProps };
+export {
+  JuiZoomElement,
+  ZoomElementProps as JuiZoomElementProps,
+  ZoomElementAnimation,
+};

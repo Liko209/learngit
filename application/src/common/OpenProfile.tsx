@@ -23,6 +23,7 @@ const getProfileDialogComponent = (id: number) => {
 };
 
 class OpenProfile {
+  static _dismiss: Function;
   static show(
     id: number,
     beforeClick?: (() => void) | null,
@@ -30,10 +31,16 @@ class OpenProfile {
   ) {
     const ProfileDialog = getProfileDialogComponent(id);
     beforeClick && beforeClick();
-    Dialog.simple(<ProfileDialog id={id} />, {
+
+    if (this._dismiss) {
+      this._dismiss();
+    }
+    const { dismiss } = Dialog.simple(<ProfileDialog id={id} />, {
       size: 'medium',
     });
     afterClick && afterClick();
+
+    this._dismiss = dismiss;
   }
 }
 

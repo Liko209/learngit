@@ -25,15 +25,15 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   }
 
   @action
-  handleSignOut = () => {
+  handleSignOut = async () => {
     const authService: AuthService = AuthService.getInstance();
-    authService.logout();
+    await authService.logout();
     window.location.href = '/';
   }
 
   @action
-  toggleAboutPage = (appVersion?: string, electronVersion?: string) => {
-    globalStore.set(GLOBAL_KEYS.APP_VERSION, appVersion || '');
+  toggleAboutPage = (electronAppVersion?: string, electronVersion?: string) => {
+    globalStore.set(GLOBAL_KEYS.ELECTRON_APP_VERSION, electronAppVersion || '');
     globalStore.set(GLOBAL_KEYS.ELECTRON_VERSION, electronVersion || '');
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !this._isShowDialog);
   }
