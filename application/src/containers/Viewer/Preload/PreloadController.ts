@@ -34,8 +34,9 @@ class PreloadController implements IImageDownloadedListener {
 
   replacePreload(itemIds: number[], currentIndex: number) {
     const ids = this._generatePreloadIds(itemIds, currentIndex);
+    this._logger.info(`Replace with ${ids}`);
     const filteredIds = this._filterOutCachedIds(ids);
-    this._logger.info(`replace with ${filteredIds}`);
+    this._logger.info(`Filter by cache ${filteredIds}`);
 
     this._pendingIds = filteredIds;
     this._startPreload();
@@ -103,7 +104,7 @@ class PreloadController implements IImageDownloadedListener {
       return false;
     }
 
-    this._logger.info(`Will process itemId: ${item.id}`);
+    this._logger.info(`Will process itemId: ${item.id}, ${item.name}`);
     if (FileItemUtils.isSupportShowRawImage(item)) {
       if (item.versionUrl) {
         this._addToQueue(item.id, item.versionUrl);
@@ -147,7 +148,7 @@ class PreloadController implements IImageDownloadedListener {
       return;
     }
     if (!this._pendingIds || this._pendingIds.length === 0) {
-      this._logger.info('Empty _pendingIds');
+      this._logger.info('Empty pendingIds');
       return;
     }
     this._inProgressId = this._pendingIds.shift()!;
