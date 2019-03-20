@@ -20,12 +20,13 @@ import {
   JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
 import { MentionItem } from './MentionItem';
+import {
+  ITEM_HEIGHT,
+  MAX_ITEM_NUMBER,
+  INIT_CURRENT_INDEX,
+  TITLE_HEIGHT,
+} from './constants';
 
-const ITEM_HEIGHT = 40; // jui/pattern/MessageInput/Mention/MentionPanelSectionItem
-const MAX_ITEM_NUMBER = 6;
-
-const INIT_CURRENT_INDEX = 1;
-const TITLE_HEIGHT = 32;
 @observer
 class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
   implements IVirtualListDataSource<any, number> {

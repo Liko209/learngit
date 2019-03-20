@@ -14,7 +14,7 @@ import GroupModel from '@/store/models/Group';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
-
+import { INIT_CURRENT_INDEX } from './constants';
 type searchMember = {
   displayName: string;
   id: number;
@@ -26,8 +26,6 @@ const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
   }
   return true;
 };
-
-const INIT_CURRENT_INDEX = 1; // because of title will within VL
 
 const DELAY = 300;
 class MentionViewModel extends StoreViewModel<MentionProps>
