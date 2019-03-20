@@ -282,6 +282,14 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   // team only
+  get adminLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self);
+  }
+
+  get guestLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
+  }
+
   get privateButton() {
     return this.profileTitle.find('.privacy');
   }
