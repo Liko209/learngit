@@ -5,6 +5,7 @@
  */
 
 import { computed, observable, action, Reaction } from 'mobx';
+import i18next from 'i18next';
 import { AbstractViewModel } from '@/base';
 import { ConvertToTeamProps, ConvertToTeamViewProps } from './types';
 import { getEntity } from '@/store/utils';
@@ -29,7 +30,9 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
     this.reaction(
       () => this.group.displayName,
       (displayName: string, reaction: Reaction) => {
-        this.name = displayName;
+        this.name = `${i18next.t(
+          'people.team.convertToTeamNamePrefix',
+        )}${displayName}`;
         reaction.dispose();
       },
       {

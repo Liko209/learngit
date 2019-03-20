@@ -138,7 +138,7 @@ describe('GroupHandleDataController', () => {
     });
 
     it('passing an array', async () => {
-      expect.assertions(7);
+      expect.assertions(6);
       AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
       daoManager.getDao(GroupDao).get.mockReturnValue(1);
       const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
@@ -169,13 +169,13 @@ describe('GroupHandleDataController', () => {
       expect(daoManager.getDao(GroupDao).bulkPut).toHaveBeenCalledTimes(1);
       // expect doNotification function
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
-      expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
         { id: 2, members: [1, 2], deactivated: false },
         { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
         { id: 4, members: [], deactivated: false },
         { id: 5, members: [], is_archived: true },
+        { _delta: false, deactivated: true, id: 1, members: [1] },
       ]);
     });
   });

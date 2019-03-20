@@ -27,7 +27,15 @@ const useItems = (defaultItems: DemoItemModel[] | (() => DemoItemModel[])) => {
 const useDemoHelper = ({ initialDataCount }: { initialDataCount: number }) => {
   const { items, appendItem, prependItem, removeItem } = useItems(() => {
     const startId = 1000000;
-    return itemFactory.buildItems(startId, initialDataCount);
+    return itemFactory.buildItems(startId, initialDataCount, 'image');
+  });
+  const [visibleRange, setVisibleRange] = useState({
+    startIndex: 0,
+    stopIndex: 0,
+  });
+  const [renderedRange, setRenderedRange] = useState({
+    startIndex: 0,
+    stopIndex: 0,
   });
 
   const handlePrependClick = () => {
@@ -49,6 +57,16 @@ const useDemoHelper = ({ initialDataCount }: { initialDataCount: number }) => {
     removeItem(0);
   };
 
+  const appendItems = (count: number) => {
+    appendItem(
+      ...itemFactory.buildItems(items[items.length - 1].id + 1, count),
+    );
+  };
+
+  const prependItems = (count: number) => {
+    prependItem(...itemFactory.buildItems(items[0].id - count, count));
+  };
+
   return {
     items,
     prependItem,
@@ -58,6 +76,12 @@ const useDemoHelper = ({ initialDataCount }: { initialDataCount: number }) => {
     handleAppendClick,
     handleAddCrazyClick,
     handleRemoveClick,
+    visibleRange,
+    setVisibleRange,
+    renderedRange,
+    setRenderedRange,
+    appendItems,
+    prependItems,
   };
 };
 

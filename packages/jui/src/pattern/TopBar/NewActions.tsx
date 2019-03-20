@@ -5,9 +5,12 @@
  */
 
 import styled from '../../foundation/styled-components';
+import { spacing } from '../../foundation/utils';
 import { JuiPopoverMenu } from '../PopoverMenu';
 
-const JuiNewActions = styled(JuiPopoverMenu)``;
+const JuiNewActions = styled(JuiPopoverMenu)`
+  margin-right: ${spacing(5)};
+`;
 
 JuiNewActions.displayName = 'JuiNewActions';
 

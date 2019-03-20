@@ -3,16 +3,13 @@
  * @Date: 2019-03-11 17:25:57
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  ElementRect,
-  Transform,
-  JuiZoomOptions,
-} from '../../components/ZoomArea';
+import { Transform, JuiZoomOptions } from '../../components/ZoomArea';
 
 export type Padding = [number, number, number, number];
 
 export type JuiDragZoomChildrenProps = {
-  autoFitContentRect?: ElementRect;
+  fitWidth?: number;
+  fitHeight?: number;
   notifyContentSizeChange: (
     contentWidth?: number,
     contentHeight?: number,

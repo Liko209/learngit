@@ -76,6 +76,14 @@ class TelephonyService extends EntityBaseService {
   hangUp(callId: string) {
     this.telephonyController.getAccountController().hangUp(callId);
   }
+
+  mute(callId: string) {
+    this.telephonyController.getAccountController().mute(callId);
+  }
+
+  unmute(callId: string) {
+    this.telephonyController.getAccountController().unmute(callId);
+  }
 }
 
 export { TelephonyService };

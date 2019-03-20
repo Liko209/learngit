@@ -56,7 +56,11 @@
     "RecentSearches": "Recent searches",
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
-    "aboutRingCentral": "About RingCentral"
+    "aboutRingCentral": "About RingCentral",
+    "version": "Version",
+    "lastCommit": "Last Commit",
+    "deployedTime": "Deploy Time",
+    "allRightsReserved": "all rights reserved"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -355,6 +359,7 @@
       "markAsRead": "Mark as read",
       "markAsUnread": "Mark as unread",
       "convertToTeam": "Convert to team",
+      "convertToTeamNamePrefix": "Team: ",
       "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content."
     },
     "company": {},
@@ -447,6 +452,7 @@
     "DismissTip": "Sorry, the image you were viewing is deleted.",
     "ImageDeleted": "Sorry, the image you were viewing is deleted.",
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
-    "TeamArchived": "The team was archived. To know more, contact the team administrator."
+    "TeamArchived": "The team was archived. To know more, contact the team administrator.",
+    "ConversationClosed": "You removed the conversation."
   }
 }

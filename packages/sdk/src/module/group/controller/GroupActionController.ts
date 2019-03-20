@@ -535,4 +535,10 @@ export class GroupActionController {
 
     return partialEntity;
   }
+
+  isIndividualGroup(group: Group) {
+    return (
+      group && !group.is_team && group.members && group.members.length === 2
+    );
+  }
 }

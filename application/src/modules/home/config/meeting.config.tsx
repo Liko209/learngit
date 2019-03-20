@@ -14,7 +14,7 @@ const config: SubModuleConfig = {
   },
   nav: () => ({
     url: '/meetings',
-    icon: 'meetings',
+    icon: 'meetings_border',
     title: i18next.t('meeting.Meetings'),
     placement: 'top',
   }),
