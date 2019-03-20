@@ -30,7 +30,7 @@ class FooterViewComponent extends Component<
 
     const { t } = this.props;
 
-    const names = this.props.likedUsers.reduce(
+    const usersName = this.props.likedUsers.reduce(
       (acc, { id, userDisplayName }) =>
         id === this._currentUserId
           ? [t('common.You'), ...acc]
@@ -38,7 +38,11 @@ class FooterViewComponent extends Component<
       [],
     );
 
-    return `${names.join(', ')} ${t('message.likedThis')}.`;
+    const lastUserName = usersName.pop();
+
+    return usersName.length
+      ? `${usersName.join(', ')}, and ${lastUserName} ${t('message.likeThis')}`
+      : `${lastUserName} ${t('message.likeThis')}`;
   }
 
   render() {
