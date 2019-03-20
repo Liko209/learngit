@@ -216,6 +216,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
+  const ensureVisibleRangeIsRendered = () => {
+    if (shouldUpdateRange()) {
+      updateRange();
+    }
+  };
+
   const keyMapper = createKeyMapper(children);
   const childrenCount = children.length;
   const minIndex = 0;
@@ -303,15 +309,12 @@ const JuiVirtualizedList: RefForwardingComponent<
           scrollToPosition(scrollPosition);
         }
       }
+      ensureVisibleRangeIsRendered();
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
       const observer = new ResizeObserver(() => {
         handleRowSizeChange(el, i);
-
-        if (shouldUpdateRange()) {
-          updateRange();
-        }
       });
       observer.observe(el);
       return observer;
@@ -342,9 +345,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Ensure there are not empty space in the list
   //
   useLayoutEffect(() => {
-    if (shouldUpdateRange()) {
-      updateRange();
-    }
+    ensureVisibleRangeIsRendered();
   });
 
   // scrollable <--> unScrollable
