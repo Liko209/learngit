@@ -17,10 +17,6 @@ import { JuiDivider } from 'jui/components/Divider';
 
 @observer
 class ProfileDialogPersonView extends Component<ProfileDialogPersonViewProps> {
-  componentDidMount() {
-    const { refreshPersonData } = this.props;
-    refreshPersonData && refreshPersonData();
-  }
   render() {
     const { id } = this.props;
     return (

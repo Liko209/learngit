@@ -19,6 +19,21 @@ import { PersonService } from 'sdk/module/person';
 class ProfileDialogPersonViewModel
   extends AbstractViewModel<ProfileDialogPersonProps>
   implements ProfileDialogPersonViewProps {
+  constructor(props: ProfileDialogPersonProps) {
+    super(props);
+    this.reaction(
+      () => this.person.homepage,
+      (homepage: string) => {
+        if (!homepage) {
+          this.refreshPersonData();
+        }
+      },
+      {
+        fireImmediately: true,
+      },
+    );
+  }
+
   @computed
   get id() {
     return this.props.id; // person id
