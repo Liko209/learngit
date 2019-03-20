@@ -177,7 +177,7 @@ describe('GroupHandleDataController', () => {
       expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
       // expect operateGroupDao function
       expect(entitySourceController.bulkDelete).toHaveBeenCalledTimes(1);
-      expect(entitySourceController.bulkPut).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
       // expect doNotification function
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
@@ -219,7 +219,7 @@ describe('GroupHandleDataController', () => {
       expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
       // expect operateGroupDao function
       expect(entitySourceController.bulkDelete).toHaveBeenCalledTimes(1);
-      expect(entitySourceController.bulkPut).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
       // expect doNotification function
       expect(notificationCenter.emit).not.toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityDelete).not.toHaveBeenCalledTimes(1);

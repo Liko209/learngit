@@ -179,7 +179,7 @@ class GroupHandleDataController {
         );
       }
       if (normalData.length) {
-        this.entitySourceController.bulkPut(normalData);
+        this.entitySourceController.bulkUpdate(normalData);
       }
     } catch (e) {
       console.error(`operateGroupDao error ${JSON.stringify(e)}`);
