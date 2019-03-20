@@ -394,7 +394,9 @@ node(buildNode) {
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sshagent (credentials: [scmCredentialId]) {
-                sh 'npm install'
+                sh 'npm install --only=dev --ignore-scripts'
+                sh 'npm install --ignore-scripts'
+                sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
             }
             try {
                 sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version check'
