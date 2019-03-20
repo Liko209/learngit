@@ -77,6 +77,10 @@ class TelephonyEngineController {
   getAccountController() {
     return this._accountController;
   }
+
+  logout() {
+    this._accountController.logout();
+  }
 }
 
 export { TelephonyEngineController };

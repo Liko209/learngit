@@ -4,21 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { GroupService } from 'sdk/module/group';
-import { PersonService } from 'sdk/module/person';
 import { SearchService } from 'sdk/module/search';
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 
 jest.mock('../../../../../../store/utils');
-// jest.mock('../../../../../../store/base/StoreManager');
 jest.mock('@/containers/Notification');
-
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
-jest.mock('sdk/module/person');
 jest.mock('sdk/module/search');
 
-PersonService.getInstance = jest.fn();
 GroupService.getInstance = jest.fn();
 
 const ONLY_ONE_SECTION_LENGTH = 9;
@@ -33,18 +28,29 @@ const groupService = {
   },
 };
 
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
 describe('SearchBarViewModel', () => {
-  let personService: PersonService;
+  let searchService: SearchService;
   let searchBarViewModel: SearchBarViewModel;
-  beforeEach(() => {
-    jest.resetAllMocks();
-    personService = new PersonService();
+
+  function setUp() {
+    searchService = new SearchService();
     searchBarViewModel = new SearchBarViewModel();
-    personService.doFuzzySearchPersons.mockImplementation(() => {
+    searchService.doFuzzySearchPersons = jest.fn().mockImplementation(() => {
       return { terms: [], sortableModels: [{ id: 1 }] };
     });
-    PersonService.getInstance.mockReturnValue(personService);
+    SearchService.getInstance = jest.fn().mockReturnValue(searchService);
     GroupService.getInstance.mockReturnValue(groupService);
+  }
+
+  beforeEach(() => {
+    clearMocks();
+    setUp();
   });
 
   describe('getSectionItemSize()', () => {
@@ -61,7 +67,13 @@ describe('SearchBarViewModel', () => {
       expect(num2).toBe(MORE_SECTION_LENGTH);
     });
   });
+
   describe('hasMore()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
     it('If sortableModels.length > needSliceNum should be true', () => {
       const hasMore = searchBarViewModel.hasMore(
         {
@@ -81,6 +93,7 @@ describe('SearchBarViewModel', () => {
       expect(hasMore).toBe(false);
     });
   });
+
   describe('getSection()', () => {
     it('If search result > 9 only show 9 items', () => {
       const section = searchBarViewModel.getSection(
@@ -456,31 +469,4 @@ describe('SearchBarViewModel', () => {
     searchBarViewModel.clearRecent();
     expect(s.clearRecentSearchRecords).toHaveBeenCalled();
   });
-
-  // describe('search()', async () => {
-  //   // jest.spyOn(searchBarViewModel, 'calculateSectionCount');
-  //   // jest.spyOn(searchBarViewModel, 'getSection');
-  //   const ret = await searchBarViewModel.search('123');
-  //   expect(searchBarViewModel.calculateSectionCount).toHaveBeenCalledWith(
-  //     { terms: [], sortableModels: [{ id: 1 }] },
-  //     { terms: [], sortableModels: [{ id: 2 }] },
-  //     { terms: [], sortableModels: [{ id: 3 }] },
-  //   );
-  //   expect(searchBarViewModel.getSection).toHaveBeenCalledTimes(3);
-  //   expect(ret).toEqual({
-  //     terms: [],
-  //     persons: {
-  //       sortableModel: [{ id: 1 }],
-  //       hasMore: false,
-  //     },
-  //     groups: {
-  //       sortableModel: [{ id: 2 }],
-  //       hasMore: false,
-  //     },
-  //     teams: {
-  //       sortableModel: [{ id: 3 }],
-  //       hasMore: false,
-  //     },
-  //   });
-  // });
 });

@@ -58,6 +58,7 @@ type ProvisionDataOptions = {
   maxReconnectionAttempts?: number;
   reconnectionTimeout?: number;
   connectionTimeout?: number;
+  modifiers?: any;
 };
 
 type InboundRtpReport = {

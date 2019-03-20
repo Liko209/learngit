@@ -94,10 +94,14 @@ const generateModifiedImageURL = async ({
     squareSize,
   });
   // fetch crop image url
-  const { width, height } = result;
-  if (width > 0 && height > 0) {
+  const { imageWidth, imageHeight } = result;
+  if (imageWidth > 0 && imageHeight > 0) {
     const itemService = ItemService.getInstance() as ItemService;
-    result.url = await itemService.getThumbsUrlWithSize(id, width, height);
+    result.url = await itemService.getThumbsUrlWithSize(
+      id,
+      imageWidth,
+      imageHeight,
+    );
   }
   return result;
 };

@@ -28,6 +28,7 @@ import {
   EBETA_FLAG,
 } from '../../../../../service/account/clientConfig';
 import { GroupConfigService } from '../../../../groupConfig';
+import { ItemNotification } from '../../../utils/ItemNotification';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -283,8 +284,23 @@ class FileUploadController {
 
     this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
-    this._entitySourceController.delete(itemId);
-    notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
+    const item = await this._entitySourceController.get(itemId);
+
+    if (item) {
+      this._entitySourceController.delete(itemId);
+
+      const notifications = ItemNotification.getItemsNotifications([item]);
+      notifications.forEach(
+        (notification: { eventKey: string; entities: Item[] }) => {
+          notificationCenter.emitEntityDelete(
+            notification.eventKey,
+            notification.entities.map((item: Item) => {
+              return item.id;
+            }),
+          );
+        },
+      );
+    }
   }
 
   getUploadItems(groupId: number): ItemFile[] {
@@ -641,9 +657,18 @@ class FileUploadController {
     await this._entitySourceController.delete(preInsertId);
     await this._entitySourceController.update(itemFile);
 
-    const replaceItemFiles = new Map<number, ItemFile>();
-    replaceItemFiles.set(preInsertId, itemFile);
-    notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
+    const notifications = ItemNotification.getItemsNotifications([itemFile]);
+    notifications.forEach(
+      (notification: { eventKey: string; entities: Item[] }) => {
+        const replaceItemFiles = new Map<number, ItemFile>();
+        replaceItemFiles.set(preInsertId, notification.entities[0]);
+        notificationCenter.emitEntityReplace(
+          notification.eventKey,
+          replaceItemFiles,
+        );
+      },
+    );
+
     this._emitItemFileStatus(PROGRESS_STATUS.SUCCESS, preInsertId, itemFile.id);
   }
 
@@ -788,10 +813,10 @@ class FileUploadController {
     });
   }
 
-  private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile) {
+  private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile, updateModifiedAt?: boolean) {
     existItem.is_new = false;
     existItem.versions = preInsertItem.versions.concat(existItem.versions);
-    existItem.modified_at = Date.now();
+    updateModifiedAt && (existItem.modified_at = Date.now());
     existItem._id = existItem.id;
     delete existItem.id;
     return await this._fileRequestController.put(existItem);

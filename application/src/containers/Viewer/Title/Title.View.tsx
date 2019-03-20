@@ -36,7 +36,7 @@ import ReactResizeDetector from 'react-resize-detector';
 
 @observer
 class ViewerTitleViewComponent extends Component<
-  WithNamespaces & ViewerTitleViewProps
+WithNamespaces & ViewerTitleViewProps
 > {
   static contextType = DialogContext;
 
@@ -74,20 +74,29 @@ class ViewerTitleViewComponent extends Component<
                 />
                 <JuiDialogHeaderMeta>
                   <JuiDialogHeaderMetaLeft>
-                    <Avatar uid={id} />
+                    <Avatar
+                      uid={id}
+                      data-test-automation-id={'previewerSenderAvatar'}
+                    />
                   </JuiDialogHeaderMetaLeft>
                   <JuiDialogHeaderMetaRight
                     title={userDisplayName}
+                    data-test-automation-id={'previewerSenderInfo'}
                     subtitle={dateFormatter.dateAndTimeWithoutWeekday(
                       moment(modifiedAt),
                     )}
                   />
                 </JuiDialogHeaderMeta>
-                <JuiDialogHeaderTitle variant="responsive">
+                <JuiDialogHeaderTitle
+                  variant="responsive"
+                  data-test-automation-id={'previewerTitle'}
+                >
                   <span>{name}</span>
                   <JuiDialogHeaderSubtitle>
                     {' '}
-                    {`(${currentIndex + 1}/${total})`}
+                    {total > -1 && currentIndex > -1
+                      ? `(${currentIndex + 1}/${total})`
+                      : ''}
                   </JuiDialogHeaderSubtitle>
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>
@@ -116,6 +125,7 @@ class ViewerTitleViewComponent extends Component<
                     </JuiPopoverMenu> */}
                     <JuiIconButton
                       onClick={viewerContext.closeViewer}
+                      aria-label={t('common.dialog.close')}
                       tooltipTitle={t('common.dialog.close')}
                     >
                       close

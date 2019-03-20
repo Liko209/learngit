@@ -6,22 +6,23 @@
 
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { FooterProps, FooterViewProps } from './types';
+import { FooterProps } from './types';
+import { WithPostLikeProps } from './withPostLike/types';
 import { Post } from 'sdk/module/post/entity';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 
 class FooterViewModel extends StoreViewModel<FooterProps>
-  implements FooterViewProps {
+  implements WithPostLikeProps {
   @computed
-  get id() {
+  get postId() {
     return this.props.id;
   }
 
   @computed
   private get _post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.id);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.postId);
   }
 
   @computed

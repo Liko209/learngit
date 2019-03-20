@@ -65,6 +65,10 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     if (this._subscribeController) {
       this._subscribeController.unsubscribe();
     }
+
+    delete this._subscribeController;
+    delete this._entitySourceController;
+    delete this._entityCacheController;
   }
 
   async getById(id: number): Promise<T | null> {
@@ -97,9 +101,13 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     return this._entityCacheController ? true : false;
   }
 
+  protected buildEntityCacheController() {
+    return buildEntityCacheController<T>();
+  }
+
   private _initControllers() {
     if (this.isSupportedCache && !this._entityCacheController) {
-      this._entityCacheController = buildEntityCacheController<T>();
+      this._entityCacheController = this.buildEntityCacheController();
       this._initialEntitiesCache();
     }
 

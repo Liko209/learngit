@@ -8,16 +8,22 @@ import { translate, WithNamespaces } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
-import { gitCommitInfo } from '@/containers/VersionInfo/commitInfo';
-import { formatDate } from '@/containers/VersionInfo/LoginVersionStatus';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import pkg from '../../../package.json';
 import { getGlobalValue } from '@/store/utils';
-import { computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { observer } from 'mobx-react';
+import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 
 type Props = WithNamespaces;
+
+type versionInfoType = {
+  deployedTime: string;
+  deployedCommit: string;
+  deployedVersion: string;
+};
+
 const Param = styled.p`
   color: ${grey('700')};
   font-size: ${({ theme }) => theme.typography.body2.fontSize};
@@ -33,24 +39,53 @@ class About extends Component<Props> {
     globalStore.set(GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG, !isSHowDialog);
   }
 
+  @observable versionInfo: versionInfoType = {
+    deployedTime: '',
+    deployedCommit: '',
+    deployedVersion: '',
+  };
+
+  constructor(props: any) {
+    super(props);
+    this.fetchVersionInfo();
+  }
+
   @computed
   get dialogInfo() {
     const isShowDialog = this._globalStore.get(
       GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG,
     );
-    const appVersion = this._globalStore.get(GLOBAL_KEYS.APP_VERSION);
+
+    const electronAppVersion = this._globalStore.get(
+      GLOBAL_KEYS.ELECTRON_APP_VERSION,
+    );
     const electronVersion = this._globalStore.get(GLOBAL_KEYS.ELECTRON_VERSION);
+
     return {
       isShowDialog,
-      appVersion,
+      electronAppVersion,
       electronVersion,
     };
   }
 
+  @action
+  async fetchVersionInfo() {
+    this.versionInfo = await fetchVersionInfo();
+  }
+
   render() {
     const { t } = this.props;
-    const { isShowDialog, appVersion, electronVersion } = this.dialogInfo;
-    const commitHash = gitCommitInfo.commitInfo[0].commitHash;
+    const {
+      isShowDialog,
+      electronAppVersion,
+      electronVersion,
+    } = this.dialogInfo;
+    const {
+      deployedTime,
+      deployedCommit,
+      deployedVersion: appVersion,
+    } = this.versionInfo;
+
     return (
       <JuiModal
         open={isShowDialog}
@@ -59,14 +94,21 @@ class About extends Component<Props> {
         onOK={this._handleAboutPage}
       >
         <Param>
-          Version: {appVersion ? appVersion : pkg.version}{' '}
-          {electronVersion ? `(E. ${electronVersion})` : null}
+          {t('home.version')}: {appVersion ? appVersion : pkg.version}
+          {electronAppVersion
+            ? ` (E. ${electronVersion} - ${electronAppVersion})`
+            : null}
         </Param>
-        <Param>Last Commit: {commitHash}</Param>
-        <Param>Build Time: {formatDate(process.env.BUILD_TIME || '')}</Param>
+        <Param>
+          {t('home.lastCommit')}: {deployedCommit}
+        </Param>
+        <Param>
+          {t('home.deployedTime')}: {deployedTime}
+        </Param>
         <Param>
           Copyright © 1999-
-          {new Date().getFullYear()} RingCentral, Inc. All rights reserved.
+          {new Date().getFullYear()} RingCentral, Inc.{' '}
+          {t('home.allRightsReserved')}.
         </Param>
       </JuiModal>
     );

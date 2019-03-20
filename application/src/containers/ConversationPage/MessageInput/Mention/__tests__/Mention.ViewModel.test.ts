@@ -7,13 +7,13 @@ import { getEntity } from '../../../../../store/utils';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MentionViewModel } from '../Mention.ViewModel';
 
-const mockPersonService = {
+const mockSearchService = {
   doFuzzySearchPersons: jest.fn(),
 };
 
-jest.mock('sdk/module/person', () => ({
-  PersonService: {
-    getInstance: () => mockPersonService,
+jest.mock('sdk/module/search', () => ({
+  SearchService: {
+    getInstance: () => mockSearchService,
   },
 }));
 
@@ -66,19 +66,20 @@ describe('mentionViewModel', () => {
   });
 
   it('_doFuzzySearchPersons()', async () => {
-    mockPersonService.doFuzzySearchPersons.mockResolvedValue({
+    mockSearchService.doFuzzySearchPersons.mockResolvedValue({
       sortableModels: [1, 2, 3],
     });
     await mentionViewModel._doFuzzySearchPersons({
       searchTerm: '',
       memberIds: mockGroupEntityData.members,
     });
-    expect(mockPersonService.doFuzzySearchPersons).toBeCalledWith(
-      '',
-      true,
-      mockGroupEntityData.members,
-      true,
-    );
+
+    expect(mockSearchService.doFuzzySearchPersons).toBeCalledWith({
+      searchKey: '',
+      excludeSelf: true,
+      arrangeIds: mockGroupEntityData.members,
+      fetchAllIfSearchKeyEmpty: true,
+    });
     expect(mentionViewModel.members).toEqual([1, 2, 3]);
   });
 

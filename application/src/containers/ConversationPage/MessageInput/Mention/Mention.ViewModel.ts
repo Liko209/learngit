@@ -7,7 +7,7 @@
 import { action, observable, computed, comparer, runInAction } from 'mobx';
 import { MentionProps, MentionViewProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
-import { PersonService } from 'sdk/module/person';
+import { SearchService } from 'sdk/module/search';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
@@ -70,14 +70,14 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     super(props);
     this.reaction(
       () => ({ searchTerm: this.searchTerm, memberIds: this._memberIds }),
-      (data: { searchTerm?: string; memberIds: number[] }) => {
+      async (data: { searchTerm?: string; memberIds: number[] }) => {
         if (this._canDoFuzzySearch || this.isEditMode) {
-          this._doFuzzySearchPersons(data);
+          await this._doFuzzySearchPersons(data);
         }
         this._canDoFuzzySearch = true;
       },
       {
-        delay: DELAY,
+        delay: this.searchTerm ? DELAY : 0,
         equals: comparer.structural,
       },
     );
@@ -138,13 +138,13 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     memberIds: number[];
   }) => {
     const term = searchTerm ? searchTerm.trim() : '';
-    const personService: PersonService = PersonService.getInstance();
-    const res = await personService.doFuzzySearchPersons(
-      term,
-      true,
-      memberIds,
-      true,
-    );
+    const searchService = SearchService.getInstance();
+    const res = await searchService.doFuzzySearchPersons({
+      searchKey: term,
+      excludeSelf: true,
+      arrangeIds: memberIds,
+      fetchAllIfSearchKeyEmpty: true,
+    });
     if (res) {
       runInAction(() => {
         this.currentIndex = INIT_CURRENT_INDEX;

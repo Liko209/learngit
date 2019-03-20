@@ -302,6 +302,42 @@ describe('Entity Cache Search Controller', () => {
       expect(result.sortableModels[1].entity).toBe(entityB);
       expect(result.sortableModels[2].entity).toBe(entityA);
     });
+
+    it('should match entityA when the parameter of searchEntities has special charactor search key, ', async () => {
+      const entityA = {
+        id: 1,
+        name: 'abc([.?*+^$[]\\(){}|-])',
+        note: 'likes to eat bone',
+      };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
+
+      const result = await entityCacheSearchController.searchEntities(
+        (entity: TestModel, terms: string[]) => {
+          if (
+            entity.name &&
+            entityCacheSearchController.isFuzzyMatched(entity.name, terms)
+          ) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              firstSortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        '([.?*+ ^$[] \\(){} |-])',
+        undefined,
+        undefined,
+      );
+
+      expect(result.sortableModels.length).toBe(1);
+      expect(result.sortableModels[0].entity).toBe(entityA);
+    });
   });
 
   describe('getMultiEntitiesFromCache()', () => {

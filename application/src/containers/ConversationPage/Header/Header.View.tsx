@@ -17,6 +17,7 @@ import { Favorite, Privacy, Member } from '@/containers/common';
 import { translate, WithNamespaces } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MessageStore } from '@/modules/message/store';
+import { Menu } from './Menu';
 
 type HeaderProps = {
   title: string;
@@ -44,6 +45,11 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
     this._onUnhover = this._onUnhover.bind(this);
   }
 
+  private _renderMenu = () => {
+    const { groupId } = this.props;
+    return <Menu id={groupId} key={groupId} />;
+  }
+
   @computed
   private get _ActionButtons() {
     const { groupId } = this.props;
@@ -54,6 +60,8 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
         <Comp key={`ACTION_${i}`} groupId={groupId} />
       ),
     );
+
+    actionButtons.push(this._renderMenu());
 
     return <JuiButtonBar overlapSize={1}>{actionButtons}</JuiButtonBar>;
   }

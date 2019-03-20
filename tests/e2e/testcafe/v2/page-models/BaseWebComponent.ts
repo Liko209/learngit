@@ -112,8 +112,8 @@ export abstract class BaseWebComponent {
     return sel.find('input[type="checkbox"]');
   }
 
-  async quitByPressESC() {
-    await this.t.pressKey('ESC');
+  async quitByPressEsc() {
+    await this.t.pressKey('esc');
   }
 
   // misc
@@ -134,7 +134,7 @@ export abstract class BaseWebComponent {
     if (text == '99+') {
       return 100;
     }
-    return Number(text);
+    return +text;
   }
 
   // hover some selector will show
