@@ -56,16 +56,17 @@ class EditMessageInputViewComponent extends Component<
   }
 
   render() {
-    const { text, error, gid, t, id } = this.props;
+    const { draft, text, error, gid, t, id, saveDraft } = this.props;
     const { modules } = this.state;
     return (
       <JuiMessageInput
         ref={this._messageInputRef}
-        defaultValue={text}
+        defaultValue={draft || text}
         error={error ? t(error) : error}
         modules={modules}
         autofocus={false}
         isEditMode={true}
+        onChange={saveDraft}
       >
         <Mention id={gid} pid={id} isEditMode={true} ref={this._mentionRef} />
       </JuiMessageInput>

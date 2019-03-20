@@ -99,7 +99,7 @@ const formats = ['mention'];
 type Props = {
   value?: string | Delta;
   defaultValue?: string;
-  onChange?: Function;
+  onChange?: (newValue: string) => void;
   onBlur?: Function;
   error: string;
   children: React.ReactNode;
