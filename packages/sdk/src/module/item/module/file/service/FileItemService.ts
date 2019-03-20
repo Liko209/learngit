@@ -106,7 +106,7 @@ class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
     this.fileUploadController.cleanUploadingFiles(groupId, itemIds);
   }
 
-  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+  async getThumbsUrlWithSize(itemId: number, width?: number, height?: number) {
     return await this.fileActionController.getThumbsUrlWithSize(
       itemId,
       width,

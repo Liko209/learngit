@@ -29,6 +29,12 @@ import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
 
+const LOG_TAG = 'SyncController';
+enum SYNC_SOURCE {
+  INDEX = 'SYNC_SOURCE.INDEX',
+  INITIAL = 'SYNC_SOURCE.INITIAL',
+  REMAINING = 'SYNC_SOURCE.REMAINING',
+}
 class SyncController {
   private _syncListener: SyncListener;
 
@@ -41,12 +47,34 @@ class SyncController {
     } else if (state === 'connecting') {
       progressBar.start();
     } else if (state === 'disconnected') {
+      this.updateCanUpdateIndexTimeStamp(false);
       progressBar.stop();
     }
   }
 
   getIndexTimestamp() {
     return NewGlobalConfig.getLastIndexTimestamp();
+  }
+
+  updateIndexTimestamp(time: number, forceUpdate: boolean) {
+    mainLogger.log(
+      LOG_TAG,
+      `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
+    );
+    if (forceUpdate) {
+      NewGlobalConfig.setLastIndexTimestamp(time);
+      this.updateCanUpdateIndexTimeStamp(true);
+    } else if (this.canUpdateIndexTimeStamp()) {
+      NewGlobalConfig.setLastIndexTimestamp(time);
+    }
+  }
+
+  updateCanUpdateIndexTimeStamp(can: boolean) {
+    return NewGlobalConfig.updateCanUpdateIndexTimeStamp(can);
+  }
+
+  canUpdateIndexTimeStamp() {
+    return NewGlobalConfig.getCanUpdateIndexTimeStamp();
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -67,6 +95,7 @@ class SyncController {
 
   handleStoppingSocketEvent() {
     // this is for update newer than tag
+    this.updateCanUpdateIndexTimeStamp(false);
   }
 
   private async _firstLogin() {
@@ -88,7 +117,10 @@ class SyncController {
     const { onInitialLoaded, onInitialHandled } = this._syncListener;
     const initialResult = await this.fetchInitialData(time);
     onInitialLoaded && (await onInitialLoaded(initialResult));
-    await this._handleIncomingData(initialResult);
+    await this._handleIncomingData({
+      result: initialResult,
+      source: SYNC_SOURCE.INITIAL,
+    });
     notificationCenter.emitKVChange(SERVICE.FETCH_INITIAL_DONE);
     onInitialHandled && (await onInitialHandled());
     mainLogger.log('fetch initial data and handle success');
@@ -108,7 +140,10 @@ class SyncController {
     const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
     const remainingResult = await this.fetchRemainingData(time);
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
-    await this._handleIncomingData(remainingResult, false);
+    await this._handleIncomingData({
+      result: remainingResult,
+      source: SYNC_SOURCE.REMAINING,
+    });
     onRemainingHandled && (await onRemainingHandled());
     NewGlobalConfig.setFetchedRemaining(true);
     mainLogger.log('fetch remaining data and handle success');
@@ -122,7 +157,10 @@ class SyncController {
     try {
       result = await this.fetchIndexData(String(timeStamp - 300000));
       onIndexLoaded && (await onIndexLoaded(result));
-      await this._handleIncomingData(result);
+      await this._handleIncomingData({
+        result,
+        source: SYNC_SOURCE.INDEX,
+      });
       onIndexHandled && (await onIndexHandled());
     } catch (error) {
       this._handleSyncIndexError(error);
@@ -249,10 +287,13 @@ class SyncController {
       );
   }
 
-  private async _handleIncomingData(
-    result: IndexDataModel,
-    shouldSaveScoreboard: boolean = true,
-  ) {
+  private async _handleIncomingData({
+    result,
+    source,
+  }: {
+    result: IndexDataModel;
+    source: SYNC_SOURCE;
+  }) {
     try {
       const {
         timestamp = null,
@@ -261,12 +302,17 @@ class SyncController {
       } = result;
 
       await this._dispatchIncomingData(result);
-      if (timestamp) {
-        NewGlobalConfig.setLastIndexTimestamp(timestamp);
+      const shouldSaveTimeStamp =
+        source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
+      if (timestamp && shouldSaveTimeStamp) {
+        this.updateIndexTimestamp(timestamp, true);
         notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
       }
 
-      if (scoreboard && shouldSaveScoreboard) {
+      const shouldSaveScoreboard =
+        scoreboard &&
+        (source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL);
+      if (shouldSaveScoreboard) {
         const socketUserConfig = new SyncUserConfig();
         socketUserConfig.setSocketServerHost(scoreboard);
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
@@ -279,7 +325,6 @@ class SyncController {
           staticHttpServer,
         );
       }
-
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);
     } catch (error) {
       mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);

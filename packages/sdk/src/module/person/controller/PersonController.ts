@@ -3,7 +3,7 @@
  * @Date: 2019-01-21 17:18:00
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
 import {
   Person,
   HeadShotModel,
@@ -12,15 +12,10 @@ import {
   PhoneNumberInfo,
   SanitizedExtensionModel,
   CALL_ID_USAGE_TYPE,
-  SortingOrder,
 } from '../entity';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { SortableModel, Raw } from '../../../framework/model';
+import { Raw } from '../../../framework/model';
 import PersonAPI from '../../../api/glip/person';
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-} from '../../../utils/performance';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
@@ -186,116 +181,6 @@ class PersonController {
     return actionMap;
   }
 
-  async doFuzzySearchPersons(
-    searchKey?: string,
-    excludeSelf?: boolean,
-    arrangeIds?: number[],
-    fetchAllIfSearchKeyEmpty?: boolean,
-    asIdsOrder?: boolean,
-  ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Person>[];
-  } | null> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_PERSON,
-      logId,
-    );
-    let currentUserId: number | null = null;
-    if (excludeSelf) {
-      currentUserId = AccountGlobalConfig.getCurrentUserId();
-    }
-
-    let sortFunc = undefined;
-    if (!arrangeIds || !asIdsOrder) {
-      sortFunc = (
-        personA: SortableModel<Person>,
-        personB: SortableModel<Person>,
-      ) => {
-        if (personA.firstSortKey > personB.firstSortKey) {
-          return -1;
-        }
-        if (personA.firstSortKey < personB.firstSortKey) {
-          return 1;
-        }
-        if (personA.secondSortKey < personB.secondSortKey) {
-          return -1;
-        }
-        if (personA.secondSortKey > personB.secondSortKey) {
-          return 1;
-        }
-        return 0;
-      };
-    }
-
-    const result = await this._cacheSearchController.searchEntities(
-      (person: Person, terms: string[]) => {
-        do {
-          if (
-            !this._isValid(person) ||
-            (currentUserId && person.id === currentUserId)
-          ) {
-            break;
-          }
-
-          if (!fetchAllIfSearchKeyEmpty && terms.length === 0) {
-            break;
-          }
-
-          let name: string = this.getName(person);
-          let sortValue: number = 0;
-          if (terms.length > 0) {
-            if (this._cacheSearchController.isFuzzyMatched(name, terms)) {
-              sortValue = SortingOrder.FullNameMatching;
-              if (
-                person.first_name &&
-                this._cacheSearchController.isStartWithMatched(
-                  person.first_name,
-                  [terms[0]],
-                )
-              ) {
-                sortValue += SortingOrder.FirstNameMatching;
-              }
-              if (
-                person.last_name &&
-                this._cacheSearchController.isStartWithMatched(
-                  person.last_name,
-                  terms,
-                )
-              ) {
-                sortValue += SortingOrder.LastNameMatching;
-              }
-            } else if (
-              person.email &&
-              this._cacheSearchController.isFuzzyMatched(person.email, terms)
-            ) {
-              sortValue = SortingOrder.EmailMatching;
-            } else {
-              break;
-            }
-          }
-
-          if (name.length <= 0) {
-            name = this.getEmailAsName(person);
-          }
-
-          return {
-            id: person.id,
-            displayName: name,
-            firstSortKey: sortValue,
-            secondSortKey: name.toLowerCase(),
-            entity: person,
-          };
-        } while (false);
-        return null;
-      },
-      searchKey,
-      arrangeIds,
-      sortFunc,
-    );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
-    return result;
-  }
   getName(person: Person) {
     if (person.display_name) {
       return person.display_name;
@@ -350,7 +235,7 @@ class PersonController {
     );
   }
 
-  private _isValid(person: Person) {
+  isValid(person: Person) {
     return (
       !this._isDeactivated(person) &&
       this._isVisible(person) &&

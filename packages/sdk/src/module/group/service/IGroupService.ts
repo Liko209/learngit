@@ -113,6 +113,10 @@ interface IGroupService {
   isGroupCanBeShown(groupId: number): Promise<boolean>;
 
   deleteGroupsConfig(ids: number[]): Promise<void>;
+
+  getIndividualGroups(): Map<number, Group>;
+
+  isIndividualGroup(group: Group): boolean;
 }
 
 export { IGroupService };

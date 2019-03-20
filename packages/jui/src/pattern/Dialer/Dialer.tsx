@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
-import { width } from '../../foundation/utils/styles';
+import { width, spacing } from '../../foundation/utils/styles';
 
 type Props = {
   children: React.ReactNode;
@@ -9,6 +9,7 @@ type Props = {
 const StyledDialer = styled('div')`
   && {
     width: ${width(70)};
+    margin: ${spacing(8)};
     box-shadow: ${({ theme }) => theme.boxShadow.val16};
   }
 `;

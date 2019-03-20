@@ -9,9 +9,13 @@ import styled from '../../foundation/styled-components';
 import { ClickAwayListener, Paper, Grow } from '@material-ui/core';
 import { PopperPlacementType } from '@material-ui/core/Popper';
 
+type AnchorProps = {
+  tooltipForceHide: boolean;
+};
+
 type PopperMenuProps = {
   children: React.ReactNode;
-  Anchor: React.SFC<{}>;
+  Anchor: React.SFC<AnchorProps>;
   automationId?: string;
   transformOrigin?: string;
   placement?: PopperPlacementType;
@@ -50,7 +54,6 @@ class JuiPopperMenu extends React.PureComponent<
 
   render() {
     const { anchorEl } = this.state;
-    // const open = Boolean(anchorEl);
     const {
       Anchor,
       children,
@@ -60,14 +63,15 @@ class JuiPopperMenu extends React.PureComponent<
       open,
     } = this.props;
     const id = open ? 'popper-menu' : '';
+    const _open = open && Boolean(anchorEl);
     return (
       <>
         <StyledAnchorWrapper onClick={this.handleToggle}>
-          <Anchor aria-describedby={id} />
+          <Anchor aria-describedby={id} tooltipForceHide={_open} />
         </StyledAnchorWrapper>
         <JuiPopper
           id={id}
-          open={open && Boolean(anchorEl)}
+          open={_open}
           anchorEl={anchorEl}
           placement={placement}
           data-test-automation-id={automationId}
@@ -93,4 +97,4 @@ class JuiPopperMenu extends React.PureComponent<
   }
 }
 
-export { JuiPopperMenu, PopperMenuProps };
+export { JuiPopperMenu, PopperMenuProps, AnchorProps };

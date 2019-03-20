@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
+import { palette } from '../../foundation/utils';
 
 const JuiLeftRail = styled.div`
   position: relative;
@@ -14,6 +15,7 @@ const JuiLeftRail = styled.div`
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  background: ${palette('grey', '100')};
 `;
 
 const JuiLeftRailStickyTop = styled.div``;

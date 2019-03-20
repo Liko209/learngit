@@ -18,7 +18,7 @@ const config: SubModuleConfig = {
   },
   nav: () => ({
     url: '/phone',
-    icon: 'phone',
+    icon: 'leftNavPhone_border',
     title: i18next.t('telephony.Phone'),
     placement: 'top',
   }),

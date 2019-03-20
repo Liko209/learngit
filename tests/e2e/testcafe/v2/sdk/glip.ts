@@ -625,6 +625,12 @@ export class GlipSdk {
     return await this.createTask(data);
   }
 
+  async deleteTask(taskId: string) {
+    await this.updateTask(taskId, {
+      deactivated: true
+    });
+  }
+
   /* note */
   createNote(data: object) {
     const uri = `api/page`;
@@ -663,6 +669,12 @@ export class GlipSdk {
       options
     )
     return await this.createNote(data);
+  }
+
+  async deleteNote(noteId: string | number) {
+    await this.updateNote(noteId, {
+      deactivated: true
+    });
   }
 
   /* event */
@@ -710,6 +722,12 @@ export class GlipSdk {
     return await this.createEvent(data);
   }
 
+  async deleteEvent(eventId: string | number) {
+    await this.updateEvent(eventId, {
+      deactivated: true
+    });
+  }
+
   /* code snippet */
   createCodeSnippet(data: object) {
     const uri = `api/code`
@@ -737,6 +755,12 @@ export class GlipSdk {
     )
 
     return await this.createCodeSnippet(data);
+  }
+
+  async deleteCodeSnippet(codeSnippetId: string | number) {
+    await this.updateCodeSnippet(codeSnippetId, {
+      deactivated: true
+    });
   }
 
   /* audio conference */
@@ -792,4 +816,34 @@ export class GlipSdk {
       deactivated: true
     });
   }
+
+  /* links */
+  async getLinksIdsFromPostId(postId: string | number) {
+    return this.getPostItemsByTypeId(postId, 17);
+  }
+
+  getLink(linkId: string | number) {
+    const uri = `/api/link/${linkId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  updateLink(linkId: string | number, data: object) {
+    const uri = `/api/link/${linkId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async updateLinkUrlTitle(linkId: string, data: { url?: string, title?: string }) {
+    return await this.updateLink(linkId, data);
+  }
+
+  async deleteLink(linkId: string | number) {
+    return await this.updateLink(linkId, {
+      deactivated: true
+    });
+  }
+
 }

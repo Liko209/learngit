@@ -5,9 +5,10 @@
  */
 
 import { NewGlobalConfig } from '../../../../service/config/NewGlobalConfig';
+import { initialData, remainingData } from '../../../../api';
 
 jest.mock('../../../../service/config/NewGlobalConfig');
-
+jest.mock('../../../../api');
 import { SyncController } from '../SyncController';
 
 describe('SyncController ', () => {
@@ -51,6 +52,65 @@ describe('SyncController ', () => {
       const spy2 = jest.spyOn(syncController, '_fetchRemaining');
       await syncController.syncData();
       expect(spy2).toBeCalledTimes(0);
+    });
+  });
+  describe('updateIndexTimestamp', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.resetModules();
+    });
+    it('should call updateCanUpdateIndexTimeStamp when forceUpdate is true', () => {
+      jest
+        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
+        .mockImplementationOnce(() => {});
+
+      syncController.updateIndexTimestamp(1, true);
+      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(1);
+      expect(NewGlobalConfig.setLastIndexTimestamp).toBeCalledTimes(1);
+    });
+
+    it('should not call updateCanUpdateIndexTimeStamp when forceUpdate is false', () => {
+      jest
+        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
+        .mockImplementationOnce(() => {});
+      jest
+        .spyOn(syncController, 'canUpdateIndexTimeStamp')
+        .mockReturnValueOnce(true);
+      syncController.updateIndexTimestamp(1, false);
+      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
+      expect(NewGlobalConfig.setLastIndexTimestamp).toBeCalledTimes(1);
+    });
+
+    it('should not call NewGlobalConfig.setLastIndexTimestamp when it is not forceUpdate and can not update time stamp', () => {
+      jest
+        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
+        .mockImplementationOnce(() => {});
+      jest
+        .spyOn(syncController, 'canUpdateIndexTimeStamp')
+        .mockReturnValueOnce(false);
+      syncController.updateIndexTimestamp(1, false);
+      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
+      expect(NewGlobalConfig.setLastIndexTimestamp).toBeCalledTimes(0);
+    });
+  });
+  describe('_handleIncomingData', () => {
+    it('should call setLastIndexTimestamp and setSocketServerHost only once when first login', async () => {
+      NewGlobalConfig.getLastIndexTimestamp = jest
+        .fn()
+        .mockReturnValue(undefined);
+      initialData.mockResolvedValueOnce({
+        timestamp: 11,
+        scoreboard: 'aws11',
+      });
+      remainingData.mockResolvedValueOnce({
+        timestamp: 222,
+        scoreboard: 'aws22',
+      });
+      jest
+        .spyOn(syncController, '_dispatchIncomingData')
+        .mockImplementationOnce(() => {});
+      await syncController.syncData();
+      expect(NewGlobalConfig.setLastIndexTimestamp).toHaveBeenCalledTimes(1);
     });
   });
 });

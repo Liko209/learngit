@@ -19,6 +19,7 @@ import { AbstractViewModel } from '@/base';
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { ViewerViewProps } from './types';
 import { ItemListDataSource } from './Viewer.DataSource';
+import { mainLogger } from 'sdk';
 import { Group } from 'sdk/module/group';
 import { Notification } from '@/containers/Notification';
 import {
@@ -27,15 +28,22 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import portalManager from '@/common/PortalManager';
 
-const INIT_PAGE_SIZE = 5;
+const PAGE_SIZE = 20;
 
 class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
+  @observable
+  isLoadingMore: boolean = false;
   @observable
   currentIndex: number = -1;
   @observable
   currentItemId: number;
   private _itemListDataSource: ItemListDataSource;
   private _onCurrentItemDeletedCb: () => void;
+  private _onItemSwitchCb: (
+    itemId: number,
+    index: number,
+    type: 'previous' | 'next',
+  ) => void;
 
   @observable
   total: number = -1;
@@ -55,7 +63,7 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
 
   @action
   init = () => {
-    this._itemListDataSource.loadInitialData(this.props.itemId, INIT_PAGE_SIZE);
+    this._itemListDataSource.loadInitialData(this.props.itemId, PAGE_SIZE);
     this._fetchIndexInfo();
   }
 
@@ -76,8 +84,10 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
 
   @action
   updateCurrentItemIndex = (index: number, itemId: number) => {
-    this.currentIndex = index;
-    this.currentItemId = itemId;
+    transaction(() => {
+      this.currentIndex = index;
+      this.currentItemId = itemId;
+    });
   }
 
   getCurrentItemId = () => {
@@ -88,20 +98,90 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     return this.currentIndex;
   }
 
-  @action
-  _updateCurrentItemIndex = (index: number, itemId: number) => {
-    transaction(() => {
-      this.currentIndex = index;
-      this.currentItemId = itemId;
-    });
-  }
-
-  fetchData = async (direction: QUERY_DIRECTION, pageSize: number) => {
-    return await this._itemListDataSource.fetchData(direction, pageSize);
-  }
-
   setOnCurrentItemDeletedCb = (callback: () => void) => {
     this._onCurrentItemDeletedCb = callback;
+  }
+
+  setOnItemSwitchCb = (callback: (itemId: number) => void) => {
+    this._onItemSwitchCb = callback;
+  }
+
+  @computed
+  get hasPrevious() {
+    return this.currentIndex > 0;
+  }
+
+  @computed
+  get hasNext() {
+    return this.currentIndex < this.total - 1;
+  }
+
+  @action
+  switchToPrevious = () => {
+    if (this.ids.length < 2 || this.ids[0] === this.currentItemId) {
+      if (this.hasPrevious) {
+        this.loadMore(QUERY_DIRECTION.OLDER).then((result: FileItem[]) => {
+          result && this.switchToPrevious();
+        });
+      } else {
+        // should not come here
+        mainLogger.warn('can not switchPreImage', {
+          ids: this.ids,
+          currentItemId: this.currentItemId,
+        });
+      }
+    } else {
+      const itemId = this.ids[this._getItemIndex() - 1];
+      const index = this.currentIndex - 1;
+      itemId && this.updateCurrentItemIndex(index, itemId);
+      itemId &&
+        this._onItemSwitchCb &&
+        this._onItemSwitchCb(itemId, index, 'previous');
+    }
+  }
+
+  @action
+  switchToNext = () => {
+    if (
+      this.ids.length < 2 ||
+      this.ids[this.ids.length - 1] === this.currentItemId
+    ) {
+      if (this.hasNext) {
+        this.loadMore(QUERY_DIRECTION.NEWER).then((result: FileItem[]) => {
+          result && this.switchToNext();
+        });
+      } else {
+        // should not come here
+        mainLogger.warn('can not switchNextImage', {
+          ids: this.ids,
+          currentItemId: this.currentItemId,
+        });
+      }
+    } else {
+      const itemId = this.ids[this._getItemIndex() + 1];
+      const index = this.currentIndex + 1;
+      itemId && this.updateCurrentItemIndex(index, itemId);
+      itemId &&
+        this._onItemSwitchCb &&
+        this._onItemSwitchCb(itemId, index, 'next');
+    }
+  }
+
+  loadMore = async (direction: QUERY_DIRECTION): Promise<FileItem[] | null> => {
+    if (this.isLoadingMore) {
+      return null;
+    }
+    this.isLoadingMore = true;
+    const result = await this._itemListDataSource.fetchData(
+      direction,
+      PAGE_SIZE,
+    );
+    this.isLoadingMore = false;
+    return result;
+  }
+
+  private _getItemIndex = (): number => {
+    return this.ids.findIndex((_id: number) => _id === this.currentItemId);
   }
 
   private _fetchIndexInfo = async () => {

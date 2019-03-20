@@ -40,7 +40,7 @@
     "ringcentral-js-concise": "^0.5.5",
     "sharp": "^0.21.0",
     "shortid": "2.2.14",
-    "testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/testcafe-0.23.3.1.tgz",
+    "testcafe": "http://xmn145.rcoffice.ringcentral.com:9003/packages/testcafe-1.1.0.1.tgz",
     "testcafe-browser-provider-electron": "0.0.6",
     "testcafe-browser-provider-selenium": "http://xmn145.rcoffice.ringcentral.com:9003/packages/testcafe-browser-provider-selenium-0.3.2.tgz",
     "testcafe-live": "0.1.3",
