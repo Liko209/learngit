@@ -110,7 +110,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   }
 
   @computed
-  get _memberIds() {
+  private get _memberIds() {
     return this._group.members || [];
   }
 
@@ -203,7 +203,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   private _upHandler(vm: MentionViewModel) {
     return function () {
       // because of title will within VL
-      const size = vm.members.length + 1;
+      const size = vm.members.length + INIT_CURRENT_INDEX;
       const currentIndex = (vm.currentIndex + size - 1) % size;
       vm.currentIndex = currentIndex === 0 ? vm.members.length : currentIndex;
       return canTriggerDefaultEventHandler(vm);
@@ -214,7 +214,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   private _downHandler(vm: MentionViewModel) {
     return function () {
       // because of title will within VL
-      const size = vm.members.length + 1;
+      const size = vm.members.length + INIT_CURRENT_INDEX;
       const currentIndex = (vm.currentIndex + 1) % size;
       vm.currentIndex = currentIndex === 0 ? INIT_CURRENT_INDEX : currentIndex;
       return canTriggerDefaultEventHandler(vm);

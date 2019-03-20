@@ -24,24 +24,22 @@ import { MentionItem } from './MentionItem';
 const ITEM_HEIGHT = 40; // jui/pattern/MessageInput/Mention/MentionPanelSectionItem
 const MAX_ITEM_NUMBER = 6;
 
+const INIT_CURRENT_INDEX = 1;
+const TITLE_HEIGHT = 32;
 @observer
 class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
   implements IVirtualListDataSource<any, number> {
   _listRef: RefObject<JuiVirtualList<number, number>> = createRef();
 
   get(index: number) {
-    return this.props.ids[index - 1];
+    return this.props.ids[index - INIT_CURRENT_INDEX];
   }
 
   size() {
-    return this.props.ids.length + 1;
+    return this.props.ids.length + INIT_CURRENT_INDEX;
   }
 
-  hasMore() {
-    return false;
-  }
-
-  rowRenderer = (cellProps: JuiVirtualCellProps<number>) => {
+  private _rowRenderer = (cellProps: JuiVirtualCellProps<number>) => {
     const {
       t,
       groupType,
@@ -53,7 +51,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
     if (index === 0) {
       return groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ? null : (
         <JuiMentionPanelSectionHeader
-          key={0}
+          key={index}
           title={t(
             searchTerm && searchTerm.trim()
               ? 'message.suggestedPeople'
@@ -105,9 +103,9 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
                     ref={this._listRef}
                     dataSource={this}
                     overscan={5}
-                    rowRenderer={this.rowRenderer}
+                    rowRenderer={this._rowRenderer}
                     width={width}
-                    height={mentionHeight + 32} // need add title height
+                    height={mentionHeight + TITLE_HEIGHT}
                     fixedCellHeight={ITEM_HEIGHT}
                     data-test-automation-id="mention-list"
                   />
