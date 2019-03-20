@@ -131,6 +131,7 @@ const StyledFabButton = styled<StyledFabButtonProps>(
         )};
       box-shadow: ${({ showShadow, theme }) =>
         showShadow ? theme.boxShadow.val16 : 'none'};
+      opacity: ${({ theme }) => theme.palette.action.hoverOpacity};
     }
   }
 `;
