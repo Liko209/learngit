@@ -33,7 +33,7 @@ const PersonFlags = {
 const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
 const HEADSHOT_THUMB_WIDTH = 'width';
 const HEADSHOT_THUMB_HEIGHT = 'height';
-const HEADSHOT_THUMB_SIZE_LIMIT = 500;
+
 const SIZE = 'size';
 
 class PersonController {
@@ -90,12 +90,11 @@ class PersonController {
 
   private _getHighestResolutionHeadshotUrlFromThumbs(
     thumbs: { key: string; value: string }[],
+    desiredSize: number,
     stored_file_id?: string,
-  ): string {
+  ): string | null {
     const keys = Object.keys(thumbs);
-    let maxKey = keys[0];
-    let maxWidth: number = 0;
-    let firstKey: string = '';
+    let matchKey: string = '';
     for (let i = 0; i < keys.length; i++) {
       if (
         keys[i].startsWith(HEADSHOT_THUMB_WIDTH) ||
@@ -107,27 +106,21 @@ class PersonController {
         continue;
       }
 
-      if (firstKey === '') {
-        firstKey = keys[i];
-      }
-
       const index = keys[i].indexOf(SIZE);
       if (index !== -1) {
         const sizeString = keys[i].substr(index + SIZE.length + 1);
         const sizeWidth = Number(sizeString);
-        if (sizeWidth < HEADSHOT_THUMB_SIZE_LIMIT) {
-          if (sizeWidth > maxWidth) {
-            maxWidth = sizeWidth;
-            maxKey = keys[i];
-          }
+        if (sizeWidth === desiredSize) {
+          matchKey = keys[i];
+          break;
         }
       }
     }
-    let url = thumbs[firstKey];
-    if (maxWidth !== 0) {
-      url = thumbs[maxKey];
+
+    if (matchKey) {
+      return thumbs[matchKey];
     }
-    return url;
+    return null;
   }
 
   getHeadShotWithSize(
@@ -137,23 +130,31 @@ class PersonController {
     size: number,
   ) {
     let url: string | null = null;
-    if (headshot_version) {
-      url = this._getHeadShotByVersion(uid, headshot_version, size);
-    } else if (headshot) {
-      if (typeof headshot === 'string') {
-        url = headshot;
-      } else {
+    let originalUrl: string | null = null;
+
+    do {
+      if (typeof headshot !== 'string') {
         if (headshot.thumbs) {
           url = this._getHighestResolutionHeadshotUrlFromThumbs(
             headshot.thumbs,
+            size,
             headshot.stored_file_id,
           );
         }
-        if (!url) {
-          url = headshot.url;
-        }
+        originalUrl = headshot.url;
       }
-    }
+
+      if (url) {
+        break;
+      }
+
+      if (headshot_version) {
+        url = this._getHeadShotByVersion(uid, headshot_version, size);
+        break;
+      }
+
+      url = originalUrl;
+    } while (false);
 
     return url;
   }
