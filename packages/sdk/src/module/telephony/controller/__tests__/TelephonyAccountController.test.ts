@@ -38,6 +38,8 @@ describe('TelephonyAccountController', () => {
     );
     callController = {
       hangUp: jest.fn(),
+      mute: jest.fn(),
+      unmute: jest.fn(),
       setRtcCall: jest.fn(),
     };
 
@@ -70,6 +72,22 @@ describe('TelephonyAccountController', () => {
       jest.spyOn(callController, 'hangUp');
       accountController.hangUp('123');
       expect(callController.hangUp).toBeCalled();
+    });
+  });
+
+  describe('mute', () => {
+    it('should call controller to mute', () => {
+      jest.spyOn(callController, 'mute');
+      accountController.mute('123');
+      expect(callController.mute).toBeCalled();
+    });
+  });
+
+  describe('unmute', () => {
+    it('should call controller to unmute', () => {
+      jest.spyOn(callController, 'unmute');
+      accountController.unmute('123');
+      expect(callController.unmute).toBeCalled();
     });
   });
 
