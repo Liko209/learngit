@@ -12,6 +12,7 @@ import { VIEWER_ITEM_TYPE } from '../constants';
 import { ViewerViewProps } from '../types';
 import { ItemListDataSource } from '../Viewer.DataSource';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import * as mobx from 'mobx';
 
 jest.mock('sdk/module/item/service', () => {
   const service: ItemService = {
@@ -265,5 +266,21 @@ describe('Viewer.ViewModel', () => {
       vm.switchToNext();
       expect(updateCurrentItemIndex).toBeCalled();
     });
+  });
+});
+
+describe('dispose reactions', () => {
+  it('should dispose all reactions when dispose vm', () => {
+    const disposer1 = jest.fn();
+    const disposer2 = jest.fn();
+    const disposer3 = jest.fn();
+    jest.spyOn(mobx, 'reaction').mockReturnValueOnce(disposer1);
+    jest.spyOn(mobx, 'reaction').mockReturnValueOnce(disposer2);
+    jest.spyOn(mobx, 'reaction').mockReturnValueOnce(disposer3);
+    const vm = new ViewerViewModel({});
+    vm.dispose();
+    expect(disposer1).toHaveBeenCalled();
+    expect(disposer2).toHaveBeenCalled();
+    expect(disposer3).toHaveBeenCalled();
   });
 });
