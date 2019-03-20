@@ -88,7 +88,7 @@ def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget) {
     println sshCmd(remoteUri, "cp -r ${linkSource} ${linkTarget}")
 }
 
-def updateVersionInfo(String remoteUri, String appDir, String sha, int timestamp) {
+def updateVersionInfo(String remoteUri, String appDir, String sha, long timestamp) {
     String cmd = "sed -i 's/{{deployedCommit}}/${sha.substring(0,9)}/;s/{{deployedTime}}/${timestamp}/' ${appDir}/static/js/versionInfo.*.chunk.js || true"
     println sshCmd(remoteUri, cmd)
 }
@@ -510,7 +510,7 @@ node(buildNode) {
                         // and create copy to branch name based folder
                         updateRemoteCopy(deployUri, appHeadShaDir, appLinkDir)
                         // and update version info
-                        int ts = System.currentTimeMillis()
+                        long ts = System.currentTimeMillis()
                         updateVersionInfo(deployUri, appLinkDir, headSha, ts)
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
@@ -554,6 +554,7 @@ node(buildNode) {
                 "BRANCH=${gitlabSourceBranch}",
                 "ACTION=ON_MERGE",
                 "SCREENSHOTS_PATH=./screenshots",
+                "TMPFILE_PATH=./tmp",
                 "DEBUG_MODE=false",
                 "STOP_ON_FIRST_FAIL=true",
                 "SKIP_JS_ERROR=true",
@@ -572,7 +573,7 @@ node(buildNode) {
                 // you need to ensure target dirs exist in selenium-node, and use ramdisk for better performance
                 sh '''echo '{"chromeOptions":{"args":["headless","user-data-dir=/user-data","disk-cache-dir=/user-cache"]}}' > chrome-opts.json'''
 
-                sh "mkdir -p screenshots"
+                sh "mkdir -p screenshots tmp"
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
                 sshagent (credentials: [scmCredentialId]) {
                     sh 'npm install --unsafe-perm'
