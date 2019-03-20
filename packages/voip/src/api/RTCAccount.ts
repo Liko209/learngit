@@ -80,6 +80,10 @@ class RTCAccount implements IRTCAccount {
       rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
       return RTC_STATUS_CODE.MAX_CALLS_REACHED;
     }
+    if (this.state() === RTC_ACCOUNT_STATE.UNREGISTERED) {
+      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
+      return RTC_STATUS_CODE.INVALID_STATE;
+    }
     let callOption: RTCCallOptions;
     if (options) {
       callOption = options;
@@ -87,6 +91,16 @@ class RTCAccount implements IRTCAccount {
       callOption = {};
     }
     this._regManager.makeCall(toNumber, delegate, callOption);
+    const call = new RTCCall(false, toNumber, null, this, delegate, callOption);
+    this._callManager.addCall(call);
+    if (this._delegate) {
+      this._delegate.onMadeOutgoingCall(call);
+    }
+    if (this.isReady()) {
+      call.onAccountReady();
+    } else {
+      call.onAccountNotReady();
+    }
     return RTC_STATUS_CODE.OK;
   }
 
@@ -151,16 +165,6 @@ class RTCAccount implements IRTCAccount {
 
   private _initListener() {
     this._regManager.on(
-      REGISTRATION_EVENT.MAKE_OUTGOING_CALL,
-      (
-        toNumber: string,
-        delegate: IRTCCallDelegate,
-        options: RTCCallOptions,
-      ) => {
-        this._onMakeOutgoingCall(toNumber, delegate, options);
-      },
-    );
-    this._regManager.on(
       REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE,
       (session: any) => {
         this._onReceiveInvite(session);
@@ -209,27 +213,6 @@ class RTCAccount implements IRTCAccount {
   private _onLogoutAction() {
     this._callManager.endAllCalls();
     this.clearLocalProvisioning();
-  }
-
-  private _onMakeOutgoingCall(
-    toNumber: string,
-    delegate: IRTCCallDelegate,
-    options: RTCCallOptions,
-  ) {
-    if (!this._callManager.allowCall()) {
-      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
-      return;
-    }
-    const call = new RTCCall(false, toNumber, null, this, delegate, options);
-    this._callManager.addCall(call);
-    if (this._delegate) {
-      this._delegate.onMadeOutgoingCall(call);
-    }
-    if (this.isReady()) {
-      call.onAccountReady();
-    } else {
-      call.onAccountNotReady();
-    }
   }
 
   private _onReceiveInvite(session: any) {
