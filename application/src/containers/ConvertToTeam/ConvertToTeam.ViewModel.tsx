@@ -5,6 +5,7 @@
  */
 
 import { computed, observable, action, Reaction } from 'mobx';
+import i18next from 'i18next';
 import { AbstractViewModel } from '@/base';
 import { ConvertToTeamProps, ConvertToTeamViewProps } from './types';
 import { getEntity } from '@/store/utils';
@@ -23,16 +24,15 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   nameErrorKey: string = '';
   @observable
   saving: boolean = false;
-  @observable
-  firstRenderName: boolean = false;
 
   constructor(props: ConvertToTeamProps) {
     super(props);
     this.reaction(
       () => this.group.displayName,
       (displayName: string, reaction: Reaction) => {
-        this.name = displayName;
-        this.firstRenderName = true;
+        this.name = `${i18next.t(
+          'people.team.convertToTeamNamePrefix',
+        )}${displayName}`;
         reaction.dispose();
       },
       {
@@ -54,7 +54,6 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   @action
   handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.name = e.target.value;
-    this.firstRenderName = false;
     this.nameErrorKey = '';
   }
 

@@ -15,7 +15,6 @@ type ConvertToTeamViewProps = {
   name: string;
   description: string;
   nameErrorKey: string;
-  firstRenderName: boolean;
   saving: boolean;
   disabledOkBtn: boolean;
   group: GroupModel;
