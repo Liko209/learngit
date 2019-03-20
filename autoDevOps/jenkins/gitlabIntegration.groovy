@@ -393,11 +393,8 @@ node(buildNode) {
 
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
-            sh "[ -f package-lock.json ] && rm package-lock.json || true"
             sshagent (credentials: [scmCredentialId]) {
-                sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
-                sh 'npm install --ignore-scripts --unsafe-perm'
-                sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
+                sh 'npm install'
             }
             try {
                 sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version check'
