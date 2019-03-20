@@ -12,6 +12,7 @@ import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import styled from '../../foundation/styled-components';
 import { JuiIconography } from '../../foundation/Iconography';
 import { JuiArrowTip } from '../../components/index';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import {
   height,
   grey,
@@ -34,6 +35,7 @@ const Left = styled<LeftNavProps>(CustomLeftNav)`
     height: 100%; // safari compatibility
   }
   .left-paper {
+    background: ${palette('grey', '100')};
     position: relative;
     height: 100%;
     overflow-y: auto;
@@ -64,14 +66,14 @@ const StyledListItem = styled(MuiListItem)`
     height: ${height(11)};
     outline: none;
     white-space: nowrap;
-    background: white;
     color: ${grey('900')};
     /**
    * Workaround to resolve transition conflicts with react-sortable-hoc
    * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
    */
     transition: transform 0s ease,
-      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      background-color 150ms
+        ${({ theme }) => theme.transitions.easing.easeInOut} 0ms;
   }
   &&:focus {
     background: ${grey('300')};
@@ -95,8 +97,9 @@ const StyledListItem = styled(MuiListItem)`
   }
   &&&:hover {
     background-color: ${({ theme, selected }) =>
-      selected ? theme.palette.action.active : grey('100')};
-    opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
+      selected
+        ? fade(grey('700')({ theme }), theme.opacity.p05)
+        : fade(grey('700')({ theme }), theme.opacity.p05)};
     .nav-icon {
       color: ${grey('500')}; // 500
     }

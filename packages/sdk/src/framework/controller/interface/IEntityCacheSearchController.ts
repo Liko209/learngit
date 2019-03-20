@@ -4,15 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../model';
-
-type SortableModel<T> = {
-  id: number;
-  displayName: string;
-  firstSortKey?: any;
-  secondSortKey?: any;
-  entity: T;
-};
+import { IdModel, SortableModel } from '../../model';
 
 interface IEntityCacheSearchController<T extends IdModel = IdModel> {
   getEntity(id: number): Promise<T | null>;
@@ -46,4 +38,4 @@ interface IEntityCacheSearchController<T extends IdModel = IdModel> {
   isInitialized(): boolean;
 }
 
-export { IEntityCacheSearchController, SortableModel };
+export { IEntityCacheSearchController };

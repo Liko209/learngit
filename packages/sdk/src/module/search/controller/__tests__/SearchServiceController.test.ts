@@ -5,6 +5,7 @@
  */
 import { SearchServiceController } from '../SearchServiceController';
 import { RecentSearchRecordController } from '../RecentSearchRecordController';
+import { ISearchService } from '../../service/ISearchService';
 function clearMocks() {
   jest.clearAllMocks();
   jest.resetAllMocks();
@@ -13,8 +14,12 @@ function clearMocks() {
 
 describe('SearchServiceController', () => {
   let searchServiceController: SearchServiceController;
+  let searchService: ISearchService;
   function setUp() {
-    searchServiceController = new SearchServiceController();
+    searchService = jest.fn().mockReturnValue({
+      getRecentSearchRecordsMap: jest.fn(),
+    }) as any;
+    searchServiceController = new SearchServiceController(searchService);
   }
 
   beforeEach(() => {

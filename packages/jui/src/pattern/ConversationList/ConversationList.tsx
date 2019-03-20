@@ -10,7 +10,6 @@ import MuiMenuList from '@material-ui/core/MenuList';
 
 const StyledList = styled(MuiMenuList)`
   && {
-    background-color: white;
     padding-top: 0;
     padding-bottom: 0;
   }
