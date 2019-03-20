@@ -6,7 +6,7 @@
 import { getEntity } from '../../../../../store/utils';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MentionViewModel } from '../Mention.ViewModel';
-
+import { INIT_CURRENT_INDEX } from '../constants';
 const mockSearchService = {
   doFuzzySearchPersons: jest.fn(),
 };
@@ -97,12 +97,14 @@ describe('mentionViewModel', () => {
     expect(quill.getModule).not.toBeCalled();
     mentionViewModel.open = true;
     // currentIndex default will be 1 because of title will within VL
-    mentionViewModel.members = ['', 1];
+    mentionViewModel.members = [1];
     handler();
     expect(quill.getModule).toBeCalledWith('mention');
     expect(mentionModules.select).toBeCalledWith(
-      mentionViewModel.members[mentionViewModel.currentIndex].id,
-      mentionViewModel.members[mentionViewModel.currentIndex].displayName,
+      mentionViewModel.members[ mentionViewModel.currentIndex - INIT_CURRENT_INDEX
+].id,
+      mentionViewModel.members[ mentionViewModel.currentIndex - INIT_CURRENT_INDEX
+].displayName,
       mentionViewModel._denotationChar,
     );
     expect(mentionViewModel.open).toBe(false);

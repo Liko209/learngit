@@ -163,8 +163,8 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       const quill: Quill = this.quill;
       const mentionModules = quill.getModule('mention');
       mentionModules.select(
-        vm.members[vm.currentIndex].id,
-        vm.members[vm.currentIndex].displayName,
+        vm.members[vm.currentIndex - INIT_CURRENT_INDEX].id,
+        vm.members[vm.currentIndex - INIT_CURRENT_INDEX].displayName,
         vm._denotationChar,
       );
       vm.currentIndex = INIT_CURRENT_INDEX;
