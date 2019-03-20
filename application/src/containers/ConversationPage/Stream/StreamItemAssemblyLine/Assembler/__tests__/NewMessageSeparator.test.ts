@@ -169,7 +169,7 @@ describe('NewMessageSeparator', () => {
       expect(separator.streamItemList.size()).toEqual(0);
     });
 
-    it.skip('should not add separator when the post is send by current user', () => {
+    it('should not add separator when the post is send by current user', () => {
       const separator = runOnAdd(<OnAddCaseConfig>{
         postCreatorId: 1,
         currentUserId: 1,
