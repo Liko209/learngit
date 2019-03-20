@@ -25,6 +25,7 @@ import {
   MAX_ITEM_NUMBER,
   INIT_CURRENT_INDEX,
   TITLE_HEIGHT,
+  ITEM_DIFF,
 } from './constants';
 
 @observer
@@ -64,7 +65,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
     const top: number = Number(style.top);
     const newStyle = {
       ...style,
-      top: top - 8, // every item has 40px but title is 32px
+      top: top - ITEM_DIFF, // every item has 40px but title is 32px
     };
     return (
       <JuiVirtualCellWrapper key={item} style={newStyle}>
