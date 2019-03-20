@@ -173,6 +173,10 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
+  const shouldUpdateRange = () => {
+    return !isRangeIn(renderedRange, computeVisibleRange());
+  };
+
   const updateRange = () => {
     if (ref.current) {
       const { scrollTop } = ref.current;
@@ -304,6 +308,10 @@ const JuiVirtualizedList: RefForwardingComponent<
     const observeDynamicRow = (el: HTMLElement, i: number) => {
       const observer = new ResizeObserver(() => {
         handleRowSizeChange(el, i);
+
+        if (shouldUpdateRange()) {
+          updateRange();
+        }
       });
       observer.observe(el);
       return observer;
@@ -334,9 +342,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   // Ensure there are not empty space in the list
   //
   useLayoutEffect(() => {
-    const visibleRange = computeVisibleRange();
-    if (!isRangeIn(renderedRange, visibleRange)) {
-      // If visible range not in current renderedRange
+    if (shouldUpdateRange()) {
       updateRange();
     }
   });
