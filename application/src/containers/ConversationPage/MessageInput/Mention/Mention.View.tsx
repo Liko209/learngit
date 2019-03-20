@@ -65,7 +65,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
     const top: number = Number(style.top);
     const newStyle = {
       ...style,
-      top: top - 8,
+      top: top - 8, // every item has 40px but title is 32px
     };
     return (
       <JuiVirtualCellWrapper key={item} style={newStyle}>
@@ -107,7 +107,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
                     overscan={5}
                     rowRenderer={this.rowRenderer}
                     width={width}
-                    height={mentionHeight + 32}
+                    height={mentionHeight + 32} // need add title height
                     fixedCellHeight={ITEM_HEIGHT}
                     data-test-automation-id="mention-list"
                   />
