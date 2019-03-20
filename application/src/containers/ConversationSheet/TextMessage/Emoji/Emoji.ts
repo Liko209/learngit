@@ -50,8 +50,7 @@ class Emoji {
       // console.log(match); // :smile:
       const obj = mapEmojiOne[match]; // :smile:
       if (obj instanceof Object) {
-        const arr = obj.unicode;
-        const unicode = arr[arr.length - 1];
+        const unicode = obj.fname;
         return this._getImg(match, unicode);
       }
       return match;
