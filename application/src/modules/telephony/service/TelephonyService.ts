@@ -9,10 +9,14 @@ import {
   TelephonyService as ServerTelephonyService,
   RTC_ACCOUNT_STATE,
   RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCCallActionSuccessOptions,
 } from 'sdk/module/telephony';
+import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { mainLogger } from 'sdk';
 import { TelephonyStore } from '../store';
+import { ToastCallError } from './ToastCallError';
 
 class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
@@ -27,6 +31,8 @@ class TelephonyService {
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(`[Telephony_Service_Account_State]: ${state}`);
   }
+
+  private _onMadeOutgoingCall = (callId: string) => {};
 
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
     mainLogger.debug(`[Telephony_Service_Call_State]: ${state}`);
@@ -44,18 +50,42 @@ class TelephonyService {
     }
   }
 
+  private _onCallActionSuccess = (
+    callAction: RTC_CALL_ACTION,
+    options: RTCCallActionSuccessOptions,
+  ) => {
+    mainLogger.info(`Call action: ${callAction} succeed, options: ${options}`);
+  }
+
+  private _onCallActionFailed = (callAction: RTC_CALL_ACTION): void => {
+    switch (callAction) {
+      case RTC_CALL_ACTION.CALL_TIME_OUT: {
+        ToastCallError.toastCallTimeout();
+      }
+    }
+  }
+
   constructor() {
     this._serverTelephonyService.createAccount({
       onAccountStateChanged: this._onAccountStateChanged,
+      onMadeOutgoingCall: this._onMadeOutgoingCall,
     });
   }
 
-  makeCall = (toNumber: string) => {
+  makeCall = async (toNumber: string) => {
     this._telephonyStore.phoneNumber = toNumber;
-    this._serverTelephonyService.makeCall(toNumber, {
+    const rv = await this._serverTelephonyService.makeCall(toNumber, {
       onCallStateChange: this._onCallStateChange,
+      onCallActionSuccess: this._onCallActionSuccess,
+      onCallActionFailed: this._onCallActionFailed,
     });
 
+    // TODO: When it reaches the max call count, we should not show new call UI
+    if (MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv) {
+      ToastCallError.toastNoNetwork();
+    } else if (MAKE_CALL_ERROR_CODE.NO_ERROR !== rv) {
+      ToastCallError.toastCallFailed();
+    }
     // TODO: There is a LeaveBlockerService, but it can't support multi-blocker. When it can support, we should use that service.
     if (!this._registeredOnbeforeunload) {
       // If makeCall return success, register this handle

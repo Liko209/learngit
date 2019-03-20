@@ -57,6 +57,10 @@ const Container = styled.div`
   height: 100%;
 `;
 
+const ZoomWrapper = styled.div`
+  position: relative;
+`;
+
 function ensureOptions(zoomOptions?: Partial<JuiZoomOptions>): JuiZoomOptions {
   return zoomOptions
     ? {
@@ -175,16 +179,9 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
       zoomIn: this.zoomIn,
       zoomOut: this.zoomOut,
     };
-    const divStyle = {
-      transform: `scale(${transform.scale}) translate(${
-        transform.translateX
-      }px, ${transform.translateY}px)`,
-    };
     return (
       <Container ref={this.getViewRef()} className={className}>
-        <div style={divStyle} onWheel={this.onWheel}>
-          {children(zoomProps)}
-        </div>
+        <ZoomWrapper onWheel={this.onWheel}>{children(zoomProps)}</ZoomWrapper>
         <ReactResizeDetector
           handleHeight={true}
           handleWidth={true}

@@ -18,6 +18,7 @@ import { ArchiveTeamDialog } from './ArchiveTeamDialog';
 import { AlertDialog } from "./AlertDialog";
 import { IUser } from '../../../models';
 import { TelephonyDialog } from './TelephonyDialog';
+import { ViewerDialog } from './ViewerDialog';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -128,4 +129,8 @@ export class HomePage extends BaseWebComponent {
   get telephonyDialog() {
     return this.getComponent(TelephonyDialog);
   }
+  get viewerDialog() {
+    return this.getComponent(ViewerDialog);
+  }
+
 }
