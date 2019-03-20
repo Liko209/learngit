@@ -74,7 +74,8 @@ test(formalName('Check the maximum length of the Team Name input box', ['P1', 'J
   });
 });
 
-test(formalName('Check the new team can be created successfully', ['P1', 'JPT-127']), async t => {
+// skip due to https://jira.ringcentral.com/browse/FIJI-4333
+test.skip(formalName('Check the new team can be created successfully', ['P1', 'JPT-127']), async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[0];
   const teamName = `Team ${uuid()}`;
@@ -341,7 +342,7 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
   });
 
   await h(t).withLog('Then I should see team created', async () => {
-     await teamsSection.expand();
+    await teamsSection.expand();
     await t.expect(teamsSection.conversations.withText(`${allowToAddUserTeamName}`).exists).ok();
     await t.expect(teamsSection.conversations.withText(`${notAllowToAddUserTeamName}`).exists).ok();
   });
