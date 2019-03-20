@@ -13,8 +13,9 @@ import { mapEmojiOne } from './map';
 const mapUnicodeToShort = {};
 
 for (const key in mapEmojiOne) {
-  for (let i = 0, len = mapEmojiOne[key].unicode.length; i < len; i++) {
-    const unicode = mapEmojiOne[key].unicode[i];
+  const arr = mapEmojiOne[key].unicode;
+  for (let i = 0, len = arr.length; i < len; i++) {
+    const unicode = arr[i];
     mapUnicodeToShort[unicode] = key;
   }
 }
