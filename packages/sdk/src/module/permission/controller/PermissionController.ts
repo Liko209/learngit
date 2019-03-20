@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 // import { SplitIOController } from './splitIO/SplitIOController';
-// import { LaunchDarklyController } from './launchDarkly/LaunchDarklyController';
+import { LaunchDarklyController } from './launchDarkly/LaunchDarklyController';
 import UserPermissionType from '../types';
 import { notificationCenter, ENTITY } from '../../../service';
 import { AccountGlobalConfig } from '../../../service/account/config';
@@ -12,7 +12,7 @@ import { UserPermission } from '../entity';
 import { mainLogger } from 'foundation';
 class PermissionController {
   // private splitIOController: SplitIOController;
-  // private launchDarklyController: LaunchDarklyController;
+  private launchDarklyController: LaunchDarklyController;
   constructor() {
     this._initControllers();
   }
@@ -26,10 +26,9 @@ class PermissionController {
      */
     // TODO: beta / RC
     // const sp = wait this.splitIOController.hasPermission(type);
-    // const ld = this.launchDarklyController.hasPermission(type);
-    // mainLogger.log(`hasPermission of ${type} splitIO:${sp} launchDarkly:${ld}`);
-    // return sp || ld;
-    return type !== UserPermissionType.JUPITER_CAN_UPLOAD_LOG;
+    const ld = this.launchDarklyController.hasPermission(type);
+    mainLogger.log(`hasPermission of ${type} launchDarkly:${ld}`);
+    return ld;
   }
 
   async getById(id: number): Promise<UserPermission> {
@@ -48,10 +47,9 @@ class PermissionController {
     // this.splitIOController = new SplitIOController(
     //   this._refreshPermissions.bind(this),
     // );
-    // this.launchDarklyController = new LaunchDarklyController(
-    //   this._refreshPermissions.bind(this),
-    // );
-    this._refreshPermissions();
+    this.launchDarklyController = new LaunchDarklyController(
+      this._refreshPermissions.bind(this),
+    );
   }
 
   private async _refreshPermissions() {

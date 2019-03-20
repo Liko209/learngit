@@ -7,22 +7,30 @@ import { AbstractViewModel } from '@/base';
 import { ImageViewerProps } from './types';
 import _ from 'lodash';
 import { computed, observable } from 'mobx';
-import { QUERY_DIRECTION } from 'sdk/dao';
-import { mainLogger } from 'sdk';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import FileItemModel from '@/store/models/FileItem';
 import { getMaxThumbnailURLInfo } from '@/common/getThumbnailURL';
-import { FileItem } from 'sdk/module/item/module/file/entity';
-const PAGE_SIZE = 5;
+import { ItemService } from 'sdk/module/item/service';
+import { Pal } from 'sdk/pal';
 
 class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
   @observable
-  isLoadingMore: boolean = false;
+  thumbnailSrc?: string;
+  @observable
+  private _initialWidth?: number;
+  @observable
+  private _initialHeight?: number;
+  @observable
+  private _buildThumbnailStatus: 'idle' | 'building' | 'fail' = 'idle';
 
   constructor(props: ImageViewerProps) {
     super(props);
+    this.thumbnailSrc = props.initialOptions.thumbnailSrc;
+    this._initialWidth = props.initialOptions.initialWidth;
+    this._initialHeight = props.initialOptions.initialHeight;
+    this.props.setOnItemSwitchCb(this._clearThumbnailInfo);
   }
 
   @computed
@@ -30,13 +38,41 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
     const item = this.item;
     if (FileItemUtils.isSupportShowRawImage(item)) {
       return {
-        url: item.downloadUrl,
+        url: item.versionUrl,
         width: item.origWidth,
         height: item.origHeight,
       };
     }
     if (FileItemUtils.isSupportPreview(item)) {
-      return getMaxThumbnailURLInfo(item);
+      if (item.thumbs) {
+        return getMaxThumbnailURLInfo(item);
+      }
+      if (this._buildThumbnailStatus === 'fail') {
+        return {
+          url: '',
+          width: 0,
+          height: 0,
+        };
+      }
+      if (this._buildThumbnailStatus === 'idle') {
+        this._buildThumbnailStatus = 'building';
+        ItemService.getInstance<ItemService>()
+          .getThumbsUrlWithSize(item.id, item.origWidth, item.origHeight)
+          .then((url: string) => {
+            Pal.instance.getImageDownloader().download(
+              { url, id: item.id },
+              {
+                onSuccess: () => {},
+                onFailure: () => {
+                  this._buildThumbnailStatus = 'fail';
+                },
+              },
+            );
+          })
+          .catch(() => {
+            this._buildThumbnailStatus = 'fail';
+          });
+      }
     }
     return {
       url: undefined,
@@ -52,92 +88,28 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
 
   @computed
   get imageWidth() {
-    return this.imageInfo.width;
+    return this.imageInfo.width || this._initialWidth;
   }
 
   @computed
   get imageHeight() {
-    return this.imageInfo.height;
+    return this.imageInfo.height || this._initialHeight;
   }
 
   @computed
   get item(): FileItemModel {
-    return getEntity(ENTITY_NAME.FILE_ITEM, this.props.currentItemId);
+    return getEntity(ENTITY_NAME.ITEM, this._getCurrentItemId());
   }
 
-  @computed
-  get hasPrevious() {
-    return this.props.currentIndex > 0;
+  private _clearThumbnailInfo = () => {
+    this.thumbnailSrc = undefined;
+    this._initialWidth = undefined;
+    this._initialHeight = undefined;
+    this._buildThumbnailStatus = 'idle';
   }
 
-  @computed
-  get hasNext() {
-    return this.props.currentIndex < this.props.total - 1;
-  }
-
-  switchPreImage = () => {
-    if (
-      this.props.ids.length < 2 ||
-      this.props.ids[0] === this.props.currentItemId
-    ) {
-      if (this.hasPrevious) {
-        this._loadMore(QUERY_DIRECTION.OLDER).then((result: FileItem[]) => {
-          result && this.switchPreImage();
-        });
-      } else {
-        // should not come here
-        mainLogger.warn('can not switchPreImage', {
-          ids: this.props.ids,
-          currentItemId: this.props.currentItemId,
-        });
-      }
-    } else {
-      const nextId = this.props.ids[this._getItemIndex() - 1];
-      nextId &&
-        this.props.updateCurrentItemIndex(this.props.currentIndex - 1, nextId);
-    }
-  }
-
-  switchNextImage = () => {
-    if (
-      this.props.ids.length < 2 ||
-      this.props.ids[this.props.ids.length - 1] === this.props.currentItemId
-    ) {
-      if (this.hasNext) {
-        this._loadMore(QUERY_DIRECTION.NEWER).then((result: FileItem[]) => {
-          result && this.switchNextImage();
-        });
-      } else {
-        // should not come here
-        mainLogger.warn('can not switchNextImage', {
-          ids: this.props.ids,
-          currentItemId: this.props.currentItemId,
-        });
-      }
-    } else {
-      this.props.updateCurrentItemIndex(
-        this.props.currentIndex + 1,
-        this.props.ids[this._getItemIndex() + 1],
-      );
-    }
-  }
-
-  private _loadMore = async (
-    direction: QUERY_DIRECTION,
-  ): Promise<FileItem[] | null> => {
-    if (this.isLoadingMore) {
-      return null;
-    }
-    this.isLoadingMore = true;
-    const result = await this.props.fetchData(direction, PAGE_SIZE);
-    this.isLoadingMore = false;
-    return result;
-  }
-
-  private _getItemIndex = (): number => {
-    return this.props.ids.findIndex(
-      (_id: number) => _id === this.props.currentItemId,
-    );
+  private _getCurrentItemId = () => {
+    return this.props.getCurrentItemId();
   }
 }
 

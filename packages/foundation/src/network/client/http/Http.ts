@@ -12,8 +12,7 @@ import {
 } from '../../network';
 import BaseClient from '../BaseClient';
 import HttpResponseBuilder from './HttpResponseBuilder';
-
-const RETRY_AFTER = 'Retry-After';
+import { RESPONSE_HEADER_KEY } from '../../Constants';
 
 class Http extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
@@ -80,12 +79,14 @@ class Http extends BaseClient {
           statusText = NETWORK_FAIL_TYPE.CANCELLED;
         }
 
-        let retryAfter = response.retryAfter;
-        if (request.ignoreLocalRetryAfter) {
-          const hasRetryAfter =
-            response.headers && response.headers.hasOwnProperty(RETRY_AFTER);
-          retryAfter = hasRetryAfter ? response.headers[RETRY_AFTER] : 0;
+        let retryAfter = 0;
+        if (
+          response.headers &&
+          response.headers.hasOwnProperty(RESPONSE_HEADER_KEY.RETRY_AFTER)
+        ) {
+          retryAfter = response.headers[RESPONSE_HEADER_KEY.RETRY_AFTER];
         }
+
         const res = HttpResponseBuilder.builder
           .setData(data)
           .setStatus(status)

@@ -6,8 +6,9 @@
 
 import { getEntity } from '../../../../store/utils';
 import { ViewerTitleViewModel } from '../Title.ViewModel';
+import { ViewerTitleViewModelProps } from '../types';
 jest.mock('../../../../store/utils');
-const props = {
+const props: ViewerTitleViewModelProps = {
   groupId: 1,
   itemId: 1,
   type: 1,
@@ -17,8 +18,15 @@ const props = {
   total: 1,
   ids: [],
   updateCurrentItemIndex: jest.fn(),
-  fetchData: jest.fn(),
+  loadMore: jest.fn(),
   setOnCurrentItemDeletedCb: jest.fn(),
+  getCurrentItemId: jest.fn(),
+  getCurrentIndex: jest.fn(),
+  setOnItemSwitchCb: jest.fn(),
+  switchToPrevious: jest.fn(),
+  switchToNext: jest.fn(),
+  hasPrevious: true,
+  hasNext: true,
 };
 
 describe('TitleViewModel', () => {

@@ -9,7 +9,6 @@ import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
 import { EndViewProps } from './types';
 import { JuiFabButton } from 'jui/components/Buttons';
-import { JuiIconography } from 'jui/foundation/Iconography';
 
 type Props = EndViewProps & WithNamespaces;
 
@@ -29,9 +28,8 @@ class EndViewComponent extends Component<Props> {
         size="large"
         showShadow={false}
         tooltipPlacement="top"
-      >
-        <JuiIconography>hand_up</JuiIconography>
-      </JuiFabButton>
+        iconName="hand_up"
+      />
     );
   }
 }

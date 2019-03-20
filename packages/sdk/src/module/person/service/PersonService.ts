@@ -16,7 +16,7 @@ import { daoManager } from '../../../dao';
 import { PersonDao } from '../dao';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { Raw, SortableModel } from '../../../framework/model';
+import { Raw } from '../../../framework/model';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 
 import { PersonController } from '../controller/PersonController';
@@ -82,27 +82,12 @@ class PersonService extends EntityBaseService<Person>
     return await this.getPersonController().buildPersonFeatureMap(personId);
   }
 
-  async doFuzzySearchPersons(
-    searchKey?: string,
-    excludeSelf?: boolean,
-    arrangeIds?: number[],
-    fetchAllIfSearchKeyEmpty?: boolean,
-    asIdsOrder?: boolean,
-  ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Person>[];
-  } | null> {
-    return await this.getPersonController().doFuzzySearchPersons(
-      searchKey,
-      excludeSelf,
-      arrangeIds,
-      fetchAllIfSearchKeyEmpty,
-      asIdsOrder,
-    );
-  }
-
   getName(person: Person) {
     return this.getPersonController().getName(person);
+  }
+
+  isValidPerson(person: Person) {
+    return this.getPersonController().isValid(person);
   }
 
   getEmailAsName(person: Person) {

@@ -19,6 +19,7 @@ import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../foundation/theme/theme';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 const rippleEnter = (theme: Theme) => keyframes`
   from {
     transform: scale(0);
@@ -45,7 +46,6 @@ const StyledJuiIconography = styled(JuiIconography)``;
 const StyledListItem = styled(MuiListItem)`
   && {
     padding: ${spacing(2, 4, 2, 3)};
-    background: white;
     color: ${grey('900')};
     height: ${height(11)};
     line-height: ${height(11)};
@@ -58,14 +58,14 @@ const StyledListItem = styled(MuiListItem)`
   }
 
   &&:hover {
-    background-color: ${grey('50')};
+    background-color: ${({ theme }) =>
+      fade(palette('grey', '700')({ theme }), theme.opacity.p05)};
   }
 
   &&.selected {
-    background: white;
-
     &&:hover {
-      background-color: ${grey('50')};
+      background-color: ${({ theme }) =>
+        fade(palette('grey', '700')({ theme }), theme.opacity.p10)};
     }
 
     p {
@@ -146,12 +146,14 @@ const JuiConversationListSectionHeader = memo(
         onClick={onClick}
         {...rest}
       >
-        <StyledJuiIconographyLeft>{icon}</StyledJuiIconographyLeft>
+        <StyledJuiIconographyLeft iconSize="medium">
+          {icon}
+        </StyledJuiIconographyLeft>
         <ItemText disableTooltip={true}>{title}</ItemText>
         <StyledRightWrapper>
           {!expanded ? umi : null}
           {!hideArrow ? (
-            <StyledJuiIconography onClick={onArrowClick}>
+            <StyledJuiIconography iconSize="medium" onClick={onArrowClick}>
               {arrow}
             </StyledJuiIconography>
           ) : null}

@@ -57,7 +57,7 @@ const Back = () => (
     variant="plain"
     color="common.white"
   >
-    pervious
+    previous
   </JuiIconButton>
 );
 

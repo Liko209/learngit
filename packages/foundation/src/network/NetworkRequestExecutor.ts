@@ -21,8 +21,9 @@ import {
   HTTP_STATUS_CODE,
   SURVIVAL_MODE,
   IRequestDecoration,
+  NETWORK_HANDLE_TYPE,
 } from './network';
-
+import { SERVER_ERROR_CODE } from './Constants';
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
@@ -171,7 +172,8 @@ export class NetworkRequestExecutor
   private _handle401XApiCompletionCallback(response: IResponse) {
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
     this._removeAuthorization();
-    this.responseListener.onAccessTokenInvalid(this.handlerType);
+    this.responseListener &&
+      this.responseListener.onAccessTokenInvalid(this.handlerType);
   }
 
   private _removeAuthorization() {
@@ -180,14 +182,41 @@ export class NetworkRequestExecutor
   }
 
   private _handle502XApiCompletionCallback(response: IResponse) {
-    this.responseListener.onSurvivalModeDetected(SURVIVAL_MODE.OFFLINE, 0);
+    this.responseListener &&
+      this.responseListener.onSurvivalModeDetected(SURVIVAL_MODE.OFFLINE, 0);
   }
 
   private _handle503XApiCompletionCallback(response: IResponse) {
-    const { retryAfter } = response;
-    this.responseListener.onSurvivalModeDetected(
-      SURVIVAL_MODE.SURVIVAL,
-      retryAfter,
-    );
+    if (response.request.handlerType.name !== NETWORK_HANDLE_TYPE.RINGCENTRAL) {
+      return;
+    }
+    if (response.data && this._isCMN211Error(response.data)) {
+      this.responseListener &&
+        this.responseListener.onSurvivalModeDetected(
+          SURVIVAL_MODE.SURVIVAL,
+          response.retryAfter,
+        );
+    }
+  }
+
+  private _isCMN211Error(data: any) {
+    return this._isServerErrorCodeMatched(data, SERVER_ERROR_CODE.CMN211);
+  }
+
+  private _isServerErrorCodeMatched(data: any, errorCode: string): boolean {
+    if (data.hasOwnProperty('errorCode') && data.errorCode === errorCode) {
+      return true;
+    }
+    if (data.hasOwnProperty('errors')) {
+      const errors = data.errors;
+      if (Array.isArray(errors)) {
+        return errors.some((error: any) => {
+          return (
+            error.hasOwnProperty('errorCode') && error.errorCode === errorCode
+          );
+        });
+      }
+    }
+    return false;
   }
 }

@@ -25,8 +25,8 @@ jest.mock('../../../../api/glip/post');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../PostDataController');
 
-const postDao = new PostDao(null);
-const itemDao = new ItemDao(null);
+const postDao = new PostDao(null as any);
+const itemDao = new ItemDao(null as any);
 
 const entitySourceController = new EntitySourceController<Post>(null, null);
 const itemService = new ItemService();

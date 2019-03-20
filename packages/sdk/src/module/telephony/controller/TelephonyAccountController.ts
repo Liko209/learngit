@@ -28,7 +28,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   makeCall(toNumber: string, delegate: ITelephonyCallDelegate) {
     this._callController = new TelephonyCallController(delegate);
-    this._rtcAccount.makeCall(toNumber, this._callController);
+    return this._rtcAccount.makeCall(toNumber, this._callController);
   }
 
   hangUp(callId: string) {
@@ -42,6 +42,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   onMadeOutgoingCall(call: RTCCall) {
     this._callController.setRtcCall(call);
+    this._delegate.onMadeOutgoingCall(call.getCallInfo().uuid);
   }
 
   onReceiveIncomingCall(call: RTCCall) {}
@@ -52,6 +53,9 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   onReceiveNewProvFlags(sipFlags: RTCSipFlags) {}
 
+  logout() {
+    this._rtcAccount.logout();
+  }
 }
 
 export { TelephonyAccountController };

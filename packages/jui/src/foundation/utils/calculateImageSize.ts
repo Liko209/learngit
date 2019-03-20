@@ -3,6 +3,7 @@
  * @Date: 2019-01-14 09:57:24
  * Copyright © RingCentral. All rights reserved.
  */
+import moize from 'moize';
 
 const MIN_HEIGHT = 72;
 const MIN_WIDTH = 180;
@@ -11,6 +12,8 @@ const MAX_WIDTHHEIGHT = 360;
 type ThumbnailInfo = {
   width: number;
   height: number;
+  imageWidth: number;
+  imageHeight: number;
   top: number;
   left: number;
   justifyWidth: boolean;
@@ -113,10 +116,15 @@ const case6: CaseTye = {
 
 const StrategyMap: CaseTye[] = [case1, case2, case3, case4, case5, case6];
 
-function getThumbnailSize(width: number, height: number): ThumbnailInfo {
+function getThumbnailSizeInternal(
+  width: number,
+  height: number,
+): ThumbnailInfo {
   const result = {
     width,
     height,
+    imageWidth: width,
+    imageHeight: height,
     top: 0,
     left: 0,
     justifyWidth: false,
@@ -135,10 +143,15 @@ function getThumbnailSize(width: number, height: number): ThumbnailInfo {
   result.height = Math.round(result.height);
   result.left = Math.round(result.left);
   result.top = Math.round(result.top);
+  result.imageWidth = Math.min(result.width + 2 * Math.abs(result.left), width);
+  result.imageHeight = Math.min(
+    result.height + 2 * Math.abs(result.top),
+    height,
+  );
   return result;
 }
 
-function getThumbnailForSquareSize(
+function getThumbnailForSquareSizeInternal(
   width: number,
   height: number,
   size: number,
@@ -146,6 +159,8 @@ function getThumbnailForSquareSize(
   const result = {
     width,
     height,
+    imageWidth: width,
+    imageHeight: height,
     top: 0,
     left: 0,
     justifyWidth: false,
@@ -167,5 +182,8 @@ function getThumbnailForSquareSize(
   }
   return result;
 }
+
+const getThumbnailSize = moize(getThumbnailSizeInternal);
+const getThumbnailForSquareSize = moize(getThumbnailForSquareSizeInternal);
 
 export { getThumbnailSize, ThumbnailInfo, getThumbnailForSquareSize };

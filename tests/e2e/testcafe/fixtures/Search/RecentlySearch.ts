@@ -34,7 +34,7 @@ test(formalName('Open and close the recently searched list', ['JPT-1216', 'P1', 
     await searchBar.nthPeople(0).enter();
     await app.homePage.profileDialog.close();
     await searchBar.clearInputAreaText();
-    await searchBar.quitByPressESC();
+    await searchBar.quitByPressEsc();
   });
 
   for (let i = 0; i < 2; i++) {
@@ -86,7 +86,7 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
     await searchBar.nthPeople(0).enter();
     await app.homePage.profileDialog.close();
     await searchBar.clearInputAreaText();
-    await searchBar.quitByPressESC();
+    await searchBar.quitByPressEsc();
   });
 
   await h(t).withLog(`And mouse in the global search box`, async () => {

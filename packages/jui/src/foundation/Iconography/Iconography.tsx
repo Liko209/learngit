@@ -9,16 +9,23 @@ import styled, { css } from '../../foundation/styled-components';
 import { Palette } from '../theme/theme';
 import { palette, width } from '../../foundation/utils/styles';
 
-type IconColor = [keyof Palette, string];
+export type IconColor = [keyof Palette, string];
 
 const sizes = {
+  extraSmall: 3,
   small: 4,
   medium: 5,
   large: 6,
   extraLarge: 9,
 };
 
-type IconSize = 'small' | 'medium' | 'large' | 'inherit' | 'extraLarge';
+export type IconSize =
+  | 'extraSmall'
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'inherit'
+  | 'extraLarge';
 
 type JuiIconographyProps = {
   iconColor?: IconColor;

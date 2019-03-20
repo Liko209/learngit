@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-02-18 16:59:52 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-01 18:50:28
+ * @Last Modified time: 2019-03-14 17:40:03
  */
 import * as assert from 'assert';
 import * as _ from 'lodash';
@@ -197,7 +197,8 @@ test(formalName('The remove team member permission should sync dynamically', ['J
           uids: [].concat(anotherAdminPersonId)
         }
       }
-    })
+    });
+    await profileDialog.memberEntryById(loginAdminPersonId).showMemberLabel();
   });
 
   for (const i of _.range(members.length)) {
@@ -232,7 +233,8 @@ test(formalName('The remove team member permission should sync dynamically', ['J
           uids: [].concat(anotherAdminPersonId, loginMemberPersonId)
         }
       }
-    })
+    });
+    await profileDialog.memberEntryById(loginMemberPersonId).showAdminLabel();
   });
 
   const toBeRemoveMembers = {
