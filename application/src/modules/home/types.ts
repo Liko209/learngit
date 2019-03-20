@@ -8,7 +8,8 @@ import { ModuleConfig } from 'framework';
 
 type NavConfig = {
   url: string;
-  icon: string;
+  Icon: React.ReactElement;
+  IconSelected: React.ReactElement;
   title: string;
   placement: 'top' | 'bottom';
   umi?: JSX.Element;

@@ -10,7 +10,6 @@ import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import styled from '../../foundation/styled-components';
-import { JuiIconography } from '../../foundation/Iconography';
 import { JuiArrowTip } from '../../components/index';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import {
@@ -161,7 +160,8 @@ type JuiLeftNavProps = {
   expand: boolean;
   icons: {
     url: string;
-    icon: string;
+    Icon: React.ReactElement;
+    IconSelected: React.ReactElement;
     title: string;
     umi?: JSX.Element;
   }[][];
@@ -211,7 +211,7 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
                   onClick={this.onRouteChange(navUrl)}
                 >
                   <MuiListItemIcon className={'nav-icon'}>
-                    <JuiIconography>{item.icon}</JuiIconography>
+                    {selected ? item.IconSelected : item.Icon}
                   </MuiListItemIcon>
                   <StyledListItemText
                     primary={item.title}
