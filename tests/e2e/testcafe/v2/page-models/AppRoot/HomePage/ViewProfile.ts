@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import { BaseWebComponent } from '../../BaseWebComponent';
+import { ClientFunction } from 'testcafe';
 
 
 export class MiniProfile extends BaseWebComponent {
@@ -214,6 +215,26 @@ export class ProfileDialog extends BaseWebComponent {
 
 
   // people only
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button');
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.click(this.telephonyButton);
+  }
+
+  get moreItem() {
+    return this.telephonyButton.parent('div');
+  }
+
+  async makeCall() {
+    await this.t.hover(this.extensionArea).click(this.telephonyButton);
+  }
+
   get formArea() {
     return this.getSelectorByAutomationId('profileDialogForm');
   }
@@ -230,8 +251,12 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByIcon('call', this.formArea);
   }
 
-  get extension() {
-    return this.extensionIcon.parent(0).find('div').withText('Ext').nextSibling('div').textContent;
+  get extensionArea() {
+    return this.extensionIcon.parent(1); //TODO: automation ID
+  }
+
+  get extensionNumber() {
+    return this.extensionIcon.parent(0).find('div').withText('Ext').nextSibling('div');
   }
 
   get emailIcon() {
@@ -286,7 +311,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get addMembersIcon() {
-    return this.getSelectorByIcon('add_team',this.memberHeader);
+    return this.getSelectorByIcon('add_team', this.memberHeader);
   }
 
   async clickAddMembersIcon() {
@@ -459,7 +484,7 @@ class MemberMoreMenu extends BaseWebComponent {
   async clickRevokeTeamAdmin() {
     await this.t.click(this.revokeTeamAdminItem);
   }
-  
+
   async quit() {
     await this.t.pressKey('esc');
   }
