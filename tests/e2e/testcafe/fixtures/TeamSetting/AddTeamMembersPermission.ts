@@ -100,7 +100,8 @@ test(formalName(`Only admin and member have add members permission when add team
 });
 
 // TODO: Guest user
-test(formalName(`Only admin has add member permission when add team members toggle is off`, ['P1', 'JPT-949', 'AddTeamMembersPermission', 'Potar.He']), async t => {
+// skip due to https://jira.ringcentral.com/browse/FIJI-4333
+test.skip(formalName(`Only admin has add member permission when add team members toggle is off`, ['P1', 'JPT-949', 'AddTeamMembersPermission', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const memberUser = h(t).rcData.mainCompany.users[4];
   const adminUser = h(t).rcData.mainCompany.users[5];

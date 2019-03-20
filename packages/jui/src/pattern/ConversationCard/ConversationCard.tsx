@@ -12,6 +12,7 @@ import {
   JuiButtonProps,
   JuiButton,
 } from '../../components/Buttons/Button/Button';
+import { createGlobalStyle } from 'styled-components';
 
 type ConversationCardProps = {
   Avatar: React.ReactNode;
@@ -64,34 +65,60 @@ const StyledConversationCard = styled<
     background: ${grey('50')};
   }
   ${({ mode }) => mode === 'navigation' && navigationStyles};
-  animation: ${({ highlight }) => (highlight ? 'highlight' : '')} 3s
-    cubic-bezier(0.575, 0.105, 0.835, 0.295);
-  @keyframes highlight {
-    from {
-      background: ${({ theme }) =>
-        tinycolor(palette('semantic', 'critical')({ theme }))
-          .setAlpha(theme.palette.action.hoverOpacity)
-          .toRgbString()};
-    }
-    to {
-      background: ${palette('common', 'white')};
+  }
+`;
+const highlightBg = ({ theme }: any) =>
+  tinycolor(palette('semantic', 'critical')({ theme }))
+    .setAlpha(theme.palette.action.hoverOpacity)
+    .toRgbString();
+const HighlightStyle = createGlobalStyle<{}>`
+  .highlight {
+    animation: highlight 3s cubic-bezier(0.575, 0.105, 0.835, 0.295);
+    @keyframes highlight {
+      from {
+        background: ${highlightBg};
+      }
+      to {
+        background: ${palette('common', 'white')};
+      }
     }
   }
 `;
 
-const JuiConversationCard = React.memo(
-  ({ children, Avatar, mode, ...rest }: ConversationCardProps) => (
-    <StyledConversationCard mode={mode} {...rest}>
-      {mode === 'navigation' ? (
-        <StyledNavigationButton variant="round">
-          Jump to conversation
-        </StyledNavigationButton>
-      ) : null}
-      <JuiConversationCardAvatarArea>{Avatar}</JuiConversationCardAvatarArea>
-      <StyledRightSection>{children}</StyledRightSection>
-    </StyledConversationCard>
-  ),
-);
+class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
+  state = {
+    highlight: false,
+  };
+
+  highlight = () => {
+    this.setState({ highlight: true });
+  }
+  removeHighlight = () => {
+    this.setState({ highlight: false });
+  }
+
+  render() {
+    const { children, Avatar, mode, ...rest } = this.props;
+    const { highlight } = this.state;
+    return (
+      <StyledConversationCard
+        onAnimationEnd={this.removeHighlight}
+        className={highlight ? 'highlight' : ''}
+        mode={mode}
+        {...rest}
+      >
+        {mode === 'navigation' ? (
+          <StyledNavigationButton variant="round">
+            Jump to conversation
+          </StyledNavigationButton>
+        ) : null}
+        <JuiConversationCardAvatarArea>{Avatar}</JuiConversationCardAvatarArea>
+        <StyledRightSection>{children}</StyledRightSection>
+        <HighlightStyle />
+      </StyledConversationCard>
+    );
+  }
+}
 
 export { JuiConversationCard };
 export default JuiConversationCard;
