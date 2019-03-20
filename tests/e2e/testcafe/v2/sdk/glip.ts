@@ -190,6 +190,13 @@ export class GlipSdk {
     return ids;
   }
 
+  async getTeamIdByName(teamName: string) {
+    const teams = await this.getTeams().then(res => res.data.teams);
+    if (!teams) return [];
+    const ids = teams.filter(team => team['set_abbreviation'] == teamName).map(team => team['_id']);
+    return ids[0];
+  }
+
   async getCompanyTeamId() {
     const teams = await this.getTeams().then(res => res.data.teams);
     if (!teams) return [];
@@ -210,7 +217,7 @@ export class GlipSdk {
     });
   }
 
-  async removeTeamMembers(groupId: string | number, rcIds: string |string[]) {
+  async removeTeamMembers(groupId: string | number, rcIds: string | string[]) {
     const uri = `api/remove_team_members/${groupId}`;
     const members = [].concat(await this.toPersonId(rcIds))
     const data = {
@@ -221,7 +228,7 @@ export class GlipSdk {
     });
   }
 
-  async addTeamMembers(groupId: string | number, rcIds: string |string[]) {
+  async addTeamMembers(groupId: string | number, rcIds: string | string[]) {
     const uri = `api/add_team_members/${groupId}`;
     const members = [].concat(await this.toPersonId(rcIds))
     const data = {
