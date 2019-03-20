@@ -4,5 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { IImageDownloadedListener, IImageDownloader } from './downloader';
+export {
+  DownloadItemInfo,
+  IImageDownloadedListener,
+  IImageDownloader,
+} from './downloader';
 export { Pal } from './pal';

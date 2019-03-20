@@ -25,6 +25,7 @@ const props: ViewerTitleViewModelProps = {
   setOnItemSwitchCb: jest.fn(),
   switchToPrevious: jest.fn(),
   switchToNext: jest.fn(),
+  stopPreload: jest.fn(),
   hasPrevious: true,
   hasNext: true,
 };

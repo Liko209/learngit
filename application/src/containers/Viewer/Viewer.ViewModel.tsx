@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, observable, action, transaction } from 'mobx';
+import { PreloadController } from '@/containers/Viewer/Preload';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
@@ -52,16 +53,28 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   @observable
   total: number = -1;
 
+  private _preloadController: PreloadController;
+
   constructor(props: ViewerViewProps) {
     super(props);
     const { groupId, type, itemId } = props;
     this.currentItemId = itemId;
     this._itemListDataSource = new ItemListDataSource({ groupId, type });
+    this._preloadController = new PreloadController();
+
     const itemNotificationKey = ItemNotification.getItemNotificationKey(
       ViewerItemTypeIdMap[this.props.type],
       groupId,
     );
     notificationCenter.on(itemNotificationKey, this._onItemDataChange);
+
+    this.reaction(
+      () => ({ itemId: this.currentItemId, ids: this.ids }),
+      async () => {
+        this.doPreload();
+      },
+    );
+
     this.reaction(
       () =>
         getSingleEntity<Profile, ProfileModel>(
@@ -105,6 +118,16 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   init = () => {
     this._itemListDataSource.loadInitialData(this.props.itemId, PAGE_SIZE);
     this._fetchIndexInfo();
+  }
+
+  doPreload = () => {
+    if (this.ids) {
+      this._preloadController.replacePreload(this.ids, this._getItemIndex());
+    }
+  }
+
+  stopPreload = () => {
+    this._preloadController.stop();
   }
 
   dispose() {
