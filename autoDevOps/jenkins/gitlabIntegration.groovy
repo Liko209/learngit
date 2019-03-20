@@ -298,7 +298,6 @@ node(buildNode) {
     try {
         // start to build
         stage ('Collect Facts') {
-            // cleanWs()
             sh 'env'
             sh 'df -h'
             sh 'uptime'
@@ -308,9 +307,12 @@ node(buildNode) {
             sh 'grep --version'
             sh 'which tr'
             sh 'which xargs'
-            // we need this to work around a typescript bug: https://github.com/Microsoft/TypeScript/pull/30078
-            // or else we have to clean whole workspace, which will make git clone much longer
-            sh 'find . -type d -name node_modules | xargs rm -rf || true'
+
+            // clean npm cache when its size exceed 10G, the unit of default du command is K, so we need to right-shift 20 to get G
+            long npmCacheSize = Long.valueOf(sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1').trim()) >> 20
+            if (npmCacheSize > 10) {
+                sh 'npm cache clean --force'
+            }
         }
 
         stage ('Checkout') {
@@ -319,7 +321,6 @@ node(buildNode) {
                 branches: [[name: "${gitlabSourceNamespace}/${gitlabSourceBranch}"]],
                 extensions: [
                     [$class: 'PruneStaleBranch'],
-                    [$class: 'CleanBeforeCheckout'],
                     [
                         $class: 'PreBuildMerge',
                         options: [
@@ -342,6 +343,8 @@ node(buildNode) {
                     ]
                 ]
             ])
+            // keep node_modules to speed up build process
+            sh 'git clean -xdf -e node_modules'
             // get head sha
             headSha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             // change in tests and autoDevOps directory should not trigger application build
