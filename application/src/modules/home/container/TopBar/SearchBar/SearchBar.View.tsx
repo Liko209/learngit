@@ -257,25 +257,27 @@ class SearchBarView extends React.Component<ViewProps & Props> {
           placeholder={i18next.t('home.search')}
           showCloseBtn={!!searchValue}
         />
-        <HotKeys
-          keyMap={{
-            up: onKeyUp,
-            down: onKeyDown,
-            esc: this.onKeyEsc,
-            enter: this.onEnter,
-          }}
-        >
-          {focus && searchValue && (
-            <JuiSearchList data-test-automation-id="search-results">
-              {this.searchResultList}
-            </JuiSearchList>
-          )}
-          {focus && !searchValue && this.searchRecordList && (
-            <JuiSearchList data-test-automation-id="search-records">
-              {this.searchRecordList}
-            </JuiSearchList>
-          )}
-        </HotKeys>
+        {focus && (
+          <HotKeys
+            keyMap={{
+              up: onKeyUp,
+              down: onKeyDown,
+              esc: this.onKeyEsc,
+              enter: this.onEnter,
+            }}
+          >
+            {searchValue && (
+              <JuiSearchList data-test-automation-id="search-results">
+                {this.searchResultList}
+              </JuiSearchList>
+            )}
+            {!searchValue && this.searchRecordList && (
+              <JuiSearchList data-test-automation-id="search-records">
+                {this.searchRecordList}
+              </JuiSearchList>
+            )}
+          </HotKeys>
+        )}
       </JuiSearchBar>
     );
   }
