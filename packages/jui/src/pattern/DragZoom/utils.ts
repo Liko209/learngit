@@ -93,6 +93,6 @@ export function isDraggable(
   containerRect: ElementRect,
 ): boolean {
   return (
-    contentWidth > containerRect.height || contentHeight > containerRect.width
+    contentWidth > containerRect.width || contentHeight > containerRect.height
   );
 }

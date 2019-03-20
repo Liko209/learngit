@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { gitCommitInfo } from './commitInfo';
-import { formatDate } from './LoginVersionStatus';
+import { formatDate } from './helper';
 import styled from 'styled-components';
 
 const Wrapper = styled.div`

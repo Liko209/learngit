@@ -4,10 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PostModel from '@/store/models/Post';
-import {
-  ConversationCardProps,
-  ConversationCardViewProps,
-} from '@/containers/ConversationCard/types';
+import { ConversationCardProps } from '@/containers/ConversationCard/types';
 import moment from 'moment';
 import { computed } from 'mobx';
 import { getEntity, getGlobalValue } from '@/store/utils';
@@ -21,16 +18,10 @@ import PersonModel from '@/store/models/Person';
 import { StoreViewModel } from '@/store/ViewModel';
 import ProgressModel from '@/store/models/Progress';
 
-class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
-  implements ConversationCardViewProps {
+class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   @computed
   get id() {
     return this.props.id;
-  }
-
-  @computed
-  get highlight() {
-    return !!this.props.highlight;
   }
 
   @computed
@@ -97,12 +88,6 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps>
       return dateFormatter.dateAndTime(moment(this.post.createdAt));
     }
     return postTimestamp(createdAt);
-  }
-
-  onAnimationStart = (evt: React.AnimationEvent) => {
-    if (this.highlight && this.props.onHighlightAnimationStart) {
-      this.props.onHighlightAnimationStart(evt);
-    }
   }
 
   @computed

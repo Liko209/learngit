@@ -54,7 +54,6 @@ class DataMigration {
       'config/DB_SCHEMA_VERSION',
       'config/ENV',
       'config/LAST_INDEX_TIMESTAMP',
-      'config/SOCKET_SERVER_HOST',
       'config/STATIC_HTTP_SERVER',
     ];
     const configNewKey = [
@@ -63,7 +62,6 @@ class DataMigration {
       'config.DB_SCHEMA_VERSION',
       'config.ENV',
       'config.LAST_INDEX_TIMESTAMP',
-      'config.SOCKET_SERVER_HOST',
       'config.STATIC_HTTP_SERVER',
     ];
     this._doMigrateKVStorage('global', configOldKey, configNewKey);

@@ -28,6 +28,7 @@ import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './service';
 import { AuthGlobalConfig } from './service/auth/config';
 import { DataMigration, UserConfigService } from './module/config';
+import { AccountGlobalConfig } from './service/account/config';
 
 const AM = AccountManager;
 
@@ -131,6 +132,7 @@ class Sdk {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     await this.daoManager.deleteDatabase();
+    AccountGlobalConfig.clear();
   }
 
   updateNetworkToken() {

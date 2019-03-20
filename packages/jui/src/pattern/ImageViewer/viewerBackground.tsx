@@ -28,9 +28,6 @@ const StyledViewerBackground = styled.div`
   flex-direction: column;
   height: inherit;
   min-height: ${height(160)};
-  > div {
-    overflow: scroll;
-  }
 `;
 
 const StyledTransition = styled(JuiTransition)`

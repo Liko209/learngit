@@ -245,7 +245,8 @@ JPT-225 All unread messages can be downloaded when click the unread button', ['J
     });
   })
 
-test(formalName('Unread button (up) will dismiss when back and open the conversation', ['JPT-234', 'P1', 'Wayne.Zhou', 'Stream']), async (t) => {
+//skip due to https://jira.ringcentral.com/browse/FIJI-4329
+test.skip(formalName('Unread button (up) will dismiss when back and open the conversation', ['JPT-234', 'P1', 'Wayne.Zhou', 'Stream']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];

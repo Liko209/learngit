@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import React, { Component } from 'react';
+import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
@@ -33,6 +33,8 @@ import {
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
+import JuiConversationCard from 'jui/src/pattern/ConversationCard';
+// import { findDOMNode } from 'react-dom';
 
 type Props = WithNamespaces & StreamViewProps & StreamProps;
 
@@ -49,6 +51,7 @@ class StreamViewComponent extends Component<Props> {
   private _globalStore = storeManager.getGlobalStore();
   private _historyViewed = false;
   private _timeout: NodeJS.Timeout | null;
+  private _jumpToPostRef: RefObject<JuiConversationCard> = createRef();
 
   @observable private _jumpToFirstUnreadLoading = false;
 
@@ -110,6 +113,11 @@ class StreamViewComponent extends Component<Props> {
     if (postIds.includes(currentId) && this._listRef.current) {
       const index = this._findStreamItemIndexByPostId(currentId);
       this._listRef.current.scrollToIndex(index);
+      requestAnimationFrame(() => {
+        if (this._jumpToPostRef.current) {
+          this._jumpToPostRef.current.highlight();
+        }
+      });
     } else {
       refresh();
     }
@@ -121,7 +129,9 @@ class StreamViewComponent extends Component<Props> {
       <ConversationPost
         id={postId}
         key={`ConversationPost${streamItem.id}`}
-        highlight={postId === this.props.jumpToPostId}
+        cardRef={
+          postId === this.props.jumpToPostId ? this._jumpToPostRef : undefined
+        }
       />
     );
   }
@@ -352,6 +362,11 @@ class StreamViewComponent extends Component<Props> {
     runInAction(() => {
       this.props.updateHistoryHandler();
       markAsRead();
+    });
+    requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+      }
     });
   }
 

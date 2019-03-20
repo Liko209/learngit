@@ -12,6 +12,7 @@ import { container } from 'framework';
 import { TelephonyStore } from '../store';
 import { TelephonyService } from '../service';
 import { CALL_WINDOW_STATUS } from '../FSM';
+import { JuiZoomInFadeOut } from 'jui/components/Animation';
 
 function copyStyles(sourceDoc: Document, targetDoc: Document) {
   Array.from(sourceDoc.styleSheets).forEach((styleSheet: CSSStyleSheet) => {
@@ -65,6 +66,22 @@ function withDialogOrNewWindow<T>(
       TelephonyService,
     );
 
+    private _createBackdrop = () => {
+      const backdrop = document.createElement('div');
+      backdrop.style.cssText = `
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: fixed;
+        z-index: 999;
+      `;
+
+      return backdrop;
+    }
+
+    private _backdrop = this._createBackdrop();
+
     private _createWindow = () => {
       if (this._window == null || this._window.closed) {
         this._window = window.open(
@@ -88,14 +105,24 @@ function withDialogOrNewWindow<T>(
       }
     }
 
+    private _handleStart = () => {
+      document.body.appendChild(this._backdrop);
+    }
+
+    private _handleStop = () => {
+      document.body.removeChild(this._backdrop);
+    }
+
     componentDidUpdate() {
       setTimeout(() => {
         if (this._dragRef.current) {
           const dragEl = ReactDOM.findDOMNode(this._dragRef.current) as Element;
           this._handleResize = () => {
-            dragEl.dispatchEvent(MOUSE_EVENT.DOWN);
-            dragEl.dispatchEvent(MOUSE_EVENT.MOVE);
-            dragEl.dispatchEvent(MOUSE_EVENT.UP);
+            requestAnimationFrame(() => {
+              dragEl.dispatchEvent(MOUSE_EVENT.DOWN);
+              dragEl.dispatchEvent(MOUSE_EVENT.MOVE);
+              dragEl.dispatchEvent(MOUSE_EVENT.UP);
+            });
           };
           window.addEventListener('resize', this._handleResize);
         } else {
@@ -123,6 +150,9 @@ function withDialogOrNewWindow<T>(
           x={(document.body.clientWidth - 344) / 2}
           y={(document.body.clientHeight - 504) / 2}
           dragRef={this._dragRef}
+          TransitionComponent={JuiZoomInFadeOut}
+          onStart={this._handleStart}
+          onStop={this._handleStop}
         >
           <Component {...this.props} />
         </JuiDraggableDialog>

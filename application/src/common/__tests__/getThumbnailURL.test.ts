@@ -65,6 +65,26 @@ describe('getMaxThumbnailURLInfo', () => {
     expect(info.width).toEqual(360);
     expect(info.height).toEqual(272);
   });
+  it('should get max thumbnail if there has a origin size thumbnail', () => {
+    const model = {
+      storeFileId: 1208836108,
+      origWidth: 666,
+      origHeight: 666,
+      thumbs: {
+        1208836108: 'url-origin',
+        '1208836108size=1000x200': 'url1',
+        '1208836108size=360x272': 'url2',
+        'width-1208836108size=1000x200': 265,
+        'height-1208836108size=1000x200': '200',
+        'width-1208836108size=360x272': 360,
+        'height-1208836108size=360x272': '272',
+      },
+    };
+    const info = getMaxThumbnailURLInfo(model as FileItemModel);
+    expect(info.url).toEqual('url-origin');
+    expect(info.width).toEqual(666);
+    expect(info.height).toEqual(666);
+  });
   it('should get empty url when thumbnail not exist', () => {
     const model = {
       storeFileId: 1208836108,

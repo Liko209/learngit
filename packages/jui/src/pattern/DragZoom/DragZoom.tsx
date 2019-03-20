@@ -22,6 +22,7 @@ import { calculateFitSize, fixBoundary, isDraggable } from './utils';
 type JuiDragZoomProps = {
   zoomInText?: string;
   zoomOutText?: string;
+  zoomResetText?: string;
   zoomRef?: RefObject<JuiZoomComponent>;
   contentRef?: RefObject<any>;
   options?: Partial<JuiDragZoomOptions>;
@@ -260,7 +261,13 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     }
   }
   render() {
-    const { options, zoomInText, zoomOutText, children } = this.props;
+    const {
+      options,
+      zoomInText,
+      zoomOutText,
+      zoomResetText,
+      children,
+    } = this.props;
     const { autoFitContentRect, transform, canDrag } = this.state;
     const { minPixel, maxPixel, step, ...zoomOptions } = ensureOptions(options);
 
@@ -317,6 +324,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
         </JuiZoomComponent>
         <ZoomButtonGroup
           className="zoomGroup"
+          resetMode={transform.scale !== 1}
           centerText={formatScaleText(transform.scale)}
           ZoomOut={
             <JuiIconButton
@@ -342,6 +350,19 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
               }}
             >
               zoom_in
+            </JuiIconButton>
+          }
+          ZoomReset={
+            <JuiIconButton
+              variant="plain"
+              tooltipTitle={zoomResetText}
+              ariaLabel={zoomResetText}
+              disabled={transform.scale + step > maxScale}
+              onClick={() => {
+                this.getZoomRef().current!.reset();
+              }}
+            >
+              reset_zoom
             </JuiIconButton>
           }
         />
