@@ -11,6 +11,8 @@ import { Pal, DownloadItemInfo, IImageDownloadedListener } from 'sdk/pal';
 
 import { mainLogger } from 'sdk';
 import { RULE } from '@/common/generateModifiedImageURL';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils/entities';
 
 class ImageDownloadedListener implements IImageDownloadedListener {
   constructor(private _waiter: any) {}
@@ -60,7 +62,15 @@ class ThumbnailPreloadProcessor implements IProcessor {
     try {
       const itemService = ItemService.getInstance() as ItemService;
       const item = await itemService.getById(this._item.id);
-      if (item && item.id > 0) {
+      if (
+        item &&
+        item.id > 0 &&
+        !item.deactivated &&
+        item.group_ids &&
+        !item.group_ids.includes(
+          getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID),
+        )
+      ) {
         if (!FileItemUtils.isSupportPreview(item)) {
           return true;
         }
