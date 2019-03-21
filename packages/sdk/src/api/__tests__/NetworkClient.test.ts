@@ -40,6 +40,7 @@ const setup = () => {
       setAuthfree: jest.fn().mockReturnThis(),
       setRequestConfig: jest.fn().mockReturnThis(),
       setRetryCount: jest.fn().mockReturnThis(),
+      setPriority: jest.fn().mockReturnThis(),
       setHAPriority: jest.fn().mockReturnThis(),
       setVia: jest.fn().mockReturnThis(),
       setTimeout: jest.fn().mockReturnThis(),
@@ -192,7 +193,7 @@ describe('NetworkClient', () => {
       const mockRequest1: any = { path: '1' };
       const mockRequest2: any = { path: '2' };
       NetworkRequestBuilder.mockReset();
-      const times = 0;
+      let times = 0;
       NetworkRequestBuilder.mockImplementation(() => {
         return {
           setNetworkManager: jest.fn().mockReturnThis(),
@@ -206,12 +207,13 @@ describe('NetworkClient', () => {
           setAuthfree: jest.fn().mockReturnThis(),
           setRequestConfig: jest.fn().mockReturnThis(),
           setRetryCount: jest.fn().mockReturnThis(),
+          setPriority: jest.fn().mockReturnThis(),
           setTimeout: jest.fn().mockReturnThis(),
           setHAPriority: jest.fn().mockReturnThis(),
           setVia: jest.fn().mockReturnThis(),
           build: jest.fn().mockImplementation(() => {
             if (times === 0) {
-              ++times;
+              times = times + 1;
               return mockRequest1;
             }
             return mockRequest2;
@@ -221,7 +223,6 @@ describe('NetworkClient', () => {
 
       const promise1 = rcNetworkClient.request(getRequest);
       const promise2 = rcNetworkClient.request(getRequest);
-
       mockRequest1.callback({ status: 200, data: { a: 1 } });
 
       const response1 = await promise1;

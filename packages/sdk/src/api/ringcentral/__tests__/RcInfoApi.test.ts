@@ -5,7 +5,7 @@
  */
 
 import { RcInfoApi } from '../RcInfoApi';
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA, HA_PRIORITY } from 'foundation';
 
 jest.mock('../../api');
 
@@ -18,6 +18,7 @@ describe('RcInfoApi', () => {
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
       });
     });
   });
@@ -42,6 +43,7 @@ describe('RcInfoApi', () => {
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
       });
     });
   });
@@ -54,6 +56,7 @@ describe('RcInfoApi', () => {
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
       });
     });
   });
@@ -66,6 +69,7 @@ describe('RcInfoApi', () => {
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
       });
     });
   });
