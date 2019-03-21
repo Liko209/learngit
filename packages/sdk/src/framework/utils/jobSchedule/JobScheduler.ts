@@ -53,7 +53,8 @@ class JobScheduler {
   scheduleDailyPeriodicJob(
     key: JOB_KEY,
     executeFunc: (callback: (successful: boolean) => void) => any,
-    needNetwork: boolean = true,
+    needNetwork: boolean,
+    ignoreFirstTime: boolean,
   ) {
     const info: JobInfo = {
       key,
@@ -63,10 +64,14 @@ class JobScheduler {
       periodic: true,
       retryTime: 0,
     };
-    this.scheduleJob(info);
+    if (ignoreFirstTime) {
+      this.scheduleAndIgnoreFirstTime(info);
+    } else {
+      this.scheduleJob(info);
+    }
   }
 
-  scheduleJob(info: JobInfo, force: boolean = false): void {
+  preSchedule(info: JobInfo): void {
     if (this._jobMap.has(info.key)) {
       mainLogger.warn(
         `JobScheduler: already has job: ${info.key},
@@ -77,6 +82,10 @@ class JobScheduler {
     info.isDropt = false;
     info.isExecuting = false;
     this._jobMap.set(info.key, info);
+  }
+
+  scheduleJob(info: JobInfo, force: boolean = false): void {
+    this.preSchedule(info);
 
     if (force) {
       this._execute(info);
@@ -95,6 +104,14 @@ class JobScheduler {
       info,
       interval > 0 ? interval : info.intervalSeconds * 1000,
     );
+  }
+
+  scheduleAndIgnoreFirstTime(info: JobInfo): void {
+    this.preSchedule(info);
+    if (info.periodic) {
+      this._setLastSuccessTime(info.key, Date.now());
+    }
+    info.jobId = this._setTimer(info, info.intervalSeconds * 1000);
   }
 
   cancelJob(key: JOB_KEY, removeLastTime: boolean = false): void {

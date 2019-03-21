@@ -96,15 +96,21 @@ class SyncController {
 
   private async _firstLogin() {
     progressBar.start();
+    const currentTime = Date.now();
     try {
-      const currentTime = Date.now();
       await this._fetchInitial(currentTime);
-      await this._fetchRemaining(currentTime);
-      mainLogger.info('fetch initial data or remaining data success');
+      mainLogger.info('fetch initial data success');
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
     } catch (e) {
-      mainLogger.error('fetch initial data or remaining data error');
+      mainLogger.error('fetch initial data error');
       // actually, should only do sign out when initial failed
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+    }
+    try {
+      await this._fetchRemaining(currentTime);
+      mainLogger.info('fetch remaining data success');
+    } catch (e) {
+      mainLogger.error('fetch remaining data error');
     }
     progressBar.stop();
   }
@@ -114,7 +120,6 @@ class SyncController {
     const initialResult = await this.fetchInitialData(time);
     onInitialLoaded && (await onInitialLoaded(initialResult));
     await this._handleIncomingData(initialResult, SYNC_SOURCE.INITIAL);
-    notificationCenter.emitKVChange(SERVICE.FETCH_INITIAL_DONE);
     onInitialHandled && (await onInitialHandled());
     mainLogger.log('fetch initial data and handle success');
   }
@@ -257,7 +262,10 @@ class SyncController {
       PresenceService.getInstance<PresenceService>().presenceHandleData(
         presences,
       ),
-      (StateService.getInstance() as StateService).handleState(arrState, source),
+      (StateService.getInstance() as StateService).handleState(
+        arrState,
+        source,
+      ),
     ])
       .then(() =>
         ProfileService.getInstance<ProfileService>().handleIncomingData(
