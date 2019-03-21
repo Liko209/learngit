@@ -12,6 +12,7 @@ import {
   NETWORK_METHOD,
   OAuthTokenManager,
   IRequest,
+  DEFAULT_TIMEOUT_INTERVAL,
 } from 'foundation';
 import NetworkClient from '../NetworkClient';
 import { HandleByRingCentral } from '../handlers';
@@ -41,6 +42,7 @@ const setup = () => {
       setRetryCount: jest.fn().mockReturnThis(),
       setHAPriority: jest.fn().mockReturnThis(),
       setVia: jest.fn().mockReturnThis(),
+      setTimeout: jest.fn().mockReturnThis(),
       build: jest.fn().mockImplementation(() => mockRequest),
     };
   });
@@ -68,6 +70,7 @@ const setup = () => {
     },
     method: NETWORK_METHOD.POST,
     authFree: true,
+    timeout: DEFAULT_TIMEOUT_INTERVAL,
     requestConfig: {},
   };
   const getRequest = {
@@ -171,7 +174,7 @@ describe('NetworkClient', () => {
     it('networkManager addApiRequest should be called with request', () => {
       const { postRequest, rcNetworkClient } = setup();
       rcNetworkClient.request(postRequest);
-      expect(networkManager.addApiRequest).toBeCalled();
+      expect(networkManager.addApiRequest).toHaveBeenCalled();
     });
 
     it('request() should call return Promise', () => {
@@ -203,6 +206,7 @@ describe('NetworkClient', () => {
           setAuthfree: jest.fn().mockReturnThis(),
           setRequestConfig: jest.fn().mockReturnThis(),
           setRetryCount: jest.fn().mockReturnThis(),
+          setTimeout: jest.fn().mockReturnThis(),
           setHAPriority: jest.fn().mockReturnThis(),
           setVia: jest.fn().mockReturnThis(),
           build: jest.fn().mockImplementation(() => {
