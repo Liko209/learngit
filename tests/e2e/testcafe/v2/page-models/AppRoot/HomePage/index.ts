@@ -16,6 +16,7 @@ import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
 import { AlertDialog } from "./AlertDialog";
 import { IUser } from '../../../models';
+import { TelephonyDialog } from './TelephonyDialog';
 import { FileAndImagePreviewer } from './ImagePreviewer';
 import { ViewerDialog } from './ViewerDialog';
 
@@ -128,6 +129,10 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(AlertDialog);
   }
 
+  get telephonyDialog() {
+    return this.getComponent(TelephonyDialog);
+  }
+  
   get fileAndImagePreviewer() {
     return this.getComponent(FileAndImagePreviewer);
   }

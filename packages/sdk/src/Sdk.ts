@@ -102,10 +102,6 @@ class Sdk {
   async onAuthSuccess() {
     this.updateNetworkToken();
 
-    if (this.syncService.getIndexTimestamp()) {
-      return;
-    }
-
     await this.syncService.syncData({
       /**
        * LifeCycle when first login
