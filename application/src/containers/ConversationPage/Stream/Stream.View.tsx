@@ -220,26 +220,29 @@ class StreamViewComponent extends Component<Props> {
       this._jumpToFirstUnreadLoading = true;
     },                         LOADING_DELAY);
 
-    const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
-    clearTimeout(this._timeout);
-    this._timeout = null;
-    this._jumpToFirstUnreadLoading = false;
-    const index = firstUnreadPostId
-      ? this.props.items.findIndex(
-          (item: StreamItemPost) =>
-            item.type === StreamItemType.POST &&
-            item.value.includes(firstUnreadPostId),
-        )
-      : 0;
+    try {
+      const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
+      const index = firstUnreadPostId
+        ? this.props.items.findIndex(
+            (item: StreamItemPost) =>
+              item.type === StreamItemType.POST &&
+              item.value.includes(firstUnreadPostId),
+          )
+        : 0;
 
-    if (index === -1) {
-      console.warn(
-        `scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} scrollToPostId:${index}`,
-      );
-      return;
+      if (index === -1) {
+        console.warn(
+          `scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} scrollToPostId:${index}`,
+        );
+        return;
+      }
+      this._listRef.current && this._listRef.current.scrollToIndex(index);
+      this.handleFirstUnreadViewed();
+    } finally {
+      clearTimeout(this._timeout);
+      this._timeout = null;
+      this._jumpToFirstUnreadLoading = false;
     }
-    this._listRef.current && this._listRef.current.scrollToIndex(index);
-    this.handleFirstUnreadViewed();
   }
 
   private _handleVisibilityChanged = ({
