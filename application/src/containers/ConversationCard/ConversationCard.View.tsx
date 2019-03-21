@@ -40,7 +40,7 @@ export class ConversationCard extends React.Component<
     }
   }
 
-  handleMouseEnter = () => {
+  handleMouseOver = () => {
     this.setState({
       isHover: true,
     });
@@ -112,7 +112,7 @@ export class ConversationCard extends React.Component<
         data-name="conversation-card"
         data-id={id}
         Avatar={avatar}
-        onMouseEnter={this.handleMouseEnter}
+        onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseLeave}
         mode={mode}
         onClick={onClickHandler}
