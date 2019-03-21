@@ -10,6 +10,7 @@ import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 type BaseGoToConversationParams = {
   conversationId: number;
   jumpToPostId?: number;
+  replaceHistory?: boolean;
 };
 
 type GoToConversationParams = {
@@ -67,7 +68,11 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
     }
     clearTimeout(timer);
     (beforeJump || hasBeforeJumpFun) && (await beforeJumpFun(conversationId));
-    goToConversation({ conversationId, jumpToPostId });
+    await goToConversation({
+      conversationId,
+      jumpToPostId,
+      replaceHistory: true,
+    });
     return true;
   } catch (err) {
     if (beforeJump) {
@@ -86,8 +91,18 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
 function goToConversation({
   conversationId,
   jumpToPostId,
+  replaceHistory,
 }: BaseGoToConversationParams) {
-  return history.push(`/messages/${conversationId}`, { jumpToPostId });
+  const args: [string, any?] = [`/messages/${conversationId}`];
+  if (jumpToPostId) {
+    args.push({ jumpToPostId });
+  }
+
+  if (replaceHistory) {
+    history.replace(...args);
+  } else {
+    history.push(...args);
+  }
 }
 
 export {
