@@ -30,13 +30,11 @@ test(formalName('Call another extension', ['P0', 'MakeCall']), async (t) => {
   await h(t).withLog(`When I enter extension and click dial button`, async () => {
     await telephonyPOCPage.typeExtension(`${callee.company.number.replace('+','')}#${callee.extension}`);
     const session = await h(t).webphone(callee);
-    await t.wait(5e3);
     await session.preOperate("answerCall", true);
-    await t.wait(5e3);
     await telephonyPOCPage.clickDial();
-    await t.wait(5e3);
+    await t.wait(10e3);
     await telephonyPOCPage.clickEnd();
-    await t.wait(5e3);
+    await t.wait(10e3);
     await session.close();
   });
 

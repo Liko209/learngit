@@ -26,9 +26,8 @@ test(formalName('Called by another extension from webphone', ['P0', 'MakeCall'])
 
   await h(t).withLog(`When I call this extension`, async () => {
     const session = await h(t).webphone(callee);
-    await t.wait(5e3);
     await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
-    await t.wait(30e3);
+    await t.wait(10e3);
     await session.close();
   });
 
