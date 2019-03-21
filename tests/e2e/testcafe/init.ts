@@ -44,7 +44,7 @@ let _runId = getRunIdFromFile();
 function formalMetadata(env: any) {
   const mappingTable = {
     'JOB_NAME': 'Tests/Jenkins/Job',
-    'JENKINS_URL': 'Tests/Jenkins/URL',
+    'JOB_URL': 'Tests/Jenkins/URL',
     'BUILD_ID': 'Tests/Jenkins/Build',
   }
   const metadata = {};
