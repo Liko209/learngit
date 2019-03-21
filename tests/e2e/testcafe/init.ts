@@ -41,6 +41,22 @@ const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHB
 // _runId is a share state
 let _runId = getRunIdFromFile();
 
+function formalMetadata(env: any) {
+  const mappingTable = {
+    'JOB_NAME': 'Tests/Jenkins/Job',
+    'JENKINS_URL': 'Tests/Jenkins/URL',
+    'BUILD_ID': 'Tests/Jenkins/Build',
+  }
+  const metadata = {};
+  for (const k in mappingTable) {
+    const v = env[k];
+    if (v) {
+      metadata[mappingTable[k]] = v;
+    }
+  }
+  return metadata;
+}
+
 function getRunIdFromFile(runIdFile: string = './runId') {
   if (fs.existsSync(runIdFile)) {
     const content = fs.readFileSync(runIdFile, 'utf8');
@@ -52,7 +68,7 @@ function getRunIdFromFile(runIdFile: string = './runId') {
 export async function getOrCreateRunId(runIdFile: string = './runId') {
   if (!_runId) {
     const runName = RUN_NAME;
-    const metadata = {};
+    const metadata = formalMetadata(process.env);
     for (const key in ENV_OPTS) {
       metadata[key] = JSON.stringify(ENV_OPTS[key]);
     }
