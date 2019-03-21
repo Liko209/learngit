@@ -8,6 +8,9 @@ import { CompanyController } from '../CompanyController';
 import { transform } from '../../../../service/utils';
 import notificationCenter from '../../../../service/notificationCenter';
 import { rawCompanyFactory } from '../../../../__tests__/factories';
+import { SYNC_SOURCE } from '../../../../module/sync/types';
+
+jest.mock('../../../../framework/controller/impl/EntitySourceController');
 
 jest.mock('../../../../service/utils', () => ({
   transform: jest.fn(),
@@ -36,7 +39,7 @@ describe('CompanyController', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
 
-    companyController = new CompanyController(null);
+    companyController = new CompanyController(entitySourceController);
     Object.assign(companyController, {
       entitySourceController,
     });
@@ -82,19 +85,35 @@ describe('CompanyController', () => {
 
   describe('Company Service handleData', () => {
     it('handleData for an empty array', async () => {
-      await companyController.handleCompanyData([]);
+      await companyController.handleCompanyData([], SYNC_SOURCE.INITIAL);
       expect(transform).toHaveBeenCalledTimes(0);
       expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalled();
       expect(entitySourceController.bulkUpdate).not.toHaveBeenCalled();
     });
 
-    it('handleData for an normal array', async () => {
-      await companyController.handleCompanyData([
-        rawCompanyFactory.build({ _id: 1 }),
-        rawCompanyFactory.build({ _id: 2 }),
-      ]);
+    it('should emit notification when handleData from index', async () => {
+      await companyController.handleCompanyData(
+        [
+          rawCompanyFactory.build({ _id: 1 }),
+          rawCompanyFactory.build({ _id: 2 }),
+        ],
+        SYNC_SOURCE.INDEX,
+      );
       expect(transform).toHaveBeenCalledTimes(2);
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
+      expect(entitySourceController.bulkUpdate).toHaveBeenCalled();
+    });
+
+    it('should not emit notification when handleData from remaining', async () => {
+      await companyController.handleCompanyData(
+        [
+          rawCompanyFactory.build({ _id: 1 }),
+          rawCompanyFactory.build({ _id: 2 }),
+        ],
+        SYNC_SOURCE.REMAINING,
+      );
+      expect(transform).toHaveBeenCalledTimes(2);
+      expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalled();
       expect(entitySourceController.bulkUpdate).toHaveBeenCalled();
     });
   });
