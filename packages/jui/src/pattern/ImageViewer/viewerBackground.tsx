@@ -32,6 +32,7 @@ const StyledViewerBackground = styled.div`
 
 const StyledTransition = styled(JuiTransition)`
   height: 100%;
+  pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
 `;
 
 const JuiViewerBackground = ({
