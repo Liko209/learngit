@@ -193,12 +193,12 @@ function formatSeconds(seconds: number) {
   let secondTime = seconds;
   let minuteTime = 0;
   let hourTime = 0;
-  if (secondTime > 60) {
+  if (secondTime >= 60) {
     // @ts-ignore
     minuteTime = parseInt(secondTime / 60, 10);
     // @ts-ignore
     secondTime = parseInt(secondTime % 60, 10);
-    if (minuteTime > 60) {
+    if (minuteTime >= 60) {
       // @ts-ignore
       hourTime = parseInt(minuteTime / 60, 10);
       // @ts-ignore
