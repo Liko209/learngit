@@ -89,19 +89,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     return renderedRange;
   };
 
-  const fixIndexWhenChildrenChanged = (
-    renderedRange: IndexRange,
+  const computeRangeOffset = (
     prevChildrenCount: number | null,
     prevStartIndex: number | null,
     prevStartChild: JSX.Element | null,
   ) => {
-    const {
-      startIndex: unfixedStartIndex,
-      stopIndex: unfixedStopIndex,
-    } = renderedRange;
-    let startIndex: number = unfixedStartIndex;
-    let stopIndex: number = unfixedStopIndex;
-
+    let result = 0;
     if (
       prevChildrenCount !== null &&
       prevStartIndex !== null &&
@@ -109,24 +102,45 @@ const JuiVirtualizedList: RefForwardingComponent<
       prevChildrenCount !== children.length
     ) {
       const _prevStartChild = prevStartChild;
-      const offset =
+      result =
         children.findIndex(
           (child: JSX.Element) => child.key === _prevStartChild.key,
         ) - prevStartIndex;
+    }
+    return result;
+  };
 
-      if (offset !== 0) {
-        startIndex += offset;
-        stopIndex += offset;
-        // TODO avoid change state this way
-        renderedRange.startIndex = startIndex;
-        renderedRange.stopIndex = stopIndex;
-        scrollPosition.index = Math.max(scrollPosition.index + offset, 0);
-        scrollEffectTriggerRef.current++; // Trigger scroll after render
-      }
+  const fixIndexWhenChildrenChanged = (
+    renderedRange: IndexRange,
+    prevChildrenCount: number | null,
+    prevStartIndex: number | null,
+    prevStartChild: JSX.Element | null,
+  ) => {
+    let { startIndex, stopIndex } = renderedRange;
+
+    const rangeOffset = computeRangeOffset(
+      prevChildrenCount,
+      prevStartIndex,
+      prevStartChild,
+    );
+
+    if (rangeOffset !== 0) {
+      startIndex += rangeOffset;
+      stopIndex += rangeOffset;
+      // TODO avoid change state this way
+      renderedRange.startIndex = startIndex;
+      renderedRange.stopIndex = stopIndex;
+      scrollPosition.index = Math.max(
+        scrollPosition.index + rangeOffset,
+        minIndex,
+      );
+      scrollEffectTriggerRef.current++; // Trigger scroll after render
     }
 
     return { startIndex, stopIndex };
   };
+
+  const isRowRendered = (index: number) => rowManager.hasRowHeight(index);
 
   const scrollToPosition = ({
     index,
@@ -191,12 +205,16 @@ const JuiVirtualizedList: RefForwardingComponent<
         (prevScrollIndex === visibleStartIndex && prevScrollOffset !== offset);
 
       if (isUserScrolling) {
-        if (rowManager.hasRowHeight(visibleRange.startIndex)) {
-          // If we know the real height of this row
-          // Remember current scroll position
+        if (isRowRendered(visibleRange.startIndex)) {
           rememberScrollPosition({
             offset,
             index: visibleRange.startIndex,
+          });
+        } else {
+          rememberScrollPosition({
+            offset:
+              scrollTop - rowManager.getRowOffsetTop(scrollPosition.index),
+            index: scrollPosition.index,
           });
         }
 
@@ -204,6 +222,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
         // TODO Don't re-render if range not changed
         setRenderedRange(newRenderedRange);
+        prevAtBottomRef.current = computeAtBottom();
 
         // Emit events
         if (!isRangeEqual(renderedRange, newRenderedRange)) {
@@ -301,7 +320,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     const handleRowSizeChange = (el: HTMLElement, i: number) => {
       const { diff } = rowManager.setRowHeight(startIndex + i, el.offsetHeight);
 
-      if (shouldScrollToBottom()) {
+      if (computeAtBottom()) {
         scrollToBottom();
       } else {
         const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
@@ -324,10 +343,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     rowElements.forEach(handleRowSizeChange);
     const observers = rowElements.map(observeDynamicRow);
     return () => observers.forEach((ro: ResizeObserver) => ro.disconnect());
-  },              [
-    keyMapper(startIndex),
-    keyMapper(Math.min(stopIndex, childrenCount - 1)),
-  ]);
+  },              [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
 
   //
   // Scroll to last remembered position,
@@ -342,13 +358,9 @@ const JuiVirtualizedList: RefForwardingComponent<
   },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
-  // Ensure there are not empty space in the list
-  //
-  useLayoutEffect(() => {
-    ensureVisibleRangeIsRendered();
-  });
-
   // scrollable <--> unScrollable
+  // TODO Emit event instead of modify style directly in VirtualizedList
+  //
   useEffect(() => {
     const contentHeight = rowManager.getRowsHeight(0, childrenCount - 1);
     const scrollable = height < contentHeight;
