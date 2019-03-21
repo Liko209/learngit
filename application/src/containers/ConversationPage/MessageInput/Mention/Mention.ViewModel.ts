@@ -15,6 +15,8 @@ import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
 import { INIT_CURRENT_INDEX } from './constants';
+import { CONVERSATION_TYPES } from '@/constants';
+
 type searchMember = {
   displayName: string;
   id: number;
@@ -37,7 +39,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @observable
   open: boolean = false;
   @observable
-  currentIndex: number = INIT_CURRENT_INDEX;
+  currentIndex: number = 0;
   @observable
   members: searchMember[] = [];
   @observable
@@ -93,7 +95,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   reset() {
     this._canDoFuzzySearch = false;
     this.open = false;
-    this.currentIndex = INIT_CURRENT_INDEX;
+    this.currentIndex = 0;
     this.members = [];
   }
 
@@ -147,7 +149,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     });
     if (res) {
       runInAction(() => {
-        this.currentIndex = INIT_CURRENT_INDEX;
+        this.currentIndex = this.initIndex;
         this.members = res.sortableModels;
       });
     }
@@ -163,11 +165,11 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       const quill: Quill = this.quill;
       const mentionModules = quill.getModule('mention');
       mentionModules.select(
-        vm.members[vm.currentIndex - INIT_CURRENT_INDEX].id,
-        vm.members[vm.currentIndex - INIT_CURRENT_INDEX].displayName,
+        vm.members[vm.currentIndex - vm.initIndex].id,
+        vm.members[vm.currentIndex - vm.initIndex].displayName,
         vm._denotationChar,
       );
-      vm.currentIndex = INIT_CURRENT_INDEX;
+      vm.currentIndex = 0;
       vm.open = false;
       return false;
     };
@@ -200,7 +202,6 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action
   private _upHandler(vm: MentionViewModel) {
     return function () {
-      // because of title will within VL
       const size = vm.members.length + INIT_CURRENT_INDEX;
       const currentIndex = (vm.currentIndex + size - 1) % size;
       vm.currentIndex = currentIndex === 0 ? vm.members.length : currentIndex;
@@ -211,12 +212,22 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action
   private _downHandler(vm: MentionViewModel) {
     return function () {
-      // because of title will within VL
       const size = vm.members.length + INIT_CURRENT_INDEX;
       const currentIndex = (vm.currentIndex + 1) % size;
       vm.currentIndex = currentIndex === 0 ? INIT_CURRENT_INDEX : currentIndex;
       return canTriggerDefaultEventHandler(vm);
     };
+  }
+
+  @computed
+  get initIndex() {
+    // because of title will within VL
+    return this.isOneToOneGroup ? 0 : INIT_CURRENT_INDEX;
+  }
+
+  @computed
+  get isOneToOneGroup() {
+    return this.groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
   }
 
   @computed
