@@ -337,7 +337,7 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
               variant="plain"
               tooltipTitle={zoomResetText}
               ariaLabel={zoomResetText}
-              disabled={transform.scale + step > maxScale}
+              disabled={transform.scale === 1}
               onClick={() => {
                 this.getZoomRef().current!.reset();
               }}
