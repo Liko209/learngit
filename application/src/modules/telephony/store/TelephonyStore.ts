@@ -24,6 +24,8 @@ class TelephonyStore {
   callState: CALL_STATE = CALL_STATE.IDLE;
   @observable
   phoneNumber?: string;
+  @observable
+  activeCallTime?: number;
 
   private _callFSM = new CallFSM();
   private _callWindowFSM = new CallWindowFSM();
@@ -32,6 +34,16 @@ class TelephonyStore {
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
       const { to } = lifecycle;
       this.callState = to as CALL_STATE;
+      switch (this.callState) {
+        case CALL_STATE.CONNECTED:
+          this.activeCallTime = Date.now();
+          break;
+        default:
+          setTimeout(() => {
+            this.activeCallTime = undefined;
+          },         300);
+          break;
+      }
     });
     this._callWindowFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
       const { to } = lifecycle;

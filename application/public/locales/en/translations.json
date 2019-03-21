@@ -40,7 +40,8 @@
 
     "back": "Back",
     "forward": "Forward",
-    "You": "You"
+    "You": "You",
+    "Connecting": "Connecting"
   },
   "auth": {
     "signIn": "Sign in",
