@@ -60,19 +60,6 @@ class RTCRegistrationManager extends EventEmitter2
     this.emit(REGISTRATION_EVENT.LOGOUT_ACTION);
   }
 
-  public onMakeOutgoingCallAction(
-    toNumber: string,
-    delegate: IRTCCallDelegate,
-    options: RTCCallOptions,
-  ) {
-    this.emit(
-      REGISTRATION_EVENT.MAKE_OUTGOING_CALL,
-      toNumber,
-      delegate,
-      options,
-    );
-  }
-
   public onReceiveIncomingInviteAction(callSession: any) {
     this.emit(REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE, callSession);
   }
