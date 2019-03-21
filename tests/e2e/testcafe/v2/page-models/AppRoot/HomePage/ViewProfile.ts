@@ -266,7 +266,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   memberEntryById(id: string) {
-    return this.getComponent(Member, this.memberList.find(`[data-id=${id}]`));
+    return this.getComponent(Member, this.memberList.find(`[data-id="${id}"]`));
   }
 
   memberEntryByName(name: string) {
@@ -274,7 +274,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get addMembersIcon() {
-    return this.getSelectorByIcon('add_team',this.memberHeader);
+    return this.getSelectorByIcon('add_team', this.memberHeader);
   }
 
   async clickAddMembersIcon() {
@@ -282,6 +282,14 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   // team only
+  get adminLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self);
+  }
+
+  get guestLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
+  }
+
   get privateButton() {
     return this.profileTitle.find('.privacy');
   }
@@ -360,17 +368,17 @@ class Member extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
   }
 
-  async showAdminLabel() {
-    await this.t.expect(this.adminLabel.exists).ok();
+  async showAdminLabel(timeout: number = 20e3) {
+    await this.t.expect(this.adminLabel.exists).ok({ timeout });
   }
 
   async showGuestLabel() {
     await this.t.expect(this.guestLabel.exists).ok();
   }
 
-  async showMemberLabel() {
-    await this.t.expect(this.adminLabel.exists).notOk();
-    await this.t.expect(this.guestLabel.exists).notOk();
+  async showMemberLabel(timeout: number = 20e3) {
+    await this.t.expect(this.adminLabel.exists).notOk({ timeout });
+    await this.t.expect(this.guestLabel.exists).notOk({ timeout });
   }
 
   get moreButton() {
@@ -436,7 +444,7 @@ class MemberMoreMenu extends BaseWebComponent {
   async clickRevokeTeamAdmin() {
     await this.t.click(this.revokeTeamAdminItem);
   }
-  
+
   async quit() {
     await this.t.pressKey('esc');
   }

@@ -188,7 +188,7 @@ export default class PersonModel extends Base<Person> {
     ) {
       return handleOneOfName(this.firstName, this.lastName);
     }
-    return '';
+    return handleOnlyLetterOrNumbers(this.email, '');
   }
   @computed
   get hasHeadShot() {

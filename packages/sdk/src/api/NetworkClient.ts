@@ -12,10 +12,12 @@ import {
   NetworkManager,
   NetworkRequestBuilder,
   DEFAULT_TIMEOUT_INTERVAL,
+  HA_PRIORITY,
 } from 'foundation';
 import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
 import { responseParser } from './parser';
+import { HighAvailableAPI } from './HighAvailableAPI';
 
 export interface IQuery {
   via?: NETWORK_VIA;
@@ -167,6 +169,11 @@ export default class NetworkClient {
       retryCount,
       timeout,
     } = query;
+
+    const HAPriority = HighAvailableAPI.includes(path)
+      ? HA_PRIORITY.HIGH
+      : HA_PRIORITY.BASIC;
+
     const versionPath = this.apiPlatformVersion
       ? `/${this.apiPlatformVersion}`
       : '';
@@ -185,6 +192,7 @@ export default class NetworkClient {
       .setTimeout(timeout || DEFAULT_TIMEOUT_INTERVAL)
       .setVia(via)
       .setNetworkManager(this.networkManager)
+      .setHAPriority(HAPriority)
       .build();
   }
 

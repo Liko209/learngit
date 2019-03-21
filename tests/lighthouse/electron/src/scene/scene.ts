@@ -56,6 +56,8 @@ class Scene {
 
         await this.collectData();
 
+        PptrUtils.cleanMock();
+
         const endTime = new Date();
         this.timing = {
           startTime,
@@ -251,6 +253,15 @@ class Scene {
 
   protected finallyUrl(): string {
     return this.url;
+  }
+
+  /**
+   * @description avoid nodeJS out of memory
+   */
+  clearReportCache() {
+    delete this.data;
+    delete this.report;
+    delete this.artifacts;
   }
 
   name(): string {

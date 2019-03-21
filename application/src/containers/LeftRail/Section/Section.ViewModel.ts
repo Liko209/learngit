@@ -22,7 +22,7 @@ import { mainLogger } from 'sdk';
 const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
     title: 'message.favoriteGroups',
-    iconName: 'star_border',
+    iconName: 'star',
     sortable: true,
   },
   [SECTION_TYPE.DIRECT_MESSAGE]: {

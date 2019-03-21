@@ -3,71 +3,141 @@
  * @Date: 2019-02-26 14:40:39
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable } from 'mobx';
+import { computed, observable, action, transaction } from 'mobx';
+import { PreloadController } from '@/containers/Viewer/Preload';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { ITEM_SORT_KEYS, ItemService } from 'sdk/module/item';
+import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
-import { ENTITY, EVENT_TYPES, notificationCenter } from 'sdk/service';
+import { EVENT_TYPES, notificationCenter } from 'sdk/service';
 import {
   NotificationEntityPayload,
   NotificationEntityUpdatePayload,
+  NotificationEntityDeletePayload,
 } from 'sdk/service/notificationCenter';
-
-import { AbstractViewModel } from '@/base';
 
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { ViewerViewProps } from './types';
 import { ItemListDataSource } from './Viewer.DataSource';
+import { mainLogger } from 'sdk';
+import { Group } from 'sdk/module/group';
+import { Profile } from 'sdk/module/profile/entity';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import portalManager from '@/common/PortalManager';
+import GroupModel from '@/store/models/Group';
+import { ENTITY_NAME } from '@/store';
+import { getEntity, getSingleEntity } from '@/store/utils';
+import ProfileModel from '@/store/models/Profile';
+import StoreViewModel from '@/store/ViewModel';
 
-const INIT_PAGE_SIZE = 5;
+const PAGE_SIZE = 20;
 
-class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
+class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   @observable
-  private _currentIndex?: number;
+  isLoadingMore: boolean = false;
   @observable
-  private _currentItemId?: number;
+  currentIndex: number = -1;
+  @observable
+  currentItemId: number;
   private _itemListDataSource: ItemListDataSource;
   private _onCurrentItemDeletedCb: () => void;
+  private _onItemSwitchCb: (
+    itemId: number,
+    index: number,
+    type: 'previous' | 'next',
+  ) => void;
 
   @observable
-  total: number = 0;
+  total: number = -1;
+
+  private _preloadController: PreloadController;
 
   constructor(props: ViewerViewProps) {
     super(props);
     const { groupId, type, itemId } = props;
-    this._currentItemId = itemId;
+    this.currentItemId = itemId;
     this._itemListDataSource = new ItemListDataSource({ groupId, type });
-    notificationCenter.on(ENTITY.ITEM, this._onItemDataChange);
+    this._preloadController = new PreloadController();
+
+    const itemNotificationKey = ItemNotification.getItemNotificationKey(
+      ViewerItemTypeIdMap[this.props.type],
+      groupId,
+    );
+    notificationCenter.on(itemNotificationKey, this._onItemDataChange);
+
+    this.reaction(
+      () => ({ itemId: this.currentItemId, ids: this.ids }),
+      async () => {
+        this.doPreload();
+      },
+    );
+
+    this.reaction(
+      () =>
+        getSingleEntity<Profile, ProfileModel>(
+          ENTITY_NAME.PROFILE,
+          'hiddenGroupIds',
+        ),
+      (hiddenGroupIds: number[]) => {
+        if (hiddenGroupIds.includes(groupId)) {
+          this._onExceptions('viewer.ConversationClosed');
+        }
+      },
+      {
+        equals: (a: number[], b: number[]) =>
+          a.sort().toString() === b.sort().toString(),
+      },
+    );
+    this.reaction(
+      () => this.group.isArchived,
+      (isArchived: boolean) => {
+        if (isArchived) {
+          this._onExceptions('viewer.TeamArchived');
+        }
+      },
+    );
+    this.reaction(
+      () => this.group.deactivated,
+      (deactivated: boolean) => {
+        if (deactivated) {
+          this._onExceptions('viewer.TeamDeleted');
+        }
+      },
+    );
   }
 
+  @computed
+  get group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId);
+  }
+
+  @action
   init = () => {
-    this._itemListDataSource.loadInitialData(this.props.itemId, INIT_PAGE_SIZE);
+    this._itemListDataSource.loadInitialData(this.props.itemId, PAGE_SIZE);
     this._fetchIndexInfo();
   }
 
+  doPreload = () => {
+    if (this.ids) {
+      this._preloadController.replacePreload(this.ids, this._getItemIndex());
+    }
+  }
+
+  stopPreload = () => {
+    this._preloadController.stop();
+  }
+
   dispose() {
-    notificationCenter.off(ENTITY.ITEM, this._onItemDataChange);
+    super.dispose();
+    const itemNotificationKey = ItemNotification.getItemNotificationKey(
+      ViewerItemTypeIdMap[this.props.type],
+      this.props.groupId,
+    );
+    notificationCenter.off(itemNotificationKey, this._onItemDataChange);
     this._itemListDataSource.dispose();
-  }
-
-  @computed
-  get currentItemId() {
-    return this._currentItemId === undefined
-      ? this.props.itemId
-      : this._currentItemId;
-  }
-
-  set currentItemId(index: number) {
-    this._currentItemId = index;
-  }
-
-  @computed
-  get currentIndex() {
-    return this._currentIndex || 0;
-  }
-
-  set currentIndex(index: number) {
-    this._currentIndex = index;
   }
 
   @computed
@@ -75,17 +145,106 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
     return this._itemListDataSource.getIds();
   }
 
+  @action
   updateCurrentItemIndex = (index: number, itemId: number) => {
-    this.currentIndex = index;
-    this.currentItemId = itemId;
+    transaction(() => {
+      this.currentIndex = index;
+      this.currentItemId = itemId;
+    });
   }
 
-  fetchData = async (direction: QUERY_DIRECTION, pageSize: number) => {
-    return await this._itemListDataSource.fetchData(direction, pageSize);
+  getCurrentItemId = () => {
+    return this.currentItemId;
+  }
+
+  getCurrentIndex = () => {
+    return this.currentIndex;
   }
 
   setOnCurrentItemDeletedCb = (callback: () => void) => {
     this._onCurrentItemDeletedCb = callback;
+  }
+
+  setOnItemSwitchCb = (callback: (itemId: number) => void) => {
+    this._onItemSwitchCb = callback;
+  }
+
+  @computed
+  get hasPrevious() {
+    return this.currentIndex > 0;
+  }
+
+  @computed
+  get hasNext() {
+    return this.currentIndex < this.total - 1;
+  }
+
+  @action
+  switchToPrevious = () => {
+    if (this.ids.length < 2 || this.ids[0] === this.currentItemId) {
+      if (this.hasPrevious) {
+        this.loadMore(QUERY_DIRECTION.OLDER).then((result: FileItem[]) => {
+          result && this.switchToPrevious();
+        });
+      } else {
+        // should not come here
+        mainLogger.warn('can not switchPreImage', {
+          ids: this.ids,
+          currentItemId: this.currentItemId,
+        });
+      }
+    } else {
+      const itemId = this.ids[this._getItemIndex() - 1];
+      const index = this.currentIndex - 1;
+      itemId && this.updateCurrentItemIndex(index, itemId);
+      itemId &&
+        this._onItemSwitchCb &&
+        this._onItemSwitchCb(itemId, index, 'previous');
+    }
+  }
+
+  @action
+  switchToNext = () => {
+    if (
+      this.ids.length < 2 ||
+      this.ids[this.ids.length - 1] === this.currentItemId
+    ) {
+      if (this.hasNext) {
+        this.loadMore(QUERY_DIRECTION.NEWER).then((result: FileItem[]) => {
+          result && this.switchToNext();
+        });
+      } else {
+        // should not come here
+        mainLogger.warn('can not switchNextImage', {
+          ids: this.ids,
+          currentItemId: this.currentItemId,
+        });
+      }
+    } else {
+      const itemId = this.ids[this._getItemIndex() + 1];
+      const index = this.currentIndex + 1;
+      itemId && this.updateCurrentItemIndex(index, itemId);
+      itemId &&
+        this._onItemSwitchCb &&
+        this._onItemSwitchCb(itemId, index, 'next');
+    }
+  }
+
+  loadMore = async (direction: QUERY_DIRECTION): Promise<FileItem[] | null> => {
+    if (this.isLoadingMore) {
+      return null;
+    }
+    this.isLoadingMore = true;
+    const result = await this._itemListDataSource.fetchData(
+      direction,
+      PAGE_SIZE,
+    );
+    this.isLoadingMore = false;
+    return result;
+  }
+
+  private _getItemIndex = (): number => {
+    return this.ids.findIndex((_id: number) => _id === this.currentItemId);
   }
 
   private _fetchIndexInfo = async () => {
@@ -105,13 +264,26 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
         ),
       },
     );
-    this.total = info.totalCount;
-    if (this.currentItemId === itemId) {
-      this._currentIndex = info.index;
-      if (info.index < 0) {
-        this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb();
+    transaction(() => {
+      this.total = info.totalCount;
+      if (this.currentItemId === itemId) {
+        this.currentIndex = info.index;
+        if (info.index < 0) {
+          this._onCurrentItemDeletedCb && this._onCurrentItemDeletedCb();
+        }
       }
-    }
+    });
+  }
+
+  private _onExceptions(toastMessage: string) {
+    portalManager.dismissAll();
+    Notification.flashToast({
+      message: toastMessage,
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
   }
 
   private _onItemDataChange = (
@@ -119,7 +291,18 @@ class ViewerViewModel extends AbstractViewModel<ViewerViewProps> {
   ) => {
     const { type } = payload;
     const { groupId } = this.props;
+    if (type === EVENT_TYPES.DELETE) {
+      (payload as NotificationEntityDeletePayload).body.ids.forEach(
+        (id: number) => {
+          if (id === this.currentItemId) {
+            this._onExceptions('viewer.ImageDeleted');
+          }
+        },
+      );
+      return;
+    }
     let needRefreshIndex = false;
+
     if (type === EVENT_TYPES.UPDATE) {
       const detailPayload = payload as NotificationEntityUpdatePayload<
         FileItem

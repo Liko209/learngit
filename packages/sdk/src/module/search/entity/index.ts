@@ -4,5 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RecentSearchModel, RecentSearchTypes } from './Search';
-export { RecentSearchModel, RecentSearchTypes };
+import {
+  RecentSearchModel,
+  RecentSearchTypes,
+  FuzzySearchPersonOptions,
+  PersonSortingOrder,
+} from './Search';
+
+export {
+  RecentSearchModel,
+  RecentSearchTypes,
+  FuzzySearchPersonOptions,
+  PersonSortingOrder,
+};

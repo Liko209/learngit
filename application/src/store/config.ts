@@ -12,6 +12,8 @@ import { PresenceService } from 'sdk/module/presence';
 import { GroupConfigService } from 'sdk/module/groupConfig';
 const { ENTITY } = service;
 import { CompanyService } from 'sdk/module/company';
+import { ModelCreator } from './utils/ModelCreator';
+import { IdModel } from 'sdk/framework/model';
 
 const CACHE_COUNT = 1000;
 
@@ -57,55 +59,22 @@ const ENTITY_SETTING = {
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.ITEM]: {
-    event: [ENTITY.ITEM],
+    event: [`${ENTITY.ITEM}.*.*`],
     service: () => ItemService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.FILE_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.TASK_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.EVENT_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.LINK_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.NOTE_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.CODE_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
-  },
-  [ENTITY_NAME.CONFERENCE_ITEM]: {
-    event: [ENTITY.ITEM],
-    service: () => ItemService.getInstance(),
-    type: HANDLER_TYPE.MULTI_ENTITY,
-    cacheCount: CACHE_COUNT,
+    modelCreator: (model: IdModel) => {
+      return ModelCreator.createItemModel(model);
+    },
   },
   [ENTITY_NAME.POST]: {
     event: [`${ENTITY.POST}.*`],
+    service: () => PostService.getInstance(),
+    type: HANDLER_TYPE.MULTI_ENTITY,
+    cacheCount: CACHE_COUNT,
+  },
+  [ENTITY_NAME.DISCONTINUOUS_POST]: {
+    event: [ENTITY.DISCONTINUOUS_POST],
     service: () => PostService.getInstance(),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
@@ -166,8 +135,8 @@ const GLOBAL_VALUES = {
   [GLOBAL_KEYS.GROUP_QUERY_TYPE_GROUP_IDS]: [] as number[],
   [GLOBAL_KEYS.GROUP_QUERY_TYPE_TEAM_IDS]: [] as number[],
   [GLOBAL_KEYS.UNREAD_TOGGLE_ON]: false,
+  [GLOBAL_KEYS.ELECTRON_APP_VERSION]: '',
   [GLOBAL_KEYS.ELECTRON_VERSION]: '',
-  [GLOBAL_KEYS.APP_VERSION]: '',
   [GLOBAL_KEYS.IS_SHOW_ABOUT_DIALOG]: false,
   [GLOBAL_KEYS.SHOULD_SHOW_UMI]: true,
   [GLOBAL_KEYS.JUMP_TO_POST_ID]: 0,

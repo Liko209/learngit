@@ -35,6 +35,8 @@ describe('generateModifiedImageURL', () => {
         left: 0,
         justifyWidth: false,
         justifyHeight: true,
+        imageHeight: 1000,
+        imageWidth: 1000,
       });
     });
 
@@ -57,6 +59,8 @@ describe('generateModifiedImageURL', () => {
         left: 0,
         justifyWidth: false,
         justifyHeight: true,
+        imageHeight: 1000,
+        imageWidth: 1000,
       });
     });
 
@@ -77,6 +81,8 @@ describe('generateModifiedImageURL', () => {
         left: -18,
         justifyWidth: false,
         justifyHeight: true,
+        imageHeight: 500,
+        imageWidth: 1000,
       });
     });
 
@@ -99,6 +105,8 @@ describe('generateModifiedImageURL', () => {
         left: 0,
         justifyWidth: true,
         justifyHeight: false,
+        imageHeight: 1000,
+        imageWidth: 500,
       });
     });
   });
@@ -123,6 +131,8 @@ describe('generateModifiedImageURL', () => {
         left: 0,
         justifyWidth: true,
         justifyHeight: false,
+        imageHeight: 360,
+        imageWidth: 360,
       });
     });
 
@@ -143,6 +153,8 @@ describe('generateModifiedImageURL', () => {
         left: 0,
         justifyWidth: true,
         justifyHeight: false,
+        imageHeight: 180,
+        imageWidth: 360,
       });
     });
 
@@ -163,6 +175,8 @@ describe('generateModifiedImageURL', () => {
         left: 0,
         justifyWidth: false,
         justifyHeight: true,
+        imageHeight: 360,
+        imageWidth: 180,
       });
     });
   });

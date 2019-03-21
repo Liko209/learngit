@@ -6,31 +6,23 @@
 
 import { IProcessor, SequenceProcessorHandler } from 'sdk/framework/processor';
 import { FileItem } from 'sdk/module/item/module/file/entity';
-import { ItemService } from 'sdk/module/item';
+import { ItemService, FileItemUtils } from 'sdk/module/item';
 import { getThumbnailURL } from '@/common/getThumbnailURL';
-import { Pal, IImageDownloadedListener } from 'sdk/pal';
+import { Pal, DownloadItemInfo, IImageDownloadedListener } from 'sdk/pal';
 
 import {
   generateModifiedImageURL,
   RULE,
   Result,
 } from '../../../../common/generateModifiedImageURL';
+import { mainLogger } from 'sdk';
 
 class ImageDownloadedListener implements IImageDownloadedListener {
   constructor(
     private _sequenceProcessorHandler: SequenceProcessorHandler,
     private _waiter: any,
   ) {}
-  onSuccess(
-    item: {
-      id: number;
-      url?: string;
-      thumbnail?: boolean;
-      count?: number | undefined;
-    },
-    width: number,
-    height: number,
-  ): void {
+  onSuccess(item: DownloadItemInfo, width: number, height: number): void {
     if (!item.thumbnail) {
       const rule = item.count ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
 
@@ -54,7 +46,12 @@ class ImageDownloadedListener implements IImageDownloadedListener {
 
     this._waiter();
   }
-  onFailure(url: string, errorCode: number): void {
+
+  onFailure(item: DownloadItemInfo, errorCode: number): void {
+    this._waiter();
+  }
+
+  onCancel(item: DownloadItemInfo): void {
     this._waiter();
   }
 }
@@ -120,12 +117,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
     return null;
   }
 
-  protected preload(item: {
-    id: number;
-    url?: string;
-    thumbnail?: boolean;
-    count?: number;
-  }) {
+  protected preload(item: DownloadItemInfo) {
     return new Promise((resolve: any, reject: any) => {
       Pal.instance
         .getImageDownloader()
@@ -140,23 +132,35 @@ class ThumbnailPreloadProcessor implements IProcessor {
     if (this._item.autoPreload) {
       await this.preload(this._item);
     } else {
-      const itemService = ItemService.getInstance() as ItemService;
-      const item = await itemService.getById(this._item.id);
-      if (item) {
-        const thumbnail = this.toThumbnailUrl(item);
-        if (!thumbnail) {
-          return true;
+      try {
+        const itemService = ItemService.getInstance() as ItemService;
+        const item = await itemService.getById(this._item.id);
+        if (item && item.id > 0) {
+          if (!FileItemUtils.isSupportPreview(item)) {
+            return false;
+          }
+
+          const thumbnail = this.toThumbnailUrl(item);
+          if (!thumbnail) {
+            return true;
+          }
+
+          this._item.url = thumbnail.url;
+          this._item.thumbnail = thumbnail.thumbnail;
+
+          await this.preload(this._item);
         }
-
-        this._item.url = thumbnail.url;
-        this._item.thumbnail = thumbnail.thumbnail;
-
-        await this.preload(this._item);
+      } catch (err) {
+        mainLogger.warn(
+          'ThumbnailPreloadProcessor: process(): error=',
+          err.message,
+        );
       }
     }
 
     return true;
   }
+
   canContinue(): boolean {
     return true;
   }

@@ -27,7 +27,10 @@ import { GroupService } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
+import { SyncUserConfig } from '../config/SyncUserConfig';
+import { SYNC_SOURCE } from '../types';
 
+const LOG_TAG = 'SyncController';
 class SyncController {
   private _syncListener: SyncListener;
 
@@ -40,12 +43,34 @@ class SyncController {
     } else if (state === 'connecting') {
       progressBar.start();
     } else if (state === 'disconnected') {
+      this.updateCanUpdateIndexTimeStamp(false);
       progressBar.stop();
     }
   }
 
   getIndexTimestamp() {
     return NewGlobalConfig.getLastIndexTimestamp();
+  }
+
+  updateIndexTimestamp(time: number, forceUpdate: boolean) {
+    mainLogger.log(
+      LOG_TAG,
+      `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
+    );
+    if (forceUpdate) {
+      NewGlobalConfig.setLastIndexTimestamp(time);
+      this.updateCanUpdateIndexTimeStamp(true);
+    } else if (this.canUpdateIndexTimeStamp()) {
+      NewGlobalConfig.setLastIndexTimestamp(time);
+    }
+  }
+
+  updateCanUpdateIndexTimeStamp(can: boolean) {
+    return NewGlobalConfig.updateCanUpdateIndexTimeStamp(can);
+  }
+
+  canUpdateIndexTimeStamp() {
+    return NewGlobalConfig.getCanUpdateIndexTimeStamp();
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -62,6 +87,11 @@ class SyncController {
     } catch (e) {
       mainLogger.log('syncData fail', e);
     }
+  }
+
+  handleStoppingSocketEvent() {
+    // this is for update newer than tag
+    this.updateCanUpdateIndexTimeStamp(false);
   }
 
   private async _firstLogin() {
@@ -83,7 +113,7 @@ class SyncController {
     const { onInitialLoaded, onInitialHandled } = this._syncListener;
     const initialResult = await this.fetchInitialData(time);
     onInitialLoaded && (await onInitialLoaded(initialResult));
-    await this._handleIncomingData(initialResult);
+    await this._handleIncomingData(initialResult, SYNC_SOURCE.INITIAL);
     notificationCenter.emitKVChange(SERVICE.FETCH_INITIAL_DONE);
     onInitialHandled && (await onInitialHandled());
     mainLogger.log('fetch initial data and handle success');
@@ -103,7 +133,7 @@ class SyncController {
     const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
     const remainingResult = await this.fetchRemainingData(time);
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
-    await this._handleIncomingData(remainingResult);
+    await this._handleIncomingData(remainingResult, SYNC_SOURCE.REMAINING);
     onRemainingHandled && (await onRemainingHandled());
     NewGlobalConfig.setFetchedRemaining(true);
     mainLogger.log('fetch remaining data and handle success');
@@ -117,7 +147,7 @@ class SyncController {
     try {
       result = await this.fetchIndexData(String(timeStamp - 300000));
       onIndexLoaded && (await onIndexLoaded(result));
-      await this._handleIncomingData(result);
+      await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
       onIndexHandled && (await onIndexHandled());
     } catch (error) {
       this._handleSyncIndexError(error);
@@ -179,7 +209,10 @@ class SyncController {
   }
 
   /* handle incoming data */
-  private async _dispatchIncomingData(data: IndexDataModel) {
+  private async _dispatchIncomingData(
+    data: IndexDataModel,
+    source: SYNC_SOURCE,
+  ) {
     const {
       user_id: userId,
       company_id: companyId,
@@ -218,23 +251,31 @@ class SyncController {
       }),
       CompanyService.getInstance<CompanyService>().handleIncomingData(
         companies,
+        source,
       ),
       (ItemService.getInstance() as ItemService).handleIncomingData(items),
       PresenceService.getInstance<PresenceService>().presenceHandleData(
         presences,
       ),
-      (StateService.getInstance() as StateService).handleState(arrState),
+      (StateService.getInstance() as StateService).handleState(arrState, source),
     ])
       .then(() =>
         ProfileService.getInstance<ProfileService>().handleIncomingData(
           transProfile,
+          source,
         ),
       )
       .then(() =>
-        PersonService.getInstance<PersonService>().handleIncomingData(people),
+        PersonService.getInstance<PersonService>().handleIncomingData(
+          people,
+          source,
+        ),
       )
       .then(() =>
-        GroupService.getInstance<GroupService>().handleData(MergedGroups),
+        GroupService.getInstance<GroupService>().handleData(
+          MergedGroups,
+          source,
+        ),
       )
       .then(() =>
         PostService.getInstance<PostService>().handleIndexData(
@@ -246,7 +287,7 @@ class SyncController {
 
   private async _handleIncomingData(
     result: IndexDataModel,
-    shouldSaveScoreboard: boolean = true,
+    source: SYNC_SOURCE,
   ) {
     try {
       const {
@@ -255,8 +296,20 @@ class SyncController {
         static_http_server: staticHttpServer = '',
       } = result;
 
-      if (scoreboard && shouldSaveScoreboard) {
-        NewGlobalConfig.setSocketServerHost(scoreboard);
+      await this._dispatchIncomingData(result, source);
+      const shouldSaveTimeStamp =
+        source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
+      if (timestamp && shouldSaveTimeStamp) {
+        this.updateIndexTimestamp(timestamp, true);
+        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
+      }
+
+      const shouldSaveScoreboard =
+        scoreboard &&
+        (source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL);
+      if (shouldSaveScoreboard) {
+        const socketUserConfig = new SyncUserConfig();
+        socketUserConfig.setSocketServerHost(scoreboard);
         notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
       }
 
@@ -267,15 +320,6 @@ class SyncController {
           staticHttpServer,
         );
       }
-
-      // logger.time('handle index data');
-      await this._dispatchIncomingData(result);
-      // logger.timeEnd('handle index data');
-      if (timestamp) {
-        NewGlobalConfig.setLastIndexTimestamp(timestamp);
-        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
-      }
-
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_DONE);
     } catch (error) {
       mainLogger.error(`sync/handleData: ${JSON.stringify(error)}`);

@@ -36,6 +36,7 @@ const FILE_COMPS = {
     handleImageClick: (
       groupId: number,
       id: number,
+      url: string,
       origWidth: number,
       origHeight: number,
     ) => (ev: React.MouseEvent, loaded: boolean) => void,
@@ -63,6 +64,7 @@ const FILE_COMPS = {
           handleImageClick={handleImageClick(
             groupId,
             id,
+            previewUrl,
             origWidth,
             origHeight,
           )}
@@ -104,15 +106,18 @@ class Task extends React.Component<taskViewProps> {
   _handleImageClick = (
     groupId: number,
     id: number,
+    url: string,
     origWidth: number,
     origHeight: number,
   ) => async (ev: React.MouseEvent, loaded?: boolean) => {
     const target = ev.currentTarget as HTMLElement;
-    const canShowDialogPermission = await this.props.getShowDialogPermission();
-    if (!canShowDialogPermission) {
-      return;
-    }
-    return await showImageViewer(groupId, id, target);
+
+    return await showImageViewer(groupId, id, {
+      originElement: target,
+      thumbnailSrc: url,
+      initialWidth: origWidth,
+      initialHeight: origHeight,
+    });
   }
 
   private _getTitleText(text: string) {
@@ -169,7 +174,8 @@ class Task extends React.Component<taskViewProps> {
         complete={complete}
         title={this._getTitleText(text)}
         titleColor={color}
-        Icon={<JuiTaskCheckbox checked={complete || false} />}
+        Icon={
+          <JuiTaskCheckbox customColor={color} checked={complete || false} />}
       >
         {endTime && (
           <JuiTaskContent title={t('item.due')}>

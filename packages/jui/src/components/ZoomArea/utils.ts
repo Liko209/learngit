@@ -3,6 +3,9 @@
  * @Date: 2019-03-04 12:42:13
  * Copyright © RingCentral. All rights reserved.
  */
+import { ElementRect, ZoomRatio, Position } from './types';
+import _ from 'lodash';
+
 export function getCenterPosition(react: ElementRect) {
   return {
     left: react.left + react.width / 2,
@@ -18,7 +21,9 @@ function isZoomRatio(arg: any): arg is ZoomRatio {
   );
 }
 
-import { ElementRect, ZoomRatio, Position } from './types';
+export function isRectChange(rect1: ElementRect, rect2: ElementRect) {
+  return !_.isEqual(rect1, rect2);
+}
 
 export function zoom(
   ratio: number | ZoomRatio,

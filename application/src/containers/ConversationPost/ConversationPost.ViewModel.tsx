@@ -6,11 +6,7 @@
 
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
-import {
-  ConversationPostProps,
-  ConversationPostViewProps,
-  POST_TYPE,
-} from './types';
+import { ConversationPostProps, POST_TYPE } from './types';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { Post } from 'sdk/module/post/entity';
@@ -21,21 +17,12 @@ const ActivityDataKeyMappingPostType = {
   members: POST_TYPE.NOTIFICATION,
 };
 
-class ConversationPostViewModel extends AbstractViewModel<ConversationPostProps>
-  implements ConversationPostViewProps {
+class ConversationPostViewModel extends AbstractViewModel<
+  ConversationPostProps
+> {
   @computed
   get id() {
     return this.props.id;
-  }
-
-  @computed
-  get highlight() {
-    return this.props.highlight || false;
-  }
-
-  @computed
-  get onHighlightAnimationStart() {
-    return this.props.onHighlightAnimationStart;
   }
 
   @computed

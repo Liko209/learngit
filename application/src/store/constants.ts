@@ -5,14 +5,8 @@ enum ENTITY_NAME {
   'GROUP_STATE' = 'groupState',
   'MY_STATE' = 'myState',
   'ITEM' = 'item',
-  'FILE_ITEM' = 'fileItem',
-  'TASK_ITEM' = 'taskItem',
-  'EVENT_ITEM' = 'eventItem',
-  'LINK_ITEM' = 'linkItem',
-  'NOTE_ITEM' = 'noteItem',
-  'CODE_ITEM' = 'codeItem',
-  'CONFERENCE_ITEM' = 'conferenceItem',
   'POST' = 'post',
+  'DISCONTINUOUS_POST' = 'discontinuousPost',
   'PRESENCE' = 'presence',
   'COMPANY' = 'company',
   'PROFILE' = 'profile',
@@ -27,8 +21,8 @@ enum HANDLER_TYPE {
 }
 
 enum GLOBAL_KEYS {
-  APP_VERSION = 'APP_VERSION',
   ELECTRON_VERSION = 'ELECTRON_VERSION',
+  ELECTRON_APP_VERSION = 'ELECTRON_APP_VERSION',
   IS_SHOW_ABOUT_DIALOG = 'IS_SHOW_ABOUT_DIALOG',
   WINDOW_FOCUS = 'WINDOW_FOCUS',
   NETWORK = 'NETWORK',

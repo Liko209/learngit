@@ -4,4 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './VirtualizedList';
-export * from './VirtualizedListProps';
+export * from './DataLoader';
+export * from './InfiniteList';
+export * from './types';

@@ -12,7 +12,7 @@ class LoggerImpl implements IRTCLogger {
   doLog = jest.fn();
 }
 
-describe('LoggerProxy', async () => {
+describe('LoggerProxy', () => {
   const voipTag: string = 'VoIP';
   const formatVoipTag: string = 'VoIP:';
 

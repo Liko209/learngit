@@ -60,11 +60,18 @@ type RTCSipFlags = {
   dscpVideo: Number;
 };
 
+enum RTC_STATUS_CODE {
+  OK = 0,
+  NUMBER_INVALID = 1000,
+  MAX_CALLS_REACHED = 1001,
+}
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
+  RTC_STATUS_CODE,
   RTCCallOptions,
   RTCCallActionSuccessOptions,
   RTCSipFlags,
