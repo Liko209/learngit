@@ -14,6 +14,7 @@ import {
   RcExtensionInfo,
   RcServiceFeature,
   RcRolePermissions,
+  ISpecialServiceNumberResponse,
 } from '../../../api/ringcentral/types';
 import { PhoneParserUtility } from '../../../utils/phoneParser';
 import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
@@ -35,7 +36,8 @@ class RcInfoController {
   private _clientInfo: RcClientInfo;
   private _accountInfo: RcAccountInfo;
   private _extensionInfo: RcExtensionInfo;
-  private _rolePermission: RcRolePermissions;
+  private _rolePermissions: RcRolePermissions;
+  private _specialNumberRule: ISpecialServiceNumberResponse;
 
   private _rolePermissionController: RolePermissionController;
   private _featurePermissionMap: Map<
@@ -81,13 +83,18 @@ class RcInfoController {
         this._shouldIgnoreFirstTime,
       );
       this.scheduleRcInfoJob(
-        JOB_KEY.FETCH_ROLE_PERMISSION,
-        this.requestRcRolePermission,
+        JOB_KEY.FETCH_ROLE_PERMISSIONS,
+        this.requestRcRolePermissions,
         this._shouldIgnoreFirstTime,
       );
       this.scheduleRcInfoJob(
         JOB_KEY.FETCH_PHONE_DATA,
         this.requestRcPhoneData,
+        false,
+      );
+      this.scheduleRcInfoJob(
+        JOB_KEY.FETCH_SPECIAL_NUMBER_RULE,
+        this.requestSpecialNumberRule,
         false,
       );
       this._isRcInfoJobScheduled = true;
@@ -137,10 +144,20 @@ class RcInfoController {
     notificationCenter.emit(RC_INFO.EXTENSION_INFO, this._extensionInfo);
   }
 
-  requestRcRolePermission = async (store: boolean = true) => {
-    this._rolePermission = await RcInfoApi.requestRcRolePermission();
-    store && this.rcInfoUserConfig.setRolePermission(this._rolePermission);
-    notificationCenter.emit(RC_INFO.ROLE_PERMISSION, this._rolePermission);
+  requestRcRolePermissions = async (store: boolean = true) => {
+    this._rolePermissions = await RcInfoApi.requestRcRolePermissions();
+    this._rolePermissionController.setRolePermissions(this._rolePermissions);
+    store && this.rcInfoUserConfig.setRolePermissions(this._rolePermissions);
+    notificationCenter.emit(RC_INFO.ROLE_PERMISSIONS, this._rolePermissions);
+  }
+
+  requestSpecialNumberRule = async () => {
+    this._specialNumberRule = await TelephonyApi.getSpecialNumbers();
+    this.rcInfoUserConfig.setSpecialNumberRule(this._specialNumberRule);
+    notificationCenter.emit(
+      RC_INFO.SPECIAL_NUMBER_RULE,
+      this._specialNumberRule,
+    );
   }
 
   requestRcPhoneData = async () => {
@@ -157,11 +174,46 @@ class RcInfoController {
     await this.requestRcClientInfo(false);
     await this.requestRcAccountInfo(false);
     await this.requestRcExtensionInfo(false);
-    await this.requestRcRolePermission(false);
+    await this.requestRcRolePermissions(false);
+  }
+
+  getRcClientInfo() {
+    if (!this._clientInfo) {
+      this._clientInfo = this.rcInfoUserConfig.getClientInfo();
+    }
+    return this._clientInfo;
+  }
+
+  getRcAccountInfo() {
+    if (!this._accountInfo) {
+      this._accountInfo = this.rcInfoUserConfig.getAccountInfo();
+    }
+    return this._accountInfo;
+  }
+
+  getRcExtensionInfo() {
+    if (!this._extensionInfo) {
+      this._extensionInfo = this.rcInfoUserConfig.getExtensionInfo();
+    }
+    return this._extensionInfo;
+  }
+
+  getRcRolePermissions() {
+    if (!this._rolePermissions) {
+      this._rolePermissions = this.rcInfoUserConfig.getRolePermissions();
+    }
+    return this._rolePermissions;
+  }
+
+  getSpecialNumberRule() {
+    if (!this._specialNumberRule) {
+      this._specialNumberRule = this.rcInfoUserConfig.getSpecialNumberRule();
+    }
+    return this._specialNumberRule;
   }
 
   private _isRcServiceFeatureEnabled(featureName: RCServiceFeatureName) {
-    const extInfo: RcExtensionInfo = this._rcInfoUserConfig.getExtensionInfo();
+    const extInfo: RcExtensionInfo = this.getRcExtensionInfo();
     if (extInfo && extInfo.serviceFeatures) {
       const feature = extInfo.serviceFeatures.find((item: RcServiceFeature) => {
         return item.featureName === featureName;

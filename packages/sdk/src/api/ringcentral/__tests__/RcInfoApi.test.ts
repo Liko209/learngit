@@ -63,7 +63,7 @@ describe('RcInfoApi', () => {
 
   describe('requestRcRolePermission()', () => {
     it('should be called with correct params', () => {
-      RcInfoApi.requestRcRolePermission();
+      RcInfoApi.requestRcRolePermissions();
       expect(RcInfoApi.rcNetworkClient.http).toBeCalledWith({
         path: '/v1.0/account/~/extension/~/authz-profile',
         method: 'get',
