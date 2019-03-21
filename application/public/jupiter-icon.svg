@@ -10,7 +10,7 @@
 </symbol>
 <symbol id="icon-reset-zoom" viewBox="0 0 32 32">
 <title>reset-zoom</title>
-<path d="M24 17.333h-2.667v2.667h-2.667v2.667h5.333v-5.333zM10.667 13.333h2.667v-2.667h-5.333v5.333h2.667v-2.667zM25.333 6.667h-18.667c-1.685 0-2.667 1-2.667 2.667v14.667c0 1.667 0.982 2.667 2.667 2.667h18.667c1.685 0 2.667-1 2.667-2.667v-14.667c0-1.667-0.982-2.667-2.667-2.667zM25.333 24h-18.667v-14.667h18.667v14.667z"></path>
+<path d="M25.164 16h-2.618v4.267h-3.927v2.844h6.545v-7.111zM9.455 11.733h3.927v-2.844h-6.545v7.111h2.618v-4.267zM27.782 3.2h-23.564c-1.44 0-2.618 1.28-2.618 2.844v19.911c0 1.564 1.178 2.844 2.618 2.844h23.564c1.44 0 2.618-1.28 2.618-2.844v-19.911c0-1.564-1.178-2.844-2.618-2.844zM27.2 25.6h-22.4v-19.2h22.4v19.2z"></path>
 </symbol>
 <symbol id="icon-task-new" viewBox="0 0 32 32">
 <title>task-new</title>
@@ -126,11 +126,11 @@
 </symbol>
 <symbol id="icon-zoom-out" viewBox="0 0 32 32">
 <title>zoom-out</title>
-<path d="M29.333 18h-26.667v-4h26.667z"></path>
+<path d="M28.8 17.6h-25.6v-3.2h25.6z"></path>
 </symbol>
 <symbol id="icon-zoom-in" viewBox="0 0 32 32">
 <title>zoom-in</title>
-<path d="M29.333 17.905h-11.429v11.429h-3.81v-11.429h-11.429v-3.81h11.429v-11.429h3.81v11.429h11.429z"></path>
+<path d="M17.6 17.6v11.2h-3.2v-11.2h-11.2v-3.2h11.2v-11.2h3.2v11.2h11.2v3.2h-11.2z"></path>
 </symbol>
 <symbol id="icon-info" viewBox="0 0 32 32">
 <title>info</title>

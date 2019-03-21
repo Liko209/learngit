@@ -6,7 +6,7 @@
 
 import * as React from 'react';
 import styled, { keyframes } from '../../foundation/styled-components';
-import { grey, height } from '../../foundation/utils';
+import { grey } from '../../foundation/utils';
 import { JuiTransition } from '../../components/Animation';
 
 type JuiViewerBackgroundProps = {
@@ -27,7 +27,6 @@ const StyledViewerBackground = styled.div`
   display: flex;
   flex-direction: column;
   height: inherit;
-  min-height: ${height(160)};
 `;
 
 const StyledTransition = styled(JuiTransition)`

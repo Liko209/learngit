@@ -254,7 +254,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
       {
         typeId: ViewerItemTypeIdMap[this.props.type],
         groupId: this.props.groupId,
-        sortKey: ITEM_SORT_KEYS.MODIFIED_TIME,
+        sortKey: ITEM_SORT_KEYS.CREATE_TIME,
         desc: false,
         limit: Infinity,
         offsetItemId: undefined,
