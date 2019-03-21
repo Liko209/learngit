@@ -28,13 +28,20 @@ import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
+import { IndexRequestProcessor } from './IndexRequestProcessor';
+import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
   private _syncListener: SyncListener;
+  private _processorHandler: SequenceProcessorHandler;
 
-  constructor() {}
+  constructor() {
+    this._processorHandler = new SequenceProcessorHandler(
+      'Index_SyncController',
+    );
+  }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
     mainLogger.log('sync service SERVICE.SOCKET_STATE_CHANGE', state);
@@ -145,19 +152,23 @@ class SyncController {
   }
 
   private async _syncIndexData(timeStamp: number) {
-    progressBar.start();
-    const { onIndexLoaded, onIndexHandled } = this._syncListener;
-    // 5 minutes ago to ensure data is correct
-    let result;
-    try {
-      result = await this.fetchIndexData(String(timeStamp - 300000));
-      onIndexLoaded && (await onIndexLoaded(result));
-      await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
-      onIndexHandled && (await onIndexHandled());
-    } catch (error) {
-      this._handleSyncIndexError(error);
-    }
-    progressBar.stop();
+    const executeFunc = async () => {
+      progressBar.start();
+      const { onIndexLoaded, onIndexHandled } = this._syncListener;
+      // 5 minutes ago to ensure data is correct
+      try {
+        const result = await this.fetchIndexData(String(timeStamp - 300000));
+        onIndexLoaded && (await onIndexLoaded(result));
+        await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
+        onIndexHandled && (await onIndexHandled());
+      } catch (error) {
+        await this._handleSyncIndexError(error);
+      }
+      progressBar.stop();
+    };
+
+    const processor = new IndexRequestProcessor(executeFunc);
+    this._processorHandler.addProcessor(processor);
   }
 
   private async _handleSyncIndexError(result: any) {

@@ -99,18 +99,17 @@ class SocketCanConnectController {
     time: number,
   ) {
     if (!this._canConnectTimeOutId) {
-      this._canConnectTimeOutId = setTimeout(
-        this._handleReTry.bind(this)(callback, forceOnline),
-        time,
-      );
+      this._canConnectTimeOutId = setTimeout(() => {
+        this._handleReTry.bind(this)(callback, forceOnline);
+      },                                     time);
     } else {
       mainLogger.warn(TAG, ' has already exits time out id');
     }
   }
 
   private _handleReTry(callback: (id: number) => void, forceOnline: boolean) {
-    this._doCanConnectApi(callback, forceOnline);
     this._clearCanConnectTimeOutId();
+    this._doCanConnectApi(callback, forceOnline);
   }
 
   private _clearCanConnectTimeOutId() {

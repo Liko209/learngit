@@ -13,11 +13,11 @@ import {
   NetworkRequestBuilder,
   DEFAULT_TIMEOUT_INTERVAL,
   HA_PRIORITY,
+  REQUEST_PRIORITY,
 } from 'foundation';
 import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
 import { responseParser } from './parser';
-import { HighAvailableAPI } from './HighAvailableAPI';
 
 export interface IQuery {
   via?: NETWORK_VIA;
@@ -29,6 +29,8 @@ export interface IQuery {
   authFree?: boolean;
   retryCount?: number;
   requestConfig?: object;
+  priority?: REQUEST_PRIORITY;
+  HAPriority?: HA_PRIORITY;
   timeout?: number;
 }
 
@@ -167,12 +169,10 @@ export default class NetworkClient {
       authFree,
       requestConfig,
       retryCount,
+      priority,
+      HAPriority,
       timeout,
     } = query;
-
-    const HAPriority = HighAvailableAPI.includes(path)
-      ? HA_PRIORITY.HIGH
-      : HA_PRIORITY.BASIC;
 
     const versionPath = this.apiPlatformVersion
       ? `/${this.apiPlatformVersion}`
@@ -192,7 +192,8 @@ export default class NetworkClient {
       .setTimeout(timeout || DEFAULT_TIMEOUT_INTERVAL)
       .setVia(via)
       .setNetworkManager(this.networkManager)
-      .setHAPriority(HAPriority)
+      .setPriority(priority ? priority : REQUEST_PRIORITY.NORMAL)
+      .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC)
       .build();
   }
 
@@ -214,6 +215,8 @@ export default class NetworkClient {
     requestConfig?: object,
     headers = {},
     retryCount?: number,
+    priority?: REQUEST_PRIORITY,
+    HAPriority?: HA_PRIORITY,
     timeout?: number,
   ) {
     return this.http<T>({
@@ -223,6 +226,8 @@ export default class NetworkClient {
       via,
       requestConfig,
       retryCount,
+      priority,
+      HAPriority,
       timeout,
       method: NETWORK_METHOD.GET,
     });

@@ -6,7 +6,7 @@
 
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
-import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
+import { NETWORK_METHOD, NETWORK_VIA, HA_PRIORITY } from 'foundation';
 import { RcClientInfo } from './types/RcClientInfo';
 import { RcAccountInfo } from './types/RcAccountInfo';
 import { RcExtensionInfo } from './types/RcExtensionInfo';
@@ -30,6 +30,7 @@ class RcInfoApi extends Api {
       method: NETWORK_METHOD.GET,
       authFree: false,
       via: NETWORK_VIA.HTTP,
+      HAPriority: HA_PRIORITY.HIGH,
     };
     return RcInfoApi.rcNetworkClient.http<RcClientInfo>(query);
   }
@@ -40,6 +41,7 @@ class RcInfoApi extends Api {
       method: NETWORK_METHOD.GET,
       authFree: false,
       via: NETWORK_VIA.HTTP,
+      HAPriority: HA_PRIORITY.HIGH,
     };
     return RcInfoApi.rcNetworkClient.http<RcAccountInfo>(query);
   }
@@ -50,6 +52,7 @@ class RcInfoApi extends Api {
       method: NETWORK_METHOD.GET,
       authFree: false,
       via: NETWORK_VIA.HTTP,
+      HAPriority: HA_PRIORITY.HIGH,
     };
     return RcInfoApi.rcNetworkClient.http<RcExtensionInfo>(query);
   }
@@ -60,6 +63,7 @@ class RcInfoApi extends Api {
       method: NETWORK_METHOD.GET,
       authFree: false,
       via: NETWORK_VIA.HTTP,
+      HAPriority: HA_PRIORITY.HIGH,
     };
     return RcInfoApi.rcNetworkClient.http<RcRolePermissions>(query);
   }
