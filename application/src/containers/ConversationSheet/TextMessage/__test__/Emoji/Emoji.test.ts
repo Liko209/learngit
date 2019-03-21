@@ -7,6 +7,7 @@
 import { Markdown } from 'glipdown';
 import { Emoji } from '../../Emoji';
 import { mapEmojiOne, mapAscii, mapUnicode } from '../../Emoji/map';
+import { mapUnicodeToShort } from '../../Emoji/mapUnicodeToShort';
 
 const staticHttpServer = 'https://www.emojione.com/';
 const customEmojiMap = {
@@ -30,7 +31,11 @@ describe('Format one kind emoji', () => {
   const _runAll = (mapOriginalData: object) => {
     Object.keys(mapOriginalData).forEach((originKey: string) => {
       const result = format(originKey);
-      const unicode = mapOriginalData[originKey];
+      let unicode = mapOriginalData[originKey]; // Temporary unicode
+      const shortName = mapUnicodeToShort[unicode];
+      if (shortName) {
+        unicode = mapEmojiOne[shortName].fname; // The actual unicode
+      }
       expect(result).toMatch(getRegExp(unicode));
     });
   };
