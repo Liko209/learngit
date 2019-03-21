@@ -76,6 +76,8 @@ const getModifiedImageSize = ({
         width = newWidth;
       }
     }
+    result.width = width;
+    result.height = height;
   }
   return result;
 };

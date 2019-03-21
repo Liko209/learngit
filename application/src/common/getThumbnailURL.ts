@@ -3,13 +3,35 @@
  * @Date: 2019-02-15 08:26:10
  * Copyright © RingCentral. All rights reserved.
  */
-
-import FileItemModel from '@/store/models/FileItem';
 import _ from 'lodash';
-import { FileItem } from 'sdk/module/item/module/file/entity';
+import FileItemModel from '@/store/models/FileItem';
+import { getThumbnailSize } from 'jui/foundation/utils';
+import {
+  RULE,
+  generateModifiedImageURL,
+} from '@/common/generateModifiedImageURL';
+import { ItemService } from 'sdk/module/item/service';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { ItemVersions } from 'sdk/src/module/item/entity';
+
+enum IMAGE_TYPE {
+  THUMBNAIL_IMAGE,
+  MODIFY_IMAGE,
+  ORIGINAL_IMAGE,
+  UNKNOWN_IMAGE,
+}
+
+type ImageInfo = {
+  id: number;
+  type: string;
+  versionUrl: string;
+  versions: ItemVersions[];
+};
+
+const SQUARE_SIZE = 180;
 
 function getThumbnailURL(
-  item: FileItemModel | FileItem,
+  item: ImageInfo,
   size: { width: number; height: number } = { width: 1000, height: 200 },
 ) {
   const { versions } = item;
@@ -24,6 +46,88 @@ function getThumbnailURL(
     }
   }
   return '';
+}
+
+function hasVersions(versions: ItemVersions[]) {
+  return versions && versions.length > 0;
+}
+
+function getVersionsValue(versions: ItemVersions[], type: string) {
+  return versions[0][type];
+}
+
+function getOrigHeight(versions: ItemVersions[]) {
+  return hasVersions(versions)
+    ? getVersionsValue(versions, 'orig_height')
+    : null;
+}
+
+function getOrigWidth(versions: ItemVersions[]) {
+  return hasVersions(versions)
+    ? getVersionsValue(versions, 'orig_width')
+    : null;
+}
+
+async function getThumbnailURLWithType(
+  item: ImageInfo,
+  rule: RULE,
+): Promise<{ url: string; type: IMAGE_TYPE }> {
+  const { id, type, versionUrl, versions } = item;
+  const origWidth = getOrigWidth(versions);
+  const origHeight = getOrigHeight(versions);
+  let url = '';
+  if (!type) {
+    return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };
+  }
+  // Notes
+  // 1. There is no thumbnail for the image just uploaded.
+  // 2. tif has thumbnail field.
+  // 3. gif use original url.
+  if (FileItemUtils.isGifItem({ type })) {
+    return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
+  }
+
+  const size = getThumbnailSize(origWidth, origHeight);
+  url = getThumbnailURL(item, {
+    width: size.imageWidth,
+    height: size.imageHeight,
+  });
+  if (url && url.length) {
+    return {
+      url,
+      type: IMAGE_TYPE.THUMBNAIL_IMAGE,
+    };
+  }
+  if (
+    !url &&
+    origWidth > 0 &&
+    origHeight > 0 &&
+    FileItemUtils.isSupportPreview({ type })
+  ) {
+    if (rule === RULE.SQUARE_IMAGE) {
+      const itemService = ItemService.getInstance() as ItemService;
+      url = await itemService.getThumbsUrlWithSize(
+        id,
+        SQUARE_SIZE,
+        SQUARE_SIZE,
+      );
+      return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
+    }
+    const result = await generateModifiedImageURL({
+      rule,
+      origHeight,
+      origWidth,
+      id,
+      squareSize: SQUARE_SIZE,
+    });
+    url = result.url;
+    return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
+  }
+  if (!url) {
+    url = versionUrl || '';
+    return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
+  }
+  return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
 }
 
 function getMaxThumbnailURLInfo(item: FileItemModel) {
@@ -79,4 +183,9 @@ function getMaxThumbnailURLInfo(item: FileItemModel) {
   };
 }
 
-export { getThumbnailURL, getMaxThumbnailURLInfo };
+export {
+  getThumbnailURL,
+  getMaxThumbnailURLInfo,
+  getThumbnailURLWithType,
+  IMAGE_TYPE,
+};
