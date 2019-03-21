@@ -294,6 +294,7 @@ node(buildNode) {
     env.NODEJS_HOME = tool nodejsTool
     env.PATH="${env.NODEJS_HOME}/bin:${env.PATH}"
     env.TZ='UTC-8'
+    env.NODE_ENV='development'
 
     try {
         // start to build
@@ -394,9 +395,12 @@ node(buildNode) {
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sshagent (credentials: [scmCredentialId]) {
+                sh 'npm install @babel/parser@7.3.3'
+                sh 'npm install'
                 sh 'npm install --only=dev --ignore-scripts'
                 sh 'npm install --ignore-scripts'
                 sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
+
             }
             try {
                 sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version check'
@@ -434,6 +438,8 @@ node(buildNode) {
                         reportTitles: 'Coverage'
                     ])
                     report.coverage = "${buildUrl}Coverage"
+                    // do this for file name compatability
+                    sh 'cp coverage/coverage-final.json coverage/coverage-summary.json || true'
                     if (!isMerge && integrationBranch == gitlabTargetBranch) {
                         // attach coverage report as git note when new commits are pushed to integration branch
                         // push git notes to remote
