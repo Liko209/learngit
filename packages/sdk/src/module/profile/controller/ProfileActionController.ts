@@ -63,7 +63,7 @@ class ProfileActionController {
         }
       } else {
         if (newIds.indexOf(groupId) !== -1) {
-          newIds = newIds.filter(id => id !== groupId);
+          newIds = newIds.filter((id: number) => id !== groupId);
         }
       }
       partialModel['favorite_group_ids'] = newIds;
@@ -141,7 +141,7 @@ class ProfileActionController {
         if (toBook) {
           oldFavPostIds.push(postId);
         } else {
-          oldFavPostIds = oldFavPostIds.filter(id => id !== postId);
+          oldFavPostIds = oldFavPostIds.filter((id: number) => id !== postId);
         }
         partialModel.favorite_post_ids = oldFavPostIds;
         return partialModel;
@@ -163,10 +163,10 @@ class ProfileActionController {
       partialModel: Partial<Raw<Profile>>,
       originalModel: Profile,
     ): Partial<Raw<Profile>> => {
-      const partialProfile = {
-        ...partialModel,
-        [`hide_group_${groupId}`]: false,
-      };
+      const partialProfile = partialModel;
+      if (originalModel[`hide_group_${groupId}`]) {
+        partialProfile[`hide_group_${groupId}`] = false;
+      }
       return partialProfile;
     };
 
