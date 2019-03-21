@@ -4,6 +4,7 @@ import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import * as assert from 'assert';
 import * as Flatted from 'flatted';
+import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
 import { SITE_URL, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
@@ -13,6 +14,7 @@ import { IConsoleLog } from './v2/models';
 import { MockClient, BrowserInitDto } from 'mock-client';
 
 import { getLogger } from 'log4js';
+
 const logger = getLogger(__filename);
 logger.level = 'info';
 
@@ -144,7 +146,7 @@ export function teardownCase() {
     const consoleLog = await t.getBrowserConsoleMessages()
     const zipConsoleLog = new JSZip();
     zipConsoleLog.file('console-log.json', JSON.stringify(consoleLog, null, 2));
-    const consoleLogPath = MiscUtils.createTmpFile(await zipConsoleLog.generateAsync({ type: "nodebuffer" }), 'console-log.zip');
+    const consoleLogPath = MiscUtils.createTmpFile(await zipConsoleLog.generateAsync({ type: "nodebuffer" }), `console-log-${uuid()}.zip`);
     const warnLog = Flatted.stringify(consoleLog.warn);
     const warnConsoleLogPath = MiscUtils.createTmpFile(warnLog);
     const errorLog = Flatted.stringify(consoleLog.error);
@@ -162,7 +164,7 @@ export function teardownCase() {
     // dump account pool data
     const zipRcData = new JSZip();
     zipRcData.file('rc-data.json', JSON.stringify(h(t).dataHelper.originData, null, 2));
-    const rcDataPath = MiscUtils.createTmpFile(await zipRcData.generateAsync({ type: "nodebuffer" }), 'rc-data.zip');
+    const rcDataPath = MiscUtils.createTmpFile(await zipRcData.generateAsync({ type: "nodebuffer" }), `rc-data-${uuid()}.zip`);
 
     // get account type
     const accountType = h(t).dataHelper.rcData.mainCompany.type;
