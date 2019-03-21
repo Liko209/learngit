@@ -67,6 +67,11 @@ class RcInfoController {
       accountService.isAccountReady() &&
       accountType === ACCOUNT_TYPE_ENUM.RC
     ) {
+      // todo: will remove it after config ready
+      if (this._shouldIgnoreFirstTime) {
+        this.storeRcAccountRelativeInfo();
+      }
+
       this.scheduleRcInfoJob(
         JOB_KEY.FETCH_CLIENT_INFO,
         this.requestRcClientInfo,
@@ -175,6 +180,13 @@ class RcInfoController {
     await this.requestRcAccountInfo(false);
     await this.requestRcExtensionInfo(false);
     await this.requestRcRolePermissions(false);
+  }
+
+  storeRcAccountRelativeInfo() {
+    this.rcInfoUserConfig.setClientInfo(this._clientInfo);
+    this.rcInfoUserConfig.setAccountInfo(this._accountInfo);
+    this.rcInfoUserConfig.setExtensionInfo(this._extensionInfo);
+    this.rcInfoUserConfig.setRolePermissions(this._rolePermissions);
   }
 
   getRcClientInfo() {
