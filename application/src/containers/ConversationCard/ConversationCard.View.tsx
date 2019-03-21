@@ -142,7 +142,7 @@ export class ConversationCard extends React.Component<
             <IdsToConversationSheet itemTypeIds={itemTypeIds} postId={id} />
           )}
         </JuiConversationCardBody>
-        <Footer id={id} />
+        <Footer postId={id} />
       </JuiConversationCard>
     );
   }

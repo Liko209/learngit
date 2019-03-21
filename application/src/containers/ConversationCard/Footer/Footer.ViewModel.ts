@@ -6,33 +6,38 @@
 
 import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { FooterProps } from './types';
-import { WithPostLikeProps } from './withPostLike/types';
-import { Post } from 'sdk/module/post/entity';
-import { getEntity } from '@/store/utils';
-import { ENTITY_NAME } from '@/store';
-import PostModel from '@/store/models/Post';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { FooterViewModelProps } from './types';
 
-class FooterViewModel extends StoreViewModel<FooterProps>
-  implements WithPostLikeProps {
+class FooterViewModel extends StoreViewModel<FooterViewModelProps> {
+  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+
   @computed
-  get postId() {
-    return this.props.id;
+  get likedUsersCount() {
+    return this.props.likedUsers.length;
   }
 
   @computed
-  private get _post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.postId);
-  }
+  get likedUsersNameMessage() {
+    if (!this.likedUsersCount) return '';
 
-  @computed
-  private get _likes() {
-    return this._post.likes;
-  }
+    const { t } = this.props;
 
-  @computed
-  get likeCount() {
-    return this._likes ? this._likes.length : 0;
+    const usersName = this.props.likedUsers.reduce(
+      (acc, { id, userDisplayName }) =>
+        id === this._currentUserId
+          ? [t('common.You'), ...acc]
+          : [...acc, userDisplayName],
+      [],
+    );
+
+    const lastUserName = usersName.pop();
+    const suffix = `${lastUserName} ${t('message.likeThis')}`;
+
+    return usersName.length
+      ? `${usersName.join(', ')}, ${t('common.and')} ${suffix}`
+      : suffix;
   }
 }
 
