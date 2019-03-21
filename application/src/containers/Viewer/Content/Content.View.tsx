@@ -14,14 +14,9 @@ type ResponsiveProps = {
   content: ReactElement;
 };
 
-const LeftResponsive = withResponsive(
-  (props: ResponsiveProps) => {
-    return React.cloneElement(props.content);
-  },
-  {
-    minWidth: 480,
-  },
-);
+const LeftResponsive = withResponsive((props: ResponsiveProps) => {
+  return React.cloneElement(props.content);
+},                                    {});
 
 const RightResponsive = withResponsive(
   (props: ResponsiveProps) => {

@@ -45,6 +45,44 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     };
   }
 
+  _handlerKeydown = (event: KeyboardEvent) => {
+    // 107 Num Key  +
+    // 109 Num Key  -
+    // 173 Min Key  hyphen/underscor Hey
+    // 61 Plus key  +/= key
+    if (
+      event.ctrlKey &&
+      (event.which === 61 ||
+        event.which === 107 ||
+        event.which === 173 ||
+        event.which === 109 ||
+        event.which === 187 ||
+        event.which === 189)
+    ) {
+      event.preventDefault();
+    }
+  }
+
+  _handlerScroll = (event: MouseEvent) => {
+    if (event.ctrlKey) {
+      event.preventDefault();
+    }
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this._handlerKeydown);
+    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
+      window.addEventListener(v, this._handlerScroll);
+    });
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this._handlerKeydown);
+    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
+      window.removeEventListener(v, this._handlerScroll);
+    });
+  }
+
   switchPreImage = () => {
     if (this._canSwitchPrevious()) {
       this._zoomRef.current!.reset();

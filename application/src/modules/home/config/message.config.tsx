@@ -11,6 +11,7 @@ import { Call } from '@/modules/telephony/container';
 import { MessageUmi } from '../container/MessageUmi';
 import Message from './lazy/Message';
 import { SubModuleConfig } from '../types';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 const config: SubModuleConfig = {
   route: {
@@ -25,7 +26,12 @@ const config: SubModuleConfig = {
   nav: () => {
     return {
       url: '/messages',
-      icon: 'messages',
+      Icon: (
+        <JuiIconography iconColor={['grey', '900']}>
+          messages_border
+        </JuiIconography>
+      ),
+      IconSelected: <JuiIconography>messages</JuiIconography>,
       title: i18next.t('message.Messages'),
       umi: <MessageUmi />,
       placement: 'top',

@@ -548,4 +548,17 @@ describe('PersonService', () => {
       expect(result.id).toBe(36);
     });
   });
+
+  describe('refreshPersonData()', () => {
+    it('should call get once when has requestController', async () => {
+      const requestController = {
+        get: jest.fn().mockResolvedValue({}),
+      };
+      jest
+        .spyOn(entitySourceController, 'getRequestController')
+        .mockReturnValue(requestController);
+      personController.refreshPersonData(1);
+      expect(requestController.get).toHaveBeenCalledTimes(1);
+    });
+  });
 });

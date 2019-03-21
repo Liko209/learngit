@@ -22,6 +22,8 @@ import { IEntityCacheSearchController } from '../../../framework/controller/inte
 import { PersonDataController } from './PersonDataController';
 import { AuthGlobalConfig } from '../../../service/auth/config';
 import { ContactType } from '../types';
+import notificationCenter from '../../../service/notificationCenter';
+import { ENTITY } from '../../../service/eventKey';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 
 const PersonFlags = {
@@ -328,6 +330,14 @@ class PersonController {
     return result && result.sortableModels.length > 0
       ? result.sortableModels[0].entity
       : null;
+  }
+
+  public async refreshPersonData(personId: number): Promise<void> {
+    const requestController = this._entitySourceController.getRequestController();
+    if (requestController) {
+      const person = await requestController.get(personId);
+      person && notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
+    }
   }
 }
 

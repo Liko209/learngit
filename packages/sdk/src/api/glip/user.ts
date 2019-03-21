@@ -9,6 +9,7 @@ import {
   NETWORK_METHOD,
   TEN_MINUTE_TIMEOUT,
   DEFAULT_RETRY_COUNT,
+  REQUEST_PRIORITY,
 } from 'foundation';
 import Api from '../api';
 import { GLIP_API } from './constants';
@@ -94,24 +95,31 @@ function loginGlip(authData: object) {
  * index data api
  */
 function indexData(params: object, requestConfig = {}, headers = {}) {
+  const retryCount = DEFAULT_RETRY_COUNT;
+  const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipNetworkClient.get<IndexDataModel>(
     '/index',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
-    DEFAULT_RETRY_COUNT,
+    retryCount,
+    priority,
     TEN_MINUTE_TIMEOUT,
   );
 }
 
 function initialData(params: object, requestConfig = {}, headers = {}) {
+  const retryCount = 3;
+  const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/initial',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    retryCount,
+    priority,
     DEFAULT_RETRY_COUNT,
     TEN_MINUTE_TIMEOUT,
   );

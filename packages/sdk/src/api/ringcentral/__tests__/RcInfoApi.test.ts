@@ -5,7 +5,7 @@
  */
 
 import { RcInfoApi } from '../RcInfoApi';
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA, HA_PRIORITY } from 'foundation';
 
 jest.mock('../../api');
 
@@ -18,6 +18,7 @@ describe('RcInfoApi', () => {
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
       });
     });
   });
@@ -42,6 +43,7 @@ describe('RcInfoApi', () => {
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
       });
     });
   });
@@ -54,18 +56,20 @@ describe('RcInfoApi', () => {
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
       });
     });
   });
 
   describe('requestRcRolePermission()', () => {
     it('should be called with correct params', () => {
-      RcInfoApi.requestRcRolePermission();
+      RcInfoApi.requestRcRolePermissions();
       expect(RcInfoApi.rcNetworkClient.http).toBeCalledWith({
         path: '/v1.0/account/~/extension/~/authz-profile',
         method: 'get',
         authFree: false,
         via: NETWORK_VIA.HTTP,
+        HAPriority: HA_PRIORITY.HIGH,
       });
     });
   });

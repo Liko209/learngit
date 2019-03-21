@@ -40,7 +40,8 @@
 
     "back": "Back",
     "forward": "Forward",
-    "You": "You"
+    "You": "You",
+    "Connecting": "Connecting"
   },
   "auth": {
     "signIn": "Sign in",
@@ -421,6 +422,7 @@
       "detach": "Detach",
       "attach": "Attach",
       "mute": "Mute",
+      "unmute": "Unmute",
       "keypad": "Keypad",
       "hold": "Hold",
       "add": "Add",

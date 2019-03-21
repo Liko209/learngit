@@ -43,10 +43,9 @@ class GlipPingPong {
       callback && this._pingCallbacks.push(callback);
       if (!this._pingTimeOutId) {
         const pingId = getCurrentTime();
-        this._pingTimeOutId = setTimeout(
-          this._onPingFailure.bind(this),
-          this._pingTimeOutTime,
-        );
+        this._pingTimeOutId = setTimeout(() => {
+          this._onPingFailure.bind(this);
+        },                               this._pingTimeOutTime);
         mainLogger.log(this._logPrefix, ' ping id: ', pingId);
         this._socket.emit(GLIP_PING, pingId);
       }
