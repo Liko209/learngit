@@ -80,7 +80,7 @@ class Sdk {
     );
 
     // Listen to account events to init network and service
-    this.accountManager.on(AM.EVENT_LOGIN, this.onLogin.bind(this));
+    this.accountManager.on(AM.AUTH_SUCCESS, this.onAuthSuccess.bind(this));
     this.accountManager.on(AM.EVENT_LOGOUT, this.onLogout.bind(this));
     this.accountManager.on(
       AM.EVENT_SUPPORTED_SERVICE_CHANGE,
@@ -99,7 +99,7 @@ class Sdk {
     }
   }
 
-  async onLogin() {
+  async onAuthSuccess() {
     this.updateNetworkToken();
 
     if (this.syncService.getIndexTimestamp()) {

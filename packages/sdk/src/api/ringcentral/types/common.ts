@@ -158,6 +158,20 @@ type IPhoneNumberResponse = {
   navigation: INavigationInfo;
 };
 
+type RcVersionInfo = {
+  uri: string;
+  versionString: string;
+  releaseDate: string;
+  uriString: string;
+};
+
+type RcAPIVersion = {
+  uri: string;
+  apiVersions: RcVersionInfo[];
+  serverVersion: string;
+  serverRevision: string;
+};
+
 export {
   RcCountryInfo,
   RcRegionalSetting,
@@ -168,4 +182,5 @@ export {
   IDialingPlanResponse,
   IPhoneNumberRequest,
   IPhoneNumberResponse,
+  RcAPIVersion,
 };

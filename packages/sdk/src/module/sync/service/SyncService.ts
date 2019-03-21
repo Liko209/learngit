@@ -34,7 +34,7 @@ class SyncService extends EntityBaseService {
   }
 
   async syncData(syncListener?: SyncListener) {
-    this.getSyncController().syncData(syncListener);
+    await this.getSyncController().syncData(syncListener);
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {

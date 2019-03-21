@@ -47,7 +47,6 @@ class AuthService extends BaseService {
         { code, token },
       );
       mainLogger.info(`unifiedLogin finished ${JSON.stringify(resp)}`);
-      this.onLogin();
     } catch (err) {
       mainLogger.error(`unified login error: ${err}`);
       throw ErrorParserHolder.getErrorParser().parse(err);

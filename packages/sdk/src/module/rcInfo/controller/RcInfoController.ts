@@ -8,24 +8,35 @@ import { RcInfoUserConfig } from '../config';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { RcInfoApi, TelephonyApi } from '../../../api/ringcentral';
+import {
+  RcClientInfo,
+  RcAccountInfo,
+  RcExtensionInfo,
+  RcServiceFeature,
+  RcRolePermissions,
+} from '../../../api/ringcentral/types';
 import { PhoneParserUtility } from '../../../utils/phoneParser';
 import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
-import AccountService from '../../../service/account';
+import { AccountService } from '../../../service/account/accountService';
 import { mainLogger } from 'foundation';
 import {
   PermissionId,
   ERcServiceFeaturePermission,
   RCServiceFeatureName,
 } from '../types';
-import {
-  RcExtensionInfo,
-  RcServiceFeature,
-} from '../../../api/ringcentral/types/RcExtensionInfo';
 import { RolePermissionController } from '../controller/RolePermissionController';
+import notificationCenter from '../../../service/notificationCenter';
+import { RC_INFO } from '../../../service/eventKey';
 
 class RcInfoController {
   private _rcInfoUserConfig: RcInfoUserConfig;
   private _isRcInfoJobScheduled: boolean;
+  private _shouldIgnoreFirstTime: boolean;
+  private _clientInfo: RcClientInfo;
+  private _accountInfo: RcAccountInfo;
+  private _extensionInfo: RcExtensionInfo;
+  private _rolePermission: RcRolePermissions;
+
   private _rolePermissionController: RolePermissionController;
   private _featurePermissionMap: Map<
     ERcServiceFeaturePermission,
@@ -34,6 +45,7 @@ class RcInfoController {
 
   constructor() {
     this._isRcInfoJobScheduled = false;
+    this._shouldIgnoreFirstTime = false;
     this._rolePermissionController = new RolePermissionController();
     this._buildFeaturePermissionMap();
   }
@@ -53,91 +65,99 @@ class RcInfoController {
       accountService.isAccountReady() &&
       accountType === ACCOUNT_TYPE_ENUM.RC
     ) {
-      jobScheduler.scheduleDailyPeriodicJob(
+      this.scheduleRcInfoJob(
         JOB_KEY.FETCH_CLIENT_INFO,
         this.requestRcClientInfo,
+        this._shouldIgnoreFirstTime,
       );
-      jobScheduler.scheduleDailyPeriodicJob(
+      this.scheduleRcInfoJob(
         JOB_KEY.FETCH_ACCOUNT_INFO,
         this.requestRcAccountInfo,
+        this._shouldIgnoreFirstTime,
       );
-      jobScheduler.scheduleDailyPeriodicJob(
+      this.scheduleRcInfoJob(
         JOB_KEY.FETCH_EXTENSION_INFO,
         this.requestRcExtensionInfo,
+        this._shouldIgnoreFirstTime,
       );
-      jobScheduler.scheduleDailyPeriodicJob(
+      this.scheduleRcInfoJob(
         JOB_KEY.FETCH_ROLE_PERMISSION,
         this.requestRcRolePermission,
+        this._shouldIgnoreFirstTime,
       );
-      jobScheduler.scheduleDailyPeriodicJob(
+      this.scheduleRcInfoJob(
         JOB_KEY.FETCH_PHONE_DATA,
         this.requestRcPhoneData,
+        false,
       );
       this._isRcInfoJobScheduled = true;
     }
   }
 
-  requestRcClientInfo = async (callback: (successful: boolean) => void) => {
-    try {
-      const result = await RcInfoApi.requestRcClientInfo();
-      this.rcInfoUserConfig.setClientInfo(result);
-      callback(true);
-    } catch (err) {
-      mainLogger.error(`requestRcClientInfo error: ${err}`);
-      callback(false);
-    }
+  scheduleRcInfoJob(
+    key: JOB_KEY,
+    executeFunc: () => void,
+    ignoreFirstTime: boolean,
+  ) {
+    jobScheduler.scheduleDailyPeriodicJob(
+      key,
+      async (callback: (successful: boolean) => void) => {
+        try {
+          await executeFunc();
+          callback(true);
+        } catch (err) {
+          if (err.message.includes('Not Modified')) {
+            callback(true);
+          } else {
+            mainLogger.error(`RcInfoController, ${key}, ${err}`);
+            callback(false);
+          }
+        }
+      },
+      true,
+      ignoreFirstTime,
+    );
   }
 
-  requestRcAccountInfo = async (callback: (successful: boolean) => void) => {
-    try {
-      const result = await RcInfoApi.requestRcAccountInfo();
-      this.rcInfoUserConfig.setAccountInfo(result);
-      callback(true);
-    } catch (err) {
-      mainLogger.error(`requestRcAccountInfo error: ${err}`);
-      callback(false);
-    }
+  requestRcClientInfo = async (store: boolean = true) => {
+    this._clientInfo = await RcInfoApi.requestRcClientInfo();
+    store && this.rcInfoUserConfig.setClientInfo(this._clientInfo);
+    notificationCenter.emit(RC_INFO.CLIENT_INFO, this._clientInfo);
   }
 
-  requestRcExtensionInfo = async (callback: (successful: boolean) => void) => {
-    try {
-      const result = await RcInfoApi.requestRcExtensionInfo();
-      this.rcInfoUserConfig.setExtensionInfo(result);
-      callback(true);
-    } catch (err) {
-      mainLogger.error(`requestRcExtensionInfo error: ${err}`);
-      callback(false);
-    }
+  requestRcAccountInfo = async (store: boolean = true) => {
+    this._accountInfo = await RcInfoApi.requestRcAccountInfo();
+    store && this.rcInfoUserConfig.setAccountInfo(this._accountInfo);
+    notificationCenter.emit(RC_INFO.ACCOUNT_INFO, this._accountInfo);
   }
 
-  requestRcRolePermission = async (callback: (successful: boolean) => void) => {
-    try {
-      const result = await RcInfoApi.requestRcRolePermission();
-      this.rcInfoUserConfig.setRolePermission(result);
-      callback(true);
-    } catch (err) {
-      mainLogger.error(`requestRcRolePermission error: ${err}`);
-      callback(false);
-    }
+  requestRcExtensionInfo = async (store: boolean = true) => {
+    this._extensionInfo = await RcInfoApi.requestRcExtensionInfo();
+    store && this.rcInfoUserConfig.setExtensionInfo(this._extensionInfo);
+    notificationCenter.emit(RC_INFO.EXTENSION_INFO, this._extensionInfo);
   }
 
-  requestRcPhoneData = async (callback: (successful: boolean) => void) => {
-    try {
-      const phoneDataVersion: string =
-        PhoneParserUtility.getPhoneDataFileVersion() || '';
-      const result = await TelephonyApi.getPhoneParserData(phoneDataVersion);
-      NewGlobalConfig.setPhoneData(result);
-      PhoneParserUtility.initPhoneParser(true);
-      callback(true);
-    } catch (err) {
-      if (err.message.includes('Not Modified')) {
-        callback(true);
-        mainLogger.debug(`requestRcPhoneData: ${err.message}`);
-      } else {
-        callback(false);
-        mainLogger.error(`requestRcPhoneData error: ${err.message}`);
-      }
-    }
+  requestRcRolePermission = async (store: boolean = true) => {
+    this._rolePermission = await RcInfoApi.requestRcRolePermission();
+    store && this.rcInfoUserConfig.setRolePermission(this._rolePermission);
+    notificationCenter.emit(RC_INFO.ROLE_PERMISSION, this._rolePermission);
+  }
+
+  requestRcPhoneData = async () => {
+    const phoneDataVersion: string =
+      PhoneParserUtility.getPhoneDataFileVersion() || '';
+    const result = await TelephonyApi.getPhoneParserData(phoneDataVersion);
+    NewGlobalConfig.setPhoneData(result);
+    PhoneParserUtility.initPhoneParser(true);
+    notificationCenter.emit(RC_INFO.PHONE_DATA, result);
+  }
+
+  async requestRcAccountRelativeInfo() {
+    this._shouldIgnoreFirstTime = true;
+    await this.requestRcClientInfo(false);
+    await this.requestRcAccountInfo(false);
+    await this.requestRcExtensionInfo(false);
+    await this.requestRcRolePermission(false);
   }
 
   private _isRcServiceFeatureEnabled(featureName: RCServiceFeatureName) {
