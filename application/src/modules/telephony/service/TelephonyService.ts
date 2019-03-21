@@ -165,6 +165,19 @@ class TelephonyService {
     this._telephonyStore.detachedWindow();
   }
 
+  muteOrUnmute = (mute: boolean) => {
+    if (this._callId) {
+      mainLogger.info(
+        `${TelephonyService.TAG}${mute ? 'mute' : 'unmute'} call id=${
+          this._callId
+        }`,
+      );
+      mute
+        ? this._serverTelephonyService.mute(this._callId)
+        : this._serverTelephonyService.unmute(this._callId);
+    }
+  }
+
   matchContactByPhoneNumber = async (phone: string) => {
     return await this._personService.matchContactByPhoneNumber(
       phone,

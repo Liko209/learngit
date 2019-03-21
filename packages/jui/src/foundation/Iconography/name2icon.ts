@@ -9,7 +9,7 @@ const name2icon = {
   messages: 'bubble_lines',
   messages_border: 'bubble_lines_border',
   contacts: 'contacts',
-  contacts_border: 'contact_border',
+  contacts_border: 'contacts_border',
   calendar: 'calendar',
   tasks: 'task',
   notes: 'note',
@@ -106,6 +106,7 @@ const name2icon = {
   leftNavFile: 'file',
   leftNavFile_border: 'file_border',
   reset_zoom: 'reset-zoom',
+  mic_off: 'mic-off',
 };
 
 export type ICON_NAME = keyof typeof name2icon;
