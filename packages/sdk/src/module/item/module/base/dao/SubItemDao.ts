@@ -83,7 +83,9 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   }
 
   toPartialSanitizedItem(partialItem: Partial<Item>) {
-    return { ..._.pick(partialItem, ['id', 'created_at', 'group_ids']) };
+    return {
+      ..._.pick(partialItem, ['id', 'created_at', 'group_ids', 'modified_at']),
+    };
   }
 
   shouldSaveSubItem<K extends { id: number; post_ids?: number[] }>(item: K) {

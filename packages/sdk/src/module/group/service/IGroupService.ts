@@ -6,11 +6,12 @@ import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { PERMISSION_ENUM } from '../constants';
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { PermissionFlags, TeamSetting } from '../types';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 interface IGroupService {
   isValid(group: Group): boolean;
 
-  handleData(groups: Raw<Group>[]): Promise<void>;
+  handleData(groups: Raw<Group>[], source: SYNC_SOURCE): Promise<void>;
 
   isInTeam(userId: number, team: Group): boolean;
 

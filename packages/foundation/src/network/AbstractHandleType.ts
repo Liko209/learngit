@@ -20,11 +20,16 @@ abstract class AbstractHandleType implements IHandleType {
   tokenExpirable: boolean = false;
   tokenRefreshable: boolean = false;
   doRefreshToken(token: IToken) {
-    return new Promise<IToken>(token => token);
+    return new Promise<IToken>((resolve, reject) => {
+      reject();
+    });
   }
-  checkServerStatus(callback: (success: boolean, interval: number) => void) {
+  checkServerStatus = (
+    callback: (success: boolean, interval: number) => void,
+  ) => {
     callback(true, 0);
   }
+  onRefreshTokenFailure = () => {};
   basic() {
     return '';
   }

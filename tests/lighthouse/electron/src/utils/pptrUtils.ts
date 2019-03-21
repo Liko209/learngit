@@ -14,6 +14,7 @@ import * as bluebird from 'bluebird';
 const browsers = new Map<string, Browser>();
 const logger = LogUtils.getLogger(__filename);
 
+let mockClient: MockClient;
 class PptrUtils {
 
   static async waitForSelector(page: Page, selector: string): Promise<boolean> {
@@ -228,6 +229,10 @@ class PptrUtils {
     return wsEndpoint.replace('localhost', '127.0.0.1');
   }
 
+  static async cleanMock() {
+    mockClient = undefined;
+  }
+
   private static async injectMockServer(browser: Browser) {
     if (!Config.mockSwitch) {
       return;
@@ -237,21 +242,26 @@ class PptrUtils {
       return;
     }
 
-    const client = new MockClient(Config.mockServerUrl);
+    let requestId;
+    if (!mockClient) {
+      mockClient = new MockClient(Config.mockServerUrl);
 
-    let initDto = BrowserInitDto.of()
-      .env(Config.jupiterEnv)
-      .appKey(Config.jupiterAppKey)
-      .appSecret(Config.jupiterAppSecret)
-      .useInitialCache(Config.useInitialCache);
+      let initDto = BrowserInitDto.of()
+        .env(Config.jupiterEnv)
+        .appKey(Config.jupiterAppKey)
+        .appSecret(Config.jupiterAppSecret)
+        .useInitialCache(Config.useInitialCache);
 
-    let requestId = await client.registerBrowser(initDto);
+      requestId = await mockClient.registerBrowser(initDto);
 
-    logger.info(`mock requestId : ${requestId}`);
+      logger.info(`mock requestId : ${requestId}`);
 
-    client['requestId'] = requestId;
+      mockClient['requestId'] = requestId;
+    } else {
+      requestId = mockClient['requestId'];
+    }
 
-    browser.mockClient = client;
+    browser.mockClient = mockClient;
 
     let pages = await browser.pages();
     for (let page of pages) {

@@ -21,6 +21,8 @@ type JuiVirtualizedListProps = {
   before?: React.ReactNode;
   after?: React.ReactNode;
   children: JSX.Element[];
+  classWhenUnScrollable?: string;
+  classWhenScrollable?: string;
 };
 
 export { JuiVirtualizedListProps, IndexRange };

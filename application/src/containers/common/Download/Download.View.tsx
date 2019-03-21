@@ -17,6 +17,7 @@ const DownloadView = React.memo(
         download={true}
         href={url}
         variant={variant}
+        aria-label={i18next.t('common.download')}
         tooltipTitle={i18next.t('common.download')}
       >
         download

@@ -9,7 +9,6 @@ import { DragArea } from '../../components/DragArea';
 import {
   DEFAULT_OPTIONS as DEFAULT_ZOOM_OPTIONS,
   ElementRect,
-  isRectChange,
   JuiZoomComponent,
   Transform,
 } from '../../components/ZoomArea';
@@ -17,7 +16,7 @@ import styled from '../../foundation/styled-components';
 import { height } from '../../foundation/utils/styles';
 import { JuiFabGroup } from '../ImageViewer';
 import { JuiDragZoomChildrenProps, JuiDragZoomOptions } from './types';
-import { calculateFitSize, fixBoundary, isDraggable } from './utils';
+import { calculateFitWidthHeight, fixBoundary, isDraggable } from './utils';
 
 type JuiDragZoomProps = {
   zoomInText?: string;
@@ -26,16 +25,16 @@ type JuiDragZoomProps = {
   zoomRef?: RefObject<JuiZoomComponent>;
   contentRef?: RefObject<any>;
   options?: Partial<JuiDragZoomOptions>;
-  onAutoFitContentRectChange?: (contentRect: ElementRect) => void;
+  onAutoFitContentRectChange?: (fitWidth: number, fitHeight: number) => void;
   onTransformChange?: (info: {
     transform: Transform;
     canDrag: boolean;
   }) => void;
   children: (withDragZoomProps: JuiDragZoomChildrenProps) => any;
+  applyTransform?: boolean;
 };
 
 type JuiDragZoomState = {
-  autoFitContentRect: ElementRect;
   transform: Transform;
   canDrag: boolean;
   canZoomIn: boolean;
@@ -87,8 +86,12 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
   private _zoomRef: RefObject<JuiZoomComponent> = createRef();
   private _contentRef: RefObject<any> = createRef();
   private _containerRef: RefObject<any> = createRef();
-  contentWidth?: number;
-  contentHeight?: number;
+  private _contentWidth?: number;
+  private _contentHeight?: number;
+  private _containerWidth?: number;
+  private _containerHeight?: number;
+  private _fitWidth?: number;
+  private _fitHeight?: number;
 
   constructor(props: JuiDragZoomProps) {
     super(props);
@@ -104,12 +107,6 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       canZoomOut: true,
       minScale: 0,
       maxScale: Number.MAX_SAFE_INTEGER,
-      autoFitContentRect: {
-        left: 0,
-        top: 0,
-        width: 0,
-        height: 0,
-      },
     };
   }
 
@@ -119,47 +116,6 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
 
   getContentRef(): RefObject<any> {
     return this.props.contentRef || this._contentRef;
-  }
-
-  getContainerRect = (): ElementRect | null => {
-    const zoomRef = this.getZoomRef();
-    return zoomRef.current ? zoomRef.current.getBoundingClientRect() : null;
-  }
-
-  getRawContentRect = (): ElementRect | null => {
-    const contentRef = this.getContentRef();
-    if (!contentRef.current) {
-      return null;
-    }
-    const boundingRect = contentRef.current.getBoundingClientRect();
-    const width =
-      this.contentWidth ||
-      contentRef.current.naturalWidth ||
-      contentRef.current.clientWidth ||
-      boundingRect.width;
-    const height =
-      this.contentHeight ||
-      contentRef.current.naturalHeight ||
-      contentRef.current.clientHeight ||
-      boundingRect.height;
-    const centerPosition = {
-      left: boundingRect.left + boundingRect.width / 2,
-      top: boundingRect.left + boundingRect.height / 2,
-    };
-    return {
-      width,
-      height,
-      left: centerPosition.left - width / 2,
-      top: centerPosition.top - height / 2,
-    };
-  }
-
-  getTransformContentRect = (): ElementRect | null => {
-    const contentRef = this.getContentRef();
-    if (!contentRef.current) {
-      return null;
-    }
-    return contentRef.current.getBoundingClientRect();
   }
 
   canZoomIn = () => {
@@ -175,47 +131,62 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
   }
 
   updateContentSize = (contentWidth: number, contentHeight: number) => {
-    this.contentWidth = contentWidth;
-    this.contentHeight = contentHeight;
+    this._contentWidth = contentWidth;
+    this._contentHeight = contentHeight;
     this.updateRect();
   }
 
   updateRect = () => {
-    const contentRect = this.getRawContentRect();
-    const containerRect = this.getContainerRect();
-    if (contentRect && containerRect) {
-      const newAutoFitContentRect = calculateFitSize(
-        containerRect,
-        contentRect,
+    if (
+      this._contentHeight &&
+      this._contentWidth &&
+      this._containerWidth &&
+      this._containerHeight
+    ) {
+      const [fitWidth, fitHeight] = calculateFitWidthHeight(
+        this._contentWidth,
+        this._contentHeight,
+        this._containerWidth,
+        this._containerHeight,
         ensureOptions(this.props.options).padding,
       );
-      if (
-        !this.state.autoFitContentRect ||
-        isRectChange(this.state.autoFitContentRect, newAutoFitContentRect)
-      ) {
+      if (this._fitWidth !== fitWidth || this._fitHeight !== fitHeight) {
         this.applyNewTransform({
           scale: 1,
           translateX: 0,
           translateY: 0,
         });
-        this._onAutoFitContentRectChange(newAutoFitContentRect);
+        this._onAutoFitContentRectChange(fitWidth, fitHeight);
       }
     }
   }
 
   applyNewTransform = (newTransform: Transform) => {
-    const contentRect = this.getTransformContentRect();
-    const containerRect = this.getContainerRect();
     let transform = newTransform;
-    const oldTransform = this.state.transform;
     let canDrag = this.state.canDrag;
-    if (contentRect && containerRect) {
-      const newWidth =
-        (contentRect.width * transform.scale) / oldTransform.scale;
-      const newHeight =
-        (contentRect.height * transform.scale) / oldTransform.scale;
-      transform = fixBoundary(transform, newWidth, newHeight, containerRect);
-      canDrag = isDraggable(newWidth, newHeight, containerRect);
+    if (
+      this._fitWidth &&
+      this._fitHeight &&
+      this._containerWidth &&
+      this._containerHeight
+    ) {
+      const [newWidth, newHeight] = [
+        this._fitWidth * transform.scale,
+        this._fitHeight * transform.scale,
+      ];
+      transform = fixBoundary(
+        transform,
+        this._fitWidth,
+        this._fitHeight,
+        this._containerWidth,
+        this._containerHeight,
+      );
+      canDrag = isDraggable(
+        newWidth,
+        newHeight,
+        this._containerWidth,
+        this._containerHeight,
+      );
     }
     this.setState({
       transform,
@@ -234,17 +205,16 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
     });
   }
 
-  private _onAutoFitContentRectChange = (autoFitContentRect: ElementRect) => {
+  private _onAutoFitContentRectChange = (
+    fitWidth: number,
+    fitHeight: number,
+  ) => {
     const { minPixel, maxPixel } = ensureOptions(this.props.options);
-    this._updateScale(
-      autoFitContentRect.width,
-      autoFitContentRect.height,
-      minPixel,
-      maxPixel,
-    );
-    this.setState({
-      autoFitContentRect,
-    });
+    this._updateScale(fitWidth, fitHeight, minPixel, maxPixel);
+    this._fitWidth = fitWidth;
+    this._fitHeight = fitHeight;
+    this.props.onAutoFitContentRectChange &&
+      this.props.onAutoFitContentRectChange(fitWidth, fitHeight);
   }
 
   private _updateScale(
@@ -260,15 +230,23 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       });
     }
   }
+
+  private _updateZoomRect(zoomRect: ElementRect) {
+    this._containerWidth = zoomRect.width;
+    this._containerHeight = zoomRect.height;
+    this.updateRect();
+  }
+
   render() {
     const {
       options,
       zoomInText,
       zoomOutText,
       zoomResetText,
+      applyTransform,
       children,
     } = this.props;
-    const { autoFitContentRect, transform, canDrag } = this.state;
+    const { transform, canDrag } = this.state;
     const { minPixel, maxPixel, step, ...zoomOptions } = ensureOptions(options);
 
     const {
@@ -279,13 +257,14 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
       <Container ref={this._containerRef}>
         <JuiZoomComponent
           ref={this.getZoomRef()}
+          applyTransform={applyTransform}
           zoomOptions={{ ...zoomOptions, minScale, maxScale }}
           transform={transform}
           onTransformChange={(transform: Transform) => {
             this.applyNewTransform(transform);
           }}
           onZoomRectChange={(zoomRect: ElementRect) => {
-            this.updateRect();
+            this._updateZoomRect(zoomRect);
           }}
         >
           {() => (
@@ -309,10 +288,11 @@ class JuiDragZoom extends Component<JuiDragZoomProps, JuiDragZoomState> {
               {({ isDragging }) =>
                 React.cloneElement(
                   children({
-                    autoFitContentRect,
                     canDrag,
                     isDragging,
                     transform,
+                    fitWidth: this._fitWidth,
+                    fitHeight: this._fitHeight,
                     notifyContentSizeChange: this.updateContentSize,
                   }),
                   {

@@ -21,6 +21,7 @@ interface IHandleType {
   checkServerStatus: (
     callback: (success: boolean, interval: number) => void,
   ) => void;
+  onRefreshTokenFailure: () => void;
   basic: () => string;
   requestDecoration: (
     tokenHandler: ITokenHandler,

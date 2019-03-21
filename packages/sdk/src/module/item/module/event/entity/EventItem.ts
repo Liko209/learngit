@@ -16,6 +16,8 @@ export type EventItem = Item & {
   repeat: string;
   repeat_ending: string;
   repeat_ending_after: string;
-  repeat_ending_on: string;
+  repeat_ending_on: number | null;
   text: string;
+  all_day: boolean;
+  tz_id: string | undefined;
 };

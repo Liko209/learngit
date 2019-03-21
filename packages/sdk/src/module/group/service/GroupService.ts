@@ -21,6 +21,7 @@ import { PermissionFlags, TeamSetting } from '../types';
 import { IGroupService } from './IGroupService';
 import { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
 import { Post } from '../../post/entity';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
@@ -77,10 +78,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.groupConfigController;
   }
 
-  handleData = async (groups: Raw<Group>[]): Promise<void> => {
+  handleData = async (
+    groups: Raw<Group>[],
+    source: SYNC_SOURCE,
+  ): Promise<void> => {
     await this.getGroupController()
       .getHandleDataController()
-      .handleData(groups);
+      .handleData(groups, source);
   }
 
   handleGroupMostRecentPostChanged = async (

@@ -89,7 +89,9 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   async getItems(options: ItemQueryOptions) {
     const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS,
+      `${PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS}_${
+        options.typeId
+      }`,
       logId,
     );
     const result = await this.itemServiceController.getItems(options);

@@ -29,13 +29,15 @@ describe('AvatarVM', () => {
       (getEntity as jest.Mock).mockReturnValue({ hasHeadShot: '' });
       expect(avatarViewModel.headShotUrl).toBe('');
     });
+
+    // With the current design, this case is no longer supported
     it('should return url if headshot is string and hasHeadShot is false', () => {
       (getEntity as jest.Mock).mockReturnValue({
         hasHeadShot: true,
         headshot: 'https://avatar.url',
         headShotVersion: '',
       });
-      expect(avatarViewModel.headShotUrl).toBe('https://avatar.url');
+      expect(avatarViewModel.headShotUrl).toBe('');
     });
     it('should return url if headshot is object and hasHeadShot is false', () => {
       (getEntity as jest.Mock).mockReturnValue({

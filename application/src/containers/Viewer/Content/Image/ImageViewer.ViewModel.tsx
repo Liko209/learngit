@@ -66,6 +66,9 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
                 onFailure: () => {
                   this._buildThumbnailStatus = 'fail';
                 },
+                onCancel: () => {
+                  this._buildThumbnailStatus = 'fail';
+                },
               },
             );
           })

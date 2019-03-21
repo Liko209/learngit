@@ -13,7 +13,7 @@ describe('auth', () => {
   describe('oauthTokenViaAuthCode()', () => {
     it('glipNetworkClient http() should be called with specific path', () => {
       oauthTokenViaAuthCode({ name: 'aaa' }, { auth: 'xxxx' });
-      expect(Api.glip2NetworkClient.http).toHaveBeenCalledWith({
+      expect(Api.rcNetworkClient.http).toHaveBeenCalledWith({
         authFree: true,
         data: { grant_type: 'authorization_code', name: 'aaa' },
         headers: { auth: 'xxxx' },
@@ -26,8 +26,8 @@ describe('auth', () => {
   describe('generateCode()', () => {
     it('glipNetworkClient get() should be called with specific path', () => {
       generateCode('123123', '456456');
-      expect(Api.glip2NetworkClient.http).toHaveBeenCalledWith({
-        path: `/v1.x/v1.0/interop/generate-code`,
+      expect(Api.rcNetworkClient.http).toHaveBeenCalledWith({
+        path: '/v1.x/v1.0/interop/generate-code',
         method: NETWORK_METHOD.POST,
         via: NETWORK_VIA.HTTP,
         data: {

@@ -190,6 +190,13 @@ export class GlipSdk {
     return ids;
   }
 
+  async getTeamIdByName(teamName: string) {
+    const teams = await this.getTeams().then(res => res.data.teams);
+    if (!teams) return [];
+    const ids = teams.filter(team => team['set_abbreviation'] == teamName).map(team => team['_id']);
+    return ids[0];
+  }
+
   async getCompanyTeamId() {
     const teams = await this.getTeams().then(res => res.data.teams);
     if (!teams) return [];

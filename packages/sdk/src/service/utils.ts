@@ -8,6 +8,7 @@ import { daoManager, DeactivatedDao } from '../dao';
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
 import { IdModel } from '../framework/model';
+import { shouldEmitNotification } from '../utils/notificationUtils';
 
 const isObject = (value: any) =>
   Object.prototype.toString.call(value) === '[object Object]';
@@ -40,7 +41,7 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
 };
 
 const baseHandleData = async (
-  { data, dao, eventKey, noSavingToDB }: any,
+  { data, dao, eventKey, noSavingToDB, source }: any,
   filterFunc?: (data: IdModel[]) => { eventKey: string; entities: IdModel[] }[],
 ) => {
   // ** NOTICE **
@@ -64,20 +65,21 @@ const baseHandleData = async (
       }
     }
 
-    if (filterFunc) {
-      const notifications = filterFunc(data);
-      notifications.forEach(
-        (notification: { eventKey: string; entities: IdModel[] }) => {
-          notificationCenter.emitEntityUpdate(
-            notification.eventKey,
-            notification.entities,
-          );
-        },
-      );
-    } else {
-      notificationCenter.emitEntityUpdate(eventKey, data);
+    if (shouldEmitNotification(source)) {
+      if (filterFunc) {
+        const notifications = filterFunc(data);
+        notifications.forEach(
+          (notification: { eventKey: string; entities: IdModel[] }) => {
+            notificationCenter.emitEntityUpdate(
+              notification.eventKey,
+              notification.entities,
+            );
+          },
+        );
+      } else {
+        notificationCenter.emitEntityUpdate(eventKey, data);
+      }
     }
-
     return normalData;
   } catch (e) {
     mainLogger.error(`baseHandleData: ${JSON.stringify(e)}`);

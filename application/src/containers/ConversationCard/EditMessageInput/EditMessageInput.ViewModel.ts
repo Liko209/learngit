@@ -25,6 +25,7 @@ enum ERROR_TYPES {
 
 class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   implements EditMessageInputViewProps {
+  private static _draftMap = new Map<number, string>();
   private _postService: PostService;
   @computed
   get id() {
@@ -48,6 +49,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     this._postService = PostService.getInstance();
     this._exitEditMode = this._exitEditMode.bind(this);
     this._editPost = this._editPost.bind(this);
+    this.saveDraft = this.saveDraft.bind(this);
   }
 
   @computed
@@ -63,6 +65,22 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   @computed
   get text() {
     return this._post.text;
+  }
+
+  @computed
+  get draft() {
+    const draftMap = EditMessageInputViewModel._draftMap;
+    return draftMap.get(this.props.id) || '';
+  }
+
+  saveDraft(draft: string) {
+    const draftMap = EditMessageInputViewModel._draftMap;
+    draftMap.set(this.props.id, draft);
+  }
+
+  removeDraft() {
+    const draftMap = EditMessageInputViewModel._draftMap;
+    draftMap.delete(this.props.id);
   }
 
   @action
@@ -83,6 +101,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       if (content.trim()) {
         vm._editPost(content, mentionIds);
       }
+      vm.removeDraft();
     };
   }
 
@@ -98,6 +117,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     );
     inEditModePostIds.splice(inEditModePostIds.indexOf(this.id), 1);
     globalStore.set(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS, [...inEditModePostIds]);
+    this.removeDraft();
   }
 
   private async _editPost(content: string, ids: number[]) {

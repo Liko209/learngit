@@ -22,6 +22,7 @@ import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import { PersonController } from '../controller/PersonController';
 import { SOCKET } from '../../../service/eventKey';
 import { ContactType } from '../types';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -50,8 +51,11 @@ class PersonService extends EntityBaseService<Person>
     return this._personController;
   }
 
-  handleIncomingData = async (persons: Raw<Person>[]): Promise<void> => {
-    await this.getPersonController().handleIncomingData(persons);
+  handleIncomingData = async (
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+  ): Promise<void> => {
+    await this.getPersonController().handleIncomingData(persons, source);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {

@@ -3,9 +3,10 @@ import { v4 as uuid } from 'uuid';
 
 import { formalName } from '../../libs/filter';
 import { setupCase, teardownCase } from '../../init';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { SITE_URL, BrandTire } from '../../config';
 import { AppRoot } from '../../v2/page-models/AppRoot';
+import { IGroup } from '../../v2/models';
 
 declare var test: TestFn;
 fixture('ConversationStream/ConversationStream')
@@ -161,35 +162,33 @@ test(formalName('Should be able to read the newest posts once open a conversatio
   }
 );
 
-// skip by a bug: https://jira.ringcentral.com/browse/FIJI-3309
-test.skip(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
-  const app = new AppRoot(t);
-  const users = h(t).rcData.mainCompany.users;
-  const loginUser= users[6];
-  await h(t).platform(loginUser).init();
+test(formalName('Conversation list scrolling when sending massage', ['JPT-106', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[6];
   await h(t).glip(loginUser).init();
   await h(t).glip(loginUser).resetProfileAndState();
   const meChatId = await h(t).glip(loginUser).getPersonPartialData('me_group_id');
 
-  const imagePaths = ['../../sources/1.png','../../sources/2.png'];
-  const imageNames = ['1.png','2.png'];
+  const imagePaths = ['../../sources/1.png', '../../sources/2.png'];
+  const imageNames = ['1.png', '2.png'];
 
-  let conversationId;
-  await h(t).withLog('Given I have an extension with a conversation', async () => {
-    conversationId = await h(t).platform(loginUser).createAndGetGroupId({
-      isPublic: true,
-      name: `Team ${uuid()}`,
-      type: 'Team',
-      members: [loginUser.rcId, users[5].rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog(`Given I have an extension with a conversation named ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
-  await h(t).withLog('And this conversation 20 message', async () => {
-    for (let i of _.range(20)) {
-      await h(t).platform(loginUser).createPost({ text: `${i} ${uuid()}` }, conversationId);
+  await h(t).withLog('And this conversation has more than one screen', async () => {
+    for (let i of _.range(5)) {
+      await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, loginUser);
     }
   });
 
+  const app = new AppRoot(t);
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -200,7 +199,7 @@ test.skip(formalName('Conversation list scrolling when sending massage', ['JPT-1
   const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('And enter the team conversation', async () => {
     await teamsSection.expand();
-    await teamsSection.conversationEntryById(conversationId).enter();
+    await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   await h(t).withLog('And scroll to middle of page', async () => {
@@ -213,7 +212,6 @@ test.skip(formalName('Conversation list scrolling when sending massage', ['JPT-1
   });
 
   await h(t).withLog('Then I should see the newest post in bottom of stream section', async () => {
-    await t.wait(1e3);
     await conversationPage.expectStreamScrollToBottom();
     await t.expect(conversationPage.nthPostItem(-1).body.withText(message).exists).ok();
   });
@@ -224,7 +222,6 @@ test.skip(formalName('Conversation list scrolling when sending massage', ['JPT-1
   });
 
   await h(t).withLog('Then I should see the newest post in bottom of stream section', async () => {
-    await t.wait(1e3);
     await conversationPage.expectStreamScrollToBottom();
     await t.expect(conversationPage.nthPostItem(-1).body.withText(anotherMessage).exists).ok();
   });
@@ -238,7 +235,6 @@ test.skip(formalName('Conversation list scrolling when sending massage', ['JPT-1
   });
 
   await h(t).withLog('Then I should see the post with image A in bottom of stream section', async () => {
-    await t.wait(1e3);
     await conversationPage.expectStreamScrollToBottom();
     await t.expect(conversationPage.nthPostItem(-1).fileNames.withText(imageNames[0]).exists).ok();
   });
@@ -258,7 +254,7 @@ test.skip(formalName('Conversation list scrolling when sending massage', ['JPT-1
   await h(t).withLog('When I enter other conversation and come bask  post', async () => {
     await favoriteSection.conversationEntryById(meChatId).enter();
     await conversationPage.waitUntilPostsBeLoaded();
-    await teamsSection.conversationEntryById(conversationId).enter();
+    await teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   await h(t).withLog('Then I should see the post with image B in bottom of stream section', async () => {

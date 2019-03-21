@@ -5,6 +5,7 @@
  */
 import Api from '../../api';
 import { loginGlip, indexData } from '../user';
+import { TEN_MINUTE_TIMEOUT } from 'foundation/src';
 
 jest.mock('../../api');
 
@@ -17,6 +18,7 @@ describe('UserAPI', () => {
         data: { rc_access_token_data: 'eyJhdXRoIjoiYXNkZnNkIn0=' },
         method: 'put',
         path: '/login',
+        timeout: TEN_MINUTE_TIMEOUT,
         via: 0,
       });
     });
@@ -34,6 +36,7 @@ describe('UserAPI', () => {
         requestConfig,
         header,
         3,
+        TEN_MINUTE_TIMEOUT,
       );
     });
   });

@@ -7,6 +7,12 @@
 import { ImageDownloader } from '../ImageDownloader';
 
 describe('ImageDownloader', () => {
+  const lisenterMock = {
+    onSuccess: jest.fn(() => {}),
+    onFailure: jest.fn(() => {}),
+    onCancel: jest.fn(() => {}),
+  };
+
   it('download', () => {
     const imageDownloader: ImageDownloader = new ImageDownloader();
 
@@ -18,7 +24,7 @@ describe('ImageDownloader', () => {
 
     imageDownloader.download(
       { id: 1, url: 'https://xxxx.xxx.jpg', thumbnail: true },
-      undefined,
+      lisenterMock,
     );
 
     expect(imageElement.setAttribute).toBeCalledWith(
