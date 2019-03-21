@@ -11,6 +11,7 @@ import styled, {
   css,
   createGlobalStyle,
 } from '../../../foundation/styled-components';
+import { spacing } from '../../../foundation/utils';
 
 type JuiTooltipProps = {
   placement?: string;
@@ -26,6 +27,7 @@ const TooltipArrow = styled.span`
   height: ${3 * baseSize}px;
   &::before {
     content: '';
+    color: transparent;
     margin: auto;
     display: block;
     width: 0;
@@ -40,6 +42,7 @@ const bottom = css`
   top: 0;
   left: 0;
   margin-top: ${-0.9 * baseSize}px;
+  width: ${3 * baseSize}px;
   height: ${baseSize}px;
   &::before {
     border-width: ${baseSize}px;
@@ -49,21 +52,21 @@ const bottom = css`
 `;
 
 const top = css`
-  bottom: ${-baseSize}px;
+  bottom: 0;
   left: 0;
-  margin-top: ${-0.9 * baseSize}px;
+  margin-bottom: ${-0.9 * baseSize}px;
   width: ${3 * baseSize}px;
   height: ${baseSize}px;
   &::before {
     border-width: ${baseSize}px;
+    border-bottom-width: 0;
     border-color: ${tooltipColor} transparent transparent;
   }
 `;
 
 const right = css`
-  top: 0;
   left: 0;
-  margin-left: ${-0.8 * baseSize}px;
+  margin-left: ${-0.9 * baseSize}px;
   height: ${2 * baseSize}px;
   width: ${baseSize}px;
   &::before {
@@ -73,20 +76,37 @@ const right = css`
   }
 `;
 
+const left = css`
+  right: 0;
+  margin-right: ${-0.8 * baseSize}px;
+  height: ${2 * baseSize}px;
+  width: ${baseSize}px;
+  &::before {
+    border-width: ${baseSize}px;
+    border-right-width: 0;
+    border-color: transparent transparent transparent ${tooltipColor};
+  }
+`;
+
 const GlobalToolTipStyle = createGlobalStyle`
   .popper[x-placement='right'] ${TooltipArrow}{
-    margin: 0 2px;
+    margin: ${spacing(0, 0.5)};
     ${right}
   }
 
   .popper[x-placement='top'] ${TooltipArrow}{
-    margin: 16px 0;
+    margin: ${spacing(4, 0)};
     ${top}
   }
 
   .popper[x-placement='bottom'] ${TooltipArrow}{
-    margin: 12px 0;
+    margin: ${spacing(3, 0)};
     ${bottom}
+  }
+
+  .popper[x-placement='left'] ${TooltipArrow}{
+    margin: ${spacing(0, 0.5)};
+    ${left}
   }
 `;
 export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
@@ -141,9 +161,6 @@ export class JuiArrowTip extends React.PureComponent<JuiTooltipProps> {
           }
           classes={{
             popper: 'popper',
-            tooltipPlacementRight: 'tooltipPlacementRight',
-            tooltipPlacementBottom: 'tooltipPlacementBottom',
-            tooltipPlacementTop: 'tooltipPlacementTop',
           }}
           PopperProps={{
             popperOptions: {
