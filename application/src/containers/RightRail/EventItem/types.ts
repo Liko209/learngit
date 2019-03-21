@@ -12,7 +12,7 @@ type Props = {
 
 type ViewProps = {
   text: string;
-  startTime: string;
+  localTime: string;
   event: EventItemModel;
   isRepeat: boolean;
   color: [keyof Palette, string];
