@@ -101,7 +101,15 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
       if (FileItemUtils.isGifItem(file)) {
         url = file.versionUrl!;
       } else {
-        url = getThumbnailURL(file, this._size) as string;
+        url = getThumbnailURL(
+          {
+            id: file.id,
+            type: file.type,
+            versionUrl: file.versionUrl || '',
+            versions: file.versions,
+          },
+          this._size,
+        ) as string;
       }
       if (
         !url &&

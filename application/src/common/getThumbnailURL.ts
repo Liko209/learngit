@@ -88,10 +88,17 @@ async function getThumbnailURLWithType(
   }
 
   const size = getThumbnailSize(origWidth, origHeight);
-  url = getThumbnailURL(item, {
-    width: size.imageWidth,
-    height: size.imageHeight,
-  });
+  if (rule === RULE.SQUARE_IMAGE) {
+    url = getThumbnailURL(item, {
+      width: SQUARE_SIZE,
+      height: SQUARE_SIZE,
+    });
+  } else {
+    url = getThumbnailURL(item, {
+      width: size.imageWidth,
+      height: size.imageHeight,
+    });
+  }
   if (url && url.length) {
     return {
       url,
