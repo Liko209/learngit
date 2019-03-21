@@ -157,4 +157,8 @@ class ZoomElementAnimation extends React.PureComponent<
 
 const JuiZoomElement = withTheme(ZoomElementAnimation);
 
-export { JuiZoomElement, ZoomElementProps as JuiZoomElementProps };
+export {
+  JuiZoomElement,
+  ZoomElementProps as JuiZoomElementProps,
+  ZoomElementAnimation,
+};

@@ -125,7 +125,7 @@ test.skip(formalName('Click the unread button (up) then jump to first unread pos
     await teamsSection.ensureLoaded();
   });
 
-  await h(t).withLog('Then I should see unread button', async () => { 
+  await h(t).withLog('Then I should see unread button', async () => {
     await t.expect(conversationPage.jumpToFirstUnreadButtonWrapper.exists).ok()
   });
 
@@ -192,7 +192,8 @@ test(formalName('The count of the unread button (up) should display correct', ['
   }, true);
 });
 
-test(formalName('JPT-699 The count of the unread button (up) should show "99+" when post more than 99. \
+// JPT-225 deprecated, should be convert to MT
+test.skip(formalName('JPT-699 The count of the unread button (up) should show "99+" when post more than 99. \
 JPT-225 All unread messages can be downloaded when click the unread button', ['JPT-225', 'JPT-699', 'P2', 'Wayne.Zhou', 'Stream']), async (t) => {
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[6];
@@ -244,7 +245,8 @@ JPT-225 All unread messages can be downloaded when click the unread button', ['J
     });
   })
 
-test(formalName('Unread button (up) will dismiss when back and open the conversation', ['JPT-234', 'P1', 'Wayne.Zhou', 'Stream']), async (t) => {
+//skip due to https://jira.ringcentral.com/browse/FIJI-4329
+test.skip(formalName('Unread button (up) will dismiss when back and open the conversation', ['JPT-234', 'P1', 'Wayne.Zhou', 'Stream']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];

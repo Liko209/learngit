@@ -14,21 +14,31 @@ import { IdsToConversationSheet } from '@/containers/ConversationSheet';
 import { TextMessage } from '@/containers/ConversationSheet/TextMessage';
 import { From } from './From';
 import { MiniCard } from '@/containers/MiniCard';
-import history from '@/history';
-import storeManager from '@/store';
-import { GLOBAL_KEYS } from '@/store/constants';
 import { Activity } from './Activity';
-import { EditMessageInput } from './EditMessageInput';
+import {
+  EditMessageInput,
+  EditMessageInputViewComponent,
+} from './EditMessageInput';
 import { Profile, PROFILE_TYPE } from '@/containers/Profile';
+import { jumpToPost } from '@/common/jumpToPost';
 
 @observer
 export class ConversationCard extends React.Component<
   ConversationCardViewProps
 > {
+  private _editMessageInputRef: React.RefObject<
+    EditMessageInputViewComponent
+  > = React.createRef();
   state = {
     isHover: false,
     isFocusMoreAction: false,
   };
+
+  componentDidUpdate(prevProps: ConversationCardViewProps) {
+    if (this.props.isEditMode && !prevProps.isEditMode) {
+      this._focusEditor();
+    }
+  }
 
   handleMouseOver = () => {
     this.setState({
@@ -51,9 +61,16 @@ export class ConversationCard extends React.Component<
   }
 
   jumpToPost = () => {
-    const globalStore = storeManager.getGlobalStore();
-    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, this.props.id);
-    history.push(`/messages/${this.props.groupId}`);
+    const { id, groupId } = this.props;
+    jumpToPost(id, groupId);
+  }
+
+  private _focusEditor() {
+    setTimeout(() => {
+      if (this._editMessageInputRef.current) {
+        this._editMessageInputRef.current.focusEditor();
+      }
+    },         100);
   }
 
   render() {
@@ -68,7 +85,7 @@ export class ConversationCard extends React.Component<
       mode,
       post,
       hideText,
-      highlight,
+      cardRef,
       onAnimationStart,
       onHighlightAnimationStart,
       isEditMode,
@@ -98,9 +115,9 @@ export class ConversationCard extends React.Component<
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseLeave}
         mode={mode}
-        highlight={highlight}
         onClick={onClickHandler}
         onAnimationStart={onAnimationStart}
+        ref={cardRef}
         {...rest}
       >
         <JuiConversationCardHeader
@@ -118,7 +135,9 @@ export class ConversationCard extends React.Component<
         </JuiConversationCardHeader>
         <JuiConversationCardBody data-name="body">
           {!hideText && !isEditMode && <TextMessage id={id} />}
-          {isEditMode && <EditMessageInput id={id} />}
+          {isEditMode && (
+            <EditMessageInput viewRef={this._editMessageInputRef} id={id} />
+          )}
           {itemTypeIds && (
             <IdsToConversationSheet itemTypeIds={itemTypeIds} postId={id} />
           )}

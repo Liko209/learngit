@@ -28,6 +28,7 @@ type ViewerViewModelProps = CommonProps & {
   hasNext: boolean;
   switchToPrevious: () => void;
   switchToNext: () => void;
+  stopPreload: () => void;
   loadMore: (direction: QUERY_DIRECTION) => Promise<Item[]>;
   setOnCurrentItemDeletedCb: (callback: () => void) => void;
   setOnItemSwitchCb: (callback: (itemId: number) => void) => void;

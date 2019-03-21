@@ -16,7 +16,7 @@ enum CACHE_INITIAL_STATUS {
 
 class EntityCacheController<T extends IdModel = IdModel>
   implements IEntityCacheController<T> {
-  private _entities: Map<number, T> = new Map(); // { [id: number]: T } = {};
+  protected _entities: Map<number, T> = new Map(); // { [id: number]: T } = {};
 
   private _initialStatus: CACHE_INITIAL_STATUS;
 
@@ -27,9 +27,7 @@ class EntityCacheController<T extends IdModel = IdModel>
   initialize(entities: T[]) {
     this._initialStatus = CACHE_INITIAL_STATUS.INPROGRESS;
     this.clear();
-    _.forEach(entities, (model: T) => {
-      this.put(model);
-    });
+    this.bulkPut(entities);
     this._initialStatus = CACHE_INITIAL_STATUS.SUCCESS;
   }
 
@@ -45,13 +43,13 @@ class EntityCacheController<T extends IdModel = IdModel>
     if (Array.isArray(item)) {
       await this.bulkPut(item);
     } else {
-      this._put(item);
+      this.putInternal(item);
     }
   }
 
   async bulkPut(array: T[]): Promise<void> {
     array.forEach(async (item: T) => {
-      await this._put(item);
+      await this.putInternal(item);
     });
   }
 
@@ -60,12 +58,12 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   async delete(key: number): Promise<void> {
-    this._delete(key);
+    this.deleteInternal(key);
   }
 
   async bulkDelete(keys: number[]): Promise<void> {
     keys.forEach(async (key: number) => {
-      await this._delete(key);
+      await this.deleteInternal(key);
     });
   }
 
@@ -136,11 +134,11 @@ class EntityCacheController<T extends IdModel = IdModel>
 
   async replace(ids: number[], entities: Map<number, T>) {
     ids.forEach((id: number) => {
-      this._delete(id);
+      this.deleteInternal(id);
     });
 
     entities.forEach((entity: T) => {
-      this._put(entity);
+      this.putInternal(entity);
     });
   }
 
@@ -170,7 +168,7 @@ class EntityCacheController<T extends IdModel = IdModel>
     if (oldEntity) {
       this._updatePartial(oldEntity, entity);
     } else {
-      this._put(entity);
+      this.putInternal(entity);
     }
   }
 
@@ -186,18 +184,18 @@ class EntityCacheController<T extends IdModel = IdModel>
           oldItem[key] = item[key];
         });
       } else {
-        this._put(item as T);
+        this.putInternal(item as T);
       }
     }
   }
 
-  private _delete(key: number) {
+  protected deleteInternal(key: number) {
     if (this._entities.has(key)) {
       this._entities.delete(key);
     }
   }
 
-  private _put(item: T) {
+  protected putInternal(item: T) {
     this._entities.set(item.id, item);
   }
 

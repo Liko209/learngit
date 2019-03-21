@@ -148,15 +148,7 @@ class TotalUnreadController {
   private async _updateTotalUnreadByGroupChanges(
     payload: NotificationEntityPayload<Group>,
   ): Promise<void> {
-    if (payload.type === EVENT_TYPES.DELETE) {
-      payload.body.ids.forEach((id: number) => {
-        const groupUnread = this._groupSectionUnread.get(id);
-        if (groupUnread) {
-          this._deleteFromTotalUnread(groupUnread);
-          this._groupSectionUnread.delete(id);
-        }
-      });
-    } else if (payload.type === EVENT_TYPES.UPDATE) {
+    if (payload.type === EVENT_TYPES.UPDATE) {
       const currentUserId = AccountGlobalConfig.getCurrentUserId();
       await Promise.all(
         payload.body.ids.map(async (id: number) => {

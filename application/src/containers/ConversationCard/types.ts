@@ -5,16 +5,17 @@
  */
 import PostModel from '@/store/models/Post';
 import PersonModel from '@/store/models/Person';
+import { RefObject } from 'react';
+import JuiConversationCard from 'jui/src/pattern/ConversationCard';
 type ConversationCardProps = {
   id: number; // post id
   mode?: 'navigation';
-  highlight?: boolean;
   onHighlightAnimationStart?: React.AnimationEventHandler;
+  cardRef?: RefObject<JuiConversationCard>;
 };
 
 type ConversationCardViewProps = {
   id: number;
-  highlight: boolean;
   post: PostModel;
   hideText: boolean;
   creator: PersonModel;
@@ -25,6 +26,7 @@ type ConversationCardViewProps = {
   itemTypeIds?: {
     [key: number]: number[];
   };
+  cardRef?: RefObject<JuiConversationCard>;
   showProgressActions: boolean;
   likes?: number[];
   mode?: string;

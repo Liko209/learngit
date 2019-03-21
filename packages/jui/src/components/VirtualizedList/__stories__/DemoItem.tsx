@@ -3,7 +3,7 @@
  * @Date: 2019-03-06 17:53:47
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useState, useLayoutEffect } from 'react';
+import React, { memo, useState, useLayoutEffect } from 'react';
 import { DemoItemModel } from './itemFactory';
 
 const ItemFooter = () => {
@@ -69,4 +69,6 @@ const DemoItem = ({ item }: { item: DemoItemModel }) => {
   );
 };
 
-export { DemoItem };
+const MemoDemoItem = memo(DemoItem);
+
+export { MemoDemoItem as DemoItem };

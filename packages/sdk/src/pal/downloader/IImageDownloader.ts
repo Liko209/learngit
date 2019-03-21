@@ -4,20 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+type DownloadItemInfo = {
+  id: number;
+  url?: string;
+  thumbnail?: boolean;
+  count?: number;
+};
+
 interface IImageDownloadedListener {
-  onSuccess(
-    item: { id: number; url?: string; thumbnail?: boolean; count?: number },
-    width: number,
-    height: number,
-  ): void;
-  onFailure(url: string, errorCode: number): void;
+  onSuccess(item: DownloadItemInfo, width: number, height: number): void;
+  onFailure(item: DownloadItemInfo, errorCode: number): void;
+  onCancel(item: DownloadItemInfo): void;
 }
 
 interface IImageDownloader {
   download(
-    item: { id: number; url?: string; thumbnail?: boolean; count?: number },
+    item: DownloadItemInfo,
     downloadListener: IImageDownloadedListener,
   ): void;
 }
 
-export { IImageDownloadedListener, IImageDownloader };
+export { DownloadItemInfo, IImageDownloadedListener, IImageDownloader };

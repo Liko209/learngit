@@ -5,7 +5,6 @@
  */
 import { observable, computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
-import { PersonService } from 'sdk/module/person';
 import { GroupService } from 'sdk/module/group';
 import { SearchService } from 'sdk/module/search';
 import { RecentSearchModel, RecentSearchTypes } from 'sdk/module/search/entity';
@@ -33,7 +32,6 @@ enum DATA_TYPE {
   recent,
 }
 class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
-  personService: PersonService;
   groupService: GroupService;
   @observable value: string = '';
   @observable focus: boolean = false;
@@ -45,7 +43,6 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
 
   constructor() {
     super();
-    this.personService = PersonService.getInstance<PersonService>();
     this.groupService = GroupService.getInstance();
   }
 
@@ -106,7 +103,11 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     if (!key) return;
 
     const [persons, groups, teams] = await Promise.all([
-      this.personService.doFuzzySearchPersons(key, false),
+      SearchService.getInstance().doFuzzySearchPersons({
+        searchKey: key,
+        excludeSelf: false,
+        recentFirst: true,
+      }),
       this.groupService.doFuzzySearchGroups(key),
       this.groupService.doFuzzySearchTeams(key),
     ]);

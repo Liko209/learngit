@@ -7,6 +7,7 @@ import _ from 'lodash';
 
 import { RecentSearchRecordController } from '../RecentSearchRecordController';
 import { SearchUserConfig } from '../../config';
+import { RecentSearchTypes } from '../../entity';
 
 jest.mock('../../config', () => {
   const xx = {
@@ -187,6 +188,50 @@ describe('RecentSearchRecordController', () => {
           query_params: res.query_params,
         },
       ]);
+    });
+  });
+
+  describe('getRecentSearchRecordsByType', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    const records = [
+      { id: 1, time_stamp: 1, type: 'people', value: 111 },
+      { id: 2, time_stamp: 2, type: 'team', value: 222 },
+      { id: 3, time_stamp: 3, type: 'group', value: 333 },
+      { id: 4, time_stamp: 4, type: 'search', value: '444' },
+    ];
+    it('should return expected records map', () => {
+      searchUserConfig.getRecentSearchRecords = jest
+        .fn()
+        .mockReturnValue(records);
+      expect(
+        controller.getRecentSearchRecordsByType(RecentSearchTypes.PEOPLE),
+      ).toEqual(
+        new Map([[111, { id: 1, time_stamp: 1, type: 'people', value: 111 }]]),
+      );
+
+      expect(
+        controller.getRecentSearchRecordsByType(RecentSearchTypes.TEAM),
+      ).toEqual(
+        new Map([[222, { id: 2, time_stamp: 2, type: 'team', value: 222 }]]),
+      );
+
+      expect(
+        controller.getRecentSearchRecordsByType(RecentSearchTypes.GROUP),
+      ).toEqual(
+        new Map([[333, { id: 3, time_stamp: 3, type: 'group', value: 333 }]]),
+      );
+
+      expect(
+        controller.getRecentSearchRecordsByType(RecentSearchTypes.SEARCH),
+      ).toEqual(
+        new Map([
+          ['444', { id: 4, time_stamp: 4, type: 'search', value: '444' }],
+        ]),
+      );
     });
   });
 });

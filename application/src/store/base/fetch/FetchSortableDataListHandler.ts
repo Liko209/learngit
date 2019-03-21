@@ -158,6 +158,7 @@ export class FetchSortableDataListHandler<
     return data;
   }
 
+  @action
   refreshData() {
     mainLogger.debug(
       `FetchSortableDataListHandler: refreshData: ${this.listStore.items
@@ -298,13 +299,13 @@ export class FetchSortableDataListHandler<
         addedSortableModels = _.differenceBy(
           matchedSortableModels,
           originalSortableModels,
-          item => item.id,
+          (item: ISortableModel<T>) => item.id,
         );
 
         updatedSortableModels = _.intersectionBy(
           matchedSortableModels,
           originalSortableModels,
-          item => item.id,
+          (item: ISortableModel<T>) => item.id,
         );
       }
     }

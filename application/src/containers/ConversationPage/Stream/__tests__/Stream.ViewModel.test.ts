@@ -30,8 +30,6 @@ jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
-const postService = new PostService();
-
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
   const vm = new StreamViewModel({
@@ -45,18 +43,22 @@ function setup(obj?: any) {
 
 describe('StreamViewModel', () => {
   let itemService: ItemService;
+  let postService: PostService;
+
   const streamController = {
     dispose: jest.fn(),
     hasMore: jest.fn(),
     enableNewMessageSep: jest.fn(),
     disableNewMessageSep: jest.fn(),
   };
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     itemService = new ItemService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    postService = new PostService();
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
@@ -147,7 +149,10 @@ describe('StreamViewModel', () => {
 
       Object.assign(vm, {
         _streamController: {
-          hasMoreUp: props.hasMoreUp,
+          hasMore: (direction: QUERY_DIRECTION) => {
+            return props.hasMoreUp;
+          },
+
           items: props.id
             ? [{ id: props.id, value: [props.id], type: StreamItemType.POST }]
             : [],
@@ -472,14 +477,14 @@ describe('StreamViewModel', () => {
       get: jest.fn().mockReturnValue(1),
     };
     const atBottomEvent = {
-      target: {
+      currentTarget: {
         scrollHeight: 0,
         scrollTop: 0,
         clientHeight: 0,
       },
     } as any;
     const notAtBottomEvent = {
-      target: {
+      currentTarget: {
         scrollHeight: 10,
         scrollTop: 0,
         clientHeight: 0,
@@ -515,7 +520,7 @@ describe('StreamViewModel', () => {
     });
 
     describe('when viewModel is initialized', () => {
-      function hideUMIAndDisableMessageHandler() {
+      function expectHideUMIAndDisableMessageHandler() {
         expect(globalStore.set).toBeCalledWith(
           GLOBAL_KEYS.SHOULD_SHOW_UMI,
           false,
@@ -523,7 +528,7 @@ describe('StreamViewModel', () => {
         expect(streamController.disableNewMessageSep).toBeCalled();
       }
 
-      function showUMIAndEnableMessageHandler() {
+      function expectShowUMIAndEnableMessageHandler() {
         expect(globalStore.set).toBeCalledWith(
           GLOBAL_KEYS.SHOULD_SHOW_UMI,
           true,
@@ -536,7 +541,7 @@ describe('StreamViewModel', () => {
         mockDocumentFocus(true);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(atBottomEvent);
-        hideUMIAndDisableMessageHandler();
+        expectHideUMIAndDisableMessageHandler();
       });
 
       it('should enable newMessageSeparatorHandler when at bottom and document without focus', () => {
@@ -544,7 +549,7 @@ describe('StreamViewModel', () => {
         mockDocumentFocus(false);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(atBottomEvent);
-        showUMIAndEnableMessageHandler();
+        expectShowUMIAndEnableMessageHandler();
       });
 
       it('should enable newMessageSeparatorHandler when not at bottom and document has focus', () => {
@@ -552,7 +557,7 @@ describe('StreamViewModel', () => {
         mockDocumentFocus(true);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(notAtBottomEvent);
-        showUMIAndEnableMessageHandler();
+        expectShowUMIAndEnableMessageHandler();
       });
 
       it('should enable newMessageSeparatorHandler when not at bottom and document without focus', () => {
@@ -560,7 +565,7 @@ describe('StreamViewModel', () => {
         mockDocumentFocus(false);
         const vm = localSetup({});
         vm.handleNewMessageSeparatorState(notAtBottomEvent);
-        showUMIAndEnableMessageHandler();
+        expectShowUMIAndEnableMessageHandler();
       });
     });
 

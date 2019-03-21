@@ -36,6 +36,14 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._callController.hangUp();
   }
 
+  mute(callId: string) {
+    this._callController.mute();
+  }
+
+  unmute(callId: string) {
+    this._callController.unmute();
+  }
+
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
     this._delegate.onAccountStateChanged(state);
   }
