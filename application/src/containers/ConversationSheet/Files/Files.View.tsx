@@ -74,8 +74,6 @@ class FilesView extends React.Component<FilesViewProps> {
   ) => async (ev: React.MouseEvent, loaded?: boolean) => {
     if (postId < 0) return;
     const target = ev.currentTarget as HTMLElement;
-    const canShowDialogPermission = await this.props.getShowDialogPermission();
-    if (!canShowDialogPermission) return;
     showImageViewer(groupId, id, {
       thumbnailSrc,
       initialWidth: origWidth,

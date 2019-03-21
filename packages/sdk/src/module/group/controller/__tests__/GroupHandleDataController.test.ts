@@ -20,6 +20,8 @@ import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
 import { GlobalConfigService } from '../../../../module/config';
 import { AccountGlobalConfig } from '../../../../service/account/config';
+import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
+import { SYNC_SOURCE } from '../../../../module/sync';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../service/account/config');
@@ -27,6 +29,8 @@ GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
+
+jest.mock('../../../../framework/controller/impl/EntitySourceController');
 
 jest.mock('../../../profile');
 jest.mock('../../../../service/account');
@@ -110,6 +114,7 @@ function generateFakeGroups(
   return groups;
 }
 
+const entitySourceController = new EntitySourceController<Group>(null, null);
 const stateService: StateService = new StateService();
 const personService = new PersonService();
 const profileService = new ProfileService();
@@ -129,16 +134,22 @@ beforeEach(() => {
 describe('GroupHandleDataController', () => {
   let groupHandleDataController: GroupHandleDataController;
   beforeEach(() => {
-    groupHandleDataController = new GroupHandleDataController(groupService);
+    groupHandleDataController = new GroupHandleDataController(
+      groupService,
+      entitySourceController,
+    );
   });
   describe('handleData()', () => {
-    it('passing an empty array', async () => {
-      const result = await groupHandleDataController.handleData([]);
+    it('should emit notification when passing an array from index', async () => {
+      const result = await groupHandleDataController.handleData(
+        [],
+        SYNC_SOURCE.INDEX,
+      );
       expect(result).toBeUndefined();
     });
 
     it('passing an array', async () => {
-      expect.assertions(7);
+      expect.assertions(6);
       AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
       daoManager.getDao(GroupDao).get.mockReturnValue(1);
       const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
@@ -161,22 +172,58 @@ describe('GroupHandleDataController', () => {
         { _id: 4, members: [], deactivated: false },
         { _id: 5, members: [], is_archived: true },
       ]);
-      await groupHandleDataController.handleData(groups);
+      await groupHandleDataController.handleData(groups, SYNC_SOURCE.INDEX);
       // expect getTransformData function
       expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
       // expect operateGroupDao function
-      expect(daoManager.getDao(GroupDao).bulkDelete).toHaveBeenCalledTimes(1);
-      expect(daoManager.getDao(GroupDao).bulkPut).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.bulkDelete).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
       // expect doNotification function
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
-      expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
         { id: 2, members: [1, 2], deactivated: false },
         { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
         { id: 4, members: [], deactivated: false },
         { id: 5, members: [], is_archived: true },
+        { _delta: false, deactivated: true, id: 1, members: [1] },
       ]);
+    });
+
+    it('should not emit notification when passing an array from remaining', async () => {
+      expect.assertions(6);
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      daoManager.getDao(GroupDao).get.mockReturnValue(1);
+      const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
+        {
+          _id: 1,
+          members: [1],
+          deactivated: true,
+          _delta: {
+            remove: { members: Array(1) },
+            set: {
+              modified_at: 1535007198836,
+              most_recent_content_modified_at: 1535007198836,
+              version: 2916578790211584,
+            },
+            _id: 4276230,
+          },
+        },
+        { _id: 2, members: [1, 2], deactivated: false },
+        { _id: 3, members: [2], deactivated: false },
+        { _id: 4, members: [], deactivated: false },
+        { _id: 5, members: [], is_archived: true },
+      ]);
+      await groupHandleDataController.handleData(groups, SYNC_SOURCE.REMAINING);
+      // expect getTransformData function
+      expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
+      // expect operateGroupDao function
+      expect(entitySourceController.bulkDelete).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
+      // expect doNotification function
+      expect(notificationCenter.emit).not.toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emitEntityDelete).not.toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalledTimes(1);
     });
   });
 
@@ -186,7 +233,7 @@ describe('GroupHandleDataController', () => {
     });
 
     it('should save directly if find partial in DB', async () => {
-      daoManager.getDao(GroupDao).get.mockReturnValueOnce(1);
+      entitySourceController.get.mockReturnValueOnce(1);
       const groups: Partial<Raw<Group>>[] = toArrayOf<Partial<Raw<Group>>>([
         {
           _id: 3375110,
@@ -196,7 +243,7 @@ describe('GroupHandleDataController', () => {
         },
       ]);
       await groupHandleDataController.handlePartialData(groups);
-      expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.update).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
 
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
@@ -269,6 +316,8 @@ describe('GroupHandleDataController', () => {
   describe('handleGroupMostRecentPostChanged()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
     });
 
     const post = {
@@ -300,6 +349,11 @@ describe('GroupHandleDataController', () => {
         most_recent_post_created_at: 99,
         members: [],
       });
+      entitySourceController.get.mockResolvedValueOnce({
+        id: 2,
+        most_recent_post_created_at: 99,
+        members: [],
+      });
       await groupHandleDataController.handleGroupMostRecentPostChanged({
         type: EVENT_TYPES.UPDATE,
         body: {
@@ -315,6 +369,10 @@ describe('GroupHandleDataController', () => {
           await fn();
         });
       daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
+        id: 2,
+        members: [],
+      });
+      entitySourceController.get.mockResolvedValueOnce({
         id: 2,
         members: [],
       });
@@ -337,13 +395,18 @@ describe('GroupHandleDataController', () => {
         members: [],
         most_recent_post_created_at: 101,
       });
+      entitySourceController.get.mockResolvedValueOnce({
+        id: 2,
+        members: [],
+        most_recent_post_created_at: 101,
+      });
       await groupHandleDataController.handleGroupMostRecentPostChanged({
         type: EVENT_TYPES.UPDATE,
         body: {
           entities: map,
         },
       });
-      expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
     });
   });
 

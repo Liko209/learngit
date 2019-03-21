@@ -5,3 +5,4 @@
  */
 
 export { SyncService, SyncListener } from './service';
+export { SYNC_SOURCE } from './types';

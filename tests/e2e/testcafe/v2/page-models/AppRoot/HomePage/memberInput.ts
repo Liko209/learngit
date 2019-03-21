@@ -4,7 +4,7 @@ export class MemberInput extends BaseWebComponent {
   get self() {
     return this.getSelector('*[role="combobox"]');
   }
-  
+
   get memberInputArea() {
     return this.self.find('#downshift-multiple-input');
   }
@@ -52,5 +52,11 @@ export class MemberInput extends BaseWebComponent {
 
   async selectMemberByEmail(email: string) {
     await this.t.click(this.contactSearchItems.find('.secondary').withText(email));
+  }
+
+  async addMember(name: string) {
+    await this.typeMember(name, { paste: true });
+    await this.t.wait(3e3);
+    await this.selectMemberByNth(0);
   }
 }

@@ -17,7 +17,7 @@ export default class EventItemModel extends ItemModel {
   @observable allDay: boolean;
   @observable repeatEnding: string;
   @observable repeatEndingAfter: string;
-  @observable repeatEndingOn: string;
+  @observable repeatEndingOn: number | null;
   @observable text: string;
 
   constructor(data: EventItem) {

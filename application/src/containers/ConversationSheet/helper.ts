@@ -61,7 +61,7 @@ const TIMES_TEXT = {
 function getDurationTimeText(
   repeat: string,
   repeatEndingAfter: string,
-  repeatEndingOn: string,
+  repeatEndingOn: number | null,
   repeatEnding: string,
 ) {
   const times =

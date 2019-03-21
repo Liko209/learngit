@@ -9,6 +9,7 @@ import { State } from '../../entity';
 import { Group } from '../../../group/entity';
 import { Profile } from '../../../profile/entity';
 import { NotificationEntityPayload } from '../../../../service/notificationCenter';
+import { SYNC_SOURCE } from '../../../../module/sync';
 
 describe('StateService', () => {
   const stateService = new StateService();
@@ -102,8 +103,8 @@ describe('StateService', () => {
   describe('handleState()', () => {
     it('should call with correct params', async () => {
       const states: Partial<State>[] = [];
-      await stateService.handleState(states);
-      expect(mockHandleState).toBeCalledWith(states);
+      await stateService.handleState(states, SYNC_SOURCE.INDEX);
+      expect(mockHandleState).toBeCalledWith(states, SYNC_SOURCE.INDEX);
     });
   });
 
