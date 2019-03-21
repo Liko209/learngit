@@ -22,10 +22,6 @@ type ImageViewerViewProps = ImageViewerProps & {
   imageUrl: string;
   imageWidth?: number;
   imageHeight?: number;
-  hasPrevious: boolean;
-  hasNext: boolean;
-  switchPreImage: () => void;
-  switchNextImage: () => void;
   thumbnailSrc?: string;
 };
 

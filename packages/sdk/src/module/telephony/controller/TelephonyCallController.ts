@@ -45,6 +45,14 @@ class TelephonyCallController implements IRTCCallDelegate {
   hangUp() {
     this._rtcCall.hangup();
   }
+
+  mute() {
+    this._rtcCall.mute();
+  }
+
+  unmute() {
+    this._rtcCall.unmute();
+  }
 }
 
 export { TelephonyCallController };

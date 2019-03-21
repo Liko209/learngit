@@ -63,6 +63,9 @@ describe('UnifiedLoginAuthenticator', () => {
     generateCode.mockResolvedValueOnce(generateCodeResult);
     loginGlip.mockResolvedValueOnce(loginGlipResult);
     Api.init({}, networkManager);
+    jest
+      .spyOn(unified, '_requestRcAccountRelativeInfo')
+      .mockImplementationOnce(() => {});
 
     const resp = await unified.authenticate({ code: '123' });
     expect(resp.success).toBe(true);

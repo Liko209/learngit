@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
+import {
+  NETWORK_VIA,
+  NETWORK_METHOD,
+  TEN_MINUTE_TIMEOUT,
+  DEFAULT_RETRY_COUNT,
+} from 'foundation';
 import Api from '../api';
 import { GLIP_API } from './constants';
 import { Raw } from '../../framework/model';
@@ -38,6 +43,26 @@ export type IndexDataModel = {
   client_config: IFlag;
   static_http_server: string;
 };
+
+export type CanConnectModel = {
+  deployment_state?: {
+    level: number;
+    number: number;
+  };
+  scoreboard?: string;
+  socket_version?: string;
+  version?: string;
+  reconnect_retry_in?: number;
+  reconnect_in?: number;
+};
+
+export type CanConnectParasType = {
+  newer_than?: number;
+  presence: string;
+  user_id?: number;
+  uidtk: string;
+};
+
 /**
  * @param {string} rcAccessTokenData
  * @param {string} username
@@ -54,6 +79,7 @@ function loginGlip(authData: object) {
     method: NETWORK_METHOD.PUT,
     data: model,
     authFree: true,
+    timeout: TEN_MINUTE_TIMEOUT,
   };
   return Api.glipNetworkClient.rawRequest<Object>({
     ...query,
@@ -74,6 +100,8 @@ function indexData(params: object, requestConfig = {}, headers = {}) {
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    DEFAULT_RETRY_COUNT,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
@@ -84,6 +112,8 @@ function initialData(params: object, requestConfig = {}, headers = {}) {
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    DEFAULT_RETRY_COUNT,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
@@ -94,9 +124,25 @@ function remainingData(params: object, requestConfig = {}, headers = {}) {
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    DEFAULT_RETRY_COUNT,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
 // plugins data
 
-export { loginGlip, indexData, initialData, remainingData };
+function canConnect(
+  params: CanConnectParasType,
+  requestConfig = {},
+  headers = {},
+) {
+  return Api.glipNetworkClient.get<CanConnectModel>(
+    '/can-reconnect-v2',
+    params,
+    NETWORK_VIA.HTTP,
+    requestConfig,
+    headers,
+  );
+}
+
+export { loginGlip, indexData, initialData, remainingData, canConnect };

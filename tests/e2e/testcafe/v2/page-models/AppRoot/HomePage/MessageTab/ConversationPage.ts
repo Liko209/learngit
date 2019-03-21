@@ -42,6 +42,19 @@ class ActionBarMoreMenu extends BaseWebComponent {
   }
 }
 
+class HeaderMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="menu"]');
+  }
+
+  private getEntry(menuName: string) {
+    return this.getComponent(Entry, this.self.find('li').withExactText(menuName));
+  }
+
+  get convertToTeam() {
+    return this.getEntry('Convert to team');
+  }
+}
 
 class BaseConversationPage extends BaseWebComponent {
 
@@ -131,7 +144,11 @@ class BaseConversationPage extends BaseWebComponent {
 
   get scrollDiv() {
     this.warnFlakySelector();
-    return this.stream.parent('div');
+    return this.getSelectorByAutomationId('virtualized-list', this.stream);
+  }
+
+  async expectStreamScrollToY(y: number) {
+    await this.t.expect(this.scrollDiv.scrollTop).eql(y);
   }
 
   async expectStreamScrollToBottom() {
@@ -140,13 +157,15 @@ class BaseConversationPage extends BaseWebComponent {
       const scrollHeight = await this.scrollDiv.scrollHeight;
       const clientHeight = await this.scrollDiv.clientHeight;
       assert.deepStrictEqual(scrollTop, scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`)
-    })
+    });
   }
 
   async scrollToY(y: number) {
+    const scrollDivElement=  this.scrollDiv;
     await ClientFunction((_y) => {
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"] div').scrollTop = _y;
-    })(y);
+      scrollDivElement().scrollTop = _y;
+    },
+    { dependencies: { scrollDivElement } })(y);
   }
 
   async scrollToMiddle() {
@@ -204,6 +223,18 @@ class BaseConversationPage extends BaseWebComponent {
       const result = await this.isVisible(this.newMessageDeadLine);
       assert.strictEqual(result, visible, `This 'New Messages' deadline expect visible: ${visible}, but actual: ${result}`);
     });
+  }
+
+  get moreButtonOnHeader() {
+    return this.getSelectorByIcon('more_vert', this.header);
+  }
+
+  async openMoreButtonOnHeader() {
+    return this.t.click(this.moreButtonOnHeader);
+  }
+
+  get headerMoreMenu() {
+    return this.getComponent(HeaderMoreMenu);
   }
 }
 
@@ -326,6 +357,19 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.messageInputArea.exists).notOk();
     await this.t.expect(this.readOnlyDiv.exists).ok();
   }
+
+  /* 1:1 */
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.click(this.telephonyButton);
+  }
 }
 
 
@@ -366,7 +410,6 @@ export class DuplicatePromptPage extends BaseWebComponent {
   async clickCreateButton() {
     await this.t.click(this.duplicateCreateButton);
   }
-
 }
 
 export class MentionPage extends BaseConversationPage {
@@ -425,6 +468,10 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get img() {
+    this.warnFlakySelector(); // todo: all specify item...
+    return this.body.find('img');
+  }
 
   get editTextArea() {
     return this.self.find('[data-placeholder="Type new message"]');
@@ -449,7 +496,7 @@ export class PostItem extends BaseWebComponent {
     return this.mentions.filter((el) => el.textContent === name);
   }
 
-  imgTitle(text) {
+  emojiTitle(text) {
     return this.text.find("img").withAttribute("title", text);
   }
 
@@ -660,6 +707,12 @@ export class PostItem extends BaseWebComponent {
     return this.getComponent(AudioConference, this.self);
   }
 
+  async scrollIntoView() {
+    await ClientFunction((_self) => {
+      const ele: any = _self()
+      ele.scrollIntoView()
+    })(this.self)
+  }
 }
 
 class AudioConference extends BaseWebComponent {

@@ -16,12 +16,13 @@ import { daoManager } from '../../../dao';
 import { PersonDao } from '../dao';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { Raw, SortableModel } from '../../../framework/model';
+import { Raw } from '../../../framework/model';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 
 import { PersonController } from '../controller/PersonController';
 import { SOCKET } from '../../../service/eventKey';
 import { ContactType } from '../types';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -50,8 +51,11 @@ class PersonService extends EntityBaseService<Person>
     return this._personController;
   }
 
-  handleIncomingData = async (persons: Raw<Person>[]): Promise<void> => {
-    await this.getPersonController().handleIncomingData(persons);
+  handleIncomingData = async (
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+  ): Promise<void> => {
+    await this.getPersonController().handleIncomingData(persons, source);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {
@@ -82,27 +86,12 @@ class PersonService extends EntityBaseService<Person>
     return await this.getPersonController().buildPersonFeatureMap(personId);
   }
 
-  async doFuzzySearchPersons(
-    searchKey?: string,
-    excludeSelf?: boolean,
-    arrangeIds?: number[],
-    fetchAllIfSearchKeyEmpty?: boolean,
-    asIdsOrder?: boolean,
-  ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Person>[];
-  } | null> {
-    return await this.getPersonController().doFuzzySearchPersons(
-      searchKey,
-      excludeSelf,
-      arrangeIds,
-      fetchAllIfSearchKeyEmpty,
-      asIdsOrder,
-    );
-  }
-
   getName(person: Person) {
     return this.getPersonController().getName(person);
+  }
+
+  isValidPerson(person: Person) {
+    return this.getPersonController().isValid(person);
   }
 
   getEmailAsName(person: Person) {

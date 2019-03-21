@@ -1,8 +1,0 @@
-{
-  "on_merge": {
-    "fixtures": ["./fixtures/**/*.ts"],
-    "include_tags": ["FIJI-1323"],
-    "exclude_tags": [],
-    "browsers": ["selenium:chrome"]
-  }
-}

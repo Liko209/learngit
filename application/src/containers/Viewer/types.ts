@@ -23,12 +23,15 @@ type ViewerViewModelProps = CommonProps & {
   total: number;
   ids: number[];
   updateCurrentItemIndex: (index: number, itemId: number) => void;
-  fetchData: (
-    direction: QUERY_DIRECTION,
-    pageSize: number,
-    anchorId?: number,
-  ) => Promise<Item[]>;
+
+  hasPrevious: boolean;
+  hasNext: boolean;
+  switchToPrevious: () => void;
+  switchToNext: () => void;
+  stopPreload: () => void;
+  loadMore: (direction: QUERY_DIRECTION) => Promise<Item[]>;
   setOnCurrentItemDeletedCb: (callback: () => void) => void;
+  setOnItemSwitchCb: (callback: (itemId: number) => void) => void;
 };
 
 type ViewerViewProps = CommonProps & {

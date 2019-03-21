@@ -11,8 +11,19 @@ import { RcClientInfo } from './types/RcClientInfo';
 import { RcAccountInfo } from './types/RcAccountInfo';
 import { RcExtensionInfo } from './types/RcExtensionInfo';
 import { RcRolePermissions } from './types/RcRolePermissions';
+import { RcAPIVersion } from './types/common';
 
 class RcInfoApi extends Api {
+  static requestRcAPIVersion() {
+    const query = {
+      path: RINGCENTRAL_API.API_VERSION,
+      method: NETWORK_METHOD.GET,
+      authFree: false,
+      via: NETWORK_VIA.HTTP,
+    };
+    return RcInfoApi.rcNetworkClient.http<RcAPIVersion>(query);
+  }
+
   static requestRcClientInfo() {
     const query = {
       path: RINGCENTRAL_API.API_CLIENT_INFO,

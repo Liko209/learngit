@@ -16,6 +16,7 @@ import { Group } from '../../group/entity';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
+import { SYNC_SOURCE } from '../../sync/types';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
@@ -84,10 +85,13 @@ class StateService extends EntityBaseService<GroupState>
       .getMyStateId();
   }
 
-  handleState = async (states: Partial<State>[]): Promise<void> => {
+  handleState = async (
+    states: Partial<State>[],
+    source: SYNC_SOURCE,
+  ): Promise<void> => {
     await this.getStateController()
       .getStateDataHandleController()
-      .handleState(states);
+      .handleState(states, source);
   }
 
   handleGroupCursor = async (groups: Partial<Group>[]): Promise<void> => {

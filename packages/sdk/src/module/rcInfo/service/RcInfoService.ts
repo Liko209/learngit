@@ -18,7 +18,7 @@ class RcInfoService extends EntityBaseService {
     super(false);
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SERVICE.FETCH_INDEX_DATA_DONE]: this.requestRcInfo,
+        [SERVICE.LOGIN]: this.requestRcInfo,
       }),
     );
   }
@@ -32,6 +32,10 @@ class RcInfoService extends EntityBaseService {
 
   requestRcInfo = async () => {
     await this.rcInfoController.requestRcInfo();
+  }
+
+  async requestRcAccountRelativeInfo(): Promise<void> {
+    await this.rcInfoController.requestRcAccountRelativeInfo();
   }
 
   isVoipCallingAvailable() {

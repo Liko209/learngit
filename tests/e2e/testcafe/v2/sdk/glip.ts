@@ -190,6 +190,13 @@ export class GlipSdk {
     return ids;
   }
 
+  async getTeamIdByName(teamName: string) {
+    const teams = await this.getTeams().then(res => res.data.teams);
+    if (!teams) return [];
+    const ids = teams.filter(team => team['set_abbreviation'] == teamName).map(team => team['_id']);
+    return ids[0];
+  }
+
   async getCompanyTeamId() {
     const teams = await this.getTeams().then(res => res.data.teams);
     if (!teams) return [];
@@ -611,9 +618,9 @@ export class GlipSdk {
     let personIds = this.toPersonId(rcIds);
     let assignees;
     if (Object.prototype.toString.call(personIds) === '[object Array]') {
-      assignees = personIds.map(id => Number(id));
+      assignees = personIds.map(id => +id);
     } else {
-      assignees = [Number(personIds)];
+      assignees = [+personIds];
     }
     const data = _.assign({
       text: title,
@@ -623,6 +630,12 @@ export class GlipSdk {
       options
     )
     return await this.createTask(data);
+  }
+
+  async deleteTask(taskId: string) {
+    await this.updateTask(taskId, {
+      deactivated: true
+    });
   }
 
   /* note */
@@ -665,6 +678,12 @@ export class GlipSdk {
     return await this.createNote(data);
   }
 
+  async deleteNote(noteId: string | number) {
+    await this.updateNote(noteId, {
+      deactivated: true
+    });
+  }
+
   /* event */
   createEvent(data: object) {
     const uri = `api/event`;
@@ -701,13 +720,19 @@ export class GlipSdk {
       let inviteeIds: number[];
       const personIds = this.toPersonId(rcIds);
       if (Object.prototype.toString.call(personIds) === '[object Array]') {
-        inviteeIds = personIds.map(id => Number(id));
+        inviteeIds = personIds.map(id => +id);
       } else {
-        inviteeIds = [Number(personIds)];
+        inviteeIds = [+personIds];
       }
       data["invitee_ids"] = inviteeIds;
     }
     return await this.createEvent(data);
+  }
+
+  async deleteEvent(eventId: string | number) {
+    await this.updateEvent(eventId, {
+      deactivated: true
+    });
   }
 
   /* code snippet */
@@ -737,6 +762,12 @@ export class GlipSdk {
     )
 
     return await this.createCodeSnippet(data);
+  }
+
+  async deleteCodeSnippet(codeSnippetId: string | number) {
+    await this.updateCodeSnippet(codeSnippetId, {
+      deactivated: true
+    });
   }
 
   /* audio conference */
@@ -792,4 +823,34 @@ export class GlipSdk {
       deactivated: true
     });
   }
+
+  /* links */
+  async getLinksIdsFromPostId(postId: string | number) {
+    return this.getPostItemsByTypeId(postId, 17);
+  }
+
+  getLink(linkId: string | number) {
+    const uri = `/api/link/${linkId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  updateLink(linkId: string | number, data: object) {
+    const uri = `/api/link/${linkId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async updateLinkUrlTitle(linkId: string, data: { url?: string, title?: string }) {
+    return await this.updateLink(linkId, data);
+  }
+
+  async deleteLink(linkId: string | number) {
+    return await this.updateLink(linkId, {
+      deactivated: true
+    });
+  }
+
 }

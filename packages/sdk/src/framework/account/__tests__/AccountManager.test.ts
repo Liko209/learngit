@@ -99,7 +99,7 @@ describe('AccountManager', () => {
 
       it('should emit login event', async () => {
         const mockFn = jest.fn();
-        accountManager.on(AccountManager.EVENT_LOGIN, mockFn);
+        accountManager.on(AccountManager.AUTH_SUCCESS, mockFn);
         await accountManager.syncLogin(MySyncAuthenticator.name);
         expect(mockFn).toHaveBeenCalled();
       });

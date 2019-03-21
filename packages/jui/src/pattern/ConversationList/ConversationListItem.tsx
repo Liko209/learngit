@@ -8,8 +8,9 @@ import React, { memo } from 'react';
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
-
+import { JuiMenu } from '../../components';
 import styled, { keyframes } from '../../foundation/styled-components';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import {
   JuiIconography,
@@ -39,11 +40,18 @@ const rippleEnter = (theme: Theme) => keyframes`
 `;
 const StyledIconographyMore = styled(JuiIconography)<JuiIconographyProps>``;
 
+const JuiMenuContain = styled(JuiMenu)`
+  && {
+    li {
+      background: ${palette('common', 'white')};
+    }
+  }
+`;
+
 const StyledListItem = styled(MuiMenuItem)`
   && {
     display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
-    background: ${palette('common', 'white')};
     padding: ${spacing(0, 4, 0, 3)};
     height: ${height(8)};
     line-height: ${height(8)};
@@ -53,7 +61,11 @@ const StyledListItem = styled(MuiMenuItem)`
      * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
      */
     transition: transform 0s ease,
-      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      ${({ theme }) =>
+        theme.transitions.create('background-color', {
+          duration: theme.transitions.duration.shortest,
+          easing: theme.transitions.easing.easeInOut,
+        })};
   }
 
   &&.dragging {
@@ -71,7 +83,8 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   &&&:hover {
-    background-color: ${grey('50')};
+    background-color: ${({ theme }) =>
+      fade(grey('700')({ theme }), theme.opacity.p05)};
     ${StyledIconographyMore} {
       display: inline-flex;
     }
@@ -81,7 +94,8 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   &&.selected {
-    background: ${palette('common', 'white')};
+    background-color: ${({ theme }) =>
+      fade(grey('700')({ theme }), theme.opacity.p10)};
     p {
       color: ${palette('primary', 'main')};
     }
@@ -180,4 +194,8 @@ const JuiConversationListItem: IConversationListItem = memo(
 JuiConversationListItem.dependencies = [ItemText, JuiIconography];
 
 export default JuiConversationListItem;
-export { JuiConversationListItemProps, JuiConversationListItem };
+export {
+  JuiConversationListItemProps,
+  JuiConversationListItem,
+  JuiMenuContain,
+};

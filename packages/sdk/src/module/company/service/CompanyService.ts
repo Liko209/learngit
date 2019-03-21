@@ -13,6 +13,7 @@ import { daoManager } from '../../../dao';
 import Api from '../../../api/api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw } from '../../../framework/model';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 class CompanyService extends EntityBaseService<Company> {
   static serviceName = 'CompanyService';
@@ -35,8 +36,8 @@ class CompanyService extends EntityBaseService<Company> {
     return await this.getCompanyController().getCompanyEmailDomain(id);
   }
 
-  async handleIncomingData(companies: Raw<Company>[]) {
-    await this.getCompanyController().handleCompanyData(companies);
+  async handleIncomingData(companies: Raw<Company>[], source: SYNC_SOURCE) {
+    await this.getCompanyController().handleCompanyData(companies, source);
   }
 
   protected getCompanyController() {

@@ -36,6 +36,8 @@ import { getThumbnailSize } from 'jui/foundation/utils';
 import { UploadFileTracker } from './UploadFileTracker';
 import { getThumbnailURL } from '@/common/getThumbnailURL';
 
+const SQUARE_SIZE = 180;
+
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
@@ -117,6 +119,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         origHeight,
         origWidth,
         id: item.id,
+        squareSize: SQUARE_SIZE,
       });
       url = result.url;
     }

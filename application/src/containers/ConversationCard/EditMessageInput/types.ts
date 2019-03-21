@@ -6,6 +6,7 @@
 
 type EditMessageInputProps = {
   id: number; // post id
+  viewRef?: React.RefObject<any>;
 };
 
 type EditMessageInputViewProps = {
@@ -13,6 +14,9 @@ type EditMessageInputViewProps = {
   error: string;
   text: string;
   id: number;
+  draft: string;
+  saveDraft: (newValue: string) => void;
+  removeDraft: () => void;
   keyboardEventHandler: {
     enter: {
       key: number;

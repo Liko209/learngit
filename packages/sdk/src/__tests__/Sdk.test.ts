@@ -73,10 +73,10 @@ describe('Sdk', () => {
     });
   });
 
-  describe('onLogin()', () => {
+  describe('onAuthSuccess()', () => {
     beforeEach(() => {
       jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => {});
-      sdk.onLogin();
+      sdk.onAuthSuccess();
     });
     afterEach(() => jest.restoreAllMocks());
 

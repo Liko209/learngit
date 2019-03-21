@@ -6,7 +6,7 @@
 
 import { EntityBaseService } from '../../../framework/service';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { SERVICE } from '../../../service/eventKey';
+import { SERVICE, SOCKET } from '../../../service/eventKey';
 import { SyncListener } from './SyncListener';
 import { SyncController } from '../controller/SyncController';
 
@@ -19,8 +19,14 @@ class SyncService extends EntityBaseService {
         [SERVICE.SOCKET_STATE_CHANGE]: this.handleSocketConnectionStateChanged.bind(
           this,
         ),
+        [SOCKET.TIMESTAMP]: this.updateIndexTimestamp.bind(this),
+        [SERVICE.STOPPING_SOCKET]: this._handleStoppingSocketEvent.bind(this),
       }),
     );
+  }
+
+  updateIndexTimestamp(time: number) {
+    this.getSyncController().updateIndexTimestamp(time, false);
   }
 
   getIndexTimestamp() {
@@ -28,7 +34,7 @@ class SyncService extends EntityBaseService {
   }
 
   async syncData(syncListener?: SyncListener) {
-    this.getSyncController().syncData(syncListener);
+    await this.getSyncController().syncData(syncListener);
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
@@ -40,6 +46,10 @@ class SyncService extends EntityBaseService {
       this._syncController = new SyncController();
     }
     return this._syncController;
+  }
+
+  private _handleStoppingSocketEvent() {
+    this.getSyncController().handleStoppingSocketEvent();
   }
 }
 
