@@ -21,6 +21,13 @@ class SocketRequest extends HttpRequest {
     this.uri = builder.path;
     this.via = NETWORK_VIA.SOCKET;
   }
+
+  setParams(params: SocketRequestParamsType) {
+    this.params = params;
+  }
+  // setId(id: string) {
+  //   this.id = id;
+  // }
 }
 type SocketRequestParamsType = { request_id: string };
 export default SocketRequest;

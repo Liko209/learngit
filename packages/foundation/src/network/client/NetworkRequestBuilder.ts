@@ -11,16 +11,17 @@ import config from '../../config';
 import NetworkManager from '../NetworkManager';
 import BaseRequest from '../BaseRequest';
 import {
-  IRequestBuilderOption,
+  // IRequestBuilderOption,
   IHandleType,
   REQUEST_PRIORITY,
   NETWORK_VIA,
   NETWORK_METHOD,
   Header,
   HA_PRIORITY,
+  IRequest,
 } from '../network';
 
-class NetworkRequestBuilder implements IRequestBuilderOption {
+class NetworkRequestBuilder implements IRequest {
   id: string = '';
   path: string = '';
   data: any;
@@ -38,7 +39,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
   method: NETWORK_METHOD = NETWORK_METHOD.GET;
   networkManager: NetworkManager;
 
-  options(options: IRequestBuilderOption) {
+  options(options: IRequest) {
     const {
       host,
       path,
@@ -63,6 +64,10 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
     this.requestConfig = requestConfig || {};
     this.HAPriority = HAPriority || HA_PRIORITY.BASIC;
     return this;
+  }
+
+  needAuth(): boolean {
+    throw new Error('Method not implemented.');
   }
 
   /**

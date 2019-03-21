@@ -5,7 +5,6 @@
  */
 import BaseClient from './client/BaseClient';
 import { HttpResponseBuilder } from './client/http';
-import doLog from './log';
 
 import {
   INetworkRequestExecutorListener,
@@ -24,6 +23,7 @@ import {
   NETWORK_HANDLE_TYPE,
 } from './network';
 import { SERVER_ERROR_CODE } from './Constants';
+import doLog from './log';
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
@@ -53,6 +53,7 @@ export class NetworkRequestExecutor
   }
 
   onSuccess(response: IResponse): void {
+    console.error('on success');
     if (this._isCompletion()) {
       return;
     }
@@ -109,8 +110,13 @@ export class NetworkRequestExecutor
   }
 
   private _performNetworkRequest() {
+    console.error(
+      `_performNetworkRequest: request:${this.request}, via:${
+        this.request.via
+      }`,
+    );
     if (this._requestDecoration) {
-      this._requestDecoration.decorate(this.getRequest());
+      this._requestDecoration.decorate(this.request);
     }
     this.client.request(this.request, this);
   }

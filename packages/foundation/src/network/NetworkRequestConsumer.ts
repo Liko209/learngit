@@ -14,6 +14,7 @@ import {
   IResponseListener,
   IRequest,
 } from './network';
+import NetworkRequestBuilder from './client/NetworkRequestBuilder';
 
 class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   private _producer: INetworkRequestProducer;
@@ -75,12 +76,15 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
       return;
     }
 
-    const request = this._producer.produceRequest(this._via);
+    let request = this._producer.produceRequest(this._via);
 
     if (!request) {
       return;
     }
-
+    const requestBuilder = request as NetworkRequestBuilder;
+    requestBuilder.via = this._via;
+    console.error(`_performNetworkRequest ${requestBuilder.via}`);
+    request = requestBuilder.build();
     const executor = new NetworkRequestExecutor(
       request,
       this._client,

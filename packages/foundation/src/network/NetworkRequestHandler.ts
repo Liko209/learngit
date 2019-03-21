@@ -94,18 +94,21 @@ class NetworkRequestHandler
   }
 
   notifyTokenRefreshed() {
-    this.consumers.forEach((consumer) => {
+    // tslint:disable-next-line:ter-arrow-parens
+    this.consumers.forEach(consumer => {
       consumer.onTokenRefreshed();
     });
   }
 
   produceRequest(via: NETWORK_VIA): IRequest | undefined {
     let task;
-    Object.keys(REQUEST_PRIORITY).some((index) => {
+    // tslint:disable-next-line:ter-arrow-parens
+    Object.keys(REQUEST_PRIORITY).some(index => {
       const priority = REQUEST_PRIORITY[index];
       if (!this.canProduceRequest(priority)) {
         return false;
       }
+      console.error(`produceRequest ${via}`);
       task = this._nextTaskInQueue(via, this.pendingTasks.get(priority));
 
       if (task) {
@@ -151,7 +154,8 @@ class NetworkRequestHandler
 
   notifyRequestArrived(handleVia: NETWORK_VIA) {
     if (handleVia === NETWORK_VIA.ALL) {
-      this.consumers.forEach((consumer) => {
+      console.error(`notifyRequestArrived: ${this.consumers.size}`);
+      this.consumers.forEach((consumer: INetworkRequestConsumerListener) => {
         if (consumer) {
           consumer.onConsumeArrived();
         }
@@ -176,14 +180,17 @@ class NetworkRequestHandler
   }
 
   cancelAllConsumers() {
-    this.consumers.forEach((consumer) => {
+    // tslint:disable-next-line:ter-arrow-parens
+    this.consumers.forEach(consumer => {
       consumer.onCancelAll();
     });
   }
 
   cancelAllPendingTasks() {
-    this.pendingTasks.forEach((queue) => {
-      queue.forEach((task) => {
+    // tslint:disable-next-line:ter-arrow-parens
+    this.pendingTasks.forEach(queue => {
+      // tslint:disable-next-line:ter-arrow-parens
+      queue.forEach(task => {
         this._callXApiResponseCallback(
           NETWORK_FAIL_TYPE.CANCELLED,
           task.request,
@@ -195,8 +202,10 @@ class NetworkRequestHandler
 
   isRequestInPending(request: IRequest) {
     let exist = false;
-    this.pendingTasks.forEach((queue) => {
-      queue.some((task) => {
+    // tslint:disable-next-line:ter-arrow-parens
+    this.pendingTasks.forEach(queue => {
+      // tslint:disable-next-line:ter-arrow-parens
+      queue.some(task => {
         if (task.request.id === request.id) {
           exist = true;
           return true;
@@ -214,7 +223,8 @@ class NetworkRequestHandler
 
   deletePendingRequest(request: IRequest) {
     let exist = false;
-    this.pendingTasks.forEach((queue) => {
+    // tslint:disable-next-line:ter-arrow-parens
+    this.pendingTasks.forEach(queue => {
       queue.some((task, index) => {
         if (task.request.id === request.id) {
           exist = true;
@@ -280,7 +290,8 @@ class NetworkRequestHandler
     let result;
     if (queue) {
       queue.some((task, index) => {
-        if (task.via() === via) {
+        console.error(`task via: ${task.via()} via:${via}`);
+        if (task.via() === via || task.via() === NETWORK_VIA.ALL) {
           result = task;
           queue.splice(index, 1);
           return true;
