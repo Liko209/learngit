@@ -72,7 +72,7 @@ class JuiFabGroup extends PureComponent<JuiZoomGroupProps> {
         <StyledZoom>{ZoomOut}</StyledZoom>
         <StyledTextContain>{centerText}</StyledTextContain>
         <StyledZoom>{ZoomIn}</StyledZoom>
-        {<StyledReset>{Reset}</StyledReset>}
+        <StyledReset>{Reset}</StyledReset>
       </StylesContain>
     );
   }
