@@ -8,4 +8,4 @@ export { RcAccountInfo } from './RcAccountInfo';
 export { RcClientInfo } from './RcClientInfo';
 export { RcExtensionInfo, RcServiceFeature } from './RcExtensionInfo';
 export { RcRolePermissions } from './RcRolePermissions';
-export { RcAPIVersion } from './common';
+export { RcAPIVersion, ISpecialServiceNumberResponse } from './common';
