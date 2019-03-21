@@ -230,6 +230,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this._itemService.requestSyncGroupItems(this.props.groupId);
   }
 
+  @action
   markAsRead() {
     this._stateService.updateReadStatus(this.props.groupId, false, true);
   }
