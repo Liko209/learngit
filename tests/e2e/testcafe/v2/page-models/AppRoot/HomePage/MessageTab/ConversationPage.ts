@@ -357,6 +357,19 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.expect(this.messageInputArea.exists).notOk();
     await this.t.expect(this.readOnlyDiv.exists).ok();
   }
+
+  /* 1:1 */
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.click(this.telephonyButton);
+  }
 }
 
 
@@ -397,7 +410,6 @@ export class DuplicatePromptPage extends BaseWebComponent {
   async clickCreateButton() {
     await this.t.click(this.duplicateCreateButton);
   }
-
 }
 
 export class MentionPage extends BaseConversationPage {
