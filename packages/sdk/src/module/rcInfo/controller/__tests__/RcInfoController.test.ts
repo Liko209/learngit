@@ -273,6 +273,32 @@ describe('RcInfoController', () => {
     });
   });
 
+  describe('storeRcAccountRelativeInfo', () => {
+    it('should store all rc info', () => {
+      rcInfoController['rcInfoUserConfig'].setClientInfo = jest.fn();
+      rcInfoController['rcInfoUserConfig'].setAccountInfo = jest.fn();
+      rcInfoController['rcInfoUserConfig'].setExtensionInfo = jest.fn();
+      rcInfoController['rcInfoUserConfig'].setRolePermissions = jest.fn();
+      rcInfoController['_clientInfo'] = '_clientInfo' as any;
+      rcInfoController['_accountInfo'] = '_accountInfo' as any;
+      rcInfoController['_extensionInfo'] = '_extensionInfo' as any;
+      rcInfoController['_rolePermissions'] = '_rolePermissions' as any;
+      rcInfoController.storeRcAccountRelativeInfo();
+      expect(
+        rcInfoController['rcInfoUserConfig'].setClientInfo,
+      ).toBeCalledWith('_clientInfo');
+      expect(
+        rcInfoController['rcInfoUserConfig'].setAccountInfo,
+      ).toBeCalledWith('_accountInfo');
+      expect(
+        rcInfoController['rcInfoUserConfig'].setExtensionInfo,
+      ).toBeCalledWith('_extensionInfo');
+      expect(
+        rcInfoController['rcInfoUserConfig'].setRolePermissions,
+      ).toBeCalledWith('_rolePermissions');
+    });
+  });
+
   describe('getRcClientInfo()', () => {
     it('should get value from config when value is invalid', () => {
       rcInfoController['rcInfoUserConfig'].getClientInfo = jest.fn().mockReturnValue('test');
