@@ -9,7 +9,7 @@ const name2icon = {
   messages: 'bubble_lines',
   messages_border: 'bubble_lines_border',
   contacts: 'contacts',
-  contacts_border: 'contact_border',
+  contacts_border: 'contacts_border',
   calendar: 'calendar',
   tasks: 'task',
   notes: 'note',
