@@ -56,6 +56,8 @@ class Scene {
 
         await this.collectData();
 
+        PptrUtils.cleanMock();
+
         const endTime = new Date();
         this.timing = {
           startTime,
