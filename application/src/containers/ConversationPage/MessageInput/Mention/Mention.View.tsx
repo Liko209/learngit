@@ -11,7 +11,6 @@ import { MentionViewProps } from './types';
 import { JuiMentionPanel } from 'jui/pattern/MessageInput/Mention/MentionPanel';
 import { JuiMentionPanelSection } from 'jui/pattern/MessageInput/Mention/MentionPanelSection';
 import { JuiMentionPanelSectionHeader } from 'jui/pattern/MessageInput/Mention/MentionPanelSectionHeader';
-import { CONVERSATION_TYPES } from '@/constants';
 import ReactResizeDetector from 'react-resize-detector';
 import {
   JuiVirtualList,
@@ -23,7 +22,6 @@ import { MentionItem } from './MentionItem';
 import {
   ITEM_HEIGHT,
   MAX_ITEM_NUMBER,
-  INIT_CURRENT_INDEX,
   TITLE_HEIGHT,
   ITEM_DIFF,
 } from './constants';
@@ -34,24 +32,26 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
   _listRef: RefObject<JuiVirtualList<number, number>> = createRef();
 
   get(index: number) {
-    return this.props.ids[index - INIT_CURRENT_INDEX];
+    const { initIndex, ids } = this.props;
+    return ids[index - initIndex];
   }
 
   size() {
-    return this.props.ids.length + INIT_CURRENT_INDEX;
+    const { initIndex, ids } = this.props;
+    return ids.length + initIndex;
   }
 
   private _rowRenderer = (cellProps: JuiVirtualCellProps<number>) => {
     const {
       t,
-      groupType,
       searchTerm,
       currentIndex,
       selectHandler,
+      isOneToOneGroup,
     } = this.props;
     const { item, index, style } = cellProps;
-    if (index === 0) {
-      return groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ? null : (
+    if (index === 0 && !isOneToOneGroup) {
+      return (
         <JuiMentionPanelSectionHeader
           key={index}
           title={t(
@@ -62,11 +62,12 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
         />
       );
     }
-    const top: number = Number(style.top);
-    const newStyle = {
-      ...style,
-      top: top - ITEM_DIFF, // every item has 40px but title is 32px
-    };
+    const newStyle = isOneToOneGroup
+      ? style
+      : {
+        ...style,
+        top: Number(style.top) - ITEM_DIFF, // every item has 40px but title is 32px
+      };
     return (
       <JuiVirtualCellWrapper key={item} style={newStyle}>
         <MentionItem
@@ -87,7 +88,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
   }
 
   render() {
-    const { open, ids, isEditMode } = this.props;
+    const { open, ids, isEditMode, isOneToOneGroup } = this.props;
     const memberIdsLength = ids.length;
 
     if (open && memberIdsLength > 0) {
@@ -98,7 +99,7 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
       return (
         <JuiMentionPanel isEditMode={isEditMode}>
           <ReactResizeDetector handleWidth={true}>
-            {(width: number) => {
+            {({ width = 2000 }: { width: number }) => {
               return (
                 <JuiMentionPanelSection>
                   <JuiVirtualList
@@ -107,7 +108,9 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
                     overscan={5}
                     rowRenderer={this._rowRenderer}
                     width={width}
-                    height={mentionHeight + TITLE_HEIGHT}
+                    height={
+                      mentionHeight + (isOneToOneGroup ? 0 : TITLE_HEIGHT)
+                    }
                     fixedCellHeight={ITEM_HEIGHT}
                     data-test-automation-id="mention-list"
                   />
@@ -116,35 +119,6 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
             }}
           </ReactResizeDetector>
         </JuiMentionPanel>
-        /*
-        S17 change to new VL will delete this comment
-        <JuiMentionPanel isEditMode={isEditMode}>
-            <JuiMentionPanelSection>
-              {groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE ? null : (
-                <JuiMentionPanelSectionHeader
-                  title={t(
-                    searchTerm && searchTerm.trim()
-                      ? 'message.suggestedPeople'
-                      : 'message.teamMembers',
-                  )}
-                />
-              )}
-              {members.map(
-                (
-                  { displayName, id }: { displayName: string; id: number },
-                  index: number,
-                ) => (
-                  <JuiMentionPanelSectionItem
-                    Avatar={this._Avatar(id)}
-                    displayName={displayName}
-                    key={id}
-                    selected={currentIndex === index}
-                    selectHandler={selectHandler(index)}
-                  />
-                ),
-              )}
-            </JuiMentionPanelSection>
-          </JuiMentionPanel> */
       );
     }
     return null;

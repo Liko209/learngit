@@ -6,7 +6,7 @@
 import { getEntity } from '../../../../../store/utils';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MentionViewModel } from '../Mention.ViewModel';
-import { INIT_CURRENT_INDEX } from '../constants';
+
 const mockSearchService = {
   doFuzzySearchPersons: jest.fn(),
 };
@@ -38,7 +38,7 @@ beforeAll(() => {
 describe('mentionViewModel', () => {
   it('lifecycle method', () => {
     expect(mentionViewModel._id).toBe(1);
-    expect(mentionViewModel.currentIndex).toBe(1);
+    expect(mentionViewModel.currentIndex).toBe(0);
     expect(mentionViewModel.open).toBe(false);
     expect(mentionViewModel.members).toEqual([]);
     expect(mentionViewModel.searchTerm).toBe(undefined);
@@ -101,9 +101,9 @@ describe('mentionViewModel', () => {
     handler();
     expect(quill.getModule).toBeCalledWith('mention');
     expect(mentionModules.select).toBeCalledWith(
-      mentionViewModel.members[ mentionViewModel.currentIndex - INIT_CURRENT_INDEX
+      mentionViewModel.members[ mentionViewModel.currentIndex - mentionViewModel.initIndex
 ].id,
-      mentionViewModel.members[ mentionViewModel.currentIndex - INIT_CURRENT_INDEX
+      mentionViewModel.members[ mentionViewModel.currentIndex - mentionViewModel.initIndex
 ].displayName,
       mentionViewModel._denotationChar,
     );
@@ -149,5 +149,30 @@ describe('mentionViewModel', () => {
     expect(mentionViewModel.currentIndex).toBe(3);
     handler();
     expect(mentionViewModel.currentIndex).toBe(1);
+  });
+
+  describe('get isOneToOneGroup', () => {
+    it('If conversation type is NORMAL_GROUP isOneToOneGroup is false', () => {
+      const mockGroupEntityData: {
+        type: CONVERSATION_TYPES;
+      } = {
+        type: CONVERSATION_TYPES.NORMAL_GROUP,
+      };
+
+      (getEntity as jest.Mock).mockReturnValue(mockGroupEntityData);
+      mentionViewModel = new MentionViewModel({ id: 1 });
+      expect(mentionViewModel.isOneToOneGroup).toBeFalsy();
+    });
+    it('If conversation type is NORMAL_ONE_TO_ONE isOneToOneGroup is true', () => {
+      const mockGroupEntityData: {
+        type: CONVERSATION_TYPES;
+      } = {
+        type: CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+      };
+
+      (getEntity as jest.Mock).mockReturnValue(mockGroupEntityData);
+      mentionViewModel = new MentionViewModel({ id: 1 });
+      expect(mentionViewModel.isOneToOneGroup).toBeTruthy();
+    });
   });
 });
