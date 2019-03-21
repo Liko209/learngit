@@ -10,11 +10,7 @@ import i18next from 'i18next';
 import { PinnedListViewProps, PinnedListProps } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 
-import {
-  JuiVirtualList,
-  IVirtualListDataSource,
-  JuiVirtualCellProps,
-} from 'jui/pattern/VirtualList';
+import { JuiInfiniteList } from 'jui/components/VirtualizedList';
 
 import {
   JuiRightShelfContent,
@@ -25,11 +21,10 @@ import { PinnedCell } from './PinnedCell';
 import { emptyView } from '../ItemList/Empty';
 import { RIGHT_RAIL_ITEM_TYPE } from '../ItemList';
 
-const HEADER_HEIGHT = 36;
 @observer
-class PinnedListView
-  extends React.Component<PinnedListViewProps & PinnedListProps>
-  implements IVirtualListDataSource<any, number> {
+class PinnedListView extends React.Component<
+  PinnedListViewProps & PinnedListProps
+> {
   constructor(props: PinnedListViewProps & PinnedListProps) {
     super(props);
   }
@@ -46,63 +41,48 @@ class PinnedListView
     return this.props.totalCount;
   }
 
-  rowRenderer = ({
-    index,
-    item: itemId,
-    style,
-  }: JuiVirtualCellProps<number>) => {
-    let content;
-    if (itemId) {
-      content = <PinnedCell id={itemId} key={itemId} />;
-    }
-
-    return content;
+  private _renderItems = () => {
+    return this.props.ids.map((itemId: number) => (
+      <PinnedCell id={itemId} key={itemId} />
+    ));
   }
 
   renderEmptyContent = () => {
     return emptyView(RIGHT_RAIL_ITEM_TYPE.PIN_POSTS);
   }
 
-  loadMore = async (startIndex: number, stopIndex: number) => {
-    await this.props.loadMore(startIndex, stopIndex);
-  }
-
-  hasMore() {
+  hasMore = () => {
     return this.size() !== this.props.totalCount;
   }
 
-  firstLoader = () => {
+  defaultLoading = () => {
     return <JuiRightRailContentLoading />;
   }
 
-  moreLoader = () => {
+  defaultLoadingMore = () => {
     return <JuiRightRailLoadingMore />;
   }
 
   render() {
-    const { totalCount, ids, width, height } = this.props;
-    const firstLoaded = true;
-
+    const { totalCount, ids, height } = this.props;
     return (
       <JuiRightShelfContent>
-        {firstLoaded && totalCount > 0 && ids.length > 0 && (
+        {totalCount > 0 && ids.length > 0 && (
           <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
             {i18next.t('item.pinnedListSubheader')}
           </JuiListSubheader>
         )}
-        {firstLoaded && (
-          <JuiVirtualList
-            dataSource={this}
-            threshold={1}
-            width={width}
-            height={height - HEADER_HEIGHT}
-            overscan={5}
-            observeCell={true}
-            rowRenderer={this.rowRenderer}
-            noContentRenderer={this.renderEmptyContent}
-            moreLoader={this.moreLoader}
-          />
-        )}
+        <JuiInfiniteList
+          height={height}
+          minRowHeight={56} // extract to const
+          loadInitialData={this.props.loadInitialData}
+          loadMore={this.props.loadMore}
+          loadingRenderer={this.defaultLoading()}
+          hasMore={this.hasMore}
+          loadingMoreRenderer={this.defaultLoadingMore()}
+        >
+          {this._renderItems()}
+        </JuiInfiniteList>
       </JuiRightShelfContent>
     );
   }
