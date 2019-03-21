@@ -61,7 +61,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     return <Indicator id={this.props.groupId} />;
   }
 
-  private _handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
+  private _handleMouseOver = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     e.preventDefault();
     this.setState({
@@ -72,6 +72,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
   private _handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     e.preventDefault();
+    this.menuAnchorEl = null;
     this.setState({
       isHover: false,
     });
@@ -93,7 +94,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           title={this.props.displayName}
           selected={this.props.selected}
           hidden={this.props.hidden}
-          onMouseEnter={this._handleMouseEnter}
+          onMouseOver={this._handleMouseOver}
           onMouseLeave={this._handleMouseLeave}
         >
           {isHover && (
@@ -118,7 +119,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     this.menuAnchorEl = event.currentTarget;
   }
 
-  private _closeMenu(event: MouseEvent<HTMLElement>) {
+  private _closeMenu(event: MouseEvent<HTMLElement> | UIEvent) {
     event.stopPropagation();
     this.menuAnchorEl = null;
   }

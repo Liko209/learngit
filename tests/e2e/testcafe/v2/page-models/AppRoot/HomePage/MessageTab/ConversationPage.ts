@@ -42,6 +42,19 @@ class ActionBarMoreMenu extends BaseWebComponent {
   }
 }
 
+class HeaderMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="menu"]');
+  }
+
+  private getEntry(menuName: string) {
+    return this.getComponent(Entry, this.self.find('li').withExactText(menuName));
+  }
+
+  get convertToTeam() {
+    return this.getEntry('Convert to team');
+  }
+}
 
 class BaseConversationPage extends BaseWebComponent {
 
@@ -131,7 +144,7 @@ class BaseConversationPage extends BaseWebComponent {
 
   get scrollDiv() {
     this.warnFlakySelector();
-    return this.stream.parent('div');
+    return this.getSelectorByAutomationId('virtualized-list', this.stream);
   }
 
   async expectStreamScrollToY(y: number) {
@@ -148,9 +161,11 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async scrollToY(y: number) {
+    const scrollDivElement=  this.scrollDiv;
     await ClientFunction((_y) => {
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"] div').scrollTop = _y;
-    })(y);
+      scrollDivElement().scrollTop = _y;
+    },
+    { dependencies: { scrollDivElement } })(y);
   }
 
   async scrollToMiddle() {
@@ -208,6 +223,18 @@ class BaseConversationPage extends BaseWebComponent {
       const result = await this.isVisible(this.newMessageDeadLine);
       assert.strictEqual(result, visible, `This 'New Messages' deadline expect visible: ${visible}, but actual: ${result}`);
     });
+  }
+
+  get moreButtonOnHeader() {
+    return this.getSelectorByIcon('more_vert', this.header);
+  }
+
+  async openMoreButtonOnHeader() {
+    return this.t.click(this.moreButtonOnHeader);
+  }
+
+  get headerMoreMenu() {
+    return this.getComponent(HeaderMoreMenu);
   }
 }
 

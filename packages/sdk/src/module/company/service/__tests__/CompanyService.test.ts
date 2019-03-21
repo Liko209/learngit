@@ -5,6 +5,7 @@
  */
 
 import { CompanyService } from '../CompanyService';
+import { SYNC_SOURCE } from '../../../../module/sync';
 
 jest.mock('../../../../api/api');
 
@@ -38,9 +39,20 @@ describe('CompanyController', () => {
   });
 
   describe('handleData', () => {
-    it('should call handleData with correct parameter', async () => {
-      await companyService.handleIncomingData([]);
-      expect(companyController.handleCompanyData).toBeCalledWith([]);
+    it('should call handleData with index data', async () => {
+      await companyService.handleIncomingData([], SYNC_SOURCE.INDEX);
+      expect(companyController.handleCompanyData).toBeCalledWith(
+        [],
+        SYNC_SOURCE.INDEX,
+      );
+    });
+
+    it('should call handleData with remaining data', async () => {
+      await companyService.handleIncomingData([], SYNC_SOURCE.REMAINING);
+      expect(companyController.handleCompanyData).toBeCalledWith(
+        [],
+        SYNC_SOURCE.REMAINING,
+      );
     });
   });
 });

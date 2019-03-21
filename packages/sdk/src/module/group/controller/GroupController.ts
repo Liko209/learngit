@@ -64,6 +64,7 @@ class GroupController {
     if (!this.groupHandleDataController) {
       this.groupHandleDataController = new GroupHandleDataController(
         this.groupService,
+        this.entitySourceController,
       );
     }
     return this.groupHandleDataController;

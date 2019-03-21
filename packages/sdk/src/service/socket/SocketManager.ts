@@ -107,10 +107,6 @@ export class SocketManager {
       this._onLogin();
     });
 
-    notificationCenter.on(SERVICE.FETCH_INITIAL_DONE, () => {
-      this._onLogin();
-    });
-
     notificationCenter.on(SERVICE.LOGOUT, () => {
       this._onLogout();
     });

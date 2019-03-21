@@ -6,20 +6,18 @@
 import { BaseWebComponent } from '../../BaseWebComponent';
 import * as _ from 'lodash';
 import * as faker from 'faker/locale/en';
+import { MemberInput } from './memberInput';
 
-export class CreateTeamModal extends BaseWebComponent {
+
+// TODO: unify create team, convert to team, team setting automation ID
+class BaseTeamSetting extends BaseWebComponent {
   get self() {
     this.warnFlakySelector();
     return this.getSelector('*[role="dialog"]');
   }
 
-  get cancelButton() {
-    this.warnFlakySelector();
-    return this.self.find('button').nth(0);
-  }
-
-  get createButton() {
-    return this.self.find('.modal-actions button').nth(1);
+  get title() {
+    return this.self.find('h2');
   }
 
   get teamNameInput() {
@@ -37,85 +35,6 @@ export class CreateTeamModal extends BaseWebComponent {
     return this.getSelectorByAutomationId("CreateTeamDescription");
   }
 
-  async typeTeamName(teamName) {
-    await this.clickAndTypeText(this.teamNameInput, teamName, { replace: true, });
-  }
-
-  randomString(length: number) {
-    return faker.random.alphaNumeric(length);
-  }
-
-  async typeRandomTeamName(length: number) {
-    await this.typeTeamName(this.randomString(length));
-  }
-
-  async typeRandomTeamDescription(length: number) {
-    await this.clickAndTypeText(this.teamDescriptionInput, this.randomString(length), { replace: true, })
-  }
-
-  async clickCancelButton() {
-    await this.t.click(this.cancelButton);
-  }
-
-  async clickCreateButton() {
-    await this.t.expect(this.createButton.hasAttribute('disabled')).notOk().click(this.createButton);
-  }
-
-  get membersInput() {
-    return this.self.find('#downshift-multiple-input');
-  }
-
-  async typeMember(text: string, options?) {
-    await this.clickAndTypeText(this.membersInput, text, options);
-  }
-
-  async addMember(name: string) {
-    await this.typeMember(name, { paste: true });
-    await this.t.wait(3e3);
-    await this.selectMemberByNth(0);
-  }
-
-  get selectedMembers() {
-    this.warnFlakySelector();
-    return this.self.find('*[role="button"]').withAttribute('uid');
-  }
-
-  async removeSelectedMember(n: number = -1) {
-    await this.t.click(this.selectedMembers.nth(n).find('button'));
-  }
-
-  get lastSelectedMemberId() {
-    return this.selectedMembers.nth(-1).getAttribute('uid');
-  }
-
-  get lastSelectedMemberName() {
-    return this.selectedMembers.nth(-1).find('.label');
-  }
-
-  async lastSelectedMemberNameShouldBe(name: string) {
-    await this.t.expect(this.lastSelectedMemberName.withText(name)).ok();
-  }
-
-  get contactSearchSuggestionsList() {
-    return this.getSelectorByAutomationId("contactSearchSuggestionsList");
-  }
-
-  get contactSearchItems() {
-    return this.contactSearchSuggestionsList.find('li');
-  }
-
-  async selectMemberByNth(n: number) {
-    await this.t.click(this.contactSearchItems.nth(n));
-  }
-
-  async selectMemberByName(name: string) {
-    await this.t.click(this.contactSearchItems.find('.primary').withText(name));
-  }
-
-  async selectMemberByEmail(email: string) {
-    await this.t.click(this.contactSearchItems.find('.secondary').withText(email));
-  }
-
   get isPublicDiv() {
     return this.getSelectorByAutomationId('CreateTeamIsPublic').parent('li');
   }
@@ -130,6 +49,22 @@ export class CreateTeamModal extends BaseWebComponent {
 
   get mayPinPostDiv() {
     return this.getSelectorByAutomationId('CreateTeamCanPinPost').parent('li');
+  }
+
+  async typeTeamName(teamName) {
+    await this.clickAndTypeText(this.teamNameInput, teamName, { replace: true, });
+  }
+
+  randomString(length: number) {
+    return faker.random.alphaNumeric(length);
+  }
+
+  async typeRandomTeamName(length: number) {
+    await this.typeTeamName(this.randomString(length));
+  }
+
+  async typeRandomTeamDescription(length: number) {
+    await this.clickAndTypeText(this.teamDescriptionInput, this.randomString(length), { replace: true, })
   }
 
   get isPublicToggle() {
@@ -186,7 +121,31 @@ export class CreateTeamModal extends BaseWebComponent {
   async turnOffMayPinPost() {
     await this.toggle(this.mayPinPostToggle, false);
   }
-  
+}
+
+
+export class CreateTeamModal extends BaseTeamSetting {
+  get exists() {
+    return this.title.withExactText('Create Team').exists
+  }
+
+  get cancelButton() {
+    return this.getSelectorByAutomationId('createToTeamCancelButton', this.self);
+  }
+
+  get createButton() {
+    return this.getSelectorByAutomationId('createTeamOkButton', this.self);
+  }
+
+  async clickCancelButton() {
+    await this.t.click(this.cancelButton);
+  }
+
+  async clickCreateButton() {
+    await this.t.expect(this.createButton.hasAttribute('disabled')).notOk().click(this.createButton);
+    await this.waitForAllSpinnersToDisappear();
+  }
+
   get isCreateButtonDisable(): Promise<boolean> {
     return this.createButton.hasAttribute('disabled');
   }
@@ -198,4 +157,72 @@ export class CreateTeamModal extends BaseWebComponent {
   async createdTeamButtonShouldBeEnabled() {
     await this.t.expect(this.isCreateButtonDisable).notOk();
   }
+
+  get memberInput() {
+    return this.getComponent(MemberInput);
+  }
+}
+
+export class ConvertToTeamDialog extends BaseTeamSetting {
+  get exists() {
+    return this.title.withExactText('Convert to team').exists
+  }
+
+  get teamNameInput() {
+    return this.getSelectorByAutomationId("ConvertToTeamTeamName");
+  }
+
+  get teamDescriptionInput() {
+    return this.getSelectorByAutomationId("ConvertToTeamTeamDescription");
+  }
+
+  get toggleList() {
+    return this.getSelectorByAutomationId("ConvertToTeamToggleList");
+  }
+
+  get isPublicDiv() {
+    return this.getSelectorByAutomationId('ConvertToTeamIsPublic').parent('li');
+  }
+
+  get mayAddMemberDiv() {
+    return this.getSelectorByAutomationId('ConvertToTeamCanAddMember').parent('li');
+  }
+
+  get mayPostMessageDiv() {
+    return this.getSelectorByAutomationId('ConvertToTeamCanPost').parent('li');
+  }
+
+  get mayPinPostDiv() {
+    return this.getSelectorByAutomationId('ConvertToTeamCanPinPost').parent('li');
+  }
+
+  get cancelButton() {
+    return this.getSelectorByAutomationId('convertToTeamCancelButton', this.self);
+  }
+
+  get convertToTeamButton() {
+    return this.getSelectorByAutomationId('convertToTeamOkButton', this.self);
+  }
+
+  async clickCancelButton() {
+    await this.t.click(this.cancelButton);
+  }
+
+  async clickConvertToTeamButton() {
+    await this.t.expect(this.convertToTeamButton.hasAttribute('disabled')).notOk().click(this.convertToTeamButton);
+    await this.waitForAllSpinnersToDisappear();
+  }
+
+  get isConvertToTeamButtonDisable(): Promise<boolean> {
+    return this.convertToTeamButton.hasAttribute('disabled');
+  }
+
+  async convertToTeamButtonShouldBeDisabled() {
+    await this.t.expect(this.isConvertToTeamButtonDisable).ok();
+  }
+
+  async convertToTeamButtonShouldBeEnabled() {
+    await this.t.expect(this.isConvertToTeamButtonDisable).notOk();
+  }
+
 }

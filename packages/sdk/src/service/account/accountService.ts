@@ -15,11 +15,11 @@ import {
   ITokenModel,
   requestServerStatus,
 } from '../../api';
-import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
 import { Aware } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
+import { SERVICE } from '../eventKey';
 import { ProfileService } from '../../module/profile';
-import { setRcToken } from '../../authenticator';
+import { setRcToken } from '../../authenticator/utils';
 import { ERROR_CODES_SDK } from '../../error';
 import {
   AccountGlobalConfig,
@@ -78,7 +78,6 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
       const oldRcToken = AuthGlobalConfig.getRcToken();
       const newRcToken = (await refreshToken(oldRcToken)) as ITokenModel;
       setRcToken(newRcToken);
-      notificationCenter.emitKVChange(AUTH_RC_TOKEN, newRcToken);
       return newRcToken;
     } catch (err) {
       Aware(ERROR_CODES_SDK.OAUTH, err.message);
@@ -107,6 +106,10 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
 
   checkServerStatus(callback: (success: boolean, retryAfter: number) => void) {
     requestServerStatus(callback);
+  }
+
+  onRefreshTokenFailure() {
+    notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
   }
 }
 

@@ -16,9 +16,13 @@ import {
 } from '../entity';
 
 import { ContactType } from '../types';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 interface IPersonService {
-  handleIncomingData(persons: Raw<Person>[]): Promise<void>;
+  handleIncomingData(
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+  ): Promise<void>;
 
   getPersonsByIds(ids: number[]): Promise<Person[]>;
 

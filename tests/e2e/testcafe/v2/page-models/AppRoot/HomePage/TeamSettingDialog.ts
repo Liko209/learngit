@@ -215,4 +215,13 @@ export class TeamSettingDialog extends BaseWebComponent {
   async clickArchiveTeamButton() {
     await this.t.click(this.archiveTeamButton);
   }
+
+  /* group only */
+  get convertToTeamButton() {
+    return this.getSelectorByAutomationId("groupSettingsConvertToTeam", this.self);
+  }
+
+  async clickConvertToTeamButton() {
+    return this.t.click(this.convertToTeamButton);
+  }
 }

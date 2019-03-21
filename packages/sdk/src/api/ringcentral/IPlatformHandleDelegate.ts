@@ -4,4 +4,5 @@ export interface IPlatformHandleDelegate {
   checkServerStatus: (
     callback: (success: boolean, retryAfter: number) => void,
   ) => void;
+  onRefreshTokenFailure: () => void;
 }
