@@ -9,7 +9,7 @@ import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
 import { JuiMenu } from '../../components';
-import styled, { keyframes } from '../../foundation/styled-components';
+import styled, { keyframes, css } from '../../foundation/styled-components';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
 import {
@@ -40,6 +40,21 @@ const rippleEnter = (theme: Theme) => keyframes`
 `;
 const StyledIconographyMore = styled(JuiIconography)<JuiIconographyProps>``;
 
+const WrapperListItem = ({
+  isItemHover,
+  ...rest
+}: MuiMenuItemProps & { isItemHover?: boolean }) => <MuiMenuItem {...rest} />;
+
+const hoverStyle = css`
+  background-color: ${({ theme }) =>
+    fade(grey('700')({ theme }), theme.opacity.p05)};
+  ${StyledIconographyMore} {
+    display: inline-flex;
+  }
+  ${StyledIconographyDraft}, ${StyledIconographyFailure} {
+    display: none;
+  }
+`;
 const JuiMenuContain = styled(JuiMenu)`
   && {
     li {
@@ -47,8 +62,8 @@ const JuiMenuContain = styled(JuiMenu)`
     }
   }
 `;
+const StyledListItem = styled(WrapperListItem)`
 
-const StyledListItem = styled(MuiMenuItem)`
   && {
     display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
@@ -67,6 +82,9 @@ const StyledListItem = styled(MuiMenuItem)`
           easing: theme.transitions.easing.easeInOut,
         })};
   }
+  &&&& {
+    ${({ isItemHover }) => (isItemHover ? hoverStyle : {})};
+  }
 
   &&.dragging {
     z-index: ${({ theme }) => theme.zIndex.dragging};
@@ -83,14 +101,7 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   &&&:hover {
-    background-color: ${({ theme }) =>
-      fade(grey('700')({ theme }), theme.opacity.p05)};
-    ${StyledIconographyMore} {
-      display: inline-flex;
-    }
-    ${StyledIconographyDraft}, ${StyledIconographyFailure} {
-      display: none;
-    }
+    ${hoverStyle}
   }
 
   &&.selected {
@@ -136,6 +147,7 @@ type JuiConversationListItemProps = {
   onMoreClick?: (e: React.MouseEvent) => any;
   umiHint?: boolean;
   hidden?: boolean;
+  isItemHover?: boolean;
 } & MuiMenuItemProps;
 
 type IConversationListItem = {
@@ -161,6 +173,7 @@ const JuiConversationListItem: IConversationListItem = memo(
       innerRef,
       umiHint,
       children,
+      isItemHover,
       ...rest
     } = props;
 
@@ -172,6 +185,7 @@ const JuiConversationListItem: IConversationListItem = memo(
         selected={selected}
         classes={{ selected: 'selected' }}
         TouchRippleProps={{ classes: touchRippleClasses }}
+        isItemHover={isItemHover}
         {...rest}
       >
         <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
