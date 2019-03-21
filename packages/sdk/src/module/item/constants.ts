@@ -9,6 +9,7 @@ enum ITEM_SORT_KEYS {
   MODIFIED_TIME = 'modified_at',
   NAME = 'name',
   START_TIME = 'start',
+  LATEST_VERSION_DATE = '_latest_version_date',
 }
 
 export { ITEM_SORT_KEYS };

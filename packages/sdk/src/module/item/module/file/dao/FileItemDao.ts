@@ -15,10 +15,19 @@ class FileItemDao extends SubItemDao<SanitizedFileItem> {
   }
 
   toSanitizedItem(file: FileItem) {
+    let lastDate: number = file.created_at;
+    for (const version of file.versions) {
+      if (!version.deactivated) {
+        lastDate = version.date;
+        break;
+      }
+    }
+
     return {
       ...super.toSanitizedItem(file),
       name: file.name,
       type: file.type,
+      __latest_version_date: lastDate,
     } as SanitizedFileItem;
   }
 

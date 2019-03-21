@@ -17,7 +17,7 @@ import { Item } from 'sdk/module/item/entity';
 import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
 
 jest.mock('@/store/base/fetch/FetchSortableDataListHandler', () => {
-  const handler: FetchSortableDataListHandler = {
+  const handler: FetchSortableDataListHandler<Item> = {
     fetchData: jest.fn(),
     getIds: jest.fn(),
     hasMore: jest.fn(),

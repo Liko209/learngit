@@ -353,7 +353,9 @@ class FileUploadController {
               loaded: hasUploaded ? 1 : -1,
               total: 1,
             },
-            status: hasUploaded ? PROGRESS_STATUS.SUCCESS : PROGRESS_STATUS.FAIL,
+            status: hasUploaded
+              ? PROGRESS_STATUS.SUCCESS
+              : PROGRESS_STATUS.FAIL,
           },
           itemFile: item,
         });
@@ -580,6 +582,8 @@ class FileUploadController {
     }
 
     try {
+      // in order to keep file time close to item time to keep item order same as file order
+      preInsertItem.versions[0].date = Date.now();
       let result: ItemFile | undefined = undefined;
       if (existItemFile) {
         result = (await this._updateItem(
@@ -776,7 +780,13 @@ class FileUploadController {
       type_id: 10,
       type: this._getFileType(file),
       versions: [
-        { download_url: '', size: file.size, url: '', stored_file_id: 0 },
+        {
+          download_url: '',
+          size: file.size,
+          url: '',
+          stored_file_id: 0,
+          date: now,
+        },
       ],
       url: '',
     };
@@ -795,7 +805,6 @@ class FileUploadController {
       group_ids: [Number(groupId)],
       post_ids: [],
       versions: preInsertItem.versions,
-      created_at: Date.now(),
       is_new: true,
     };
     return await this._fileRequestController.post(fileItemOptions);
@@ -813,7 +822,11 @@ class FileUploadController {
     });
   }
 
-  private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile, updateModifiedAt?: boolean) {
+  private async _updateItem(
+    existItem: ItemFile,
+    preInsertItem: ItemFile,
+    updateModifiedAt?: boolean,
+  ) {
     existItem.is_new = false;
     existItem.versions = preInsertItem.versions.concat(existItem.versions);
     updateModifiedAt && (existItem.modified_at = Date.now());

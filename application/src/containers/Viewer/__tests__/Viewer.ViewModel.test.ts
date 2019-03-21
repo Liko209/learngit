@@ -6,7 +6,7 @@
 
 import { ViewerViewModel } from '../Viewer.ViewModel';
 import { notificationCenter } from 'sdk/service';
-import { ItemService } from 'sdk/module/item';
+import { ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
 
 import { VIEWER_ITEM_TYPE } from '../constants';
 import { ViewerViewProps } from '../types';
@@ -151,7 +151,14 @@ describe('Viewer.ViewModel', () => {
       await vm.init();
       setTimeout(() => {
         expect(dataSource.loadInitialData).toBeCalled();
-        expect(itemService.getItemIndexInfo).toBeCalled();
+        expect(itemService.getItemIndexInfo).toBeCalledWith(props.itemId, {
+          typeId: 10,
+          groupId: props.groupId,
+          sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+          desc: false,
+          limit: Infinity,
+          offsetItemId: undefined,
+        });
 
         expect(vm.total).toEqual(22);
         expect(vm.currentIndex).toEqual(11);
