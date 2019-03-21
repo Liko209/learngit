@@ -534,16 +534,16 @@ node(buildNode) {
             }
         )
 
-        // FIXME: it is better to provide a stage for all external jobs
-        // Telephony automation automation
-        try {
-            if (!isMerge && 'POC/FIJI-1302' == gitlabSourceBranch) {
-                build(job: 'Jupiter-telephony-automation', parameters: [
-                    [$class: 'StringParameterValue', name: 'BRANCH', value: 'POC/FIJI-2808'],
-                    [$class: 'StringParameterValue', name: 'JUPITER_URL', value: appUrl],
-                ])
-            }
-        } catch (e) {}
+        condStage(name: 'Telephony Automation', timeout: 600) {
+            try {
+                if (!isMerge && 'POC/FIJI-1302' == gitlabSourceBranch) {
+                    build(job: 'Jupiter-telephony-automation', parameters: [
+                        [$class: 'StringParameterValue', name: 'BRANCH', value: 'POC/FIJI-2808'],
+                        [$class: 'StringParameterValue', name: 'JUPITER_URL', value: appUrl],
+                    ])
+                }
+            } catch (e) {}
+        }
 
         condStage (name: 'E2E Automation', timeout: 3600, enable: !skipEndToEnd) {
             String hostname =  sh(returnStdout: true, script: 'hostname -f').trim()
