@@ -84,6 +84,7 @@ async function getThumbnailURLWithType(
   // 2. tif has thumbnail field.
   // 3. gif use original url.
   if (FileItemUtils.isGifItem({ type })) {
+    url = versionUrl || '';
     return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
   }
 
@@ -92,7 +93,6 @@ async function getThumbnailURLWithType(
       width: SQUARE_SIZE,
       height: SQUARE_SIZE,
     });
-    console.log(url, 'shining111111');
 
     if (url && url.length) {
       return {
@@ -108,7 +108,6 @@ async function getThumbnailURLWithType(
         SQUARE_SIZE,
         SQUARE_SIZE,
       );
-      console.log(url, 'shining2222');
       return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
     }
   } else {
@@ -209,4 +208,5 @@ export {
   getThumbnailURLWithType,
   IMAGE_TYPE,
   ImageInfo,
+  SQUARE_SIZE,
 };
