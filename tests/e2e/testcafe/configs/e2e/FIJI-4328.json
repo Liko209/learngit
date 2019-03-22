@@ -1,7 +1,7 @@
 {
   "on_merge": {
     "fixtures": [
-      "./fixtures/ConversationList/MarkPrivateOrProtected.ts"
+      "./fixtures/ContentPanel/CodeSnippet.ts"
     ],
    "browsers": [
       "selenium:chrome"
