@@ -29,6 +29,7 @@ import { Stream } from './Stream';
 import { AttachmentManager } from './MessageInput/Attachments';
 import { AttachmentManagerViewComponent } from './MessageInput/Attachments/AttachmentManager.View';
 import { withRouter } from 'react-router';
+import { goToConversation } from '@/common/goToConversation';
 
 const STREAM = 'stream';
 const INPUT = 'input';
@@ -52,6 +53,7 @@ class ConversationPageViewComponent extends Component<
       return;
     }
     if (stream.props.hasMore('down')) {
+      goToConversation({ conversationId: this.props.groupId });
       this.remountStream();
     }
   }

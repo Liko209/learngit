@@ -1,5 +1,15 @@
-import history from '@/history';
+import { goToConversation } from './goToConversation';
 
-export function jumpToPost(postId: number, groupId: number) {
-  return history.push(`/messages/${groupId}`, { jumpToPostId: postId });
+type JumpToPostParams = {
+  id: number;
+  groupId: number;
+};
+
+function jumpToPost({ id, groupId }: JumpToPostParams) {
+  return goToConversation({
+    conversationId: groupId,
+    jumpToPostId: id,
+  });
 }
+
+export { jumpToPost };
