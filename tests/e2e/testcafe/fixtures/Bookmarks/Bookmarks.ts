@@ -11,7 +11,6 @@ fixture('Bookmarks/Bookmarks')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-// skip by bug:https://jira.ringcentral.com/browse/FIJI-3933 
 test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'Bookmarks']),
   async (t: TestController) => {
     const users = h(t).rcData.mainCompany.users;

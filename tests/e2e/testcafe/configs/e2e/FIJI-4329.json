@@ -1,0 +1,18 @@
+{
+  "on_merge": {
+    "fixtures": [
+      ".fixtures/AtMention/AtMention.ts",
+      "./fixtures/ContentPanel/JumpToUnreadButton.ts",
+      "./fixtures/Bookmarks/Bookmarks.ts"
+    ],
+    "include_tags": [
+      "JPT-958",
+      "JPT-208",
+      "JPT-234",
+      "JPT-1212"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
