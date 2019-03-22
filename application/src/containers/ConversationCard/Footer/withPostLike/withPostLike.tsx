@@ -15,10 +15,12 @@ import PostModel from '@/store/models/Post';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import { computed, action } from 'mobx';
+import { observer } from 'mobx-react';
 
 function withPostLike<P>(
   Component: ComponentType<P & WithPostLikeComponentProps>,
 ): ComponentClass<P & WithPostLikeProps> {
+  @observer
   class ComponentWithPostLike extends React.Component<P & WithPostLikeProps> {
     private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 

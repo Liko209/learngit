@@ -5,13 +5,11 @@
  */
 
 import React, { Component } from 'react';
-import { observer } from 'mobx-react';
 import { JuiConversationCardFooter } from 'jui/pattern/ConversationCard';
 import { JuiConversationPostLike } from 'jui/pattern/ConversationPostLike';
 import { JuiCollapse } from 'jui/components/Collapse';
 import { FooterViewProps } from './types';
 
-@observer
 class FooterView extends Component<FooterViewProps> {
   render() {
     const {
