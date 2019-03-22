@@ -33,8 +33,8 @@ import {
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
+import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
 import JuiConversationCard from 'jui/src/pattern/ConversationCard';
-// import { findDOMNode } from 'react-dom';
 
 type Props = WithNamespaces & StreamViewProps & StreamProps;
 
@@ -172,11 +172,9 @@ class StreamViewComponent extends Component<Props> {
   private _renderInitialPost() {
     const { groupId, notEmpty } = this.props;
     return (
-      <ConversationInitialPost
-        notEmpty={notEmpty}
-        id={groupId}
-        key="ConversationInitialPost"
-      />
+      <JuiConversationInitialPostWrapper key="ConversationInitialPost">
+        <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
+      </JuiConversationInitialPostWrapper>
     );
   }
 
@@ -308,6 +306,12 @@ class StreamViewComponent extends Component<Props> {
     });
   }
 
+  private _contentStyleGen = _.memoize((height?: number) => ({
+    'min-height': height,
+    display: 'flex',
+    'flex-direction': 'column',
+  }));
+
   render() {
     const {
       t,
@@ -337,6 +341,7 @@ class StreamViewComponent extends Component<Props> {
           <JuiStream ref={ref}>
             {this._renderJumpToFirstUnreadButton()}
             <JuiInfiniteList
+              contentStyle={this._contentStyleGen(height)}
               ref={this._listRef}
               height={height}
               stickToBottom={true}

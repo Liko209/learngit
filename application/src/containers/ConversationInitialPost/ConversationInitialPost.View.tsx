@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import {
-  JuiConversationInitialPost,
   JuiConversationInitialPostHeader,
   StyledTitle,
   StyledSpan,
@@ -138,10 +137,10 @@ class ConversationInitialPost extends React.Component<
   render() {
     const streamIsEmpty = !this.props.notEmpty;
     return (
-      <JuiConversationInitialPost>
+      <>
         {this._conversationInitialPostHeader}
         {streamIsEmpty ? this._conversationInitialPostBody : null}
-      </JuiConversationInitialPost>
+      </>
     );
   }
 }
