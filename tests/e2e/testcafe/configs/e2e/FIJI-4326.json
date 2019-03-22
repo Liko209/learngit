@@ -1,0 +1,14 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ActionBar/LikeAndUnlike.ts"
+    ],
+    "include_tags": [
+      "JPT-304",
+      "JPT-308"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

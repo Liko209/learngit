@@ -62,6 +62,7 @@ class JuiConversationPostLike extends PureComponent<
           color={iLiked ? 'primary' : undefined}
           variant="plain"
           disableToolTip={true}
+          data-name="actionBarLike"
         >
           {iLiked ? 'thumbup' : 'thumbup_border'}
         </JuiIconButton>
