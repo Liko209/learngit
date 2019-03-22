@@ -16,7 +16,7 @@ import {
 import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { SortableModel } from '../../../../framework/model';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { GroupService } from '../../../group';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
@@ -42,7 +42,7 @@ describe('SearchPersonController', () => {
   function setUp() {
     groupService = new GroupService();
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(1);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
 
     entityCacheController = buildEntityCacheController<Person>();
     cacheSearchController = buildEntityCacheSearchController<Person>(

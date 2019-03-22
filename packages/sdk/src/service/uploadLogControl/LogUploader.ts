@@ -6,7 +6,7 @@ import {
 } from 'foundation';
 import AccountService from '../account';
 import axios, { AxiosError } from 'axios';
-import { AccountGlobalConfig } from '../../service/account/config';
+import { AccountUserConfig } from '../../service/account/config';
 import { Api } from '../../api';
 
 const DEFAULT_EMAIL = 'service@glip.com';
@@ -54,7 +54,8 @@ export class LogUploader implements ILogUploader {
     let id;
     let email = DEFAULT_EMAIL;
     try {
-      id = AccountGlobalConfig.getCurrentUserId();
+      const userConfig = new AccountUserConfig();
+      id = userConfig.getGlipUserId();
       email = await accountService.getUserEmail();
     } catch (error) {
       mainLogger.warn(error);

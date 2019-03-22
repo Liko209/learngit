@@ -5,7 +5,6 @@
  */
 
 import { SyncUserConfig } from '../SyncUserConfig';
-import { AccountGlobalConfig } from '../../../../service/account/config';
 import { UserConfigService } from '../../../config/service/UserConfigService';
 import { SYNC_CONFIG_KEYS } from '../configKeys';
 
@@ -28,7 +27,6 @@ describe('SyncUserConfig', () => {
       .fn()
       .mockReturnValue(userConfigService);
 
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(222);
     syncUserConfig = new SyncUserConfig();
   }
 

@@ -7,8 +7,7 @@ import { SocketFSM } from './SocketFSM';
 import notificationCenter from '../../service/notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
 import { mainLogger } from 'foundation';
-import { AuthGlobalConfig } from '../../service/auth/config';
-import { NewGlobalConfig } from '../../service/config';
+import { AuthUserConfig } from '../../service/auth/config';
 import { SocketCanConnectController } from './SocketCanConnectController';
 import { getCurrentTime } from '../../utils/jsUtils';
 import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';
@@ -139,7 +138,8 @@ export class SocketManager {
   }
 
   private _onLogin() {
-    const timeStamp = NewGlobalConfig.getLastIndexTimestamp();
+    const synConfig = new SyncUserConfig();
+    const timeStamp = synConfig.getLastIndexTimestamp();
     this.info('onLogin', timeStamp);
     if (!timeStamp) {
       return;
@@ -324,7 +324,8 @@ export class SocketManager {
   private _startRealFSM() {
     // TO-DO: 1. jitter 2. ignore for same serverURL when activeFSM is connected?
     const serverHost = this._getServerHost();
-    const glipToken = AuthGlobalConfig.getGlipToken();
+    const authConfig = new AuthUserConfig();
+    const glipToken = authConfig.getGlipToken();
     if (serverHost) {
       this.activeFSM = new SocketFSM(
         serverHost,

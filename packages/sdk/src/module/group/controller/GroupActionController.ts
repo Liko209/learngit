@@ -27,7 +27,7 @@ import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { PermissionFlags, TeamSetting } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../service/account/config';
 
 export class GroupActionController {
   teamRequestController: IRequestController<Group>;
@@ -278,7 +278,8 @@ export class GroupActionController {
     memberIds: number[],
     teamSetting: TeamSetting = {},
   ): Promise<Group> {
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     const team: Partial<GroupApiType> = this._generateTeamParameters(
       currentUserId,
       memberIds,
@@ -420,7 +421,8 @@ export class GroupActionController {
     }
     if (group) {
       isValid = this.groupService.isValid(group);
-      const currentUserId = AccountGlobalConfig.getCurrentUserId();
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
       isIncludeSelf = group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;

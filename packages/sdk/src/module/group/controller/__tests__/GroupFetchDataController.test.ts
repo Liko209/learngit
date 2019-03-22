@@ -13,6 +13,8 @@ import { EntityCacheController } from '../../../../framework/controller/impl/Ent
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
+import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { AccountGlobalConfig } from '../../../../service/account/config';
 import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
@@ -66,7 +68,7 @@ describe('GroupFetchDataController', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
-    AccountGlobalConfig.getCurrentUserId = jest
+    AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
     PostService.getInstance = jest.fn().mockReturnValue(postService);
@@ -224,7 +226,7 @@ describe('GroupFetchDataController', () => {
 
   it('getGroupByPersonId()', async () => {
     const mock = { id: 2 };
-    AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
 
     daoManager.getDao.mockReturnValueOnce(groupDao);
 
@@ -252,7 +254,7 @@ describe('GroupFetchDataController', () => {
 
   describe('doFuzzySearch', () => {
     function prepareGroupsForSearch() {
-      AccountGlobalConfig.getCurrentUserId = jest
+      AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
         .mockImplementation(() => 1);
 
@@ -560,7 +562,7 @@ describe('GroupFetchDataController', () => {
     };
 
     function prepareGroupsForSearch() {
-      AccountGlobalConfig.getCurrentUserId = jest
+      AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
         .mockImplementation(() => 1);
 
@@ -591,7 +593,7 @@ describe('GroupFetchDataController', () => {
     const groupDao = new GroupDao(null);
 
     beforeEach(() => {
-      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(3);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(3);
     });
 
     const mockNormal = { id: 1 };
@@ -606,7 +608,7 @@ describe('GroupFetchDataController', () => {
         memberIDs,
       );
 
-      expect(AccountGlobalConfig.getCurrentUserId).toBeCalled();
+      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalled();
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
       expect(result1).toEqual(mockNormal);
     });
@@ -623,7 +625,7 @@ describe('GroupFetchDataController', () => {
       );
       expect(testEntitySourceController.put).toBeCalledWith(result2);
       expect(groupDao.queryGroupByMemberList).toBeCalledWith([1, 2, 3]);
-      expect(AccountGlobalConfig.getCurrentUserId).toBeCalled();
+      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalled();
       expect(result2).toEqual(mockNormal);
     });
 
@@ -646,7 +648,7 @@ describe('GroupFetchDataController', () => {
   describe('requestRemoteGroupByMemberList', () => {
     beforeEach(() => {
       const curUserId = 3;
-      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(curUserId);
     });
     it('should return a group when request success', async () => {
       const data = { _id: 1 };
@@ -688,7 +690,7 @@ describe('GroupFetchDataController', () => {
         favorite_group_ids: groupIds,
       });
 
-      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(curUserId);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(curUserId);
     });
     it("should return true when the person's conversion is favored", async () => {
       const spy = jest.spyOn(groupService, 'getLocalGroup');
