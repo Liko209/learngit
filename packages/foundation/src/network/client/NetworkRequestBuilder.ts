@@ -11,7 +11,6 @@ import config from '../../config';
 import NetworkManager from '../NetworkManager';
 import BaseRequest from '../BaseRequest';
 import {
-  // IRequestBuilderOption,
   IHandleType,
   REQUEST_PRIORITY,
   NETWORK_VIA,
@@ -20,6 +19,7 @@ import {
   HA_PRIORITY,
   IRequest,
 } from '../network';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'src/error';
 
 class NetworkRequestBuilder implements IRequest {
   id: string = '';
@@ -67,7 +67,10 @@ class NetworkRequestBuilder implements IRequest {
   }
 
   needAuth(): boolean {
-    throw new Error('Method not implemented.');
+    throw new JNetworkError(
+      ERROR_CODES_NETWORK.NETWORK_ERROR,
+      'Builder Error: needAuth method not implemented.',
+    );
   }
 
   /**

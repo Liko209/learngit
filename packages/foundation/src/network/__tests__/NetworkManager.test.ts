@@ -10,11 +10,7 @@ import {
   getFakeHandler,
 } from './utils';
 import OAuthTokenManager from '../OAuthTokenManager';
-// import { NetworkRequestBuilder } from '../client';
 
-// jest.mock('../client/NetworkRequestBuilder');
-
-const mockRequest: any = {};
 let networkManager: NetworkManager;
 const initManagerWithHandlerType = () => {
   networkManager.initNetworkRequestBaseHandler(
