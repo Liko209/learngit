@@ -158,8 +158,11 @@ test(formalName(`Only admin has add member permission when add team members togg
     await addTeamMemberDialog.cancel();
   });
 
-  await h(t).withLog(`When member of the team open team profile dialog`, async () => {
+  await h(t).withLog(`When I logout and login  with member ${memberUser.company.number}#${memberUser.extension}`, async () => {
     await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
+  }) 
+
+  await h(t).withLog(`And open team profile dialog`, async () => {
     await teamEntry.openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   })
