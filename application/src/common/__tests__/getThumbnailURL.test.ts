@@ -4,7 +4,20 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import FileItemModel from '../../store/models/FileItem';
-import { getThumbnailURL, getMaxThumbnailURLInfo } from '../getThumbnailURL';
+import {
+  getThumbnailURL,
+  getMaxThumbnailURLInfo,
+  getThumbnailURLWithType,
+  ImageInfo,
+  IMAGE_TYPE,
+} from '../getThumbnailURL';
+import {
+  RULE,
+  generateModifiedImageURL,
+} from '@/common/generateModifiedImageURL';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+
+let rule: RULE;
 
 describe('getThumbnailURL', () => {
   beforeEach(() => {
@@ -14,7 +27,12 @@ describe('getThumbnailURL', () => {
   const defaultURL = 'http://a.com';
 
   it('should get empty url when file item has no versions', () => {
-    const model: FileItemModel = { versions: [] } as FileItemModel;
+    const model: ImageInfo = {
+      id: 1,
+      type: '',
+      versionUrl: '',
+      versions: [],
+    } as ImageInfo;
     expect(getThumbnailURL(model)).toBe('');
   });
 
@@ -29,9 +47,9 @@ describe('getThumbnailURL', () => {
       },
     };
     const version1 = {};
-    const model: FileItemModel = {
+    const model: ImageInfo = {
       versions: [version0, version1],
-    } as FileItemModel;
+    } as ImageInfo;
     expect(getThumbnailURL(model)).toBe(thumbnailURL);
   });
   it('should get empty url when versions has no thumbs filed', () => {
@@ -40,9 +58,9 @@ describe('getThumbnailURL', () => {
       stored_file_id,
     };
     const version1 = {};
-    const model: FileItemModel = {
+    const model: ImageInfo = {
       versions: [version0, version1],
-    } as FileItemModel;
+    } as ImageInfo;
     expect(getThumbnailURL(model)).toBe('');
   });
 });
@@ -102,5 +120,29 @@ describe('getMaxThumbnailURLInfo', () => {
     expect(info.url).toEqual('');
     expect(info.width).toEqual(0);
     expect(info.height).toEqual(0);
+  });
+});
+
+describe('getThumbnailURLWithType', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+  it('should get empty url with unknown type when item without type', async () => {
+    const model = {
+      versions: [],
+    };
+    rule = RULE.RECTANGLE_IMAGE;
+    const result = await getThumbnailURLWithType(model, rule);
+    expect(result.url).toEqual('');
+  });
+  it('should get original url with original type when item is gif item', async () => {
+    const model = {
+      versions: [],
+    };
+    rule = RULE.RECTANGLE_IMAGE;
+    FileItemUtils.isGifItem.mockReturnValue(true);
+    const result = await getThumbnailURLWithType(model, rule);
+    expect(result.url).toEqual('');
+    expect(result.type).toEqual(IMAGE_TYPE.ORIGINAL_IMAGE);
   });
 });

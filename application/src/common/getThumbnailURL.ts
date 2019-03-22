@@ -87,54 +87,67 @@ async function getThumbnailURLWithType(
     return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
   }
 
-  const size = getThumbnailSize(origWidth, origHeight);
   if (rule === RULE.SQUARE_IMAGE) {
     url = getThumbnailURL(item, {
       width: SQUARE_SIZE,
       height: SQUARE_SIZE,
     });
-  } else {
-    url = getThumbnailURL(item, {
-      width: size.imageWidth,
-      height: size.imageHeight,
-    });
-  }
-  if (url && url.length) {
-    return {
-      url,
-      type: IMAGE_TYPE.THUMBNAIL_IMAGE,
-    };
-  }
-  if (
-    !url &&
-    origWidth > 0 &&
-    origHeight > 0 &&
-    FileItemUtils.isSupportPreview({ type })
-  ) {
-    if (rule === RULE.SQUARE_IMAGE) {
+    console.log(url, 'shining111111');
+
+    if (url && url.length) {
+      return {
+        url,
+        type: IMAGE_TYPE.THUMBNAIL_IMAGE,
+      };
+    }
+
+    if (!url && FileItemUtils.isSupportPreview({ type })) {
       const itemService = ItemService.getInstance() as ItemService;
       url = await itemService.getThumbsUrlWithSize(
         id,
         SQUARE_SIZE,
         SQUARE_SIZE,
       );
+      console.log(url, 'shining2222');
       return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
     }
-    const result = await generateModifiedImageURL({
-      rule,
-      origHeight,
-      origWidth,
-      id,
-      squareSize: SQUARE_SIZE,
+  } else {
+    const size = getThumbnailSize(origWidth, origHeight);
+    url = getThumbnailURL(item, {
+      width: size.imageWidth,
+      height: size.imageHeight,
     });
-    url = result.url;
-    return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
+
+    if (url && url.length) {
+      return {
+        url,
+        type: IMAGE_TYPE.THUMBNAIL_IMAGE,
+      };
+    }
+
+    if (
+      !url &&
+      origWidth > 0 &&
+      origHeight > 0 &&
+      FileItemUtils.isSupportPreview({ type })
+    ) {
+      const result = await generateModifiedImageURL({
+        rule,
+        origHeight,
+        origWidth,
+        id,
+        squareSize: SQUARE_SIZE,
+      });
+      url = result.url;
+      return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
+    }
   }
+
   if (!url) {
     url = versionUrl || '';
     return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
   }
-  return { url, type: IMAGE_TYPE.MODIFY_IMAGE };
+  return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };
 }
 
 function getMaxThumbnailURLInfo(item: FileItemModel) {
@@ -195,4 +208,5 @@ export {
   getMaxThumbnailURLInfo,
   getThumbnailURLWithType,
   IMAGE_TYPE,
+  ImageInfo,
 };
