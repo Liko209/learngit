@@ -33,8 +33,8 @@ describe('EventItemViewModel', () => {
     });
   });
 
-  describe('get startTime()', () => {
-    it('should be a date string when incoming timestamp [JPT-845]', () => {
+  describe('get localTime()', () => {
+    it('should be a time string when incoming timestamp [JPT-845]', () => {
       (getEntity as jest.Mock).mockReturnValue(mockEvent);
       expect(vm.localTime).toEqual(
         dateFormatter.localTime(moment(mockEvent.start)),
@@ -44,6 +44,21 @@ describe('EventItemViewModel', () => {
       });
       expect(vm.localTime).toEqual(
         dateFormatter.localTime(moment(1547631484105)),
+      );
+    });
+  });
+
+  describe('get startTime()', () => {
+    it('should be a date string when incoming timestamp [JPT-845]', () => {
+      (getEntity as jest.Mock).mockReturnValue(mockEvent);
+      expect(vm.startTime).toEqual(
+        dateFormatter.dateAndTimeWithoutWeekday(moment(mockEvent.start)),
+      );
+      (getEntity as jest.Mock).mockReturnValue({
+        start: 1547631484105,
+      });
+      expect(vm.startTime).toEqual(
+        dateFormatter.dateAndTimeWithoutWeekday(moment(1547631484105)),
       );
     });
   });
