@@ -221,7 +221,6 @@ const JuiVirtualizedList: RefForwardingComponent<
 
         // TODO Don't re-render if range not changed
         setRenderedRange(newRenderedRange);
-        prevAtBottomRef.current = computeAtBottom();
 
         // Emit events
         if (!isRangeEqual(renderedRange, newRenderedRange)) {
