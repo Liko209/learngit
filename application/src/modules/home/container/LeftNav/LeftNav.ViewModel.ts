@@ -27,12 +27,16 @@ class LeftNavViewModel extends StoreViewModel {
 
   constructor(props: LeftNavProps) {
     super(props);
+    const key = this._expandKey();
     const isLocalExpand =
-      getItem('expanded') === null
-        ? true
-        : JSON.parse(String(getItem('expanded')));
+      getItem(key) === null ? false : JSON.parse(String(getItem(key)));
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.IS_LEFT_NAV_OPEN, isLocalExpand);
+  }
+
+  private _expandKey = () => {
+    const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    return `${userId}-expanded`;
   }
 
   @computed
@@ -58,8 +62,9 @@ class LeftNavViewModel extends StoreViewModel {
   @computed
   get isLeftNavOpen() {
     const isExpand = getGlobalValue(GLOBAL_KEYS.IS_LEFT_NAV_OPEN);
-    localStorage.setItem('expanded', JSON.stringify(isExpand));
-    return JSON.parse(getItem('expanded') || 'true');
+    const key = this._expandKey();
+    localStorage.setItem(key, JSON.stringify(isExpand));
+    return JSON.parse(getItem(key) || 'true');
   }
 }
 

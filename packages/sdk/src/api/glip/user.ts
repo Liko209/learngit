@@ -126,12 +126,16 @@ function initialData(params: object, requestConfig = {}, headers = {}) {
 }
 
 function remainingData(params: object, requestConfig = {}, headers = {}) {
+  const retryCount = 3;
+  const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/remaining',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    retryCount,
+    priority,
     DEFAULT_RETRY_COUNT,
     TEN_MINUTE_TIMEOUT,
   );

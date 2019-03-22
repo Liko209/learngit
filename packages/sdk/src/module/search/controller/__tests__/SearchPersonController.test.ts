@@ -23,6 +23,7 @@ import { IEntityCacheSearchController } from '../../../../framework/controller/i
 import { SortableModel } from '../../../../framework/model';
 import { AccountGlobalConfig } from '../../../../service/account/config';
 import { GroupService } from '../../../group';
+import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
 jest.mock('../../../../service/account/config');
 jest.mock('../../../../api');
@@ -35,7 +36,7 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('SearchServiceController', () => {
+describe('SearchPersonController', () => {
   let searchPersonController: SearchPersonController;
   let searchService: ISearchService;
 
@@ -256,6 +257,7 @@ describe('SearchServiceController', () => {
       clearMocks();
       setUp();
       await prepareDataForSearchUTs();
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
     });
 
     type SearchResultType = {

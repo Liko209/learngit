@@ -84,6 +84,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
       <Fragment>
         <JuiConversationListItem
           className="conversation-list-item"
+          isItemHover={!!this.menuAnchorEl}
           data-group-id={this.props.groupId}
           presence={this._presence}
           umi={this._umi}

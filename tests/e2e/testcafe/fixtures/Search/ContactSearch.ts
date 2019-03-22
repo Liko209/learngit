@@ -71,7 +71,7 @@ test(formalName('Search result should be updated in real time when team privacy 
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchBar.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
       await searchBar.dropDownListShouldContainTeam(team);
     }
@@ -112,7 +112,7 @@ test(formalName('Search result should be updated in real time when team privacy 
   // assertion
   searchResults = [publicTeamWithMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchBar.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
       await searchBar.dropDownListShouldContainTeam(team);
     }
@@ -185,7 +185,7 @@ test(formalName('Search result should be updated in real time when team membersh
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchBar.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
       await searchBar.dropDownListShouldContainTeam(team);
     }
@@ -226,7 +226,7 @@ test(formalName('Search result should be updated in real time when team membersh
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchBar.teams.count).eql(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchBar.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
       await searchBar.dropDownListShouldContainTeam(team);
     }
