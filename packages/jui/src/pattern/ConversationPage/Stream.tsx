@@ -18,7 +18,7 @@ type JuiStreamProps = {
 };
 
 const StyledDiv = styled.div`
-  height: 100%;
+  min-height: 100%;
   & .un-scrollable {
     display: flex;
     flex-direction: column;
