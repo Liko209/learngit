@@ -41,7 +41,7 @@ const SQUARE_SIZE = 180;
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
-  private _idToDelete: number;
+  private _deleteIds: Set<number> = new Set();
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
   @observable
@@ -180,11 +180,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   get items() {
     const result: FileItemModel[] = [];
     this._ids.forEach((id: number) => {
-      if (id !== this._idToDelete) {
-        try {
-          const item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, id);
-          result.push(item);
-        } catch (e) {}
+      if (!this._deleteIds.has(id)) {
+        const item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, id);
+        result.push(item);
       }
     });
     return result;
@@ -252,9 +250,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         if (postLoading) {
           await this._itemService.cancelUpload(id);
         } else {
-          this._idToDelete = id;
           await this._postService.removeItemFromPost(this._postId, id);
         }
+        this._deleteIds.add(id);
       } catch (e) {
         Notification.flashToast({
           message: i18next.t('item.prompt.notAbleToCancelUploadTryAgain'),

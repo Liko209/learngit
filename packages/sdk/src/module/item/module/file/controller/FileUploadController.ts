@@ -282,7 +282,7 @@ class FileUploadController {
       }
     });
 
-    this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
+    await this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
     const item = await this._entitySourceController.get(itemId);
 
@@ -353,7 +353,9 @@ class FileUploadController {
               loaded: hasUploaded ? 1 : -1,
               total: 1,
             },
-            status: hasUploaded ? PROGRESS_STATUS.SUCCESS : PROGRESS_STATUS.FAIL,
+            status: hasUploaded
+              ? PROGRESS_STATUS.SUCCESS
+              : PROGRESS_STATUS.FAIL,
           },
           itemFile: item,
         });
@@ -801,19 +803,26 @@ class FileUploadController {
     return await this._fileRequestController.post(fileItemOptions);
   }
 
-  private _emitItemFileStatus(
+  private async _emitItemFileStatus(
     status: PROGRESS_STATUS,
     preInsertId: number,
     updatedId: number,
   ) {
-    notificationCenter.emit(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, {
-      status,
-      preInsertId,
-      updatedId,
-    });
+    await notificationCenter.emitAsync(
+      SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+      {
+        status,
+        preInsertId,
+        updatedId,
+      },
+    );
   }
 
-  private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile, updateModifiedAt?: boolean) {
+  private async _updateItem(
+    existItem: ItemFile,
+    preInsertItem: ItemFile,
+    updateModifiedAt?: boolean,
+  ) {
     existItem.is_new = false;
     existItem.versions = preInsertItem.versions.concat(existItem.versions);
     updateModifiedAt && (existItem.modified_at = Date.now());
