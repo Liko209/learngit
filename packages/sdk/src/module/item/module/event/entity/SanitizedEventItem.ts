@@ -10,4 +10,9 @@ export type SanitizedEventItem = SanitizedItem & {
   start: number;
   end: number;
   effective_end: number;
+  repeat: string;
+  repeat_ending: string;
+  repeat_ending_after: string;
+  repeat_ending_on: number | null;
+  all_day: boolean;
 };

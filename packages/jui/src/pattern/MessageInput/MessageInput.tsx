@@ -13,6 +13,7 @@ import {
 } from '../../foundation/utils/styles';
 // import { markdownFromDelta } from './markdown';
 import { handleAtMention } from './Mention/handleAtMention';
+import './Modules';
 
 import 'react-quill/dist/quill.snow.css';
 
@@ -93,35 +94,12 @@ const StyledError = styled.div`
   }
 `;
 
-const formats = [
-  'background',
-  'bold',
-  'color',
-  'font',
-  'code',
-  'italic',
-  'link',
-  'size',
-  'strike',
-  'script',
-  'underline',
-  'blockquote',
-  'header',
-  'indent',
-  'list',
-  'align',
-  'direction',
-  'code-block',
-  'formula',
-  'mention',
-  // 'image',
-  // 'video',
-];
+const formats = ['mention'];
 
 type Props = {
   value?: string | Delta;
   defaultValue?: string;
-  onChange?: Function;
+  onChange?: (newValue: string) => void;
   onBlur?: Function;
   error: string;
   children: React.ReactNode;
@@ -130,14 +108,19 @@ type Props = {
   attachmentsNode?: React.ReactNode;
   isEditMode?: boolean;
   didDropFile?: (file: File[]) => void;
+  autofocus?: boolean;
   id?: number;
 };
 
 class JuiMessageInput extends React.PureComponent<Props> {
+  static defaultProps = {
+    autofocus: true,
+  };
+
   private _inputRef: React.RefObject<ReactQuill> = React.createRef();
 
   componentDidMount() {
-    setTimeout(this.focusEditor, 0);
+    setTimeout(this._autoFocus, 0);
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -146,13 +129,34 @@ class JuiMessageInput extends React.PureComponent<Props> {
       prevProps.modules !== this.props.modules &&
       this.props.isEditMode
     ) {
-      const quill = this._inputRef.current.getEditor();
-      quill.enable(false);
-      setTimeout(() => {
-        quill.enable(true);
-      },         0);
+      this._enable(false);
+      setTimeout(() => this._enable(true), 0);
     }
     if (prevProps.id !== this.props.id) {
+      this._autoFocus();
+    }
+  }
+
+  private _getEditor = () => {
+    let editor;
+
+    if (this._inputRef.current) {
+      editor = this._inputRef.current.getEditor();
+    } else {
+      editor = {
+        enable: (enabled: boolean) => {},
+      };
+    }
+
+    return editor;
+  }
+
+  private _enable = (enabled: boolean) => {
+    this._getEditor().enable(enabled);
+  }
+
+  private _autoFocus = () => {
+    if (this.props.autofocus) {
       this.focusEditor();
     }
   }
@@ -209,6 +213,16 @@ class JuiMessageInput extends React.PureComponent<Props> {
       : {
         value,
       };
+
+    // initialReadOnly should be true when autofocus is false to avoid auto focus and trigger
+    // browser's scroll behavior.
+    // The Case:
+    // When using MessageInput in VirtualizedList, the MessageInput may be destroyed/re-created
+    // as user are scrolling, but re-create a MessageInput and focus it would force scrolled to
+    // the MessageInput, this is not what we want. So we mark the input as readOnly to avoid
+    // auto scroll.
+    const initialReadOnly = !this.props.autofocus;
+
     return (
       <Wrapper isEditMode={isEditMode} onPaste={this._handlePaste}>
         {toolbarNode}
@@ -218,6 +232,7 @@ class JuiMessageInput extends React.PureComponent<Props> {
           placeholder="Type new message"
           modules={modules}
           formats={formats}
+          readOnly={initialReadOnly}
           ref={this._inputRef}
         />
         {error ? <StyledError>{error}</StyledError> : null}

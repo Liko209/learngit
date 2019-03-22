@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { getEntity } from '../../../store/utils';
-import { handerTimeZoneOffset } from '../../../utils/date';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
 jest.mock('i18next', () => ({
@@ -16,8 +15,7 @@ jest.mock('../../../store/utils');
 const conversationCardVM = new ConversationCardViewModel();
 
 const DAY = 24 * 3600 * 1000;
-const CHINATIMEZONEOFFSET = -480;
-const DATE_2019_1_4 = handerTimeZoneOffset(1546564919703, CHINATIMEZONEOFFSET);
+const DATE_2019_1_4 = 1546564919703;
 const DATE_2019_1_3 = DATE_2019_1_4 - DAY;
 const DATE_2019_1_2 = DATE_2019_1_4 - 2 * DAY;
 const DATE_2019_1_1 = DATE_2019_1_4 - 3 * DAY;

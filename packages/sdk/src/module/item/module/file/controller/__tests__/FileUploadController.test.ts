@@ -33,6 +33,7 @@ import {
 } from '../../../../../../error';
 import { IPartialModifyController } from '../../../../../../framework/controller/interface/IPartialModifyController';
 import { GroupConfigService } from '../../../../../groupConfig';
+import { ItemNotification } from '../../../../utils/ItemNotification';
 
 jest.mock('../../../../../groupConfig');
 jest.mock('../../../../service/ItemService');
@@ -519,7 +520,42 @@ describe('fileUploadController', () => {
     });
 
     it('should just send item to server when all file has beed uploaded and has stored file', async (done: jest.DoneCallback) => {
-      const { progressCaches, groupId, fileItem } = sendItemData_setUp();
+      const groupId = 3;
+      const validStoredFile = {
+        _id: 123,
+        creator_id: 2588675,
+        last_modified: 1542274244897,
+        download_url: 'url/123.pdf',
+        url: 'url/123',
+        stored_file_id: 5701644,
+        size: 1111,
+      };
+
+      const progressCaches = new Map();
+      const fileItem = {
+        id: -10,
+        is_new: true,
+        versions: [validStoredFile],
+        group_ids: [groupId],
+      };
+
+      const r: RequestHolder = { request: undefined };
+      const p: Progress = { id: -10, rate: { total: 3, loaded: 5 } };
+      const file = {
+        name: '1.ts',
+        type: 'ts',
+        size: 123123,
+      } as File;
+
+      const itemFileUploadStatus = {
+        file,
+        progress: p,
+        requestHolder: r,
+        itemFile: fileItem as any,
+      } as ItemFileUploadStatus;
+
+      progressCaches.set(-10, itemFileUploadStatus);
+
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
@@ -529,13 +565,13 @@ describe('fileUploadController', () => {
         '_waitUntilAllItemCreated',
       );
 
-      const responseItem = { id: 10 };
+      const responseItem = { id: 10, group_ids: [groupId] };
       fileRequestController.put.mockResolvedValue(responseItem);
       fileRequestController.post.mockResolvedValue(responseItem);
 
       itemDao.getExistGroupFilesByName.mockResolvedValue([]);
 
-      await fileUploadController.sendItemData(groupId, [-3]);
+      await fileUploadController.sendItemData(groupId, [-10]);
 
       setTimeout(() => {
         expect(fileRequestController.put).not.toBeCalled();
@@ -544,11 +580,11 @@ describe('fileUploadController', () => {
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
             status: PROGRESS_STATUS.SUCCESS,
-            preInsertId: -3,
+            preInsertId: -10,
             updatedId: 10,
           },
         );
-        expect(progressCaches.get(-3)).toBeUndefined;
+        expect(progressCaches.get(-10)).toBeUndefined;
         expect(spy_waitUntilAllItemCreated).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();
         done();
@@ -862,10 +898,17 @@ describe('fileUploadController', () => {
 
     it('should not call cancel api and update when item id is not in progress', async (done: any) => {
       const itemId = 10;
+      entitySourceController.get.mockImplementationOnce(() => {
+        return {
+          id: 10,
+          group_ids: [1],
+        };
+      });
+
       await fileUploadController.cancelUpload(itemId);
       expect(ItemAPI.cancelUploadRequest).not.toBeCalled();
       expect(notificationCenter.emitEntityDelete).toBeCalledWith(
-        ENTITY.ITEM,
+        ItemNotification.getItemNotificationKey(10, 1),
         expect.anything(),
       );
 
@@ -881,6 +924,13 @@ describe('fileUploadController', () => {
 
     it('should delete item and send notification', async () => {
       const itemId = -3;
+      entitySourceController.get.mockImplementationOnce(() => {
+        return {
+          id: -3,
+          group_ids: [1],
+        };
+      });
+
       await fileUploadController.cancelUpload(itemId);
       expect(entitySourceController.delete).toBeCalledTimes(1);
       expect(ItemAPI.cancelUploadRequest).toBeCalledWith(expect.anything());
@@ -891,7 +941,7 @@ describe('fileUploadController', () => {
       expect(uploadingFiles.get(3)).toBeUndefined();
       expect(uploadingFiles.get(5)).toHaveLength(1);
       expect(notificationCenter.emitEntityDelete).toBeCalledWith(
-        ENTITY.ITEM,
+        ItemNotification.getItemNotificationKey(3, 1),
         expect.anything(),
       );
     });
@@ -929,12 +979,13 @@ describe('fileUploadController', () => {
     };
 
     it('should just upload item when file has beed send successfully', async (done: jest.DoneCallback) => {
-      const existItem = { id: 11, versions: [] };
+      const existItem = { id: 10, versions: [], group_ids: [1] };
       itemDao.getExistGroupFilesByName.mockResolvedValue([existItem]);
       entitySourceController.get.mockResolvedValue(itemWithVersion);
       const serverItemFile = {
-        id: 11,
+        id: 10,
         versions: itemWithVersion.versions,
+        group_ids: [1],
       };
       const mockItemFileRes = serverItemFile;
       ItemAPI.putItem.mockResolvedValue(mockItemFileRes);
@@ -1301,33 +1352,35 @@ describe('fileUploadController', () => {
 
   describe('hasUploadingFiles', () => {
     let progressCaches: Map<number, any>;
-    const groupId = 1;
     beforeEach(() => {
       clearMocks();
       setup();
       progressCaches = new Map();
     });
 
-    function setFileCache(status: any) {
+    function setFileCache(status: any, version: any) {
       progressCaches.set(-1, {
         progress: status,
+        itemFile: { versions: [version] },
       } as ItemFileUploadStatus);
+
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
     }
 
     it.each`
-      progress                                  | expectRes
-      ${{}}                                     | ${false}
-      ${{ status: PROGRESS_STATUS.CANCELED }}   | ${false}
-      ${{ status: PROGRESS_STATUS.SUCCESS }}    | ${false}
-      ${{ status: PROGRESS_STATUS.FAIL }}       | ${false}
-      ${{ status: PROGRESS_STATUS.INPROGRESS }} | ${true}
+      progress                                  | fileVersion                        | expectRes
+      ${{}}                                     | ${undefined}                       | ${false}
+      ${{ status: PROGRESS_STATUS.CANCELED }}   | ${{ download_url: '', url: '' }}   | ${false}
+      ${{ status: PROGRESS_STATUS.SUCCESS }}    | ${{ download_url: '1', url: '1' }} | ${false}
+      ${{ status: PROGRESS_STATUS.FAIL }}       | ${{ download_url: '', url: '' }}   | ${false}
+      ${{ status: PROGRESS_STATUS.INPROGRESS }} | ${{ download_url: '1', url: '1' }} | ${false}
+      ${{ status: PROGRESS_STATUS.INPROGRESS }} | ${{ download_url: '', url: '' }}   | ${true}
     `(
       'should return true when has file in upload, progress: $progress',
-      ({ progress, expectRes }) => {
-        setFileCache(progress);
+      ({ progress, expectRes, fileVersion }) => {
+        setFileCache(progress, fileVersion);
 
         expect(fileUploadController.hasUploadingFiles()).toEqual(expectRes);
       },
@@ -1456,6 +1509,38 @@ describe('fileUploadController', () => {
       const uploadInfo = progressCaches.get(-385034) as ItemFileUploadStatus;
       expect(uploadInfo).not.toBeUndefined();
       expect(uploadInfo.progress.status).toEqual(PROGRESS_STATUS.FAIL);
+    });
+  });
+  describe('_updateItem()', () => {
+    it('should combine versions', async () => {
+      const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
+      const preInsertItem: ItemFile = {
+        group_ids: [11],
+        versions: [{ size: 11 }],
+      };
+      await fileUploadController['_updateItem'](existItem, preInsertItem);
+      expect(fileRequestController.put).toBeCalledWith(existItem);
+      expect(existItem.versions).toEqual([{ size: 11 }, { size: 10 }]);
+    });
+    it('should not update modified_at', async () => {
+      const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
+      const preInsertItem: ItemFile = {
+        group_ids: [11],
+        versions: [{ size: 11 }],
+      };
+      await fileUploadController['_updateItem'](existItem, preInsertItem);
+      expect(fileRequestController.put).toBeCalledWith(existItem);
+      expect(existItem).not.toHaveProperty('modified_at');
+    });
+    it('should update modified_at', async () => {
+      const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
+      const preInsertItem: ItemFile = {
+        group_ids: [11],
+        versions: [{ size: 11 }],
+      };
+      await fileUploadController['_updateItem'](existItem, preInsertItem, true);
+      expect(fileRequestController.put).toBeCalledWith(existItem);
+      expect(existItem).toHaveProperty('modified_at');
     });
   });
 });

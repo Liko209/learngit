@@ -12,10 +12,11 @@ import {
   JuiProfileMiniCardFooterLeft,
   JuiProfileMiniCardFooterRight,
 } from 'jui/pattern/Profile/MiniCard';
-import { JuiIconButton, JuiButton } from 'jui/components/Buttons';
+import { JuiIconButton, JuiLinkButton } from 'jui/components/Buttons';
 import { goToConversation } from '@/common/goToConversation';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+import { Call } from '@/modules/telephony';
 
 @observer
 class ProfileMiniCardPersonFooter extends Component<
@@ -44,9 +45,7 @@ class ProfileMiniCardPersonFooter extends Component<
       <>
         <JuiProfileMiniCardFooterLeft>
           <OpenProfileDialog id={id} beforeClick={this.handleCloseMiniCard}>
-            <JuiButton variant="text" color="primary">
-              {t('people.team.profile')}
-            </JuiButton>
+            <JuiLinkButton>{t('people.team.profile')}</JuiLinkButton>
           </OpenProfileDialog>
         </JuiProfileMiniCardFooterLeft>
         <JuiProfileMiniCardFooterRight>
@@ -62,6 +61,7 @@ class ProfileMiniCardPersonFooter extends Component<
           >
             chat_bubble
           </JuiIconButton>
+          <Call color="primary" variant="plain" id={id} />
         </JuiProfileMiniCardFooterRight>
       </>
     );

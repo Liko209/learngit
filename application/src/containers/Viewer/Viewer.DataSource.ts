@@ -13,9 +13,13 @@ import {
 import { ENTITY_NAME } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { SortUtils } from 'sdk/framework/utils';
-import { ITEM_SORT_KEYS, ItemService, ItemUtils } from 'sdk/module/item';
+import {
+  ITEM_SORT_KEYS,
+  ItemService,
+  ItemUtils,
+  ItemNotification,
+} from 'sdk/module/item';
 import { Item } from 'sdk/module/item/entity';
-import { ENTITY } from 'sdk/service';
 import { GlipTypeUtil } from 'sdk/utils';
 
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
@@ -67,7 +71,7 @@ class ItemListDataSource {
     this._buildSortableMemberListHandler(
       this.groupId,
       type,
-      ITEM_SORT_KEYS.MODIFIED_TIME,
+      ITEM_SORT_KEYS.CREATE_TIME,
       false,
     );
   }
@@ -124,7 +128,7 @@ class ItemListDataSource {
       transformFunc,
       sortFunc,
       entityName: ENTITY_NAME.ITEM,
-      eventName: ENTITY.ITEM,
+      eventName: ItemNotification.getItemNotificationKey(typeId, groupId),
       hasMoreDown: true,
       hasMoreUp: true,
     });

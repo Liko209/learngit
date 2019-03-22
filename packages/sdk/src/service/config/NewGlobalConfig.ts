@@ -13,14 +13,6 @@ class NewGlobalConfig extends GlobalConfig {
     return this.get(CONFIG_KEYS.ACCOUNT_TYPE);
   }
 
-  static getSocketServerHost() {
-    return this.get(CONFIG_KEYS.SOCKET_SERVER_HOST);
-  }
-
-  static setSocketServerHost(server: string) {
-    this.put(CONFIG_KEYS.SOCKET_SERVER_HOST, server);
-  }
-
   static getStaticHttpServer() {
     return this.get(CONFIG_KEYS.STATIC_HTTP_SERVER);
   }
@@ -51,6 +43,13 @@ class NewGlobalConfig extends GlobalConfig {
 
   static setLastIndexTimestamp(timestamp: any) {
     this.put(CONFIG_KEYS.LAST_INDEX_TIMESTAMP, timestamp);
+  }
+
+  static updateCanUpdateIndexTimeStamp(can: boolean) {
+    this.put(CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP, can);
+  }
+  static getCanUpdateIndexTimeStamp() {
+    return this.get(CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP);
   }
 
   static removeLastIndexTimestamp() {

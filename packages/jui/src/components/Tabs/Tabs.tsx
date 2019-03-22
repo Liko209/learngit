@@ -19,7 +19,7 @@ import { StyledTab, StyledTabProps } from './StyledTab';
 import { StyledContainer } from './StyledContainer';
 import { StyledWrapper } from './StyledWrapper';
 import { JuiTabProps } from './Tab';
-import { JuiPopperMenu } from '../../pattern/PopperMenu';
+import { JuiPopperMenu, AnchorProps } from '../../pattern/PopperMenu';
 import { JuiMenuList, JuiMenuItem } from '../Menus';
 import { JuiArrowTip } from '../Tooltip/ArrowTip';
 
@@ -262,12 +262,12 @@ class JuiTabs extends PureComponent<Props, States> {
     );
   }
 
-  private _renderMore = () => {
+  private _renderMore = ({ tooltipForceHide }: AnchorProps) => {
     const { tag, moreText } = this.props;
     return this._renderStyledTab({
       value: MORE,
       icon: (
-        <JuiArrowTip title={moreText}>
+        <JuiArrowTip title={moreText} tooltipForceHide={tooltipForceHide}>
           <MoreHoriz />
         </JuiArrowTip>
       ),
@@ -330,7 +330,7 @@ class JuiTabs extends PureComponent<Props, States> {
           automationId: this._automationIds[index],
         }),
     );
-    tabs.push(this._renderMore()); // add more tab
+    tabs.push(this._renderMore({ tooltipForceHide: false })); // add more tab
     return tabs;
   }
 

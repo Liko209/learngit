@@ -6,6 +6,7 @@
 import React from 'react';
 import i18next from 'i18next';
 import { SubModuleConfig } from '../types';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 const config: SubModuleConfig = {
   route: {
@@ -14,7 +15,13 @@ const config: SubModuleConfig = {
   },
   nav: () => ({
     url: '/meetings',
-    icon: 'meetings',
+    icon: 'meetings_border',
+    Icon: (
+      <JuiIconography iconColor={['grey', '900']}>
+        meetings_border
+      </JuiIconography>
+    ),
+    IconSelected: <JuiIconography>meetings</JuiIconography>,
     title: i18next.t('meeting.Meetings'),
     placement: 'top',
   }),

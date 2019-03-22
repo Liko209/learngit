@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { ReactNode } from 'react';
 import { inject } from 'framework';
 import { MessageStore } from '../store';
-import { MessageExtension } from '../types';
 
 class MessageService {
   @inject(MessageStore) private _messageStore: MessageStore;
 
-  registerExtension(extension: MessageExtension) {
-    this._messageStore.addExtension(extension);
+  registerConversationHeaderExtension(extension: ReactNode) {
+    this._messageStore.addConversationHeaderExtension(extension);
   }
 }
 

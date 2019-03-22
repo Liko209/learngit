@@ -54,7 +54,6 @@ class DataMigration {
       'config/DB_SCHEMA_VERSION',
       'config/ENV',
       'config/LAST_INDEX_TIMESTAMP',
-      'config/SOCKET_SERVER_HOST',
       'config/STATIC_HTTP_SERVER',
     ];
     const configNewKey = [
@@ -63,13 +62,12 @@ class DataMigration {
       'config.DB_SCHEMA_VERSION',
       'config.ENV',
       'config.LAST_INDEX_TIMESTAMP',
-      'config.SOCKET_SERVER_HOST',
       'config.STATIC_HTTP_SERVER',
     ];
     this._doMigrateKVStorage('global', configOldKey, configNewKey);
 
-    const userOldKey = ['config/MY_STATE_ID'];
-    const userNewKey = ['config.MY_STATE_ID'];
+    const userOldKey = ['config/MY_STATE_ID', 'config/SOCKET_SERVER_HOST'];
+    const userNewKey = ['config.MY_STATE_ID', 'sync.socket_server_host'];
     this._doMigrateKVStorage(userId, userOldKey, userNewKey);
   }
 }

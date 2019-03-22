@@ -88,7 +88,8 @@ test(formalName('Display the default mode of code snippet', ['JPT-950', 'P1', 'W
   })
 })
 
-test(formalName('The preview of code snippet if the code is longer than 15 lines (<200 lines)', ['JPT-954', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
+// skip due to https://jira.ringcentral.com/browse/FIJI-4328
+test.skip(formalName('The preview of code snippet if the code is longer than 15 lines (<200 lines)', ['JPT-954', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
@@ -155,7 +156,8 @@ test(formalName('The preview of code snippet if the code is longer than 15 lines
   })
 })
 
-test(formalName('The preview of code snippet if the code is longer than 200 lines ', ['JPT-955', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
+// skip due to https://jira.ringcentral.com/browse/FIJI-4328
+test.skip(formalName('The preview of code snippet if the code is longer than 200 lines ', ['JPT-955', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
@@ -221,7 +223,7 @@ test(formalName('The preview of code snippet if the code is longer than 200 line
   })
 })
 
-test.skip(formalName('This change of code snippet should be synced to backend and all clients', ['JPT-958', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
+test(formalName('This change of code snippet should be synced to backend and all clients', ['JPT-958', 'P1', 'Wayne.Zhou', 'CodeSnippetItem']), async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];

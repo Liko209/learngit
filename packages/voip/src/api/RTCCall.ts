@@ -62,6 +62,7 @@ class RTCCall {
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
   private _rtcMediaStatsManager: RTCMediaStatsManager;
+  private _isReinviteForHoldOrUnhold: boolean;
 
   constructor(
     isIncoming: boolean,
@@ -92,7 +93,6 @@ class RTCCall {
     } else {
       this._addHangupTimer();
       this._callInfo.toNum = toNumber;
-      this._startOutCallFSM();
     }
     this._rtcMediaStatsManager = new RTCMediaStatsManager();
     this._prepare();
@@ -168,10 +168,12 @@ class RTCCall {
   }
 
   hold(): void {
+    this._isReinviteForHoldOrUnhold = true;
     this._fsm.hold();
   }
 
   unhold(): void {
+    this._isReinviteForHoldOrUnhold = true;
     this._fsm.unhold();
   }
 
@@ -203,6 +205,14 @@ class RTCCall {
     this._fsm.transfer(target);
   }
 
+  forward(target: string): void {
+    if (target.length === 0 || !this._isIncomingCall) {
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.FORWARD);
+      return;
+    }
+    this._fsm.forward(target);
+  }
+
   dtmf(digits: string): void {
     if (digits.length === 0) {
       return;
@@ -210,8 +220,12 @@ class RTCCall {
     this._fsm.dtmf(digits);
   }
 
-  onAccountReady(): void {
+  onAccountReady() {
     this._fsm.accountReady();
+  }
+
+  onAccountNotReady() {
+    this._fsm.accountNotReady();
   }
 
   setCallSession(session: any): void {
@@ -224,14 +238,6 @@ class RTCCall {
     ) {
       // Update party id and session id in incoming call sip message
       this._parseRcApiIds(session.request.headers);
-    }
-  }
-
-  private _startOutCallFSM(): void {
-    if (this._account.isReady()) {
-      this._fsm.accountReady();
-    } else {
-      this._fsm.accountNotReady();
     }
   }
 
@@ -324,6 +330,9 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
       this._onTransferAction(target);
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.FORWARD_ACTION, (target: string) => {
+      this._onForwardAction(target);
     });
     this._fsm.on(CALL_FSM_NOTIFY.PARK_ACTION, () => {
       this._onParkAction();
@@ -467,11 +476,17 @@ class RTCCall {
   }
 
   private _onSessionReinviteAccepted(session: any) {
-    this._onCallActionSuccess(this._getSessionReinviteAction(session));
+    if (this._isReinviteForHoldOrUnhold) {
+      this._onCallActionSuccess(this._getSessionReinviteAction(session));
+      this._isReinviteForHoldOrUnhold = false;
+    }
   }
 
   private _onSessionReinviteFailed(session: any) {
-    this._onCallActionFailed(this._getSessionReinviteAction(session));
+    if (this._isReinviteForHoldOrUnhold) {
+      this._onCallActionFailed(this._getSessionReinviteAction(session));
+      this._isReinviteForHoldOrUnhold = false;
+    }
   }
 
   // fsm listener
@@ -505,6 +520,10 @@ class RTCCall {
 
   private _onTransferAction(target: string) {
     this._callSession.transfer(target);
+  }
+
+  private _onForwardAction(target: string) {
+    this._callSession.forward(target);
   }
 
   private _onParkAction() {

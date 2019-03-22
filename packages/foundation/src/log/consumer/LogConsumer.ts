@@ -68,6 +68,10 @@ const transform = {
   },
 };
 
+function retryDelay(retryCount: number) {
+  return Math.min(5000 + retryCount * 20000, 60 * 1000);
+}
+
 export class LogConsumer implements ILogConsumer {
   private _logUploader: ILogUploader;
   private _logPersistence: ILogPersistence;
@@ -101,7 +105,8 @@ export class LogConsumer implements ILogConsumer {
             await loopController.abortAll();
             break;
           case 'retry':
-            await sleep(5000);
+            await sleep(retryDelay(task.retryCount));
+            task.retryCount += 1;
             await loopController.retry();
             break;
           case 'ignore':

@@ -57,7 +57,7 @@ const Back = () => (
     variant="plain"
     color="common.white"
   >
-    pervious
+    previous
   </JuiIconButton>
 );
 
@@ -73,7 +73,11 @@ const HoverActions = () => (
 );
 
 const End = () => (
-  <JuiIconButton color="semantic.negative" tooltipTitle="Hand down">
+  <JuiIconButton
+    color="semantic.negative"
+    tooltipTitle="Hand down"
+    size="xxlarge"
+  >
     hand_up
   </JuiIconButton>
 );
@@ -84,7 +88,7 @@ const knobs = {
 
 const MuteAction = () => (
   <JuiKeypadAction>
-    <JuiIconButton color="grey.900" disableToolTip={true}>
+    <JuiIconButton color="grey.900" disableToolTip={true} size="xxlarge">
       mic
     </JuiIconButton>
     <span>Mute</span>
@@ -93,7 +97,7 @@ const MuteAction = () => (
 
 const KeypadAction = () => (
   <JuiKeypadAction>
-    <JuiIconButton color="grey.900" disableToolTip={true}>
+    <JuiIconButton color="grey.900" disableToolTip={true} size="xxlarge">
       keypad
     </JuiIconButton>
     <span>Keypad</span>
@@ -102,7 +106,7 @@ const KeypadAction = () => (
 
 const HoldAction = () => (
   <JuiKeypadAction>
-    <JuiIconButton color="grey.900" disableToolTip={true}>
+    <JuiIconButton color="grey.900" disableToolTip={true} size="xxlarge">
       hold
     </JuiIconButton>
     <span>Hold</span>
@@ -111,8 +115,8 @@ const HoldAction = () => (
 
 const AddAction = () => (
   <JuiKeypadAction>
-    <JuiIconButton color="grey.900" disableToolTip={true}>
-      zoom_in
+    <JuiIconButton color="grey.900" disableToolTip={true} size="xxlarge">
+      call_add
     </JuiIconButton>
     <span>Add</span>
   </JuiKeypadAction>
@@ -120,7 +124,7 @@ const AddAction = () => (
 
 const RecordAction = () => (
   <JuiKeypadAction>
-    <JuiIconButton color="grey.900" disableToolTip={true}>
+    <JuiIconButton color="grey.900" disableToolTip={true} size="xxlarge">
       record
     </JuiIconButton>
     <span>Record</span>
@@ -129,8 +133,8 @@ const RecordAction = () => (
 
 const CallActionsAction = () => (
   <JuiKeypadAction>
-    <JuiIconButton color="grey.900" disableToolTip={true}>
-      more_horiz
+    <JuiIconButton color="grey.900" disableToolTip={true} size="xxlarge">
+      call_more
     </JuiIconButton>
     <span>Call Actions</span>
   </JuiKeypadAction>

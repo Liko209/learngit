@@ -12,6 +12,7 @@ export type PartialWithKey<T> = Pick<T, Extract<keyof T, 'id'>> & Partial<T>;
 
 export type GroupApiType = ExtendedBaseModel & {
   members: (number | string)[];
+  group_id?: number;
 } & GroupCommon;
 export type UserInfo = {
   email: string;

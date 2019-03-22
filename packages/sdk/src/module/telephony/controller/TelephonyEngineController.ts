@@ -10,9 +10,9 @@ import {
 } from 'foundation';
 import RTCEngine from 'voip';
 import { Api } from '../../../api';
-import { daoManager, VoIPDao } from '../../../dao';
 import { TelephonyAccountController } from './TelephonyAccountController';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
+import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -31,20 +31,21 @@ class VoIPNetworkClient implements ITelephonyNetworkDelegate {
 }
 
 class VoIPDaoClient implements ITelephonyDaoDelegate {
+  private _telephonyConfig: TelephonyUserConfig;
+
+  constructor() {
+    this._telephonyConfig = new TelephonyUserConfig();
+  }
   put(key: string, value: any): void {
-    const voipDao = daoManager.getKVDao(VoIPDao);
-    voipDao.put(key, value);
-    return;
+    this._telephonyConfig.putConfig(key, value);
   }
 
   get(key: string): any {
-    const voipDao = daoManager.getKVDao(VoIPDao);
-    return voipDao.get(key);
+    return this._telephonyConfig.getConfig(key);
   }
 
   remove(key: string): void {
-    const voipDao = daoManager.getKVDao(VoIPDao);
-    voipDao.remove(key);
+    this._telephonyConfig.removeConfig(key);
   }
 }
 
@@ -75,6 +76,10 @@ class TelephonyEngineController {
 
   getAccountController() {
     return this._accountController;
+  }
+
+  logout() {
+    this._accountController.logout();
   }
 }
 

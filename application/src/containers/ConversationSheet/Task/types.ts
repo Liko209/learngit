@@ -12,12 +12,11 @@ type ActivityData = {
 };
 
 type Props = {
+  postId: number;
   ids: number[];
 };
 
-type TaskUpdateProps = {
-  postId: number;
-} & Props;
+type TaskUpdateProps = Props;
 
 type ViewProps = {
   task: TaskItemModel;
@@ -28,6 +27,8 @@ type ViewProps = {
   endTime: string;
   hasTime: boolean;
   color?: [keyof Palette, string];
+  groupId: number;
+  getShowDialogPermission: () => Promise<boolean>;
 };
 
 type TaskUpdateViewProps = {

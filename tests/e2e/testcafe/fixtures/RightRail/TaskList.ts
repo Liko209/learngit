@@ -9,29 +9,31 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('RightRail/TaskList')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
 test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850', 'TaskList']), async t => {
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  const taskTitle = uuid();
+  await h(t).glip(loginUser).init();
+
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
   const app = new AppRoot(t);
   const conversationPage = app.homePage.messageTab.conversationPage;
   const rightRail = app.homePage.messageTab.rightRail;
-  const loginUser = h(t).rcData.mainCompany.users[4];
-  const taskTitle = uuid();
-  await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).init();
-
-  let teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
-  });
-
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -39,7 +41,7 @@ test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850',
 
   const tasksTab = rightRail.tasksTab;
   await h(t).withLog('When I enter a conversation and click Task Tab', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await rightRail.tasksEntry.enter();
   });
@@ -50,7 +52,7 @@ test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850',
 
   // step 2 create a task
   await h(t).withLog('When User create 1 tasks via api', async () => {
-    await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
+    await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, taskTitle);
     await t.expect(conversationPage.posts.count).eql(1, { timeout: 5e3 });
   });
 
@@ -61,7 +63,7 @@ test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850',
   });
 
   await h(t).withLog('When User create 1 tasks again via api', async () => {
-    await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
+    await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, taskTitle);
     await t.expect(conversationPage.posts.count).eql(2, { timeout: 5e3 });
   });
 
@@ -72,33 +74,34 @@ test(formalName('New task will show under Tasks tab', ['Nello', 'P1', 'JPT-850',
 });
 
 test(formalName('Task info will sync immediately when update', ['Nello', 'P2', 'JPT-852', 'TaskList']), async t => {
-  const app = new AppRoot(t);
-  const rightRail = app.homePage.messageTab.rightRail;
   const loginUser = h(t).rcData.mainCompany.users[4];
   const taskTitle = uuid();
   const taskUpdateTitle = 'New Title';
-  let taskId;
-  await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
+
+  const app = new AppRoot(t);
+  const rightRail = app.homePage.messageTab.rightRail;
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
   });
 
   const tasksTab = rightRail.tasksTab;
   await h(t).withLog('When I enter a conversation and click Task Tab', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await rightRail.tasksEntry.enter();
   });
@@ -108,8 +111,9 @@ test(formalName('Task info will sync immediately when update', ['Nello', 'P2', '
   });
 
   // step 2 create a task
+  let taskId;
   await h(t).withLog('When User create 1 tasks via api', async () => {
-    const resp = await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
+    const resp = await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, taskTitle);
     taskId = resp.data._id;
   });
 
@@ -135,22 +139,23 @@ test(formalName('Task info will sync immediately when update', ['Nello', 'P2', '
 
 
 test(formalName('Deleted task will NOT show under Tasks tab', ['Nello', 'P1', 'JPT-851', 'TaskList']), async t => {
-  const app = new AppRoot(t);
-  const rightRail = app.homePage.messageTab.rightRail;
   const loginUser = h(t).rcData.mainCompany.users[4];
   const taskTitle = uuid();
-  let taskId;
-  await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
+
+  const app = new AppRoot(t);
+  const rightRail = app.homePage.messageTab.rightRail;
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -159,7 +164,7 @@ test(formalName('Deleted task will NOT show under Tasks tab', ['Nello', 'P1', 'J
 
   const tasksTab = rightRail.tasksTab;
   await h(t).withLog('When I enter a conversation and click Task Tab', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await rightRail.tasksEntry.enter();
   });
@@ -169,10 +174,11 @@ test(formalName('Deleted task will NOT show under Tasks tab', ['Nello', 'P1', 'J
   });
 
   // step 2 create 2 task
+  let taskId;
   await h(t).withLog('When User create task A and Task B via api', async () => {
-    const resp = await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
+    const resp = await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, taskTitle);
     taskId = resp.data._id;
-    await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, uuid());
+    await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, uuid());
   });
 
   await h(t).withLog('Then tasks count in tasks tab should be 2', async () => {
@@ -197,22 +203,22 @@ test(formalName('Deleted task will NOT show under Tasks tab', ['Nello', 'P1', 'J
 
 
 test(formalName('Completed task will NOT show under Tasks tab', ['Nello', 'P1', 'JPT-960', 'TaskList']), async t => {
-  const app = new AppRoot(t);
-  const rightRail = app.homePage.messageTab.rightRail;
   const loginUser = h(t).rcData.mainCompany.users[4];
-  const taskTitle = uuid();
-  await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
 
-  let teamId, taskId;
-  await h(t).withLog('Given I have a team before login ', async () => {
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [loginUser.rcId],
-    });
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: loginUser,
+    members: [loginUser]
+  }
+
+  await h(t).withLog(`Given I have a team named ${team.name} before login`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
   });
 
+  const app = new AppRoot(t);
+  const rightRail = app.homePage.messageTab.rightRail;
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
@@ -220,7 +226,7 @@ test(formalName('Completed task will NOT show under Tasks tab', ['Nello', 'P1', 
 
   const tasksTab = rightRail.tasksTab;
   await h(t).withLog('When I enter a conversation and click Task Tab', async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).enter();
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
     await app.homePage.messageTab.conversationPage.waitUntilPostsBeLoaded();
     await rightRail.tasksEntry.enter();
   });
@@ -230,10 +236,12 @@ test(formalName('Completed task will NOT show under Tasks tab', ['Nello', 'P1', 
   });
 
   // step 2 create 2 task
+  let taskId;
+  const taskTitle = uuid();
   await h(t).withLog('When User create task A and Task B via api', async () => {
-    const resp = await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, taskTitle);
+    const resp = await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, taskTitle);
     taskId = resp.data._id;
-    await h(t).glip(loginUser).createSimpleTask(teamId, loginUser.rcId, uuid());
+    await h(t).glip(loginUser).createSimpleTask(team.glipId, loginUser.rcId, uuid());
   });
 
   await h(t).withLog('Then tasks count in tasks tab should be 2', async () => {

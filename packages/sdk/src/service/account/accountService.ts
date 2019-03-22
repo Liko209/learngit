@@ -9,12 +9,17 @@ import { daoManager } from '../../dao';
 import { PersonDao } from '../../module/person/dao';
 import { UserInfo } from '../../models';
 import { generateUUID } from '../../utils/mathUtils';
-import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
-import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
+import {
+  refreshToken,
+  IPlatformHandleDelegate,
+  ITokenModel,
+  requestServerStatus,
+} from '../../api';
 import { Aware } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
+import { SERVICE } from '../eventKey';
 import { ProfileService } from '../../module/profile';
-import { setRcToken } from '../../authenticator';
+import { setRcToken } from '../../authenticator/utils';
 import { ERROR_CODES_SDK } from '../../error';
 import {
   AccountGlobalConfig,
@@ -23,7 +28,7 @@ import {
 import { AuthGlobalConfig } from '../../service/auth/config';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
-class AccountService extends BaseService implements ITokenRefreshDelegate {
+class AccountService extends BaseService implements IPlatformHandleDelegate {
   static serviceName = 'AccountService';
 
   constructor() {
@@ -73,7 +78,6 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
       const oldRcToken = AuthGlobalConfig.getRcToken();
       const newRcToken = (await refreshToken(oldRcToken)) as ITokenModel;
       setRcToken(newRcToken);
-      notificationCenter.emitKVChange(AUTH_RC_TOKEN, newRcToken);
       return newRcToken;
     } catch (err) {
       Aware(ERROR_CODES_SDK.OAUTH, err.message);
@@ -98,6 +102,14 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   setUnreadToggleSetting(value: boolean) {
     const userConfig = new AccountUserConfig();
     userConfig.setUnreadToggleSetting(value);
+  }
+
+  checkServerStatus(callback: (success: boolean, retryAfter: number) => void) {
+    requestServerStatus(callback);
+  }
+
+  onRefreshTokenFailure() {
+    notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
   }
 }
 

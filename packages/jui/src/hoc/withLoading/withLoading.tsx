@@ -14,9 +14,10 @@ type WithLoadingProps = {
   alwaysComponentShow?: boolean;
   delay?: number;
 };
+
 type LoaderProps = {
-  mask?: boolean;
   size?: number;
+  backgroundType?: 'mask';
 };
 const StyledLoadingPage = styled('div')<LoaderProps>`
   position: absolute;
@@ -27,19 +28,21 @@ const StyledLoadingPage = styled('div')<LoaderProps>`
   justify-content: center;
   top: 0px;
   left: 0px;
-  opacity: ${({ mask, theme }) =>
-    mask ? theme.palette.action.hoverOpacity * 5 : 1};
-  background: ${palette('common', 'white')}
+  opacity: ${({ backgroundType, theme }) =>
+    backgroundType ? theme.palette.action.hoverOpacity * 5 : 1};
+  background: ${palette('common', 'white')};
   z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
-const DefaultLoadingWithDelay = withDelay((props: LoaderProps) => {
-  return (
-    <StyledLoadingPage {...props}>
-      <JuiCircularProgress {...props} />
-    </StyledLoadingPage>
-  );
-});
+const DefaultLoadingWithDelay = withDelay(
+  ({ backgroundType, size }: LoaderProps) => {
+    return (
+      <StyledLoadingPage backgroundType={backgroundType}>
+        <JuiCircularProgress size={size} />
+      </StyledLoadingPage>
+    );
+  },
+);
 
 const MAP = { circular: DefaultLoadingWithDelay };
 

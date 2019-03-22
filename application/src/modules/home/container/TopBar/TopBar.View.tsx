@@ -33,7 +33,8 @@ class TopBar extends React.Component<TopBarProps> {
     return (
       <JuiIconButton
         tooltipTitle={t('home.menu')}
-        size="medium"
+        size="large"
+        color="common.white"
         onClick={updateLeftNavState}
         data-test-automation-id="toggleBtn"
         {...mainMenuProps}

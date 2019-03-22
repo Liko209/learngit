@@ -28,6 +28,7 @@ import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './service';
 import { AuthGlobalConfig } from './service/auth/config';
 import { DataMigration, UserConfigService } from './module/config';
+import { AccountGlobalConfig } from './service/account/config';
 
 const AM = AccountManager;
 
@@ -71,7 +72,7 @@ class Sdk {
     this.serviceManager.startService(SyncService.name);
 
     const accountService: AccountService = AccountService.getInstance();
-    HandleByRingCentral.tokenRefreshDelegate = accountService;
+    HandleByRingCentral.platformHandleDelegate = accountService;
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
@@ -79,7 +80,7 @@ class Sdk {
     );
 
     // Listen to account events to init network and service
-    this.accountManager.on(AM.EVENT_LOGIN, this.onLogin.bind(this));
+    this.accountManager.on(AM.AUTH_SUCCESS, this.onAuthSuccess.bind(this));
     this.accountManager.on(AM.EVENT_LOGOUT, this.onLogout.bind(this));
     this.accountManager.on(
       AM.EVENT_SUPPORTED_SERVICE_CHANGE,
@@ -98,12 +99,8 @@ class Sdk {
     }
   }
 
-  async onLogin() {
+  async onAuthSuccess() {
     this.updateNetworkToken();
-
-    if (this.syncService.getIndexTimestamp()) {
-      return;
-    }
 
     await this.syncService.syncData({
       /**
@@ -131,6 +128,7 @@ class Sdk {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     await this.daoManager.deleteDatabase();
+    AccountGlobalConfig.clear();
   }
 
   updateNetworkToken() {

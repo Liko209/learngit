@@ -16,9 +16,13 @@ import {
   AssemblerDelFunc,
 } from './types';
 
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils';
+
 class NewMessageSeparatorHandler extends Assembler {
   private _readThrough: number = 0;
   private _disabled?: boolean;
+  private readonly _userId?: number;
   private separatorId?: number;
   _oldestPost?: ISortableModel;
 
@@ -35,6 +39,7 @@ class NewMessageSeparatorHandler extends Assembler {
 
   constructor() {
     super();
+    this._userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   }
 
   onAdd: AssemblerAddFunc = (args: AssemblerAddFuncArgs) => {
@@ -104,10 +109,11 @@ class NewMessageSeparatorHandler extends Assembler {
     const { deleted, postList, streamItemList } = args;
     const latestDeletedPostId = _.max(deleted) as number;
     const postNext = _.find(postList, ({ id }) => id >= latestDeletedPostId);
+    let filteredStreamItemList = streamItemList;
     if (!postNext) {
-      streamItemList.remove((item: StreamItem) => this.separatorId === item.id);
+      filteredStreamItemList = streamItemList.filter((item: StreamItem) => this.separatorId !== item.id);
     }
-    return { ...args, streamItemList };
+    return { ...args, streamItemList: filteredStreamItemList };
   }
 
   updateReadThrough(readThrough: number) {
@@ -136,7 +142,10 @@ class NewMessageSeparatorHandler extends Assembler {
     let targetPost;
     for (let i = 0; i < len; i++) {
       const post = allPosts[i];
-      if (post.id > postId) {
+      if (
+        post.id > postId &&
+        post.data.creator_id !== this._userId
+      ) {
         targetPost = post;
         break;
       }

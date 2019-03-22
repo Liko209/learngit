@@ -3,7 +3,6 @@
  * @Date: 2019-01-16 13:25:57
  * Copyright © RingCentral. All rights reserved.
  */
-import { ConfigDao, daoManager } from '../../../../dao';
 import { PostDao } from '../../../post/dao';
 import { PreInsertController } from '../impl/PreInsertController';
 import { ProgressService, PROGRESS_STATUS } from '../../../progress';
@@ -21,10 +20,8 @@ describe('PreInsertController', () => {
   let preInsertController: PreInsertController;
   const progressService: ProgressService = new ProgressService();
   const dao = new PostDao(null);
-  const configDao = new ConfigDao(null);
 
   beforeEach(() => {
-    jest.spyOn(daoManager, 'getKVDao').mockReturnValueOnce(configDao);
     preInsertController = new PreInsertController(dao, progressService);
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
     jest

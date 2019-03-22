@@ -7,11 +7,9 @@ import { getEntity } from '../../../../../store/utils';
 import { TypeDictionary, GlipTypeUtil } from 'sdk/utils';
 import { PinnedItemViewModel } from '../PinnedItem.ViewModel';
 import { ENTITY_NAME } from '@/store';
-import { getFileIcon } from '@/common/getFileIcon';
 
 jest.mock('../../../../../store/utils');
 jest.mock('sdk/utils');
-jest.mock('@/common/getFileIcon');
 
 describe('PinnedItemViewModel', () => {
   let pinnedItemViewModel: PinnedItemViewModel;
@@ -28,7 +26,7 @@ describe('PinnedItemViewModel', () => {
         .mockReturnValue(TypeDictionary.TYPE_ID_FILE);
       (getEntity as jest.Mock).mockImplementation(() => '');
       expect(pinnedItemViewModel.item).toBe('');
-      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.FILE_ITEM, undefined);
+      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.ITEM, undefined);
     });
     it('should be return task item', () => {
       jest
@@ -36,7 +34,7 @@ describe('PinnedItemViewModel', () => {
         .mockReturnValue(TypeDictionary.TYPE_ID_TASK);
       (getEntity as jest.Mock).mockImplementation(() => '');
       expect(pinnedItemViewModel.item).toBe('');
-      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.TASK_ITEM, undefined);
+      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.ITEM, undefined);
     });
     it('Should be return node item', () => {
       jest
@@ -44,7 +42,7 @@ describe('PinnedItemViewModel', () => {
         .mockReturnValue(TypeDictionary.TYPE_ID_PAGE);
       (getEntity as jest.Mock).mockImplementation(() => '');
       expect(pinnedItemViewModel.item).toBe('');
-      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.NOTE_ITEM, undefined);
+      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.ITEM, undefined);
     });
     it('Should be return event item', () => {
       jest
@@ -52,7 +50,7 @@ describe('PinnedItemViewModel', () => {
         .mockReturnValue(TypeDictionary.TYPE_ID_EVENT);
       (getEntity as jest.Mock).mockImplementation(() => '');
       expect(pinnedItemViewModel.item).toBe('');
-      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.EVENT_ITEM, undefined);
+      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.ITEM, undefined);
     });
     it('Should be return link item', () => {
       jest
@@ -60,7 +58,7 @@ describe('PinnedItemViewModel', () => {
         .mockReturnValue(TypeDictionary.TYPE_ID_LINK);
       (getEntity as jest.Mock).mockImplementation(() => '');
       expect(pinnedItemViewModel.item).toBe('');
-      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.LINK_ITEM, undefined);
+      expect(getEntity).toHaveBeenCalledWith(ENTITY_NAME.ITEM, undefined);
     });
   });
 

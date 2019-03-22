@@ -27,7 +27,7 @@ export default {
     if (activityData && activityData.key) {
       return <TaskUpdate ids={ids} postId={postId} />;
     }
-    return <Task ids={ids} />;
+    return <Task ids={ids} postId={postId} />;
   }),
   type: TypeDictionary.TYPE_ID_TASK,
   breakIn: true,

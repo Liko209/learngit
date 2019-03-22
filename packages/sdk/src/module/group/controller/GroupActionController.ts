@@ -182,6 +182,21 @@ export class GroupActionController {
     );
   }
 
+  async deleteGroup(groupId: number): Promise<void> {
+    await this.partialModifyController.updatePartially(
+      groupId,
+      (partialEntity, originalEntity) => {
+        return {
+          ...partialEntity,
+          deactivated: true,
+        };
+      },
+      async (updateEntity: Group) => {
+        return await this._getGroupRequestController().put(updateEntity);
+      },
+    );
+  }
+
   async makeOrRevokeAdmin(teamId: number, member: number, isMake: boolean) {
     await this.partialModifyController.updatePartially(
       teamId,
@@ -253,34 +268,37 @@ export class GroupActionController {
     memberIds: (number | string)[],
     teamSetting: TeamSetting = {},
   ): Promise<Group> {
-    const {
-      isPublic = false,
-      name,
-      description,
-      permissionFlags = {},
-    } = teamSetting;
-    const privacy = isPublic ? 'protected' : 'private';
-    const permissionLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
-      permissionFlags,
-      0,
-    );
-    const team: Partial<GroupApiType> = {
-      privacy,
-      description,
-      set_abbreviation: name,
-      members: memberIds.concat(creator),
-      permissions: {
-        admin: {
-          uids: [creator],
-        },
-        user: {
-          uids: [],
-          level: permissionLevel,
-        },
-      },
-    };
+    const team = this._generateTeamParameters(creator, memberIds, teamSetting);
     const result = await GroupAPI.createTeam(team);
     return await this.handleRawGroup(result);
+  }
+
+  async convertToTeam(
+    groupId: number,
+    memberIds: number[],
+    teamSetting: TeamSetting = {},
+  ): Promise<Group> {
+    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const team: Partial<GroupApiType> = this._generateTeamParameters(
+      currentUserId,
+      memberIds,
+      teamSetting,
+    );
+    team['group_id'] = groupId;
+    const result = await GroupAPI.convertToTeam(team);
+    const group = await this.handleRawGroup(result);
+
+    try {
+      // delete group;
+      // if delete group failed, convert to team should still be success
+      await this.deleteGroup(groupId);
+    } catch (err) {
+      mainLogger
+        .tags('GroupActionController')
+        .info(`convert to team, delete group ${groupId} fail`, err);
+    }
+
+    return group;
   }
 
   async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
@@ -408,6 +426,43 @@ export class GroupActionController {
     return !isHidden && isValid && isIncludeSelf;
   }
 
+  private _generateTeamParameters(
+    creatorId: number,
+    memberIds: (number | string)[],
+    teamSetting: TeamSetting = {},
+  ) {
+    const {
+      isPublic = false,
+      name,
+      description,
+      permissionFlags = {},
+    } = teamSetting;
+    const privacy = isPublic ? 'protected' : 'private';
+    const permissionLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
+      permissionFlags,
+      0,
+    );
+    const members = memberIds.includes(creatorId)
+      ? memberIds
+      : memberIds.concat(creatorId);
+    const team: Partial<GroupApiType> = {
+      privacy,
+      description,
+      members,
+      set_abbreviation: name,
+      permissions: {
+        admin: {
+          uids: [creatorId],
+        },
+        user: {
+          uids: [],
+          level: permissionLevel,
+        },
+      },
+    };
+    return team;
+  }
+
   private _getGroupRequestController() {
     if (!this.groupRequestController) {
       this.groupRequestController = buildRequestController<Group>({
@@ -479,5 +534,11 @@ export class GroupActionController {
     });
 
     return partialEntity;
+  }
+
+  isIndividualGroup(group: Group) {
+    return (
+      group && !group.is_team && group.members && group.members.length === 2
+    );
   }
 }

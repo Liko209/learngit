@@ -4,7 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
+import {
+  NETWORK_VIA,
+  NETWORK_METHOD,
+  TEN_MINUTE_TIMEOUT,
+  DEFAULT_RETRY_COUNT,
+  REQUEST_PRIORITY,
+} from 'foundation';
 import Api from '../api';
 import { GLIP_API } from './constants';
 import { Raw } from '../../framework/model';
@@ -38,6 +44,26 @@ export type IndexDataModel = {
   client_config: IFlag;
   static_http_server: string;
 };
+
+export type CanConnectModel = {
+  deployment_state?: {
+    level: number;
+    number: number;
+  };
+  scoreboard?: string;
+  socket_version?: string;
+  version?: string;
+  reconnect_retry_in?: number;
+  reconnect_in?: number;
+};
+
+export type CanConnectParasType = {
+  newer_than?: number;
+  presence: string;
+  user_id?: number;
+  uidtk: string;
+};
+
 /**
  * @param {string} rcAccessTokenData
  * @param {string} username
@@ -54,6 +80,7 @@ function loginGlip(authData: object) {
     method: NETWORK_METHOD.PUT,
     data: model,
     authFree: true,
+    timeout: TEN_MINUTE_TIMEOUT,
   };
   return Api.glipNetworkClient.rawRequest<Object>({
     ...query,
@@ -68,28 +95,61 @@ function loginGlip(authData: object) {
  * index data api
  */
 function indexData(params: object, requestConfig = {}, headers = {}) {
+  const retryCount = DEFAULT_RETRY_COUNT;
+  const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipNetworkClient.get<IndexDataModel>(
     '/index',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    retryCount,
+    priority,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
 function initialData(params: object, requestConfig = {}, headers = {}) {
+  const retryCount = 3;
+  const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/initial',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    retryCount,
+    priority,
+    DEFAULT_RETRY_COUNT,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
 function remainingData(params: object, requestConfig = {}, headers = {}) {
+  const retryCount = 3;
+  const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/remaining',
+    params,
+    NETWORK_VIA.HTTP,
+    requestConfig,
+    headers,
+    retryCount,
+    priority,
+    DEFAULT_RETRY_COUNT,
+    TEN_MINUTE_TIMEOUT,
+  );
+}
+
+// plugins data
+
+function canConnect(
+  params: CanConnectParasType,
+  requestConfig = {},
+  headers = {},
+) {
+  return Api.glipNetworkClient.get<CanConnectModel>(
+    '/can-reconnect-v2',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
@@ -97,6 +157,4 @@ function remainingData(params: object, requestConfig = {}, headers = {}) {
   );
 }
 
-// plugins data
-
-export { loginGlip, indexData, initialData, remainingData };
+export { loginGlip, indexData, initialData, remainingData, canConnect };

@@ -28,10 +28,10 @@ class CallActionsViewComponent extends Component<Props> {
           color="grey.900"
           disableToolTip={true}
           onClick={this._handleCallActions}
-          size="xlarge"
+          size="xxlarge"
           disabled={true}
         >
-          more_horiz
+          call_more
         </JuiIconButton>
         <span className="disabled">{t('telephony.action.callActions')}</span>
       </JuiKeypadAction>

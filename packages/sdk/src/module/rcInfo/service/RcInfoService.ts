@@ -8,14 +8,17 @@ import { SERVICE } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { RcInfoController } from '../controller/RcInfoController';
-
+import { ERcServiceFeaturePermission } from '../types';
+import { NewGlobalConfig } from '../../../service/config';
+import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 class RcInfoService extends EntityBaseService {
   private _rcInfoController: RcInfoController;
+
   constructor() {
     super(false);
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
-        [SERVICE.FETCH_INDEX_DATA_DONE]: this.requestRcInfo,
+        [SERVICE.LOGIN]: this.requestRcInfo,
       }),
     );
   }
@@ -29,6 +32,39 @@ class RcInfoService extends EntityBaseService {
 
   requestRcInfo = async () => {
     await this.rcInfoController.requestRcInfo();
+  }
+
+  async requestRcAccountRelativeInfo(): Promise<void> {
+    await this.rcInfoController.requestRcAccountRelativeInfo();
+  }
+
+  getRcClientInfo() {
+    return this.rcInfoController.getRcClientInfo();
+  }
+
+  getRcAccountInfo() {
+    return this.rcInfoController.getRcAccountInfo();
+  }
+
+  getRcExtensionInfo() {
+    return this.rcInfoController.getRcExtensionInfo();
+  }
+
+  getRcRolePermissions() {
+    return this.rcInfoController.getRcRolePermissions();
+  }
+
+  getSpecialNumberRule() {
+    return this.rcInfoController.getSpecialNumberRule();
+  }
+
+  isVoipCallingAvailable() {
+    return (
+      NewGlobalConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
+      this._rcInfoController.isRcFeaturePermissionEnabled(
+        ERcServiceFeaturePermission.VOIP_CALLING,
+      )
+    );
   }
 }
 

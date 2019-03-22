@@ -4,14 +4,52 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import styled from '../../foundation/styled-components';
+import * as React from 'react';
+import styled, { keyframes } from '../../foundation/styled-components';
 import { grey } from '../../foundation/utils';
+import { JuiTransition } from '../../components/Animation';
 
-const JuiViewerBackground = styled.div`
+type JuiViewerBackgroundProps = {
+  children: React.ReactNode;
+  show: boolean;
+};
+
+const backgroundAnimation = keyframes`
+  from {
+    background: transparent;
+  }
+  to {
+  }
+`;
+
+const StyledViewerBackground = styled.div`
   background: ${grey('100')};
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: inherit;
 `;
 
-export { JuiViewerBackground };
+const StyledTransition = styled(JuiTransition)`
+  height: 100%;
+  pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
+`;
+
+const JuiViewerBackground = ({
+  children,
+  show,
+  ...rest
+}: JuiViewerBackgroundProps) => {
+  return (
+    <StyledTransition
+      show={show}
+      duration="standard"
+      easing="sharp"
+      appear={true}
+      animation={backgroundAnimation}
+    >
+      <StyledViewerBackground {...rest}>{children}</StyledViewerBackground>
+    </StyledTransition>
+  );
+};
+
+export { JuiViewerBackground, JuiViewerBackgroundProps };

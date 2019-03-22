@@ -7,12 +7,13 @@ import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
-import { JuiMenu, JuiMenuItem } from 'jui/components';
+import { JuiMenuItem } from 'jui/components';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { Dialog } from '@/containers/Dialog';
 import { Notification } from '@/containers/Notification';
 import { MenuViewProps } from './types';
+import { JuiMenuContain } from 'jui/pattern/ConversationList/ConversationListItem';
 import {
   ToastType,
   ToastMessageAlign,
@@ -36,6 +37,18 @@ class MenuViewComponent extends Component<Props> {
         {t('people.team.close')}
       </JuiMenuItem>
     );
+  }
+
+  _handleResize = (event: UIEvent) => {
+    this.props.onClose(event);
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this._handleResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._handleResize);
   }
 
   private _getKeyReadOrUnread = () => {
@@ -125,8 +138,10 @@ class MenuViewComponent extends Component<Props> {
             />
           </>
         ),
-        okText: t('people.prompt.closeConversation'),
-        okVariant: 'text',
+        okText: t('people.team.close'),
+        cancelText: t('common.dialog.cancel'),
+        okVariant: 'contained',
+        okType: 'primary',
         onOK: () => {
           this._closeConversationWithConfirm();
         },
@@ -162,6 +177,10 @@ class MenuViewComponent extends Component<Props> {
     }
   }
 
+  private _onClose = (event: MouseEvent<HTMLElement>) => {
+    this.props.onClose(event);
+  }
+
   render() {
     const {
       personId,
@@ -172,11 +191,11 @@ class MenuViewComponent extends Component<Props> {
       t,
     } = this.props;
     return (
-      <JuiMenu
+      <JuiMenuContain
         id="render-props-menu"
         anchorEl={anchorEl}
         open={!!anchorEl}
-        onClose={onClose}
+        onClose={this._onClose}
       >
         {this._renderReadOrUnreadMenuItem()}
         <JuiMenuItem
@@ -191,7 +210,7 @@ class MenuViewComponent extends Component<Props> {
           </JuiMenuItem>
         </OpenProfileDialog>
         {this.renderCloseMenuItem()}
-      </JuiMenu>
+      </JuiMenuContain>
     );
   }
 }

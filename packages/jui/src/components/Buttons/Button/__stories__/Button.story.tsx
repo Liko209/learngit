@@ -11,7 +11,6 @@ import {
   alignCenterDecorator,
 } from '../../../../foundation/utils/decorators';
 import { JuiFabButton, JuiButton } from '../';
-import { JuiIconography } from '../../../../foundation/Iconography';
 import styled from '../../../../foundation/styled-components';
 
 function getKnobs() {
@@ -91,17 +90,18 @@ storiesOf('Components/Buttons', module)
         <JuiFabButton
           {...rest}
           className="buttonWrapper"
-          tooltipTitle="pervious"
-        >
-          <JuiIconography color="grey.900">pervious</JuiIconography>
-        </JuiFabButton>
+          tooltipTitle="previous"
+          color="common.white"
+          iconColor={['grey', '900']}
+          iconName="previous"
+        />
         <JuiFabButton
           {...rest}
           className="buttonWrapper"
           tooltipTitle="forward"
-        >
-          <JuiIconography color="grey.900">forward</JuiIconography>
-        </JuiFabButton>
+          iconColor={['grey', '900']}
+          iconName="forward"
+        />
       </Wrapper>
     );
   });

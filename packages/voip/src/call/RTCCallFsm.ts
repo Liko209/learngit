@@ -16,6 +16,7 @@ const CallFsmEvent = {
   MUTE: 'muteEvent',
   UNMUTE: 'unmuteEvent',
   TRANSFER: 'transferEvent',
+  FORWARD: 'forwardEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
   SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
@@ -143,6 +144,15 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     );
   }
 
+  forward(target: string): void {
+    this._eventQueue.push(
+      { name: CallFsmEvent.FORWARD, params: target },
+      (params: any) => {
+        this._onForward(params);
+      },
+    );
+  }
+
   hold(): void {
     this._eventQueue.push({ name: CallFsmEvent.HOLD }, () => {
       this._onHold();
@@ -252,6 +262,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.TRANSFER_ACTION, target);
   }
 
+  onForwardAction(target: string) {
+    this.emit(CALL_FSM_NOTIFY.FORWARD_ACTION, target);
+  }
+
   onParkAction() {
     this.emit(CALL_FSM_NOTIFY.PARK_ACTION);
   }
@@ -298,6 +312,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onTransfer(target: string) {
     this._callFsmTable.transfer(target);
+  }
+
+  private _onForward(target: string) {
+    this._callFsmTable.forward(target);
   }
 
   private _onPark() {

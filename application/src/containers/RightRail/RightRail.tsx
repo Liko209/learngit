@@ -5,6 +5,7 @@
  */
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import ReactResizeDetector from 'react-resize-detector';
 import { translate, WithNamespaces } from 'react-i18next';
@@ -34,10 +35,13 @@ type TriggerButtonProps = {
 
 // height of conversation header & tabs, pass these constant height to list;
 // since resize observer in resize observer will cause UI performance issue.
-const HEIGHT_CONVERSATION_HEADER = 48;
 const HEIGHT_TABS = 33;
-const HEIGHT_FIX = HEIGHT_CONVERSATION_HEADER + HEIGHT_TABS;
 const MIN_TAB_WIDTH = 200;
+
+const CONTAINER_IDS = {
+  CONVERSATION_HEADER: 'conversation-header-right-wrapper',
+  RIGHT_RAIL_HEADER: 'right-rail-header',
+};
 
 class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   private _getTooltipKey = () => {
@@ -53,8 +57,16 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
   }
 
   render() {
-    const { t, onClick } = this.props;
-    return (
+    const { t, isOpen, onClick } = this.props;
+    const container = document.getElementById(
+      isOpen
+        ? CONTAINER_IDS.RIGHT_RAIL_HEADER
+        : CONTAINER_IDS.CONVERSATION_HEADER,
+    );
+    if (!container) {
+      return null;
+    }
+    return ReactDOM.createPortal(
       <JuiRightShelfHeaderIcon>
         <JuiIconButton
           tooltipTitle={t(this._getTooltipKey())}
@@ -63,7 +75,8 @@ class TriggerButtonComponent extends React.Component<TriggerButtonProps> {
         >
           {this._getIconKey()}
         </JuiIconButton>
-      </JuiRightShelfHeaderIcon>
+      </JuiRightShelfHeaderIcon>,
+      container,
     );
   }
 }
@@ -74,7 +87,7 @@ class RightRailComponent extends React.Component<Props> {
   private _renderHeader = () => {
     const { t } = this.props;
     return (
-      <JuiRightShelfHeader>
+      <JuiRightShelfHeader id="right-rail-header">
         <JuiRightShelfHeaderText>
           {t('message.conversationDetails')}
         </JuiRightShelfHeaderText>
@@ -112,7 +125,7 @@ class RightRailComponent extends React.Component<Props> {
     const { tabIndex } = this.state;
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {(w: number, h: number) => {
+        {({ width: w, height: h }: { width: number; height: number }) => {
           const width =
             Number.isNaN(w) || typeof w === 'undefined' ? MIN_TAB_WIDTH : w;
           const height =
@@ -137,7 +150,7 @@ class RightRailComponent extends React.Component<Props> {
                       id,
                       tabIndex === index,
                       width,
-                      height - HEIGHT_FIX,
+                      height - HEIGHT_TABS,
                     )}
                   </JuiTab>
                 ),

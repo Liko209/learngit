@@ -3,16 +3,10 @@
  * @Date: 2019-01-17 14:15:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { ComponentType } from 'react';
-
-type MessageExtension = {
-  'CONVERSATION_PAGE.HEADER.BUTTONS'?: ComponentType<{}>[];
-  'CONVERSATION_PAGE.MESSAGE_INPUT.BUTTONS'?: ComponentType<{}>[];
-  'CONVERSATION_LIST.MENU.BUTTONS'?: ComponentType<{}>[];
-};
+import { ReactNode } from 'react';
 
 type MessageModuleBootstrapOptions = {
-  extensions: MessageExtension[];
+  extensions: ReactNode;
 };
 
-export { MessageExtension, MessageModuleBootstrapOptions };
+export { MessageModuleBootstrapOptions };

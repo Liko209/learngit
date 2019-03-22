@@ -190,6 +190,13 @@ class AppModule extends AbstractModule {
       history.replace('/messages');
     });
 
+    notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {
+      // force logout
+      const authService: service.AuthService = service.AuthService.getInstance();
+      await authService.logout();
+      window.location.href = '/';
+    });
+
     const api = config.get('api');
     const db = config.get('db');
 

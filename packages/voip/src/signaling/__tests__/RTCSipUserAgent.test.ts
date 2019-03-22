@@ -7,15 +7,25 @@ import { RTCSipUserAgent } from '../RTCSipUserAgent';
 import { ProvisionDataOptions, UA_EVENT } from '../../signaling/types';
 import { RTCCallOptions } from '../../api/types';
 import { EventEmitter2 } from 'eventemitter2';
+import { opusModifier } from './../../utils/utils';
 
 class MockUserAgent extends EventEmitter2 {
-  constructor() {
+  constructor(provisionData: any, mockOptions: any) {
     super();
+    let modifiers: any = [];
+    if (mockOptions && mockOptions.modifiers) {
+      modifiers = mockOptions.modifiers;
+    }
+    this.configuration = {
+      sessionDescriptionHandlerFactoryOptions: { modifiers },
+    };
   }
   invite = jest.fn();
 }
 class MockWebPhone {
-  public userAgent: MockUserAgent = new MockUserAgent();
+  constructor(provisionData: any, mockOptions: any) {
+    this.userAgent = new MockUserAgent(provisionData, mockOptions);
+  }
 }
 
 class MockEventReceiver {
@@ -34,8 +44,8 @@ class MockEventReceiver {
 }
 
 jest.mock('ringcentral-web-phone', () => {
-  return jest.fn().mockImplementation(() => {
-    return new MockWebPhone();
+  return jest.fn().mockImplementation((provisionData, mockOptions) => {
+    return new MockWebPhone(provisionData, mockOptions);
   });
 });
 
@@ -43,7 +53,7 @@ const provisionData = 'provisionData';
 const options: ProvisionDataOptions = {};
 const phoneNumber = 'phoneNumber';
 
-describe('RTCSipUserAgent', async () => {
+describe('RTCSipUserAgent', () => {
   it('should emit registered event when web-phone tells register is successful. [JPT-599]', () => {
     const userAgent = new RTCSipUserAgent();
     userAgent._createWebPhone(provisionData, options);
@@ -113,6 +123,31 @@ describe('RTCSipUserAgent', async () => {
         phoneNumber,
         { fromNumber: '100', homeCountryId: '1' },
       );
+    });
+
+    it('Should add one opusModifier into the webphone if there is no any opusModifier', () => {
+      const userAgent = new RTCSipUserAgent();
+      userAgent._createWebPhone(provisionData, options);
+      expect(
+        userAgent._webphone.userAgent.configuration.sessionDescriptionHandlerFactoryOptions.modifiers.find(
+          opusModifier,
+        ),
+      ).not.toBeNull();
+    });
+
+    it('Should not add another opusModifier into the webphone if there is an existing one', () => {
+      const userAgent = new RTCSipUserAgent();
+      options.modifiers = [opusModifier];
+      userAgent._createWebPhone(provisionData, options);
+      let count = 0;
+      userAgent._webphone.userAgent.configuration.sessionDescriptionHandlerFactoryOptions.modifiers.forEach(
+        (element: any) => {
+          if (element == opusModifier) {
+            count++;
+          }
+        },
+      );
+      expect(count).toBe(1);
     });
   });
 });

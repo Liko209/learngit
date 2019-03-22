@@ -32,6 +32,14 @@ class ProfileDialogGroupContentViewModel extends ProfileDialogGroupViewModel
   }
 
   @computed
+  get destinationId() {
+    const { convertedToTeam } = this.group;
+    return convertedToTeam && convertedToTeam.team_id
+      ? convertedToTeam.team_id
+      : this.id;
+  }
+
+  @computed
   get typeId(): number {
     return GlipTypeUtil.extractTypeId(this.id);
   }

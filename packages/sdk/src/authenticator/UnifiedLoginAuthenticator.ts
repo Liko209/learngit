@@ -5,10 +5,12 @@
  */
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
 import { Api, loginGlip } from '../api';
+import { RcInfoApi } from '../api/ringcentral';
 import notificationCenter from '../service/notificationCenter';
 import { GlipAccount, RCAccount } from '../account';
 import { generateCode, oauthTokenViaAuthCode } from '../api/ringcentral/auth';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
+import { RcInfoService } from '../module/rcInfo';
 import {
   setRcToken,
   setRcAccountType,
@@ -62,9 +64,29 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
   // rc user login
   private async _authenticateRC(code: string): Promise<IAuthResponse> {
-    const { rc } = Api.httpConfig;
+    // login rc
+    const rcToken = await this._fetchRcToken(code);
+    await this._requestRcAccountRelativeInfo();
 
-    // fetch rc token
+    // login glip
+    const glipToken = await this._loginGlipByRcToken();
+
+    return {
+      success: true,
+      accountInfos: [
+        {
+          type: RCAccount.name,
+          data: rcToken,
+        },
+        {
+          type: GlipAccount.name,
+          data: glipToken,
+        },
+      ],
+    };
+  }
+
+  private async _fetchRcToken(code: string) {
     const rcToken = await oauthTokenViaAuthCode({
       code,
       redirect_uri: window.location.origin,
@@ -72,6 +94,17 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     await setRcToken(rcToken);
     await setRcAccountType();
     notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN);
+    return rcToken;
+  }
+
+  private async _requestRcAccountRelativeInfo() {
+    await RcInfoApi.requestRcAPIVersion();
+    const rcInfoService: RcInfoService = RcInfoService.getInstance();
+    await rcInfoService.requestRcAccountRelativeInfo();
+  }
+
+  private async _loginGlipByRcToken() {
+    const { rc } = Api.httpConfig;
 
     // fetch new code for glip token
     const codeData = await generateCode(rc.clientId, rc.redirectUri);
@@ -86,20 +119,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     const glipLoginResponse = await loginGlip(glipParams);
     const glipToken = glipLoginResponse.headers['x-authorization'];
     await setGlipToken(glipToken);
-
-    return {
-      success: true,
-      accountInfos: [
-        {
-          type: RCAccount.name,
-          data: rcToken,
-        },
-        {
-          type: GlipAccount.name,
-          data: glipParams,
-        },
-      ],
-    };
+    return glipToken;
   }
 }
 

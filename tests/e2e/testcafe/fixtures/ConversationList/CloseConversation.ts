@@ -113,7 +113,7 @@ test(formalName('Close current conversation directly, and navigate to blank page
   },
 );
 
-test(formalName('Close other conversation in confirm alert,and still focus on user veiwing conversation(without UMI)', ['JPT-137', 'JPT-130', 'P1', 'ConversationList']),
+test(formalName('Close other conversation in confirm alert,and still focus on user viewing conversation(without UMI)', ['JPT-137', 'JPT-130', 'P1', 'ConversationList']),
   async (t: TestController) => {
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
@@ -186,7 +186,7 @@ test(formalName('Close other conversation in confirm alert,and still focus on us
 const title = 'Close Conversation?';
 const content = 'Closing a conversation will remove it from the left pane, but will not delete the contents.';
 const checkboxLabel = "Don't ask me again";
-const button = 'Close Conversation';
+const button = 'Close';
 
 test(formalName('Close current conversation in confirm alert(without UMI)', ['JPT-134', 'JPT-130', 'P2', 'ConversationList']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
@@ -250,11 +250,11 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
     await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
     await t.expect(dialog.getSelector('p').withText(content)).ok();
     await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
-    await t.expect(dialog.confirmButton.find('span').withText(button).exists).ok();
+    await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
   });
 
   await h(t).withLog(`When I don't select "Don't ask me again" then click "Close Conversation" button`, async () => {
-    await dialog.confirm();
+    await dialog.clickCloseButton();
   });
 
   await h(t).withLog('The popup dialog dissmis and conversation A is unvisible', async () => {
@@ -271,10 +271,9 @@ test(formalName('Close current conversation in confirm alert(without UMI)', ['JP
     await t.expect(dialog.getSelector('h2').withText(title).exists).ok();
     await t.expect(dialog.getSelector('p').withText(content)).ok();
     await t.expect(dialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
-    await t.expect(dialog.confirmButton.find('span').withText(button).exists).ok();
+    await t.expect(dialog.closeButton.find('span').withText(button).exists).ok();
   });
-},
-);
+});
 
 test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation in confirm alert(without UMI)`, ['JPT-134', 'JPT-130', 'P2', 'ConversationList']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
@@ -340,12 +339,12 @@ test(formalName(`Tap ${checkboxLabel} checkbox,then close current conversation i
     await t.expect(closeConversationDialog.getSelector('h2').withText(title).exists).ok();
     await t.expect(closeConversationDialog.getSelector('p').withText(content)).ok();
     await t.expect(closeConversationDialog.dontAskAgainCheckbox.find('span').withText(checkboxLabel).exists).ok();
-    await t.expect(closeConversationDialog.confirmButton.find('span').withText(button).exists).ok();
+    await t.expect(closeConversationDialog.closeButton.find('span').withText(button).exists).ok();
   });
 
   await h(t).withLog(`When I select "Don't ask me again" then click "Close Conversation" button`, async () => {
     await closeConversationDialog.toggleDontAskAgain();
-    await closeConversationDialog.confirm();
+    await closeConversationDialog.clickCloseButton();
   });
 
   await h(t).withLog('The popup dialog disappear and conversation A should be closed', async () => {
@@ -454,8 +453,7 @@ test(formalName('No close button in conversation with UMI', ['JPT-114', 'P2', 'C
       await t.pressKey('esc');
     });
   }
-},
-);
+});
 
 
 test(formalName('JPT-138 Can display conversation history when receiving messages from the closed conversation.', ['JPT-138', 'P2', 'ConversationList', 'Mia.Cai']),
@@ -560,4 +558,73 @@ test(formalName('JPT-138 Can display conversation history when receiving message
       await conversationPage.historyPostsDisplayedInOrder(posts);
     }, true);
 
+  });
+
+test(formalName('Check can cancel confirm dialog when user first time use close conversation function', ['JPT-1360', 'P2', 'ConversationList', 'Potar.He']),
+  async (t: TestController) => {
+    const users = h(t).rcData.mainCompany.users;
+    const loginUser = users[7];
+
+    let team = <IGroup>{
+      type: 'Team',
+      name: uuid(),
+      owner: loginUser,
+      members: [loginUser]
+    }
+
+    await h(t).withLog(`Given I have an extension with one new team named: ${team.name}`, async () => {
+      await h(t).scenarioHelper.createTeam(team);
+    });
+
+    await h(t).withLog('And I set user skip_close_conversation_confirmation is false before login', async () => {
+      await h(t).glip(loginUser).init();
+      await h(t).glip(loginUser).skipCloseConversationConfirmation(false);
+    });
+
+    const app = new AppRoot(t);
+    await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+
+    const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
+
+    await h(t).withLog('When I open close conversation dialog of the team', async () => {
+      await app.homePage.messageTab.teamsSection.expand();
+      await teamEntry.openMoreMenu();
+      await app.homePage.messageTab.moreMenu.close.enter();
+    });
+
+    const closeConversationDialog = app.homePage.messageTab.closeConversationModal;
+    await h(t).withLog('Then the close conversation dialog should be popup', async () => {
+      await t.expect(closeConversationDialog.exists).ok();
+    }, true);
+
+    await h(t).withLog(`When I select "Don't ask me again" then click Cancel button`, async () => {
+      await closeConversationDialog.toggleDontAskAgain();
+      await closeConversationDialog.clickCancelButton();
+    });
+
+    await h(t).withLog(`Then the confirm dialog should dismiss and the team still exist in team section`, async () => {
+      await t.expect(closeConversationDialog.exists).notOk();
+      await t.expect(teamEntry.exists).ok();
+    });
+
+    await h(t).withLog(`When I open close conversation dialog of the team again`, async () => {
+      await teamEntry.openMoreMenu();
+      await app.homePage.messageTab.moreMenu.close.enter();
+    });
+
+    await h(t).withLog('Then the close conversation dialog should be popup', async () => {
+      await t.expect(closeConversationDialog.exists).ok();
+    }, true);
+
+    await h(t).withLog(`When I click Cancel button`, async () => {
+      await closeConversationDialog.clickCancelButton();
+    });;
+
+    await h(t).withLog(`Then the confirm dialog should dismiss and the team still exist in team section`, async () => {
+      await t.expect(closeConversationDialog.exists).notOk();
+      await t.expect(teamEntry.exists).ok();
+    });
   });

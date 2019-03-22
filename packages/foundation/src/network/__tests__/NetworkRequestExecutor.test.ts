@@ -4,14 +4,22 @@ import {
   NETWORK_REQUEST_EXECUTOR_STATUS,
   NETWORK_FAIL_TYPE,
   HTTP_STATUS_CODE,
+  NETWORK_HANDLE_TYPE,
+  IResponse,
 } from '../network';
+import { SERVER_ERROR_CODE } from '../Constants';
 
-const networkExecutor = new NetworkRequestExecutor(
-  getFakeRequest(),
-  getFakeClient(),
-);
+let networkExecutor: NetworkRequestExecutor;
 
 describe('NetworkRequestExecutor', () => {
+  beforeEach(() => {
+    networkExecutor = new NetworkRequestExecutor(
+      getFakeRequest(),
+      getFakeClient(),
+    );
+    jest.clearAllMocks();
+  });
+
   describe('onSuccess', () => {
     it('should call callback', () => {
       const spy = jest.spyOn(networkExecutor, '_callXApiResponseCallback');
@@ -151,6 +159,83 @@ describe('NetworkRequestExecutor', () => {
     it('should true when status not equal pause', () => {
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
       expect(networkExecutor.isPause()).not.toEqual(true);
+    });
+  });
+
+  describe('_handle503XApiCompletionCallback()', () => {
+    it('should do nothing when handle type is not ringcentral', () => {
+      const response = {
+        request: {
+          handlerType: {
+            name: NETWORK_HANDLE_TYPE.GLIP,
+          },
+        },
+      };
+      jest.spyOn(networkExecutor, '_isCMN211Error');
+      networkExecutor['_handle503XApiCompletionCallback'](
+        response as IResponse,
+      );
+      expect(networkExecutor['_isCMN211Error']).not.toBeCalled();
+    });
+
+    it('should enter survival mode when is CMN-211 error', () => {
+      const response = {
+        request: {
+          handlerType: {
+            name: NETWORK_HANDLE_TYPE.RINGCENTRAL,
+          },
+        },
+        data: 'data',
+      };
+      jest.spyOn(networkExecutor, '_isCMN211Error').mockReturnValueOnce(true);
+      networkExecutor.responseListener = {
+        onSurvivalModeDetected: jest.fn(),
+      };
+      networkExecutor['_handle503XApiCompletionCallback'](
+        response as IResponse,
+      );
+      expect(networkExecutor['_isCMN211Error']).toBeCalled();
+      expect(
+        networkExecutor.responseListener.onSurvivalModeDetected,
+      ).toBeCalled();
+    });
+  });
+
+  describe('_isCMN211Error()', () => {
+    it('should call _isServerErrorCodeMatched', () => {
+      jest.spyOn(networkExecutor, '_isServerErrorCodeMatched');
+      const data = 'data';
+      networkExecutor['_isCMN211Error'](data);
+      expect(networkExecutor['_isServerErrorCodeMatched']).toBeCalledWith(
+        data,
+        SERVER_ERROR_CODE.CMN211,
+      );
+    });
+  });
+
+  describe('_isServerErrorCodeMatched', () => {
+    it('should return true when data errorCode is matched', () => {
+      const err = 'someError';
+      const data = { errorCode: err };
+      expect(
+        networkExecutor['_isServerErrorCodeMatched'](data, err),
+      ).toBeTruthy();
+    });
+
+    it('should return true when errors errorCode is matched', () => {
+      const err = 'someError';
+      const data = { errorCode: 'other', errors: [{ errorCode: err }] };
+      expect(
+        networkExecutor['_isServerErrorCodeMatched'](data, err),
+      ).toBeTruthy();
+    });
+
+    it('should return false when errorCode is not matched', () => {
+      const err = 'someError';
+      const data = { errorCode: 'other', errors: [{ errorCode: 'other' }] };
+      expect(
+        networkExecutor['_isServerErrorCodeMatched'](data, err),
+      ).toBeFalsy();
     });
   });
 });

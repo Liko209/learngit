@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { PureComponent } from 'react';
-import styled from 'styled-components';
+import styled from '../../foundation/styled-components';
 import MuiList, { ListProps } from '@material-ui/core/List';
 import MuiListItem, { ListItemProps } from '@material-ui/core/ListItem';
 import MuiListItemSecondaryAction, {
@@ -20,20 +20,21 @@ import { spacing, grey, typography } from '../../foundation/utils/styles';
 const List = styled(MuiList)`
   && {
     padding: 0;
-    margin: ${({ theme }) => spacing(5)} 0;
+    margin: ${spacing(5, 0)};
   }
 `;
 
 const ListItem = styled(MuiListItem)`
   && {
     padding: 0;
-    margin: 0 0 ${({ theme }) => spacing(4)} 0;
+    margin: ${spacing(0, 0, 4, 0)};
   }
 `;
 
 const ListItemSecondaryAction = styled(MuiListItemSecondaryAction)`
   && {
     right: 0;
+    transform: translate3d(0, -50%, 0);
   }
 `;
 

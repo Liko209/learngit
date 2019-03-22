@@ -13,24 +13,63 @@ import { CallViewProps, CallProps } from './types';
 
 type Props = WithNamespaces & CallViewProps & CallProps;
 
+type State = {
+  isShowIcon: boolean;
+};
+
 @observer
-class CallViewComponent extends Component<Props> {
-  handleClick = () => {
-    const { directCall } = this.props;
-    portalManager.dismissLast();
+class CallViewComponent extends Component<Props, State> {
+  state = {
+    isShowIcon: false,
+  };
+
+  private _handleClick = (evt: React.MouseEvent) => {
+    evt.stopPropagation();
+    const { directCall, onClick } = this.props;
+    if (onClick) {
+      onClick();
+    } else {
+      portalManager.dismissLast();
+    }
     directCall();
   }
 
+  private _checkShowIcon = () => {
+    const { showIcon } = this.props;
+    const { isShowIcon } = this.state;
+    if (showIcon !== isShowIcon) {
+      this.setState({
+        isShowIcon: showIcon,
+      });
+    }
+  }
+
+  componentDidMount() {
+    this._checkShowIcon();
+  }
+
+  componentDidUpdate() {
+    this._checkShowIcon();
+  }
+
   render() {
-    const { t, phone } = this.props;
+    const { isShowIcon } = this.state;
+    if (!isShowIcon) {
+      return null;
+    }
+
+    const { t, phone, size, variant, color } = this.props;
+
     return (
       <JuiIconButton
-        size="small"
-        onClick={this.handleClick}
+        size={size ? size : 'medium'}
+        onClick={this._handleClick}
         tooltipTitle={t('common.call')}
         ariaLabel={t('common.ariaCall', {
           value: phone,
         })}
+        variant={variant}
+        color={color}
       >
         phone
       </JuiIconButton>

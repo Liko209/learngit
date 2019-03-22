@@ -19,4 +19,25 @@ type RecentSearchModel = {
   time_stamp: number;
 };
 
-export { RecentSearchModel, RecentSearchTypes };
+type FuzzySearchPersonOptions = {
+  searchKey?: string;
+  excludeSelf?: boolean;
+  arrangeIds?: number[];
+  fetchAllIfSearchKeyEmpty?: boolean;
+  asIdsOrder?: boolean;
+  recentFirst?: boolean;
+};
+
+enum PersonSortingOrder {
+  EmailMatching = 0,
+  FullNameMatching = 1,
+  LastNameMatching = 2,
+  FirstNameMatching = 3,
+}
+
+export {
+  RecentSearchModel,
+  RecentSearchTypes,
+  FuzzySearchPersonOptions,
+  PersonSortingOrder,
+};

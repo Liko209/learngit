@@ -25,13 +25,6 @@ class Page {
     return this._browser;
   }
 
-  async disconnectBrowser() {
-    if (this._browser) {
-      await this._browser.disconnect();
-      this._browser = null;
-    }
-  }
-
   async close() {
     let page = await this.page();
     if (page) {
