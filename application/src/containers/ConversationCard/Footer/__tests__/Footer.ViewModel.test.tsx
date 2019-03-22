@@ -15,8 +15,10 @@ jest.mock('../../../../store/utils');
 const t = (key: string) => {
   const map = {
     'common.You': 'You',
-    'common.and': 'and',
-    'message.likeThis': 'like this',
+    'common.conj.and': 'and',
+    'common.pronoun.this': 'this',
+    'common.verb.like': 'like',
+    'common.verb.likes': 'likes',
   };
 
   return map[key];
@@ -73,8 +75,8 @@ const postsMock = [
 
 const ASSERTIONS = [
   'You like this',
-  'Allen Lian like this',
-  'You, and Allen Lian like this',
+  'Allen Lian likes this',
+  'You and Allen Lian like this',
   'You, Mia Cai, and Allen Lian like this',
   'Mia Cai, William Ye, and Allen Lian like this',
 ];

@@ -83,7 +83,7 @@ type RcSite = {
 
 type RcExtensionInfo = {
   uri?: string;
-  id?: number;
+  id: number;
   contact?: RcContactInfo;
   departments?: RcDepartmentInfo[];
   extensionNumber?: string;

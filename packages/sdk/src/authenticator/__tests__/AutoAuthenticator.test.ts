@@ -8,20 +8,29 @@ import { AutoAuthenticator } from '../AutoAuthenticator';
 import { daoManager } from '../../dao';
 import { ACCOUNT_TYPE_ENUM } from '../constants';
 import { GlobalConfigService } from '../../module/config';
-import { NewGlobalConfig } from '../../service/config/NewGlobalConfig';
-import { AuthGlobalConfig } from '../../service/auth/config';
+import { AuthUserConfig } from '../../service/auth/config';
+import {
+  AccountUserConfig,
+  AccountGlobalConfig,
+} from '../../service/account/config';
 
 jest.mock('../../module/config');
 jest.mock('../../service/config/NewGlobalConfig');
 jest.mock('../../service/auth/config');
+jest.mock('../../service/account/config');
 
 GlobalConfigService.getInstance = jest.fn();
 
 describe('AutoAuthenticator', () => {
   const autoAuthenticator = new AutoAuthenticator(daoManager);
+  let authConfig: AuthUserConfig;
+  let accountConfig: AccountUserConfig;
 
   beforeEach(() => {
     jest.clearAllMocks();
+    AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValue('12');
+    authConfig = new AuthUserConfig();
+    accountConfig = new AccountUserConfig();
   });
 
   describe('user has not loggin', () => {
@@ -30,18 +39,19 @@ describe('AutoAuthenticator', () => {
   });
   describe('GLIP user', () => {
     it('GLIP user type but has not token', () => {
-      NewGlobalConfig.getAccountType = jest
+      AccountUserConfig.prototype.getAccountType = jest
         .fn()
         .mockReturnValue(ACCOUNT_TYPE_ENUM.GLIP);
-
       const resp = autoAuthenticator.authenticate();
       expect(resp.success).toBe(false);
     });
     it('GLIP user type and has token', () => {
-      NewGlobalConfig.getAccountType = jest
+      AccountUserConfig.prototype.getAccountType = jest
         .fn()
         .mockReturnValue(ACCOUNT_TYPE_ENUM.GLIP);
-      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('glip_token');
+      AuthUserConfig.prototype.getGlipToken = jest
+        .fn()
+        .mockReturnValue('glip_token');
       const resp = autoAuthenticator.authenticate();
       expect(resp.success).toBe(true);
     });
@@ -49,15 +59,19 @@ describe('AutoAuthenticator', () => {
 
   describe('RC user', () => {
     it('RC user type but has not token', () => {
-      NewGlobalConfig.getAccountType = jest
+      AccountUserConfig.prototype.getAccountType = jest
         .fn()
         .mockReturnValue(ACCOUNT_TYPE_ENUM.RC);
       const resp = autoAuthenticator.authenticate();
       expect(resp.success).toBe(false);
     });
     it('RC user type and has token', () => {
-      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('glip_token');
-      AuthGlobalConfig.getRcToken = jest.fn().mockReturnValue('rc_token');
+      AuthUserConfig.prototype.getGlipToken = jest
+        .fn()
+        .mockReturnValue('glip_token');
+      AuthUserConfig.prototype.getRcToken = jest
+        .fn()
+        .mockReturnValue('rc_token');
       const resp = autoAuthenticator.authenticate();
       expect(resp.success).toBe(true);
     });

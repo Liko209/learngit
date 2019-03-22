@@ -8,7 +8,7 @@ import { AccountGlobalConfig } from '../../../service/account/config';
 
 class TelephonyUserConfig extends UserConfig {
   constructor() {
-    super(AccountGlobalConfig.getCurrentUserId(), 'telephony');
+    super(AccountGlobalConfig.getUserDictionary(), 'telephony');
   }
 
   putConfig(key: string, value: any) {

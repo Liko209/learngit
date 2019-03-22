@@ -2,12 +2,14 @@
 import ConfigService from '..';
 import AuthService from '../../auth';
 import { NewGlobalConfig } from '../NewGlobalConfig';
+import { SyncUserConfig } from '../../../module/sync/config';
 
 jest.mock('../../auth');
 jest.mock('../../BaseService');
 jest.mock('../../../dao');
 jest.mock('../../../module/config');
 jest.mock('../../../service/config/NewGlobalConfig');
+jest.mock('../../../module/sync/config');
 
 describe('ConfigService', () => {
   let configService: ConfigService;
@@ -16,13 +18,6 @@ describe('ConfigService', () => {
   beforeAll(() => {
     mockAuthService = new AuthService();
     configService = new ConfigService(mockAuthService);
-  });
-
-  describe('getLastIndexTimestamp()', () => {
-    it('should return last index timestamp from dao', () => {
-      NewGlobalConfig.getLastIndexTimestamp = jest.fn().mockReturnValue(123);
-      expect(configService.getLastIndexTimestamp()).toBe(123);
-    });
   });
 
   describe('getEnv()', () => {

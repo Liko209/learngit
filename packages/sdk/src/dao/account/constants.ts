@@ -12,7 +12,7 @@ export const ACCOUNT_CLIENT_CONFIG = 'client_config';
 export const ACCOUNT_CONVERSATION_LIST_LIMITS = 'max_conversations';
 export const UNREAD_TOGGLE_ON = 'unread_toggle_on';
 
-export const ACCOUNT_USER_ID_KEY = `${ACCOUNT_COLLECTION_NAME}/${ACCOUNT_USER_ID}`;
+export const ACCOUNT_USER_ID_KEY = `global.${ACCOUNT_COLLECTION_NAME}.UD`;
 export const ACCOUNT_KEYS = [
   ACCOUNT_USER_ID,
   ACCOUNT_PROFILE_ID,

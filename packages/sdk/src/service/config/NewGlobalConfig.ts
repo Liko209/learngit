@@ -5,14 +5,6 @@ import { CONFIG_KEYS } from './configKeys';
 class NewGlobalConfig extends GlobalConfig {
   static moduleName = 'config';
 
-  static setAccountType(accountType: string) {
-    this.put(CONFIG_KEYS.ACCOUNT_TYPE, accountType);
-  }
-
-  static getAccountType() {
-    return this.get(CONFIG_KEYS.ACCOUNT_TYPE);
-  }
-
   static getStaticHttpServer() {
     return this.get(CONFIG_KEYS.STATIC_HTTP_SERVER);
   }
@@ -37,25 +29,6 @@ class NewGlobalConfig extends GlobalConfig {
     return this.get(CONFIG_KEYS.PHONE_DATA);
   }
 
-  static getLastIndexTimestamp() {
-    return this.get(CONFIG_KEYS.LAST_INDEX_TIMESTAMP);
-  }
-
-  static setLastIndexTimestamp(timestamp: any) {
-    this.put(CONFIG_KEYS.LAST_INDEX_TIMESTAMP, timestamp);
-  }
-
-  static updateCanUpdateIndexTimeStamp(can: boolean) {
-    this.put(CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP, can);
-  }
-  static getCanUpdateIndexTimeStamp() {
-    return this.get(CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP);
-  }
-
-  static removeLastIndexTimestamp() {
-    this.remove(CONFIG_KEYS.LAST_INDEX_TIMESTAMP);
-  }
-
   static setDBSchemaVersion(version: number) {
     this.put(CONFIG_KEYS.DB_SCHEMA_VERSION, version);
   }
@@ -74,14 +47,6 @@ class NewGlobalConfig extends GlobalConfig {
 
   static removeConfig(key: string) {
     this.remove(key);
-  }
-
-  static setFetchedRemaining(value: boolean) {
-    this.put(CONFIG_KEYS.FETCHED_REMAINING, value);
-  }
-
-  static getFetchedRemaining() {
-    return this.get(CONFIG_KEYS.FETCHED_REMAINING);
   }
 }
 

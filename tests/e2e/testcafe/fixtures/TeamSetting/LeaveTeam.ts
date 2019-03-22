@@ -19,8 +19,7 @@ fixture('TeamSetting/LeaveTeam')
   .afterEach(teardownCase());
 
 
-// skip due to https://jira.ringcentral.com/browse/FIJI-4333
-test.skip(formalName(`Leave team successful after clicking Leave button.`, ['P1', 'JPT-935', 'LeaveTeam', 'Potar.He']), async t => {
+test(formalName(`Leave team successful after clicking Leave button.`, ['P1', 'JPT-935', 'LeaveTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const memberUser = h(t).rcData.mainCompany.users[5];

@@ -10,7 +10,8 @@ import {
   ACCOUNT_CLIENT_CONFIG,
 } from '../../dao/account/constants';
 import notificationCenter from '../../service/notificationCenter';
-import { AccountGlobalConfig } from './config';
+import { AccountGlobalConfig, AccountUserConfig } from './config';
+import { ACCOUNT_TYPE_ENUM } from '../../authenticator/constants';
 
 export interface IHandleData {
   userId?: number;
@@ -25,21 +26,29 @@ const accountHandleData = ({
   profileId,
   clientConfig,
 }: IHandleData): void => {
+  let userConfig = new AccountUserConfig();
   if (userId) {
+    if (!AccountGlobalConfig.getUserDictionary()) {
+      // by default, rc extension id will be used as UD. For glip only user, we'll use glip id as UD
+      AccountGlobalConfig.setUserDictionary(userId.toString());
+      userConfig = new AccountUserConfig();
+      userConfig.setAccountType(ACCOUNT_TYPE_ENUM.GLIP);
+    }
     notificationCenter.emitKVChange(ACCOUNT_USER_ID, userId);
-    AccountGlobalConfig.setCurrentUserId(userId);
+    userConfig.setGlipUserId(userId);
   }
+
   if (companyId) {
     notificationCenter.emitKVChange(ACCOUNT_COMPANY_ID, companyId);
-    AccountGlobalConfig.setCurrentCompanyId(companyId);
+    userConfig.setCurrentCompanyId(companyId);
   }
   if (profileId) {
     notificationCenter.emitKVChange(ACCOUNT_PROFILE_ID, profileId);
-    AccountGlobalConfig.setCurrentUserProfileId(profileId);
+    userConfig.setCurrentUserProfileId(profileId);
   }
   if (clientConfig) {
     notificationCenter.emitKVChange(ACCOUNT_CLIENT_CONFIG, clientConfig);
-    AccountGlobalConfig.setClientConfig(clientConfig);
+    userConfig.setClientConfig(clientConfig);
   }
 };
 

@@ -13,7 +13,7 @@ import {
   JuiProfileMiniCardFooterRight,
 } from 'jui/pattern/Profile/MiniCard';
 import { JuiIconButton, JuiButton } from 'jui/components/Buttons';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 import { TypeDictionary } from 'sdk/utils';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
@@ -24,7 +24,7 @@ class ProfileMiniCardGroupFooter extends Component<
 > {
   onClickMessage = () => {
     const { id } = this.props;
-    const result = goToConversation({ id });
+    const result = goToConversationWithLoading({ id });
     if (result) {
       portalManager.dismissLast();
     }

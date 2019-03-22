@@ -296,7 +296,7 @@ test(formalName(`The user should see go to conversation icon instead of the join
   await h(t).withLog(`Then profile dialog should be popped up and show 'Join the team' button`, async () => {
     await profileDialog.shouldBePopUp();
     await t.expect(profileDialog.joinTeamButton.exists).ok();
-    await profileDialog.close();
+    await profileDialog.clickCloseButton();
   });
 
   await h(t).withLog(`When adminUser add loginUser to the Public_team`, async () => {

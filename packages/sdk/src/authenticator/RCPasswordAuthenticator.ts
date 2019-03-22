@@ -7,9 +7,9 @@ import { loginGlip, loginRCByPassword } from '../api';
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
 import { ACCOUNT_TYPE_ENUM } from './constants';
 import { setRcToken } from './utils';
-import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
-import { AuthGlobalConfig } from '../service/auth/config';
+import { AuthUserConfig } from '../service/auth/config';
 import { RCAccount, GlipAccount } from '../account';
+import { AccountUserConfig } from '../service/account/config';
 
 interface IRCPasswordAuthenticateParams extends IAuthParams {
   username: string;
@@ -28,9 +28,11 @@ class RCPasswordAuthenticator implements IAuthenticator {
 
     setRcToken(rcAuthData);
 
-    AuthGlobalConfig.setGlipToken(glipAuthResponse.headers['x-authorization']);
+    const authConfig = new AuthUserConfig();
+    authConfig.setGlipToken(glipAuthResponse.headers['x-authorization']);
 
-    NewGlobalConfig.setAccountType(ACCOUNT_TYPE_ENUM.RC);
+    const userConfig = new AccountUserConfig();
+    userConfig.setAccountType(ACCOUNT_TYPE_ENUM.RC);
 
     return {
       success: true,

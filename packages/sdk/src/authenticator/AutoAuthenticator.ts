@@ -6,9 +6,12 @@
 import { IAuthResponse, ISyncAuthenticator } from '../framework';
 import { ACCOUNT_TYPE_ENUM } from './constants';
 import DaoManager from '../dao/DaoManager';
-import { AuthGlobalConfig } from '../service/auth/config';
-import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
+import { AuthUserConfig } from '../service/auth/config';
 import { RCAccount, GlipAccount } from '../account';
+import {
+  AccountGlobalConfig,
+  AccountUserConfig,
+} from '../service/account/config';
 
 class AutoAuthenticator implements ISyncAuthenticator {
   private _accountTypeHandleMap: Map<string, any>;
@@ -26,7 +29,11 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   authenticate(): IAuthResponse {
-    const type: string = NewGlobalConfig.getAccountType();
+    let type: string = '';
+    if (AccountGlobalConfig.getUserDictionary()) {
+      const userConfig = new AccountUserConfig();
+      type = userConfig.getAccountType();
+    }
     const func = this._accountTypeHandleMap.get(type);
 
     if (func) {
@@ -37,7 +44,8 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authGlipLogin(): IAuthResponse {
-    const glipToken: string = AuthGlobalConfig.getGlipToken();
+    const authConfig = new AuthUserConfig();
+    const glipToken: string = authConfig.getGlipToken();
 
     if (glipToken) {
       return {
@@ -55,8 +63,9 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authRCLogin(): IAuthResponse {
-    const rcToken: string = AuthGlobalConfig.getRcToken();
-    const glipToken: string = AuthGlobalConfig.getGlipToken();
+    const authConfig = new AuthUserConfig();
+    const rcToken: string = authConfig.getRcToken();
+    const glipToken: string = authConfig.getGlipToken();
 
     if (rcToken && glipToken) {
       return {

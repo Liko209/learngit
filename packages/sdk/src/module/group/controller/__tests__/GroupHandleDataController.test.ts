@@ -19,7 +19,7 @@ import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
 import { GlobalConfigService } from '../../../../module/config';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { SYNC_SOURCE } from '../../../../module/sync';
 
@@ -150,7 +150,7 @@ describe('GroupHandleDataController', () => {
 
     it('passing an array', async () => {
       expect.assertions(6);
-      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
       daoManager.getDao(GroupDao).get.mockReturnValue(1);
       const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
         {
@@ -192,7 +192,7 @@ describe('GroupHandleDataController', () => {
 
     it('should not emit notification when passing an array from remaining', async () => {
       expect.assertions(6);
-      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
       daoManager.getDao(GroupDao).get.mockReturnValue(1);
       const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
         {
@@ -412,7 +412,7 @@ describe('GroupHandleDataController', () => {
 
   describe('filterGroups()', () => {
     beforeEach(() => {
-      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(99);
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(99);
     });
     it('should remove extra, when limit < total teams', async () => {
       const LIMIT = 2;
@@ -629,7 +629,7 @@ describe('GroupHandleDataController', () => {
         },
       ] as Group[];
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
-      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(2);
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(2);
       const filteredGroups = await groupHandleDataController.filterGroups(
         group,
         2,
@@ -738,7 +738,7 @@ describe('GroupHandleDataController', () => {
 
   describe('getTransformData()', () => {
     it('should return deactivated group when removed_guest_user_ids includes current user', async () => {
-      AccountGlobalConfig.getCurrentUserId.mockReturnValue(123);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(123);
       const groups = generateFakeGroups(3, {
         deactivated: false,
       });
