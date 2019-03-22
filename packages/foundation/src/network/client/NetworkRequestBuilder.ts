@@ -19,7 +19,7 @@ import {
   HA_PRIORITY,
   IRequest,
 } from '../network';
-import { JNetworkError, ERROR_CODES_NETWORK } from 'src/error';
+import { JNetworkError, ERROR_CODES_NETWORK } from '../../error';
 
 class NetworkRequestBuilder implements IRequest {
   id: string = '';
