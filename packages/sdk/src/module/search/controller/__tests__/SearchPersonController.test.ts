@@ -7,17 +7,12 @@
 import { SearchPersonController } from '../SearchPersonController';
 import { ISearchService } from '../../service/ISearchService';
 
-import { PersonDao } from '../../../../module/person/dao';
 import { Person } from '../../../../module/person/entity';
 import { PersonService } from '../../../../module/person';
 import {
-  buildEntitySourceController,
   buildEntityCacheSearchController,
   buildEntityCacheController,
-  buildEntityPersistentController,
 } from '../../../../framework/controller';
-import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
-import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { SortableModel } from '../../../../framework/model';
@@ -41,10 +36,6 @@ describe('SearchPersonController', () => {
   let searchService: ISearchService;
 
   let personService: PersonService;
-  let personDao: PersonDao;
-
-  let entityPersistentController: IEntityPersistentController<Person>;
-  let entitySourceController: IEntitySourceController<Person>;
   let entityCacheController: IEntityCacheController<Person>;
   let cacheSearchController: IEntityCacheSearchController<Person>;
   let groupService: GroupService;
@@ -53,16 +44,7 @@ describe('SearchPersonController', () => {
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(1);
 
-    personDao = new PersonDao(null as any);
-
     entityCacheController = buildEntityCacheController<Person>();
-    entityPersistentController = buildEntityPersistentController<Person>(
-      personDao,
-      entityCacheController,
-    );
-    entitySourceController = buildEntitySourceController<Person>(
-      entityPersistentController,
-    );
     cacheSearchController = buildEntityCacheSearchController<Person>(
       entityCacheController,
     );
@@ -84,186 +66,183 @@ describe('SearchPersonController', () => {
     clearMocks();
     setUp();
   });
-
-  describe('doFuzzySearchPersons', () => {
-    async function prepareDataForSearchUTs() {
-      await entityCacheController.clear();
-      for (let i = 1; i <= 10000; i += 1) {
-        const person = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_new: false,
-          has_registered: true,
-          version: i,
-          company_id: 1,
-          email: `cat${i.toString()}@ringcentral.com`,
-          me_group_id: 1,
-          first_name: `dora${i.toString()}`,
-          last_name: `bruce${i.toString()}`,
-          display_name: `dora${i.toString()} bruce${i.toString()}`,
-        };
-        await entityCacheController.put(person as Person);
-      }
-
-      for (let i = 10001; i <= 20000; i += 1) {
-        const person = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_new: false,
-          flags: 4,
-          version: i,
-          company_id: 1,
-          email: `dog${i.toString()}@ringcentral.com`,
-          me_group_id: 1,
-          first_name: `ben${i.toString()}`,
-          last_name: `niu${i.toString()}`,
-          display_name: `ben${i.toString()} niu${i.toString()}`,
-        };
-        entityCacheController.put(person as Person);
-      }
-
-      for (let i = 20001; i <= 20010; i += 1) {
-        const person = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_new: false,
-          deactivated: false,
-          has_registered: true,
-          version: i,
-          company_id: 1,
-          email: `monkey${i.toString()}@ringcentral.com`,
-          me_group_id: 1,
-          first_name: `kong${i.toString()}`,
-          last_name: `wu${i.toString()}`,
-          display_name: `kong${i.toString()} wu${i.toString()}`,
-        };
-        entityCacheController.put(person);
-      }
-
-      for (let i = 20011; i <= 20020; i += 1) {
-        const person = {
-          id: i,
-          created_at: i,
-          modified_at: i,
-          creator_id: i,
-          is_new: false,
-          deactivated: false,
-          flags: 4,
-          version: i,
-          company_id: 1,
-          email: `master${i.toString()}@ringcentral.com`,
-          me_group_id: 1,
-          first_name: `monkey${i.toString()}`,
-          last_name: `wu${i.toString()}`,
-          display_name: `monkey${i.toString()} wu${i.toString()}`,
-        };
-        entityCacheController.put(person as Person);
-      }
-
-      const deactivatedByField = {
-        id: 20021,
-        created_at: 20021,
-        modified_at: 20021,
-        creator_id: 20021,
-        is_new: false,
-        deactivated: true,
-        version: 20021,
-        company_id: 1,
-        email: 'master20021@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'deactivatedByField',
-        last_name: 'deactivatedByField',
-        display_name: 'deactivatedByField',
-      };
-      entityCacheController.put(deactivatedByField);
-
-      const deactivatedByFlags = {
-        id: 20022,
-        created_at: 20022,
-        modified_at: 20022,
-        creator_id: 20022,
-        is_new: false,
-        flags: 2,
-        version: 20022,
-        company_id: 1,
-        email: 'master20022@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'deactivatedByFlags',
-        last_name: 'deactivatedByFlags',
-        display_name: 'deactivatedByFlags',
-      };
-      entityCacheController.put(deactivatedByFlags as Person);
-
-      const isRemovedGuest = {
-        id: 20023,
-        created_at: 20023,
-        modified_at: 20023,
-        creator_id: 20023,
+  async function prepareDataForSearchUTs() {
+    await entityCacheController.clear();
+    for (let i = 1; i <= 10000; i += 1) {
+      const person = {
+        id: i,
+        created_at: i,
+        modified_at: i,
+        creator_id: i,
         is_new: false,
         has_registered: true,
-        flags: 1024,
-        version: 20023,
+        version: i,
         company_id: 1,
-        email: 'master20023@ringcentral.com',
+        email: `cat${i.toString()}@ringcentral.com`,
         me_group_id: 1,
-        first_name: 'isRemovedGuest',
-        last_name: 'isRemovedGuest',
-        display_name: 'isRemovedGuest',
+        first_name: `dora${i.toString()}`,
+        last_name: `bruce${i.toString()}`,
+        display_name: `dora${i.toString()} bruce${i.toString()}`,
       };
-      entityCacheController.put(isRemovedGuest as Person);
-
-      const amRemovedGuest = {
-        id: 20024,
-        created_at: 20024,
-        modified_at: 20024,
-        creator_id: 20024,
-        is_new: false,
-        flags: 2052,
-        version: 20024,
-        company_id: 1,
-        email: 'master20024@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'amRemovedGuest',
-        last_name: 'amRemovedGuest',
-        display_name: 'amRemovedGuest',
-      };
-      entityCacheController.put(amRemovedGuest as Person);
-
-      const unRegistered1 = {
-        id: 20025,
-        created_at: 20025,
-        modified_at: 20025,
-        creator_id: 20025,
-        is_new: false,
-        flags: 0,
-        version: 20025,
-        company_id: 1,
-        email: 'master20025@ringcentral.com',
-        me_group_id: 1,
-        first_name: 'unRegistered',
-        last_name: 'unRegistered',
-        display_name: 'unRegistered',
-      };
-      entityCacheController.put(unRegistered1 as Person);
+      await entityCacheController.put(person as Person);
     }
 
+    for (let i = 10001; i <= 20000; i += 1) {
+      const person = {
+        id: i,
+        created_at: i,
+        modified_at: i,
+        creator_id: i,
+        is_new: false,
+        flags: 4,
+        version: i,
+        company_id: 1,
+        email: `dog${i.toString()}@ringcentral.com`,
+        me_group_id: 1,
+        first_name: `ben${i.toString()}`,
+        last_name: `niu${i.toString()}`,
+        display_name: `ben${i.toString()} niu${i.toString()}`,
+      };
+      entityCacheController.put(person as Person);
+    }
+
+    for (let i = 20001; i <= 20010; i += 1) {
+      const person = {
+        id: i,
+        created_at: i,
+        modified_at: i,
+        creator_id: i,
+        is_new: false,
+        deactivated: false,
+        has_registered: true,
+        version: i,
+        company_id: 1,
+        email: `monkey${i.toString()}@ringcentral.com`,
+        me_group_id: 1,
+        first_name: `kong${i.toString()}`,
+        last_name: `wu${i.toString()}`,
+        display_name: `kong${i.toString()} wu${i.toString()}`,
+      };
+      entityCacheController.put(person);
+    }
+
+    for (let i = 20011; i <= 20020; i += 1) {
+      const person = {
+        id: i,
+        created_at: i,
+        modified_at: i,
+        creator_id: i,
+        is_new: false,
+        deactivated: false,
+        flags: 4,
+        version: i,
+        company_id: 1,
+        email: `master${i.toString()}@ringcentral.com`,
+        me_group_id: 1,
+        first_name: `monkey${i.toString()}`,
+        last_name: `wu${i.toString()}`,
+        display_name: `monkey${i.toString()} wu${i.toString()}`,
+      };
+      entityCacheController.put(person as Person);
+    }
+
+    const deactivatedByField = {
+      id: 20021,
+      created_at: 20021,
+      modified_at: 20021,
+      creator_id: 20021,
+      is_new: false,
+      deactivated: true,
+      version: 20021,
+      company_id: 1,
+      email: 'master20021@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'deactivatedByField',
+      last_name: 'deactivatedByField',
+      display_name: 'deactivatedByField',
+    };
+    entityCacheController.put(deactivatedByField);
+
+    const deactivatedByFlags = {
+      id: 20022,
+      created_at: 20022,
+      modified_at: 20022,
+      creator_id: 20022,
+      is_new: false,
+      flags: 2,
+      version: 20022,
+      company_id: 1,
+      email: 'master20022@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'deactivatedByFlags',
+      last_name: 'deactivatedByFlags',
+      display_name: 'deactivatedByFlags',
+    };
+    entityCacheController.put(deactivatedByFlags as Person);
+
+    const isRemovedGuest = {
+      id: 20023,
+      created_at: 20023,
+      modified_at: 20023,
+      creator_id: 20023,
+      is_new: false,
+      has_registered: true,
+      flags: 1024,
+      version: 20023,
+      company_id: 1,
+      email: 'master20023@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'isRemovedGuest',
+      last_name: 'isRemovedGuest',
+      display_name: 'isRemovedGuest',
+    };
+    entityCacheController.put(isRemovedGuest as Person);
+
+    const amRemovedGuest = {
+      id: 20024,
+      created_at: 20024,
+      modified_at: 20024,
+      creator_id: 20024,
+      is_new: false,
+      flags: 2052,
+      version: 20024,
+      company_id: 1,
+      email: 'master20024@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'amRemovedGuest',
+      last_name: 'amRemovedGuest',
+      display_name: 'amRemovedGuest',
+    };
+    entityCacheController.put(amRemovedGuest as Person);
+
+    const unRegistered1 = {
+      id: 20025,
+      created_at: 20025,
+      modified_at: 20025,
+      creator_id: 20025,
+      is_new: false,
+      flags: 0,
+      version: 20025,
+      company_id: 1,
+      email: 'master20025@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'unRegistered',
+      last_name: 'unRegistered',
+      display_name: 'unRegistered',
+    };
+    entityCacheController.put(unRegistered1 as Person);
+  }
+  type SearchResultType = {
+    terms: string[];
+    sortableModels: SortableModel<Person>[];
+  };
+  describe('doFuzzySearchPersons', () => {
     beforeEach(async () => {
       clearMocks();
       setUp();
       await prepareDataForSearchUTs();
       SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
     });
-
-    type SearchResultType = {
-      terms: string[];
-      sortableModels: SortableModel<Person>[];
-    };
 
     it('search parts of data, with multi terms', async () => {
       const result = (await searchPersonController.doFuzzySearchPersons({
@@ -552,6 +531,44 @@ describe('SearchPersonController', () => {
       expect(result.sortableModels[4].id).toBe(20005);
       expect(result.sortableModels[5].id).toBe(20015);
       expect(result.sortableModels[6].id).toBe(20011);
+    });
+  });
+
+  describe('duFuzzySearchPerson with soundex', () => {
+    beforeEach(async () => {
+      clearMocks();
+      setUp();
+      await prepareDataForSearchUTs();
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(true);
+    });
+
+    it('search parts of data with soundex, with multi terms', async () => {
+      const result = (await searchPersonController.doFuzzySearchPersons({
+        searchKey: 'doaaaara bruce',
+        excludeSelf: false,
+      })) as SearchResultType;
+      expect(result.sortableModels.length).toBe(10000);
+      expect(result.terms.length).toBe(2);
+      expect(result.terms[0]).toBe('doaaaara');
+      expect(result.terms[1]).toBe('bruce');
+    });
+
+    it('search parts of data with soundex, with single terms', async () => {
+      const result = (await searchPersonController.doFuzzySearchPersons({
+        searchKey: 'braaaauce',
+        excludeSelf: false,
+      })) as SearchResultType;
+      expect(result.sortableModels.length).toBe(10000);
+      expect(result.terms.length).toBe(1);
+      expect(result.terms[0]).toBe('braaaauce');
+    });
+
+    it('search parts of data with soundex, with searchKey is empty', async () => {
+      const result = (await searchPersonController.doFuzzySearchPersons({
+        searchKey: '',
+      })) as SearchResultType;
+      expect(result.sortableModels.length).toBe(0);
+      expect(result.terms.length).toBe(0);
     });
   });
 });
