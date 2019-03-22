@@ -64,7 +64,6 @@ describe('NetworkManager', () => {
         networkManager.networkRequestHandler(fakeHandleType.name)!,
         'addApiRequest',
       );
-      // setup();
       const request = getFakeRequest();
       networkManager.addApiRequest(request);
       expect(
