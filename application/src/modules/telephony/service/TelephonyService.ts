@@ -79,7 +79,7 @@ class TelephonyService {
     }
   }
 
-  constructor() {
+  init = () => {
     this._serverTelephonyService.createAccount({
       onAccountStateChanged: this._onAccountStateChanged,
       onMadeOutgoingCall: this._onMadeOutgoingCall,
