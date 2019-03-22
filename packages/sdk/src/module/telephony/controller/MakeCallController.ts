@@ -3,7 +3,6 @@
  * @Date: 2019-03-02 17:02:29
  * Copyright © RingCentral. All rights reserved.
  */
-import { RcInfoUserConfig } from '../../rcInfo/config';
 import { RcExtensionInfo } from '../../../api/ringcentral/types/RcExtensionInfo';
 import {
   FEATURE_PERMISSIONS,
@@ -14,6 +13,7 @@ import { ISpecialServiceNumberResponse } from '../../../api/ringcentral/types/co
 import { PhoneParserUtility } from '../../../utils/phoneParser';
 import { PersonService } from '../../person';
 import { ContactType } from '../../person/types';
+import { RcInfoService } from '../../rcInfo/service';
 
 enum RCN11Reason {
   N11_101 = 'N11-101',
@@ -21,11 +21,7 @@ enum RCN11Reason {
 }
 
 class MakeCallController {
-  private _rcInfo: RcInfoUserConfig;
-
-  constructor() {
-    this._rcInfo = new RcInfoUserConfig();
-  }
+  constructor() {}
 
   private _checkInternetConnection() {
     if (!window.navigator.onLine) {
@@ -35,7 +31,8 @@ class MakeCallController {
   }
 
   private _isRcFeaturePermissionEnabled(permission: FEATURE_PERMISSIONS) {
-    const extInfo: RcExtensionInfo = this._rcInfo.getExtensionInfo();
+    const rcInfoService: RcInfoService = RcInfoService.getInstance();
+    const extInfo: RcExtensionInfo = rcInfoService.getRcExtensionInfo();
     if (extInfo) {
       for (const index in extInfo.serviceFeatures) {
         const feature = extInfo.serviceFeatures[index];
@@ -65,7 +62,8 @@ class MakeCallController {
 
   private _checkVoipN11Number(phoneNumber: string) {
     let result = MAKE_CALL_ERROR_CODE.NO_ERROR;
-    const specialNumber: ISpecialServiceNumberResponse = this._rcInfo.getSpecialNumberRule();
+    const rcInfoService: RcInfoService = RcInfoService.getInstance();
+    const specialNumber: ISpecialServiceNumberResponse = rcInfoService.getSpecialNumberRule();
     if (specialNumber) {
       for (const index in specialNumber.records) {
         const record = specialNumber.records[index];

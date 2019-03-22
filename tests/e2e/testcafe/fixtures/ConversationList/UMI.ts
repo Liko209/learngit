@@ -512,7 +512,8 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   });
 });
 
-test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
+// skip due to https://jira.ringcentral.com/browse/FIJI-4331
+test.skip(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -702,7 +703,7 @@ test(formalName('Should be unread when closed conversation received new unread',
   const loginUser = users[4];
   const otherUser = users[5];
 
-  let chat = <IGroup> {
+  let chat = <IGroup>{
     type: "DirectMessage",
     owner: loginUser,
     members: [loginUser, otherUser]
@@ -723,7 +724,7 @@ test(formalName('Should be unread when closed conversation received new unread',
   });
 
   await h(t).withLog('And the conversation received one unread post from other members', async () => {
-    await h(t).scenarioHelper.sendTextPost(uuid(),chat, otherUser);
+    await h(t).scenarioHelper.sendTextPost(uuid(), chat, otherUser);
   });
 
   await h(t).withLog('Then the conversation should not be opened automatically', async () => {

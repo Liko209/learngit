@@ -4,8 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractHandleType } from 'foundation';
+import { AbstractHandleType, NETWORK_HANDLE_TYPE } from 'foundation';
 
-const HandleByCustom = new class extends AbstractHandleType {}();
+const HandleByCustom = new class extends AbstractHandleType {
+  name = NETWORK_HANDLE_TYPE.CUSTOM;
+}();
 
 export default HandleByCustom;

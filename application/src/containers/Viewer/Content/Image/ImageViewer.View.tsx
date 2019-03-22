@@ -3,7 +3,6 @@
  * @Date: 2019-03-04 15:28:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { JuiIconography } from 'jui/foundation/Iconography';
 import { withTheme } from 'jui/foundation/styled-components';
 import { ThemeProps } from 'jui/foundation/theme/theme';
 import { HotKeys } from 'jui/hoc/HotKeys';
@@ -23,9 +22,10 @@ import {
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
 import { ImageViewerViewProps } from './types';
-import { JuiZoomElement } from 'jui/components/Animation';
+import { JuiZoomElement, ZoomElementAnimation } from 'jui/components/Animation';
 import ViewerContext from '../../ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
+import { memoizeColor } from '@/common/memoizeFunction';
 
 type ImageViewerProps = WithNamespaces & ImageViewerViewProps & ThemeProps;
 
@@ -33,6 +33,7 @@ type ImageViewerProps = WithNamespaces & ImageViewerViewProps & ThemeProps;
 class ImageViewerComponent extends Component<ImageViewerProps, any> {
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _zoomRef: RefObject<JuiDragZoom> = createRef();
+  private _animateRef: RefObject<ZoomElementAnimation> = createRef();
   static contextType = DialogContext;
   constructor(props: ImageViewerProps) {
     super(props);
@@ -40,13 +41,52 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
     this.state = {
       initialOptions: this.props.initialOptions,
       switched: false,
+      imageInited: false,
     };
+  }
+
+  _handlerKeydown = (event: KeyboardEvent) => {
+    // 107 Num Key  +
+    // 109 Num Key  -
+    // 173 Min Key  hyphen/underscor Hey
+    // 61 Plus key  +/= key
+    if (
+      event.ctrlKey &&
+      (event.which === 61 ||
+        event.which === 107 ||
+        event.which === 173 ||
+        event.which === 109 ||
+        event.which === 187 ||
+        event.which === 189)
+    ) {
+      event.preventDefault();
+    }
+  }
+
+  _handlerScroll = (event: MouseEvent) => {
+    if (event.ctrlKey) {
+      event.preventDefault();
+    }
+  }
+
+  componentDidMount() {
+    window.addEventListener('keydown', this._handlerKeydown);
+    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
+      window.addEventListener(v, this._handlerScroll);
+    });
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this._handlerKeydown);
+    ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
+      window.removeEventListener(v, this._handlerScroll);
+    });
   }
 
   switchPreImage = () => {
     if (this._canSwitchPrevious()) {
       this._zoomRef.current!.reset();
-      this.props.switchPreImage();
+      this.props.switchToPrevious();
       if (!this.state.switched) {
         this.setState({ switched: true });
       }
@@ -56,7 +96,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   switchNextImage = () => {
     if (this._canSwitchNext()) {
       this._zoomRef.current!.reset();
-      this.props.switchNextImage();
+      this.props.switchToNext();
       if (!this.state.switched) {
         this.setState({ switched: true });
       }
@@ -73,6 +113,14 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       dismissible: false,
     });
     this.context();
+  }
+
+  private _onZoomImageContentChange = () => {
+    if (!this.state.imageInited) {
+      this.setState({
+        imageInited: true,
+      });
+    }
   }
 
   private _canSwitchPrevious = () => {
@@ -93,6 +141,9 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
       thumbnailSrc,
       imageWidth,
       imageHeight,
+      currentItemId,
+      hasPrevious,
+      hasNext,
     } = this.props;
     const padding = theme.spacing.unit * 8;
     return (
@@ -118,9 +169,12 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                   }}
                   zoomInText={t('viewer.ZoomIn')}
                   zoomOutText={t('viewer.ZoomOut')}
+                  zoomResetText={t('viewer.ZoomReset')}
+                  onAutoFitContentRectChange={this._onZoomImageContentChange}
                 >
                   {({
-                    autoFitContentRect,
+                    fitWidth,
+                    fitHeight,
                     notifyContentSizeChange,
                     canDrag,
                     isDragging,
@@ -131,26 +185,16 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                       transform: `scale(${transform.scale}) translate(${
                         transform.translateX
                       }px, ${transform.translateY}px)`,
-                      // transition:
-                      //   isDragging || value.isAnimating
-                      //     ? undefined
-                      //     : 'all ease 0.3s',
                       cursor: canDrag ? 'move' : undefined,
                     };
                     return (
                       <JuiImageView
+                        data-test-automation-id={'previewerCanvas'}
+                        key={`image-${currentItemId}`}
                         imageRef={this._imageRef}
                         src={imageUrl}
-                        width={
-                          autoFitContentRect
-                            ? autoFitContentRect.width
-                            : imageWidth
-                        }
-                        height={
-                          autoFitContentRect
-                            ? autoFitContentRect.height
-                            : imageHeight
-                        }
+                        width={fitWidth || imageWidth}
+                        height={fitHeight || imageHeight}
                         style={imageStyle}
                         onSizeLoad={notifyContentSizeChange}
                         thumbnailSrc={thumbnailSrc}
@@ -158,28 +202,31 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                     );
                   }}
                 </JuiDragZoom>
-                <JuiImageViewerPreviousButton
-                  className="buttonWrapper"
-                  tooltipTitle={t('viewer.PreviousFile')}
-                  aria-label={t('viewer.PreviousFile')}
-                  disabled={!this._canSwitchPrevious()}
-                  onClick={this.switchPreImage}
-                >
-                  <JuiIconography color="grey.900">pervious</JuiIconography>
-                </JuiImageViewerPreviousButton>
-                <JuiImageViewerForwardButton
-                  className="buttonWrapper"
-                  tooltipTitle={t('viewer.NextFile')}
-                  aria-label={t('viewer.NextFile')}
-                  disabled={!this._canSwitchNext()}
-                  onClick={this.switchNextImage}
-                >
-                  <JuiIconography color="grey.900">forward</JuiIconography>
-                </JuiImageViewerForwardButton>
+                {hasPrevious && (
+                  <JuiImageViewerPreviousButton
+                    className="buttonWrapper"
+                    tooltipTitle={t('viewer.PreviousFile')}
+                    aria-label={t('viewer.PreviousFile')}
+                    onClick={this.switchPreImage}
+                    iconName="previous"
+                    iconColor={memoizeColor('grey', '900')}
+                  />
+                )}
+                {hasNext && (
+                  <JuiImageViewerForwardButton
+                    className="buttonWrapper"
+                    tooltipTitle={t('viewer.NextFile')}
+                    aria-label={t('viewer.NextFile')}
+                    onClick={this.switchNextImage}
+                    iconName="forward"
+                    iconColor={memoizeColor('grey', '900')}
+                  />
+                )}
               </JuiImageViewerContainer>
             </HotKeys>
-            {this._imageRef.current && (
+            {this._imageRef.current && this.state.imageInited && (
               <JuiZoomElement
+                ref={this._animateRef}
                 originalElement={
                   this.state.switched
                     ? null

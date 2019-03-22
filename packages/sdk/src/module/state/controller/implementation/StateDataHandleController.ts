@@ -19,6 +19,8 @@ import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
 import { AccountGlobalConfig } from '../../../../service/account/config';
 import { NewUserConfig } from '../../../../service/config';
+import { SYNC_SOURCE } from '../../../../module/sync/types';
+import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 
 type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 
@@ -32,14 +34,17 @@ class StateDataHandleController {
     this._taskArray = [];
   }
 
-  async handleState(states: Partial<State>[]): Promise<void> {
+  async handleState(
+    states: Partial<State>[],
+    source: SYNC_SOURCE,
+  ): Promise<void> {
     const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
       data: states,
     };
     this._taskArray.push(stateTask);
     if (this._taskArray.length === 1) {
-      await this._startDataHandleTask(this._taskArray[0]);
+      await this._startDataHandleTask(this._taskArray[0], source);
     }
   }
 
@@ -54,16 +59,23 @@ class StateDataHandleController {
     }
   }
 
-  private async _startDataHandleTask(task: DataHandleTask): Promise<void> {
-    let transformedState: TransformedState;
-    if (task.type === TASK_DATA_TYPE.STATE) {
-      transformedState = this._transformStateData(task.data);
-    } else {
-      transformedState = this._transformGroupData(task.data);
+  private async _startDataHandleTask(
+    task: DataHandleTask,
+    source?: SYNC_SOURCE,
+  ): Promise<void> {
+    try {
+      let transformedState: TransformedState;
+      if (task.type === TASK_DATA_TYPE.STATE) {
+        transformedState = this._transformStateData(task.data);
+      } else {
+        transformedState = this._transformGroupData(task.data);
+      }
+      const updatedState = await this._generateUpdatedState(transformedState);
+      await this._updateEntitiesAndDoNotification(updatedState, source);
+      this._totalUnreadController.handleGroupState(updatedState.groupStates);
+    } catch (err) {
+      mainLogger.error(`StateDataHandleController, handle task error, ${err}`);
     }
-    const updatedState = await this._generateUpdatedState(transformedState);
-    await this._updateEntitiesAndDoNotification(updatedState);
-    this._totalUnreadController.handleGroupState(updatedState.groupStates);
 
     this._taskArray.shift();
     if (this._taskArray.length > 0) {
@@ -181,9 +193,10 @@ class StateDataHandleController {
     if (transformedState.groupStates.length > 0) {
       const groupStates = transformedState.groupStates;
       const ids = _.map(groupStates, 'id');
-      const localGroupStates = await this._stateFetchDataController.getAllGroupStatesFromLocal(
-        ids,
-      );
+      const localGroupStates =
+        (await this._stateFetchDataController.getAllGroupStatesFromLocal(
+          ids,
+        )) || [];
       updatedState.groupStates = _.compact(
         groupStates.map((groupState: GroupState) => {
           let stateChanged: boolean = false;
@@ -321,12 +334,17 @@ class StateDataHandleController {
 
   private async _updateEntitiesAndDoNotification(
     transformedState: TransformedState,
+    source?: SYNC_SOURCE,
   ): Promise<void> {
     if (transformedState.myState) {
       const myState = transformedState.myState;
-      await daoManager.getDao(StateDao).update(myState);
-      const newConfig = new NewUserConfig();
-      await newConfig.setMyStateId(myState.id);
+      try {
+        await daoManager.getDao(StateDao).update(myState);
+        const config = new NewUserConfig();
+        await config.setMyStateId(myState.id);
+      } catch (err) {
+        mainLogger.error(`StateDataHandleController, my state error, ${err}`);
+      }
       notificationCenter.emitEntityUpdate(
         ENTITY.MY_STATE,
         [myState],
@@ -337,11 +355,13 @@ class StateDataHandleController {
       await this._entitySourceController.bulkUpdate(
         transformedState.groupStates,
       );
-      notificationCenter.emitEntityUpdate(
-        ENTITY.GROUP_STATE,
-        transformedState.groupStates,
-        transformedState.groupStates,
-      );
+      if (shouldEmitNotification(source)) {
+        notificationCenter.emitEntityUpdate(
+          ENTITY.GROUP_STATE,
+          transformedState.groupStates,
+          transformedState.groupStates,
+        );
+      }
     }
   }
 }

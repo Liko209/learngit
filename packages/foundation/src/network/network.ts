@@ -12,11 +12,16 @@ type IToken = {
   refresh_token?: string;
 };
 interface IHandleType {
+  name: NETWORK_HANDLE_TYPE;
   survivalModeSupportable: boolean;
   tokenExpirable: boolean;
   tokenRefreshable: boolean;
   defaultVia: NETWORK_VIA;
   doRefreshToken: (token: IToken) => Promise<IToken>;
+  checkServerStatus: (
+    callback: (success: boolean, interval: number) => void,
+  ) => void;
+  onRefreshTokenFailure: () => void;
   basic: () => string;
   requestDecoration: (
     tokenHandler: ITokenHandler,
@@ -88,13 +93,13 @@ interface IRequest {
   params: object;
   handlerType: IHandleType;
   priority: REQUEST_PRIORITY;
+  HAPriority: HA_PRIORITY;
   via: NETWORK_VIA;
   retryCount: number;
   host: string;
   timeout: number;
   requestConfig: object;
   readonly authFree: boolean;
-  ignoreLocalRetryAfter?: boolean;
 
   callback?: (response: IResponse) => void;
   needAuth(): boolean;
@@ -110,6 +115,7 @@ interface IRequestBuilderOption {
   data?: object;
   authFree?: boolean;
   requestConfig?: object;
+  HAPriority?: HA_PRIORITY;
 }
 
 interface IClient {
@@ -143,6 +149,11 @@ enum REQUEST_PRIORITY {
   HIGH,
   NORMAL,
   LOW,
+}
+
+enum HA_PRIORITY {
+  BASIC,
+  HIGH,
 }
 
 enum NETWORK_VIA {
@@ -185,6 +196,15 @@ enum NETWORK_REQUEST_EXECUTOR_STATUS {
   COMPLETION = 'completion',
 }
 
+enum NETWORK_HANDLE_TYPE {
+  DEFAULT = 'DEFAULT',
+  GLIP = 'GLIP',
+  GLIP2 = 'GLIP2',
+  CUSTOM = 'CUSTOM',
+  UPLOAD = 'UPLOAD',
+  RINGCENTRAL = 'RINGCENTRAL',
+}
+
 export {
   NETWORK_REQUEST_EXECUTOR_STATUS,
   SURVIVAL_MODE,
@@ -193,6 +213,7 @@ export {
   CONSUMER_MAX_QUEUE_COUNT,
   NETWORK_VIA,
   REQUEST_PRIORITY,
+  HA_PRIORITY,
   NETWORK_METHOD,
   HTTP_STATUS_CODE,
   IToken,
@@ -210,4 +231,5 @@ export {
   IRequestDecoration,
   ITokenRefreshListener,
   IHandleType,
+  NETWORK_HANDLE_TYPE,
 };

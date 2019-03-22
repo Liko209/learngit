@@ -9,7 +9,7 @@ import { ACCOUNT_KEYS } from '../../../service/account/config/configKeys';
 
 class AccountGlobalConfig extends GlobalConfig {
   static moduleName = 'account';
-
+  private static currentUserId: any;
   static setCurrentUserProfileId(id: number) {
     this.put(ACCOUNT_KEYS.ACCOUNT_PROFILE_ID, id);
   }
@@ -33,8 +33,11 @@ class AccountGlobalConfig extends GlobalConfig {
   }
 
   static getCurrentUserId() {
-    const userId = this.get(ACCOUNT_KEYS.ACCOUNT_USER_ID);
-    return userId;
+    if (!this.currentUserId) {
+      this.currentUserId = this.get(ACCOUNT_KEYS.ACCOUNT_USER_ID);
+    }
+
+    return this.currentUserId;
   }
 
   static getClientId() {
@@ -51,6 +54,11 @@ class AccountGlobalConfig extends GlobalConfig {
 
   static getClientConfig() {
     return this.get(ACCOUNT_KEYS.ACCOUNT_CLIENT_CONFIG);
+  }
+
+  static clear() {
+    this.remove(ACCOUNT_KEYS.ACCOUNT_USER_ID);
+    delete this.currentUserId;
   }
 }
 

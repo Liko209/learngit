@@ -8,9 +8,9 @@ import {
   loginRCByPassword,
   loginGlip2ByPassword,
   refreshToken,
+  requestServerStatus,
 } from '../login';
 import { NETWORK_VIA } from 'foundation';
-import { NetworkRequestExecutor } from 'foundation/src/network/NetworkRequestExecutor';
 
 jest.mock('../../api');
 jest.mock('foundation/src/network/NetworkRequestExecutor');
@@ -111,6 +111,38 @@ describe('login', () => {
         },
         NETWORK_VIA.HTTP,
       );
+    });
+  });
+
+  describe('requestServerStatus()', () => {
+    const mockRequest = {};
+    it('should call callback with true when request success', () => {
+      Api.rcNetworkClient.getRequestByVia.mockReturnValue(mockRequest);
+      Api.rcNetworkClient.networkManager = {
+        addApiRequest: jest.fn().mockImplementation(({ callback }) => {
+          callback({ status: 200 });
+        }),
+      } as any;
+      const mockCallBack = jest.fn();
+      requestServerStatus(mockCallBack);
+      expect(mockCallBack).toBeCalledWith(true, 0);
+    });
+
+    it('should call callback with true when request success', () => {
+      Api.rcNetworkClient.getRequestByVia.mockReturnValue(mockRequest);
+      Api.rcNetworkClient.networkManager = {
+        addApiRequest: jest.fn().mockImplementation(({ callback }) => {
+          callback({
+            status: 500,
+            headers: {
+              'Retry-After': 20,
+            },
+          });
+        }),
+      } as any;
+      const mockCallBack = jest.fn();
+      requestServerStatus(mockCallBack);
+      expect(mockCallBack).toBeCalledWith(false, 20);
     });
   });
 });

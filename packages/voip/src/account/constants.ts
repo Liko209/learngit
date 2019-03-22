@@ -17,10 +17,9 @@ export const kRTCAnonymous = 'anonymous';
 export const kRTCHangupInvalidCallInterval = 10;
 export const kRTCGetStatsInterval = 2;
 export const kRTCProvisioningOptions = {
-  appKey: 'YCWFuqW8T7-GtSTb6KBS6g',
-  appName: 'RingCentral',
+  appName: 'RingCentral Jupiter',
   appVersion: '0.1.0',
-  endPointId: 'FVKGRbLRTxGxPempqg5f9g',
+  builtinEnabled: false,
   audioHelper: {
     enabled: true,
   },

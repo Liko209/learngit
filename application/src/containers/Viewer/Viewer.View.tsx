@@ -30,6 +30,10 @@ class ViewerView extends Component<
     };
   }
 
+  componentWillUnmount() {
+    this.props.stopPreload();
+  }
+
   closeViewer = () => {
     this.setState({
       contextValue: {
@@ -58,7 +62,10 @@ class ViewerView extends Component<
     const { contentLeftRender, ...rest } = this.props;
     return (
       <ViewerContext.Provider value={this.state.contextValue}>
-        <JuiViewerBackground show={this.state.contextValue.show}>
+        <JuiViewerBackground
+          data-test-automation-id="Viewer"
+          show={this.state.contextValue.show}
+        >
           <ViewerTitle itemId={rest.itemId} {...rest} />
           <ViewerContent
             data-test-automation-id="ViewerContent"

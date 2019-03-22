@@ -9,5 +9,6 @@ export type SortableModel<T> = {
   displayName: string;
   firstSortKey?: any;
   secondSortKey?: any;
+  thirdSortKey?: any;
   entity: T;
 };

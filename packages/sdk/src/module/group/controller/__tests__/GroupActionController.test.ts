@@ -268,6 +268,101 @@ describe('GroupFetchDataController', () => {
     });
   });
 
+  describe('convertToTeam()', () => {
+    const data = {
+      group_id: 1323,
+      set_abbreviation: 'some team',
+      members: [1, 2, 3],
+      description: 'abc',
+      privacy: 'private',
+      permissions: {
+        admin: {
+          uids: [1],
+        },
+        user: {
+          uids: [],
+          level: 100,
+        },
+      },
+    };
+    beforeEach(() => {
+      jest.restoreAllMocks();
+      jest.clearAllMocks();
+    });
+
+    it('should return error object if duplicate name', async () => {
+      const error = new JServerError(
+        ERROR_CODES_SERVER.ALREADY_TAKEN,
+        'Already taken',
+      );
+      GroupAPI.convertToTeam.mockRejectedValue(error);
+
+      await expect(
+        groupActionController.convertToTeam(1323, [], {
+          name: 'some team',
+          description: 'abc',
+        }),
+      ).rejects.toEqual(error);
+    });
+
+    it('should call dependency apis with correct data user Id has already in members', async () => {
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.convertToTeam.mockResolvedValue(group);
+
+      const result = await groupActionController.convertToTeam(
+        1323,
+        [1, 2, 3],
+        {
+          name: 'some team',
+          description: 'abc',
+        },
+      );
+      expect(result).toEqual(group);
+
+      expect(GroupAPI.convertToTeam).toHaveBeenCalledWith({
+        ...data,
+        permissions: {
+          ...data.permissions,
+          user: {
+            uids: data.permissions.user.uids,
+            level: 0,
+          },
+        },
+      });
+    });
+    it('should call dependency apis with correct data user Id has not in members', async () => {
+      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      data.members = [2, 3, 4, 1];
+      const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
+      GroupAPI.convertToTeam.mockResolvedValue(group);
+      jest
+        .spyOn(groupActionController, 'deleteGroup')
+        .mockImplementationOnce(() => {});
+
+      const result = await groupActionController.convertToTeam(
+        1323,
+        [2, 3, 4],
+        {
+          name: 'some team',
+          description: 'abc',
+        },
+      );
+      expect(result).toEqual(group);
+      expect(groupActionController.deleteGroup).toHaveBeenCalledWith(1323);
+      expect(GroupAPI.convertToTeam).toHaveBeenCalledWith({
+        ...data,
+        permissions: {
+          ...data.permissions,
+          user: {
+            uids: data.permissions.user.uids,
+            level: 0,
+          },
+        },
+      });
+    });
+  });
+
   describe('updateGroupLastAccessedTime', () => {
     it('test', async () => {
       jest.spyOn(groupActionController, 'updateGroupPartialData');
@@ -737,6 +832,24 @@ describe('GroupFetchDataController', () => {
     });
   });
 
+  describe('deleteGroup()', () => {
+    it('should call requestController.put with correct group info.', async () => {
+      const mockTeam = groupFactory.build({
+        is_team: false,
+        deactivated: false,
+      });
+      (testEntitySourceController.get as jest.Mock).mockResolvedValueOnce(
+        mockTeam,
+      );
+      await groupActionController.deleteGroup(mockTeam.id);
+      expect(testGroupRequestController.put).toBeCalledWith(
+        _.merge({}, mockTeam, {
+          deactivated: true,
+        }),
+      );
+    });
+  });
+
   describe('pinPost', () => {
     beforeEach(() => {
       clearMocks();
@@ -830,6 +943,33 @@ describe('GroupFetchDataController', () => {
         pinned_post_ids: [4, 1, 2, 3],
         modified_at: expect.any(Number),
       });
+    });
+  });
+
+  describe('isIndividualGroup', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('should return true when group has 2 members and is not team', () => {
+      const group: any = { id: 2, members: [1, 2], is_team: false };
+      expect(groupActionController.isIndividualGroup(group)).toBeTruthy();
+    });
+
+    it('should return false when group has more then 2 members and is not team', () => {
+      const group: any = { id: 2, members: [1, 2, 3], is_team: false };
+      expect(groupActionController.isIndividualGroup(group)).toBeFalsy();
+    });
+
+    it('should return false when group has 1 member and is not team', () => {
+      const group: any = { id: 2, members: [1], is_team: false };
+      expect(groupActionController.isIndividualGroup(group)).toBeFalsy();
+    });
+
+    it('should return false when group has 2 member and is team', () => {
+      const group: any = { id: 2, members: [1], is_team: true };
+      expect(groupActionController.isIndividualGroup(group)).toBeFalsy();
     });
   });
 });

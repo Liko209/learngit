@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-03-01 10:44:59 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-01 16:27:33
+ * @Last Modified time: 2019-03-18 19:03:37
  */
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
@@ -100,7 +100,7 @@ test(formalName('Check can open profile dialog when click the item of search res
   // recently search 
   await h(t).withLog(`Given I clear search box text`, async () => {
     await searchBar.clearInputAreaText();
-    await searchBar.quitByPressESC();
+    await searchBar.quitByPressEsc();
   });
 
   const recentHistoryCount = searchResults.length;

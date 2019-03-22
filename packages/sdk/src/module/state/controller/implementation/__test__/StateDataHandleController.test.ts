@@ -16,7 +16,9 @@ import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { TotalUnreadController } from '../TotalUnreadController';
 import { GlobalConfigService } from '../../../../../module/config/service/GlobalConfigService';
 import { AccountGlobalConfig } from '../../../../../service/account/config/AccountGlobalConfig';
+import { SYNC_SOURCE } from '../../../../../module/sync';
 
+jest.mock('../../../../../service/notificationCenter');
 jest.mock('../../../../../module/config/service/GlobalConfigService');
 jest.mock('../../../../../service/account/config/AccountGlobalConfig');
 GlobalConfigService.getInstance = jest
@@ -34,6 +36,8 @@ describe('StateDataHandleController', () => {
   let mockTotalUnreadController: TotalUnreadController;
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
     mockEntitySourceController = new EntitySourceController<GroupState>(
       {} as IEntityPersistentController,
       {} as DeactivatedDao,
@@ -55,11 +59,14 @@ describe('StateDataHandleController', () => {
     it('should start handle task when array only has one task', async () => {
       const states: Partial<State>[] = [{ id: 123 }];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleState(states);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.STATE,
-        data: states,
-      });
+      await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
+      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith(
+        {
+          type: TASK_DATA_TYPE.STATE,
+          data: states,
+        },
+        SYNC_SOURCE.INDEX,
+      );
     });
 
     it('should only add task to array when array has more than one task', async () => {
@@ -68,7 +75,7 @@ describe('StateDataHandleController', () => {
         { type: TASK_DATA_TYPE.STATE, data: states },
       ];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleState(states);
+      await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
       expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
         0,
       );
@@ -142,6 +149,42 @@ describe('StateDataHandleController', () => {
       await stateDataHandleController['_startDataHandleTask'](task);
       expect(stateDataHandleController['_transformStateData']).toBeCalledTimes(
         0,
+      );
+      expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
+        task.data,
+      );
+      expect(
+        stateDataHandleController['_generateUpdatedState'],
+      ).toBeCalledTimes(1);
+      expect(
+        stateDataHandleController['_updateEntitiesAndDoNotification'],
+      ).toBeCalledTimes(1);
+      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
+    });
+
+    it('should handle next task when crashing', async () => {
+      const task: DataHandleTask = {
+        type: TASK_DATA_TYPE.GROUP_CURSOR,
+        data: 'data' as any,
+      };
+      const task2: DataHandleTask = {
+        type: TASK_DATA_TYPE.STATE,
+        data: 'data2' as any,
+      };
+      stateDataHandleController['_taskArray'] = [task, task2];
+      stateDataHandleController['_transformStateData'] = jest.fn();
+      stateDataHandleController['_transformGroupData'] = jest.fn().mockImplementation(() => {
+        throw Error('error');
+      });
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+        groupStates: [],
+      });
+      stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
+      mockTotalUnreadController.handleGroupState = jest.fn();
+
+      await stateDataHandleController['_startDataHandleTask'](task);
+      expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
+        task2.data,
       );
       expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
         task.data,

@@ -6,29 +6,38 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
-import { FooterViewProps } from './types';
 import { JuiConversationCardFooter } from 'jui/pattern/ConversationCard';
+import { JuiConversationPostLike } from 'jui/pattern/ConversationPostLike';
 import { JuiCollapse } from 'jui/components/Collapse';
-import { Like } from '@/containers/ConversationCard/Actions/Like';
+import { FooterViewProps } from './types';
 
-type Props = FooterViewProps & WithNamespaces;
 @observer
-class FooterViewComponent extends Component<Props> {
+class FooterView extends Component<FooterViewProps> {
   render() {
-    const { id, likeCount } = this.props;
-    const hasLike = likeCount > 0;
+    const {
+      onToggleLike,
+      iLiked,
+      likedUsersCount,
+      likedUsersNameMessage,
+    } = this.props;
+
     return (
-      <JuiCollapse mountOnEnter={true} unmountOnExit={true} in={hasLike}>
-        <JuiConversationCardFooter
-          likeCount={likeCount}
-          Like={<Like id={id} />}
-        />
+      <JuiCollapse
+        mountOnEnter={true}
+        unmountOnExit={true}
+        in={Boolean(likedUsersCount)}
+      >
+        <JuiConversationCardFooter>
+          <JuiConversationPostLike
+            title={likedUsersNameMessage}
+            onClick={onToggleLike}
+            likedUsersCount={likedUsersCount}
+            iLiked={iLiked}
+          />
+        </JuiConversationCardFooter>
       </JuiCollapse>
     );
   }
 }
-
-const FooterView = translate('translations')(FooterViewComponent);
 
 export { FooterView };

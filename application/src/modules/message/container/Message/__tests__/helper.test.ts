@@ -115,11 +115,11 @@ describe('MessageRouterChangeHelper', () => {
   });
   describe('handleSourceOfRouter', () => {
     it('should access Group when conversation is not in the left panel', () => {
-      MessageRouterChangeHelper.handleSourceOfRouter(110);
+      MessageRouterChangeHelper.ensureGroupIsOpened(110);
       expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(0);
     });
     it('should not access Group when conversation is in the left panel', () => {
-      MessageRouterChangeHelper.handleSourceOfRouter(120);
+      MessageRouterChangeHelper.ensureGroupIsOpened(120);
       expect(mockedGroupService.updateGroupLastAccessedTime).toBeCalledTimes(1);
     });
   });
@@ -144,7 +144,7 @@ describe('ensureGroupOpened', () => {
     mockedProfileService.reopenConversation = jest
       .fn()
       .mockResolvedValueOnce({ isErr: () => false });
-    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    MessageRouterChangeHelper.ensureGroupIsOpened(110);
     setTimeout(() => {
       expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
       done();
@@ -154,7 +154,7 @@ describe('ensureGroupOpened', () => {
     mockedProfileService.isConversationHidden = jest
       .fn()
       .mockResolvedValue(false);
-    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    MessageRouterChangeHelper.ensureGroupIsOpened(110);
     expect(mockedProfileService.reopenConversation).not.toHaveBeenCalled();
   });
   it('should show loading page with error when reopen failed', (done: any) => {
@@ -164,7 +164,7 @@ describe('ensureGroupOpened', () => {
     mockedProfileService.reopenConversation = jest
       .fn()
       .mockRejectedValueOnce(new Error('test'));
-    MessageRouterChangeHelper.handleSourceOfRouter(110);
+    MessageRouterChangeHelper.ensureGroupIsOpened(110);
     setTimeout(() => {
       expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
       expect(history.replace).toBeCalledWith('/messages/loading', {

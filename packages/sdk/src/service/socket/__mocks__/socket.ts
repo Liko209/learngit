@@ -19,6 +19,8 @@ export default class Socket {
   close = jest.fn();
   open = jest.fn();
   removeAllListeners = jest.fn();
+  removeEventListener = jest.fn();
+  destroy = jest.fn();
 
   constructor() {
     this.io = new SocketIO();
@@ -33,6 +35,8 @@ export default class Socket {
     }
   }
   on(event: string, callback: Function) {
-    this._subs[event] ? this._subs[event].push(callback) : (this._subs[event] = [callback]);
+    this._subs[event]
+      ? this._subs[event].push(callback)
+      : (this._subs[event] = [callback]);
   }
 }

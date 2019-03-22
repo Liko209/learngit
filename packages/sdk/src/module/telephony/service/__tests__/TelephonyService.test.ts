@@ -38,6 +38,8 @@ describe('TelephonyService', () => {
     accountController = {
       makeCall: jest.fn(),
       hangUp: jest.fn(),
+      mute: jest.fn(),
+      unmute: jest.fn(),
       getCallCount: jest.fn(),
     };
 
@@ -94,6 +96,18 @@ describe('TelephonyService', () => {
     it('should call account controller to hang up ', () => {
       telephonyService.hangUp('123');
       expect(accountController.hangUp).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('mute', () => {
+    it('should call account controller to mute', () => {
+      telephonyService.mute('123');
+      expect(accountController.mute).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('unmute', () => {
+    it('should call account controller to unmute', () => {
+      telephonyService.unmute('123');
+      expect(accountController.unmute).toHaveBeenCalledWith('123');
     });
   });
   describe('getAllCallCount', () => {

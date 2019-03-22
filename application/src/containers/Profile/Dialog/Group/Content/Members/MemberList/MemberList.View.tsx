@@ -63,14 +63,16 @@ class MemberList
         : ITEM_HEIGHT * memberIdsLength;
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {(width: number = 0, height: number = dialogHeight) => {
+        {({ width = 0, height = dialogHeight }) => {
           let virtualListHeight =
             memberIdsLength >= MAX_ITEM_NUMBER ? height : dialogHeight;
           if (virtualListHeight === 0) {
             virtualListHeight = dialogHeight;
           }
           return (
-            <JuiProfileDialogContentMemberList>
+            <JuiProfileDialogContentMemberList
+              style={{ height: dialogHeight, minHeight: dialogHeight }}
+            >
               <JuiVirtualList
                 dataSource={this}
                 overscan={5}

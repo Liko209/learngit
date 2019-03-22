@@ -4,4 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { IImageDownloadedListener, IImageDownloader } from './IImageDownloader';
+export {
+  DownloadItemInfo,
+  IImageDownloadedListener,
+  IImageDownloader,
+} from './IImageDownloader';

@@ -28,12 +28,20 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   makeCall(toNumber: string, delegate: ITelephonyCallDelegate) {
     this._callController = new TelephonyCallController(delegate);
-    this._rtcAccount.makeCall(toNumber, this._callController);
+    return this._rtcAccount.makeCall(toNumber, this._callController);
   }
 
   hangUp(callId: string) {
     // So far only need to support one call. By design, we should get call controller according callID.
     this._callController.hangUp();
+  }
+
+  mute(callId: string) {
+    this._callController.mute();
+  }
+
+  unmute(callId: string) {
+    this._callController.unmute();
   }
 
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
@@ -52,6 +60,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   }
 
   onReceiveNewProvFlags(sipFlags: RTCSipFlags) {}
+
+  logout() {
+    this._rtcAccount.logout();
+  }
 }
 
 export { TelephonyAccountController };

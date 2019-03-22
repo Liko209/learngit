@@ -88,6 +88,9 @@ describe('PersonModel', () => {
     it('should return H if firstName=,lastName=huang', () => {
       checkShortName(getUserInfo('', 'huang'), 'H');
     });
+    it('should return A if firstName=,lastName=,email=alvin.huang@ringcentral.com', () => {
+      checkShortName(getUserInfo('', '', 'alvin.huang@ringcentral.com'), 'A');
+    });
   });
   describe('hasHeadShot', () => {
     const pm = PersonModel.fromJS({

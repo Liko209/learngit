@@ -16,12 +16,12 @@ type Props = MuteViewProps & WithNamespaces;
 @observer
 class MuteViewComponent extends Component<Props> {
   private _handleMute = async () => {
-    const { mute } = this.props;
-    mute();
+    const { muteOrUnmute } = this.props;
+    muteOrUnmute();
   }
 
   render() {
-    const { t } = this.props;
+    const { t, isMute } = this.props;
     return (
       <JuiKeypadAction>
         <JuiIconButton
@@ -29,11 +29,12 @@ class MuteViewComponent extends Component<Props> {
           disableToolTip={true}
           onClick={this._handleMute}
           size="xxlarge"
-          disabled={true}
         >
-          mic
+          {isMute ? 'mic_off' : 'mic'}
         </JuiIconButton>
-        <span className="disabled">{t('telephony.action.mute')}</span>
+        <span>
+          {isMute ? t('telephony.action.unmute') : t('telephony.action.mute')}
+        </span>
       </JuiKeypadAction>
     );
   }

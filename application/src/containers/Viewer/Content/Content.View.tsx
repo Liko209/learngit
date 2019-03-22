@@ -7,24 +7,16 @@
 import React, { Component, ReactElement } from 'react';
 import { observer } from 'mobx-react';
 import { translate, WithNamespaces } from 'react-i18next';
-import {
-  JuiResponsiveLayout,
-  withResponsive,
-  VISUAL_MODE,
-} from 'jui/foundation/Layout/Responsive';
+import { withResponsive, VISUAL_MODE } from 'jui/foundation/Layout/Responsive';
 import { ViewerContentViewProps } from './types';
+import { JuiImageViewerContent } from 'jui/pattern/ImageViewer';
 type ResponsiveProps = {
   content: ReactElement;
 };
 
-const LeftResponsive = withResponsive(
-  (props: ResponsiveProps) => {
-    return React.cloneElement(props.content);
-  },
-  {
-    minWidth: 480,
-  },
-);
+const LeftResponsive = withResponsive((props: ResponsiveProps) => {
+  return React.cloneElement(props.content);
+},                                    {});
 
 const RightResponsive = withResponsive(
   (props: ResponsiveProps) => {
@@ -44,10 +36,10 @@ class ViewerContentViewComponent extends Component<
 > {
   render() {
     return (
-      <JuiResponsiveLayout>
+      <JuiImageViewerContent>
         <LeftResponsive content={this.props.left} />
         <RightResponsive content={this.props.right} />
-      </JuiResponsiveLayout>
+      </JuiImageViewerContent>
     );
   }
 }

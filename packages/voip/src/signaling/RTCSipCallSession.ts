@@ -233,6 +233,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     );
   }
 
+  forward(target: string) {
+    this._session.forward(target);
+  }
+
   park() {
     this._session.park().then(
       (parkOptions: any) => {

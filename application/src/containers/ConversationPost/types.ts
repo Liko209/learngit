@@ -1,3 +1,6 @@
+import { JuiConversationCard } from 'jui/src/pattern/ConversationCard';
+import { RefObject } from 'react';
+
 /*
  * @Author: Devin Lin (devin.lin@ringcentral.com)
  * @Date: 2018-11-12 11:28:57
@@ -10,16 +13,14 @@ enum POST_TYPE {
 }
 
 type ConversationPostProps = {
+  cardRef?: RefObject<JuiConversationCard>;
   id: number;
-  highlight?: boolean;
-  onHighlightAnimationStart?: React.AnimationEventHandler;
 };
 
 type ConversationPostViewProps = {
   id: number;
   type: POST_TYPE;
-  highlight: boolean;
-  onHighlightAnimationStart?: React.AnimationEventHandler;
+  cardRef?: RefObject<JuiConversationCard>;
 };
 
 export { ConversationPostProps, ConversationPostViewProps, POST_TYPE };

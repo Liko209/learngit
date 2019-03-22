@@ -6,6 +6,7 @@
 import { GlobalConfigService } from '../../../../module/config/service/GlobalConfigService';
 import { AccountGlobalConfig } from '../AccountGlobalConfig';
 import { ACCOUNT_KEYS } from '../configKeys';
+import { jsxEmptyExpression } from '@babel/types';
 
 jest.mock('../../../../module/config/service/GlobalConfigService');
 
@@ -16,6 +17,7 @@ describe('AccountGlobalConfig', () => {
     mockGlobalConfigService = {
       get: jest.fn(),
       put: jest.fn(),
+      remove: jest.fn(),
     };
     GlobalConfigService.getInstance = jest
       .fn()
@@ -81,5 +83,21 @@ describe('AccountGlobalConfig', () => {
       ACCOUNT_KEYS.ACCOUNT_USER_ID,
       123,
     );
+  });
+
+  it('clear', () => {
+    mockGlobalConfigService.get = jest
+      .fn()
+      .mockReturnValueOnce(2)
+      .mockReturnValueOnce(undefined);
+    const id = AccountGlobalConfig.getCurrentUserId();
+    expect(id).toEqual(2);
+    AccountGlobalConfig.clear();
+    expect(mockGlobalConfigService.remove).toBeCalledWith(
+      MODULE,
+      ACCOUNT_KEYS.ACCOUNT_USER_ID,
+    );
+
+    expect(AccountGlobalConfig.getCurrentUserId()).toEqual(undefined);
   });
 });

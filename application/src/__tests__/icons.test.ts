@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { name2icon } from 'jui/foundation/Iconography';
+import _ from 'lodash';
 
 function getIconList(svgData: string): string[] {
   const re = /<title>(.+?)<\/title>/g;
@@ -18,9 +19,13 @@ describe('icon svg file', () => {
   );
   const icons = getIconList(file);
   it('contain all the icons that needed', () => {
-    Object.values(name2icon).forEach((icon: string) => {
-      expect(icons.includes(icon)).toBeTruthy();
-    });
+    const definedIcons = Object.values(name2icon);
+    const lackIcons = _.difference(definedIcons, icons);
+    lackIcons.length &&
+      console.error(
+        `icon ${lackIcons.join(', ')} not exist in jupiter-icon.svg`,
+      );
+    expect(lackIcons.length).toEqual(0);
   });
 
   it('expect svg file to match snapshot', () => {

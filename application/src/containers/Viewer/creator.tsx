@@ -31,6 +31,12 @@ export const showImageViewer = (
       fullScreen: true,
       hideBackdrop: true,
       TransitionComponent: JuiDialogOpenTransition,
+      onKeyDown: (event: React.KeyboardEvent) => {
+        // if ESC typed, just dismiss
+        if (event.keyCode === 27) {
+          dismiss();
+        }
+      },
     },
   );
 };

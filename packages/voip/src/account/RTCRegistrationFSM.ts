@@ -67,29 +67,12 @@ class RTCRegistrationFSM extends StateMachine {
         },
         {
           name: REGISTRATION_FSM_EVENT.MAKE_OUTGOING_CALL,
-          from: [
-            REGISTRATION_FSM_STATE.IN_PROGRESS,
-            REGISTRATION_FSM_STATE.READY,
-          ],
-          to: (
-            toNumber: string,
-            delegate: IRTCCallDelegate,
-            options: RTCCallOptions,
-            s: any,
-          ) => {
-            dependency.onMakeOutgoingCallAction(toNumber, delegate, options);
-            return s;
-          },
-        },
-        {
-          name: REGISTRATION_FSM_EVENT.MAKE_OUTGOING_CALL,
           from: REGISTRATION_FSM_STATE.FAILURE,
           to: (
             toNumber: string,
             delegate: IRTCCallDelegate,
             options: RTCCallOptions,
           ) => {
-            dependency.onMakeOutgoingCallAction(toNumber, delegate, options);
             dependency.onReRegisterAction();
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
           },

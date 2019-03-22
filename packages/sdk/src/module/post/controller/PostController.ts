@@ -23,8 +23,8 @@ import { DiscontinuousPostController } from './DiscontinuousPostController';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ISendPostController } from './interface/ISendPostController';
 import { PostDataController } from './PostDataController';
+import { ENTITY } from '../../../service/eventKey';
 import { PostSearchController } from './implementation/PostSearchController';
-import { ENTITY } from '../../../service';
 
 class PostController {
   private _actionController: PostActionController;

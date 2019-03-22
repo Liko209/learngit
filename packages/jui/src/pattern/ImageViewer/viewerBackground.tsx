@@ -31,9 +31,14 @@ const StyledViewerBackground = styled.div`
 
 const StyledTransition = styled(JuiTransition)`
   height: 100%;
+  pointer-events: ${({ show }) => (show ? 'auto' : 'none')};
 `;
 
-const JuiViewerBackground = ({ children, show }: JuiViewerBackgroundProps) => {
+const JuiViewerBackground = ({
+  children,
+  show,
+  ...rest
+}: JuiViewerBackgroundProps) => {
   return (
     <StyledTransition
       show={show}
@@ -42,7 +47,7 @@ const JuiViewerBackground = ({ children, show }: JuiViewerBackgroundProps) => {
       appear={true}
       animation={backgroundAnimation}
     >
-      <StyledViewerBackground>{children}</StyledViewerBackground>
+      <StyledViewerBackground {...rest}>{children}</StyledViewerBackground>
     </StyledTransition>
   );
 };

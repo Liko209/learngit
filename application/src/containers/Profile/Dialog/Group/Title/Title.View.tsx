@@ -35,9 +35,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
         <JuiDialogHeaderActions>
           <Privacy id={id} size="medium" />
           <Favorite id={id} size="medium" />
-          {group.isTeam && group.isMember && (
-            <TeamSettingButton id={id} size="medium" />
-          )}
+          {group.isMember && <TeamSettingButton id={id} size="medium" />}
           {group.isTeam && <More id={id} size="medium" />}
           <JuiIconButton
             onClick={this.dismiss}

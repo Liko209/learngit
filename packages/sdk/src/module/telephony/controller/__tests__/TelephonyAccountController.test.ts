@@ -30,6 +30,7 @@ describe('TelephonyAccountController', () => {
     rtcAccount = {
       handleProvisioning: jest.fn(),
       makeCall: jest.fn(),
+      logout: jest.fn(),
     }; // new RTCAccount(null);
     accountController = new TelephonyAccountController(
       { createAccount: jest.fn().mockReturnValue(rtcAccount) },
@@ -37,6 +38,8 @@ describe('TelephonyAccountController', () => {
     );
     callController = {
       hangUp: jest.fn(),
+      mute: jest.fn(),
+      unmute: jest.fn(),
       setRtcCall: jest.fn(),
     };
 
@@ -56,11 +59,35 @@ describe('TelephonyAccountController', () => {
       expect(rtcAccount.makeCall).toBeCalled();
     });
   });
+
+  describe('logout', () => {
+    it('should call rtcAccount to logout', () => {
+      accountController.logout();
+      expect(rtcAccount.logout).toBeCalled();
+    });
+  });
+
   describe('hangUp', () => {
     it('should call controller to hang up', () => {
       jest.spyOn(callController, 'hangUp');
       accountController.hangUp('123');
       expect(callController.hangUp).toBeCalled();
+    });
+  });
+
+  describe('mute', () => {
+    it('should call controller to mute', () => {
+      jest.spyOn(callController, 'mute');
+      accountController.mute('123');
+      expect(callController.mute).toBeCalled();
+    });
+  });
+
+  describe('unmute', () => {
+    it('should call controller to unmute', () => {
+      jest.spyOn(callController, 'unmute');
+      accountController.unmute('123');
+      expect(callController.unmute).toBeCalled();
     });
   });
 

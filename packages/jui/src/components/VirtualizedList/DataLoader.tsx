@@ -3,7 +3,8 @@
  * @Date: 2019-03-04 10:14:48
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, memo } from 'react';
+import { noop } from '../../foundation/utils';
 
 type Direction = 'up' | 'down';
 
@@ -12,12 +13,12 @@ type JuiDataLoaderProps = {
   loadInitialData: () => Promise<void>;
   hasMore: (direction: Direction) => boolean;
   children: (params: {
-    ref: React.RefObject<any>;
     loadingInitial: boolean;
     loadingUp: boolean;
     loadingDown: boolean;
+    loadingInitialFailed: boolean;
     onScroll: (event: React.UIEvent) => void;
-  }) => JSX.Element;
+  }) => JSX.Element | null | void;
 };
 
 const JuiDataLoader = ({
@@ -26,25 +27,28 @@ const JuiDataLoader = ({
   loadMore,
   children,
 }: JuiDataLoaderProps) => {
-  const ref = React.createRef();
   const prevScrollTopRef = useRef(0);
   const [loadingUp, setLoadingUp] = useState(false);
   const [loadingDown, setLoadingDown] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(false);
+  const [loadingInitialFailed, setLoadingInitialFailed] = useState(false);
   const loading = loadingUp || loadingDown || loadingInitial;
 
   const map = {
     up: {
       setLoading: setLoadingUp,
       load: () => loadMore('up'),
+      onFailed: noop,
     },
     down: {
       setLoading: setLoadingDown,
       load: () => loadMore('down'),
+      onFailed: noop,
     },
     initial: {
       setLoading: setLoadingInitial,
       load: () => loadInitialData(),
+      onFailed: setLoadingInitialFailed,
     },
   };
 
@@ -53,9 +57,14 @@ const JuiDataLoader = ({
   },        []);
 
   const loadData = async (type: 'initial' | 'up' | 'down') => {
-    const { setLoading, load } = map[type];
+    const { setLoading, load, onFailed } = map[type];
     setLoading(true);
-    await load();
+    onFailed(false);
+    try {
+      await load();
+    } catch {
+      onFailed(true);
+    }
     setLoading(false);
   };
 
@@ -81,13 +90,15 @@ const JuiDataLoader = ({
     }
   };
 
-  return children({
-    ref,
+  const childrenElement = children({
     loadingInitial,
     loadingUp,
     loadingDown,
+    loadingInitialFailed,
     onScroll: handleScroll,
   });
+  return childrenElement || null;
 };
 
-export { JuiDataLoader, JuiDataLoaderProps };
+const MemoDataLoader = memo(JuiDataLoader);
+export { MemoDataLoader as JuiDataLoader, JuiDataLoaderProps };

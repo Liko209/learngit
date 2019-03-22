@@ -111,10 +111,7 @@ class Task extends React.Component<taskViewProps> {
     origHeight: number,
   ) => async (ev: React.MouseEvent, loaded?: boolean) => {
     const target = ev.currentTarget as HTMLElement;
-    const canShowDialogPermission = await this.props.getShowDialogPermission();
-    if (!canShowDialogPermission) {
-      return;
-    }
+
     return await showImageViewer(groupId, id, {
       originElement: target,
       thumbnailSrc: url,
@@ -177,7 +174,8 @@ class Task extends React.Component<taskViewProps> {
         complete={complete}
         title={this._getTitleText(text)}
         titleColor={color}
-        Icon={<JuiTaskCheckbox checked={complete || false} />}
+        Icon={
+          <JuiTaskCheckbox customColor={color} checked={complete || false} />}
       >
         {endTime && (
           <JuiTaskContent title={t('item.due')}>

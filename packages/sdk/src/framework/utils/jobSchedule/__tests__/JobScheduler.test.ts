@@ -75,13 +75,37 @@ describe('JobScheduler', () => {
   describe('scheduleDailyPeriodicJob()', () => {
     it('should schedule daily job', () => {
       jobScheduler.scheduleJob = jest.fn();
+      jobScheduler.scheduleAndIgnoreFirstTime = jest.fn();
       const mockFunc = () => {};
       jobScheduler.scheduleDailyPeriodicJob(
         JOB_KEY.FETCH_PHONE_DATA,
         mockFunc,
         false,
+        false,
       );
+      expect(jobScheduler.scheduleAndIgnoreFirstTime).not.toBeCalled();
       expect(jobScheduler.scheduleJob).toBeCalledWith({
+        key: JOB_KEY.FETCH_PHONE_DATA,
+        executeFunc: mockFunc,
+        needNetwork: false,
+        intervalSeconds: DailyJobIntervalSeconds,
+        periodic: true,
+        retryTime: 0,
+      });
+    });
+
+    it('should schedule daily job and ignore first time', () => {
+      jobScheduler.scheduleJob = jest.fn();
+      jobScheduler.scheduleAndIgnoreFirstTime = jest.fn();
+      const mockFunc = () => {};
+      jobScheduler.scheduleDailyPeriodicJob(
+        JOB_KEY.FETCH_PHONE_DATA,
+        mockFunc,
+        false,
+        true,
+      );
+      expect(jobScheduler.scheduleJob).not.toBeCalled();
+      expect(jobScheduler.scheduleAndIgnoreFirstTime).toBeCalledWith({
         key: JOB_KEY.FETCH_PHONE_DATA,
         executeFunc: mockFunc,
         needNetwork: false,
@@ -154,6 +178,26 @@ describe('JobScheduler', () => {
       expect(jobScheduler['_canExecute']).toBeCalledWith(info, 12345);
       expect(jobScheduler['_execute']).toBeCalledTimes(0);
       expect(jobScheduler['_setTimer']).toBeCalledWith(info, 23000);
+    });
+  });
+
+  describe('scheduleAndIgnoreFirstTime()', () => {
+    it('should call preSchedule and setTimer', () => {
+      jobScheduler.preSchedule = jest.fn();
+      jobScheduler['_setTimer'] = jest.fn();
+      jobScheduler['_setLastSuccessTime'] = jest.fn();
+      const info = {
+        key: JOB_KEY.FETCH_CLIENT_INFO,
+        intervalSeconds: 43,
+        periodic: true,
+      } as JobInfo;
+      jobScheduler.scheduleAndIgnoreFirstTime(info);
+      expect(jobScheduler.preSchedule).toBeCalledWith(info);
+      expect(jobScheduler['_setTimer']).toBeCalledWith(
+        info,
+        info.intervalSeconds * 1000,
+      );
+      expect(jobScheduler['_setLastSuccessTime']).toBeCalled();
     });
   });
 

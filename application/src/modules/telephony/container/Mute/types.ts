@@ -7,7 +7,8 @@
 type MuteProps = {};
 
 type MuteViewProps = {
-  mute: () => void;
+  muteOrUnmute: () => void;
+  isMute: boolean;
 };
 
 export { MuteProps, MuteViewProps };

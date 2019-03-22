@@ -34,12 +34,24 @@ class TelephonyCallController implements IRTCCallDelegate {
   onCallActionSuccess(
     callAction: RTC_CALL_ACTION,
     options: RTCCallActionSuccessOptions,
-  ) {}
+  ) {
+    this._callDelegate.onCallActionSuccess(callAction, options);
+  }
 
-  onCallActionFailed(callAction: RTC_CALL_ACTION) {}
+  onCallActionFailed(callAction: RTC_CALL_ACTION) {
+    this._callDelegate.onCallActionFailed(callAction);
+  }
 
   hangUp() {
     this._rtcCall.hangup();
+  }
+
+  mute() {
+    this._rtcCall.mute();
+  }
+
+  unmute() {
+    this._rtcCall.unmute();
   }
 }
 

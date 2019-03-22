@@ -18,11 +18,24 @@ import { AttachmentView } from '../Attachment';
 storiesOf('Pattern/MessageInput', module)
   .addDecorator(withInfoDecorator(JuiMessageInput, { inline: true }))
   .add('MessageInput', () => {
+    const value = text('value', 'default text');
     const onChange = () => {};
+    const ref = React.createRef<JuiMessageInput>();
     return (
-      <JuiMessageInput value="test" onChange={onChange} error="" modules={{}}>
-        <div />
-      </JuiMessageInput>
+      <>
+        <JuiMessageInput
+          ref={ref}
+          value={value}
+          onChange={onChange}
+          error=""
+          modules={{}}
+        >
+          <div />
+        </JuiMessageInput>
+        <button onClick={() => ref.current!.focusEditor()}>
+          focusEditor()
+        </button>
+      </>
     );
   });
 

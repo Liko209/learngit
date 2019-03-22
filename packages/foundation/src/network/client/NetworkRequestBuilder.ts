@@ -17,6 +17,7 @@ import {
   NETWORK_VIA,
   NETWORK_METHOD,
   Header,
+  HA_PRIORITY,
 } from '../network';
 
 class NetworkRequestBuilder implements IRequestBuilderOption {
@@ -30,9 +31,9 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
   retryCount: number = 0;
   authFree: boolean;
   timeout: number = config.timeout;
-  ignoreLocalRetryAfter: boolean = false;
   handlerType: IHandleType;
   priority: REQUEST_PRIORITY = REQUEST_PRIORITY.NORMAL;
+  HAPriority: HA_PRIORITY = HA_PRIORITY.BASIC;
   via: NETWORK_VIA = NETWORK_VIA.HTTP;
   method: NETWORK_METHOD = NETWORK_METHOD.GET;
   networkManager: NetworkManager;
@@ -48,6 +49,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
       headers,
       authFree,
       requestConfig,
+      HAPriority,
     } = options;
 
     this.headers = headers || {};
@@ -59,6 +61,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
     this.params = params || {};
     this.data = data || {};
     this.requestConfig = requestConfig || {};
+    this.HAPriority = HAPriority || HA_PRIORITY.BASIC;
     return this;
   }
 
@@ -86,6 +89,15 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
    */
   public setPriority(value: REQUEST_PRIORITY) {
     this.priority = value;
+    return this;
+  }
+
+  /**
+   * Setter HAPriority
+   * @param {HA_PRIORITY} value
+   */
+  public setHAPriority(value: HA_PRIORITY) {
+    this.HAPriority = value;
     return this;
   }
 
@@ -176,11 +188,6 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
    */
   public setAuthfree(value: boolean) {
     this.authFree = value;
-    return this;
-  }
-
-  public setIgnoreLocalRetryAfter(value: boolean) {
-    this.ignoreLocalRetryAfter = value;
     return this;
   }
 

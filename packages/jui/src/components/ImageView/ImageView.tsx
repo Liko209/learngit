@@ -25,13 +25,13 @@ const StyledLoadingPage = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: ${({ theme }) => theme.zIndex && theme.zIndex.loading};
 `;
 
 const StyledImage = styled.img<{ visibility: string }>`
   display: block;
   box-shadow: ${({ theme }) => theme.shadows[7]};
   visibility: ${({ visibility }) => visibility};
+  user-select: none;
 `;
 
 const HiddenImage = styled.img`
@@ -52,7 +52,6 @@ type JuiImageProps = React.DetailedHTMLProps<
 };
 
 type JuiImageState = {
-  src?: string;
   currentShow: 'raw' | 'thumbnail';
   loadings: {
     raw: boolean;
@@ -72,12 +71,9 @@ function isThumbnailMode(props: JuiImageProps) {
 
 function getInitState(props: JuiImageProps): JuiImageState {
   if (isThumbnailMode(props)) {
-    return {
-      ..._.cloneDeep(JuiImageView.initThumbnailModeState),
-      src: props.src,
-    };
+    return _.cloneDeep(JuiImageView.initThumbnailModeState);
   }
-  return { ..._.cloneDeep(JuiImageView.initState), src: props.src };
+  return _.cloneDeep(JuiImageView.initState);
 }
 
 class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
@@ -108,19 +104,6 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   constructor(props: JuiImageProps) {
     super(props);
     this.state = getInitState(props);
-  }
-
-  static getDerivedStateFromProps(
-    nextProps: JuiImageProps,
-    prevState: JuiImageState,
-  ) {
-    if (nextProps.src !== prevState.src) {
-      return getInitState(nextProps);
-    }
-    return null;
-  }
-
-  componentDidMount() {
     const { width, height, onSizeLoad } = this.props;
     width && height && onSizeLoad && onSizeLoad(Number(width), Number(height));
   }
@@ -140,7 +123,7 @@ class JuiImageView extends React.Component<JuiImageProps, JuiImageState> {
   private _errorView() {
     return (
       <StyledLoadingPage>
-        <JuiIconography iconSize="large" iconColor={['grey', '400']}>
+        <JuiIconography iconSize="extraLarge" iconColor={['grey', '400']}>
           image_broken
         </JuiIconography>
       </StyledLoadingPage>

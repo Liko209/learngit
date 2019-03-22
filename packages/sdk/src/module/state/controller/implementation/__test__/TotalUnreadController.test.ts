@@ -257,6 +257,43 @@ describe('TotalUnreadController', () => {
       ).toBeCalledTimes(0);
       expect(totalUnreadController['_doNotification']).toBeCalledTimes(1);
     });
+
+    it('should continue handle next task and when crash', async () => {
+      const task: DataHandleTask = {
+        type: TASK_DATA_TYPE.GROUP_STATE,
+        data: 'data' as any,
+      };
+      const task2: DataHandleTask = {
+        type: TASK_DATA_TYPE.GROUP_ENTITY,
+        data: 'data2' as any,
+      };
+      totalUnreadController['_taskArray'] = [task, task2];
+      totalUnreadController['_unreadInitialized'] = true;
+      totalUnreadController['_initializeTotalUnread'] = jest.fn();
+      totalUnreadController['_updateTotalUnreadByStateChanges'] = jest
+        .fn()
+        .mockImplementation(() => {
+          throw Error('error');
+        });
+      totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
+      totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
+      totalUnreadController['_doNotification'] = jest.fn();
+
+      await totalUnreadController['_startDataHandleTask'](task);
+      expect(totalUnreadController['_initializeTotalUnread']).toBeCalledTimes(
+        0,
+      );
+      expect(
+        totalUnreadController['_updateTotalUnreadByStateChanges'],
+      ).toBeCalledWith(task.data);
+      expect(
+        totalUnreadController['_updateTotalUnreadByGroupChanges'],
+      ).toBeCalledWith(task2.data);
+      expect(
+        totalUnreadController['_updateTotalUnreadByProfileChanges'],
+      ).toBeCalledTimes(0);
+      expect(totalUnreadController['_doNotification']).toBeCalledTimes(1);
+    });
   });
 
   describe('_updateTotalUnreadByStateChanges()', () => {
@@ -377,88 +414,6 @@ describe('TotalUnreadController', () => {
 
   describe('_updateTotalUnreadByGroupChanges()', () => {
     beforeEach(() => {});
-    it('should update correctly when delete groups', async () => {
-      AccountGlobalConfig.getCurrentUserId = jest.fn();
-      totalUnreadController['_modifyTotalUnread'] = jest.fn();
-      totalUnreadController['_addNewGroupUnread'] = jest.fn();
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
-        unreadCount: 8,
-        mentionCount: 2,
-      });
-      const payload: NotificationEntityPayload<Group> = {
-        type: EVENT_TYPES.DELETE,
-        body: {
-          ids: [1, 2],
-        },
-      };
-      await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
-      expect(AccountGlobalConfig.getCurrentUserId).toBeCalledTimes(0);
-      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(0);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.DIRECT_MESSAGE,
-        -8,
-        -2,
-      );
-      expect(totalUnreadController['_groupSectionUnread'].size).toEqual(0);
-    });
-
-    it('should delete team correctly when current unread count = 0', async () => {
-      AccountGlobalConfig.getCurrentUserId = jest.fn();
-      totalUnreadController['_modifyTotalUnread'] = jest.fn();
-      totalUnreadController['_addNewGroupUnread'] = jest.fn();
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.TEAM,
-        unreadCount: 0,
-        mentionCount: 5,
-        isTeam: true,
-      });
-      const payload: NotificationEntityPayload<Group> = {
-        type: EVENT_TYPES.DELETE,
-        body: {
-          ids: [1, 2],
-        },
-      };
-      await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
-      expect(AccountGlobalConfig.getCurrentUserId).toBeCalledTimes(0);
-      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(0);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.TEAM,
-        0,
-        -5,
-      );
-      expect(totalUnreadController['_groupSectionUnread'].size).toEqual(0);
-    });
-
-    it('should delete team correctly when current unread count != 0', async () => {
-      AccountGlobalConfig.getCurrentUserId = jest.fn();
-      totalUnreadController['_modifyTotalUnread'] = jest.fn();
-      totalUnreadController['_addNewGroupUnread'] = jest.fn();
-      totalUnreadController['_groupSectionUnread'].set(1, {
-        section: UMI_SECTION_TYPE.TEAM,
-        unreadCount: 7,
-        mentionCount: 5,
-        isTeam: true,
-      });
-      const payload: NotificationEntityPayload<Group> = {
-        type: EVENT_TYPES.DELETE,
-        body: {
-          ids: [1, 2],
-        },
-      };
-      await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
-      expect(AccountGlobalConfig.getCurrentUserId).toBeCalledTimes(0);
-      expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(0);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
-      expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
-        UMI_SECTION_TYPE.TEAM,
-        -5,
-        -5,
-      );
-      expect(totalUnreadController['_groupSectionUnread'].size).toEqual(0);
-    });
 
     it('should update correctly when update groups', async () => {
       AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);

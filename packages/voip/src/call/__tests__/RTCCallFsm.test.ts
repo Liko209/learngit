@@ -439,4 +439,151 @@ describe('Call FSM UT', () => {
       });
     });
   });
+
+  describe('forward()', () => {
+    const forwardNumber = '10086';
+    it('should FSM enter forwarding state from Idle state when receive ‘forward’ event [JPT-1298]', done => {
+      const callFsm = new RTCCallFsm();
+      jest.spyOn(callFsm, 'onForwardAction');
+      callFsm.forward(forwardNumber);
+      setImmediate(() => {
+        expect(callFsm.state()).toBe('forwarding');
+        expect(callFsm.onForwardAction).toBeCalled();
+        done();
+      });
+    });
+
+    it('should FSM enter disconnected state from forwarding state when receive ‘hangup’ event [JPT-1299]', done => {
+      const callFsm = new RTCCallFsm();
+      callFsm.forward(forwardNumber);
+      callFsm.hangup();
+      setImmediate(() => {
+        expect(callFsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should FSM enter disconnected state from forwarding state when receive ‘sessionDisconnected’ event [JPT-1319]', done => {
+      const callFsm = new RTCCallFsm();
+      callFsm.forward(forwardNumber);
+      callFsm.sessionDisconnected();
+      setImmediate(() => {
+        expect(callFsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    it('should FSM enter disconnected state from forwarding state when receive ‘sessionError’ event [JPT-1320]', done => {
+      const callFsm = new RTCCallFsm();
+      callFsm.forward(forwardNumber);
+      callFsm.sessionError();
+      setImmediate(() => {
+        expect(callFsm.state()).toBe('disconnected');
+        done();
+      });
+    });
+
+    describe('should FSM state does not change when receive ‘forward’ event in non-Idle state [JPT-1300]', () => {
+      it('should FSM enter pending state from pending state when receive ‘forward’ event', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.accountNotReady();
+        callFsm.forward(forwardNumber);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('pending');
+          done();
+        });
+      });
+
+      it('should FSM enter answering state from answering state when receive ‘forward’ event', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.answer();
+        callFsm.forward(forwardNumber);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('answering');
+          done();
+        });
+      });
+
+      it('should FSM enter forwarding state from forwarding state when receive ‘forward’ event', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.forward(forwardNumber);
+        callFsm.forward(forwardNumber);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('forwarding');
+          done();
+        });
+      });
+
+      it('should FSM enter connecting state from connecting state when receive ‘forward’ event', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.accountReady();
+        callFsm.forward(forwardNumber);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connecting');
+          done();
+        });
+      });
+
+      it('should FSM enter connected state from connected state when receive ‘forward’ event', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.answer();
+        callFsm.sessionConfirmed();
+        callFsm.forward(forwardNumber);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('connected');
+          done();
+        });
+      });
+
+      it('should FSM enter holding state from holding state when receive ‘forward’ event', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.answer();
+        callFsm.sessionConfirmed();
+        callFsm.hold();
+        callFsm.forward(forwardNumber);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('holding');
+          done();
+        });
+      });
+
+      it('should FSM enter holded state from holded state when receive ‘forward’ event', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.answer();
+        callFsm.sessionConfirmed();
+        callFsm.hold();
+        callFsm.holdSuccess();
+        callFsm.forward(forwardNumber);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('holded');
+          done();
+        });
+      });
+
+      it('should FSM enter unholding state from unholding state when receive ‘forward’ event', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.answer();
+        callFsm.sessionConfirmed();
+        callFsm.hold();
+        callFsm.holdSuccess();
+        callFsm.unhold();
+        callFsm.forward(forwardNumber);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('unholding');
+          done();
+        });
+      });
+
+      it('should FSM enter disconnected state from disconnected state when receive ‘forward’ event', done => {
+        const callFsm = new RTCCallFsm();
+        callFsm.accountReady();
+        callFsm.hangup();
+        callFsm.forward(forwardNumber);
+        setImmediate(() => {
+          expect(callFsm.state()).toBe('disconnected');
+          done();
+        });
+      });
+    });
+  });
 });

@@ -209,6 +209,22 @@ class SearchItem extends BaseWebComponent {
     return this.avatar.find("div").withAttribute('uid').getAttribute('uid');
   }
 
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button');
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
+
+  async makeCall() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
+
   // group or team
   get cid() {
     return this.avatar.find("div").withAttribute('cid').getAttribute('cid');

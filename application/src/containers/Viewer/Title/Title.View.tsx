@@ -16,7 +16,8 @@ import {
   JuiDialogHeaderMeta,
   JuiDialogHeaderMetaLeft,
   JuiDialogHeaderMetaRight,
-} from 'jui/components/Dialog/DialogHeader/index';
+  JuiDialogHeaderSubtitle,
+} from 'jui/components/Dialog/DialogHeader';
 import { JuiDivider } from 'jui/components/Divider';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 // import { JuiMenuList, JuiMenuItem } from 'jui/components/Menus';
@@ -53,7 +54,7 @@ class ViewerTitleViewComponent extends Component<
 
   render() {
     const { item, total, currentIndex, person, t } = this.props;
-    const { name, modifiedAt, downloadUrl } = item;
+    const { name, downloadUrl, createdAt } = item;
     const { userDisplayName, id } = person;
     return (
       <ViewerContext.Consumer>
@@ -66,25 +67,37 @@ class ViewerTitleViewComponent extends Component<
             animation={imageViewerHeaderAnimation}
           >
             <div>
-              <JuiDialogHeader>
+              <JuiDialogHeader data-test-automation-id="ViewerHeader">
                 <ReactResizeDetector
                   handleWidth={true}
                   onResize={this.handleHeaderResize}
                 />
                 <JuiDialogHeaderMeta>
                   <JuiDialogHeaderMetaLeft>
-                    <Avatar uid={id} />
+                    <Avatar
+                      uid={id}
+                      data-test-automation-id={'previewerSenderAvatar'}
+                    />
                   </JuiDialogHeaderMetaLeft>
                   <JuiDialogHeaderMetaRight
                     title={userDisplayName}
+                    data-test-automation-id={'previewerSenderInfo'}
                     subtitle={dateFormatter.dateAndTimeWithoutWeekday(
-                      moment(modifiedAt),
+                      moment(createdAt),
                     )}
                   />
                 </JuiDialogHeaderMeta>
-                <JuiDialogHeaderTitle variant="responsive">
+                <JuiDialogHeaderTitle
+                  variant="responsive"
+                  data-test-automation-id={'previewerTitle'}
+                >
                   <span>{name}</span>
-                  <span> {`(${currentIndex + 1}/${total})`}</span>
+                  <JuiDialogHeaderSubtitle>
+                    {' '}
+                    {total > -1 && currentIndex > -1
+                      ? `(${currentIndex + 1}/${total})`
+                      : ''}
+                  </JuiDialogHeaderSubtitle>
                 </JuiDialogHeaderTitle>
                 <JuiDialogHeaderActions>
                   <JuiButtonBar overlapSize={2.5}>
@@ -112,6 +125,7 @@ class ViewerTitleViewComponent extends Component<
                     </JuiPopoverMenu> */}
                     <JuiIconButton
                       onClick={viewerContext.closeViewer}
+                      aria-label={t('common.dialog.close')}
                       tooltipTitle={t('common.dialog.close')}
                     >
                       close
