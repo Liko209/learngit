@@ -9,13 +9,14 @@ const name2icon = {
   messages: 'bubble_lines',
   messages_border: 'bubble_lines_border',
   contacts: 'contacts',
-  contacts_border: 'contact_border',
+  contacts_border: 'contacts_border',
   calendar: 'calendar',
   tasks: 'task',
   notes: 'note',
   files: 'copy',
   conference: 'conference',
   settings: 'settings',
+  settings_border: 'settings_border',
   lock_open: 'unlock',
   lock: 'lock',
   new_actions: 'zoom-in',
@@ -43,6 +44,7 @@ const name2icon = {
   arrow_up: 'arrow_up',
   arrow_down: 'arrow_down',
   dashboard: 'dashboard',
+  dashboard_border: 'dashboard_border',
   chat: 'chat',
   direct_message: 'people',
   team: 'team',
@@ -106,6 +108,7 @@ const name2icon = {
   leftNavFile: 'file',
   leftNavFile_border: 'file_border',
   reset_zoom: 'reset-zoom',
+  mic_off: 'mic-off',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

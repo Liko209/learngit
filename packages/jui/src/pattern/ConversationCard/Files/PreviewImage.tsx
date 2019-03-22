@@ -75,6 +75,14 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _mounted: boolean = false;
   private _loaded: boolean = false;
+  private _updating: boolean = false;
+
+  componentDidUpdate(prevProps: JuiPreviewImageProps) {
+    if (prevProps.url !== this.props.url) {
+      this._updating = true;
+      this.forceUpdate();
+    }
+  }
 
   private _handleImageLoad = () => {
     const { forceSize, squareSize, didLoad } = this.props;
@@ -89,6 +97,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
       this._imageInfo = getThumbnailSize(width, height);
     }
     this._loaded = true;
+    this._updating = false;
     didLoad && didLoad();
     if (this._mounted) {
       this.forceUpdate();
@@ -129,14 +138,13 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     return (
       <>
         {!this._loaded && placeholder}
-        {!this._loaded && url && (
+        {(!this._loaded || this._updating) && url && (
           <img
             style={{ display: 'none' }}
             ref={this._imageRef}
             src={url}
             onLoad={this._handleImageLoad}
             onClick={this._handleImageClick}
-            {...imageProps}
           />
         )}
         {this._loaded && (

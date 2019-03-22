@@ -45,6 +45,8 @@ export default class GroupModel extends Base<Group> {
   deactivated: boolean;
   @observable
   isArchived?: boolean;
+  @observable
+  convertedToTeam?: { team_id?: number; created?: number };
 
   isCompanyTeam: boolean;
   latestTime: number;
@@ -67,6 +69,7 @@ export default class GroupModel extends Base<Group> {
       deactivated,
       is_company_team,
       is_archived,
+      converted_to_team,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -87,6 +90,7 @@ export default class GroupModel extends Base<Group> {
     this.deactivated = deactivated;
     this.isArchived = is_archived;
     this.isCompanyTeam = is_company_team;
+    this.convertedToTeam = converted_to_team;
   }
 
   @computed

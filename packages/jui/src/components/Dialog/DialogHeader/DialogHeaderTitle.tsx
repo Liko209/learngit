@@ -42,7 +42,10 @@ class WrappedDialogTitle extends React.PureComponent<
     if (this.rootRef.current) {
       const h2 = this.rootRef.current.querySelector('h2');
       if (h2) {
-        const childrenWidth = Array.from(h2.children).reduce(
+        const childSpans = Array.from(h2.children).filter(
+          (child: Element) => child.tagName === 'SPAN',
+        );
+        const childrenWidth = childSpans.reduce(
           (a, b) => a + b.getBoundingClientRect().width,
           0,
         );
@@ -51,7 +54,7 @@ class WrappedDialogTitle extends React.PureComponent<
           overflow,
         });
         if (overflow) {
-          Array.from(h2.children).forEach((child: HTMLElement) => {
+          childSpans.forEach((child: HTMLElement) => {
             child.style.alignSelf =
               child.getBoundingClientRect().width > this.containerWidth
                 ? 'normal'

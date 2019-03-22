@@ -23,7 +23,7 @@ type JuiZoomGroupProps = {
   className?: string;
 };
 
-const StylesContain = styled.div<{ resetMode: boolean }>`
+const StylesContain = styled.div`
   && {
     display: flex;
     align-items: center;
@@ -65,15 +65,14 @@ class JuiFabGroup extends PureComponent<JuiZoomGroupProps> {
       ZoomOut,
       ZoomReset: Reset,
       centerText,
-      resetMode = false,
       className,
     } = this.props;
     return (
-      <StylesContain className={className} resetMode={resetMode}>
+      <StylesContain className={className}>
         <StyledZoom>{ZoomOut}</StyledZoom>
         <StyledTextContain>{centerText}</StyledTextContain>
         <StyledZoom>{ZoomIn}</StyledZoom>
-        {resetMode && <StyledReset>{Reset}</StyledReset>}
+        <StyledReset>{Reset}</StyledReset>
       </StylesContain>
     );
   }

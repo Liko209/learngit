@@ -55,6 +55,7 @@ interface IPersonService {
     e164PhoneNumber: string,
     contactType: ContactType,
   ): Promise<Person | null>;
+  refreshPersonData(personId: number): Promise<void>;
 
   isValidPerson(person: Person): boolean;
 }

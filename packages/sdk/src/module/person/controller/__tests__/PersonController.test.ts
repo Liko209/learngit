@@ -26,7 +26,7 @@ import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from '../../../../module/config';
 import { AccountGlobalConfig } from '../../../../service/account/config';
 import { ContactType } from '../../types';
-import { SortableModel } from '../../../../framework/model';
+import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../service/account/config');
@@ -503,6 +503,7 @@ describe('PersonService', () => {
       jest.clearAllMocks();
       jest.resetAllMocks();
       setUp();
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
     });
     it('should return null when there is no phone number data', async () => {
       await prepareInvalidData();
@@ -546,6 +547,19 @@ describe('PersonService', () => {
       );
       expect(result).not.toBeNull();
       expect(result.id).toBe(36);
+    });
+  });
+
+  describe('refreshPersonData()', () => {
+    it('should call get once when has requestController', async () => {
+      const requestController = {
+        get: jest.fn().mockResolvedValue({}),
+      };
+      jest
+        .spyOn(entitySourceController, 'getRequestController')
+        .mockReturnValue(requestController);
+      personController.refreshPersonData(1);
+      expect(requestController.get).toHaveBeenCalledTimes(1);
     });
   });
 });

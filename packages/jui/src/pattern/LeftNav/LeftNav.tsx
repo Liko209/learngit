@@ -10,7 +10,6 @@ import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import styled from '../../foundation/styled-components';
-import { JuiIconography } from '../../foundation/Iconography';
 import { JuiArrowTip } from '../../components/index';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import {
@@ -42,7 +41,7 @@ const Left = styled<LeftNavProps>(CustomLeftNav)`
     overflow-x: hidden;
     width: ${props => (props.expand ? MaxWidth : MinWidth)}px;
     justify-content: space-between;
-    padding: ${spacing(6)} 0;
+    padding: ${spacing(8, 0, 6, 0)};
     box-sizing: border-box;
     transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     // this group btns will awake
@@ -115,6 +114,7 @@ const StyledListItemText = styled(MuiListItemText)`
     }
   }
 `;
+
 const ListLink = styled.a`
   position: relative;
   outline: none;
@@ -122,7 +122,7 @@ const ListLink = styled.a`
   height: 100%;
   padding: 0 ${spacing(5)};
   width: 100%;
-  margin-left: ${({ theme }) => `${(theme.spacing.unit * 6) / 4}px`};
+  margin-left: ${spacing(1)};
   align-items: center;
   text-decoration: none;
   &&&:active {
@@ -140,7 +140,7 @@ const ListLink = styled.a`
   }
   .nav-icon {
     color: ${palette('accent', 'ash')};
-    margin-right: ${spacing(8)};
+    margin-right: ${spacing(6)};
   }
   .nav-text span {
     color: ${palette('accent', 'ash')};
@@ -161,7 +161,8 @@ type JuiLeftNavProps = {
   expand: boolean;
   icons: {
     url: string;
-    icon: string;
+    Icon: React.ReactElement;
+    IconSelected: React.ReactElement;
     title: string;
     umi?: JSX.Element;
   }[][];
@@ -211,7 +212,7 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
                   onClick={this.onRouteChange(navUrl)}
                 >
                   <MuiListItemIcon className={'nav-icon'}>
-                    <JuiIconography>{item.icon}</JuiIconography>
+                    {selected ? item.IconSelected : item.Icon}
                   </MuiListItemIcon>
                   <StyledListItemText
                     primary={item.title}

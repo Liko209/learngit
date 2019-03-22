@@ -6,6 +6,7 @@
 import React from 'react';
 import i18next from 'i18next';
 import { SubModuleConfig } from '../types';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 const config: SubModuleConfig = {
   route: {
@@ -14,7 +15,10 @@ const config: SubModuleConfig = {
   },
   nav: () => ({
     url: '/tasks',
-    icon: 'leftNavTask_border',
+    Icon: <JuiIconography iconSize="medium">leftNavTask_border</JuiIconography>,
+    IconSelected: (
+      <JuiIconography iconSize="medium">leftNavTask</JuiIconography>
+    ),
     title: i18next.t('item.tasks'),
     placement: 'bottom',
   }),
