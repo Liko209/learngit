@@ -25,9 +25,6 @@ class SocketRequest extends HttpRequest {
   setParams(params: SocketRequestParamsType) {
     this.params = params;
   }
-  // setId(id: string) {
-  //   this.id = id;
-  // }
 }
 type SocketRequestParamsType = { request_id: string };
 export default SocketRequest;

@@ -105,9 +105,7 @@ export default class NetworkClient {
   }
 
   async request<T>(query: IQuery, requestHolder?: RequestHolder): Promise<T> {
-    console.error('send request');
     const response = await this.rawRequest(query, requestHolder);
-    console.error('request back');
     if (response.status >= 200 && response.status < 300) {
       return response.data;
     }
@@ -196,8 +194,6 @@ export default class NetworkClient {
       .setNetworkManager(this.networkManager)
       .setPriority(priority ? priority : REQUEST_PRIORITY.NORMAL)
       .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC);
-    // .build();
-    // .build();
   }
 
   http<T>(query: IQuery, requestHolder?: RequestHolder) {

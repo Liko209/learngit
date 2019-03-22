@@ -23,7 +23,7 @@ import {
   NETWORK_HANDLE_TYPE,
 } from './network';
 import { SERVER_ERROR_CODE } from './Constants';
-import doLog from './log';
+import { doResponseLog, doRequestLog } from './log';
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
@@ -53,14 +53,13 @@ export class NetworkRequestExecutor
   }
 
   onSuccess(response: IResponse): void {
-    console.error('on success');
     if (this._isCompletion()) {
       return;
     }
 
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
     this._callXApiResponseCallback(response);
-    doLog(response);
+    doResponseLog(response);
   }
 
   onFailure(response: IResponse): void {
@@ -71,7 +70,7 @@ export class NetworkRequestExecutor
     if (response.statusText !== NETWORK_FAIL_TYPE.TIME_OUT) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
       this._callXApiResponseCallback(response);
-      doLog(response);
+      doResponseLog(response);
     } else {
       this._retry();
     }
@@ -110,11 +109,7 @@ export class NetworkRequestExecutor
   }
 
   private _performNetworkRequest() {
-    console.error(
-      `_performNetworkRequest: request:${this.request}, via:${
-        this.request.via
-      }`,
-    );
+    doRequestLog(this.request);
     if (this._requestDecoration) {
       this._requestDecoration.decorate(this.request);
     }

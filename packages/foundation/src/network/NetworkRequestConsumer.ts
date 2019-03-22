@@ -14,8 +14,9 @@ import {
   IResponseListener,
   IRequest,
 } from './network';
-import NetworkRequestBuilder from './client/NetworkRequestBuilder';
+import { networkLogger } from '../log';
 
+const LOG_TAG = 'NetworkRequestConsumer';
 class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   private _producer: INetworkRequestProducer;
   private _client: BaseClient;
@@ -76,15 +77,11 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
       return;
     }
 
-    let request = this._producer.produceRequest(this._via);
+    const request = this._producer.produceRequest(this._via);
 
     if (!request) {
       return;
     }
-    const requestBuilder = request as NetworkRequestBuilder;
-    requestBuilder.via = this._via;
-    console.error(`_performNetworkRequest ${requestBuilder.via}`);
-    request = requestBuilder.build();
     const executor = new NetworkRequestExecutor(
       request,
       this._client,
@@ -97,7 +94,16 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   }
 
   private _canHandleRequest() {
-    return this._executorQueue.size < this._maxQueueCount;
+    networkLogger.info(
+      LOG_TAG,
+      `_canHandleRequest queue size: ${this._executorQueue.size}, via: ${
+        this._via
+      }`,
+    );
+    return (
+      this._client.isNetworkReachable() &&
+      this._executorQueue.size < this._maxQueueCount
+    );
   }
 
   private _addExecutor(executor: INetworkRequestExecutor) {
