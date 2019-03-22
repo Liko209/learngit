@@ -18,10 +18,15 @@ import { Raw } from '../../../framework/model';
 import PersonAPI from '../../../api/glip/person';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
-import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
+import {
+  IEntityCacheSearchController,
+  Terms,
+} from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { PersonDataController } from './PersonDataController';
 import { AuthGlobalConfig } from '../../../service/auth/config';
 import { ContactType } from '../types';
+import notificationCenter from '../../../service/notificationCenter';
+import { ENTITY } from '../../../service/eventKey';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 
 const PersonFlags = {
@@ -296,7 +301,7 @@ class PersonController {
     contactType: ContactType,
   ): Promise<Person | null> {
     const result = await this._cacheSearchController.searchEntities(
-      (person: Person, terms: string[]) => {
+      (person: Person, terms: Terms) => {
         if (
           person.sanitized_rc_extension &&
           person.sanitized_rc_extension.extensionNumber === e164PhoneNumber
@@ -328,6 +333,14 @@ class PersonController {
     return result && result.sortableModels.length > 0
       ? result.sortableModels[0].entity
       : null;
+  }
+
+  public async refreshPersonData(personId: number): Promise<void> {
+    const requestController = this._entitySourceController.getRequestController();
+    if (requestController) {
+      const person = await requestController.get(personId);
+      person && notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
+    }
   }
 }
 

@@ -35,8 +35,8 @@ class ProfileDialogGroupContentViewComponent extends Component<
   }
 
   messageAfterClick = async () => {
-    const { id } = this.props;
-    await goToConversation({ id });
+    const { destinationId } = this.props;
+    await goToConversation({ id: destinationId });
     portalManager.dismissLast();
   }
 

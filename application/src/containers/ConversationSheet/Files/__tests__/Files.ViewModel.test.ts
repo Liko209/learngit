@@ -124,10 +124,13 @@ describe('filesItemVM', () => {
       });
       ItemService.getInstance = jest.fn().mockReturnValue(itemService);
       const vm = new FilesViewModel({ ids: [123, 2, 3] } as FilesViewProps);
+      const _deleteIds = new Set<number>();
+      Object.assign(vm, { _deleteIds });
       await vm.removeFile(123);
-      await waitResult(() =>
-        expect(itemService.cancelUpload).toBeCalledTimes(1),
-      );
+      await waitResult(() => {
+        expect(itemService.cancelUpload).toBeCalledTimes(1);
+        expect(_deleteIds.has(123)).toBeTruthy();
+      });
     });
   });
 

@@ -9,6 +9,7 @@ import * as leaveBlocker from '@/modules/leave-blocker/module.config';
 import * as router from '@/modules/router/module.config';
 import * as home from '@/modules/home/module.config';
 import * as app from '@/modules/app/module.config';
+import * as FeaturesFlag from '@/modules/featuresFlags/module.config';
 
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
@@ -23,6 +24,7 @@ class Application {
     // TODO auto load modules
     jupiter.registerModule(sw.config);
     jupiter.registerModule(leaveBlocker.config);
+    jupiter.registerModule(FeaturesFlag.config);
     jupiter.registerModule(router.config);
     jupiter.registerModule(home.config);
     jupiter.registerModule(app.config);

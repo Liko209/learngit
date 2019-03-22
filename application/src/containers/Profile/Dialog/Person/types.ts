@@ -12,6 +12,7 @@ type ProfileDialogPersonProps = {
 
 type ProfileDialogPersonViewProps = ProfileDialogPersonProps & {
   person: PersonModel;
+  refreshPersonData(): void;
 };
 
 export { ProfileDialogPersonProps, ProfileDialogPersonViewProps };

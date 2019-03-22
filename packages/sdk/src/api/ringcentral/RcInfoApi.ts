@@ -57,9 +57,9 @@ class RcInfoApi extends Api {
     return RcInfoApi.rcNetworkClient.http<RcExtensionInfo>(query);
   }
 
-  static requestRcRolePermission() {
+  static requestRcRolePermissions() {
     const query = {
-      path: RINGCENTRAL_API.API_ROLE_PERMISSION,
+      path: RINGCENTRAL_API.API_ROLE_PERMISSIONS,
       method: NETWORK_METHOD.GET,
       authFree: false,
       via: NETWORK_VIA.HTTP,

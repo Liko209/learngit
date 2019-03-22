@@ -37,7 +37,7 @@
     "download": "Download",
     "expand": "Expand",
     "collapse": "Collapse",
-
+    "and": "and",
     "back": "Back",
     "forward": "Forward",
     "You": "You",
@@ -67,7 +67,7 @@
     "Dashboard": "Dashboard"
   },
   "message": {
-    "likedThis": "liked this",
+    "likeThis": "like this",
     "showUnreads": "Show Unreads",
     "meGroup": "me",
     "mentionPosts": "Mentions",

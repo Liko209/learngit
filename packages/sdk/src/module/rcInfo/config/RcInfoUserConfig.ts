@@ -35,12 +35,12 @@ class RcInfoUserConfig extends UserConfig {
     return this.get(RCINFO_KEYS.CLIENT_INFO);
   }
 
-  setRolePermission(info: any) {
-    this.put(RCINFO_KEYS.ROLE_PERMISSION, info);
+  setRolePermissions(info: any) {
+    this.put(RCINFO_KEYS.ROLE_PERMISSIONS, info);
   }
 
-  getRolePermission() {
-    return this.get(RCINFO_KEYS.ROLE_PERMISSION);
+  getRolePermissions() {
+    return this.get(RCINFO_KEYS.ROLE_PERMISSIONS);
   }
 
   setSpecialNumberRule(info: any) {

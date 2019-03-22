@@ -10,7 +10,7 @@ import { storiesOf } from '@storybook/react';
 // import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import {
-  JuiConversationInitialPost,
+  JuiConversationInitialPostWrapper,
   JuiConversationInitialPostHeader,
   StyledTitle,
   StyledSpan,
@@ -49,7 +49,7 @@ const ConversationInitialPostBody = () => {
 
 storiesOf('Pattern', module).add('ConversationInitialPost', () => {
   return (
-    <JuiConversationInitialPost>
+    <JuiConversationInitialPostWrapper>
       <JuiConversationInitialPostHeader>
         <StyledTitle>
           {'Dan Abramov'}
@@ -59,6 +59,6 @@ storiesOf('Pattern', module).add('ConversationInitialPost', () => {
         </StyledTitle>
       </JuiConversationInitialPostHeader>
       <ConversationInitialPostBody />
-    </JuiConversationInitialPost>
+    </JuiConversationInitialPostWrapper>
   );
 });

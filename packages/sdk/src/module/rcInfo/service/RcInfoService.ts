@@ -38,10 +38,30 @@ class RcInfoService extends EntityBaseService {
     await this.rcInfoController.requestRcAccountRelativeInfo();
   }
 
+  getRcClientInfo() {
+    return this.rcInfoController.getRcClientInfo();
+  }
+
+  getRcAccountInfo() {
+    return this.rcInfoController.getRcAccountInfo();
+  }
+
+  getRcExtensionInfo() {
+    return this.rcInfoController.getRcExtensionInfo();
+  }
+
+  getRcRolePermissions() {
+    return this.rcInfoController.getRcRolePermissions();
+  }
+
+  getSpecialNumberRule() {
+    return this.rcInfoController.getSpecialNumberRule();
+  }
+
   isVoipCallingAvailable() {
     return (
       NewGlobalConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
-      this._rcInfoController.isRcFeaturePermissionEnabled(
+      this.rcInfoController.isRcFeaturePermissionEnabled(
         ERcServiceFeaturePermission.VOIP_CALLING,
       )
     );

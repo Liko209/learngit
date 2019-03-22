@@ -106,7 +106,6 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
 
 });
 
-// skip due to https://jira.ringcentral.com/browse/FIJI-4188
 test(formalName('Should scroll to the bottom automatically when reveived new messages then close the dialog', ['JPT-1348', 'P2', 'Potar.He', 'FileAndImagePreviewer']), async (t) => {
   const filesPath = ['../../sources/1.png', '../../sources/2.png'];
   const users = h(t).rcData.mainCompany.users;
@@ -143,14 +142,13 @@ test(formalName('Should scroll to the bottom automatically when reveived new mes
   });
 
   await h(t).withLog('And I receive a text post to ensured the images is not on the bottom', async () => {
-    await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, anotherUser);
-    await t.expect(conversationPage.posts.count).eql(3);
-    await conversationPage.expectStreamScrollToBottom();
+    for (const i of _.range(4)){
+      await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, anotherUser);
+    }
   });
 
   await h(t).withLog('When I scroll to the first image post and click the first image', async () => {
-    await t.wait(1e3); // wait conversation stream stage.
-    await conversationPage.postItemById(postId).scrollIntoView();
+    await conversationPage.scrollUpToViewPostById(postId);
     await t.click(conversationPage.postItemById(postId).img);
   });
 
@@ -162,8 +160,7 @@ test(formalName('Should scroll to the bottom automatically when reveived new mes
 
   await h(t).withLog('When I receive new message from I send by API', async () => {
     await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, loginUser);
-    await t.expect(conversationPage.posts.count).eql(4);
-  });
+   });
 
   await h(t).withLog('and I click the close button', async () => {
     await previewer.clickCloseButton();

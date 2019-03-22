@@ -123,6 +123,10 @@ class PersonService extends EntityBaseService<Person>
       contactType,
     );
   }
+
+  public async refreshPersonData(personId: number): Promise<void> {
+    await this.getPersonController().refreshPersonData(personId);
+  }
 }
 
 export { PersonService };

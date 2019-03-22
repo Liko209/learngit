@@ -63,6 +63,8 @@ describe('login', () => {
     const token: any = {
       refresh_token: 'refresh_token',
       access_token: 'access_token',
+      endpoint_id: 'endpoint_id',
+      test_field: 'test_field',
     };
 
     const retRequest: any = {
@@ -101,9 +103,9 @@ describe('login', () => {
         {
           authFree: true,
           data: {
-            access_token: 'access_token',
             grant_type: 'refresh_token',
             refresh_token: 'refresh_token',
+            endpoint_id: 'endpoint_id',
           },
           method: 'post',
           via: NETWORK_VIA.HTTP,

@@ -114,6 +114,7 @@ const StyledListItemText = styled(MuiListItemText)`
     }
   }
 `;
+
 const ListLink = styled.a`
   position: relative;
   outline: none;
@@ -121,7 +122,7 @@ const ListLink = styled.a`
   height: 100%;
   padding: 0 ${spacing(5)};
   width: 100%;
-  margin-left: ${({ theme }) => `${(theme.spacing.unit * 6) / 4}px`};
+  margin-left: ${spacing(1)};
   align-items: center;
   text-decoration: none;
   &&&:active {
@@ -139,7 +140,7 @@ const ListLink = styled.a`
   }
   .nav-icon {
     color: ${palette('accent', 'ash')};
-    margin-right: ${spacing(8)};
+    margin-right: ${spacing(6)};
   }
   .nav-text span {
     color: ${palette('accent', 'ash')};

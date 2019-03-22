@@ -1,10 +1,12 @@
 {
-  "on_push": {
+  "on_merge": {
     "fixtures": [
-      "./fixtures/Profile/RemoveTeamMember.ts"
+      "./fixtures/ConversationStream/*.ts"
     ],
     "include_tags": [
-      "JPT-1086"
+      "P0",
+      "P1",
+      "P2"
     ],
     "browsers": [
       "selenium:chrome"
