@@ -121,7 +121,7 @@ test(formalName('Check can open conversation when click message icon in the sear
 
   await h(t).withLog(`Then the team profile dialog should be popup`, async () => {
     await app.homePage.profileDialog.shouldBePopUp();
-    await app.homePage.profileDialog.close();
+    await app.homePage.profileDialog.clickCloseButton();
     await searchBar.clearInputAreaText();
   });
 

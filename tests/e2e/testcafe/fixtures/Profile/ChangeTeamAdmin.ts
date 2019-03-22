@@ -207,7 +207,7 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
 
   //check the settings when admin changed to member
   await h(t).withLog(`Given I login Jupiter with u3:${u3.company.number}#${u3.extension}`, async () => {
-    await profileDialog.close();
+    await profileDialog.clickCloseButton();
     await app.homePage.logoutThenLoginWithUser(SITE_URL, u3);
   });
 
