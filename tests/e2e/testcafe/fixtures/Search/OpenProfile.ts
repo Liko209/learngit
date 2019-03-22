@@ -81,7 +81,7 @@ test(formalName('Check can open profile dialog when click the item of search res
     });
 
     await h(t).withLog(`When I close the profile dialog`, async () => {
-      await profileDialog.close();
+      await profileDialog.clickCloseButton();
     });
 
     await h(t).withLog(`Then Keep the search text in the search box`, async () => {
@@ -125,7 +125,7 @@ test(formalName('Check can open profile dialog when click the item of search res
     });
 
     await h(t).withLog(`When I close the profile dialog`, async () => {
-      await profileDialog.close();
+      await profileDialog.clickCloseButton();
     });
 
     await h(t).withLog(`Then the search text should be clean`, async () => {

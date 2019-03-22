@@ -402,7 +402,7 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
   });
 
   await h(t).withLog('When I open "notAllowToAddUser..." team profile', async () => {
-    await app.homePage.profileDialog.close();
+    await app.homePage.profileDialog.clickCloseButton();
     await teamsSection.conversationEntryByName(notAllowToAddUserTeamName).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });

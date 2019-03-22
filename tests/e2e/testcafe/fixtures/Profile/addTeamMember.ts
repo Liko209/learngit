@@ -168,7 +168,7 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
     await t.expect(profileDialog.memberEntryByName(nonMemberName).exists).ok();
-    await profileDialog.close();
+    await profileDialog.clickCloseButton();
    });
 
    const conversationPage = app.homePage.messageTab.conversationPage;

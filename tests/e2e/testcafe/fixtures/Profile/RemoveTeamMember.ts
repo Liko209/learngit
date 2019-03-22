@@ -212,7 +212,7 @@ test(formalName('The remove team member permission should sync dynamically', ['J
   }
 
   await h(t).withLog(`Given the login user logout and login with member: ${loginMember.company.number}#${loginMember.extension}`, async () => {
-    await profileDialog.close();
+    await profileDialog.clickCloseButton();
     await app.homePage.openSettingMenu();
     await app.homePage.settingMenu.ensureLoaded();
     await app.homePage.settingMenu.clickLogout();

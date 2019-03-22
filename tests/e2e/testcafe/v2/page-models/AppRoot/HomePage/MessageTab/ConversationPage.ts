@@ -268,21 +268,21 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.pressKey('enter');
   }
 
-  get privateButton() {
+  get privacyToggle() {
     this.warnFlakySelector();
     return this.self.find('.privacy');
   }
 
   async clickPrivate() {
-    await this.t.click(this.privateButton);
+    await this.t.click(this.privacyToggle);
   }
 
   get privateTeamIcon() {
-    return this.getSelectorByIcon('lock', this.privateButton);
+    return this.getSelectorByIcon('lock', this.privacyToggle);
   }
 
   get publicTeamIcon() {
-    return this.getSelectorByIcon('lock_open', this.privateButton);
+    return this.getSelectorByIcon('lock_open', this.privacyToggle);
   }
 
   get favoriteButton() {
