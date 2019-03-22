@@ -61,7 +61,7 @@ class RcInfoService extends EntityBaseService {
   isVoipCallingAvailable() {
     return (
       NewGlobalConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
-      this._rcInfoController.isRcFeaturePermissionEnabled(
+      this.rcInfoController.isRcFeaturePermissionEnabled(
         ERcServiceFeaturePermission.VOIP_CALLING,
       )
     );

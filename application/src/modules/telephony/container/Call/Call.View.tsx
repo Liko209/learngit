@@ -13,16 +13,8 @@ import { CallViewProps, CallProps } from './types';
 
 type Props = WithNamespaces & CallViewProps & CallProps;
 
-type State = {
-  isShowIcon: boolean;
-};
-
 @observer
-class CallViewComponent extends Component<Props, State> {
-  state = {
-    isShowIcon: false,
-  };
-
+class CallViewComponent extends Component<Props> {
   private _handleClick = (evt: React.MouseEvent) => {
     evt.stopPropagation();
     const { directCall, onClick } = this.props;
@@ -34,31 +26,12 @@ class CallViewComponent extends Component<Props, State> {
     directCall();
   }
 
-  private _checkShowIcon = () => {
-    const { showIcon } = this.props;
-    const { isShowIcon } = this.state;
-    if (showIcon !== isShowIcon) {
-      this.setState({
-        isShowIcon: showIcon,
-      });
-    }
-  }
-
-  componentDidMount() {
-    this._checkShowIcon();
-  }
-
-  componentDidUpdate() {
-    this._checkShowIcon();
-  }
-
   render() {
-    const { isShowIcon } = this.state;
-    if (!isShowIcon) {
+    const { t, phone, size, variant, color, showIcon } = this.props;
+
+    if (!showIcon.get()) {
       return null;
     }
-
-    const { t, phone, size, variant, color } = this.props;
 
     return (
       <JuiIconButton
