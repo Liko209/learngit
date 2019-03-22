@@ -175,19 +175,14 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   @computed
-  get _postId() {
-    return this.props.postId;
-  }
-
-  @computed
   get post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.postId);
   }
 
   private _getPostStatus() {
     const progress = getEntity<Progress, ProgressModel>(
       ENTITY_NAME.PROGRESS,
-      this._postId,
+      this.props.postId,
     );
     return progress.progressStatus;
   }

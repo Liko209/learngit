@@ -12,10 +12,12 @@ import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import FileItemModel from '@/store/models/FileItem';
+import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 
 jest.mock('sdk/module/post');
 jest.mock('../../../../store/utils');
 jest.mock('@/containers/Notification');
+jest.mock('@/common/getThumbnailURL');
 
 const itemService = {
   cancelUpload: jest.fn(),
@@ -140,7 +142,10 @@ describe('filesItemVM', () => {
       versions: [],
     } as FileItemModel;
 
-    beforeEach(() => filesItemVM.urlMap.clear());
+    beforeEach(() => {
+      filesItemVM.urlMap.clear();
+      jest.resetAllMocks();
+    });
 
     it('should fallback url to versionUrl for multiple images', async () => {
       filesItemVM.files[0] = [
@@ -149,17 +154,19 @@ describe('filesItemVM', () => {
           type: 10,
         },
       ];
+      (getThumbnailURLWithType as jest.Mock).mockReturnValue({
+        url: imageItem.versionUrl,
+      });
       await filesItemVM.getCropImage();
-      await waitResult(() =>
-        expect(filesItemVM.urlMap.get(imageItem.id)).toEqual(
-          imageItem.versionUrl,
-        ),
+      expect(filesItemVM.urlMap.get(imageItem.id)).toEqual(
+        imageItem.versionUrl,
       );
     });
 
     it('should get undefined url when type invalid', async () => {
       const invalidItem: FileItemModel = {
         type: 0,
+        versions: [],
       } as FileItemModel;
       filesItemVM.files[0] = [
         {
@@ -167,6 +174,9 @@ describe('filesItemVM', () => {
           type: 10,
         },
       ];
+      (getThumbnailURLWithType as jest.Mock).mockReturnValue({
+        url: imageItem.versionUrl,
+      });
       await filesItemVM.getCropImage();
       await waitResult(() =>
         expect(filesItemVM.urlMap.get(imageItem.id)).toBeUndefined(),
@@ -186,10 +196,11 @@ describe('filesItemVM', () => {
           type: 10,
         },
       ];
+      (getThumbnailURLWithType as jest.Mock).mockReturnValue({
+        url: gifItem.versionUrl,
+      });
       await filesItemVM.getCropImage();
-      await waitResult(() =>
-        expect(filesItemVM.urlMap.get(gifItem.id)).toEqual(gifItem.versionUrl),
-      );
+      expect(filesItemVM.urlMap.get(gifItem.id)).toEqual(gifItem.versionUrl);
     });
   });
 });
