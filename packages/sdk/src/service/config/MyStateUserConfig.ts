@@ -2,9 +2,9 @@ import { UserConfig } from '../../module/config';
 import { CONFIG_KEYS } from './configKeys';
 import { AccountGlobalConfig } from '../account/config';
 
-class NewUserConfig extends UserConfig {
+class MyStateUserConfig extends UserConfig {
   constructor() {
-    super(AccountGlobalConfig.getCurrentUserId(), 'config');
+    super(AccountGlobalConfig.getUserDictionary(), 'config');
   }
 
   setMyStateId(id: number) {
@@ -16,4 +16,4 @@ class NewUserConfig extends UserConfig {
   }
 }
 
-export { NewUserConfig };
+export { MyStateUserConfig };

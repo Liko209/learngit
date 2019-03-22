@@ -24,7 +24,7 @@ import { IEntityCacheController } from '../../../../framework/controller/interfa
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from '../../../../module/config';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { ContactType } from '../../types';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
@@ -189,7 +189,10 @@ describe('PersonService', () => {
     };
 
     beforeEach(() => {
-      AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(1);
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValue(1);
     });
 
     it('should not return extension id for guest user', () => {

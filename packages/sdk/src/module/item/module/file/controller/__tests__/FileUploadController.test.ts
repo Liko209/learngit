@@ -16,7 +16,7 @@ import notificationCenter from '../../../../../../service/notificationCenter';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
 import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
-import { AccountGlobalConfig } from '../../../../../../service/account/config';
+import { AccountGlobalConfig, AccountUserConfig } from '../../../../../../service/account/config';
 import { isInBeta } from '../../../../../../service/account/clientConfig';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
@@ -77,8 +77,8 @@ describe('fileUploadController', () => {
 
     daoManager.getDao = jest.fn().mockReturnValue(itemDao);
 
-    AccountGlobalConfig.getCurrentCompanyId.mockReturnValue(companyId);
-    AccountGlobalConfig.getCurrentUserId.mockReturnValue(userId);
+    AccountUserConfig.prototype.getCurrentCompanyId.mockReturnValue(companyId);
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(userId);
 
     notificationCenter.emitEntityReplace.mockImplementation(() => {});
     GroupConfigService.getInstance = jest

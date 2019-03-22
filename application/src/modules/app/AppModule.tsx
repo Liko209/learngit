@@ -24,7 +24,7 @@ import { HomeService } from '@/modules/home';
 
 import './index.css';
 import { generalErrorHandler } from '@/utils/error';
-import { AccountGlobalConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/service/account/config';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 
 /**
@@ -94,8 +94,9 @@ class AppModule extends AbstractModule {
       const accountService: service.AccountService = AccountService.getInstance();
 
       if (accountService.isAccountReady()) {
-        const currentUserId = AccountGlobalConfig.getCurrentUserId();
-        const currentCompanyId = AccountGlobalConfig.getCurrentCompanyId();
+        const accountUserConfig = new AccountUserConfig();
+        const currentUserId = accountUserConfig.getGlipUserId();
+        const currentCompanyId = accountUserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
 
