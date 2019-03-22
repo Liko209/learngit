@@ -33,6 +33,7 @@ const StyleConversationPostLike = styled.div`
 
   & > button {
     margin-right: ${spacing(1)};
+    border-radius: 0;
   }
 
   & > span {
