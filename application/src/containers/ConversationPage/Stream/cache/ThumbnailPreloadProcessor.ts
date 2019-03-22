@@ -60,6 +60,10 @@ class ThumbnailPreloadProcessor implements IProcessor {
 
   async process(): Promise<boolean> {
     try {
+      if (!this._item || this._item.id < 0) {
+        return false;
+      }
+
       const itemService = ItemService.getInstance() as ItemService;
       const item = await itemService.getById(this._item.id);
       if (
@@ -72,7 +76,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
         )
       ) {
         if (!FileItemUtils.isSupportPreview(item)) {
-          return true;
+          return false;
         }
 
         const thumbnail = await getThumbnailURLWithType(

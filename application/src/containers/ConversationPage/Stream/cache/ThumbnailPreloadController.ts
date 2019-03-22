@@ -30,14 +30,12 @@ class ThumbnailPreloadController {
     notificationCenter.on(
       ItemNotification.getItemNotificationKey(TypeDictionary.TYPE_ID_FILE),
       (payload: NotificationEntityPayload<FileItem>) => {
-        this._handleItemChanged(payload);
+        this.handleItemChanged(payload);
       },
     );
   }
 
-  private _handleItemChanged = (
-    payload: NotificationEntityPayload<ItemFile>,
-  ) => {
+  handleItemChanged = (payload: NotificationEntityPayload<ItemFile>) => {
     const { type } = payload;
     if (type === EVENT_TYPES.UPDATE) {
       const data: any = payload;
@@ -56,6 +54,7 @@ class ThumbnailPreloadController {
 
   clear() {
     this._sequenceProcessorHandler.clear();
+    this._itemsObserver.clear();
   }
 
   preload(ids: number[]) {
