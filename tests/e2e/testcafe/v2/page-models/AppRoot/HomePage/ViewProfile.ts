@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import { BaseWebComponent } from '../../BaseWebComponent';
+import { ClientFunction } from 'testcafe';
 
 
 export class MiniProfile extends BaseWebComponent {
@@ -110,6 +111,18 @@ export class MiniProfile extends BaseWebComponent {
   get favoriteStatusIcon() {
     return this.getSelectorByIcon("star", this.header);
   }
+
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
 }
 
 export class ProfileDialog extends BaseWebComponent {
@@ -202,6 +215,26 @@ export class ProfileDialog extends BaseWebComponent {
 
 
   // people only
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button');
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.click(this.telephonyButton);
+  }
+
+  get moreItem() {
+    return this.telephonyButton.parent('div');
+  }
+
+  async makeCall() {
+    await this.t.hover(this.extensionArea).click(this.telephonyButton);
+  }
+
   get formArea() {
     return this.getSelectorByAutomationId('profileDialogForm');
   }
@@ -218,8 +251,12 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByIcon('call', this.formArea);
   }
 
-  get extension() {
-    return this.extensionIcon.parent(0).find('div').withText('Ext').nextSibling('div').textContent;
+  get extensionArea() {
+    return this.extensionIcon.parent(1); //TODO: automation ID
+  }
+
+  get extensionNumber() {
+    return this.extensionIcon.parent(0).find('div').withText('Ext').nextSibling('div');
   }
 
   get emailIcon() {
@@ -282,6 +319,14 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   // team only
+  get adminLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self);
+  }
+
+  get guestLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
+  }
+
   get privateButton() {
     return this.profileTitle.find('.privacy');
   }
@@ -381,6 +426,17 @@ class Member extends BaseWebComponent {
     await this.t.hover(this.self).click(this.moreButton);
   }
 
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
 }
 
 class MoreMenu extends BaseWebComponent {

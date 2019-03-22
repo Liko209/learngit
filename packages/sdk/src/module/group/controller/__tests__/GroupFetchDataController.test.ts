@@ -28,6 +28,7 @@ import { Group, TeamPermission } from '../../entity';
 import { GroupService } from '../../index';
 import { GroupFetchDataController } from '../GroupFetchDataController';
 import { GroupHandleDataController } from '../GroupHandleDataController';
+import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
 jest.mock('../../../../dao');
 jest.mock('../../../groupConfig/dao');
@@ -55,6 +56,7 @@ beforeEach(() => {
 
   PersonService.getInstance = jest.fn().mockReturnValue(personService);
   ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+  SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
 });
 
 describe('GroupFetchDataController', () => {

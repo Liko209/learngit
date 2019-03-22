@@ -1,7 +1,7 @@
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
  * @Date: 2019-02-14 15:55:54
- * Copyright Â© RingCentral. All rights reserved.
+ * Copyright © RingCentral. All rights reserved.
  */
 import { Profile } from '../../entity';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
@@ -233,12 +233,34 @@ describe('ProfileActionController', () => {
   });
   describe('reopenConversation', () => {
     it('should reopen group when group is hidden', async () => {
-      testPartialModifyController.partialEntity = { _id: 2 };
+      testPartialModifyController.partialEntity = {
+        _id: 2,
+      };
+      testPartialModifyController.originalEntity = {
+        _id: 2,
+        hide_group_333: true,
+      };
       const controller = getActionController();
       const result = await controller.reopenConversation(333);
       expect(result).toEqual({
         _id: 2,
         hide_group_333: false,
+      });
+    });
+
+    it('should do nothing when group is not hidden', async () => {
+      testPartialModifyController.partialEntity = {
+        _id: 2,
+        person_id: 3,
+      };
+      testPartialModifyController.originalEntity = {
+        _id: 2,
+      };
+      const controller = getActionController();
+      const result = await controller.reopenConversation(333);
+      expect(result).toEqual({
+        _id: 2,
+        person_id: 3,
       });
     });
   });

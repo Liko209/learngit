@@ -19,12 +19,10 @@ const ThemeDecorator = storyFn => {
   );
 };
 
-function requireAll(requireContext) {
-  return requireContext.keys().map(requireContext);
-}
+const req = require.context('../src', true, /\.story\.tsx?$/);
 
 function loadStories() {
-  requireAll(require.context('../src', true, /\.story\.tsx?$/));
+  req.keys().forEach(filename => req(filename));
 }
 
 addDecorator(withKnobs);

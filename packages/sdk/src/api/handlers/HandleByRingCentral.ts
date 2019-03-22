@@ -77,6 +77,13 @@ const HandleByRingCentral = new class extends AbstractHandleType {
     }
     this.platformHandleDelegate.checkServerStatus(callback);
   }
+
+  onRefreshTokenFailure = () => {
+    if (!this.platformHandleDelegate) {
+      return;
+    }
+    this.platformHandleDelegate.onRefreshTokenFailure();
+  }
 }();
 
 export default HandleByRingCentral;

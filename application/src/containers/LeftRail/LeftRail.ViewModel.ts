@@ -52,7 +52,7 @@ class LeftRailViewModel extends StoreViewModel<LeftRailProps>
       },
       {
         title: 'message.bookmarkPosts',
-        icon: 'bookmark_border',
+        icon: 'bookmark',
         type: POST_LIST_TYPE.bookmarks,
         testId: 'entry-bookmarks',
       },

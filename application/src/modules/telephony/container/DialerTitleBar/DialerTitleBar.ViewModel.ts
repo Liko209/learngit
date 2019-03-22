@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed, observable, action } from 'mobx';
+import i18next from 'i18next';
 import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import { formatSeconds } from '@/utils/date';
 import { DialerTitleBarProps, DialerTitleBarViewProps } from './types';
 import { TelephonyStore } from '../../store';
-import { CALL_STATE } from '../../FSM';
 
 class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
   implements DialerTitleBarViewProps {
@@ -32,16 +32,19 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
 
   @action.bound
   private _createInterval() {
-    this._intervalId = setInterval(() => {
-      this._seconds = this._seconds + 1;
-    },                             1000);
+    const { activeCallTime } = this._telephonyStore;
+    if (activeCallTime) {
+      this._intervalId = setInterval(() => {
+        this._seconds = Number(`${Date.now() - activeCallTime}`.slice(0, -3));
+      },                             1000);
+    }
   }
 
   @computed
   get timing() {
-    const { callState } = this._telephonyStore;
-    if (callState === CALL_STATE.CONNECTING) {
-      return 'Connecting';
+    const { activeCallTime } = this._telephonyStore;
+    if (!activeCallTime) {
+      return i18next.t('common.Connecting');
     }
     if (!this._intervalId) {
       this._createInterval();

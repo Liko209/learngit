@@ -5,6 +5,7 @@
  */
 import Api from '../../api';
 import { loginGlip, indexData } from '../user';
+import { TEN_MINUTE_TIMEOUT, NETWORK_VIA, REQUEST_PRIORITY } from 'foundation';
 
 jest.mock('../../api');
 
@@ -17,6 +18,7 @@ describe('UserAPI', () => {
         data: { rc_access_token_data: 'eyJhdXRoIjoiYXNkZnNkIn0=' },
         method: 'put',
         path: '/login',
+        timeout: TEN_MINUTE_TIMEOUT,
         via: 0,
       });
     });
@@ -30,10 +32,12 @@ describe('UserAPI', () => {
       expect(Api.glipNetworkClient.get).toHaveBeenCalledWith(
         '/index',
         mock,
-        0,
+        NETWORK_VIA.HTTP,
         requestConfig,
         header,
         3,
+        REQUEST_PRIORITY.HIGH,
+        TEN_MINUTE_TIMEOUT,
       );
     });
   });

@@ -20,12 +20,13 @@ const StyledLinkButton = styled.button`
     palette(ColorMap[color][0], ColorMap[color][1])};
   min-width: ${width(16)};
   border: none;
-  background-color: none;
+  background-color: ${palette('common', 'white')};
+  outline: none;
 
   &:hover {
     cursor: pointer;
+    color: ${({ color = 'primary' }) => palette(ColorMap[color][0], 'light')};
   }
-
   &.disabled {
     color: ${palette('accent', 'ash')};
   }

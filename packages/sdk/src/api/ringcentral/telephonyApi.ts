@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RINGCENTRAL_API, HTTP_HEADER_KEY, CONTENT_TYPE } from './constants';
-import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
+import { NETWORK_METHOD, NETWORK_VIA, HA_PRIORITY } from 'foundation';
 import Api from '../api';
 import {
   ISpecialServiceRequest,
@@ -23,6 +23,7 @@ class TelephonyApi extends Api {
       authFree: false,
       via: NETWORK_VIA.HTTP,
       params: request,
+      HAPriority: HA_PRIORITY.HIGH,
     };
     return Api.rcNetworkClient.http<ISpecialServiceNumberResponse>(query);
   }
@@ -38,6 +39,7 @@ class TelephonyApi extends Api {
       authFree: false,
       via: NETWORK_VIA.HTTP,
       headers: extraHeaders,
+      HAPriority: HA_PRIORITY.HIGH,
     };
     return Api.rcNetworkClient.http<string>(query);
   }
@@ -49,6 +51,7 @@ class TelephonyApi extends Api {
       authFree: false,
       via: NETWORK_VIA.HTTP,
       params: request,
+      HAPriority: HA_PRIORITY.HIGH,
     };
     return Api.rcNetworkClient.http<IDialingPlanResponse>(query);
   }
@@ -60,6 +63,7 @@ class TelephonyApi extends Api {
       authFree: false,
       via: NETWORK_VIA.HTTP,
       params: request,
+      HAPriority: HA_PRIORITY.HIGH,
     };
     return Api.rcNetworkClient.http<IPhoneNumberResponse>(query);
   }

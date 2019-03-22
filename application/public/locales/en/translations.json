@@ -40,7 +40,8 @@
     "and": "and",
     "back": "Back",
     "forward": "Forward",
-    "You": "You"
+    "You": "You",
+    "Connecting": "Connecting"
   },
   "auth": {
     "signIn": "Sign in",
@@ -56,7 +57,11 @@
     "RecentSearches": "Recent searches",
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
-    "aboutRingCentral": "About RingCentral"
+    "aboutRingCentral": "About RingCentral",
+    "version": "Version",
+    "lastCommit": "Last Commit",
+    "deployedTime": "Deployed at",
+    "allRightsReserved": "All rights reserved"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -355,6 +360,7 @@
       "markAsRead": "Mark as read",
       "markAsUnread": "Mark as unread",
       "convertToTeam": "Convert to team",
+      "convertToTeamNamePrefix": "Team: ",
       "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content."
     },
     "company": {},
@@ -416,6 +422,7 @@
       "detach": "Detach",
       "attach": "Attach",
       "mute": "Mute",
+      "unmute": "Unmute",
       "keypad": "Keypad",
       "hold": "Hold",
       "add": "Add",
@@ -447,6 +454,7 @@
     "DismissTip": "Sorry, the image you were viewing is deleted.",
     "ImageDeleted": "Sorry, the image you were viewing is deleted.",
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
-    "TeamArchived": "The team was archived. To know more, contact the team administrator."
+    "TeamArchived": "The team was archived. To know more, contact the team administrator.",
+    "ConversationClosed": "You removed the conversation."
   }
 }

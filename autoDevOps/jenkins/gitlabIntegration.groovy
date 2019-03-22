@@ -88,7 +88,7 @@ def updateRemoteCopy(String remoteUri, String linkSource, String linkTarget) {
     println sshCmd(remoteUri, "cp -r ${linkSource} ${linkTarget}")
 }
 
-def updateVersionInfo(String remoteUri, String appDir, String sha, int timestamp) {
+def updateVersionInfo(String remoteUri, String appDir, String sha, long timestamp) {
     String cmd = "sed -i 's/{{deployedCommit}}/${sha.substring(0,9)}/;s/{{deployedTime}}/${timestamp}/' ${appDir}/static/js/versionInfo.*.chunk.js || true"
     println sshCmd(remoteUri, cmd)
 }
@@ -294,11 +294,11 @@ node(buildNode) {
     env.NODEJS_HOME = tool nodejsTool
     env.PATH="${env.NODEJS_HOME}/bin:${env.PATH}"
     env.TZ='UTC-8'
+    env.NODE_ENV='development'
 
     try {
         // start to build
         stage ('Collect Facts') {
-            // cleanWs()
             sh 'env'
             sh 'df -h'
             sh 'uptime'
@@ -308,9 +308,12 @@ node(buildNode) {
             sh 'grep --version'
             sh 'which tr'
             sh 'which xargs'
-            // we need this to work around a typescript bug: https://github.com/Microsoft/TypeScript/pull/30078
-            // or else we have to clean whole workspace, which will make git clone much longer
-            sh 'find . -type d -name node_modules | xargs rm -rf || true'
+
+            // clean npm cache when its size exceed 10G, the unit of default du command is K, so we need to right-shift 20 to get G
+            long npmCacheSize = Long.valueOf(sh(returnStdout: true, script: 'du -s $(npm config get cache) | cut -f1').trim()) >> 20
+            if (npmCacheSize > 10) {
+                sh 'npm cache clean --force'
+            }
         }
 
         stage ('Checkout') {
@@ -319,7 +322,6 @@ node(buildNode) {
                 branches: [[name: "${gitlabSourceNamespace}/${gitlabSourceBranch}"]],
                 extensions: [
                     [$class: 'PruneStaleBranch'],
-                    [$class: 'CleanBeforeCheckout'],
                     [
                         $class: 'PreBuildMerge',
                         options: [
@@ -342,6 +344,8 @@ node(buildNode) {
                     ]
                 ]
             ])
+            // keep node_modules to speed up build process
+            sh 'git clean -xdf -e node_modules'
             // get head sha
             headSha = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
             // change in tests and autoDevOps directory should not trigger application build
@@ -390,11 +394,13 @@ node(buildNode) {
 
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
             sh "echo 'registry=${npmRegistry}' > .npmrc"
-            sh "[ -f package-lock.json ] && rm package-lock.json || true"
             sshagent (credentials: [scmCredentialId]) {
-                sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
-                sh 'npm install --ignore-scripts --unsafe-perm'
+                sh 'npm install @babel/parser@7.3.3'
+                sh 'npm install'
+                sh 'npm install --only=dev --ignore-scripts'
+                sh 'npm install --ignore-scripts'
                 sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
+
             }
             try {
                 sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version check'
@@ -432,6 +438,8 @@ node(buildNode) {
                         reportTitles: 'Coverage'
                     ])
                     report.coverage = "${buildUrl}Coverage"
+                    // do this for file name compatability
+                    sh 'cp coverage/coverage-final.json coverage/coverage-summary.json || true'
                     if (!isMerge && integrationBranch == gitlabTargetBranch) {
                         // attach coverage report as git note when new commits are pushed to integration branch
                         // push git notes to remote
@@ -510,7 +518,7 @@ node(buildNode) {
                         // and create copy to branch name based folder
                         updateRemoteCopy(deployUri, appHeadShaDir, appLinkDir)
                         // and update version info
-                        int ts = System.currentTimeMillis()
+                        long ts = System.currentTimeMillis()
                         updateVersionInfo(deployUri, appLinkDir, headSha, ts)
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
@@ -526,16 +534,16 @@ node(buildNode) {
             }
         )
 
-        // FIXME: it is better to provide a stage for all external jobs
-        // Telephony automation automation
-        try {
-            if (!isMerge && 'POC/FIJI-1302' == gitlabSourceBranch) {
-                build(job: 'Jupiter-telephony-automation', parameters: [
-                    [$class: 'StringParameterValue', name: 'BRANCH', value: 'POC/FIJI-2808'],
-                    [$class: 'StringParameterValue', name: 'JUPITER_URL', value: appUrl],
-                ])
-            }
-        } catch (e) {}
+        condStage(name: 'Telephony Automation', timeout: 600) {
+            try {
+                if (!isMerge && 'POC/FIJI-1302' == gitlabSourceBranch) {
+                    build(job: 'Jupiter-telephony-automation', parameters: [
+                        [$class: 'StringParameterValue', name: 'BRANCH', value: 'POC/FIJI-2808'],
+                        [$class: 'StringParameterValue', name: 'JUPITER_URL', value: appUrl],
+                    ])
+                }
+            } catch (e) {}
+        }
 
         condStage (name: 'E2E Automation', timeout: 3600, enable: !skipEndToEnd) {
             String hostname =  sh(returnStdout: true, script: 'hostname -f').trim()
@@ -554,6 +562,7 @@ node(buildNode) {
                 "BRANCH=${gitlabSourceBranch}",
                 "ACTION=ON_MERGE",
                 "SCREENSHOTS_PATH=./screenshots",
+                "TMPFILE_PATH=./tmp",
                 "DEBUG_MODE=false",
                 "STOP_ON_FIRST_FAIL=true",
                 "SKIP_JS_ERROR=true",
@@ -572,7 +581,7 @@ node(buildNode) {
                 // you need to ensure target dirs exist in selenium-node, and use ramdisk for better performance
                 sh '''echo '{"chromeOptions":{"args":["headless","user-data-dir=/user-data","disk-cache-dir=/user-cache"]}}' > chrome-opts.json'''
 
-                sh "mkdir -p screenshots"
+                sh "mkdir -p screenshots tmp"
                 sh "echo 'registry=${npmRegistry}' > .npmrc"
                 sshagent (credentials: [scmCredentialId]) {
                     sh 'npm install --unsafe-perm'

@@ -160,6 +160,7 @@ describe('Event Item Dao', () => {
     const itemResult = {
       id: 536412170,
       created_at: 1546857116347,
+      modified_at: 1546857116623,
       group_ids: [842096646],
       name: '人月神话（CN）.pdf',
       type: 'application/pdf',

@@ -28,17 +28,20 @@ import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
+import { IndexRequestProcessor } from './IndexRequestProcessor';
+import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
+import { SYNC_SOURCE } from '../types';
 
 const LOG_TAG = 'SyncController';
-enum SYNC_SOURCE {
-  INDEX = 'SYNC_SOURCE.INDEX',
-  INITIAL = 'SYNC_SOURCE.INITIAL',
-  REMAINING = 'SYNC_SOURCE.REMAINING',
-}
 class SyncController {
   private _syncListener: SyncListener;
+  private _processorHandler: SequenceProcessorHandler;
 
-  constructor() {}
+  constructor() {
+    this._processorHandler = new SequenceProcessorHandler(
+      'Index_SyncController',
+    );
+  }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
     mainLogger.log('sync service SERVICE.SOCKET_STATE_CHANGE', state);
@@ -100,15 +103,21 @@ class SyncController {
 
   private async _firstLogin() {
     progressBar.start();
+    const currentTime = Date.now();
     try {
-      const currentTime = Date.now();
       await this._fetchInitial(currentTime);
-      await this._fetchRemaining(currentTime);
-      mainLogger.info('fetch initial data or remaining data success');
+      mainLogger.info('fetch initial data success');
+      notificationCenter.emitKVChange(SERVICE.LOGIN);
     } catch (e) {
-      mainLogger.error('fetch initial data or remaining data error');
+      mainLogger.error('fetch initial data error');
       // actually, should only do sign out when initial failed
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+    }
+    try {
+      await this._fetchRemaining(currentTime);
+      mainLogger.info('fetch remaining data success');
+    } catch (e) {
+      mainLogger.error('fetch remaining data error');
     }
     progressBar.stop();
   }
@@ -117,11 +126,7 @@ class SyncController {
     const { onInitialLoaded, onInitialHandled } = this._syncListener;
     const initialResult = await this.fetchInitialData(time);
     onInitialLoaded && (await onInitialLoaded(initialResult));
-    await this._handleIncomingData({
-      result: initialResult,
-      source: SYNC_SOURCE.INITIAL,
-    });
-    notificationCenter.emitKVChange(SERVICE.FETCH_INITIAL_DONE);
+    await this._handleIncomingData(initialResult, SYNC_SOURCE.INITIAL);
     onInitialHandled && (await onInitialHandled());
     mainLogger.log('fetch initial data and handle success');
   }
@@ -140,32 +145,30 @@ class SyncController {
     const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
     const remainingResult = await this.fetchRemainingData(time);
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
-    await this._handleIncomingData({
-      result: remainingResult,
-      source: SYNC_SOURCE.REMAINING,
-    });
+    await this._handleIncomingData(remainingResult, SYNC_SOURCE.REMAINING);
     onRemainingHandled && (await onRemainingHandled());
     NewGlobalConfig.setFetchedRemaining(true);
     mainLogger.log('fetch remaining data and handle success');
   }
 
   private async _syncIndexData(timeStamp: number) {
-    progressBar.start();
-    const { onIndexLoaded, onIndexHandled } = this._syncListener;
-    // 5 minutes ago to ensure data is correct
-    let result;
-    try {
-      result = await this.fetchIndexData(String(timeStamp - 300000));
-      onIndexLoaded && (await onIndexLoaded(result));
-      await this._handleIncomingData({
-        result,
-        source: SYNC_SOURCE.INDEX,
-      });
-      onIndexHandled && (await onIndexHandled());
-    } catch (error) {
-      this._handleSyncIndexError(error);
-    }
-    progressBar.stop();
+    const executeFunc = async () => {
+      progressBar.start();
+      const { onIndexLoaded, onIndexHandled } = this._syncListener;
+      // 5 minutes ago to ensure data is correct
+      try {
+        const result = await this.fetchIndexData(String(timeStamp - 300000));
+        onIndexLoaded && (await onIndexLoaded(result));
+        await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
+        onIndexHandled && (await onIndexHandled());
+      } catch (error) {
+        await this._handleSyncIndexError(error);
+      }
+      progressBar.stop();
+    };
+
+    const processor = new IndexRequestProcessor(executeFunc);
+    this._processorHandler.addProcessor(processor);
   }
 
   private async _handleSyncIndexError(result: any) {
@@ -222,7 +225,10 @@ class SyncController {
   }
 
   /* handle incoming data */
-  private async _dispatchIncomingData(data: IndexDataModel) {
+  private async _dispatchIncomingData(
+    data: IndexDataModel,
+    source: SYNC_SOURCE,
+  ) {
     const {
       user_id: userId,
       company_id: companyId,
@@ -261,23 +267,34 @@ class SyncController {
       }),
       CompanyService.getInstance<CompanyService>().handleIncomingData(
         companies,
+        source,
       ),
       (ItemService.getInstance() as ItemService).handleIncomingData(items),
       PresenceService.getInstance<PresenceService>().presenceHandleData(
         presences,
       ),
-      (StateService.getInstance() as StateService).handleState(arrState),
+      (StateService.getInstance() as StateService).handleState(
+        arrState,
+        source,
+      ),
     ])
       .then(() =>
         ProfileService.getInstance<ProfileService>().handleIncomingData(
           transProfile,
+          source,
         ),
       )
       .then(() =>
-        PersonService.getInstance<PersonService>().handleIncomingData(people),
+        PersonService.getInstance<PersonService>().handleIncomingData(
+          people,
+          source,
+        ),
       )
       .then(() =>
-        GroupService.getInstance<GroupService>().handleData(MergedGroups),
+        GroupService.getInstance<GroupService>().handleData(
+          MergedGroups,
+          source,
+        ),
       )
       .then(() =>
         PostService.getInstance<PostService>().handleIndexData(
@@ -287,13 +304,10 @@ class SyncController {
       );
   }
 
-  private async _handleIncomingData({
-    result,
-    source,
-  }: {
-    result: IndexDataModel;
-    source: SYNC_SOURCE;
-  }) {
+  private async _handleIncomingData(
+    result: IndexDataModel,
+    source: SYNC_SOURCE,
+  ) {
     try {
       const {
         timestamp = null,
@@ -301,7 +315,7 @@ class SyncController {
         static_http_server: staticHttpServer = '',
       } = result;
 
-      await this._dispatchIncomingData(result);
+      await this._dispatchIncomingData(result, source);
       const shouldSaveTimeStamp =
         source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
       if (timestamp && shouldSaveTimeStamp) {

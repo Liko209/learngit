@@ -69,12 +69,24 @@ class TelephonyService extends EntityBaseService {
         result = MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
         break;
       }
+      case RTC_STATUS_CODE.INVALID_STATE: {
+        result = MAKE_CALL_ERROR_CODE.INVALID_STATE;
+        break;
+      }
     }
     return result;
   }
 
   hangUp(callId: string) {
     this.telephonyController.getAccountController().hangUp(callId);
+  }
+
+  mute(callId: string) {
+    this.telephonyController.getAccountController().mute(callId);
+  }
+
+  unmute(callId: string) {
+    this.telephonyController.getAccountController().unmute(callId);
   }
 }
 

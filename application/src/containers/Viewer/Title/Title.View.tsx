@@ -54,7 +54,7 @@ class ViewerTitleViewComponent extends Component<
 
   render() {
     const { item, total, currentIndex, person, t } = this.props;
-    const { name, modifiedAt, downloadUrl } = item;
+    const { name, downloadUrl, createdAt } = item;
     const { userDisplayName, id } = person;
     return (
       <ViewerContext.Consumer>
@@ -74,16 +74,23 @@ class ViewerTitleViewComponent extends Component<
                 />
                 <JuiDialogHeaderMeta>
                   <JuiDialogHeaderMetaLeft>
-                    <Avatar uid={id} />
+                    <Avatar
+                      uid={id}
+                      data-test-automation-id={'previewerSenderAvatar'}
+                    />
                   </JuiDialogHeaderMetaLeft>
                   <JuiDialogHeaderMetaRight
                     title={userDisplayName}
+                    data-test-automation-id={'previewerSenderInfo'}
                     subtitle={dateFormatter.dateAndTimeWithoutWeekday(
-                      moment(modifiedAt),
+                      moment(createdAt),
                     )}
                   />
                 </JuiDialogHeaderMeta>
-                <JuiDialogHeaderTitle variant="responsive">
+                <JuiDialogHeaderTitle
+                  variant="responsive"
+                  data-test-automation-id={'previewerTitle'}
+                >
                   <span>{name}</span>
                   <JuiDialogHeaderSubtitle>
                     {' '}
@@ -118,6 +125,7 @@ class ViewerTitleViewComponent extends Component<
                     </JuiPopoverMenu> */}
                     <JuiIconButton
                       onClick={viewerContext.closeViewer}
+                      aria-label={t('common.dialog.close')}
                       tooltipTitle={t('common.dialog.close')}
                     >
                       close

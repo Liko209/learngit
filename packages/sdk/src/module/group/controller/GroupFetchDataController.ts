@@ -9,7 +9,10 @@ import _ from 'lodash';
 import { Api } from '../../../api';
 import GroupAPI from '../../../api/glip/group';
 import { daoManager } from '../../../dao';
-import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
+import {
+  IEntityCacheSearchController,
+  Terms,
+} from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { SortableModel } from '../../../framework/model';
@@ -196,7 +199,6 @@ export class GroupFetchDataController {
 
     return false;
   }
-
   async doFuzzySearchGroups(
     searchKey: string,
     fetchAllIfSearchKeyEmpty?: boolean,
@@ -213,29 +215,34 @@ export class GroupFetchDataController {
     if (!currentUserId) {
       return null;
     }
-
     const sortFunc = (
       group: Group,
-      terms: string[],
+      terms: Terms,
     ): SortableModel<Group> | null => {
       if (this._isValidGroup(group) && group.members.length > 2) {
         const groupName = this.getGroupNameByMultiMembers(
           group.members,
           currentUserId,
         );
-
+        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+        const lowerCaseGroupName = groupName.toLowerCase();
+        const isFuzzyMatched =
+          this.entityCacheSearchController.isFuzzyMatched(
+            lowerCaseGroupName,
+            searchKeyTerms,
+          ) ||
+          this.entityCacheSearchController.isSoundexMatched(
+            lowerCaseGroupName,
+            searchKeyTermsToSoundex,
+          );
         if (
-          (terms.length > 0 &&
-            this.entityCacheSearchController.isFuzzyMatched(
-              groupName,
-              terms,
-            )) ||
-          (fetchAllIfSearchKeyEmpty && terms.length === 0)
+          (searchKeyTerms.length > 0 && isFuzzyMatched) ||
+          (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0)
         ) {
           return {
             id: group.id,
             displayName: groupName,
-            firstSortKey: groupName.toLowerCase(),
+            firstSortKey: lowerCaseGroupName,
             entity: group,
           };
         }
@@ -282,29 +289,34 @@ export class GroupFetchDataController {
     const kSortingRateWithFirstAndPositionMatched: number = 1.1;
 
     const result = await this.entityCacheSearchController.searchEntities(
-      (team: Group, terms: string[]) => {
+      (team: Group, terms: Terms) => {
         let isMatched: boolean = false;
         let sortValue: number = 0;
-
         do {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
           if (!this._idValidTeam(team)) {
             break;
           }
 
-          if (fetchAllIfSearchKeyEmpty && terms.length === 0) {
+          if (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
             isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
           }
 
-          if (isMatched || terms.length === 0) {
+          if (isMatched || searchKeyTerms.length === 0) {
             break;
           }
+          const lowerCaseAbbreviation = team.set_abbreviation.toLowerCase();
 
-          if (
-            !this.entityCacheSearchController.isFuzzyMatched(
-              team.set_abbreviation,
-              terms,
-            )
-          ) {
+          const isFuzzyMatched =
+            this.entityCacheSearchController.isFuzzyMatched(
+              lowerCaseAbbreviation,
+              searchKeyTerms,
+            ) ||
+            this.entityCacheSearchController.isSoundexMatched(
+              lowerCaseAbbreviation,
+              searchKeyTermsToSoundex,
+            );
+          if (!isFuzzyMatched) {
             break;
           }
 
@@ -313,15 +325,15 @@ export class GroupFetchDataController {
           }
 
           const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
-            team.set_abbreviation,
+            lowerCaseAbbreviation,
           );
 
           for (let i = 0; i < splitNames.length; ++i) {
-            for (let j = 0; j < terms.length; ++j) {
+            for (let j = 0; j < searchKeyTerms.length; ++j) {
               if (
                 this.entityCacheSearchController.isStartWithMatched(
-                  splitNames[i],
-                  [terms[j]],
+                  splitNames[i].toLowerCase(),
+                  [searchKeyTerms[j]],
                 )
               ) {
                 sortValue +=

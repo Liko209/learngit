@@ -10,20 +10,19 @@ import {
   JuiPinnedCell,
   JuiPinnedCellMore,
 } from 'jui/pattern/RightShelf/PinnedItem';
-import storeManager from '@/store';
-import { GLOBAL_KEYS } from '@/store/constants';
 import { PinnedCellViewProps, PinnedCellProps } from './types';
 import { PinnedItem } from '../PinnedItem';
+import { jumpToPost } from '@/common/jumpToPost';
 const MAX_ITEM_LENGTH = 3;
 
 @observer
 class PinnedCellView extends Component<PinnedCellViewProps & PinnedCellProps> {
   jumpToPost = () => {
     const { post } = this.props;
-    const { id } = post;
-    const globalStore = storeManager.getGlobalStore();
-    globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, id);
+    const { id, groupId } = post;
+    jumpToPost(id, groupId);
   }
+
   render() {
     const {
       creatorName = '',

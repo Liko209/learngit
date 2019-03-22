@@ -40,15 +40,11 @@ if (process.env.NODE_ENV === 'test') {
     }
   }
 
-  Object.defineProperty(window, "localStorage", {
-    value: new FakeStorage()
+  Object.defineProperty(window, 'localStorage', {
+    value: new FakeStorage(),
   });
 
-  Object.defineProperty(window, "sessionStorage", {
-    value: new FakeStorage()
+  Object.defineProperty(window, 'sessionStorage', {
+    value: new FakeStorage(),
   });
-
-  // to fix: wait for enzyme to support memo
-  const React = require("react");
-  React.memo = x => x;
 }

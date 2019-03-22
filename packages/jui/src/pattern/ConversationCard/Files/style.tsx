@@ -28,6 +28,7 @@ import {
 } from '../../../foundation/Iconography';
 
 const ITEM_WIDTH = 84;
+const FILE_CARD_HEIGHT = 68;
 
 type FileIconProps = {
   size?: 'small';
@@ -87,6 +88,7 @@ const FileActionsWrapper = styled.span`
 const FileCard = styled(JuiCard)`
   display: inline-block;
   width: ${width(ITEM_WIDTH)};
+  height: ${height(FILE_CARD_HEIGHT)};
   margin: ${spacing(0, 3, 3, 0)};
 `;
 
