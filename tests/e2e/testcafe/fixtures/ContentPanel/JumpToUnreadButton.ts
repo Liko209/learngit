@@ -40,7 +40,7 @@ test(formalName('Unread button will disappear when resizing window then full scr
   });
 
   await h(t).withLog('And ensured unread message in the conversation', async () => {
-    const msgs = _.range(5);
+    const msgs = _.range(4);
     for (let msg of msgs) {
       await h(t).scenarioHelper.sentAndGetTextPostId(`${msg} ${uuid()}`, team, otherUser);
     }
@@ -245,8 +245,7 @@ JPT-225 All unread messages can be downloaded when click the unread button', ['J
     });
   })
 
-//skip due to https://jira.ringcentral.com/browse/FIJI-4329
-test.skip(formalName('Unread button (up) will dismiss when back and open the conversation', ['JPT-234', 'P1', 'Wayne.Zhou', 'Stream']), async (t) => {
+test(formalName('Unread button (up) will dismiss when back and open the conversation', ['JPT-234', 'P1', 'Wayne.Zhou', 'Stream']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];
@@ -270,7 +269,7 @@ test.skip(formalName('Unread button (up) will dismiss when back and open the con
   });
 
   await h(t).withLog('And conversationA has more than 1 screen unread messages', async () => {
-    const msgList = _.range(3).map(i => H.multilineString(10, `No. ${i}`, uuid()));
+    const msgList = _.range(5).map(i => H.multilineString(10, `No. ${i}`, uuid()));
     for (const msg of msgList) {
       await h(t).scenarioHelper.sentAndGetTextPostId(msg, teamA, otherUser);
     }
@@ -322,7 +321,7 @@ test(formalName(`The unread button (up) shouldn't dismiss when opening one conve
   });
 
   await h(t).withLog('And conversationA has more than 1 screen unread messages', async () => {
-    const msgList = _.range(3).map(i => H.multilineString(10, `No. ${i}`, uuid()));
+    const msgList = _.range(5).map(i => H.multilineString(10, `No. ${i}`, uuid()));
     for (const msg of msgList) {
       await h(t).scenarioHelper.sentAndGetTextPostId(msg, team, otherUser);
     }

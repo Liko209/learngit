@@ -11,8 +11,7 @@ fixture('Bookmarks/Bookmarks')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-// skip by bug:https://jira.ringcentral.com/browse/FIJI-3933 
-test.skip(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'Bookmarks']),
+test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'Bookmarks']),
   async (t: TestController) => {
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
@@ -41,15 +40,15 @@ test.skip(formalName('Jump to post position when click button or clickable area 
     let bookmarksPostTeamId: string, bookmarksPostChatId: string;
     await h(t).withLog('Given I have an extension with one Bookmarks post in team and one in group (out of screen)', async () => {
       await h(t).scenarioHelper.createTeamsOrChats([team, chat]);
-      bookmarksPostTeamId = await h(t).platform(otherUser).sentAndGetTextPostId(
+      bookmarksPostTeamId = await h(t).platform(loginUser).sentAndGetTextPostId(
         teamBookmarkMessage,
         team.glipId,
       );
-      bookmarksPostChatId = await h(t).platform(otherUser).sentAndGetTextPostId(
+      bookmarksPostChatId = await h(t).platform(loginUser).sentAndGetTextPostId(
         privateChatBookmarkMessage,
         chat.glipId,
       );
-      await h(t).glip(loginUser).bookmarkPosts([bookmarksPostTeamId, bookmarksPostChatId]);
+      await h(t).glip(loginUser).bookmarkPosts([+bookmarksPostTeamId, +bookmarksPostChatId]);
       for (const i of _.range(3)) {
         await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, otherUser);
         await h(t).scenarioHelper.sendTextPost(H.multilineString(), chat, otherUser);
@@ -74,8 +73,8 @@ test.skip(formalName('Jump to post position when click button or clickable area 
       await t.expect(bookmarkPage.postItemById(bookmarksPostChatId).exists).ok();
     }, true);
 
-    await h(t).withLog('When I click the bookmarked post item of team', async () => {
-      await bookmarkPage.postItemById(bookmarksPostTeamId).clickConversationByButton();
+    await h(t).withLog('When I click clickable area of team post. (except team name)', async () => {
+      await bookmarkPage.postItemById(bookmarksPostTeamId).jumpToConversationByClickPost();
     });
 
     await h(t).withLog('Then I should jump to the bookmarked post position in the team', async () => {
@@ -95,8 +94,8 @@ test.skip(formalName('Jump to post position when click button or clickable area 
       await t.expect(bookmarkPage.postItemById(bookmarksPostChatId).exists).ok();
     }, true);
 
-    await h(t).withLog('When I click team name on the bookmarked post item of privateChat', async () => {
-      await bookmarkPage.postItemById(bookmarksPostChatId).jumpToConversationByClickName();
+    await h(t).withLog(`When I hover the private chat message then click button - "Jump to conversation"`, async () => {
+      await bookmarkPage.postItemById(bookmarksPostChatId).clickConversationByButton();
     });
 
     await h(t).withLog('Then I should jump to the bookmarked post position in the private chat', async () => {
