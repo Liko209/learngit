@@ -10,6 +10,11 @@ import {
   getFakeHandler,
 } from './utils';
 import OAuthTokenManager from '../OAuthTokenManager';
+// import { NetworkRequestBuilder } from '../client';
+
+// jest.mock('../client/NetworkRequestBuilder');
+
+const mockRequest: any = {};
 let networkManager: NetworkManager;
 const initManagerWithHandlerType = () => {
   networkManager.initNetworkRequestBaseHandler(
@@ -63,10 +68,12 @@ describe('NetworkManager', () => {
         networkManager.networkRequestHandler(fakeHandleType.name)!,
         'addApiRequest',
       );
+      // setup();
       const request = getFakeRequest();
       networkManager.addApiRequest(request);
       expect(
-        networkManager.networkRequestHandler(fakeHandleType.name)!.addApiRequest,
+        networkManager.networkRequestHandler(fakeHandleType.name)!
+          .addApiRequest,
       ).toHaveBeenCalled();
     });
   });
@@ -119,7 +126,8 @@ describe('NetworkManager', () => {
       );
       networkManager.cancelRequest(request);
       expect(
-        networkManager.networkRequestHandler(fakeHandleType.name)!.cancelRequest,
+        networkManager.networkRequestHandler(fakeHandleType.name)!
+          .cancelRequest,
       ).toBeCalledWith(request);
     });
   });
