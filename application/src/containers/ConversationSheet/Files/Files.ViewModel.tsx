@@ -210,7 +210,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
           await this._itemService.cancelUpload(id);
         } else {
           this._idToDelete = id;
-          await this._postService.removeItemFromPost(this._postId, id);
+          await this._postService.removeItemFromPost(this.props.postId, id);
         }
       } catch (e) {
         Notification.flashToast({
