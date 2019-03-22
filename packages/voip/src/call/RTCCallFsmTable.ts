@@ -11,6 +11,7 @@ const CallFsmState = {
   IDLE: 'idle',
   PENDING: 'pending',
   ANSWERING: 'answering',
+  FORWARDING: 'forwarding',
   CONNECTING: 'connecting',
   CONNECTED: 'connected',
   HOLDING: 'holding',
@@ -30,6 +31,7 @@ const CallFsmEvent = {
   MUTE: 'mute',
   UNMUTE: 'Unmute',
   TRANSFER: 'transfer',
+  FORWARD: 'forward',
   START_RECORD: 'startRecord',
   STOP_RECORD: 'stopRecord',
   HOLD: 'hold',
@@ -54,6 +56,7 @@ interface IRTCCallFsmTableDependency {
   onHangupAction(): void;
   onFlipAction(target: number): void;
   onTransferAction(target: string): void;
+  onForwardAction(target: string): void;
   onStartRecordAction(): void;
   onStopRecordAction(): void;
   onMuteAction(): void;
@@ -118,6 +121,7 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
           ],
           to: () => {
             dependency.onHangupAction();
@@ -157,6 +161,14 @@ class RTCCallFsmTable extends StateMachine {
           },
         },
         {
+          name: CallFsmEvent.FORWARD,
+          from: CallFsmState.IDLE,
+          to: (target: string) => {
+            dependency.onForwardAction(target);
+            return CallFsmState.FORWARDING;
+          },
+        },
+        {
           name: CallFsmEvent.PARK,
           from: CallFsmState.CONNECTED,
           to: () => {
@@ -175,6 +187,7 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
           ],
           to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.PARK);
@@ -192,9 +205,28 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
           ],
           to: (target: string, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.TRANSFER);
+            return s;
+          },
+        },
+        {
+          name: CallFsmEvent.FORWARD,
+          from: [
+            CallFsmState.CONNECTED,
+            CallFsmState.ANSWERING,
+            CallFsmState.CONNECTING,
+            CallFsmState.DISCONNECTED,
+            CallFsmState.PENDING,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
+          ],
+          to: (target: string, s: any) => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.FORWARD);
             return s;
           },
         },
@@ -209,6 +241,7 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
           ],
           to: (target: number, s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.FLIP);
@@ -234,6 +267,7 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
           ],
           to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.START_RECORD);
@@ -259,6 +293,7 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
           ],
           to: (s: any) => {
             dependency.onReportCallActionFailed(RTC_CALL_ACTION.STOP_RECORD);
@@ -310,6 +345,7 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
           ],
           to: (digits: string, s: any) => {
             dependency.onDtmfAction(digits);
@@ -336,6 +372,7 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
           ],
           to: CallFsmState.DISCONNECTED,
         },
@@ -349,6 +386,7 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDING,
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
           ],
           to: CallFsmState.DISCONNECTED,
         },
@@ -380,4 +418,4 @@ class RTCCallFsmTable extends StateMachine {
   }
 }
 
-export { RTCCallFsmTable, IRTCCallFsmTableDependency };
+export { RTCCallFsmTable, IRTCCallFsmTableDependency, CallFsmState };
