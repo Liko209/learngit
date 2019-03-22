@@ -27,6 +27,20 @@ class CodeSnippet extends React.Component<
     hover: false,
   };
 
+  componentDidMount() {
+    this.setState({
+      isCollapse: this.props.isCollapse,
+    });
+  }
+
+  componentDidUpdate(prevProps: CodeSnippetViewProps) {
+    if (this.props.isCollapse !== prevProps.isCollapse) {
+      this.setState({
+        isCollapse: this.props.isCollapse,
+      });
+    }
+  }
+
   handleCopy = () => {
     copy(this.props.postItem.body);
   }
@@ -101,10 +115,12 @@ class CodeSnippet extends React.Component<
 
   handleExpand = () => {
     this.setState({ isCollapse: false });
+    this.props.setCollapse(false);
   }
 
   handleCollapse = () => {
     this.setState({ isCollapse: true });
+    this.props.setCollapse(true);
   }
 
   calcTotalLines = (content: string) => {
