@@ -317,15 +317,15 @@ const JuiVirtualizedList: RefForwardingComponent<
     const handleRowSizeChange = (el: HTMLElement, i: number) => {
       const { diff } = rowManager.setRowHeight(startIndex + i, el.offsetHeight);
 
-      if (computeAtBottom()) {
+      if (shouldScrollToBottom()) {
         scrollToBottom();
       } else {
         const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
         if (diff !== 0 && beforeFirstVisibleRow) {
           scrollToPosition(scrollPosition);
+          ensureVisibleRangeIsRendered();
         }
       }
-      ensureVisibleRangeIsRendered();
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
