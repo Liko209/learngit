@@ -137,6 +137,19 @@ describe('getThumbnailURLWithType', () => {
     FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(true);
   });
 
+  it('should just return unknown image type and empty url when id< 0', async () => {
+    const item = {
+      id: -10,
+      type: 'type',
+      versionUrl: 'versionUrl',
+      versions: [],
+    };
+    rule = RULE.RECTANGLE_IMAGE;
+    const result = await getThumbnailURLWithType(item, rule);
+    expect(result.url).toEqual('');
+    expect(result.type).toEqual(IMAGE_TYPE.UNKNOWN_IMAGE);
+  });
+
   it('should get empty url with unknown type when item without type', async () => {
     const model = Object.assign({}, defaultModel, { type: '' });
     rule = RULE.RECTANGLE_IMAGE;
