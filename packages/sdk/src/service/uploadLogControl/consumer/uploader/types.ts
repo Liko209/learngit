@@ -1,4 +1,4 @@
-import { LogEntity } from '../../types';
+import { LogEntity } from 'foundation/src/log/types';
 interface ILogUploader {
   upload(logs: LogEntity[]): Promise<void>;
 

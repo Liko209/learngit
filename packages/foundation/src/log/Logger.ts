@@ -15,6 +15,7 @@ import {
 import { configManager } from './config';
 import { LogEntityProcessor } from './LogEntityProcessor';
 import { ConsoleLogPrettier } from './ConsoleLogPrettier';
+import _ from 'lodash';
 
 const buildLogEntity = (
   level: LOG_LEVEL,
@@ -32,9 +33,18 @@ export class Logger implements ILogger, ILoggerCore {
   private _logEntityProcessor: ILogEntityProcessor;
   private _logConsumer: ILogConsumer;
   private _consoleLoggerCore: ILoggerCore;
+  private _memoizeTags: ((_tags: string[]) => ILogger) & _.MemoizedFunction;
   constructor() {
     this._logEntityProcessor = new LogEntityProcessor();
     this._consoleLoggerCore = new ConsoleLogCore(new ConsoleLogPrettier());
+    this._memoizeTags = _.memoize(
+      (_tags: string[]): ILogger => {
+        return new LoggerTagDecorator(this, _tags);
+      },
+      (_tags: string[]) => {
+        return _tags.join(',');
+      },
+    );
   }
 
   setConsumer(consumer: ILogConsumer) {
@@ -69,9 +79,16 @@ export class Logger implements ILogger, ILoggerCore {
     return this.doLog(buildLogEntity(LOG_LEVEL.FATAL, [], params));
   }
 
-  tags(...tags: string[]): ILogger {
-    return new LoggerTagDecorator(this, tags);
+  tags = (...tags: string[]): ILogger => {
+    return this._memoizeTags(tags);
   }
+  // tags(...tags: string[]): ILogger {
+  //   // const xx = _.memoize(() => '')();
+  //   return _.memoize((_tags) => {
+  //     return new LoggerTagDecorator(this, _tags);
+  //   })(tags);
+  //   // return new LoggerTagDecorator(this, tags);
+  // }
 
   doLog(logEntity: LogEntity = new LogEntity()) {
     if (!this._isLogEnabled(logEntity)) return;
@@ -89,10 +106,10 @@ export class Logger implements ILogger, ILoggerCore {
   }
 
   private _isConsumerEnabled() {
-    const {
-      consumer: { enabled },
-    } = configManager.getConfig();
-    return enabled;
+    // const {
+    //   consumer: { enabled },
+    // } = configManager.getConfig();
+    return !!this._logConsumer;
   }
 
   private _isBrowserEnabled(logEntity: LogEntity) {

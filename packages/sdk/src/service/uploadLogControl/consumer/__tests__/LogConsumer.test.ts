@@ -30,7 +30,7 @@ const createCallbackObserver = (): [Function, Promise<any>] => {
 
 describe('LogConsumer', () => {
   let mockLogPersistence;
-  let mockApi;
+  let mockUploader;
   let [callback, observer] = createCallbackObserver();
   describe('onLog()', () => {
     beforeEach(() => {
@@ -85,30 +85,30 @@ describe('LogConsumer', () => {
         return persistenceLogsStore.slice(0, limit).filter(item => !!item);
       });
 
-      mockApi = new MockApi();
-      mockApi.upload = jest.fn();
+      mockUploader = new MockApi();
+      mockUploader.upload = jest.fn();
 
       [callback, observer] = createCallbackObserver();
 
       configManager.setConfig(
         logConfigFactory.build({
-          logUploader: mockApi,
+          // logUploader: mockUploader,
           uploadAccessor: {
             isAccessible: jest.fn().mockReturnValue(true),
             subscribe: jest.fn(),
           },
-          consumer: consumerConfigFactory.build({
-            enabled: true,
-            uploadQueueLimit: 10,
-            memoryCountThreshold: 10,
-          }),
+          // consumer: consumerConfigFactory.build({
+          //   enabled: true,
+          //   uploadQueueLimit: 10,
+          //   memoryCountThreshold: 10,
+          // }),
         }),
       );
     });
     it('should write into memory after log process done [JPT-537]', async () => {
-      const logConsumer = new LogConsumer();
+      const logConsumer = new LogConsumer(mockUploader, mockLogPersistence);
       const mockLog = logEntityFactory.build();
-      logConsumer.setLogPersistence(mockLogPersistence);
+      // todo logConsumer.setLogPersistence(mockLogPersistence);
       // memoryQueue is empty
       expect(logConsumer['_memoryQueue'].size()).toEqual(0);
       logConsumer.onLog(mockLog);
@@ -242,7 +242,7 @@ describe('LogConsumer', () => {
       // mock DB cache data
       await mockLogPersistence.bulkPut(mockPersistenceLogs);
       let uploadLogs = [];
-      mockApi.upload.mockImplementation(async (logs: LogEntity[]) => {
+      mockUploader.upload.mockImplementation(async (logs: LogEntity[]) => {
         uploadLogs = uploadLogs.concat(logs);
       });
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
@@ -273,7 +273,7 @@ describe('LogConsumer', () => {
       };
       configManager.setConfig(
         logConfigFactory.build({
-          logUploader: mockApi,
+          logUploader: mockUploader,
           uploadAccessor: {
             isAccessible: () => mockAccessor.networkAccessible,
             subscribe: jest.fn(),
@@ -311,9 +311,9 @@ describe('LogConsumer', () => {
         callback2();
       });
       await observer2;
-      expect(mockApi.upload).toHaveBeenNthCalledWith(1, [logs[0]]);
-      expect(mockApi.upload).toHaveBeenNthCalledWith(2, [logs[1]]);
-      expect(mockApi.upload).toBeCalledTimes(2);
+      expect(mockUploader.upload).toHaveBeenNthCalledWith(1, [logs[0]]);
+      expect(mockUploader.upload).toHaveBeenNthCalledWith(2, [logs[1]]);
+      expect(mockUploader.upload).toBeCalledTimes(2);
       const [callback3, observer3] = createCallbackObserver();
       logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
         await rawOnLoopCompleted();
@@ -321,8 +321,8 @@ describe('LogConsumer', () => {
       });
       // wait next net loop, expect DB log has been upload
       await observer3;
-      expect(mockApi.upload).toHaveBeenNthCalledWith(3, [logs[2]]);
-      expect(mockApi.upload).toBeCalledTimes(3);
+      expect(mockUploader.upload).toHaveBeenNthCalledWith(3, [logs[2]]);
+      expect(mockUploader.upload).toBeCalledTimes(3);
 
       logConsumer['_uploadTaskQueueLoop'].peekAll();
       logConsumer['_persistenceTaskQueueLoop'].peekAll();
@@ -331,7 +331,7 @@ describe('LogConsumer', () => {
     it('When uploading not complete, network error occur, log should write into DB cache [JPT-550]', async () => {
       configManager.setConfig(
         logConfigFactory.build({
-          logUploader: mockApi,
+          logUploader: mockUploader,
           uploadAccessor: {
             isAccessible: jest.fn().mockReturnValue(true),
             subscribe: jest.fn(),
@@ -345,8 +345,8 @@ describe('LogConsumer', () => {
       );
       const logConsumer = new LogConsumer();
       // mock network error
-      mockApi.upload.mockRejectedValue(new Error('abort error'));
-      mockApi.errorHandler.mockReturnValue('abortAll');
+      mockUploader.upload.mockRejectedValue(new Error('abort error'));
+      mockUploader.errorHandler.mockReturnValue('abortAll');
       logConsumer.setLogPersistence(mockLogPersistence);
       logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
@@ -362,7 +362,7 @@ describe('LogConsumer', () => {
       });
       await observer;
       // have try to upload
-      expect(mockApi.upload).toHaveBeenCalledTimes(1);
+      expect(mockUploader.upload).toHaveBeenCalledTimes(1);
       // should write to DB cache
       expect(mockLogPersistence.put).toHaveBeenCalledTimes(1);
 

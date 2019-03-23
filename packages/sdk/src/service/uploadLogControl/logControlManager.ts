@@ -4,8 +4,14 @@
  */
 import notificationCenter from '../notificationCenter';
 import { SERVICE, WINDOW, ENTITY } from '../../service/eventKey';
-import { logManager, LOG_LEVEL, mainLogger, IAccessor } from 'foundation';
+import { logManager, LOG_LEVEL, mainLogger } from 'foundation';
 import { LogUploader } from './LogUploader';
+import {
+  LogConsumer,
+  LogPersistence,
+  IAccessor,
+  configManager as logUploadConsumerConfigManager,
+} from './consumer';
 import { PermissionService, UserPermissionType } from '../../module/permission';
 
 class LogControlManager implements IAccessor {
@@ -14,14 +20,17 @@ class LogControlManager implements IAccessor {
   private _enabledLog: boolean;
   private _isDebugMode: boolean; // if in debug mode, should not upload log
   private _onUploadAccessorChange: (accessible: boolean) => void;
+  uploadLogConsumer: LogConsumer;
   private constructor() {
     this._enabledLog = true;
     this._isDebugMode = true;
     this._isOnline = window.navigator.onLine;
-    logManager.config({
-      logUploader: new LogUploader(),
-      uploadAccessor: this,
-    });
+    this.uploadLogConsumer = new LogConsumer(
+      new LogUploader(),
+      new LogPersistence(),
+      this,
+    );
+    logManager.setConsumer(this.uploadLogConsumer);
     this.subscribeNotifications();
   }
 
@@ -49,6 +58,13 @@ class LogControlManager implements IAccessor {
     notificationCenter.on(WINDOW.BLUR, () => {
       this.flush();
     });
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('error', this.windowError.bind(this));
+      window.addEventListener('beforeunload', (event: any) => {
+        this.flush();
+      });
+    }
   }
 
   public setDebugMode(isDebug: boolean) {
@@ -57,7 +73,7 @@ class LogControlManager implements IAccessor {
   }
 
   public async flush() {
-    logManager.flush();
+    this.uploadLogConsumer.flush();
   }
 
   public setNetworkState(isOnline: boolean) {
@@ -68,7 +84,7 @@ class LogControlManager implements IAccessor {
   }
 
   isAccessible(): boolean {
-    return this._isOnline;
+    return this._isOnline && window.navigator.onLine;
   }
 
   subscribe(onChange: (accessible: boolean) => void): void {
@@ -88,11 +104,14 @@ class LogControlManager implements IAccessor {
         browser: {
           enabled: logEnabled,
         },
-        consumer: {
-          ...(logManager.getConfig().consumer || {}),
-          enabled: logUploadEnabled,
-        },
       });
+      logUploadConsumerConfigManager.mergeConfig({
+        enabled: logUploadEnabled,
+      });
+      // consumer: {
+      //   ...(logManager.getConfig().consumer || {}),
+      //   enabled: logUploadEnabled,
+      // },
     } catch (error) {
       mainLogger.warn('getUserPermission fail:', error);
     }
@@ -106,6 +125,13 @@ class LogControlManager implements IAccessor {
     );
     const level: LOG_LEVEL = LOG_LEVEL.ALL;
     logManager.setAllLoggerLevel(level);
+  }
+
+  windowError(msg: string, url: string, line: number) {
+    const message = `Error in ('${url ||
+      window.location}) on line ${line} with message (${msg})`;
+    mainLogger.fatal(message);
+    this.flush();
   }
 }
 

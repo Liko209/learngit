@@ -1,4 +1,4 @@
-import { ISchema } from '../../../db';
+import { ISchema } from 'foundation';
 export const TABLE_LOG = 'log';
 
 /**

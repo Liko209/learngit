@@ -1,9 +1,5 @@
-import {
-  ILogUploader,
-  LogEntity,
-  mainLogger,
-  HTTP_STATUS_CODE,
-} from 'foundation';
+import { LogEntity, mainLogger, HTTP_STATUS_CODE } from 'foundation';
+import { ILogUploader } from './consumer';
 import AccountService from '../account';
 import axios, { AxiosError } from 'axios';
 import { AccountUserConfig } from '../../service/account/config';

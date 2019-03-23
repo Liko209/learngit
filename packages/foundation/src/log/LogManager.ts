@@ -1,6 +1,6 @@
 import { Logger } from './Logger';
 import { LOG_LEVEL, LOG_TAGS } from './constants';
-import { ILogger, ILogEntityDecorator, LogConfig } from './types';
+import { ILogger, ILogEntityDecorator, LogConfig, ILogConsumer } from './types';
 import { configManager } from './config';
 import mergeWith from 'lodash/mergeWith';
 import {
@@ -10,7 +10,6 @@ import {
   TimestampDecorator,
   StringifyDecorator,
 } from './decorators';
-import { LogConsumer, LogPersistence } from './consumer';
 
 type LoaderMap = {
   [name: string]: ILogEntityDecorator;
@@ -24,7 +23,6 @@ class LogManager {
   private static _instance: LogManager;
   private _loggers: Map<string, ILogger>;
   private _logger: Logger;
-  private _logConsumer: LogConsumer;
   private _defaultLoaderMap: LoaderMap;
 
   public constructor() {
@@ -36,9 +34,9 @@ class LogManager {
       MessageDecorator: new MessageDecorator(),
       StringifyDecorator: new StringifyDecorator(),
     };
-    configManager.mergeConfig({
-      persistence: new LogPersistence(),
-    });
+    // configManager.mergeConfig({
+    //   persistence: new LogPersistence(),
+    // });
     this.configDecorators([
       {
         loader: 'SessionDecorator',
@@ -60,15 +58,6 @@ class LogManager {
       },
     ]);
     this._logger = new Logger();
-    this._logConsumer = new LogConsumer();
-    this._logConsumer.setLogPersistence(new LogPersistence());
-    this._logger.setConsumer(this._logConsumer);
-    if (typeof window !== 'undefined') {
-      window.addEventListener('error', this.windowError.bind(this));
-      window.addEventListener('beforeunload', (event: any) => {
-        this.flush();
-      });
-    }
     if (process.env.NODE_ENV === 'test') {
       configManager.mergeConfig({
         enabled: false,
@@ -84,8 +73,8 @@ class LogManager {
     return this._instance;
   }
 
-  flush() {
-    this._logConsumer.flush();
+  setConsumer(consumer: ILogConsumer) {
+    this._logger.setConsumer(consumer);
   }
 
   configAll(config: LogConfig) {
@@ -146,13 +135,6 @@ class LogManager {
     configManager.mergeConfig({
       level,
     });
-  }
-
-  windowError(msg: string, url: string, line: number) {
-    const message = `Error in ('${url ||
-      window.location}) on line ${line} with message (${msg})`;
-    this.getMainLogger().fatal(message);
-    this.flush();
   }
 }
 

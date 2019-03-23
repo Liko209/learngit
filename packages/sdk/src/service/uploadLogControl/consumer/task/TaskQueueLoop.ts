@@ -163,7 +163,7 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
 
   abortAll(): void {
     const tasks = this._taskQueue.peekAll();
-    tasks.forEach(task => {
+    tasks.forEach((task: Task) => {
       task.onAbort().catch();
     });
   }

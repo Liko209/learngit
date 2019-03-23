@@ -9,4 +9,3 @@ const networkLogger: ILogger = logManager.getNetworkLogger();
 export { LOG_LEVEL } from './constants';
 export { logManager, mainLogger, networkLogger };
 export * from './types';
-export * from './consumer';

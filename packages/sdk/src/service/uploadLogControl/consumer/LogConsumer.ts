@@ -3,15 +3,16 @@
  * @Date: 2018-12-26 15:21:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { ILogConsumer, LogEntity } from '../types';
-import { ILogUploader, LogUploaderProxy } from './uploader';
+import { ILogConsumer, LogEntity } from 'foundation/src/log/types';
+import { ILogUploader } from './uploader';
 import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistenceLogEntity, ILogPersistence } from './persistence';
 import StateMachine from 'ts-javascript-state-machine';
-import { configManager } from '../config';
-import { randomInt, sleep } from '../utils';
+import { configManager } from './config';
+import { randomInt, sleep } from './utils';
 import sumBy from 'lodash/sumBy';
 import cloneDeep from 'lodash/cloneDeep';
+import { IAccessor } from './types';
 
 const PERSISTENCE_STATE = {
   INIT: 'INIT',
@@ -73,8 +74,6 @@ function retryDelay(retryCount: number) {
 }
 
 export class LogConsumer implements ILogConsumer {
-  private _logUploader: ILogUploader;
-  private _logPersistence: ILogPersistence;
   private _persistenceFSM: StateMachine;
   private _memoryQueue: MemoryQueue<LogEntity>;
   private _memorySize: number;
@@ -82,12 +81,16 @@ export class LogConsumer implements ILogConsumer {
   private _persistenceTaskQueueLoop: TaskQueueLoop;
   private _timeoutId: NodeJS.Timeout;
   private _flushMode: boolean;
+  private _isInit: boolean;
 
-  constructor() {
+  constructor(
+    private _logUploader: ILogUploader,
+    private _logPersistence: ILogPersistence,
+    private _uploadAccessor?: IAccessor,
+  ) {
     this._memoryQueue = new MemoryQueue();
     this._memorySize = 0;
     this._flushMode = false;
-    this._logUploader = new LogUploaderProxy();
     this._uploadTaskQueueLoop = new TaskQueueLoop()
       .setOnTaskError(async (task, error, loopController) => {
         const handlerType = this._logUploader.errorHandler(error);
@@ -166,6 +169,7 @@ export class LogConsumer implements ILogConsumer {
         },
       },
     });
+    // this._init();
   }
 
   async onLog(logEntity: LogEntity): Promise<void> {
@@ -174,7 +178,7 @@ export class LogConsumer implements ILogConsumer {
     const {
       memoryCountThreshold,
       memorySizeThreshold,
-    } = configManager.getConfig().consumer;
+    } = configManager.getConfig();
     if (
       this._memoryQueue.size() > memoryCountThreshold ||
       this._memorySize > memorySizeThreshold
@@ -199,14 +203,21 @@ export class LogConsumer implements ILogConsumer {
     this._init();
   }
 
+  public setUploadAccessor(uploadAccessor: IAccessor) {
+    this._uploadAccessor = uploadAccessor;
+  }
+
   private _init() {
-    this._persistenceTaskQueueLoop.addTail(
-      new PersistenceTask().setOnExecute(async () => {
-        await this._logPersistence.init();
-      }),
-    );
-    this._persistenceFSM.initial();
-    this._flushInTimeout();
+    if (!this._isInit) {
+      this._persistenceTaskQueueLoop.addTail(
+        new PersistenceTask().setOnExecute(async () => {
+          await this._logPersistence.init();
+        }),
+      );
+      this._persistenceFSM.initial();
+      this._flushInTimeout();
+      this._isInit = true;
+    }
   }
 
   private _flushInTimeout() {
@@ -216,7 +227,7 @@ export class LogConsumer implements ILogConsumer {
     this._timeoutId = setTimeout(() => {
       this._consumePersistenceIfNeed();
       this._flushMemory();
-    },                           configManager.getConfig().consumer.autoFlushTimeCycle);
+    },                           configManager.getConfig().autoFlushTimeCycle);
   }
 
   private _flushMemory() {
@@ -224,6 +235,7 @@ export class LogConsumer implements ILogConsumer {
     this._memorySize = 0;
     this._flushInTimeout();
     if (logs.length < 1) return;
+    this._init();
     if (
       this._persistenceFSM.state === PERSISTENCE_STATE.EMPTY &&
       this._uploadAvailable()
@@ -258,9 +270,8 @@ export class LogConsumer implements ILogConsumer {
   }
 
   private _consumePersistenceIfNeed() {
-    const {
-      consumer: { uploadQueueLimit },
-    } = configManager.getConfig();
+    const { uploadQueueLimit } = configManager.getConfig();
+    this._init();
     if (this._uploadTaskQueueLoop.size() === 0 && this._uploadAvailable()) {
       this._persistenceTaskQueueLoop.addTail(
         new PersistenceTask().setOnExecute(async () => {
@@ -299,7 +310,7 @@ export class LogConsumer implements ILogConsumer {
       if (!currentLog) {
         combineLogs.push(cloneDeep(persistenceLogs[i]));
       } else if (
-        size > configManager.getConfig().consumer.combineSizeThreshold ||
+        size > configManager.getConfig().combineSizeThreshold ||
         currentLog.sessionId !== persistenceLogs[i].sessionId
       ) {
         combineLogs.push(cloneDeep(persistenceLogs[i]));
@@ -315,13 +326,10 @@ export class LogConsumer implements ILogConsumer {
   }
 
   private _uploadAvailable(): boolean {
-    const {
-      uploadAccessor,
-      consumer: { uploadQueueLimit },
-    } = configManager.getConfig();
+    const { uploadQueueLimit } = configManager.getConfig();
     do {
       if (this._flushMode) break;
-      if (uploadAccessor && !uploadAccessor.isAccessible()) break;
+      if (this._uploadAccessor && !this._uploadAccessor.isAccessible()) break;
       if (this._uploadTaskQueueLoop.size() >= uploadQueueLimit) break;
       if (!this._uploadTaskQueueLoop.isAvailable()) break;
       return true;

@@ -1,4 +1,4 @@
-import { LogEntity } from '../../types';
+import { LogEntity } from 'foundation';
 type PersistenceLogEntity = {
   id: number;
   logs: LogEntity[];
@@ -22,7 +22,4 @@ interface ILogPersistence {
   count: () => Promise<number>;
 }
 
-export {
-  PersistenceLogEntity,
-  ILogPersistence,
-};
+export { PersistenceLogEntity, ILogPersistence };

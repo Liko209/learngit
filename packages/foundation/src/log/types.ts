@@ -1,6 +1,4 @@
 import { LOG_LEVEL } from './constants';
-import { ILogUploader } from './consumer';
-import { ILogPersistence } from './consumer/persistence';
 
 interface ILogger {
   tags(...tags: string[]): ILogger;
@@ -49,17 +47,6 @@ type LogConfig = {
   browser: {
     enabled: boolean;
   };
-  consumer: {
-    enabled: boolean;
-    memoryCountThreshold: number;
-    memorySizeThreshold: number;
-    uploadQueueLimit: number;
-    autoFlushTimeCycle: number;
-    combineSizeThreshold: number;
-  };
-  logUploader: ILogUploader | null;
-  persistence: ILogPersistence | null;
-  uploadAccessor: IAccessor | null;
   decorators: ILogEntityDecorator[];
 };
 

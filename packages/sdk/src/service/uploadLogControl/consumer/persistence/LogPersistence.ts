@@ -4,7 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ILogPersistence, PersistenceLogEntity } from './types';
-import { DBManager, KVStorageManager, DatabaseType, IDatabase, IDatabaseCollection } from '../../../db';
+import {
+  DBManager,
+  KVStorageManager,
+  DatabaseType,
+  IDatabase,
+  IDatabaseCollection,
+} from 'foundation';
 import schema, { TABLE_LOG } from './schema';
 export class LogPersistence implements ILogPersistence {
   private _kvStorageManager: KVStorageManager;
@@ -18,7 +24,9 @@ export class LogPersistence implements ILogPersistence {
   }
 
   init = async () => {
-    const dbType = this._kvStorageManager.isLocalStorageSupported() ? DatabaseType.DexieDB : DatabaseType.LokiDB;
+    const dbType = this._kvStorageManager.isLocalStorageSupported()
+      ? DatabaseType.DexieDB
+      : DatabaseType.LokiDB;
     this._dbManager.initDatabase(schema, dbType);
     this._db = this._dbManager.getDatabase();
     this._collection = this._db.getCollection<PersistenceLogEntity>(TABLE_LOG);
@@ -64,14 +72,15 @@ export class LogPersistence implements ILogPersistence {
 
   bulkDelete = async (array: PersistenceLogEntity[]) => {
     await this._db.ensureDBOpened();
-    await this._collection.bulkDelete(array.map((item) => {
-      return item.id;
-    }));
+    await this._collection.bulkDelete(
+      array.map((item: PersistenceLogEntity) => {
+        return item.id;
+      }),
+    );
   }
 
   count = async () => {
     await this._db.ensureDBOpened();
     return await this._collection.count();
   }
-
 }

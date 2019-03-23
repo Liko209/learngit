@@ -9,17 +9,6 @@ const defaultConfig: LogConfig = {
   browser: {
     enabled: true,
   },
-  consumer: {
-    enabled: false,
-    memoryCountThreshold: 100,
-    memorySizeThreshold: 1024 * 1024,
-    combineSizeThreshold: 50 * 1024,
-    uploadQueueLimit: 4,
-    autoFlushTimeCycle: 30 * 1000,
-  },
-  logUploader: null,
-  uploadAccessor: null,
-  persistence: null,
   decorators: [],
 };
 

@@ -5,9 +5,19 @@ import {
   logEntityFactory,
   consumerConfigFactory,
 } from './factory';
-import { LogConsumer } from '../consumer';
+// import { LogConsumer } from '../consumer';
 import { configManager } from '../config';
+import { ILogConsumer } from '../types';
+const mockConsumer: ILogConsumer = {
+  onLog: jest.fn(),
+  flush: jest.fn(),
+};
+
 describe('Logger', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('doLog()', () => {
     it.each`
       methodName | params             | level              | tags
@@ -96,7 +106,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      const mockConsumer = new LogConsumer();
+      // const mockConsumer = new LogConsumer();
       logger.setConsumer(mockConsumer);
       const mockConfig = logConfigFactory.build({
         level: LOG_LEVEL.ALL,
@@ -105,9 +115,6 @@ describe('Logger', () => {
         browser: {
           enabled: true,
         },
-        consumer: consumerConfigFactory.build({
-          enabled: true,
-        }),
       });
       const mockLog = logEntityFactory.build();
       configManager.setConfig(mockConfig);
@@ -125,9 +132,6 @@ describe('Logger', () => {
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
           filter: jest.fn().mockReturnValue(true),
-          consumer: consumerConfigFactory.build({
-            enabled: false,
-          }),
           browser: {
             enabled: true,
           },
@@ -147,9 +151,6 @@ describe('Logger', () => {
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
           filter: jest.fn().mockReturnValue(true),
-          consumer: consumerConfigFactory.build({
-            enabled: false,
-          }),
           browser: {
             enabled: false,
           },
@@ -163,7 +164,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      const mockConsumer = new LogConsumer();
+      // const mockConsumer = new LogConsumer();
       logger.setConsumer(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const mockLog = logEntityFactory.build({
@@ -174,9 +175,6 @@ describe('Logger', () => {
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
           filter: jest.fn().mockReturnValue(true),
-          consumer: consumerConfigFactory.build({
-            enabled: true,
-          }),
         }),
       );
       logger.doLog(mockLog);
@@ -187,8 +185,8 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      const mockConsumer = new LogConsumer();
-      logger.setConsumer(mockConsumer);
+      // const mockConsumer = new LogConsumer();
+      // logger.setConsumer(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
@@ -199,9 +197,6 @@ describe('Logger', () => {
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
           filter: jest.fn().mockReturnValue(true),
-          consumer: consumerConfigFactory.build({
-            enabled: false,
-          }),
         }),
       );
       logger.doLog(mockLog);
@@ -213,7 +208,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      const mockConsumer = new LogConsumer();
+      // const mockConsumer = new LogConsumer();
       logger.setConsumer(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
@@ -225,9 +220,6 @@ describe('Logger', () => {
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
           filter: jest.fn().mockReturnValue(true),
-          consumer: consumerConfigFactory.build({
-            enabled: true,
-          }),
           browser: {
             enabled: true,
           },
@@ -242,7 +234,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      const mockConsumer = new LogConsumer();
+      // const mockConsumer = new LogConsumer();
       logger.setConsumer(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const mockLog = logEntityFactory.build({
@@ -253,9 +245,6 @@ describe('Logger', () => {
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
           filter: jest.fn().mockReturnValue(true),
-          consumer: consumerConfigFactory.build({
-            enabled: true,
-          }),
         }),
       );
       logger.doLog(mockLog);
@@ -266,7 +255,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      const mockConsumer = new LogConsumer();
+      // const mockConsumer = new LogConsumer();
       logger.setConsumer(mockConsumer);
       const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
       const mockLog = logEntityFactory.build({
@@ -278,9 +267,6 @@ describe('Logger', () => {
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
           filter: jest.fn().mockReturnValue(true),
-          consumer: consumerConfigFactory.build({
-            enabled: false,
-          }),
           browser: {
             enabled: false,
           },
@@ -294,15 +280,12 @@ describe('Logger', () => {
       const mockPrettier = jest
         .spyOn(logger['_consoleLoggerCore']['_consoleLogPrettier'], 'prettier')
         .mockImplementation(item => item.params);
-      const mockConsumer = new LogConsumer();
-      logger.setConsumer(mockConsumer);
+      // const mockConsumer = new LogConsumer();
+      // logger.setConsumer(mockConsumer);
       configManager.setConfig(
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
           filter: jest.fn().mockReturnValue(true),
-          consumer: consumerConfigFactory.build({
-            enabled: false,
-          }),
           browser: {
             enabled: true,
           },
