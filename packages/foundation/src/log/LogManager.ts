@@ -34,9 +34,6 @@ class LogManager {
       MessageDecorator: new MessageDecorator(),
       StringifyDecorator: new StringifyDecorator(),
     };
-    // configManager.mergeConfig({
-    //   persistence: new LogPersistence(),
-    // });
     this.configDecorators([
       {
         loader: 'SessionDecorator',

@@ -1,4 +1,4 @@
-export * from './persistence';
+export * from './persistent';
 export * from './uploader';
 export * from './LogConsumer';
 export * from './config';

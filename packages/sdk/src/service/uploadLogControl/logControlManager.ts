@@ -8,7 +8,7 @@ import { logManager, LOG_LEVEL, mainLogger } from 'foundation';
 import { LogUploader } from './LogUploader';
 import {
   LogConsumer,
-  LogPersistence,
+  LogPersistent,
   IAccessor,
   configManager as logUploadConsumerConfigManager,
 } from './consumer';
@@ -27,7 +27,7 @@ class LogControlManager implements IAccessor {
     this._isOnline = window.navigator.onLine;
     this.uploadLogConsumer = new LogConsumer(
       new LogUploader(),
-      new LogPersistence(),
+      new LogPersistent(),
       this,
     );
     logManager.setConsumer(this.uploadLogConsumer);

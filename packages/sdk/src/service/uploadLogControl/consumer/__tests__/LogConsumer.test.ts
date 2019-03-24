@@ -1,16 +1,21 @@
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-03-24 11:09:16
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { LogConsumer } from '../LogConsumer';
 import {
   logEntityFactory,
-  persistenceLogFactory,
+  persistentLogFactory,
   logConfigFactory,
   consumerConfigFactory,
 } from '../../__tests__/factory';
 import { ILogUploader } from '../api';
-import { LogPersistence, PersistenceLogEntity } from '../persistence';
+import { LogPersistent, PersistentLogEntity } from '../persistent';
 import { configManager } from '../../config';
 import { Task } from '../task';
 import { LogEntity } from '../../types';
-jest.mock('../persistence');
+jest.mock('../persistent');
 class MockApi implements ILogUploader {
   upload = jest.fn();
   errorHandler = jest.fn();
@@ -29,60 +34,60 @@ const createCallbackObserver = (): [Function, Promise<any>] => {
 };
 
 describe('LogConsumer', () => {
-  let mockLogPersistence;
+  let mockLogPersistent;
   let mockUploader;
   let [callback, observer] = createCallbackObserver();
   describe('onLog()', () => {
     beforeEach(() => {
       jest.resetAllMocks();
       jest.restoreAllMocks();
-      const persistenceLogsStore: PersistenceLogEntity[] = [];
-      mockLogPersistence = new LogPersistence();
-      mockLogPersistence.init = jest.fn();
-      mockLogPersistence.count = jest.fn();
-      mockLogPersistence.getAll = jest.fn();
-      mockLogPersistence.put = jest.fn();
-      mockLogPersistence.delete = jest.fn();
-      mockLogPersistence.bulkPut = jest.fn();
-      mockLogPersistence.bulkDelete = jest.fn();
+      const persistentLogsStore: PersistentLogEntity[] = [];
+      mockLogPersistent = new LogPersistent();
+      mockLogPersistent.init = jest.fn();
+      mockLogPersistent.count = jest.fn();
+      mockLogPersistent.getAll = jest.fn();
+      mockLogPersistent.put = jest.fn();
+      mockLogPersistent.delete = jest.fn();
+      mockLogPersistent.bulkPut = jest.fn();
+      mockLogPersistent.bulkDelete = jest.fn();
 
-      mockLogPersistence.put.mockImplementation(
-        async (persistenceLog: PersistenceLogEntity) => {
-          persistenceLogsStore.push(persistenceLog);
+      mockLogPersistent.put.mockImplementation(
+        async (persistentLog: PersistentLogEntity) => {
+          persistentLogsStore.push(persistentLog);
         },
       );
-      mockLogPersistence.bulkPut.mockImplementation(
-        async (persistenceLogs: PersistenceLogEntity[]) => {
-          persistenceLogs.forEach(item => {
-            persistenceLogsStore.push(item);
+      mockLogPersistent.bulkPut.mockImplementation(
+        async (persistentLogs: PersistentLogEntity[]) => {
+          persistentLogs.forEach(item => {
+            persistentLogsStore.push(item);
           });
         },
       );
-      const deleteItem = (persistenceLog: PersistenceLogEntity) => {
-        const index = persistenceLogsStore.findIndex(
-          item => item.id === persistenceLog.id,
+      const deleteItem = (persistentLog: PersistentLogEntity) => {
+        const index = persistentLogsStore.findIndex(
+          item => item.id === persistentLog.id,
         );
         if (index > -1) {
-          persistenceLogsStore.splice(index, 1);
+          persistentLogsStore.splice(index, 1);
         }
       };
-      mockLogPersistence.delete.mockImplementation(
-        async (persistenceLog: PersistenceLogEntity) => {
-          deleteItem(persistenceLog);
+      mockLogPersistent.delete.mockImplementation(
+        async (persistentLog: PersistentLogEntity) => {
+          deleteItem(persistentLog);
         },
       );
-      mockLogPersistence.bulkDelete.mockImplementation(
-        async (persistenceLogs: PersistenceLogEntity[]) => {
-          for (let index = 0; index < persistenceLogs.length; index++) {
-            deleteItem(persistenceLogs[index]);
+      mockLogPersistent.bulkDelete.mockImplementation(
+        async (persistentLogs: PersistentLogEntity[]) => {
+          for (let index = 0; index < persistentLogs.length; index++) {
+            deleteItem(persistentLogs[index]);
           }
         },
       );
-      mockLogPersistence.count.mockImplementation(async () => {
-        return persistenceLogsStore.length;
+      mockLogPersistent.count.mockImplementation(async () => {
+        return persistentLogsStore.length;
       });
-      mockLogPersistence.getAll.mockImplementation(async limit => {
-        return persistenceLogsStore.slice(0, limit).filter(item => !!item);
+      mockLogPersistent.getAll.mockImplementation(async limit => {
+        return persistentLogsStore.slice(0, limit).filter(item => !!item);
       });
 
       mockUploader = new MockApi();
@@ -106,9 +111,9 @@ describe('LogConsumer', () => {
       );
     });
     it('should write into memory after log process done [JPT-537]', async () => {
-      const logConsumer = new LogConsumer(mockUploader, mockLogPersistence);
+      const logConsumer = new LogConsumer(mockUploader, mockLogPersistent);
       const mockLog = logEntityFactory.build();
-      // todo logConsumer.setLogPersistence(mockLogPersistence);
+      // todo logConsumer.setLogPersistent(mockLogPersistent);
       // memoryQueue is empty
       expect(logConsumer['_memoryQueue'].size()).toEqual(0);
       logConsumer.onLog(mockLog);
@@ -125,36 +130,36 @@ describe('LogConsumer', () => {
         }),
       });
       const logConsumer = new LogConsumer();
-      // mockLogPersistence.count.mockReturnValue(0); // no data in DB
+      // mockLogPersistent.count.mockReturnValue(0); // no data in DB
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
-      logConsumer.setLogPersistence(mockLogPersistence);
-      logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
+      logConsumer.setLogPersistent(mockLogPersistent);
+      logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
-      await observer; // wait for persistenceTaskQueue done
-      expect(mockLogPersistence.count).toBeCalled();
+      await observer; // wait for persistentTaskQueue done
+      expect(mockLogPersistent.count).toBeCalled();
       // prepare fill uploadTaskQueue to full
       for (let i = 0; i < 2; i++) {
         expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(i);
         logConsumer.onLog(logEntityFactory.build());
         expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(i + 1);
-        expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(0);
+        expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(0);
       }
 
       // uploadTaskQueue is full now
       logConsumer.onLog(logEntityFactory.build());
 
-      // will add to persistenceTaskQueue
+      // will add to persistentTaskQueue
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
-      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(1);
+      expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(1);
 
-      // will add to persistenceTaskQueue
+      // will add to persistentTaskQueue
       logConsumer.onLog(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
-      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(2);
+      expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(2);
       // clear
       logConsumer['_uploadTaskQueueLoop'].abortAll();
-      logConsumer['_persistenceTaskQueueLoop'].abortAll();
+      logConsumer['_persistentTaskQueueLoop'].abortAll();
     });
 
     it('When work queue and network is not working neither, log should write into DB cache [JPT-546]', async () => {
@@ -170,10 +175,10 @@ describe('LogConsumer', () => {
         }),
       });
       const logConsumer = new LogConsumer();
-      // mockLogPersistence.count.mockReturnValue(0);
+      // mockLogPersistent.count.mockReturnValue(0);
       [callback, observer] = createCallbackObserver();
-      logConsumer.setLogPersistence(mockLogPersistence);
-      logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
+      logConsumer.setLogPersistent(mockLogPersistent);
+      logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
       await observer;
@@ -182,23 +187,23 @@ describe('LogConsumer', () => {
       logConsumer['_uploadTaskQueueLoop'].addTail(new Task());
       logConsumer['_uploadTaskQueueLoop'].addTail(new Task());
 
-      let taskQueueSize = logConsumer['_persistenceTaskQueueLoop'].size();
-      // will add to persistenceTaskQueue
+      let taskQueueSize = logConsumer['_persistentTaskQueueLoop'].size();
+      // will add to persistentTaskQueue
       logConsumer.onLog(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
-      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(
+      expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(
         ++taskQueueSize,
       );
 
-      // will add to persistenceTaskQueue
+      // will add to persistentTaskQueue
       logConsumer.onLog(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
-      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(
+      expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(
         ++taskQueueSize,
       );
       // clear
       logConsumer['_uploadTaskQueueLoop'].peekAll();
-      logConsumer['_persistenceTaskQueueLoop'].peekAll();
+      logConsumer['_persistentTaskQueueLoop'].peekAll();
     });
 
     it('When work queue is working but network is not working, log should write into DB cache [JPT-547]', async () => {
@@ -214,57 +219,57 @@ describe('LogConsumer', () => {
         }),
       });
       const logConsumer = new LogConsumer();
-      // mockLogPersistence.count.mockReturnValue(0);
-      logConsumer.setLogPersistence(mockLogPersistence);
-      logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
+      // mockLogPersistent.count.mockReturnValue(0);
+      logConsumer.setLogPersistent(mockLogPersistent);
+      logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
       await observer;
-      expect(mockLogPersistence.count).toBeCalled();
+      expect(mockLogPersistent.count).toBeCalled();
 
-      // will add to persistenceTaskQueue
+      // will add to persistentTaskQueue
       logConsumer.onLog(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
-      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(1);
+      expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(1);
 
-      // will add to persistenceTaskQueue
+      // will add to persistentTaskQueue
       logConsumer.onLog(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
-      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(2);
+      expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(2);
       // clear
       logConsumer['_uploadTaskQueueLoop'].peekAll();
-      logConsumer['_persistenceTaskQueueLoop'].peekAll();
+      logConsumer['_persistentTaskQueueLoop'].peekAll();
     });
 
     it('DB cache log data should upload by network when db cache init [JPT-548]', async () => {
       const logConsumer = new LogConsumer();
-      const mockPersistenceLogs = persistenceLogFactory.buildList(10);
+      const mockPersistentLogs = persistentLogFactory.buildList(10);
       // mock DB cache data
-      await mockLogPersistence.bulkPut(mockPersistenceLogs);
+      await mockLogPersistent.bulkPut(mockPersistentLogs);
       let uploadLogs = [];
       mockUploader.upload.mockImplementation(async (logs: LogEntity[]) => {
         uploadLogs = uploadLogs.concat(logs);
       });
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
-      logConsumer.setLogPersistence(mockLogPersistence);
+      logConsumer.setLogPersistent(mockLogPersistent);
       logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
       await observer;
-      expect(mockLogPersistence.count).toBeCalled();
-      expect(mockLogPersistence.getAll).toBeCalled();
-      // expect(mockApi.upload).toBeCalledTimes(mockPersistenceLogs.length);
-      expect(mockLogPersistence.bulkDelete).lastCalledWith(mockPersistenceLogs);
+      expect(mockLogPersistent.count).toBeCalled();
+      expect(mockLogPersistent.getAll).toBeCalled();
+      // expect(mockApi.upload).toBeCalledTimes(mockPersistentLogs.length);
+      expect(mockLogPersistent.bulkDelete).lastCalledWith(mockPersistentLogs);
 
       // should upload all logs from DB cache
-      let persistenceLogs = [];
-      mockPersistenceLogs.forEach(({ logs }) => {
-        persistenceLogs = persistenceLogs.concat(logs);
+      let persistentLogs = [];
+      mockPersistentLogs.forEach(({ logs }) => {
+        persistentLogs = persistentLogs.concat(logs);
       });
-      expect(uploadLogs).toEqual(persistenceLogs);
+      expect(uploadLogs).toEqual(persistentLogs);
       // clear
       logConsumer['_uploadTaskQueueLoop'].peekAll();
-      logConsumer['_persistenceTaskQueueLoop'].peekAll();
+      logConsumer['_persistentTaskQueueLoop'].peekAll();
     });
 
     it('DB cache log data should upload by network if work queue is empty or not block [JPT-549]', async () => {
@@ -290,10 +295,10 @@ describe('LogConsumer', () => {
       const rawOnLoopCompleted =
         logConsumer['_uploadTaskQueueLoop']['_onLoopCompleted'];
       const [callback1, observer1] = createCallbackObserver();
-      logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
+      logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback1();
       });
-      logConsumer.setLogPersistence(mockLogPersistence);
+      logConsumer.setLogPersistent(mockLogPersistent);
       // waite init check
       await observer1;
       // net not busy, to net queue
@@ -325,7 +330,7 @@ describe('LogConsumer', () => {
       expect(mockUploader.upload).toBeCalledTimes(3);
 
       logConsumer['_uploadTaskQueueLoop'].peekAll();
-      logConsumer['_persistenceTaskQueueLoop'].peekAll();
+      logConsumer['_persistentTaskQueueLoop'].peekAll();
     });
 
     it('When uploading not complete, network error occur, log should write into DB cache [JPT-550]', async () => {
@@ -347,11 +352,11 @@ describe('LogConsumer', () => {
       // mock network error
       mockUploader.upload.mockRejectedValue(new Error('abort error'));
       mockUploader.errorHandler.mockReturnValue('abortAll');
-      logConsumer.setLogPersistence(mockLogPersistence);
-      logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
+      logConsumer.setLogPersistent(mockLogPersistent);
+      logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
-      expect(mockLogPersistence.put).toHaveBeenCalledTimes(0);
+      expect(mockLogPersistent.put).toHaveBeenCalledTimes(0);
       // waite init check
       await observer;
       [callback, observer] = createCallbackObserver();
@@ -364,11 +369,11 @@ describe('LogConsumer', () => {
       // have try to upload
       expect(mockUploader.upload).toHaveBeenCalledTimes(1);
       // should write to DB cache
-      expect(mockLogPersistence.put).toHaveBeenCalledTimes(1);
+      expect(mockLogPersistent.put).toHaveBeenCalledTimes(1);
 
       // clear
       logConsumer['_uploadTaskQueueLoop'].peekAll();
-      logConsumer['_persistenceTaskQueueLoop'].peekAll();
+      logConsumer['_persistentTaskQueueLoop'].peekAll();
     });
   });
 });

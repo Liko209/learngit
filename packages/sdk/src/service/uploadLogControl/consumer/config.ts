@@ -1,5 +1,10 @@
-import { UploadConsumerConfig } from './types';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-03-24 11:07:10
+ * Copyright © RingCentral. All rights reserved.
+ */
 import _ from 'lodash';
+import { UploadConsumerConfig } from './types';
 
 const DEFAULT_CONFIG: UploadConsumerConfig = {
   enabled: false,

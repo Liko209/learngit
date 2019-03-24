@@ -12,13 +12,13 @@ import {
 } from 'foundation';
 import { configManager } from '../config';
 import schema, { TABLE_LOG } from './schema';
-import { ILogPersistence, PersistenceLogEntity } from './types';
+import { ILogPersistent, PersistentLogEntity } from './types';
 
-export class LogPersistence implements ILogPersistence {
+export class LogPersistent implements ILogPersistent {
   private _kvStorageManager: KVStorageManager;
   private _dbManager: DBManager;
   private _db: IDatabase;
-  private _collection: IDatabaseCollection<PersistenceLogEntity>;
+  private _collection: IDatabaseCollection<PersistentLogEntity>;
   private _isInit: boolean;
 
   _ensureInit = async () => {
@@ -31,7 +31,7 @@ export class LogPersistence implements ILogPersistence {
         : DatabaseType.LokiDB;
       this._dbManager.initDatabase(schema, dbType);
       this._db = this._dbManager.getDatabase();
-      this._collection = this._db.getCollection<PersistenceLogEntity>(
+      this._collection = this._db.getCollection<PersistentLogEntity>(
         TABLE_LOG,
       );
       await this.cleanPersistentWhenReachLimit(
@@ -40,13 +40,13 @@ export class LogPersistence implements ILogPersistence {
     }
   }
 
-  put = async (item: PersistenceLogEntity) => {
+  put = async (item: PersistentLogEntity) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.put(item);
   }
 
-  bulkPut = async (array: PersistenceLogEntity[]) => {
+  bulkPut = async (array: PersistentLogEntity[]) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.bulkPut(array);
@@ -78,17 +78,17 @@ export class LogPersistence implements ILogPersistence {
     return array;
   }
 
-  delete = async (item: PersistenceLogEntity) => {
+  delete = async (item: PersistentLogEntity) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.delete(item.id);
   }
 
-  bulkDelete = async (array: PersistenceLogEntity[]) => {
+  bulkDelete = async (array: PersistentLogEntity[]) => {
     await this._ensureInit();
     await this._db.ensureDBOpened();
     await this._collection.bulkDelete(
-      array.map((item: PersistenceLogEntity) => {
+      array.map((item: PersistentLogEntity) => {
         return item.id;
       }),
     );
@@ -100,7 +100,7 @@ export class LogPersistence implements ILogPersistence {
     return await this._collection.count();
   }
 
-  cleanPersistentWhenReachLimit = async (maxPersistenceSize: number) => {
+  cleanPersistentWhenReachLimit = async (maxPersistentSize: number) => {
     const logs = await this.getAll();
     if (!logs) return;
     let size = 0;
@@ -108,11 +108,11 @@ export class LogPersistence implements ILogPersistence {
     for (let index = logs.length - 1; index >= 0; index--) {
       const element = logs[index];
       size += element.size || 0;
-      if (size > maxPersistenceSize / 2) {
+      if (size > maxPersistentSize / 2) {
         if (halfMaxSizeIndex === -1) {
           halfMaxSizeIndex = index;
         }
-        if (size > maxPersistenceSize) {
+        if (size > maxPersistentSize) {
           await this.bulkDelete(logs.slice(0, halfMaxSizeIndex + 1));
           break;
         }
