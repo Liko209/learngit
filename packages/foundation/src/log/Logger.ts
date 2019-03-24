@@ -106,9 +106,6 @@ export class Logger implements ILogger, ILoggerCore {
   }
 
   private _isConsumerEnabled() {
-    // const {
-    //   consumer: { enabled },
-    // } = configManager.getConfig();
     return !!this._logConsumer;
   }
 

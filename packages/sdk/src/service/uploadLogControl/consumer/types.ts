@@ -5,6 +5,7 @@ export type UploadConsumerConfig = {
   uploadQueueLimit: number;
   autoFlushTimeCycle: number;
   combineSizeThreshold: number;
+  persistanceLimit: number;
 };
 
 type onAccessibleChange = (accessible: boolean) => void;

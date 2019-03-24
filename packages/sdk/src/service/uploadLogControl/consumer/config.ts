@@ -8,6 +8,7 @@ const DEFAULT_CONFIG: UploadConsumerConfig = {
   combineSizeThreshold: 50 * 1024,
   uploadQueueLimit: 4,
   autoFlushTimeCycle: 30 * 1000,
+  persistanceLimit: 10 * 1024 * 1024,
 };
 
 class ConfigManager {

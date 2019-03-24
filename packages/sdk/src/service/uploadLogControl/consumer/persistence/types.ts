@@ -12,11 +12,10 @@ type PersistenceLogEntity = {
 };
 
 interface ILogPersistence {
-  init: () => Promise<void>;
   put: (item: PersistenceLogEntity) => Promise<void>;
   bulkPut: (array: PersistenceLogEntity[]) => Promise<void>;
   get: (key: number) => Promise<PersistenceLogEntity | null>;
-  getAll: (limit: number) => Promise<PersistenceLogEntity[] | null>;
+  getAll: (limit?: number) => Promise<PersistenceLogEntity[] | null>;
   delete: (item: PersistenceLogEntity) => Promise<void>;
   bulkDelete: (array: PersistenceLogEntity[]) => Promise<void>;
   count: () => Promise<number>;
