@@ -82,13 +82,6 @@ export class Logger implements ILogger, ILoggerCore {
   tags = (...tags: string[]): ILogger => {
     return this._memoizeTags(tags);
   }
-  // tags(...tags: string[]): ILogger {
-  //   // const xx = _.memoize(() => '')();
-  //   return _.memoize((_tags) => {
-  //     return new LoggerTagDecorator(this, _tags);
-  //   })(tags);
-  //   // return new LoggerTagDecorator(this, tags);
-  // }
 
   doLog(logEntity: LogEntity = new LogEntity()) {
     if (!this._isLogEnabled(logEntity)) return;

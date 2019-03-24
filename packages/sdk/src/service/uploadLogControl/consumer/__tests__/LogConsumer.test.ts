@@ -3,7 +3,7 @@
  * @Date: 2019-03-24 11:09:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { LogConsumer } from '../LogConsumer';
+import { LogConsumer } from '../LogUploadConsumer';
 import {
   logEntityFactory,
   persistentLogFactory,
