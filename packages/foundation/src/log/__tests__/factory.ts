@@ -23,17 +23,10 @@ const logConfigBuilder: Builder<LogConfig> = {
   browser: {
     enabled: false,
   },
+  consumer: {
+    enabled: true,
+  },
   decorators: [],
 };
 
-const consumerConfigBuilder = {
-  enabled: false,
-  memoryCountThreshold: 100,
-  memorySizeThreshold: 1024 * 1024,
-  combineSizeThreshold: 50 * 1024,
-  uploadQueueLimit: 4,
-  autoFlushTimeCycle: 30 * 1000,
-};
-
 export const logConfigFactory = Factory.makeFactory(logConfigBuilder);
-export const consumerConfigFactory = Factory.makeFactory(consumerConfigBuilder);
