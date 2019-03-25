@@ -19,7 +19,7 @@ type LoaderItem = {
   loader: string | ILogEntityDecorator;
   options?: object;
 };
-class LogManager {
+export class LogManager {
   private static _instance: LogManager;
   private _loggers: Map<string, ILogger>;
   private _logger: Logger;
@@ -134,5 +134,3 @@ class LogManager {
     });
   }
 }
-
-export default LogManager;

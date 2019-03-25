@@ -31,9 +31,7 @@ export class LogPersistent implements ILogPersistent {
         : DatabaseType.LokiDB;
       this._dbManager.initDatabase(schema, dbType);
       this._db = this._dbManager.getDatabase();
-      this._collection = this._db.getCollection<PersistentLogEntity>(
-        TABLE_LOG,
-      );
+      this._collection = this._db.getCollection<PersistentLogEntity>(TABLE_LOG);
       await this.cleanPersistentWhenReachLimit(
         configManager.getConfig().persistanceLimit,
       );

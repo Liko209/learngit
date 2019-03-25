@@ -106,12 +106,8 @@ class LogControlManager implements IAccessor {
         },
       });
       logUploadConsumerConfigManager.mergeConfig({
-        enabled: logUploadEnabled,
+        uploadEnabled: logUploadEnabled,
       });
-      // consumer: {
-      //   ...(logManager.getConfig().consumer || {}),
-      //   enabled: logUploadEnabled,
-      // },
     } catch (error) {
       mainLogger.warn('getUserPermission fail:', error);
     }

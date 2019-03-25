@@ -304,8 +304,9 @@ export class LogConsumer implements ILogConsumer {
   }
 
   private _uploadAvailable(): boolean {
-    const { uploadQueueLimit } = configManager.getConfig();
+    const { uploadEnabled, uploadQueueLimit } = configManager.getConfig();
     do {
+      if (!uploadEnabled) break;
       if (this._flushMode) break;
       if (this._uploadAccessor && !this._uploadAccessor.isAccessible()) break;
       if (this._uploadTaskQueueLoop.size() >= uploadQueueLimit) break;

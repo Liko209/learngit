@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import Factory, { Builder } from 'factory.ts';
-import { LogPersistent, PersistentLogEntity } from '../';
+import { LogPersistent } from '../LogPersistent';
+import { PersistentLogEntity } from '../types';
 import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
 
 const persistentLogBuilder: Builder<PersistentLogEntity> = {

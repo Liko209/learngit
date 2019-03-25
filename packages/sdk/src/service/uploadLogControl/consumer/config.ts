@@ -7,7 +7,7 @@ import _ from 'lodash';
 import { UploadConsumerConfig } from './types';
 
 const DEFAULT_CONFIG: UploadConsumerConfig = {
-  enabled: false,
+  uploadEnabled: false,
   memoryCountThreshold: 100,
   memorySizeThreshold: 1024 * 1024,
   combineSizeThreshold: 50 * 1024,

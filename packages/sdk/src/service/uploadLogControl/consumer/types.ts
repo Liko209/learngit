@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export type UploadConsumerConfig = {
-  enabled: boolean;
+  uploadEnabled: boolean;
   memoryCountThreshold: number;
   memorySizeThreshold: number;
   uploadQueueLimit: number;

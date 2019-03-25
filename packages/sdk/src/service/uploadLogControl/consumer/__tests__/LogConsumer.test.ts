@@ -4,17 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { LogConsumer } from '../LogUploadConsumer';
-import {
-  logEntityFactory,
-  persistentLogFactory,
-  logConfigFactory,
-  consumerConfigFactory,
-} from '../../__tests__/factory';
-import { ILogUploader } from '../api';
+import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
+import { persistentLogFactory } from '../persistent/__tests__/LogPersistent.test';
+import { ILogUploader } from '../uploader/types';
 import { LogPersistent, PersistentLogEntity } from '../persistent';
-import { configManager } from '../../config';
+import { configManager } from '../config';
 import { Task } from '../task';
-import { LogEntity } from '../../types';
+import { LogEntity } from 'foundation';
 jest.mock('../persistent');
 class MockApi implements ILogUploader {
   upload = jest.fn();
@@ -34,8 +30,12 @@ const createCallbackObserver = (): [Function, Promise<any>] => {
 };
 
 describe('LogConsumer', () => {
-  let mockLogPersistent;
-  let mockUploader;
+  let mockLogPersistent: LogPersistent;
+  let mockUploader: ILogUploader;
+  const mockAccessor = {
+    isAccessible: jest.fn().mockReturnValue(false), // network is not working
+    subscribe: jest.fn(),
+  };
   let [callback, observer] = createCallbackObserver();
   describe('onLog()', () => {
     beforeEach(() => {
@@ -43,7 +43,7 @@ describe('LogConsumer', () => {
       jest.restoreAllMocks();
       const persistentLogsStore: PersistentLogEntity[] = [];
       mockLogPersistent = new LogPersistent();
-      mockLogPersistent.init = jest.fn();
+      // mockLogPersistent.init = jest.fn();
       mockLogPersistent.count = jest.fn();
       mockLogPersistent.getAll = jest.fn();
       mockLogPersistent.put = jest.fn();
@@ -58,7 +58,7 @@ describe('LogConsumer', () => {
       );
       mockLogPersistent.bulkPut.mockImplementation(
         async (persistentLogs: PersistentLogEntity[]) => {
-          persistentLogs.forEach(item => {
+          persistentLogs.forEach((item: PersistentLogEntity) => {
             persistentLogsStore.push(item);
           });
         },
@@ -86,29 +86,16 @@ describe('LogConsumer', () => {
       mockLogPersistent.count.mockImplementation(async () => {
         return persistentLogsStore.length;
       });
-      mockLogPersistent.getAll.mockImplementation(async limit => {
-        return persistentLogsStore.slice(0, limit).filter(item => !!item);
+      mockLogPersistent.getAll.mockImplementation(async (limit?: number) => {
+        return limit === undefined
+          ? persistentLogsStore
+          : persistentLogsStore.slice(0, limit).filter(item => !!item);
       });
 
       mockUploader = new MockApi();
       mockUploader.upload = jest.fn();
 
       [callback, observer] = createCallbackObserver();
-
-      configManager.setConfig(
-        logConfigFactory.build({
-          // logUploader: mockUploader,
-          uploadAccessor: {
-            isAccessible: jest.fn().mockReturnValue(true),
-            subscribe: jest.fn(),
-          },
-          // consumer: consumerConfigFactory.build({
-          //   enabled: true,
-          //   uploadQueueLimit: 10,
-          //   memoryCountThreshold: 10,
-          // }),
-        }),
-      );
     });
     it('should write into memory after log process done [JPT-537]', async () => {
       const logConsumer = new LogConsumer(mockUploader, mockLogPersistent);
@@ -123,16 +110,18 @@ describe('LogConsumer', () => {
 
     it('When network working but work queue is full, log should write into DB cache [JPT-545]', async () => {
       configManager.mergeConfig({
-        consumer: consumerConfigFactory.build({
-          enabled: true,
-          uploadQueueLimit: 2,
-          memoryCountThreshold: 0, // set to 0 to flush immediately while onLog
-        }),
+        uploadEnabled: true,
+        uploadQueueLimit: 2,
+        memoryCountThreshold: 0,
       });
-      const logConsumer = new LogConsumer();
+      mockAccessor.isAccessible.mockReturnValue(true);
+      const logConsumer = new LogConsumer(
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
+      );
       // mockLogPersistent.count.mockReturnValue(0); // no data in DB
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
-      logConsumer.setLogPersistent(mockLogPersistent);
       logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
@@ -164,20 +153,19 @@ describe('LogConsumer', () => {
 
     it('When work queue and network is not working neither, log should write into DB cache [JPT-546]', async () => {
       configManager.mergeConfig({
-        uploadAccessor: {
-          isAccessible: jest.fn().mockReturnValue(false), // network is not working
-          subscribe: jest.fn(),
-        },
-        consumer: consumerConfigFactory.build({
-          enabled: true,
-          uploadQueueLimit: 2,
-          memoryCountThreshold: 0, // set to 0 to flush immediately while onLog
-        }),
+        uploadEnabled: true,
+        uploadQueueLimit: 2,
+        memoryCountThreshold: 0, // set to 0 to flush immediately while onLog
       });
-      const logConsumer = new LogConsumer();
+      mockAccessor.isAccessible.mockReturnValue(false);
+      // network is not working
+      const logConsumer = new LogConsumer(
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
+      );
       // mockLogPersistent.count.mockReturnValue(0);
       [callback, observer] = createCallbackObserver();
-      logConsumer.setLogPersistent(mockLogPersistent);
       logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
@@ -208,19 +196,19 @@ describe('LogConsumer', () => {
 
     it('When work queue is working but network is not working, log should write into DB cache [JPT-547]', async () => {
       configManager.mergeConfig({
-        uploadAccessor: {
-          isAccessible: jest.fn().mockReturnValue(false), // network is not working
-          subscribe: jest.fn(),
-        },
-        consumer: consumerConfigFactory.build({
-          enabled: true,
-          uploadQueueLimit: 10,
-          memoryCountThreshold: 0, // set to 0 to flush immediately while onLog
-        }),
+        uploadEnabled: true,
+        uploadQueueLimit: 10,
+        memoryCountThreshold: 0, // set to 0 to flush immediately while onLog
       });
-      const logConsumer = new LogConsumer();
+      mockAccessor.isAccessible.mockReturnValue(false);
+      const logConsumer = new LogConsumer(
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
+      );
       // mockLogPersistent.count.mockReturnValue(0);
       logConsumer.setLogPersistent(mockLogPersistent);
+      [callback, observer] = createCallbackObserver();
       logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
@@ -242,16 +230,26 @@ describe('LogConsumer', () => {
     });
 
     it('DB cache log data should upload by network when db cache init [JPT-548]', async () => {
-      const logConsumer = new LogConsumer();
+      configManager.mergeConfig({
+        uploadEnabled: true,
+        uploadQueueLimit: 10,
+        memoryCountThreshold: 0, // set to 0 to flush immediately while onLog
+      });
+      mockAccessor.isAccessible.mockReturnValue(true);
       const mockPersistentLogs = persistentLogFactory.buildList(10);
       // mock DB cache data
       await mockLogPersistent.bulkPut(mockPersistentLogs);
-      let uploadLogs = [];
+      let uploadLogs: LogEntity[] = [];
       mockUploader.upload.mockImplementation(async (logs: LogEntity[]) => {
         uploadLogs = uploadLogs.concat(logs);
       });
-      expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
-      logConsumer.setLogPersistent(mockLogPersistent);
+      // expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
+      [callback, observer] = createCallbackObserver();
+      const logConsumer = new LogConsumer(
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
+      );
       logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
@@ -262,7 +260,7 @@ describe('LogConsumer', () => {
       expect(mockLogPersistent.bulkDelete).lastCalledWith(mockPersistentLogs);
 
       // should upload all logs from DB cache
-      let persistentLogs = [];
+      let persistentLogs: LogEntity[] = [];
       mockPersistentLogs.forEach(({ logs }) => {
         persistentLogs = persistentLogs.concat(logs);
       });
@@ -273,24 +271,17 @@ describe('LogConsumer', () => {
     });
 
     it('DB cache log data should upload by network if work queue is empty or not block [JPT-549]', async () => {
-      const mockAccessor = {
-        networkAccessible: true,
-      };
-      configManager.setConfig(
-        logConfigFactory.build({
-          logUploader: mockUploader,
-          uploadAccessor: {
-            isAccessible: () => mockAccessor.networkAccessible,
-            subscribe: jest.fn(),
-          },
-          consumer: consumerConfigFactory.build({
-            enabled: true,
-            uploadQueueLimit: 4,
-            memoryCountThreshold: 0,
-          }),
-        }),
+      configManager.mergeConfig({
+        uploadEnabled: true,
+        uploadQueueLimit: 4,
+        memoryCountThreshold: 0,
+      });
+      mockAccessor.isAccessible.mockReturnValue(true);
+      const logConsumer = new LogConsumer(
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
       );
-      const logConsumer = new LogConsumer();
       const logs = logEntityFactory.buildList(3);
       const rawOnLoopCompleted =
         logConsumer['_uploadTaskQueueLoop']['_onLoopCompleted'];
@@ -302,13 +293,13 @@ describe('LogConsumer', () => {
       // waite init check
       await observer1;
       // net not busy, to net queue
-      mockAccessor.networkAccessible = true;
+      mockAccessor.isAccessible.mockReturnValue(true);
       logConsumer.onLog(logs[0]);
       logConsumer.onLog(logs[1]);
       // net busy, to DB queue
-      mockAccessor.networkAccessible = false;
+      mockAccessor.isAccessible.mockReturnValue(false);
       logConsumer.onLog(logs[2]);
-      mockAccessor.networkAccessible = true;
+      mockAccessor.isAccessible.mockReturnValue(true);
       // wait net loop completed
       const [callback2, observer2] = createCallbackObserver();
       logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
@@ -334,21 +325,17 @@ describe('LogConsumer', () => {
     });
 
     it('When uploading not complete, network error occur, log should write into DB cache [JPT-550]', async () => {
-      configManager.setConfig(
-        logConfigFactory.build({
-          logUploader: mockUploader,
-          uploadAccessor: {
-            isAccessible: jest.fn().mockReturnValue(true),
-            subscribe: jest.fn(),
-          },
-          consumer: consumerConfigFactory.build({
-            enabled: true,
-            uploadQueueLimit: 10,
-            memoryCountThreshold: 0,
-          }),
-        }),
+      configManager.mergeConfig({
+        uploadEnabled: true,
+        uploadQueueLimit: 10,
+        memoryCountThreshold: 0,
+      });
+      mockAccessor.isAccessible.mockReturnValue(true);
+      const logConsumer = new LogConsumer(
+        mockUploader,
+        mockLogPersistent,
+        mockAccessor,
       );
-      const logConsumer = new LogConsumer();
       // mock network error
       mockUploader.upload.mockRejectedValue(new Error('abort error'));
       mockUploader.errorHandler.mockReturnValue('abortAll');
