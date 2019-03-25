@@ -18,7 +18,9 @@ class DataHelper {
       domain: data.companyEmailDomain,
     }
     // first_user of system user is true
-    const glipUsers = _.partition(data.glipUsers, { first_user: true });
+    const glipUsers = _.partition(data.glipUsers, (user) => {
+      return user.first_user == true && user.rc_phone_numbers[0].phoneNumber == mainCompany.number;
+    });
     const buildUsers = function (user) {
       return <IUser>{
         company: mainCompany,
@@ -30,7 +32,7 @@ class DataHelper {
     };
     const admins = glipUsers[0].map(user => buildUsers(user));
     // exclude glip service user with 0 as rc_extension_id
-    const users = glipUsers[1].filter((user) => { return user['rc_extension_id'] }).map(user => buildUsers(user));
+    const users = glipUsers[1].filter((user) => { return user['rc_extension_id'] && (user.rc_phone_numbers[0].phoneNumber == mainCompany.number) }).map(user => buildUsers(user));
     mainCompany.admin = admins[0];
     mainCompany.users = users;
     const groups = data.teams.map((team) => {
@@ -40,7 +42,39 @@ class DataHelper {
     })
     mainCompany.groups = groups;
     // TODO: format guest company, another guest company
-    return <IRcData>{ mainCompany, };
+
+    let guestCompany: ICompany;
+    const guestData = glipUsers[1].filter((user) => { return user['rc_extension_id'] && (user.rc_phone_numbers[0].phoneNumber != mainCompany.number) });
+    if (guestData.length) {
+      let guest: IUser[] =[];
+      const phoneNumber = guestData[0].rc_phone_numbers[0].phoneNumber;
+      const companyEmailDomain = guestData[0].email.split('@')[1];
+      guestCompany = <ICompany>{
+        type: data.accountType,
+        brandId: String(data.brand),
+        number: phoneNumber,
+        domain: companyEmailDomain,
+      }
+      const buildGuests = function (user) {
+        return <IUser>{
+          company: guestCompany,
+          rcId: String(user.rc_extension_id),
+          email: user.email,
+          password: user.password || 'Test!123',
+          extension: user.sanitized_rc_extension.extensionNumber,
+        }
+      };
+      for (const user of guestData) {
+        if (user.first_user) {
+          guestCompany.admin = buildGuests(user);
+        } else {
+          guest.push(buildGuests(user))
+        }
+      }
+      guestCompany.users = guest;
+    }
+    
+    return <IRcData>{ mainCompany, guestCompany };
   }
 
 
