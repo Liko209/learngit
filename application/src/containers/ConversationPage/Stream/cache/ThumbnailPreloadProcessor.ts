@@ -68,7 +68,6 @@ class ThumbnailPreloadProcessor implements IProcessor {
       const item = await itemService.getById(this._item.id);
       if (
         item &&
-        item.id > 0 &&
         !item.deactivated &&
         item.group_ids &&
         !item.group_ids.includes(
