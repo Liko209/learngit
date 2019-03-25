@@ -13,7 +13,7 @@ import {
   WEBPHONE_SESSION_EVENT,
   WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
 } from '../signaling/types';
-import { rtcMediaManager } from '../utils/RTCMediaManager';
+import { RTCMediaManager } from '../utils/RTCMediaManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 const {
@@ -30,7 +30,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   constructor(uuid: string) {
     super();
     this._uuid = uuid;
-    this._mediaElement = rtcMediaManager.createMediaElement(this._uuid);
+    this._mediaElement = RTCMediaManager.instance().createMediaElement(
+      this._uuid,
+    );
   }
   destroy() {
     if (!this._session) {
@@ -47,7 +49,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (pc) {
       sdh.close();
     }
-    rtcMediaManager.removeMediaElement(this._uuid);
+    RTCMediaManager.instance().removeMediaElement(this._uuid);
     this._session = null;
   }
 
