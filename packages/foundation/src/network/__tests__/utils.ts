@@ -20,9 +20,7 @@ import OAuthTokenHandler from '../OAuthTokenHandler';
 const fakeHandleType = new class extends AbstractHandleType {}();
 
 const getFakeRequest = () => {
-  const request = new NetworkRequestBuilder()
-    .setHandlerType(fakeHandleType)
-    .build();
+  const request = new NetworkRequestBuilder().setHandlerType(fakeHandleType);
   return request;
 };
 
