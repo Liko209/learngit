@@ -146,6 +146,7 @@ export class NetworkRequestExecutor
         break;
       case HTTP_STATUS_CODE.SERVICE_UNAVAILABLE:
         this._handle503XApiCompletionCallback(response);
+        break;
       case HTTP_STATUS_CODE.DEFAULT:
         response.request = this.request;
         break;
