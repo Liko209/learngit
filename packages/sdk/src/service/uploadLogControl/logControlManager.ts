@@ -4,33 +4,36 @@
  */
 import notificationCenter from '../notificationCenter';
 import { SERVICE, WINDOW, ENTITY } from '../../service/eventKey';
-import { logManager, LOG_LEVEL, mainLogger } from 'foundation';
+import { logManager, LOG_LEVEL, mainLogger, LogEntity } from 'foundation';
 import { LogUploader } from './LogUploader';
 import {
-  LogConsumer,
+  LogUploadConsumer,
+  MemoryLogConsumer,
   LogPersistent,
   IAccessor,
   configManager as logUploadConsumerConfigManager,
 } from './consumer';
 import { PermissionService, UserPermissionType } from '../../module/permission';
-
 class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
   private _enabledLog: boolean;
   private _isDebugMode: boolean; // if in debug mode, should not upload log
   private _onUploadAccessorChange: (accessible: boolean) => void;
-  uploadLogConsumer: LogConsumer;
+  uploadLogConsumer: LogUploadConsumer;
+  memoryLogConsumer: MemoryLogConsumer;
   private constructor() {
     this._enabledLog = true;
     this._isDebugMode = true;
     this._isOnline = window.navigator.onLine;
-    this.uploadLogConsumer = new LogConsumer(
+    this.uploadLogConsumer = new LogUploadConsumer(
       new LogUploader(),
       new LogPersistent(),
       this,
     );
+    this.memoryLogConsumer = new MemoryLogConsumer();
     logManager.setConsumer(this.uploadLogConsumer);
+    logManager.setConsumer(this.memoryLogConsumer);
     this.subscribeNotifications();
   }
 

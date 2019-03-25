@@ -74,6 +74,10 @@ export class LogManager {
     this._logger.setConsumer(consumer);
   }
 
+  addConsumer(consumer: ILogConsumer) {
+    this._logger.addConsumer(consumer);
+  }
+
   configAll(config: LogConfig) {
     configManager.setConfig(config);
   }

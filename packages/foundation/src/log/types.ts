@@ -21,8 +21,7 @@ interface ILogEntityDecorator {
 }
 
 interface ILogConsumer {
-  onLog(logEntity: LogEntity): Promise<void>;
-  flush(): Promise<void>;
+  onLog(logEntity: LogEntity): void;
 }
 
 interface ILogEntityProcessor {
