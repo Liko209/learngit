@@ -72,6 +72,9 @@ async function getThumbnailURLWithType(
   item: ImageInfo,
   rule: RULE,
 ): Promise<{ url: string; type: IMAGE_TYPE }> {
+  if (item.id < 0) {
+    return { url: '', type: IMAGE_TYPE.UNKNOWN_IMAGE };
+  }
   const { id, type, versionUrl, versions } = item;
   const origWidth = getOrigWidth(versions);
   const origHeight = getOrigHeight(versions);
