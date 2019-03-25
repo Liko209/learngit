@@ -52,9 +52,6 @@ describe('CodeSnippetItem.View', () => {
       props.isCollapse = true;
       codeSnippet = shallow(<CodeSnippetView {...props} />);
       expect(codeSnippet.state().isCollapse).toBe(true);
-
-      codeSnippet.setProps({ isCollapse: false });
-      expect(codeSnippet.state().isCollapse).toBe(false);
     });
     it('should update state if vm updated', () => {
       props.isCollapse = true;
