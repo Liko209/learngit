@@ -181,6 +181,10 @@ class MenuViewComponent extends Component<Props> {
     this.props.onClose(event);
   }
 
+  private _mouseEventHandler = (e: React.TouchEvent | MouseEvent) => {
+    e.stopPropagation();
+  }
+
   render() {
     const {
       personId,
@@ -196,6 +200,9 @@ class MenuViewComponent extends Component<Props> {
         anchorEl={anchorEl}
         open={!!anchorEl}
         onClose={this._onClose}
+        onClick={this._mouseEventHandler}
+        onTouchStart={this._mouseEventHandler}
+        onMouseDown={this._mouseEventHandler}
       >
         {this._renderReadOrUnreadMenuItem()}
         <JuiMenuItem
