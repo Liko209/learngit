@@ -2,18 +2,18 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-06-08 11:05:46
  */
+import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation';
+import { PermissionService, UserPermissionType } from '../../module/permission';
+import { ENTITY, SERVICE, WINDOW } from '../../service/eventKey';
 import notificationCenter from '../notificationCenter';
-import { SERVICE, WINDOW, ENTITY } from '../../service/eventKey';
-import { logManager, LOG_LEVEL, mainLogger, LogEntity } from 'foundation';
-import { LogUploader } from './LogUploader';
 import {
+  configManager as logUploadConsumerConfigManager,
+  IAccessor,
+  LogPersistent,
   LogUploadConsumer,
   MemoryLogConsumer,
-  LogPersistent,
-  IAccessor,
-  configManager as logUploadConsumerConfigManager,
 } from './consumer';
-import { PermissionService, UserPermissionType } from '../../module/permission';
+import { LogUploader } from './LogUploader';
 class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
@@ -32,8 +32,13 @@ class LogControlManager implements IAccessor {
       this,
     );
     this.memoryLogConsumer = new MemoryLogConsumer();
+    this.memoryLogConsumer.setSizeThreshold(10 * 1024 * 1024);
+    this.memoryLogConsumer.setFilter((log: LogEntity) => {
+      return !log.tags.includes('ImageDownloader');
+    });
     logManager.setConsumer(this.uploadLogConsumer);
     logManager.setConsumer(this.memoryLogConsumer);
+
     this.subscribeNotifications();
   }
 

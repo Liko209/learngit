@@ -26,7 +26,7 @@ export class MemoryLogConsumer implements ILogConsumer {
   }
 
   setFilter(filter: (log: LogEntity) => boolean) {
-    this._recentLogQueue.filter;
+    this._filter = filter;
   }
 
   onLog(logEntity: LogEntity) {
