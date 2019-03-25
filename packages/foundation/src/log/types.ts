@@ -47,6 +47,9 @@ type LogConfig = {
   browser: {
     enabled: boolean;
   };
+  consumer: {
+    enabled: boolean;
+  };
   decorators: ILogEntityDecorator[];
 };
 

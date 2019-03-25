@@ -107,7 +107,10 @@ export class Logger implements ILogger, ILoggerCore {
   }
 
   private _isConsumerEnabled() {
-    return this._logConsumers.length > 0;
+    const {
+      consumer: { enabled },
+    } = configManager.getConfig();
+    return enabled && this._logConsumers.length > 0;
   }
 
   private _isBrowserEnabled(logEntity: LogEntity) {

@@ -9,6 +9,9 @@ const defaultConfig: LogConfig = {
   browser: {
     enabled: true,
   },
+  consumer: {
+    enabled: true,
+  },
   decorators: [],
 };
 
