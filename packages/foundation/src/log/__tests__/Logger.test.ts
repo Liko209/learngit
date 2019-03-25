@@ -320,4 +320,20 @@ describe('Logger', () => {
       });
     });
   });
+  describe('setConsumer()', () => {
+    it('should set consumer.', () => {
+      const logger = new Logger();
+      logger.setConsumer(mockConsumer);
+      expect(logger['_logConsumers']).toEqual([mockConsumer]);
+    });
+  });
+  describe('addConsumer()', () => {
+    it('should add consumer.', () => {
+      const logger = new Logger();
+      logger.addConsumer(mockConsumer);
+      expect(logger['_logConsumers'].length).toEqual(1);
+      logger.addConsumer(mockConsumer);
+      expect(logger['_logConsumers'].length).toEqual(2);
+    });
+  });
 });

@@ -31,7 +31,7 @@ const buildLogEntity = (
 
 export class Logger implements ILogger, ILoggerCore {
   private _logEntityProcessor: ILogEntityProcessor;
-  private _logConsumer: ILogConsumer;
+  private _logConsumers: ILogConsumer[] = [];
   private _consoleLoggerCore: ILoggerCore;
   private _memoizeTags: ((_tags: string[]) => ILogger) & _.MemoizedFunction;
   constructor() {
@@ -48,7 +48,11 @@ export class Logger implements ILogger, ILoggerCore {
   }
 
   setConsumer(consumer: ILogConsumer) {
-    this._logConsumer = consumer;
+    this._logConsumers = [consumer];
+  }
+
+  addConsumer(consumer: ILogConsumer) {
+    this._logConsumers = [...this._logConsumers, consumer];
   }
 
   log(...params: any) {
@@ -87,8 +91,12 @@ export class Logger implements ILogger, ILoggerCore {
     if (!this._isLogEnabled(logEntity)) return;
     this._isBrowserEnabled(logEntity) &&
       this._consoleLoggerCore.doLog(logEntity);
-    this._isConsumerEnabled() &&
-      this._logConsumer.onLog(this._logEntityProcessor.process(logEntity));
+    if (this._isConsumerEnabled()) {
+      const log = this._logEntityProcessor.process(logEntity);
+      this._logConsumers.forEach((logConsumer: ILogConsumer) => {
+        logConsumer.onLog(log);
+      });
+    }
   }
 
   private _isLogEnabled(logEntity: LogEntity) {
@@ -99,7 +107,7 @@ export class Logger implements ILogger, ILoggerCore {
   }
 
   private _isConsumerEnabled() {
-    return !!this._logConsumer;
+    return this._logConsumers.length > 0;
   }
 
   private _isBrowserEnabled(logEntity: LogEntity) {
