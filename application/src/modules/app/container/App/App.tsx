@@ -13,7 +13,7 @@ import ThemeProvider from '@/containers/ThemeProvider';
 import history from '@/history';
 import { analytics } from '@/Analytics';
 import { AboutView } from '@/containers/About';
-import { generalErrorHandler } from '@/utils/error';
+import { generalErrorHandler, errorReporter } from '@/utils/error';
 import { Router } from '@/modules/router';
 import { Upgrade } from '@/modules/service-worker';
 import { TopBanner } from '../TopBanner';
@@ -30,6 +30,7 @@ class App extends React.Component {
 
   componentDidCatch(error: Error) {
     generalErrorHandler(error);
+    errorReporter.report(error);
   }
 
   componentWillUnmount() {
