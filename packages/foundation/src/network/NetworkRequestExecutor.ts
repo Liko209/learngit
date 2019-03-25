@@ -5,7 +5,6 @@
  */
 import BaseClient from './client/BaseClient';
 import { HttpResponseBuilder } from './client/http';
-import doLog from './log';
 
 import {
   INetworkRequestExecutorListener,
@@ -24,6 +23,7 @@ import {
   NETWORK_HANDLE_TYPE,
 } from './network';
 import { SERVER_ERROR_CODE, DEFAULT_RETRY_COUNT } from './Constants';
+import { doResponseLog, doRequestLog } from './log';
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
@@ -59,7 +59,7 @@ export class NetworkRequestExecutor
 
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
     this._callXApiResponseCallback(response);
-    doLog(response);
+    doResponseLog(response);
   }
 
   onFailure(response: IResponse): void {
@@ -70,7 +70,7 @@ export class NetworkRequestExecutor
     if (response.statusText !== NETWORK_FAIL_TYPE.TIME_OUT) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
       this._callXApiResponseCallback(response);
-      doLog(response);
+      doResponseLog(response);
     } else {
       this._retry();
     }
@@ -109,8 +109,9 @@ export class NetworkRequestExecutor
   }
 
   private _performNetworkRequest() {
+    doRequestLog(this.request);
     if (this._requestDecoration) {
-      this._requestDecoration.decorate(this.getRequest());
+      this._requestDecoration.decorate(this.request);
     }
     this.client.request(this.request, this);
   }
