@@ -54,6 +54,11 @@ export class TestEntityCacheSearchController<T extends IdModel = IdModel>
     'isFuzzyMatched',
     false,
   );
+  isSoundexMatched = delegate(
+    () => this.entityCacheSearchController,
+    'isSoundexMatched',
+    false,
+  );
   isStartWithMatched = delegate(
     () => this.entityCacheSearchController,
     'isStartWithMatched',

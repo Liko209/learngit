@@ -27,7 +27,16 @@
       "Saturday": "Saturday",
       "Sunday": "Sunday"
     },
-
+    "verb": {
+      "like": "like",
+      "likes": "likes"
+    },
+    "pronoun": {
+      "this": "this"
+    },
+    "conj": {
+      "and": "and"
+    },
     "more": "More",
     "copy": "Copy",
     "pin": "Pin",
@@ -37,7 +46,6 @@
     "download": "Download",
     "expand": "Expand",
     "collapse": "Collapse",
-
     "back": "Back",
     "forward": "Forward",
     "You": "You",
@@ -67,7 +75,6 @@
     "Dashboard": "Dashboard"
   },
   "message": {
-    "likedThis": "liked this",
     "showUnreads": "Show Unreads",
     "meGroup": "me",
     "mentionPosts": "Mentions",

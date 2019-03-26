@@ -302,8 +302,7 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
 });
 
-// skip by bug:https://jira.ringcentral.com/browse/FIJI-3933 
-test.skip(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'AtMention']), async (t: TestController) => {
+test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'AtMention']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
@@ -354,7 +353,7 @@ test.skip(formalName('Jump to post position when click button or clickable area 
     await mentionsEntry.enter();
   });
 
-  await h(t).withLog('And I click the post item', async () => {
+  await h(t).withLog('And I click clickable area of team post. (except team name)', async () => {
     await postMentionPage.postItemById(atMentionTeamPostId).jumpToConversationByClickPost();
   });
 
@@ -368,8 +367,8 @@ test.skip(formalName('Jump to post position when click button or clickable area 
     await mentionsEntry.enter();
   });
 
-  await h(t).withLog('And I click AtMention post item from pvChat', async () => {
-    await postMentionPage.postItemById(atMentionChatPostId).jumpToConversationByClickName();
+  await h(t).withLog('And I hover the private chat message then click button - "Jump to conversation"', async () => {
+    await postMentionPage.postItemById(atMentionChatPostId).clickConversationByButton();
   });
 
   await h(t).withLog('Then I should jump to the AtMention post position in the pvChat', async () => {

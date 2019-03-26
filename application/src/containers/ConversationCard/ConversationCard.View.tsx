@@ -62,7 +62,7 @@ export class ConversationCard extends React.Component<
 
   jumpToPost = () => {
     const { id, groupId } = this.props;
-    jumpToPost(id, groupId);
+    jumpToPost({ id, groupId });
   }
 
   private _focusEditor() {
@@ -142,7 +142,7 @@ export class ConversationCard extends React.Component<
             <IdsToConversationSheet itemTypeIds={itemTypeIds} postId={id} />
           )}
         </JuiConversationCardBody>
-        <Footer id={id} />
+        <Footer postId={id} />
       </JuiConversationCard>
     );
   }

@@ -35,6 +35,6 @@ describe('NewMessageVM', () => {
     const message = 'test';
     newMessageVM.members = [1, 2];
     await newMessageVM.newMessage(message);
-    expect(goToConversation.goToConversation).toHaveBeenCalled();
+    expect(goToConversation.goToConversationWithLoading).toHaveBeenCalled();
   });
 });

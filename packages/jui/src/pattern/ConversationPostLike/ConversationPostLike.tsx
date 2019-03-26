@@ -33,6 +33,7 @@ const StyleConversationPostLike = styled.div`
 
   & > button {
     margin-right: ${spacing(1)};
+    border-radius: 0;
   }
 
   & > span {
@@ -62,6 +63,7 @@ class JuiConversationPostLike extends PureComponent<
           color={iLiked ? 'primary' : undefined}
           variant="plain"
           disableToolTip={true}
+          data-name="actionBarLike"
         >
           {iLiked ? 'thumbup' : 'thumbup_border'}
         </JuiIconButton>

@@ -69,7 +69,7 @@ const _JuiLozengeButton: React.StatelessComponent<JuiLozengeButtonProps> = ({
   children,
   loading,
   arrowDirection,
-  className,
+  className = '',
   ...rest
 }: JuiLozengeButtonProps) => {
   let newClassName = className;

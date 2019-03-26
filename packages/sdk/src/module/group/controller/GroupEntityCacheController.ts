@@ -7,7 +7,7 @@
 import _ from 'lodash';
 import { Group } from '../entity';
 import { EntityCacheController } from '../../../framework/controller/impl/EntityCacheController';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../service/account/config';
 import { IGroupService } from '../service/IGroupService';
 class GroupEntityCacheController extends EntityCacheController<Group> {
   private _individualGroups: Map<number, Group> = new Map();
@@ -51,7 +51,9 @@ class GroupEntityCacheController extends EntityCacheController<Group> {
   }
 
   private _getPersonIdInIndividualGroup(group: Group) {
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
+
     for (const memberId of group.members) {
       if (memberId !== currentUserId) {
         return memberId;

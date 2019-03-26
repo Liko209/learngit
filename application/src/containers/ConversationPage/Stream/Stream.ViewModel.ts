@@ -279,7 +279,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this._historyHandler.getDistanceToFirstUnread(this.postIds) + 1;
     if (loadCount > 0) {
       this._streamController.enableNewMessageSep();
-      await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
+      try {
+        await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
+      } catch (err) {
+        this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
+        throw err;
+      }
     }
     return this.firstHistoryUnreadPostId;
   }

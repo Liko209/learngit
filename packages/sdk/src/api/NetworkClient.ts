@@ -193,8 +193,7 @@ export default class NetworkClient {
       .setVia(via)
       .setNetworkManager(this.networkManager)
       .setPriority(priority ? priority : REQUEST_PRIORITY.NORMAL)
-      .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC)
-      .build();
+      .setHAPriority(HAPriority ? HAPriority : HA_PRIORITY.BASIC);
   }
 
   http<T>(query: IQuery, requestHolder?: RequestHolder) {

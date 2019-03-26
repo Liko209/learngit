@@ -35,6 +35,18 @@ describe('RcInfoApi', () => {
     });
   });
 
+  describe('requestRcAPIVersion()', () => {
+    it('should be called with correct params', () => {
+      RcInfoApi.requestRcAPIVersion();
+      expect(RcInfoApi.rcNetworkClient.http).toBeCalledWith({
+        path: '',
+        method: 'get',
+        authFree: false,
+        via: NETWORK_VIA.HTTP,
+      });
+    });
+  });
+
   describe('requestRcAccountInfo()', () => {
     it('should be called with correct params', () => {
       RcInfoApi.requestRcAccountInfo();

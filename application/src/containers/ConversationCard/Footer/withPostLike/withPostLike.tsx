@@ -20,7 +20,6 @@ import { observer } from 'mobx-react';
 function withPostLike<P>(
   Component: ComponentType<P & WithPostLikeComponentProps>,
 ): ComponentClass<P & WithPostLikeProps> {
-
   @observer
   class ComponentWithPostLike extends React.Component<P & WithPostLikeProps> {
     private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);

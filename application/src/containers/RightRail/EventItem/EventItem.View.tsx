@@ -18,7 +18,7 @@ import { ViewProps } from './types';
 @observer
 class EventItemView extends React.Component<ViewProps> {
   render() {
-    const { text, startTime, color, isRepeat } = this.props;
+    const { text, localTime, startTime, color, isRepeat } = this.props;
     return (
       <JuiListItem data-test-automation-id="rightRail-event-item">
         <JuiListItemIcon>
@@ -29,9 +29,9 @@ class EventItemView extends React.Component<ViewProps> {
           primary={text}
           secondary={
             <JuiListItemSecondaryText>
+              {isRepeat && <JuiEventRepeatIcon />}
               <JuiListItemSecondarySpan>
-                {isRepeat && <JuiEventRepeatIcon />}
-                {startTime}
+                {isRepeat ? localTime : startTime}
               </JuiListItemSecondarySpan>
             </JuiListItemSecondaryText>
           }

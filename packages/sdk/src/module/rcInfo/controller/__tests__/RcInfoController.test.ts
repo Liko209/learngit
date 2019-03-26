@@ -16,9 +16,11 @@ import { RolePermissionController } from '../RolePermissionController';
 import { PermissionService } from '../../../permission';
 import notificationCenter from '../../../../service/notificationCenter';
 import { RC_INFO } from '../../../../service/eventKey';
+import { AccountUserConfig } from '../../../../service/account/config';
 
 jest.mock('../../config');
 jest.mock('../../../permission');
+jest.mock('../../../../service/account/config');
 
 describe('RcInfoController', () => {
   let rcInfoController: RcInfoController;
@@ -42,24 +44,29 @@ describe('RcInfoController', () => {
     it('should not schedule rc info job when can not start schedule', () => {
       rcInfoController.scheduleRcInfoJob = jest.fn();
       mockIsAccountReady.mockReturnValueOnce(false);
-      NewGlobalConfig.getAccountType = jest.fn().mockReturnValueOnce('RC');
+      AccountUserConfig.prototype.getAccountType = jest
+        .fn()
+        .mockReturnValueOnce('RC');
       rcInfoController.requestRcInfo();
       expect(rcInfoController.scheduleRcInfoJob).toBeCalledTimes(0);
       expect(rcInfoController['_isRcInfoJobScheduled']).toBeFalsy();
       mockIsAccountReady.mockReturnValueOnce(true);
-      NewGlobalConfig.getAccountType = jest.fn().mockReturnValueOnce('GLIP');
+      AccountUserConfig.prototype.getAccountType = jest
+        .fn()
+        .mockReturnValueOnce('GLIP');
       rcInfoController.requestRcInfo();
       expect(rcInfoController.scheduleRcInfoJob).toBeCalledTimes(0);
       expect(rcInfoController['_isRcInfoJobScheduled']).toBeFalsy();
     });
 
     it('should schedule all rc info job and should not schedule again', () => {
-      NewGlobalConfig.getAccountType = jest.fn().mockReturnValueOnce('RC');
-      mockIsAccountReady.mockReturnValueOnce(true);
+      AccountUserConfig.prototype.getAccountType = jest
+        .fn()
+        .mockReturnValue('RC');
+      mockIsAccountReady.mockReturnValue(true);
       rcInfoController.scheduleRcInfoJob = jest.fn();
       rcInfoController.requestRcInfo();
       expect(rcInfoController['_isRcInfoJobScheduled']).toBeTruthy();
-      rcInfoController.requestRcInfo();
       expect(rcInfoController.scheduleRcInfoJob).toHaveBeenCalledWith(
         JOB_KEY.FETCH_CLIENT_INFO,
         rcInfoController.requestRcClientInfo,
@@ -93,13 +100,14 @@ describe('RcInfoController', () => {
     });
 
     it('should schedule all rc info job and should ignore first time when _shouldIgnoreFirstTime = true', () => {
-      NewGlobalConfig.getAccountType = jest.fn().mockReturnValueOnce('RC');
+      AccountUserConfig.prototype.getAccountType = jest
+        .fn()
+        .mockReturnValueOnce('RC');
       mockIsAccountReady.mockReturnValueOnce(true);
       rcInfoController.scheduleRcInfoJob = jest.fn();
       rcInfoController['_shouldIgnoreFirstTime'] = true;
       rcInfoController.requestRcInfo();
       expect(rcInfoController['_isRcInfoJobScheduled']).toBeTruthy();
-      rcInfoController.requestRcInfo();
       expect(rcInfoController.scheduleRcInfoJob).toHaveBeenCalledWith(
         JOB_KEY.FETCH_CLIENT_INFO,
         rcInfoController.requestRcClientInfo,
@@ -270,6 +278,32 @@ describe('RcInfoController', () => {
       expect(rcInfoController.requestRcAccountInfo).toBeCalledWith(false);
       expect(rcInfoController.requestRcExtensionInfo).toBeCalledWith(false);
       expect(rcInfoController.requestRcRolePermissions).toBeCalledWith(false);
+    });
+  });
+
+  describe('storeRcAccountRelativeInfo', () => {
+    it('should store all rc info', () => {
+      rcInfoController['rcInfoUserConfig'].setClientInfo = jest.fn();
+      rcInfoController['rcInfoUserConfig'].setAccountInfo = jest.fn();
+      rcInfoController['rcInfoUserConfig'].setExtensionInfo = jest.fn();
+      rcInfoController['rcInfoUserConfig'].setRolePermissions = jest.fn();
+      rcInfoController['_clientInfo'] = '_clientInfo' as any;
+      rcInfoController['_accountInfo'] = '_accountInfo' as any;
+      rcInfoController['_extensionInfo'] = '_extensionInfo' as any;
+      rcInfoController['_rolePermissions'] = '_rolePermissions' as any;
+      rcInfoController.storeRcAccountRelativeInfo();
+      expect(
+        rcInfoController['rcInfoUserConfig'].setClientInfo,
+      ).toBeCalledWith('_clientInfo');
+      expect(
+        rcInfoController['rcInfoUserConfig'].setAccountInfo,
+      ).toBeCalledWith('_accountInfo');
+      expect(
+        rcInfoController['rcInfoUserConfig'].setExtensionInfo,
+      ).toBeCalledWith('_extensionInfo');
+      expect(
+        rcInfoController['rcInfoUserConfig'].setRolePermissions,
+      ).toBeCalledWith('_rolePermissions');
     });
   });
 

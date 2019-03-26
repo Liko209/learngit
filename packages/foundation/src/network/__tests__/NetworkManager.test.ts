@@ -10,6 +10,7 @@ import {
   getFakeHandler,
 } from './utils';
 import OAuthTokenManager from '../OAuthTokenManager';
+
 let networkManager: NetworkManager;
 const initManagerWithHandlerType = () => {
   networkManager.initNetworkRequestBaseHandler(
@@ -66,7 +67,8 @@ describe('NetworkManager', () => {
       const request = getFakeRequest();
       networkManager.addApiRequest(request);
       expect(
-        networkManager.networkRequestHandler(fakeHandleType.name)!.addApiRequest,
+        networkManager.networkRequestHandler(fakeHandleType.name)!
+          .addApiRequest,
       ).toHaveBeenCalled();
     });
   });
@@ -119,7 +121,8 @@ describe('NetworkManager', () => {
       );
       networkManager.cancelRequest(request);
       expect(
-        networkManager.networkRequestHandler(fakeHandleType.name)!.cancelRequest,
+        networkManager.networkRequestHandler(fakeHandleType.name)!
+          .cancelRequest,
       ).toBeCalledWith(request);
     });
   });

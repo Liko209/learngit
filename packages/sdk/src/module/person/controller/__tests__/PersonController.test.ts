@@ -24,9 +24,9 @@ import { IEntityCacheController } from '../../../../framework/controller/interfa
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from '../../../../module/config';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { ContactType } from '../../types';
-import { SortableModel } from '../../../../framework/model';
+import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../service/account/config');
@@ -189,7 +189,10 @@ describe('PersonService', () => {
     };
 
     beforeEach(() => {
-      AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(1);
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValue(1);
     });
 
     it('should not return extension id for guest user', () => {
@@ -503,6 +506,7 @@ describe('PersonService', () => {
       jest.clearAllMocks();
       jest.resetAllMocks();
       setUp();
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
     });
     it('should return null when there is no phone number data', async () => {
       await prepareInvalidData();

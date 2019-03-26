@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import styled from '../../foundation/styled-components';
-import { JuiConversationInitialPost } from '../ConversationInitialPost';
+import { JuiConversationInitialPostWrapper } from '../ConversationInitialPost';
 
 // FIXME
 // Use any due to issues with type of styled-component
@@ -18,13 +18,13 @@ type JuiStreamProps = {
 };
 
 const StyledDiv = styled.div`
-  height: 100%;
+  min-height: 100%;
   & .un-scrollable {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     position: relative;
-    ${JuiConversationInitialPost} {
+    ${JuiConversationInitialPostWrapper} {
       position: absolute;
       top: 0px;
       width: 100%;

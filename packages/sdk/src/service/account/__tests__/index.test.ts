@@ -7,17 +7,14 @@ import AccountService from '..';
 import { daoManager } from '../../../dao';
 import { PersonDao } from '../../../module/person/dao';
 import { refreshToken } from '../../../api';
-import { GlobalConfigService } from '../../../module/config/service/GlobalConfigService';
-import { AccountGlobalConfig } from '../../../service/account/config';
-import { UserConfigService } from '../../../module/config';
+import { AccountUserConfig } from '../../../service/account/config/AccountUserConfig';
+import { AuthUserConfig } from '../../../service/auth/config';
 
 jest.mock('../../../dao');
 jest.mock('../../../module/person/dao');
 jest.mock('../../../api');
-jest.mock('../../../module/config');
-jest.mock('../../../service/account/config');
-GlobalConfigService.getInstance = jest.fn();
-UserConfigService.getInstance = jest.fn();
+jest.mock('../../../service/auth/config');
+jest.mock('../../../service/account/config/AccountUserConfig');
 
 describe('AccountService', () => {
   let accountService: AccountService;
@@ -37,9 +34,12 @@ describe('AccountService', () => {
         email: 'a@gmail.com',
         display_name: 'display_name',
       });
-
-      AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(222);
-      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(222);
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(222);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValue(222);
 
       const user = accountService.getCurrentUserInfo();
       return expect(user).resolves.toEqual({

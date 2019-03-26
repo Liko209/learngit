@@ -1,19 +1,19 @@
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
  * @Date: 2019-02-14 15:55:54
- * Copyright Â© RingCentral. All rights reserved.
+ * Copyright © RingCentral. All rights reserved.
  */
 import { Profile } from '../../entity';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { ProfileDataController } from '../ProfileDataController';
 import { Raw } from '../../../../framework/model';
 import { ProfileActionController } from '../ProfileActionController';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { PersonDao } from '../../../person/dao/PersonDao';
 import { daoManager } from '../../../../dao';
 
 jest.mock('../ProfileDataController');
-
+jest.mock('../../../../service/account/config');
 jest.mock('../../../person/dao/PersonDao');
 jest.mock('../../../../dao');
 
@@ -159,7 +159,7 @@ describe('ProfileActionController', () => {
         id: 2,
         favorite_group_ids: [],
       } as Profile;
-      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValueOnce(1);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
       personDao.get.mockResolvedValueOnce({
         me_group_id: 111,
       });
@@ -233,12 +233,34 @@ describe('ProfileActionController', () => {
   });
   describe('reopenConversation', () => {
     it('should reopen group when group is hidden', async () => {
-      testPartialModifyController.partialEntity = { _id: 2 };
+      testPartialModifyController.partialEntity = {
+        _id: 2,
+      };
+      testPartialModifyController.originalEntity = {
+        _id: 2,
+        hide_group_333: true,
+      };
       const controller = getActionController();
       const result = await controller.reopenConversation(333);
       expect(result).toEqual({
         _id: 2,
         hide_group_333: false,
+      });
+    });
+
+    it('should do nothing when group is not hidden', async () => {
+      testPartialModifyController.partialEntity = {
+        _id: 2,
+        person_id: 3,
+      };
+      testPartialModifyController.originalEntity = {
+        _id: 2,
+      };
+      const controller = getActionController();
+      const result = await controller.reopenConversation(333);
+      expect(result).toEqual({
+        _id: 2,
+        person_id: 3,
       });
     });
   });

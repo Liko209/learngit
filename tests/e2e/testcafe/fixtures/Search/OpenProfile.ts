@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-03-01 10:44:59 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-18 19:03:37
+ * @Author: Potar.He
+ * @Date: 2019-03-01 10:44:59
+ * @Last Modified by: isaac.liu
+ * @Last Modified time: 2019-03-22 15:04:04
  */
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
@@ -17,10 +17,10 @@ fixture('Search/Profile')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-
 test(formalName('Check can open profile dialog when click the item of search result', ['P1', 'JPT-1213', 'search', 'Potar.He']), async (t) => {
-  const me = h(t).rcData.mainCompany.users[5];
-  const anotherUser = h(t).rcData.mainCompany.users[6];
+  const users = h(t).rcData.mainCompany.users;
+  const me = users[5];
+  const anotherUser = users[6];
   await h(t).glip(me).init();
   const anotherUserName = await h(t).glip(me).getPersonPartialData('display_name', anotherUser.rcId);
 
@@ -30,10 +30,11 @@ test(formalName('Check can open profile dialog when click the item of search res
     owner: me,
     members: [me],
   };
+
   let group = <IGroup>{
     type: 'DirectMessage',
     owner: me,
-    members: [me, anotherUser, h(t).rcData.mainCompany.users[7]],
+    members: [me, anotherUser, users[7]],
   };
 
   await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
@@ -51,86 +52,154 @@ test(formalName('Check can open profile dialog when click the item of search res
 
   const searchBar = app.homePage.header.search;
 
-  const searchResults = [{
-    keyword: anotherUserName,
-    item: searchBar.nthPeople(0),
-    type: "result",
-  }, {
-    keyword: anotherUserName,
-    item: searchBar.nthGroup(0),
-    type: "groups",
-  }, {
-    keyword: team.name,
-    item: searchBar.nthTeam(0),
-    type: "teams",
-  }]
-
+  // people
   const profileDialog = app.homePage.profileDialog;
-  for (const result of searchResults) {
-    const { keyword, item, type } = result;
-    await h(t).withLog(`When I search keyword ${keyword} and click the first ${type} result`, async () => {
-      await searchBar.clearInputAreaText();
-      await searchBar.typeSearchKeyword(keyword);
-      await t.expect(item.exists).ok();
-      await item.enter();
-    });
+  await h(t).withLog(`When I search keyword ${anotherUserName} and click the first people result`, async () => {
+    await searchBar.clearInputAreaText();
+    await searchBar.typeSearchKeyword(anotherUserName);
+    await searchBar.nthPeople(0).ensureLoaded();
+    await searchBar.nthPeople(0).enter();
+  });
 
-    await h(t).withLog(`Then Profile dialog should be popup and search result should be closed`, async () => {
-      await profileDialog.shouldBePopUp();
-      await t.expect(searchBar.searchResultsContainer.exists).notOk();
-    });
+  await h(t).withLog(`Then Profile dialog should be popup and search result should be closed`, async () => {
+    await profileDialog.shouldBePopUp();
+    await t.expect(searchBar.searchResultsContainer.exists).notOk();
+  });
 
-    await h(t).withLog(`When I close the profile dialog`, async () => {
-      await profileDialog.close();
-    });
+  await h(t).withLog(`When I close the profile dialog`, async () => {
+    await profileDialog.clickCloseButton();
+  });
 
-    await h(t).withLog(`Then Keep the search text in the search box`, async () => {
-      await t.expect(searchBar.inputArea.value).eql(keyword);
-    });
+  await h(t).withLog(`Then Keep the search text in the search box`, async () => {
+    await t.expect(searchBar.inputArea.value).eql(anotherUserName)
+  });
 
-    await h(t).withLog(`When I click the search box`, async () => {
-      await searchBar.clickInputArea();
-    });
+  // group
+  let groupName;
+  await h(t).withLog(`When I search keyword ${anotherUserName} and click the first group result`, async () => {
+    await searchBar.clearInputAreaText();
+    await searchBar.typeSearchKeyword(anotherUserName);
+    await searchBar.nthGroup(0).ensureLoaded();
+    groupName = await searchBar.nthGroup(0).name.textContent;
+    await searchBar.nthGroup(0).enter();
+  });
 
-    await h(t).withLog(`Then display instant search`, async () => {
-      await t.expect(item.exists).ok();
-    });
-  }
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`Then the conversation should be opened`, async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+  });
+
+  await h(t).withLog(`And No text in the search box`, async () => {
+    await t.expect(searchBar.inputArea.value).eql("")
+  });
+
+  await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.clickInputArea();
+  });
+
+  await h(t).withLog(`Then display instant search`, async () => {
+    await searchBar.nthGroup(0).ensureLoaded();
+  });
+
+  // team
+  await h(t).withLog(`When I search keyword ${team.name} and click the team result`, async () => {
+    await searchBar.clearInputAreaText();
+    await searchBar.typeSearchKeyword(team.name);
+    await searchBar.getSearchItemByCid(team.glipId).ensureLoaded();
+    await searchBar.getSearchItemByCid(team.glipId).enter();
+  });
+
+  await h(t).withLog(`Then the conversation should be opened`, async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.groupIdShouldBe(team.glipId);
+  });
+
+  await h(t).withLog(`And Keep the search text in the search box`, async () => {
+    await t.expect(searchBar.inputArea.value).eql("");
+  });
+
+  await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.clickInputArea();
+  });
+
+  await h(t).withLog(`Then display instant search`, async () => {
+    await searchBar.dropDownListShouldContainTeam(team);
+  });
 
   // recently search 
+  // people
   await h(t).withLog(`Given I clear search box text`, async () => {
     await searchBar.clearInputAreaText();
     await searchBar.quitByPressEsc();
   });
 
-  const recentHistoryCount = searchResults.length;
-  for (const i of _.range(recentHistoryCount)) {
-    await h(t).withLog(`When I click the search box`, async () => {
-      await searchBar.clickInputArea();
-    })
+  await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.clickInputArea();
+  });
 
-    let resultName;
-    await h(t).withLog(`Then recently search result should be showed`, async () => {
-      await searchBar.shouldShowRecentlyHistory();
-      resultName = await searchBar.itemsNames.nth(recentHistoryCount - 1).textContent
-    });
+  await h(t).withLog(`Then recently search result should be showed`, async () => {
+    await searchBar.shouldShowRecentlyHistory();
+  });
 
-    await h(t).withLog(`When I click the last one: ${resultName}`, async () => {
-      await searchBar.nthAllResults(recentHistoryCount - 1).enter();
-    })
+  await h(t).withLog(`When I click the people result named "${anotherUserName}"`, async () => {
+    await searchBar.getSearchItemByName(anotherUserName).enter();
+  });
 
-    await h(t).withLog(`Then Profile dialog should be popup and recently search result should be closed`, async () => {
-      await profileDialog.shouldBePopUp();
-      await t.expect(searchBar.historyContainer.exists).notOk();
-    });
+  await h(t).withLog(`Then Profile dialog should be popup and recently search result should be closed`, async () => {
+    await profileDialog.shouldBePopUp();
+    await t.expect(searchBar.historyContainer.exists).notOk();
+  }, true);
 
-    await h(t).withLog(`When I close the profile dialog`, async () => {
-      await profileDialog.close();
-    });
+  await h(t).withLog(`And I close the profile dialog`, async () => {
+    await profileDialog.clickCloseButton();
+  });
 
-    await h(t).withLog(`Then the search text should be clean`, async () => {
-      await t.expect(searchBar.inputArea.value).eql('');
-    });
-  }
+  // group
+  await h(t).withLog(`Given I clear search box text`, async () => {
+    await searchBar.clearInputAreaText();
+    await searchBar.quitByPressEsc();
+  });
 
+  await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.clickInputArea();
+  })
+
+  await h(t).withLog(`Then recently search result should be showed`, async () => {
+    await searchBar.shouldShowRecentlyHistory();
+  });
+
+  await h(t).withLog(`When I click the group result`, async () => {
+    await searchBar.getSearchItemByName(groupName).enter();
+  });
+
+  await h(t).withLog(`Then the conversation should be opened`, async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.titleShouldBe(groupName);
+  });
+
+  await h(t).withLog(`And No text in the search box`, async () => {
+    await t.expect(searchBar.inputArea.value).eql("");
+  });
+
+  // team
+  await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.clickInputArea();
+  });
+
+  await h(t).withLog(`Then recently search result should be showed`, async () => {
+    await searchBar.shouldShowRecentlyHistory();
+  });
+
+  await h(t).withLog(`When I click the team result`, async () => {
+    await searchBar.getSearchItemByName(team.name).enter();
+  });
+
+  await h(t).withLog(`Then the conversation should be opened`, async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.groupIdShouldBe(team.glipId);
+  });
+
+  await h(t).withLog(`And No text in the search box`, async () => {
+    await t.expect(searchBar.inputArea.value).eql("");
+  });
 });

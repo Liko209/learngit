@@ -9,11 +9,14 @@ import _ from 'lodash';
 import { Api } from '../../../api';
 import GroupAPI from '../../../api/glip/group';
 import { daoManager } from '../../../dao';
-import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
+import {
+  IEntityCacheSearchController,
+  Terms,
+} from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { SortableModel } from '../../../framework/model';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../service/account/config';
 import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
@@ -38,7 +41,8 @@ import { IGroupService } from '../service/IGroupService';
 import { GroupHandleDataController } from './GroupHandleDataController';
 
 function buildNewGroupInfo(members: number[]) {
-  const userId = AccountGlobalConfig.getCurrentUserId();
+  const userConfig = new AccountUserConfig();
+  const userId = userConfig.getGlipUserId();
   return {
     members,
     creator_id: Number(userId),
@@ -86,7 +90,8 @@ export class GroupFetchDataController {
         ? await extractHiddenGroupIdsWithoutUnread(profile)
         : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-      const userId = AccountGlobalConfig.getCurrentUserId();
+      const userConfig = new AccountUserConfig();
+      const userId = userConfig.getGlipUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
       if (this.entityCacheSearchController.isInitialized()) {
         result = await this.entityCacheSearchController.getEntities(
@@ -196,7 +201,6 @@ export class GroupFetchDataController {
 
     return false;
   }
-
   async doFuzzySearchGroups(
     searchKey: string,
     fetchAllIfSearchKeyEmpty?: boolean,
@@ -209,33 +213,39 @@ export class GroupFetchDataController {
       PERFORMANCE_KEYS.SEARCH_GROUP,
       logId,
     );
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     if (!currentUserId) {
       return null;
     }
-
     const sortFunc = (
       group: Group,
-      terms: string[],
+      terms: Terms,
     ): SortableModel<Group> | null => {
       if (this._isValidGroup(group) && group.members.length > 2) {
         const groupName = this.getGroupNameByMultiMembers(
           group.members,
           currentUserId,
         );
-
+        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+        const lowerCaseGroupName = groupName.toLowerCase();
+        const isFuzzyMatched =
+          this.entityCacheSearchController.isFuzzyMatched(
+            lowerCaseGroupName,
+            searchKeyTerms,
+          ) ||
+          this.entityCacheSearchController.isSoundexMatched(
+            lowerCaseGroupName,
+            searchKeyTermsToSoundex,
+          );
         if (
-          (terms.length > 0 &&
-            this.entityCacheSearchController.isFuzzyMatched(
-              groupName.toLowerCase(),
-              terms,
-            )) ||
-          (fetchAllIfSearchKeyEmpty && terms.length === 0)
+          (searchKeyTerms.length > 0 && isFuzzyMatched) ||
+          (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0)
         ) {
           return {
             id: group.id,
             displayName: groupName,
-            firstSortKey: groupName.toLowerCase(),
+            firstSortKey: lowerCaseGroupName,
             entity: group,
           };
         }
@@ -273,7 +283,8 @@ export class GroupFetchDataController {
       PERFORMANCE_KEYS.SEARCH_TEAM,
       logId,
     );
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     if (!currentUserId) {
       return null;
     }
@@ -282,29 +293,34 @@ export class GroupFetchDataController {
     const kSortingRateWithFirstAndPositionMatched: number = 1.1;
 
     const result = await this.entityCacheSearchController.searchEntities(
-      (team: Group, terms: string[]) => {
+      (team: Group, terms: Terms) => {
         let isMatched: boolean = false;
         let sortValue: number = 0;
-
         do {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
           if (!this._idValidTeam(team)) {
             break;
           }
 
-          if (fetchAllIfSearchKeyEmpty && terms.length === 0) {
+          if (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
             isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
           }
 
-          if (isMatched || terms.length === 0) {
+          if (isMatched || searchKeyTerms.length === 0) {
             break;
           }
+          const lowerCaseAbbreviation = team.set_abbreviation.toLowerCase();
 
-          if (
-            !this.entityCacheSearchController.isFuzzyMatched(
-              team.set_abbreviation.toLowerCase(),
-              terms,
-            )
-          ) {
+          const isFuzzyMatched =
+            this.entityCacheSearchController.isFuzzyMatched(
+              lowerCaseAbbreviation,
+              searchKeyTerms,
+            ) ||
+            this.entityCacheSearchController.isSoundexMatched(
+              lowerCaseAbbreviation,
+              searchKeyTermsToSoundex,
+            );
+          if (!isFuzzyMatched) {
             break;
           }
 
@@ -313,15 +329,15 @@ export class GroupFetchDataController {
           }
 
           const splitNames = this.entityCacheSearchController.getTermsFromSearchKey(
-            team.set_abbreviation.toLowerCase(),
+            lowerCaseAbbreviation,
           );
 
           for (let i = 0; i < splitNames.length; ++i) {
-            for (let j = 0; j < terms.length; ++j) {
+            for (let j = 0; j < searchKeyTerms.length; ++j) {
               if (
                 this.entityCacheSearchController.isStartWithMatched(
                   splitNames[i].toLowerCase(),
-                  [terms[j]],
+                  [searchKeyTerms[j]],
                 )
               ) {
                 sortValue +=
@@ -440,7 +456,8 @@ export class GroupFetchDataController {
     const group = await this.entitySourceController.get(groupId);
     if (group) {
       isValid = this.groupService.isValid(group);
-      const currentUserId = AccountGlobalConfig.getCurrentUserId();
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
       isIncludeSelf = group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;
@@ -475,7 +492,8 @@ export class GroupFetchDataController {
   }
 
   private _addCurrentUserToMemList(ids: number[]) {
-    const userId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const userId = userConfig.getGlipUserId();
     if (userId) {
       ids.push(userId);
     }

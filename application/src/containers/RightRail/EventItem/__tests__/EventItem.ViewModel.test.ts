@@ -7,7 +7,6 @@ import { getEntity } from '../../../../store/utils';
 import { EventItemViewModel } from '../EventItem.ViewModel';
 import { dateFormatter } from '../../../../utils/date';
 import moment from 'moment';
-import { ENTITY_NAME } from '../../../../store';
 
 jest.mock('../../../../store/utils');
 
@@ -31,6 +30,21 @@ describe('EventItemViewModel', () => {
         text: 'Facebook',
       });
       expect(vm.text).toEqual('Facebook');
+    });
+  });
+
+  describe('get localTime()', () => {
+    it('should be a time string when incoming timestamp [JPT-845]', () => {
+      (getEntity as jest.Mock).mockReturnValue(mockEvent);
+      expect(vm.localTime).toEqual(
+        dateFormatter.localTime(moment(mockEvent.start)),
+      );
+      (getEntity as jest.Mock).mockReturnValue({
+        start: 1547631484105,
+      });
+      expect(vm.localTime).toEqual(
+        dateFormatter.localTime(moment(1547631484105)),
+      );
     });
   });
 

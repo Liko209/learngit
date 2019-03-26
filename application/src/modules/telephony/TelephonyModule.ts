@@ -4,10 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AbstractModule } from 'framework';
+import { AbstractModule, inject } from 'framework';
+import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
+import { TelephonyService } from '@/modules/telephony/service';
 
 class TelephonyModule extends AbstractModule {
-  async bootstrap() {}
+  @inject(FeaturesFlagsService)
+  private _FeaturesFlagsService: FeaturesFlagsService;
+  @inject(TelephonyService) private _TelephonyService: TelephonyService;
+
+  async bootstrap() {
+    const canUseTelephony = await this._FeaturesFlagsService.canUseTelephony();
+    if (canUseTelephony) {
+      this._TelephonyService.init();
+    }
+  }
 }
 
 export { TelephonyModule };

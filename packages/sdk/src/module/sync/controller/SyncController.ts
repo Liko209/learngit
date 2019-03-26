@@ -31,6 +31,7 @@ import { SyncUserConfig } from '../config/SyncUserConfig';
 import { IndexRequestProcessor } from './IndexRequestProcessor';
 import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
+import { AccountGlobalConfig } from '../../../service/account/config';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -56,7 +57,11 @@ class SyncController {
   }
 
   getIndexTimestamp() {
-    return NewGlobalConfig.getLastIndexTimestamp();
+    if (AccountGlobalConfig.getUserDictionary()) {
+      const syncConfig = new SyncUserConfig();
+      return syncConfig.getLastIndexTimestamp();
+    }
+    return null;
   }
 
   updateIndexTimestamp(time: number, forceUpdate: boolean) {
@@ -64,20 +69,23 @@ class SyncController {
       LOG_TAG,
       `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
     );
+    const syncConfig = new SyncUserConfig();
     if (forceUpdate) {
-      NewGlobalConfig.setLastIndexTimestamp(time);
+      syncConfig.setLastIndexTimestamp(time);
       this.updateCanUpdateIndexTimeStamp(true);
     } else if (this.canUpdateIndexTimeStamp()) {
-      NewGlobalConfig.setLastIndexTimestamp(time);
+      syncConfig.setLastIndexTimestamp(time);
     }
   }
 
   updateCanUpdateIndexTimeStamp(can: boolean) {
-    return NewGlobalConfig.updateCanUpdateIndexTimeStamp(can);
+    const syncConfig = new SyncUserConfig();
+    return syncConfig.updateCanUpdateIndexTimeStamp(can);
   }
 
   canUpdateIndexTimeStamp() {
-    return NewGlobalConfig.getCanUpdateIndexTimeStamp();
+    const syncConfig = new SyncUserConfig();
+    return syncConfig.getCanUpdateIndexTimeStamp();
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -98,7 +106,9 @@ class SyncController {
 
   handleStoppingSocketEvent() {
     // this is for update newer than tag
-    this.updateCanUpdateIndexTimeStamp(false);
+    if (AccountGlobalConfig.getUserDictionary()) {
+      this.updateCanUpdateIndexTimeStamp(false);
+    }
   }
 
   private async _firstLogin() {
@@ -132,7 +142,8 @@ class SyncController {
   }
 
   private async _checkFetchedRemaining(time: number) {
-    if (!NewGlobalConfig.getFetchedRemaining()) {
+    const syncConfig = new SyncUserConfig();
+    if (!syncConfig.getFetchedRemaining()) {
       try {
         this._fetchRemaining(time);
       } catch (e) {
@@ -147,7 +158,8 @@ class SyncController {
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
     await this._handleIncomingData(remainingResult, SYNC_SOURCE.REMAINING);
     onRemainingHandled && (await onRemainingHandled());
-    NewGlobalConfig.setFetchedRemaining(true);
+    const syncConfig = new SyncUserConfig();
+    syncConfig.setFetchedRemaining(true);
     mainLogger.log('fetch remaining data and handle success');
   }
 
@@ -187,7 +199,8 @@ class SyncController {
 
   private async _handle504GateWayError() {
     // clear data
-    NewGlobalConfig.setLastIndexTimestamp('');
+    const syncConfig = new SyncUserConfig();
+    syncConfig.setLastIndexTimestamp('');
 
     await Promise.all([
       ItemService.getInstance<ItemService>().clear(),

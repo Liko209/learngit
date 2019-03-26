@@ -18,7 +18,7 @@ import {
   JuiProfileDialogContentSummaryDescription as Description,
   JuiProfileDialogContentSummaryButtons as Buttons,
 } from 'jui/pattern/Profile/Dialog';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 import { Members } from './Members';
 import { joinTeam } from '@/common/joinPublicTeam';
 import portalManager from '@/common/PortalManager';
@@ -35,8 +35,8 @@ class ProfileDialogGroupContentViewComponent extends Component<
   }
 
   messageAfterClick = async () => {
-    const { id } = this.props;
-    await goToConversation({ id });
+    const { destinationId } = this.props;
+    await goToConversationWithLoading({ id: destinationId });
     portalManager.dismissLast();
   }
 

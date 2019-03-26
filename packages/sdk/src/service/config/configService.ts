@@ -25,10 +25,6 @@ export default class ConfigService extends BaseService {
     return NewGlobalConfig.getEnv();
   }
 
-  getLastIndexTimestamp() {
-    return NewGlobalConfig.getLastIndexTimestamp();
-  }
-
   getStaticHttpServer() {
     return NewGlobalConfig.getStaticHttpServer();
   }
