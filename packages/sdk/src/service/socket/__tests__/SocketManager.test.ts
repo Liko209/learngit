@@ -191,30 +191,49 @@ describe('Socket Manager', () => {
       });
 
       it('focus', () => {
+        // 1. user is not login do nothing
         notificationCenter.emitKVChange(SERVICE.LOGOUT);
         notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'focus',
         });
         expect(socketManager.hasActiveFSM()).toBeFalsy();
 
+        // 2. user login should start FSM and should not do ping pong
         syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         expect(socketManager.activeFSM.doGlipPing).toHaveBeenCalledTimes(0);
 
+        // 3. emit focus event and has activated FSM should to ping pong
         socketManager.activeFSM.finishConnect();
+        expect(socketManager.isConnected()).toBeTruthy();
+        expect(socketManager.hasActiveFSM()).toBeTruthy();
         notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'focus',
         });
+        expect(socketManager.activeFSM.doGlipPing).toHaveBeenCalledTimes(1);
 
         socketManager.activeFSM.fireDisconnect();
+        expect(socketManager.isConnected()).toBeFalsy();
+
+        // 4. has not activated FSM, emit focus event, should try to restart FSM
+        expect(socketManager.hasActiveFSM()).toBeTruthy();
+        socketManager._stopActiveFSM();
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
+
         notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'focus',
         });
+        expect(socketManager.hasActiveFSM()).toBeTruthy();
 
         notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'refresh',
         });
+
+        // 5. user is not login,
+        notificationCenter.emitKVChange(SERVICE.LOGOUT);
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
+        expect(socketManager.isConnected()).toBeFalsy();
       });
     });
 
