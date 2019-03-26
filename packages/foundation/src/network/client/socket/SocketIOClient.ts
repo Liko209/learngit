@@ -31,7 +31,9 @@ class SocketClient implements ISocketRequestDelegate {
     this.socket.on('response', (response: any) => {
       this.socketRequestHelper.newResponse(response);
     });
-
+    this.socket.on('disconnect', () => {
+      this.socketRequestHelper.onSocketDisconnect();
+    });
     SocketClient.get = () => {
       return this as ISocketRequestDelegate;
     };

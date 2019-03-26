@@ -22,14 +22,14 @@ import {
   IRequestDecoration,
   NETWORK_HANDLE_TYPE,
 } from './network';
-import { SERVER_ERROR_CODE } from './Constants';
+import { SERVER_ERROR_CODE, DEFAULT_RETRY_COUNT } from './Constants';
 import { doResponseLog, doRequestLog } from './log';
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
   via: NETWORK_VIA;
   handlerType: IHandleType;
-  retryCount: number = 10;
+  retryCount: number = DEFAULT_RETRY_COUNT;
   client: BaseClient;
   status: NETWORK_REQUEST_EXECUTOR_STATUS =
     NETWORK_REQUEST_EXECUTOR_STATUS.IDLE;
@@ -147,6 +147,9 @@ export class NetworkRequestExecutor
         break;
       case HTTP_STATUS_CODE.SERVICE_UNAVAILABLE:
         this._handle503XApiCompletionCallback(response);
+        break;
+      case HTTP_STATUS_CODE.DEFAULT:
+        response.request = this.request;
         break;
     }
 
