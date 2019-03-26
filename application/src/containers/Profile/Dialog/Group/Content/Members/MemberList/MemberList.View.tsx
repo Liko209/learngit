@@ -19,7 +19,7 @@ import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 const ITEM_HEIGHT = 48;
-const MAX_ITEM_NUMBER = 8;
+const MAX_ITEM_NUMBER = 5.5;
 
 @observer
 class MemberList
@@ -78,7 +78,7 @@ class MemberList
                 overscan={5}
                 rowRenderer={this.rowRenderer}
                 width={width}
-                height={virtualListHeight}
+                height={dialogHeight}
                 fixedCellHeight={ITEM_HEIGHT}
                 onScroll={this.onScroll}
                 data-test-automation-id="profileDialogMemberList"

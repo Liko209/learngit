@@ -10,6 +10,7 @@ const JuiDialogHeader = styled.div`
   background-color: white;
   padding: ${spacing(0, 6)};
   height: ${height(13)};
+  min-height: ${height(13)};
   display: flex;
   align-items: center;
 `;
