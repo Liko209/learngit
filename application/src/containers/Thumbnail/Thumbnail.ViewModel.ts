@@ -5,18 +5,13 @@
  */
 
 import { computed, observable, comparer, action } from 'mobx';
-// import { ItemService } from 'sdk/module/item/service';
-// import { FileItemUtils } from 'sdk/module/item/utils';
 import { Item } from 'sdk/module/item/entity';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import FileItemModel, { FileType } from '@/store/models/FileItem';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getFileType } from '@/common/getFileType';
-import {
-  // getThumbnailURL,
-  getThumbnailURLWithType,
-} from '@/common/getThumbnailURL';
+import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 import { Props, ViewProps } from './types';
 import { RULE } from '@/common/generateModifiedImageURL';
 

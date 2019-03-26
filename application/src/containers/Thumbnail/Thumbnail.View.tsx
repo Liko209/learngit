@@ -14,7 +14,6 @@ import { ViewProps, Props } from './types';
 class ThumbnailView extends React.Component<ViewProps & Props> {
   render() {
     const { icon, thumbsUrlWithSize, type } = this.props;
-    console.log(thumbsUrlWithSize, 'shining');
     return (
       <>
         {type === 'image' ? (
