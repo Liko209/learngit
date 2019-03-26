@@ -221,7 +221,6 @@ const JuiVirtualizedList: RefForwardingComponent<
 
         // TODO Don't re-render if range not changed
         setRenderedRange(newRenderedRange);
-        prevAtBottomRef.current = computeAtBottom();
 
         // Emit events
         if (!isRangeEqual(renderedRange, newRenderedRange)) {
@@ -234,7 +233,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
-  const ensureVisibleRangeIsRendered = () => {
+  const ensureNoBlankArea = () => {
     if (shouldUpdateRange()) {
       updateRange();
     }
@@ -323,14 +322,21 @@ const JuiVirtualizedList: RefForwardingComponent<
         const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
         if (diff !== 0 && beforeFirstVisibleRow) {
           scrollToPosition(scrollPosition);
-          ensureVisibleRangeIsRendered();
         }
       }
+      return { diff };
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
       const observer = new ResizeObserver(() => {
-        handleRowSizeChange(el, i);
+        const { diff } = handleRowSizeChange(el, i);
+
+        // Fix blank area:
+        // When row shrinks, the list didn't recompute rendered range
+        // automatically, which may leave a blank area in the list.
+        if (diff < 0) {
+          ensureNoBlankArea();
+        }
       });
       observer.observe(el);
       return observer;
@@ -341,6 +347,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     const observers = rowElements.map(observeDynamicRow);
     return () => observers.forEach((ro: ResizeObserver) => ro.disconnect());
   },              [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
+
   //
   // Scroll to last remembered position,
   // The position was remembered in handleScroll() function

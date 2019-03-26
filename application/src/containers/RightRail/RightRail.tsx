@@ -35,6 +35,7 @@ type TriggerButtonProps = {
 
 // height of conversation header & tabs, pass these constant height to list;
 // since resize observer in resize observer will cause UI performance issue.
+const HEADER_HEIGHT = 48;
 const HEIGHT_TABS = 33;
 const MIN_TAB_WIDTH = 200;
 
@@ -155,7 +156,7 @@ class RightRailComponent extends React.Component<Props> {
                           id,
                           tabIndex === index,
                           width,
-                          height - HEIGHT_TABS,
+                          height - HEIGHT_TABS - HEADER_HEIGHT,
                         )}
                       </JuiTab>
                     ),

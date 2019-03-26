@@ -63,6 +63,11 @@ class AddMembers extends React.Component<ViewProps> {
         onOK={this.handleAddTeam}
         okText={t('people.team.addTeamMemberSubmit')}
         cancelText={t('common.dialog.cancel')}
+        modalProps={{
+          classes: {
+            paper: 'overflow-y',
+          },
+        }}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}

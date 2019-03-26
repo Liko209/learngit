@@ -12,10 +12,8 @@ type Props = {
 };
 
 type ViewProps = {
-  fileTypeOrUrl: {
-    icon: string;
-    url: string;
-  };
+  icon: string;
+  thumbsUrlWithSize: string;
   type?: 'image' | 'file';
 };
 
