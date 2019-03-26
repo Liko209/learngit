@@ -80,6 +80,7 @@ class PinnedListView extends React.Component<
           loadingRenderer={this.defaultLoading()}
           hasMore={this.hasMore}
           loadingMoreRenderer={this.defaultLoadingMore()}
+          fallBackRenderer={this.renderEmptyContent()}
         >
           {this._renderItems()}
         </JuiInfiniteList>
