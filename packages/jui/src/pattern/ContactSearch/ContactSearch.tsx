@@ -153,7 +153,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
 
     if (
       emailRegExp.test(value) &&
-      selectedItem.findIndex(item => item.email === value) === -1
+      selectedItem.findIndex((item: Suggestion) => item.email === value) === -1
     ) {
       this.setState(
         {
@@ -237,7 +237,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         onChange={this.handleChange}
         selectedItem={selectedItem}
         defaultHighlightedIndex={0}
-        itemToString={item => (item ? item.label : '')}
+        itemToString={(item: Suggestion) => (item ? item.label : '')}
       >
         {({
           getInputProps,
@@ -304,23 +304,23 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
                     }`,
                   } as any), // Downshift startAdornment is not include in getInputProps interface
                 })}
-                {/* {isOpen && filterSuggestions.length ? ( */}
-                <StyledPaper
-                  square={true}
-                  data-test-automation-id={automationId}
-                >
-                  {filterSuggestions.map((suggestion: Suggestion, index) =>
-                    this.renderSuggestion({
-                      ContactSearchItem,
-                      suggestion,
-                      index,
-                      selectedItem,
-                      highlightedIndex,
-                      itemProps: getItemProps({ item: suggestion }),
-                    }),
-                  )}
-                </StyledPaper>
-                {/* ) : null} */}
+                {isOpen && filterSuggestions.length ? (
+                  <StyledPaper
+                    square={true}
+                    data-test-automation-id={automationId}
+                  >
+                    {filterSuggestions.map((suggestion: Suggestion, index) =>
+                      this.renderSuggestion({
+                        ContactSearchItem,
+                        suggestion,
+                        index,
+                        selectedItem,
+                        highlightedIndex,
+                        itemProps: getItemProps({ item: suggestion }),
+                      }),
+                    )}
+                  </StyledPaper>
+                ) : null}
               </StyledDownshiftMultipleWrapper>
             </div>
           );
