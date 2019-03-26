@@ -56,6 +56,7 @@ const configLoader = new ConfigLoader(
   CONFIGS_ROOT,
 );
 
+configLoader.load();
 
 const REPORTER = process.env.REPORTER || 'spec';
 const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
