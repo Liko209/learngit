@@ -13,23 +13,24 @@ Object.keys(BrandTire).map((accountType) => BrandTire[accountType]).forEach(acco
     .beforeEach(setupCase(accountType))
     .afterEach(teardownCase());
 
-  test(formalName('Logout', ['JPT-70', 'P0', 'Logout']), async (t) => {
-    const loginUser = h(t).rcData.mainCompany.users[1];
-    const app = new AppRoot(t);
+  test.meta({ "tags": ['JPT-70', 'P0', 'Logout', 'Potar.He'] })
+    ('Logout', async (t) => {
+      const loginUser = h(t).rcData.mainCompany.users[1];
+      const app = new AppRoot(t);
 
-    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
+      await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+        await h(t).directLoginWithUser(SITE_URL, loginUser);
+        await app.homePage.ensureLoaded();
+      });
+      await h(t).withLog('Then I can open setting menu in home page', async () => {
+        await app.homePage.openSettingMenu();
+        await app.homePage.settingMenu.ensureLoaded();
+      });
+      await h(t).withLog('When I click logout button in setting menu', async () => {
+        await app.homePage.settingMenu.clickLogout();
+      });
+      await h(t).withLog('Then I should logout from Jupiter and back to login page', async () => {
+        await t.expect(h(t).href).contains('unified-login');
+      }, true);
     });
-    await h(t).withLog('Then I can open setting menu in home page', async () => {
-      await app.homePage.openSettingMenu();
-      await app.homePage.settingMenu.ensureLoaded();
-    });
-    await h(t).withLog('When I click logout button in setting menu', async () => {
-      await app.homePage.settingMenu.clickLogout();
-    });
-    await h(t).withLog('Then I should logout from Jupiter and back to login page', async () => {
-      await t.expect(h(t).href).contains('unified-login');
-    }, true);
-  });
 });
