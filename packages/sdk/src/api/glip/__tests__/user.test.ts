@@ -5,7 +5,12 @@
  */
 import Api from '../../api';
 import { loginGlip, indexData } from '../user';
-import { TEN_MINUTE_TIMEOUT, NETWORK_VIA, REQUEST_PRIORITY } from 'foundation';
+import {
+  TEN_MINUTE_TIMEOUT,
+  NETWORK_VIA,
+  REQUEST_PRIORITY,
+  HA_PRIORITY,
+} from 'foundation';
 
 jest.mock('../../api');
 
@@ -37,6 +42,7 @@ describe('UserAPI', () => {
         header,
         3,
         REQUEST_PRIORITY.HIGH,
+        HA_PRIORITY.BASIC,
         TEN_MINUTE_TIMEOUT,
       );
     });

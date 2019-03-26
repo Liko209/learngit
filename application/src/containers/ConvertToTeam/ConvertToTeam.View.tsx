@@ -12,7 +12,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import portalManager from '@/common/PortalManager';
 import { JuiTopText } from 'jui/pattern/ConvertToTeam';
 import { JuiTextField } from 'jui/components/Forms/TextField';
-import { JuiTextarea } from 'jui/components/Forms/Textarea';
+// import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { withLoading, DefaultLoadingWithDelay } from 'jui/hoc/withLoading';
 // import {
 //   JuiListToggleButton,
@@ -31,10 +31,10 @@ const NAME_INPUT_PROPS = {
   maxLength: 200,
 };
 
-const DESCRIPTION_INPUT_PROPS = {
-  'data-test-automation-id': 'ConvertToTeamTeamDescription',
-  maxLength: 1000,
-};
+// const DESCRIPTION_INPUT_PROPS = {
+//   'data-test-automation-id': 'ConvertToTeamTeamDescription',
+//   maxLength: 1000,
+// };
 
 const createTeamLoading = () => (
   <DefaultLoadingWithDelay backgroundType={'mask'} size={42} />
@@ -195,7 +195,7 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
       name,
       nameErrorKey,
       handleNameChange,
-      handleDescriptionChange,
+      // handleDescriptionChange,
       saving,
       disabledOkBtn,
     } = this.props;
@@ -231,13 +231,13 @@ class ConvertToTeamView extends Component<ConvertToTeamViewProps, State> {
             helperText={nameErrorKey && i18next.t(nameErrorKey)}
             onChange={handleNameChange}
           />
-          <JuiTextarea
+          {/* <JuiTextarea
             id={i18next.t('people.team.teamDescription')}
             label={i18next.t('people.team.teamDescription')}
             inputProps={DESCRIPTION_INPUT_PROPS}
             fullWidth={true}
             onChange={handleDescriptionChange}
-          />
+          /> */}
           {/* <JuiListToggleButton
             data-test-automation-id="ConvertToTeamToggleList"
             items={items}

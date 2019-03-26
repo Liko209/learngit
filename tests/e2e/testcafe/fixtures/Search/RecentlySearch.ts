@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-02-28 14:12:13 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-01 15:28:40
+ * @Author: Potar.He
+ * @Date: 2019-02-28 14:12:13
+ * @Last Modified by: isaac.liu
+ * @Last Modified time: 2019-03-22 15:04:36
  */
 
 import { formalName } from '../../libs/filter';
@@ -85,6 +85,7 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
     await searchBar.typeSearchKeyword(beSearchedName);
     await searchBar.nthPeople(0).enter();
     await app.homePage.profileDialog.clickCloseButton();
+
     await searchBar.clearInputAreaText();
     await searchBar.quitByPressEsc();
   });

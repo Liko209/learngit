@@ -105,19 +105,6 @@ interface IRequest {
   needAuth(): boolean;
 }
 
-interface IRequestBuilderOption {
-  host?: string;
-  path: string;
-  method: NETWORK_METHOD;
-  handlerType: IHandleType;
-  headers?: Header;
-  params?: object;
-  data?: object;
-  authFree?: boolean;
-  requestConfig?: object;
-  HAPriority?: HA_PRIORITY;
-}
-
 interface IClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void;
   cancelRequest(request: IRequest): void;
@@ -221,7 +208,6 @@ export {
   Header,
   IRequest,
   IResponse,
-  IRequestBuilderOption,
   INetworkRequestExecutor,
   INetworkRequestExecutorListener,
   IResponseListener,
