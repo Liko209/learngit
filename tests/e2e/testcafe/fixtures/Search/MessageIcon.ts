@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-03-01 10:44:59 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-01 13:02:11
+ * @Author: Potar.He
+ * @Date: 2019-03-01 10:44:59
+ * @Last Modified by: isaac.liu
+ * @Last Modified time: 2019-03-22 16:06:54
  */
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
@@ -119,10 +119,14 @@ test(formalName('Check can open conversation when click message icon in the sear
     await searchBar.getSearchItemByName(publicTeamWithOutMe.name).enter();
   });
 
-  await h(t).withLog(`Then the team profile dialog should be popup`, async () => {
-    await app.homePage.profileDialog.shouldBePopUp();
-    await app.homePage.profileDialog.clickCloseButton();
-    await searchBar.clearInputAreaText();
+  const joinTeamDialog = app.homePage.joinTeamDialog;
+  await h(t).withLog(`Then the team join dialog should be popup`, async () => {
+    // FIJI-4360 temp solution
+    // await app.homePage.profileDialog.shouldBePopUp();
+    // await app.homePage.profileDialog.clickCloseButton();
+    // await searchBar.clearInputAreaText();
+    await joinTeamDialog.ensureLoaded();
+    await joinTeamDialog.cancel();
   });
 
   // message icon on recently history
