@@ -13,6 +13,7 @@ import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import isElectron from '@/common/isElectron';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+import { UploadRecentLogs } from '@/modules/feedback/container';
 
 @observer
 class AvatarActionsView extends React.Component<ViewProps> {
@@ -46,8 +47,12 @@ class AvatarActionsView extends React.Component<ViewProps> {
 
   handleAboutPage = () => this.props.toggleAboutPage();
 
+  handleFeedback = () => {
+    UploadRecentLogs.show();
+  }
+
   render() {
-    const { handleSignOut, currentUserId } = this.props;
+    const { handleSignOut, currentUserId, isUploadingFeedback } = this.props;
 
     return (
       <JuiAvatarActions
@@ -70,6 +75,14 @@ class AvatarActionsView extends React.Component<ViewProps> {
               {i18next.t('people.team.profile')}
             </JuiMenuItem>
           </OpenProfileDialog>
+          <JuiMenuItem
+            onClick={this.handleFeedback}
+            aria-label={i18next.t('home.feedback')}
+            data-test-automation-id="feedback"
+          >
+            {i18next.t('home.feedback')}
+            {isUploadingFeedback ? i18next.t('home.uploading') : ''}
+          </JuiMenuItem>
           {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}

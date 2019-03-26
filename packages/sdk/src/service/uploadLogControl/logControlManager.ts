@@ -14,7 +14,12 @@ import {
   MemoryLogConsumer,
 } from './consumer';
 import { LogUploader } from './LogUploader';
-class LogControlManager implements IAccessor {
+import JSZip from 'jszip';
+import * as filestack from 'filestack-js';
+import { progressBar } from '../../utils/progress';
+const FILE_STACK_API_KEY = 'AMQqm7fiSTkC6TGrB15Yhz';
+
+export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
   private _enabledLog: boolean;
@@ -121,6 +126,59 @@ class LogControlManager implements IAccessor {
     }
   }
 
+  getMemoryLogs(): LogEntity[] {
+    return this.memoryLogConsumer.getRecentLogs();
+  }
+
+  async uploadMemoryLogs(): Promise<{
+    filename: string;
+    handle: string;
+    size: number;
+    url: string;
+  } | null> {
+    const recentLogs = this.memoryLogConsumer.getRecentLogs();
+    if (recentLogs.length < 1) {
+      console.debug('Recent logs is empty');
+      return null;
+    }
+    const client = filestack.init(FILE_STACK_API_KEY);
+    const zip = new JSZip();
+    zip.file(
+      'recentLogs.txt',
+      this.memoryLogConsumer
+        .getRecentLogs()
+        .map((log: LogEntity, index: number) => {
+          return `${index}: ${log.message}`;
+        })
+        .join('\n'),
+    );
+    const zipBlob = await zip.generateAsync({
+      type: 'blob',
+      compression: 'DEFLATE',
+      compressionOptions: {
+        level: 9,
+      },
+    });
+    console.log('zip file done.');
+    progressBar.start();
+    const uploadResult = await client.upload(
+      zipBlob,
+      {
+        onProgress: (evt: { totalPercent: number; totalBytes: number }) => {
+          console.log(evt.totalPercent);
+        },
+        timeout: 60 * 1000,
+        retry: 1,
+      },
+      {
+        filename: `LOG_${recentLogs[0].sessionId}.zip`,
+      },
+    );
+    progressBar.stop();
+    console.log('uploadResult,', uploadResult);
+    return uploadResult;
+  }
+
   private _updateLogSystemLevel() {
     // set log level to log system
     // TODO let it all level now, should reset to above code after implement service framework
@@ -138,5 +196,3 @@ class LogControlManager implements IAccessor {
     this.flush();
   }
 }
-
-export default LogControlManager;

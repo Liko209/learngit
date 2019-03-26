@@ -9,7 +9,7 @@ import { logManager, mainLogger } from 'foundation/src/log/index';
 import { notificationCenter } from 'sdk/service';
 import { PermissionService } from '../../../module/permission';
 import { ENTITY, SERVICE, WINDOW } from '../../../service/eventKey';
-import LogControlManager from '../logControlManager';
+import { LogControlManager } from '../logControlManager';
 import { configManager } from '../consumer/config';
 
 jest.mock('axios');

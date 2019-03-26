@@ -43,4 +43,8 @@ export class MemoryLogConsumer implements ILogConsumer {
   setSizeThreshold(threshold: number) {
     this._sizeThreshold = threshold;
   }
+
+  getRecentLogs() {
+    return this._recentLogQueue;
+  }
 }

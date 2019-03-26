@@ -18,6 +18,8 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   implements ViewProps {
   @observable
   private _isShowDialog: boolean = false;
+  @observable
+  isUploadingFeedback: boolean = false;
 
   @computed
   get currentUserId() {
