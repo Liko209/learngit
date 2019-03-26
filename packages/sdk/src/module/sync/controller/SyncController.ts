@@ -32,6 +32,7 @@ import { IndexRequestProcessor } from './IndexRequestProcessor';
 import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
 import { AccountGlobalConfig } from '../../../service/account/config';
+import { GroupConfigService } from '../../../module/groupConfig';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -95,7 +96,7 @@ class SyncController {
     try {
       if (lastIndexTimestamp) {
         await this._syncIndexData(lastIndexTimestamp);
-        this._checkFetchedRemaining(lastIndexTimestamp);
+        await this._checkFetchedRemaining(lastIndexTimestamp);
       } else {
         await this._firstLogin();
       }
@@ -145,7 +146,7 @@ class SyncController {
     const syncConfig = new SyncUserConfig();
     if (!syncConfig.getFetchedRemaining()) {
       try {
-        this._fetchRemaining(time);
+        await this._fetchRemaining(time);
       } catch (e) {
         mainLogger.error('fetch remaining data error');
       }
@@ -205,6 +206,7 @@ class SyncController {
     await Promise.all([
       ItemService.getInstance<ItemService>().clear(),
       PostService.getInstance<PostService>().clear(),
+      GroupConfigService.getInstance<GroupConfigService>().clear(),
       GroupService.getInstance<GroupService>().clear(),
       PersonService.getInstance<PersonService>().clear(),
     ]);
