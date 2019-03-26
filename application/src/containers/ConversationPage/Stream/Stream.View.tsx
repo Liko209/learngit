@@ -306,11 +306,14 @@ class StreamViewComponent extends Component<Props> {
     });
   }
 
-  private _contentStyleGen = _.memoize((height?: number) => ({
-    'min-height': height,
-    display: 'flex',
-    'flex-direction': 'column',
-  }));
+  private _contentStyleGen = _.memoize(
+    (height?: number) =>
+      ({
+        minHeight: height,
+        display: 'flex',
+        flexDirection: 'column',
+      } as React.CSSProperties),
+  );
 
   render() {
     const {
