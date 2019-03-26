@@ -65,7 +65,7 @@ class AddMembers extends React.Component<ViewProps> {
         cancelText={t('common.dialog.cancel')}
         modalProps={{
           classes: {
-            paper: 'no-overflow',
+            paper: 'overflow-y',
           },
         }}
       >

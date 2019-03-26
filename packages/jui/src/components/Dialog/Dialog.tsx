@@ -39,7 +39,7 @@ const Dialog = styled(
   & .paper {
     width: 100%;
   }
-  & .paper.no-overflow {
+  & .paper.overflow-y {
     overflow-y: visible;
   }
 `;
