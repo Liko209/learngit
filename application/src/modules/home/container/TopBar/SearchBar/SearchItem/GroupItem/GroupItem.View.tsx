@@ -30,9 +30,12 @@ class GroupItemComponent extends React.Component<
     await goToConversation(group.id);
   }
 
-  onClick = () => {
-    const { addRecentRecord } = this.props;
-    addRecentRecord();
+  onClick = async (event: React.MouseEvent) => {
+    const { canJoinTeam } = this.props;
+    if (canJoinTeam) {
+      return await this.handleJoinTeam(event);
+    }
+    return await this.handleGoToConversation(event);
   }
 
   handleGoToConversation = (evt: React.MouseEvent) => {
