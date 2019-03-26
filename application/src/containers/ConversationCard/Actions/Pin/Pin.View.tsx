@@ -54,6 +54,7 @@ class PinViewComponent extends Component<Props> {
           color={isPin ? 'primary' : undefined}
           onClick={this._handlePinButton}
           disabled={shouldDisablePinOption}
+          disableToolTip={shouldDisablePinOption}
           variant="plain"
           data-name="actionBarPin"
         >

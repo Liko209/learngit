@@ -5,65 +5,30 @@
  */
 
 import { computed, observable, comparer, action } from 'mobx';
-import { ItemService } from 'sdk/module/item/service';
-import { FileItemUtils } from 'sdk/module/item/utils';
 import { Item } from 'sdk/module/item/entity';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import FileItemModel, { FileType } from '@/store/models/FileItem';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getFileType } from '@/common/getFileType';
-import { getThumbnailURL } from '@/common/getThumbnailURL';
+import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 import { Props, ViewProps } from './types';
-
-type Size = {
-  width: number;
-  height: number;
-};
+import { RULE } from '@/common/generateModifiedImageURL';
 
 class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   static DEFAULT_WIDTH = 36;
   static DEFAULT_HEIGHT = 36;
   @observable
-  private _thumbsUrlWithSize: string;
+  thumbsUrlWithSize: string;
+  @observable
+  _lastStoreFileId: number;
 
   constructor(props: Props) {
     super(props);
-    this.reaction(
-      () => ({ size: this._size, id: this._id }),
-      this._getThumbsUrlWithSize,
-      {
-        fireImmediately: true,
-        equals: comparer.structural,
-      },
-    );
-  }
-
-  @computed
-  private get _size() {
-    const { origWidth, origHeight } = this.file;
-    const size: Size = {
-      width: ThumbnailViewModel.DEFAULT_WIDTH,
-      height: ThumbnailViewModel.DEFAULT_WIDTH,
-    };
-    if (origWidth && origHeight) {
-      if (origWidth > origHeight) {
-        size.width = Math.max(
-          Math.round(
-            (origWidth / origHeight) * ThumbnailViewModel.DEFAULT_WIDTH,
-          ),
-          ThumbnailViewModel.DEFAULT_WIDTH,
-        );
-      } else {
-        size.height = Math.max(
-          Math.round(
-            (origHeight / origWidth) * ThumbnailViewModel.DEFAULT_WIDTH,
-          ),
-          ThumbnailViewModel.DEFAULT_WIDTH,
-        );
-      }
-    }
-    return size;
+    this.reaction(() => ({ id: this._id }), this._getThumbsUrlWithSize, {
+      fireImmediately: true,
+      equals: comparer.structural,
+    });
   }
 
   @computed
@@ -78,53 +43,25 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @action
   private _getThumbsUrlWithSize = async () => {
-    const itemService = ItemService.getInstance() as ItemService;
-
-    const { width, height } = this._size;
-    this._thumbsUrlWithSize = await itemService.getThumbsUrlWithSize(
-      this._id,
-      width,
-      height,
-    );
+    const { id, type, versions } = this.file;
+    if (versions[0].stored_file_id !== this._lastStoreFileId) {
+      const thumbnail = await getThumbnailURLWithType(
+        {
+          id,
+          type,
+          versions,
+          versionUrl: versions.length && versions[0].url ? versions[0].url : '',
+        },
+        RULE.SQUARE_IMAGE,
+      );
+      this._lastStoreFileId = versions[0].stored_file_id;
+      this.thumbsUrlWithSize = thumbnail.url;
+    }
   }
 
-  @computed
-  get fileTypeOrUrl() {
+  @computed get icon() {
     const file = this.file;
-    const thumb = {
-      icon: file.iconType || '',
-      url: '',
-    };
-
-    if (file && file.type) {
-      let url: string;
-      if (FileItemUtils.isGifItem(file)) {
-        url = file.versionUrl!;
-      } else {
-        url = getThumbnailURL(
-          {
-            id: file.id,
-            type: file.type,
-            versionUrl: file.versionUrl || '',
-            versions: file.versions,
-          },
-          this._size,
-        ) as string;
-      }
-      if (
-        !url &&
-        FileItemUtils.isSupportPreview(file) &&
-        file.origHeight &&
-        file.origWidth
-      ) {
-        url = this._thumbsUrlWithSize;
-      }
-      if (!url) {
-        url = file.versionUrl!;
-      }
-      thumb.url = url;
-    }
-    return thumb;
+    return file.iconType || '';
   }
 
   isImage(fileItem: FileItemModel) {
