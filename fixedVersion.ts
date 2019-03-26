@@ -263,6 +263,14 @@ const diffLockVersion = () => {
   writeFile('versionLockDiff.json', JSON.stringify(diff));
 }
 
+const writeLockFile = () => {
+  let lockFilePath = path.join(__dirname, packageLockName);
+  let lockFileDestPath = path.join(cachePath, packageLockName);
+  if (fs.existsSync(lockFilePath)) {
+    fs.copyFileSync(lockFilePath, lockFileDestPath);
+  }
+}
+
 const cacheVersion = () => {
   let dirPath = path.join(__dirname, 'node_modules');
   let cache = {};
@@ -274,14 +282,8 @@ const cacheVersion = () => {
   diffLockVersion();
 
   fs.writeFileSync(path.join(cachePath, packageCacheName), JSON.stringify(cache));
-}
 
-const writeLockFile = () => {
-  let lockFilePath = path.join(__dirname, packageLockName);
-  let lockFileDestPath = path.join(cachePath, packageLockName);
-  if (fs.existsSync(lockFilePath)) {
-    fs.copyFileSync(lockFilePath, lockFileDestPath);
-  }
+  writeLockFile();
 }
 
 const preHandler = () => {
