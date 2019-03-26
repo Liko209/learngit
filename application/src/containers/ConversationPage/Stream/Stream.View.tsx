@@ -312,9 +312,17 @@ class StreamViewComponent extends Component<Props> {
     'flex-direction': 'column',
   }));
 
+  private _onInitialDataFailed = (
+    <JuiStreamLoading
+      showTip={true}
+      tip={this.props.t('translations:message.prompt.MessageLoadingErrorTip')}
+      linkText={this.props.t('translations:common.prompt.tryAgain')}
+      onClick={this._loadInitialPosts}
+    />
+  );
+
   render() {
     const {
-      t,
       loadMore,
       hasMore,
       items,
@@ -326,14 +334,6 @@ class StreamViewComponent extends Component<Props> {
 
     const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
-    const onInitialDataFailed = (
-      <JuiStreamLoading
-        showTip={true}
-        tip={t('translations:message.prompt.MessageLoadingErrorTip')}
-        linkText={t('translations:common.prompt.tryAgain')}
-        onClick={this._loadInitialPosts}
-      />
-    );
 
     return (
       <JuiSizeMeasurer>
@@ -352,7 +352,7 @@ class StreamViewComponent extends Component<Props> {
               loadingRenderer={defaultLoading}
               hasMore={hasMore}
               loadingMoreRenderer={defaultLoadingMore}
-              fallBackRenderer={onInitialDataFailed}
+              fallBackRenderer={this._onInitialDataFailed}
               onScroll={handleNewMessageSeparatorState}
               onVisibleRangeChange={this._handleVisibilityChanged}
             >
