@@ -20,14 +20,12 @@ import {
   RTCSipProvisionInfo,
 } from './types';
 import async, { AsyncQueue } from 'async';
-import {
-  kRTCRegisterRetryTimerMin,
-  kRTCRegisterRetryTimerMax,
-} from './constants';
+import { kRTCRegisterRetryTimerMin } from './constants';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 const LOG_TAG = 'RTCRegistrationManager';
-
+const registerRetryMinValue = 30;
+const registerRetryValueFloatRange = 30;
 class RTCRegistrationManager extends EventEmitter2
   implements IRTCRegistrationFsmDependency {
   private _fsm: RTCRegistrationFSM;
@@ -291,10 +289,9 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   private _calculateNextRetryInterval() {
-    this._retryInterval = this._retryInterval * 2;
-    if (this._retryInterval > kRTCRegisterRetryTimerMax) {
-      this._retryInterval = kRTCRegisterRetryTimerMax;
-    }
+    this._retryInterval =
+      registerRetryMinValue +
+      Math.floor(Math.random() * registerRetryValueFloatRange);
   }
 
   private _restartUA(
