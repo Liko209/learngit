@@ -411,7 +411,51 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
   }
 
-  private _setDefaultAudioInputDevice(deviceID: string) {}
+  private _setDefaultAudioInputDevice(deviceID: string) {
+    navigator.mediaDevices
+      .getUserMedia({
+        audio: {
+          deviceId: {
+            exact: deviceID,
+          },
+        },
+        video: false,
+      })
+      .then((stream: any) => {
+        // self.audio_settings.refresh_audio_devices_list();
+        this._refreshPc(stream);
+      })
+      .catch((error: any) => {
+        rtcLogger.debug(
+          LOG_TAG,
+          `Cannot switch audio input device because if error while getting input stream : ${error}`,
+        );
+      });
+  }
+
+  private _refreshPc(stream: any) {
+    if (this._session) {
+      const pc = this._session.sessionDescriptionHandler.peerConnection;
+      const oldLocalStreams = pc.getLocalStreams() || [];
+      let wasEnabled = false;
+      oldLocalStreams.array.forEach((localStream: any) => {
+        const tracks = localStream.getTracks();
+        wasEnabled = tracks[0].enabled;
+        tracks.forEach((track: any) => {
+          track.stop();
+        });
+        pc.removeStream(localStream);
+      });
+      const newStreamTracks = stream.getTracks();
+      newStreamTracks.forEach((newStreamTrack: any) => {
+        newStreamTrack.enabled = wasEnabled;
+      });
+
+      /** Add new audio input stream & re-init sip session */
+      pc.addStream(stream);
+      this._session.sessionDescriptionHandler.getDescription();
+    }
+  }
 
   private _setDefaultAudioOutputDevice(deviceID: string) {
     if (this._mediaElement && this._mediaElement.local.setSinkId) {
@@ -422,6 +466,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         }`,
       );
       this._mediaElement.local.setSinkId(deviceID);
+      this._mediaElement.remote.setSinkId(deviceID);
     }
   }
 }
