@@ -13,7 +13,7 @@ type PersistentLogEntity = {
   sessionId: string;
   startTime: number;
   endTime: number;
-  size?: number;
+  size: number;
 };
 
 interface ILogPersistent {
