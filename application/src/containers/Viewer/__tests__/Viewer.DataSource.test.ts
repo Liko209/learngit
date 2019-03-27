@@ -15,6 +15,10 @@ import {
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Item } from 'sdk/module/item/entity';
 import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { ITEM_SORT_KEYS } from 'sdk/module/item';
+
+jest.mock('sdk/module/item/module/file/utils');
 
 jest.mock('@/store/base/fetch/FetchSortableDataListHandler', () => {
   const handler: FetchSortableDataListHandler<Item> = {
@@ -65,8 +69,7 @@ describe('Viewer.DataSource', () => {
         20,
         {
           id: itemId,
-          sortValue: itemId,
-          data: { id: itemId },
+          sortValue: undefined,
         },
       );
       expect(result).toEqual(mockResult);
@@ -190,5 +193,18 @@ describe('Viewer.DataSource', () => {
         expect(result).toEqual(expected);
       },
     );
+  });
+  describe('_transformFunc()', () => {
+    it('should get version date as SortableModel data property', () => {
+      const dataSource = new ItemListDataSource(props);
+      const item: Item = {
+        id: 1,
+      } as Item;
+      const mockVersionDate = 222;
+      FileItemUtils.getVersionDate.mockReturnValue(mockVersionDate);
+      const result = dataSource['_transformFunc'](item);
+      expect(FileItemUtils.getVersionDate).toBeCalledWith({ id: 1 });
+      expect(result.sortValue).toEqual(mockVersionDate);
+    });
   });
 });

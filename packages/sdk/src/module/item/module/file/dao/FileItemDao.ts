@@ -6,6 +6,7 @@
 import _ from 'lodash';
 import { SanitizedFileItem, FileItem } from '../entity';
 import { SubItemDao } from '../../base/dao';
+import { FileItemUtils } from '../utils';
 import { IDatabase } from 'foundation';
 
 class FileItemDao extends SubItemDao<SanitizedFileItem> {
@@ -15,19 +16,12 @@ class FileItemDao extends SubItemDao<SanitizedFileItem> {
   }
 
   toSanitizedItem(file: FileItem) {
-    let lastDate: number = file.created_at;
-    for (const version of file.versions) {
-      if (!version.deactivated) {
-        lastDate = version.date;
-        break;
-      }
-    }
-
     return {
       ...super.toSanitizedItem(file),
       name: file.name,
       type: file.type,
-      __latest_version_date: lastDate,
+      __latest_version_date:
+        FileItemUtils.getVersionDate(file) || file.created_at,
     } as SanitizedFileItem;
   }
 
