@@ -298,7 +298,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     renderedRange,
     usePrevious(() => children.length),
     usePrevious(() => startIndex),
-    usePrevious(() => children[startIndex]),
+    usePrevious(() => children[startIndex] || null),
   );
 
   //

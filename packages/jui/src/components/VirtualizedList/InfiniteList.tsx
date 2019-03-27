@@ -99,6 +99,9 @@ const JuiInfiniteList: RefForwardingComponent<
         if (isEmpty) {
           return noRowsRenderer;
         }
+        if (children.length === 0) {
+          return null;
+        }
         return (
           <JuiVirtualizedList
             ref={forwardRef}

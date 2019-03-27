@@ -24,10 +24,8 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
     // url change need build first
     this.build(this.pinnedPostIds);
     this.reaction(
-      () => ({
-        id: this._groupId,
-      }),
-      ({ id }) => {
+      () => this._groupId,
+      (id: number) => {
         if (id) {
           this.firstInit = true;
           this.discontinuousPosListHandler &&
@@ -67,18 +65,22 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
 
   @action
   loadInitialData = async () => {
-    await this.discontinuousPosListHandler.loadMorePosts(
-      QUERY_DIRECTION.NEWER,
-      15,
-    );
+    if (this.discontinuousPosListHandler) {
+      await this.discontinuousPosListHandler.loadMorePosts(
+        QUERY_DIRECTION.NEWER,
+        15,
+      );
+    }
   }
 
   @action
   loadMore = async () => {
-    await this.discontinuousPosListHandler.loadMorePosts(
-      QUERY_DIRECTION.NEWER,
-      20,
-    );
+    if (this.discontinuousPosListHandler) {
+      await this.discontinuousPosListHandler.loadMorePosts(
+        QUERY_DIRECTION.NEWER,
+        20,
+      );
+    }
   }
 
   @computed
