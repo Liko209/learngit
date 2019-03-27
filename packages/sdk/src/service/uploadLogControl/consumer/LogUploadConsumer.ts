@@ -9,7 +9,7 @@ import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';
 import StateMachine from 'ts-javascript-state-machine';
 import { configManager } from './config';
-import { randomInt } from 'sdk/utils';
+import { randomInt } from '../../../utils';
 import sumBy from 'lodash/sumBy';
 import cloneDeep from 'lodash/cloneDeep';
 import { IAccessor } from './types';
@@ -74,7 +74,7 @@ function retryDelay(retryCount: number) {
 }
 
 function timeout(time: number) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     setTimeout(resolve, time);
   });
 }

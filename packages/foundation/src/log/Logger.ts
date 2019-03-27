@@ -52,7 +52,7 @@ export class Logger implements ILogger, ILoggerCore {
   }
 
   removeConsumer(consumer: ILogConsumer) {
-    this._logConsumers = this._logConsumer.filter(it => it === consumer);
+    this._logConsumers = this._logConsumers.filter(it => it === consumer);
   }
 
   log(...params: any) {
