@@ -25,7 +25,6 @@ class TelephonyService {
   private _serverTelephonyService: ServerTelephonyService = ServerTelephonyService.getInstance();
   private _personService: PersonService = PersonService.getInstance();
   private _callId?: string;
-  private _registeredOnbeforeunload: boolean = false;
 
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(
@@ -106,32 +105,6 @@ class TelephonyService {
       return; // For other errors, need not show call UI
     }
     this._telephonyStore.phoneNumber = toNumber;
-    // TODO: There is a LeaveBlockerService, but it can't support multi-blocker. When it can support, we should use that service.
-    // Ticket: https://jira.ringcentral.com/browse/FIJI-4273
-    if (!this._registeredOnbeforeunload) {
-      // If makeCall return success, register this handle
-      window.addEventListener(
-        'beforeunload',
-        (e: Event) => {
-          e.preventDefault();
-          if (this._serverTelephonyService.getAllCallCount() > 0) {
-            mainLogger.info(
-              `${
-                TelephonyService.TAG
-              }Notify user has call count: ${this._serverTelephonyService.getAllCallCount()}`,
-            );
-            const confirmationMessage = true;
-
-            (e || window.event).returnValue = confirmationMessage; // Gecko + IE
-            return confirmationMessage;
-          }
-          // if we return nothing here (just calling return;) then there will be no pop-up question at all
-          return;
-        },
-        false,
-      );
-      this._registeredOnbeforeunload = true;
-    }
   }
 
   directCall = (toNumber: string) => {
@@ -183,6 +156,10 @@ class TelephonyService {
       phone,
       ContactType.GLIP_CONTACT,
     );
+  }
+
+  getAllCallCount = () => {
+    return this._serverTelephonyService.getAllCallCount();
   }
 }
 
