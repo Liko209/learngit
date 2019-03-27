@@ -14,8 +14,13 @@ import {
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_ACTION } from '../../api/types';
 import { rtcLogger } from '../../utils/RTCLoggerProxy';
+import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 
 describe('sip call session', () => {
+  afterEach(() => {
+    RTCMediaDeviceManager.instance().removeAllListeners();
+  });
+
   class SessionDescriptionHandler extends EventEmitter2 {
     private _directionFlag: boolean = true;
     constructor() {
