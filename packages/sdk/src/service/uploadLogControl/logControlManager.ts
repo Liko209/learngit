@@ -158,13 +158,16 @@ export class LogControlManager implements IAccessor {
         level: 9,
       },
     });
-    console.log('zip file done.');
     progressBar.start();
     const uploadResult = await client.upload(
       zipBlob,
       {
         onProgress: (evt: { totalPercent: number; totalBytes: number }) => {
-          console.log(evt.totalPercent);
+          progressBar.update({
+            loaded: evt.totalPercent,
+            total: 100,
+            lengthComputable: true,
+          });
         },
         timeout: 60 * 1000,
         retry: 1,
@@ -174,7 +177,6 @@ export class LogControlManager implements IAccessor {
       },
     );
     progressBar.stop();
-    console.log('uploadResult,', uploadResult);
     return uploadResult;
   }
 
