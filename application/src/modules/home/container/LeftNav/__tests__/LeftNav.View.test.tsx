@@ -6,8 +6,8 @@
 
 import * as i18n from 'react-i18next';
 import * as router from 'react-router-dom';
-jest.spyOn(i18n, 'translate').mockImplementation((x) => x);
-jest.spyOn(router, 'withRouter').mockImplementation((x) => x);
+jest.spyOn(i18n, 'withTranslation').mockImplementation(x => x);
+jest.spyOn(router, 'withRouter').mockImplementation(x => x);
 import { shallow } from 'enzyme';
 import history from '@/history';
 import { LeftNavView } from '../LeftNav.View';
@@ -19,6 +19,9 @@ describe.only('LeftNav.View', () => {
     const props = {
       history: { listen: jest.fn(), push: history.push },
       location: { pathname: '/message/123' },
+      icons: {
+        get: () => [],
+      },
     } as any;
     let view: any;
     beforeEach(() => {

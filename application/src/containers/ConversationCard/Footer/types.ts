@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { WithPostLikeComponentProps } from './withPostLike/types';
-import { WithNamespaces } from 'react-i18next';
+import { WithTranslation } from 'react-i18next';
 
-type FooterViewModelProps = WithPostLikeComponentProps & WithNamespaces;
+type FooterViewModelProps = WithPostLikeComponentProps & WithTranslation;
 
 type FooterViewProps = {
   iLiked: boolean;

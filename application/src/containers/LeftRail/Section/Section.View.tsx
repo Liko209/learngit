@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { SortableContainer, SortableElement } from 'react-sortable-hoc';
 import {
   JuiConversationList,
@@ -21,7 +21,7 @@ import { observer } from 'mobx-react';
 const SortableList = SortableContainer(JuiConversationList);
 const SortableItem = SortableElement(ConversationListItem);
 
-type Props = SectionViewProps & WithNamespaces;
+type Props = SectionViewProps & WithTranslation;
 
 @observer
 class SectionViewComponent extends React.Component<Props> {
@@ -93,7 +93,7 @@ class SectionViewComponent extends React.Component<Props> {
   }
 }
 
-const SectionView = translate('translations')(SectionViewComponent);
+const SectionView = withTranslation('translations')(SectionViewComponent);
 
 export { SectionView };
 export default SectionView;

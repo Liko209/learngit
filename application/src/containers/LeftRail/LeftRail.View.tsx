@@ -18,13 +18,13 @@ import {
   JuiLeftRailMainSection,
 } from 'jui/pattern/LeftRail/LeftRail';
 import history from '@/history';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
 
 @observer
 class LeftRailViewComponent extends Component<
-  LeftRailViewProps & WithNamespaces
+  LeftRailViewProps & WithTranslation
 > {
   onEntryClick = (type: POST_LIST_TYPE) => {
     history.push(`/messages/${type}`);
@@ -76,6 +76,6 @@ class LeftRailViewComponent extends Component<
   }
 }
 
-const LeftRailView = translate('translations')(LeftRailViewComponent);
+const LeftRailView = withTranslation('translations')(LeftRailViewComponent);
 
 export { LeftRailView };

@@ -8,7 +8,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { observer } from 'mobx-react';
 import ReactResizeDetector from 'react-resize-detector';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiRightShelf,
   JuiRightShelfHeader,
@@ -26,12 +26,12 @@ type Props = {
   id: number;
   width: number;
   height: number;
-} & WithNamespaces;
+} & WithTranslation;
 
 type TriggerButtonProps = {
   isOpen: boolean;
   onClick: () => {};
-} & WithNamespaces;
+} & WithTranslation;
 
 // height of conversation header & tabs, pass these constant height to list;
 // since resize observer in resize observer will cause UI performance issue.
@@ -177,7 +177,7 @@ class RightRailComponent extends React.Component<Props> {
   }
 }
 
-const RightRail = translate('translations')(RightRailComponent);
-const TriggerButton = translate('translations')(TriggerButtonComponent);
+const RightRail = withTranslation('translations')(RightRailComponent);
+const TriggerButton = withTranslation('translations')(TriggerButtonComponent);
 
 export { RightRail, TriggerButton };

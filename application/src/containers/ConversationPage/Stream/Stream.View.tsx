@@ -25,7 +25,7 @@ import {
 } from './types';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { toTitleCase } from '@/utils/string';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiInfiniteList,
   IndexRange,
@@ -36,7 +36,7 @@ import { getGlobalValue } from '@/store/utils';
 import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
 import JuiConversationCard from 'jui/src/pattern/ConversationCard';
 
-type Props = WithNamespaces & StreamViewProps & StreamProps;
+type Props = WithTranslation & StreamViewProps & StreamProps;
 
 type StreamItemPost = StreamItem & { value: number[] };
 
@@ -410,6 +410,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 const view = extractView<Props>(StreamViewComponent);
-const StreamView = translate('translations')(view);
+const StreamView = withTranslation('translations')(view);
 
 export { StreamView, StreamViewComponent };

@@ -13,7 +13,7 @@ import {
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
@@ -145,7 +145,7 @@ class ConversationInitialPost extends React.Component<
   }
 }
 
-const ConversationInitialPostView = translate('translations')(
+const ConversationInitialPostView = withTranslation('translations')(
   ConversationInitialPost,
 );
 

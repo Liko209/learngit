@@ -6,11 +6,11 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { EndViewProps } from './types';
 import { JuiFabButton } from 'jui/components/Buttons';
 
-type Props = EndViewProps & WithNamespaces;
+type Props = EndViewProps & WithTranslation;
 
 @observer
 class EndViewComponent extends Component<Props> {
@@ -34,6 +34,6 @@ class EndViewComponent extends Component<Props> {
   }
 }
 
-const EndView = translate('translations')(EndViewComponent);
+const EndView = withTranslation('translations')(EndViewComponent);
 
 export { EndView };

@@ -5,7 +5,7 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import ReactResizeDetector from 'react-resize-detector';
 import { JuiProfileDialogContentMemberList } from 'jui/pattern/Profile/Dialog';
 import {
@@ -24,7 +24,7 @@ const MAX_ITEM_NUMBER = 5.5;
 @observer
 class MemberList
   extends React.Component<
-    WithNamespaces & MemberListProps & MemberListViewProps
+    WithTranslation & MemberListProps & MemberListViewProps
   >
   implements IVirtualListDataSource<number, number> {
   componentWillUnmount() {
@@ -90,6 +90,6 @@ class MemberList
     );
   }
 }
-const MemberListView = translate('translations')(MemberList);
+const MemberListView = withTranslation('translations')(MemberList);
 
 export { MemberListView };

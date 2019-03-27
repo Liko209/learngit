@@ -6,12 +6,12 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
 import { CallViewProps, CallProps } from './types';
 
-type Props = WithNamespaces & CallViewProps & CallProps;
+type Props = WithTranslation & CallViewProps & CallProps;
 
 @observer
 class CallViewComponent extends Component<Props> {
@@ -27,7 +27,7 @@ class CallViewComponent extends Component<Props> {
   }
 
   render() {
-    const { t, phone, size, variant, color, showIcon } = this.props;
+    const { t, phoneNumber, size, variant, color, showIcon } = this.props;
 
     if (!showIcon.get()) {
       return null;
@@ -39,7 +39,7 @@ class CallViewComponent extends Component<Props> {
         onClick={this._handleClick}
         tooltipTitle={t('common.call')}
         ariaLabel={t('common.ariaCall', {
-          value: phone,
+          value: phoneNumber,
         })}
         variant={variant}
         color={color}
@@ -50,6 +50,6 @@ class CallViewComponent extends Component<Props> {
   }
 }
 
-const CallView = translate('translations')(CallViewComponent);
+const CallView = withTranslation('translations')(CallViewComponent);
 
 export { CallView };
