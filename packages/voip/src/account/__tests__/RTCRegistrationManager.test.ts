@@ -121,7 +121,7 @@ describe('RTCRegistrationManager', () => {
       });
     });
 
-    it('Should schedule nex retry interval as max(3600, current_interval * 2). [JPT-813]', () => {
+    it('Should set retry interval from 30s to 60s. [JPT-813]', () => {
       setup();
       regManager._calculateNextRetryInterval();
       const minExpected = 30;
