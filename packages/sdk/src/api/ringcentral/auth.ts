@@ -7,7 +7,7 @@
 
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
-import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
+import { NETWORK_METHOD, NETWORK_VIA, HA_PRIORITY } from 'foundation';
 import { ITokenModel } from '../ringcentral/login';
 
 export interface IAuthCodeModel {
@@ -46,6 +46,7 @@ function generateCode(clientId: string, redirectUri: string) {
     method: NETWORK_METHOD.POST,
     via: NETWORK_VIA.HTTP,
     data: model,
+    HAPriority: HA_PRIORITY.HIGH,
   });
 }
 
