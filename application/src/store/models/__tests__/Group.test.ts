@@ -3,7 +3,6 @@
  * @Date: 2018-11-26 21:33:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { CONVERSATION_TYPES } from '@/constants';
 import GroupModel from '../Group';
 import { Group } from 'sdk/models';
 import { PERMISSION_ENUM } from 'sdk/service';
