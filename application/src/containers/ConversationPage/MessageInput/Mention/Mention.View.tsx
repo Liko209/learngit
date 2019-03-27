@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { MentionViewProps } from './types';
 import { JuiMentionPanel } from 'jui/pattern/MessageInput/Mention/MentionPanel';
@@ -17,7 +17,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 
 @observer
 class MentionViewComponent extends Component<
-  MentionViewProps & WithNamespaces
+  MentionViewProps & WithTranslation
 > {
   private _Avatar(id: number) {
     return <Avatar uid={id} size="small" />;
@@ -69,6 +69,6 @@ class MentionViewComponent extends Component<
   }
 }
 
-const MentionView = translate('translations')(MentionViewComponent);
+const MentionView = withTranslation('translations')(MentionViewComponent);
 
 export { MentionView };

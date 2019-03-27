@@ -6,10 +6,10 @@
 
 import React, { Component } from 'react';
 import { ChangeViewProps } from './types';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { renderPerson } from '@/common/renderPerson';
 
-class ChangeViewComponent extends Component<ChangeViewProps & WithNamespaces> {
+class ChangeViewComponent extends Component<ChangeViewProps & WithTranslation> {
   render() {
     const {
       changerId,
@@ -34,6 +34,6 @@ class ChangeViewComponent extends Component<ChangeViewProps & WithNamespaces> {
   }
 }
 
-const ChangeView = translate('translations')(ChangeViewComponent);
+const ChangeView = withTranslation('translations')(ChangeViewComponent);
 
 export { ChangeView };

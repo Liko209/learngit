@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { PrivacyViewProps, PrivacyProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
@@ -15,7 +15,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
-type Props = PrivacyViewProps & WithNamespaces & PrivacyProps;
+type Props = PrivacyViewProps & WithTranslation & PrivacyProps;
 
 class PrivacyViewComponent extends Component<Props> {
   flashToast = (message: string) => {
@@ -73,6 +73,6 @@ class PrivacyViewComponent extends Component<Props> {
   }
 }
 
-const PrivacyView = translate('translations')(PrivacyViewComponent);
+const PrivacyView = withTranslation('translations')(PrivacyViewComponent);
 
 export { PrivacyView };

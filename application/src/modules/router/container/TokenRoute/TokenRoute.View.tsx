@@ -6,13 +6,13 @@
 
 import React, { Component } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import { JuiModal } from 'jui/components/Dialog';
 
 type TokenRouteProps = RouteComponentProps<{}> &
-  WithNamespaces & {
+  WithTranslation & {
     unifiedLogin: Function;
     redirectToIndex: Function;
     isOffline: boolean;
@@ -61,6 +61,6 @@ class TokenRoute extends Component<TokenRouteProps> {
   }
 }
 
-const TokenRouteView = translate('translations')(withRouter(TokenRoute));
+const TokenRouteView = withTranslation('translations')(withRouter(TokenRoute));
 
 export { TokenRouteView };

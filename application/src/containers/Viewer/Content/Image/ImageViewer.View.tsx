@@ -14,7 +14,7 @@ import {
 } from 'jui/pattern/ImageViewer';
 import { observer } from 'mobx-react';
 import React, { Component, createRef, RefObject } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { Notification } from '@/containers/Notification';
 import { DialogContext } from '@/containers/Dialog';
 import {
@@ -27,7 +27,7 @@ import ViewerContext from '../../ViewerContext';
 import { JuiImageView } from 'jui/components/ImageView';
 import { memoizeColor } from '@/common/memoizeFunction';
 
-type ImageViewerProps = WithNamespaces & ImageViewerViewProps & ThemeProps;
+type ImageViewerProps = WithTranslation & ImageViewerViewProps & ThemeProps;
 
 @observer
 class ImageViewerComponent extends Component<ImageViewerProps, any> {
@@ -182,7 +182,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                   }) => {
                     const imageStyle = {
                       opacity: value.isAnimating && value.show ? 0 : undefined,
-                      transform: `scale(${transform.scale}) translate(${
+                      transform: `scale(${transform.scale}) withTranslation(${
                         transform.translateX
                       }px, ${transform.translateY}px)`,
                       cursor: canDrag ? 'move' : undefined,
@@ -248,7 +248,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
 }
 
 const ImageViewerView = withTheme(
-  translate('translations')(ImageViewerComponent),
+  withTranslation('translations')(ImageViewerComponent),
 );
 
 export { ImageViewerView };

@@ -6,12 +6,12 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { AddViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiKeypadAction } from 'jui/pattern/Dialer';
 
-type Props = AddViewProps & WithNamespaces;
+type Props = AddViewProps & WithTranslation;
 
 @observer
 class AddViewComponent extends Component<Props> {
@@ -39,6 +39,6 @@ class AddViewComponent extends Component<Props> {
   }
 }
 
-const AddView = translate('translations')(AddViewComponent);
+const AddView = withTranslation('translations')(AddViewComponent);
 
 export { AddView };

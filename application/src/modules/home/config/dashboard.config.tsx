@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 
@@ -13,7 +13,7 @@ const config: SubModuleConfig = {
     path: '/dashboard',
     component: () => <div>Dashboard</div>,
   },
-  nav: () => ({
+  nav: async () => ({
     url: '/dashboard',
     Icon: (
       <JuiIconography iconColor={['grey', '900']}>
@@ -21,7 +21,7 @@ const config: SubModuleConfig = {
       </JuiIconography>
     ),
     IconSelected: <JuiIconography>dashboard</JuiIconography>,
-    title: i18next.t('dashboard.Dashboard'),
+    title: await i18nT('dashboard.Dashboard'),
     placement: 'top',
   }),
 };

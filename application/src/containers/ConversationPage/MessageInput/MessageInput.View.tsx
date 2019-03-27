@@ -5,7 +5,7 @@
  */
 
 import React, { Component, RefObject, createRef } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { MessageInputViewProps, MessageInputProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 import { Mention } from './Mention';
@@ -16,7 +16,7 @@ import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
 
-type Props = MessageInputProps & MessageInputViewProps & WithNamespaces;
+type Props = MessageInputProps & MessageInputViewProps & WithTranslation;
 @observer
 class MessageInputViewComponent extends Component<
   Props,
@@ -124,9 +124,9 @@ class MessageInputViewComponent extends Component<
   }
 }
 
-const view = extractView<WithNamespaces & MessageInputViewProps>(
+const view = extractView<WithTranslation & MessageInputViewProps>(
   MessageInputViewComponent,
 );
-const MessageInputView = translate('translations')(view);
+const MessageInputView = withTranslation('translations')(view);
 
 export { MessageInputView, MessageInputViewComponent };

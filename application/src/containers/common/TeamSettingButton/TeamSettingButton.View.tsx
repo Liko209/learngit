@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TeamSettingButtonViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { toTitleCase } from '@/utils/string';
@@ -13,7 +13,7 @@ import { TeamSettings } from '@/containers/TeamSettings';
 import { GroupSettings } from '@/containers/GroupSettings';
 import { CONVERSATION_TYPES } from '@/constants';
 
-type Props = TeamSettingButtonViewProps & WithNamespaces;
+type Props = TeamSettingButtonViewProps & WithTranslation;
 
 class TeamSettingButtonViewComponent extends Component<Props> {
   onClickSettingButton = async () => {
@@ -43,7 +43,7 @@ class TeamSettingButtonViewComponent extends Component<Props> {
   }
 }
 
-const TeamSettingButtonView = translate('translations')(
+const TeamSettingButtonView = withTranslation('translations')(
   TeamSettingButtonViewComponent,
 );
 

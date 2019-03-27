@@ -6,7 +6,7 @@
 import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
+import { withTranslation, WithTranslation } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiMenuItem } from 'jui/components';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
@@ -20,7 +20,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
-type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
+type Props = MenuViewProps & RouteComponentProps & WithTranslation;
 
 @observer
 class MenuViewComponent extends Component<Props> {
@@ -222,6 +222,6 @@ class MenuViewComponent extends Component<Props> {
   }
 }
 
-const MenuView = withRouter(translate('translations')(MenuViewComponent));
+const MenuView = withRouter(withTranslation('translations')(MenuViewComponent));
 
 export { MenuView, MenuViewComponent };

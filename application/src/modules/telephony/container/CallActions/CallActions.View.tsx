@@ -6,12 +6,12 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { CallActionsViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiKeypadAction } from 'jui/pattern/Dialer';
 
-type Props = CallActionsViewProps & WithNamespaces;
+type Props = CallActionsViewProps & WithTranslation;
 
 @observer
 class CallActionsViewComponent extends Component<Props> {
@@ -39,6 +39,8 @@ class CallActionsViewComponent extends Component<Props> {
   }
 }
 
-const CallActionsView = translate('translations')(CallActionsViewComponent);
+const CallActionsView = withTranslation('translations')(
+  CallActionsViewComponent,
+);
 
 export { CallActionsView };

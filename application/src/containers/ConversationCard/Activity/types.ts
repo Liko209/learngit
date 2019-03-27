@@ -12,7 +12,7 @@ type ActivityViewProps = {
   activity: {
     key: string;
     parameter: {
-      translated?: object;
+      withTranslationd?: object;
       numerals?: number;
     };
   };
