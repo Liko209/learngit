@@ -182,7 +182,7 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
                   }) => {
                     const imageStyle = {
                       opacity: value.isAnimating && value.show ? 0 : undefined,
-                      transform: `scale(${transform.scale}) withTranslation(${
+                      transform: `scale(${transform.scale}) translate(${
                         transform.translateX
                       }px, ${transform.translateY}px)`,
                       cursor: canDrag ? 'move' : undefined,
