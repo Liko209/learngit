@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
-import { observable, runInAction } from 'mobx';
+import { observable, runInAction, reaction, action } from 'mobx';
 import { observer, Observer } from 'mobx-react';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
@@ -288,11 +288,13 @@ class StreamViewComponent extends Component<Props> {
   handleMostRecentViewed = () => {
     if (document.hasFocus()) {
       this.props.markAsRead();
+      this.props.disableNewMessageSeparatorHandler();
       this._setUmiDisplay(false);
     }
   }
 
   handleMostRecentHidden = () => {
+    this.props.enableNewMessageSeparatorHandler();
     this._setUmiDisplay(true);
   }
 
@@ -316,13 +318,7 @@ class StreamViewComponent extends Component<Props> {
   );
 
   render() {
-    const {
-      t,
-      loadMore,
-      hasMore,
-      items,
-      handleNewMessageSeparatorState,
-    } = this.props;
+    const { t, loadMore, hasMore, items } = this.props;
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
@@ -362,7 +358,6 @@ class StreamViewComponent extends Component<Props> {
                   hasMore={hasMore}
                   loadingMoreRenderer={defaultLoadingMore}
                   fallBackRenderer={onInitialDataFailed}
-                  onScroll={handleNewMessageSeparatorState}
                   onVisibleRangeChange={this._handleVisibilityChanged}
                 >
                   {this._renderStreamItems()}
@@ -375,6 +370,7 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
+  @action
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead } = this.props;
     await loadInitialPosts();
@@ -387,6 +383,25 @@ class StreamViewComponent extends Component<Props> {
         this._jumpToPostRef.current.highlight();
       }
     });
+    this._watchUnreadCount();
+  }
+
+  private _watchUnreadCount() {
+    reaction(
+      () => {
+        return this.props.unreadCount > 0;
+      },
+      (hasUnread) => {
+        if (this._listRef.current && !this.props.hasMore('down')) {
+          const isLastPostVisible =
+            this._listRef.current.getVisibleRange().stopIndex >=
+            this.props.items.length - 1;
+          if (isLastPostVisible) {
+            this.handleMostRecentViewed();
+          }
+        }
+      },
+    );
   }
 
   private _focusHandler = () => {
@@ -396,6 +411,7 @@ class StreamViewComponent extends Component<Props> {
       this._listRef.current && this._listRef.current.isAtBottom();
     if (atBottom) {
       markAsRead();
+      this.props.disableNewMessageSeparatorHandler();
       this._setUmiDisplay(false);
     }
   }

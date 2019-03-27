@@ -54,6 +54,7 @@ type StreamProps = {
 
 type StreamViewProps = {
   mostRecentPostId: number;
+  unreadCount: number;
   firstHistoryUnreadInPage: boolean;
   postIds: number[];
   jumpToPostId: number;
@@ -63,6 +64,7 @@ type StreamViewProps = {
   markAsRead: () => void;
   loadInitialPosts: () => Promise<void>;
   enableNewMessageSeparatorHandler: () => void;
+  disableNewMessageSeparatorHandler: () => void;
   handleNewMessageSeparatorState: (event: React.UIEvent<HTMLElement>) => void;
   loadPostUntilFirstUnread: () => Promise<number | undefined>;
   updateHistoryHandler: () => void;
