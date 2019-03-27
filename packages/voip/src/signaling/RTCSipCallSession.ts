@@ -43,15 +43,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._mediaDeviceManager = RTCMediaDeviceManager.instance();
     this._mediaDeviceManager.on(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-      (deviceID: string) => {
-        this._setDefaultAudioInputDevice(deviceID);
-      },
+      this._setDefaultAudioInputDevice,
     );
     this._mediaDeviceManager.on(
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      (deviceID: string) => {
-        this._setDefaultAudioOutputDevice(deviceID);
-      },
+      this._setDefaultAudioOutputDevice,
     );
   }
   destroy() {
@@ -63,6 +59,16 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (this._session.sessionDescriptionHandler) {
       this._session.sessionDescriptionHandler.removeAllListeners();
     }
+
+    this._mediaDeviceManager.off(
+      RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
+      this._setDefaultAudioOutputDevice,
+    );
+
+    this._mediaDeviceManager.off(
+      RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
+      this._setDefaultAudioOutputDevice,
+    );
 
     const sdh = this._session.sessionDescriptionHandler;
     const pc = sdh && sdh.peerConnection;
