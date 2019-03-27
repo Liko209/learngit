@@ -3,6 +3,7 @@
  * @Date: 2018-11-26 21:33:16
  * Copyright © RingCentral. All rights reserved.
  */
+import { CONVERSATION_TYPES } from '@/constants';
 import GroupModel from '../Group';
 import { Group } from 'sdk/models';
 import { PERMISSION_ENUM } from 'sdk/service';
@@ -10,6 +11,7 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { GlobalConfigService } from 'sdk/module/config';
 import { AccountUserConfig } from 'sdk/service/account/config';
+import i18next from 'i18next';
 
 jest.mock('sdk/api');
 jest.mock('sdk/service/account/config');
@@ -355,6 +357,38 @@ describe('GroupModel', () => {
         isMocked: true,
       } as Group);
       expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
+    });
+  });
+
+  describe('displayName', () => {
+    it('should return team name if it is team', () => {
+      const gm = GroupModel.fromJS({
+        set_abbreviation: 'TEAM NAME',
+        is_team: true,
+      } as Group);
+      expect(gm.displayName).toBe('TEAM NAME');
+    });
+
+    it('should return empty string if it is team and no team name', () => {
+      const gm = GroupModel.fromJS({
+        is_team: true,
+      } as Group);
+      expect(gm.displayName).toBe('');
+    });
+
+    it('should return userDisplayNameForGroupName if it is me conversation', () => {
+      const gm = GroupModel.fromJS({
+        members: [mockUserId],
+      } as Group);
+      (getEntity as jest.Mock).mockImplementation((name: string) => {
+        if (name === ENTITY_NAME.PERSON) {
+          return {
+            userDisplayNameForGroupName: 'Chris',
+          };
+        }
+      });
+      jest.spyOn(i18next, 't').mockReturnValueOnce('me');
+      expect(gm.displayName).toBe('Chris (me)');
     });
   });
 });
