@@ -93,15 +93,14 @@ const JuiInfiniteList: RefForwardingComponent<
         if (loadingInitialFailed) {
           return fallBackRenderer || <></>;
         }
-
-        const isEmpty =
-          children.length === 0 && !hasMore('up') && !hasMore('down');
-        if (isEmpty) {
-          return noRowsRenderer;
-        }
         if (children.length === 0) {
+          const isEmpty = !hasMore('up') && !hasMore('down');
+          if (isEmpty) {
+            return noRowsRenderer;
+          }
           return null;
         }
+
         return (
           <JuiVirtualizedList
             ref={forwardRef}

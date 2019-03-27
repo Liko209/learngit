@@ -167,7 +167,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (shouldAdd) {
       const groupService = GroupService.getInstance<GroupService>();
       const groups: Group[] = (await groupService.getGroupsByIds(ids)) || [];
-      const validGroups = groups.filter(group => groupService.isValid(group));
+      const validGroups = groups.filter((group: Group) =>
+        groupService.isValid(group),
+      );
       this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(validGroups);
       this._handlersMap[SECTION_TYPE.TEAM].upsert(validGroups);
     } else {
@@ -328,11 +330,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   private _handleGroupChanged = (delta: TDelta) => {
     const { deleted, updated, added } = delta;
-    const addedIds = added.map(item => item.id);
+    const addedIds = added.map((item: ISortableModel<any>) => item.id);
 
     if (deleted.length) {
-      const truelyDeleted = _.differenceBy(deleted, addedIds);
-      truelyDeleted.forEach((groupId: number) => {
+      const trulyDeleted = _.differenceBy(deleted, addedIds);
+      trulyDeleted.forEach((groupId: number) => {
         postCacheController.remove(groupId);
       });
     }
@@ -346,8 +348,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
 
     if (added.length) {
-      const truelyAdded = _.differenceBy(addedIds, deleted);
-      truelyAdded.forEach((groupId: number) => {
+      const trulyAdded = _.differenceBy(addedIds, deleted);
+      trulyAdded.forEach((groupId: number) => {
         if (!postCacheController.has(groupId)) {
           this._addToFetchProcessor(groupId);
         }

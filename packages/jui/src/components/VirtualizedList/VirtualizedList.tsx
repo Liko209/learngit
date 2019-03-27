@@ -87,7 +87,14 @@ const JuiVirtualizedList: RefForwardingComponent<
 
     return renderedRange;
   };
-
+  const virtualizedListStyle: React.CSSProperties = {
+    height,
+    overflow: 'auto',
+    // Prevent repaints on scroll
+    transform: 'translateZ(0)',
+    // Prevent chrome's default behavior
+    overflowAnchor: 'none',
+  };
   const computeRangeOffset = (
     prevChildrenCount: number | null,
     prevStartIndex: number | null,
@@ -400,14 +407,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     <div
       ref={ref}
       onScroll={handleScroll}
-      style={{
-        height,
-        overflow: 'auto',
-        // Prevent repaints on scroll
-        transform: 'translateZ(0)',
-        // Prevent chrome's default behavior
-        overflowAnchor: 'none',
-      }}
+      style={virtualizedListStyle}
       data-test-automation-id="virtualized-list"
     >
       {wrappedBefore}

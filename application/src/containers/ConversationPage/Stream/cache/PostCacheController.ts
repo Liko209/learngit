@@ -70,7 +70,7 @@ class PostUsedItemCache implements IUsedCache {
     usedItemIds = [
       ...new Set(
         Object.values(data)
-          .map(a => a.id)
+          .map((a: PostModel) => a.id)
           .flat(),
       ),
     ];
