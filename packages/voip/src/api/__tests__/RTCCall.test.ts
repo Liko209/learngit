@@ -13,8 +13,14 @@ import { RTC_CALL_STATE, RTC_CALL_ACTION, RTCCallOptions } from '../types';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
 import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 import { rtcLogger } from '../../utils/RTCLoggerProxy';
+import { RTCMediaDeviceManager } from '../../api/RTCMediaDeviceManager';
 
 describe('RTC call', () => {
+
+  afterEach(() => {
+    RTCMediaDeviceManager.instance().removeAllListeners();
+  });
+
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
     createOutgoingCallSession(toNum: string): void {
       this.toNum = toNum;
