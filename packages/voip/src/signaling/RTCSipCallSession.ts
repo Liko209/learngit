@@ -41,14 +41,6 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       this._uuid,
     );
     this._mediaDeviceManager = RTCMediaDeviceManager.instance();
-    this._mediaDeviceManager.on(
-      RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-      this._setDefaultAudioInputDevice,
-    );
-    this._mediaDeviceManager.on(
-      RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      this._setDefaultAudioOutputDevice,
-    );
   }
   destroy() {
     if (!this._session) {
@@ -83,6 +75,14 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (!this._session) {
       return;
     }
+    this._mediaDeviceManager.on(
+      RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
+      this._setDefaultAudioInputDevice,
+    );
+    this._mediaDeviceManager.on(
+      RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
+      this._setDefaultAudioOutputDevice,
+    );
     this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, (inviteRes: any) => {
       this._inviteResponse = inviteRes;
       this._onSessionAccepted();
