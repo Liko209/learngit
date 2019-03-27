@@ -5,11 +5,12 @@
  */
 import { LeaveBlockerModule } from './LeaveBlockerModule';
 import { LeaveBlockerService } from './service';
+import { LEAVE_BLOCKER_SERVICE } from './interface';
 
 const config = {
   entry: LeaveBlockerModule,
   provides: {
-    LeaveBlockerService,
+    [LEAVE_BLOCKER_SERVICE]: LeaveBlockerService,
   },
 };
 

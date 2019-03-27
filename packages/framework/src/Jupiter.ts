@@ -5,7 +5,13 @@
  */
 import getDecorators from 'inversify-inject-decorators';
 import { AbstractModule } from './AbstractModule';
-import { Container, decorate, injectable, interfaces } from './ioc';
+import {
+  METADATA_KEY,
+  Container,
+  decorate,
+  injectable,
+  interfaces,
+} from './ioc';
 import { ModuleConfig } from './types';
 
 /**
@@ -49,13 +55,22 @@ class Jupiter {
 
   bindProvides(provides: ModuleConfig['provides'] = {}) {
     Object.keys(provides).forEach((key: string) => {
-      this.bindProvide(provides[key]);
+      this.bindProvide(provides[key], key);
     });
   }
 
-  bindProvide(provide: interfaces.Newable<AbstractModule>) {
-    decorate(injectable(), provide);
-    this._container.bind(provide).to(provide);
+  bindProvide<T>(provide: interfaces.Newable<T>, key?: string) {
+    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, provide)) {
+      decorate(injectable(), provide);
+    }
+
+    this._container.bind(key || provide).to(provide);
+  }
+
+  get<T>(
+    name: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>,
+  ) {
+    return this._container.get<T>(name);
   }
 
   async bootstrapModule<T extends AbstractModule>(
