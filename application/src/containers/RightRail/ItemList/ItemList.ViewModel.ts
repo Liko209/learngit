@@ -194,6 +194,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
           (this._getFilterFunc(groupId, type) as (valid: Item) => boolean)(
             item,
           );
+        break;
       default:
         isValidItem =
           isValidItem &&
