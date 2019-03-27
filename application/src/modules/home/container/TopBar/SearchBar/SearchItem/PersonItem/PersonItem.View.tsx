@@ -21,8 +21,9 @@ class PersonItemView extends React.Component<ViewProps, {}> {
   }
 
   onClick = () => {
-    const { addRecentRecord } = this.props;
+    const { addRecentRecord, onClear } = this.props;
     addRecentRecord();
+    onClear();
   }
 
   handleGoToConversation = (evt: React.MouseEvent) => {
