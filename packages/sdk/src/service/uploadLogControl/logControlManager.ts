@@ -30,7 +30,7 @@ class LogControlManager implements IAccessor {
       new LogMemoryPersistent(10 * 1024 * 1024),
       this,
     );
-    logManager.setConsumer(this.uploadLogConsumer);
+    logManager.addConsumer(this.uploadLogConsumer);
     this.subscribeNotifications();
   }
 

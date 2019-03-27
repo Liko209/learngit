@@ -47,12 +47,12 @@ export class Logger implements ILogger, ILoggerCore {
     );
   }
 
-  setConsumer(consumer: ILogConsumer) {
-    this._logConsumers = [consumer];
-  }
-
   addConsumer(consumer: ILogConsumer) {
     this._logConsumers = [...this._logConsumers, consumer];
+  }
+
+  removeConsumer(consumer: ILogConsumer) {
+    this._logConsumers = this._logConsumer.filter(it => it === consumer);
   }
 
   log(...params: any) {

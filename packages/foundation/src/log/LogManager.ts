@@ -70,8 +70,12 @@ export class LogManager {
     return this._instance;
   }
 
-  setConsumer(consumer: ILogConsumer) {
-    this._logger.setConsumer(consumer);
+  addConsumer(consumer: ILogConsumer) {
+    this._logger.addConsumer(consumer);
+  }
+
+  removeConsumer(consumer: ILogConsumer) {
+    this._logger.removeConsumer(consumer);
   }
 
   configAll(config: LogConfig) {
