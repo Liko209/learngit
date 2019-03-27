@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { observer } from 'mobx-react';
 import { JuiContactSearch } from 'jui/pattern/ContactSearch';
 
 import { Chip } from '@/containers/Chip';
@@ -14,6 +15,7 @@ import { ViewProps } from './types';
 
 type Props = WithTranslation & ViewProps;
 
+@observer
 class ContactSearch extends React.Component<Props> {
   constructor(props: Props) {
     super(props);

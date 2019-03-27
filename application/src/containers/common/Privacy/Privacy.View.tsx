@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
+import { observer } from 'mobx-react';
 import { PrivacyViewProps, PrivacyProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
@@ -17,6 +18,7 @@ import {
 
 type Props = PrivacyViewProps & WithTranslation & PrivacyProps;
 
+@observer
 class PrivacyViewComponent extends Component<Props> {
   flashToast = (message: string) => {
     Notification.flashToast({

@@ -5,10 +5,12 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { AddedViewProps } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { renderPerson } from '@/common/renderPerson';
 
+@observer
 class AddedViewComponent extends Component<AddedViewProps & WithTranslation> {
   render() {
     const {

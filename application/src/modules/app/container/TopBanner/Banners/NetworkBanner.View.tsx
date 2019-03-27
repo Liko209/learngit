@@ -7,10 +7,12 @@ import React from 'react';
 import i18next from 'i18next';
 import { WithTranslation } from 'react-i18next';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
+import { observer } from 'mobx-react';
 import { NetworkBannerViewProps, NetworkBannerProps } from './types';
 
 type Props = WithTranslation & NetworkBannerProps & NetworkBannerViewProps;
 
+@observer
 class NetworkBannerView extends React.Component<Props> {
   render() {
     const { banner } = this.props;

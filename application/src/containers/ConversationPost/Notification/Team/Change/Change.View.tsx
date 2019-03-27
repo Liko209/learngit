@@ -5,10 +5,12 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { ChangeViewProps } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { renderPerson } from '@/common/renderPerson';
 
+@observer
 class ChangeViewComponent extends Component<ChangeViewProps & WithTranslation> {
   render() {
     const {

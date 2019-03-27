@@ -7,6 +7,7 @@ import React, { Component } from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { TeamSettingButtonViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { observer } from 'mobx-react';
 import { toTitleCase } from '@/utils/string';
 import portalManager from '@/common/PortalManager';
 import { TeamSettings } from '@/containers/TeamSettings';
@@ -15,6 +16,7 @@ import { CONVERSATION_TYPES } from '@/constants';
 
 type Props = TeamSettingButtonViewProps & WithTranslation;
 
+@observer
 class TeamSettingButtonViewComponent extends Component<Props> {
   onClickSettingButton = async () => {
     const { id, group } = this.props;

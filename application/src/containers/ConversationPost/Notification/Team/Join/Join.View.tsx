@@ -5,10 +5,12 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { JoinViewProps } from './types';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { renderPerson } from '@/common/renderPerson';
 
+@observer
 class JoinViewComponent extends Component<JoinViewProps & WithTranslation> {
   render() {
     const { newUserId, newUserName, createdAt, t } = this.props;
