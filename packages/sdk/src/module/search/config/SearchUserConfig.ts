@@ -14,7 +14,7 @@ class SearchUserConfig extends UserConfig {
   static moduleName = 'search';
 
   constructor() {
-    super(AccountGlobalConfig.getCurrentUserId(), SearchUserConfig.moduleName);
+    super(AccountGlobalConfig.getUserDictionary(), SearchUserConfig.moduleName);
   }
 
   setRecentSearchRecords(records: RecentSearchModel[]) {

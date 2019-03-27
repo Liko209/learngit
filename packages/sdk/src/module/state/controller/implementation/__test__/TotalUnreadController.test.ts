@@ -27,7 +27,7 @@ import {
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 import { GlobalConfigService } from '../../../../../module/config';
-import { AccountGlobalConfig } from '../../../../../service/account/config';
+import { AccountUserConfig } from '../../../../../service/account/config';
 
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../service/account/config');
@@ -416,7 +416,7 @@ describe('TotalUnreadController', () => {
     beforeEach(() => {});
 
     it('should update correctly when update groups', async () => {
-      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5683);
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
       totalUnreadController['_groupSectionUnread'].set(1, {
@@ -446,7 +446,7 @@ describe('TotalUnreadController', () => {
         },
       };
       await totalUnreadController['_updateTotalUnreadByGroupChanges'](payload);
-      expect(AccountGlobalConfig.getCurrentUserId).toBeCalledTimes(1);
+      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_modifyTotalUnread']).toBeCalledWith(
         UMI_SECTION_TYPE.DIRECT_MESSAGE,
@@ -616,7 +616,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
 
-      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5683);
       GroupService.getInstance = jest.fn().mockReturnValue({
         getEntitySource: jest.fn().mockReturnValue({
           getEntities: jest
@@ -647,7 +647,7 @@ describe('TotalUnreadController', () => {
       expect(GroupService.getInstance<GroupService>().isValid).toBeCalledTimes(
         3,
       );
-      expect(AccountGlobalConfig.getCurrentUserId).toBeCalledTimes(2);
+      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({
         members: [1, 5683],
@@ -660,7 +660,7 @@ describe('TotalUnreadController', () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
 
-      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(5683);
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5683);
       GroupService.getInstance = jest.fn().mockReturnValue({
         getEntitySource: jest.fn().mockReturnValue({
           getEntities: jest
@@ -691,7 +691,7 @@ describe('TotalUnreadController', () => {
       expect(GroupService.getInstance<GroupService>().isValid).toBeCalledTimes(
         3,
       );
-      expect(AccountGlobalConfig.getCurrentUserId).toBeCalledTimes(2);
+      expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({
         members: [1, 5683],

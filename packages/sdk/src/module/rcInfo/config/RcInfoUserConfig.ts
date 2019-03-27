@@ -9,7 +9,7 @@ import { AccountGlobalConfig } from '../../../service/account/config';
 
 class RcInfoUserConfig extends UserConfig {
   constructor() {
-    super(AccountGlobalConfig.getCurrentUserId(), 'rcinfo');
+    super(AccountGlobalConfig.getUserDictionary(), 'rcinfo');
   }
   setExtensionInfo(info: any) {
     this.put(RCINFO_KEYS.EXTENSION_INFO, info);

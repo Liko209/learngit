@@ -71,7 +71,7 @@ class ItemListDataSource {
     this._buildSortableMemberListHandler(
       this.groupId,
       type,
-      ITEM_SORT_KEYS.CREATE_TIME,
+      ITEM_SORT_KEYS.LATEST_VERSION_DATE,
       false,
     );
   }

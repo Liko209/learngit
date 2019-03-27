@@ -5,7 +5,7 @@
  */
 
 import { GroupEntityCacheController } from '../GroupEntityCacheController';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { Group } from '../../entity';
 import { GroupService } from '../../service/GroupService';
 
@@ -23,7 +23,7 @@ describe('GroupEntityCacheController', () => {
   function setUp() {
     const groupService: any = new GroupService();
     groupEntityCacheController = new GroupEntityCacheController(groupService);
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(1);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
   }
   beforeEach(() => {
     clearMocks();
@@ -33,7 +33,9 @@ describe('GroupEntityCacheController', () => {
     it('should return GroupEntityCacheController', () => {
       const groupService: any = new GroupService();
       expect(
-        GroupEntityCacheController.buildGroupEntityCacheController(groupService),
+        GroupEntityCacheController.buildGroupEntityCacheController(
+          groupService,
+        ),
       ).toBeInstanceOf(GroupEntityCacheController);
     });
   });

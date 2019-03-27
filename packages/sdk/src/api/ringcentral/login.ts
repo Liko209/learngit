@@ -68,7 +68,8 @@ function loginGlip2ByPassword(data: object) {
 
 function refreshToken(data: ITokenModel) {
   const model = {
-    ...data,
+    refresh_token: data.refresh_token,
+    endpoint_id: data.endpoint_id,
     grant_type: 'refresh_token',
   };
 

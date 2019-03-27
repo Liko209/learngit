@@ -7,7 +7,7 @@ import _ from 'lodash';
 import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction } from 'mobx';
-import { observer } from 'mobx-react';
+import { observer, Observer } from 'mobx-react';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -33,8 +33,8 @@ import {
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
+import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
 import JuiConversationCard from 'jui/src/pattern/ConversationCard';
-// import { findDOMNode } from 'react-dom';
 
 type Props = WithNamespaces & StreamViewProps & StreamProps;
 
@@ -172,11 +172,9 @@ class StreamViewComponent extends Component<Props> {
   private _renderInitialPost() {
     const { groupId, notEmpty } = this.props;
     return (
-      <ConversationInitialPost
-        notEmpty={notEmpty}
-        id={groupId}
-        key="ConversationInitialPost"
-      />
+      <JuiConversationInitialPostWrapper key="ConversationInitialPost">
+        <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
+      </JuiConversationInitialPostWrapper>
     );
   }
 
@@ -308,6 +306,15 @@ class StreamViewComponent extends Component<Props> {
     });
   }
 
+  private _contentStyleGen = _.memoize(
+    (height?: number) =>
+      ({
+        minHeight: height,
+        display: 'flex',
+        flexDirection: 'column',
+      } as React.CSSProperties),
+  );
+
   render() {
     const {
       t,
@@ -334,26 +341,35 @@ class StreamViewComponent extends Component<Props> {
     return (
       <JuiSizeMeasurer>
         {({ ref, height }) => (
-          <JuiStream ref={ref}>
-            {this._renderJumpToFirstUnreadButton()}
-            <JuiInfiniteList
-              ref={this._listRef}
-              height={height}
-              stickToBottom={true}
-              initialScrollToIndex={initialPosition}
-              minRowHeight={50} // extract to const
-              loadInitialData={this._loadInitialPosts}
-              loadMore={loadMore}
-              loadingRenderer={defaultLoading}
-              hasMore={hasMore}
-              loadingMoreRenderer={defaultLoadingMore}
-              fallBackRenderer={onInitialDataFailed}
-              onScroll={handleNewMessageSeparatorState}
-              onVisibleRangeChange={this._handleVisibilityChanged}
-            >
-              {this._renderStreamItems()}
-            </JuiInfiniteList>
-          </JuiStream>
+          // MobX only tracks data accessed for observer components
+          // if they are directly accessed by render, for render
+          // callback, we can wrap it with <Observer>
+          // See: https://tinyurl.com/y3nfuybu
+          <Observer>
+            {() => (
+              <JuiStream ref={ref}>
+                {this._renderJumpToFirstUnreadButton()}
+                <JuiInfiniteList
+                  contentStyle={this._contentStyleGen(height)}
+                  ref={this._listRef}
+                  height={height}
+                  stickToBottom={true}
+                  initialScrollToIndex={initialPosition}
+                  minRowHeight={50} // extract to const
+                  loadInitialData={this._loadInitialPosts}
+                  loadMore={loadMore}
+                  loadingRenderer={defaultLoading}
+                  hasMore={hasMore}
+                  loadingMoreRenderer={defaultLoadingMore}
+                  fallBackRenderer={onInitialDataFailed}
+                  onScroll={handleNewMessageSeparatorState}
+                  onVisibleRangeChange={this._handleVisibilityChanged}
+                >
+                  {this._renderStreamItems()}
+                </JuiInfiniteList>
+              </JuiStream>
+            )}
+          </Observer>
         )}
       </JuiSizeMeasurer>
     );

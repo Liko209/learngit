@@ -430,14 +430,16 @@ describe('Entity Cache Search Controller', () => {
   });
 
   describe('Check Cache Search when use soundex', () => {
-    it('should return one result when no arrangeIds, has search key, no sort', async () => {
-      const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
-      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+    beforeEach(() => {
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(true);
+    });
+    it('should return two results with soundex when no arrangeIds, has search key, no sort', async () => {
+      const entityA = { id: 1, name: 'mr.Knuth', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.Kant', note: 'likes to eat fish' };
       const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
       await entityCacheController.put(entityA);
       await entityCacheController.put(entityB);
       await entityCacheController.put(entityC);
-      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(true);
       const result = await entityCacheSearchController.searchEntities(
         (entity: TestModel, terms: Terms) => {
           const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
@@ -460,11 +462,48 @@ describe('Entity Cache Search Controller', () => {
           }
           return null;
         },
-        'maaaaar.dog',
+        'Mr.knt',
       );
 
-      expect(result.sortableModels.length).toBe(1);
+      expect(result.sortableModels.length).toBe(2);
       expect(result.sortableModels[0].entity).toBe(entityA);
+      expect(result.sortableModels[1].entity).toBe(entityB);
+    });
+    it('should return two results with soundex when no arrangeIds, has search key, no sort', async () => {
+      const entityA = { id: 1, name: 'mr.Knuth', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.Kant', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
+      const result = await entityCacheSearchController.searchEntities(
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name.toLowerCase() || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name.toLowerCase() || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              firstSortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        'Mr.k',
+      );
+
+      expect(result.sortableModels.length).toBe(2);
+      expect(result.sortableModels[0].entity).toBe(entityA);
+      expect(result.sortableModels[1].entity).toBe(entityB);
     });
   });
 });

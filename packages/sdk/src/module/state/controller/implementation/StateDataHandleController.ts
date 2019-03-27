@@ -17,8 +17,8 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { StateFetchDataController } from './StateFetchDataController';
 import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
-import { AccountGlobalConfig } from '../../../../service/account/config';
-import { NewUserConfig } from '../../../../service/config';
+import { AccountUserConfig } from '../../../../service/account/config';
+import { MyStateUserConfig } from '../../../../service/config';
 import { SYNC_SOURCE } from '../../../../module/sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 
@@ -98,7 +98,8 @@ class StateDataHandleController {
           switch (key) {
             case '__trigger_ids': {
               const triggerIds = group[key];
-              const currentUserId: number = AccountGlobalConfig.getCurrentUserId();
+              const userConfig = new AccountUserConfig();
+              const currentUserId: number = userConfig.getGlipUserId();
               if (
                 triggerIds &&
                 currentUserId &&
@@ -340,7 +341,7 @@ class StateDataHandleController {
       const myState = transformedState.myState;
       try {
         await daoManager.getDao(StateDao).update(myState);
-        const config = new NewUserConfig();
+        const config = new MyStateUserConfig();
         await config.setMyStateId(myState.id);
       } catch (err) {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);

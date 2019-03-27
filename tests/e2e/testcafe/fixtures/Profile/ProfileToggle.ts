@@ -182,7 +182,7 @@ test(formalName('Open profile via conversation list', ['JPT-450', 'P2', 'Profile
     });
 
     await h(t).withLog(`When I click a ${key} conversation profile dialog close button`, async () => {
-      await profileDialog.close();
+      await profileDialog.clickCloseButton();
     });
 
     await h(t).withLog(`The ${key} conversation profile dialog dismiss`, async () => {
@@ -267,7 +267,7 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
     });
 
     await h(t).withLog(`When I click a ${key} conversation profile dialog close button`, async () => {
-      await profileDialog.close();
+      await profileDialog.clickCloseButton();
     });
 
     await h(t).withLog(`Then the profile dialog dismiss`, async () => {
@@ -299,7 +299,7 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
     });
 
     await h(t).withLog(`When I click a ${key} conversation profile dialog close button`, async () => {
-      await profileDialog.close();
+      await profileDialog.clickCloseButton();
     });
 
     await h(t).withLog(`Then the profile dialog dismiss`, async () => {

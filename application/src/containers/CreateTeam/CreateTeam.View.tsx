@@ -204,6 +204,7 @@ class CreateTeamView extends React.Component<ViewProps, State> {
     } = this.props;
     return (
       <JuiModal
+        modalProps={{ scroll: 'body' }}
         open={true}
         size={'medium'}
         title={i18next.t('people.team.CreateTeam')}

@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/RightRail/PinnedPost.ts"
+    ],
+    "include_tags": [
+      "JPT-1079"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -16,7 +16,7 @@ import Base from './Base';
 import i18next from 'i18next';
 import { TeamPermission, GroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
-import { AccountGlobalConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/service/account/config';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -105,9 +105,9 @@ export default class GroupModel extends Base<Group> {
   }
 
   get isMember() {
+    const userConfig = new AccountUserConfig();
     return (
-      this.members &&
-      this.members.indexOf(AccountGlobalConfig.getCurrentUserId()) >= 0
+      this.members && this.members.indexOf(userConfig.getGlipUserId()) >= 0
     );
   }
 
@@ -116,8 +116,8 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.TEAM) {
       return this.setAbbreviation || '';
     }
-
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
@@ -162,7 +162,8 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
 
     const members = this.members || [];
 
@@ -189,8 +190,9 @@ export default class GroupModel extends Base<Group> {
   @computed
   get membersExcludeMe() {
     const members = this.members || [];
+    const userConfig = new AccountUserConfig();
 
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const currentUserId = userConfig.getGlipUserId();
 
     return members.filter(member => member !== currentUserId);
   }
