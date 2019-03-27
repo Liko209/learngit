@@ -1,26 +1,53 @@
 import NetworkRequestConsumer from '../NetworkRequestConsumer';
-import { NETWORK_VIA } from '../network';
+import { NETWORK_VIA, NETWORK_FAIL_TYPE } from '../network';
 import {
   getFakeRequest,
   getFakeExecutor,
   getFakeHandler,
   getFakeClient,
+  getFakeDecoration,
 } from './utils';
+import NetworkRequestDecorator from '../NetworkRequestDecorator';
+import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
+
+const client = getFakeClient();
+const handler = getFakeHandler();
+const decorate = new NetworkRequestDecorator(getFakeDecoration());
+handler.produceRequest = jest.fn();
+client.isNetworkReachable = jest.fn();
 
 const consumer = new NetworkRequestConsumer(
-  getFakeHandler(),
-  getFakeClient(),
+  handler,
+  client,
   10,
   NETWORK_VIA.ALL,
-  getFakeHandler(),
-  null,
+  handler,
+  decorate,
 );
+
 describe('NetworkRequestConsumer', () => {
   describe('onConsumeArrived', () => {
     it('should call consume', () => {
       const spy = jest.spyOn(consumer, '_consume');
       consumer.onConsumeArrived();
       expect(spy).toBeCalled();
+    });
+
+    it.only('should consume the request if network is disconnected', () => {
+      handler.produceRequest.mockImplementationOnce(() => {
+        return { id: 10, path: '/' };
+      });
+      client.isNetworkReachable.mockImplementationOnce(() => {
+        return false;
+      });
+      const executeSpy = jest.spyOn(consumer, '_addExecutor');
+      const responseSpy = (NetworkRequestExecutor.prototype['_callXApiResponse'] = jest.fn());
+      consumer.onConsumeArrived();
+      expect(executeSpy).toBeCalled();
+      expect(responseSpy).toBeCalledWith(
+        0,
+        NETWORK_FAIL_TYPE.NOT_NETWORK_CONNECTION,
+      );
     });
   });
 
