@@ -100,7 +100,10 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
         this._via
       }`,
     );
-    return this._executorQueue.size < this._maxQueueCount;
+    const isNotExceed = this._executorQueue.size < this._maxQueueCount;
+    return this._via === NETWORK_VIA.SOCKET
+      ? this._client.isNetworkReachable() && isNotExceed
+      : isNotExceed;
   }
 
   private _addExecutor(executor: INetworkRequestExecutor) {
