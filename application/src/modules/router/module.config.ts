@@ -4,7 +4,7 @@ import { RouterModule } from './RouterModule';
 
 const config = {
   entry: RouterModule,
-  provides: { RouterStore, RouterService },
+  provides: [RouterStore, RouterService],
 };
 
 export { config };

@@ -8,7 +8,7 @@ import { AppStore } from './store';
 
 const config = {
   entry: AppModule,
-  provides: { AppStore },
+  provides: [AppStore],
 };
 
 export { config };

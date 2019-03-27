@@ -9,9 +9,12 @@ import { LEAVE_BLOCKER_SERVICE } from './interface';
 
 const config = {
   entry: LeaveBlockerModule,
-  provides: {
-    [LEAVE_BLOCKER_SERVICE]: LeaveBlockerService,
-  },
+  provides: [
+    {
+      name: LEAVE_BLOCKER_SERVICE,
+      value: LeaveBlockerService,
+    },
+  ],
 };
 
 export { config };

@@ -12,7 +12,7 @@ import {
   injectable,
   interfaces,
 } from './ioc';
-import { ModuleConfig } from './types';
+import { ModuleConfig, Provide } from './types';
 
 /**
  * Jupiter Framework
@@ -53,18 +53,37 @@ class Jupiter {
     this._moduleEntries.push(m);
   }
 
-  bindProvides(provides: ModuleConfig['provides'] = {}) {
-    Object.keys(provides).forEach((key: string) => {
-      this.bindProvide(provides[key], key);
+  bindProvides(provides: ModuleConfig['provides'] = []) {
+    provides.forEach((provide: Provide<any>) => {
+      this.bindProvide(provide);
     });
   }
 
-  bindProvide<T>(provide: interfaces.Newable<T>, key?: string) {
-    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, provide)) {
-      decorate(injectable(), provide);
+  bindProvide<T>(provide: Provide<T>, key?: string) {
+    const hasNameValue = (
+      provide: any,
+    ): provide is {
+      name: string | interfaces.Newable<T>;
+      value: interfaces.Newable<T>;
+    } => {
+      return !!provide.value;
+    };
+
+    let identifier;
+    let constructor;
+
+    if (hasNameValue(provide)) {
+      identifier = provide.name;
+      constructor = provide.value;
+    } else {
+      identifier = provide;
+      constructor = provide;
     }
 
-    this._container.bind(key || provide).to(provide);
+    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, constructor)) {
+      decorate(injectable(), constructor);
+    }
+    this._container.bind(identifier).to(constructor);
   }
 
   get<T>(
