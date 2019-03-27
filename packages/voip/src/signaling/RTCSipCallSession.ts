@@ -7,15 +7,21 @@
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
-import { RTC_CALL_ACTION, RTCCallActionSuccessOptions } from '../api/types';
+import {
+  RTC_CALL_ACTION,
+  RTCCallActionSuccessOptions,
+  RTC_MEDIA_ACTION,
+} from '../api/types';
 import {
   WEBPHONE_SESSION_STATE,
   WEBPHONE_SESSION_EVENT,
   WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
 } from '../signaling/types';
-import { RTCMediaManager } from '../utils/RTCMediaManager';
+import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
+
 const {
   MediaStreams,
 } = require('ringcentral-web-phone/src/ringcentral-web-phone-media-engine');
@@ -26,12 +32,26 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   private _inviteResponse: any = null;
   private _uuid: string = '';
   private _mediaElement: RTCMediaElement | null;
+  private _mediaDeviceManager: RTCMediaDeviceManager;
 
   constructor(uuid: string) {
     super();
     this._uuid = uuid;
-    this._mediaElement = RTCMediaManager.instance().createMediaElement(
+    this._mediaElement = RTCMediaElementManager.instance().createMediaElement(
       this._uuid,
+    );
+    this._mediaDeviceManager = RTCMediaDeviceManager.instance();
+    this._mediaDeviceManager.on(
+      RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
+      (deviceID: string) => {
+        this._setDefaultAudioInputDevice(deviceID);
+      },
+    );
+    this._mediaDeviceManager.on(
+      RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
+      (deviceID: string) => {
+        this._setDefaultAudioOutputDevice(deviceID);
+      },
     );
   }
   destroy() {
@@ -49,7 +69,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (pc) {
       sdh.close();
     }
-    RTCMediaManager.instance().removeMediaElement(this._uuid);
+    RTCMediaElementManager.instance().removeMediaElement(this._uuid);
     this._session = null;
   }
 
@@ -388,6 +408,20 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   stopMediaStats() {
     if (this._session && this._session.mediaStreams) {
       this._session.mediaStreams.stopMediaStats();
+    }
+  }
+
+  private _setDefaultAudioInputDevice(deviceID: string) {}
+
+  private _setDefaultAudioOutputDevice(deviceID: string) {
+    if (this._mediaElement && this._mediaElement.local.setSinkId) {
+      rtcLogger.debug(
+        LOG_TAG,
+        `mediaElement: ${this._mediaElement} setSinkId: ${
+          this._mediaElement.local.setSinkId
+        }`,
+      );
+      this._mediaElement.local.setSinkId(deviceID);
     }
   }
 }
