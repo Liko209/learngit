@@ -33,7 +33,7 @@ describe('NetworkRequestConsumer', () => {
       expect(spy).toBeCalled();
     });
 
-    it.only('should consume the request if network is disconnected', () => {
+    it('should consume the request if network is disconnected', () => {
       handler.produceRequest.mockImplementationOnce(() => {
         return { id: 10, path: '/' };
       });
@@ -41,7 +41,8 @@ describe('NetworkRequestConsumer', () => {
         return false;
       });
       const executeSpy = jest.spyOn(consumer, '_addExecutor');
-      const responseSpy = (NetworkRequestExecutor.prototype['_callXApiResponse'] = jest.fn());
+      const responseSpy = (NetworkRequestExecutor.prototype[ '_callXApiResponse'
+] = jest.fn());
       consumer.onConsumeArrived();
       expect(executeSpy).toBeCalled();
       expect(responseSpy).toBeCalledWith(
