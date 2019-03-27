@@ -61,8 +61,8 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
 
     this._mediaDeviceManager.off(
-      RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      this._setDefaultAudioOutputDevice,
+      RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
+      this._setDefaultAudioInputDevice,
     );
 
     this._mediaDeviceManager.off(
