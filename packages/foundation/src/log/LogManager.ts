@@ -78,10 +78,6 @@ export class LogManager {
     this._logger.removeConsumer(consumer);
   }
 
-  addConsumer(consumer: ILogConsumer) {
-    this._logger.addConsumer(consumer);
-  }
-
   configAll(config: LogConfig) {
     configManager.setConfig(config);
   }
