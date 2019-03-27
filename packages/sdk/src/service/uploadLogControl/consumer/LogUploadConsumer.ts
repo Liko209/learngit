@@ -9,7 +9,7 @@ import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';
 import StateMachine from 'ts-javascript-state-machine';
 import { configManager } from './config';
-import { randomInt, sleep } from './utils';
+import { randomInt } from '../../../utils';
 import sumBy from 'lodash/sumBy';
 import cloneDeep from 'lodash/cloneDeep';
 import { IAccessor } from './types';
@@ -73,6 +73,12 @@ function retryDelay(retryCount: number) {
   return Math.min(5000 + retryCount * 20000, 60 * 1000);
 }
 
+function timeout(time: number) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, time);
+  });
+}
+
 export class LogUploadConsumer implements ILogConsumer {
   private _persistentFSM: StateMachine;
   private _memoryQueue: MemoryQueue<LogEntity>;
@@ -99,9 +105,10 @@ export class LogUploadConsumer implements ILogConsumer {
             break;
           case 'abortAll':
             await loopController.abortAll();
+            await timeout(5000);
             break;
           case 'retry':
-            await sleep(retryDelay(task.retryCount));
+            await timeout(retryDelay(task.retryCount));
             task.retryCount += 1;
             await loopController.retry();
             break;

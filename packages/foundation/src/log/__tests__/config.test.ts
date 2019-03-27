@@ -1,5 +1,5 @@
 import { ILogEntityDecorator, LogEntity } from '../types';
-import { logConfigFactory, consumerConfigFactory } from './factory';
+import { logConfigFactory } from './factory';
 import { configManager } from '../config';
 import { LOG_LEVEL } from '../constants';
 class DummyLoader implements ILogEntityDecorator {
@@ -8,12 +8,10 @@ class DummyLoader implements ILogEntityDecorator {
   decorate(data: LogEntity): LogEntity {
     return data;
   }
-
 }
 
 describe('config', () => {
   describe('mergeConfig()', () => {
-
     beforeEach(() => {
       configManager.setConfig(logConfigFactory.build());
     });
@@ -26,22 +24,17 @@ describe('config', () => {
     });
 
     it('should merge object type in config', async () => {
-
       const rawConfig = configManager.getConfig();
-      const consumerConfig = consumerConfigFactory.build({
-        enabled: false,
-      });
       const result = configManager.mergeConfig({
-        consumer: consumerConfig,
+        consumer: {
+          enabled: false,
+        },
       });
-      expect(result).toEqual({ ...rawConfig, consumer: consumerConfig });
+      expect(result).toEqual({ ...rawConfig, consumer: { enabled: false } });
     });
 
     it('should replace array value in config', async () => {
-      const expectDecorators = [
-        new DummyLoader(),
-        new DummyLoader(),
-      ];
+      const expectDecorators = [new DummyLoader(), new DummyLoader()];
       const rawConfig = configManager.getConfig();
       const result = configManager.mergeConfig({
         decorators: expectDecorators,

@@ -98,7 +98,10 @@ describe('LogConsumer', () => {
       [callback, observer] = createCallbackObserver();
     });
     it('should write into memory after log process done [JPT-537]', async () => {
-      const logConsumer = new LogUploadConsumer(mockUploader, mockLogPersistent);
+      const logConsumer = new LogUploadConsumer(
+        mockUploader,
+        mockLogPersistent,
+      );
       const mockLog = logEntityFactory.build();
       // todo logConsumer.setLogPersistent(mockLogPersistent);
       // memoryQueue is empty
@@ -331,6 +334,7 @@ describe('LogConsumer', () => {
         memoryCountThreshold: 0,
       });
       mockAccessor.isAccessible.mockReturnValue(true);
+      (mockLogPersistent.count as jest.Mock).mockResolvedValue(0);
       const logConsumer = new LogUploadConsumer(
         mockUploader,
         mockLogPersistent,
@@ -338,20 +342,21 @@ describe('LogConsumer', () => {
       );
       // mock network error
       mockUploader.upload.mockRejectedValue(new Error('abort error'));
-      mockUploader.errorHandler.mockReturnValue('abortAll');
-      logConsumer.setLogPersistent(mockLogPersistent);
+      mockUploader.errorHandler.mockReturnValue('abort');
+      // logConsumer.setLogPersistent(mockLogPersistent);
       logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
-      expect(mockLogPersistent.put).toHaveBeenCalledTimes(0);
+      // logConsumer.onLog(logEntityFactory.build());
+      // expect(mockLogPersistent.put).toHaveBeenCalledTimes(0);
       // waite init check
       await observer;
       [callback, observer] = createCallbackObserver();
 
-      logConsumer.onLog(logEntityFactory.build());
       logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
+      logConsumer.onLog(logEntityFactory.build());
       await observer;
       // have try to upload
       expect(mockUploader.upload).toHaveBeenCalledTimes(1);

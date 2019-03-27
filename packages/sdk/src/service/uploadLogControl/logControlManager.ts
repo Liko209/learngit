@@ -7,9 +7,9 @@ import { PermissionService, UserPermissionType } from '../../module/permission';
 import { ENTITY, SERVICE, WINDOW } from '../../service/eventKey';
 import notificationCenter from '../notificationCenter';
 import {
-  configManager as logUploadConsumerConfigManager,
+  LogMemoryPersistent,
   IAccessor,
-  LogPersistent,
+  configManager as logUploadConsumerConfigManager,
   LogUploadConsumer,
   MemoryLogConsumer,
 } from './consumer';
@@ -33,7 +33,7 @@ export class LogControlManager implements IAccessor {
     this._isOnline = window.navigator.onLine;
     this.uploadLogConsumer = new LogUploadConsumer(
       new LogUploader(),
-      new LogPersistent(),
+      new LogMemoryPersistent(10 * 1024 * 1024),
       this,
     );
     this.memoryLogConsumer = new MemoryLogConsumer();
@@ -41,9 +41,8 @@ export class LogControlManager implements IAccessor {
     this.memoryLogConsumer.setFilter((log: LogEntity) => {
       return !log.tags.includes('ImageDownloader');
     });
-    logManager.setConsumer(this.uploadLogConsumer);
-    logManager.setConsumer(this.memoryLogConsumer);
-
+    logManager.addConsumer(this.memoryLogConsumer);
+    logManager.addConsumer(this.uploadLogConsumer);
     this.subscribeNotifications();
   }
 

@@ -10,6 +10,7 @@ import {
   IDatabaseCollection,
   KVStorageManager,
 } from 'foundation';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../../utils';
 import { configManager } from '../config';
 import schema, { TABLE_LOG } from './schema';
 import { ILogPersistent, PersistentLogEntity } from './types';
@@ -99,7 +100,13 @@ export class LogPersistent implements ILogPersistent {
   }
 
   cleanPersistentWhenReachLimit = async (maxPersistentSize: number) => {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
+      logId,
+    );
     const logs = await this.getAll();
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     if (!logs) return;
     let size = 0;
     let halfMaxSizeIndex = -1;

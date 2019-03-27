@@ -1,11 +1,6 @@
 import { Logger } from '../Logger';
 import { LOG_LEVEL } from '../constants';
-import {
-  logConfigFactory,
-  logEntityFactory,
-  consumerConfigFactory,
-} from './factory';
-// import { LogConsumer } from '../consumer';
+import { logConfigFactory, logEntityFactory } from './factory';
 import { configManager } from '../config';
 import { ILogConsumer } from '../types';
 const mockConsumer: ILogConsumer = {
@@ -32,7 +27,6 @@ describe('Logger', () => {
       'should $methodName call doLog with correct param',
       ({ methodName, params, level, tags }) => {
         const logger = new Logger();
-        // logger.applyConfig(logConfigFactory.build({}));
         const mock = jest.spyOn(logger, 'doLog').mockReturnValueOnce(1);
         logger[methodName](...params);
         expect(mock).toBeCalledWith({
@@ -63,7 +57,6 @@ describe('Logger', () => {
             filter: mockFilter,
           }),
         );
-        // logger.applyConfig();
         logger['log']('hello');
         expect(mockFilter).toBeCalledTimes(log ? 1 : 0);
         mockFilter.mockClear();
@@ -106,8 +99,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      // const mockConsumer = new LogConsumer();
-      logger.setConsumer(mockConsumer);
+      logger.addConsumer(mockConsumer);
       const mockConfig = logConfigFactory.build({
         level: LOG_LEVEL.ALL,
         filter: jest.fn().mockReturnValue(true),
@@ -164,8 +156,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      // const mockConsumer = new LogConsumer();
-      logger.setConsumer(mockConsumer);
+      logger.addConsumer(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
@@ -185,8 +176,6 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      // const mockConsumer = new LogConsumer();
-      // logger.setConsumer(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
@@ -208,8 +197,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      // const mockConsumer = new LogConsumer();
-      logger.setConsumer(mockConsumer);
+      logger.addConsumer(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
       const mockLog = logEntityFactory.build({
@@ -234,8 +222,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      // const mockConsumer = new LogConsumer();
-      logger.setConsumer(mockConsumer);
+      logger.addConsumer(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
@@ -255,8 +242,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      // const mockConsumer = new LogConsumer();
-      logger.setConsumer(mockConsumer);
+      logger.addConsumer(mockConsumer);
       const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.WARN,
@@ -280,8 +266,6 @@ describe('Logger', () => {
       const mockPrettier = jest
         .spyOn(logger['_consoleLoggerCore']['_consoleLogPrettier'], 'prettier')
         .mockImplementation(item => item.params);
-      // const mockConsumer = new LogConsumer();
-      // logger.setConsumer(mockConsumer);
       configManager.setConfig(
         logConfigFactory.build({
           level: LOG_LEVEL.ALL,
@@ -320,10 +304,10 @@ describe('Logger', () => {
       });
     });
   });
-  describe('setConsumer()', () => {
+  describe('addConsumer()', () => {
     it('should set consumer.', () => {
       const logger = new Logger();
-      logger.setConsumer(mockConsumer);
+      logger.addConsumer(mockConsumer);
       expect(logger['_logConsumers']).toEqual([mockConsumer]);
     });
   });
