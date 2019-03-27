@@ -7,7 +7,7 @@ import _ from 'lodash';
 import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction, reaction, action } from 'mobx';
-import { observer, Observer } from 'mobx-react';
+import { observer, Observer, Disposer } from 'mobx-react';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -52,6 +52,7 @@ class StreamViewComponent extends Component<Props> {
   private _historyViewed = false;
   private _timeout: NodeJS.Timeout | null;
   private _jumpToPostRef: RefObject<JuiConversationCard> = createRef();
+  private _disposers: Disposer[] = [];
 
   @observable private _jumpToFirstUnreadLoading = false;
 
@@ -61,6 +62,7 @@ class StreamViewComponent extends Component<Props> {
   }
 
   componentWillUnmount() {
+    this._disposers.forEach((disposer: Disposer) => disposer());
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
   }
@@ -317,22 +319,23 @@ class StreamViewComponent extends Component<Props> {
       } as React.CSSProperties),
   );
 
+  private _onInitialDataFailed = (
+    <JuiStreamLoading
+      showTip={true}
+      tip={this.props.t('translations:message.prompt.MessageLoadingErrorTip')}
+      linkText={this.props.t('translations:common.prompt.tryAgain')}
+      onClick={this._loadInitialPosts}
+    />
+  );
+
   render() {
-    const { t, loadMore, hasMore, items } = this.props;
+    const { loadMore, hasMore, items } = this.props;
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
 
     const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
-    const onInitialDataFailed = (
-      <JuiStreamLoading
-        showTip={true}
-        tip={t('translations:message.prompt.MessageLoadingErrorTip')}
-        linkText={t('translations:common.prompt.tryAgain')}
-        onClick={this._loadInitialPosts}
-      />
-    );
 
     return (
       <JuiSizeMeasurer>
@@ -357,7 +360,7 @@ class StreamViewComponent extends Component<Props> {
                   loadingRenderer={defaultLoading}
                   hasMore={hasMore}
                   loadingMoreRenderer={defaultLoadingMore}
-                  fallBackRenderer={onInitialDataFailed}
+                  fallBackRenderer={this._onInitialDataFailed}
                   onVisibleRangeChange={this._handleVisibilityChanged}
                 >
                   {this._renderStreamItems()}
@@ -387,12 +390,12 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _watchUnreadCount() {
-    reaction(
+    const disposer = reaction(
       () => {
         return this.props.unreadCount > 0;
       },
       (hasUnread) => {
-        if (this._listRef.current && !this.props.hasMore('down')) {
+        if (hasUnread && this._listRef.current && !this.props.hasMore('down')) {
           const isLastPostVisible =
             this._listRef.current.getVisibleRange().stopIndex >=
             this.props.items.length - 1;
@@ -402,6 +405,7 @@ class StreamViewComponent extends Component<Props> {
         }
       },
     );
+    this._disposers.push(disposer);
   }
 
   private _focusHandler = () => {

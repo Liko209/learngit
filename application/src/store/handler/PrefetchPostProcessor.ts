@@ -2,6 +2,7 @@ import { IProcessor } from 'sdk/src/framework/processor/IProcessor';
 import { ICacheController } from '@/containers/ConversationPage/Stream/cache/ICacheController';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Post } from 'sdk/module/post/entity';
+import { mainLogger } from 'sdk';
 
 export default class PrefetchPostProcessor implements IProcessor {
   constructor(
@@ -11,9 +12,16 @@ export default class PrefetchPostProcessor implements IProcessor {
 
   async process(): Promise<boolean> {
     if (this._shouldDoPreload(QUERY_DIRECTION.OLDER)) {
-      await this._cacheController
-        .get(this._groupId)
-        .fetchData(QUERY_DIRECTION.OLDER);
+      try {
+        await this._cacheController
+          .get(this._groupId)
+          .fetchData(QUERY_DIRECTION.OLDER);
+      } catch (e) {
+        mainLogger.error(
+          `failed to prefetch post of group ${this._groupId}`,
+          e,
+        );
+      }
     }
     return Promise.resolve(true);
   }
