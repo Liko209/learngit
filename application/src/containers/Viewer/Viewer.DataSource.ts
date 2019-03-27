@@ -21,7 +21,6 @@ import {
 } from 'sdk/module/item';
 import { Item } from 'sdk/module/item/entity';
 import { GlipTypeUtil } from 'sdk/utils';
-
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
@@ -76,6 +75,13 @@ class ItemListDataSource {
     );
   }
 
+  private _transformFunc = (model: Item) => {
+    return {
+      id: model.id,
+      sortValue: FileItemUtils.getVersionDate(model) || model.created_at,
+    } as ISortableModel<Item>;
+  }
+
   @action
   private _buildSortableMemberListHandler(
     groupId: number,
@@ -91,24 +97,11 @@ class ItemListDataSource {
         : false;
     };
 
-    const transformFunc = (model: Item) => {
-      return {
-        id: model.id,
-        sortValue: model.id,
-        data: { id: model.id, [sortKey]: model[sortKey] },
-      } as ISortableModel<Item>;
-    };
-
     const sortFunc = (
       lhs: ISortableModel<Item>,
       rhs: ISortableModel<Item>,
     ): number => {
-      return SortUtils.sortModelByKey(
-        lhs.data as Item,
-        rhs.data as Item,
-        sortKey,
-        desc,
-      );
+      return SortUtils.sortModelByKey(lhs, rhs, 'sortValue', desc);
     };
 
     const dataProvider = new GroupItemDataProvider(
@@ -125,9 +118,9 @@ class ItemListDataSource {
 
     this._sortableDataHandler = new FetchSortableDataListHandler(dataProvider, {
       isMatchFunc,
-      transformFunc,
       sortFunc,
       entityName: ENTITY_NAME.ITEM,
+      transformFunc: this._transformFunc,
       eventName: ItemNotification.getItemNotificationKey(typeId, groupId),
       hasMoreDown: true,
       hasMoreUp: true,
@@ -204,17 +197,10 @@ class ItemListDataSource {
 
   @action
   async loadInitialData(itemId: number, pageSize: number) {
-    const transformFunc = (model: Item) => {
-      return {
-        id: model.id,
-        sortValue: model.id,
-        data: { id: model.id },
-      } as ISortableModel<Item>;
-    };
     return await this._sortableDataHandler.fetchDataByAnchor(
       QUERY_DIRECTION.BOTH,
       pageSize,
-      transformFunc({
+      this._transformFunc({
         id: itemId,
       } as Item),
     );
