@@ -10,11 +10,19 @@ class SortUtils {
   static sortModelByKey<T extends IdModel>(
     lhs: T,
     rhs: T,
-    sortKey: string,
+    sortKeys: string[],
     desc: boolean,
   ) {
-    const lhsValue = lhs[sortKey];
-    const rhsValue = rhs[sortKey];
+    let lhsValue: any;
+    let rhsValue: any;
+    for (const key of sortKeys) {
+      lhsValue = lhs[key];
+      rhsValue = rhs[key];
+      if (lhsValue !== rhsValue) {
+        break;
+      }
+    }
+
     const lhsType = typeof lhsValue;
     const rhsType = typeof rhsValue;
     if (lhsType === rhsType) {

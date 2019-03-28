@@ -150,7 +150,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
       return SortUtils.sortModelByKey(
         lhs.data as Item,
         rhs.data as Item,
-        sortKey,
+        [sortKey],
         desc,
       );
     };
