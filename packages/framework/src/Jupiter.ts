@@ -59,7 +59,7 @@ class Jupiter {
     });
   }
 
-  bindProvide<T>(provide: Provide<T>, key?: string) {
+  bindProvide<T>(provide: Provide<T>) {
     const hasNameValue = (
       provide: any,
     ): provide is {

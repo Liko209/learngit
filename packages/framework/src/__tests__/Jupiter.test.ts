@@ -15,7 +15,10 @@ describe('Jupiter', () => {
     it('should be able to use string as key', () => {
       const MY_SERVICE = 'MySrv';
       const jupiter = new Jupiter();
-      jupiter.bindProvide(MyService, MY_SERVICE);
+      jupiter.bindProvide({
+        name: MY_SERVICE,
+        value: MyService,
+      });
       expect(container.get<MyService>(MY_SERVICE)).toBeInstanceOf(MyService);
     });
 
