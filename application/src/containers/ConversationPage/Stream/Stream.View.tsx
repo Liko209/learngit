@@ -259,13 +259,11 @@ class StreamViewComponent extends Component<Props> {
     const visibleItems = items.slice(startIndex, stopIndex + 1);
     const visiblePosts = _(visibleItems)
       .flatMap('value')
-      .concat()
-      .value();
-
-    if (visiblePosts.includes(mostRecentPostId)) {
-      this.handleMostRecentViewed();
-    } else {
+      .concat();
+    if (this.props.hasMore('down') || !visiblePosts.includes(mostRecentPostId)) {
       this.handleMostRecentHidden();
+    } else {
+      this.handleMostRecentViewed();
     }
     if (this._historyViewed) {
       return;
