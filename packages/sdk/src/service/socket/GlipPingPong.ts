@@ -24,7 +24,7 @@ type GlipPingCallback = (success: boolean) => void;
 
 class GlipPingPong {
   private _pingTimeOutTime: number = PING_TIMEOUT;
-  private _socket: SocketIOClient.Socket;
+  private _socket?: SocketIOClient.Socket;
   private _pingCallbacks: GlipPingCallback[] = [];
   private _pingPongStatusCallback?: GlipPingCallback;
   private _pingTimeOutId?: NodeJS.Timeout;
@@ -58,6 +58,7 @@ class GlipPingPong {
     this._heartBeatCheck && this._heartBeatCheck.cleanUp();
     this._heartBeatCheck = undefined;
     this._socket && this._socket.removeEventListener(GLIP_PONG);
+    this._socket = undefined;
     this._pingPongStatusCallback = undefined;
     this._pingCallbacks = [];
     this._clearPingTimeOutId();

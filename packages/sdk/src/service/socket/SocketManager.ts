@@ -347,7 +347,7 @@ export class SocketManager {
   private _stopActiveFSM() {
     notificationCenter.emitKVChange(SERVICE.STOPPING_SOCKET);
     if (this.activeFSM) {
-      this.activeFSM.stop();
+      this.activeFSM.stopFSM();
       this.activeFSM = null;
     }
     if (this._canReconnectController) {
@@ -388,7 +388,7 @@ export class SocketManager {
   }
 
   private _restartFSM() {
-    this.info('restartFSM ', this._isScreenLocked);
+    this.info('restartFSM _isScreenLocked:', this._isScreenLocked);
     if (!this._isScreenLocked) {
       this._stopActiveFSM();
       this._startFSM();
