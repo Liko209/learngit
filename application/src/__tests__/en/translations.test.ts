@@ -368,7 +368,7 @@ describe.skip('i18next-en', () => {
   expect(i18next.t('Members')).toEqual('Members');
 
   expect(i18next.t('alreadyTaken')).toEqual(
-    'The name is already taken, choose another one.',
+    'This name is already taken, try choosing another one.',
   );
 
   expect(i18next.t('Invalid Email')).toEqual('Invalid Email');

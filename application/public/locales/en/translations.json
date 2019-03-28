@@ -400,7 +400,7 @@
       "SorryWeWereNotAbleToCloseTheConversation": "Sorry, we weren't able to close the conversation. Try again.",
       "SorryWeWereNotAbleToOpenThisProfile": "Sorry, we weren't able to open this profile. Try again.",
       "JoinTeamNotAuthorizedError": "Sorry, we weren't able to let you join the team. This team is changed to a private team, please contact the team administrator.",
-      "alreadyTaken": "The name is already taken, choose another one.",
+      "alreadyTaken": "This name is already taken, try choosing another one.",
       "CreateTeamError": "We are having trouble creating this team. Please try again later.",
       "SorryWeWereNotAbleToSaveTheUpdate": "Sorry, we weren't able to save the update.",
       "SorryWeWereNotAbleToSaveTheUpdateTryAgain": "Sorry, we weren't able to save the update. Try again.",
