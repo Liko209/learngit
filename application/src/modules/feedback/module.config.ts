@@ -4,6 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const config = {};
+import { FeedbackModule } from './FeedbackModule';
+import { FeedbackService } from './service';
+
+const config = {
+  entry: FeedbackModule,
+  provides: { FeedbackService },
+};
 
 export { config };

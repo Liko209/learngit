@@ -36,11 +36,11 @@ class UploadRecentLogsView extends React.Component<
     const result = await this.props.uploadRecentLogs();
     if (result) {
       this.props.openEmail(
-        'jupiter feedback',
+        'Jupiter Feedback',
         escape(
           `File stack url: ${result.url}\n${i18next.t(
-            'feedback.describeYourProblemHere:\n',
-          )}`,
+            'feedback.describeYourProblemHere',
+          )}:\n`,
         ),
       );
     }

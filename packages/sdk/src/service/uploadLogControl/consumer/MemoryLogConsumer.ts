@@ -30,7 +30,9 @@ export class MemoryLogConsumer implements ILogConsumer {
   }
 
   onLog(logEntity: LogEntity) {
-    if (this._filter && !this._filter(logEntity)) return;
+    if (this._filter && !this._filter(logEntity)) {
+      return;
+    }
     const sizeSpace = this._sizeThreshold - this._totalSize;
     const releaseSize = logEntity.size - sizeSpace;
     if (releaseSize > 0) {

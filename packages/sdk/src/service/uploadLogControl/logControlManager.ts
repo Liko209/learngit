@@ -14,10 +14,6 @@ import {
   MemoryLogConsumer,
 } from './consumer';
 import { LogUploader } from './LogUploader';
-import JSZip from 'jszip';
-import * as filestack from 'filestack-js';
-import { progressBar } from '../../utils/progress';
-const FILE_STACK_API_KEY = 'AMQqm7fiSTkC6TGrB15Yhz';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -125,59 +121,8 @@ export class LogControlManager implements IAccessor {
     }
   }
 
-  getMemoryLogs(): LogEntity[] {
+  getRecentLogs(): LogEntity[] {
     return this.memoryLogConsumer.getRecentLogs();
-  }
-
-  async uploadMemoryLogs(): Promise<{
-    filename: string;
-    handle: string;
-    size: number;
-    url: string;
-  } | null> {
-    const recentLogs = this.memoryLogConsumer.getRecentLogs();
-    if (recentLogs.length < 1) {
-      console.debug('Recent logs is empty');
-      return null;
-    }
-    const client = filestack.init(FILE_STACK_API_KEY);
-    const zip = new JSZip();
-    zip.file(
-      'recentLogs.txt',
-      this.memoryLogConsumer
-        .getRecentLogs()
-        .map((log: LogEntity, index: number) => {
-          return `${index}: ${log.message}`;
-        })
-        .join('\n'),
-    );
-    const zipBlob = await zip.generateAsync({
-      type: 'blob',
-      compression: 'DEFLATE',
-      compressionOptions: {
-        level: 9,
-      },
-    });
-    progressBar.start();
-    const uploadResult = await client.upload(
-      zipBlob,
-      {
-        onProgress: (evt: { totalPercent: number; totalBytes: number }) => {
-          progressBar.update({
-            loaded: evt.totalPercent,
-            total: 100,
-            lengthComputable: true,
-          });
-        },
-        timeout: 60 * 1000,
-        retry: 1,
-      },
-      {
-        filename: `LOG_${recentLogs[0].sessionId}.zip`,
-      },
-    );
-    progressBar.stop();
-    return uploadResult;
   }
 
   private _updateLogSystemLevel() {
