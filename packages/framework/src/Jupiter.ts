@@ -70,20 +70,20 @@ class Jupiter {
     };
 
     let identifier;
-    let constructor;
+    let creator;
 
     if (hasNameValue(provide)) {
       identifier = provide.name;
-      constructor = provide.value;
+      creator = provide.value;
     } else {
       identifier = provide;
-      constructor = provide;
+      creator = provide;
     }
 
-    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, constructor)) {
-      decorate(injectable(), constructor);
+    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, creator)) {
+      decorate(injectable(), creator);
     }
-    this._container.bind(identifier).to(constructor);
+    this._container.bind(identifier).to(creator);
   }
 
   get<T>(
