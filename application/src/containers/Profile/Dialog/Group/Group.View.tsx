@@ -7,9 +7,10 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import {
-  JuiDialogTitleWithAction,
   JuiDialogContentWithFill,
+  JuiDialogHeader,
 } from 'jui/components/Dialog';
+import { JuiDivider } from 'jui/components/Divider';
 import { ProfileDialogGroupTitle } from './Title';
 import { ProfileDialogGroupContent } from './Content';
 import { JuiProfileDialogContentMemberShadow } from 'jui/pattern/Profile/Dialog';
@@ -21,9 +22,10 @@ class ProfileDialogGroupView extends Component<ProfileDialogGroupViewProps> {
     const { id } = this.props;
     return (
       <>
-        <JuiDialogTitleWithAction data-test-automation-id="profileDialogTitle">
+        <JuiDialogHeader data-test-automation-id="profileDialogTitle">
           <ProfileDialogGroupTitle id={id} />
-        </JuiDialogTitleWithAction>
+        </JuiDialogHeader>
+        <JuiDivider />
         <JuiDialogContentWithFill data-test-automation-id="profileDialogContent">
           <ProfileDialogGroupContent id={id} />
         </JuiDialogContentWithFill>

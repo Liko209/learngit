@@ -4,50 +4,50 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { observer } from 'mobx-react';
-import React, { CSSProperties } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import React from 'react';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import ReactResizeDetector from 'react-resize-detector';
 import { JuiProfileDialogContentMemberList } from 'jui/pattern/Profile/Dialog';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellWrapper,
+  JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
-import { MemberListViewProps } from './types';
+import { MemberListProps, MemberListViewProps } from './types';
 import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 const ITEM_HEIGHT = 48;
-const MAX_ITEM_NUMBER = 8;
+const MAX_ITEM_NUMBER = 5.5;
+
 @observer
-class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
-  implements IVirtualListDataSource {
+class MemberList
+  extends React.Component<
+    WithTranslation & MemberListProps & MemberListViewProps
+  >
+  implements IVirtualListDataSource<number, number> {
   componentWillUnmount() {
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
   }
 
-  countOfCell() {
-    const { memberIds } = this.props;
-    return memberIds.length;
+  get(index: number) {
+    return this.props.filteredMemberIds[index];
   }
 
-  cellAtIndex = (index: number, style: CSSProperties) => {
-    const { memberIds, id } = this.props;
-    const memberId = memberIds[index];
-    return memberId ? (
-      <JuiVirtualCellWrapper key={index} style={style}>
+  size() {
+    const { filteredMemberIds } = this.props;
+    return filteredMemberIds.length;
+  }
+
+  rowRenderer = ({ style, item: memberId }: JuiVirtualCellProps<number>) => {
+    const { id } = this.props;
+    return (
+      <JuiVirtualCellWrapper key={memberId} style={style}>
         <MemberListItem key={memberId} cid={id} pid={memberId} />
       </JuiVirtualCellWrapper>
-    ) : null;
-  }
-
-  loadMore = async (startIndex: number, stopIndex: number) => {
-    await this.props.loadMore();
-  }
-
-  fixedCellHeight() {
-    return ITEM_HEIGHT;
+    );
   }
 
   onScroll = (event: { scrollTop: number }) => {
@@ -55,23 +55,32 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
   }
 
   render() {
-    const { memberIds } = this.props;
-    const memberIdsLength = memberIds.length;
+    const { sortedAllMemberIds } = this.props;
+    const memberIdsLength = sortedAllMemberIds.length;
     const dialogHeight =
       memberIdsLength >= MAX_ITEM_NUMBER
         ? MAX_ITEM_NUMBER * ITEM_HEIGHT
         : ITEM_HEIGHT * memberIdsLength;
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {(width: number = 0, height: number = dialogHeight) => {
-          const virtualListHeight =
+        {({ width = 0, height = dialogHeight }) => {
+          let virtualListHeight =
             memberIdsLength >= MAX_ITEM_NUMBER ? height : dialogHeight;
+          if (virtualListHeight === 0) {
+            virtualListHeight = dialogHeight;
+          }
           return (
-            <JuiProfileDialogContentMemberList>
+            <JuiProfileDialogContentMemberList
+              style={{ height: dialogHeight, minHeight: dialogHeight }}
+            >
               <JuiVirtualList
                 dataSource={this}
+                overscan={5}
+                rowRenderer={this.rowRenderer}
                 width={width}
-                height={virtualListHeight}
+                height={dialogHeight}
+                fixedCellHeight={ITEM_HEIGHT}
+                onScroll={this.onScroll}
                 data-test-automation-id="profileDialogMemberList"
               />
             </JuiProfileDialogContentMemberList>
@@ -81,6 +90,6 @@ class MemberList extends React.Component<WithNamespaces & MemberListViewProps>
     );
   }
 }
-const MemberListView = translate('translations')(MemberList);
+const MemberListView = withTranslation('translations')(MemberList);
 
 export { MemberListView };

@@ -12,7 +12,8 @@ import { SendPostType, PostItemsReadyCallbackType } from '../../types';
 import SendPostControllerHelper from './SendPostControllerHelper';
 import { ItemService } from '../../../item/service';
 
-import { notificationCenter, GroupConfigService } from '../../../../service';
+import notificationCenter from '../../../../service/notificationCenter';
+import { GroupConfigService } from '../../../groupConfig';
 import { ENTITY } from '../../../../service/eventKey';
 import { ErrorParserHolder } from '../../../../error';
 import { PostActionController } from './PostActionController';
@@ -21,7 +22,7 @@ import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { Raw } from '../../../../framework/model';
-import { UserConfig } from '../../../../service/account';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 
@@ -44,8 +45,9 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPost(params: SendPostType) {
-    const userId: number = UserConfig.getCurrentUserId();
-    const companyId: number = UserConfig.getCurrentCompanyId();
+    const userConfig = new AccountUserConfig();
+    const userId: number = userConfig.getGlipUserId();
+    const companyId: number = userConfig.getCurrentCompanyId();
     const paramsInfo = {
       userId,
       companyId,

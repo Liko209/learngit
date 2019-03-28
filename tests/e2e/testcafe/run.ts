@@ -29,13 +29,13 @@ async function runTests(runnerOpts) {
     .concurrency(runnerOpts.CONCURRENCY);
 
   try {
-    failed = await runner.run({ 
-      quarantineMode: runnerOpts.QUARANTINE_MODE, 
-      skipUncaughtErrors: true, 
-      skipJsErrors: true,
-      stopOnFirstFail: runnerOpts.STOP_ON_FIRST_FAIL, 
+    failed = await runner.run({
+      quarantineMode: runnerOpts.QUARANTINE_MODE,
+      skipUncaughtErrors: true,
+      skipJsErrors: runnerOpts.SKIP_JS_ERROR,
+      stopOnFirstFail: runnerOpts.STOP_ON_FIRST_FAIL,
       assertionTimeout: runnerOpts.ASSERTION_TIMEOUT,
-     });
+    });
   } finally {
     await testCafe.close();
   }

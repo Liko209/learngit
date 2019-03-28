@@ -18,7 +18,7 @@ import { versionHash } from '../../../../../utils/mathUtils';
 import { FILE_FORM_DATA_KEYS } from '../constants';
 import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
-import { UserConfig } from '../../../../../service/account/UserConfig';
+import {  AccountUserConfig } from '../../../../../service/account/config';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 
@@ -27,7 +27,8 @@ import {
   isInBeta,
   EBETA_FLAG,
 } from '../../../../../service/account/clientConfig';
-import { GroupConfigService } from '../../../../../service/groupConfig';
+import { GroupConfigService } from '../../../../groupConfig';
+import { ItemNotification } from '../../../utils/ItemNotification';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -281,10 +282,25 @@ class FileUploadController {
       }
     });
 
-    this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
+    await this._emitItemFileStatus(PROGRESS_STATUS.CANCELED, itemId, itemId);
 
-    this._entitySourceController.delete(itemId);
-    notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
+    const item = await this._entitySourceController.get(itemId);
+
+    if (item) {
+      this._entitySourceController.delete(itemId);
+
+      const notifications = ItemNotification.getItemsNotifications([item]);
+      notifications.forEach(
+        (notification: { eventKey: string; entities: Item[] }) => {
+          notificationCenter.emitEntityDelete(
+            notification.eventKey,
+            notification.entities.map((item: Item) => {
+              return item.id;
+            }),
+          );
+        },
+      );
+    }
   }
 
   getUploadItems(groupId: number): ItemFile[] {
@@ -337,7 +353,9 @@ class FileUploadController {
               loaded: hasUploaded ? 1 : -1,
               total: 1,
             },
-            status: hasUploaded ? PROGRESS_STATUS.SUCCESS : PROGRESS_STATUS.FAIL,
+            status: hasUploaded
+              ? PROGRESS_STATUS.SUCCESS
+              : PROGRESS_STATUS.FAIL,
           },
           itemFile: item,
         });
@@ -564,6 +582,8 @@ class FileUploadController {
     }
 
     try {
+      // in order to keep file time close to item time to keep item order same as file order
+      preInsertItem.versions[0].date = Date.now();
       let result: ItemFile | undefined = undefined;
       if (existItemFile) {
         result = (await this._updateItem(
@@ -641,9 +661,18 @@ class FileUploadController {
     await this._entitySourceController.delete(preInsertId);
     await this._entitySourceController.update(itemFile);
 
-    const replaceItemFiles = new Map<number, ItemFile>();
-    replaceItemFiles.set(preInsertId, itemFile);
-    notificationCenter.emitEntityReplace(ENTITY.ITEM, replaceItemFiles);
+    const notifications = ItemNotification.getItemsNotifications([itemFile]);
+    notifications.forEach(
+      (notification: { eventKey: string; entities: Item[] }) => {
+        const replaceItemFiles = new Map<number, ItemFile>();
+        replaceItemFiles.set(preInsertId, notification.entities[0]);
+        notificationCenter.emitEntityReplace(
+          notification.eventKey,
+          replaceItemFiles,
+        );
+      },
+    );
+
     this._emitItemFileStatus(PROGRESS_STATUS.SUCCESS, preInsertId, itemFile.id);
   }
 
@@ -732,8 +761,9 @@ class FileUploadController {
     file: File,
     isUpdate: boolean,
   ): ItemFile {
-    const companyId: number = UserConfig.getCurrentCompanyId();
-    const userId: number = UserConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const companyId: number = userConfig.getCurrentCompanyId();
+    const userId: number = userConfig.getGlipUserId();
     const now = Date.now();
     const id = GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE);
     return {
@@ -751,7 +781,13 @@ class FileUploadController {
       type_id: 10,
       type: this._getFileType(file),
       versions: [
-        { download_url: '', size: file.size, url: '', stored_file_id: 0 },
+        {
+          download_url: '',
+          size: file.size,
+          url: '',
+          stored_file_id: 0,
+          date: now,
+        },
       ],
       url: '',
     };
@@ -770,28 +806,34 @@ class FileUploadController {
       group_ids: [Number(groupId)],
       post_ids: [],
       versions: preInsertItem.versions,
-      created_at: Date.now(),
       is_new: true,
     };
     return await this._fileRequestController.post(fileItemOptions);
   }
 
-  private _emitItemFileStatus(
+  private async _emitItemFileStatus(
     status: PROGRESS_STATUS,
     preInsertId: number,
     updatedId: number,
   ) {
-    notificationCenter.emit(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, {
-      status,
-      preInsertId,
-      updatedId,
-    });
+    await notificationCenter.emitAsync(
+      SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+      {
+        status,
+        preInsertId,
+        updatedId,
+      },
+    );
   }
 
-  private async _updateItem(existItem: ItemFile, preInsertItem: ItemFile) {
+  private async _updateItem(
+    existItem: ItemFile,
+    preInsertItem: ItemFile,
+    updateModifiedAt?: boolean,
+  ) {
     existItem.is_new = false;
     existItem.versions = preInsertItem.versions.concat(existItem.versions);
-    existItem.modified_at = Date.now();
+    updateModifiedAt && (existItem.modified_at = Date.now());
     existItem._id = existItem.id;
     delete existItem.id;
     return await this._fileRequestController.put(existItem);
@@ -844,7 +886,12 @@ class FileUploadController {
     const uploadingFiles = Array.from(this._progressCaches.values());
     for (let i = 0; i < uploadingFiles.length; i++) {
       const fileStatus = uploadingFiles[i];
-      if (fileStatus && this._isFileInUploading(fileStatus)) {
+      if (
+        fileStatus &&
+        this._isFileInUploading(fileStatus) &&
+        fileStatus.itemFile &&
+        !this._hasValidStoredFile(fileStatus.itemFile)
+      ) {
         hasUploading = true;
         break;
       }

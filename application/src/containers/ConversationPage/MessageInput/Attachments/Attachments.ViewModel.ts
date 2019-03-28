@@ -12,14 +12,10 @@ import {
   SelectFile,
   DidUploadFileCallback,
 } from './types';
-import {
-  notificationCenter,
-  ENTITY,
-  EVENT_TYPES,
-  GroupConfigService,
-} from 'sdk/service';
+import { notificationCenter, EVENT_TYPES } from 'sdk/service';
 
-import { ItemService } from 'sdk/module/item';
+import { GroupConfigService } from 'sdk/module/groupConfig';
+import { ItemService, ItemNotification } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import StoreViewModel from '@/store/ViewModel';
@@ -43,7 +39,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   constructor(props: AttachmentsProps) {
     super(props);
     this.reaction(
-      () => this.id,
+      () => this.props.id,
       () => {
         this.reloadFiles();
       },
@@ -60,7 +56,10 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       },
     );
 
-    notificationCenter.on(ENTITY.ITEM, this._handleItemChanged);
+    notificationCenter.on(
+      ItemNotification.getItemNotificationKey(),
+      this._handleItemChanged,
+    );
   }
 
   private _handleItemChanged = (
@@ -72,7 +71,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       const { ids, entities } = data.body;
       ids.forEach((looper: number) => {
         const record = this.items.get(looper);
-        if (record && record.item.group_ids.includes(this.id)) {
+        if (record && record.item.group_ids.includes(this.props.id)) {
           this.items.delete(looper);
           const newItem: ItemFile = entities.get(looper);
           this.items.set(newItem.id, {
@@ -82,11 +81,6 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         }
       });
     }
-  }
-
-  @computed
-  get id() {
-    return this.props.id;
   }
 
   @computed
@@ -112,7 +106,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   reloadFiles = async () => {
     this.cleanFiles();
     const itemService = ItemService.getInstance() as ItemService;
-    const uploadItems = await itemService.initialUploadItemsFromDraft(this.id);
+    const uploadItems = await itemService.initialUploadItemsFromDraft(
+      this.props.id,
+    );
     if (uploadItems && uploadItems.length > 0) {
       uploadItems.forEach((element: ItemFile) => {
         this.items.set(element.id, {
@@ -122,7 +118,11 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     }
   }
 
-  autoUploadFiles = async (files: File[], callback?: DidUploadFileCallback) => {
+  autoUploadFiles = async (
+    files: File[],
+    checkDuplicate: boolean = true,
+    callback?: DidUploadFileCallback,
+  ) => {
     const canUpload = await this.canUploadFiles(files);
     if (!canUpload) {
       Notification.flashToast({
@@ -137,10 +137,12 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       return;
     }
     if (files.length > 0) {
-      const exists = await Promise.all(
-        files.map(file => this.isFileExists(file)),
-      );
-      const hasDuplicate = exists.some(value => value);
+      let hasDuplicate = false;
+      let exists: boolean[] = [];
+      if (checkDuplicate) {
+        exists = await Promise.all(files.map(file => this.isFileExists(file)));
+        hasDuplicate = exists.some(value => value);
+      }
       const result = files.map(
         (file, i: number) =>
           ({ data: file, duplicate: exists[i] } as SelectFile),
@@ -163,7 +165,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     if (files.length === 0) {
       return true;
     }
-    return itemService.canUploadFiles(this.id, files, true); // TODO: The third parameter should be false for drag and drop files.
+    return itemService.canUploadFiles(this.props.id, files, true); // TODO: The third parameter should be false for drag and drop files.
   }
 
   private _uploadFiles = async (files: SelectFile[], isUpdate: boolean) => {
@@ -262,7 +264,7 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
       });
       await postService.sendPost({
         text: '',
-        groupId: this.id,
+        groupId: this.props.id,
         itemIds: ids,
       });
       this.items.clear();
@@ -277,12 +279,15 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
     });
     groupConfigService.updateDraft({
       attachment_item_ids: draftItemsIds,
-      id: this.id,
+      id: this.props.id,
     });
   }
 
   dispose = () => {
-    notificationCenter.off(ENTITY.ITEM, this._handleItemChanged);
+    notificationCenter.off(
+      ItemNotification.getItemNotificationKey(),
+      this._handleItemChanged,
+    );
   }
 }
 

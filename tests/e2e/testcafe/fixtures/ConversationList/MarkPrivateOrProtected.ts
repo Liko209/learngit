@@ -52,35 +52,32 @@ test(formalName('Team admin can change team from public to private.', ['JPT-517'
     await profileDialog.shouldBePopUp();
   });
 
-  await h(t).withLog(`When I click a team conversation profile dialog private icon`, async () => {
-    await t.wait(2e3);
-    await profileDialog.clickPrivate();
-    await t.wait(2e3);
-    await profileDialog.close();
-    await t.wait(2e3);
+  await h(t).withLog(`And I should find public icon on profile dialog header`, async () => {
+    await profileDialog.shouldShowPublicIcon();
   });
 
-  await h(t).withLog('Then I can open setting menu in home page', async () => {
-    await app.homePage.openSettingMenu();
-    await app.homePage.settingMenu.ensureLoaded();
-  });
-  await h(t).withLog('When I click logout button in setting menu', async () => {
-    await app.homePage.settingMenu.clickLogout();
+  await h(t).withLog(`When I click the public icon`, async () => {
+    await profileDialog.clickPrivacyToggle();
   });
 
-  await h(t).withLog(`Given I login Jupiter with nonMember: ${nonMember.company.number}#${nonMember.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, nonMember);
-    await app.homePage.ensureLoaded();
+  await h(t).withLog(`Then the icon change to private icon`, async () => {
+    await profileDialog.shouldShowPrivateIcon();
+  });
+
+  await h(t).withLog(`Given I logout and then login Jupiter with ${nonMember.company.number}#${nonMember.extension}`, async () => {
+    await profileDialog.clickCloseButton();
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, nonMember);
   });
 
   const search = app.homePage.header.search;
   await h(t).withLog(`When I type people keyword ${team.name} in search input area`, async () => {
     await search.typeSearchKeyword(team.name);
-  });
+  }, true);
 
   await h(t).withLog(`Then I should not find ${team.name} team.`, async () => {
+    await t.wait(3e3); // wait back-end response
     await t.expect(search.teams.withText(team.name).exists).notOk({ timeout: 10e3 });
-  }, true);
+  });
 
 });
 
@@ -121,25 +118,21 @@ test(formalName('Team admin can change team from private to public.', ['JPT-518'
     await profileDialog.shouldBePopUp();
   });
 
-  await h(t).withLog(`When I click a team conversation profile dialog private icon`, async () => {
-    await t.wait(2e3);
-    await profileDialog.clickPrivate();
-    await t.wait(2e3);
-    await profileDialog.close();
-    await t.wait(2e3);
+  await h(t).withLog(`And I should find private icon on profile dialog header`, async () => {
+    await profileDialog.shouldShowPrivateIcon();
   });
 
-  await h(t).withLog('Then I can open setting menu in home page', async () => {
-    await app.homePage.openSettingMenu();
-    await app.homePage.settingMenu.ensureLoaded();
-  });
-  await h(t).withLog('When I click logout button in setting menu', async () => {
-    await app.homePage.settingMenu.clickLogout();
+  await h(t).withLog(`When I click the private icon`, async () => {
+    await profileDialog.clickPrivacyToggle();
   });
 
-  await h(t).withLog(`Given I login Jupiter with ${nonMember.company.number}#${nonMember.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, nonMember);
-    await app.homePage.ensureLoaded();
+  await h(t).withLog(`Then the icon change to private icon`, async () => {
+    await profileDialog.shouldShowPublicIcon();
+  });
+
+  await h(t).withLog(`Given I logout and then login Jupiter with ${nonMember.company.number}#${nonMember.extension}`, async () => {
+    await profileDialog.clickCloseButton();
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, nonMember);
   });
 
   const search = app.homePage.header.search;
@@ -197,7 +190,7 @@ test(formalName('Public/Private team icon is disabled for team member.', ['JPT-5
     await t.expect(conversationPage.privateTeamIcon.exists).notOk();
   }, true);
 
-   await h(t).withLog(`When I open a private team "${privateTeam.name}" conversation and click private button icon in conversation header`, async () => {
+  await h(t).withLog(`When I open a private team "${privateTeam.name}" conversation and click private button icon in conversation header`, async () => {
     await teamsSection.conversationEntryById(privateTeam.glipId).enter();
     await conversationPage.clickPrivate();
   }, true);

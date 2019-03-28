@@ -15,10 +15,10 @@ import { daoManager } from '../../../../../dao';
 import { ItemDao } from '../../../dao';
 import { Item, ItemFile } from '../../../entity';
 import { FileActionController } from './FileActionController';
-
 class FileItemController {
   private _fileActionController: FileActionController;
   private _fileUploadController: FileUploadController;
+
   constructor() {}
 
   get fileActionController() {

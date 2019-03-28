@@ -8,6 +8,7 @@ import { PersonService } from '../PersonService';
 import { PersonController } from '../../controller/PersonController';
 import { Raw } from '../../../../framework/model';
 import { Person } from '../../entity';
+import { SYNC_SOURCE } from '../../../../module/sync';
 
 jest.mock('../../controller/PersonController');
 jest.mock('../../../../api');
@@ -42,8 +43,11 @@ describe('PersonService', () => {
   describe('handleIncomingData', () => {
     it('should call controller with correct parameter', async () => {
       const persons: Raw<Person>[] = [];
-      await personService.handleIncomingData(persons);
-      expect(personController.handleIncomingData).toBeCalledWith(persons);
+      await personService.handleIncomingData(persons, SYNC_SOURCE.INDEX);
+      expect(personController.handleIncomingData).toBeCalledWith(
+        persons,
+        SYNC_SOURCE.INDEX,
+      );
     });
   });
 
@@ -87,18 +91,6 @@ describe('PersonService', () => {
     });
   });
 
-  describe('doFuzzySearchPersons', () => {
-    it('should call controller with correct parameter', async () => {
-      await personService.doFuzzySearchPersons('a', true, [1], true);
-      expect(personController.doFuzzySearchPersons).toBeCalledWith(
-        'a',
-        true,
-        [1],
-        true,
-      );
-    });
-  });
-
   describe('getName', () => {
     const person: Person = {
       id: 1,
@@ -136,6 +128,13 @@ describe('PersonService', () => {
         undefined,
         undefined,
       );
+    });
+  });
+
+  describe('refreshPersonData', () => {
+    it('should call controller with correct parameter', async () => {
+      personService.refreshPersonData(111);
+      expect(personController.refreshPersonData).toBeCalledWith(111);
     });
   });
 });

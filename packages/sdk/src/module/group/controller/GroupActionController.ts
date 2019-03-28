@@ -8,7 +8,8 @@ import { mainLogger } from 'foundation';
 
 import { Api } from '../../../api';
 import GroupAPI from '../../../api/glip/group';
-import { daoManager, GroupConfigDao, QUERY_DIRECTION } from '../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
+import { GroupConfigDao } from '../../groupConfig/dao';
 import { ErrorParserHolder } from '../../../error';
 import { buildRequestController } from '../../../framework/controller';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
@@ -16,7 +17,6 @@ import { IPartialModifyController } from '../../../framework/controller/interfac
 import { IRequestController } from '../../../framework/controller/interface/IRequestController';
 import { Raw } from '../../../framework/model';
 import { GroupApiType } from '../../../models';
-import { UserConfig } from '../../../service/account/UserConfig';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { ProfileService } from '../../profile';
@@ -27,10 +27,12 @@ import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { PermissionFlags, TeamSetting } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
+import { AccountUserConfig } from '../../../service/account/config';
 
 export class GroupActionController {
   teamRequestController: IRequestController<Group>;
   groupRequestController: IRequestController<Group>;
+
   constructor(
     public groupService: IGroupService,
     public entitySourceController: IEntitySourceController<Group>,
@@ -180,6 +182,21 @@ export class GroupActionController {
     );
   }
 
+  async deleteGroup(groupId: number): Promise<void> {
+    await this.partialModifyController.updatePartially(
+      groupId,
+      (partialEntity, originalEntity) => {
+        return {
+          ...partialEntity,
+          deactivated: true,
+        };
+      },
+      async (updateEntity: Group) => {
+        return await this._getGroupRequestController().put(updateEntity);
+      },
+    );
+  }
+
   async makeOrRevokeAdmin(teamId: number, member: number, isMake: boolean) {
     await this.partialModifyController.updatePartially(
       teamId,
@@ -217,23 +234,31 @@ export class GroupActionController {
     await this.partialModifyController.updatePartially(
       groupId,
       (partialEntity, originalEntity) => {
+        const modifiedAt = Date.now();
         const { pinned_post_ids = [] } = originalEntity;
         if (toPin) {
           return {
             ...partialEntity,
-            pinned_post_ids: _.union(pinned_post_ids, [postId]),
+            pinned_post_ids: _.union([postId], pinned_post_ids),
+            modified_at: modifiedAt,
           };
         }
         return {
           ...partialEntity,
           pinned_post_ids: _.difference(pinned_post_ids, [postId]),
+          modified_at: modifiedAt,
         };
       },
       async (updateEntity: Group) => {
+        const partialModel = {
+          _id: updateEntity.id || updateEntity._id,
+          pinned_post_ids: updateEntity.pinned_post_ids,
+          modified_at: updateEntity.modified_at,
+        };
         if (updateEntity.is_team) {
-          return await this._getTeamRequestController().put(updateEntity);
+          return await this._getTeamRequestController().put(partialModel);
         }
-        return await this._getGroupRequestController().put(updateEntity);
+        return await this._getGroupRequestController().put(partialModel);
       },
     );
   }
@@ -243,34 +268,38 @@ export class GroupActionController {
     memberIds: (number | string)[],
     teamSetting: TeamSetting = {},
   ): Promise<Group> {
-    const {
-      isPublic = false,
-      name,
-      description,
-      permissionFlags = {},
-    } = teamSetting;
-    const privacy = isPublic ? 'protected' : 'private';
-    const permissionLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
-      permissionFlags,
-      0,
-    );
-    const team: Partial<GroupApiType> = {
-      privacy,
-      description,
-      set_abbreviation: name,
-      members: memberIds.concat(creator),
-      permissions: {
-        admin: {
-          uids: [creator],
-        },
-        user: {
-          uids: [],
-          level: permissionLevel,
-        },
-      },
-    };
+    const team = this._generateTeamParameters(creator, memberIds, teamSetting);
     const result = await GroupAPI.createTeam(team);
     return await this.handleRawGroup(result);
+  }
+
+  async convertToTeam(
+    groupId: number,
+    memberIds: number[],
+    teamSetting: TeamSetting = {},
+  ): Promise<Group> {
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
+    const team: Partial<GroupApiType> = this._generateTeamParameters(
+      currentUserId,
+      memberIds,
+      teamSetting,
+    );
+    team['group_id'] = groupId;
+    const result = await GroupAPI.convertToTeam(team);
+    const group = await this.handleRawGroup(result);
+
+    try {
+      // delete group;
+      // if delete group failed, convert to team should still be success
+      await this.deleteGroup(groupId);
+    } catch (err) {
+      mainLogger
+        .tags('GroupActionController')
+        .info(`convert to team, delete group ${groupId} fail`, err);
+    }
+
+    return group;
   }
 
   async handleRawGroup(rawGroup: Raw<Group>): Promise<Group> {
@@ -392,10 +421,48 @@ export class GroupActionController {
     }
     if (group) {
       isValid = this.groupService.isValid(group);
-      const currentUserId = UserConfig.getCurrentUserId();
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
       isIncludeSelf = group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;
+  }
+
+  private _generateTeamParameters(
+    creatorId: number,
+    memberIds: (number | string)[],
+    teamSetting: TeamSetting = {},
+  ) {
+    const {
+      isPublic = false,
+      name,
+      description,
+      permissionFlags = {},
+    } = teamSetting;
+    const privacy = isPublic ? 'protected' : 'private';
+    const permissionLevel = this.teamPermissionController.mergePermissionFlagsWithLevel(
+      permissionFlags,
+      0,
+    );
+    const members = memberIds.includes(creatorId)
+      ? memberIds
+      : memberIds.concat(creatorId);
+    const team: Partial<GroupApiType> = {
+      privacy,
+      description,
+      members,
+      set_abbreviation: name,
+      permissions: {
+        admin: {
+          uids: [creatorId],
+        },
+        user: {
+          uids: [],
+          level: permissionLevel,
+        },
+      },
+    };
+    return team;
   }
 
   private _getGroupRequestController() {
@@ -469,5 +536,11 @@ export class GroupActionController {
     });
 
     return partialEntity;
+  }
+
+  isIndividualGroup(group: Group) {
+    return (
+      group && !group.is_team && group.members && group.members.length === 2
+    );
   }
 }

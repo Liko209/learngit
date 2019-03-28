@@ -27,7 +27,6 @@ storiesOf('HoC/withScroller', module)
     return (
       <DemoWrapper>
         <DemoWithScroller
-          initialScrollTop={999999}
           onScrollToTop={action('onScrollToTop')}
           onScrollToBottom={action('onScrollToBottom')}
         >
@@ -59,7 +58,7 @@ storiesOf('HoC/withScroller', module)
         const { items } = this.state;
         return (
           <DemoWrapper>
-            <DemoContentWithScroller initialScrollTop={99999} stickTo="bottom">
+            <DemoContentWithScroller stickTo="bottom">
               {items.map((n: any) => (
                 <li key={n}>{n}</li>
               ))}

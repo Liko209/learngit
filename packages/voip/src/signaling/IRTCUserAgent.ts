@@ -5,10 +5,14 @@
  */
 import { EventEmitter2 } from 'eventemitter2';
 import { RTCCallOptions } from '../api/types';
+import { RTCSipProvisionInfo } from '../account/types';
 import { ProvisionDataOptions } from './types';
 interface IRTCUserAgent extends EventEmitter2 {
+  restartUA(
+    provisionData: RTCSipProvisionInfo,
+    options: ProvisionDataOptions,
+  ): void;
   reRegister(): void;
-  register(options?: ProvisionDataOptions): void;
   unregister(): void;
   makeCall(phoneNumber: string, options: RTCCallOptions): any;
 }

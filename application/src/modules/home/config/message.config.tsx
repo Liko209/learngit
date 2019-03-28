@@ -4,12 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { container } from 'framework';
 import { MessageService } from '@/modules/message/service/MessageService';
+import { Call } from '@/modules/telephony/container';
 import { MessageUmi } from '../container/MessageUmi';
 import Message from './lazy/Message';
 import { SubModuleConfig } from '../types';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 const config: SubModuleConfig = {
   route: {
@@ -21,11 +23,16 @@ const config: SubModuleConfig = {
     //     webpackChunkName: "c.message" */ './lazy/Message'),
     // }),
   },
-  nav: () => {
+  nav: async () => {
     return {
       url: '/messages',
-      icon: 'messages',
-      title: i18next.t('message.Messages'),
+      Icon: (
+        <JuiIconography iconColor={['grey', '900']}>
+          messages_border
+        </JuiIconography>
+      ),
+      IconSelected: <JuiIconography>messages</JuiIconography>,
+      title: await i18nT('message.Messages'),
       umi: <MessageUmi />,
       placement: 'top',
     };
@@ -36,9 +43,7 @@ const config: SubModuleConfig = {
   afterBootstrap: () => {
     const messageService = container.get(MessageService);
     // Check user permission and register extensions
-    messageService.registerExtension({
-      'CONVERSATION_PAGE.HEADER.BUTTONS': [], // [TelephonyButton, MeetingButton]
-    });
+    messageService.registerConversationHeaderExtension(Call); // [TelephonyButton, MeetingButton]
   },
 };
 

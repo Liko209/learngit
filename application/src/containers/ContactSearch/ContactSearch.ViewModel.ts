@@ -6,7 +6,7 @@
 import { observable, action, computed } from 'mobx';
 import { debounce } from 'lodash';
 
-import { PersonService } from 'sdk/module/person';
+import { SearchService } from 'sdk/module/search';
 import { Person } from 'sdk/module/person/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
@@ -33,11 +33,12 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   @action
   fetchSearch = async (query: string) => {
-    const personService = PersonService.getInstance<PersonService>();
-    const result = await personService.doFuzzySearchPersons(
-      query,
-      this._isExcludeMe ? true : false,
-    );
+    const searchService = SearchService.getInstance();
+    const result = await searchService.doFuzzySearchPersons({
+      searchKey: query,
+      excludeSelf: this._isExcludeMe,
+      recentFirst: true,
+    });
     const { hasMembers } = this.props;
     const existMembers = hasMembers
       ? [...this.existMembers, ...hasMembers]

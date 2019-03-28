@@ -4,13 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../../framework/model';
+import { IdModel, SortableModel } from '../../../framework/model';
 import {
   IEntityCacheSearchController,
-  SortableModel,
+  Terms,
 } from '../interface/IEntityCacheSearchController';
 
 import { IEntityCacheController } from '../interface/IEntityCacheController';
+import { SearchUtils } from '../../utils/SearchUtils';
+const soundex = require('soundex-code');
 
 class EntityCacheSearchController<T extends IdModel = IdModel>
   implements IEntityCacheSearchController<T> {
@@ -43,10 +45,7 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
   }
 
   async searchEntities(
-    genSortableModelFunc: (
-      entity: T,
-      terms: string[],
-    ) => SortableModel<T> | null,
+    genSortableModelFunc: (entity: T, terms: Terms) => SortableModel<T> | null,
     searchKey?: string,
     arrangeIds?: number[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
@@ -54,22 +53,32 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
     terms: string[];
     sortableModels: SortableModel<T>[];
   } | null> {
-    let terms: string[] = [];
+    const searchTerms: Terms = {
+      searchKeyTerms: [],
+      searchKeyTermsToSoundex: [],
+    };
     let entities: T[];
     const sortableEntities: SortableModel<T>[] = [];
-
+    const isUseSoundex = await SearchUtils.isUseSoundex();
     if (searchKey) {
-      terms = this.getTermsFromSearchKey(searchKey.trim());
+      searchTerms.searchKeyTerms = this.getTermsFromSearchKey(
+        searchKey.toLowerCase().trim(),
+      );
+      if (isUseSoundex) {
+        searchTerms.searchKeyTermsToSoundex = searchTerms.searchKeyTerms.map(
+          item => soundex(item),
+        );
+      }
     }
 
     if (arrangeIds) {
-      entities = await this.entityCacheController.batchGet(arrangeIds);
+      entities = await this.entityCacheController.batchGet(arrangeIds, true);
     } else {
       entities = await this.getEntities();
     }
 
     entities.forEach((entity: T) => {
-      const result = genSortableModelFunc(entity, terms);
+      const result = genSortableModelFunc(entity, searchTerms);
       if (result) {
         sortableEntities.push(result);
       }
@@ -79,28 +88,20 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
       sortableEntities.sort(sortFunc);
     }
 
-    return { terms, sortableModels: sortableEntities };
+    return {
+      terms: searchTerms.searchKeyTerms,
+      sortableModels: sortableEntities,
+    };
   }
 
   isFuzzyMatched(srcText: string, terms: string[]): boolean {
-    return srcText.length > 0
-      ? terms.reduce(
-          (prev: boolean, key: string) =>
-            prev && new RegExp(`${key}`, 'i').test(srcText),
-          true,
-        )
-      : false;
+    return SearchUtils.isFuzzyMatched(srcText, terms);
   }
-
+  isSoundexMatched(srcText: string, terms: string[]): boolean {
+    return SearchUtils.isSoundexMatched(srcText, terms);
+  }
   isStartWithMatched(srcText: string, terms: string[]): boolean {
-    if (srcText.length > 0) {
-      for (let i = 0; i < terms.length; ++i) {
-        if (new RegExp(`^${terms[i]}`, 'i').test(srcText)) {
-          return true;
-        }
-      }
-    }
-    return false;
+    return SearchUtils.isStartWithMatched(srcText, terms);
   }
 
   getTermsFromSearchKey(searchKey: string) {

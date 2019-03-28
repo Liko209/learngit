@@ -18,9 +18,11 @@ import {
   HttpResponseBuilder,
   HttpResponse,
 } from 'foundation';
+import { GlobalConfigService } from '../../module/config';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
+jest.mock('../../module/config');
 jest.mock('../../api/glip/user', () => ({
   loginGlip: jest.fn(),
 }));
@@ -29,6 +31,7 @@ jest.mock('../../api/ringcentral/auth', () => ({
   oauthTokenViaAuthCode: jest.fn(),
   generateCode: jest.fn(),
 }));
+GlobalConfigService.getInstance = jest.fn();
 
 function createResponse(obj: any) {
   const builder = new HttpResponseBuilder();
@@ -60,6 +63,9 @@ describe('UnifiedLoginAuthenticator', () => {
     generateCode.mockResolvedValueOnce(generateCodeResult);
     loginGlip.mockResolvedValueOnce(loginGlipResult);
     Api.init({}, networkManager);
+    jest
+      .spyOn(unified, '_requestRcAccountRelativeInfo')
+      .mockImplementationOnce(() => {});
 
     const resp = await unified.authenticate({ code: '123' });
     expect(resp.success).toBe(true);

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
-import { TabConfig } from './config';
+import { IVirtualListDataSource } from 'jui/pattern/VirtualList';
 
 type LoadStatus = {
   firstLoaded: boolean;
@@ -25,14 +25,7 @@ type Props = {
 };
 
 type ViewProps = {
-  ids: number[];
-  totalCount: number;
-  loadStatus: LoadStatus;
-  tabConfig: TabConfig;
-  forceReload: () => void;
-  fetchNextPageItems: () => Promise<any>;
-  width: number;
-  height: number;
+  dataSource: IVirtualListDataSource<any, number>;
 };
 
 export { Props, ViewProps, LoadStatus, InitLoadStatus };

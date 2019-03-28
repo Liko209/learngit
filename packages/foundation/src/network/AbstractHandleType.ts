@@ -9,17 +9,27 @@ import {
   IRequest,
   IHandleType,
   NETWORK_VIA,
+  NETWORK_HANDLE_TYPE,
 } from './network';
 import { Base64 } from 'js-base64';
 
 abstract class AbstractHandleType implements IHandleType {
+  name: NETWORK_HANDLE_TYPE = NETWORK_HANDLE_TYPE.DEFAULT;
   defaultVia: NETWORK_VIA = NETWORK_VIA.HTTP;
   survivalModeSupportable: boolean = false;
   tokenExpirable: boolean = false;
   tokenRefreshable: boolean = false;
   doRefreshToken(token: IToken) {
-    return new Promise<IToken>(token => token);
+    return new Promise<IToken>((resolve, reject) => {
+      reject();
+    });
   }
+  checkServerStatus = (
+    callback: (success: boolean, interval: number) => void,
+  ) => {
+    callback(true, 0);
+  }
+  onRefreshTokenFailure = () => {};
   basic() {
     return '';
   }

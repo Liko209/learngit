@@ -1,5 +1,4 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { ClientFunction } from "testcafe";
 import { IGroup } from '../../../models';
 
 export class Header extends BaseWebComponent {
@@ -52,7 +51,15 @@ class Search extends BaseWebComponent {
   }
 
   get inputArea() {
-    return this.getSelectorByAutomationId('search-input');
+    return this.getSelectorByAutomationId('search-input').find('input');
+  }
+
+  async clickInputArea() {
+    await this.t.click(this.inputArea);
+  }
+
+  async clearInputAreaText() {
+    await this.t.click(this.inputArea).selectText(this.inputArea).pressKey('delete');
   }
 
   async typeSearchKeyword(text: string, options?: TypeActionOptions) {
@@ -63,12 +70,16 @@ class Search extends BaseWebComponent {
     return this.getSelectorByIcon('close');
   }
 
-  async close() {
+  async clickCloseButton() {
     await this.t.click(this.closeButton);
   }
 
   get allResultItems() {
     return this.getSelector('.search-items');
+  }
+
+  get itemsNames() {
+    return this.getSelectorByAutomationId('search-item-text')
   }
 
   get peoples() {
@@ -95,14 +106,91 @@ class Search extends BaseWebComponent {
     return this.getComponent(SearchItem, this.teams.nth(n));
   }
 
+  nthAllResults(n: number) {
+    return this.getComponent(SearchItem, this.allResultItems.nth(n));
+  }
+
   getSearchItemByCid(cid: string) {
     this.warnFlakySelector();
     const root = this.allResultItems.child().find(`[cid="${cid}"]`).parent('.search-items');
     return this.getComponent(SearchItem, root);
   }
 
+  getSearchItemByName(name: string) {
+    return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items'));
+  }
+
   async dropDownListShouldContainTeam(team: IGroup, timeout: number = 20e3) {
     await this.t.expect(this.teams.withText(team.name).exists).ok({ timeout });
+  }
+
+  get peopleHeader() {
+    return this.getSelectorByAutomationId('search-People');
+  }
+
+  get groupsHeader() {
+    return this.getSelectorByAutomationId('search-Groups');
+  }
+
+  get teamsHeader() {
+    return this.getSelectorByAutomationId('search-Teams');
+  }
+
+  get historyContainer() {
+    return this.getSelectorByAutomationId('search-records');
+  };
+
+  get searchResultsContainer() {
+    return this.getSelectorByAutomationId('search-results');
+  }
+
+  async shouldShowRecentlyHistory() {
+    await this.t.expect(this.historyContainer.exists).ok();
+  }
+
+  async shouldShowSearchResults() {
+    await this.t.expect(this.searchResultsContainer.exists).ok();
+  }
+
+  get historyHeader() {
+    return this.getSelectorByAutomationId('search-clear');
+  }
+
+  get showMorePeopleButton() {
+    return this.peopleHeader.find('span');
+  }
+
+  get showMoreGroupsButton() {
+    return this.groupsHeader.find('span');
+  }
+
+  get showMoreTeamsButton() {
+    return this.teamsHeader.find('span');
+  }
+
+  get clearHistoryButton() {
+    return this.historyHeader.find('span');
+  }
+
+  async clickShowMorePeople() {
+    await this.t.click(this.showMorePeopleButton);
+  }
+
+  async clickShowMoreGroups() {
+    await this.t.click(this.showMoreGroupsButton);
+  }
+
+  async clickShowMoreTeams() {
+    await this.t.click(this.showMoreTeamsButton);
+  }
+
+  async clickClearHistory() {
+    await this.t.click(this.clearHistoryButton)
+  }
+
+
+  async quit() {
+    await this.t.pressKey('esc');
   }
 
 }
@@ -121,9 +209,29 @@ class SearchItem extends BaseWebComponent {
     return this.avatar.find("div").withAttribute('uid').getAttribute('uid');
   }
 
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button');
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
+
+  async makeCall() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
+
   // group or team
   get cid() {
     return this.avatar.find("div").withAttribute('cid').getAttribute('cid');
+  }
+
+  async getName() {
+    return await this.name.textContent;
   }
 
   async getId() {
@@ -183,6 +291,18 @@ class SearchItem extends BaseWebComponent {
 
   async clickName() {
     await this.t.click(this.name);
+  }
+
+  get messageButton() {
+    return this.getSelectorByAutomationId('goToConversationIcon', this.self);
+  }
+
+  get messageIcon() {
+    return this.getSelectorByIcon('messages', this.messageButton);
+  }
+
+  async clickMessageButton() {
+    await this.t.hover(this.self).click(this.messageButton);
   }
 }
 

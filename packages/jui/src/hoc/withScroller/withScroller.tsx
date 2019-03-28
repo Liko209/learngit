@@ -7,7 +7,6 @@ import throttle from 'lodash/throttle';
 import React, { ComponentType, PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
-import _ from 'lodash';
 
 type StickType = 'top' | 'bottom';
 
@@ -19,7 +18,6 @@ type ScrollerProps = {
   thresholdUp: number;
   thresholdDown: number;
   throttle: number;
-  initialScrollTop: number;
   stickTo: StickType;
   onScroll: (event: Event) => void;
   onScrollToTop: () => void;
@@ -48,7 +46,6 @@ function withScroller(Comp: ComponentType<any>) {
       thresholdUp: 100,
       thresholdDown: 0,
       throttle: 100,
-      initialScrollTop: 0,
       stickTo: 'top',
       onScroll: noop,
       onScrollToTop: noop,
@@ -71,7 +68,6 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     componentDidMount() {
-      this._scrollEl.scrollTop = this.props.initialScrollTop;
       this.attachScrollListener();
     }
 
@@ -128,7 +124,6 @@ function withScroller(Comp: ComponentType<any>) {
         thresholdUp,
         thresholdDown,
         throttle,
-        initialScrollTop,
         onScroll,
         onScrollToTop,
         onScrollToBottom,

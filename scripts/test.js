@@ -35,14 +35,14 @@ if (
 const packages = getPackages();
 
 if (argv.length) {
-  packages.filter(p =>
-    argv.includes(path.basename(p))
-  ).forEach((p) => {
-    argv.push(p);
-  });
+  packages
+    .filter(p => argv.includes(path.basename(p)))
+    .forEach(p => {
+      argv.push(p);
+    });
 }
 
-switch(true) {
+switch (true) {
   case argv.includes('application'):
     process.env.APP = '<rootDir>/application';
     break;
@@ -52,11 +52,15 @@ switch(true) {
   case argv.includes('foundation'):
     process.env.APP = '<rootDir>/packages/foundation';
     break;
+  case argv.includes('jui'):
+    process.env.APP = '<rootDir>/packages/jui';
+    break;
   case argv.includes('voip'):
     process.env.APP = '<rootDir>/packages/voip';
     break;
   default:
-    process.env.APP = '<rootDir>/{application|packages/sdk|packages/foundation|packages/voip}';
+    process.env.APP =
+      '<rootDir>/(application|packages/sdk|packages/foundation|packages/voip|packages/jui)';
     break;
 }
 

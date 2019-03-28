@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { PureComponent, ComponentType } from 'react';
+import React, { PureComponent, ComponentType, ReactNode } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import Resizable, { ResizableProps } from 're-resizable';
 import styled from '../../styled-components';
@@ -36,11 +36,13 @@ type ResponsiveProps = ResponsiveInfo & {
   visual?: boolean;
   TriggerButton?: React.ComponentType<any>;
   addResponsiveInfo?: (info: ResponsiveInfo) => {};
+  children: (width: number, height: number) => ReactNode | ReactNode;
 };
 
 type ResponsiveState = {
   isShow: boolean;
   width: number;
+  height: number;
   prevVisual?: boolean;
 };
 
@@ -81,6 +83,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   state = {
     isShow: false,
     width: this.localWidth,
+    height: 0,
     prevVisual: this.props.visual,
   };
 
@@ -156,11 +159,12 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     localStorage.setItem(`${tag}-show-state`, `${value}`);
   }
 
-  onResize = (width: number) => {
+  onResize = (width: number, height: number) => {
     if (width) {
       this.localWidth = width;
       this.setState({
         width,
+        height,
       });
     }
   }
@@ -208,16 +212,15 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     return visualMode === VISUAL_MODE.MANUAL || visualMode === VISUAL_MODE.BOTH;
   }
 
+  private _renderChildren = () => {
+    const { children } = this.props;
+    const { width, height } = this.state;
+    return typeof children === 'function' ? children(width, height) : children;
+  }
+
   renderMode = () => {
     const { isShow, width } = this.state;
-    const {
-      enable = {},
-      children,
-      minWidth,
-      maxWidth,
-      visual,
-      priority,
-    } = this.props;
+    const { enable = {}, minWidth, maxWidth, visual, priority } = this.props;
     if (visual === undefined) {
       return null;
     }
@@ -244,9 +247,13 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
             position: enable.right ? 'left' : 'right',
           }}
         >
-          {children}
+          {this._renderChildren()}
           {visual && (
-            <ReactResizeDetector handleWidth={true} onResize={this.onResize} />
+            <ReactResizeDetector
+              handleWidth={true}
+              handleHeight={true}
+              onResize={this.onResize}
+            />
           )}
         </StyledResizable>
       </>
@@ -254,8 +261,12 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   }
 
   renderMain = () => {
-    const { children, minWidth } = this.props;
-    return <StyledMain minWidth={Number(minWidth)}>{children}</StyledMain>;
+    const { minWidth } = this.props;
+    return (
+      <StyledMain minWidth={Number(minWidth)}>
+        {this._renderChildren()}
+      </StyledMain>
+    );
   }
 
   render() {
@@ -279,7 +290,9 @@ const withResponsive = (
     render() {
       return (
         <Responsive {...props} {...this.props} tag={ResponsiveHOC.tag}>
-          <WrappedComponent {...this.props} />
+          {(width: number, height: number) => (
+            <WrappedComponent {...this.props} width={width} height={height} />
+          )}
         </Responsive>
       );
     }

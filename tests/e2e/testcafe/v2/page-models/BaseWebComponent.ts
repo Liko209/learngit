@@ -14,8 +14,12 @@ export abstract class BaseWebComponent {
   public self: Selector;
   constructor(protected t: TestController) { }
 
-  async ensureLoaded(timeout: number = 5e3) {
+  async ensureLoaded(timeout: number = 10e3) {
     await this.t.expect(this.exists).ok({ timeout });
+  }
+
+  async ensureDismiss(timeout: number = 10e3) {
+    await this.t.expect(this.exists).notOk({ timeout });
   }
 
   async waitUntilExist(selector: Selector | BaseWebComponent, timeout: number = 5e3) {
@@ -112,6 +116,10 @@ export abstract class BaseWebComponent {
     return sel.find('input[type="checkbox"]');
   }
 
+  async quitByPressEsc() {
+    await this.t.pressKey('esc');
+  }
+
   // misc
   warnFlakySelector() {
     const stack = (new Error()).stack;
@@ -130,7 +138,7 @@ export abstract class BaseWebComponent {
     if (text == '99+') {
       return 100;
     }
-    return Number(text);
+    return +text;
   }
 
   // hover some selector will show

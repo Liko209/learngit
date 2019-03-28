@@ -33,6 +33,7 @@ type JuiPreviewImageProps = {
   squareSize?: number;
   url: string;
   placeholder?: JSX.Element;
+  handleImageClick?: (ev: React.MouseEvent, loaded: boolean) => void;
   didLoad?: Function;
 } & SizeType;
 
@@ -48,11 +49,11 @@ const Wrapper = styled.div`
 `;
 
 const Icon = withDelay(() => (
-  <JuiIconography fontSize="large">image_preview</JuiIconography>
+  <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>
 ));
 
 const JuiDelayPlaceholder = (props: SizeType) => (
-  <Jui.ImageCard width={props.width} height={props.height}>
+  <Jui.ImageCard {...props}>
     <Wrapper>
       <Icon delay={400} />
     </Wrapper>
@@ -64,6 +65,8 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   private _imageInfo: ThumbnailInfo = {
     width: 0,
     height: 0,
+    imageWidth: 0,
+    imageHeight: 0,
     left: 0,
     top: 0,
     justifyHeight: false,
@@ -72,6 +75,14 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   private _imageRef: RefObject<HTMLImageElement> = createRef();
   private _mounted: boolean = false;
   private _loaded: boolean = false;
+  private _updating: boolean = false;
+
+  componentDidUpdate(prevProps: JuiPreviewImageProps) {
+    if (prevProps.url !== this.props.url) {
+      this._updating = true;
+      this.forceUpdate();
+    }
+  }
 
   private _handleImageLoad = () => {
     const { forceSize, squareSize, didLoad } = this.props;
@@ -86,11 +97,18 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
       this._imageInfo = getThumbnailSize(width, height);
     }
     this._loaded = true;
+    this._updating = false;
     didLoad && didLoad();
     if (this._mounted) {
       this.forceUpdate();
     }
   }
+
+  private _handleImageClick = (ev: React.MouseEvent) => {
+    this.props.handleImageClick &&
+      this.props.handleImageClick(ev, this._loaded);
+  }
+
   componentDidMount() {
     this._mounted = true;
   }
@@ -120,17 +138,23 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     return (
       <>
         {!this._loaded && placeholder}
-        {!this._loaded && url && (
+        {(!this._loaded || this._updating) && url && (
           <img
             style={{ display: 'none' }}
             ref={this._imageRef}
             src={url}
             onLoad={this._handleImageLoad}
+            onClick={this._handleImageClick}
           />
         )}
         {this._loaded && (
           <Jui.ImageCard width={width} height={height}>
-            <img style={imageStyle} src={url} {...imageProps} />
+            <img
+              style={imageStyle}
+              src={url}
+              onClick={this._handleImageClick}
+              {...imageProps}
+            />
             <Jui.ImageFileInfo width={width} height={height} component="div">
               <FileName filename={fileName} />
               <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>

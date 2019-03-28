@@ -3,7 +3,7 @@
  * @Date: 2019-01-09 10:01:24
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import i18next from 'i18next';
 import { ViewProps, Props } from './types';
@@ -11,118 +11,79 @@ import { JuiListSubheader } from 'jui/components/Lists';
 import { ITEM_HEIGHT } from './config';
 import {
   JuiVirtualList,
-  IVirtualListDataSource,
   JuiVirtualCellWrapper,
+  JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
 import { emptyView } from './Empty';
-
 import {
   JuiRightShelfContent,
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
-import { debounce } from 'lodash';
-// according to most debounce config
-const LOAD_DEBOUNCE = 300;
-const LOADING_MORE_HEIGHT = 96;
+import { getTabConfig } from './utils';
+
 const HEADER_HEIGHT = 36;
+
 @observer
-class ItemListView extends React.Component<ViewProps & Props>
-  implements IVirtualListDataSource {
-  private _loadData: Function;
-  private _scrollTimer: NodeJS.Timeout;
-  private _scrolling: boolean = false;
-  constructor(props: ViewProps & Props) {
-    super(props);
-    this._loadData = debounce(async () => {
-      const { loadStatus, ids, totalCount } = this.props;
-      const { firstLoaded, loading } = loadStatus;
-      if ((firstLoaded && ids.length === totalCount) || loading) {
-        return;
-      }
-      await this.props.fetchNextPageItems();
-    },                        LOAD_DEBOUNCE);
-  }
-
-  componentWillUnmount() {
-    clearTimeout(this._scrollTimer);
-  }
-
-  countOfCell() {
-    const { ids, loadStatus } = this.props;
-    const { loading } = loadStatus;
-    return loading ? ids.length + 1 : ids.length;
-  }
-
-  cellAtIndex = (index: number, style: CSSProperties) => {
-    const { ids, tabConfig } = this.props;
+class ItemListView extends React.Component<ViewProps & Props> {
+  rowRenderer = ({
+    index,
+    item: itemId,
+    style,
+  }: JuiVirtualCellProps<number>) => {
+    const { type, active } = this.props;
+    const tabConfig = getTabConfig(type);
     const Component: any = tabConfig.item;
-    const id = ids[index];
     let content;
-    if (id) {
-      content = <Component id={id} />;
+    if (itemId) {
+      content = <Component id={itemId} />;
     }
 
+    if (!active) return null;
+
     return (
-      <JuiVirtualCellWrapper key={id} style={style}>
+      <JuiVirtualCellWrapper key={itemId} style={style}>
         {content}
       </JuiVirtualCellWrapper>
     );
   }
 
-  fixedCellHeight() {
-    return ITEM_HEIGHT;
-  }
-
-  renderEmptyContent = () => {
+  noContentRenderer = () => {
     const { type } = this.props;
     return emptyView(type);
-  }
-
-  isRowLoaded = (index: number) => {
-    const { ids } = this.props;
-    const result = typeof ids[index] !== 'undefined';
-    return result;
-  }
-
-  loadMore = async (startIndex: number, stopIndex: number) => {
-    await this._loadData();
   }
 
   firstLoader = () => {
     return <JuiRightRailContentLoading delay={500} />;
   }
 
-  onScroll = () => {
-    this._scrolling = true;
-    this._scrollTimer = setTimeout(() => (this._scrolling = false), 100);
-  }
+  moreLoader = () => <JuiRightRailLoadingMore />;
 
   render() {
-    const { ids, loadStatus, tabConfig, width, height } = this.props;
-    const { loading, firstLoaded } = loadStatus;
-    const { subheader } = tabConfig;
-    const showLoading = this._scrolling && loading;
-    const heightFix = showLoading ? LOADING_MORE_HEIGHT : 0;
+    const { type, width, height, dataSource } = this.props;
+    const { subheader } = getTabConfig(type);
+    const totalCount = dataSource.total!();
     return (
       <JuiRightShelfContent>
-        {firstLoaded && ids.length > 0 && (
-          <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-            {/* https://jira.ringcentral.com/browse/FIJI-3592 */}
-            {/* The total is not displayed for the time being */}
-            {i18next.t(subheader)}
-          </JuiListSubheader>
-        )}
-        {firstLoaded && (
-          <JuiVirtualList
-            dataSource={this}
-            threshold={1}
-            width={width}
-            height={height - HEADER_HEIGHT - heightFix}
-          />
-        )}
-        {loading && !firstLoaded && this.firstLoader()}
-        {showLoading && <JuiRightRailLoadingMore />}
+        {dataSource.isLoadingContent!() && this.firstLoader()}
+        {!dataSource.isLoadingContent!() &&
+          totalCount > 0 &&
+          dataSource.size() > 0 && (
+            <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
+              {i18next.t(subheader)}
+            </JuiListSubheader>
+          )}
+        <JuiVirtualList
+          overscan={5}
+          threshold={40}
+          dataSource={dataSource}
+          rowRenderer={this.rowRenderer}
+          noContentRenderer={this.noContentRenderer}
+          moreLoader={this.moreLoader}
+          fixedCellHeight={ITEM_HEIGHT}
+          width={width}
+          height={height - HEADER_HEIGHT}
+        />
       </JuiRightShelfContent>
     );
   }

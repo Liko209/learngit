@@ -3,10 +3,10 @@
  * @Date: 2018-09-30 10:49:07
  * Copyright © RingCentral. All rights reserved.
  */
-import { WithNamespaces } from 'react-i18next';
+import { WithTranslation } from 'react-i18next';
 import { Group, TeamSetting } from 'sdk/module/group';
 
-type ViewProps = WithNamespaces & {
+type ViewProps = WithTranslation & {
   create: (
     memberIds: (number | string)[],
     options: TeamSetting,
@@ -25,6 +25,7 @@ type ViewProps = WithNamespaces & {
   handleNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDescChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSearchContactChange: (items: any) => void;
+  loading: boolean;
 };
 
 export { ViewProps };

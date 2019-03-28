@@ -13,11 +13,11 @@ import {
   JuiConversationPageHeaderSubtitle,
 } from 'jui/pattern/ConversationPageHeader';
 import { JuiButtonBar } from 'jui/components/Buttons';
-import { Favorite, Privacy } from '@/containers/common';
-import { translate, WithNamespaces } from 'react-i18next';
+import { Favorite, Privacy, Member } from '@/containers/common';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
-import { MessageExtension } from '@/modules/message/types';
 import { MessageStore } from '@/modules/message/store';
+import { Menu } from './Menu';
 
 type HeaderProps = {
   title: string;
@@ -30,7 +30,7 @@ type HeaderProps = {
   }[];
   customStatus: string | null;
   groupId: number;
-} & WithNamespaces;
+} & WithTranslation;
 
 @observer
 class Header extends Component<HeaderProps, { awake: boolean }> {
@@ -45,23 +45,23 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
     this._onUnhover = this._onUnhover.bind(this);
   }
 
-  @computed
-  private get _rightButtonsComponents() {
-    const { extensions } = this._messageStore;
-    const buttons: ComponentType<{}>[] = [];
-    extensions.forEach((extension: MessageExtension) => {
-      const extensionButtons = extension['CONVERSATION_PAGE.HEADER.BUTTONS'];
-      if (extensionButtons) {
-        buttons.push(...extensionButtons);
-      }
-    });
-    return buttons;
+  private _renderMenu = () => {
+    const { groupId } = this.props;
+    return <Menu id={groupId} key={groupId} />;
   }
 
-  private _ActionButtons() {
-    const actionButtons = this._rightButtonsComponents.map(
-      (Comp: ComponentType<{}>, i: number) => <Comp key={`ACTION_${i}`} />,
+  @computed
+  private get _ActionButtons() {
+    const { groupId } = this.props;
+
+    const { conversationHeaderExtensions } = this._messageStore;
+    const actionButtons = conversationHeaderExtensions.map(
+      (Comp: ComponentType<{ groupId: number }>, i: number) => (
+        <Comp key={`ACTION_${i}`} groupId={groupId} />
+      ),
     );
+
+    actionButtons.push(this._renderMenu());
 
     return <JuiButtonBar overlapSize={1}>{actionButtons}</JuiButtonBar>;
   }
@@ -76,6 +76,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
             <Privacy id={groupId} size="medium" />
           ) : null}
           <Favorite id={groupId} size="medium" />
+          <Member id={groupId} />
         </JuiButtonBar>
       </JuiConversationPageHeaderSubtitle>
     );
@@ -102,7 +103,7 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
         title={title}
         status={customStatus}
         SubTitle={this._SubTitle()}
-        Right={this._ActionButtons()}
+        Right={this._ActionButtons}
         onMouseEnter={this._onHover}
         onMouseLeave={this._onUnhover}
       />
@@ -110,6 +111,6 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 }
 
-const HeaderView = translate('translations')(Header);
+const HeaderView = withTranslation('translations')(Header);
 
 export { HeaderView, HeaderProps };

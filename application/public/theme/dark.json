@@ -162,5 +162,17 @@
       "fontFamily": "'Roboto', 'Helvetica', 'Arial', sans-serif",
       "lineHeight": "16px"
     }
+  },
+  "transitions": {
+    "easing": {
+      "openCloseDialog": "cubic-bezier(0.25, 0.1, 0.25, 1)"
+    }
+  },
+  "opacity": {
+    "p05": 0.05,
+    "p10": 0.1,
+    "p50": 0.5,
+    "p60": 0.6,
+    "p80": 0.8
   }
 }

@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProgressActionsViewProps } from './types';
 import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
@@ -15,7 +15,7 @@ import i18next from 'i18next';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { Dialog } from '@/containers/Dialog';
 
-type Props = ProgressActionsViewProps & WithNamespaces;
+type Props = ProgressActionsViewProps & WithTranslation;
 
 @observer
 class ProgressActionsViewComponent extends Component<Props> {
@@ -97,7 +97,7 @@ class ProgressActionsViewComponent extends Component<Props> {
   }
 }
 
-const ProgressActionsView = translate('translations')(
+const ProgressActionsView = withTranslation('translations')(
   ProgressActionsViewComponent,
 );
 

@@ -9,6 +9,9 @@ import {
 import { AbstractAccount } from '../AbstractAccount';
 import * as helper from '../helper';
 import * as dao from '../../../dao';
+import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
+
+jest.mock('../../../service/config/NewGlobalConfig');
 class MyAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {}
 }
@@ -96,7 +99,7 @@ describe('AccountManager', () => {
 
       it('should emit login event', async () => {
         const mockFn = jest.fn();
-        accountManager.on(AccountManager.EVENT_LOGIN, mockFn);
+        accountManager.on(AccountManager.AUTH_SUCCESS, mockFn);
         await accountManager.syncLogin(MySyncAuthenticator.name);
         expect(mockFn).toHaveBeenCalled();
       });
@@ -259,9 +262,10 @@ describe('AccountManager', () => {
       jest.spyOn(helper, 'fetchWhiteList').mockResolvedValue({
         release: ['123'],
       });
-      const permitted = await accountManager.sanitizeUser(
-        mockedAccountInfo[0].data.owner_id,
-      );
+
+      NewGlobalConfig.getEnv = jest.fn().mockReturnValue('release');
+      const permitted = await accountManager.sanitizeUser(mockedAccountInfo);
+
       expect(permitted).toBeFalsy();
     });
   });

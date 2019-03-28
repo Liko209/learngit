@@ -11,7 +11,7 @@ type MenuProps = {
   personId: number;
   groupId: number;
   anchorEl: HTMLElement | null;
-  onClose: (event: MouseEvent<HTMLElement>) => void;
+  onClose: (event: MouseEvent<HTMLElement> | UIEvent) => void;
 };
 
 type MenuViewProps = {
@@ -19,11 +19,14 @@ type MenuViewProps = {
   groupId: number;
   anchorEl: HTMLElement | null;
   isFavorite: boolean;
+  isUnread: boolean;
+  disabledReadOrUnread: boolean;
   favoriteText: string;
   shouldSkipCloseConfirmation: boolean;
   closable: boolean;
-  onClose: (event: MouseEvent<HTMLElement>) => void;
+  onClose: (event: MouseEvent<HTMLElement> | UIEvent) => void;
   toggleFavorite: () => Promise<Profile | null>;
+  toggleRead: () => Promise<void>;
   closeConversation: (shouldSkipNextTime: boolean) => Promise<Profile | null>;
 };
 

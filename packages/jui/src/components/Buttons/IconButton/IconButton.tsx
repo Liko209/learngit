@@ -19,10 +19,11 @@ import { Theme, Palette } from '../../../foundation/theme/theme';
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 type IconButtonVariant = 'round' | 'plain';
-type IconButtonSize = 'small' | 'medium' | 'large';
+type IconButtonSize = 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
 
 type JuiIconButtonProps = {
   tooltipTitle?: string;
+  tooltipForceHide?: boolean;
   invisible?: boolean;
   awake?: boolean;
   variant?: IconButtonVariant;
@@ -38,6 +39,8 @@ type JuiIconButtonProps = {
   Omit<JuiIconographyProps, 'color' | 'children'>;
 
 const iconSizes = {
+  xxlarge: 8,
+  xlarge: 7,
   large: 6,
   medium: 5,
   small: 4,
@@ -47,6 +50,7 @@ const WrappedMuiIcon = ({
   invisible,
   awake,
   color,
+  tooltipForceHide,
   ...rest
 }: JuiIconButtonProps & { children: string }) => <JuiIconography {...rest} />;
 const StyledIcon = styled<JuiIconButtonProps>(WrappedMuiIcon)``;
@@ -74,6 +78,7 @@ const WrappedMuiIconButton = ({
   colorName,
   colorScope,
   alwaysEnableTooltip,
+  tooltipForceHide,
   ...rest
 }: StyledIconButtonProps) => (
   <MuiIconButton
@@ -151,6 +156,7 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
     className,
     children,
     tooltipTitle,
+    tooltipForceHide,
     color,
     disableToolTip = false,
     alwaysEnableTooltip = false,
@@ -200,7 +206,9 @@ export const JuiIconButtonComponent: React.SFC<JuiIconButtonProps> = (
   }
   if (!disableToolTip) {
     return (
-      <JuiArrowTip title={tooltipTitle}>{renderToolTipWrapper()}</JuiArrowTip>
+      <JuiArrowTip title={tooltipTitle} tooltipForceHide={tooltipForceHide}>
+        {renderToolTipWrapper()}
+      </JuiArrowTip>
     );
   }
   return renderToolTipWrapper();

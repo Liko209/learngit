@@ -30,7 +30,7 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
       },
       [MENU_LIST_ITEM_TYPE.DELETE]: {
         permission: this._isPostByMe,
-        shouldShowAction: true,
+        shouldShowAction: !this._isEventOrTask,
       },
       [MENU_LIST_ITEM_TYPE.EDIT]: {
         permission: this._canPost && this._isPostByMe,
@@ -92,7 +92,7 @@ class MoreViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @computed
   get showMoreAction() {
-    return this._isText;
+    return this._isText && !this._isEventOrTask;
   }
 }
 

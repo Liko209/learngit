@@ -9,9 +9,11 @@ import { EventEmitter2 } from 'eventemitter2';
 import {
   WEBPHONE_SESSION_STATE,
   WEBPHONE_SESSION_EVENT,
+  WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
 } from '../../signaling/types';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
 import { RTC_CALL_ACTION } from '../../api/types';
+import { rtcLogger } from '../../utils/RTCLoggerProxy';
 
 describe('sip call session', () => {
   class SessionDescriptionHandler extends EventEmitter2 {
@@ -31,11 +33,67 @@ describe('sip call session', () => {
       return 'sendrecv';
     }
   }
+  class MediaStreams extends EventEmitter2 {
+    public onMediaConnectionStateChange: any;
+    private _testConnection: string;
+    private _session: any;
+    private _mediaStatsTimerCallback: any;
+    private _mediaStatsTimer: any;
+    constructor(session: any) {
+      super();
+      this._testConnection = 'resolve';
+      this._session = session;
+    }
+
+    public reconnectMedia(options: any) {
+      const self = this;
+      return new Promise((resolve, reject) => {
+        if (self.testConnectionMode === 'resolve') {
+          resolve('succeed');
+        } else if (self.testConnectionMode === 'reject') {
+          reject(new Error('failed'));
+        }
+      });
+    }
+
+    getMediaStats(callback: any, interval: any) {
+      this._mediaStatsTimerCallback = callback;
+      this._mediaStatsTimer = setInterval(() => {
+        this._mediaStatsTimerCallback();
+      },                                  interval);
+    }
+
+    stopMediaStats() {
+      clearInterval(this._mediaStatsTimer);
+    }
+
+    emitMediaConnectionFailed() {
+      this.onMediaConnectionStateChange(
+        this._session,
+        WEBPHONE_MEDIA_CONNECTION_STATE_EVENT.MEDIA_CONNECTION_FAILED,
+      );
+    }
+
+    release() {
+      this.stopMediaStats();
+    }
+
+    set testConnectionMode(mode: any) {
+      this._testConnection = mode;
+    }
+
+    get testConnectionMode() {
+      return this._testConnection;
+    }
+  }
+
   class VirtualSession extends EventEmitter2 {
     public sessionDescriptionHandler: SessionDescriptionHandler;
+    public mediaStreams: MediaStreams;
     constructor() {
       super();
       this.sessionDescriptionHandler = new SessionDescriptionHandler();
+      this.mediaStreams = new MediaStreams(this);
     }
     emitSessionConfirmed() {
       this.emit(WEBPHONE_SESSION_STATE.CONFIRMED);
@@ -67,6 +125,10 @@ describe('sip call session', () => {
 
     emitSessionReinviteFailed() {
       this.emit(WEBPHONE_SESSION_STATE.REINVITE_FAILED, this);
+    }
+
+    set onMediaConnectionStateChange(callback: any) {
+      this.mediaStreams.onMediaConnectionStateChange = callback;
     }
 
     terminate() {}
@@ -342,6 +404,194 @@ describe('sip call session', () => {
       vsession.emitSdhCreated();
       vsession.emitTrackAdded();
       expect(sipcallsession._onSessionTrackAdded).toHaveBeenCalled();
+    });
+  });
+
+  describe('WebPhone SDK APIs', () => {
+    it('reconnectMedia() API - succeed', async () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      sipcallsession.setSession(vsession);
+      const succeededFunc = jest.fn((session: any) => {
+        expect(session).toEqual(vsession);
+      });
+      const failedFunc = jest.fn((error: any, session: any) => {
+        expect(session).toEqual(vsession);
+      });
+      const options = {
+        eventHandlers: {
+          succeeded: succeededFunc,
+          failed: failedFunc,
+        },
+      };
+      sipcallsession.reconnectMedia(options);
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         100);
+        }),
+      ).resolves.toEqual('new');
+      expect(succeededFunc).toHaveBeenCalled();
+      sipcallsession.destroy();
+    });
+
+    it('reconnectMedia() API - failed', async () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      sipcallsession.setSession(vsession);
+      const succeededFunc = jest.fn((session: any) => {
+        expect(session).toEqual(vsession);
+      });
+      const failedFunc = jest.fn((error: any, session: any) => {
+        expect(session).toEqual(vsession);
+      });
+      const options = {
+        eventHandlers: {
+          succeeded: succeededFunc,
+          failed: failedFunc,
+        },
+      };
+      vsession.mediaStreams.testConnectionMode = 'reject';
+      sipcallsession.reconnectMedia(options);
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         100);
+        }),
+      ).resolves.toEqual('new');
+      expect(failedFunc).toHaveBeenCalled();
+      sipcallsession.destroy();
+    });
+
+    it('onMediaConnectionStateChange property should be called when receiving a media connection event', () => {
+      global.console = {
+        error: jest.fn(),
+        warn: jest.fn(),
+        log: jest.fn(),
+      };
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      const mediaStreams = vsession.mediaStreams;
+      sipcallsession.setSession(vsession);
+      const tmpError = rtcLogger.error;
+      rtcLogger.error = jest.fn((label, msg) => {});
+      mediaStreams.emitMediaConnectionFailed();
+      expect(rtcLogger.error).toHaveBeenCalled();
+      rtcLogger.error = tmpError;
+      sipcallsession.destroy();
+    });
+
+    it('getMediaStats API - valid callback and valid interval', async () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      const callback = jest.fn((report: any, session: any) => {});
+      sipcallsession.setSession(vsession);
+      sipcallsession.getMediaStats(callback, 2000);
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         2100);
+        }),
+      ).resolves.toEqual('new');
+      expect(callback).toHaveBeenCalled();
+      sipcallsession.destroy();
+    });
+
+    it('getMediaStats API - valid callback and invalid interval', async () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      const callback = jest.fn((report: any, session: any) => {});
+      sipcallsession.setSession(vsession);
+      sipcallsession.getMediaStats(callback, -1);
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         1100);
+        }),
+      ).resolves.toEqual('new');
+      expect(callback).toHaveBeenCalled();
+      sipcallsession.destroy();
+    });
+
+    it('getMediaStats API - valid callback and  interval = null', async () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      const callback = jest.fn((report: any, session: any) => {});
+      sipcallsession.setSession(vsession);
+      sipcallsession.getMediaStats(callback);
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         1100);
+        }),
+      ).resolves.toEqual('new');
+      expect(callback).toHaveBeenCalled();
+      expect(callback.mock.calls.length).toBe(1);
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         1100);
+        }),
+      ).resolves.toEqual('new');
+      expect(callback.mock.calls.length).toBe(2);
+      sipcallsession.destroy();
+    });
+
+    it('stopMediaStats API ', async () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      const callback = jest.fn((report: any, session: any) => {});
+      sipcallsession.setSession(vsession);
+      sipcallsession.getMediaStats(callback);
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         1100);
+        }),
+      ).resolves.toEqual('new');
+      expect(callback.mock.calls.length).toBe(1);
+      sipcallsession.stopMediaStats();
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         1100);
+        }),
+      ).resolves.toEqual('new');
+      expect(callback.mock.calls.length).toBe(1);
+      sipcallsession.destroy();
+    });
+
+    it('_releaseMediaStreams private function ', async () => {
+      const sipcallsession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      const callback = jest.fn((report: any, session: any) => {});
+      sipcallsession.setSession(vsession);
+      sipcallsession.getMediaStats(callback);
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         1100);
+        }),
+      ).resolves.toEqual('new');
+      expect(callback.mock.calls.length).toBe(1);
+      sipcallsession.destroy();
+      await expect(
+        new Promise((resolve: any) => {
+          setTimeout(() => {
+            resolve('new');
+          },         1100);
+        }),
+      ).resolves.toEqual('new');
+      expect(callback.mock.calls.length).toBe(1);
     });
   });
 });

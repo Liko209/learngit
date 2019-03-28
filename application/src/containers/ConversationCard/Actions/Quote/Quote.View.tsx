@@ -5,11 +5,11 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiMenuItem } from 'jui/components';
 import { ViewProps } from './types';
 
-type Props = ViewProps & WithNamespaces;
+type Props = ViewProps & WithTranslation;
 
 @observer
 class QuoteViewComponent extends React.Component<Props> {
@@ -27,6 +27,6 @@ class QuoteViewComponent extends React.Component<Props> {
   }
 }
 
-const QuoteView = translate('translations')(QuoteViewComponent);
+const QuoteView = withTranslation('translations')(QuoteViewComponent);
 
 export { QuoteView };

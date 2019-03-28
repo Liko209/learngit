@@ -14,9 +14,9 @@ import { rtcLogger } from '../utils/RTCLoggerProxy';
 enum REGISTRATION_FSM_EVENT {
   PROVISION_READY = 'provisionReady',
   REG_SUCCEED = 'regSuccess',
-  REG_TIMEOUT = 'regTimeout',
   REG_FAILED = 'regFailed',
   UNREGISTER = 'unregister',
+  TRARNSPORT_ERROR = 'transportError',
   RE_REGISTER = 'reRegister',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
   MAKE_OUTGOING_CALL = 'makeOutgoingCall',
@@ -30,7 +30,12 @@ class RTCRegistrationFSM extends StateMachine {
       transitions: [
         {
           name: REGISTRATION_FSM_EVENT.PROVISION_READY,
-          from: REGISTRATION_FSM_STATE.IDLE,
+          from: [
+            REGISTRATION_FSM_STATE.IDLE,
+            REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.READY,
+            REGISTRATION_FSM_STATE.FAILURE,
+          ],
           to: (provisionData: any, options: any) => {
             dependency.onProvisionReadyAction(provisionData, options);
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
@@ -62,29 +67,12 @@ class RTCRegistrationFSM extends StateMachine {
         },
         {
           name: REGISTRATION_FSM_EVENT.MAKE_OUTGOING_CALL,
-          from: [
-            REGISTRATION_FSM_STATE.IN_PROGRESS,
-            REGISTRATION_FSM_STATE.READY,
-          ],
-          to: (
-            toNumber: string,
-            delegate: IRTCCallDelegate,
-            options: RTCCallOptions,
-            s: any,
-          ) => {
-            dependency.onMakeOutgoingCallAction(toNumber, delegate, options);
-            return s;
-          },
-        },
-        {
-          name: REGISTRATION_FSM_EVENT.MAKE_OUTGOING_CALL,
           from: REGISTRATION_FSM_STATE.FAILURE,
           to: (
             toNumber: string,
             delegate: IRTCCallDelegate,
             options: RTCCallOptions,
           ) => {
-            dependency.onMakeOutgoingCallAction(toNumber, delegate, options);
             dependency.onReRegisterAction();
             return REGISTRATION_FSM_STATE.IN_PROGRESS;
           },
@@ -108,15 +96,15 @@ class RTCRegistrationFSM extends StateMachine {
           to: REGISTRATION_FSM_STATE.READY,
         },
         {
-          name: REGISTRATION_FSM_EVENT.REG_TIMEOUT,
+          name: REGISTRATION_FSM_EVENT.REG_FAILED,
           from: [
-            REGISTRATION_FSM_STATE.READY,
             REGISTRATION_FSM_STATE.IN_PROGRESS,
+            REGISTRATION_FSM_STATE.READY,
           ],
           to: REGISTRATION_FSM_STATE.FAILURE,
         },
         {
-          name: REGISTRATION_FSM_EVENT.REG_FAILED,
+          name: REGISTRATION_FSM_EVENT.TRARNSPORT_ERROR,
           from: [
             REGISTRATION_FSM_STATE.IN_PROGRESS,
             REGISTRATION_FSM_STATE.READY,
@@ -140,10 +128,7 @@ class RTCRegistrationFSM extends StateMachine {
         {
           name: REGISTRATION_FSM_EVENT.REG_SUCCEED,
           from: [REGISTRATION_FSM_STATE.READY, REGISTRATION_FSM_STATE.FAILURE],
-          to: () => {
-            dependency.onRegistrationAction();
-            return REGISTRATION_FSM_STATE.READY;
-          },
+          to: REGISTRATION_FSM_STATE.READY,
         },
       ],
       methods: {

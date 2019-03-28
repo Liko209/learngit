@@ -11,12 +11,16 @@ const logTag = '[Upgrade]';
 class Upgrade {
   private _hasNewVersion: boolean = false;
   private _swURL: string;
+  private _lastCheckTime: Date;
+  private _queryTimer: NodeJS.Timeout;
 
-  constructor(public queryInterval = 20 * 60 * 1000) {
+  constructor(public queryInterval = 60 * 60 * 1000) {
     mainLogger.info(
       `${logTag}constructor with interval: ${this.queryInterval}`,
     );
-    setInterval(this._queryIfHasNewVersion.bind(this), this.queryInterval);
+
+    this._resetQueryTimer();
+    window.addEventListener('online', this._onlineHandler.bind(this));
   }
 
   public setServiceWorkerURL(swURL: string) {
@@ -50,6 +54,8 @@ class Upgrade {
       navigator.serviceWorker
         .getRegistration(this._swURL)
         .then((registration: ServiceWorkerRegistration) => {
+          this._lastCheckTime = new Date();
+
           registration
             .update()
             .then((...args) => {
@@ -65,6 +71,31 @@ class Upgrade {
           mainLogger.info(`${logTag}Checking new version`);
         });
     }
+  }
+
+  private _onlineHandler() {
+    if (this._lastCheckTime) {
+      const now = new Date();
+      const duration = now.getTime() - this._lastCheckTime.getTime();
+      if (duration < 20 * 60 * 1000) {
+        mainLogger.info(`${logTag}Ignore online immediately update`);
+        return;
+      }
+    }
+
+    this._resetQueryTimer();
+    this._queryIfHasNewVersion();
+  }
+
+  private _resetQueryTimer() {
+    if (this._queryTimer) {
+      clearInterval(this._queryTimer);
+    }
+
+    this._queryTimer = setInterval(
+      this._queryIfHasNewVersion.bind(this),
+      this.queryInterval,
+    );
   }
 
   private _canDoReload() {

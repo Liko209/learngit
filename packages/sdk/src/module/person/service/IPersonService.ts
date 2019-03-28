@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { SortableModel, Raw } from '../../../framework/model';
+import { Raw } from '../../../framework/model';
 import { FEATURE_STATUS, FEATURE_TYPE } from '../../group/entity';
 
 import {
@@ -15,8 +15,14 @@ import {
   HeadShotModel,
 } from '../entity';
 
+import { ContactType } from '../types';
+import { SYNC_SOURCE } from '../../../module/sync/types';
+
 interface IPersonService {
-  handleIncomingData(persons: Raw<Person>[]): Promise<void>;
+  handleIncomingData(
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+  ): Promise<void>;
 
   getPersonsByIds(ids: number[]): Promise<Person[]>;
 
@@ -33,16 +39,6 @@ interface IPersonService {
     personId: number,
   ): Promise<Map<FEATURE_TYPE, FEATURE_STATUS>>;
 
-  doFuzzySearchPersons(
-    searchKey?: string,
-    excludeSelf?: boolean,
-    arrangeIds?: number[],
-    fetchAllIfSearchKeyEmpty?: boolean,
-  ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Person>[];
-  } | null>;
-
   getName(person: Person): string;
 
   getEmailAsName(person: Person): string;
@@ -54,6 +50,14 @@ interface IPersonService {
     phoneNumbersData?: PhoneNumberModel[],
     extensionData?: SanitizedExtensionModel,
   ): PhoneNumberInfo[];
+
+  matchContactByPhoneNumber(
+    e164PhoneNumber: string,
+    contactType: ContactType,
+  ): Promise<Person | null>;
+  refreshPersonData(personId: number): Promise<void>;
+
+  isValidPerson(person: Person): boolean;
 }
 
 export { IPersonService };

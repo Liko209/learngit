@@ -28,6 +28,7 @@ import {
 } from '../../../foundation/Iconography';
 
 const ITEM_WIDTH = 84;
+const FILE_CARD_HEIGHT = 68;
 
 type FileIconProps = {
   size?: 'small';
@@ -43,10 +44,13 @@ const FileItem = styled(MuiListItem)`
   }
 `;
 
-const FileIcon = styled<FileIconProps>(JuiIconography)`
+const FileIcon = styled<FileIconProps>(({ size, ...rest }) => (
+  <JuiIconography
+    iconSize={size === 'small' ? 'medium' : 'extraLarge'}
+    {...rest}
+  />
+))`
   && {
-    font-size: ${({ size }) => (size === 'small' ? width(5) : width(9))};
-    background-size: cover;
     margin: ${({ size }) => (size === 'small' ? spacing(0, 2, 0, 0) : null)};
   }
 `;
@@ -84,6 +88,7 @@ const FileActionsWrapper = styled.span`
 const FileCard = styled(JuiCard)`
   display: inline-block;
   width: ${width(ITEM_WIDTH)};
+  height: ${height(FILE_CARD_HEIGHT)};
   margin: ${spacing(0, 3, 3, 0)};
 `;
 

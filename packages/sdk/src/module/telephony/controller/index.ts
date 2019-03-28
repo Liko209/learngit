@@ -4,3 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export { TelephonyEngineController } from './TelephonyEngineController';
+export { TelephonyAccountController } from './TelephonyAccountController';
+export { TelephonyCallController } from './TelephonyCallController';

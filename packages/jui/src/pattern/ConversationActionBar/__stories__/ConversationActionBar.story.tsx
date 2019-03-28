@@ -36,6 +36,7 @@ storiesOf('Pattern', module)
       More: <Action />,
       Like: <Action />,
       Bookmark: <Action />,
+      Pin: <Action />,
       handleLike: () => alert('handleLike'),
       handleUnlike: () => alert('handleUnlike'),
       handleBookmark: () => alert('handleBookmark'),

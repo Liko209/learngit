@@ -6,13 +6,9 @@
 
 import BaseService from '../BaseService';
 import AuthService from '../auth';
-import { daoManager, ConfigDao } from '../../dao';
 import { SERVICE } from '../eventKey';
 import { handleLogout } from './handleData';
-import {
-  LAST_INDEX_TIMESTAMP,
-  STATIC_HTTP_SERVER,
-} from '../../dao/config/constants';
+import { NewGlobalConfig } from './NewGlobalConfig';
 
 export default class ConfigService extends BaseService {
   static serviceName = 'ConfigService';
@@ -21,28 +17,20 @@ export default class ConfigService extends BaseService {
     const subscriptions = {
       [SERVICE.LOGOUT]: handleLogout,
     };
-    super(ConfigDao, null, null, subscriptions);
+    super(null, null, null, subscriptions);
     this._authService = authService;
   }
 
   getEnv() {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    return configDao.getEnv();
-  }
-
-  getLastIndexTimestamp() {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    return configDao.get(LAST_INDEX_TIMESTAMP);
+    return NewGlobalConfig.getEnv();
   }
 
   getStaticHttpServer() {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    return configDao.get(STATIC_HTTP_SERVER);
+    return NewGlobalConfig.getStaticHttpServer();
   }
 
   async switchEnv(env: string): Promise<boolean> {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const oldEnv = configDao.getEnv();
+    const oldEnv = NewGlobalConfig.getEnv();
 
     if (oldEnv === env) return false;
 
@@ -51,7 +39,7 @@ export default class ConfigService extends BaseService {
       await this._authService.logout();
     }
 
-    configDao.putEnv(env);
+    NewGlobalConfig.setEnv(env);
     sessionStorage.setItem('env', env);
 
     return true;

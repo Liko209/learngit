@@ -1,8 +1,7 @@
 /*
  * @Author: Chris Zhan (chris.zhan@ringcentral.com)
  * @Date: 2018-11-12 20:31:07
- * @Last Modified by: Chris Zhan (chris.zhan@ringcentral.com)
- * @Last Modified time: 2018-11-26 22:59:09
+ * Copyright © RingCentral. All rights reserved.
  */
 import { StreamViewModel } from '../Stream.ViewModel';
 import { POST_LIST_TYPE } from '../../types';
@@ -11,9 +10,8 @@ import storeManager from '@/store';
 import * as _ from 'lodash';
 import * as utils from '@/store/utils';
 import { PostService } from 'sdk/module/post';
+import { notificationCenter, ENTITY } from 'sdk/service';
 
-jest.mock('@/store');
-jest.mock('@/store/utils');
 jest.mock('sdk/module/post');
 
 function setup(obj: any) {
@@ -56,16 +54,6 @@ describe('StreamViewModel', () => {
     jest.resetAllMocks();
   });
 
-  it('should sort ids in descending order', async () => {
-    postService.getPostsByIds.mockResolvedValue({
-      posts: [],
-    });
-    await vm.onReceiveProps({
-      postIds: [1, 10, 2, 33, 512, 0, 100, 521, 345345],
-    });
-    expect(vm._postIds).toEqual([345345, 521, 512, 100, 33, 10, 2, 1, 0]);
-  });
-
   it('should add new post if the postIds added', async () => {
     const localProps = { ...newProps };
     postService.getPostsByIds.mockResolvedValue({
@@ -78,7 +66,7 @@ describe('StreamViewModel', () => {
     vm._postIds = [1];
     await vm.onReceiveProps(localProps);
     const returnedEntity = new Map();
-    returnedEntity.set(1, { id: 1 });
+    returnedEntity.set(1, expect.objectContaining({ id: 1 }));
     expect(mockedSortableListHandler.onDataChanged).toBeCalledWith({
       body: {
         entities: returnedEntity,
@@ -115,7 +103,7 @@ describe('StreamViewModel', () => {
     expect(mockedSortableListHandler.fetchData).toBeCalledWith(
       QUERY_DIRECTION.NEWER,
     );
-    expect(vm._postIds).toEqual([2, 1]);
+    expect(vm._postIds).toEqual([1, 2]);
   });
   describe('fetchData()', () => {
     const data: number[] = [];
@@ -154,6 +142,65 @@ describe('StreamViewModel', () => {
       await vm.fetchData(null, 4);
       expect(postService.getPostsByIds).toBeCalledTimes(0);
       expect(utils.getEntity).toBeCalledTimes(4);
+    });
+  });
+});
+
+describe('Posts order', () => {
+  afterEach(() => {
+    notificationCenter.removeAllListeners();
+  });
+  it('should render posts following the same order as the received id array', async () => {
+    postService.getPostsByIds.mockImplementation(async (ids: number[]) => ({
+      posts: ids.map((id: number) => ({ id })),
+    }));
+    const mockedStore = {
+      subtractedBy: jest.fn(ids => [[...ids], []]),
+      batchSet: jest.fn(),
+    };
+    jest
+      .spyOn(storeManager, 'getEntityMapStore')
+      .mockImplementation(() => mockedStore);
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    const vm = new StreamViewModel();
+    vm._sortableListHandler._pageSize = 5;
+    const sourceArray = [1, 2, 3, 5, 4, 9, 6, 10, 323, 11, 32];
+
+    vm.onReceiveProps({
+      type: POST_LIST_TYPE.mentions,
+      postIds: sourceArray,
+    });
+    await vm.fetchInitialPosts();
+    expect(vm.ids).toEqual([1, 2, 3, 5, 4]);
+
+    await vm.fetchNextPagePosts();
+    expect(vm.ids).toEqual([1, 2, 3, 5, 4, 9, 6, 10, 323, 11]);
+  });
+
+  it('should have _index as sortValue when handle data change', () => {
+    jest.spyOn(utils, 'transform2Map').mockImplementation(a => a);
+    const vm = new StreamViewModel();
+    vm._postIds = [4, 1, 2, 5];
+    jest
+      .spyOn(vm._sortableListHandler, 'onDataChanged')
+      .mockImplementationOnce(() => {});
+    notificationCenter.emitEntityUpdate(`${ENTITY.POST}.*`, [
+      { id: 1 },
+      { id: 2 },
+      { id: 4 },
+      { id: 5 },
+    ]);
+    expect(vm._sortableListHandler.onDataChanged).toHaveBeenCalledWith({
+      body: {
+        ids: [1, 2, 4, 5],
+        entities: [
+          { _index: 1, id: 1 },
+          { _index: 2, id: 2 },
+          { _index: 0, id: 4 },
+          { _index: 3, id: 5 },
+        ],
+      },
+      type: 'update',
     });
   });
 });

@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { observer } from 'mobx-react';
 import { JuiContactSearch } from 'jui/pattern/ContactSearch';
 
 import { Chip } from '@/containers/Chip';
@@ -12,8 +13,9 @@ import { ContactSearchItem } from './ContactSearchItem';
 
 import { ViewProps } from './types';
 
-type Props = WithNamespaces & ViewProps;
+type Props = WithTranslation & ViewProps;
 
+@observer
 class ContactSearch extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
@@ -50,6 +52,6 @@ class ContactSearch extends React.Component<Props> {
   }
 }
 
-const ContactSearchView = translate('translations')(ContactSearch);
+const ContactSearchView = withTranslation('translations')(ContactSearch);
 
 export { ContactSearchView };

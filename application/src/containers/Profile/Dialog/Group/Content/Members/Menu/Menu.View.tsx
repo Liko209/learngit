@@ -6,7 +6,7 @@
 import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observable } from 'mobx';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
 import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
@@ -19,7 +19,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
-type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
+type Props = MenuViewProps & RouteComponentProps & WithTranslation;
 type State = {
   open: boolean;
 };
@@ -89,7 +89,7 @@ class MenuViewComponent extends Component<Props, State> {
 
   private _Anchor = () => {
     return (
-      <JuiIconography data-test-automation-id="moreIcon" fontSize="small">
+      <JuiIconography data-test-automation-id="moreIcon" iconSize="small">
         more_horiz
       </JuiIconography>
     );
@@ -151,6 +151,6 @@ class MenuViewComponent extends Component<Props, State> {
   }
 }
 
-const MenuView = withRouter(translate('translations')(MenuViewComponent));
+const MenuView = withRouter(withTranslation('translations')(MenuViewComponent));
 
 export { MenuView, MenuViewComponent };

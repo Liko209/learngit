@@ -33,7 +33,6 @@ fixture('UploadFiles')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-// bug: https://jira.ringcentral.com/browse/FIJI-2399, so I only skip the check point, only check uploading several files
 test(formalName('The post is sent successfully when sending a post with uploaded files', ['P0', 'JPT-448', 'UploadFiles', 'Mia.Cai']), async t => {
   const users = h(t).rcData.mainCompany.users;
   const user = users[4];

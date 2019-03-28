@@ -11,8 +11,6 @@ import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import PersonModel from '@/store/models/Person';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '../../../__tests__/utils';
-import 'mobx';
-jest.mock('mobx');
 
 describe('ConversationInitialPostView', () => {
   describe('render()', () => {

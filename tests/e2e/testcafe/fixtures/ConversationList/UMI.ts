@@ -9,6 +9,7 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('ConversationStream/ConversationStream')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -19,31 +20,35 @@ test(formalName('UMI should be added received messages count in conversations', 
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
-  await h(t).platform(loginUser).init();
-  await h(t).glip(loginUser).init();
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
-  await h(t).glip(loginUser).resetProfile();
 
-  let pvtChatId, groupId, teamId, groupConversation, teamConversation;
+  let privateChat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  let groupChat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser, users[7]]
+  }
+
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
   await h(t).withLog('Given I have an extension with certain conversations', async () => {
-    pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [loginUser.rcId, users[5].rcId]
-    });
-    groupId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Group',
-      members: [loginUser.rcId, users[5].rcId, users[6].rcId],
-    });
-    teamId = await h(t).platform(loginUser).createAndGetGroupId({
-      type: 'Team',
-      name: `My Team ${uuid()}`,
-      members: [loginUser.rcId, users[5].rcId],
-    });
+    await h(t).scenarioHelper.createTeamsOrChats([privateChat, groupChat, team]);
   });
 
   await h(t).withLog('Clear all UMIs before login', async () => {
-    await h(t).glip(loginUser).clearAllUmi();
+    await h(t).scenarioHelper.resetProfile(loginUser);
+    await h(t).scenarioHelper.clearAllUmi(loginUser);
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -53,28 +58,26 @@ test(formalName('UMI should be added received messages count in conversations', 
     },
   );
 
-  await h(t).withLog('And I click a private chat', async () => {
-    await app.homePage.messageTab.directMessagesSection.conversationEntryById(pvtChatId).enter();
-
-  });
-
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
-  await h(t).withLog(`And make preconditions: group ${groupId} and team ${teamId} both with UMI=1`, async () => {
-    await h(t).platform(otherUser).sendTextPost(`![:Person](${loginUser.rcId}), ${uuid()}`, groupId);
-    await h(t).platform(otherUser).sendTextPost(`![:Person](${loginUser.rcId}), ${uuid()}`, teamId);
-    await t.wait(3e3);
+  await h(t).withLog('And I click a private chat', async () => {
+    directMessagesSection.conversationEntryById(privateChat.glipId).enter();
+  });
+
+  let groupConversation, teamConversation;
+  await h(t).withLog(`And make preconditions: group ${groupChat.name} and team ${team.name} both with UMI=1`, async () => {
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, groupChat, otherUser);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, team, otherUser);
     await directMessagesSection.expand();
-    groupConversation = directMessagesSection.conversationEntryById(groupId);
+    groupConversation = directMessagesSection.conversationEntryById(groupChat.glipId);
     await teamsSection.expand();
-    teamConversation = teamsSection.conversationEntryById(teamId);
+    teamConversation = teamsSection.conversationEntryById(team.glipId);
     await groupConversation.umi.shouldBeNumber(1);
     await teamConversation.umi.shouldBeNumber(1);
   });
 
   await h(t).withLog('When other user send a post with @mention to the group', async () => {
-    await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, groupId);
-    await t.wait(3e3);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, groupChat, otherUser);
   });
 
   await h(t).withLog(`The group should have 2 umi`, async () => {
@@ -82,8 +85,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog('When other user send a post with @mention to the team', async () => {
-    await h(t).platform(otherUser).sendTextPost(`Hi, ![:Person](${loginUser.rcId})`, teamId);
-    await t.wait(3e3);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, team, otherUser);
   });
 
   await h(t).withLog(`Then the team should have 2 umi`, async () => {
@@ -91,8 +93,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog('When other user send a post without @mention to the group', async () => {
-    await h(t).platform(otherUser).sendTextPost(`${uuid()}`, groupId);
-    await t.wait(3e3);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, groupChat, otherUser);
   });
 
   await h(t).withLog(`Then the group should have 3 umi`, async () => {
@@ -100,8 +101,7 @@ test(formalName('UMI should be added received messages count in conversations', 
   });
 
   await h(t).withLog('When other user send a post without @mention to the team', async () => {
-    await h(t).platform(otherUser).sendTextPost(`${uuid()}`, teamId);
-    await t.wait(3e3);
+    await h(t).scenarioHelper.sentAndGetTextPostId(`![:Person](${loginUser.rcId}), ${uuid()}`, team, otherUser);
   });
 
   await h(t).withLog(`Then the team should have 2 umi, no change`, async () => {
@@ -115,7 +115,6 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -137,7 +136,7 @@ test(formalName('Remove UMI when open conversation', ['JPT-103', 'P0', 'Conversa
   );
 
   await h(t).withLog('Clear all UMIs before login', async () => {
-    await h(t).glip(loginUser).clearAllUmi();
+    await h(t).glip(loginUser).resetProfileAndState();
   });
 
   await h(t).withLog('Have other user send a post with mention to the team before I login', async () => {
@@ -182,7 +181,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -190,7 +189,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
   const directMessagesSection = app.homePage.messageTab.directMessagesSection;
   const teamsSection = app.homePage.messageTab.teamsSection;
 
-  let pvtChatId, teamId, pvtChat, team;
+  let pvtChatId, teamId;
   await h(t).withLog('Given I have an extension with a team and a private chat', async () => {
     pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
       type: 'PrivateChat',
@@ -210,8 +209,8 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     },
   );
 
+  const pvtChat = directMessagesSection.conversationEntryById(pvtChatId);
   await h(t).withLog('Then I can open the private chat', async () => {
-    pvtChat = directMessagesSection.conversationEntryById(pvtChatId);
     await pvtChat.enter();
   });
 
@@ -234,8 +233,7 @@ test(formalName('Current opened conversation should not display UMI', ['JPT-105'
     await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
     await pvtChat.umi.shouldBeNumber(0);
   });
-},
-);
+});
 
 test(formalName('Should not display UMI when section is expended & Should display UMI when section is collapsed',
   ['JPT-98', 'JPT-99', 'P2', 'P1', 'ConversationList']),
@@ -245,7 +243,6 @@ test(formalName('Should not display UMI when section is expended & Should displa
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
@@ -289,12 +286,12 @@ test(formalName('Should not display UMI when section is expended & Should displa
       });
     });
 
-    await h(t).withLog('And favorite 2 conversation before login', async () => {
-      await h(t).glip(loginUser).favoriteGroups([+favPrivateChatId, +favTeamId]);
+    await h(t).withLog('Clear all UMIs before login', async () => {
+      await h(t).glip(loginUser).resetProfileAndState();
     });
 
-    await h(t).withLog('Clear all UMIs before login', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
+    await h(t).withLog('And favorite 2 conversation before login', async () => {
+      await h(t).glip(loginUser).favoriteGroups([+favPrivateChatId, +favTeamId]);
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -395,7 +392,6 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
 
   const otherUser = users[5];
   await h(t).platform(otherUser).init();
@@ -428,7 +424,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   });
 
   await h(t).withLog('Clear all UMIs before login', async () => {
-    await h(t).glip(loginUser).clearAllUmi();
+    await h(t).glip(loginUser).resetProfileAndState();
   });
 
   await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`,
@@ -516,14 +512,14 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   });
 });
 
-test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
+// skip due to https://jira.ringcentral.com/browse/FIJI-4331
+test.skip(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
@@ -542,7 +538,7 @@ test(formalName('Show UMI when scroll up to old post then receive new messages',
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
+      await h(t).glip(loginUser).resetProfileAndState();
     });
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -579,7 +575,6 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
 
     const otherUser = users[5];
     await h(t).platform(otherUser).init();
@@ -597,7 +592,7 @@ test(formalName('Should not show UMI and scroll up automatically when receive po
     });
 
     await h(t).withLog('Clear all UMIs before login', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
+      await h(t).glip(loginUser).resetProfileAndState();
     });
 
     await h(t).withLog(`Given I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
@@ -633,7 +628,7 @@ test(formalName('Show UMI when does not focus then receive post', ['JPT-246', 'P
 
     let pvtChatId;
     await h(t).withLog('Given I have an extension with at least one conversation', async () => {
-      await h(t).glip(loginUser).resetProfile();
+      await h(t).glip(loginUser).resetProfileAndState();
       pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
         type: 'PrivateChat',
         members: [loginUser.rcId, users[5].rcId]
@@ -703,47 +698,44 @@ test(formalName(`Shouldn't show UMI when login then open last conversation with 
   },
 );
 
-test(formalName('Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']),
-  async (t: TestController) => {
-    const app = new AppRoot(t);
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[4];
-    await h(t).platform(loginUser).init();
+test(formalName('Should be unread when closed conversation received new unread', ['JPT-743', 'P1', 'ConversationList', 'Mia.Cai']), async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
+
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  await h(t).withLog('Given closed one DirectMessage conversation', async () => {
     await h(t).glip(loginUser).init();
-    const otherUser = users[5];
-    await h(t).platform(otherUser).init();
-    const directMessagesSection = app.homePage.messageTab.directMessagesSection;
-    const post = uuid();
-
-    let privateChatId;
-    await h(t).withLog('Given closed one conversation', async () => {
-      privateChatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat',
-        members: [loginUser.rcId, otherUser.rcId]
-      });
-      await h(t).glip(loginUser).clearFavoriteGroupsRemainMeChat();
-      await h(t).glip(loginUser).hideGroups(privateChatId);
-    });
-
-    await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
-
-    await h(t).withLog('And the conversation received one unread post from other members', async () => {
-      await h(t).platform(otherUser).sendTextPost(post, privateChatId);
-    });
-
-    await h(t).withLog('Then the conversation should not be opened automatically', async () => {
-      await t.expect(h(t).href).notContains(privateChatId);
-    });
-
-    await h(t).withLog('And the conversation should show in the conversation list', async () => {
-      await t.expect(directMessagesSection.conversationEntryById(privateChatId).exists).ok();
-    });
-
-    // bug https://jira.ringcentral.com/browse/FIJI-2766
-    // await h(t).withLog('And the conversation should be unread', async () => {
-    //   await directMessagesSection.conversationEntryById(pvtChatId).expectUmi(1);
-    // });
+    await h(t).glip(loginUser).resetProfileAndState();
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+    await h(t).glip(loginUser).hideGroups(chat.glipId);
   });
+
+  const app = new AppRoot(t);
+  const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('And the conversation received one unread post from other members', async () => {
+    await h(t).scenarioHelper.sendTextPost(uuid(), chat, otherUser);
+  });
+
+  await h(t).withLog('Then the conversation should not be opened automatically', async () => {
+    await t.expect(h(t).href).notContains(chat.glipId);
+  });
+
+  await h(t).withLog('And the conversation should show in the conversation list', async () => {
+    await t.expect(directMessagesSection.conversationEntryById(chat.glipId).exists).ok();
+  });
+
+  await h(t).withLog('And the conversation should be unread', async () => {
+    await directMessagesSection.conversationEntryById(chat.glipId).umi.shouldBeNumber(1);
+  });
+});

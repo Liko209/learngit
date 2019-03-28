@@ -21,6 +21,21 @@ class SequenceProcessorHandler extends AbstractProcessor {
     return result;
   }
 
+  addProcessors(processors: IProcessor[]): IProcessor[] {
+    const addedProcessors: IProcessor[] = [];
+    processors.forEach((processor: IProcessor) => {
+      if (this.addProcessor(processor)) {
+        addedProcessors.push(processor);
+      }
+    });
+    return addedProcessors;
+  }
+
+  replaceProcessors(processors: IProcessor[]): IProcessor[] {
+    this.clear();
+    return this.addProcessors(processors);
+  }
+
   async execute(): Promise<boolean> {
     const result = true;
     if (this._isExecuting) {
@@ -54,4 +69,4 @@ class SequenceProcessorHandler extends AbstractProcessor {
   }
 }
 
-export default SequenceProcessorHandler;
+export { SequenceProcessorHandler };

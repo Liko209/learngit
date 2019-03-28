@@ -29,61 +29,65 @@ const mockOriginalText = (text: string) => {
 };
 
 describe('QuoteVM', () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
   describe('quote()', () => {
     it('should quoteText and quoteHead with correct quote format. [JPT-447]', () => {
       mockOriginalText('test\n');
 
       ViewModel.quote();
-      expect(ViewModel.getQuoteText()).toBe('> test<br/><br/><br/>');
+      expect(ViewModel.getQuoteText()).toBe('> test<br/><br/><br/><br/>');
       expect(ViewModel.getQuoteHead()).toBe(mockExpectQuoteHead);
     });
   });
   describe('getQuoteText()', () => {
-    beforeAll(() => {
-      jest.resetAllMocks();
-    });
     it('should format with >>>\n', () => {
       mockOriginalText('>>>\n');
 
       ViewModel.quote();
-      expect(ViewModel.getQuoteText()).toBe('> >>><br/><br/><br/>');
+      expect(ViewModel.getQuoteText()).toBe('> >>><br/><br/><br/><br/>');
     });
     it('should format with >\n', () => {
       mockOriginalText('>\n');
 
       ViewModel.quote();
-      expect(ViewModel.getQuoteText()).toBe('> ><br/><br/><br/>');
+      expect(ViewModel.getQuoteText()).toBe('> ><br/><br/><br/><br/>');
     });
     it('should format with \n\n\n', () => {
       mockOriginalText('\n\n\n');
 
       ViewModel.quote();
-      expect(ViewModel.getQuoteText()).toBe('> <br/>> <br/>> <br/><br/><br/>');
+      expect(ViewModel.getQuoteText()).toBe(
+        '> <br/>> <br/>> <br/><br/><br/><br/>',
+      );
     });
     it('should format with \n\n>', () => {
       mockOriginalText('\n\n>');
 
       ViewModel.quote();
-      expect(ViewModel.getQuoteText()).toBe('> <br/>> <br/>> ><br/><br/><br/>');
+      expect(ViewModel.getQuoteText()).toBe(
+        '> <br/>> <br/>> ><br/><br/><br/><br/>',
+      );
     });
     it('should format with 900900\n', () => {
       mockOriginalText('900900\n');
 
       ViewModel.quote();
-      expect(ViewModel.getQuoteText()).toBe('> 900900<br/><br/><br/>');
+      expect(ViewModel.getQuoteText()).toBe('> 900900<br/><br/><br/><br/>');
     });
     it('should format with >>\n', () => {
       mockOriginalText('>>\n');
 
       ViewModel.quote();
-      expect(ViewModel.getQuoteText()).toBe('> >><br/><br/><br/>');
+      expect(ViewModel.getQuoteText()).toBe('> >><br/><br/><br/><br/>');
     });
     it('should format with \n>\n>\n>', () => {
       mockOriginalText('\n>\n>\n>');
 
       ViewModel.quote();
       expect(ViewModel.getQuoteText()).toBe(
-        '> <br/>> ><br/>> ><br/><br/><br/>',
+        '> <br/>> ><br/>> ><br/><br/><br/><br/>',
       );
     });
     it('should format with \n   >\n  >\n>', () => {
@@ -91,7 +95,7 @@ describe('QuoteVM', () => {
 
       ViewModel.quote();
       expect(ViewModel.getQuoteText()).toBe(
-        '> <br/>>    ><br/>>   ><br/>> ><br/><br/><br/>',
+        '> <br/>>    ><br/>>   ><br/>> ><br/><br/><br/><br/>',
       );
     });
     it('should format with \n   \n  >\n>', () => {
@@ -99,14 +103,14 @@ describe('QuoteVM', () => {
 
       ViewModel.quote();
       expect(ViewModel.getQuoteText()).toBe(
-        '> <br/>>    <br/>>   ><br/>> ><br/><br/><br/>',
+        '> <br/>>    <br/>>   ><br/>> ><br/><br/><br/><br/>',
       );
     });
     it('should format without end with \n', () => {
       mockOriginalText('eee');
 
       ViewModel.quote();
-      expect(ViewModel.getQuoteText()).toBe('> eee<br/><br/><br/>');
+      expect(ViewModel.getQuoteText()).toBe('> eee<br/><br/><br/><br/>');
     });
   });
 });

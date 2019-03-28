@@ -8,12 +8,7 @@ import {
   Middleware,
   Next,
 } from './interface';
-import AccountDao from '../../dao/account';
-import {
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-} from '../../dao/account/constants';
-import { daoManager } from '../../dao';
+import { AccountUserConfig } from '../../service/account/config';
 
 class FlagCalculator implements IFlagCalculator {
   featureConfig: IFeatureConfig;
@@ -25,9 +20,9 @@ class FlagCalculator implements IFlagCalculator {
     this._permissionKeys = Object.values(PERMISSION);
   }
   get accountInfo(): IAccountInfo {
-    const dao: AccountDao = daoManager.getKVDao(AccountDao);
-    const companyId: number = dao.get(ACCOUNT_COMPANY_ID);
-    const userId: number = dao.get(ACCOUNT_USER_ID);
+    const userConfig = new AccountUserConfig();
+    const companyId: number = userConfig.getCurrentCompanyId();
+    const userId: number = userConfig.getGlipUserId();
     return { companyId, userId };
   }
 

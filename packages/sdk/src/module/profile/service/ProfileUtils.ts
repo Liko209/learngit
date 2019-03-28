@@ -4,6 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Profile } from '../entity/Profile';
+import { StateService } from '../../state';
+
 function extractHiddenGroupIds(profile: Profile): number[] {
   const clone = Object.assign({}, profile);
   const result: number[] = [];
@@ -18,4 +20,24 @@ function extractHiddenGroupIds(profile: Profile): number[] {
   return result;
 }
 
-export { extractHiddenGroupIds };
+async function extractHiddenGroupIdsWithoutUnread(
+  profile: Profile,
+): Promise<number[]> {
+  const stateService: StateService = StateService.getInstance();
+  const result: number[] = [];
+  await Promise.all(
+    extractHiddenGroupIds(profile).map(async (groupId: number) => {
+      const groupState = await stateService.getById(groupId);
+      if (
+        !groupState ||
+        !groupState.unread_count ||
+        groupState.unread_count <= 0
+      ) {
+        result.push(groupId);
+      }
+    }),
+  );
+  return result;
+}
+
+export { extractHiddenGroupIds, extractHiddenGroupIdsWithoutUnread };

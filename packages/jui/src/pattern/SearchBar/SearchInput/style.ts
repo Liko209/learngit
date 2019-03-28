@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import MuiTextField from '@material-ui/core/TextField';
-import { JuiIconButton } from '../../../components/Buttons/IconButton';
+import { JuiIconButton } from '../../../components/Buttons';
 import styled, { css } from '../../../foundation/styled-components';
+import { Theme } from '../../../foundation/theme/theme';
 import {
   spacing,
   height,
@@ -14,11 +15,19 @@ import {
   palette,
 } from '../../../foundation/utils/styles';
 import { JuiTextField } from '../../../components/Forms';
+import { fade } from '@material-ui/core/styles/colorManipulator';
+import { JuiIconography } from '../../../foundation/Iconography';
 
 type SearchWrapperType = {
   focus: boolean;
-  hasValue: string;
+  hasValue?: boolean;
 };
+
+const colorTransition = ({ theme }: { theme: Theme }) =>
+  theme.transitions.create(['color'], {
+    easing: theme.transitions.easing.easeInOut,
+    duration: theme.transitions.duration.standard,
+  });
 
 const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   height: ${height(10)};
@@ -27,38 +36,46 @@ const SearchWrapper = styled<SearchWrapperType, 'div'>('div')`
   display: flex;
   position: relative;
   box-sizing: border-box;
-  background: ${({ focus }) =>
-      focus ? palette('common', 'white') : grey('100')}
-    ${({ hasValue, focus }) => {
-      return hasValue && focus
-        ? css`
-            border-top-right-radius: ${spacing(1)};
-            border-top-left-radius: ${spacing(1)};
-          `
-        : css`
-            border-radius: ${spacing(1)};
-          `;
-    }}
-    ${({ focus }) =>
-      focus
-        ? css`
-            border-bottom: 1px solid ${grey('200')};
-          `
-        : null};
+  background: ${({ theme, focus }) =>
+    focus
+      ? palette('common', 'white')
+      : fade(palette('common', 'white')({ theme }), 0.22)};
+
+  ${({ hasValue, focus }) => {
+    return hasValue && focus
+      ? css`
+          border-top-right-radius: ${spacing(1)};
+          border-top-left-radius: ${spacing(1)};
+        `
+      : css`
+          border-radius: ${spacing(1)};
+        `;
+  }};
+
+  ${({ focus }) =>
+    focus
+      ? css`
+          border-bottom: 1px solid ${grey('200')};
+        `
+      : null};
+
   z-index: ${({ theme }) => theme.zIndex.drawer + 12};
-  transition: all 0.3s ${({ theme }) => theme.transitions.easing.easeInOut};
+
+  transition: ${colorTransition};
+
   &:hover {
-    background: ${({ focus }) =>
-      focus ? palette('common', 'white') : grey('300')};
+    background: ${({ focus, theme }) =>
+      focus ? undefined : fade(palette('common', 'white')({ theme }), 0.32)};
   }
 `;
 
-const SearchIcon = styled(JuiIconButton)`
-  color: ${grey('500')};
+const SearchIcon = styled(JuiIconography)`
+  transition: ${colorTransition};
 `;
 
-const CloseBtn = styled(SearchIcon)`
+const CloseBtn = styled(JuiIconButton)`
   cursor: pointer;
+  transition: ${colorTransition};
 `;
 
 const SearchInput = styled(JuiTextField)`
@@ -66,22 +83,18 @@ const SearchInput = styled(JuiTextField)`
     width: 100%;
     margin: 0 ${spacing(2)};
     ${typography('body1')};
-    color: ${grey('500')};
+    transition: ${colorTransition};
     .search-input {
-      ::-webkit-input-placeholder {
-        color: ${grey('500')};
-      }
-
-      ::-moz-placeholder {
-        color: ${grey('500')};
-      }
-
-      ::-ms-placeholder {
-        color: ${grey('500')};
-      }
-
+      color: ${palette('common', 'white')};
+      transition: ${colorTransition};
       ::placeholder {
-        color: ${grey('500')};
+        color: ${palette('common', 'white')};
+      }
+      &:focus {
+        color: ${palette('common', 'black')};
+        ::placeholder {
+          color: ${palette('grey', '500')};
+        }
       }
     }
   }

@@ -22,11 +22,11 @@ const packageCacheName = 'package-cache.json';
 const travelWorkspace = (dir: string) => {
   let fixModules = Object.keys(fixedVersionsMap);
 
-  let files = fs.readdirSync(dir, { withFileTypes: true });
+  let files = fs.readdirSync(dir);
 
   for (let file of files) {
-    let p = path.join(dir, file.name);
-    if (file.isDirectory()) {
+    let p = path.join(dir, file);
+    if (fs.lstatSync(p).isDirectory()) {
       travelWorkspace(p);
       continue;
     }
@@ -133,7 +133,7 @@ const travelNodeModules = (modulesPath: string, dirPath: string, cache: {}) => {
   let files = fs.readdirSync(dirPath, { withFileTypes: true });
 
   for (let file of files) {
-    if (!file.isDirectory()) {
+    if (fs.lstatSync(path.join(dirPath, file)).isDirectory()) {
       continue;
     }
 

@@ -3,6 +3,8 @@
  * @Date: 2018-12-27 17:42:00
  * Copyright © RingCentral. All rights reserved.
  */
+import { RTCSipFlags } from '../api/types';
+
 type RTCSipProvisionInfo = {
   device: object;
   sipInfo: {
@@ -13,7 +15,7 @@ type RTCSipProvisionInfo = {
     authorizationId: string;
     outboundProxy: string;
   }[];
-  sipFlags: object;
+  sipFlags: RTCSipFlags;
 };
 
 type RTCRegisterAsyncTask = {
@@ -26,7 +28,10 @@ enum RTC_PROV_EVENT {
 }
 
 enum REGISTRATION_ERROR_CODE {
-  TIME_OUT = 500,
+  SERVER_TIME_OUT = 504,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  PROXY_AUTHENTICATION_REQUIRED = 407,
 }
 
 enum REGISTRATION_EVENT {
@@ -39,11 +44,12 @@ enum REGISTRATION_EVENT {
   UA_REGISTER_FAILED = 'uaRegisterFailed',
   UA_REGISTER_TIMEOUT = 'uaRegisterTimeout',
   UA_UNREGISTERED = 'uaUnregistered',
+  UA_TRANSPORT_ERROR = 'uaTransportError',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
   LOGOUT = 'logout',
   LOGOUT_ACTION = 'logoutAction',
-  MAKE_OUTGOING_CALL = 'makeOutgoingCall',
   RECEIVE_INCOMING_INVITE = 'receiveIncomingInvite',
+  REFRESH_PROV = 'refreshProvisioning',
 }
 
 enum REGISTRATION_FSM_STATE {

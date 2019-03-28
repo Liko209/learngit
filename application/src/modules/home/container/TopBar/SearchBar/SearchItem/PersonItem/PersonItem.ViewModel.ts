@@ -7,17 +7,27 @@ import { computed } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { Props } from '../types';
 import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
+import { SearchService } from 'sdk/module/search';
+import { Props, ISearchItemModel, RecentSearchTypes } from '../types';
 
-class PersonItemViewModel extends StoreViewModel<Props> {
+class PersonItemViewModel extends StoreViewModel<Props>
+  implements ISearchItemModel {
   constructor(props: Props) {
     super(props);
     const { sectionIndex, cellIndex } = props;
+
     this.reaction(
       () => this.person,
-      () => this.props.didChange(sectionIndex, cellIndex),
+      () => (person: PersonModel) => {
+        this.props.didChange(sectionIndex, cellIndex);
+        if (person.deactivated) {
+          SearchService.getInstance().removeRecentSearchRecords(
+            new Set([person.id]),
+          );
+        }
+      },
     );
   }
 
@@ -31,6 +41,13 @@ class PersonItemViewModel extends StoreViewModel<Props> {
   get hovered() {
     const { sectionIndex, selectIndex, cellIndex } = this.props;
     return sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
+  }
+
+  addRecentRecord = () => {
+    SearchService.getInstance().addRecentSearchRecord(
+      RecentSearchTypes.PEOPLE,
+      this.props.id,
+    );
   }
 }
 

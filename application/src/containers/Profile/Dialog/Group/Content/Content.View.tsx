@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogGroupContentViewProps } from './types';
 import { JuiDivider } from 'jui/components/Divider';
 import { GroupAvatar } from '@/containers/Avatar';
@@ -17,19 +17,16 @@ import {
   JuiProfileDialogContentSummaryName as Name,
   JuiProfileDialogContentSummaryDescription as Description,
   JuiProfileDialogContentSummaryButtons as Buttons,
-  JuiProfileDialogContentMembers as Members,
 } from 'jui/pattern/Profile/Dialog';
-import { goToConversation } from '@/common/goToConversation';
-import { MemberHeader, MemberList } from './Members';
-import { AddMembers } from './AddMembers';
-import { Dialog } from '@/containers/Dialog';
+import { goToConversationWithLoading } from '@/common/goToConversation';
+import { Members } from './Members';
 import { joinTeam } from '@/common/joinPublicTeam';
 import portalManager from '@/common/PortalManager';
 import { renderButton } from './common/button';
 
 @observer
 class ProfileDialogGroupContentViewComponent extends Component<
-  WithNamespaces & ProfileDialogGroupContentViewProps
+  WithTranslation & ProfileDialogGroupContentViewProps
 > {
   joinTeamAfterClick = () => {
     const handerJoinTeam = joinTeam(this.props.group);
@@ -38,17 +35,9 @@ class ProfileDialogGroupContentViewComponent extends Component<
   }
 
   messageAfterClick = async () => {
-    const { id } = this.props;
-    await goToConversation({ id });
+    const { destinationId } = this.props;
+    await goToConversationWithLoading({ id: destinationId });
     portalManager.dismissLast();
-  }
-
-  addTeamMembers = () => {
-    const { group } = this.props;
-    portalManager.dismissLast();
-    Dialog.simple(<AddMembers group={group} />, {
-      size: 'medium',
-    });
   }
 
   render() {
@@ -94,16 +83,13 @@ class ProfileDialogGroupContentViewComponent extends Component<
           </Right>
         </Summary>
         <JuiDivider />
-        <Members>
-          <MemberHeader id={id} AddTeamMembers={this.addTeamMembers} />
-          <MemberList id={id} />
-        </Members>
+        <Members id={id} />
       </>
     );
   }
 }
 
-const ProfileDialogGroupContentView = translate('translations')(
+const ProfileDialogGroupContentView = withTranslation('translations')(
   ProfileDialogGroupContentViewComponent,
 );
 

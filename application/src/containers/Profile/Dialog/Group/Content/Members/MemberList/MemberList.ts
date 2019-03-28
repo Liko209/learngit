@@ -6,22 +6,11 @@
 import { buildContainer } from '@/base';
 import { MemberListView } from './MemberList.View';
 import { MemberListViewModel } from './MemberList.ViewModel';
-import { LoadingMorePlugin, LoadingPlugin } from '@/plugins';
 import { MemberListProps } from './types';
 
 const MemberList = buildContainer<MemberListProps>({
   View: MemberListView,
   ViewModel: MemberListViewModel,
-  plugins() {
-    return {
-      loadingMorePlugin: new LoadingMorePlugin({
-        thresholdDown: 300,
-        initialScrollTop: 0,
-        stickTo: 'top',
-      }),
-      loadingPlugin: new LoadingPlugin(),
-    };
-  },
 });
 
 export { MemberList, MemberListProps };

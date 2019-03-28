@@ -21,7 +21,7 @@ test(formalName(`The Add Team Members dialog display correctly after clicking 'A
   const otherUser = users[5];
   await h(t).platform(admin).init();
   await h(t).glip(admin).init();
-  await h(t).glip(admin).resetProfile()
+  await h(t).glip(admin).resetProfileAndState()
 
 
   const app = new AppRoot(t);
@@ -73,7 +73,7 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
   const otherUser = users[5];
   await h(t).platform(admin).init();
   await h(t).glip(admin).init();
-  await h(t).glip(admin).resetProfile();
+  await h(t).glip(admin).resetProfileAndState();
 
   const adminName = await h(t).glip(admin).getPersonPartialData('display_name');
   const nonMemberName = await h(t).glip(admin).getPersonPartialData('display_name', users[6].rcId);
@@ -168,7 +168,7 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
     await t.expect(profileDialog.memberEntryByName(nonMemberName).exists).ok();
-    await profileDialog.close();
+    await profileDialog.clickCloseButton();
    });
 
    const conversationPage = app.homePage.messageTab.conversationPage;
@@ -186,7 +186,7 @@ test(formalName(`The existing team members should not be displayed as search res
   const otherUser = users[5];
   await h(t).platform(admin).init();
   await h(t).glip(admin).init();
-  await h(t).glip(admin).resetProfile()
+  await h(t).glip(admin).resetProfileAndState()
 
   const otherUserName = await h(t).glip(admin).getPersonPartialData('display_name', otherUser.rcId);
 
@@ -248,7 +248,7 @@ test(formalName(`The member list and counts are updated when the member is added
   const otherUser = users[5];
   await h(t).platform(admin).init();
   await h(t).glip(admin).init();
-  await h(t).glip(admin).resetProfile()
+  await h(t).glip(admin).resetProfileAndState()
 
   const nonMemberName = await h(t).glip(admin).getPersonPartialData('display_name', otherUser.rcId);
 

@@ -64,6 +64,8 @@ interface IItemService {
 
   requestSyncGroupItems(groupId: number): Promise<void>;
 
+  getThumbsUrlWithSize(itemId: number): Promise<string>;
+
   getThumbsUrlWithSize(
     itemId: number,
     width: number,
@@ -71,5 +73,10 @@ interface IItemService {
   ): Promise<string>;
 
   hasUploadingFiles(): boolean;
+
+  getItemIndexInfo(
+    itemId: number,
+    options: ItemQueryOptions,
+  ): Promise<{ index: number; totalCount: number }>;
 }
 export { IItemService };

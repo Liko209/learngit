@@ -173,7 +173,7 @@ class NotificationCenter extends EventEmitter2 {
 }
 
 const notificationCenter: NotificationCenter = new NotificationCenter();
-notificationCenter.setMaxListeners(40);
+notificationCenter.setMaxListeners(1000);
 
 export { NotificationCenter };
 export default notificationCenter;

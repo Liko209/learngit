@@ -10,6 +10,7 @@ import {
   getThumbnailForSquareSize as square,
 } from 'jui/foundation/utils/calculateImageSize';
 import { ItemService } from 'sdk/module/item/service';
+import { Omit } from 'jui/foundation/utils/typeHelper';
 
 enum RULE {
   SQUARE_IMAGE,
@@ -28,16 +29,17 @@ type Result = ThumbnailInfo & {
   url: string;
 };
 
-const generateModifiedImageURL = async ({
-  id,
+const getModifiedImageSize = ({
   origWidth,
   origHeight,
   rule,
   squareSize = 36,
-}: Request): Promise<Result> => {
+}: Omit<Request, 'id'>): Result => {
   let result: Result = {
     width: origWidth,
     height: origHeight,
+    imageWidth: origWidth,
+    imageHeight: origHeight,
     top: 0,
     left: 0,
     justifyWidth: false,
@@ -58,26 +60,33 @@ const generateModifiedImageURL = async ({
     default:
       break;
   }
+  return result;
+};
+
+const generateModifiedImageURL = async ({
+  id,
+  origWidth,
+  origHeight,
+  rule,
+  squareSize = 36,
+}: Request): Promise<Result> => {
+  const result: Result = getModifiedImageSize({
+    origWidth,
+    origHeight,
+    rule,
+    squareSize,
+  });
   // fetch crop image url
-  let { width, height } = result;
-  if (width > 0 && height > 0) {
-    // should adjust height or width according to server thumbnail policy.
-    // optimize for js float calculation
-    if (origWidth < origHeight) {
-      const newHeight = (width / origWidth) * origHeight;
-      if (Math.abs(newHeight - height) > 1) {
-        height = newHeight;
-      }
-    } else {
-      const newWidth = (height / origHeight) * origWidth;
-      if (Math.abs(newWidth - width) > 1) {
-        width = newWidth;
-      }
-    }
+  const { imageWidth, imageHeight } = result;
+  if (imageWidth > 0 && imageHeight > 0) {
     const itemService = ItemService.getInstance() as ItemService;
-    result.url = await itemService.getThumbsUrlWithSize(id, width, height);
+    result.url = await itemService.getThumbsUrlWithSize(
+      id,
+      imageWidth,
+      imageHeight,
+    );
   }
   return result;
 };
 
-export { generateModifiedImageURL, RULE, Result };
+export { generateModifiedImageURL, getModifiedImageSize, RULE, Result };

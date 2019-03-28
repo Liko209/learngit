@@ -15,6 +15,7 @@ describe('Event Item Dao', () => {
       id: 1,
       group_ids: [1],
       created_at: 1,
+      modified_at: 1,
       name: 'item1',
       type: 'jpg',
     },
@@ -22,6 +23,7 @@ describe('Event Item Dao', () => {
       id: 2,
       group_ids: [1],
       created_at: 2,
+      modified_at: 2,
       name: 'item2',
       type: 'png',
     },
@@ -29,6 +31,7 @@ describe('Event Item Dao', () => {
       id: 3,
       group_ids: [2],
       created_at: 3,
+      modified_at: 3,
       name: 'item3',
       type: 'exe',
     },
@@ -36,6 +39,7 @@ describe('Event Item Dao', () => {
       id: 4,
       group_ids: [1],
       created_at: 3,
+      modified_at: 3,
       name: 'item4',
       type: 'txt',
     },
@@ -64,6 +68,7 @@ describe('Event Item Dao', () => {
           id: 1,
           group_ids: [1],
           created_at: 1,
+          modified_at: 1,
           name: 'item1',
           type: 'jpg',
         },
@@ -71,6 +76,7 @@ describe('Event Item Dao', () => {
           id: 2,
           group_ids: [1],
           created_at: 2,
+          modified_at: 2,
           name: 'item2',
           type: 'png',
         },
@@ -78,6 +84,7 @@ describe('Event Item Dao', () => {
           id: 4,
           group_ids: [1],
           created_at: 3,
+          modified_at: 3,
           name: 'item4',
           type: 'txt',
         },
@@ -109,7 +116,7 @@ describe('Event Item Dao', () => {
         type: 'application/pdf',
         type_id: 10,
         version: 2271038454890496,
-        versions: [],
+        versions: [] as any[],
       };
       return {
         fileItem,
@@ -118,12 +125,27 @@ describe('Event Item Dao', () => {
 
     const { fileItem } = setUpData();
     it('should return sanitized item', () => {
-      expect(dao.toSanitizedItem(fileItem)).toEqual({
+      expect(dao.toSanitizedItem(fileItem as any)).toEqual({
         id: fileItem.id,
         group_ids: fileItem.group_ids,
         created_at: fileItem.created_at,
+        modified_at: fileItem.modified_at,
         name: fileItem.name,
         type: fileItem.type,
+        __latest_version_date: fileItem.created_at,
+      });
+    });
+
+    it('should set _latest_version_date to latest valid version', () => {
+      fileItem.versions = [{ date: 999, deactivated: true }, { date: 888 }];
+      expect(dao.toSanitizedItem(fileItem as any)).toEqual({
+        id: fileItem.id,
+        group_ids: fileItem.group_ids,
+        created_at: fileItem.created_at,
+        modified_at: fileItem.modified_at,
+        name: fileItem.name,
+        type: fileItem.type,
+        __latest_version_date: 888,
       });
     });
   });
@@ -152,6 +174,7 @@ describe('Event Item Dao', () => {
     const itemResult = {
       id: 536412170,
       created_at: 1546857116347,
+      modified_at: 1546857116623,
       group_ids: [842096646],
       name: '人月神话（CN）.pdf',
       type: 'application/pdf',

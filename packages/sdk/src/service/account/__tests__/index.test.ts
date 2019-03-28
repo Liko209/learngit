@@ -4,41 +4,42 @@
  */
 /// <reference path="../../../__tests__/types.d.ts" />
 import AccountService from '..';
-import { daoManager, AccountDao } from '../../../dao';
+import { daoManager } from '../../../dao';
 import { PersonDao } from '../../../module/person/dao';
 import { refreshToken } from '../../../api';
+import { AccountUserConfig } from '../../../service/account/config/AccountUserConfig';
+import { AuthUserConfig } from '../../../service/auth/config';
 
 jest.mock('../../../dao');
 jest.mock('../../../module/person/dao');
 jest.mock('../../../api');
+jest.mock('../../../service/auth/config');
+jest.mock('../../../service/account/config/AccountUserConfig');
 
 describe('AccountService', () => {
   let accountService: AccountService;
-  let accountDao: AccountDao;
   let personDao: PersonDao;
 
   beforeAll(() => {
-    accountDao = new AccountDao(null);
     personDao = new PersonDao(null);
     daoManager.getDao.mockReturnValue(personDao);
-    daoManager.getKVDao.mockReturnValue(accountDao);
     accountService = new AccountService();
-  });
-
-  beforeEach(() => {
-    accountDao.get.mockClear();
   });
 
   describe('getCurrentUserInfo()', () => {
     it('should return current user info', () => {
       expect.assertions(1);
-      accountDao.get.mockClear();
-      accountDao.get.mockReturnValueOnce(1).mockReturnValueOnce(222);
       personDao.get.mockReturnValueOnce({
         id: 1,
         email: 'a@gmail.com',
         display_name: 'display_name',
       });
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(222);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValue(222);
 
       const user = accountService.getCurrentUserInfo();
       return expect(user).resolves.toEqual({
@@ -50,15 +51,12 @@ describe('AccountService', () => {
 
     it('should return {} when not userId ', () => {
       expect.assertions(1);
-      accountDao.get.mockReturnValueOnce('').mockReturnValueOnce('123');
       const userInfo = accountService.getCurrentUserInfo();
       return expect(userInfo).resolves.toEqual({});
     });
 
     it('should return {} when not personInfo', () => {
       expect.assertions(1);
-      accountDao.get.mockClear();
-      accountDao.get.mockReturnValueOnce('12').mockReturnValueOnce('123');
       personDao.get.mockReturnValueOnce('');
       const personInfo = accountService.getCurrentUserInfo();
       return expect(personInfo).resolves.toEqual({});

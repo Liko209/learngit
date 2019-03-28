@@ -4,5 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ProfileService } from './service/ProfileService';
-import { extractHiddenGroupIds } from './service/ProfileUtils';
-export { ProfileService, extractHiddenGroupIds };
+import {
+  extractHiddenGroupIds,
+  extractHiddenGroupIdsWithoutUnread,
+} from './service/ProfileUtils';
+export {
+  ProfileService,
+  extractHiddenGroupIds,
+  extractHiddenGroupIdsWithoutUnread,
+};

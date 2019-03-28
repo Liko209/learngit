@@ -5,11 +5,13 @@
  */
 
 type ActionsProps = {
-  id: number; // post id
+  postId: number;
+  groupId: number;
 };
 
 type ActionsViewProps = {
-  id: number;
+  postId: number;
+  groupId: number;
 };
 
 export { ActionsProps, ActionsViewProps };

@@ -9,6 +9,7 @@ import {
   ImageFileExtensions,
   ResizableExtensions,
   SupportPreviewImageExtensions,
+  SupportShowRawImageExtensions,
 } from './ImageFileExtensions';
 import { ItemVersions } from '../../../entity';
 
@@ -17,7 +18,7 @@ const ImagePrefix = 'image/';
 
 class FileItemUtils {
   static filterType<T extends { type: string }>(file: T) {
-    let { type } = file;
+    let { type = '' } = file;
     type = type.toLowerCase();
     if (type.indexOf(ImagePrefix) === 0) {
       return type.substring(ImagePrefix.length, type.length);
@@ -27,6 +28,11 @@ class FileItemUtils {
   static isSupportPreview<T extends { type: string }>(file: T) {
     const type = FileItemUtils.filterType(file);
     return SupportPreviewImageExtensions.has(type);
+  }
+
+  static isSupportShowRawImage<T extends { type: string }>(file: T) {
+    const type = FileItemUtils.filterType(file);
+    return SupportShowRawImageExtensions.has(type);
   }
 
   static isImageResizable<T extends { type: string }>(file: T) {
@@ -64,6 +70,16 @@ class FileItemUtils {
 
   static isFromGiphy<T extends { source?: string }>(file: T) {
     return file.source && file.source.toLowerCase() === GifSource;
+  }
+
+  static getVersionDate<T extends { versions: ItemVersions[] }>(file: T) {
+    if (!Array.isArray(file.versions)) return null;
+    for (const version of file.versions) {
+      if (!version.deactivated) {
+        return version.date;
+      }
+    }
+    return null;
   }
 }
 

@@ -13,6 +13,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('TeamSetting/DeleteTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -148,20 +149,20 @@ test(formalName(`The team can't be displayed on conversation list and search res
   await h(t).platform(adminUser).init();
   await h(t).glip(adminUser).init();
 
-  const teamName = uuid();
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser, memberUser],
+  }
 
-  const teamSection = app.homePage.messageTab.teamsSection;
+  await h(t).withLog(`Given I have one new team ${team.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
   const profileDialog = app.homePage.profileDialog;
   const deleteTeamDialog = app.homePage.deleteTeamDialog;
-
-  let teamId;
-  await h(t).withLog(`Given I have one new team ${teamName}`, async () => {
-    teamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: teamName,
-      type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
-    });
-  });
 
   await h(t).withLog(`And I login Jupiter with adminUser: ${adminUser.company.number}#${adminUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, adminUser);
@@ -169,7 +170,7 @@ test(formalName(`The team can't be displayed on conversation list and search res
   });
 
   await h(t).withLog(`When I open Team setting dialog via team profile entry on conversation list`, async () => {
-    await teamSection.conversationEntryById(teamId).openMoreMenu();
+    await teamEntry.openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
     await profileDialog.clickSetting();
   });
@@ -186,33 +187,33 @@ test(formalName(`The team can't be displayed on conversation list and search res
   });
 
   await h(t).withLog(`Then the team conversation was removed from the conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+    await t.expect(teamEntry.exists).notOk();
   });
 
   const searchBar = app.homePage.header.search;
-  await h(t).withLog(`When search with keyword "${teamName}"`, async () => {
-    await searchBar.typeSearchKeyword(teamName);
+  await h(t).withLog(`When search with keyword "${team.name}"`, async () => {
+    await searchBar.typeSearchKeyword(team.name);
   });
 
   await h(t).withLog(`Then I can't find the team in search results list`, async () => {
-    await t.expect(searchBar.teams.withText(teamName).exists).notOk()
+    await t.expect(searchBar.teams.withText(team.name).exists).notOk()
   }, true);
 
   await h(t).withLog(`When I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
-    const roleMember = await h(t).userRole(memberUser);
-    await t.useRole(roleMember);
+    await searchBar.quit();
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
   });
 
   await h(t).withLog(`Then can't find the team in conversation list`, async () => {
-    await t.expect(teamSection.conversationEntryById(teamId).exists).notOk();
+    await t.expect(teamEntry.exists).notOk();
   });
 
-  await h(t).withLog(`When search with keyword "${teamName}"`, async () => {
-    await searchBar.typeSearchKeyword(teamName);
+  await h(t).withLog(`When search with keyword "${team.name}"`, async () => {
+    await searchBar.typeSearchKeyword(team.name);
   });
 
   await h(t).withLog(`Then I can't find the team in search results list`, async () => {
-    await t.expect(searchBar.teams.withText(teamName).exists).notOk()
+    await t.expect(searchBar.teams.withText(team.name).exists).notOk()
   }, true);
 });
 

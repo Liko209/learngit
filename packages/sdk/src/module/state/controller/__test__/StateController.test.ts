@@ -11,10 +11,7 @@ import { StateActionController } from '../implementation/StateActionController';
 import { StateDataHandleController } from '../implementation/StateDataHandleController';
 import { TotalUnreadController } from '../implementation/TotalUnreadController';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import {
-  buildPartialModifyController,
-  buildRequestController,
-} from '../../../../framework/controller';
+import { buildRequestController } from '../../../../framework/controller';
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
@@ -33,9 +30,6 @@ describe('StateController', () => {
   describe('getStateActionController()', () => {
     it('should call functions with correct params', () => {
       const result = stateController.getStateActionController();
-      expect(buildPartialModifyController).toBeCalledWith(
-        mockEntitySourceController,
-      );
       expect(buildRequestController).toBeCalledWith({
         basePath: '/save_state_partial',
         networkClient: Api.glipNetworkClient,

@@ -6,11 +6,12 @@ import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { PERMISSION_ENUM } from '../constants';
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
 import { PermissionFlags, TeamSetting } from '../types';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 interface IGroupService {
   isValid(group: Group): boolean;
 
-  handleData(groups: Raw<Group>[]): Promise<void>;
+  handleData(groups: Raw<Group>[], source: SYNC_SOURCE): Promise<void>;
 
   isInTeam(userId: number, team: Group): boolean;
 
@@ -62,7 +63,7 @@ interface IGroupService {
     _limit?: number,
   ): Promise<Group[]>;
 
-  getGroupsByIds(ids: number[]): Promise<Group[]>;
+  getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]>;
 
   getLocalGroup(personIds: number[]): Promise<Group | null>;
 
@@ -113,6 +114,10 @@ interface IGroupService {
   isGroupCanBeShown(groupId: number): Promise<boolean>;
 
   deleteGroupsConfig(ids: number[]): Promise<void>;
+
+  getIndividualGroups(): Map<number, Group>;
+
+  isIndividualGroup(group: Group): boolean;
 }
 
 export { IGroupService };

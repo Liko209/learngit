@@ -12,7 +12,7 @@ import { computed, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { ENTITY_NAME } from '@/store';
 
-import { GroupState } from 'sdk/models';
+import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
 import postCacheController from './cache/PostCacheController';
@@ -47,16 +47,6 @@ export class StreamController {
     return this._groupState.readThrough || 0;
   }
 
-  @computed
-  get hasMoreUp() {
-    return this._orderListHandler.hasMore(QUERY_DIRECTION.OLDER);
-  }
-
-  @computed
-  get hasMoreDown() {
-    return this._orderListHandler.hasMore(QUERY_DIRECTION.NEWER);
-  }
-
   constructor(
     private _groupId: number,
     private _historyHandler: HistoryHandler,
@@ -71,7 +61,7 @@ export class StreamController {
     }
 
     this._orderListHandler = listHandler;
-    this._orderListHandler.setDataChangeCallback(this.handlePostsChanged);
+    this._orderListHandler.addDataChangeCallback(this.handlePostsChanged);
 
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this._streamListHandler = new FetchSortableDataListHandler<StreamItem>(
@@ -102,21 +92,29 @@ export class StreamController {
     if (!isFirstItemPost) {
       startIndex = 1;
     }
-    return _(items)
+    let chain = _(items)
       .slice(startIndex)
       .map('data')
-      .compact()
-      .value();
+      .compact();
+
+    if (!this.hasMore(QUERY_DIRECTION.OLDER)) {
+      const initialPost: StreamItem = {
+        id: 1,
+        type: StreamItemType.INITIAL_POST,
+        timeStart: 1,
+      };
+      chain = chain.unshift(initialPost);
+    }
+    return chain.value();
   }
 
   dispose() {
     if (this._orderListHandler) {
-      this._orderListHandler.setDataChangeCallback();
+      this._orderListHandler.removeDataChangeCallback(this.handlePostsChanged);
     }
     if (this._streamListHandler) {
       this._streamListHandler.dispose();
     }
-
     if (!this._jumpToPostId) {
       postCacheController.releaseCurrentConversation(this._groupId);
     }
@@ -131,7 +129,7 @@ export class StreamController {
     const { streamItems } = this._assemblyLine.process(
       delta,
       this._orderListHandler.listStore.items,
-      this.hasMoreUp,
+      this.hasMore(QUERY_DIRECTION.OLDER),
       items,
       this._readThrough,
     );

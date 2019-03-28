@@ -21,6 +21,8 @@ import { PermissionFlags, TeamSetting } from '../types';
 import { IGroupService } from './IGroupService';
 import { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
 import { Post } from '../../post/entity';
+import { SYNC_SOURCE } from '../../../module/sync/types';
+import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   static serviceName = 'GroupService';
@@ -42,6 +44,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
           .setAsTrue4HasMoreConfigByDirection,
       }),
     );
+  }
+
+  protected buildEntityCacheController() {
+    return GroupEntityCacheController.buildGroupEntityCacheController(this);
   }
 
   protected getPartialModifyController() {
@@ -72,10 +78,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return this.groupConfigController;
   }
 
-  handleData = async (groups: Raw<Group>[]): Promise<void> => {
+  handleData = async (
+    groups: Raw<Group>[],
+    source: SYNC_SOURCE,
+  ): Promise<void> => {
     await this.getGroupController()
       .getHandleDataController()
-      .handleData(groups);
+      .handleData(groups, source);
   }
 
   handleGroupMostRecentPostChanged = async (
@@ -93,7 +102,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   isValid(group: Group): boolean {
-    return !group.is_archived && !group.deactivated && !!group.members;
+    return group && !group.is_archived && !group.deactivated && !!group.members;
   }
 
   isInTeam(userId: number, team: Group) {
@@ -214,10 +223,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .getGroupsByType(groupType, offset, _limit);
   }
 
-  async getGroupsByIds(ids: number[]): Promise<Group[]> {
+  async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     return await this.getGroupController()
       .getGroupFetchDataController()
-      .getGroupsByIds(ids);
+      .getGroupsByIds(ids, order);
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
@@ -250,6 +259,16 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return await this.getGroupController()
       .getGroupActionController()
       .createTeam(creator, memberIds, options);
+  }
+
+  async convertToTeam(
+    groupId: number,
+    memberIds: number[],
+    teamSetting: TeamSetting = {},
+  ): Promise<Group> {
+    return await this.getGroupController()
+      .getGroupActionController()
+      .convertToTeam(groupId, memberIds, teamSetting);
   }
 
   async getLeftRailGroups(): Promise<Group[]> {
@@ -330,6 +349,17 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
 
   async deleteGroupsConfig(ids: number[]): Promise<void> {
     await this.getGroupConfigController().deleteGroupsConfig(ids);
+  }
+
+  isIndividualGroup(group: Group) {
+    return this.getGroupController()
+      .getGroupActionController()
+      .isIndividualGroup(group);
+  }
+
+  getIndividualGroups() {
+    const cache = this.getEntityCacheController() as GroupEntityCacheController;
+    return cache.getIndividualGroups();
   }
 }
 

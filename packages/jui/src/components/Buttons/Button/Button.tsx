@@ -67,11 +67,7 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       variant={_variant}
       {...restProps}
     >
-      {loading ? (
-        <JuiCircularProgress size={20} white={_variant === 'contained'} />
-      ) : (
-        children
-      )}
+      {loading ? <JuiCircularProgress size={20} color="inherit" /> : children}
     </MuiButton>
   );
 };
@@ -93,7 +89,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       color: ${palette('common', 'white')};
       ${shadow(3)}
       background-color: ${({ color = 'primary' }) =>
-        palette(ColorMap[color][0], ColorMap[color][1])}
+        palette(ColorMap[color][0], ColorMap[color][1])};
       &:hover {
         opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity}
       }
@@ -158,4 +154,4 @@ JuiButtonComponent.defaultProps = {
 
 const JuiButton = styled(React.memo(JuiButtonComponent))``;
 
-export { JuiButton, JuiButtonProps, JuiButtonColor };
+export { JuiButton, JuiButtonProps, JuiButtonColor, ColorMap };

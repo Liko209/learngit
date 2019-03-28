@@ -11,6 +11,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('Profile/ChangeTeamAdmin')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -92,8 +93,7 @@ test(formalName('Only admin has the ability to change team admins', ['P1', 'JPT-
 
   // Case2: admin 'u1' changed to member
   await h(t).withLog(`When hover on the admin 'u1' row`, async () => {
-    // await profileDialog.memberMoreMenu.quit();
-    await t.click(profileDialog.profileTitle); // FIXME: press key 'ESC' invalid
+    await profileDialog.memberMoreMenu.quit();
     await t.hover(profileDialog.memberEntryByName(u1Name).self);
   });
 
@@ -131,50 +131,103 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
   const users = h(t).rcData.mainCompany.users;
   const u1 = users[4];
   const u2 = users[5];
+  const u3 = users[6];
+
   await h(t).glip(u1).init();
-  const app = new AppRoot(t);
-  const profileDialog = app.homePage.profileDialog;
-  const teamSettingDialog = app.homePage.teamSettingDialog;
-  const u1Name = await h(t).glip(u1).getPersonPartialData('display_name', u1.rcId);
+
+  const u3Name = await h(t).glip(u1).getPersonPartialData('display_name', u3.rcId);
   const u2Name = await h(t).glip(u1).getPersonPartialData('display_name', u2.rcId);
   const u1PersonId = await h(t).glip(u1).toPersonId(u1.rcId);
   const u2PersonId = await h(t).glip(u1).toPersonId(u2.rcId);
+  const u3PersonId = await h(t).glip(u1).toPersonId(u3.rcId);
 
-  let teamId;
-  await h(t).withLog('Given I have one team', async () => {
-    teamId = await h(t).platform(u1).createAndGetGroupId({
-      isPublic: true,
-      name: uuid(),
-      type: 'Team',
-      members: [u1.rcId, u2.rcId],
+  let team = <IGroup>{
+    name: uuid(),
+    type: "Team",
+    owner: u1,
+    members: [u1, u2, u3]
+  }
+  let adminIds = [u1PersonId, u2PersonId];
+  await h(t).withLog(`Given I have one team with 2 admin('u1','u2') and 1 member('u3')`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+    await h(t).glip(u1).updateGroup(team.glipId, {
+      permissions: {
+        admin: { uids: adminIds }
+      }
     });
   });
 
-  const roleUser1 = await h(t).userRole(u1);
-  const roleUser2 = await h(t).userRole(u2);
+  const app = new AppRoot(t);
+  const profileDialog = app.homePage.profileDialog;
+  const teamSettingDialog = app.homePage.teamSettingDialog;
+  const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
 
   //check the settings when admin changed to member
-  await h(t).withLog(`And I login Jupiter with ${u2.company.number}#${u2.extension}`, async () => {
-    await t.useRole(roleUser2);
+  await h(t).withLog(`And I login Jupiter with u2: ${u2.company.number}#${u2.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, u2);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
+  await h(t).withLog(`When u2 open team profile via team "More Menu"`, async () => {
+    await teamEntry.openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });
 
-  let adminIds = [u1PersonId, u2PersonId];
-  await h(t).withLog(`And make member 'u2' to admin`, async () => {
-    await h(t).glip(u1).updateGroup(teamId, {
+  await h(t).withLog(`When I open the team setting dialog`, async () => {
+    await profileDialog.memberEntryByName(u2Name).showAdminLabel();
+    await profileDialog.clickSetting();
+  });
+
+  adminIds = [u1PersonId];
+  await h(t).withLog(`And make login user admin 'u2' to member`, async () => {
+    await h(t).glip(u1).updateGroup(team.glipId, {
       permissions: {
         admin: { uids: adminIds }
       }
     })
   });
 
-  await h(t).withLog(`Then will show 'Admin' label in u2 row`, async () => {
-    await app.homePage.profileDialog.memberEntryByName(u2Name).showAdminLabel();
+  await h(t).withLog(`Then the admin settings dialog will change to non-admin settings dialog`, async () => {
+    await t.expect(teamSettingDialog.teamNameInputArea.exists).notOk();
+    await t.expect(teamSettingDialog.leaveTeamButton.exists).ok();
+  });
+
+  await h(t).withLog(`When click cancel button in the settings profile`, async () => {
+    await teamSettingDialog.cancel();
+  });
+
+  await h(t).withLog(`And u2 open team profile via team "More Menu"`, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.profile.enter();
+  });
+
+  await h(t).withLog(`Then won't show label in member u2 row`, async () => {
+    await profileDialog.memberEntryByName(u2Name).showMemberLabel();
+  });
+
+  //check the settings when admin changed to member
+  await h(t).withLog(`Given I login Jupiter with u3:${u3.company.number}#${u3.extension}`, async () => {
+    await profileDialog.clickCloseButton();
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, u3);
+  });
+
+  await h(t).withLog(`When u3 open team profile via team "More Menu"`, async () => {
+    await teamEntry.openMoreMenu();
+    await app.homePage.messageTab.moreMenu.profile.enter();
+    await profileDialog.memberEntryByName(u3Name).showMemberLabel();
+  });
+
+  adminIds = [u1PersonId, u3PersonId];
+  await h(t).withLog(`And make member 'u3' to admin`, async () => {
+    await h(t).glip(u1).updateGroup(team.glipId, {
+      permissions: {
+        admin: { uids: adminIds }
+      }
+    })
+  });
+
+  await h(t).withLog(`Then will show 'Admin' label in u3 row`, async () => {
+    await profileDialog.memberEntryByName(u3Name).showAdminLabel();
   });
 
   await h(t).withLog(`When I open the team setting dialog`, async () => {
@@ -185,47 +238,6 @@ test(formalName('The admin/non-admin roles should sync dynamically when the role
     await teamSettingDialog.shouldBePopup();
     await t.expect(teamSettingDialog.teamNameInputArea.exists).ok();
   });
-
-  //check the settings when admin changed to member
-  await h(t).withLog(`And I login Jupiter with ${u1.company.number}#${u1.extension}`, async () => {
-    await t.useRole(roleUser1);
-    await app.homePage.ensureLoaded();
-  });
-
-  await h(t).withLog(`When admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
-  });
-
-  await h(t).withLog(`When I open the team setting dialog`, async () => {
-    await profileDialog.clickSetting();
-  });
-
-  adminIds = [u2PersonId];
-  await h(t).withLog(`And make login user admin 'u1' to member`, async () => {
-    await h(t).glip(u1).updateGroup(teamId, {
-      permissions: {
-        admin: { uids: adminIds }
-      }
-    })
-  });
-  await h(t).withLog(`Then the admin settings dialog will change to non-admin settings dialog`, async () => {
-    await t.expect(teamSettingDialog.leaveTeamButton.exists).ok();
-  });
-
-  await h(t).withLog(`When click cancel button in the settings profile`, async () => {
-    await teamSettingDialog.cancel();
-  });
-
-  await h(t).withLog(`And admin open team profile via team "More Menu"`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
-    await app.homePage.messageTab.moreMenu.profile.enter();
-  });
-
-  await h(t).withLog(`Then won't show label in member u1 row`, async () => {
-    await profileDialog.memberEntryByName(u1Name).showMemberLabel();
-  });
-
 });
 
 test(formalName(`The whole "More" menu will be hidden in non-admin side`, ['P1', 'JPT-1101', 'ChangeTeamAdmin', 'Mia.Cai']), async t => {

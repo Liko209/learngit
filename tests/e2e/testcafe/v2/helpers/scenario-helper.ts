@@ -57,6 +57,18 @@ class ScenarioHelper {
     _.pull(team.members, me);
   }
 
+  public async archiveTeam(team: IGroup, operator: IUser) {
+    assert(team.glipId && operator, "require glipId and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    await platform.archiveTeam(team.glipId);
+  }
+
+  public async unArchiveTeam(team: IGroup, operator: IUser) {
+    assert(team.glipId && operator, "require glipId and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    await platform.leaveTeam(team.glipId);
+  }
+
   public async joinTeam(team: IGroup, me: IUser) {
     assert(team.glipId && me, "require glipId and me");
     const platform = await this.sdkHelper.sdkManager.getPlatform(me);
@@ -86,6 +98,82 @@ class ScenarioHelper {
     // update model
     team.members.push(...data);
   }
+
+  public async createOrOpenChat(chat: IGroup) {
+    assert(chat.members && chat.owner, "require members and owner");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(chat.owner);
+    const res = await platform.createOrOpenChat({
+      members: chat.members.map(user => { return { id: user.rcId, email: user.email }; }),
+    });
+    // update model
+    chat.glipId = res.data.id;
+  }
+
+  public async createTeamsOrChats(groups: IGroup[]) {
+    for (const group of groups) {
+      if (group.type == "Team") {
+        await this.createTeam(group);
+      } else {
+        await this.createOrOpenChat(group);
+      }
+    }
+  }
+
+  public async sendTextPost(text: string, chat: IGroup, operator: IUser) {
+    assert(text && chat && operator, "require text, chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    return await platform.sendTextPost(text, chat.glipId);
+  }
+
+  public async sentAndGetTextPostId(text: string, chat: IGroup, operator: IUser) {
+    assert(text && chat && operator, "require text, chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    return await platform.sentAndGetTextPostId(text, chat.glipId);
+  }
+
+  public async addChatToFavorites(chat: IGroup, operator: IUser) {
+    assert(chat && operator, "require chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    await platform.addChatToFavorites(chat.glipId);
+  }
+
+  async removeChatToFavorites(chat: IGroup, operator: IUser) {
+    assert(chat && operator, "require chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    await platform.removeChatToFavorites(chat.glipId);
+  }
+
+  // glip
+  public async clearAllUmi(me: IUser) {
+    assert(me, "require me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.clearAllUmi(me.rcId);
+  }
+
+  public async resetProfileAndState(me: IUser) {
+    assert(me, "require me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.resetProfileAndState(me.rcId);
+  }
+
+  public async resetProfile(me: IUser) {
+    assert(me, "require me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.resetProfile(me.rcId);
+  }
+
+  public async resetState(me: IUser) {
+    assert(me, "require me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.resetState(me.rcId);
+  }
+
+  public async likePost(postId: string, me: IUser) {
+    assert(postId && me, "require postId and me");
+    const glip = await this.sdkHelper.sdkManager.getGlip(me);
+    await glip.likePost(postId);
+  }
+
 }
 
 

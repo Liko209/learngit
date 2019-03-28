@@ -16,7 +16,7 @@ import Base from './Base';
 import i18next from 'i18next';
 import { TeamPermission, GroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
-import { UserConfig } from 'sdk/service/account';
+import { AccountUserConfig } from 'sdk/service/account/config';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -43,9 +43,14 @@ export default class GroupModel extends Base<Group> {
   mostRecentPostId?: number;
   @observable
   deactivated: boolean;
-  isCompanyTeam: boolean;
+  @observable
+  isArchived?: boolean;
+  @observable
+  convertedToTeam?: { team_id?: number; created?: number };
 
+  isCompanyTeam: boolean;
   latestTime: number;
+
   constructor(data: Group) {
     super(data);
     const {
@@ -63,6 +68,8 @@ export default class GroupModel extends Base<Group> {
       permissions,
       deactivated,
       is_company_team,
+      is_archived,
+      converted_to_team,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -81,7 +88,9 @@ export default class GroupModel extends Base<Group> {
     this.mostRecentPostId = most_recent_post_id;
 
     this.deactivated = deactivated;
+    this.isArchived = is_archived;
     this.isCompanyTeam = is_company_team;
+    this.convertedToTeam = converted_to_team;
   }
 
   @computed
@@ -96,8 +105,9 @@ export default class GroupModel extends Base<Group> {
   }
 
   get isMember() {
+    const userConfig = new AccountUserConfig();
     return (
-      this.members && this.members.indexOf(UserConfig.getCurrentUserId()) >= 0
+      this.members && this.members.indexOf(userConfig.getGlipUserId()) >= 0
     );
   }
 
@@ -106,17 +116,16 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.TEAM) {
       return this.setAbbreviation || '';
     }
-
-    const currentUserId = UserConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
     if (this.type === CONVERSATION_TYPES.ME) {
       const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
-      if (person.displayName) {
-        return `${person.displayName} (${i18next.t('message.meGroup')})`;
-      }
-      return '';
+      return `${person.userDisplayNameForGroupName || ''} (${i18next.t(
+        'message.meGroup',
+      )})`;
     }
 
     if (
@@ -152,7 +161,8 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const currentUserId = UserConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
 
     const members = this.members || [];
 
@@ -179,8 +189,9 @@ export default class GroupModel extends Base<Group> {
   @computed
   get membersExcludeMe() {
     const members = this.members || [];
+    const userConfig = new AccountUserConfig();
 
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = userConfig.getGlipUserId();
 
     return members.filter(member => member !== currentUserId);
   }
@@ -241,6 +252,15 @@ export default class GroupModel extends Base<Group> {
     const groupService: GroupService = GroupService.getInstance();
     return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_POST,
+      this.teamPermissionParams,
+    );
+  }
+
+  @computed
+  get canPin() {
+    const groupService: GroupService = GroupService.getInstance();
+    return groupService.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_PIN_POST,
       this.teamPermissionParams,
     );
   }

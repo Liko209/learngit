@@ -9,9 +9,14 @@ import { Group } from '../../group/entity';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
+import { SYNC_SOURCE } from '../../sync/types';
 
 interface IStateService {
-  updateReadStatus(groupId: number, isUnread: boolean): Promise<void>;
+  updateReadStatus(
+    groupId: number,
+    isUnread: boolean,
+    ignoreError: boolean,
+  ): Promise<void>;
 
   updateLastGroup(groupId: number): Promise<void>;
 
@@ -23,7 +28,7 @@ interface IStateService {
 
   getMyStateId(): number;
 
-  handleState(states: Partial<State>[]): Promise<void>;
+  handleState(states: Partial<State>[], source: SYNC_SOURCE): Promise<void>;
 
   handleGroupCursor(groups: Partial<Group>[]): Promise<void>;
 

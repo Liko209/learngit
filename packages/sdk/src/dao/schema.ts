@@ -28,7 +28,7 @@ const gen = (
 
 const schema: ISchema = {
   name: 'Glip',
-  version: 6, // Should update this number if all the old data in client db need to be deleted.
+  version: 9, // Should update this number if all the old data in client db need to be deleted.
   schema: {
     1: {
       person: gen(),
@@ -70,6 +70,9 @@ const schema: ISchema = {
     11: { postView: gen('id', ['group_id', 'created_at']) },
     12: {
       conferenceItem: gen('id', ['*group_ids']),
+    },
+    13: {
+      postDiscontinuous: gen(),
     },
   },
 };

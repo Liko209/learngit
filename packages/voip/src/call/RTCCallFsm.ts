@@ -62,6 +62,9 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_DISCONNECTED, () =>
       this._onEnterDisconnected(),
     );
+    this._callFsmTable.observe(CALL_FSM_NOTIFY.ON_LEAVE_CONNECTED, () =>
+      this._onLeaveConnected(),
+    );
   }
 
   public state(): string {
@@ -399,6 +402,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onEnterDisconnected() {
     this.emit(CALL_FSM_NOTIFY.ENTER_DISCONNECTED);
+  }
+
+  private _onLeaveConnected() {
+    this.emit(CALL_FSM_NOTIFY.LEAVE_CONNECTED);
   }
 }
 

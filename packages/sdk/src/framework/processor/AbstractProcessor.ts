@@ -49,6 +49,10 @@ abstract class AbstractProcessor {
     });
     return existed;
   }
+
+  clear() {
+    this._processors = [];
+  }
 }
 
 export { AbstractProcessor };

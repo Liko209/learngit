@@ -8,7 +8,7 @@ import { ExtendedBaseModel } from '../../../../models';
 import { Raw } from '../../../../../framework/model';
 
 export type Thumbs = {
-  string: string | number;
+  [key: string]: string | number;
 };
 
 export type ItemVersionPage = {
@@ -25,7 +25,9 @@ export type ItemVersions = {
   orig_height?: number;
   orig_width?: number;
   pages?: ItemVersionPage[];
+  deactivated?: boolean;
   stored_file_id: number;
+  date: number;
 };
 
 export type Item = ExtendedBaseModel & {

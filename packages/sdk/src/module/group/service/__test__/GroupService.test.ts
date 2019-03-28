@@ -305,6 +305,25 @@ describe('GroupService', () => {
     });
   });
 
+  describe('pinPost', async () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call group action controller to pin a post', async () => {
+      const pinPost = jest.fn();
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
+        .fn()
+        .mockReturnValue({
+          pinPost,
+        });
+      await groupService.pinPost(1, 2, true);
+      expect(pinPost).toBeCalledWith(1, 2, true);
+    });
+  });
+
   describe('revokeAdmin()', () => {
     beforeEach(() => {
       clearMocks();

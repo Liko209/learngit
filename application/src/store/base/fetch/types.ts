@@ -54,3 +54,7 @@ export type TReplacedData<T> = {
   id: number;
   data: T;
 };
+
+export interface IEntityDataProvider<T> {
+  getByIds(ids: number[]): Promise<T[]>;
+}

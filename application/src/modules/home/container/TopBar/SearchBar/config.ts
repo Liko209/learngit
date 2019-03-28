@@ -3,19 +3,19 @@
  * @Date: 2019-02-01 16:23:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { SectionTypeMap } from './types';
 import { PersonItem, GroupItem } from './SearchItem';
+import { RecentSearchTypes } from 'sdk/module/search/entity';
 
 const SearchSectionsConfig = {
-  [SectionTypeMap.PEOPLE]: {
+  [RecentSearchTypes.PEOPLE]: {
     title: 'People',
     SearchItem: PersonItem,
   },
-  [SectionTypeMap.GROUPS]: {
+  [RecentSearchTypes.GROUP]: {
     title: 'Groups',
     SearchItem: GroupItem,
   },
-  [SectionTypeMap.TEAMS]: {
+  [RecentSearchTypes.TEAM]: {
     title: 'Teams',
     SearchItem: GroupItem,
   },

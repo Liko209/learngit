@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiLogo, JuiTopBar } from 'jui/pattern/TopBar';
 import { MenuListCompositionProps } from 'jui/pattern/MenuListComposition';
@@ -14,7 +14,7 @@ import { NewActions } from './NewActions';
 import { BackNForward } from './BackNForward';
 import { SearchBar } from './SearchBar';
 
-type TopBarProps = WithNamespaces & {
+type TopBarProps = WithTranslation & {
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
   brandName: string;
   currentUserId: number;
@@ -33,7 +33,8 @@ class TopBar extends React.Component<TopBarProps> {
     return (
       <JuiIconButton
         tooltipTitle={t('home.menu')}
-        size="medium"
+        size="large"
+        color="common.white"
         onClick={updateLeftNavState}
         data-test-automation-id="toggleBtn"
         {...mainMenuProps}
@@ -63,6 +64,6 @@ class TopBar extends React.Component<TopBarProps> {
     );
   }
 }
-const TopBarView = translate('translations')(TopBar);
+const TopBarView = withTranslation('translations')(TopBar);
 
 export { TopBarView };

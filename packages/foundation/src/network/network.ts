@@ -12,11 +12,16 @@ type IToken = {
   refresh_token?: string;
 };
 interface IHandleType {
+  name: NETWORK_HANDLE_TYPE;
   survivalModeSupportable: boolean;
   tokenExpirable: boolean;
   tokenRefreshable: boolean;
   defaultVia: NETWORK_VIA;
   doRefreshToken: (token: IToken) => Promise<IToken>;
+  checkServerStatus: (
+    callback: (success: boolean, interval: number) => void,
+  ) => void;
+  onRefreshTokenFailure: () => void;
   basic: () => string;
   requestDecoration: (
     tokenHandler: ITokenHandler,
@@ -88,6 +93,7 @@ interface IRequest {
   params: object;
   handlerType: IHandleType;
   priority: REQUEST_PRIORITY;
+  HAPriority: HA_PRIORITY;
   via: NETWORK_VIA;
   retryCount: number;
   host: string;
@@ -97,18 +103,6 @@ interface IRequest {
 
   callback?: (response: IResponse) => void;
   needAuth(): boolean;
-}
-
-interface IRequestBuilderOption {
-  host?: string;
-  path: string;
-  method: NETWORK_METHOD;
-  handlerType: IHandleType;
-  headers?: Header;
-  params?: object;
-  data?: object;
-  authFree?: boolean;
-  requestConfig?: object;
 }
 
 interface IClient {
@@ -144,6 +138,11 @@ enum REQUEST_PRIORITY {
   LOW,
 }
 
+enum HA_PRIORITY {
+  BASIC,
+  HIGH,
+}
+
 enum NETWORK_VIA {
   HTTP,
   SOCKET,
@@ -169,6 +168,7 @@ enum NETWORK_FAIL_TYPE {
   BAD_REQUEST = 'BAD REQUEST',
   BAD_GATEWAY = 'Bad Gateway',
   SERVICE_UNAVAILABLE = 'Service Unavailable',
+  SOCKET_DISCONNECTED = 'SOCKET_DISCONNECTED',
 }
 
 enum SURVIVAL_MODE {
@@ -184,6 +184,15 @@ enum NETWORK_REQUEST_EXECUTOR_STATUS {
   COMPLETION = 'completion',
 }
 
+enum NETWORK_HANDLE_TYPE {
+  DEFAULT = 'DEFAULT',
+  GLIP = 'GLIP',
+  GLIP2 = 'GLIP2',
+  CUSTOM = 'CUSTOM',
+  UPLOAD = 'UPLOAD',
+  RINGCENTRAL = 'RINGCENTRAL',
+}
+
 export {
   NETWORK_REQUEST_EXECUTOR_STATUS,
   SURVIVAL_MODE,
@@ -192,6 +201,7 @@ export {
   CONSUMER_MAX_QUEUE_COUNT,
   NETWORK_VIA,
   REQUEST_PRIORITY,
+  HA_PRIORITY,
   NETWORK_METHOD,
   HTTP_STATUS_CODE,
   IToken,
@@ -199,7 +209,6 @@ export {
   Header,
   IRequest,
   IResponse,
-  IRequestBuilderOption,
   INetworkRequestExecutor,
   INetworkRequestExecutorListener,
   IResponseListener,
@@ -209,4 +218,5 @@ export {
   IRequestDecoration,
   ITokenRefreshListener,
   IHandleType,
+  NETWORK_HANDLE_TYPE,
 };

@@ -19,7 +19,7 @@ import {
 } from 'jui/foundation/Layout/Responsive';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
 import {
-  goToConversation,
+  goToConversationWithLoading,
   GoToConversationParams,
 } from '@/common/goToConversation';
 import { ConversationPage } from '@/containers/ConversationPage';
@@ -81,9 +81,9 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   componentDidUpdate(prevProps: MessagesWrapperPops) {
     const subPath = this.props.match.params.subPath;
     const prevSubPath = prevProps.match.params.subPath;
-
     if (subPath !== prevSubPath) {
       MessageRouterChangeHelper.updateCurrentConversationId(subPath);
+      MessageRouterChangeHelper.ensureGroupIsOpened(Number(subPath));
     }
   }
 
@@ -102,7 +102,7 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   retryMessage = () => {
     const { retryParams } = this.state;
     if (!retryParams) return;
-    goToConversation(retryParams);
+    goToConversationWithLoading(retryParams);
   }
 
   render() {

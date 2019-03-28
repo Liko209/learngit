@@ -8,15 +8,15 @@ import { Assembler } from './Assembler';
 import _ from 'lodash';
 import { StreamItemType, StreamItem } from '../../types';
 import { AssemblerDelFunc, AssemblerAddFunc } from './types';
-import { Post } from 'sdk/src/module/post/entity';
+import { ISortableModel } from '../../../../../store/base/fetch/types';
 
 export class OrdinaryPostWrapper extends Assembler {
   onAdd: AssemblerAddFunc = ({ added, postList, streamItemList, ...rest }) => {
-    const convert2StreamItem: (i: { data: Post }) => StreamItem = i => ({
-      id: i.data.created_at,
+    const convert2StreamItem: (i: ISortableModel) => StreamItem = i => ({
+      id: i.sortValue,
       type: StreamItemType.POST,
-      value: [i.data.id],
-      timeStart: i.data.created_at,
+      value: [i.id],
+      timeStart: i.sortValue,
     });
 
     const addedItems: StreamItem[] = _(added)

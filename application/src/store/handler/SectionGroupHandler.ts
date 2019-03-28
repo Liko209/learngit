@@ -15,13 +15,14 @@ import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { GroupService } from 'sdk/module/group';
 import { Group } from 'sdk/module/group/entity';
 import { Profile } from 'sdk/module/profile/entity';
-import { GroupState } from 'sdk/models';
+import { GroupState } from 'sdk/module/state/entity';
 
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { autorun, observable, computed, reaction, action } from 'mobx';
-import { getSingleEntity, getGlobalValue } from '@/store/utils';
+import { getEntity, getSingleEntity, getGlobalValue } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
+import GroupStateModel from '@/store/models/GroupState';
 import _ from 'lodash';
 import storeManager from '@/store';
 import history from '@/history';
@@ -30,7 +31,7 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
 import { ProfileService } from 'sdk/module/profile';
-import SequenceProcessorHandler from 'sdk/framework/processor/SequenceProcessorHandler';
+import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
 import PrefetchPostProcessor from './PrefetchPostProcessor';
 import { TDelta } from '../base/fetch/types';
 import postCacheController from '@/containers/ConversationPage/Stream/cache/PostCacheController';
@@ -133,11 +134,18 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private _removeGroupsIfExistedInHiddenGroups() {
-    Object.keys(this._handlersMap).forEach((key: SECTION_TYPE) => {
-      const inters = _.intersection(
-        this._hiddenGroupIds,
-        this.getGroupIdsByType(key),
+    const removeIds: number[] = [];
+    this._hiddenGroupIds.forEach((groupId: number) => {
+      const groupState: GroupStateModel = getEntity(
+        ENTITY_NAME.GROUP_STATE,
+        groupId,
       );
+      if (!groupState.unreadCount || groupState.unreadCount <= 0) {
+        removeIds.push(groupId);
+      }
+    });
+    Object.keys(this._handlersMap).forEach((key: SECTION_TYPE) => {
+      const inters = _.intersection(removeIds, this.getGroupIdsByType(key));
       if (inters.length) {
         this._removeByIds(key, inters);
       }
@@ -158,8 +166,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
     if (shouldAdd) {
       const groupService = GroupService.getInstance<GroupService>();
-      const groups: Group[] = await groupService.getGroupsByIds(ids);
-      const validGroups = groups.filter(group => groupService.isValid(group));
+      const groups: Group[] = (await groupService.getGroupsByIds(ids)) || [];
+      const validGroups = groups.filter((group: Group) =>
+        groupService.isValid(group),
+      );
       this._handlersMap[SECTION_TYPE.DIRECT_MESSAGE].upsert(validGroups);
       this._handlersMap[SECTION_TYPE.TEAM].upsert(validGroups);
     } else {
@@ -207,15 +217,14 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       (payload: NotificationEntityPayload<Group>) => {
         const keys = Object.keys(this._handlersMap);
         let ids: number[] = [];
-        if (payload.type === EVENT_TYPES.DELETE) {
-          ids = payload.body!.ids!;
-        } else if (payload.type === EVENT_TYPES.UPDATE) {
+        if (payload.type === EVENT_TYPES.UPDATE) {
           ids = payload.body!.ids!;
           const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
           ids = ids.filter((id: number) => {
             const group = payload.body.entities.get(id);
             return (
               !group ||
+              group.deactivated ||
               !_.includes(group.members, currentUserId) ||
               group.is_archived
             );
@@ -321,11 +330,11 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   private _handleGroupChanged = (delta: TDelta) => {
     const { deleted, updated, added } = delta;
-    const addedIds = added.map(item => item.id);
+    const addedIds = added.map((item: ISortableModel<any>) => item.id);
 
     if (deleted.length) {
-      const truelyDeleted = _.differenceBy(deleted, addedIds);
-      truelyDeleted.forEach((groupId: number) => {
+      const trulyDeleted = _.differenceBy(deleted, addedIds);
+      trulyDeleted.forEach((groupId: number) => {
         postCacheController.remove(groupId);
       });
     }
@@ -339,8 +348,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     }
 
     if (added.length) {
-      const truelyAdded = _.differenceBy(addedIds, deleted);
-      truelyAdded.forEach((groupId: number) => {
+      const trulyAdded = _.differenceBy(addedIds, deleted);
+      trulyAdded.forEach((groupId: number) => {
         if (!postCacheController.has(groupId)) {
           this._addToFetchProcessor(groupId);
         }
@@ -358,21 +367,31 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       dataProvider,
       config,
     );
-    this._handlersMap[sectionType].setDataChangeCallback(
+    this._handlersMap[sectionType].addDataChangeCallback(
       this._handleGroupChanged,
     );
     return this.fetchGroups(sectionType, QUERY_DIRECTION.NEWER);
   }
 
   private async _addFavoriteSection() {
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
-      const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-      const includesMe = userId && _.includes(model.members, userId);
+      const groupState: GroupStateModel = getEntity(
+        ENTITY_NAME.GROUP_STATE,
+        model.id,
+      );
+      const hasUnread =
+        groupState && groupState.unreadCount
+          ? groupState.unreadCount > 0
+          : false;
+      const includesMe =
+        currentUserId && _.includes(model.members, currentUserId);
+      const groupService = GroupService.getInstance<GroupService>();
       return (
         this._oldFavGroupIds.indexOf(model.id) !== -1 &&
-        this._hiddenGroupIds.indexOf(model.id) === -1 &&
+        (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
         includesMe &&
-        !model.is_archived
+        groupService.isValid(model)
       );
     };
     const transformFun = (model: Group) => {
@@ -392,14 +411,26 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _addDirectMessageSection() {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const isMatchFun = (model: Group) => {
-      const notInFav =
-        this._oldFavGroupIds.indexOf(model.id) === -1 &&
-        this._hiddenGroupIds.indexOf(model.id) === -1;
-      const isDirectInDirectSection = !model.is_team;
+      const groupState: GroupStateModel = getEntity(
+        ENTITY_NAME.GROUP_STATE,
+        model.id,
+      );
+      const hasUnread =
+        groupState && groupState.unreadCount
+          ? groupState.unreadCount > 0
+          : false;
       const createdByMeOrHasPostTime: boolean =
         model.most_recent_post_created_at !== undefined ||
         model.creator_id === currentUserId;
-      return notInFav && isDirectInDirectSection && createdByMeOrHasPostTime;
+
+      const groupService = GroupService.getInstance<GroupService>();
+      return (
+        this._oldFavGroupIds.indexOf(model.id) === -1 &&
+        (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
+        !model.is_team &&
+        createdByMeOrHasPostTime &&
+        groupService.isValid(model)
+      );
     };
     return this._addSection(
       SECTION_TYPE.DIRECT_MESSAGE,
@@ -414,14 +445,24 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
   private async _addTeamSection() {
     const isMatchFun = (model: Group) => {
-      const notInFav =
-        this._oldFavGroupIds.indexOf(model.id) === -1 &&
-        this._hiddenGroupIds.indexOf(model.id) === -1;
+      const groupState: GroupStateModel = getEntity(
+        ENTITY_NAME.GROUP_STATE,
+        model.id,
+      );
+      const hasUnread =
+        groupState && groupState.unreadCount
+          ? groupState.unreadCount > 0
+          : false;
       const isTeamInTeamSection = model.is_team as boolean;
       const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       const includesMe = userId && _.includes(model.members, userId);
+      const groupService = GroupService.getInstance<GroupService>();
       return (
-        notInFav && isTeamInTeamSection && includesMe && !model.is_archived
+        this._oldFavGroupIds.indexOf(model.id) === -1 &&
+        (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
+        isTeamInTeamSection &&
+        includesMe &&
+        groupService.isValid(model)
       );
     };
     return this._addSection(SECTION_TYPE.TEAM, GROUP_QUERY_TYPE.TEAM, {
@@ -440,7 +481,8 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         performanceKey,
         logId,
       );
-      const groups = await this._handlersMap[sectionType].fetchData(direction);
+      const groups =
+        (await this._handlersMap[sectionType].fetchData(direction)) || [];
       if (sectionType === SECTION_TYPE.FAVORITE) {
         groups.forEach((group: Group) => {
           this._addToFetchProcessor(group.id);
@@ -620,9 +662,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   getGroupIdsByType(type: SECTION_TYPE) {
-    const ids = this._handlersMap[type]
-      ? this._handlersMap[type].sortableListStore.getIds
-      : [];
+    const ids =
+      this._handlersMap[type] && this._handlersMap[type].sortableListStore
+        ? this._handlersMap[type].sortableListStore.getIds
+        : [];
     return ids;
   }
 }

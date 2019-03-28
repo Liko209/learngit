@@ -5,7 +5,7 @@
  */
 import { TypeDictionary } from '../../../../utils';
 import ItemApi from '../../../../api/glip/item';
-import { GroupConfigService } from '../../../../service/groupConfig';
+import { GroupConfigService } from '../../../groupConfig';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ItemSyncController } from '../ItemSyncController';
 import { Listener } from 'eventemitter2';
@@ -14,7 +14,7 @@ import { JServerError, ERROR_CODES_SERVER } from '../../../../error';
 
 jest.mock('../../../../api/glip/item');
 jest.mock('../../service/IItemService');
-jest.mock('../../../../service/groupConfig');
+jest.mock('../../../groupConfig');
 jest.mock('../../../../service/notificationCenter');
 
 function clearMocks() {
@@ -104,7 +104,7 @@ describe('ItemSyncController', () => {
       const response = { id: 1, name: 'jupiter' };
       ItemApi.getItems = jest.fn().mockResolvedValue(response);
       groupConfigService.getById = jest.fn().mockReturnValue(groupConfig);
-      groupConfigService.updateGroupConfigPartialData = jest.fn();
+      groupConfigService.saveAndDoNotify = jest.fn();
 
       await itemSyncController.requestSyncGroupItems(groupConfig.id);
       setTimeout(() => {
@@ -135,27 +135,25 @@ describe('ItemSyncController', () => {
           10,
           5,
         );
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledTimes(
-          5,
-        );
+        expect(groupConfigService.saveAndDoNotify).toBeCalledTimes(5);
 
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_links: expect.any(Number),
         });
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_tasks: expect.any(Number),
         });
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_notes: expect.any(Number),
         });
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_events: expect.any(Number),
         });
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_files: expect.any(Number),
         });
@@ -176,12 +174,12 @@ describe('ItemSyncController', () => {
       };
       ItemApi.getItems = jest.fn().mockRejectedValue(error);
       groupConfigService.getById = jest.fn().mockReturnValue(groupConfig);
-      groupConfigService.updateGroupConfigPartialData = jest.fn();
+      groupConfigService.saveAndDoNotify = jest.fn();
       expect(
         itemSyncController.requestSyncGroupItems(groupConfig.id),
       ).resolves.toThrow();
       expect(
-        (groupConfigService.updateGroupConfigPartialData = jest.fn()),
+        (groupConfigService.saveAndDoNotify = jest.fn()),
       ).not.toHaveBeenCalled();
     });
   });

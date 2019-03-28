@@ -9,7 +9,7 @@ import { mainLogger, Container } from 'foundation';
 import { fetchWhiteList } from './helper';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
-import { daoManager, ConfigDao } from '../../dao';
+import { NewGlobalConfig } from '../../service/config/NewGlobalConfig';
 
 import {
   IAccountInfo,
@@ -18,13 +18,13 @@ import {
   ISyncAuthenticator,
 } from './IAuthenticator';
 
-const EVENT_LOGIN = 'ACCOUNT_MANAGER.EVENT_LOGIN';
+const AUTH_SUCCESS = 'ACCOUNT_MANAGER.AUTH_SUCCESS';
 const EVENT_LOGOUT = 'ACCOUNT_MANAGER.EVENT_LOGOUT';
 const EVENT_SUPPORTED_SERVICE_CHANGE =
   'ACCOUNT_MANAGER.EVENT_SUPPORTED_SERVICE_CHANGE';
 
 class AccountManager extends EventEmitter2 {
-  static EVENT_LOGIN = EVENT_LOGIN;
+  static AUTH_SUCCESS = AUTH_SUCCESS;
   static EVENT_LOGOUT = EVENT_LOGOUT;
   static EVENT_SUPPORTED_SERVICE_CHANGE = EVENT_SUPPORTED_SERVICE_CHANGE;
 
@@ -39,7 +39,7 @@ class AccountManager extends EventEmitter2 {
   async syncLogin(authType: string, params?: any) {
     const authenticator = this._container.get<ISyncAuthenticator>(authType);
     const resp = authenticator.authenticate(params);
-    return this._handleLoginResponse(resp);
+    return this._handleAuthResponse(resp);
   }
 
   async login(authType: string, params?: any) {
@@ -51,7 +51,7 @@ class AccountManager extends EventEmitter2 {
     const mailboxID = resp.accountInfos[0].data.owner_id;
 
     await this.makeSureUserInWhitelist(mailboxID);
-    return this._handleLoginResponse(resp);
+    return this._handleAuthResponse(resp);
   }
 
   async makeSureUserInWhitelist(mailboxID: string) {
@@ -120,8 +120,7 @@ class AccountManager extends EventEmitter2 {
   }
 
   async sanitizeUser(mailboxID: string) {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    const env = configDao.getEnv();
+    const env = NewGlobalConfig.getEnv();
     const whiteList = await fetchWhiteList();
     const allAccount = whiteList[env];
     if (allAccount !== undefined) {
@@ -138,11 +137,11 @@ class AccountManager extends EventEmitter2 {
     return true;
   }
 
-  private async _handleLoginResponse(resp: IAuthResponse) {
+  private async _handleAuthResponse(resp: IAuthResponse) {
     if (!resp.accountInfos || resp.accountInfos.length <= 0) {
       return { success: false, error: new Error('Auth fail') };
     }
-    this.emit(EVENT_LOGIN, resp.accountInfos);
+    this.emit(AUTH_SUCCESS, resp.accountInfos);
     this._isLogin = true;
     const accounts = this._createAccounts(resp.accountInfos);
     return {

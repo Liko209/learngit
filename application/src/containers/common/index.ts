@@ -5,6 +5,6 @@
  */
 
 export * from './Favorite';
+export * from './Member';
 export * from './Privacy';
-export * from './ProfileButton';
 export * from './PreloadImg';

@@ -19,6 +19,7 @@ import Wrapper from './Wrapper';
 import { dao, mainLogger } from 'sdk';
 import { AuthService } from 'sdk/service/auth/authService';
 import { ModalPortal } from '@/containers/Dialog';
+import { Dialer } from '@/modules/telephony';
 
 @observer
 class HomeView extends Component<HomeViewProps> {
@@ -63,6 +64,7 @@ class HomeView extends Component<HomeViewProps> {
             <HomeRouter />
           </Bottom>
           <ModalPortal />
+          <Dialer />
         </Wrapper>
       </>
     );

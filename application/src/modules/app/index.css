@@ -1,4 +1,4 @@
-@import "~typeface-roboto/index.css";
+@import '~typeface-roboto/index.css';
 html,
 body {
   height: 100%;
@@ -7,6 +7,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -30,6 +32,11 @@ input::-webkit-contacts-auto-fill-button {
   pointer-events: none;
   position: absolute;
   right: 0;
+}
+
+/*  fix edge input default clear button */
+input::-ms-clear {
+  display: none;
 }
 
 .ReactVirtualized__Grid,

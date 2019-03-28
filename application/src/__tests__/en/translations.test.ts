@@ -421,4 +421,5 @@ describe.skip('i18next-en', () => {
   expect(i18next.t('pinPosts')).toEqual('Pin posts');
   expect(i18next.t('deleteTeam')).toEqual('Delete team');
   expect(i18next.t('deleteTeamToolTip')).toEqual('Delete a team permanently.');
+  expect(i18next.t('pinnedMore', { num: 2 })).toEqual('and 2 more');
 });

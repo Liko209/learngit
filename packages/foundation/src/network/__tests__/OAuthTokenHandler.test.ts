@@ -5,11 +5,11 @@ const handler = new OAuthTokenHandler(fakeHandleType, getFakeTokenHandler());
 
 describe('OAuthTokenHandler', () => {
   describe('refreshOAuthToken', () => {
-    it('should notifyRefreshTokenFailure if isOAuthTokenRefreshing', () => {
+    it('should not notifyRefreshTokenFailure if isOAuthTokenRefreshing', () => {
       handler.isOAuthTokenRefreshing = true;
       const spy = jest.spyOn(handler, '_notifyRefreshTokenFailure');
       handler.refreshOAuthToken();
-      expect(spy).toBeCalled();
+      expect(spy).not.toBeCalled();
     });
     it('should notifyRefreshTokenFailure if is not AccessTokenRefreshable', () => {
       handler.isOAuthTokenRefreshing = false;

@@ -4,16 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IdModel } from '../../model';
-
-type SortableModel<T> = {
-  id: number;
-  displayName: string;
-  firstSortKey?: any;
-  secondSortKey?: any;
-  entity: T;
+import { IdModel, SortableModel } from '../../model';
+type Terms = {
+  searchKeyTerms: string[];
+  searchKeyTermsToSoundex: string[];
 };
-
 interface IEntityCacheSearchController<T extends IdModel = IdModel> {
   getEntity(id: number): Promise<T | null>;
 
@@ -25,10 +20,7 @@ interface IEntityCacheSearchController<T extends IdModel = IdModel> {
   getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]>;
 
   searchEntities(
-    genSortableModelFunc: (
-      entity: T,
-      terms: string[],
-    ) => SortableModel<T> | null,
+    genSortableModelFunc: (entity: T, terms: Terms) => SortableModel<T> | null,
     searchKey?: string,
     arrangeIds?: number[],
     sortFunc?: (entityA: SortableModel<T>, entityB: SortableModel<T>) => number,
@@ -38,7 +30,7 @@ interface IEntityCacheSearchController<T extends IdModel = IdModel> {
   } | null>;
 
   isFuzzyMatched(srcText: string, terms: string[]): boolean;
-
+  isSoundexMatched(srcText: string, terms: string[]): boolean;
   isStartWithMatched(srcText: string, terms: string[]): boolean;
 
   getTermsFromSearchKey(searchKey: string): string[];
@@ -46,4 +38,4 @@ interface IEntityCacheSearchController<T extends IdModel = IdModel> {
   isInitialized(): boolean;
 }
 
-export { IEntityCacheSearchController, SortableModel };
+export { IEntityCacheSearchController, Terms };

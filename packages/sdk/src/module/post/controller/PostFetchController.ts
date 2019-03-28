@@ -18,7 +18,6 @@ import _ from 'lodash';
 import { GroupService } from '../../../module/group';
 import { IRemotePostRequest } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
-import { Item } from '../../../module/item/entity';
 
 const TAG = 'PostFetchController';
 
@@ -82,11 +81,14 @@ class PostFetchController {
           result.posts,
         );
         const serverResult = await this.getRemotePostsByGroupId({
-          direction,
           groupId,
           limit,
           shouldSaveToDb,
           postId: validAnchorPostId ? validAnchorPostId : postId,
+          direction:
+            shouldSaveToDb && direction === QUERY_DIRECTION.BOTH
+              ? QUERY_DIRECTION.OLDER
+              : direction,
         });
         if (serverResult) {
           result.posts = this._handleDuplicatePosts(
@@ -111,6 +113,11 @@ class PostFetchController {
     limit,
     direction,
   }: IPostQuery): Promise<IRawPostResult | null> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_SERVER,
+      logId,
+    );
     const result: IRawPostResult = {
       posts: [],
       items: [],
@@ -132,7 +139,7 @@ class PostFetchController {
       result.items = data.items;
       result.hasMore = result.posts.length === limit;
     }
-
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 
@@ -197,6 +204,20 @@ class PostFetchController {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
+      logId,
+    );
+    const result: IPostResult = {
+      limit,
+      posts: [],
+      items: [],
+      hasMore: true,
+    };
+    if (!postId && direction === QUERY_DIRECTION.NEWER) {
+      return result;
+    }
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
@@ -206,38 +227,11 @@ class PostFetchController {
     );
 
     const itemService: ItemService = ItemService.getInstance();
-    const result: IPostResult = {
-      limit,
-      posts,
-      hasMore: true,
-      items: posts.length === 0 ? [] : await itemService.getByPosts(posts),
-    };
-    return result;
-  }
-
-  async getPostsByIds(
-    ids: number[],
-  ): Promise<{ posts: Post[]; items: Item[] }> {
-    const itemService: ItemService = ItemService.getInstance();
-    const localPosts = await this.entitySourceController.batchGet(ids);
-    const result = {
-      posts: localPosts,
-      items: await itemService.getByPosts(localPosts),
-    };
-    const restIds = _.difference(ids, localPosts.map(({ id }) => id));
-    if (restIds.length) {
-      const remoteData = await PostAPI.requestByIds(restIds);
-      const posts: Post[] =
-        (await this.postDataController.filterAndSavePosts(
-          this.postDataController.transformData(remoteData.posts),
-          false,
-        )) || [];
-      const itemService = ItemService.getInstance() as ItemService;
-      const items =
-        (await itemService.handleIncomingData(remoteData.items)) || [];
-      result.posts.push(...posts);
-      result.items.push(...items);
-    }
+    result.limit = limit;
+    result.posts = posts;
+    result.items =
+      posts.length === 0 ? [] : await itemService.getByPosts(posts);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 
@@ -245,8 +239,8 @@ class PostFetchController {
     if (posts && posts.length) {
       const validAnchorPost =
         direction === QUERY_DIRECTION.OLDER
-          ? _.findLast(posts, (p: Post) => p.id > 0)
-          : _.find(posts, (p: Post) => p.id > 0);
+          ? _.find(posts, (p: Post) => p.id > 0)
+          : _.findLast(posts, (p: Post) => p.id > 0);
       return validAnchorPost ? validAnchorPost.id : 0;
     }
     return 0;

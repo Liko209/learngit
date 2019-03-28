@@ -9,6 +9,7 @@ import visibilityChangeEvent from './visibilityChangeEvent';
 import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
+import IUsedCache from './IUsedCache';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -25,14 +26,20 @@ export default class MultiEntityMapStore<
   private _maxCacheCount: number;
   private _service: BaseService<T>;
 
+  private _usedCacheArr: IUsedCache[] = [];
+
+  private _modelCreator: ((model: IdModel) => K) | undefined;
+
   constructor(
     entityName: ENTITY_NAME,
-    { service, event, cacheCount }: EntitySetting,
+    { service, event, cacheCount, modelCreator }: EntitySetting<K>,
   ) {
     super(entityName);
 
     this._getService = service;
     this._maxCacheCount = cacheCount;
+    this._modelCreator = modelCreator;
+
     const callback = (payload: NotificationEntityPayload<T>) => {
       this.handleIncomingData(payload);
     };
@@ -67,11 +74,9 @@ export default class MultiEntityMapStore<
           const partials = payload.body.partials;
           const entities = payload.body.entities;
           if (partials) {
-            this.batchUpdate(partials);
+            this.batchPartialUpdate(partials);
           } else {
-            entities.forEach((entity: T) => {
-              this._partialUpdate(entity, entity.id);
-            });
+            this.batchUpdate(entities);
           }
         }
         break;
@@ -79,22 +84,24 @@ export default class MultiEntityMapStore<
   }
 
   @action
-  set(data: T) {
-    const model = this.createModel(data);
-    const { id } = model;
-
-    this._data[id] = model;
-    this._registerHook(id);
-  }
-
-  @action
-  batchUpdate(partials: Map<number, Partial<Raw<T>>>) {
+  batchPartialUpdate(partials: Map<number, Partial<Raw<T>>>) {
     partials.forEach((partialEntity, id) => {
       this._partialUpdate(partialEntity, id);
     });
   }
 
   @action
+  batchUpdate(partials: Map<number, T>) {
+    partials.forEach((partialEntity, id) => {
+      this._partialUpdate(partialEntity, id);
+    });
+  }
+
+  @action
+  partialUpdate(partialEntity: Partial<Raw<T>> | T, id: number) {
+    this._partialUpdate(partialEntity, id);
+  }
+
   private _partialUpdate(partialEntity: Partial<Raw<T>> | T, id: number) {
     const model = this._data[id];
     if (model) {
@@ -106,10 +113,36 @@ export default class MultiEntityMapStore<
   }
 
   @action
+  set(data: T, refreshCache: boolean = false) {
+    this._set(data, refreshCache);
+    this._refreshCache();
+  }
+
+  @action
   batchSet(entities: T[]) {
     entities.forEach((entity: T) => {
       this._setOrUpdate(entity);
     });
+
+    this._refreshCache();
+  }
+
+  private _set(data: T, refreshCache: boolean = false) {
+    let model: K;
+    if (this._modelCreator) {
+      model = this._modelCreator(data);
+    } else {
+      model = this.createModel(data);
+    }
+
+    const { id } = model;
+
+    this._data[id] = model;
+    this._registerHook(id);
+
+    if (refreshCache) {
+      this._refreshCache();
+    }
   }
 
   @action
@@ -119,7 +152,6 @@ export default class MultiEntityMapStore<
     });
   }
 
-  @action
   private _replace(oldId: number, entity: T) {
     if (entity && this._data[oldId]) {
       this._setOrUpdate(entity);
@@ -129,7 +161,7 @@ export default class MultiEntityMapStore<
   private _setOrUpdate(entity: T) {
     const model = this._data[entity.id];
     if (!model) {
-      this.set(entity);
+      this._set(entity);
     } else {
       this._partialUpdate(entity, entity.id);
     }
@@ -138,19 +170,20 @@ export default class MultiEntityMapStore<
   @action
   remove(id: number) {
     setTimeout(() => {
-      const model = this._data[id];
-      if (model) {
-        delete this._data[id];
-      }
+      delete this._data[id];
     },         0);
   }
 
+  @action
   batchRemove(ids: number[]) {
-    ids.forEach((id: number) => {
-      this.remove(id);
-    });
+    setTimeout(() => {
+      ids.forEach((id: number) => {
+        delete this._data[id];
+      });
+    },         0);
   }
 
+  @action
   clearAll() {
     this._data = {};
   }
@@ -162,19 +195,19 @@ export default class MultiEntityMapStore<
       model = this._data[id] as K;
       const found = this.getByServiceSynchronously(id);
       if (found) {
-        this._partialUpdate(found, id);
+        this.partialUpdate(found, id);
         model = this._data[id] as K;
       } else {
         const res = this.getByService(id);
         if (res instanceof Promise) {
           res.then((res: T & { error?: {} }) => {
             if (res && !res.error) {
-              this._partialUpdate(res as T, id);
+              this.partialUpdate(res as T, id);
             }
           });
         } else {
           if (res) {
-            this._partialUpdate(res as T, id);
+            this.partialUpdate(res as T, id);
             model = this._data[id] as K;
           }
         }
@@ -258,13 +291,21 @@ export default class MultiEntityMapStore<
       if (res instanceof Promise) {
         res.then((res: T & { error?: {} }) => {
           if (res && !res.error) {
-            this.set(res);
+            this._set(res);
           }
         });
       } else {
-        this.set(res as T);
+        this._set(res as T);
       }
     });
+  }
+
+  addUsedCache(cache: IUsedCache) {
+    this._usedCacheArr.push(cache);
+  }
+
+  removeUsedCache(cache: IUsedCache) {
+    _.remove(this._usedCacheArr, (element: IUsedCache) => element === cache);
   }
 
   private _registerHook(id: number) {
@@ -284,12 +325,22 @@ export default class MultiEntityMapStore<
     };
   }
 
+  @action
   private _refreshCache() {
     if (this.getSize() < this._maxCacheCount) {
       return;
     }
-    const existKeys = Object.keys(this._data).map(Number);
-    const diffKeys = _.difference(existKeys, [...this._usedIds]);
-    this.batchRemove(diffKeys);
+
+    setTimeout(() => {
+      const existKeys = Object.keys(this._data).map(Number);
+      let allUsedIds = [...this._usedIds];
+      this._usedCacheArr.forEach((cache: IUsedCache) => {
+        allUsedIds = _.union(allUsedIds, cache.getUsedId());
+      });
+      const diffKeys = _.difference(existKeys, allUsedIds);
+      diffKeys.forEach((id: number) => {
+        delete this._data[id];
+      });
+    },         100);
   }
 }

@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import { h } from '../../../helpers';
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { CreateTeamModal } from './CreateTeamModal';
+import { CreateTeamModal, ConvertToTeamDialog } from './CreateTeamModal';
 import { SendNewMessageModal } from './SendNewMessage';
 import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
@@ -14,8 +14,11 @@ import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
 import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
-
 import { AlertDialog } from "./AlertDialog";
+import { IUser } from '../../../models';
+import { TelephonyDialog } from './TelephonyDialog';
+import { FileAndImagePreviewer } from './ImagePreviewer';
+import { ViewerDialog } from './ViewerDialog';
 
 export class HomePage extends BaseWebComponent {
   async ensureLoaded(timeout: number = 60e3, alwaysFocus: boolean = true) {
@@ -27,6 +30,18 @@ export class HomePage extends BaseWebComponent {
 
   get self() {
     return this.getSelector('#root');
+  }
+
+  async logout() {
+    await this.openSettingMenu();
+    await this.settingMenu.clickLogout();
+    await this.t.expect(h(this.t).href).contains('unified-login');
+  }
+
+  async logoutThenLoginWithUser(url: string, user: IUser) {
+    await this.logout();
+    await h(this.t).directLoginWithUser(url, user);
+    await this.ensureLoaded();
   }
 
   get leftPanel() {
@@ -55,6 +70,9 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(CreateTeamModal);
   }
 
+  get convertToTeamModal() {
+    return this.getComponent(ConvertToTeamDialog);
+  }  
   get sendNewMessageModal() {
     return this.getComponent(SendNewMessageModal);
   }
@@ -109,6 +127,17 @@ export class HomePage extends BaseWebComponent {
 
   get alertDialog() {
     return this.getComponent(AlertDialog);
+  }
+
+  get telephonyDialog() {
+    return this.getComponent(TelephonyDialog);
+  }
+  
+  get fileAndImagePreviewer() {
+    return this.getComponent(FileAndImagePreviewer);
+  }
+  get viewerDialog() {
+    return this.getComponent(ViewerDialog);
   }
 
 }

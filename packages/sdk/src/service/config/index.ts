@@ -5,3 +5,5 @@
  */
 
 export { ConfigService as default } from './configService';
+export { MyStateUserConfig } from './MyStateUserConfig';
+export { NewGlobalConfig } from './NewGlobalConfig';

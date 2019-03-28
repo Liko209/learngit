@@ -29,6 +29,7 @@ describe('GlipTypeUtil', () => {
         '"objects": [[{"_id":532486,"version":7383248413917184,"modified_at":1536061960642,"post_cursor":1995}]]}}',
     );
     expect(res).toEqual({
+      TIMESTAMP: 1536061961508,
       group: [
         {
           _id: 532486,
@@ -76,6 +77,20 @@ describe('GlipTypeUtil', () => {
           expect(-result & 0x1fff).toBe(TypeDictionary[val]);
         });
       });
+    });
+  });
+
+  describe('isExpectedType', () => {
+    it('should return true when is expected type', () => {
+      expect(
+        GlipTypeUtil.isExpectedType(10, TypeDictionary.TYPE_ID_FILE),
+      ).toBeTruthy();
+    });
+
+    it('should return false when is not expected type', () => {
+      expect(
+        GlipTypeUtil.isExpectedType(11, TypeDictionary.TYPE_ID_FILE),
+      ).toBeFalsy();
     });
   });
 });

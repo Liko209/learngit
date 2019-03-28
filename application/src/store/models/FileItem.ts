@@ -7,6 +7,7 @@ import { Item } from 'sdk/module/item/entity';
 import { observable, computed } from 'mobx';
 import ItemModel from './Item';
 import { getFileIcon } from '@/common/getFileIcon';
+import { Thumbs } from 'sdk/module/item/module/base/entity/Item';
 
 enum FileType {
   image = 0,
@@ -41,6 +42,7 @@ export default class FileItemModel extends ItemModel {
       deactivated,
       creator_id,
       created_at,
+      modified_at,
     } = data;
     this.type = type;
     this.name = name;
@@ -50,6 +52,7 @@ export default class FileItemModel extends ItemModel {
     this.deactivated = deactivated;
     this.creatorId = creator_id;
     this.createdAt = created_at;
+    this.modifiedAt = modified_at;
   }
 
   hasVersions() {
@@ -61,7 +64,7 @@ export default class FileItemModel extends ItemModel {
   }
 
   @computed
-  get thumbs() {
+  get thumbs(): Thumbs | null {
     if (!this.hasVersions()) return null;
     return this._getVersionsValue('thumbs');
   }
@@ -101,6 +104,12 @@ export default class FileItemModel extends ItemModel {
   get origWidth() {
     if (!this.hasVersions()) return null;
     return this._getVersionsValue('orig_width');
+  }
+
+  @computed
+  get storeFileId() {
+    if (!this.hasVersions()) return null;
+    return this._getVersionsValue('stored_file_id');
   }
 
   @computed

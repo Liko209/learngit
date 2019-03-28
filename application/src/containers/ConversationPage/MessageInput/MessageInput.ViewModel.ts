@@ -10,7 +10,8 @@ import {
   MessageInputViewProps,
   OnPostCallback,
 } from './types';
-import { GroupConfigService, notificationCenter } from 'sdk/service';
+import { notificationCenter } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -42,16 +43,11 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   @observable
   private _memoryDraftMap: Map<number, string> = new Map();
 
-  @computed
-  get id() {
-    return this.props.id;
-  }
-
   get items() {
-    return this._itemService.getUploadItems(this.id);
+    return this._itemService.getUploadItems(this.props.id);
   }
 
-  private _oldId: number = this.id;
+  private _oldId: number;
 
   @observable
   error: string = '';
@@ -70,29 +66,43 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this._itemService = ItemService.getInstance();
     this._groupConfigService = GroupConfigService.getInstance();
     this._sendPost = this._sendPost.bind(this);
+    this._oldId = props.id;
     this.reaction(
-      () => this.id,
-      () => {
-        this._oldId = this.id;
+      () => this.props.id,
+      (id: number) => {
+        this._oldId = id;
         this.error = '';
         this.forceSaveDraft();
       },
     );
-    notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, ({ quote, groupId }) => {
-      this._memoryDraftMap.set(groupId, quote);
-    });
+    notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+  }
+
+  dispose = () => {
+    notificationCenter.off(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+  }
+
+  @action
+  private _handleQuoteChanged = ({
+    quote,
+    groupId,
+  }: {
+    quote: string;
+    groupId: number;
+  }) => {
+    this._memoryDraftMap.set(groupId, quote);
   }
 
   private _isEmpty = (content: string) => {
     const commentText = content.trim();
-    const re = /^<p>(<br>|<br\/>|<br\s\/>|\s+|)<\/p>$/gm;
+    const re = /^(<p>(<br>|<br\/>|<br\s\/>|\s+|)<\/p>)+$/gm;
     return re.test(commentText);
   }
 
   @action
   contentChange = (draft: string) => {
     this.error = '';
-    this.draft = this._isEmpty(draft) ? '' : draft;
+    this.draft = draft;
   }
 
   @action
@@ -108,6 +118,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   forceSaveDraft = () => {
     const draft = this._isEmpty(this.draft) ? '' : this.draft;
+    this._memoryDraftMap.set(this.props.id, draft);
     this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
@@ -124,25 +135,25 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   @computed
   get _group() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
   @computed
   get draft() {
-    if (this._memoryDraftMap.has(this.id)) {
-      return this._memoryDraftMap.get(this.id) || '';
+    if (this._memoryDraftMap.has(this.props.id)) {
+      return this._memoryDraftMap.get(this.props.id) || '';
     }
     this.getDraftFromLocal();
     return '';
   }
 
   async getDraftFromLocal() {
-    const draft = await this._groupConfigService.getDraft(this.id);
-    this._memoryDraftMap.set(this.id, draft);
+    const draft = await this._groupConfigService.getDraft(this.props.id);
+    this._memoryDraftMap.set(this.props.id, draft);
   }
 
   set draft(draft: string) {
-    this._memoryDraftMap.set(this.id, draft);
+    this._memoryDraftMap.set(this.props.id, draft);
   }
 
   @computed
@@ -199,7 +210,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       }
       await this._postService.sendPost({
         text: realContent,
-        groupId: this.id,
+        groupId: this.props.id,
         itemIds: items.map((item: FileItem) => item.id),
         mentionNonItemIds: ids,
       });

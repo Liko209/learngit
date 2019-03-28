@@ -82,7 +82,7 @@ describe('Post Dao', () => {
         3,
       );
       expect(result).toHaveLength(3);
-      expect(_.last(result).created_at).toBe(1);
+      expect(_.first(result).created_at).toBe(1);
     });
 
     it('Query newer posts by group Id and post id', async () => {
@@ -94,7 +94,7 @@ describe('Post Dao', () => {
         3,
       );
       expect(result).toHaveLength(3);
-      expect(_.last(result).created_at).toBe(2);
+      expect(_.first(result).created_at).toBe(2);
     });
 
     it('Query Oldest Post By Group Id', async () => {

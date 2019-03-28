@@ -6,12 +6,18 @@
 
 import { JuiAppBar } from '../../components/AppBar';
 import styled from '../../foundation/styled-components';
+import { palette } from '../../foundation/utils';
 
 const StyledAppBar = styled(JuiAppBar).attrs({ position: 'static' })`
   && {
     min-height: 64px;
     min-width: 400px;
     background-color: ${({ theme }) => `${theme.palette.common.white}`};
+    background: linear-gradient(
+      to right,
+      ${palette('primary', '600')},
+      ${palette('primary', '300')}
+    );
     box-shadow: none;
     border-bottom: 1px solid
       rgba(0, 0, 0, ${({ theme }) => `${theme.palette.action.hoverOpacity}`});

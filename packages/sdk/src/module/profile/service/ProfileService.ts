@@ -11,9 +11,10 @@ import { daoManager } from '../../../dao';
 import { ProfileDao } from '../dao';
 import { Api } from '../../../api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { SOCKET, SERVICE } from '../../../service';
+import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -35,11 +36,15 @@ class ProfileService extends EntityBaseService<Profile>
     );
   }
 
-  handleIncomingData = async (profile: Raw<Profile> | null) => {
+  handleIncomingData = async (
+    profile: Raw<Profile> | null,
+    source: SYNC_SOURCE,
+  ) => {
     this.getProfileController()
       .getProfileDataController()
-      .profileHandleData(profile);
+      .profileHandleData(profile, source);
   }
+
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
     this.getProfileController()
       .getProfileActionController()

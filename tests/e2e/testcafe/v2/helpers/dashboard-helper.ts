@@ -2,6 +2,7 @@ import 'testcafe';
 import * as _ from 'lodash';
 import * as fs from 'fs';
 import { UAParser } from 'ua-parser-js';
+import { identity } from 'lodash';
 
 import { getLogger } from 'log4js';
 import { IStep, Status, IConsoleLog } from "../models";
@@ -89,13 +90,16 @@ export class DashboardHelper {
     detailStep.attachments.push(consoleLog.errorConsoleLogPath);
     detailStep.attachments.push(rcDataPath);
     if (status === Status.FAILED) {
-      const errorDetailPath = MiscUtils.createTmpFile(JSON.stringify(errs, null, 2))
-      detailStep.attachments.push(errorDetailPath);
+      const errList = [];
       for (const err of errs) {
         if (err.screenshotPath) {
           detailStep.attachments.push(err.screenshotPath);
+          const errorText = err.formatMessage(newErrorDecorator(), 2048);
+          errList.push(errorText);
         }
       }
+      const errorDetailPath = MiscUtils.createTmpFile(errList.join('\n'));
+      detailStep.attachments.push(errorDetailPath);
     }
     detailStep.endTime = Date.now();
     await this.createStepInDashboard(detailStep, res.body.id);
@@ -111,4 +115,35 @@ export class DashboardHelper {
     }
     logger.info(`it takes ${Date.now() - ts} ms to upload result to dashboard`);
   }
+}
+
+function newErrorDecorator() {
+  return {
+    'span user-agent': str => str,
+    'span subtitle': str => `- str -`,
+    'div message': str => str,
+    'div screenshot-info': identity,
+    'a screenshot-path': str => str,
+    code: identity,
+    'span syntax-string': str => str,
+    'span syntax-punctuator': str => str,
+    'span syntax-keyword': str => str,
+    'span syntax-number': str => str,
+    'span syntax-regex': str => str,
+    'span syntax-comment': str => str,
+    'span syntax-invalid': str => str,
+    'div code-frame': identity,
+    'div code-line': str => str + '\n',
+    'div code-line-last': identity,
+    'div code-line-num': str => `${str} |`,
+    'div code-line-num-base': str => ` > ${str} ` + '|',
+    'div code-line-src': identity,
+    'div stack': str => '\n\n' + str,
+    'div stack-line': str => str + '\n',
+    'div stack-line-last': identity,
+    'div stack-line-name': str => `   at ${str}`,
+    'div stack-line-location': str => ` (${str})`,
+    strong: str => str,
+    a: str => `"${str}"`,
+  };
 }

@@ -3,14 +3,15 @@
  * @Date: 2019-1-2 15:50:00
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
-import { SortUtils } from '../../../../../framework/utils';
 import { IDatabase } from 'foundation';
-import { BaseDao } from '../../../../../framework/dao';
-import { SanitizedItem, Item } from '../entity';
-import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { isIEOrEdge } from 'foundation/src/db/adapter/dexie/utils';
-
+import _ from 'lodash';
+import { BaseDao } from '../../../../../framework/dao';
+import { SortUtils } from '../../../../../framework/utils';
+import { ItemFilterFunction, ItemQueryOptions } from '../../../types';
+import { Item, SanitizedItem } from '../entity';
+import { ArrayUtils } from '../../../../../utils/ArrayUtils';
+import { QUERY_DIRECTION } from '../../../../../dao/constants';
 class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   constructor(collectionName: string, db: IDatabase) {
     super(collectionName, db);
@@ -22,7 +23,15 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   }
 
   async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    const { groupId, sortKey, desc, limit, offsetItemId, filterFunc } = options;
+    const {
+      groupId,
+      sortKey,
+      desc,
+      limit,
+      offsetItemId,
+      filterFunc,
+      direction = QUERY_DIRECTION.NEWER,
+    } = options;
     let sanitizedItems = await this.queryItemsByGroupId(groupId);
 
     if (sanitizedItems.length === 0) {
@@ -38,22 +47,14 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     };
 
     sanitizedItems = sanitizedItems.sort(sortFunc);
-    const itemIds: number[] = [];
-    let insertAble: boolean = offsetItemId ? false : true;
-    for (let i = 0; i < sanitizedItems.length; ++i) {
-      const itemId = sanitizedItems[i].id;
-      if (!insertAble && itemId === offsetItemId) {
-        insertAble = true;
-      }
-      if (insertAble && itemId !== offsetItemId) {
-        if (itemIds.length < limit) {
-          itemIds.push(itemId);
-        } else {
-          break;
-        }
-      }
-    }
+    const allItemIds = sanitizedItems.map((x: T) => x.id);
 
+    const itemIds = ArrayUtils.sliceIdArray(
+      allItemIds,
+      limit,
+      offsetItemId,
+      direction,
+    );
     return itemIds;
   }
 
@@ -77,11 +78,14 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
       id: item.id,
       group_ids: item.group_ids,
       created_at: item.created_at,
+      modified_at: item.modified_at,
     };
   }
 
   toPartialSanitizedItem(partialItem: Partial<Item>) {
-    return { ..._.pick(partialItem, ['id', 'created_at', 'group_ids']) };
+    return {
+      ..._.pick(partialItem, ['id', 'created_at', 'group_ids', 'modified_at']),
+    };
   }
 
   shouldSaveSubItem<K extends { id: number; post_ids?: number[] }>(item: K) {
@@ -89,35 +93,11 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   }
 
   async update(item: Partial<T> | Partial<T>[]): Promise<void> {
-    if (Array.isArray(item)) {
-      const array = item;
-      await this.bulkUpdate(array);
-    } else {
-      if (item.id) {
-        const saved = await this.get(item.id);
-        // If item not exists, no need to save
-        if (saved) {
-          await super.update(item);
-        }
-      }
-    }
+    await super.update(item, false);
   }
 
   async bulkUpdate(partialItems: Partial<T>[]): Promise<void> {
-    const itemIds: number[] = [];
-    partialItems.forEach((value: Partial<T>) => {
-      if (value.id) {
-        itemIds.push(value.id);
-      }
-    });
-    const exists = new Set(await this.primaryKeys(itemIds));
-    const updates: Partial<T>[] = [];
-    partialItems.forEach((item: Partial<T>) => {
-      if (item.id && exists.has(item.id)) {
-        updates.push(item);
-      }
-    });
-    await super.bulkUpdate(updates);
+    await super.bulkUpdate(partialItems, false);
   }
 }
 

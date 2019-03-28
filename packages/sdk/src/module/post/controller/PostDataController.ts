@@ -5,17 +5,19 @@
  */
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
-import { daoManager } from '../../../dao';
-import { PostDao } from '../dao';
+import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
+import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
-import { ENTITY, notificationCenter, SERVICE } from '../../../service';
+import { ENTITY, SERVICE } from '../../../service/eventKey';
+import notificationCenter from '../../../service/notificationCenter';
 import { baseHandleData, transform } from '../../../service/utils';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ItemService } from '../../item';
 import { INDEX_POST_MAX_SIZE } from '../constant';
 import { IRawPostResult, Post } from '../entity';
 import { GroupService } from '../../group';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 const TAG = 'PostDataController';
 
@@ -26,6 +28,11 @@ class PostDataController {
   ) {}
 
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
+      logId,
+    );
     const transformedData = this.transformData(data.posts);
     if (shouldSaveToDb) {
       await this.preInsertController.bulkDelete(transformedData);
@@ -36,6 +43,7 @@ class PostDataController {
       (await ItemService.getInstance<ItemService>().handleIncomingData(
         data.items,
       )) || [];
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return {
       posts,
       items,
@@ -52,6 +60,9 @@ class PostDataController {
   async handleIndexPosts(data: Raw<Post>[], maxPostsExceed: boolean) {
     if (data.length) {
       let posts = this.transformData(data);
+      this._handleModifiedDiscontinuousPosts(
+        posts.filter((post: Post) => post.created_at !== post.modified_at),
+      );
       await this.handelPostsOverThreshold(posts, maxPostsExceed);
       await this.preInsertController.bulkDelete(posts);
       posts = await this.handleIndexModifiedPosts(posts);
@@ -68,11 +79,38 @@ class PostDataController {
   async handleSexioPosts(data: Raw<Post>[]) {
     if (data.length) {
       let posts = this.transformData(data);
+      this._handleModifiedDiscontinuousPosts(
+        posts.filter((post: Post) => post.created_at !== post.modified_at),
+      );
       posts = await this.handleSexioModifiedPosts(posts);
       await this.preInsertController.bulkDelete(posts);
       return await this.filterAndSavePosts(posts, true);
     }
     return data;
+  }
+
+  /**
+   * For bookmark/@mentions/pin post/reply
+   */
+  private async _handleModifiedDiscontinuousPosts(posts: Post[]) {
+    const postDiscontinuousDao = daoManager.getDao(PostDiscontinuousDao);
+    const deactivatedPosts: Post[] = [];
+    const normalPosts: Post[] = [];
+    posts.forEach((post: Post) => {
+      post.deactivated ? deactivatedPosts.push(post) : normalPosts.push(post);
+    });
+    if (deactivatedPosts.length > 0) {
+      await Promise.all([
+        daoManager.getDao(DeactivatedDao).bulkPut(deactivatedPosts),
+        postDiscontinuousDao.bulkDelete(
+          deactivatedPosts.map((post: Post) => post.id),
+        ),
+      ]);
+    }
+    if (normalPosts.length > 0) {
+      await postDiscontinuousDao.bulkUpdate(normalPosts, false);
+    }
+    notificationCenter.emitEntityUpdate(ENTITY.DISCONTINUOUS_POST, posts);
   }
 
   /**
@@ -259,6 +297,7 @@ class PostDataController {
       notificationCenter.emit(
         SERVICE.POST_SERVICE.MARK_GROUP_HAS_MORE_ODER_AS_TRUE,
         [...deleteGroupIdSet],
+        QUERY_DIRECTION.OLDER,
       );
       return deletePostIds;
     }

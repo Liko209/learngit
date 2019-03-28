@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
+import { withTranslation, WithTranslation } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiConversationItemCard as EventUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import {
   JuiEventLocation,
@@ -19,7 +19,7 @@ import {
 import { getDurationTime } from '../helper';
 import { EventUpdateViewProps } from './types';
 
-type Props = WithNamespaces & EventUpdateViewProps;
+type Props = WithTranslation & EventUpdateViewProps;
 @observer
 class EventUpdate extends React.Component<Props> {
   private _getDurationTime = (value: any) => {
@@ -68,6 +68,7 @@ class EventUpdate extends React.Component<Props> {
       <EventUpdateViewCard
         title={text}
         titleColor={color}
+        iconColor={color}
         Icon="event"
         Footer={
           (hasOldTime || oldLocation) && (
@@ -100,6 +101,6 @@ class EventUpdate extends React.Component<Props> {
   }
 }
 
-const EventUpdateView = translate('translations')(EventUpdate);
+const EventUpdateView = withTranslation('translations')(EventUpdate);
 
 export { EventUpdateView };

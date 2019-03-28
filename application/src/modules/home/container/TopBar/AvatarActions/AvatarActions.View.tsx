@@ -12,8 +12,7 @@ import { JuiAvatarActions } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import isElectron from '@/common/isElectron';
-import { Dialog } from '@/containers/Dialog';
-import { ProfileDialogPerson } from '@/containers/Profile/Dialog';
+import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
 @observer
 class AvatarActionsView extends React.Component<ViewProps> {
@@ -47,15 +46,8 @@ class AvatarActionsView extends React.Component<ViewProps> {
 
   handleAboutPage = () => this.props.toggleAboutPage();
 
-  handleViewYourProfile = () => {
-    const { currentUserId } = this.props;
-    Dialog.simple(<ProfileDialogPerson id={currentUserId} />, {
-      size: 'medium',
-    });
-  }
-
   render() {
-    const { handleSignOut } = this.props;
+    const { handleSignOut, currentUserId } = this.props;
 
     return (
       <JuiAvatarActions
@@ -70,13 +62,14 @@ class AvatarActionsView extends React.Component<ViewProps> {
         }}
       >
         <JuiMenuList data-test-automation-id="avatarMenu">
-          <JuiMenuItem
-            onClick={this.handleViewYourProfile}
-            aria-label={i18next.t('home.viewYourProfile')}
-            data-test-automation-id="viewYourProfile"
-          >
-            {i18next.t('people.team.profile')}
-          </JuiMenuItem>
+          <OpenProfileDialog id={currentUserId}>
+            <JuiMenuItem
+              aria-label={i18next.t('home.viewYourProfile')}
+              data-test-automation-id="viewYourProfile"
+            >
+              {i18next.t('people.team.profile')}
+            </JuiMenuItem>
+          </OpenProfileDialog>
           {!isElectron && (
             <JuiMenuItem
               onClick={this.handleAboutPage}

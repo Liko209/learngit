@@ -20,9 +20,9 @@ const DEBUG_MODE = !(process.env.DEBUG_MODE === 'false');
 const QUARANTINE_MODE = (process.env.QUARANTINE_MODE === 'true');
 
 const ENABLE_MOCK_SERVER = (process.env.ENABLE_MOCK_SERVER === 'true');
-const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck01.lab.nordigy.ru";
+const MOCK_SERVER_URL = process.env.MOCK_SERVER_URL || "https://xmn02-i01-mck02.lab.nordigy.ru";
 const MOCK_ENV = process.env.MOCK_ENV || 'XMN-MOCK';
-const MOCK_AUTH_URL = process.env.MOCK_AUTH_URL || 'https://xmn02-i01-mck01.lab.nordigy.ru/jupiter/login/api/login';
+const MOCK_AUTH_URL = process.env.MOCK_AUTH_URL || 'https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/login/api/login';
 
 const ENV_OPTS = {
   'XMN-UP': {
@@ -71,6 +71,9 @@ const EXCLUDE_TAGS = process.env.EXCLUDE_TAGS ? parseArgs(process.env.EXCLUDE_TA
 const STOP_ON_FIRST_FAIL = process.env.STOP_ON_FIRST_FAIL === 'true';
 const MAX_RESOLUTION = (process.env.MAX_RESOLUTION || '1280x720').split('x').map(n => parseInt(n, 10));
 const ASSERTION_TIMEOUT = Number(process.env.ASSERTION_TIMEOUT) || 8e3;
+const SKIP_JS_ERROR = !(process.env.SKIP_JS_ERROR === 'false');
+const SKIP_CONSOLE_ERROR = !(process.env.SKIP_CONSOLE_ERROR === 'false');
+const SKIP_CONSOLE_WARN = !(process.env.SKIP_CONSOLE_WARN === 'false');
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -86,6 +89,9 @@ const RUNNER_OPTS = {
   STOP_ON_FIRST_FAIL,
   MAX_RESOLUTION,
   ASSERTION_TIMEOUT,
+  SKIP_JS_ERROR,
+  SKIP_CONSOLE_ERROR,
+  SKIP_CONSOLE_WARN,
 }
 
 // beat dashboard configuration

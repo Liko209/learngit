@@ -1,5 +1,6 @@
 import * as assert from 'assert';
 import { BaseWebComponent } from '../../BaseWebComponent';
+import { ClientFunction } from 'testcafe';
 
 
 export class MiniProfile extends BaseWebComponent {
@@ -110,6 +111,18 @@ export class MiniProfile extends BaseWebComponent {
   get favoriteStatusIcon() {
     return this.getSelectorByIcon("star", this.header);
   }
+
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
 }
 
 export class ProfileDialog extends BaseWebComponent {
@@ -192,7 +205,7 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByIcon('close');
   }
 
-  async close() {
+  async clickCloseButton() {
     await this.t.click(this.closeButton);
   }
 
@@ -202,6 +215,26 @@ export class ProfileDialog extends BaseWebComponent {
 
 
   // people only
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button');
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.click(this.telephonyButton);
+  }
+
+  get moreItem() {
+    return this.telephonyButton.parent('div');
+  }
+
+  async makeCall() {
+    await this.t.hover(this.extensionArea).click(this.telephonyButton);
+  }
+
   get formArea() {
     return this.getSelectorByAutomationId('profileDialogForm');
   }
@@ -218,8 +251,12 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByIcon('call', this.formArea);
   }
 
-  get extension() {
-    return this.extensionIcon.parent(0).find('div').withText('Ext').nextSibling('div').textContent;
+  get extensionArea() {
+    return this.extensionIcon.parent(1); //TODO: automation ID
+  }
+
+  get extensionNumber() {
+    return this.extensionIcon.parent(0).find('div').withText('Ext').nextSibling('div');
   }
 
   get emailIcon() {
@@ -266,7 +303,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   memberEntryById(id: string) {
-    return this.getComponent(Member, this.memberList.find(`[data-id=${id}]`));
+    return this.getComponent(Member, this.memberList.find(`[data-id="${id}"]`));
   }
 
   memberEntryByName(name: string) {
@@ -274,7 +311,7 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   get addMembersIcon() {
-    return this.getSelectorByIcon('add_team',this.memberHeader);
+    return this.getSelectorByIcon('add_team', this.memberHeader);
   }
 
   async clickAddMembersIcon() {
@@ -282,20 +319,38 @@ export class ProfileDialog extends BaseWebComponent {
   }
 
   // team only
-  get privateButton() {
+  get adminLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonAdmin', this.self);
+  }
+
+  get guestLabel() {
+    return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
+  }
+
+  get privacyToggle() {
     return this.profileTitle.find('.privacy');
   }
 
   get publicIcon() {
-    return this.getSelectorByIcon("lock_open", this.privateButton);
+    return this.getSelectorByIcon("lock_open", this.privacyToggle);
   }
 
   get privateIcon() {
-    return this.getSelectorByIcon('lock', this.privateButton);
+    return this.getSelectorByIcon('lock', this.privacyToggle);
   }
 
-  async clickPrivate() {
-    await this.t.click(this.privateButton);
+  async shouldShowPublicIcon() {
+    await this.t.expect(this.publicIcon.exists).ok();
+    await this.t.expect(this.privateIcon.exists).notOk();
+  }
+
+  async shouldShowPrivateIcon() {
+    await this.t.expect(this.publicIcon.exists).notOk();
+    await this.t.expect(this.privateIcon.exists).ok();
+  }
+
+  async clickPrivacyToggle() {
+    await this.t.click(this.privacyToggle);
   }
 
   get settingButton() {
@@ -360,17 +415,17 @@ class Member extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
   }
 
-  async showAdminLabel() {
-    await this.t.expect(this.adminLabel.exists).ok();
+  async showAdminLabel(timeout: number = 20e3) {
+    await this.t.expect(this.adminLabel.exists).ok({ timeout });
   }
 
   async showGuestLabel() {
     await this.t.expect(this.guestLabel.exists).ok();
   }
 
-  async showMemberLabel() {
-    await this.t.expect(this.adminLabel.exists).notOk();
-    await this.t.expect(this.guestLabel.exists).notOk();
+  async showMemberLabel(timeout: number = 20e3) {
+    await this.t.expect(this.adminLabel.exists).notOk({ timeout });
+    await this.t.expect(this.guestLabel.exists).notOk({ timeout });
   }
 
   get moreButton() {
@@ -381,6 +436,17 @@ class Member extends BaseWebComponent {
     await this.t.hover(this.self).click(this.moreButton);
   }
 
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.hover(this.self).click(this.telephonyButton);
+  }
 }
 
 class MoreMenu extends BaseWebComponent {
@@ -404,7 +470,7 @@ class MoreMenu extends BaseWebComponent {
   }
 
   async quit() {
-    await this.t.pressKey('ESC');
+    await this.t.pressKey('esc');
   }
 }
 
@@ -436,8 +502,8 @@ class MemberMoreMenu extends BaseWebComponent {
   async clickRevokeTeamAdmin() {
     await this.t.click(this.revokeTeamAdminItem);
   }
-  
+
   async quit() {
-    await this.t.pressKey('ESC');
+    await this.t.pressKey('esc');
   }
 }

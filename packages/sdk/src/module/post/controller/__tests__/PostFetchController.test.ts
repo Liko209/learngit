@@ -12,11 +12,10 @@ import { PostDao } from '../../dao';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { PostFetchController } from '../PostFetchController';
 import PostAPI from '../../../../api/glip/post';
-import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
+import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import { Post } from '../../entity/Post';
 import { PostDataController } from '../PostDataController';
 import { GroupService } from '../../../../module/group/service';
-import { GROUP_QUERY_TYPE } from '../../../../service';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
@@ -26,8 +25,8 @@ jest.mock('../../../../api/glip/post');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../PostDataController');
 
-const postDao = new PostDao(null);
-const itemDao = new ItemDao(null);
+const postDao = new PostDao(null as any);
+const itemDao = new ItemDao(null as any);
 
 const entitySourceController = new EntitySourceController<Post>(null, null);
 const itemService = new ItemService();
@@ -330,6 +329,87 @@ describe('PostFetchController()', () => {
         limit: 20,
       });
     });
+
+    it('should getRemotePostsByGroupId with both direction if should not save to db', async () => {
+      const mockPosts = [];
+      const mockItems = [];
+      const data = {
+        posts: [],
+        items: [],
+      };
+      jest.spyOn(postFetchController, '_isPostInDb').mockReturnValueOnce(false);
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+
+      jest
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
+        .mockResolvedValueOnce({
+          hasMore: false,
+          ...data,
+        });
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        postId: 1,
+        limit: 20,
+        direction: QUERY_DIRECTION.BOTH,
+      });
+
+      expect(postFetchController.getRemotePostsByGroupId).toBeCalledWith({
+        groupId: 1,
+        postId: 1,
+        limit: 20,
+        direction: QUERY_DIRECTION.BOTH,
+        shouldSaveToDb: false,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        limit: 20,
+      });
+    });
+
+    it('should getRemotePostsByGroupId with old direction if should save to db', async () => {
+      const mockPosts = [];
+      const mockItems = [];
+      const data = {
+        posts: [],
+        items: [],
+      };
+      groupService.hasMorePostInRemote.mockResolvedValueOnce(true);
+      postDao.queryPostsByGroupId.mockResolvedValue(mockPosts);
+      itemService.getByPosts.mockResolvedValue(mockItems);
+
+      jest
+        .spyOn(postFetchController, 'getRemotePostsByGroupId')
+        .mockResolvedValueOnce({
+          hasMore: false,
+          ...data,
+        });
+
+      const result = await postFetchController.getPostsByGroupId({
+        groupId: 1,
+        limit: 20,
+        direction: QUERY_DIRECTION.BOTH,
+      });
+
+      expect(postFetchController.getRemotePostsByGroupId).toBeCalledWith({
+        groupId: 1,
+        postId: 0,
+        limit: 20,
+        direction: QUERY_DIRECTION.OLDER,
+        shouldSaveToDb: true,
+      });
+
+      expect(result).toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        limit: 20,
+      });
+    });
   });
 
   describe('fetchPaginationPosts()', () => {
@@ -468,45 +548,6 @@ describe('PostFetchController()', () => {
       groupService.updateHasMore.mockImplementationOnce(() => {});
       expect(groupService.updateHasMore).toHaveBeenCalledTimes(1);
       expect(result.hasMore).toBeFalsy();
-    });
-  });
-
-  describe('getPostsByIds', () => {
-    it('should return all posts if there are all exist in local', async () => {
-      setup();
-      itemService.getByPosts.mockResolvedValueOnce([]);
-      postFetchController.entitySourceController.batchGet.mockResolvedValueOnce(
-        [{ id: 1 }, { id: 2 }],
-      );
-      const result = await postFetchController.getPostsByIds([1, 2]);
-      expect(result.posts.length).toEqual(2);
-    });
-    it('should request posts if there are not all exist in local', async () => {
-      setup();
-      itemService.getByPosts.mockResolvedValueOnce([]);
-      postFetchController.entitySourceController.batchGet.mockResolvedValueOnce(
-        [{ id: 1 }],
-      );
-      const data = {
-        posts: [{ _id: 2 }],
-        items: [],
-      };
-      const mockNormal = data;
-      PostAPI.requestByIds.mockResolvedValueOnce(mockNormal);
-
-      postFetchController.postDataController.filterAndSavePosts.mockResolvedValueOnce(
-        [{ id: 2 }],
-      );
-      const result = await postFetchController.getPostsByIds([1, 2]);
-      expect(result.posts).toEqual([{ id: 1 }, { id: 2 }]);
-    });
-  });
-
-  describe('getPostCountByGroupId', () => {
-    it('should return correct post count by group id', async () => {
-      postDao.groupPostCount.mockResolvedValueOnce(2);
-      const result = await postFetchController.getPostCountByGroupId(2);
-      expect(result).toEqual(2);
     });
   });
 });

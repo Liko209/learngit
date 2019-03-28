@@ -18,22 +18,23 @@ import {
   NETWORK_VIA,
   CONSUMER_MAX_QUEUE_COUNT,
   IRequestDecoration,
+  NETWORK_HANDLE_TYPE,
 } from './network';
 
 class NetworkManager {
   clientManager: ClientManager;
-  handlers: Map<IHandleType, NetworkRequestHandler>;
+  handlers: Map<NETWORK_HANDLE_TYPE, NetworkRequestHandler>;
   tokenManager?: OAuthTokenManager;
   decorator?: NetworkRequestDecorator;
 
   constructor(oauthTokenManager: OAuthTokenManager) {
     this.clientManager = new ClientManager();
-    this.handlers = new Map<IHandleType, NetworkRequestHandler>();
+    this.handlers = new Map<NETWORK_HANDLE_TYPE, NetworkRequestHandler>();
     this.tokenManager = oauthTokenManager;
   }
 
   addApiRequest(request: IRequest, isTail = true) {
-    const handler = this.networkRequestHandler(request.handlerType);
+    const handler = this.networkRequestHandler(request.handlerType.name);
     if (handler) {
       handler.addApiRequest(request, isTail);
     }
@@ -52,7 +53,7 @@ class NetworkManager {
   }
 
   cancelRequest(request: IRequest) {
-    const handler = this.networkRequestHandler(request.handlerType);
+    const handler = this.networkRequestHandler(request.handlerType.name);
     if (handler) {
       handler.cancelRequest(request);
     }
@@ -78,10 +79,10 @@ class NetworkManager {
   }
 
   addNetworkRequestHandler(handler: NetworkRequestHandler) {
-    this.handlers.set(handler.type, handler);
+    this.handlers.set(handler.type.name, handler);
   }
 
-  networkRequestHandler(type: IHandleType) {
+  networkRequestHandler(type: NETWORK_HANDLE_TYPE) {
     return this.handlers.get(type);
   }
   addRequestConsumer(
@@ -102,16 +103,6 @@ class NetworkManager {
     const finalDecorator = new NetworkRequestDecorator(decorator);
     const handler = new NetworkRequestHandler(this.tokenManager, handlerType);
 
-    const httpVia = NETWORK_VIA.HTTP;
-    const httpConsumer = new NetworkRequestConsumer(
-      handler,
-      this.clientManager.getApiClient(httpVia),
-      CONSUMER_MAX_QUEUE_COUNT.HTTP,
-      httpVia,
-      handler,
-      finalDecorator,
-    );
-    this.addRequestConsumer(handler, httpVia, httpConsumer);
     const socketVia = NETWORK_VIA.SOCKET;
     const socketConsumer = new NetworkRequestConsumer(
       handler,
@@ -123,8 +114,21 @@ class NetworkManager {
     );
     this.addRequestConsumer(handler, socketVia, socketConsumer);
 
+    const httpVia = NETWORK_VIA.HTTP;
+    const httpConsumer = new NetworkRequestConsumer(
+      handler,
+      this.clientManager.getApiClient(httpVia),
+      CONSUMER_MAX_QUEUE_COUNT.HTTP,
+      httpVia,
+      handler,
+      finalDecorator,
+    );
+    this.addRequestConsumer(handler, httpVia, httpConsumer);
+
     if (hasSurvivalMode) {
-      const survivalMode = new NetworkRequestSurvivalMode();
+      const survivalMode = new NetworkRequestSurvivalMode(
+        handlerType.checkServerStatus,
+      );
       handler.setNetworkRequestSurvivalMode(survivalMode);
     }
 

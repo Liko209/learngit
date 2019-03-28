@@ -3,40 +3,55 @@
  * @Date: 2019-01-16 13:25:57
  * Copyright © RingCentral. All rights reserved.
  */
-import { ConfigDao, daoManager } from '../../../../dao';
 import { PostDao } from '../../../post/dao';
 import { PreInsertController } from '../impl/PreInsertController';
 import { ProgressService, PROGRESS_STATUS } from '../../../progress';
 import notificationCenter from '../../../../service/notificationCenter';
+// import { GlobalConfigService } from '../../../../module/config';
+import { UserConfigService } from '../../../../module/config/service/UserConfigService';
+import { GlobalConfigService } from '../../../../module/config/service/GlobalConfigService';
 
 jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao');
 jest.mock('../../../post/dao');
+jest.mock('../../../../module/config/service/UserConfigService');
+jest.mock('../../../../module/config/service/GlobalConfigService');
+
+// GlobalConfigService.getInstance = jest.fn();
 
 describe('PreInsertController', () => {
-  let preInsertController: PreInsertController;
-  const progressService: ProgressService = new ProgressService();
-  const dao = new PostDao(null);
-  const configDao = new ConfigDao(null);
+  // afterEach(() => {
+  //   jest.restoreAllMocks();
+  //   jest.resetAllMocks();
+  //   jest.clearAllMocks();
+  // });
+  let progressService: ProgressService;
+  function setup() {
+    let preInsertController: PreInsertController;
 
-  beforeEach(() => {
-    jest.spyOn(daoManager, 'getKVDao').mockReturnValueOnce(configDao);
-    preInsertController = new PreInsertController(dao, progressService);
+    progressService = new ProgressService();
+
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
+    const dao = new PostDao(null);
+    preInsertController = new PreInsertController(dao, progressService);
     jest
       .spyOn(preInsertController, 'getEntityNotificationKey')
       .mockReturnValue('ENTITY.POST');
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-    jest.resetAllMocks();
-    jest.clearAllMocks();
-  });
+    return preInsertController;
+  }
 
   describe('insert()', () => {
     it('should call addProgress & notificationCenter.emitEntityUpdate', async () => {
+      GlobalConfigService.getInstance = jest.fn().mockReturnValue({
+        get: jest.fn(),
+      });
+      const userConfigService: UserConfigService = new UserConfigService();
+      UserConfigService.getInstance = jest
+        .fn()
+        .mockReturnValue(userConfigService);
+      userConfigService.setUserId.mockImplementation(() => {});
+      const preInsertController = setup();
       await preInsertController.insert({ id: -2, version: -2 });
       expect(preInsertController.isInPreInsert(-2)).toBe(true);
       expect(progressService.addProgress).toBeCalledTimes(1);
@@ -46,6 +61,7 @@ describe('PreInsertController', () => {
 
   describe('delete()', () => {
     it('should call add progress and emit update', async () => {
+      const preInsertController = setup();
       await preInsertController.insert({ id: -2, version: -2 });
       expect(preInsertController.isInPreInsert(-2)).toBe(true);
       await preInsertController.delete({ id: -2, version: -2 });
@@ -54,7 +70,9 @@ describe('PreInsertController', () => {
   });
 
   describe('bulkDelete()', () => {
+    let preInsertController;
     beforeEach(async () => {
+      preInsertController = setup();
       await preInsertController.insert({ id: -2, version: -2 });
       await preInsertController.insert({ id: -3, version: -3 });
       await preInsertController.insert({ id: -4, version: -4 });
@@ -91,12 +109,29 @@ describe('PreInsertController', () => {
 
   describe('isInPreInsert()', () => {
     it('should return true for the insert version', async () => {
+      const preInsertController = setup();
       await preInsertController.insert({ id: -2, version: -2 });
       expect(preInsertController.isInPreInsert(-2)).toBe(true);
     });
   });
 
   describe('updateStatus()', () => {
+    let preInsertController;
+    let progressService: ProgressService;
+
+    beforeEach(async () => {
+      //  preInsertController: PreInsertController;
+
+      progressService = new ProgressService();
+
+      ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
+      const dao = new PostDao(null);
+      preInsertController = new PreInsertController(dao, progressService);
+      jest
+        .spyOn(preInsertController, 'getEntityNotificationKey')
+        .mockReturnValue('ENTITY.POST');
+      return preInsertController;
+    });
     it('should call progressService.addProgress when preinsert', async () => {
       await preInsertController.updateStatus(
         { id: -2, version: -2 },
@@ -124,6 +159,7 @@ describe('PreInsertController', () => {
 
   describe('getEntityNotificationKey()', () => {
     it('should return entity name when has dao', () => {
+      const preInsertController = setup();
       const result = preInsertController.getEntityNotificationKey();
       expect(result).toEqual('ENTITY.POST');
     });

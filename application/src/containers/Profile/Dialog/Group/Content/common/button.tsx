@@ -29,7 +29,7 @@ const renderButton = (
       tabIndex={0}
       onClick={handleClick}
     >
-      <JuiIconography fontSize="small">{iconName}</JuiIconography>
+      <JuiIconography iconSize="medium">{iconName}</JuiIconography>
       {i18next.t(buttonMessage)}
     </JuiProfileDialogContentSummaryButton>
   );

@@ -13,6 +13,7 @@ type FilesProps = {
 
 type FilesViewProps = {
   postId: number;
+  groupId: number;
   post: Post;
   files: {
     [FileType.image]: ExtendFileItem[];
@@ -24,6 +25,7 @@ type FilesViewProps = {
   removeFile: (id: number) => void;
   dispose: () => void;
   urlMap: Map<number, string>;
+  getShowDialogPermission: () => boolean;
   getCropImage: () => Promise<void>;
   isRecentlyUploaded: (id: number) => boolean;
 };

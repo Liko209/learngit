@@ -153,7 +153,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
 
     if (
       emailRegExp.test(value) &&
-      selectedItem.findIndex(item => item.email === value) === -1
+      selectedItem.findIndex((item: Suggestion) => item.email === value) === -1
     ) {
       this.setState(
         {
@@ -181,15 +181,17 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
       selectedItem = [...selectedItem, item];
     }
 
-    this.setState(
-      {
-        selectedItem,
-        inputValue: '',
-      },
-      () => {
-        this.props.onSelectChange(this.state.selectedItem);
-      },
-    );
+    setTimeout(() => {
+      this.setState(
+        {
+          selectedItem,
+          inputValue: '',
+        },
+        () => {
+          this.props.onSelectChange(this.state.selectedItem);
+        },
+      );
+    },         0);
   }
 
   handleDelete = (item: Suggestion) => () => {
@@ -235,7 +237,7 @@ class JuiContactSearch extends React.PureComponent<Props, State> {
         onChange={this.handleChange}
         selectedItem={selectedItem}
         defaultHighlightedIndex={0}
-        itemToString={item => (item ? item.label : '')}
+        itemToString={(item: Suggestion) => (item ? item.label : '')}
       >
         {({
           getInputProps,

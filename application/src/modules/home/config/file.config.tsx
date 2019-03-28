@@ -4,18 +4,22 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 const config: SubModuleConfig = {
   route: {
     path: '/files',
     component: () => <div>Files</div>,
   },
-  nav: () => ({
+  nav: async () => ({
     url: '/files',
-    icon: 'files',
-    title: i18next.t('item.files'),
+    Icon: <JuiIconography iconSize="medium">leftNavFile_border</JuiIconography>,
+    IconSelected: (
+      <JuiIconography iconSize="medium">leftNavFile</JuiIconography>
+    ),
+    title: await i18nT('item.files'),
     placement: 'bottom',
   }),
 };

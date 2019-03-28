@@ -19,8 +19,12 @@ import {
   NETWORK_VIA,
   REQUEST_WEIGHT,
   SURVIVAL_MODE,
+  HA_PRIORITY,
 } from './network';
+import { networkLogger } from '../log';
+import { NetworkRequestBuilder } from './client';
 
+const LOG_TAG = 'NetworkRequestHandler';
 class NetworkRequestHandler
   implements IResponseListener, INetworkRequestProducer {
   pendingTasks: Map<REQUEST_PRIORITY, RequestTask[]>;
@@ -54,7 +58,7 @@ class NetworkRequestHandler
     if (this.isSurvivalModeEnabled()) {
       if (
         this.isInSurvivalMode() &&
-        !this.canHandleSurvivalMode(request.path)
+        !this.canHandleInSurvivalMode(request.HAPriority)
       ) {
         this._callXApiResponseCallback(NETWORK_FAIL_TYPE.SERVER_ERROR, request);
         return;
@@ -63,6 +67,13 @@ class NetworkRequestHandler
     const task = new RequestTask(request);
 
     this.appendTask(task, isTail);
+    networkLogger.info(
+      LOG_TAG,
+      'addToQueueTime: ',
+      Date.now(),
+      'request: ',
+      request,
+    );
     this.notifyRequestArrived(request.via);
   }
 
@@ -93,14 +104,14 @@ class NetworkRequestHandler
   }
 
   notifyTokenRefreshed() {
-    this.consumers.forEach((consumer) => {
+    this.consumers.forEach((consumer: INetworkRequestConsumerListener) => {
       consumer.onTokenRefreshed();
     });
   }
 
   produceRequest(via: NETWORK_VIA): IRequest | undefined {
     let task;
-    Object.keys(REQUEST_PRIORITY).some((index) => {
+    Object.keys(REQUEST_PRIORITY).some((index: string) => {
       const priority = REQUEST_PRIORITY[index];
       if (!this.canProduceRequest(priority)) {
         return false;
@@ -125,7 +136,9 @@ class NetworkRequestHandler
         this.pendingTasks.get(REQUEST_PRIORITY.LOW),
         this.pendingTasks.get(REQUEST_PRIORITY.NORMAL),
       );
-
+      const requestBuilder = task.request as NetworkRequestBuilder;
+      requestBuilder.via = via;
+      task.request = requestBuilder.build();
       return task.request;
     }
 
@@ -150,7 +163,7 @@ class NetworkRequestHandler
 
   notifyRequestArrived(handleVia: NETWORK_VIA) {
     if (handleVia === NETWORK_VIA.ALL) {
-      this.consumers.forEach((consumer) => {
+      this.consumers.forEach((consumer: INetworkRequestConsumerListener) => {
         if (consumer) {
           consumer.onConsumeArrived();
         }
@@ -175,14 +188,14 @@ class NetworkRequestHandler
   }
 
   cancelAllConsumers() {
-    this.consumers.forEach((consumer) => {
+    this.consumers.forEach((consumer: INetworkRequestConsumerListener) => {
       consumer.onCancelAll();
     });
   }
 
   cancelAllPendingTasks() {
-    this.pendingTasks.forEach((queue) => {
-      queue.forEach((task) => {
+    this.pendingTasks.forEach((queue: RequestTask[]) => {
+      queue.forEach((task: RequestTask) => {
         this._callXApiResponseCallback(
           NETWORK_FAIL_TYPE.CANCELLED,
           task.request,
@@ -194,8 +207,8 @@ class NetworkRequestHandler
 
   isRequestInPending(request: IRequest) {
     let exist = false;
-    this.pendingTasks.forEach((queue) => {
-      queue.some((task) => {
+    this.pendingTasks.forEach((queue: RequestTask[]) => {
+      queue.some((task: RequestTask) => {
         if (task.request.id === request.id) {
           exist = true;
           return true;
@@ -213,7 +226,7 @@ class NetworkRequestHandler
 
   deletePendingRequest(request: IRequest) {
     let exist = false;
-    this.pendingTasks.forEach((queue) => {
+    this.pendingTasks.forEach((queue: RequestTask[]) => {
       queue.some((task, index) => {
         if (task.request.id === request.id) {
           exist = true;
@@ -244,11 +257,8 @@ class NetworkRequestHandler
     );
   }
 
-  canHandleSurvivalMode(uri: string) {
-    return (
-      this.networkRequestSurvivalMode &&
-      this.networkRequestSurvivalMode.canSupportSurvivalMode(uri)
-    );
+  canHandleInSurvivalMode(HAPriority: HA_PRIORITY) {
+    return HAPriority === HA_PRIORITY.HIGH;
   }
 
   onAccessTokenInvalid(handlerType: IHandleType) {
@@ -257,10 +267,8 @@ class NetworkRequestHandler
 
   onSurvivalModeDetected(mode: SURVIVAL_MODE, retryAfter: number) {
     if (this.isSurvivalModeEnabled() && this.networkRequestSurvivalMode) {
-      const interval = retryAfter ? retryAfter * 1000 : 4000;
+      const interval = retryAfter ? retryAfter * 1000 : 60000;
       this.networkRequestSurvivalMode.setSurvivalMode(mode, interval);
-
-      this.cancelAllPendingTasks();
     }
   }
 
@@ -284,7 +292,7 @@ class NetworkRequestHandler
     let result;
     if (queue) {
       queue.some((task, index) => {
-        if (task.via() === via) {
+        if (task.via() === via || task.via() === NETWORK_VIA.ALL) {
           result = task;
           queue.splice(index, 1);
           return true;

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { transaction } from 'mobx';
+import { transaction, action } from 'mobx';
 import { IdModel } from 'sdk/framework/model';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import {
@@ -26,9 +26,12 @@ import {
 import {
   FetchDataListHandler,
   IFetchDataListHandlerOptions,
+  DeltaDataHandler,
 } from './FetchDataListHandler';
 import { SortableListStore } from './SortableListStore';
 import { mainLogger } from 'sdk';
+
+type CountChangeCallback = (count: number) => void;
 
 export interface IFetchSortableDataListHandlerOptions<T>
   extends IFetchDataListHandlerOptions {
@@ -43,6 +46,9 @@ export interface IFetchSortableDataProvider<T> {
     pageSize: number,
     anchor?: ISortableModel<T>,
   ): Promise<{ data: T[]; hasMore: boolean }>;
+
+  totalCount?(): number;
+  fetchTotalCount?(): Promise<number>;
 }
 
 export class FetchSortableDataListHandler<
@@ -53,6 +59,9 @@ export class FetchSortableDataListHandler<
   private _transformFunc: ITransformFunc<T>;
   private _sortFun?: ISortFunc<ISortableModel<T>>;
   private _sortableDataProvider?: IFetchSortableDataProvider<T>;
+  protected _totalCountChangeCallback?: CountChangeCallback;
+
+  private _maintainMode: boolean = false;
 
   constructor(
     dataProvider: IFetchSortableDataProvider<T> | undefined,
@@ -73,8 +82,40 @@ export class FetchSortableDataListHandler<
     }
   }
 
+  setTotalCountChangeCallback(cb: CountChangeCallback) {
+    this._totalCountChangeCallback = cb;
+  }
+
   get sortableListStore() {
     return this.listStore as SortableListStore<T>;
+  }
+
+  set maintainMode(mode: boolean) {
+    if (this._maintainMode !== mode) {
+      mainLogger.debug(
+        `FetchSortableDataListHandler: change maintain mode, ${mode}`,
+      );
+      this._maintainMode = mode;
+      this._releaseDataInMaintainMode();
+    }
+  }
+
+  get maintainMode() {
+    return this._maintainMode;
+  }
+
+  async fetchDataByAnchor(
+    direction: QUERY_DIRECTION,
+    pageSize: number,
+    anchor: ISortableModel<T>,
+  ) {
+    return this.fetchDataInternal(direction, pageSize, anchor);
+  }
+
+  private _releaseDataInMaintainMode() {
+    if (this._maintainMode) {
+      this.refreshData();
+    }
   }
 
   protected async fetchDataInternal(
@@ -83,9 +124,11 @@ export class FetchSortableDataListHandler<
     anchor: ISortableModel<T>,
   ) {
     if (!this._sortableDataProvider) {
-      return mainLogger.warn('data fetcher should be defined ');
+      return mainLogger.warn(
+        'FetchSortableDataListHandler: data fetcher should be defined ',
+      );
     }
-    const { data, hasMore } = await this._sortableDataProvider.fetchData(
+    const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
       direction,
       pageSize,
       anchor,
@@ -98,17 +141,29 @@ export class FetchSortableDataListHandler<
       this.updateEntityStore(data);
       this.handleHasMore(hasMore, direction);
       this.handlePageData(sortableResult);
-      this._dataChangeCallBack &&
-        this._dataChangeCallBack({
-          added: sortableResult,
-          updated: [],
-          deleted: [],
-        });
+      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+        if (callback) {
+          callback({
+            added: sortableResult,
+            updated: [],
+            deleted: [],
+          });
+        }
+      });
+
+      if (sortableResult.length) {
+        this._releaseDataInMaintainMode();
+      }
     });
     return data;
   }
 
+  @action
   refreshData() {
+    mainLogger.debug(
+      `FetchSortableDataListHandler: refreshData: ${this.listStore.items
+        .length - this._pageSize}`,
+    );
     let sortableResult: ISortableModel<T>[];
     if (this.listStore.items.length > this._pageSize) {
       sortableResult = this.listStore.items.slice(
@@ -120,38 +175,49 @@ export class FetchSortableDataListHandler<
     } else {
       sortableResult = this.listStore.items;
     }
-    this._dataChangeCallBack &&
-      this._dataChangeCallBack({
-        added: sortableResult,
-        updated: [],
-        deleted: [],
+
+    !this._maintainMode &&
+      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+        if (callback) {
+          callback({
+            added: sortableResult,
+            updated: [],
+            deleted: [],
+          });
+        }
       });
   }
 
-  handleDataDeleted(payload: NotificationEntityDeletePayload) {
+  @action
+  handleDataDeleted = (payload: NotificationEntityDeletePayload) => {
     let originalSortableIds: number[] = [];
 
-    if (this._dataChangeCallBack) {
+    if (this._dataChangeCallBacks.length) {
       originalSortableIds = this.sortableListStore.getIds;
     }
 
     const deletedSortableModelIds = Array.from(payload.body.ids);
     this.sortableListStore.removeByIds(deletedSortableModelIds);
 
-    if (this._dataChangeCallBack) {
-      this._dataChangeCallBack({
-        deleted: _.intersection(originalSortableIds, payload.body.ids),
-        updated: [],
-        added: [],
-      });
-    }
+    this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+      if (callback) {
+        callback({
+          deleted: _.intersection(originalSortableIds, payload.body.ids),
+          updated: [],
+          added: [],
+        });
+      }
+    });
+
+    this._updateTotalCount();
   }
 
-  handleDataUpdateReplace(
+  @action
+  handleDataUpdateReplace = (
     payload:
       | NotificationEntityUpdatePayload<T>
       | NotificationEntityReplacePayload<T>,
-  ) {
+  ) => {
     let originalSortableModels: ISortableModel[] = [];
     let deletedSortableModelIds: number[] = [];
     let addedSortableModels: ISortableModel[] = [];
@@ -179,8 +245,7 @@ export class FetchSortableDataListHandler<
         const sortableModel = this._transformFunc(model);
         if (
           payload.type === EVENT_TYPES.REPLACE ||
-          sortableModel.sortValue !==
-            (this.sortableListStore.getById(key) as ISortableModel).sortValue
+          this._isPosChanged(sortableModel)
         ) {
           matchedSortableModels.push(sortableModel);
           matchedEntities.push(model);
@@ -211,7 +276,7 @@ export class FetchSortableDataListHandler<
       });
     }
 
-    if (this._dataChangeCallBack) {
+    if (this._needToCalculateDifference()) {
       originalSortableModels = _.cloneDeep(this.sortableListStore.items);
     }
 
@@ -220,7 +285,7 @@ export class FetchSortableDataListHandler<
       this.sortableListStore.removeByIds(deletedSortableModelIds);
       this.sortableListStore.upsert(matchedSortableModels);
 
-      if (this._dataChangeCallBack) {
+      if (this._needToCalculateDifference()) {
         // replace models as updated models
         addedSortableModels = matchedSortableModels;
       }
@@ -229,33 +294,45 @@ export class FetchSortableDataListHandler<
       this.sortableListStore.upsert(matchedSortableModels);
       this.sortableListStore.removeByIds(deletedSortableModelIds);
 
-      if (this._dataChangeCallBack) {
+      if (this._needToCalculateDifference()) {
         // calculate added models
         addedSortableModels = _.differenceBy(
           matchedSortableModels,
           originalSortableModels,
-          item => item.id,
+          (item: ISortableModel<T>) => item.id,
         );
 
         updatedSortableModels = _.intersectionBy(
           matchedSortableModels,
           originalSortableModels,
-          item => item.id,
+          (item: ISortableModel<T>) => item.id,
         );
       }
     }
 
     if (
-      deletedSortableModelIds.length ||
-      addedSortableModels.length ||
-      updatedSortableModels.length
+      this._needToCalculateDifference() &&
+      (deletedSortableModelIds.length ||
+        addedSortableModels.length ||
+        updatedSortableModels.length)
     ) {
-      this._dataChangeCallBack &&
-        this._dataChangeCallBack({
-          deleted: deletedSortableModelIds,
-          updated: updatedSortableModels,
-          added: addedSortableModels,
-        });
+      this._dataChangeCallBacks.forEach((callback: DeltaDataHandler) => {
+        if (callback) {
+          callback({
+            deleted: deletedSortableModelIds,
+            updated: updatedSortableModels,
+            added: addedSortableModels,
+          });
+        }
+      });
+
+      if (addedSortableModels.length) {
+        this._releaseDataInMaintainMode();
+      }
+    }
+
+    if (entities.size > 0) {
+      this._updateTotalCount();
     }
   }
 
@@ -269,6 +346,10 @@ export class FetchSortableDataListHandler<
         this.handleDataUpdateReplace(payload);
         break;
     }
+  }
+
+  private _needToCalculateDifference() {
+    return this.maintainMode || this._dataChangeCallBacks.length;
   }
 
   private _isInRange(newData: ISortableModel<T>) {
@@ -309,6 +390,35 @@ export class FetchSortableDataListHandler<
       );
     }
     return inRange;
+  }
+
+  private _isPosChanged(newModel: ISortableModel<T>) {
+    let isPosChanged = false;
+
+    const oldModel = this.sortableListStore.getById(
+      newModel.id,
+    ) as ISortableModel;
+    isPosChanged = newModel.sortValue !== oldModel.sortValue;
+
+    if (!isPosChanged && this._sortFun) {
+      const currentAllItems = this.sortableListStore.items;
+      const pos = currentAllItems.findIndex((value: ISortableModel<T>) => {
+        return value.id === newModel.id;
+      });
+
+      const leftModel = pos - 1 >= 0 ? currentAllItems[pos - 1] : undefined;
+      const rightModel =
+        pos + 1 < currentAllItems.length ? currentAllItems[pos + 1] : undefined;
+
+      isPosChanged =
+        (leftModel && this._sortFun(newModel, leftModel) < 0) || false; // if smaller then left
+
+      isPosChanged = !isPosChanged
+        ? (rightModel && this._sortFun(newModel, rightModel) > 0) || false // if bigger then right
+        : isPosChanged;
+    }
+
+    return isPosChanged;
   }
 
   protected handleHasMore(hasMore: boolean, direction: QUERY_DIRECTION) {
@@ -359,5 +469,20 @@ export class FetchSortableDataListHandler<
       type: EVENT_TYPES.REPLACE,
       body: notificationBody,
     });
+  }
+
+  private async _updateTotalCount() {
+    if (
+      this._sortableDataProvider &&
+      this._sortableDataProvider.fetchTotalCount &&
+      this._sortableDataProvider.totalCount &&
+      this._totalCountChangeCallback
+    ) {
+      const oldTotal = this._sortableDataProvider.totalCount();
+      const newTotal = await this._sortableDataProvider.fetchTotalCount();
+      if (oldTotal !== newTotal) {
+        this._totalCountChangeCallback(newTotal);
+      }
+    }
   }
 }

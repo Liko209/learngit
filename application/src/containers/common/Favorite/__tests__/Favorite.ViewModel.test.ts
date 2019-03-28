@@ -11,7 +11,6 @@ import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FavoriteViewModel } from '../Favorite.ViewModel';
 import { FavoriteProps } from '../types';
 import { GLOBAL_KEYS } from '../../../../store/constants';
-import { ItemService } from 'sdk/src/module/item';
 
 jest.mock('../../../../store/utils');
 
@@ -19,7 +18,7 @@ const mockServiceGroup = {
   id: 11370502, // team or group id
 };
 
-const mockEntityGroup = {
+const mockEntityGroup: any = {
   isFavorite: true,
   members: [],
 };

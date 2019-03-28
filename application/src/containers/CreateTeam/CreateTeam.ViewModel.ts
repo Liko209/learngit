@@ -6,7 +6,8 @@
 import { action, computed, observable } from 'mobx';
 
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
-import { UserConfig } from 'sdk/service/account';
+import { AccountUserConfig } from 'sdk/service/account/config';
+
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -34,6 +35,8 @@ class CreateTeamViewModel extends AbstractViewModel {
   members: (number | string)[] = [];
   @observable
   errorEmail: string;
+  @observable
+  loading: boolean = false;
 
   @computed
   get isOffline() {
@@ -70,10 +73,19 @@ class CreateTeamViewModel extends AbstractViewModel {
     options: TeamSetting,
   ): Promise<Group | null> => {
     const groupService: GroupService = GroupService.getInstance();
-    const creatorId = Number(UserConfig.getCurrentUserId());
+    const userConfig = new AccountUserConfig();
+    const creatorId = userConfig.getGlipUserId();
     try {
-      return await groupService.createTeam(creatorId, memberIds, options);
+      this.loading = true;
+      const result = await groupService.createTeam(
+        creatorId,
+        memberIds,
+        options,
+      );
+      this.loading = false;
+      return result;
     } catch (error) {
+      this.loading = false;
       const unkonwnError = this.createErrorHandler(error);
       if (unkonwnError) {
         throw new Error();

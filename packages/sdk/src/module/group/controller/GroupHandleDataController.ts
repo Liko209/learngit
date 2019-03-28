@@ -9,9 +9,9 @@ import _ from 'lodash';
 import GroupAPI from '../../../api/glip/group';
 import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
-import { GroupState, PartialWithKey } from '../../../models';
+import { PartialWithKey } from '../../../models';
+import { GroupState } from '../../state/entity';
 import { GroupDao } from '../../../module/group/dao';
-import { UserConfig } from '../../../service/account';
 import { EVENT_TYPES } from '../../../service/constants';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
 import notificationCenter, {
@@ -19,29 +19,38 @@ import notificationCenter, {
 } from '../../../service/notificationCenter';
 import { ProfileService, extractHiddenGroupIds } from '../../profile';
 import { transform } from '../../../service/utils';
+import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import { Post } from '../../post/entity';
 import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
+import { IGroupService } from '../service/IGroupService';
+import { AccountUserConfig } from '../../../service/account/config';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 class GroupHandleDataController {
+  constructor(
+    public groupService: IGroupService,
+    public entitySourceController: IEntitySourceController<Group>,
+  ) {}
   getExistedAndTransformDataFromPartial = async (
     groups: Partial<Raw<Group>>[],
   ): Promise<Group[]> => {
-    const groupDao = daoManager.getDao<GroupDao>(GroupDao);
-
     const transformedData: (Partial<Group> | null)[] = await Promise.all(
       groups.map(async (item: Partial<Raw<Group>>) => {
         if (item._id) {
           const finalItem = item;
-          const existedGroup = await groupDao.get(item._id);
+          const existedGroup = await this.entitySourceController.get(item._id);
           if (existedGroup) {
             // If existed in DB, update directly and return the updated result for notification later
             type Transformed = PartialWithKey<Group>;
             const transformed: Transformed = transform<Transformed>(finalItem);
-            await groupDao.update(transformed);
+            await this.entitySourceController.update(transformed);
             if (transformed.id) {
-              const updated = await groupDao.get(transformed.id);
+              const updated = await this.entitySourceController.get(
+                transformed.id,
+              );
               return updated;
             }
           } else {
@@ -127,6 +136,21 @@ class GroupHandleDataController {
         }
         /* eslint-enable no-underscore-dangle */
         const transformed: Group = transform<Group>(finalItem);
+        const userConfig = new AccountUserConfig();
+        const beRemovedAsGuest =
+          transformed.removed_guest_user_ids &&
+          transformed.removed_guest_user_ids.includes(
+            userConfig.getGlipUserId(),
+          );
+
+        if (beRemovedAsGuest) {
+          transformed.deactivated = true;
+        }
+
+        if (transformed.privacy) {
+          transformed.is_public = transformed.privacy === 'protected';
+        }
+
         return transformed;
       }),
     );
@@ -138,30 +162,39 @@ class GroupHandleDataController {
 
   doNotification = async (deactivatedData: Group[], groups: Group[]) => {
     groups.length && notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
-    const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
-      return group.id;
-    });
-    deactivatedGroupIds.length &&
-      notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
-    groups.length && notificationCenter.emitEntityUpdate(ENTITY.GROUP, groups);
+    // https://jira.ringcentral.com/browse/FIJI-4264
+    // const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
+    //   return group.id;
+    // });
+    // deactivatedGroupIds.length &&
+    //   notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
+    ((groups && groups.length) ||
+      (deactivatedData && deactivatedData.length)) &&
+      notificationCenter.emitEntityUpdate(
+        ENTITY.GROUP,
+        deactivatedData && deactivatedData.length
+          ? [...groups, ...deactivatedData]
+          : groups,
+      );
   }
 
   operateGroupDao = async (deactivatedData: Group[], normalData: Group[]) => {
     try {
-      const dao = daoManager.getDao(GroupDao);
       if (deactivatedData.length) {
         daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
-        dao.bulkDelete(deactivatedData.map(item => item.id));
+        this.entitySourceController.bulkDelete(
+          deactivatedData.map(item => item.id),
+        );
       }
       if (normalData.length) {
-        await dao.bulkUpdate(normalData);
+        this.entitySourceController.bulkUpdate(normalData);
       }
     } catch (e) {
       console.error(`operateGroupDao error ${JSON.stringify(e)}`);
     }
   }
 
-  saveDataAndDoNotification = async (groups: Group[]) => {
+  saveDataAndDoNotification = async (groups: Group[], source?: SYNC_SOURCE) => {
     const deactivatedData = groups.filter(
       (item: Group) => item && item.deactivated,
     );
@@ -169,11 +202,13 @@ class GroupHandleDataController {
       (item: Group) => item && !item.deactivated,
     );
     await this.operateGroupDao(deactivatedData, normalData);
-    await this.doNotification(deactivatedData, normalData);
+    if (shouldEmitNotification(source)) {
+      await this.doNotification(deactivatedData, normalData);
+    }
     return normalData;
   }
 
-  handleData = async (groups: Raw<Group>[]) => {
+  handleData = async (groups: Raw<Group>[], source?: SYNC_SOURCE) => {
     if (groups.length === 0) {
       return;
     }
@@ -184,7 +219,7 @@ class GroupHandleDataController {
     const data = transformData.filter(item => item);
 
     // handle deactivated data and normal data
-    await this.saveDataAndDoNotification(data);
+    await this.saveDataAndDoNotification(data, source);
     // check all group members exist in local or not if not, should get from remote
     // seems we only need check normal groups, don't need to check deactivated data
     // if (shouldCheckIncompleteMembers) {
@@ -205,12 +240,12 @@ class GroupHandleDataController {
       const profile = await profileService.getProfile();
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const validFavIds = _.difference(filteredFavIds, hiddenIds);
-      const dao = daoManager.getDao(GroupDao);
-      let groups = await dao.queryGroupsByIds(validFavIds);
-      groups = this.sortFavoriteGroups(validFavIds, groups);
+      const groups = await this.groupService.getGroupsByIds(validFavIds, true);
 
       _.forEach(groups, (group: Group) => {
-        replaceGroups.set(group.id, group);
+        if (this.groupService.isValid(group)) {
+          replaceGroups.set(group.id, group);
+        }
       });
     }
     notificationCenter.emitEntityReplace(ENTITY.FAVORITE_GROUPS, replaceGroups);
@@ -240,16 +275,26 @@ class GroupHandleDataController {
       if (oldIds.toString() !== newIds.toString()) {
         const moreFavorites: number[] = _.difference(newIds, oldIds);
         const moreNormals: number[] = _.difference(oldIds, newIds);
-        const dao = daoManager.getDao(GroupDao);
         if (moreFavorites.length) {
-          const resultGroups: Group[] = await dao.queryGroupsByIds(
+          const groups = await this.groupService.getGroupsByIds(
             moreFavorites,
+            true,
           );
-          this.doNonFavoriteGroupsNotification(resultGroups, false);
+          const resultGroup = groups.filter((item: Group) =>
+            this.groupService.isValid(item),
+          );
+          this.doNonFavoriteGroupsNotification(resultGroup, false);
         }
         if (moreNormals.length) {
-          const resultGroups = await dao.queryGroupsByIds(moreNormals);
-          this.doNonFavoriteGroupsNotification(resultGroups, true);
+          const groups = await this.groupService.getGroupsByIds(
+            moreNormals,
+            true,
+          );
+          const resultGroup = groups.filter((item: Group) =>
+            this.groupService.isValid(item),
+          );
+
+          this.doNonFavoriteGroupsNotification(resultGroup, true);
         }
         await this.doFavoriteGroupsNotification(
           newProfile.favorite_group_ids || [],
@@ -324,10 +369,9 @@ class GroupHandleDataController {
     await groupDao.doInTransaction(async () => {
       const groups: (null | Partial<Raw<Group>>)[] = await Promise.all(
         uniqMaxPosts.map(async (post: Post) => {
-          // for index data flow, group will processed first, so all posts are not newer than most recent post, we still need to update hidden flag
-          ids.push(post.group_id);
           const group: null | Group = await groupDao.get(post.group_id);
           if (group && this.isNeedToUpdateMostRecent4Group(post, group)) {
+            ids.push(post.group_id);
             const pg: Partial<Raw<Group>> = {
               _id: post.group_id,
               most_recent_post_created_at: post.created_at,
@@ -369,7 +413,8 @@ class GroupHandleDataController {
    */
   filterGroups = async (groups: Group[], limit: number) => {
     let sortedGroups = groups;
-    const currentUserId = UserConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     sortedGroups = groups.filter((model: Group) => {
       if (model.is_team) {
         return true;

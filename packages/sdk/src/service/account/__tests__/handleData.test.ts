@@ -7,7 +7,11 @@
 import notificationCenter from '../../../service/notificationCenter';
 // import AccountDao from 'dao/account';
 import accountHandleData from '../handleData';
+import { GlobalConfigService } from '../../../module/config';
 
+jest.mock('../../../module/config');
+jest.mock('../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 jest.mock('../../../service/notificationCenter', () => ({
   emitKVChange: jest.fn(),
 }));

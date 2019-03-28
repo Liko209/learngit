@@ -3,7 +3,7 @@
  * @Date: 2018-11-23 16:26:44
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { observer } from 'mobx-react';
 import i18next from 'i18next';
 import { debounce } from 'lodash';
@@ -14,73 +14,29 @@ import {
   JuiSearchTitle,
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 import GroupModel from '@/store/models/Group';
 import { joinTeam } from '@/common/joinPublicTeam';
 
-import { ViewProps, SectionTypeMap } from './types';
-
+import { ViewProps, SearchItems, RecentItems } from './types';
+import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 import { SearchSectionsConfig } from './config';
+import { OpenProfile } from '@/common/OpenProfile';
 
 const SEARCH_DELAY = 50;
-
-type SearchItems = {
-  ids: number[];
-  name: SectionTypeMap;
-  hasMore: boolean;
-};
-
-type State = {
-  terms: string[];
-  data: SearchItems[];
-  selectIndex: number[];
-};
-
-const InvalidIndexPath: number[] = [-1, -1];
 
 type Props = { closeSearchBar: () => void; isShowSearchBar: boolean };
 
 @observer
-class SearchBarView extends React.Component<ViewProps & Props, State> {
+class SearchBarView extends React.Component<ViewProps & Props> {
   private _debounceSearch: Function;
-  private timer: number;
   textInput: React.RefObject<JuiSearchInput> = React.createRef();
-
-  state = {
-    terms: [],
-    data: [],
-    selectIndex: InvalidIndexPath,
-  };
 
   constructor(props: ViewProps & Props) {
     super(props);
-    const { search } = this.props;
-    this._debounceSearch = debounce(async (value: string) => {
-      const ret = await search(value);
-      if (!ret) return;
-
-      const { terms, people, groups, teams } = ret;
-      const data: SearchItems[] = [
-        {
-          ...people,
-          name: SectionTypeMap.PEOPLE,
-        },
-        {
-          ...groups,
-          name: SectionTypeMap.GROUPS,
-        },
-        {
-          ...teams,
-          name: SectionTypeMap.TEAMS,
-        },
-      ];
-      this.setState({
-        terms,
-        data,
-        selectIndex: InvalidIndexPath,
-      });
-    },                              SEARCH_DELAY);
+    const { setSearchResult } = this.props;
+    this._debounceSearch = debounce(setSearchResult, SEARCH_DELAY);
   }
 
   componentDidMount() {
@@ -93,21 +49,14 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     });
   }
 
-  private _resetData() {
-    this.setState({
-      terms: [],
-      data: [],
-      selectIndex: InvalidIndexPath,
-    });
-  }
-
   onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.persist();
     const { value } = e.target;
-    const { setValue, updateFocus, focus } = this.props;
+    const { setValue, updateFocus, focus, getRecent, resetData } = this.props;
     setValue(value);
     if (!value.trim()) {
-      this._resetData();
+      resetData();
+      getRecent();
       return;
     }
     this._debounceSearch(value);
@@ -117,32 +66,40 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
   }
 
   onFocus = () => {
-    const { updateFocus, searchValue } = this.props;
+    const { updateFocus, searchValue, getRecent } = this.props;
     updateFocus(true);
-    this._debounceSearch(searchValue);
+    if (searchValue) {
+      this._debounceSearch(searchValue);
+    } else {
+      getRecent();
+    }
   }
 
   onClear = () => {
-    const { setValue } = this.props;
+    const { setValue, resetData, getRecent } = this.props;
     setValue('');
-    this._resetData();
+    resetData();
+    getRecent();
   }
 
   onClose = () => {
-    const { closeSearchBar, isShowSearchBar, updateFocus } = this.props;
+    const {
+      closeSearchBar,
+      isShowSearchBar,
+      updateFocus,
+      resetSelectIndex,
+    } = this.props;
     if (isShowSearchBar) {
       closeSearchBar();
     }
     updateFocus(false);
-    this.setState({
-      selectIndex: InvalidIndexPath,
-    });
+    resetSelectIndex();
   }
 
   private _goToConversation = async (id: number) => {
     this.onClear();
     this.onClose();
-    await goToConversation({ id });
+    await goToConversationWithLoading({ id });
   }
 
   handleJoinTeam = async (item: GroupModel) => {
@@ -152,96 +109,13 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     await joinTeamByItem();
   }
 
-  private _setSelectIndex(section: number, cellIndex: number) {
-    this.setState({
-      selectIndex: [section, cellIndex],
-    });
-  }
-
-  private _findNextValidSectionLength(
-    section: number,
-    offset: number,
-  ): number[] {
-    const { data } = this.state;
-    for (let i = section; i >= 0 && i < data.length; i += offset) {
-      const { length } = (data[i] as SearchItems).ids;
-      if (length > 0) {
-        return [i, length];
-      }
-    }
-    return InvalidIndexPath;
-  }
-
-  onKeyUp = () => {
-    const { selectIndex } = this.state;
-    const [section, cell] = selectIndex;
-    if (cell > 0) {
-      this._setSelectIndex(section, cell - 1);
-    } else {
-      if (section > 0) {
-        const [nextSection, sectionLength] = this._findNextValidSectionLength(
-          section - 1,
-          -1,
-        );
-        if (nextSection !== -1) {
-          this._setSelectIndex(nextSection, sectionLength - 1);
-        }
-      }
-    }
-  }
-
-  onKeyDown = () => {
-    const { selectIndex } = this.state;
-    const [section, cell] = selectIndex;
-    const { data } = this.state;
-    const currentSection = section < 0 ? 0 : section;
-    const searchItem: SearchItems = data[currentSection];
-
-    if (!searchItem) {
-      return;
-    }
-    const currentSectionLength = searchItem.ids.length;
-    if (cell < currentSectionLength - 1) {
-      this._setSelectIndex(currentSection, cell + 1);
-    } else {
-      if (currentSection < data.length - 1) {
-        const [nextSection] = this._findNextValidSectionLength(section + 1, 1);
-        if (nextSection !== -1) {
-          this._setSelectIndex(nextSection, 0);
-        }
-      }
-    }
-  }
-
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
-    const [section, cell] = this.state.selectIndex;
-
-    let { data } = this.state;
-    data = data.slice(0);
-
-    const items: SearchItems = data[sectionIndex];
-    items.ids.splice(cellIndex, 1);
-    this.setState({ data });
-
-    // remove current select item
-    if (sectionIndex === section && cell === cellIndex) {
-      this._setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
-      return;
-    }
-
-    // remove before current select item
-    if (sectionIndex === section && cellIndex < cell) {
-      this._setSelectIndex(section, cell - 1);
-    }
+    this.props.selectIndexChange(sectionIndex, cellIndex);
   }
 
-  addHighlight = (sectionIndex: number, cellIndex: number) => () => {
-    this._setSelectIndex(sectionIndex, cellIndex);
-  }
-
-  mouseLeaveItem = () => {
-    this._setSelectIndex(InvalidIndexPath[0], InvalidIndexPath[1]);
+  hoverHighlight = (sectionIndex: number, cellIndex: number) => () => {
+    this.props.setSelectIndex(sectionIndex, cellIndex);
   }
 
   onKeyEsc = () => {
@@ -249,82 +123,162 @@ class SearchBarView extends React.Component<ViewProps & Props, State> {
     this.onClose();
   }
 
-  searchBarBlur = () => {
-    this.timer = setTimeout(() => {
-      this.onClose();
-    });
+  createSearchItem = (config: {
+    id: number | string;
+    cellIndex: number;
+    sectionIndex: number;
+    type: string;
+    hasMore?: boolean;
+  }) => {
+    const { terms, selectIndex, resetSelectIndex } = this.props;
+    const { id, type, hasMore, sectionIndex, cellIndex } = config;
+
+    const { SearchItem, title } = SearchSectionsConfig[type];
+    const Component = (
+      <SearchItem
+        cellIndex={cellIndex}
+        selectIndex={selectIndex}
+        sectionIndex={sectionIndex}
+        onMouseEnter={this.hoverHighlight}
+        onMouseLeave={resetSelectIndex} // this.mouseLeaveItem
+        hasMore={hasMore}
+        title={title}
+        goToConversation={this._goToConversation}
+        onClose={this.onClose}
+        onClear={this.onClear}
+        handleJoinTeam={this.handleJoinTeam}
+        didChange={this.selectIndexChange}
+        terms={terms}
+        id={id}
+        key={id}
+      />
+    );
+
+    // id will be string if search content text
+    return typeof id === 'number' ? (
+      <OpenProfileDialog id={id} key={id} afterClick={this.onClose}>
+        {Component}
+      </OpenProfileDialog>
+    ) : (
+      Component
+    );
   }
 
-  searchBarFocus = () => {
-    clearTimeout(this.timer);
-  }
-
-  render() {
-    const { data, terms, selectIndex } = this.state;
-    const { searchValue, focus } = this.props;
-    const cells: ReactNode[] = data.map(
-      ({ ids, name, hasMore }: SearchItems, sectionIndex: number) => {
+  get searchResultList() {
+    const { searchResult } = this.props;
+    return searchResult.map(
+      ({ ids, type, hasMore }: SearchItems, sectionIndex: number) => {
         if (ids.length === 0) return null;
 
-        const { SearchItem, title } = SearchSectionsConfig[name];
-
+        const { title } = SearchSectionsConfig[type];
         return (
-          <React.Fragment key={name}>
+          <React.Fragment key={type}>
             <JuiSearchTitle
               isShowMore={hasMore}
               showMore={i18next.t('home.showMore')}
               title={i18next.t(title)}
               data-test-automation-id={`search-${title}`}
             />
-            {ids.map((id: number, cellIndex: number) => (
-              <SearchItem
-                cellIndex={cellIndex}
-                selectIndex={selectIndex}
-                sectionIndex={sectionIndex}
-                onMouseEnter={this.addHighlight}
-                onMouseLeave={this.mouseLeaveItem}
-                hasMore={hasMore}
-                title={title}
-                goToConversation={this._goToConversation}
-                handleJoinTeam={this.handleJoinTeam}
-                didChange={this.selectIndexChange}
-                terms={terms}
-                id={id}
-                key={id}
-              />
-            ))}
+            {ids.map((id: number, cellIndex: number) => {
+              return this.createSearchItem({
+                id,
+                type,
+                hasMore,
+                sectionIndex,
+                cellIndex,
+              });
+            })}
           </React.Fragment>
         );
       },
     );
+  }
+
+  clearRecent = () => {
+    const { clearRecent } = this.props;
+    clearRecent();
+    this.onClose();
+    this.textInput.current!.focusTextInput();
+  }
+
+  get searchRecordList() {
+    const { recentRecord } = this.props;
+
+    if (recentRecord[0].ids.length === 0) {
+      return null;
+    }
 
     return (
-      <JuiSearchBar
-        onClose={this.onClose}
-        focus={focus}
-        tabIndex={0}
-        onBlur={this.searchBarBlur}
-        onFocus={this.searchBarFocus}
-      >
-        <HotKeys
-          keyMap={{
-            up: this.onKeyUp,
-            down: this.onKeyDown,
-            esc: this.onKeyEsc,
-          }}
-        >
-          <JuiSearchInput
-            ref={this.textInput}
-            focus={focus}
-            onClick={this.onFocus}
-            onClear={this.onClear}
-            value={searchValue}
-            onChange={this.onChange}
-            placeholder={i18next.t('home.search')}
-            showCloseBtn={!!searchValue}
-          />
-          {focus && searchValue && <JuiSearchList>{cells}</JuiSearchList>}
-        </HotKeys>
+      <>
+        <JuiSearchTitle
+          onClick={this.clearRecent}
+          isShowMore={true}
+          showMore={i18next.t('home.ClearHistory')}
+          title={i18next.t('home.RecentSearches')}
+          data-test-automation-id={'search-clear'}
+        />
+        {recentRecord.map(({ ids, types }: RecentItems) => {
+          return ids.map((id: number | string, cellIndex: number) => {
+            return this.createSearchItem({
+              id,
+              cellIndex,
+              type: types[cellIndex],
+              hasMore: false,
+              sectionIndex: 0,
+            });
+          });
+        })}
+      </>
+    );
+  }
+
+  onEnter = () => {
+    const { getCurrentItemId, addRecentRecord } = this.props;
+    const currentItemId = getCurrentItemId();
+    if (!currentItemId) {
+      return;
+    }
+    addRecentRecord(currentItemId);
+    OpenProfile.show(currentItemId, null, this.onClose);
+  }
+
+  render() {
+    const { searchValue, focus, onKeyUp, onKeyDown } = this.props;
+
+    return (
+      <JuiSearchBar onClose={this.onClose} focus={focus} tabIndex={0}>
+        <JuiSearchInput
+          ref={this.textInput}
+          focus={focus}
+          onClick={this.onFocus}
+          onClear={this.onClear}
+          value={searchValue}
+          hasValue={!!searchValue || !!this.searchRecordList}
+          onChange={this.onChange}
+          placeholder={i18next.t('home.search')}
+          showCloseBtn={!!searchValue}
+        />
+        {focus && (
+          <HotKeys
+            keyMap={{
+              up: onKeyUp,
+              down: onKeyDown,
+              esc: this.onKeyEsc,
+              enter: this.onEnter,
+            }}
+          >
+            {searchValue && (
+              <JuiSearchList data-test-automation-id="search-results">
+                {this.searchResultList}
+              </JuiSearchList>
+            )}
+            {!searchValue && this.searchRecordList && (
+              <JuiSearchList data-test-automation-id="search-records">
+                {this.searchRecordList}
+              </JuiSearchList>
+            )}
+          </HotKeys>
+        )}
       </JuiSearchBar>
     );
   }

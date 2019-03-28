@@ -4,22 +4,38 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import storeManager from '@/store';
-import { GLOBAL_KEYS } from '@/store/constants';
+import { getEntity, getGlobalValue } from '../../../../../../../../store/utils';
 import { MemberHeaderViewModel } from '../MemberHeader.ViewModel';
+import { PersonService } from 'sdk/module/person';
+
+jest.mock('../../../../../../../../store/utils');
+
+const mockGroup = {
+  id: 1,
+  members: [],
+  isCurrentUserHasPermissionAddMember: true,
+};
+
+const personService = {
+  doFuzzySearchPersons: jest.fn(),
+};
+PersonService.getInstance = jest.fn().mockReturnValue(personService);
+
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
 }));
 
-const globalStore = storeManager.getGlobalStore();
-
 const props = {
   id: 1,
-  dismiss: jest.fn(),
+  onSearch: () => {},
 };
 let vm: MemberHeaderViewModel;
 
 describe('MemberHeaderViewModel', () => {
+  beforeAll(() => {
+    (getEntity as jest.Mock).mockReturnValue(mockGroup);
+  });
+
   beforeEach(() => {
     jest.clearAllMocks();
     vm = new MemberHeaderViewModel(props);
@@ -27,13 +43,25 @@ describe('MemberHeaderViewModel', () => {
 
   describe('hasShadow', () => {
     it('should be get true when invoke class instance property hasShadow', () => {
-      globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, true);
+      (getGlobalValue as jest.Mock).mockReturnValue(true);
       expect(vm.hasShadow).toEqual(true);
     });
 
     it('should be get false when invoke class instance property hasShadow', () => {
-      globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
+      (getGlobalValue as jest.Mock).mockReturnValue(false);
       expect(vm.hasShadow).toEqual(false);
+    });
+  });
+
+  describe('isCurrentUserHasPermissionAddMember', () => {
+    it('should be get true when invoke group entity property isCurrentUserHasPermissionAddMember', () => {
+      mockGroup.isCurrentUserHasPermissionAddMember = true;
+      expect(vm.isCurrentUserHasPermissionAddMember).toEqual(true);
+    });
+
+    it('should be get false when invoke group entity property isCurrentUserHasPermissionAddMember', () => {
+      mockGroup.isCurrentUserHasPermissionAddMember = false;
+      expect(vm.isCurrentUserHasPermissionAddMember).toEqual(false);
     });
   });
 });

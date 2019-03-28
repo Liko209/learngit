@@ -18,6 +18,7 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import FileItemModel from '@/store/models/FileItem';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
@@ -26,17 +27,14 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import {
-  generateModifiedImageURL,
-  RULE,
-} from '@/common/generateModifiedImageURL';
-import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { RULE } from '@/common/generateModifiedImageURL';
 import { UploadFileTracker } from './UploadFileTracker';
+import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
-  private _idToDelete: number;
+  private _deleteIds: Set<number> = new Set();
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
   @observable
@@ -66,45 +64,34 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     );
   }
 
+  getShowDialogPermission = async () => {
+    const permissionService: PermissionService = PermissionService.getInstance();
+    return await permissionService.hasPermission(
+      UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
+    );
+  }
+
   @action
   private _fetchUrl = async (
     { item }: ExtendFileItem,
     rule: RULE,
   ): Promise<string> => {
-    const { id, origWidth, origHeight, type, versionUrl } = item;
-    let url = '';
-    if (!type) {
-      return url;
+    const thumbnail = await getThumbnailURLWithType(
+      {
+        id: item.id,
+        type: item.type,
+        versionUrl:
+          item.versions.length && item.versions[0].url
+            ? item.versions[0].url
+            : '',
+        versions: item.versions,
+      },
+      rule,
+    );
+    if (thumbnail.url) {
+      this.urlMap.set(item.id, thumbnail.url);
     }
-    // Notes
-    // 1. There is no thumbnail for the image just uploaded.
-    // 2. tif has thumbnail field.
-    // 3. gif use original url.
-    if (FileItemUtils.isGifItem({ type })) {
-      url = versionUrl || '';
-    }
-    if (
-      !url &&
-      origWidth > 0 &&
-      origHeight > 0 &&
-      FileItemUtils.isSupportPreview({ type })
-    ) {
-      const thumbnail = await generateModifiedImageURL({
-        id,
-        origWidth,
-        origHeight,
-        rule,
-        squareSize: 180,
-      });
-      url = thumbnail.url;
-    }
-    if (!url) {
-      url = versionUrl || '';
-    }
-    if (url) {
-      this.urlMap.set(id, url);
-    }
-    return url;
+    return thumbnail.url;
   }
 
   private _handleItemChanged = (
@@ -122,7 +109,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   dispose = () => {
-    notificationCenter.off(ENTITY.ITEM, this._handleItemChanged);
+    notificationCenter.off(ENTITY.PROGRESS, this._handleItemChanged);
   }
 
   @computed
@@ -155,14 +142,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   get items() {
     const result: FileItemModel[] = [];
     this._ids.forEach((id: number) => {
-      if (id !== this._idToDelete) {
-        try {
-          const item = getEntity<Item, FileItemModel>(
-            ENTITY_NAME.FILE_ITEM,
-            id,
-          );
-          result.push(item);
-        } catch (e) {}
+      if (!this._deleteIds.has(id)) {
+        const item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, id);
+        result.push(item);
       }
     });
     return result;
@@ -191,21 +173,21 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   @computed
-  get _postId() {
-    return this.props.postId;
-  }
-
-  @computed
   get post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.postId);
   }
 
   private _getPostStatus() {
     const progress = getEntity<Progress, ProgressModel>(
       ENTITY_NAME.PROGRESS,
-      this._postId,
+      this.props.postId,
     );
     return progress.progressStatus;
+  }
+
+  @computed
+  get groupId() {
+    return this.post && this.post.groupId;
   }
 
   removeFile = async (id: number) => {
@@ -225,9 +207,9 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         if (postLoading) {
           await this._itemService.cancelUpload(id);
         } else {
-          this._idToDelete = id;
-          await this._postService.removeItemFromPost(this._postId, id);
+          await this._postService.removeItemFromPost(this.props.postId, id);
         }
+        this._deleteIds.add(id);
       } catch (e) {
         Notification.flashToast({
           message: i18next.t('item.prompt.notAbleToCancelUploadTryAgain'),

@@ -1,9 +1,10 @@
-import { WithNamespaces } from 'react-i18next';
+import { WithTranslation } from 'react-i18next';
+import { RouteComponentProps } from 'react-router';
 
-type ConversationPageViewProps = WithNamespaces & {
+type ConversationPageViewProps = WithTranslation & {
   canPost: boolean;
   groupId: number;
-};
+} & RouteComponentProps;
 
 type ConversationPageProps = {
   groupId: number;

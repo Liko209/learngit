@@ -7,7 +7,7 @@
 import { Notification } from '@/containers/Notification';
 import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
-import { GroupConfigService } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemFile } from 'sdk/module/item/entity';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
@@ -47,7 +47,7 @@ function mockUpload() {
       firstItem.id = -firstItem.id;
       _uploadedItems.push(firstItem);
       _uploadingItems.splice(0, 1);
-    },         3 * 1000);
+    },         3);
   }
 }
 
@@ -121,6 +121,7 @@ describe('AttachmentsViewModel', () => {
     vm = new AttachmentsViewModel({ id: 456, forceSaveDraft: true });
     _uploadedItems = [];
     _uploadingItems = [];
+    fileIDs = -1001;
   });
 
   describe('_sendPost()', () => {
@@ -187,6 +188,12 @@ describe('AttachmentsViewModel', () => {
       await vm.autoUploadFiles([file]);
       expect(itemService.sendItemFile).toBeCalledTimes(1);
     });
+
+    it('should not show duplicate dialog', async () => {
+      await vm.autoUploadFiles([file], false);
+      expect(vm.duplicateFiles.length).toBe(0);
+      expect(vm.showDuplicateFiles).toBeFalsy();
+    });
   });
 
   describe('uploadFile()', () => {
@@ -195,7 +202,7 @@ describe('AttachmentsViewModel', () => {
       await vm.uploadFile(info, false);
       expect(vm.items.size).toBe(1);
       expect(itemService.sendItemFile).toBeCalledTimes(1);
-      const exists = await itemService.isFileExists(vm.id, file.name);
+      const exists = await itemService.isFileExists(vm.props.id, file.name);
       expect(exists).toBe(true);
     });
   });
@@ -203,11 +210,11 @@ describe('AttachmentsViewModel', () => {
   describe('cancelUploadFile()', () => {
     it('should cancel uploading file', async () => {
       await vm.autoUploadFiles([file]);
-      let exists = await itemService.isFileExists(vm.id, file.name);
+      let exists = await itemService.isFileExists(vm.props.id, file.name);
       expect(exists).toBe(true);
       expect(vm.files.length).toBe(1);
       expect(vm.items.size).toBe(1);
-      const items = itemService.getUploadItems(vm.id);
+      const items = itemService.getUploadItems(vm.props.id);
       const item = items[0];
       await vm.cancelUploadFile({
         id: item.id,
@@ -216,7 +223,7 @@ describe('AttachmentsViewModel', () => {
       } as ItemInfo);
       expect(itemService.cancelUpload).toBeCalledTimes(1);
 
-      exists = await itemService.isFileExists(vm.id, file.name);
+      exists = await itemService.isFileExists(vm.props.id, file.name);
       expect(exists).toBe(false);
     });
   });
@@ -297,6 +304,9 @@ describe('AttachmentsViewModel', () => {
   });
 
   describe('forceSaveDraftItems()', () => {
+    beforeEach(() => {
+      fileIDs = -1001;
+    });
     it('should call forceSaveDraftItems after uploading a file', async () => {
       const info: SelectFile = { data: file, duplicate: false };
       jest.spyOn(vm, 'forceSaveDraftItems');
@@ -309,7 +319,7 @@ describe('AttachmentsViewModel', () => {
       jest.spyOn(vm, 'forceSaveDraftItems');
       await vm.uploadFile(info, false);
       expect(groupConfigService.updateDraft).toHaveBeenCalledWith({
-        attachment_item_ids: [-1022],
+        attachment_item_ids: [fileIDs + 1],
         id: 456,
       });
     });

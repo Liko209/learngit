@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Markdown } from 'glipdown';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogPersonContentViewProps, FormGroupType } from './types';
 import { JuiDivider } from 'jui/components/Divider';
 import { Avatar } from '@/containers/Avatar';
@@ -37,10 +37,11 @@ import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/module/person/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
+import { Call } from '@/modules/telephony';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
-  WithNamespaces & ProfileDialogPersonContentViewProps
+  WithTranslation & ProfileDialogPersonContentViewProps
 > {
   renderPresence = () => {
     const { id } = this.props;
@@ -66,13 +67,14 @@ class ProfileDialogPersonContentViewComponent extends Component<
   }
 
   renderIcon = (key: string) => {
-    return <JuiIconography fontSize="small">{key}</JuiIconography>;
+    return <JuiIconography iconSize="medium">{key}</JuiIconography>;
   }
 
-  renderCopy = (value: string, aria?: string) => {
-    const { t } = this.props;
+  renderIcons = (value: string, aria?: string, showCall?: boolean) => {
+    const { t, id } = this.props;
     return (
       <FormCopy>
+        {showCall && <Call phone={value} size="small" id={id} />}
         <JuiIconButton
           size="small"
           onClick={this.onClickCopy.bind(this, value)}
@@ -98,6 +100,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     valueEmphasize = false,
     copyAria,
     copyValue,
+    showCall,
   }: FormGroupType) => {
     return (
       <FormGroup key={value}>
@@ -106,7 +109,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copyValue && this.renderCopy(copyValue, copyAria)}
+        {copyValue && this.renderIcons(copyValue, copyAria, showCall)}
       </FormGroup>
     );
   }
@@ -192,6 +195,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   valueEmphasize: true,
                   copyAria: t('people.profile.ariaExtensionNumber'),
                   copyValue: info.phoneNumber,
+                  showCall: true,
                 });
               })}
               {directNumbers.map((info: PhoneNumberInfo, index: number) => {
@@ -205,6 +209,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   valueEmphasize: true,
                   copyAria: t('people.profile.ariaDirectNumber'),
                   copyValue: info.phoneNumber,
+                  showCall: true,
                 });
               })}
               {person.email &&
@@ -249,7 +254,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
   }
 }
 
-const ProfileDialogPersonContentView = translate('translations')(
+const ProfileDialogPersonContentView = withTranslation('translations')(
   ProfileDialogPersonContentViewComponent,
 );
 

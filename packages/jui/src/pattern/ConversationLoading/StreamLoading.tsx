@@ -30,7 +30,7 @@ const Progress = styled(JuiCircularProgress)`
 `;
 
 const Loading = styled.div`
-  position: relative;
+  position: absolute;
   background: ${palette('common', 'white')};
   display: flex;
   height: 100%;

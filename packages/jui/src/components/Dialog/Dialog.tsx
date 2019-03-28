@@ -10,7 +10,7 @@ type JuiDialogProps = MuiDialogProps & {
 };
 
 const Dialog = styled(
-  memo(({ size = 'medium', ...restProps }: JuiDialogProps) => {
+  memo(({ size = 'medium', classes, ...restProps }: JuiDialogProps) => {
     switch (size) {
       case 'small':
         restProps.maxWidth = 'xs';
@@ -27,15 +27,20 @@ const Dialog = styled(
         break;
     }
 
-    const classes = {
-      paper: 'paper',
+    const initClasses = {
+      ...classes,
+      paper: `paper ${classes && classes.paper}`,
+      root: `root ${classes && classes.root}`,
     };
 
-    return <MuiDialog classes={classes} {...restProps} />;
+    return <MuiDialog classes={initClasses} {...restProps} />;
   }),
 )`
   & .paper {
     width: 100%;
+  }
+  & .paper.overflow-y {
+    overflow-y: visible;
   }
 `;
 

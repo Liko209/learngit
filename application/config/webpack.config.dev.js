@@ -93,7 +93,7 @@ module.exports = {
   mode: "development",
   // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
   // See the discussion in https://github.com/facebookincubator/create-react-app/issues/343.
-  devtool: "cheap-module-source-map",
+  devtool: "cheap-module-eval-source-map",
   // These are the "entry points" to our application.
   // This means they will be the "root" imports that are included in JS bundle.
   // The first two entry points enable "hot" CSS and auto-refreshes for JS.
@@ -119,7 +119,7 @@ module.exports = {
   ],
   output: {
     // Add /* filename */ comments to generated require()s in the output.
-    pathinfo: true,
+    pathinfo: false,
     // This does not produce a real file. It's just the virtual path that is
     // served by WebpackDevServer in development. This is the JS bundle
     // containing code from all our entry points, and the Webpack runtime.
@@ -129,23 +129,13 @@ module.exports = {
     // This is the URL that app is served from. We use "/" in development.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: (info) =>
+    devtoolModuleFilenameTemplate: info =>
       path.resolve(info.absoluteResourcePath).replace(/\\/g, "/")
   },
   optimization: {
     // Automatically split vendor and commons
     // https://twitter.com/wSokra/status/969633336732905474
     // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
-    splitChunks: {
-      chunks: "all",
-      name: false,
-      cacheGroups: {
-        codeMirror: {
-          test: /[\\/]codemirror[\\/]/,
-          name: "codemirror"
-        }
-      }
-    },
     // Keep the runtime chunk seperated to enable long term caching
     // https://twitter.com/wSokra/status/969679223278505985
     runtimeChunk: true
@@ -192,7 +182,7 @@ module.exports = {
       // To fix this, we prevent you from importing files out of src/ -- if you'd like to,
       // please link the files into your node_modules/ and let module-resolution kick in.
       // Make sure your source files are compiled, as they will not be processed in any way.
-      new ModuleScopePlugin(paths.appSrc, [paths.appPackageJson]),
+      new ModuleScopePlugin([paths.appSrc, paths.depPackages], [paths.appPackageJson]),
       new TsconfigPathsPlugin({ configFile: paths.appTsConfig })
     ]
   },
@@ -238,18 +228,8 @@ module.exports = {
               options: {
                 cacheDirectory: true,
                 babelrc: false,
-                presets: [
-                  [
-                    "@babel/preset-env",
-                    { targets: { browsers: ["last 2 versions", "ie 11"] } } // or whatever your project requires
-                  ],
-                  "@babel/preset-typescript",
-                  "@babel/preset-react"
-                ],
+                presets: [['react-app', { flow: false, typescript: true }]],
                 plugins: [
-                  // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
-                  ["@babel/plugin-proposal-decorators", { legacy: true }],
-                  ["@babel/plugin-proposal-class-properties", { loose: true }],
                   ["@babel/plugin-syntax-dynamic-import"],
                   [
                     "babel-plugin-styled-components",
@@ -331,8 +311,7 @@ module.exports = {
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     // In development, this will be an empty string.
     new InterpolateHtmlPlugin(HtmlWebpackPlugin, {
-      ...env.raw,
-      ICON_URL: iconUrl
+      ...env.raw
     }),
     // This gives some necessary context to module not found errors, such as
     // the requesting resource.
@@ -401,7 +380,7 @@ module.exports = {
     // add dll.js to html
     ...(dllPlugin
       ? glob.sync(`${dllPlugin.defaults.path}/*.dll.js`).map(
-          (dllPath) =>
+          dllPath =>
             new AddAssetHtmlPlugin({
               filepath: dllPath,
               includeSourcemap: false

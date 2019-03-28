@@ -1,0 +1,17 @@
+/*
+ * @Author: Lewi Li (lewi.li@ringcentral.com)
+ * @Date: 2019-02-21 10:42:16
+ * Copyright © RingCentral. All rights reserved.
+ */
+const CONFIG_KEYS = {
+  SOCKET_SERVER_HOST: 'SOCKET_SERVER_HOST',
+  STATIC_HTTP_SERVER: 'STATIC_HTTP_SERVER',
+  ENV: 'ENV',
+  DB_SCHEMA_VERSION: 'DB_SCHEMA_VERSION',
+  LAST_CLICKED_GROUP: 'LAST_CLICKED_GROUP',
+  PRE_INSERT_IDS: 'PRE_INSERT_IDS',
+  MY_STATE_ID: 'MY_STATE_ID',
+  PHONE_DATA: 'PHONE_DATA',
+};
+
+export { CONFIG_KEYS };

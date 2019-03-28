@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, GroupStateDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { GroupStateDao } from '../dao';
 import { EntityBaseService } from '../../../framework';
 import { IStateService } from './IStateService';
 import { GroupState, MyState, State } from '../entity';
@@ -15,6 +16,7 @@ import { Group } from '../../group/entity';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
+import { SYNC_SOURCE } from '../../sync/types';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
@@ -41,10 +43,14 @@ class StateService extends EntityBaseService<GroupState>
     return this._stateController;
   }
 
-  async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
+  async updateReadStatus(
+    groupId: number,
+    isUnread: boolean,
+    ignoreError: boolean,
+  ): Promise<void> {
     await this.getStateController()
       .getStateActionController()
-      .updateReadStatus(groupId, isUnread);
+      .updateReadStatus(groupId, isUnread, ignoreError);
   }
 
   async updateLastGroup(groupId: number): Promise<void> {
@@ -79,10 +85,13 @@ class StateService extends EntityBaseService<GroupState>
       .getMyStateId();
   }
 
-  handleState = async (states: Partial<State>[]): Promise<void> => {
+  handleState = async (
+    states: Partial<State>[],
+    source: SYNC_SOURCE,
+  ): Promise<void> => {
     await this.getStateController()
       .getStateDataHandleController()
-      .handleState(states);
+      .handleState(states, source);
   }
 
   handleGroupCursor = async (groups: Partial<Group>[]): Promise<void> => {

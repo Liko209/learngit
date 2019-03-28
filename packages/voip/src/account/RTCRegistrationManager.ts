@@ -17,6 +17,7 @@ import {
   REGISTRATION_EVENT,
   REGISTRATION_FSM_NOTIFY,
   RTCRegisterAsyncTask,
+  RTCSipProvisionInfo,
 } from './types';
 import async, { AsyncQueue } from 'async';
 import {
@@ -35,8 +36,6 @@ class RTCRegistrationManager extends EventEmitter2
   private _retryTimer: NodeJS.Timeout | null = null;
   private _retryInterval: number = kRTCRegisterRetryTimerMin;
 
-  public onRegistrationAction(): void {}
-
   onNetworkChangeToOnlineAction(): void {
     this.reRegister();
   }
@@ -48,11 +47,10 @@ class RTCRegistrationManager extends EventEmitter2
   }
 
   public onProvisionReadyAction(
-    provisionData: any,
+    provisionData: RTCSipProvisionInfo,
     options: ProvisionDataOptions,
   ): void {
-    this._userAgent = new RTCSipUserAgent(provisionData, options);
-    this._initUserAgentListener();
+    this._restartUA(provisionData, options);
   }
 
   public onUnregisterAction() {
@@ -62,19 +60,6 @@ class RTCRegistrationManager extends EventEmitter2
     this.emit(REGISTRATION_EVENT.LOGOUT_ACTION);
   }
 
-  public onMakeOutgoingCallAction(
-    toNumber: string,
-    delegate: IRTCCallDelegate,
-    options: RTCCallOptions,
-  ) {
-    this.emit(
-      REGISTRATION_EVENT.MAKE_OUTGOING_CALL,
-      toNumber,
-      delegate,
-      options,
-    );
-  }
-
   public onReceiveIncomingInviteAction(callSession: any) {
     this.emit(REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE, callSession);
   }
@@ -82,11 +67,13 @@ class RTCRegistrationManager extends EventEmitter2
   constructor() {
     super();
     this._fsm = new RTCRegistrationFSM(this);
+    this._userAgent = new RTCSipUserAgent();
     this._eventQueue = async.queue(
       (task: RTCRegisterAsyncTask, callback: any) => {
         callback(task.data);
       },
     );
+    this._initUserAgentListener();
     this._initFsmObserve();
   }
 
@@ -147,6 +134,9 @@ class RTCRegistrationManager extends EventEmitter2
     });
     this._userAgent.on(UA_EVENT.REG_UNREGISTER, () => {
       this._onUADeRegister();
+    });
+    this._userAgent.on(UA_EVENT.TRANSPORT_ERROR, () => {
+      this._onUATransportError();
     });
   }
 
@@ -237,22 +227,32 @@ class RTCRegistrationManager extends EventEmitter2
     });
   }
 
-  private _onUARegFailed(response: any, cause: any) {
-    if (REGISTRATION_ERROR_CODE.TIME_OUT === cause) {
-      this._eventQueue.push(
-        { name: REGISTRATION_EVENT.UA_REGISTER_TIMEOUT },
-        () => {
-          this._fsm.regTimeout();
-        },
-      );
-    } else {
-      this._eventQueue.push(
-        { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
-        () => {
-          this._fsm.regFailed();
-        },
-      );
+  private _onUARegFailed(response?: any, cause?: any) {
+    if (
+      response &&
+      response.status_code &&
+      (REGISTRATION_ERROR_CODE.FORBIDDEN === response.status_code ||
+        REGISTRATION_ERROR_CODE.UNAUTHORIZED === response.status_code ||
+        REGISTRATION_ERROR_CODE.PROXY_AUTHENTICATION_REQUIRED ===
+          response.status_code)
+    ) {
+      this.emit(REGISTRATION_EVENT.REFRESH_PROV);
     }
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.UA_REGISTER_FAILED },
+      () => {
+        this._fsm.regFailed();
+      },
+    );
+  }
+
+  private _onUATransportError() {
+    this._eventQueue.push(
+      { name: REGISTRATION_EVENT.UA_TRANSPORT_ERROR },
+      () => {
+        this._fsm.transportError();
+      },
+    );
   }
 
   private _onUAReceiveInvite(session: any) {
@@ -295,6 +295,13 @@ class RTCRegistrationManager extends EventEmitter2
     if (this._retryInterval > kRTCRegisterRetryTimerMax) {
       this._retryInterval = kRTCRegisterRetryTimerMax;
     }
+  }
+
+  private _restartUA(
+    provisionData: RTCSipProvisionInfo,
+    options: ProvisionDataOptions,
+  ) {
+    this._userAgent.restartUA(provisionData, options);
   }
 }
 

@@ -7,7 +7,6 @@ import { parse } from 'qs';
 import ReactDOM from 'react-dom';
 import React from 'react';
 import { Sdk, LogControlManager, service } from 'sdk';
-import { UserConfig } from 'sdk/service/account';
 import { SectionUnread, UMI_SECTION_TYPE } from 'sdk/module/state';
 import { AbstractModule, inject } from 'framework';
 import config from '@/config';
@@ -25,6 +24,8 @@ import { HomeService } from '@/modules/home';
 
 import './index.css';
 import { generalErrorHandler } from '@/utils/error';
+import { AccountUserConfig } from 'sdk/service/account/config';
+import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 
 /**
  * The root module, we call it AppModule,
@@ -67,7 +68,9 @@ class AppModule extends AbstractModule {
     }
 
     window.addEventListener('error', (event: ErrorEvent) => {
-      generalErrorHandler(event.error);
+      generalErrorHandler(
+        event.error instanceof Error ? event.error : new Error(event.message),
+      );
     });
 
     const {
@@ -93,12 +96,16 @@ class AppModule extends AbstractModule {
       const accountService: service.AccountService = AccountService.getInstance();
 
       if (accountService.isAccountReady()) {
-        const currentUserId = UserConfig.getCurrentUserId();
-        const currentCompanyId = UserConfig.getCurrentCompanyId();
+        const accountUserConfig = new AccountUserConfig();
+        const currentUserId = accountUserConfig.getGlipUserId();
+        const currentCompanyId = accountUserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
 
         if (!this._subModuleRegistered) {
+          // load phone parser module
+          PhoneParserUtility.loadModule();
+
           // TODO register subModule according to account profile
           this._homeService.registerSubModules([
             'dashboard',
@@ -184,6 +191,13 @@ class AppModule extends AbstractModule {
       // stop loading
       this._appStore.setGlobalLoading(false);
       history.replace('/messages');
+    });
+
+    notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {
+      // force logout
+      const authService: service.AuthService = service.AuthService.getInstance();
+      await authService.logout();
+      window.location.href = '/';
     });
 
     const api = config.get('api');

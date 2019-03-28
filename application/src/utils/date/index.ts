@@ -53,8 +53,7 @@ const dateFormatter = {
     return i18next.t('common.time.yesterday');
   },
   weekday: (m: Moment) => {
-    const date = new Date(m.format());
-    return i18next.t(WEEKDAY[date.getDay()]);
+    return i18next.t(WEEKDAY[m.day()]);
   },
   exactDate: (m: Moment) => {
     return `${dateFormatter.weekday(m).slice(0, 3)}, ${m.format('l')}`;
@@ -177,14 +176,42 @@ function getDateTimeStamp(timestamp: number) {
     .startOf('day')
     .valueOf();
 }
-function handerTimeZoneOffset(
+function handleTimeZoneOffset(
   timestamp: number,
   timezoneOffset: number,
 ): number {
-  const localTimezoneOffset = new Date().getTimezoneOffset();
+  const localTimezoneOffset = moment().utcOffset();
   const MINUTE = 60 * 1000;
   return timestamp + (localTimezoneOffset - timezoneOffset) * MINUTE;
 }
+
+function twoDigit(n: number) {
+  return (n < 10 ? '0' : '') + n;
+}
+
+function formatSeconds(seconds: number) {
+  let secondTime = seconds;
+  let minuteTime = 0;
+  let hourTime = 0;
+  if (secondTime >= 60) {
+    // @ts-ignore
+    minuteTime = parseInt(secondTime / 60, 10);
+    // @ts-ignore
+    secondTime = parseInt(secondTime % 60, 10);
+    if (minuteTime >= 60) {
+      // @ts-ignore
+      hourTime = parseInt(minuteTime / 60, 10);
+      // @ts-ignore
+      minuteTime = parseInt(minuteTime % 60, 10);
+    }
+  }
+  return {
+    secondTime: twoDigit(secondTime),
+    minuteTime: twoDigit(minuteTime),
+    hourTime: twoDigit(hourTime),
+  };
+}
+
 export {
   getDateTimeStamp,
   getDateMessage,
@@ -192,7 +219,8 @@ export {
   dividerTimestamp,
   postTimestamp,
   dateFormatter,
-  handerTimeZoneOffset,
+  handleTimeZoneOffset,
+  formatSeconds,
 };
 
 // 7 days inside

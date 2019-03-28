@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import axios, { AxiosInstance } from 'axios';
 
 import { RcPlatformSdk } from './platform';
+import { H } from '../helpers';
 
 interface Person {
   _id: number;
@@ -190,6 +191,13 @@ export class GlipSdk {
     return ids;
   }
 
+  async getTeamIdByName(teamName: string) {
+    const teams = await this.getTeams().then(res => res.data.teams);
+    if (!teams) return [];
+    const ids = teams.filter(team => team['set_abbreviation'] == teamName).map(team => team['_id']);
+    return ids[0];
+  }
+
   async getCompanyTeamId() {
     const teams = await this.getTeams().then(res => res.data.teams);
     if (!teams) return [];
@@ -210,7 +218,7 @@ export class GlipSdk {
     });
   }
 
-  async removeTeamMembers(groupId: string | number, rcIds: string |string[]) {
+  async removeTeamMembers(groupId: string | number, rcIds: string | string[]) {
     const uri = `api/remove_team_members/${groupId}`;
     const members = [].concat(await this.toPersonId(rcIds))
     const data = {
@@ -221,7 +229,7 @@ export class GlipSdk {
     });
   }
 
-  async addTeamMembers(groupId: string | number, rcIds: string |string[]) {
+  async addTeamMembers(groupId: string | number, rcIds: string | string[]) {
     const uri = `api/add_team_members/${groupId}`;
     const members = [].concat(await this.toPersonId(rcIds))
     const data = {
@@ -366,7 +374,7 @@ export class GlipSdk {
       .filter((key: string) => {
         return (/hide_group_/.test(key)) && (currentProfile[key] == true);
       });
-    const meChatId = await this.getPerson(rcId).then(res => res.data.me_group_id);
+    const meChatId = await this.getMeChatId();
 
     const initData = {
       model_size: 0,
@@ -395,6 +403,13 @@ export class GlipSdk {
     return await this.updateProfile(data, rcId);
   }
 
+  async bookmarkPosts(postIds: string | number | string[] | number[], rcId?: string) {
+    const data = {
+      favorite_post_ids: H.toNumberArray(postIds)
+    }
+    await this.updateProfile(data, rcId);
+  }
+
   /* state */
   getState(rcId?: string) {
     const stateId = rcId ? this.toStateId(rcId) : this.myState._id;
@@ -418,6 +433,27 @@ export class GlipSdk {
     return this.axiosClient.put(uri, data, {
       headers: this.headers,
     });
+  }
+
+  async resetState(rcId?: string) {
+    const initData = {
+      "model_size": 0,
+      "is_new": true,
+      "tour_complete": true,
+      "deactivated": false,
+      "applied_patches": { "clean_unused_keys": true },
+      "do_kip_bot": true,
+      "_csrf": null,
+      "first_time_users_ensured": true,
+      "desktop_banner_dismissed": true,
+    }
+    await this.clearAllUmi();
+    return await this.partialUpdateState(initData, rcId);
+  }
+
+  async resetProfileAndState(rcId?: string) {
+    await this.resetProfile(rcId);
+    await this.resetState(rcId);
   }
 
   /* high level API */
@@ -478,6 +514,15 @@ export class GlipSdk {
     await this.partialUpdateState({ last_group_id: +groupId }, rcId);
   }
 
+  async getMeChatId(rcId?: string) {
+    return await this.getPersonPartialData('me_group_id', rcId);
+  }
+
+  async setLastGroupIdIsMeChatId() {
+    const meChatId = await this.getMeChatId();
+    await this.setLastGroupId(meChatId);
+  }
+
   async showAllGroups(rcId?: string) {
     const groupList = await this.getTeamsIds();
     const data = _.assign(
@@ -519,9 +564,9 @@ export class GlipSdk {
     await this.updateProfile(data, rcId);
   }
 
-  async favoriteGroups(groupIds: number[], rcId?: string) {
+  async favoriteGroups(groupIds:string | number | string[] | number[], rcId?: string) {
     const data = {
-      favorite_group_ids: groupIds
+      favorite_group_ids: H.toNumberArray(groupIds)
     }
     await this.updateProfile(data, rcId);
   }
@@ -534,7 +579,7 @@ export class GlipSdk {
   }
 
   async clearFavoriteGroupsRemainMeChat(rcId?: string) {
-    const meChatId = await this.getPerson(rcId).then(res => res.data.me_group_id);
+    const meChatId = await this.getMeChatId();
     await this.favoriteGroups([+meChatId], rcId);
   }
 
@@ -573,9 +618,9 @@ export class GlipSdk {
     let personIds = this.toPersonId(rcIds);
     let assignees;
     if (Object.prototype.toString.call(personIds) === '[object Array]') {
-      assignees = personIds.map(id => Number(id));
+      assignees = personIds.map(id => +id);
     } else {
-      assignees = [Number(personIds)];
+      assignees = [+personIds];
     }
     const data = _.assign({
       text: title,
@@ -585,6 +630,12 @@ export class GlipSdk {
       options
     )
     return await this.createTask(data);
+  }
+
+  async deleteTask(taskId: string) {
+    await this.updateTask(taskId, {
+      deactivated: true
+    });
   }
 
   /* note */
@@ -616,16 +667,21 @@ export class GlipSdk {
     });
   }
 
-  async createSimpleNote(groupIds: string[] | string, title: string, body: string, options?: object) {
-    if (typeof groupIds == "string") { groupIds = [groupIds] };
+  async createSimpleNote(groupIds: string[] | string, title: string, options?: object) {
+    const group_ids = [].concat(groupIds);
     const data = _.assign({
       title,
-      body,
-      group_ids: groupIds
+      group_ids
     },
       options
     )
     return await this.createNote(data);
+  }
+
+  async deleteNote(noteId: string | number) {
+    await this.updateNote(noteId, {
+      deactivated: true
+    });
   }
 
   /* event */
@@ -664,13 +720,19 @@ export class GlipSdk {
       let inviteeIds: number[];
       const personIds = this.toPersonId(rcIds);
       if (Object.prototype.toString.call(personIds) === '[object Array]') {
-        inviteeIds = personIds.map(id => Number(id));
+        inviteeIds = personIds.map(id => +id);
       } else {
-        inviteeIds = [Number(personIds)];
+        inviteeIds = [+personIds];
       }
       data["invitee_ids"] = inviteeIds;
     }
     return await this.createEvent(data);
+  }
+
+  async deleteEvent(eventId: string | number) {
+    await this.updateEvent(eventId, {
+      deactivated: true
+    });
   }
 
   /* code snippet */
@@ -702,6 +764,12 @@ export class GlipSdk {
     return await this.createCodeSnippet(data);
   }
 
+  async deleteCodeSnippet(codeSnippetId: string | number) {
+    await this.updateCodeSnippet(codeSnippetId, {
+      deactivated: true
+    });
+  }
+
   /* audio conference */
   // need sign on status???
   createAudioConference(data: object) {
@@ -720,4 +788,69 @@ export class GlipSdk {
     )
     return await this.createAudioConference(data);
   }
+
+  async getPostItemsByTypeId(postId: string | number, typeId: number | string) {
+    const items = await this.getPost(postId).then(res => res.data.items);
+    const ids = items.filter(item => item.type_id == `${typeId}`).map(item => item.id);
+    return ids;
+  }
+
+  /* file and image */
+  async getFilesIdsFromPostId(postId: string | number) {
+    return this.getPostItemsByTypeId(postId, 10);
+  }
+
+  getFile(fileId: string | number) {
+    const uri = `/api/file/${fileId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  updateFile(fileId: string | number, data: object) {
+    const uri = `/api/file/${fileId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async updateFileName(fileId: string, name: string) {
+    return await this.updateFile(fileId, { name });
+  }
+
+  async deleteFile(fileId: string | number) {
+    return await this.updateFile(fileId, {
+      deactivated: true
+    });
+  }
+
+  /* links */
+  async getLinksIdsFromPostId(postId: string | number) {
+    return this.getPostItemsByTypeId(postId, 17);
+  }
+
+  getLink(linkId: string | number) {
+    const uri = `/api/link/${linkId}`;
+    return this.axiosClient.get(uri, {
+      headers: this.headers,
+    });
+  }
+
+  updateLink(linkId: string | number, data: object) {
+    const uri = `/api/link/${linkId}`;
+    return this.axiosClient.put(uri, data, {
+      headers: this.headers,
+    });
+  }
+
+  async updateLinkUrlTitle(linkId: string, data: { url?: string, title?: string }) {
+    return await this.updateLink(linkId, data);
+  }
+
+  async deleteLink(linkId: string | number) {
+    return await this.updateLink(linkId, {
+      deactivated: true
+    });
+  }
+
 }

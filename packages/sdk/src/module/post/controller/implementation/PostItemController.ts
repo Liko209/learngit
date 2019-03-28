@@ -10,7 +10,7 @@ import { ItemFile } from '../../../item/entity';
 import { Post } from '../../entity/Post';
 import { uniqueArray } from '../../../../utils';
 import { PROGRESS_STATUS } from '../../../progress';
-import { notificationCenter } from '../../../../service';
+import notificationCenter from '../../../../service/notificationCenter';
 import { SERVICE } from '../../../../service/eventKey';
 import { IPostActionController } from '../interface/IPostActionController';
 import {
@@ -173,9 +173,11 @@ class PostItemController implements IPostItemController {
       });
     } else if (status === PROGRESS_STATUS.SUCCESS) {
       if (updatedId !== preInsertId) {
-        post.item_ids = post.item_ids.map((id: number) => {
-          return id === preInsertId ? updatedId : id;
-        });
+        const hasPreInsert = post.item_ids.includes(preInsertId);
+        if (hasPreInsert) {
+          post.item_ids = post.item_ids.filter(x => x !== preInsertId);
+          post.item_ids.push(updatedId);
+        }
 
         if (post.item_data && post.item_data.version_map) {
           const versionMap = post.item_data.version_map;

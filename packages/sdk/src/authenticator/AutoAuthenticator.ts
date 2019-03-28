@@ -3,27 +3,37 @@
  * @Date: 2018-07-08 07:52:17
  * Copyright © RingCentral. All rights reserved.
  */
-import { AuthDao, ConfigDao } from '../dao';
-import { AUTH_GLIP_TOKEN, AUTH_RC_TOKEN } from '../dao/auth/constants';
 import { IAuthResponse, ISyncAuthenticator } from '../framework';
-import { GlipAccount, RCAccount } from '../account';
-import { ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM } from './constants';
+import { ACCOUNT_TYPE_ENUM } from './constants';
 import DaoManager from '../dao/DaoManager';
+import { AuthUserConfig } from '../service/auth/config';
+import { RCAccount, GlipAccount } from '../account';
+import {
+  AccountGlobalConfig,
+  AccountUserConfig,
+} from '../service/account/config';
 
 class AutoAuthenticator implements ISyncAuthenticator {
   private _accountTypeHandleMap: Map<string, any>;
-  private _daoManager: DaoManager;
 
   constructor(daoManager: DaoManager) {
-    this._daoManager = daoManager;
     this._accountTypeHandleMap = new Map<string, any>();
-    this._accountTypeHandleMap.set(ACCOUNT_TYPE_ENUM.RC, this._authRCLogin.bind(this));
-    this._accountTypeHandleMap.set(ACCOUNT_TYPE_ENUM.GLIP, this._authGlipLogin.bind(this));
+    this._accountTypeHandleMap.set(
+      ACCOUNT_TYPE_ENUM.RC,
+      this._authRCLogin.bind(this),
+    );
+    this._accountTypeHandleMap.set(
+      ACCOUNT_TYPE_ENUM.GLIP,
+      this._authGlipLogin.bind(this),
+    );
   }
 
   authenticate(): IAuthResponse {
-    const configDao = this._daoManager.getKVDao(ConfigDao);
-    const type: string = configDao.get(ACCOUNT_TYPE);
+    let type: string = '';
+    if (AccountGlobalConfig.getUserDictionary()) {
+      const userConfig = new AccountUserConfig();
+      type = userConfig.getAccountType();
+    }
     const func = this._accountTypeHandleMap.get(type);
 
     if (func) {
@@ -34,8 +44,8 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authGlipLogin(): IAuthResponse {
-    const authDao = this._daoManager.getKVDao(AuthDao);
-    const glipToken: string = authDao.get(AUTH_GLIP_TOKEN);
+    const authConfig = new AuthUserConfig();
+    const glipToken: string = authConfig.getGlipToken();
 
     if (glipToken) {
       return {
@@ -53,9 +63,9 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authRCLogin(): IAuthResponse {
-    const authDao = this._daoManager.getKVDao(AuthDao);
-    const rcToken: string = authDao.get(AUTH_RC_TOKEN);
-    const glipToken: string = authDao.get(AUTH_GLIP_TOKEN);
+    const authConfig = new AuthUserConfig();
+    const rcToken: string = authConfig.getRcToken();
+    const glipToken: string = authConfig.getGlipToken();
 
     if (rcToken && glipToken) {
       return {

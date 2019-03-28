@@ -17,7 +17,7 @@ export default class TaskItemModel extends ItemModel {
   @observable repeat: string;
   @observable repeatEnding: string;
   @observable repeatEndingAfter: string;
-  @observable repeatEndingOn: string;
+  @observable repeatEndingOn: number | null;
   @observable text: string;
   @observable due: number;
   @observable completeType: string;

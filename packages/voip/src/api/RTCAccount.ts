@@ -8,7 +8,7 @@ import { RTCRegistrationManager } from '../account/RTCRegistrationManager';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCall } from './RTCCall';
-import { kRTCAnonymous } from '../account/constants';
+import { kRTCAnonymous, kRTCProvisioningOptions } from '../account/constants';
 
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import {
@@ -16,8 +16,12 @@ import {
   RTCSipProvisionInfo,
   RTC_PROV_EVENT,
 } from '../account/types';
-import { v4 as uuid } from 'uuid';
-import { RTC_ACCOUNT_STATE, RTCCallOptions } from './types';
+import {
+  RTC_ACCOUNT_STATE,
+  RTCCallOptions,
+  RTCSipFlags,
+  RTC_STATUS_CODE,
+} from './types';
 import { RTCProvManager } from '../account/RTCProvManager';
 import { RTCCallManager } from '../account/RTCCallManager';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
@@ -25,23 +29,13 @@ import { RTCNetworkNotificationCenter } from '../utils/RTCNetworkNotificationCen
 import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../utils/types';
 import { Listener } from 'eventemitter2';
 
-const options = {
-  appKey: 'YCWFuqW8T7-GtSTb6KBS6g',
-  appName: 'RingCentral',
-  appVersion: '0.1.0',
-  endPointId: 'FVKGRbLRTxGxPempqg5f9g',
-  audioHelper: {
-    enabled: true,
-  },
-  logLevel: 10,
-};
-
 const LOG_TAG = 'RTCAccount';
 
 class RTCAccount implements IRTCAccount {
   private _regManager: RTCRegistrationManager;
   private _delegate: IRTCAccountDelegate;
   private _state: RTC_ACCOUNT_STATE;
+  private _postponeProvisioning: RTCSipProvisionInfo | null;
   private _provManager: RTCProvManager;
   private _callManager: RTCCallManager;
   private _networkListener: Listener;
@@ -69,14 +63,29 @@ class RTCAccount implements IRTCAccount {
     this._provManager.acquireSipProv();
   }
 
+  public clearLocalProvisioning() {
+    this._provManager.clearProvInfo();
+  }
+
   public makeCall(
     toNumber: string,
     delegate: IRTCCallDelegate,
     options?: RTCCallOptions,
-  ) {
-    if (toNumber.length === 0) {
+  ): RTC_STATUS_CODE {
+    if (!toNumber || toNumber.length === 0) {
       rtcLogger.error(LOG_TAG, 'Failed to make call. To number is empty');
-      return;
+      return RTC_STATUS_CODE.NUMBER_INVALID;
+    }
+    if (!this._callManager.allowCall()) {
+      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
+      return RTC_STATUS_CODE.MAX_CALLS_REACHED;
+    }
+    if (this.state() === RTC_ACCOUNT_STATE.UNREGISTERED) {
+      rtcLogger.warn(
+        LOG_TAG,
+        'Failed to make call. Account is in Unregistered state',
+      );
+      return RTC_STATUS_CODE.INVALID_STATE;
     }
     let callOption: RTCCallOptions;
     if (options) {
@@ -85,6 +94,17 @@ class RTCAccount implements IRTCAccount {
       callOption = {};
     }
     this._regManager.makeCall(toNumber, delegate, callOption);
+    const call = new RTCCall(false, toNumber, null, this, delegate, callOption);
+    this._callManager.addCall(call);
+    if (this._delegate) {
+      this._delegate.onMadeOutgoingCall(call);
+    }
+    if (this.isReady()) {
+      call.onAccountReady();
+    } else {
+      call.onAccountNotReady();
+    }
+    return RTC_STATUS_CODE.OK;
   }
 
   public makeAnonymousCall(
@@ -99,7 +119,7 @@ class RTCAccount implements IRTCAccount {
     } else {
       optionsWithAnonymous = { fromNumber: kRTCAnonymous };
     }
-    rtcLogger.error(LOG_TAG, 'make anonymous call');
+    rtcLogger.debug(LOG_TAG, 'make anonymous call');
     this.makeCall(toNumber, delegate, optionsWithAnonymous);
   }
 
@@ -133,19 +153,20 @@ class RTCAccount implements IRTCAccount {
 
   removeCallFromCallManager(uuid: string): void {
     this._callManager.removeCall(uuid);
+    if (this._callManager.callCount() === 0 && this._postponeProvisioning) {
+      rtcLogger.debug(
+        LOG_TAG,
+        "There's no active call. Process postpone provisioning info",
+      );
+      this._regManager.provisionReady(
+        this._postponeProvisioning,
+        kRTCProvisioningOptions,
+      );
+      this._postponeProvisioning = null;
+    }
   }
 
   private _initListener() {
-    this._regManager.on(
-      REGISTRATION_EVENT.MAKE_OUTGOING_CALL,
-      (
-        toNumber: string,
-        delegate: IRTCCallDelegate,
-        options: RTCCallOptions,
-      ) => {
-        this._onMakeOutgoingCall(toNumber, delegate, options);
-      },
-    );
     this._regManager.on(
       REGISTRATION_EVENT.RECEIVE_INCOMING_INVITE,
       (session: any) => {
@@ -163,8 +184,13 @@ class RTCAccount implements IRTCAccount {
       this._onLogoutAction();
     });
 
+    this._regManager.on(REGISTRATION_EVENT.REFRESH_PROV, () => {
+      this._refreshProv();
+    });
+
     this._provManager.on(RTC_PROV_EVENT.NEW_PROV, ({ info }) => {
       this._onNewProv(info);
+      this._delegate.onReceiveNewProvFlags(info.sipFlags);
     });
 
     RTCNetworkNotificationCenter.instance().on(
@@ -180,6 +206,7 @@ class RTCAccount implements IRTCAccount {
     this._state = state;
     if (this._state === RTC_ACCOUNT_STATE.REGISTERED) {
       this._callManager.notifyAccountReady();
+      this._provManager.initRefreshState();
     }
     if (this._delegate) {
       this._delegate.onAccountStateChanged(state);
@@ -188,23 +215,7 @@ class RTCAccount implements IRTCAccount {
 
   private _onLogoutAction() {
     this._callManager.endAllCalls();
-    this._provManager.clearProvInfo();
-  }
-
-  private _onMakeOutgoingCall(
-    toNumber: string,
-    delegate: IRTCCallDelegate,
-    options: RTCCallOptions,
-  ) {
-    if (!this._callManager.allowCall()) {
-      rtcLogger.warn(LOG_TAG, 'Failed to make call. Max call count reached');
-      return;
-    }
-    const call = new RTCCall(false, toNumber, null, this, delegate, options);
-    this._callManager.addCall(call);
-    if (this._delegate) {
-      this._delegate.onMadeOutgoingCall(call);
-    }
+    this.clearLocalProvisioning();
   }
 
   private _onReceiveInvite(session: any) {
@@ -231,21 +242,38 @@ class RTCAccount implements IRTCAccount {
     if (!this._regManager) {
       return;
     }
-    const info = {
-      appKey: options.appKey,
-      appName: options.appName,
-      appVersion: options.appVersion,
-      endPointId: uuid(),
-      audioHelper: options.audioHelper,
-      logLevel: options.logLevel,
-    };
-    this._regManager.provisionReady(sipProv, info);
+    if (this._callManager.callCount() === 0) {
+      rtcLogger.debug(
+        LOG_TAG,
+        "There's no active call. Process new provisioning info",
+      );
+      this._regManager.provisionReady(sipProv, kRTCProvisioningOptions);
+    } else {
+      rtcLogger.debug(
+        LOG_TAG,
+        "There're active calls. Postpone new provisioning info",
+      );
+      this._postponeProvisioning = sipProv;
+    }
   }
 
   private _onNetworkChange(params: any) {
     if (RTC_NETWORK_STATE.ONLINE === params.state) {
       this._regManager.networkChangeToOnline();
     }
+  }
+
+  getSipProvFlags(): RTCSipFlags | null {
+    const SipProvisionInfo = this._provManager.getCurrentSipProvisionInfo();
+    if (SipProvisionInfo) {
+      return SipProvisionInfo.sipFlags;
+    }
+
+    return null;
+  }
+
+  private _refreshProv() {
+    this._provManager.refreshSipProv();
   }
 }
 

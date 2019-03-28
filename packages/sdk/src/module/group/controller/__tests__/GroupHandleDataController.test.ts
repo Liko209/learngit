@@ -8,8 +8,7 @@ import GroupAPI from '../../../../api/glip/group';
 import { daoManager } from '../../../../dao';
 import { Raw } from '../../../../framework/model';
 import { EVENT_TYPES } from '../../../../service';
-import { UserConfig } from '../../../../service/account';
-import { ENTITY, SERVICE } from '../../../../service/eventKey';
+import { ENTITY } from '../../../../service/eventKey';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PersonService } from '../../../person';
@@ -19,9 +18,19 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
+import { GlobalConfigService } from '../../../../module/config';
+import { AccountUserConfig } from '../../../../service/account/config';
+import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
+import { SYNC_SOURCE } from '../../../../module/sync';
+
+jest.mock('../../../../module/config');
+jest.mock('../../../../service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
+
+jest.mock('../../../../framework/controller/impl/EntitySourceController');
 
 jest.mock('../../../profile');
 jest.mock('../../../../service/account');
@@ -30,7 +39,6 @@ jest.mock('../../../state');
 jest.mock('../../../../dao', () => {
   const dao = {
     get: jest.fn().mockReturnValue(1),
-    queryGroupsByIds: jest.fn(),
     bulkDelete: jest.fn(),
     bulkPut: jest.fn(),
     doInTransaction: jest.fn(),
@@ -66,10 +74,6 @@ jest.mock('../../../../api/glip/group', () => {
     requestGroupById: jest.fn(),
   };
 });
-
-type GenerateFakeGroupOptions = {
-  hasPost: boolean;
-};
 
 function generateFakeGroups(
   count: number,
@@ -110,9 +114,14 @@ function generateFakeGroups(
   return groups;
 }
 
+const entitySourceController = new EntitySourceController<Group>(null, null);
 const stateService: StateService = new StateService();
 const personService = new PersonService();
 const profileService = new ProfileService();
+const groupService = {
+  getGroupsByIds: jest.fn(),
+  isValid: jest.fn(),
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -125,17 +134,23 @@ beforeEach(() => {
 describe('GroupHandleDataController', () => {
   let groupHandleDataController: GroupHandleDataController;
   beforeEach(() => {
-    groupHandleDataController = new GroupHandleDataController();
+    groupHandleDataController = new GroupHandleDataController(
+      groupService,
+      entitySourceController,
+    );
   });
   describe('handleData()', () => {
-    it('passing an empty array', async () => {
-      const result = await groupHandleDataController.handleData([]);
+    it('should emit notification when passing an array from index', async () => {
+      const result = await groupHandleDataController.handleData(
+        [],
+        SYNC_SOURCE.INDEX,
+      );
       expect(result).toBeUndefined();
     });
 
     it('passing an array', async () => {
-      expect.assertions(7);
-      UserConfig.getCurrentUserId.mockReturnValueOnce(1);
+      expect.assertions(6);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
       daoManager.getDao(GroupDao).get.mockReturnValue(1);
       const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
         {
@@ -154,25 +169,61 @@ describe('GroupHandleDataController', () => {
         },
         { _id: 2, members: [1, 2], deactivated: false },
         { _id: 3, members: [2], deactivated: false },
-        { _id: 4, deactivated: false },
-        { _id: 5, is_archived: true },
+        { _id: 4, members: [], deactivated: false },
+        { _id: 5, members: [], is_archived: true },
       ]);
-      await groupHandleDataController.handleData(groups);
+      await groupHandleDataController.handleData(groups, SYNC_SOURCE.INDEX);
       // expect getTransformData function
       expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
       // expect operateGroupDao function
-      expect(daoManager.getDao(GroupDao).bulkDelete).toHaveBeenCalledTimes(1);
-      expect(daoManager.getDao(GroupDao).bulkPut).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.bulkDelete).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
       // expect doNotification function
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
-      expect(notificationCenter.emitEntityDelete).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emitEntityUpdate).toBeCalledWith(ENTITY.GROUP, [
         { id: 2, members: [1, 2], deactivated: false },
         { id: 3, members: [2], deactivated: false }, // members is not include self also should notify update
-        { id: 4, deactivated: false },
-        { id: 5, is_archived: true },
+        { id: 4, members: [], deactivated: false },
+        { id: 5, members: [], is_archived: true },
+        { _delta: false, deactivated: true, id: 1, members: [1] },
       ]);
+    });
+
+    it('should not emit notification when passing an array from remaining', async () => {
+      expect.assertions(6);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
+      daoManager.getDao(GroupDao).get.mockReturnValue(1);
+      const groups: Raw<Group>[] = toArrayOf<Raw<Group>>([
+        {
+          _id: 1,
+          members: [1],
+          deactivated: true,
+          _delta: {
+            remove: { members: Array(1) },
+            set: {
+              modified_at: 1535007198836,
+              most_recent_content_modified_at: 1535007198836,
+              version: 2916578790211584,
+            },
+            _id: 4276230,
+          },
+        },
+        { _id: 2, members: [1, 2], deactivated: false },
+        { _id: 3, members: [2], deactivated: false },
+        { _id: 4, members: [], deactivated: false },
+        { _id: 5, members: [], is_archived: true },
+      ]);
+      await groupHandleDataController.handleData(groups, SYNC_SOURCE.REMAINING);
+      // expect getTransformData function
+      expect(GroupAPI.requestGroupById).toHaveBeenCalledTimes(1);
+      // expect operateGroupDao function
+      expect(entitySourceController.bulkDelete).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.bulkUpdate).toHaveBeenCalledTimes(1);
+      // expect doNotification function
+      expect(notificationCenter.emit).not.toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emitEntityDelete).not.toHaveBeenCalledTimes(1);
+      expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalledTimes(1);
     });
   });
 
@@ -182,7 +233,7 @@ describe('GroupHandleDataController', () => {
     });
 
     it('should save directly if find partial in DB', async () => {
-      daoManager.getDao(GroupDao).get.mockReturnValueOnce(1);
+      entitySourceController.get.mockReturnValueOnce(1);
       const groups: Partial<Raw<Group>>[] = toArrayOf<Partial<Raw<Group>>>([
         {
           _id: 3375110,
@@ -192,7 +243,7 @@ describe('GroupHandleDataController', () => {
         },
       ]);
       await groupHandleDataController.handlePartialData(groups);
-      expect(daoManager.getDao(GroupDao).update).toHaveBeenCalledTimes(1);
+      expect(entitySourceController.update).toHaveBeenCalledTimes(1);
       expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
 
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
@@ -219,9 +270,8 @@ describe('GroupHandleDataController', () => {
       jest.clearAllMocks();
     });
     it('params', async () => {
-      daoManager
-        .getDao(GroupDao)
-        .queryGroupsByIds.mockResolvedValue([{ id: 1, is_team: true }]);
+      groupService.isValid.mockResolvedValue(true);
+      groupService.getGroupsByIds.mockResolvedValue([{ id: 1, is_team: true }]);
       const oldProfile: any = {
         person_id: 0,
         favorite_group_ids: [1, 2],
@@ -242,9 +292,8 @@ describe('GroupHandleDataController', () => {
       jest.clearAllMocks();
     });
     it('params are arry empty', async () => {
-      daoManager
-        .getDao(GroupDao)
-        .queryGroupsByIds.mockResolvedValueOnce([{ is_team: true }]);
+      groupService.getGroupsByIds.mockResolvedValueOnce([{ is_team: true }]);
+
       const oldProfile: any = {
         person_id: 0,
         favorite_group_ids: [1, 2],
@@ -267,6 +316,8 @@ describe('GroupHandleDataController', () => {
   describe('handleGroupMostRecentPostChanged()', () => {
     beforeEach(() => {
       jest.clearAllMocks();
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
     });
 
     const post = {
@@ -298,6 +349,11 @@ describe('GroupHandleDataController', () => {
         most_recent_post_created_at: 99,
         members: [],
       });
+      entitySourceController.get.mockResolvedValueOnce({
+        id: 2,
+        most_recent_post_created_at: 99,
+        members: [],
+      });
       await groupHandleDataController.handleGroupMostRecentPostChanged({
         type: EVENT_TYPES.UPDATE,
         body: {
@@ -313,6 +369,10 @@ describe('GroupHandleDataController', () => {
           await fn();
         });
       daoManager.getDao(GroupDao).get.mockResolvedValueOnce({
+        id: 2,
+        members: [],
+      });
+      entitySourceController.get.mockResolvedValueOnce({
         id: 2,
         members: [],
       });
@@ -335,58 +395,25 @@ describe('GroupHandleDataController', () => {
         members: [],
         most_recent_post_created_at: 101,
       });
+      entitySourceController.get.mockResolvedValueOnce({
+        id: 2,
+        members: [],
+        most_recent_post_created_at: 101,
+      });
       await groupHandleDataController.handleGroupMostRecentPostChanged({
         type: EVENT_TYPES.UPDATE,
         body: {
           entities: map,
         },
       });
-      expect(notificationCenter.emit).toHaveBeenCalledTimes(2);
-    });
-    it('should emit NEW_POST_TO_GROUP with correct ids always', async () => {
-      const map = new Map();
-      map.set(11, {
-        id: 11,
-        modified_at: 100,
-        created_at: 100,
-        group_id: 21,
-      });
-      map.set(12, {
-        id: 12,
-        modified_at: 200,
-        created_at: 200,
-        group_id: 21,
-      });
-      map.set(13, {
-        id: 13,
-        modified_at: 300,
-        created_at: 300,
-        group_id: 22,
-      });
-      daoManager.getDao = jest.fn().mockReturnValue({
-        doInTransaction: jest.fn().mockImplementation(async (fn: Function) => {
-          await fn();
-        }),
-        get: jest.fn().mockReturnValue(null),
-      });
-      groupHandleDataController.handlePartialData = jest.fn();
-      await groupHandleDataController.handleGroupMostRecentPostChanged({
-        type: EVENT_TYPES.UPDATE,
-        body: {
-          entities: map,
-        },
-      });
-      expect(groupHandleDataController.handlePartialData).toBeCalledTimes(1);
-      expect(groupHandleDataController.handlePartialData).toBeCalledWith([]);
-      expect(notificationCenter.emit).toHaveBeenCalledTimes(1);
-      expect(notificationCenter.emit).toBeCalledWith(
-        SERVICE.POST_SERVICE.NEW_POST_TO_GROUP,
-        [21, 22],
-      );
+      expect(notificationCenter.emit).toHaveBeenCalledTimes(0);
     });
   });
 
   describe('filterGroups()', () => {
+    beforeEach(() => {
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(99);
+    });
     it('should remove extra, when limit < total teams', async () => {
       const LIMIT = 2;
       const TOTAL_GROUPS = 5;
@@ -395,7 +422,7 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
+
       const filteredGroups = await groupHandleDataController.filterGroups(
         groups,
         LIMIT,
@@ -411,7 +438,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       const filteredGroups = await groupHandleDataController.filterGroups(
         teams,
         LIMIT,
@@ -427,7 +453,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       const filteredGroups = await groupHandleDataController.filterGroups(
         teams,
         LIMIT,
@@ -443,7 +468,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
 
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1, is_team: true },
@@ -461,7 +485,6 @@ describe('GroupHandleDataController', () => {
       const TOTAL_GROUPS = 5;
 
       const teams = generateFakeGroups(TOTAL_GROUPS, { creator_id: 99 });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1, is_team: true },
       ]);
@@ -481,7 +504,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_count: 1 },
       ]);
@@ -501,7 +523,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([
         { id: 2, unread_mentions_count: 1 },
         { id: 3, unread_mentions_count: 1 },
@@ -522,7 +543,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValue([
         { id: 4, unread_count: 1 },
         { id: 3, unread_count: 1 },
@@ -544,7 +564,6 @@ describe('GroupHandleDataController', () => {
         creator_id: 99,
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
       const filteredGroups = await groupHandleDataController.filterGroups(
@@ -562,7 +581,6 @@ describe('GroupHandleDataController', () => {
         members: [99, 10],
         is_team: true,
       });
-      UserConfig.getCurrentUserId.mockReturnValue(99);
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
 
       const filteredGroups = await groupHandleDataController.filterGroups(
@@ -611,7 +629,7 @@ describe('GroupHandleDataController', () => {
         },
       ] as Group[];
       stateService.getAllGroupStatesFromLocal.mockResolvedValueOnce([]);
-      UserConfig.getCurrentUserId.mockReturnValue(2);
+      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(2);
       const filteredGroups = await groupHandleDataController.filterGroups(
         group,
         2,
@@ -715,6 +733,77 @@ describe('GroupHandleDataController', () => {
           members: [123, 456, 789, 111222],
         });
       });
+    });
+  });
+
+  describe('getTransformData()', () => {
+    it('should return deactivated group when removed_guest_user_ids includes current user', async () => {
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(123);
+      const groups = generateFakeGroups(3, {
+        deactivated: false,
+      });
+      groups[0].members = [123, 456, 789];
+      groups[0].removed_guest_user_ids = [123];
+      groups[1].members = [123, 456];
+      groups[1].removed_guest_user_ids = [123];
+      const result = await groupHandleDataController.getTransformData(
+        groups as Raw<Group>[],
+      );
+      expect(result).toEqual([
+        {
+          company_id: 1,
+          created_at: 1,
+          creator_id: 1,
+          deactivated: true,
+          email_friendly_abbreviation: '',
+          id: 1,
+          is_company_team: false,
+          is_new: false,
+          is_team: false,
+          members: [123, 456, 789],
+          modified_at: 1,
+          most_recent_content_modified_at: 1,
+          most_recent_post_created_at: 1,
+          removed_guest_user_ids: [123],
+          set_abbreviation: '',
+          version: 1,
+        },
+        {
+          company_id: 2,
+          created_at: 2,
+          creator_id: 2,
+          deactivated: true,
+          email_friendly_abbreviation: '',
+          id: 2,
+          is_company_team: false,
+          is_new: false,
+          is_team: false,
+          members: [123, 456],
+          modified_at: 2,
+          most_recent_content_modified_at: 2,
+          most_recent_post_created_at: 2,
+          removed_guest_user_ids: [123],
+          set_abbreviation: '',
+          version: 2,
+        },
+        {
+          company_id: 3,
+          created_at: 3,
+          creator_id: 3,
+          deactivated: false,
+          email_friendly_abbreviation: '',
+          id: 3,
+          is_company_team: false,
+          is_new: false,
+          is_team: false,
+          members: [],
+          modified_at: 3,
+          most_recent_content_modified_at: 3,
+          most_recent_post_created_at: 3,
+          set_abbreviation: '',
+          version: 3,
+        },
+      ]);
     });
   });
 });

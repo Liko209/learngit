@@ -3,7 +3,7 @@
  * @Date: 2019-01-14 14:30:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { UserConfig } from 'sdk/service/account/UserConfig';
+import { GlobalConfigService } from '../../../../module/config';
 
 import {
   DEFAULT_USER_PERMISSION_LEVEL,
@@ -11,10 +11,17 @@ import {
 } from '../../constants';
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 import { TeamPermissionController } from '../TeamPermissionController';
+import { AccountUserConfig } from '../../../../service/account/config';
 
-jest.mock('sdk/service/account/UserConfig');
+jest.mock('../../../../module/config/service/GlobalConfigService');
+jest.mock('../../../../service/account/config');
+jest.mock('../../../../service/account/config/AccountUserConfig');
+
 const mockCurrentUserId = 5683;
 const mockCurrentUserCompanyId = 55668833;
+
+GlobalConfigService.getInstance = jest.fn();
+
 describe('TeamPermissionController', () => {
   let teamPermissionController: TeamPermissionController;
   beforeEach(() => {
@@ -24,12 +31,13 @@ describe('TeamPermissionController', () => {
 
   describe('isCurrentUserGuest()', () => {
     beforeAll(() => {
-      UserConfig.getCurrentUserId = jest
+      AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
-        .mockImplementation(() => mockCurrentUserId);
-      UserConfig.getCurrentCompanyId = jest
+        .mockReturnValue(mockCurrentUserId);
+
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
         .fn()
-        .mockImplementation(() => mockCurrentUserCompanyId);
+        .mockReturnValue(mockCurrentUserCompanyId);
     });
     it('should return false when guestUserCompanyIds is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -62,6 +70,7 @@ describe('TeamPermissionController', () => {
         members: [mockCurrentUserId],
         guest_user_company_ids: [mockCurrentUserCompanyId],
       };
+
       expect(
         teamPermissionController.isCurrentUserGuest(teamPermissionParams),
       ).toBeTruthy();
@@ -142,7 +151,6 @@ describe('TeamPermissionController', () => {
       const teamPermissionParams: TeamPermissionParams = {
         members: [],
         is_team: true,
-
       };
       expect(
         teamPermissionController.getCurrentUserPermissionLevel(
@@ -414,8 +422,7 @@ describe('TeamPermissionController', () => {
     });
 
     it('should has default permission when do not have info', () => {
-      const teamPermissionParams: TeamPermissionParams = {
-      };
+      const teamPermissionParams: TeamPermissionParams = {};
       expect(
         teamPermissionController.isCurrentUserHasPermission(
           PERMISSION_ENUM.TEAM_POST,
@@ -449,7 +456,7 @@ describe('TeamPermissionController', () => {
     });
   });
 
-  describe('isTeamAdmin()', async () => {
+  describe('isTeamAdmin()', () => {
     it('should return true if no team permission model', async () => {
       expect(teamPermissionController.isTeamAdmin(11, undefined)).toBeFalsy();
     });

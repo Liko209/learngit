@@ -105,6 +105,10 @@ export class RightRail extends BaseWebComponent {
   get notesTab() {
     return this.getComponent(NotesTab);
   }
+
+  get pinnedTab() {
+    return this.getComponent(PinnedTab);
+  }
 }
 
 class TabEntry extends BaseWebComponent {
@@ -283,4 +287,87 @@ class TasksTab extends BaseTab {
   get items() {
     return this.getSelectorByAutomationId('rightRail-task-item');
   }
+}
+
+class PinnedTab extends BaseTab {
+  get subTitle() {
+    return this.getSubTitle('Pinned');
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('pinned-section');
+  }
+
+  nthItem(n: number) {
+    return this.getComponent(PinnedItem, this.items.nth(n))
+  }
+
+  itemByPostId(postId: string) {
+    return this.getComponent(PinnedItem, this.items.filter(`[data-postid="${postId}"]`));
+  }
+
+  async shouldContainPostItem(postId: string) {
+    await this.t.expect(this.items.withAttribute('data-postid', postId).exists).ok();
+  }
+}
+
+class PinnedItem extends BaseWebComponent {
+  get postId() {
+    return this.self.getAttribute('data-postid');
+  }
+  get creator() {
+    return this.getSelectorByAutomationId("pinned-creator", this.self);
+  }
+
+  get createTime() {
+    return this.getSelectorByAutomationId("pinned-createTime", this.self);
+  }
+
+  get postText() {
+    return this.getSelectorByAutomationId("pinned-text", this.self);
+  }
+
+  get attachmentIcons() {
+    return this.getSelectorByAutomationId("pinned-item-icon", this.self);
+  }
+
+  get nonFileOrImageAttachmentsTexts() {
+    return this.getSelectorByAutomationId('pinned-item-text', this.self);
+  }
+
+  get fileOrImageFileNames() {
+    return this.getSelectorByAutomationId('file-name', this.self);
+  }
+
+  get moreAttachmentsInfo() {
+    return // TODO
+  }
+
+  async shouldBePostId(postId: string) {
+    await this.t.expect(this.postId).eql(postId);
+  }
+
+  async shouldBeCreator(name: string) {
+    await this.t.expect(this.creator.withExactText(name).exists).ok();
+  }
+
+  async postTextShouldBe(text: string | RegExp) {
+    if (typeof text == "string") {
+      await this.t.expect(this.postText.withText(text).exists).ok();
+    } else {
+      await this.t.expect(this.postText.textContent).match(text);
+    }
+
+  }
+
+  async shouldHasFileOrImage(fileName: string) {
+    await this.t.expect(this.fileOrImageFileNames.withText(fileName).exists).ok();
+  }
+
+  async shouldHasAttachmentsText(text: string) {
+    await this.t.expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists).ok();
+  }
+
+
+
 }

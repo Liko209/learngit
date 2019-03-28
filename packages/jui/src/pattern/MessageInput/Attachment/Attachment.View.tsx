@@ -22,7 +22,6 @@ import {
   JuiMenuList,
   JuiDivider,
 } from '../../../components';
-import { JuiIconography } from '../../../foundation/Iconography';
 import { withUploadFile } from '../../../hoc/withUploadFile';
 
 const Menu = styled(JuiMenu)`
@@ -80,23 +79,23 @@ class AttachmentView extends Component<Props> {
     const open = !!anchorEl;
     const menus = [
       {
-        icon: <JuiIconography>google</JuiIconography>,
+        icon: 'google',
         label: 'Google Drive',
       },
       {
-        icon: <JuiIconography>dropbox</JuiIconography>,
+        icon: 'dropbox',
         label: 'Dropbox',
       },
       {
-        icon: <JuiIconography>box</JuiIconography>,
+        icon: 'box',
         label: 'Box',
       },
       {
-        icon: <JuiIconography>evernote</JuiIconography>,
+        icon: 'evernote',
         label: 'Evernote',
       },
       {
-        icon: <JuiIconography>onedrive</JuiIconography>,
+        icon: 'onedrive',
         label: 'OneDrive',
       },
     ];

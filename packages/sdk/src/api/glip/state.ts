@@ -6,8 +6,7 @@
 import Api from '../api';
 
 import { Raw } from '../../framework/model';
-import { State } from '../../module/state/entity';
-import { MyState } from '../../models';
+import { State, MyState } from '../../module/state/entity';
 
 class StateAPI extends Api {
   /**

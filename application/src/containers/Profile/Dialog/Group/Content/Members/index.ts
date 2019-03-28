@@ -4,5 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export * from './MemberHeader';
-export * from './MemberList';
+export * from './Members';

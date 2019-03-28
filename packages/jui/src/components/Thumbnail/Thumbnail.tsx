@@ -4,9 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../foundation/styled-components';
 import { width, shape, grey } from '../../foundation/utils/styles';
-// import { preloadImg } from '../../foundation/utils';
 import { JuiIconography } from '../../foundation/Iconography';
 
 type JuiThumbnailProps = {
@@ -21,20 +20,6 @@ type JuiThumbnailWithUrlProps = {
 type JuiThumbnailWithIconProps = {
   iconType: string;
 } & JuiThumbnailProps;
-
-const WrappedMuiIcon = ({
-  iconType,
-  size,
-  ...rest
-}: JuiThumbnailWithIconProps & { children: string }) => (
-  <JuiIconography {...rest} />
-);
-
-const StyledIcon = styled(WrappedMuiIcon)`
-  && {
-    font-size: ${({ size }) => (size === 'small' ? width(5) : width(9))};
-  }
-`;
 
 const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>('span')`
   width: ${({ size }) => (size === 'small' ? width(5) : width(9))};
@@ -60,9 +45,9 @@ class JuiThumbnail extends React.PureComponent<
         {url ? (
           <StyledModifyImage url={url} style={style} />
         ) : (
-          <StyledIcon size={size} iconType={iconType}>
+          <JuiIconography iconSize={size === 'small' ? 'small' : 'extraLarge'}>
             {iconType}
-          </StyledIcon>
+          </JuiIconography>
         )}
       </>
     );

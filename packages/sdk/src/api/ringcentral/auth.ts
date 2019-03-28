@@ -1,13 +1,13 @@
 /*
  * @Author: Steve Chen (steve.chen@ringcentral.com)
  * @Date: 2018-03-01 15:43:04
- * @Last Modified by: Valor Lin (valor.lin@ringcentral.com)
- * @Last Modified time: 2018-11-26 14:14:50
+ * @Last Modified by: Rito.Xiao (rito.xiao@ringcentral.com)
+ * @Last Modified time: 2019-03-19 21:27:47
  */
 
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
-import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
+import { NETWORK_METHOD, NETWORK_VIA, HA_PRIORITY } from 'foundation';
 import { ITokenModel } from '../ringcentral/login';
 
 export interface IAuthCodeModel {
@@ -28,7 +28,7 @@ function oauthTokenViaAuthCode(params: object, headers?: object) {
     data: model,
     authFree: true,
   };
-  return Api.glip2NetworkClient.http<ITokenModel>(query);
+  return Api.rcNetworkClient.http<ITokenModel>(query);
 }
 
 function generateCode(clientId: string, redirectUri: string) {
@@ -41,11 +41,12 @@ function generateCode(clientId: string, redirectUri: string) {
         RINGCENTRAL_API.API_GENERATE_CODE
       }`
     : `${RINGCENTRAL_API.API_GENERATE_CODE}`;
-  return Api.glip2NetworkClient.http<IAuthCodeModel>({
+  return Api.rcNetworkClient.http<IAuthCodeModel>({
     path,
     method: NETWORK_METHOD.POST,
     via: NETWORK_VIA.HTTP,
     data: model,
+    HAPriority: HA_PRIORITY.HIGH,
   });
 }
 

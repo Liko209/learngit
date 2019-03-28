@@ -5,17 +5,22 @@
  */
 
 import { Person } from '../entity';
-import { daoManager } from '../../../dao';
-import { PersonDao } from '../dao';
+import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
-import { UserConfig } from '../../../service/account/UserConfig';
-import { transform, baseHandleData } from '../../../service/utils';
+import { AccountUserConfig } from '../../../service/account/config';
+import { transform } from '../../../service/utils';
+import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, ENTITY } from '../../../service/eventKey';
+import { SYNC_SOURCE } from '../../../module/sync/types';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 class PersonDataController {
+  constructor(public entitySourceController: IEntitySourceController<Person>) {}
+
   handleTeamRemovedIds = async (people: any[]) => {
-    const userId: Number = UserConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const userId: Number = userConfig.getGlipUserId();
     if (userId) {
       let ids: number[] = [];
       people.some((person: Person) => {
@@ -35,18 +40,40 @@ class PersonDataController {
     }
   }
 
-  handleIncomingData = async (persons: Raw<Person>[]) => {
+  handleIncomingData = async (persons: Raw<Person>[], source: SYNC_SOURCE) => {
     if (persons.length === 0) {
       return;
     }
-    const personDao = daoManager.getDao(PersonDao);
-    const transformedData = persons.map(item => transform(item));
+    const transformedData: Person[] = persons.map((item: Raw<Person>) =>
+      transform(item),
+    );
     this.handleTeamRemovedIds(transformedData);
-    await baseHandleData({
-      data: transformedData,
-      dao: personDao,
-      eventKey: ENTITY.PERSON,
-    });
+    this._saveDataAndDoNotification(transformedData, source);
+  }
+
+  private _saveDataAndDoNotification(persons: Person[], source: SYNC_SOURCE) {
+    const deactivatedData = persons.filter(
+      (item: any) => item.deactivated === true,
+    );
+
+    const normalData = persons.filter((item: any) => item.deactivated !== true);
+
+    this._saveData(deactivatedData, normalData);
+    if (shouldEmitNotification(source)) {
+      notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
+    }
+  }
+
+  private async _saveData(deactivatedData: Person[], normalData: Person[]) {
+    if (deactivatedData.length > 0) {
+      await daoManager.getDao(DeactivatedDao).bulkPut(deactivatedData);
+      await this.entitySourceController.bulkDelete(
+        deactivatedData.map((item: any) => item.id),
+      );
+    }
+    if (normalData.length > 0) {
+      await this.entitySourceController.bulkPut(normalData);
+    }
   }
 }
 

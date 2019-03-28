@@ -10,18 +10,19 @@ import MuiListItemText from '@material-ui/core/ListItemText';
 import MuiListItemIcon from '@material-ui/core/ListItemIcon';
 import MuiDrawer, { DrawerProps } from '@material-ui/core/Drawer/index';
 import styled from '../../foundation/styled-components';
-import { JuiIconography } from '../../foundation/Iconography';
 import { JuiArrowTip } from '../../components/index';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import {
   height,
   grey,
   palette,
   spacing,
+  width,
   typography,
 } from '../../foundation/utils/styles';
 
-const MaxWidth = 200;
-const MinWidth = 72;
+const MaxWidth = 180;
+const MinWidth = 64;
 type LeftNavProps = {
   expand: boolean;
 } & DrawerProps;
@@ -34,13 +35,14 @@ const Left = styled<LeftNavProps>(CustomLeftNav)`
     height: 100%; // safari compatibility
   }
   .left-paper {
+    background: ${palette('grey', '100')};
     position: relative;
     height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     width: ${props => (props.expand ? MaxWidth : MinWidth)}px;
     justify-content: space-between;
-    padding: ${spacing(6)} 0;
+    padding: ${spacing(8, 0, 6, 0)};
     box-sizing: border-box;
     transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
     // this group btns will awake
@@ -64,14 +66,14 @@ const StyledListItem = styled(MuiListItem)`
     height: ${height(11)};
     outline: none;
     white-space: nowrap;
-    background: white;
     color: ${grey('900')};
     /**
    * Workaround to resolve transition conflicts with react-sortable-hoc
    * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
    */
     transition: transform 0s ease,
-      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      background-color 150ms
+        ${({ theme }) => theme.transitions.easing.easeInOut} 0ms;
   }
   &&:focus {
     background: ${grey('300')};
@@ -95,13 +97,24 @@ const StyledListItem = styled(MuiListItem)`
   }
   &&&:hover {
     background-color: ${({ theme, selected }) =>
-      selected ? theme.palette.action.active : grey('100')};
-    opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity};
+      selected
+        ? fade(grey('700')({ theme }), theme.opacity.p05)
+        : fade(grey('700')({ theme }), theme.opacity.p05)};
     .nav-icon {
       color: ${grey('500')}; // 500
     }
   }
 `;
+
+const StyledListItemIcon = styled(MuiListItemIcon)`
+  width: ${width(16)};
+  display: flex;
+  justify-content: center;
+  && {
+    margin-right: 0;
+  }
+`;
+
 const StyledListItemText = styled(MuiListItemText)`
   && {
     color: ${grey('500')}; // 500
@@ -112,14 +125,13 @@ const StyledListItemText = styled(MuiListItemText)`
     }
   }
 `;
+
 const ListLink = styled.a`
   position: relative;
   outline: none;
   display: flex;
   height: 100%;
-  padding: 0 ${spacing(5)};
   width: 100%;
-  margin-left: ${({ theme }) => `${(theme.spacing.unit * 6) / 4}px`};
   align-items: center;
   text-decoration: none;
   &&&:active {
@@ -137,7 +149,6 @@ const ListLink = styled.a`
   }
   .nav-icon {
     color: ${palette('accent', 'ash')};
-    margin-right: ${spacing(8)};
   }
   .nav-text span {
     color: ${palette('accent', 'ash')};
@@ -146,9 +157,11 @@ const ListLink = styled.a`
 
 const UmiWrapper = styled.div<{ expand: boolean }>`
   display: flex;
-  position: ${props => (!props.expand ? 'absolute' : 'static')};
+  position: absolute;
   top: ${props => (!props.expand ? spacing(1) : '')};
   left: ${props => (!props.expand ? spacing(8) : '')};
+  right: ${props => (props.expand ? spacing(4) : '')};
+  transition: all 1s;
   .umi {
     color: #fff !important;
   }
@@ -158,7 +171,8 @@ type JuiLeftNavProps = {
   expand: boolean;
   icons: {
     url: string;
-    icon: string;
+    Icon: React.ReactElement;
+    IconSelected: React.ReactElement;
     title: string;
     umi?: JSX.Element;
   }[][];
@@ -207,9 +221,9 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
                   className={`left-link ${selected ? 'active' : ''}`}
                   onClick={this.onRouteChange(navUrl)}
                 >
-                  <MuiListItemIcon className={'nav-icon'}>
-                    <JuiIconography>{item.icon}</JuiIconography>
-                  </MuiListItemIcon>
+                  <StyledListItemIcon className={'nav-icon'}>
+                    {selected ? item.IconSelected : item.Icon}
+                  </StyledListItemIcon>
                   <StyledListItemText
                     primary={item.title}
                     className={'nav-text'}

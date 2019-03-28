@@ -3,14 +3,8 @@
  * @Date: 2018-06-08 15:43:47
  */
 
-import { daoManager } from '../../dao';
-import AccountDao from '../../dao/account';
-import {
-  ACCOUNT_CLIENT_CONFIG,
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-} from '../../dao/account/constants';
 import { BETA_CONFIG_KEYS } from './constants';
+import { AccountUserConfig } from '../../service/account/config';
 
 enum EBETA_FLAG {
   BETA_LOG,
@@ -86,8 +80,8 @@ function isInBetaEmailList(flagName: string): boolean {
   const list: string = getFlagValue(flagName);
   if (list !== '') {
     const emailsList: string[] = list.split(',');
-    const dao: AccountDao = daoManager.getKVDao(AccountDao);
-    const userId: number = dao.get(ACCOUNT_USER_ID);
+    const userConfig = new AccountUserConfig();
+    const userId: number = userConfig.getGlipUserId();
     if (userId) {
       return emailsList.indexOf(userId.toString()) !== -1;
     }
@@ -99,8 +93,8 @@ function isInBetaDomainList(flagName: string): boolean {
   const list: string = getFlagValue(flagName);
   if (list !== '') {
     const emailsList: string[] = list.split(',');
-    const dao: AccountDao = daoManager.getKVDao(AccountDao);
-    const companyId: number = dao.get(ACCOUNT_COMPANY_ID);
+    const userConfig = new AccountUserConfig();
+    const companyId: number = userConfig.getCurrentCompanyId();
     if (companyId) {
       return emailsList.indexOf(companyId.toString()) !== -1;
     }
@@ -109,8 +103,8 @@ function isInBetaDomainList(flagName: string): boolean {
 }
 
 function getFlagValue(flagName: string): string {
-  const dao: AccountDao = daoManager.getKVDao(AccountDao);
-  const clientConfig = dao.get(ACCOUNT_CLIENT_CONFIG);
+  const userConfig = new AccountUserConfig();
+  const clientConfig = userConfig.getClientConfig();
   if (clientConfig && clientConfig[flagName]) {
     return clientConfig[flagName];
   }

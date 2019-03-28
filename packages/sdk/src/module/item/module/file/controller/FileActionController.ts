@@ -7,15 +7,14 @@
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 import { Item } from '../../../entity';
 import { FileItemUtils } from '../utils';
-import { daoManager, AuthDao } from '../../../../../dao';
-import { AUTH_GLIP_TOKEN } from '../../../../../dao/auth/constants';
 import { Api } from '../../../../../api';
 import { FileItem } from '../entity';
+import { AuthUserConfig } from '../../../../../service/auth/config';
 
 class FileActionController {
   constructor(private _sourceController: IEntitySourceController<Item>) {}
 
-  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+  async getThumbsUrlWithSize(itemId: number, width?: number, height?: number) {
     const file = (await this._sourceController.get(itemId)) as FileItem;
     let url = '';
     do {
@@ -41,9 +40,8 @@ class FileActionController {
       if (storageId === 0) {
         break;
       }
-
-      const autoDao = daoManager.getKVDao(AuthDao);
-      const glipAccessToken = autoDao.get(AUTH_GLIP_TOKEN);
+      const authConfig = new AuthUserConfig();
+      const glipAccessToken = authConfig.getGlipToken();
       if (!glipAccessToken) {
         break;
       }
@@ -53,9 +51,21 @@ class FileActionController {
         break;
       }
 
-      url = `${cacheServer}/modify-image?size=${width}x${height}&id=${storageId}&source_type=files&source_id=${
-        file.id
-      }&t=${glipAccessToken}`;
+      const querys: { key: string; value: string | undefined }[] = [
+        {
+          key: 'size',
+          value: width && height ? `${width}x${height}` : undefined,
+        },
+        { key: 'id', value: storageId },
+        { key: 'source_type', value: 'files' },
+        { key: 'source_id', value: file.id },
+        { key: 't', value: glipAccessToken },
+      ];
+      const queryString = querys
+        .filter(({ value }) => value !== undefined)
+        .map(({ key, value }) => `${key}=${value}`)
+        .join('&');
+      url = `${cacheServer}/modify-image?${queryString}`;
     } while (false);
 
     return url;

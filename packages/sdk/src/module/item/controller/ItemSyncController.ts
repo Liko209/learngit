@@ -7,10 +7,10 @@ import { mainLogger } from 'foundation';
 import { TypeDictionary } from '../../../utils';
 import ItemApi from '../../../api/glip/item';
 import { IItemService } from '../service/IItemService';
-import { GroupConfigService } from '../../../service/groupConfig';
+import { GroupConfigService } from '../../groupConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
-import { GroupConfig } from '../../../models';
+import { GroupConfig } from '../../groupConfig/entity';
 
 const AvailableSocketStatus = ['connected', 'connecting'];
 const GroupItemKeyMap = {
@@ -83,7 +83,7 @@ class ItemSyncController {
       [GroupItemKeyMap[typeId]]: Date.now(),
     };
 
-    await groupConfigService.updateGroupConfigPartialData(partialData);
+    await groupConfigService.saveAndDoNotify(partialData);
   }
 }
 

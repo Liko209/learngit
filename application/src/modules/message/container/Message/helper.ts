@@ -62,7 +62,8 @@ export class MessageRouterChangeHelper {
 
   static async goToLastOpenedGroup() {
     const lastGroupId = await this.getLastGroupId();
-    this._goToConversation(lastGroupId, 'REPLACE');
+    this._doRouterRedirection(lastGroupId, 'REPLACE');
+    this.updateCurrentConversationId(lastGroupId);
   }
 
   static async goToConversation(id?: string, action?: Action) {
@@ -77,16 +78,18 @@ export class MessageRouterChangeHelper {
 
   private static async _goToDefaultConversation() {
     const id = this.defaultPageId;
-    await this._goToConversation(id);
+    await this._doRouterRedirection(id);
+    this.updateCurrentConversationId(id);
   }
 
   private static async _goToConversationById(id: string, action?: Action) {
     const validId = await this.verifyGroup(Number(id));
-    await this._goToConversation(validId, action);
-    this.handleSourceOfRouter(Number(id));
+    this.ensureGroupIsOpened(Number(id));
+    this._doRouterRedirection(validId, action);
+    this.updateCurrentConversationId(id);
   }
 
-  private static async _goToConversation(id: string, action?: Action) {
+  private static async _doRouterRedirection(id: string, action?: Action) {
     switch (action) {
       case 'REPLACE':
         history.replace(`/messages/${id}`);
@@ -97,7 +100,6 @@ export class MessageRouterChangeHelper {
         });
         break;
     }
-    this.updateCurrentConversationId(id);
   }
 
   static async verifyGroup(id: number) {
@@ -116,7 +118,7 @@ export class MessageRouterChangeHelper {
       .set(GLOBAL_KEYS.CURRENT_CONVERSATION_ID, Number(id));
   }
 
-  static handleSourceOfRouter(id: number) {
+  static ensureGroupIsOpened(id: number) {
     const handler = SectionGroupHandler.getInstance();
     handler.onReady((conversationList: number[]) => {
       GroupHandler.ensureGroupOpened(id);

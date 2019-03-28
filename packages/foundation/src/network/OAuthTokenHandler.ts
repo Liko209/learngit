@@ -136,6 +136,8 @@ class OAuthTokenHandler implements ITokenHandler {
               if (token) {
                 this.token = token;
                 this._notifyRefreshTokenSuccess(token);
+              } else {
+                this._notifyRefreshTokenFailure();
               }
             })
             .catch(() => {
@@ -145,8 +147,6 @@ class OAuthTokenHandler implements ITokenHandler {
       } else {
         this._notifyRefreshTokenFailure();
       }
-    } else {
-      this._notifyRefreshTokenFailure();
     }
   }
 

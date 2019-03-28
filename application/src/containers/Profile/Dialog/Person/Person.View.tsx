@@ -7,12 +7,13 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import {
-  JuiDialogTitleWithAction,
   JuiDialogContentWithFill,
+  JuiDialogHeader,
 } from 'jui/components/Dialog';
 import { ProfileDialogPersonTitle } from './Title';
 import { ProfileDialogPersonContent } from './Content';
 import { ProfileDialogPersonViewProps } from './types';
+import { JuiDivider } from 'jui/components/Divider';
 
 @observer
 class ProfileDialogPersonView extends Component<ProfileDialogPersonViewProps> {
@@ -20,9 +21,10 @@ class ProfileDialogPersonView extends Component<ProfileDialogPersonViewProps> {
     const { id } = this.props;
     return (
       <>
-        <JuiDialogTitleWithAction data-test-automation-id="profileDialogTitle">
+        <JuiDialogHeader data-test-automation-id="profileDialogTitle">
           <ProfileDialogPersonTitle id={id} />
-        </JuiDialogTitleWithAction>
+        </JuiDialogHeader>
+        <JuiDivider />
         <JuiDialogContentWithFill data-test-automation-id="profileDialogContent">
           <ProfileDialogPersonContent id={id} />
         </JuiDialogContentWithFill>

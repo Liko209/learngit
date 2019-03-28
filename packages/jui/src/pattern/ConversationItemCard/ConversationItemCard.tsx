@@ -63,7 +63,8 @@ const ItemCardHeader = styled.div<{
   position: relative;
   padding: ${spacing(4, 4, 4, 4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
-  display: flex ${typography('body1')};
+  display: flex;
+  ${typography('body1')};
   color: ${({ titleColor }) => getAccentColor(titleColor)};
   word-break: break-word;
   svg {
@@ -104,6 +105,7 @@ type JuiConversationItemCardProps = {
   title?: string | JSX.Element;
   Icon: JSX.Element | string;
   titleColor?: [keyof Palette, string];
+  iconColor?: [keyof Palette, string];
   titleClick?: (event: React.MouseEvent<HTMLElement>) => void;
   children?: React.ReactNode;
   contentHasPadding?: boolean;
@@ -127,6 +129,7 @@ class JuiConversationItemCard extends React.PureComponent<
       children,
       title,
       Icon,
+      iconColor,
       Footer,
       footerPadding = true,
       contentHasPadding = true,
@@ -144,7 +147,11 @@ class JuiConversationItemCard extends React.PureComponent<
           titleColor={titleColor}
           buttonNumber={headerActions ? headerActions.length : 0}
         >
-          {typeof Icon === 'string' ? <ItemIcon>{Icon}</ItemIcon> : Icon}
+          {typeof Icon === 'string' ? (
+            <ItemIcon iconColor={iconColor}>{Icon}</ItemIcon>
+          ) : (
+            Icon
+          )}
           {title && <ItemTitle complete={complete}>{title}</ItemTitle>}
           {showHeaderActions && headerActions && (
             <HeaderActionsWrapper overlapSize={2}>

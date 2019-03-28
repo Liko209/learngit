@@ -18,20 +18,18 @@ import {
 } from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
-import { AuthDao } from './dao';
-import {
-  AUTH_GLIP2_TOKEN,
-  AUTH_GLIP_TOKEN,
-  AUTH_RC_TOKEN,
-} from './dao/auth/constants';
 import DaoManager from './dao/DaoManager';
 import { AccountManager, ServiceManager } from './framework';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from './service/constants';
 import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
-import SyncService from './service/sync';
+import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './service';
+import { DataMigration, UserConfigService } from './module/config';
+import { setGlipToken } from './authenticator/utils';
+import { AuthUserConfig } from './service/auth/config';
+import { AccountGlobalConfig } from './service/account/config';
 
 const AM = AccountManager;
 
@@ -40,6 +38,8 @@ const defaultDBConfig: DBConfig = {
 };
 
 class Sdk {
+  private _glipToken: string;
+
   constructor(
     public daoManager: DaoManager,
     public accountManager: AccountManager,
@@ -66,13 +66,16 @@ class Sdk {
     });
 
     Api.init(apiConfig, this.networkManager);
+
+    DataMigration.migrateKVStorage();
+
     await this.daoManager.initDatabase();
 
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
 
     const accountService: AccountService = AccountService.getInstance();
-    HandleByRingCentral.tokenRefreshDelegate = accountService;
+    HandleByRingCentral.platformHandleDelegate = accountService;
 
     notificationCenter.on(
       SHOULD_UPDATE_NETWORK_TOKEN,
@@ -80,7 +83,7 @@ class Sdk {
     );
 
     // Listen to account events to init network and service
-    this.accountManager.on(AM.EVENT_LOGIN, this.onLogin.bind(this));
+    this.accountManager.on(AM.AUTH_SUCCESS, this.onAuthSuccess.bind(this));
     this.accountManager.on(AM.EVENT_LOGOUT, this.onLogout.bind(this));
     this.accountManager.on(
       AM.EVENT_SUPPORTED_SERVICE_CHANGE,
@@ -99,11 +102,14 @@ class Sdk {
     }
   }
 
-  async onLogin() {
-    this.updateNetworkToken();
-
-    if (this.syncService.getIndexTimestamp()) {
-      return;
+  async onAuthSuccess() {
+    // need to set token if it's not first login
+    if (AccountGlobalConfig.getUserDictionary()) {
+      const authConfig = new AuthUserConfig();
+      this.updateNetworkToken({
+        rcToken: authConfig.getRcToken(),
+        glipToken: authConfig.getGlipToken(),
+      });
     }
 
     await this.syncService.syncData({
@@ -117,6 +123,9 @@ class Sdk {
       onInitialHandled: async () => {
         const accountService: AccountService = AccountService.getInstance();
         accountService.onBoardingPreparation();
+        if (this._glipToken) {
+          await setGlipToken(this._glipToken);
+        }
       },
       /**
        * LifeCycle when refresh page
@@ -131,26 +140,33 @@ class Sdk {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     await this.daoManager.deleteDatabase();
+    UserConfigService.getInstance().clear();
+    AccountGlobalConfig.removeUserDictionary();
   }
 
-  updateNetworkToken() {
-    const authDao = this.daoManager.getKVDao(AuthDao);
-    const glipToken: string = authDao.get(AUTH_GLIP_TOKEN);
-    const rcToken: Token = authDao.get(AUTH_RC_TOKEN);
-    const glip2Token: Token = authDao.get(AUTH_GLIP2_TOKEN);
-
-    if (glipToken) {
-      this.networkManager.setOAuthToken(new Token(glipToken), HandleByGlip);
-      this.networkManager.setOAuthToken(new Token(glipToken), HandleByUpload);
+  updateNetworkToken(tokens: {
+    rcToken?: Token;
+    glipToken?: string;
+    glip2Token?: Token;
+  }) {
+    if (tokens.glipToken) {
+      this._glipToken = tokens.glipToken;
+      this.networkManager.setOAuthToken(
+        new Token(tokens.glipToken),
+        HandleByGlip,
+      );
+      this.networkManager.setOAuthToken(
+        new Token(tokens.glipToken),
+        HandleByUpload,
+      );
+    }
+    if (tokens.rcToken) {
+      this.networkManager.setOAuthToken(tokens.rcToken, HandleByRingCentral);
+      this.networkManager.setOAuthToken(tokens.rcToken, HandleByGlip2);
     }
 
-    if (rcToken) {
-      this.networkManager.setOAuthToken(rcToken, HandleByRingCentral);
-      this.networkManager.setOAuthToken(rcToken, HandleByGlip2);
-    }
-
-    if (glip2Token) {
-      this.networkManager.setOAuthToken(glip2Token, HandleByGlip2);
+    if (tokens.glip2Token) {
+      this.networkManager.setOAuthToken(tokens.glip2Token, HandleByGlip2);
     }
   }
 

@@ -119,4 +119,25 @@ describe('ItemServiceController', () => {
       expect(res).toEqual([item1, item3, item2]);
     });
   });
+
+  describe('getItemIndexInfo', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      subItemService.getSortedIds = jest
+        .fn()
+        .mockResolvedValue([1, 3, 2, 4, 5]);
+    });
+
+    it('should return index info', async () => {
+      const options = {
+        typeId: fileTypeId,
+        groupId: 111,
+      };
+      const itemId = 3;
+      const res = await itemServiceController.getItemIndexInfo(itemId, options);
+      expect(subItemService.getSortedIds).toBeCalledWith(options);
+      expect(res).toEqual({ index: 1, totalCount: 5 });
+    });
+  });
 });

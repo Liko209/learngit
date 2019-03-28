@@ -39,16 +39,6 @@ class GroupDao extends BaseDao<Group> {
     return query.toArray();
   }
 
-  async queryGroupsByIds(ids: number[]): Promise<Group[]> {
-    return this.createQuery()
-      .anyOf('id', ids)
-      .filter((item: Group) => !item.is_archived)
-      .toArray({
-        sortBy: 'most_recent_post_created_at',
-        desc: true,
-      });
-  }
-
   async queryAllGroups(
     offset: number = 0,
     limit: number = Infinity,
@@ -89,7 +79,6 @@ class GroupDao extends BaseDao<Group> {
       )
       .first();
   }
-
 }
 
 export { GroupDao };

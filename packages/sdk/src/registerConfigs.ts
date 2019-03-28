@@ -17,27 +17,32 @@ import Sdk from './Sdk';
 // Service
 import AccountService from './service/account';
 import AuthService from './service/auth';
-import CompanyService from './service/company';
+import { CompanyService } from './module/company';
 import ConfigService from './service/config';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
-import PresenceService from './service/presence';
+import { PresenceService } from './module/presence';
 import { ProfileService } from './module/profile';
-import GroupConfigService from './service/groupConfig';
+import { GroupConfigService } from './module/groupConfig';
 import socketManager from './service/socket';
 import { SocketManager } from './service/socket/SocketManager';
 import { StateService } from './module/state';
-import SyncService from './service/sync';
+import { SyncService } from './module/sync';
 import { TelephonyService } from './module/telephony';
 import { ProgressService } from './module/progress';
 import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
+import { SearchService } from './module/search';
+import { RcInfoService } from './module/rcInfo';
+import { GlobalConfigService, UserConfigService } from './module/config';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
 const registerConfigs = {
   classes: [
+    { name: GlobalConfigService.name, value: GlobalConfigService },
+    { name: UserConfigService.name, value: UserConfigService },
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     {
@@ -63,6 +68,7 @@ const registerConfigs = {
     { name: PostService.name, value: PostService },
     { name: PermissionService.name, value: PermissionService },
     { name: GroupService.name, value: GroupService },
+    { name: RcInfoService.name, value: RcInfoService },
     {
       name: ConfigService.name,
       value: ConfigService,
@@ -77,6 +83,7 @@ const registerConfigs = {
     { name: SyncService.name, value: SyncService },
     { name: TelephonyService.name, value: TelephonyService },
     { name: GroupConfigService.name, value: GroupConfigService },
+    { name: SearchService.name, value: SearchService },
 
     // Manager
     {

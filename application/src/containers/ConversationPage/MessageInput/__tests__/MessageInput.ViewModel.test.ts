@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { service } from 'sdk';
 import {
   MessageInputViewModel,
   ERROR_TYPES,
@@ -13,12 +12,12 @@ import {
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
-import { GroupConfigService } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 
 jest.mock('sdk/module/post');
-jest.mock('sdk/service/groupConfig');
+jest.mock('sdk/module/groupConfig');
 jest.mock('sdk/api');
 
 const postService = new PostService();
@@ -52,13 +51,6 @@ describe('MessageInputViewModel', () => {
   });
   afterEach(() => {
     jest.clearAllMocks();
-  });
-
-  describe('ActionsViewModel', () => {
-    it('method forceSaveDraft', () => {
-      messageInputViewModel.forceSaveDraft();
-      expect(groupConfigService.updateDraft).toBeCalled();
-    });
   });
 
   describe('MessageInputViewModel', () => {
@@ -168,6 +160,23 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel._memoryDraftMap = new Map();
         messageInputViewModel._memoryDraftMap.set(9999, '9999');
         expect(groupConfigService.getDraft).toHaveBeenCalledTimes(0);
+      });
+    });
+    describe('forceSaveDraft', () => {
+      it('should call groupConfigService updateDraft', () => {
+        messageInputViewModel.forceSaveDraft();
+        expect(groupConfigService.updateDraft).toBeCalled();
+      });
+      it('should not remove empty line with any text when save draft', () => {
+        const draft = '<p><br></p><p>111</p>';
+        messageInputViewModel.draft = draft;
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe(draft);
+      });
+      it('should remove empty line without any text when save draft', () => {
+        messageInputViewModel.draft = '<p><br></p><p><br></p>';
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe('');
       });
     });
   });

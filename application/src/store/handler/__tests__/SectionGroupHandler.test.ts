@@ -3,13 +3,24 @@
  * @Date: 2018-10-29 10:47:27
  * Copyright © RingCentral. All rights reserved.
  */
-import { getGlobalValue } from '../../utils/entities';
+import { getGlobalValue, getEntity } from '../../utils/entities';
 import SectionGroupHandler from '../SectionGroupHandler';
 import { SECTION_TYPE } from '@/containers/LeftRail/Section/types';
 import { ProfileService } from 'sdk/module/profile';
 import { StateService } from 'sdk/module/state';
 import { GroupService } from 'sdk/module/group';
 import { notificationCenter, ENTITY } from 'sdk/service';
+import { QUERY_DIRECTION } from 'sdk/dao';
+
+jest.mock('sdk/framework/processor/SequenceProcessorHandler', () => {
+  const SequenceProcessorHandler = () => ({
+    addProcessor: jest.fn(),
+    execute: jest.fn(),
+  });
+  return {
+    SequenceProcessorHandler,
+  };
+});
 jest.mock('sdk/api');
 jest.mock('sdk/module/profile');
 jest.mock('sdk/module/state');
@@ -29,6 +40,7 @@ beforeEach(() => {
   Object.assign(SectionGroupHandler, { _instance: undefined });
   (profileService.getProfile as jest.Mock).mockResolvedValue({});
   (getGlobalValue as jest.Mock).mockReturnValue(1);
+  getEntity.mockReturnValue({ unreadCount: 0 });
 });
 
 afterEach(() => {
@@ -36,6 +48,28 @@ afterEach(() => {
 });
 
 describe('SectionGroupHandler', () => {
+  describe('_removeGroupsIfExistedInHiddenGroups', () => {
+    it('should not remove unread conversation', () => {
+      SectionGroupHandler.getInstance()['_hiddenGroupIds'] = [123, 456];
+      SectionGroupHandler.getInstance()['_handlersMap'] = {};
+      SectionGroupHandler.getInstance()['_handlersMap'][
+        SECTION_TYPE.DIRECT_MESSAGE
+] = {};
+      getEntity.mockReturnValueOnce({ unreadCount: 1 });
+      jest
+        .spyOn(SectionGroupHandler.getInstance(), 'getGroupIdsByType')
+        .mockReturnValueOnce([123, 456, 789]);
+      SectionGroupHandler.getInstance()['_removeByIds'] = jest.fn();
+      SectionGroupHandler.getInstance()['_updateUrl'] = jest.fn();
+      SectionGroupHandler.getInstance()[ '_removeGroupsIfExistedInHiddenGroups'
+]();
+      expect(SectionGroupHandler.getInstance()['_removeByIds']).toBeCalledWith(
+        SECTION_TYPE.DIRECT_MESSAGE,
+        [456],
+      );
+    });
+  });
+
   describe('Basic functions/configs', () => {
     it('getInstance', () => {
       expect(SectionGroupHandler.getInstance() !== undefined).toBeTruthy();
@@ -61,6 +95,11 @@ describe('SectionGroupHandler', () => {
   });
 
   describe('Group change notification', () => {
+    groupService.isValid.mockImplementation((group: any) => {
+      return (
+        group && !group.is_archived && !group.deactivated && !!group.members
+      );
+    });
     it('entity put', () => {
       SectionGroupHandler.getInstance();
       const fakeData = [
@@ -258,6 +297,59 @@ describe('SectionGroupHandler', () => {
       ).toEqual([]);
       expect(
         SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
+      ).toEqual([]);
+    });
+
+    it('should not include deactivated data when update group', () => {
+      SectionGroupHandler.getInstance();
+      const fakeData = [
+        {
+          id: 1,
+          is_team: false,
+          created_at: 0,
+          most_recent_post_created_at: 1,
+          members: [1],
+        },
+        {
+          id: 2,
+          is_team: true,
+          created_at: 0,
+          most_recent_post_created_at: 1,
+          members: [1],
+        },
+      ];
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
+      expect(SectionGroupHandler.getInstance().groupIds.sort()).toEqual([1, 2]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
+      ).toEqual([2]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.DIRECT_MESSAGE,
+        ),
+      ).toEqual([1]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.FAVORITE,
+        ),
+      ).toEqual([]);
+
+      fakeData[0]['deactivated'] = true;
+      fakeData[1]['deactivated'] = true;
+      notificationCenter.emitEntityUpdate(ENTITY.GROUP, fakeData);
+      expect(SectionGroupHandler.getInstance().groupIds.sort()).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(SECTION_TYPE.TEAM),
+      ).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.DIRECT_MESSAGE,
+        ),
+      ).toEqual([]);
+      expect(
+        SectionGroupHandler.getInstance().getGroupIdsByType(
+          SECTION_TYPE.FAVORITE,
+        ),
       ).toEqual([]);
     });
   });
@@ -560,6 +652,58 @@ describe('SectionGroupHandler', () => {
       ]);
       await handler.checkIfGroupOpenedFromHidden([1, 2], [1]);
       expect(handler.groupIds.length).toBe(0);
+    });
+  });
+
+  describe('fetchGroups()', () => {
+    it('should call addProcessor twice when sectionType is favorites', async () => {
+      const sectionGroupHandler = SectionGroupHandler.getInstance();
+      const direction = QUERY_DIRECTION.OLDER;
+      const sectionType = SECTION_TYPE.FAVORITE;
+      jest
+        .spyOn(sectionGroupHandler._handlersMap[sectionType], 'fetchData')
+        .mockResolvedValueOnce([{ id: 1 }, { id: 2 }]);
+      await sectionGroupHandler.fetchGroups(sectionType, direction);
+      expect(
+        sectionGroupHandler._prefetchHandler.addProcessor,
+      ).toHaveBeenCalledTimes(2);
+    });
+    it('should call addProcessor twice when sectionType is direct_messages and state.unread_count is 2', async (done: any) => {
+      const sectionGroupHandler = SectionGroupHandler.getInstance();
+      const direction = QUERY_DIRECTION.OLDER;
+      const sectionType = SECTION_TYPE.DIRECT_MESSAGE;
+      jest
+        .spyOn(sectionGroupHandler._handlersMap[sectionType], 'fetchData')
+        .mockResolvedValue([{ id: 1 }, { id: 2 }]);
+      jest
+        .spyOn(stateService, 'getById')
+        .mockResolvedValue({ unread_count: 2 });
+      await sectionGroupHandler.fetchGroups(sectionType, direction);
+      setTimeout(() => {
+        expect(
+          sectionGroupHandler._prefetchHandler.addProcessor,
+        ).toHaveBeenCalledTimes(2);
+        done();
+      });
+    });
+
+    it('should call addProcessor twice when sectionType is teams and state.unread_mentions_count is 2', async (done: any) => {
+      const sectionGroupHandler = SectionGroupHandler.getInstance();
+      const direction = QUERY_DIRECTION.OLDER;
+      const sectionType = SECTION_TYPE.TEAM;
+      jest
+        .spyOn(sectionGroupHandler._handlersMap[sectionType], 'fetchData')
+        .mockResolvedValue([{ id: 1 }, { id: 2 }]);
+      jest
+        .spyOn(stateService, 'getById')
+        .mockResolvedValue({ unread_mentions_count: 2 });
+      await sectionGroupHandler.fetchGroups(sectionType, direction);
+      setTimeout(() => {
+        expect(
+          sectionGroupHandler._prefetchHandler.addProcessor,
+        ).toHaveBeenCalledTimes(2);
+        done();
+      });
     });
   });
 });

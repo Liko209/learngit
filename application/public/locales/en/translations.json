@@ -27,16 +27,29 @@
       "Saturday": "Saturday",
       "Sunday": "Sunday"
     },
-
+    "verb": {
+      "like": "like",
+      "likes": "likes"
+    },
+    "pronoun": {
+      "this": "this"
+    },
+    "conj": {
+      "and": "and"
+    },
     "more": "More",
     "copy": "Copy",
+    "pin": "Pin",
     "ariaCopy": "Copy this {{value}}",
+    "call": "Call",
+    "ariaCall": "Call {{value}}",
     "download": "Download",
     "expand": "Expand",
     "collapse": "Collapse",
-
     "back": "Back",
-    "forward": "Forward"
+    "forward": "Forward",
+    "You": "You",
+    "Connecting": "Connecting"
   },
   "auth": {
     "signIn": "Sign in",
@@ -48,9 +61,15 @@
     "menu": "Menu",
     "search": "Search",
     "showMore": "Show more",
+    "ClearHistory": "Clear History",
+    "RecentSearches": "Recent searches",
     "newActions": "New actions",
     "viewYourProfile": "View Your Profile",
-    "aboutRingCentral": "About RingCentral"
+    "aboutRingCentral": "About RingCentral",
+    "version": "Version",
+    "lastCommit": "Last Commit",
+    "deployedTime": "Deployed at",
+    "allRightsReserved": "All rights reserved"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -85,6 +104,8 @@
       "bookmark": "Bookmark",
       "removeBookmark": "Remove bookmark",
       "quote": "Quote",
+      "pin": "Pin",
+      "unpin": "Unpin",
       "editPost": "Edit post",
       "deletePost": "Delete post",
       "resendPost": "Resend post",
@@ -115,6 +136,8 @@
       "SorryWeWereNotAbleToUnlikeTheMessage": "Sorry, we weren't able to unlike this message. Try again.",
       "SorryWeWereNotAbleToRemoveYourBookmark": "Sorry, we weren't able to remove your bookmark. Try again.",
       "SorryWeWereNotAbleToBookmarkThisMessage": "Sorry, we weren't able to bookmark this message. Try again.",
+      "SorryWeWereNotAbleToPinTheMessage": "Sorry, we weren't able to pin this message. Try again.",
+      "SorryWeWereNotAbleToUnpinTheMessage": "Sorry, we weren't able to unpin this message. Try again.",
       "SorryWeWereNotAbleToLoadOlderMessages": "Sorry, we weren't able to load older messages. Try again.",
       "SorryWeWereNotAbleToLoadNewerMessages": "Sorry, we weren't able to load newer messages. Try again.",
       "MessageLoadingErrorTip": "We weren't able to open this conversation.",
@@ -217,6 +240,7 @@
     "notes": "Notes",
     "events": "Events",
     "integrations": "Integrations",
+    "pinnedListSubheader": "Pinned Posts",
     "fileListSubheader": "Files",
     "taskListSubheader": "Tasks",
     "noteListSubheader": "Notes",
@@ -247,6 +271,7 @@
     "networkErrorEventsPrompt": "Sorry, we weren't able to load more events.",
     "networkErrorNotesPrompt": "Sorry, we weren't able to load more notes.",
     "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations.",
+    "pinnedMore": "and {{num}} more",
 
     "prompt": {
       "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed.",
@@ -304,18 +329,19 @@
       "deleteTeamConfirmOk": "delete",
       "deleteTeamSuccessMsg": "Team deleted successfully.",
       "archiveTeam": "Archive team",
-      "archiveTeamToolTip": "Archive a team so that it doesn't show up in your active conversations but is still searchable and can be restored.",
+      "archiveTeamToolTip": "Archive a team so that it doesn't show up in your active conversations. The team will still show up on your team list and can be restored.",
       "archiveTeamConfirmTitle": "Archive Team?",
       "archiveTeamConfirmContent": "Archived teams are still available at the bottom of the teams page, but won't show up in your active conversations.",
       "archiveTeamConfirmOk": "archive",
       "archiveTeamSuccessMsg": "Team archived successfully.",
 
-      "changeToPublic": "Change to Public Team",
-      "changeToPrivate": "Change to Private Team",
-      "publicTeam": "Public team",
-      "privateTeam": "Private team",
+      "changeToPublic": "Change to public team",
+      "changeToPrivate": "Change to private team",
+      "publicTeam": "This is a public team",
+      "privateTeam": "This is a private team",
       "teamMembers": "Team members",
       "groupMembers": "Group members",
+      "searchMembers": "Search members",
       "makeTeamAdmin": "Make team admin",
       "revokeTeamAdmin": "Revoke team admin",
 
@@ -337,14 +363,18 @@
       "addToFavorites": "Add to Favorites",
       "removeFromFavorites": "Remove from Favorites",
       "profile": "Profile",
-      "close": "Close"
+      "close": "Close",
+      "markAsRead": "Mark as read",
+      "markAsUnread": "Mark as unread",
+      "convertToTeam": "Convert to team",
+      "convertToTeamNamePrefix": "Team: ",
+      "convertToTeamPreviousMessageHandle": "By converting to a team you will save your previous message thread and content."
     },
     "company": {},
     "prompt": {
       "closeConfirmDialogHeader": "Close Conversation?",
       "closeConfirmDialogContent": "Closing a conversation will remove it from the left pane, but will not delete the contents.",
       "closeConfirmDialogDontAskMeAgain": "Don't ask me again",
-      "closeConversation": "Close Conversation",
       "SorryWeWereNotAbleToCloseTheConversation": "Sorry, we weren't able to close the conversation. Try again.",
       "SorryWeWereNotAbleToOpenThisProfile": "Sorry, we weren't able to open this profile. Try again.",
       "JoinTeamNotAuthorizedError": "Sorry, we weren't able to let you join the team. This team is changed to a private team, please contact the team administrator.",
@@ -378,7 +408,11 @@
       "makeTeamAdminBackendError": "Sorry, we weren't able to make this member team admin. Try again.",
       "revokeTeamAdminBackendError": "Sorry, we weren't able to revoke team admin for this member. Try again.",
 
-      "InvalidEmail": "Invalid Email"
+      "InvalidEmail": "Invalid Email",
+
+      "markAsRead": "Failed to mark this conversation as read. Try again later.",
+      "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
+      "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later."
     }
   },
   "contact": {
@@ -388,7 +422,26 @@
     "Calendar": "Calendar"
   },
   "telephony": {
-    "Phone": "Phone"
+    "Phone": "Phone",
+    "Ext": "Ext.",
+    "action": {
+      "minimize": "Minimize",
+      "detach": "Detach",
+      "attach": "Attach",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "keypad": "Keypad",
+      "hold": "Hold",
+      "add": "Add",
+      "record": "Record",
+      "callActions": "Call Actions",
+      "end": "End"
+    },
+    "prompt": {
+      "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
+      "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
+      "CallTimeout": "Sorry, we weren't able to place the call. Try again later."
+    }
   },
   "meeting": {
     "Meetings": "Meetings"
@@ -397,5 +450,18 @@
   "setting": {
     "Settings": "Settings",
     "teamSettings": "Settings"
+  },
+
+  "viewer": {
+    "ZoomIn": "Scale file up",
+    "ZoomOut": "Scale file down",
+    "ZoomReset": "Reset zoom",
+    "PreviousFile": "View previous file",
+    "NextFile": "View next file",
+    "DismissTip": "Sorry, the image you were viewing is deleted.",
+    "ImageDeleted": "Sorry, the image you were viewing is deleted.",
+    "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
+    "TeamArchived": "The team was archived. To know more, contact the team administrator.",
+    "ConversationClosed": "You removed the conversation."
   }
 }

@@ -2,6 +2,8 @@ import 'testcafe';
 import { RequestHook } from 'testcafe';
 import * as JSZip from 'jszip';
 import * as fs from 'fs';
+import * as assert from 'assert';
+import * as Flatted from 'flatted';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
 import { SITE_URL, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
@@ -143,10 +145,12 @@ export function teardownCase() {
     const zipConsoleLog = new JSZip();
     zipConsoleLog.file('console-log.json', JSON.stringify(consoleLog, null, 2));
     const consoleLogPath = MiscUtils.createTmpFile(await zipConsoleLog.generateAsync({ type: "nodebuffer" }), 'console-log.zip');
-    const warnConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['warn'], null, 2));
-    const errorConsoleLogPath = MiscUtils.createTmpFile(JSON.stringify(consoleLog['error'], null, 2));
-    const warnConsoleLogNumber = consoleLog['warn'].length;
-    const errorConsoleLogNumber = consoleLog['error'].length;
+    const warnLog = Flatted.stringify(consoleLog.warn);
+    const warnConsoleLogPath = MiscUtils.createTmpFile(warnLog);
+    const errorLog = Flatted.stringify(consoleLog.error);
+    const errorConsoleLogPath = MiscUtils.createTmpFile(errorLog);
+    const warnConsoleLogNumber = consoleLog.warn.length;
+    const errorConsoleLogNumber = consoleLog.error.length;
     const consoleLogObj: IConsoleLog = {
       consoleLogPath,
       warnConsoleLogPath,
@@ -173,6 +177,8 @@ export function teardownCase() {
         await h(t).dashboardHelper.teardown(beatsClient, runId, consoleLogObj, accountType, rcDataPath);
       }
     }
+    assert(RUNNER_OPTS.SKIP_CONSOLE_ERROR || 0 === errorConsoleLogNumber, `console error is detected: ${errorLog}!`);
+    assert(RUNNER_OPTS.SKIP_CONSOLE_WARN || 0 === warnConsoleLogNumber, `console warn is detected: ${warnLog}!`);
   }
 }
 
@@ -180,10 +186,10 @@ export function teardownCase() {
 class MockClientHook extends RequestHook {
   public requestId: string;
 
-  onRequest(event) {
+  async onRequest(event) {
     event.requestOptions.headers['x-mock-request-id'] = this.requestId;
   }
 
-  onResponse(event) {
+  async onResponse(event) {
   }
 }

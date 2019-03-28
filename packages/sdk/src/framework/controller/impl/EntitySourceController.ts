@@ -56,7 +56,79 @@ class EntitySourceController<T extends IdModel = IdModel>
   }
 
   async batchGet(ids: number[], order?: boolean): Promise<T[]> {
-    return await this.entityPersistentController.batchGet(ids, order);
+    const existsEntities = await this.entityPersistentController.batchGet(
+      ids,
+      order,
+    );
+    if (ids.length === existsEntities.length) {
+      return existsEntities;
+    }
+
+    const existsIds = this._getIds(existsEntities);
+    const diffIds = _.difference(ids, existsIds);
+    const deactivatedEntities = await this.deactivatedDao.batchGet(diffIds);
+
+    const deactivatedIds = this._getIds(deactivatedEntities);
+    const remoteIds = _.difference(diffIds, deactivatedIds);
+    const remoteEntities = await this._getEntitiesRemoteServer(remoteIds);
+
+    let entities = existsEntities
+      .concat(deactivatedEntities)
+      .concat(remoteEntities);
+
+    if (order && entities.length) {
+      entities = this._orderAsIds(ids, entities);
+    }
+
+    return entities;
+  }
+
+  private _getIds(entities: T[]): number[] {
+    return entities.map((entity: T) => {
+      return entity.id;
+    });
+  }
+
+  private _orderAsIds(ids: number[], entities: T[]) {
+    const entitiesMap: Map<number, T> = new Map();
+    entities.forEach((entity: T) => {
+      entitiesMap.set(entity.id, entity);
+    });
+
+    const orderedEntities: T[] = [];
+    ids.forEach((id: number) => {
+      const entity = entitiesMap.get(id);
+      if (entity) {
+        orderedEntities.push(entity);
+      }
+    });
+
+    return orderedEntities;
+  }
+
+  private async _getEntitiesRemoteServer(remoteIds: number[]): Promise<T[]> {
+    // TODO https://jira.ringcentral.com/browse/FIJI-3903
+    const promises = remoteIds.map(async (id: number) => {
+      if (this.requestController) {
+        try {
+          return this.requestController.get(id);
+        } catch {
+          return null;
+        }
+      }
+      return null;
+    });
+
+    const remoteEntities: T[] = [];
+    await Promise.all(promises).then((results: (T | null)[]) => {
+      results.forEach((result: T | null) => {
+        if (result) {
+          remoteEntities.push(result);
+        }
+      });
+    });
+
+    return remoteEntities;
   }
 
   getEntityName(): string {
@@ -99,6 +171,10 @@ class EntitySourceController<T extends IdModel = IdModel>
       models = _.concat(models, deactivateModels);
     }
     return models;
+  }
+
+  getRequestController(): IRequestController<T> | null {
+    return this.requestController ? this.requestController : null;
   }
 }
 

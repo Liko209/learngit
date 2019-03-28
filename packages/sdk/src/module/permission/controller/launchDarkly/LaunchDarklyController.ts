@@ -6,7 +6,7 @@
 
 import { LaunchDarklyClient } from './LaunchDarklyClient';
 import { notificationCenter, SERVICE } from '../../../../service';
-import { UserConfig } from '../../../../service/account/UserConfig';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyDefaultPermissions';
 import UserPermissionType from '../../types';
 import { LDFlagSet } from 'ldclient-js';
@@ -39,13 +39,24 @@ class LaunchDarklyController {
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
       this._initClient();
     });
+    window.addEventListener('unload', () => {
+      this._shutdownClient();
+    });
+    notificationCenter.on(SERVICE.LOGOUT, () => {
+      this._shutdownClient();
+    });
+  }
+  private _shutdownClient() {
+    this.launchDarklyClient && this.launchDarklyClient.shutdown();
+    this.isClientReady = false;
   }
   private _initClient() {
     if (this.isClientReady) {
       return;
     }
-    const userId: number = UserConfig.getCurrentUserId();
-    const companyId: number = UserConfig.getCurrentCompanyId();
+    const userConfig = new AccountUserConfig();
+    const userId: number = userConfig.getGlipUserId();
+    const companyId: number = userConfig.getCurrentCompanyId();
     if (!userId || !companyId) {
       return;
     }

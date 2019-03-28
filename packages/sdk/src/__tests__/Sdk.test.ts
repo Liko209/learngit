@@ -13,13 +13,20 @@ import {
   HandleByUpload,
   HandleByGlip2,
 } from '../api';
-import { daoManager, AuthDao } from '../dao';
+import { daoManager } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
-import SyncService from '../service/sync';
+import { GlobalConfigService, UserConfigService } from '../module/config';
+import { AuthUserConfig } from '../service/auth/config';
+import { SyncService } from '../module/sync';
+import { AccountGlobalConfig } from '../service/account/config';
+
+jest.mock('../module/config');
+jest.mock('../service/auth/config');
+GlobalConfigService.getInstance = jest.fn();
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
-jest.mock('../service/sync');
+jest.mock('../module/sync');
 jest.mock('../dao');
 jest.mock('../api');
 jest.mock('../utils');
@@ -67,10 +74,11 @@ describe('Sdk', () => {
     });
   });
 
-  describe('onLogin()', () => {
+  describe('onAuthSuccess()', () => {
     beforeEach(() => {
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
       jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => {});
-      sdk.onLogin();
+      sdk.onAuthSuccess();
     });
     afterEach(() => jest.restoreAllMocks());
 
@@ -84,6 +92,9 @@ describe('Sdk', () => {
 
   describe('onLogout()', () => {
     beforeEach(async () => {
+      UserConfigService.getInstance = jest
+        .fn()
+        .mockReturnValue({ clear: jest.fn() });
       await sdk.onLogout();
     });
 
@@ -95,60 +106,6 @@ describe('Sdk', () => {
     });
     it('should clear database', () => {
       expect(daoManager.deleteDatabase).toHaveBeenCalled();
-    });
-  });
-
-  describe('initNetworkManager()', () => {
-    let authDao: AuthDao;
-    beforeEach(() => {
-      authDao = new AuthDao(null);
-      daoManager.getKVDao.mockReturnValue(authDao);
-    });
-    it('should init with glip token', () => {
-      authDao.get.mockReturnValueOnce('glip token');
-      authDao.get.mockReturnValueOnce(null);
-      authDao.get.mockReturnValueOnce(null);
-
-      sdk.updateNetworkToken();
-
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        new Token('glip token'),
-        HandleByGlip,
-      );
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        new Token('glip token'),
-        HandleByUpload,
-      );
-    });
-
-    it('should init with rc token ', () => {
-      authDao.get.mockReturnValueOnce(null);
-      authDao.get.mockReturnValueOnce('rc token');
-      authDao.get.mockReturnValueOnce(null);
-
-      sdk.updateNetworkToken();
-
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        'rc token',
-        HandleByRingCentral,
-      );
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        'rc token',
-        HandleByGlip2,
-      );
-    });
-
-    it('should init with glip2 token ', () => {
-      authDao.get.mockReturnValueOnce(null);
-      authDao.get.mockReturnValueOnce(null);
-      authDao.get.mockReturnValueOnce('glip2 token');
-
-      sdk.updateNetworkToken();
-
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        'glip2 token',
-        HandleByGlip2,
-      );
     });
   });
 

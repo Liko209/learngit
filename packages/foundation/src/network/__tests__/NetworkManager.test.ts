@@ -10,6 +10,7 @@ import {
   getFakeHandler,
 } from './utils';
 import OAuthTokenManager from '../OAuthTokenManager';
+
 let networkManager: NetworkManager;
 const initManagerWithHandlerType = () => {
   networkManager.initNetworkRequestBaseHandler(
@@ -24,93 +25,111 @@ const initManagerWithHandlerType = () => {
 };
 describe('NetworkManager', () => {
   beforeEach(() => {
+    networkManager = new NetworkManager(new OAuthTokenManager());
+    initManagerWithHandlerType();
     jest.clearAllMocks();
   });
 
-  beforeAll(() => {
-    networkManager = new NetworkManager(new OAuthTokenManager());
-  });
   describe('initNetworkRequestBaseHandler', () => {
+    it('should throw error when token manager is invalid', () => {
+      networkManager.tokenManager = undefined;
+      networkManager.handlers.clear();
+      jest.spyOn(networkManager, 'addRequestConsumer');
+      try {
+        initManagerWithHandlerType();
+      } catch (err) {
+        expect(err).toEqual(Error('token manager can not be null.'));
+      }
+      expect(
+        networkManager.networkRequestHandler(fakeHandleType.name),
+      ).toBeUndefined();
+      expect(networkManager.addRequestConsumer).toHaveBeenCalledTimes(0);
+      expect(NetworkRequestSurvivalMode).toHaveBeenCalledTimes(0);
+    });
+
     it('should have initiated request handler', () => {
-      const spy = jest.spyOn(networkManager, 'addRequestConsumer');
+      jest.spyOn(networkManager, 'addRequestConsumer');
       initManagerWithHandlerType();
       expect(
-        networkManager.networkRequestHandler(fakeHandleType),
-      ).not.toBeNull();
-      expect(spy).toHaveBeenCalledTimes(2);
+        networkManager.networkRequestHandler(fakeHandleType.name),
+      ).toBeDefined();
+      expect(networkManager.addRequestConsumer).toHaveBeenCalledTimes(2);
       expect(NetworkRequestSurvivalMode).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('addApiRequest', () => {
     it('should add request to specific handler', () => {
-      const request = getFakeRequest();
-      const spy = jest.spyOn(
-        networkManager.networkRequestHandler(fakeHandleType),
+      jest.spyOn(
+        networkManager.networkRequestHandler(fakeHandleType.name)!,
         'addApiRequest',
       );
+      const request = getFakeRequest();
       networkManager.addApiRequest(request);
-      expect(spy).toHaveBeenCalled();
+      expect(
+        networkManager.networkRequestHandler(fakeHandleType.name)!
+          .addApiRequest,
+      ).toHaveBeenCalled();
     });
   });
 
   describe('pause', () => {
     it('should pause all handlers', () => {
-      const spys = [];
-      networkManager.handlers.forEach(handler => {
-        const spy = jest.spyOn(handler, 'pause');
-        return spys.push(spy);
-      });
+      jest.spyOn(
+        networkManager.networkRequestHandler(fakeHandleType.name)!,
+        'pause',
+      );
       networkManager.pause();
-      spys.forEach(spy => {
-        expect(spy).toHaveBeenCalled();
-      });
+      expect(
+        networkManager.networkRequestHandler(fakeHandleType.name)!.pause,
+      ).toHaveBeenCalled();
     });
   });
 
   describe('resume', () => {
     it('should resume all handlers', () => {
-      const spys = [];
-      networkManager.handlers.forEach(handler => {
-        const spy = jest.spyOn(handler, 'resume');
-        return spys.push(spy);
-      });
+      jest.spyOn(
+        networkManager.networkRequestHandler(fakeHandleType.name)!,
+        'resume',
+      );
       networkManager.resume();
-      spys.forEach(spy => {
-        expect(spy).toHaveBeenCalled();
-      });
+      expect(
+        networkManager.networkRequestHandler(fakeHandleType.name)!.resume,
+      ).toHaveBeenCalled();
     });
   });
 
   describe('cancelAll', () => {
     it('should cancel all handlers', () => {
-      const spys = [];
-      networkManager.handlers.forEach(handler => {
-        const spy = jest.spyOn(handler, 'cancelAll');
-        return spys.push(spy);
-      });
+      jest.spyOn(
+        networkManager.networkRequestHandler(fakeHandleType.name)!,
+        'cancelAll',
+      );
       networkManager.cancelAll();
-      spys.forEach(spy => {
-        expect(spy).toHaveBeenCalled();
-      });
+      expect(
+        networkManager.networkRequestHandler(fakeHandleType.name)!.cancelAll,
+      ).toHaveBeenCalled();
     });
   });
 
   describe('cancelRequest', () => {
     it('should cancel specific request', () => {
       const request = getFakeRequest();
-      const spy = jest.spyOn(
-        networkManager.networkRequestHandler(fakeHandleType),
+      jest.spyOn(
+        networkManager.networkRequestHandler(fakeHandleType.name)!,
         'cancelRequest',
       );
       networkManager.cancelRequest(request);
-      expect(spy).toHaveBeenCalled();
+      expect(
+        networkManager.networkRequestHandler(fakeHandleType.name)!
+          .cancelRequest,
+      ).toBeCalledWith(request);
     });
   });
 
   describe('getTokenManager', () => {
     it('should return tokenManager', () => {
-      expect(networkManager.getTokenManager()).not.toBeNull();
+      expect(networkManager.getTokenManager()).toBeDefined();
       expect(
         networkManager.getTokenManager() === networkManager.tokenManager,
       ).toBeTruthy();
@@ -119,33 +138,37 @@ describe('NetworkManager', () => {
 
   describe('setOAuthToken', () => {
     it('should set token to tokenManager', () => {
-      const spy = jest.spyOn(networkManager.tokenManager, 'setOAuthToken');
-      networkManager.setOAuthToken(getFakeToken(), fakeHandleType);
-      expect(spy).toBeCalled();
+      jest.spyOn(networkManager.tokenManager!, 'setOAuthToken');
+      const token = getFakeToken();
+      networkManager.setOAuthToken(token, fakeHandleType);
+      expect(networkManager.tokenManager!.setOAuthToken).toBeCalledWith(
+        token,
+        fakeHandleType,
+      );
     });
   });
 
   describe('clearToken', () => {
     it('should clear tokenManager', () => {
-      const spy = jest.spyOn(networkManager.tokenManager, 'clearOAuthToken');
+      jest.spyOn(networkManager.tokenManager!, 'clearOAuthToken');
       networkManager.clearToken();
-      expect(spy).toBeCalled();
+      expect(networkManager.tokenManager!.clearOAuthToken).toBeCalled();
     });
   });
 
   describe('addNetworkRequestHandler', () => {
     it('should add handler to handlers map', () => {
-      const spy = jest.spyOn(networkManager.handlers, 'set');
+      jest.spyOn(networkManager.handlers, 'set');
       networkManager.addNetworkRequestHandler(getFakeHandler());
-      expect(spy).toBeCalled();
+      expect(networkManager.handlers.set).toBeCalled();
     });
   });
 
   describe('networkRequestHandler', () => {
     it('should get particular type handler', () => {
       expect(
-        networkManager.networkRequestHandler(fakeHandleType) ===
-          networkManager.handlers.get(fakeHandleType),
+        networkManager.networkRequestHandler(fakeHandleType.name) ===
+          networkManager.handlers.get(fakeHandleType.name),
       ).toBeTruthy();
     });
   });

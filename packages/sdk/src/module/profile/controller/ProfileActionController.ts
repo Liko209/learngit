@@ -9,7 +9,7 @@ import { IPartialModifyController } from '../../../framework/controller/interfac
 import { Raw } from '../../../framework/model';
 import _ from 'lodash';
 import { ProfileDataController } from './ProfileDataController';
-import { UserConfig } from '../../../service/account/UserConfig';
+import { AccountUserConfig } from '../../../service/account/config';
 import { PersonDao } from '../../person/dao/PersonDao';
 import { daoManager } from '../../../dao';
 
@@ -63,7 +63,7 @@ class ProfileActionController {
         }
       } else {
         if (newIds.indexOf(groupId) !== -1) {
-          newIds = newIds.filter(id => id !== groupId);
+          newIds = newIds.filter((id: number) => id !== groupId);
         }
       }
       partialModel['favorite_group_ids'] = newIds;
@@ -91,7 +91,8 @@ class ProfileActionController {
 
     // should use Person Service to get current user
     // waiting for Person Service refactor
-    const currentId = UserConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentId = userConfig.getGlipUserId();
     const personDao = daoManager.getDao(PersonDao);
     const result = await personDao.get(currentId);
 
@@ -141,7 +142,7 @@ class ProfileActionController {
         if (toBook) {
           oldFavPostIds.push(postId);
         } else {
-          oldFavPostIds = oldFavPostIds.filter(id => id !== postId);
+          oldFavPostIds = oldFavPostIds.filter((id: number) => id !== postId);
         }
         partialModel.favorite_post_ids = oldFavPostIds;
         return partialModel;
@@ -163,10 +164,10 @@ class ProfileActionController {
       partialModel: Partial<Raw<Profile>>,
       originalModel: Profile,
     ): Partial<Raw<Profile>> => {
-      const partialProfile = {
-        ...partialModel,
-        [`hide_group_${groupId}`]: false,
-      };
+      const partialProfile = partialModel;
+      if (originalModel[`hide_group_${groupId}`]) {
+        partialProfile[`hide_group_${groupId}`] = false;
+      }
       return partialProfile;
     };
 

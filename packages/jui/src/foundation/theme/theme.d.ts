@@ -101,6 +101,8 @@ type Theme = {
     toast: number;
     floatButton: number;
     codeEditor: number;
+    modal: number;
+    makeZIndexStackingContext: number;
   };
   size: {
     width: number;
@@ -196,9 +198,22 @@ type Theme = {
     val1: string;
     val2: string;
     val3: string;
+    val16: string;
   };
   maxHeight: {
     dialog: string;
+  };
+  transitions: {
+    easing: {
+      openCloseDialog: string;
+    };
+  };
+  opacity: {
+    p05: number;
+    p10: number;
+    p50: number;
+    p60: number;
+    p80: number;
   };
 } & Omit<MuiTheme, 'typography'>;
 

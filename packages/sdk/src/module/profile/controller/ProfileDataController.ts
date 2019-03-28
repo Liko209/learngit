@@ -5,7 +5,7 @@
  */
 
 import { Profile } from '../entity';
-import { UserConfig } from '../../../service/account/UserConfig';
+import { AccountUserConfig } from '../../../service/account/config';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { JSdkError } from '../../../error/sdk/JSdkError';
 import { ERROR_CODES_SDK } from '../../../error/sdk/types';
@@ -15,6 +15,8 @@ import { mainLogger } from 'foundation';
 import { ENTITY } from '../../../service/eventKey';
 import _ from 'lodash';
 import { transform } from '../../../service/utils';
+import { shouldEmitNotification } from '../../../utils/notificationUtils';
+import { SYNC_SOURCE } from '../../../module/sync/types';
 
 const DEFAULT_LEFTRAIL_GROUP: number = 20;
 
@@ -25,20 +27,22 @@ class ProfileDataController {
 
   async profileHandleData(
     profile: Raw<Profile> | null,
+    source: SYNC_SOURCE,
   ): Promise<Profile | null> {
     let result: Profile | null = null;
     if (profile) {
       if (_.isArray(profile)) {
-        result = await this._handleProfile(profile[0]);
+        result = await this._handleProfile(profile[0], source);
       } else {
-        result = await this._handleProfile(profile);
+        result = await this._handleProfile(profile, source);
       }
     }
     return result;
   }
 
   getCurrentProfileId(): number {
-    return UserConfig.getCurrentUserProfileId();
+    const userConfig = new AccountUserConfig();
+    return userConfig.getCurrentUserProfileId();
   }
 
   async getProfile(): Promise<Profile> {
@@ -78,15 +82,20 @@ class ProfileDataController {
     return profile.favorite_group_ids || [];
   }
 
-  private async _handleProfile(profile: Raw<Profile>): Promise<Profile | null> {
+  private async _handleProfile(
+    profile: Raw<Profile>,
+    source: SYNC_SOURCE,
+  ): Promise<Profile | null> {
     try {
       if (profile) {
         const transformedData: Profile = transform(profile);
         if (transformedData) {
           await this.entitySourceController.put(transformedData);
-          notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
-            transformedData,
-          ]);
+          if (shouldEmitNotification(source)) {
+            notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
+              transformedData,
+            ]);
+          }
           return transformedData;
         }
       }

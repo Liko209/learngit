@@ -16,6 +16,9 @@ import { Item } from 'sdk/module/item/entity';
 import { getFileType } from '@/common/getFileType';
 import { getDateAndTime } from '../helper';
 import { accentColor } from '@/common/AccentColor';
+import { Post } from 'sdk/module/post/entity';
+import PostModel from '@/store/models/Post';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 
 class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
@@ -24,8 +27,30 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   @computed
+  get _postId() {
+    return this.props.postId;
+  }
+
+  @computed
+  get post() {
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
+  }
+
+  @computed
   get task() {
-    return getEntity<Item, TaskItemModel>(ENTITY_NAME.TASK_ITEM, this._id);
+    return getEntity<Item, TaskItemModel>(ENTITY_NAME.ITEM, this._id);
+  }
+
+  @computed
+  get groupId() {
+    return this.post && this.post.groupId;
+  }
+
+  getShowDialogPermission = async () => {
+    const permissionService: PermissionService = PermissionService.getInstance();
+    return await permissionService.hasPermission(
+      UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
+    );
   }
 
   truncateNotesOrSection = (text: string, subLength: number) => {
@@ -88,10 +113,7 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   get attachments() {
     const items: FileItemModel[] = [];
     this.attachmentIds.forEach((attachment: number) => {
-      const item = getEntity<Item, FileItemModel>(
-        ENTITY_NAME.FILE_ITEM,
-        attachment,
-      );
+      const item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, attachment);
       if (item && !item.deactivated) {
         items.push(item);
       }

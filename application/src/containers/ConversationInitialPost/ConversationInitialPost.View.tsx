@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import {
-  JuiConversationInitialPost,
   JuiConversationInitialPostHeader,
   StyledTitle,
   StyledSpan,
@@ -14,20 +13,18 @@ import {
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
 import { MiniCard } from '../MiniCard';
 import { Profile, PROFILE_TYPE } from '@/containers/Profile';
+import { observer } from 'mobx-react';
 
+@observer
 class ConversationInitialPost extends React.Component<
   ConversationInitialPostViewProps
 > {
-  constructor(props: ConversationInitialPostViewProps) {
-    super(props);
-  }
-
   showProfile = (event: React.MouseEvent) => {
     const { creator } = this.props;
     const target = event.target as HTMLElement;
@@ -140,15 +137,15 @@ class ConversationInitialPost extends React.Component<
   render() {
     const streamIsEmpty = !this.props.notEmpty;
     return (
-      <JuiConversationInitialPost>
+      <>
         {this._conversationInitialPostHeader}
         {streamIsEmpty ? this._conversationInitialPostBody : null}
-      </JuiConversationInitialPost>
+      </>
     );
   }
 }
 
-const ConversationInitialPostView = translate('translations')(
+const ConversationInitialPostView = withTranslation('translations')(
   ConversationInitialPost,
 );
 

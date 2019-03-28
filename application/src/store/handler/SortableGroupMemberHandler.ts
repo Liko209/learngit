@@ -1,8 +1,8 @@
-// /*
-//  * @Author: Thomas thomas.yang@ringcentral.com
-//  * @Date: 2018-11-20 14:37:25
-//  * Copyright © RingCentral. All rights reserved.
-//  */
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2018-11-20 14:37:25
+ * Copyright © RingCentral. All rights reserved.
+ */
 
 import {
   FetchSortableDataListHandler,
