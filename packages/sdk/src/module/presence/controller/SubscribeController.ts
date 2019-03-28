@@ -50,7 +50,13 @@ class SubscribeController {
     this.failIds.clear();
   }
 
-  onSubscriptRequestFail(ids: number[]) {
+  onSubscriptRequestFail(ids: number[], isConnect: boolean) {
+    if (!isConnect) {
+      this.queue.push(...ids);
+      this.subscribeIds();
+      return;
+    }
+
     ids.forEach((id: number) => {
       // avoid endless loop request ids
       // id if count > 3  need throw

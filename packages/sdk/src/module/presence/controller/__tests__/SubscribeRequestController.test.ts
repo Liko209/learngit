@@ -29,7 +29,10 @@ describe('Presence subscribe worker', () => {
     jest.spyOn(subscribeRequestController, 'successCallback');
 
     await subscribeRequestController.execute([1, 2]);
-    expect(subscribeRequestController.failCallback).not.toHaveBeenCalled();
+    expect(subscribeRequestController.failCallback).toHaveBeenCalledWith(
+      [1, 2],
+      false,
+    );
     expect(subscribeRequestController.successCallback).not.toHaveBeenCalled();
   });
   it('execute success', async () => {
@@ -63,10 +66,9 @@ describe('Presence subscribe worker', () => {
     });
     jest.spyOn(subscribeRequestController, 'failCallback');
     await subscribeRequestController.execute([1, 2, 3]);
-    expect(subscribeRequestController.failCallback).toHaveBeenCalledWith([
-      1,
-      2,
-      3,
-    ]);
+    expect(subscribeRequestController.failCallback).toHaveBeenCalledWith(
+      [1, 2, 3],
+      true,
+    );
   });
 });

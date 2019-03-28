@@ -14,14 +14,20 @@ class SubscribeRequestController {
   ) {}
 
   async execute(ids: number[]) {
-    if (ids.length === 0) return;
-    if (!socketManager.isConnected()) return;
+    if (ids.length === 0) {
+      return;
+    }
+
+    if (!socketManager.isConnected()) {
+      this.failCallback(ids, false);
+      return;
+    }
 
     try {
       const data = await PresenceAPI.requestPresenceByIds(ids);
       this.successCallback(data);
     } catch (err) {
-      this.failCallback(ids);
+      this.failCallback(ids, true);
       return;
     }
   }
