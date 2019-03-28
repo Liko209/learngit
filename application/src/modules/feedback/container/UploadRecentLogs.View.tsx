@@ -13,6 +13,11 @@ import {
   UploadRecentLogsViewModelProps,
   UploadRecentLogsViewProps,
 } from './types';
+import { Notification } from '@/containers/Notification';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
 
 type State = {};
 
@@ -33,17 +38,33 @@ class UploadRecentLogsView extends React.Component<
   onClose = () => this.context();
 
   handleUpload = async () => {
-    const result = await this.props.uploadRecentLogs();
-    if (result) {
-      this.props.openEmail(
+    const uploadResult = await this.props.uploadRecentLogs();
+    let isSuccess = true;
+    let message = '';
+    if (uploadResult) {
+      const openResult = this.props.openEmail(
         'Jupiter Feedback',
         escape(
-          `File stack url: ${result.url}\n${i18next.t(
-            'feedback.describeYourProblemHere',
-          )}:\n`,
+          `FileName: ${uploadResult.filename}\nFile stack url: ${
+            uploadResult.url
+          }\n${i18next.t('feedback.describeYourProblemHere')}:\n`,
         ),
       );
+      isSuccess = openResult;
+      message = openResult
+        ? i18next.t('feedback.uploadLogSuccess')
+        : i18next.t('feedback.openEmailFailed');
+    } else {
+      isSuccess = false;
+      message = i18next.t('feedback.uploadLogFailed');
     }
+    Notification.flashToast({
+      message,
+      type: isSuccess ? ToastType.SUCCESS : ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
     this.onClose();
   }
 
@@ -58,9 +79,6 @@ class UploadRecentLogsView extends React.Component<
         onOK={this.handleUpload}
         okText={i18next.t('feedback.upload')}
         cancelText={i18next.t('common.dialog.cancel')}
-        okBtnProps={{
-          disabled: isUploadingFeedback,
-        }}
         loading={isUploadingFeedback}
       >
         {i18next.t('feedback.uploadRecentLogsDialogContent')}

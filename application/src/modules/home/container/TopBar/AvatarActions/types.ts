@@ -8,7 +8,6 @@ type Props = {};
 
 type ViewProps = {
   currentUserId: number;
-  isUploadingFeedback: boolean;
   toggleAboutPage: (
     electronAppVersion?: string,
     electronVersion?: string,

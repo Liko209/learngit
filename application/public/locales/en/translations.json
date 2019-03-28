@@ -69,8 +69,7 @@
     "version": "Version",
     "lastCommit": "Last Commit",
     "deployedTime": "Deployed at",
-    "allRightsReserved": "All rights reserved",
-    "feedback": "Feedback"
+    "allRightsReserved": "All rights reserved"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -471,6 +470,9 @@
     "uploadRecentLogsDialogHeader": "Upload log?",
     "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
     "upload": "Upload",
-    "describeYourProblemHere": "Describe your problem here"
+    "describeYourProblemHere": "Describe your problem here",
+    "uploadLogSuccess": "Upload log successfully, please send it via email.",
+    "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
+    "openEmailFailed": "Open email failed."
   }
 }
