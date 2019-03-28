@@ -257,12 +257,12 @@ class StreamViewComponent extends Component<Props> {
       historyReadThrough = 0,
     } = this.props;
     const visibleItems = items.slice(startIndex, stopIndex + 1);
-    const lastPostItem = _.findLast(
-      visibleItems,
-      this.findPost,
-    ) as StreamItemPost;
+    const visiblePosts = _(visibleItems)
+      .flatMap('value')
+      .concat()
+      .value();
 
-    if (lastPostItem && lastPostItem.value.includes(mostRecentPostId)) {
+    if (visiblePosts.includes(mostRecentPostId)) {
       this.handleMostRecentViewed();
     } else {
       this.handleMostRecentHidden();
@@ -392,10 +392,10 @@ class StreamViewComponent extends Component<Props> {
   private _watchUnreadCount() {
     const disposer = reaction(
       () => {
-        return this.props.unreadCount > 0;
+        return this.props.mostRecentPostId;
       },
-      (hasUnread) => {
-        if (hasUnread && this._listRef.current && !this.props.hasMore('down')) {
+      (mostRecentPostId) => {
+        if (this._listRef.current && !this.props.hasMore('down')) {
           const isLastPostVisible =
             this._listRef.current.getVisibleRange().stopIndex >=
             this.props.items.length - 1;

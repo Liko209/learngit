@@ -87,14 +87,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @computed
   get mostRecentPostId() {
     let result: number | undefined;
-    if (this.hasMore('down')) {
-      result = getEntity<Group, GroupModel>(
-        ENTITY_NAME.GROUP,
-        this.props.groupId,
-      ).mostRecentPostId;
-    } else {
-      result = _.last(this.postIds);
-    }
+    result = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
+      .mostRecentPostId;
     return result || 0;
   }
 
@@ -141,11 +135,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       ENTITY_NAME.GROUP_STATE,
       this.props.groupId,
     );
-  }
-
-  @computed
-  get unreadCount() {
-    return this._groupState.unreadCount || 0;
   }
 
   @computed

@@ -54,7 +54,6 @@ type StreamProps = {
 
 type StreamViewProps = {
   mostRecentPostId: number;
-  unreadCount: number;
   firstHistoryUnreadInPage: boolean;
   postIds: number[];
   jumpToPostId: number;
