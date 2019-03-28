@@ -9,7 +9,7 @@ import notificationCenter from '../notificationCenter';
 import {
   LogMemoryPersistent,
   IAccessor,
-  configManager as logUploadConsumerConfigManager,
+  configManager as logConsumerConfigManager,
   LogUploadConsumer,
   MemoryLogConsumer,
 } from './consumer';
@@ -29,11 +29,15 @@ export class LogControlManager implements IAccessor {
     this._isOnline = window.navigator.onLine;
     this.uploadLogConsumer = new LogUploadConsumer(
       new LogUploader(),
-      new LogMemoryPersistent(10 * 1024 * 1024),
+      new LogMemoryPersistent(
+        logConsumerConfigManager.getConfig().persistentLimit,
+      ),
       this,
     );
     this.memoryLogConsumer = new MemoryLogConsumer();
-    this.memoryLogConsumer.setSizeThreshold(10 * 1024 * 1024);
+    this.memoryLogConsumer.setSizeThreshold(
+      logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
+    );
     this.memoryLogConsumer.setFilter((log: LogEntity) => {
       return !log.tags.includes('ImageDownloader');
     });
@@ -113,7 +117,7 @@ export class LogControlManager implements IAccessor {
           enabled: logEnabled,
         },
       });
-      logUploadConsumerConfigManager.mergeConfig({
+      logConsumerConfigManager.mergeConfig({
         uploadEnabled: logUploadEnabled,
       });
     } catch (error) {

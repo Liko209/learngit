@@ -4,35 +4,36 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { UploadConsumerConfig } from './types';
+import { LogConsumerConfig } from './types';
 
-const DEFAULT_CONFIG: UploadConsumerConfig = {
+const DEFAULT_CONFIG: LogConsumerConfig = {
   uploadEnabled: false,
   memoryCountThreshold: 100,
   memorySizeThreshold: 1024 * 1024,
   combineSizeThreshold: 50 * 1024,
   uploadQueueLimit: 4,
   autoFlushTimeCycle: 30 * 1000,
-  persistanceLimit: 10 * 1024 * 1024,
+  persistentLimit: 10 * 1024 * 1024,
+  memoryCacheSizeThreshold: 10 * 1024 * 1024,
 };
 
 class ConfigManager {
-  private _config: UploadConsumerConfig;
+  private _config: LogConsumerConfig;
 
   constructor() {
     this._config = _.cloneDeep(DEFAULT_CONFIG);
   }
 
-  getConfig(): UploadConsumerConfig {
+  getConfig(): LogConsumerConfig {
     return this._config;
   }
 
-  setConfig(_config: UploadConsumerConfig) {
+  setConfig(_config: LogConsumerConfig) {
     this._config = _config;
     return _config;
   }
 
-  mergeConfig(partialConfig: Partial<UploadConsumerConfig>) {
+  mergeConfig(partialConfig: Partial<LogConsumerConfig>) {
     const newConfig = _.mergeWith(
       {},
       this._config,
@@ -47,6 +48,6 @@ class ConfigManager {
   }
 }
 
-const configManager = new ConfigManager();
+const logConsumerConfigManager = new ConfigManager();
 
-export { configManager };
+export { logConsumerConfigManager as configManager };
