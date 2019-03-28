@@ -29,6 +29,7 @@ describe('ItemListViewModel', () => {
           getIds: jest.fn().mockReturnValue([1, 2]),
         },
         fetchData: jest.fn(),
+        setHasMore: jest.fn(),
       };
       dataSource = new ItemListViewModel({
         groupId: 1,
@@ -167,7 +168,7 @@ describe('ItemListViewModel', () => {
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
       });
-      expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.START_TIME);
+      expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.CREATE_TIME);
     });
 
     it('Tasks displays by order of tasks created time [JPT-982]', async () => {

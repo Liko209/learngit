@@ -198,7 +198,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     return !isRangeIn(renderedRange, computeVisibleRange());
   };
 
-  const updateRange = () => {
+  const updateRange = ({
+    forceUpdate = false,
+  }: { forceUpdate?: boolean } = {}) => {
     if (ref.current) {
       const { scrollTop } = ref.current;
       const visibleRange = computeVisibleRange();
@@ -211,7 +213,7 @@ const JuiVirtualizedList: RefForwardingComponent<
         prevScrollIndex !== visibleStartIndex ||
         (prevScrollIndex === visibleStartIndex && prevScrollOffset !== offset);
 
-      if (isUserScrolling) {
+      if (forceUpdate || isUserScrolling) {
         if (isRowRendered(visibleRange.startIndex)) {
           rememberScrollPosition({
             offset,
@@ -243,7 +245,7 @@ const JuiVirtualizedList: RefForwardingComponent<
 
   const ensureNoBlankArea = () => {
     if (shouldUpdateRange()) {
-      updateRange();
+      updateRange({ forceUpdate: true });
     }
   };
 
@@ -322,17 +324,30 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   useLayoutEffect(() => {
     const handleRowSizeChange = (el: HTMLElement, i: number) => {
-      const { diff } = rowManager.setRowHeight(startIndex + i, el.offsetHeight);
+      let result: { diff: number };
 
-      if (shouldScrollToBottom()) {
-        scrollToBottom();
-      } else {
-        const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
-        if (diff !== 0 && beforeFirstVisibleRow) {
-          scrollToPosition(scrollPosition);
+      if (el.offsetParent) {
+        const { diff } = rowManager.setRowHeight(
+          startIndex + i,
+          el.offsetHeight,
+        );
+
+        if (shouldScrollToBottom()) {
+          scrollToBottom();
+        } else {
+          const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
+          if (diff !== 0 && beforeFirstVisibleRow) {
+            scrollToPosition(scrollPosition);
+          }
         }
+        result = { diff };
+      } else {
+        // When the element was hidden via display: none, it also fires
+        // a size change event, in this case we don't need to do anything.
+        result = { diff: 0 };
       }
-      return { diff };
+
+      return result;
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
