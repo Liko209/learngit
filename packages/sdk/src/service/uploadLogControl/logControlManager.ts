@@ -14,18 +14,17 @@ import {
   MemoryLogConsumer,
 } from './consumer';
 import { LogUploader } from './LogUploader';
+import _ from 'lodash';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
-  private _enabledLog: boolean;
-  private _isDebugMode: boolean; // if in debug mode, should not upload log
   private _onUploadAccessorChange: (accessible: boolean) => void;
+  private _tagBlackList: string[] = [];
+  private _tagWhiteList: string[] = [];
   uploadLogConsumer: LogUploadConsumer;
   memoryLogConsumer: MemoryLogConsumer;
   private constructor() {
-    this._enabledLog = true;
-    this._isDebugMode = true;
     this._isOnline = window.navigator.onLine;
     this.uploadLogConsumer = new LogUploadConsumer(
       new LogUploader(),
@@ -39,11 +38,19 @@ export class LogControlManager implements IAccessor {
       logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
     );
     this.memoryLogConsumer.setFilter((log: LogEntity) => {
-      return !log.tags.includes('ImageDownloader');
+      return this._whiteListFilter(log) || !this._blackListFilter(log);
     });
     logManager.addConsumer(this.memoryLogConsumer);
     logManager.addConsumer(this.uploadLogConsumer);
     this.subscribeNotifications();
+  }
+
+  private _whiteListFilter = (log: LogEntity) => {
+    return _.intersection(this._tagWhiteList, log.tags).length > 0;
+  }
+
+  private _blackListFilter = (log: LogEntity) => {
+    return _.intersection(this._tagBlackList, log.tags).length > 0;
   }
 
   public static instance(): LogControlManager {
@@ -80,8 +87,7 @@ export class LogControlManager implements IAccessor {
   }
 
   public setDebugMode(isDebug: boolean) {
-    this._isDebugMode = isDebug;
-    this._updateLogSystemLevel();
+    isDebug && logManager.setAllLoggerLevel(LOG_LEVEL.ALL);
   }
 
   public async flush() {
@@ -129,20 +135,26 @@ export class LogControlManager implements IAccessor {
     return this.memoryLogConsumer.getRecentLogs();
   }
 
-  private _updateLogSystemLevel() {
-    // set log level to log system
-    // TODO let it all level now, should reset to above code after implement service framework
-    mainLogger.info(
-      `_isDebugMode : ${this._isDebugMode} _enabledLog: ${this._enabledLog}`,
-    );
-    const level: LOG_LEVEL = LOG_LEVEL.ALL;
-    logManager.setAllLoggerLevel(level);
-  }
-
   windowError(msg: string, url: string, line: number) {
     const message = `Error in ('${url ||
       window.location}) on line ${line} with message (${msg})`;
     mainLogger.fatal(message);
     this.flush();
+  }
+
+  addTag2BlackList(...tags: string[]) {
+    this._tagBlackList = _.uniq([...this._tagBlackList, ...tags]);
+  }
+
+  removeFromBlackList(...tags: string[]) {
+    this._tagBlackList = _.difference(tags, this._tagBlackList);
+  }
+
+  addTag2WhiteList(...tags: string[]) {
+    this._tagWhiteList = _.uniq([...this._tagWhiteList, ...tags]);
+  }
+
+  removeFromWhiteList(...tags: string[]) {
+    this._tagWhiteList = _.difference(tags, this._tagWhiteList);
   }
 }

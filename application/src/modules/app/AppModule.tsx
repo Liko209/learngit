@@ -53,7 +53,7 @@ class AppModule extends AbstractModule {
     LogControlManager.instance().setDebugMode(
       process.env.NODE_ENV === 'development',
     );
-
+    LogControlManager.instance().addTag2BlackList('ImageDownloader');
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
     if (state && state.length) {
