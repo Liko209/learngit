@@ -26,20 +26,17 @@ class SortUtils {
     const lhsType = typeof lhsValue;
     const rhsType = typeof rhsValue;
     if (lhsType === rhsType) {
-      if (lhsValue === rhsValue) {
-        return desc ? rhs.id - lhs.id : lhs.id - rhs.id;
+      if (lhsValue !== rhsValue) {
+        switch (rhsType) {
+          case 'string':
+            return desc
+              ? natureCompare(rhsValue, lhsValue)
+              : natureCompare(lhsValue, rhsValue);
+          case 'number':
+            return desc ? rhsValue - lhsValue : lhsValue - rhsValue;
+        }
       }
-
-      switch (rhsType) {
-        case 'string':
-          return desc
-            ? natureCompare(rhsValue, lhsValue)
-            : natureCompare(lhsValue, rhsValue);
-        case 'number':
-          return desc ? rhsValue - lhsValue : lhsValue - rhsValue;
-        default:
-          return 0;
-      }
+      return desc ? rhs.id - lhs.id : lhs.id - rhs.id;
     }
     const hasUndefined = lhsValue === undefined || rhsValue === undefined;
     if (hasUndefined) {
