@@ -13,8 +13,8 @@ class SortUtils {
     sortKeys: string[],
     desc: boolean,
   ) {
-    let lhsValue: any;
-    let rhsValue: any;
+    let lhsValue: any = undefined;
+    let rhsValue: any = undefined;
     for (const key of sortKeys) {
       lhsValue = lhs[key];
       rhsValue = rhs[key];
