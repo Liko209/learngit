@@ -53,7 +53,7 @@ class Jupiter {
     this._moduleEntries.push(m);
   }
 
-  bindProvides(provides: ModuleConfig['provides'] = []) {
+  bindProvides(provides: Provide<any>[] = []) {
     provides.forEach((provide: Provide<any>) => {
       this.bindProvide(provide);
     });
