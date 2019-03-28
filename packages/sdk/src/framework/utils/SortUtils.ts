@@ -5,9 +5,9 @@
  */
 
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
-
+import { IdModel } from '../model';
 class SortUtils {
-  static sortModelByKey<T extends {}>(
+  static sortModelByKey<T extends IdModel>(
     lhs: T,
     rhs: T,
     sortKey: string,
@@ -17,7 +17,7 @@ class SortUtils {
     const rhsValue = rhs[sortKey];
     const lhsType = typeof lhsValue;
     const rhsType = typeof rhsValue;
-    if (lhsType === rhsType) {
+    if (lhsType === rhsType && lhsValue !== rhsValue) {
       switch (rhsType) {
         case 'string':
           return desc
@@ -26,10 +26,11 @@ class SortUtils {
         case 'number':
           return desc ? rhsValue - lhsValue : lhsValue - rhsValue;
         default:
-          return 0;
+          break;
       }
     }
-    return desc ? (lhsValue ? -1 : 1) : lhsValue ? 1 : -1;
+    // use id to sort
+    return desc ? rhs.id - lhs.id : lhs.id - rhs.id;
   }
 }
 
