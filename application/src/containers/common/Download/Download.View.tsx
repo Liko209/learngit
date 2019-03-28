@@ -7,9 +7,10 @@
 import React from 'react';
 import i18next from 'i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { observer } from 'mobx-react';
 import { DownloadViewProps } from './types';
 
-const DownloadView = React.memo(
+const DownloadView = observer(
   ({ url, variant = 'plain' }: DownloadViewProps) => {
     return (
       <JuiIconButton

@@ -49,7 +49,7 @@ class CallViewModel extends AbstractViewModel<CallProps>
   }
 
   @computed
-  private get _phoneNumber() {
+  get phoneNumber() {
     const { phone } = this.props;
     if (phone) {
       return phone;
@@ -93,13 +93,13 @@ class CallViewModel extends AbstractViewModel<CallProps>
 
   @action
   directCall = () => {
-    if (this._phoneNumber) {
-      this._telephonyService.directCall(this._phoneNumber);
+    if (this.phoneNumber) {
+      this._telephonyService.directCall(this.phoneNumber);
     }
   }
 
   showIcon = promisedComputed(false, async () => {
-    const phoneNumber = this._phoneNumber;
+    const phoneNumber = this.phoneNumber;
     const canUseTelephony = await this._featuresFlagsService.canUseTelephony();
     if (canUseTelephony && phoneNumber) {
       const { id, groupId } = this.props;

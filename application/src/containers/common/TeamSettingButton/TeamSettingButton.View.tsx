@@ -4,17 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { TeamSettingButtonViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
+import { observer } from 'mobx-react';
 import { toTitleCase } from '@/utils/string';
 import portalManager from '@/common/PortalManager';
 import { TeamSettings } from '@/containers/TeamSettings';
 import { GroupSettings } from '@/containers/GroupSettings';
 import { CONVERSATION_TYPES } from '@/constants';
 
-type Props = TeamSettingButtonViewProps & WithNamespaces;
+type Props = TeamSettingButtonViewProps & WithTranslation;
 
+@observer
 class TeamSettingButtonViewComponent extends Component<Props> {
   onClickSettingButton = async () => {
     const { id, group } = this.props;
@@ -43,7 +45,7 @@ class TeamSettingButtonViewComponent extends Component<Props> {
   }
 }
 
-const TeamSettingButtonView = translate('translations')(
+const TeamSettingButtonView = withTranslation('translations')(
   TeamSettingButtonViewComponent,
 );
 

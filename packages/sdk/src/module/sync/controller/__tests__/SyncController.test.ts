@@ -172,57 +172,87 @@ describe('SyncController ', () => {
       ).toHaveBeenCalledTimes(1);
     });
   });
-  describe('syncData', () => {
-    it('should handle 504 error when it happens', async (done: any) => {
-      SyncUserConfig.prototype.getLastIndexTimestamp = jest
-        .fn()
-        .mockReturnValue(1);
-      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
 
-      indexData.mockRejectedValueOnce(
-        new JNetworkError(ERROR_CODES_NETWORK.GATEWAY_TIMEOUT, ''),
-      );
-      jest.spyOn(syncController, '_firstLogin').mockResolvedValueOnce({});
-      jest
-        .spyOn(syncController, '_checkFetchedRemaining')
-        .mockResolvedValueOnce({});
-      jest
-        .spyOn(syncController, '_handleIncomingData')
-        .mockResolvedValueOnce({});
-      jest
-        .spyOn(syncController, '_handle504GateWayError')
-        .mockResolvedValueOnce({});
-
-      itemService.clear.mockResolvedValueOnce({});
-      groupConfigService.clear.mockResolvedValueOnce({});
-      groupService.clear.mockResolvedValueOnce({});
-      personService.clear.mockResolvedValueOnce({});
-      postService.clear.mockResolvedValueOnce({});
-
-      await syncController.syncData();
-
-      setTimeout(() => {
-        expect(syncController._handle504GateWayError).toHaveBeenCalledTimes(1);
-        done();
+  describe('handleNetworkChange', () => {
+    describe('_onPageFocused', () => {
+      it('should call _onPageFocused if network became focused', async () => {
+        jest.spyOn(syncController, '_onPageFocused').mockResolvedValueOnce();
+        await syncController.handleWindowFocused();
+        expect(syncController._onPageFocused).toHaveBeenCalledTimes(1);
+      });
+      it('should call syncData if index fail last time', async () => {
+        SyncUserConfig.prototype.getIndexSucceed = jest
+          .fn()
+          .mockReturnValue(false);
+        jest.spyOn(syncController, 'syncData').mockResolvedValueOnce();
+        await syncController.handleWindowFocused();
+        expect(syncController.syncData).toHaveBeenCalledTimes(1);
+      });
+      it('should not call syncData if index success last time', async () => {
+        SyncUserConfig.prototype.getIndexSucceed = jest
+          .fn()
+          .mockReturnValue(true);
+        jest.spyOn(syncController, 'syncData').mockResolvedValueOnce();
+        await syncController.handleWindowFocused();
+        expect(syncController.syncData).toHaveBeenCalledTimes(0);
       });
     });
-    it('should clear data when call _handle504GateWayError', async () => {
-      jest.spyOn(syncController, '_firstLogin').mockResolvedValueOnce({});
+    describe('syncData', () => {
+      it('should handle 504 error when it happens', async (done: any) => {
+        SyncUserConfig.prototype.getLastIndexTimestamp = jest
+          .fn()
+          .mockReturnValue(1);
+        AccountGlobalConfig.getUserDictionary = jest
+          .fn()
+          .mockReturnValueOnce(1);
 
-      itemService.clear.mockResolvedValueOnce({});
-      groupConfigService.clear.mockResolvedValueOnce({});
-      groupService.clear.mockResolvedValueOnce({});
-      personService.clear.mockResolvedValueOnce({});
-      postService.clear.mockResolvedValueOnce({});
+        indexData.mockRejectedValueOnce(
+          new JNetworkError(ERROR_CODES_NETWORK.GATEWAY_TIMEOUT, ''),
+        );
+        jest.spyOn(syncController, '_firstLogin').mockResolvedValueOnce({});
+        jest
+          .spyOn(syncController, '_checkFetchedRemaining')
+          .mockResolvedValueOnce({});
+        jest
+          .spyOn(syncController, '_handleIncomingData')
+          .mockResolvedValueOnce({});
+        jest
+          .spyOn(syncController, '_handle504GateWayError')
+          .mockResolvedValueOnce({});
 
-      await syncController._handle504GateWayError();
+        itemService.clear.mockResolvedValueOnce({});
+        groupConfigService.clear.mockResolvedValueOnce({});
+        groupService.clear.mockResolvedValueOnce({});
+        personService.clear.mockResolvedValueOnce({});
+        postService.clear.mockResolvedValueOnce({});
 
-      expect(itemService.clear).toHaveBeenCalledTimes(1);
-      expect(postService.clear).toHaveBeenCalledTimes(1);
-      expect(groupConfigService.clear).toHaveBeenCalledTimes(1);
-      expect(groupService.clear).toHaveBeenCalledTimes(1);
-      expect(personService.clear).toHaveBeenCalledTimes(1);
-      expect(syncController._firstLogin).toHaveBeenCalledTimes(1);
+        await syncController.syncData();
+
+        setTimeout(() => {
+          expect(syncController._handle504GateWayError).toHaveBeenCalledTimes(
+            1,
+          );
+          done();
+        });
+      });
+      it('should clear data when call _handle504GateWayError', async () => {
+        jest.spyOn(syncController, '_firstLogin').mockResolvedValueOnce({});
+
+        itemService.clear.mockResolvedValueOnce({});
+        groupConfigService.clear.mockResolvedValueOnce({});
+        groupService.clear.mockResolvedValueOnce({});
+        personService.clear.mockResolvedValueOnce({});
+        postService.clear.mockResolvedValueOnce({});
+
+        await syncController._handle504GateWayError();
+
+        expect(itemService.clear).toHaveBeenCalledTimes(1);
+        expect(postService.clear).toHaveBeenCalledTimes(1);
+        expect(groupConfigService.clear).toHaveBeenCalledTimes(1);
+        expect(groupService.clear).toHaveBeenCalledTimes(1);
+        expect(personService.clear).toHaveBeenCalledTimes(1);
+        expect(syncController._firstLogin).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });

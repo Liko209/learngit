@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { ProfileMiniCardPersonFooterViewProps } from './types';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiProfileMiniCardFooterLeft,
   JuiProfileMiniCardFooterRight,
@@ -20,7 +20,7 @@ import { Call } from '@/modules/telephony';
 
 @observer
 class ProfileMiniCardPersonFooter extends Component<
-  WithNamespaces & ProfileMiniCardPersonFooterViewProps
+  WithTranslation & ProfileMiniCardPersonFooterViewProps
 > {
   onClickMessage = () => {
     const { id } = this.props;
@@ -68,7 +68,7 @@ class ProfileMiniCardPersonFooter extends Component<
   }
 }
 
-const ProfileMiniCardPersonFooterView = translate('translations')(
+const ProfileMiniCardPersonFooterView = withTranslation('translations')(
   ProfileMiniCardPersonFooter,
 );
 

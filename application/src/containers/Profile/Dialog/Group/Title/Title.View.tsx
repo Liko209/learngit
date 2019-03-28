@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogGroupTitleViewProps } from './types';
 import {
   JuiDialogHeaderTitle,
@@ -21,7 +21,7 @@ import { DialogContext } from '@/containers/Dialog';
 
 @observer
 class ProfileDialogGroupTitleViewComponent extends Component<
-  WithNamespaces & ProfileDialogGroupTitleViewProps
+  WithTranslation & ProfileDialogGroupTitleViewProps
 > {
   static contextType = DialogContext;
 
@@ -50,7 +50,7 @@ class ProfileDialogGroupTitleViewComponent extends Component<
   }
 }
 
-const ProfileDialogGroupTitleView = translate('translations')(
+const ProfileDialogGroupTitleView = withTranslation('translations')(
   ProfileDialogGroupTitleViewComponent,
 );
 

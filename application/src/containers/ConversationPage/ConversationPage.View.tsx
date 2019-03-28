@@ -5,7 +5,7 @@
  */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { DropTargetMonitor } from 'react-dnd';
 import {
@@ -157,7 +157,7 @@ class ConversationPageViewComponent extends Component<
 }
 
 const ConversationPageView = withDragDropContext(
-  withRouter(translate('translations')(ConversationPageViewComponent)),
+  withRouter(withTranslation('translations')(ConversationPageViewComponent)),
 );
 
 export { ConversationPageView };

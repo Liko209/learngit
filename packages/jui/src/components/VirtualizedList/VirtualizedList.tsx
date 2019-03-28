@@ -87,7 +87,14 @@ const JuiVirtualizedList: RefForwardingComponent<
 
     return renderedRange;
   };
-
+  const virtualizedListStyle: React.CSSProperties = {
+    height,
+    overflow: 'auto',
+    // Prevent repaints on scroll
+    transform: 'translateZ(0)',
+    // Prevent chrome's default behavior
+    overflowAnchor: 'none',
+  };
   const computeRangeOffset = (
     prevChildrenCount: number | null,
     prevStartIndex: number | null,
@@ -175,7 +182,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (ref.current) {
       result =
         height >=
-        rowManager.getRowOffsetTop(childrenCount) - ref.current.scrollTop;
+        rowManager.getRowOffsetTop(childrenCount) -
+          Math.ceil(ref.current.scrollTop);
     }
     return result;
   };
@@ -298,7 +306,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     renderedRange,
     usePrevious(() => children.length),
     usePrevious(() => startIndex),
-    usePrevious(() => children[startIndex]),
+    usePrevious(() => children[startIndex] || null),
   );
 
   //
@@ -377,6 +385,13 @@ const JuiVirtualizedList: RefForwardingComponent<
   });
 
   //
+  // Ensure no blank area
+  //
+  useEffect(() => {
+    ensureNoBlankArea();
+  });
+
+  //
   // Scrolling
   //
   const handleScroll = (event: React.UIEvent) => {
@@ -400,14 +415,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     <div
       ref={ref}
       onScroll={handleScroll}
-      style={{
-        height,
-        overflow: 'auto',
-        // Prevent repaints on scroll
-        transform: 'translateZ(0)',
-        // Prevent chrome's default behavior
-        overflowAnchor: 'none',
-      }}
+      style={virtualizedListStyle}
       data-test-automation-id="virtualized-list"
     >
       {wrappedBefore}

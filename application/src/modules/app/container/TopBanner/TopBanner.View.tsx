@@ -8,7 +8,9 @@ import React from 'react';
 import { JuiTopBannerContainer } from 'jui/pattern/TopBanner';
 import { config, ConfigType } from './register';
 import _ from 'lodash';
+import { observer } from 'mobx-react';
 
+@observer
 class TopBannerView extends React.Component {
   render() {
     const children = _(config)

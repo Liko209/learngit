@@ -10,7 +10,7 @@ import { CodeEditor } from 'jui/pattern/CodeEditor';
 import { CodeSnippetViewProps } from './types';
 import { memoize } from 'lodash';
 import copy from 'copy-to-clipboard';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 
 const DEFAULT_LINE_LIMIT = 15;
@@ -19,7 +19,7 @@ const MAX_EDITOR_LINES = 200;
 
 @observer
 class CodeSnippet extends React.Component<
-  WithNamespaces & CodeSnippetViewProps
+  WithTranslation & CodeSnippetViewProps
 > {
   state = {
     showHeaderActions: false,
@@ -175,5 +175,5 @@ class CodeSnippet extends React.Component<
   }
 }
 
-const CodeSnippetView = translate('translations')(CodeSnippet);
+const CodeSnippetView = withTranslation('translations')(CodeSnippet);
 export { CodeSnippetView };

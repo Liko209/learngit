@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { grey } from 'jui/foundation/utils/styles';
 import styled from 'jui/foundation/styled-components';
@@ -16,7 +16,7 @@ import { observable, computed, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 
-type Props = WithNamespaces;
+type Props = WithTranslation;
 
 type versionInfoType = {
   deployedTime: string;
@@ -115,5 +115,5 @@ class About extends Component<Props> {
   }
 }
 
-const AboutView = translate('translations')(About);
+const AboutView = withTranslation()(About);
 export { AboutView };

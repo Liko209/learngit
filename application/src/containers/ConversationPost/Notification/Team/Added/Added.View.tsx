@@ -5,11 +5,13 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { AddedViewProps } from './types';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { renderPerson } from '@/common/renderPerson';
 
-class AddedViewComponent extends Component<AddedViewProps & WithNamespaces> {
+@observer
+class AddedViewComponent extends Component<AddedViewProps & WithTranslation> {
   render() {
     const {
       inviterId,
@@ -31,6 +33,6 @@ class AddedViewComponent extends Component<AddedViewProps & WithNamespaces> {
   }
 }
 
-const AddedView = translate('translations')(AddedViewComponent);
+const AddedView = withTranslation('translations')(AddedViewComponent);
 
 export { AddedView };

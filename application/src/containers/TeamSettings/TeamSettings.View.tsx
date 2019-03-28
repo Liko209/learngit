@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
@@ -40,7 +40,7 @@ type State = {
   allowMemberPin: boolean;
 };
 
-type TeamSettingsProps = WithNamespaces & ViewProps;
+type TeamSettingsProps = WithTranslation & ViewProps;
 
 const NAME_MAX_LENGTH = 200;
 const DESC_MAX_LENGTH = 1000;
@@ -371,7 +371,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 }
 
-const TeamSettingsView = translate()(TeamSettings);
+const TeamSettingsView = withTranslation()(TeamSettings);
 const TeamSettingsComponent = TeamSettings;
 
 export { TeamSettingsView, TeamSettingsComponent };

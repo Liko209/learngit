@@ -206,7 +206,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   hangup() {
     if (this._session != null) {
-      this._session.terminate();
+      try {
+        this._session.terminate();
+      } catch (error) {
+        rtcLogger.error(LOG_TAG, `Exception when hangup call: ${error}`);
+      }
     }
   }
 
