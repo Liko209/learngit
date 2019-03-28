@@ -5,9 +5,13 @@
  */
 import { mainLogger } from 'sdk';
 import { ErrorParserHolder } from 'sdk/error';
+import { ErrorReporterProxy } from './ErrorReporterProxy';
+import { IErrorReporter } from './types';
 function generalErrorHandler(error: Error) {
   const jErr = ErrorParserHolder.getErrorParser().parse(error);
   mainLogger.error(jErr.message);
 }
-
-export { generalErrorHandler };
+const errorReporter: IErrorReporter = new ErrorReporterProxy(
+  process.env.NODE_ENV === 'production',
+);
+export { generalErrorHandler, errorReporter };
