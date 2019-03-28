@@ -31,7 +31,7 @@ describe('Presence subscribe worker', () => {
     await subscribeRequestController.execute([1, 2]);
     expect(subscribeRequestController.failCallback).toHaveBeenCalledWith(
       [1, 2],
-      false,
+      true,
     );
     expect(subscribeRequestController.successCallback).not.toHaveBeenCalled();
   });
@@ -68,7 +68,7 @@ describe('Presence subscribe worker', () => {
     await subscribeRequestController.execute([1, 2, 3]);
     expect(subscribeRequestController.failCallback).toHaveBeenCalledWith(
       [1, 2, 3],
-      true,
+      false,
     );
   });
 });

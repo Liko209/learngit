@@ -49,7 +49,7 @@ describe('presence subscribeHandler test', () => {
         .spyOn(subscribeController, 'subscribeIds')
         .mockImplementation(() => {});
       subscribeController.queue = [];
-      subscribeController.onSubscriptRequestFail([1, 2, 3], false);
+      subscribeController.onSubscriptRequestFail([1, 2, 3], true);
       expect(subscribeController.subscribeIds).toHaveBeenCalledTimes(1);
       expect(subscribeController.queue).toEqual([1, 2, 3]);
     });
@@ -60,14 +60,14 @@ describe('presence subscribeHandler test', () => {
         .spyOn(subscribeController, 'subscribeIds')
         .mockImplementation(() => {});
       subscribeController.queue = [4, 5, 6];
-      subscribeController.onSubscriptRequestFail([1, 2, 3], true);
-      subscribeController.onSubscriptRequestFail([1, 2, 3], true);
-      subscribeController.onSubscriptRequestFail([1, 2, 3], true);
+      subscribeController.onSubscriptRequestFail([1, 2, 3], false);
+      subscribeController.onSubscriptRequestFail([1, 2, 3], false);
+      subscribeController.onSubscriptRequestFail([1, 2, 3], false);
       expect(subscribeController.queue).toEqual([4, 5, 6]);
 
-      subscribeController.onSubscriptRequestFail([1, 2, 3, 4], true);
-      subscribeController.onSubscriptRequestFail([1, 2, 3, 4], true);
-      subscribeController.onSubscriptRequestFail([1, 2, 3, 4], true);
+      subscribeController.onSubscriptRequestFail([1, 2, 3, 4], false);
+      subscribeController.onSubscriptRequestFail([1, 2, 3, 4], false);
+      subscribeController.onSubscriptRequestFail([1, 2, 3, 4], false);
       expect(subscribeController.queue).toEqual([5, 6]);
       expect(subscribeController.subscribeIds).toHaveBeenCalledTimes(6);
       setTimeout(() => {

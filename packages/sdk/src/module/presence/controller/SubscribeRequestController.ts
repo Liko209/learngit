@@ -19,7 +19,7 @@ class SubscribeRequestController {
     }
 
     if (!socketManager.isConnected()) {
-      this.failCallback(ids, false);
+      this.failCallback(ids, true);
       return;
     }
 
@@ -27,7 +27,7 @@ class SubscribeRequestController {
       const data = await PresenceAPI.requestPresenceByIds(ids);
       this.successCallback(data);
     } catch (err) {
-      this.failCallback(ids, true);
+      this.failCallback(ids, false);
       return;
     }
   }

@@ -50,8 +50,8 @@ class SubscribeController {
     this.failIds.clear();
   }
 
-  onSubscriptRequestFail(ids: number[], isConnect: boolean) {
-    if (!isConnect) {
+  onSubscriptRequestFail(ids: number[], retryAble: boolean) {
+    if (retryAble) {
       this.queue.push(...ids);
       this.subscribeIds();
       return;
