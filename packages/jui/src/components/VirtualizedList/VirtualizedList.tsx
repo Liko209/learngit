@@ -384,6 +384,13 @@ const JuiVirtualizedList: RefForwardingComponent<
   });
 
   //
+  // Ensure no blank area
+  //
+  useEffect(() => {
+    ensureNoBlankArea();
+  });
+
+  //
   // Scrolling
   //
   const handleScroll = (event: React.UIEvent) => {
