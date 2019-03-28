@@ -512,8 +512,7 @@ test(formalName('UMI should be updated when fav/unfav conversation', ['JPT-123',
   });
 });
 
-// skip due to https://jira.ringcentral.com/browse/FIJI-4331
-test.skip(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
+test(formalName('Show UMI when scroll up to old post then receive new messages', ['JPT-189', 'P1', 'ConversationList', 'Yilia.Hong']),
   async (t: TestController) => {
     const app = new AppRoot(t);
     const users = h(t).rcData.mainCompany.users;
@@ -525,15 +524,17 @@ test.skip(formalName('Show UMI when scroll up to old post then receive new messa
     await h(t).platform(otherUser).init();
 
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
+    
+    let group = <IGroup> {
+      type: "DirectMessage",
+      members: [loginUser, otherUser, users[1]],
+      owner: loginUser
+    }
 
-    let pvtChatId;
     await h(t).withLog('Given Open a conversation with post more than one screen', async () => {
-      pvtChatId = await h(t).platform(loginUser).createAndGetGroupId({
-        type: 'PrivateChat',
-        members: [loginUser.rcId, users[5].rcId]
-      });
-      for (var i = 0; i < 15; i++) {
-        await h(t).platform(otherUser).sendTextPost('test', pvtChatId);
+      await h(t).scenarioHelper.createOrOpenChat(group);
+      for (var i = 0; i < 5; i++) {
+        await h(t).platform(otherUser).sendTextPost(H.multilineString(), group.glipId);
       }
     });
 
@@ -548,13 +549,14 @@ test.skip(formalName('Show UMI when scroll up to old post then receive new messa
 
     const conversationPage = app.homePage.messageTab.conversationPage;
     await h(t).withLog('When I scroll up content page and receive new messages', async () => {
-      await directMessagesSection.conversationEntryById(pvtChatId).enter();
+      await directMessagesSection.conversationEntryById(group.glipId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
       await conversationPage.scrollToMiddle();
-      await h(t).platform(otherUser).sendTextPost('test again', pvtChatId);
+      await h(t).platform(otherUser).sendTextPost('test again', group.glipId);
     });
 
     await h(t).withLog('Then show UMI', async () => {
-      await directMessagesSection.conversationEntryById(pvtChatId).umi.shouldBeNumber(1);
+      await directMessagesSection.conversationEntryById(group.glipId).umi.shouldBeNumber(1);
     });
 
     await h(t).withLog('When I scroll down content page', async () => {
@@ -563,7 +565,7 @@ test.skip(formalName('Show UMI when scroll up to old post then receive new messa
 
     await h(t).withLog('Then UMI dismiss', async () => {
       await h(t).waitUmiDismiss();  // temporary: need time to wait back-end and front-end sync umi data.
-      await directMessagesSection.conversationEntryById(pvtChatId).umi.shouldBeNumber(0);
+      await directMessagesSection.conversationEntryById(group.glipId).umi.shouldBeNumber(0);
     });
   },
 );

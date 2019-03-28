@@ -182,7 +182,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (ref.current) {
       result =
         height >=
-        rowManager.getRowOffsetTop(childrenCount) - ref.current.scrollTop;
+        rowManager.getRowOffsetTop(childrenCount) -
+          Math.ceil(ref.current.scrollTop);
     }
     return result;
   };
@@ -381,6 +382,13 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   useEffect(() => {
     prevAtBottomRef.current = computeAtBottom();
+  });
+
+  //
+  // Ensure no blank area
+  //
+  useEffect(() => {
+    ensureNoBlankArea();
   });
 
   //
