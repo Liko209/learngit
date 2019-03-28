@@ -15,6 +15,7 @@ describe('SortUtils', () => {
     name: 'item1',
     sameSortKey: '1',
     diffSortKey: {},
+    mightUndefined: undefined,
   };
   const item2 = {
     id: 2,
@@ -23,6 +24,7 @@ describe('SortUtils', () => {
     name: 'item2',
     sameSortKey: '1',
     diffSortKey: 'other',
+    mightUndefined: 111,
   };
 
   const item3 = {
@@ -32,6 +34,7 @@ describe('SortUtils', () => {
     name: 'item3',
     sameSortKey: '1',
     diffSortKey: 1,
+    mightUndefined: undefined,
   };
 
   it('should return sorted items by name', () => {
@@ -80,5 +83,21 @@ describe('SortUtils', () => {
       return SortUtils.sortModelByKey(lhs, rhs, 'diffSortKey', false);
     };
     expect(items.sort(sortFn)).toEqual([item1, item2, item3]);
+  });
+
+  it('should sort by id when sort value has different type', () => {
+    const items = [item2, item1, item3];
+    const sortFn = (lhs: any, rhs: any) => {
+      return SortUtils.sortModelByKey(lhs, rhs, 'diffSortKey', false);
+    };
+    expect(items.sort(sortFn)).toEqual([item1, item2, item3]);
+  });
+
+  it('should sort by sort value first, if sort value is undefined, then use id to sort', () => {
+    const items = [item1, item2, item3];
+    const sortFn = (lhs: any, rhs: any) => {
+      return SortUtils.sortModelByKey(lhs, rhs, 'mightUndefined', false);
+    };
+    expect(items.sort(sortFn)).toEqual([item1, item3, item2]);
   });
 });

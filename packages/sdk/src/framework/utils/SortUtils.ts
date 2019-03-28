@@ -17,7 +17,11 @@ class SortUtils {
     const rhsValue = rhs[sortKey];
     const lhsType = typeof lhsValue;
     const rhsType = typeof rhsValue;
-    if (lhsType === rhsType && lhsValue !== rhsValue) {
+    if (lhsType === rhsType) {
+      if (lhsValue === rhsValue) {
+        return desc ? rhs.id - lhs.id : lhs.id - rhs.id;
+      }
+
       switch (rhsType) {
         case 'string':
           return desc
@@ -26,10 +30,13 @@ class SortUtils {
         case 'number':
           return desc ? rhsValue - lhsValue : lhsValue - rhsValue;
         default:
-          break;
+          return 0;
       }
     }
-    // use id to sort
+    const hasUndefined = lhsValue === undefined || rhsValue === undefined;
+    if (hasUndefined) {
+      return desc ? (lhsValue ? -1 : 1) : lhsValue ? 1 : -1;
+    }
     return desc ? rhs.id - lhs.id : lhs.id - rhs.id;
   }
 }
