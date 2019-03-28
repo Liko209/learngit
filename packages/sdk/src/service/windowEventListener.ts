@@ -31,6 +31,7 @@ window.addEventListener('load', () => {
 window.addEventListener('focus', () => {
   if (navigator.onLine) {
     notificationCenter.emit(SOCKET.NETWORK_CHANGE, { state: 'focus' });
+    notificationCenter.emit(WINDOW.FOCUS);
   }
 });
 

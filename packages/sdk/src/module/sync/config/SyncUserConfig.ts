@@ -55,6 +55,13 @@ class SyncUserConfig extends UserConfig {
   removeFetchRemaining() {
     this.remove(SYNC_CONFIG_KEYS.FETCHED_REMAINING);
   }
+
+  getIndexSucceed() {
+    return this.get(SYNC_CONFIG_KEYS.INDEX_SUCCEED);
+  }
+  updateIndexSucceed(value: boolean) {
+    this.put(SYNC_CONFIG_KEYS.INDEX_SUCCEED, value);
+  }
 }
 
 export { SyncUserConfig };
