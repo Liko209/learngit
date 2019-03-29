@@ -56,6 +56,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     after = null,
     stickToBottom,
     contentStyle,
+    stickToLastPosition = true,
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
@@ -336,7 +337,7 @@ const JuiVirtualizedList: RefForwardingComponent<
           scrollToBottom();
         } else {
           const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
-          if (diff !== 0 && beforeFirstVisibleRow) {
+          if (diff !== 0 && beforeFirstVisibleRow && stickToLastPosition) {
             scrollToPosition(scrollPosition);
           }
         }
@@ -379,7 +380,9 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (shouldScrollToBottom()) {
       scrollToBottom();
     } else {
-      scrollToPosition(scrollPosition);
+      if (stickToLastPosition) {
+        scrollToPosition(scrollPosition);
+      }
     }
   },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
 
@@ -461,6 +464,7 @@ const MemoList = memo(
       stickToBottom?: boolean;
       children: JSX.Element[];
       contentStyle?: React.CSSProperties;
+      stickToLastPosition?: boolean;
     } & React.RefAttributes<JuiVirtualizedListHandles>
   >
 >;
