@@ -104,11 +104,14 @@ describe('AccountService', () => {
       });
     });
 
-    it('should not refresh rc token if api return error', () => {
+    it('should not refresh rc token if api return error', async () => {
       refreshToken.mockRejectedValueOnce('error');
       expect.assertions(1);
-      const token = accountService.refreshRCToken();
-      return expect(token).resolves.toEqual(null);
+      try {
+        await accountService.refreshRCToken();
+      } catch (err) {
+        expect(err).toEqual('error');
+      }
     });
   });
 });

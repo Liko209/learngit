@@ -2,6 +2,10 @@ import { OAuthTokenHandler } from '..';
 import { fakeHandleType, getFakeTokenHandler, getFakeToken } from './utils';
 
 const handler = new OAuthTokenHandler(fakeHandleType, getFakeTokenHandler());
+const fakeListener = {
+  onRefreshTokenFailure: jest.fn(),
+} as any;
+handler.listener = fakeListener;
 
 describe('OAuthTokenHandler', () => {
   describe('refreshOAuthToken', () => {
@@ -60,6 +64,16 @@ describe('OAuthTokenHandler', () => {
       handler.token = getFakeToken();
       handler.token.timestamp = Date.now() + 6000;
       expect(handler.isTokenExpired(true)).toBeTruthy();
+    });
+  });
+
+  describe('_notifyRefreshTokenFailure()', () => {
+    it('should not force logout when error code >= 500', () => {
+      handler['_notifyRefreshTokenFailure']('500');
+      expect(handler.listener!.onRefreshTokenFailure).toBeCalledWith(
+        handler.type,
+        false,
+      );
     });
   });
 });

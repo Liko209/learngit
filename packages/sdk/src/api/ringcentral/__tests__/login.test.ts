@@ -80,12 +80,12 @@ describe('login', () => {
     });
 
     it('should throw when get wrong error', async () => {
-      const response = { status: 400, statusText: 'erroroooo' };
+      const response = { status: '401', statusText: 'erroroooo' };
       const promise = refreshToken(token);
       setTimeout(() => {
         retRequest.callback(response);
       },         10);
-      await expect(promise).rejects.toBeInstanceOf(Error);
+      await expect(promise).rejects.toEqual('401');
     });
 
     it('should call right path and return token data ', async () => {
