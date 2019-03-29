@@ -63,10 +63,22 @@ class PostDataController {
       this._handleModifiedDiscontinuousPosts(
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
-      await this.handelPostsOverThreshold(posts, maxPostsExceed);
+      const result = await this.handelPostsOverThreshold(posts, maxPostsExceed);
       await this.preInsertController.bulkDelete(posts);
       posts = await this.handleIndexModifiedPosts(posts);
-      return await this.filterAndSavePosts(posts, true);
+      posts = await this.filterAndSavePosts(posts, true);
+      if (result) {
+        if (result.shouldRemoveGroupIds.length > 0) {
+          await this.entitySourceController.bulkDelete(result.deletePostIds);
+          const groupService: GroupService = GroupService.getInstance();
+          result.deleteMap.forEach((value: number[], key: number) => {
+            groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
+            notificationCenter.emitEntityDelete(`${ENTITY.POST}.${key}`, value);
+            notificationCenter.emit(`${ENTITY.RELOAD}.${key}`, value);
+          });
+        }
+      }
+      return posts;
     }
     return [];
   }
@@ -129,7 +141,7 @@ class PostDataController {
         posts.length
       }`,
     );
-    if (maxPostsExceed && posts.length >= INDEX_POST_MAX_SIZE) {
+    if (maxPostsExceed || posts.length >= INDEX_POST_MAX_SIZE) {
       const groupPostsNumber: { [groupId: number]: number[] } = {};
       posts.forEach((post: Post) => {
         groupPostsNumber[post.group_id]
@@ -144,7 +156,8 @@ class PostDataController {
         }
       });
       if (shouldRemoveGroupIds.length) {
-        let deleteIds: number[] = [];
+        let deletePostIds: number[] = [];
+        const deleteMap: Map<number, number[]> = new Map();
         // TODO Need to refactor db interface to support delete by where
         // Will do this refactor after jerry refactor the dao layer
         await Promise.all(
@@ -152,15 +165,14 @@ class PostDataController {
             const postIds = await daoManager
               .getDao(PostDao)
               .queryPostIdsByGroupId(id);
-            deleteIds = deleteIds.concat(postIds);
+            deletePostIds = deletePostIds.concat(postIds);
+            deleteMap.set(id, postIds);
           }),
         );
-        if (deleteIds.length) {
-          this.entitySourceController.bulkDelete(deleteIds);
-        }
+        return { shouldRemoveGroupIds, deleteMap, deletePostIds };
       }
     }
-    return posts;
+    return undefined;
   }
 
   protected async handleIndexModifiedPosts(posts: Post[]) {

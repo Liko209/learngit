@@ -31,6 +31,7 @@ import { ThumbnailPreloadController } from './ThumbnailPreloadController';
 import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
 import PrefetchPostProcessor from '@/store/handler/PrefetchPostProcessor';
 import { ICacheController } from './ICacheController';
+import { FetchPostDataListHandler } from '@/store/base/fetch/FetchPostDataListHandler';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -57,6 +58,10 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
     }
 
     return { hasMore, data: posts };
+  }
+
+  getGroupId(): number {
+    return this._groupId;
   }
 }
 
@@ -203,7 +208,7 @@ class PostCacheController implements ICacheController<Post> {
         dataChangeCallBack: fetchDataCallback,
       };
 
-      listHandler = new FetchSortableDataListHandler(
+      listHandler = new FetchPostDataListHandler(
         new PostDataProvider(groupId),
         options,
       );
@@ -278,5 +283,5 @@ class PostCacheController implements ICacheController<Post> {
 
 const postCacheController = new PostCacheController();
 
-export { PostCacheController };
+export { PostCacheController, PostDataProvider };
 export default postCacheController;
