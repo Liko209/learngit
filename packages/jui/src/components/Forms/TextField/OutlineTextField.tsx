@@ -17,22 +17,31 @@ import {
   width,
 } from '../../../foundation/utils';
 import { JuiIconography } from '../../../foundation/Iconography';
+import { Theme } from 'src/foundation/theme/theme';
 
 type IconPosition = 'left' | 'right';
 
-type RadiusType = 'square' | 'circle';
-
 const INPUT_HEIGHT = 10;
-const RADIUS_MAP = {
-  square: 1,
-  circle: INPUT_HEIGHT / 2,
-};
 const CLASSES_PAPER = { root: 'root' };
+
+type InputRadius = {
+  square: string;
+  round: string;
+};
+type InputRadiusKeys = keyof InputRadius;
+const getRadius = (theme: Theme, radiusType: InputRadiusKeys) => {
+  const { radius, size } = theme;
+  const type: InputRadius = {
+    square: radius.xl,
+    round: `${size.height * INPUT_HEIGHT * radius.round}px`,
+  };
+  return type[radiusType];
+};
 
 type CompositePaperProps = PaperProps & {
   iconPosition?: IconPosition;
   focus: boolean;
-  radius: string;
+  radius: InputRadiusKeys;
   disabled?: boolean;
 };
 
@@ -53,11 +62,11 @@ const StyledPaper = styled<CompositePaperProps>(CompositePaper)`
     background-color: ${({ disabled }) =>
       disabled ? grey('100') : palette('common', 'white')};
     border: 1px solid ${({ focus }) => (focus ? grey('400') : grey('300'))};
-    border-radius: ${({ radius }) => spacing(RADIUS_MAP[radius])};
+    border-radius: ${({ theme, radius }) => getRadius(theme, radius)};
     /* ${({ disabled = false }) =>
       disabled ? 'pointer-events: none;' : ''}; */
     box-sizing: border-box;
-    padding: 0 12px;
+    padding: 0 ${spacing(4)};
   }
   &:hover {
     background-color: ${({ focus, disabled }) => {
@@ -108,6 +117,9 @@ const StyledIcon = styled(JuiIconography)`
   width: ${width(5)};
   height: ${height(5)};
   align-items: center;
+  svg {
+    font-size: ${spacing(5)};
+  }
 `;
 const StyledIconLeft = styled(StyledIcon)`
   margin: 0 ${spacing(3)} 0 0;
@@ -122,7 +134,7 @@ type Props = InputBaseProps & {
   iconPosition?: IconPosition;
   iconName?: string;
   maxLength?: number;
-  radiusType?: RadiusType;
+  radiusType?: InputRadiusKeys;
 };
 
 const JuiOutlineTextField = (props: Props) => {

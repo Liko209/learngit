@@ -85,6 +85,15 @@
       "lake": "#6FAFEB"
     }
   },
+  "radius": {
+    "circle": "50%",
+    "round": 0.5,
+    "zero": 0,
+    "sm": "2px",
+    "md": "3px",
+    "lg": "4px",
+    "xl": "8px"
+  },
   "shape": {
     "borderRadius": 4,
     "border1": "1px solid rgba(255,55,55,.1)",

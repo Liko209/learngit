@@ -20,7 +20,7 @@ storiesOf('Components/Forms', module)
       'radiusType',
       {
         square: 'square',
-        circle: 'circle',
+        round: 'round',
       },
       'square',
     );
@@ -38,6 +38,7 @@ storiesOf('Components/Forms', module)
           iconName="search"
           disabled={disabled}
           iconPosition="left"
+          radiusType={radius}
         />
         <br />
         <JuiOutlineTextField
@@ -45,6 +46,7 @@ storiesOf('Components/Forms', module)
           iconName="lock"
           iconPosition="right"
           disabled={disabled}
+          radiusType={radius}
         />
         <br />
         <JuiOutlineTextField
@@ -52,6 +54,7 @@ storiesOf('Components/Forms', module)
           iconName="lock"
           iconPosition="right"
           disabled={disabled}
+          radiusType={radius}
           inputAfter={<div onClick={() => alert('clear')}>clear</div>}
         />
       </div>
