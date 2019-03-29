@@ -35,6 +35,7 @@ import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
 import JuiConversationCard from 'jui/src/pattern/ConversationCard';
+import { goToConversation } from '@/common/goToConversation';
 
 type Props = WithNamespaces & StreamViewProps & StreamProps;
 
@@ -118,6 +119,10 @@ class StreamViewComponent extends Component<Props> {
       requestAnimationFrame(() => {
         if (this._jumpToPostRef.current) {
           this._jumpToPostRef.current.highlight();
+          goToConversation({
+            conversationId: this.props.groupId,
+            replaceHistory: true,
+          });
         }
       });
     } else {
@@ -260,7 +265,10 @@ class StreamViewComponent extends Component<Props> {
     const visiblePosts = _(visibleItems)
       .flatMap('value')
       .concat();
-    if (this.props.hasMore('down') || !visiblePosts.includes(mostRecentPostId)) {
+    if (
+      this.props.hasMore('down') ||
+      !visiblePosts.includes(mostRecentPostId)
+    ) {
       this.handleMostRecentHidden();
     } else {
       this.handleMostRecentViewed();
