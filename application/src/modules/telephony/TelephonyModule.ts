@@ -7,8 +7,10 @@
 import { AbstractModule, inject } from 'framework';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
 import { TelephonyService } from '@/modules/telephony/service';
-import { ILeaveBlockerService } from '@/modules/leave-blocker/interface';
-import { LeaveBlockerService } from '@/modules/leave-blocker/service';
+import {
+  LEAVE_BLOCKER_SERVICE,
+  ILeaveBlockerService,
+} from '@/modules/leave-blocker/interface';
 import { mainLogger } from 'sdk';
 
 class TelephonyModule extends AbstractModule {
@@ -17,7 +19,7 @@ class TelephonyModule extends AbstractModule {
   @inject(FeaturesFlagsService)
   private _FeaturesFlagsService: FeaturesFlagsService;
   @inject(TelephonyService) private _TelephonyService: TelephonyService;
-  @inject(LeaveBlockerService) _leaveBlockerService: ILeaveBlockerService;
+  @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
 
   async bootstrap() {
     const canUseTelephony = await this._FeaturesFlagsService.canUseTelephony();
