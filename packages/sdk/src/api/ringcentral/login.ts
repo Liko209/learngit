@@ -16,7 +16,6 @@ import {
 } from 'foundation';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
-import { responseParser } from '../parser';
 import { stringify } from 'qs';
 
 interface ITokenModel extends Token {
@@ -96,7 +95,7 @@ function refreshToken(data: ITokenModel) {
           handler.onSurvivalModeDetected(SURVIVAL_MODE.SURVIVAL, 0);
         }
       }
-      reject(responseParser.parse(response));
+      reject(response.status);
     };
 
     const request = Api.rcNetworkClient.getRequestByVia(
