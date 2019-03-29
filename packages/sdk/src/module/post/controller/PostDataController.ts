@@ -73,7 +73,6 @@ class PostDataController {
           const groupService: GroupService = GroupService.getInstance();
           result.deleteMap.forEach((value: number[], key: number) => {
             groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
-            notificationCenter.emitEntityDelete(`${ENTITY.POST}.${key}`, value);
             notificationCenter.emit(`${ENTITY.RELOAD}.${key}`, value);
           });
         }

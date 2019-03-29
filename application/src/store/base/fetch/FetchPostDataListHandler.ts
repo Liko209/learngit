@@ -12,7 +12,7 @@ import {
 import { Post } from 'sdk/module/post/entity';
 import { SortableListStore } from './SortableListStore';
 import { PostDataProvider } from '@/containers/ConversationPage/Stream/cache/PostCacheController';
-import { ENTITY } from 'sdk/service';
+import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { mainLogger } from 'sdk';
 
@@ -32,6 +32,11 @@ class FetchPostDataListHandler extends FetchSortableDataListHandler<Post> {
       (ids: number[]) => {
         mainLogger.info(LOG_TAG, `reload group ${groupId}`);
         this.handleHasMore(true, QUERY_DIRECTION.OLDER);
+        this.handleDataDeleted({
+          type: EVENT_TYPES.DELETE,
+          body: { ids },
+        });
+        this.fetchData(QUERY_DIRECTION.OLDER, 20);
       },
     );
   }
