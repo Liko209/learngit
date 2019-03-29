@@ -18,6 +18,7 @@ import { INDEX_POST_MAX_SIZE } from '../constant';
 import { IRawPostResult, Post } from '../entity';
 import { GroupService } from '../../group';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { SortUtils } from '../../../framework/utils';
 
 const TAG = 'PostDataController';
 
@@ -255,6 +256,10 @@ class PostDataController {
     return normalPosts;
   }
 
+  postCreationTimeSortingFn = (lhs: Post, rhs: Post) => {
+    return SortUtils.sortModelByKey(lhs, rhs, 'created_at', false);
+  }
+
   /**
    * 1, Check whether the group has discontinues post,
    *    the condition is the modification time is different with the creation time;
@@ -275,10 +280,7 @@ class PostDataController {
     await Promise.all(
       groupIds.map(async (groupId: string) => {
         const posts: Post[] = groupPosts[groupId];
-        if (
-          posts.length < INDEX_POST_MAX_SIZE &&
-          this._isGroupPostsDiscontinuous(posts)
-        ) {
+        if (this._isGroupPostsDiscontinuous(posts)) {
           const oldestPost = await postDao.queryOldestPostByGroupId(
             Number(groupId),
           );
@@ -303,9 +305,15 @@ class PostDataController {
               }
             });
           } else {
-            // If do the message preview feature, should modify this code
-            deleteGroupIdSet.add(groupId);
-            deletePostIds.concat(posts.map((post: Post) => post.id));
+            const sortedPost = posts.sort(this.postCreationTimeSortingFn);
+            const index = sortedPost.findIndex(
+              (post: Post) => post.created_at === post.modified_at,
+            );
+            if (index !== -1) {
+              const deletePosts = sortedPost.slice(0, index);
+              deleteGroupIdSet.add(groupId);
+              deletePostIds.concat(deletePosts.map((post: Post) => post.id));
+            }
           }
         }
       }),
