@@ -275,7 +275,10 @@ class PostDataController {
     await Promise.all(
       groupIds.map(async (groupId: string) => {
         const posts: Post[] = groupPosts[groupId];
-        if (this._isGroupPostsDiscontinuous(posts)) {
+        if (
+          posts.length < INDEX_POST_MAX_SIZE &&
+          this._isGroupPostsDiscontinuous(posts)
+        ) {
           const oldestPost = await postDao.queryOldestPostByGroupId(
             Number(groupId),
           );
