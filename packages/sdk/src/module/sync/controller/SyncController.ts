@@ -33,6 +33,7 @@ import { SequenceProcessorHandler } from '../../../framework/processor/SequenceP
 import { SYNC_SOURCE } from '../types';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
+import { AccountService } from '../../../service/account/accountService';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -379,12 +380,15 @@ class SyncController {
   }
 
   private async _checkIndex() {
-    const socketUserConfig = new SyncUserConfig();
-    const succeed = socketUserConfig.getIndexSucceed();
+    const accountService: AccountService = AccountService.getInstance();
+    if (accountService.isGlipLogin()) {
+      const socketUserConfig = new SyncUserConfig();
+      const succeed = socketUserConfig.getIndexSucceed();
 
-    if (!succeed) {
-      mainLogger.info(LOG_TAG, ' _checkIndex, last index was not succeed');
-      await this.syncData();
+      if (!succeed) {
+        mainLogger.info(LOG_TAG, ' _checkIndex, last index was not succeed');
+        await this.syncData();
+      }
     }
   }
 }

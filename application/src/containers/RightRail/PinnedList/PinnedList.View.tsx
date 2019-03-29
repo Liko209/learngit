@@ -72,6 +72,7 @@ class PinnedListView extends React.Component<
             hasMore={this.hasMore}
             loadingMoreRenderer={this.defaultLoadingMore()}
             noRowsRenderer={this.renderEmptyContent()}
+            stickToLastPosition={false}
           >
             {this._renderItems()}
           </JuiInfiniteList>

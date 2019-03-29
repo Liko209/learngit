@@ -76,14 +76,15 @@ const JuiDataLoader = ({
     const { scrollTop, scrollHeight, clientHeight } = currentTarget;
     const atTop = 0 === scrollTop;
     const atBottom = scrollHeight === scrollTop + clientHeight;
-    const direction = scrollTop - prevScrollTopRef.current > 0 ? 'down' : 'up';
+    const scrollTopDiff = Math.floor(scrollTop - prevScrollTopRef.current);
+
     prevScrollTopRef.current = currentTarget.scrollTop;
 
-    if (atTop && direction === 'up') {
+    if (atTop && scrollTopDiff < 0) {
       if (hasMore('up')) {
         loadData('up');
       }
-    } else if (atBottom && direction === 'down') {
+    } else if (atBottom && scrollTopDiff > 0) {
       if (hasMore('down')) {
         loadData('down');
       }
