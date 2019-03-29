@@ -76,7 +76,7 @@ const JuiDataLoader = ({
     const { scrollTop, scrollHeight, clientHeight } = currentTarget;
     const atTop = 0 === scrollTop;
     const atBottom = scrollHeight === scrollTop + clientHeight;
-    const scrollTopDiff = scrollTop - prevScrollTopRef.current;
+    const scrollTopDiff = Math.floor(scrollTop - prevScrollTopRef.current);
 
     prevScrollTopRef.current = currentTarget.scrollTop;
 
