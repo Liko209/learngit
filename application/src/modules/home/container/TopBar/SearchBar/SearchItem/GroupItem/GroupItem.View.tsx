@@ -6,7 +6,7 @@
 import React from 'react';
 import i18next from 'i18next';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { GroupAvatar } from '@/containers/Avatar';
 import { JuiButton, JuiIconButton } from 'jui/components/Buttons';
@@ -14,7 +14,7 @@ import { ViewProps } from './types';
 
 @observer
 class GroupItemComponent extends React.Component<
-  ViewProps & WithNamespaces,
+  ViewProps & WithTranslation,
   {}
 > {
   handleJoinTeam = async (e: React.MouseEvent | KeyboardEvent) => {
@@ -105,6 +105,6 @@ class GroupItemComponent extends React.Component<
   }
 }
 
-const GroupItemView = translate('translations')(GroupItemComponent);
+const GroupItemView = withTranslation('translations')(GroupItemComponent);
 
 export { GroupItemView };

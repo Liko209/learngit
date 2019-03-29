@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-03-01 10:44:59
- * @Last Modified by: isaac.liu
- * @Last Modified time: 2019-03-22 15:04:04
+ * @Last Modified by: Nello Huang (nello.huang@ringcentral.com)
+ * @Last Modified time: 2019-03-27 17:13:42
  */
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
@@ -70,8 +70,9 @@ test(formalName('Check can open profile dialog when click the item of search res
     await profileDialog.clickCloseButton();
   });
 
-  await h(t).withLog(`Then Keep the search text in the search box`, async () => {
-    await t.expect(searchBar.inputArea.value).eql(anotherUserName)
+
+  await h(t).withLog(`And No text in the search box`, async () => {
+    await t.expect(searchBar.inputArea.value).eql("")
   });
 
   // group
@@ -126,7 +127,7 @@ test(formalName('Check can open profile dialog when click the item of search res
     await searchBar.dropDownListShouldContainTeam(team);
   });
 
-  // recently search 
+  // recently search
   // people
   await h(t).withLog(`Given I clear search box text`, async () => {
     await searchBar.clearInputAreaText();

@@ -12,6 +12,7 @@ import {
   SURVIVAL_MODE,
   NETWORK_HANDLE_TYPE,
   RESPONSE_HEADER_KEY,
+  HA_PRIORITY,
 } from 'foundation';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
@@ -124,6 +125,7 @@ function requestServerStatus(
     method: NETWORK_METHOD.GET,
     authFree: true,
     via: NETWORK_VIA.HTTP,
+    HAPriority: HA_PRIORITY.HIGH,
   };
 
   const callbackFunc = (response: BaseResponse) => {

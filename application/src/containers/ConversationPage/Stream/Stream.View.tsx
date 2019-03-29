@@ -25,7 +25,7 @@ import {
 } from './types';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { toTitleCase } from '@/utils/string';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiInfiniteList,
   IndexRange,
@@ -37,7 +37,7 @@ import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationIniti
 import JuiConversationCard from 'jui/src/pattern/ConversationCard';
 import { goToConversation } from '@/common/goToConversation';
 
-type Props = WithNamespaces & StreamViewProps & StreamProps;
+type Props = WithTranslation & StreamViewProps & StreamProps;
 
 type StreamItemPost = StreamItem & { value: number[] };
 
@@ -265,10 +265,7 @@ class StreamViewComponent extends Component<Props> {
     const visiblePosts = _(visibleItems)
       .flatMap('value')
       .concat();
-    if (
-      this.props.hasMore('down') ||
-      !visiblePosts.includes(mostRecentPostId)
-    ) {
+    if (this.props.hasMore('down') || !visiblePosts.includes(mostRecentPostId)) {
       this.handleMostRecentHidden();
     } else {
       this.handleMostRecentViewed();
@@ -436,6 +433,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 const view = extractView<Props>(StreamViewComponent);
-const StreamView = translate('translations')(view);
+const StreamView = withTranslation('translations')(view);
 
 export { StreamView, StreamViewComponent };

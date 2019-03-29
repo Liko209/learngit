@@ -10,14 +10,14 @@ type NavConfig = {
   url: string;
   Icon: React.ReactElement;
   IconSelected: React.ReactElement;
-  title: string;
+  title: string | Promise<string>;
   placement: 'top' | 'bottom';
   umi?: JSX.Element;
 };
 
 type SubModuleConfig = {
   route?: RouteProps;
-  nav?: () => NavConfig;
+  nav?: () => Promise<NavConfig>;
   loader?: () => Promise<{ config: ModuleConfig }>;
   afterBootstrap?: (...args: any[]) => void;
 };

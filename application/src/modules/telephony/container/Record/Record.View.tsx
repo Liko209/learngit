@@ -6,12 +6,12 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { RecordViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiKeypadAction } from 'jui/pattern/Dialer';
 
-type Props = RecordViewProps & WithNamespaces;
+type Props = RecordViewProps & WithTranslation;
 
 @observer
 class RecordViewComponent extends Component<Props> {
@@ -39,6 +39,6 @@ class RecordViewComponent extends Component<Props> {
   }
 }
 
-const RecordView = translate('translations')(RecordViewComponent);
+const RecordView = withTranslation('translations')(RecordViewComponent);
 
 export { RecordView };

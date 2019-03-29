@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogGroupContentViewProps } from './types';
 import { JuiDivider } from 'jui/components/Divider';
 import { GroupAvatar } from '@/containers/Avatar';
@@ -26,7 +26,7 @@ import { renderButton } from './common/button';
 
 @observer
 class ProfileDialogGroupContentViewComponent extends Component<
-  WithNamespaces & ProfileDialogGroupContentViewProps
+  WithTranslation & ProfileDialogGroupContentViewProps
 > {
   joinTeamAfterClick = () => {
     const handerJoinTeam = joinTeam(this.props.group);
@@ -89,7 +89,7 @@ class ProfileDialogGroupContentViewComponent extends Component<
   }
 }
 
-const ProfileDialogGroupContentView = translate('translations')(
+const ProfileDialogGroupContentView = withTranslation('translations')(
   ProfileDialogGroupContentViewComponent,
 );
 

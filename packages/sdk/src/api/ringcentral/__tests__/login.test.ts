@@ -10,7 +10,7 @@ import {
   refreshToken,
   requestServerStatus,
 } from '../login';
-import { NETWORK_VIA } from 'foundation';
+import { NETWORK_VIA, NETWORK_METHOD, HA_PRIORITY } from 'foundation';
 
 jest.mock('../../api');
 jest.mock('foundation/src/network/NetworkRequestExecutor');
@@ -127,6 +127,16 @@ describe('login', () => {
       } as any;
       const mockCallBack = jest.fn();
       requestServerStatus(mockCallBack);
+      expect(Api.rcNetworkClient.getRequestByVia).toBeCalledWith(
+        {
+          path: '/v1.0/status',
+          method: NETWORK_METHOD.GET,
+          authFree: true,
+          via: NETWORK_VIA.HTTP,
+          HAPriority: HA_PRIORITY.HIGH,
+        },
+        NETWORK_VIA.HTTP,
+      );
       expect(mockCallBack).toBeCalledWith(true, 0);
     });
 
@@ -144,6 +154,16 @@ describe('login', () => {
       } as any;
       const mockCallBack = jest.fn();
       requestServerStatus(mockCallBack);
+      expect(Api.rcNetworkClient.getRequestByVia).toBeCalledWith(
+        {
+          path: '/v1.0/status',
+          method: NETWORK_METHOD.GET,
+          authFree: true,
+          via: NETWORK_VIA.HTTP,
+          HAPriority: HA_PRIORITY.HIGH,
+        },
+        NETWORK_VIA.HTTP,
+      );
       expect(mockCallBack).toBeCalledWith(false, 20);
     });
   });
