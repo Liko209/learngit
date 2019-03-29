@@ -59,10 +59,6 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
 
     return { hasMore, data: posts };
   }
-
-  getGroupId(): number {
-    return this._groupId;
-  }
 }
 
 class PostUsedItemCache implements IUsedCache {
