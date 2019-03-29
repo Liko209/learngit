@@ -19,7 +19,7 @@ import { mainLogger } from 'sdk';
 const LOG_TAG = 'FetchPostDataListHandler';
 class FetchPostDataListHandler extends FetchSortableDataListHandler<Post> {
   constructor(
-    dataProvider: IFetchSortableDataProvider<Post> | undefined,
+    dataProvider: IFetchSortableDataProvider<Post>,
     options: IFetchSortableDataListHandlerOptions<Post>,
     listStore: SortableListStore<Post> = new SortableListStore<Post>(
       options.sortFunc,
