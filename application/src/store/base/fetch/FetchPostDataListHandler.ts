@@ -35,7 +35,7 @@ class FetchPostDataListHandler extends FetchSortableDataListHandler<Post> {
           type: EVENT_TYPES.DELETE,
           body: { ids },
         });
-        this.fetchData(QUERY_DIRECTION.OLDER, 20);
+        this.fetchData(QUERY_DIRECTION.OLDER);
       },
     );
   }
