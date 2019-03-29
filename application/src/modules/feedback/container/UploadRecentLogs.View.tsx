@@ -20,7 +20,13 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 
 type State = {};
-
+function removeProtocol(url: string) {
+  if (url.indexOf('://')) {
+    const protocolEndPosition = url.indexOf('://');
+    return url.substring(protocolEndPosition + 3);
+  }
+  return url;
+}
 @observer
 class UploadRecentLogsView extends React.Component<
   UploadRecentLogsViewProps & UploadRecentLogsViewModelProps,
@@ -42,12 +48,15 @@ class UploadRecentLogsView extends React.Component<
     let isSuccess = true;
     let message = '';
     if (uploadResult) {
+      uploadResult.url = removeProtocol(uploadResult.url);
       const openResult = this.props.openEmail(
         'Jupiter Feedback',
         escape(
-          `FileName: ${uploadResult.filename}\nFile stack url: ${
-            uploadResult.url
-          }\n${i18next.t('feedback.describeYourProblemHere')}:\n`,
+          `HandleId: ${uploadResult.handle}\nFileName: ${
+            uploadResult.filename
+          }\nFile stack url: ${uploadResult.url}\n${i18next.t(
+            'feedback.describeYourProblemHere',
+          )}:\n`,
         ),
       );
       isSuccess = openResult;
