@@ -4,11 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { observer } from 'mobx-react';
 import { JuiConversationPageMember } from 'jui/pattern/ConversationPageMember';
 import { MemberViewProps } from './types';
 import { OpenProfile } from '@/common/OpenProfile';
 import i18next from 'i18next';
 
+@observer
 class MemberView extends React.Component<MemberViewProps> {
   openProfile = () => {
     OpenProfile.show(this.props.groupId);

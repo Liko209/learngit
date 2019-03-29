@@ -13,7 +13,6 @@ import React, {
   useEffect,
   useLayoutEffect,
   useRef,
-  useState,
 } from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import { noop } from '../../foundation/utils';
@@ -56,8 +55,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     before = null,
     after = null,
     stickToBottom,
-    classWhenScrollable = 'scrollable',
-    classWhenUnScrollable = 'un-scrollable',
+    contentStyle,
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
@@ -84,11 +82,19 @@ const JuiVirtualizedList: RefForwardingComponent<
       visibleRange.startIndex - overscan,
       minIndex,
     );
+
     renderedRange.stopIndex = visibleRange.stopIndex + overscan;
 
     return renderedRange;
   };
-
+  const virtualizedListStyle: React.CSSProperties = {
+    height,
+    overflow: 'auto',
+    // Prevent repaints on scroll
+    transform: 'translateZ(0)',
+    // Prevent chrome's default behavior
+    overflowAnchor: 'none',
+  };
   const computeRangeOffset = (
     prevChildrenCount: number | null,
     prevStartIndex: number | null,
@@ -176,7 +182,8 @@ const JuiVirtualizedList: RefForwardingComponent<
     if (ref.current) {
       result =
         height >=
-        rowManager.getRowOffsetTop(childrenCount) - ref.current.scrollTop;
+        rowManager.getRowOffsetTop(childrenCount) -
+          Math.ceil(ref.current.scrollTop);
     }
     return result;
   };
@@ -222,7 +229,6 @@ const JuiVirtualizedList: RefForwardingComponent<
 
         // TODO Don't re-render if range not changed
         setRenderedRange(newRenderedRange);
-        prevAtBottomRef.current = computeAtBottom();
 
         // Emit events
         if (!isRangeEqual(renderedRange, newRenderedRange)) {
@@ -235,7 +241,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     }
   };
 
-  const ensureVisibleRangeIsRendered = () => {
+  const ensureNoBlankArea = () => {
     if (shouldUpdateRange()) {
       updateRange();
     }
@@ -265,8 +271,6 @@ const JuiVirtualizedList: RefForwardingComponent<
   const ref: DivRefObject = useRef(null);
   const beforeRef: DivRefObject = useRef(null);
   const contentRef: DivRefObject = useRef(null);
-  const prevScrollable: React.MutableRefObject<boolean> = useRef(true);
-  const [listStyle, setListStyle] = useState(classWhenScrollable);
 
   //
   // State
@@ -302,7 +306,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     renderedRange,
     usePrevious(() => children.length),
     usePrevious(() => startIndex),
-    usePrevious(() => children[startIndex]),
+    usePrevious(() => children[startIndex] || null),
   );
 
   //
@@ -320,7 +324,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     const handleRowSizeChange = (el: HTMLElement, i: number) => {
       const { diff } = rowManager.setRowHeight(startIndex + i, el.offsetHeight);
 
-      if (computeAtBottom()) {
+      if (shouldScrollToBottom()) {
         scrollToBottom();
       } else {
         const beforeFirstVisibleRow = i + startIndex < scrollPosition.index;
@@ -328,12 +332,19 @@ const JuiVirtualizedList: RefForwardingComponent<
           scrollToPosition(scrollPosition);
         }
       }
-      ensureVisibleRangeIsRendered();
+      return { diff };
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
       const observer = new ResizeObserver(() => {
-        handleRowSizeChange(el, i);
+        const { diff } = handleRowSizeChange(el, i);
+
+        // Fix blank area:
+        // When row shrinks, the list didn't recompute rendered range
+        // automatically, which may leave a blank area in the list.
+        if (diff < 0) {
+          ensureNoBlankArea();
+        }
       });
       observer.observe(el);
       return observer;
@@ -358,19 +369,6 @@ const JuiVirtualizedList: RefForwardingComponent<
   },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
-  // scrollable <--> unScrollable
-  // TODO Emit event instead of modify style directly in VirtualizedList
-  //
-  useEffect(() => {
-    const contentHeight = rowManager.getRowsHeight(0, childrenCount - 1);
-    const scrollable = height < contentHeight;
-    if (prevScrollable.current !== scrollable) {
-      prevScrollable.current = scrollable;
-      setListStyle(scrollable ? classWhenScrollable : classWhenUnScrollable);
-    }
-  });
-
-  //
   // Emit visible range change when component mounted
   //
   useEffect(() => {
@@ -384,6 +382,13 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   useEffect(() => {
     prevAtBottomRef.current = computeAtBottom();
+  });
+
+  //
+  // Ensure no blank area
+  //
+  useEffect(() => {
+    ensureNoBlankArea();
   });
 
   //
@@ -410,19 +415,12 @@ const JuiVirtualizedList: RefForwardingComponent<
     <div
       ref={ref}
       onScroll={handleScroll}
-      style={{
-        height,
-        overflow: 'auto',
-        // Prevent repaints on scroll
-        transform: 'translateZ(0)',
-        // Prevent chrome's default behavior
-        overflowAnchor: 'none',
-      }}
+      style={virtualizedListStyle}
       data-test-automation-id="virtualized-list"
     >
       {wrappedBefore}
       <div style={{ height: heightBeforeStartRow }} />
-      <div style={{ minHeight: height }} ref={contentRef} className={listStyle}>
+      <div style={contentStyle} ref={contentRef}>
         {childrenToRender}
       </div>
       <div style={{ height: heightAfterStopRow }} />
@@ -437,8 +435,6 @@ const MemoList = memo(
   React.ForwardRefExoticComponent<
     {
       initialScrollToIndex?: number;
-      classWhenUnScrollable?: string;
-      classWhenScrollable?: string;
       onScroll?: (event: React.UIEvent) => void;
       onVisibleRangeChange?: (range: IndexRange) => void;
       onRenderedRangeChange?: (range: IndexRange) => void;
@@ -449,6 +445,7 @@ const MemoList = memo(
       overscan?: number;
       stickToBottom?: boolean;
       children: JSX.Element[];
+      contentStyle?: React.CSSProperties;
     } & React.RefAttributes<JuiVirtualizedListHandles>
   >
 >;

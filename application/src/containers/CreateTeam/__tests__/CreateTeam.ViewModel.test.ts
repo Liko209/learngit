@@ -14,7 +14,7 @@ import {
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { AccountGlobalConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/service/account/config';
 
 jest.mock('sdk/service/account/config');
 jest.mock('../../Notification');
@@ -43,9 +43,7 @@ describe('CreateTeamVM', () => {
 
   it('create team success', async () => {
     const creatorId = 1;
-    AccountGlobalConfig.getCurrentUserId = jest
-      .fn()
-      .mockImplementation(() => creatorId);
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(creatorId);
     groupService.createTeam = jest.fn().mockImplementation(() => '');
 
     const name = 'name';
@@ -70,9 +68,8 @@ describe('CreateTeamVM', () => {
   it('create team success handle error', async () => {
     const error = getNewJServerError(ERROR_CODES_SERVER.ALREADY_TAKEN);
     const creatorId = 1;
-    AccountGlobalConfig.getCurrentUserId = jest
-      .fn()
-      .mockImplementation(() => creatorId);
+
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(creatorId);
     groupService.createTeam = jest.fn().mockRejectedValue(error);
 
     jest.spyOn(createTeamVM, 'createErrorHandler');
@@ -96,9 +93,8 @@ describe('CreateTeamVM', () => {
       '',
     );
     const creatorId = 1;
-    AccountGlobalConfig.getCurrentUserId = jest
-      .fn()
-      .mockImplementation(() => creatorId);
+
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(creatorId);
     groupService.createTeam = jest.fn().mockRejectedValueOnce(error);
     const name = 'name';
     const memberIds = [1, 2];

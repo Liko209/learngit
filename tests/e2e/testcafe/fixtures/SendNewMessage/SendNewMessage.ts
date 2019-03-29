@@ -115,8 +115,7 @@ test(formalName('JPT-288 Check the maximum length of the “Type new message" Te
 
 });
 
-// skip due to https://jira.ringcentral.com/browse/FIJI-4332
-test.skip(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-286']), async t => {
+test(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendNewMessage', 'Mia.Cai', 'JPT-286']), async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[0];
   const sendNewMessageModal = app.homePage.sendNewMessageModal;

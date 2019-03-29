@@ -14,7 +14,7 @@ import {
   PerformanceTracerHolder,
   PERFORMANCE_KEYS,
 } from '../../../utils/performance';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../service/account/config';
 import {
   RecentSearchTypes,
   FuzzySearchPersonOptions,
@@ -96,7 +96,8 @@ class SearchPersonController {
     fetchAllIfSearchKeyEmpty?: boolean,
     recentFirst?: boolean,
   ) {
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     const recentSearchedPersons = recentFirst
       ? this._searchService.getRecentSearchRecordsByType(
           RecentSearchTypes.PEOPLE,

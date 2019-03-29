@@ -37,7 +37,7 @@ class FakeActionController implements IPostActionController {
   }
 }
 
-let postItemController;
+let postItemController: PostItemControllers;
 
 describe('PostItemController', () => {
   const itemService = new ItemService();
@@ -128,6 +128,17 @@ describe('PostItemController', () => {
   });
   describe('waiting4Items', () => {});
   describe('updatePreInsertItemVersion', () => {
+    it('update item should be set to the end of array', () => {
+      const post = _.cloneDeep(localPostJson4UnitTest);
+      post.item_ids = [-1, -2, -3];
+      const result = postItemController.updatePreInsertItemVersion(post, {
+        status: PROGRESS_STATUS.SUCCESS,
+        preInsertId: -1,
+        updatedId: 1,
+      });
+      expect(result.post.item_ids).toEqual([-2, -3, 1]);
+    });
+
     it('should return shouldUpdatePost = false when PROGRESS_STATUS = FAIL', () => {
       const post = _.cloneDeep(localPostJson4UnitTest);
       const result = postItemController.updatePreInsertItemVersion(post, {

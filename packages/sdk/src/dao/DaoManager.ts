@@ -8,7 +8,8 @@ import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
 import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
-import { AuthGlobalConfig } from '../service/auth/config';
+import { SyncUserConfig } from '../module/sync/config';
+import { AccountGlobalConfig } from '../service/account/config';
 
 class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   private kvStorageManager: KVStorageManager;
@@ -33,7 +34,13 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
         this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
         await this.dbManager.deleteDatabase();
       }
-      NewGlobalConfig.removeLastIndexTimestamp();
+      if (AccountGlobalConfig.getUserDictionary()) {
+        // TODO FIJI-4396
+        const synConfig = new SyncUserConfig();
+        synConfig.removeLastIndexTimestamp();
+        synConfig.removeCanUpdateIndexTimeStamp();
+        synConfig.removeFetchRemaining();
+      }
     }
 
     const db = this.dbManager.getDatabase();
@@ -70,16 +77,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
     await this.dbManager.closeDatabase();
   }
 
-  private _clearLocalStorage() {
-    // need to remove last index timestamp or can't sync data when users re-login
-    NewGlobalConfig.removeLastIndexTimestamp();
-    // need to remove glip token or can't logout
-    AuthGlobalConfig.removeGlipToken();
-    AuthGlobalConfig.removeRcToken();
-  }
-
   async deleteDatabase(): Promise<void> {
-    this._clearLocalStorage();
     await this.dbManager.deleteDatabase();
   }
 

@@ -307,12 +307,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _handleLoadInitialPostsError(err: Error) {
     if (this._canHandleError(err)) {
-      this.loadInitialPostsError = err;
+      throw err; // let view catch the error
     } else {
       generalErrorHandler(err);
     }
   }
-
   private _handleLoadMoreError(err: Error, direction: QUERY_DIRECTION) {
     if (this._canHandleError(err)) {
       this._debouncedToast(direction);

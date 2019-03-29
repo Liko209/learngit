@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import moment from 'moment';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewerTitleViewProps } from './types';
 import {
   JuiDialogHeader,
@@ -36,7 +36,7 @@ import ReactResizeDetector from 'react-resize-detector';
 
 @observer
 class ViewerTitleViewComponent extends Component<
-  WithNamespaces & ViewerTitleViewProps
+  WithTranslation & ViewerTitleViewProps
 > {
   static contextType = DialogContext;
 
@@ -142,6 +142,8 @@ class ViewerTitleViewComponent extends Component<
   }
 }
 
-const ViewerTitleView = translate('translations')(ViewerTitleViewComponent);
+const ViewerTitleView = withTranslation('translations')(
+  ViewerTitleViewComponent,
+);
 
 export { ViewerTitleView };

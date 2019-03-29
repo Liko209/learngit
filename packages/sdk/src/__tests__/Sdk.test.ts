@@ -16,8 +16,9 @@ import {
 import { daoManager } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
 import { GlobalConfigService, UserConfigService } from '../module/config';
-import { AuthGlobalConfig } from '../service/auth/config';
+import { AuthUserConfig } from '../service/auth/config';
 import { SyncService } from '../module/sync';
+import { AccountGlobalConfig } from '../service/account/config';
 
 jest.mock('../module/config');
 jest.mock('../service/auth/config');
@@ -75,6 +76,7 @@ describe('Sdk', () => {
 
   describe('onAuthSuccess()', () => {
     beforeEach(() => {
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
       jest.spyOn(sdk, 'updateNetworkToken').mockImplementation(() => {});
       sdk.onAuthSuccess();
     });
@@ -104,58 +106,6 @@ describe('Sdk', () => {
     });
     it('should clear database', () => {
       expect(daoManager.deleteDatabase).toHaveBeenCalled();
-    });
-  });
-
-  describe('initNetworkManager()', () => {
-    it('should init with glip token', () => {
-      AuthGlobalConfig.getGlipToken = jest
-        .fn()
-        .mockReturnValueOnce('glip token');
-      AuthGlobalConfig.getRcToken = jest.fn().mockReturnValueOnce(null);
-      AuthGlobalConfig.getGlip2Token = jest.fn().mockReturnValueOnce(null);
-
-      sdk.updateNetworkToken();
-
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        new Token('glip token'),
-        HandleByGlip,
-      );
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        new Token('glip token'),
-        HandleByUpload,
-      );
-    });
-
-    it('should init with rc token ', () => {
-      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValueOnce(null);
-      AuthGlobalConfig.getRcToken = jest.fn().mockReturnValueOnce('rc token');
-      AuthGlobalConfig.getGlip2Token = jest.fn().mockReturnValueOnce(null);
-
-      sdk.updateNetworkToken();
-
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        'rc token',
-        HandleByRingCentral,
-      );
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        'rc token',
-        HandleByGlip2,
-      );
-    });
-
-    it('should init with glip2 token ', () => {
-      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValueOnce(null);
-      AuthGlobalConfig.getRcToken = jest.fn().mockReturnValueOnce(null);
-      AuthGlobalConfig.getGlip2Token = jest
-        .fn()
-        .mockReturnValueOnce('glip2 token');
-      sdk.updateNetworkToken();
-
-      expect(networkManager.setOAuthToken).toHaveBeenCalledWith(
-        'glip2 token',
-        HandleByGlip2,
-      );
     });
   });
 

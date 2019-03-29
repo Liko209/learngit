@@ -4,6 +4,7 @@ import * as _ from 'lodash';
 import axios, { AxiosInstance } from 'axios';
 
 import { RcPlatformSdk } from './platform';
+import { H } from '../helpers';
 
 interface Person {
   _id: number;
@@ -402,10 +403,9 @@ export class GlipSdk {
     return await this.updateProfile(data, rcId);
   }
 
-  async bookmarkPosts(postIds: string | string[], rcId?: string) {
-    const posts = [].concat(postIds)
+  async bookmarkPosts(postIds: string | number | string[] | number[], rcId?: string) {
     const data = {
-      favorite_post_ids: posts
+      favorite_post_ids: H.toNumberArray(postIds)
     }
     await this.updateProfile(data, rcId);
   }
@@ -564,9 +564,9 @@ export class GlipSdk {
     await this.updateProfile(data, rcId);
   }
 
-  async favoriteGroups(groupIds: number[], rcId?: string) {
+  async favoriteGroups(groupIds:string | number | string[] | number[], rcId?: string) {
     const data = {
-      favorite_group_ids: groupIds
+      favorite_group_ids: H.toNumberArray(groupIds)
     }
     await this.updateProfile(data, rcId);
   }

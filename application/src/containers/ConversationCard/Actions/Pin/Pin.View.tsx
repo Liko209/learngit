@@ -5,7 +5,7 @@
  */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import i18next from 'i18next';
 import { PinViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -14,7 +14,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-type Props = PinViewProps & WithNamespaces;
+type Props = PinViewProps & WithTranslation;
 
 @observer
 class PinViewComponent extends Component<Props> {
@@ -54,6 +54,7 @@ class PinViewComponent extends Component<Props> {
           color={isPin ? 'primary' : undefined}
           onClick={this._handlePinButton}
           disabled={shouldDisablePinOption}
+          disableToolTip={shouldDisablePinOption}
           variant="plain"
           data-name="actionBarPin"
         >
@@ -64,6 +65,6 @@ class PinViewComponent extends Component<Props> {
   }
 }
 
-const PinView = translate('translations')(PinViewComponent);
+const PinView = withTranslation('translations')(PinViewComponent);
 
 export { PinView };

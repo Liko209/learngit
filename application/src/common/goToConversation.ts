@@ -7,8 +7,15 @@ import history from '@/history';
 import { GroupService } from 'sdk/module/group';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
+type BaseGoToConversationParams = {
+  conversationId: number;
+  jumpToPostId?: number;
+  replaceHistory?: boolean;
+};
+
 type GoToConversationParams = {
   id: number | number[];
+  jumpToPostId?: number;
   message?: string;
   beforeJump?: (id: number) => {};
   hasBeforeJumpFun?: boolean;
@@ -41,8 +48,8 @@ const getConversationId = async (id: number | number[]) => {
   return null;
 };
 
-async function goToConversation(params: GoToConversationParams) {
-  const { id, beforeJump, hasBeforeJumpFun } = params;
+async function goToConversationWithLoading(params: GoToConversationParams) {
+  const { id, jumpToPostId, beforeJump, hasBeforeJumpFun } = params;
   const timer = setTimeout(() => {
     history.push('/messages/loading');
   },                       DELAY_LOADING);
@@ -61,7 +68,11 @@ async function goToConversation(params: GoToConversationParams) {
     }
     clearTimeout(timer);
     (beforeJump || hasBeforeJumpFun) && (await beforeJumpFun(conversationId));
-    history.replace(`/messages/${conversationId}`);
+    await goToConversation({
+      conversationId,
+      jumpToPostId,
+      replaceHistory: true,
+    });
     return true;
   } catch (err) {
     if (beforeJump) {
@@ -77,7 +88,25 @@ async function goToConversation(params: GoToConversationParams) {
   }
 }
 
+function goToConversation({
+  conversationId,
+  jumpToPostId,
+  replaceHistory,
+}: BaseGoToConversationParams) {
+  const args: [string, any?] = [`/messages/${conversationId}`];
+  if (jumpToPostId) {
+    args.push({ jumpToPostId });
+  }
+
+  if (replaceHistory) {
+    history.replace(...args);
+  } else {
+    history.push(...args);
+  }
+}
+
 export {
+  goToConversationWithLoading,
   goToConversation,
   getConversationId,
   GoToConversationParams,

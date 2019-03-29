@@ -1,9 +1,21 @@
 import { networkLogger } from '../log';
 import { IResponse } from '.';
+import { IRequest } from './network';
 
-export default function doLog(response: IResponse) {
+export function doResponseLog(response: IResponse) {
   const request = response.request;
   delete response.request;
 
-  networkLogger.info('request: ', request, 'response: ', response);
+  networkLogger.info(
+    'responseTime: ',
+    Date.now(),
+    'request: ',
+    request,
+    'response: ',
+    response,
+  );
+}
+
+export function doRequestLog(request: IRequest) {
+  networkLogger.info('requestTime: ', Date.now(), 'request: ', request);
 }

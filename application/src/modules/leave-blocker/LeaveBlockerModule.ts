@@ -5,9 +5,10 @@
  */
 import { AbstractModule, inject } from 'framework';
 import { LeaveBlockerService } from './service';
+import { LEAVE_BLOCKER_SERVICE } from './interface';
 
 class LeaveBlockerModule extends AbstractModule {
-  @inject(LeaveBlockerService)
+  @inject(LEAVE_BLOCKER_SERVICE)
   private _leaveBlockerService: LeaveBlockerService;
 
   async bootstrap() {

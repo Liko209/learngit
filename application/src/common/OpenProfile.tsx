@@ -37,6 +37,7 @@ class OpenProfile {
     }
     const { dismiss } = Dialog.simple(<ProfileDialog id={id} />, {
       size: 'medium',
+      scroll: 'body',
     });
     afterClick && afterClick();
 

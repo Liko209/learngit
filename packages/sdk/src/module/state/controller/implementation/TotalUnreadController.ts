@@ -17,7 +17,7 @@ import { GroupState } from '../../entity';
 import { GroupService } from '../../../group';
 import { ProfileService } from '../../../profile';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../service/account/config';
 import notificationCenter, {
   NotificationEntityPayload,
 } from '../../../../service/notificationCenter';
@@ -149,7 +149,8 @@ class TotalUnreadController {
     payload: NotificationEntityPayload<Group>,
   ): Promise<void> {
     if (payload.type === EVENT_TYPES.UPDATE) {
-      const currentUserId = AccountGlobalConfig.getCurrentUserId();
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
       await Promise.all(
         payload.body.ids.map(async (id: number) => {
           const group = payload.body.entities.get(id);
@@ -252,13 +253,12 @@ class TotalUnreadController {
     const profileService: ProfileService = ProfileService.getInstance();
     const groups = await groupService.getEntitySource().getEntities();
     this._favoriteGroupIds = (await profileService.getFavoriteGroupIds()) || [];
+    const userConfig = new AccountUserConfig();
+    const glipId = userConfig.getGlipUserId();
 
     await Promise.all(
       groups.map(async (group: Group) => {
-        if (
-          !groupService.isValid(group) ||
-          !group.members.includes(AccountGlobalConfig.getCurrentUserId())
-        ) {
+        if (!groupService.isValid(group) || !group.members.includes(glipId)) {
           return;
         }
         await this._addNewGroupUnread(group);

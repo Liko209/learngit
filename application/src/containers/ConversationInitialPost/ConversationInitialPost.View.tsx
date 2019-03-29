@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import {
-  JuiConversationInitialPost,
   JuiConversationInitialPostHeader,
   StyledTitle,
   StyledSpan,
@@ -14,7 +13,7 @@ import {
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
@@ -138,15 +137,15 @@ class ConversationInitialPost extends React.Component<
   render() {
     const streamIsEmpty = !this.props.notEmpty;
     return (
-      <JuiConversationInitialPost>
+      <>
         {this._conversationInitialPostHeader}
         {streamIsEmpty ? this._conversationInitialPostBody : null}
-      </JuiConversationInitialPost>
+      </>
     );
   }
 }
 
-const ConversationInitialPostView = translate('translations')(
+const ConversationInitialPostView = withTranslation('translations')(
   ConversationInitialPost,
 );
 

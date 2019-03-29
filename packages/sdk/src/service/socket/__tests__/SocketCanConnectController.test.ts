@@ -6,15 +6,17 @@
 
 import { SocketCanConnectController } from '../SocketCanConnectController';
 import { canConnect } from '../../../api/glip/user';
-import { AccountGlobalConfig } from '../../account/config';
+import { AccountUserConfig } from '../../account/config';
 import { PresenceService } from '../../../module/presence/service/PresenceService';
-import { NewGlobalConfig } from '../../config';
-import { AuthGlobalConfig } from '../../../service/auth/config';
+import { AuthUserConfig } from '../../../service/auth/config';
+import { SyncUserConfig } from '../../../module/sync/config';
+
 jest.mock('../../../api/glip/user');
 jest.mock('../../../module/presence/service/PresenceService');
 jest.mock('../../../service/config');
 jest.mock('../../../service/account/config');
 jest.mock('../../../service/auth/config');
+jest.mock('../../../module/sync/config');
 
 let presenceService;
 
@@ -111,9 +113,9 @@ describe('SocketCanConnectController', () => {
     });
 
     function mockData({ user_id, time, token, presence }) {
-      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(user_id);
-      NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(time);
-      AuthGlobalConfig.getGlipToken.mockReturnValueOnce(token);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(user_id);
+      SyncUserConfig.prototype.getLastIndexTimestamp.mockReturnValueOnce(time);
+      AuthUserConfig.prototype.getGlipToken.mockReturnValueOnce(token);
       const controller = getController();
       jest
         .spyOn(controller, '_generateUserPresence')

@@ -110,6 +110,7 @@ class NewMessageView extends React.Component<ViewProps, State> {
     }
     return (
       <JuiModal
+        modalProps={{ scroll: 'body' }}
         open={true}
         size={'medium'}
         okBtnProps={{ disabled: disabledOkBtn }}

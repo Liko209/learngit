@@ -16,18 +16,18 @@ import {
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
 import PersonAPI from '../../../api/glip/person';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../service/account/config';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import {
   IEntityCacheSearchController,
   Terms,
 } from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { PersonDataController } from './PersonDataController';
-import { AuthGlobalConfig } from '../../../service/auth/config';
 import { ContactType } from '../types';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+import { AuthUserConfig } from '../../../service/auth/config';
 
 const PersonFlags = {
   is_webmail: 1,
@@ -93,7 +93,8 @@ class PersonController {
     headShotVersion: string,
     size: number,
   ) {
-    const token = AuthGlobalConfig.getGlipToken();
+    const auth = new AuthUserConfig();
+    const token = auth.getGlipToken();
     const glipToken = token && token.replace(/\"/g, '');
     if (headShotVersion) {
       return PersonAPI.getHeadShotUrl({
@@ -275,7 +276,8 @@ class PersonController {
     extensionData?: SanitizedExtensionModel,
   ) {
     const availNumbers: PhoneNumberInfo[] = [];
-    const isCoWorker = AccountGlobalConfig.getCurrentCompanyId() === companyId;
+    const userConfig = new AccountUserConfig();
+    const isCoWorker = userConfig.getCurrentCompanyId() === companyId;
     if (isCoWorker && extensionData) {
       availNumbers.push({
         type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,

@@ -17,11 +17,7 @@ const MAX_ITEM_LENGTH = 3;
 
 @observer
 class PinnedCellView extends Component<PinnedCellViewProps & PinnedCellProps> {
-  jumpToPost = () => {
-    const { post } = this.props;
-    const { id, groupId } = post;
-    jumpToPost(id, groupId);
-  }
+  jumpToPost = () => jumpToPost(this.props.post);
 
   render() {
     const {

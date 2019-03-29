@@ -12,6 +12,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { NETWORK_FAIL_TYPE } from '../../network';
 import { mainLogger } from '../../../log';
 import { SocketResponse } from './SocketResponse';
+
 interface ISocketRequestManager {
   newRequest: (requestId: SocketRequest) => void;
   newResponse: (response: any) => void;
@@ -66,6 +67,7 @@ class SocketRequestHelper implements ISocketRequestManager {
   private _removeRequestTimer(requestId: string) {
     const timerId = this.requestTimerMap.get(requestId);
     window.clearTimeout(timerId);
+    this.requestTimerMap.delete(requestId);
   }
 
   private _onRequestTimeout(requestId: string, reject: any) {
@@ -75,6 +77,20 @@ class SocketRequestHelper implements ISocketRequestManager {
       .setStatusText(NETWORK_FAIL_TYPE.TIME_OUT)
       .build();
     reject(response);
+  }
+
+  public onSocketDisconnect() {
+    for (const requestId of this.requestTimerMap.keys()) {
+      mainLogger.info(
+        `[Socket]: socket disconnect, return SOCKET_DISCONNECTED error for request id:${requestId}`,
+      );
+      const response = new SocketResponseBuilder()
+        .setStatus(0)
+        .setStatusText(NETWORK_FAIL_TYPE.SOCKET_DISCONNECTED)
+        .build();
+      this._removeRequestTimer(requestId);
+      this._handleRegisteredRequest(requestId, response);
+    }
   }
 }
 export default SocketRequestHelper;

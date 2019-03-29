@@ -103,16 +103,6 @@ class NetworkManager {
     const finalDecorator = new NetworkRequestDecorator(decorator);
     const handler = new NetworkRequestHandler(this.tokenManager, handlerType);
 
-    const httpVia = NETWORK_VIA.HTTP;
-    const httpConsumer = new NetworkRequestConsumer(
-      handler,
-      this.clientManager.getApiClient(httpVia),
-      CONSUMER_MAX_QUEUE_COUNT.HTTP,
-      httpVia,
-      handler,
-      finalDecorator,
-    );
-    this.addRequestConsumer(handler, httpVia, httpConsumer);
     const socketVia = NETWORK_VIA.SOCKET;
     const socketConsumer = new NetworkRequestConsumer(
       handler,
@@ -123,6 +113,17 @@ class NetworkManager {
       finalDecorator,
     );
     this.addRequestConsumer(handler, socketVia, socketConsumer);
+
+    const httpVia = NETWORK_VIA.HTTP;
+    const httpConsumer = new NetworkRequestConsumer(
+      handler,
+      this.clientManager.getApiClient(httpVia),
+      CONSUMER_MAX_QUEUE_COUNT.HTTP,
+      httpVia,
+      handler,
+      finalDecorator,
+    );
+    this.addRequestConsumer(handler, httpVia, httpConsumer);
 
     if (hasSurvivalMode) {
       const survivalMode = new NetworkRequestSurvivalMode(

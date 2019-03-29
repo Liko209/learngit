@@ -111,8 +111,7 @@ test(formalName('Check the maximum length of the Team Name input box', ['P1', 'J
   });
 });
 
-// skip due to https://jira.ringcentral.com/browse/FIJI-4333
-test.skip(formalName('Check the new team can be created successfully', ['P1', 'JPT-127']), async t => {
+test(formalName('Check the new team can be created successfully', ['P1', 'JPT-127']), async t => {
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[0];
   const teamName = `Team ${uuid()}`;
@@ -122,7 +121,6 @@ test.skip(formalName('Check the new team can be created successfully', ['P1', 'J
     await app.homePage.ensureLoaded();
   });
 
-  // case 3
   await h(t).withLog('Then I can open add menu in home page', async () => {
     await app.homePage.openAddActionMenu();
   });
@@ -402,7 +400,7 @@ test(formalName('Check \"Allow members to add other members\" can be turn on/off
   });
 
   await h(t).withLog('When I open "notAllowToAddUser..." team profile', async () => {
-    await app.homePage.profileDialog.close();
+    await app.homePage.profileDialog.clickCloseButton();
     await teamsSection.conversationEntryByName(notAllowToAddUserTeamName).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   });

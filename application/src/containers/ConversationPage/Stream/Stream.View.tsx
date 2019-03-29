@@ -7,7 +7,7 @@ import _ from 'lodash';
 import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction } from 'mobx';
-import { observer } from 'mobx-react';
+import { observer, Observer } from 'mobx-react';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -25,7 +25,7 @@ import {
 } from './types';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { toTitleCase } from '@/utils/string';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiInfiniteList,
   IndexRange,
@@ -33,10 +33,10 @@ import {
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
+import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
 import JuiConversationCard from 'jui/src/pattern/ConversationCard';
-// import { findDOMNode } from 'react-dom';
 
-type Props = WithNamespaces & StreamViewProps & StreamProps;
+type Props = WithTranslation & StreamViewProps & StreamProps;
 
 type StreamItemPost = StreamItem & { value: number[] };
 
@@ -172,11 +172,9 @@ class StreamViewComponent extends Component<Props> {
   private _renderInitialPost() {
     const { groupId, notEmpty } = this.props;
     return (
-      <ConversationInitialPost
-        notEmpty={notEmpty}
-        id={groupId}
-        key="ConversationInitialPost"
-      />
+      <JuiConversationInitialPostWrapper key="ConversationInitialPost">
+        <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
+      </JuiConversationInitialPostWrapper>
     );
   }
 
@@ -308,9 +306,26 @@ class StreamViewComponent extends Component<Props> {
     });
   }
 
+  private _contentStyleGen = _.memoize(
+    (height?: number) =>
+      ({
+        minHeight: height,
+        display: 'flex',
+        flexDirection: 'column',
+      } as React.CSSProperties),
+  );
+
+  private _onInitialDataFailed = (
+    <JuiStreamLoading
+      showTip={true}
+      tip={this.props.t('translations:message.prompt.MessageLoadingErrorTip')}
+      linkText={this.props.t('translations:common.prompt.tryAgain')}
+      onClick={this._loadInitialPosts}
+    />
+  );
+
   render() {
     const {
-      t,
       loadMore,
       hasMore,
       items,
@@ -322,38 +337,39 @@ class StreamViewComponent extends Component<Props> {
 
     const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
-    const onInitialDataFailed = (
-      <JuiStreamLoading
-        showTip={true}
-        tip={t('translations:message.prompt.MessageLoadingErrorTip')}
-        linkText={t('translations:common.prompt.tryAgain')}
-        onClick={this._loadInitialPosts}
-      />
-    );
 
     return (
       <JuiSizeMeasurer>
         {({ ref, height }) => (
-          <JuiStream ref={ref}>
-            {this._renderJumpToFirstUnreadButton()}
-            <JuiInfiniteList
-              ref={this._listRef}
-              height={height}
-              stickToBottom={true}
-              initialScrollToIndex={initialPosition}
-              minRowHeight={50} // extract to const
-              loadInitialData={this._loadInitialPosts}
-              loadMore={loadMore}
-              loadingRenderer={defaultLoading}
-              hasMore={hasMore}
-              loadingMoreRenderer={defaultLoadingMore}
-              fallBackRenderer={onInitialDataFailed}
-              onScroll={handleNewMessageSeparatorState}
-              onVisibleRangeChange={this._handleVisibilityChanged}
-            >
-              {this._renderStreamItems()}
-            </JuiInfiniteList>
-          </JuiStream>
+          // MobX only tracks data accessed for observer components
+          // if they are directly accessed by render, for render
+          // callback, we can wrap it with <Observer>
+          // See: https://tinyurl.com/y3nfuybu
+          <Observer>
+            {() => (
+              <JuiStream ref={ref}>
+                {this._renderJumpToFirstUnreadButton()}
+                <JuiInfiniteList
+                  contentStyle={this._contentStyleGen(height)}
+                  ref={this._listRef}
+                  height={height}
+                  stickToBottom={true}
+                  initialScrollToIndex={initialPosition}
+                  minRowHeight={50} // extract to const
+                  loadInitialData={this._loadInitialPosts}
+                  loadMore={loadMore}
+                  loadingRenderer={defaultLoading}
+                  hasMore={hasMore}
+                  loadingMoreRenderer={defaultLoadingMore}
+                  fallBackRenderer={this._onInitialDataFailed}
+                  onScroll={handleNewMessageSeparatorState}
+                  onVisibleRangeChange={this._handleVisibilityChanged}
+                >
+                  {this._renderStreamItems()}
+                </JuiInfiniteList>
+              </JuiStream>
+            )}
+          </Observer>
         )}
       </JuiSizeMeasurer>
     );
@@ -394,6 +410,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 const view = extractView<Props>(StreamViewComponent);
-const StreamView = translate('translations')(view);
+const StreamView = withTranslation('translations')(view);
 
 export { StreamView, StreamViewComponent };

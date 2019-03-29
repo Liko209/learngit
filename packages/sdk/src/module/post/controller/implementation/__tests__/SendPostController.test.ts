@@ -22,10 +22,10 @@ import notificationCenter from '../../../../../service/notificationCenter';
 import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { GlobalConfigService } from '../../../../../module/config';
-import { AccountGlobalConfig } from '../../../../../service/account/config';
+import { AccountUserConfig } from '../../../../../service/account/config';
 
 jest.mock('../../../../../module/config');
-jest.mock('../../../../../service/account/config');
+jest.mock('../../../../../service/account/config/AccountUserConfig');
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../PostActionController');
@@ -83,8 +83,10 @@ describe('SendPostController', () => {
   describe('sendPost', () => {
     it('should add user id and company id into parameters', async () => {
       let correct = false;
-      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValueOnce(4);
-      AccountGlobalConfig.getCurrentCompanyId = jest
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValueOnce(4);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
         .fn()
         .mockReturnValueOnce(1);
       jest

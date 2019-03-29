@@ -6,9 +6,9 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { observer } from 'mobx-react';
+import { observer, Observer } from 'mobx-react';
 import ReactResizeDetector from 'react-resize-detector';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiRightShelf,
   JuiRightShelfHeader,
@@ -26,15 +26,16 @@ type Props = {
   id: number;
   width: number;
   height: number;
-} & WithNamespaces;
+} & WithTranslation;
 
 type TriggerButtonProps = {
   isOpen: boolean;
   onClick: () => {};
-} & WithNamespaces;
+} & WithTranslation;
 
 // height of conversation header & tabs, pass these constant height to list;
 // since resize observer in resize observer will cause UI performance issue.
+const HEADER_HEIGHT = 48;
 const HEIGHT_TABS = 33;
 const MIN_TAB_WIDTH = 200;
 
@@ -131,31 +132,38 @@ class RightRailComponent extends React.Component<Props> {
           const height =
             Number.isNaN(h) || typeof w === 'undefined' ? HEIGHT_TABS : h;
           return (
-            <JuiTabs
-              defaultActiveIndex={0}
-              tag="right-shelf"
-              width={w}
-              onChangeTab={this._handleTabChanged}
-              moreText={t('common.more')}
-            >
-              {TAB_CONFIG.map(
-                ({ title, type, automationID }: TabConfig, index: number) => (
-                  <JuiTab
-                    key={index}
-                    title={t(title)}
-                    automationId={`right-shelf-${automationID}`}
-                  >
-                    {this._renderListView(
-                      type,
-                      id,
-                      tabIndex === index,
-                      width,
-                      height - HEIGHT_TABS,
-                    )}
-                  </JuiTab>
-                ),
+            <Observer>
+              {() => (
+                <JuiTabs
+                  defaultActiveIndex={0}
+                  tag="right-shelf"
+                  width={w}
+                  onChangeTab={this._handleTabChanged}
+                  moreText={t('common.more')}
+                >
+                  {TAB_CONFIG.map(
+                    (
+                      { title, type, automationID }: TabConfig,
+                      index: number,
+                    ) => (
+                      <JuiTab
+                        key={index}
+                        title={t(title)}
+                        automationId={`right-shelf-${automationID}`}
+                      >
+                        {this._renderListView(
+                          type,
+                          id,
+                          tabIndex === index,
+                          width,
+                          height - HEIGHT_TABS - HEADER_HEIGHT,
+                        )}
+                      </JuiTab>
+                    ),
+                  )}
+                </JuiTabs>
               )}
-            </JuiTabs>
+            </Observer>
           );
         }}
       </ReactResizeDetector>
@@ -176,7 +184,7 @@ class RightRailComponent extends React.Component<Props> {
   }
 }
 
-const RightRail = translate('translations')(RightRailComponent);
-const TriggerButton = translate('translations')(TriggerButtonComponent);
+const RightRail = withTranslation('translations')(RightRailComponent);
+const TriggerButton = withTranslation('translations')(TriggerButtonComponent);
 
 export { RightRail, TriggerButton };

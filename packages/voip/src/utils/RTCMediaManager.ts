@@ -5,9 +5,46 @@
  */
 
 import { RTCMediaElement } from './types';
+import { rtcLogger } from './RTCLoggerProxy';
 
+const LOG_TAG = 'RTCMediaManager';
 class RTCMediaManager {
+  private static _singleton: RTCMediaManager | null = null;
   private _mediaRootElement: any = null;
+  private _volume: number = 1;
+
+  public static instance() {
+    if (!RTCMediaManager._singleton) {
+      RTCMediaManager._singleton = new RTCMediaManager();
+    }
+    return RTCMediaManager._singleton;
+  }
+
+  public destroy() {
+    RTCMediaManager._singleton = null;
+  }
+
+  public setVolume(volume: number) {
+    if (volume < 0 || volume > 1) {
+      rtcLogger.warn(
+        LOG_TAG,
+        `Failed to set volume ${volume}. Volume value must be in [0, 1]`,
+      );
+      return;
+    }
+    rtcLogger.debug(LOG_TAG, `Set volume: ${volume}`);
+    this._volume = volume;
+    const audioList = document.querySelectorAll<HTMLVideoElement>(
+      '.rc-phone-audio',
+    );
+    audioList.forEach((element: HTMLVideoElement) => {
+      this._setVolumeInVideoElement(element, volume);
+    });
+  }
+
+  public getVolume(): number {
+    return this._volume;
+  }
 
   public createMediaElement(uuid: string): RTCMediaElement | null {
     this._initMediaRoot();
@@ -20,7 +57,7 @@ class RTCMediaManager {
     local_audio.muted = true;
     local_audio.id = `local-audio-${uuid}`;
     local_audio.className = 'rc-phone-audio';
-    local_audio.volume = 1;
+    local_audio.volume = this._volume;
     this._mediaRootElement.appendChild(local_audio);
 
     const remote_audio = document.createElement('video');
@@ -28,7 +65,7 @@ class RTCMediaManager {
     remote_audio.hidden = true;
     remote_audio.id = `remote-audio-${uuid}`;
     remote_audio.className = 'rc-phone-audio';
-    remote_audio.volume = 1;
+    remote_audio.volume = this._volume;
     this._mediaRootElement.appendChild(remote_audio);
 
     return { local: local_audio, remote: remote_audio };
@@ -70,8 +107,10 @@ class RTCMediaManager {
       rootEl.appendChild(this._mediaRootElement);
     }
   }
+
+  private _setVolumeInVideoElement(element: HTMLVideoElement, volume: number) {
+    element.volume = volume;
+  }
 }
 
-const rtcMediaManager = new RTCMediaManager();
-
-export { rtcMediaManager };
+export { RTCMediaManager };

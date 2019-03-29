@@ -6,12 +6,12 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { HoldViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { JuiKeypadAction } from 'jui/pattern/Dialer';
 
-type Props = HoldViewProps & WithNamespaces;
+type Props = HoldViewProps & WithTranslation;
 
 @observer
 class HoldViewComponent extends Component<Props> {
@@ -39,6 +39,6 @@ class HoldViewComponent extends Component<Props> {
   }
 }
 
-const HoldView = translate('translations')(HoldViewComponent);
+const HoldView = withTranslation('translations')(HoldViewComponent);
 
 export { HoldView };

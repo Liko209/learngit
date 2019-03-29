@@ -42,7 +42,9 @@ class ArrayUtils {
             ? idArray.length
             : limit
           : idArray.length;
-      startIndex = direction !== QUERY_DIRECTION.OLDER ? 0 : endIndex - limit;
+      if (direction === QUERY_DIRECTION.OLDER) {
+        startIndex = endIndex > limit ? endIndex - limit : 0;
+      }
     }
 
     // Slice ids

@@ -185,54 +185,6 @@ describe('NetworkClient', () => {
         rcNetworkClient.request(postRequest, requestHolder),
       ).toBeInstanceOf(Promise);
     });
-
-    it('should only send request once when request is totally same', async () => {
-      // expect.assertions(7);
-      const { getRequest, rcNetworkClient } = setup();
-
-      const mockRequest1: any = { path: '1' };
-      const mockRequest2: any = { path: '2' };
-      NetworkRequestBuilder.mockReset();
-      let times = 0;
-      NetworkRequestBuilder.mockImplementation(() => {
-        return {
-          setNetworkManager: jest.fn().mockReturnThis(),
-          setHost: jest.fn().mockReturnThis(),
-          setHandlerType: jest.fn().mockReturnThis(),
-          setPath: jest.fn().mockReturnThis(),
-          setMethod: jest.fn().mockReturnThis(),
-          setData: jest.fn().mockReturnThis(),
-          setHeaders: jest.fn().mockReturnThis(),
-          setParams: jest.fn().mockReturnThis(),
-          setAuthfree: jest.fn().mockReturnThis(),
-          setRequestConfig: jest.fn().mockReturnThis(),
-          setRetryCount: jest.fn().mockReturnThis(),
-          setPriority: jest.fn().mockReturnThis(),
-          setTimeout: jest.fn().mockReturnThis(),
-          setHAPriority: jest.fn().mockReturnThis(),
-          setVia: jest.fn().mockReturnThis(),
-          build: jest.fn().mockImplementation(() => {
-            if (times === 0) {
-              times = times + 1;
-              return mockRequest1;
-            }
-            return mockRequest2;
-          }),
-        };
-      });
-
-      const promise1 = rcNetworkClient.request(getRequest);
-      const promise2 = rcNetworkClient.request(getRequest);
-      mockRequest1.callback({ status: 200, data: { a: 1 } });
-
-      const response1 = await promise1;
-      const response2 = await promise2;
-      expect(mockRequest1.callback).not.toBeUndefined();
-      expect(mockRequest2.callback).toBeUndefined();
-      expect(networkManager.addApiRequest).toHaveBeenCalledTimes(1);
-      expect(response1).toEqual({ a: 1 });
-      expect(response2).toEqual({ a: 1 });
-    });
   });
 
   describe('duplicate request', () => {

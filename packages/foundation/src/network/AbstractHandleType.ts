@@ -29,7 +29,7 @@ abstract class AbstractHandleType implements IHandleType {
   ) => {
     callback(true, 0);
   }
-  onRefreshTokenFailure = () => {};
+  onRefreshTokenFailure = (forceLogout: boolean) => {};
   basic() {
     return '';
   }

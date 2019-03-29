@@ -12,6 +12,7 @@ import { RTCRestApiManager } from '../utils/RTCRestApiManager';
 import { RTCDaoManager } from '../utils/RTCDaoManager';
 import { RTCMediaDeviceManager } from './RTCMediaDeviceManager';
 import { ITelephonyNetworkDelegate, ITelephonyDaoDelegate } from 'foundation';
+import { RTCMediaManager } from '../utils/RTCMediaManager';
 import { IRTCMediaDeviceDelegate } from './IRTCMediaDeviceDelegate';
 
 class RTCEngine {
@@ -48,6 +49,14 @@ class RTCEngine {
 
   public setTelephonyDaoDelegate(delegate: ITelephonyDaoDelegate): void {
     RTCDaoManager.instance().setDaoDelegate(delegate);
+  }
+
+  public setVolume(volume: number): void {
+    RTCMediaManager.instance().setVolume(volume);
+  }
+
+  public getVolume(): number {
+    return RTCMediaManager.instance().getVolume();
   }
 
   public setMediaDeviceDelegate(delegate: IRTCMediaDeviceDelegate): void {

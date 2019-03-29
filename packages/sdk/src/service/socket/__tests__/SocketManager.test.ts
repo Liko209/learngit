@@ -14,7 +14,6 @@ import { GlobalConfigService } from '../../../module/config';
 import { SocketCanConnectController } from '../SocketCanConnectController';
 import { getCurrentTime } from '../../../utils/jsUtils';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
-import { NewGlobalConfig } from '../../../service/config';
 
 jest.mock('../../../module/config');
 jest.mock('../SocketCanConnectController', () => {
@@ -48,6 +47,7 @@ jest.mock('../../../module/sync/config/SyncUserConfig', () => {
   const config = {
     getSocketServerHost: jest.fn(),
     setSocketServerHost: jest.fn(),
+    getLastIndexTimestamp: jest.fn(),
   };
   return {
     SyncUserConfig: () => {
@@ -96,7 +96,7 @@ describe('Socket Manager', () => {
     });
 
     it('should not be null when has active FSM', () => {
-      NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+      syncUserConfig.getLastIndexTimestamp = jest.fn().mockReturnValueOnce(1);
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       expect(socketManager._canReconnectController).not.toBeUndefined();
@@ -105,7 +105,7 @@ describe('Socket Manager', () => {
       expect(socketManager._canReconnectController).toBeUndefined();
     });
     it('should not have active FSM if id is incorrect', () => {
-      NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+      syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
       getCurrentTime.mockReturnValue(2);
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeFalsy();
@@ -129,7 +129,7 @@ describe('Socket Manager', () => {
 
     it('login without timestamp', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
-      NewGlobalConfig.getLastIndexTimestamp.mockReturnValue(null);
+      syncUserConfig.getLastIndexTimestamp.mockReturnValue(null);
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeFalsy();
       expect(socketManager.ongoingFSMCount()).toEqual(0);
@@ -137,7 +137,7 @@ describe('Socket Manager', () => {
 
     it('initial done event', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
-      NewGlobalConfig.getLastIndexTimestamp.mockReturnValue(null);
+      syncUserConfig.getLastIndexTimestamp.mockReturnValue(null);
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeFalsy();
       expect(socketManager.ongoingFSMCount()).toEqual(0);
@@ -145,7 +145,7 @@ describe('Socket Manager', () => {
 
     it('initial done event', () => {
       expect(socketManager.hasActiveFSM()).toBeFalsy();
-      NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+      syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
       notificationCenter.emitKVChange(SERVICE.LOGIN);
       expect(socketManager.hasActiveFSM()).toBeTruthy();
       expect(socketManager.ongoingFSMCount()).toEqual(1);
@@ -168,7 +168,7 @@ describe('Socket Manager', () => {
       });
 
       it('online after logged in', () => {
-        NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmNameBeforeOnline = socketManager.activeFSM.name;
@@ -191,30 +191,49 @@ describe('Socket Manager', () => {
       });
 
       it('focus', () => {
+        // 1. user is not login do nothing
         notificationCenter.emitKVChange(SERVICE.LOGOUT);
         notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'focus',
         });
         expect(socketManager.hasActiveFSM()).toBeFalsy();
 
-        NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+        // 2. user login should start FSM and should not do ping pong
+        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         expect(socketManager.activeFSM.doGlipPing).toHaveBeenCalledTimes(0);
 
+        // 3. emit focus event and has activated FSM should to ping pong
         socketManager.activeFSM.finishConnect();
+        expect(socketManager.isConnected()).toBeTruthy();
+        expect(socketManager.hasActiveFSM()).toBeTruthy();
         notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'focus',
         });
+        expect(socketManager.activeFSM.doGlipPing).toHaveBeenCalledTimes(1);
 
         socketManager.activeFSM.fireDisconnect();
+        expect(socketManager.isConnected()).toBeFalsy();
+
+        // 4. has not activated FSM, emit focus event, should try to restart FSM
+        expect(socketManager.hasActiveFSM()).toBeTruthy();
+        socketManager._stopActiveFSM();
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
+
         notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'focus',
         });
+        expect(socketManager.hasActiveFSM()).toBeTruthy();
 
         notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {
           state: 'refresh',
         });
+
+        // 5. user is not login,
+        notificationCenter.emitKVChange(SERVICE.LOGOUT);
+        expect(socketManager.hasActiveFSM()).toBeFalsy();
+        expect(socketManager.isConnected()).toBeFalsy();
       });
     });
 
@@ -230,7 +249,7 @@ describe('Socket Manager', () => {
       });
 
       it('invalid new url', () => {
-        NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         const fsmName1 = socketManager.activeFSM.name;
 
@@ -241,7 +260,7 @@ describe('Socket Manager', () => {
       });
 
       it('url no changed', () => {
-        NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmName1 = socketManager.activeFSM.name;
@@ -253,7 +272,7 @@ describe('Socket Manager', () => {
       });
 
       it('url changed', () => {
-        NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         const fsmName1 = socketManager.activeFSM.name;
@@ -281,7 +300,7 @@ describe('Socket Manager', () => {
 
     describe('reconnect', () => {
       it('reconnect event by attempt reconnection', () => {
-        NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         // const fsmName1 = socketManager.activeFSM.name;
@@ -290,7 +309,7 @@ describe('Socket Manager', () => {
       });
 
       it('socket reconnect new url', () => {
-        NewGlobalConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
+        syncUserConfig.getLastIndexTimestamp.mockReturnValueOnce(1);
         notificationCenter.emitKVChange(SERVICE.LOGIN);
         expect(socketManager.hasActiveFSM()).toBeTruthy();
         // const fsmName1 = socketManager.activeFSM.name;
@@ -304,7 +323,7 @@ describe('Socket Manager', () => {
 
   describe('PowerMonitor', () => {
     beforeEach(() => {
-      NewGlobalConfig.getLastIndexTimestamp.mockReturnValue(1);
+      syncUserConfig.getLastIndexTimestamp.mockReturnValue(1);
     });
     it('not login', () => {
       notificationCenter.emitKVChange(SOCKET.NETWORK_CHANGE, {

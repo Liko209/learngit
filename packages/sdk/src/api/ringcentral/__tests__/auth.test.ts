@@ -5,7 +5,7 @@
  */
 import Api from '../../api';
 import { oauthTokenViaAuthCode, generateCode } from '../auth';
-import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
+import { NETWORK_VIA, NETWORK_METHOD, HA_PRIORITY } from 'foundation';
 
 jest.mock('../../api');
 
@@ -34,6 +34,7 @@ describe('auth', () => {
           clientId: '123123',
           redirectUri: '456456',
         },
+        HAPriority: HA_PRIORITY.HIGH,
       });
     });
   });

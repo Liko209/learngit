@@ -35,6 +35,12 @@ class EventItemViewModel extends AbstractViewModel<Props> implements ViewProps {
   }
 
   @computed
+  get localTime() {
+    const { start } = this.event;
+    return dateFormatter.localTime(moment(start));
+  }
+
+  @computed
   get startTime() {
     const { start } = this.event;
     return dateFormatter.dateAndTimeWithoutWeekday(moment(start));
