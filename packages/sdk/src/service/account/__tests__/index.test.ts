@@ -9,12 +9,14 @@ import { PersonDao } from '../../../module/person/dao';
 import { refreshToken } from '../../../api';
 import { AccountUserConfig } from '../../../service/account/config/AccountUserConfig';
 import { AuthUserConfig } from '../../../service/auth/config';
+import { AccountGlobalConfig } from '../../../service/account/config/AccountGlobalConfig';
 
 jest.mock('../../../dao');
 jest.mock('../../../module/person/dao');
 jest.mock('../../../api');
 jest.mock('../../../service/auth/config');
 jest.mock('../../../service/account/config/AccountUserConfig');
+jest.mock('../../../service/account/config/AccountGlobalConfig');
 
 describe('AccountService', () => {
   let accountService: AccountService;
@@ -109,6 +111,26 @@ describe('AccountService', () => {
       expect.assertions(1);
       const token = accountService.refreshRCToken();
       return expect(token).resolves.toEqual(null);
+    });
+  });
+
+  describe('isGlipLogin', () => {
+    it('should return false when user dictionary is not ready', () => {
+      AccountGlobalConfig.getUserDictionary.mockReturnValue(null);
+      expect(accountService.isGlipLogin()).toBe(false);
+    });
+    it('should return false when there is no glip user id', () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
+      AccountGlobalConfig.getUserDictionary.mockReturnValue(1);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(null);
+      expect(accountService.isGlipLogin()).toBe(false);
+    });
+    it('should return true when glip user id is set', () => {
+      AccountGlobalConfig.getUserDictionary.mockReturnValue(1);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue('123');
+      expect(accountService.isGlipLogin()).toBe(true);
     });
   });
 });
