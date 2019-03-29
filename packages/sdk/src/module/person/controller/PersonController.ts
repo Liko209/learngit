@@ -161,6 +161,8 @@ class PersonController {
           );
         }
         originalUrl = headshot.url;
+      } else {
+        originalUrl = headshot;
       }
 
       if (url) {

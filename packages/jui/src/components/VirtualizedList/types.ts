@@ -22,6 +22,7 @@ type JuiVirtualizedListProps = {
   after?: React.ReactNode;
   children: JSX.Element[];
   contentStyle: React.CSSProperties;
+  stickToLastPosition?: boolean;
 };
 
 export { JuiVirtualizedListProps, IndexRange };
