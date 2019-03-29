@@ -70,6 +70,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
           hasMore={this.hasMore}
           loadingMoreRenderer={this.defaultLoadingMore()}
           noRowsRenderer={this.renderEmptyContent()}
+          stickToLastPosition={false}
         >
           {this._renderItems()}
         </JuiInfiniteList>
