@@ -211,6 +211,7 @@ class PostCacheController implements ICacheController<Post> {
       listHandler = new FetchPostDataListHandler(
         new PostDataProvider(groupId),
         options,
+        groupId,
       );
 
       if (!jump2PostId) {
@@ -283,5 +284,5 @@ class PostCacheController implements ICacheController<Post> {
 
 const postCacheController = new PostCacheController();
 
-export { PostCacheController, PostDataProvider };
+export { PostCacheController };
 export default postCacheController;

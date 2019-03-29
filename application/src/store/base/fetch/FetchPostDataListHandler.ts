@@ -11,7 +11,6 @@ import {
 } from './FetchSortableDataListHandler';
 import { Post } from 'sdk/module/post/entity';
 import { SortableListStore } from './SortableListStore';
-import { PostDataProvider } from '@/containers/ConversationPage/Stream/cache/PostCacheController';
 import { ENTITY, EVENT_TYPES } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { mainLogger } from 'sdk';
@@ -21,14 +20,14 @@ class FetchPostDataListHandler extends FetchSortableDataListHandler<Post> {
   constructor(
     dataProvider: IFetchSortableDataProvider<Post>,
     options: IFetchSortableDataListHandlerOptions<Post>,
+    groupId: number,
     listStore: SortableListStore<Post> = new SortableListStore<Post>(
       options.sortFunc,
     ),
   ) {
     super(dataProvider, options, listStore);
-    const groupId = (dataProvider as PostDataProvider).getGroupId();
     this.subscribeNotification(
-      `${ENTITY.RELOAD}.${groupId}`,
+      `${ENTITY.FOC_RELOAD}.${groupId}`,
       (ids: number[]) => {
         mainLogger.info(LOG_TAG, `reload group ${groupId}`);
         this.handleHasMore(true, QUERY_DIRECTION.OLDER);

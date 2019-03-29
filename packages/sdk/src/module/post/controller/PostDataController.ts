@@ -67,15 +67,12 @@ class PostDataController {
       await this.preInsertController.bulkDelete(posts);
       posts = await this.handleIndexModifiedPosts(posts);
       posts = await this.filterAndSavePosts(posts, true);
-      if (result) {
-        if (result.shouldRemoveGroupIds.length > 0) {
-          await this.entitySourceController.bulkDelete(result.deletePostIds);
-          const groupService: GroupService = GroupService.getInstance();
-          result.deleteMap.forEach((value: number[], key: number) => {
-            groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
-            notificationCenter.emit(`${ENTITY.RELOAD}.${key}`, value);
-          });
-        }
+      if (result && result.shouldRemoveGroupIds.length > 0) {
+        const groupService: GroupService = GroupService.getInstance();
+        result.deleteMap.forEach((value: number[], key: number) => {
+          groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
+          notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
+        });
       }
       return posts;
     }
@@ -168,7 +165,10 @@ class PostDataController {
             deleteMap.set(id, postIds);
           }),
         );
-        return { shouldRemoveGroupIds, deleteMap, deletePostIds };
+        if (deletePostIds.length > 0) {
+          this.entitySourceController.bulkDelete(deletePostIds);
+        }
+        return { shouldRemoveGroupIds, deleteMap };
       }
     }
     return undefined;
@@ -275,7 +275,10 @@ class PostDataController {
     await Promise.all(
       groupIds.map(async (groupId: string) => {
         const posts: Post[] = groupPosts[groupId];
-        if (this._isGroupPostsDiscontinuous(posts)) {
+        if (
+          posts.length < INDEX_POST_MAX_SIZE &&
+          this._isGroupPostsDiscontinuous(posts)
+        ) {
           const oldestPost = await postDao.queryOldestPostByGroupId(
             Number(groupId),
           );
