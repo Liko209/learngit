@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
+import { withTranslation, WithTranslation, Trans } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
@@ -20,7 +20,6 @@ import {
   JuiTeamSettingButtonList as ButtonList,
   JuiTeamSettingButtonListItem as ButtonListItem,
   JuiTeamSettingButtonListItemText as ButtonListItemText,
-  JuiHighlightedTeamName,
 } from 'jui/pattern/TeamSetting';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
@@ -153,8 +152,12 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       title: t('people.team.deleteTeamConfirmTitle'),
       content: (
         <JuiDialogContentText>
-          {t('people.team.deleteTeamConfirmContent')}
-          <JuiHighlightedTeamName> {groupName}</JuiHighlightedTeamName> team?
+          <Trans
+            i18nKey="people.team.deleteTeamConfirmContent"
+            values={{ teamName: groupName }}
+            // tslint:disable-next-line:jsx-key
+            components={[<strong>0</strong>]}
+          />
         </JuiDialogContentText>
       ),
       okText: toTitleCase(t('people.team.deleteTeamConfirmOk')),

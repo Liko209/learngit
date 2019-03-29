@@ -3,7 +3,9 @@
  * @Date: 2019-01-16 09:12:51
  * Copyright © RingCentral. All rights reserved.
  */
+import * as React from 'react';
 import i18next from 'i18next';
+import { Trans } from 'react-i18next';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import { Dialog } from '@/containers/Dialog';
 import { errorHelper } from 'sdk/error';
@@ -16,6 +18,7 @@ import {
   ToastMessageAlign,
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
+import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 
 const joinHander = async (conversationId: number) => {
   const nGroupService: GroupService = GroupService.getInstance();
@@ -41,9 +44,16 @@ const joinTeam = (item: GroupModel) => (e?: React.MouseEvent<HTMLElement>) => {
   e && e.stopPropagation();
   Dialog.confirm({
     title: i18next.t('people.team.joinTeamTitle'),
-    content: i18next.t('people.team.joinTeamContent', {
-      teamName: item.displayName,
-    }),
+    content: (
+      <JuiDialogContentText>
+        <Trans
+          i18nKey="people.team.joinTeamContent"
+          values={{ teamName: item.displayName }}
+          // tslint:disable-next-line:jsx-key
+          components={[<strong>0</strong>]}
+        />
+      </JuiDialogContentText>
+    ),
     okText: i18next.t('people.team.joinTeamSubmit'),
     cancelText: i18next.t('common.dialog.cancel'),
     onOK: () =>
