@@ -7,28 +7,36 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
+import { select, boolean, number } from '@storybook/addon-knobs';
 
 import { JuiOutlineTextField } from '..';
 
 storiesOf('Components/Forms', module)
   .addDecorator(withInfoDecorator(JuiOutlineTextField, { inline: true }))
   .add('OutlineTextField', () => {
+    const maxLength = number('maxLength', 20);
+    const disabled = boolean('disabled', false);
+    const radius = select(
+      'radiusType',
+      {
+        square: 'square',
+        circle: 'circle',
+      },
+      'square',
+    );
     return (
       <div style={{ padding: '0 30%' }}>
-        <JuiOutlineTextField />
-        <br />
-        <JuiOutlineTextField placeholder="Typing keywords" />
-        <br />
         <JuiOutlineTextField
-          placeholder="Only tying 3 characters"
-          maxLength={3}
+          placeholder="Typing keywords"
+          maxLength={maxLength}
+          disabled={disabled}
+          radiusType={radius}
         />
-        <br />
-        <JuiOutlineTextField value="Disabled typing" disabled={true} />
         <br />
         <JuiOutlineTextField
           placeholder="Search members"
           iconName="search"
+          disabled={disabled}
           iconPosition="left"
         />
         <br />
@@ -36,6 +44,15 @@ storiesOf('Components/Forms', module)
           placeholder="Password"
           iconName="lock"
           iconPosition="right"
+          disabled={disabled}
+        />
+        <br />
+        <JuiOutlineTextField
+          placeholder="Password"
+          iconName="lock"
+          iconPosition="right"
+          disabled={disabled}
+          inputAfter={<div onClick={() => alert('clear')}>clear</div>}
         />
       </div>
     );

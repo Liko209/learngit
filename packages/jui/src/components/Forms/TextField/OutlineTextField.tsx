@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { PureComponent } from 'react';
+import React, { useState } from 'react';
 import styled, { css } from '../../../foundation/styled-components';
 import Paper, { PaperProps } from '@material-ui/core/Paper';
 import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
@@ -20,37 +20,74 @@ import { JuiIconography } from '../../../foundation/Iconography';
 
 type IconPosition = 'left' | 'right';
 
+type RadiusType = 'square' | 'circle';
+
+const INPUT_HEIGHT = 10;
+const RADIUS_MAP = {
+  square: 1,
+  circle: INPUT_HEIGHT / 2,
+};
 const CLASSES_PAPER = { root: 'root' };
-const StyledPaper = styled<PaperProps>(Paper)`
+
+type CompositePaperProps = PaperProps & {
+  iconPosition?: IconPosition;
+  focus: boolean;
+  radius: string;
+  disabled?: boolean;
+};
+
+const CompositePaper = ({
+  iconPosition,
+  radius,
+  focus,
+  disabled,
+  ...rest
+}: CompositePaperProps) => <Paper {...rest} />;
+
+const StyledPaper = styled<CompositePaperProps>(CompositePaper)`
   &.root {
     display: flex;
+    align-items: center;
     position: relative;
-    height: ${height(10)};
+    height: ${height(INPUT_HEIGHT)};
+    background-color: ${({ disabled }) =>
+      disabled ? grey('100') : palette('common', 'white')};
+    border: 1px solid ${({ focus }) => (focus ? grey('400') : grey('300'))};
+    border-radius: ${({ radius }) => spacing(RADIUS_MAP[radius])};
+    /* ${({ disabled = false }) =>
+      disabled ? 'pointer-events: none;' : ''}; */
+    box-sizing: border-box;
+    padding: 0 12px;
+  }
+  &:hover {
+    background-color: ${({ focus, disabled }) => {
+      if (disabled) {
+        return;
+      }
+      return focus ? palette('common', 'white') : grey('50');
+    }};
   }
 `;
 
 type CompositeInputProps = InputBaseProps & {
   iconPosition?: IconPosition;
 };
+
 const CompositeInput = ({ iconPosition, ...rest }: CompositeInputProps) => (
   <InputBase {...rest} />
 );
 
 const CLASSES_INPUT_BASE = {
   root: 'root',
-  focused: 'focused',
-  disabled: 'disabled',
 };
+
 const StyledInput = styled<CompositeInputProps>(CompositeInput)`
   &.root {
     flex: 1;
-    background-color: ${palette('common', 'white')};
-    border: 1px solid ${grey('300')};
-    border-radius: ${spacing(1)};
     ${typography('body1')};
     color: ${grey('900')};
-    padding: ${spacing(1.5, 3)};
-    ${({ iconPosition }: CompositeInputProps) => {
+    /* padding: ${spacing(1, 3)}; */
+    /* ${({ iconPosition }: CompositeInputProps) => {
       if (iconPosition === 'left') {
         return css`
           padding-left: ${height(10)};
@@ -62,66 +99,82 @@ const StyledInput = styled<CompositeInputProps>(CompositeInput)`
         `;
       }
       return;
-    }}
-  }
-  &:hover {
-    background-color: ${grey('50')};
-  }
-  &.focused {
-    background-color: ${palette('common', 'white')};
-    border: 1px solid ${grey('400')};
-  }
-  &.disabled {
-    /* Need the UI to provide the design */
-    background-color: ${grey('100')};
+    }} */
   }
 `;
 
 const StyledIcon = styled(JuiIconography)`
   color: ${grey('500')};
-  padding: 0;
-  position: absolute;
-  top: ${spacing(2)};
   width: ${width(5)};
   height: ${height(5)};
+  align-items: center;
 `;
 const StyledIconLeft = styled(StyledIcon)`
-  left: ${spacing(3)};
+  margin: 0 ${spacing(3)} 0 0;
 `;
 const StyledIconRight = styled(StyledIcon)`
-  right: ${spacing(3)};
+  margin: 0 0 0 ${spacing(3)};
 `;
 
 type Props = InputBaseProps & {
+  inputBefore?: JSX.Element;
+  inputAfter?: JSX.Element;
   iconPosition?: IconPosition;
   iconName?: string;
   maxLength?: number;
+  radiusType?: RadiusType;
 };
 
-class JuiOutlineTextField extends PureComponent<Props> {
-  render() {
-    const {
-      iconPosition,
-      iconName = '',
-      maxLength = 999999,
-      ...rest
-    } = this.props;
-    const inputProps = { maxLength };
-    return (
-      <StyledPaper elevation={0} classes={CLASSES_PAPER}>
-        {iconPosition === 'left' && <StyledIconLeft>{iconName}</StyledIconLeft>}
-        <StyledInput
-          classes={CLASSES_INPUT_BASE}
-          iconPosition={iconPosition}
-          inputProps={inputProps}
-          {...rest}
-        />
-        {iconPosition === 'right' && (
-          <StyledIconRight>{iconName}</StyledIconRight>
-        )}
-      </StyledPaper>
-    );
-  }
-}
+const JuiOutlineTextField = (props: Props) => {
+  const {
+    iconPosition,
+    iconName = '',
+    maxLength = 999999,
+    radiusType = 'square',
+    inputBefore,
+    inputAfter,
+    disabled,
+    ...rest
+  } = props;
+  const inputProps = { maxLength };
+  const { onFocus, onBlur, ...others } = rest;
+  const [focus, setFocus] = useState(false);
+
+  const baseOnFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFocus(true);
+    onFocus && onFocus(e);
+  };
+
+  const baseOnBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFocus(false);
+    onBlur && onBlur(e);
+  };
+
+  return (
+    <StyledPaper
+      focus={focus}
+      radius={radiusType}
+      elevation={0}
+      classes={CLASSES_PAPER}
+      disabled={disabled}
+    >
+      {iconPosition === 'left' && <StyledIconLeft>{iconName}</StyledIconLeft>}
+      {inputBefore && inputBefore}
+      <StyledInput
+        classes={CLASSES_INPUT_BASE}
+        iconPosition={iconPosition}
+        inputProps={inputProps}
+        onFocus={baseOnFocus}
+        onBlur={baseOnBlur}
+        disabled={disabled}
+        {...others}
+      />
+      {inputAfter && inputAfter}
+      {iconPosition === 'right' && (
+        <StyledIconRight>{iconName}</StyledIconRight>
+      )}
+    </StyledPaper>
+  );
+};
 
 export { JuiOutlineTextField };
