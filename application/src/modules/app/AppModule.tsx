@@ -204,7 +204,7 @@ class AppModule extends AbstractModule {
 
     const api = config.get('api');
     const db = config.get('db');
-
+    console.log('TCL: AppModule -> private_init -> api', api);
     await Sdk.init({
       api,
       db,

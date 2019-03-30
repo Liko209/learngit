@@ -41,7 +41,7 @@ class Api {
   static setupHandlers(networkManager: NetworkManager) {
     this._networkManager = networkManager;
 
-    NetworkSetup.setup(types, networkManager);
+    types.forEach(type => NetworkSetup.setup(type, networkManager));
     // This explicit set rc handler accessToken as the RC token provider for glip handler
     const tokenManager = networkManager.getTokenManager();
     const rcTokenHandler =

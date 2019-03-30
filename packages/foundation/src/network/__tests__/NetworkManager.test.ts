@@ -12,7 +12,7 @@ import {
 import OAuthTokenManager from '../OAuthTokenManager';
 
 let networkManager: NetworkManager;
-const initManagerWithHandlerType = () => {
+const initManagerbuildNetworkRequestBaseHandler
   networkManager.initNetworkRequestBaseHandler(
     fakeHandleType,
     true,
