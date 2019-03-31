@@ -327,7 +327,7 @@ export default class MultiEntityMapStore<
 
   @action
   private _refreshCache() {
-    if (this.getSize() < this._maxCacheCount) {
+    if (this.getSize() < this._maxCacheCount || !document.hidden) {
       return;
     }
 
