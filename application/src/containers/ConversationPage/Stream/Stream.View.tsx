@@ -6,8 +6,8 @@
 import _ from 'lodash';
 import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
-import { observable, runInAction } from 'mobx';
-import { observer, Observer } from 'mobx-react';
+import { observable, runInAction, reaction, action } from 'mobx';
+import { observer, Observer, Disposer } from 'mobx-react';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -52,6 +52,7 @@ class StreamViewComponent extends Component<Props> {
   private _historyViewed = false;
   private _timeout: NodeJS.Timeout | null;
   private _jumpToPostRef: RefObject<JuiConversationCard> = createRef();
+  private _disposers: Disposer[] = [];
 
   @observable private _jumpToFirstUnreadLoading = false;
 
@@ -61,6 +62,7 @@ class StreamViewComponent extends Component<Props> {
   }
 
   componentWillUnmount() {
+    this._disposers.forEach((disposer: Disposer) => disposer());
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
   }
@@ -255,15 +257,13 @@ class StreamViewComponent extends Component<Props> {
       historyReadThrough = 0,
     } = this.props;
     const visibleItems = items.slice(startIndex, stopIndex + 1);
-    const lastPostItem = _.findLast(
-      visibleItems,
-      this.findPost,
-    ) as StreamItemPost;
-
-    if (lastPostItem && lastPostItem.value.includes(mostRecentPostId)) {
-      this.handleMostRecentViewed();
-    } else {
+    const visiblePosts = _(visibleItems)
+      .flatMap('value')
+      .concat();
+    if (this.props.hasMore('down') || !visiblePosts.includes(mostRecentPostId)) {
       this.handleMostRecentHidden();
+    } else {
+      this.handleMostRecentViewed();
     }
     if (this._historyViewed) {
       return;
@@ -288,11 +288,13 @@ class StreamViewComponent extends Component<Props> {
   handleMostRecentViewed = () => {
     if (document.hasFocus()) {
       this.props.markAsRead();
+      this.props.disableNewMessageSeparatorHandler();
       this._setUmiDisplay(false);
     }
   }
 
   handleMostRecentHidden = () => {
+    this.props.enableNewMessageSeparatorHandler();
     this._setUmiDisplay(true);
   }
 
@@ -325,12 +327,7 @@ class StreamViewComponent extends Component<Props> {
   );
 
   render() {
-    const {
-      loadMore,
-      hasMore,
-      items,
-      handleNewMessageSeparatorState,
-    } = this.props;
+    const { loadMore, hasMore, items } = this.props;
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
@@ -362,7 +359,6 @@ class StreamViewComponent extends Component<Props> {
                   hasMore={hasMore}
                   loadingMoreRenderer={defaultLoadingMore}
                   fallBackRenderer={this._onInitialDataFailed}
-                  onScroll={handleNewMessageSeparatorState}
                   onVisibleRangeChange={this._handleVisibilityChanged}
                 >
                   {this._renderStreamItems()}
@@ -375,6 +371,7 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
+  @action
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead } = this.props;
     await loadInitialPosts();
@@ -387,6 +384,26 @@ class StreamViewComponent extends Component<Props> {
         this._jumpToPostRef.current.highlight();
       }
     });
+    this._watchUnreadCount();
+  }
+
+  private _watchUnreadCount() {
+    const disposer = reaction(
+      () => {
+        return this.props.mostRecentPostId;
+      },
+      (mostRecentPostId) => {
+        if (this._listRef.current && !this.props.hasMore('down')) {
+          const isLastPostVisible =
+            this._listRef.current.getVisibleRange().stopIndex >=
+            this.props.items.length - 1;
+          if (isLastPostVisible) {
+            this.handleMostRecentViewed();
+          }
+        }
+      },
+    );
+    this._disposers.push(disposer);
   }
 
   private _focusHandler = () => {
@@ -396,6 +413,7 @@ class StreamViewComponent extends Component<Props> {
       this._listRef.current && this._listRef.current.isAtBottom();
     if (atBottom) {
       markAsRead();
+      this.props.disableNewMessageSeparatorHandler();
       this._setUmiDisplay(false);
     }
   }
