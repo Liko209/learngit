@@ -63,8 +63,6 @@ const StyledPaper = styled<CompositePaperProps>(CompositePaper)`
       disabled ? grey('100') : palette('common', 'white')};
     border: 1px solid ${({ focus }) => (focus ? grey('400') : grey('300'))};
     border-radius: ${({ theme, radius }) => getRadius(theme, radius)};
-    /* ${({ disabled = false }) =>
-      disabled ? 'pointer-events: none;' : ''}; */
     box-sizing: border-box;
     padding: 0 ${spacing(4)};
   }
@@ -119,6 +117,8 @@ type Props = InputBaseProps & {
   inputAfter?: JSX.Element;
   maxLength?: number;
   radiusType?: InputRadiusKeys;
+  onClickIconLeft?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+  onClickIconRight?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
 } & (
     | {
       iconPosition?: Extract<IconPosition, 'both'>;
@@ -138,6 +138,8 @@ const JuiOutlineTextField = (props: Props) => {
     inputBefore,
     inputAfter,
     disabled,
+    onClickIconLeft,
+    onClickIconRight,
     ...rest
   } = props;
   const inputProps = { maxLength };
@@ -163,7 +165,7 @@ const JuiOutlineTextField = (props: Props) => {
       disabled={disabled}
     >
       {(iconPosition === 'left' || iconPosition === 'both') && (
-        <StyledIconLeft>
+        <StyledIconLeft onClick={onClickIconLeft}>
           {Array.isArray(iconName) ? iconName[0] : iconName}
         </StyledIconLeft>
       )}
@@ -179,7 +181,7 @@ const JuiOutlineTextField = (props: Props) => {
       />
       {inputAfter && inputAfter}
       {(iconPosition === 'right' || iconPosition === 'both') && (
-        <StyledIconRight>
+        <StyledIconRight onClick={onClickIconRight}>
           {Array.isArray(iconName) ? iconName[1] : iconName}
         </StyledIconRight>
       )}

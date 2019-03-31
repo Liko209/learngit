@@ -55,6 +55,7 @@ storiesOf('Components/Forms', module)
           iconPosition="both"
           disabled={disabled}
           radiusType={radius}
+          onClickIconRight={() => alert('close')}
           inputAfter={<div onClick={() => alert('clear')}>clear</div>}
         />
       </div>
