@@ -5,9 +5,9 @@
  */
 
 import React, { useState } from 'react';
-import styled from '../../../foundation/styled-components';
-import Paper, { PaperProps } from '@material-ui/core/Paper';
 import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
+import Paper, { PaperProps } from '@material-ui/core/Paper';
+import styled from '../../../foundation/styled-components';
 import {
   grey,
   palette,
@@ -17,7 +17,7 @@ import {
   width,
 } from '../../../foundation/utils';
 import { JuiIconography } from '../../../foundation/Iconography';
-import { Theme } from 'jui/foundation/theme/theme';
+import { Theme } from '../../../foundation/theme/theme';
 
 type IconPosition = 'left' | 'right' | 'both';
 
