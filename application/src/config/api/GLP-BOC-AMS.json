@@ -13,16 +13,14 @@
   "glip": {
     "server": "https://app.glipdemo.com",
     "apiServer": "https://app.glipdemo.com:8443",
-    "apiPlatform": "/api"
+    "pathPrefix": "/api"
   },
   "glip_desktop": {
     "server": "https://app.glipdemo.com",
-    "apiPlatformVersion": "v1.0",
-    "apiPlatform": "/desktop"
+    "pathPrefix": "v1.0/desktop"
   },
   "upload": {
-    "server": "https://api.glipdemo.com",
-    "apiPlatform": ""
+    "server": "https://api.glipdemo.com"
   },
   "launchdarkly": {
     "clientId": "5c6a4261eb049c2df965e0a7"

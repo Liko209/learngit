@@ -29,8 +29,7 @@ const chrisSandboxConfig = {
   },
   glip_desktop: {
     server: 'https://aws13-g04-uds02.asialab.glip.net:11904',
-    apiPlatformVersion: 'v1.0',
-    apiPlatform: '/desktop',
+    pathPrefix: '/v1.0/desktop'
   },
 };
 

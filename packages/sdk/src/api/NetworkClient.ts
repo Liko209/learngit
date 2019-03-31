@@ -42,6 +42,7 @@ export interface IResponse<T> {
 
 export interface INetworkRequests {
   readonly host?: string;
+  readonly pathPrefix?: string;
   readonly handlerType: IHandleType;
 }
 
@@ -64,8 +65,7 @@ export interface IResponseError {
 
 export default class NetworkClient {
   networkRequests: INetworkRequests;
-  apiPlatform: string;
-  apiPlatformVersion: string;
+  pathPrefix?: string;
   apiMap: Map<
     string,
     { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
@@ -76,14 +76,10 @@ export default class NetworkClient {
   // todo refactor config
   constructor(
     networkRequests: INetworkRequests,
-    apiPlatform: string,
     defaultVia: NETWORK_VIA,
-    apiPlatformVersion: string = '',
     networkManager: NetworkManager,
   ) {
-    this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
-    this.apiPlatformVersion = apiPlatformVersion;
     this.apiMap = new Map();
     this.defaultVia = defaultVia;
     this.networkManager = networkManager;
@@ -174,10 +170,8 @@ export default class NetworkClient {
       timeout,
     } = query;
 
-    const versionPath = this.apiPlatformVersion
-      ? `/${this.apiPlatformVersion}`
-      : '';
-    const finalPath = `${versionPath}${this.apiPlatform}${path}`;
+    const { pathPrefix = '' } = this.networkRequests;
+    const finalPath = `${pathPrefix}${path}`;
     return new NetworkRequestBuilder()
       .setHost(this.networkRequests.host || '')
       .setHandlerType(this.networkRequests.handlerType)

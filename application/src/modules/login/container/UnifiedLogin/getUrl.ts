@@ -26,7 +26,7 @@ const defaultOptions = {
 
 const getUrl = (location: History.LocationState) => {
   const { glip2, glip } = config.get('api');
-  const url = `${glip2.server}${glip2.apiPlatform}/oauth/authorize`;
+  const url = `${glip2.server}${glip2.pathPrefix || ''}/oauth/authorize`;
   const { from } = location.state || { from: {} };
   const { pathname = '/', search = '', hash = '' } = from;
   const parsedSearch = parse(search, { ignoreQueryPrefix: true });

@@ -77,12 +77,11 @@ class Api {
       const networkRequests: INetworkRequests = {
         host: currentConfig.server,
         handlerType: type,
+        pathPrefix: currentConfig.pathPrefix,
       };
       networkClient = new NetworkClient(
         networkRequests,
-        currentConfig.apiPlatform,
         type.defaultVia,
-        currentConfig.apiPlatformVersion,
         this.networkManager,
       );
       this.httpSet.set(name, networkClient);
@@ -99,9 +98,7 @@ class Api {
       };
       networkClient = new NetworkClient(
         networkRequests,
-        '',
         type.defaultVia,
-        '',
         this.networkManager,
       );
       this.httpSet.set(name, networkClient);
