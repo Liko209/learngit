@@ -6,7 +6,6 @@
 
 import React, { useState } from 'react';
 import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
-import Paper, { PaperProps } from '@material-ui/core/Paper';
 import styled from '../../../foundation/styled-components';
 import {
   grey,
@@ -22,7 +21,6 @@ import { Theme } from '../../../foundation/theme/theme';
 type IconPosition = 'left' | 'right' | 'both';
 
 const INPUT_HEIGHT = 10;
-const CLASSES_PAPER = { root: 'root' };
 
 type InputRadius = {
   square: string;
@@ -32,40 +30,38 @@ type InputRadiusKeys = keyof InputRadius;
 const getRadius = (theme: Theme, radiusType: InputRadiusKeys) => {
   const { radius, size } = theme;
   const type: InputRadius = {
-    square: radius.xl,
+    square: radius.lg,
     round: `${size.height * INPUT_HEIGHT * radius.round}px`,
   };
   return type[radiusType];
 };
 
-type CompositePaperProps = PaperProps & {
+type CompositeWrapperProps = {
   iconPosition?: IconPosition;
   focus: boolean;
   radius: InputRadiusKeys;
   disabled?: boolean;
 };
 
-const CompositePaper = ({
+const CompositeWrapper = ({
   iconPosition,
   radius,
   focus,
   disabled,
   ...rest
-}: CompositePaperProps) => <Paper {...rest} />;
+}: CompositeWrapperProps) => <div {...rest} />;
 
-const StyledPaper = styled<CompositePaperProps>(CompositePaper)`
-  &.root {
-    display: flex;
-    align-items: center;
-    position: relative;
-    height: ${height(INPUT_HEIGHT)};
-    background-color: ${({ disabled }) =>
-      disabled ? grey('100') : palette('common', 'white')};
-    border: 1px solid ${({ focus }) => (focus ? grey('400') : grey('300'))};
-    border-radius: ${({ theme, radius }) => getRadius(theme, radius)};
-    box-sizing: border-box;
-    padding: 0 ${spacing(4)};
-  }
+const StyledWrapper = styled<CompositeWrapperProps>(CompositeWrapper)`
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: ${height(INPUT_HEIGHT)};
+  background-color: ${({ disabled }) =>
+    disabled ? grey('100') : palette('common', 'white')};
+  border: 1px solid ${({ focus }) => (focus ? grey('400') : grey('300'))};
+  border-radius: ${({ theme, radius }) => getRadius(theme, radius)};
+  box-sizing: border-box;
+  padding: 0 ${spacing(4)};
   &:hover {
     background-color: ${({ focus, disabled }) => {
       if (disabled) {
@@ -76,24 +72,10 @@ const StyledPaper = styled<CompositePaperProps>(CompositePaper)`
   }
 `;
 
-type CompositeInputProps = InputBaseProps & {
-  iconPosition?: IconPosition;
-};
-
-const CompositeInput = ({ iconPosition, ...rest }: CompositeInputProps) => (
-  <InputBase {...rest} />
-);
-
-const CLASSES_INPUT_BASE = {
-  root: 'root',
-};
-
-const StyledInput = styled<CompositeInputProps>(CompositeInput)`
-  &.root {
-    flex: 1;
-    ${typography('body1')};
-    color: ${grey('900')};
-  }
+const StyledInput = styled(InputBase)`
+  flex: 1;
+  ${typography('body1')};
+  color: ${grey('900')};
 `;
 
 const StyledIcon = styled(JuiIconography)`
@@ -133,7 +115,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
   const {
     iconPosition,
     iconName = '',
-    maxLength = 999999,
+    inputProps,
     radiusType = 'square',
     inputBefore,
     inputAfter,
@@ -142,7 +124,6 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
     onClickIconRight,
     ...rest
   } = props;
-  const inputProps = { maxLength };
   const { onFocus, onBlur, ...others } = rest;
   const [focus, setFocus] = useState(false);
 
@@ -157,12 +138,11 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
   };
 
   return (
-    <StyledPaper
+    <StyledWrapper
       focus={focus}
       radius={radiusType}
-      elevation={0}
-      classes={CLASSES_PAPER}
       disabled={disabled}
+      {...rest}
     >
       {(iconPosition === 'left' || iconPosition === 'both') && (
         <StyledIconLeft onClick={onClickIconLeft}>
@@ -171,8 +151,6 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
       )}
       {inputBefore && inputBefore}
       <StyledInput
-        classes={CLASSES_INPUT_BASE}
-        iconPosition={iconPosition}
         inputProps={inputProps}
         onFocus={baseOnFocus}
         onBlur={baseOnBlur}
@@ -185,7 +163,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
           {Array.isArray(iconName) ? iconName[1] : iconName}
         </StyledIconRight>
       )}
-    </StyledPaper>
+    </StyledWrapper>
   );
 };
 
