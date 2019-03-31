@@ -112,7 +112,7 @@ const StyledIconRight = styled(StyledIcon)`
   margin: 0 0 0 ${spacing(3)};
 `;
 
-type Props = InputBaseProps & {
+type JuiOutlineTextFieldProps = InputBaseProps & {
   inputBefore?: JSX.Element;
   inputAfter?: JSX.Element;
   maxLength?: number;
@@ -129,7 +129,7 @@ type Props = InputBaseProps & {
       iconName?: string;
     });
 
-const JuiOutlineTextField = (props: Props) => {
+const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
   const {
     iconPosition,
     iconName = '',
@@ -189,4 +189,4 @@ const JuiOutlineTextField = (props: Props) => {
   );
 };
 
-export { JuiOutlineTextField };
+export { JuiOutlineTextField, JuiOutlineTextFieldProps };
