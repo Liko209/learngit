@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import { ResponsiveInfo } from './Responsive';
 import { StyledWrapper } from './StyledWrapper';
@@ -17,7 +17,7 @@ type State = {
   visual: { [key: string]: boolean };
 };
 
-class JuiResponsiveLayout extends Component<Props, State> {
+class JuiResponsiveLayout extends PureComponent<Props, State> {
   responsiveInfo: { [key: string]: ResponsiveInfo } = {};
   hasSortedResponsiveInfo: ResponsiveInfo[] = [];
   prevWidth: number = 0;
@@ -25,18 +25,6 @@ class JuiResponsiveLayout extends Component<Props, State> {
   state = {
     visual: {},
   };
-
-  shouldComponentUpdate(nextProps: Props, nextState: State) {
-    const { visual: nextVisual } = nextState;
-    const { visual } = this.state;
-    if (
-      JSON.stringify(visual) !== JSON.stringify(nextVisual) ||
-      nextProps !== this.props
-    ) {
-      return true;
-    }
-    return false;
-  }
 
   componentDidUpdate(prevProps: Props) {
     const prevTags = React.Children.map(
@@ -65,14 +53,14 @@ class JuiResponsiveLayout extends Component<Props, State> {
     );
   }
 
+  checkWidth = (diffWidth: number, minWidth?: number, defaultWidth?: number) =>
+    (diffWidth > 0 ? defaultWidth || minWidth : minWidth) || 0
+
   contentWidth = (diffWidth: number) => {
     return this.hasSortedResponsiveInfo.reduce(
       (contentWidth: number, info: ResponsiveInfo) => {
         const { minWidth, defaultWidth } = info;
-        const checkWidth =
-          diffWidth > 0
-            ? Number(defaultWidth) || Number(minWidth)
-            : Number(minWidth);
+        const checkWidth = this.checkWidth(diffWidth, minWidth, defaultWidth);
         return contentWidth + checkWidth;
       },
       0,
@@ -83,23 +71,24 @@ class JuiResponsiveLayout extends Component<Props, State> {
     const diffWidth = width - this.prevWidth;
     const contentWidth = this.contentWidth(diffWidth);
     this.prevWidth = width;
+    let shouldUpdate = false;
     const visual = {};
     this.hasSortedResponsiveInfo.reduce((totalWidth, info) => {
       const { visualMode, minWidth, defaultWidth, tag } = info;
-      const checkWidth =
-        diffWidth > 0
-          ? Number(defaultWidth) || Number(minWidth)
-          : Number(minWidth);
+      let checkWidth = 0;
       visual[tag] = true;
       if (visualMode !== undefined && totalWidth >= width) {
+        checkWidth = this.checkWidth(diffWidth, minWidth, defaultWidth);
         visual[tag] = false;
-        return totalWidth - checkWidth;
       }
-      return totalWidth;
+      shouldUpdate = shouldUpdate || visual[tag] !== this.state.visual[tag];
+      return totalWidth - checkWidth;
     },                                  contentWidth);
-    this.setState({
-      visual,
-    });
+    if (shouldUpdate) {
+      this.setState({
+        visual,
+      });
+    }
   }
 
   addResponsiveInfo = (Info: ResponsiveInfo) => {
