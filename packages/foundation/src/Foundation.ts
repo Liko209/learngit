@@ -3,14 +3,10 @@
  * @Date: 2018-06-04 15:41:12
  * Copyright © RingCentral. All rights reserved.
  */
-import config, { IFoundationConfig } from './config';
+import { config, IFoundationConfig } from './config';
 
 class Foundation {
   static init(newConfig: IFoundationConfig) {
-    // TODO refactor: foundation should not care about rcConfig,
-    // and foundation should not contain biz logic.
-    Object.assign(config.rcConfig, newConfig.rcConfig);
-
     if (newConfig.timeout) {
       config.timeout = newConfig.timeout;
     }

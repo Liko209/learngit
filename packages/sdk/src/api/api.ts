@@ -72,6 +72,7 @@ class Api {
 
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {
+      // todo fix any
       const currentConfig = this._httpConfig[name];
       const networkRequests: INetworkRequests = {
         host: currentConfig.server,

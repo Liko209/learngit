@@ -54,14 +54,6 @@ class Sdk {
     const dbConfig: DBConfig = merge({}, defaultDBConfig, config.db);
     // Initialize foundation
     Foundation.init({
-      // TODO refactor foundation, extract biz logic from `foundation` to `sdk`.
-      rcConfig: {
-        rc: apiConfig.rc,
-        glip2: apiConfig.glip2,
-        server: apiConfig.rc.server,
-        apiPlatform: apiConfig.rc.apiPlatform,
-        apiPlatformVersion: apiConfig.rc.apiPlatformVersion,
-      },
       dbAdapter: dbConfig.adapter,
     });
 

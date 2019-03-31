@@ -6,7 +6,6 @@
 import {
   IHandleType,
   IRequest,
-  ITokenHandler,
   IToken,
   IRequestDecoration,
   ITokenRefreshListener,
