@@ -5,7 +5,7 @@
  */
 
 import React, { useState } from 'react';
-import styled, { css } from '../../../foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import Paper, { PaperProps } from '@material-ui/core/Paper';
 import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
 import {
@@ -19,7 +19,7 @@ import {
 import { JuiIconography } from '../../../foundation/Iconography';
 import { Theme } from 'src/foundation/theme/theme';
 
-type IconPosition = 'left' | 'right';
+type IconPosition = 'left' | 'right' | 'both';
 
 const INPUT_HEIGHT = 10;
 const CLASSES_PAPER = { root: 'root' };
@@ -95,20 +95,6 @@ const StyledInput = styled<CompositeInputProps>(CompositeInput)`
     flex: 1;
     ${typography('body1')};
     color: ${grey('900')};
-    /* padding: ${spacing(1, 3)}; */
-    /* ${({ iconPosition }: CompositeInputProps) => {
-      if (iconPosition === 'left') {
-        return css`
-          padding-left: ${height(10)};
-        `;
-      }
-      if (iconPosition === 'right') {
-        return css`
-          padding-right: ${height(10)};
-        `;
-      }
-      return;
-    }} */
   }
 `;
 
@@ -131,11 +117,17 @@ const StyledIconRight = styled(StyledIcon)`
 type Props = InputBaseProps & {
   inputBefore?: JSX.Element;
   inputAfter?: JSX.Element;
-  iconPosition?: IconPosition;
-  iconName?: string;
   maxLength?: number;
   radiusType?: InputRadiusKeys;
-};
+} & (
+    | {
+      iconPosition?: Extract<IconPosition, 'both'>;
+      iconName?: string[];
+    }
+    | {
+      iconPosition?: Exclude<IconPosition, 'both'>;
+      iconName?: string;
+    });
 
 const JuiOutlineTextField = (props: Props) => {
   const {
@@ -170,7 +162,11 @@ const JuiOutlineTextField = (props: Props) => {
       classes={CLASSES_PAPER}
       disabled={disabled}
     >
-      {iconPosition === 'left' && <StyledIconLeft>{iconName}</StyledIconLeft>}
+      {(iconPosition === 'left' || iconPosition === 'both') && (
+        <StyledIconLeft>
+          {Array.isArray(iconName) ? iconName[0] : iconName}
+        </StyledIconLeft>
+      )}
       {inputBefore && inputBefore}
       <StyledInput
         classes={CLASSES_INPUT_BASE}
@@ -182,8 +178,10 @@ const JuiOutlineTextField = (props: Props) => {
         {...others}
       />
       {inputAfter && inputAfter}
-      {iconPosition === 'right' && (
-        <StyledIconRight>{iconName}</StyledIconRight>
+      {(iconPosition === 'right' || iconPosition === 'both') && (
+        <StyledIconRight>
+          {Array.isArray(iconName) ? iconName[1] : iconName}
+        </StyledIconRight>
       )}
     </StyledPaper>
   );

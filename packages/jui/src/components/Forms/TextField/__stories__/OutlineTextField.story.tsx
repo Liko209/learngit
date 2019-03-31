@@ -36,8 +36,8 @@ storiesOf('Components/Forms', module)
         <JuiOutlineTextField
           placeholder="Search members"
           iconName="search"
-          disabled={disabled}
           iconPosition="left"
+          disabled={disabled}
           radiusType={radius}
         />
         <br />
@@ -51,8 +51,8 @@ storiesOf('Components/Forms', module)
         <br />
         <JuiOutlineTextField
           placeholder="Password"
-          iconName="lock"
-          iconPosition="right"
+          iconName={['search', 'close']}
+          iconPosition="both"
           disabled={disabled}
           radiusType={radius}
           inputAfter={<div onClick={() => alert('clear')}>clear</div>}
