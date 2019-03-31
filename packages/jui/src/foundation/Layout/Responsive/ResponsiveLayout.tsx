@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
-import { ResponsiveInfo, VISUAL_MODE } from './Responsive';
+import { ResponsiveInfo } from './Responsive';
 import { StyledWrapper } from './StyledWrapper';
 
 type Props = {
@@ -17,17 +17,26 @@ type State = {
   visual: { [key: string]: boolean };
 };
 
-class JuiResponsiveLayout extends PureComponent<Props, State> {
+class JuiResponsiveLayout extends Component<Props, State> {
   responsiveInfo: { [key: string]: ResponsiveInfo } = {};
   hasSortedResponsiveInfo: ResponsiveInfo[] = [];
-  prevWidth: number = 1;
-  visualWidth: number = 0;
-  contentWidth: number = 0;
+  prevWidth: number = 0;
 
   state = {
-    width: {},
     visual: {},
   };
+
+  shouldComponentUpdate(nextProps: Props, nextState: State) {
+    const { visual: nextVisual } = nextState;
+    const { visual } = this.state;
+    if (
+      JSON.stringify(visual) !== JSON.stringify(nextVisual) ||
+      nextProps !== this.props
+    ) {
+      return true;
+    }
+    return false;
+  }
 
   componentDidUpdate(prevProps: Props) {
     const prevTags = React.Children.map(
@@ -42,7 +51,7 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
     );
     if (prevTags.toString() !== tags.toString()) {
       this.initWidthAndResponsiveInfo();
-      this.init(this.prevWidth);
+      this.onResize(this.prevWidth);
     }
   }
 
@@ -51,99 +60,46 @@ class JuiResponsiveLayout extends PureComponent<Props, State> {
   }
 
   initWidthAndResponsiveInfo() {
-    this.contentWidth = 0;
-    this.visualWidth = 0;
     this.hasSortedResponsiveInfo = [...Object.values(this.responsiveInfo)].sort(
       (a, b) => Number(b.priority) - Number(a.priority),
     );
-    this.hasSortedResponsiveInfo.forEach((info: ResponsiveInfo) => {
-      const { defaultWidth, minWidth, visualMode } = info;
-      const checkWidth = Number(defaultWidth) || Number(minWidth);
-      if (visualMode === undefined) {
-        this.visualWidth += checkWidth;
-      }
-      this.contentWidth += Number(minWidth);
-    });
   }
 
-  init = (width: number) => {
-    const visual = {};
-    this.hasSortedResponsiveInfo.reduce((totalWidth, info) => {
-      const { visualMode, minWidth, tag } = info;
-      visual[tag] = true;
-      if (visualMode !== undefined && totalWidth >= width) {
-        visual[tag] = false;
-        return totalWidth - Number(minWidth);
-      }
-      return totalWidth;
-    },                                  this.contentWidth);
-    this.setState({
-      visual,
-    });
-  }
-
-  largeHandler = (width: number) => {
-    const { visual } = this.state;
-    [...this.hasSortedResponsiveInfo]
-      .reverse()
-      .reduce((totalWidth, info, i, arr) => {
-        const { visualMode, tag, defaultWidth, minWidth } = info;
-        const checkWidth = Number(defaultWidth) || Number(minWidth);
-        const calculateWidth =
-          visualMode === undefined
-            ? totalWidth
-            : totalWidth + Number(checkWidth);
-        if (
-          visual[tag] === false &&
-          width > calculateWidth + this.visualWidth &&
-          (visualMode === VISUAL_MODE.AUTOMATIC ||
-            visualMode === VISUAL_MODE.BOTH)
-        ) {
-          this.setState({
-            visual: {
-              ...this.state.visual,
-              [tag]: true,
-            },
-          });
-          arr.splice(1);
-        }
-        return calculateWidth;
-      },      0);
-  }
-
-  smallHandler = (width: number) => {
-    const { visual } = this.state;
-    [...this.hasSortedResponsiveInfo].reduce((contentWidth, info, i, arr) => {
-      const { visualMode, minWidth, tag } = info;
-      if (visual[tag] !== false) {
-        if (visualMode !== undefined && width < contentWidth) {
-          this.setState({
-            visual: {
-              ...visual,
-              [tag]: false,
-            },
-          });
-          arr.splice(1);
-        }
-        return contentWidth;
-      }
-      return contentWidth - Number(minWidth);
-    },                                       this.contentWidth);
+  contentWidth = (diffWidth: number) => {
+    return this.hasSortedResponsiveInfo.reduce(
+      (contentWidth: number, info: ResponsiveInfo) => {
+        const { minWidth, defaultWidth } = info;
+        const checkWidth =
+          diffWidth > 0
+            ? Number(defaultWidth) || Number(minWidth)
+            : Number(minWidth);
+        return contentWidth + checkWidth;
+      },
+      0,
+    );
   }
 
   onResize = (width: number) => {
-    const diffWidth = this.prevWidth - width;
-    const multiple = Math.abs(diffWidth) / this.prevWidth;
+    const diffWidth = width - this.prevWidth;
+    const contentWidth = this.contentWidth(diffWidth);
     this.prevWidth = width;
-    if (multiple > 0.5) {
-      this.init(width);
-      return;
-    }
-    if (diffWidth < 0) {
-      this.largeHandler(width);
-    } else {
-      this.smallHandler(width);
-    }
+    const visual = {};
+    this.hasSortedResponsiveInfo.reduce((totalWidth, info) => {
+      const { visualMode, minWidth, defaultWidth, tag } = info;
+      const checkWidth =
+        diffWidth > 0
+          ? Number(defaultWidth) || Number(minWidth)
+          : Number(minWidth);
+      visual[tag] = true;
+      if (visualMode !== undefined && totalWidth >= width) {
+        visual[tag] = false;
+        return totalWidth - checkWidth;
+      }
+      return totalWidth;
+    },                                  contentWidth);
+    this.setState({
+      visual,
+    });
   }
 
   addResponsiveInfo = (Info: ResponsiveInfo) => {
