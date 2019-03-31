@@ -167,7 +167,7 @@ class PostDataController {
           }),
         );
         if (deletePostIds.length > 0) {
-          this.entitySourceController.bulkDelete(deletePostIds);
+          await this.entitySourceController.bulkDelete(deletePostIds);
         }
         return { deleteMap };
       }
