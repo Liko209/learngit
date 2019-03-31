@@ -17,7 +17,7 @@ import {
   width,
 } from '../../../foundation/utils';
 import { JuiIconography } from '../../../foundation/Iconography';
-import { Theme } from 'src/foundation/theme/theme';
+import { Theme } from 'jui/foundation/theme/theme';
 
 type IconPosition = 'left' | 'right' | 'both';
 
