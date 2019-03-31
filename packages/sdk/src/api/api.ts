@@ -5,8 +5,12 @@
  */
 import merge from 'lodash/merge';
 import NetworkClient, { INetworkRequests } from './NetworkClient';
-import { ApiConfig, HttpConfigType, PartialApiConfig } from '../types';
-import { Throw } from '../utils';
+import {
+  ApiConfig,
+  HttpConfigType,
+  BaseConfig,
+  PartialApiConfig,
+} from '../types';
 import { defaultConfig } from './defaultConfig';
 import { Raw } from '../framework/model';
 
@@ -18,7 +22,6 @@ import {
   HandleByUpload,
   HandleByCustom,
 } from './handlers';
-import { ERROR_CODES_SDK } from '../error';
 const types = [
   HandleByGlip,
   HandleByRingCentral,
@@ -29,7 +32,7 @@ const types = [
 class Api {
   static basePath = '';
   static httpSet: Map<string, NetworkClient> = new Map();
-  static _httpConfig: ApiConfig;
+  static _httpConfig: ApiConfig = defaultConfig;
 
   static _networkManager: NetworkManager;
 
@@ -66,18 +69,13 @@ class Api {
     name: HttpConfigType,
     type: IHandleType,
   ): NetworkClient {
-    if (!this._httpConfig) {
-      Throw(ERROR_CODES_SDK.API_NOT_INITIALIZED, 'Api not initialized');
-    }
-
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {
-      // todo fix any
-      const currentConfig = this._httpConfig[name];
+      const config: BaseConfig = this._httpConfig[name];
       const networkRequests: INetworkRequests = {
-        host: currentConfig.server,
+        host: config.server,
+        pathPrefix: config.pathPrefix,
         handlerType: type,
-        pathPrefix: currentConfig.pathPrefix,
       };
       networkClient = new NetworkClient(
         networkRequests,
