@@ -21,6 +21,7 @@ type Props = {
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward: ComponentType<any>;
   SearchBar: ComponentType<any>;
+  openGlobalSearch?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 type States = {
@@ -49,6 +50,7 @@ class JuiTopBar extends React.PureComponent<Props, States> {
       AvatarActions,
       NewActions,
       BackNForward,
+      openGlobalSearch,
       // SearchBar,
     } = this.props;
     return (
@@ -61,8 +63,9 @@ class JuiTopBar extends React.PureComponent<Props, States> {
             </StyledMenuWithLogo>
             <BackNForward />
             <StyledJuiSearchBar
-            // isShowSearchBar={isShowSearchBar}
-            // closeSearchBar={this.showSearchBar}
+              onClick={openGlobalSearch}
+              // isShowSearchBar={isShowSearchBar}
+              // closeSearchBar={this.showSearchBar}
             />
             <StyledSearchIconButton
               onClick={this.showSearchBar}

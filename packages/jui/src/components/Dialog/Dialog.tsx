@@ -29,8 +29,8 @@ const Dialog = styled(
 
     const initClasses = {
       ...classes,
-      paper: `paper ${classes && classes.paper}`,
-      root: `root ${classes && classes.root}`,
+      paper: `paper ${(classes && classes.paper) || ''}`,
+      root: `root ${(classes && classes.root) || ''}`,
     };
 
     return <MuiDialog classes={initClasses} {...restProps} />;

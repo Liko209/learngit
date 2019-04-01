@@ -20,6 +20,7 @@ import { dao, mainLogger } from 'sdk';
 import { AuthService } from 'sdk/service/auth/authService';
 import { ModalPortal } from '@/containers/Dialog';
 import { Dialer } from '@/modules/telephony';
+import { GlobalSearch } from '@/modules/GlobalSearch';
 
 @observer
 class HomeView extends Component<HomeViewProps> {
@@ -65,6 +66,7 @@ class HomeView extends Component<HomeViewProps> {
           </Bottom>
           <ModalPortal />
           <Dialer />
+          <GlobalSearch />
         </Wrapper>
       </>
     );

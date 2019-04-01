@@ -9,7 +9,7 @@ import { JuiOutlineTextField } from '../../components/Forms/TextField';
 // import { JuiSearchBar } from '../SearchBar';
 import { width } from '../../foundation/utils';
 
-const TobBarSearch: any = styled(JuiOutlineTextField)`
+const TobBarSearch = styled(JuiOutlineTextField)`
   width: ${width(67)};
   cursor: pointer;
   input {
@@ -17,18 +17,21 @@ const TobBarSearch: any = styled(JuiOutlineTextField)`
   }
 `;
 
-// type StyledJuiSearchBarProps = {
-//   isShowSearchBar: boolean;
-//   closeSearchBar: Function;
-// };
+type StyledJuiSearchBarProps = {
+  // isShowSearchBar: boolean;
+  // closeSearchBar: Function;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+};
 
-const StyledJuiSearchBar = () => {
+const StyledJuiSearchBar = (props: StyledJuiSearchBarProps) => {
+  const { onClick } = props;
   return (
     <TobBarSearch
       iconName="search"
-      radiusType="round"
+      radiusType="circle"
       iconPosition="left"
       disabled={true}
+      onClick={onClick}
     />
   );
 };

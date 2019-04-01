@@ -38,7 +38,7 @@ type Props = {
   defaultActiveIndex: number;
   children: JSX.Element[];
   onChangeTab?: (index: number) => void;
-  moreText: string; // more tab support i18N
+  moreText?: string; // more tab support i18N
 };
 
 const CLASSES = {
