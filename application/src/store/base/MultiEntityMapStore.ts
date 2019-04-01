@@ -327,7 +327,7 @@ export default class MultiEntityMapStore<
 
   @action
   private _refreshCache() {
-    if (this.getSize() < this._maxCacheCount) {
+    if (this.getSize() < this._maxCacheCount || !this._getIsHidden()) {
       return;
     }
 
@@ -342,5 +342,11 @@ export default class MultiEntityMapStore<
         delete this._data[id];
       });
     },         100);
+  }
+
+  private _getIsHidden() {
+    return (
+      document['hidden'] || document['msHidden'] || document['webkitHidden']
+    );
   }
 }

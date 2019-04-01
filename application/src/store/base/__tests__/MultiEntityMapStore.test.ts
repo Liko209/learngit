@@ -12,17 +12,11 @@ import { Entity } from '@/store';
 import { BaseModel } from 'sdk/models';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { PostService } from 'sdk/module/post';
+
 const { EVENT_TYPES } = service;
-
+jest.mock('../visibilityChangeEvent');
 jest.mock('sdk/module/post');
-const postService = new PostService();
-PostService.getInstance = jest.fn().mockReturnValue(postService);
 
-// jest.mock('../ModelProvider');
-const instance: MultiEntityMapStore<any, any> = new MultiEntityMapStore(
-  ENTITY_NAME.POST,
-  ENTITY_SETTING[ENTITY_NAME.POST],
-);
 const getEntity: (i?: number) => Entity = (i?: number) => ({
   id: i || faker.random.number(10),
 });
@@ -41,97 +35,179 @@ const getEntityMap: (n?: number) => Map<number, Entity> = (n?: number) => {
   return map;
 };
 
-describe('handleIncomingData()', () => {
-  const entityMap = getEntityMap(10);
-  const body = {
-    ids: Array.from(entityMap.keys()),
-    entities: entityMap,
-  };
-  const entitiesArray = getEntityArray(5);
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
+describe('MultiEntityMapStore', () => {
+  let instance: MultiEntityMapStore<any, any>;
+  let postService: PostService;
+  function setUp() {
+    postService = new PostService();
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
+
+    instance = new MultiEntityMapStore(
+      ENTITY_NAME.POST,
+      ENTITY_SETTING[ENTITY_NAME.POST],
+    );
+  }
   beforeEach(() => {
-    instance.batchSet(entitiesArray);
+    clearMocks();
+    setUp();
   });
 
-  afterEach(() => {
-    instance.clearAll();
-  });
-
-  it('for put type', () => {
-    const data: NotificationEntityPayload<BaseModel> = {
-      body,
-      type: EVENT_TYPES.UPDATE,
+  describe('handleIncomingData()', () => {
+    const entityMap = getEntityMap(10);
+    const body = {
+      ids: Array.from(entityMap.keys()),
+      entities: entityMap,
     };
-    instance.handleIncomingData(data);
-
-    const models = instance.getData();
-
-    expect(Object.keys(models)).toHaveLength(5);
-  });
-
-  it('for update type', () => {
-    const data: NotificationEntityPayload<BaseModel> = {
-      body,
-      type: EVENT_TYPES.UPDATE,
-    };
-    instance.handleIncomingData(data);
-
-    const models = instance.getData();
-
-    expect(Object.keys(models)).toHaveLength(5);
-  });
-
-  it('for delete type', () => {
-    const data: NotificationEntityPayload<BaseModel> = {
-      body: { ids: [1, 2, 3, 4, 5, 6] },
-      type: EVENT_TYPES.DELETE,
-    };
-    instance.handleIncomingData(data);
-    const models = instance.getData();
-    setTimeout(() => {
-      expect(Object.keys(models)).toHaveLength(0);
-    },         0);
-  });
-});
-
-describe('get()', () => {
-  postService.getById.mockResolvedValueOnce({ id: '1' });
-  instance.get(1);
-  const models = instance.getData();
-  expect(Object.keys(models)).toHaveLength(1);
-  expect(Object.keys(models).includes('1')).toBeTruthy();
-});
-
-describe('subtractedBy()', () => {
-  it('should return differences and interactions', () => {
-    getEntityMap(10);
-    const result = instance.subtractedBy([10, 11]);
-    expect(result).toEqual([[10, 11], []]);
-  });
-});
-
-describe('hasValid()', () => {
-  it('should return false when model not found', () => {
-    expect(instance.hasValid(9999)).toBe(false);
-  });
-
-  it('should return false when model is mocked', () => {
-    instance.set({
-      id: 9999,
-      isMocked: true,
+    const entitiesArray = getEntityArray(5);
+    beforeEach(() => {
+      instance.batchSet(entitiesArray);
     });
-    expect(instance.hasValid(9999)).toBe(false);
+
+    afterEach(() => {
+      instance.clearAll();
+    });
+
+    it('for put type', () => {
+      const data: NotificationEntityPayload<BaseModel> = {
+        body,
+        type: EVENT_TYPES.UPDATE,
+      };
+      instance.handleIncomingData(data);
+
+      const models = instance.getData();
+
+      expect(Object.keys(models)).toHaveLength(5);
+    });
+
+    it('for update type', () => {
+      const data: NotificationEntityPayload<BaseModel> = {
+        body,
+        type: EVENT_TYPES.UPDATE,
+      };
+      instance.handleIncomingData(data);
+
+      const models = instance.getData();
+
+      expect(Object.keys(models)).toHaveLength(5);
+    });
+
+    it('for delete type', async (done: any) => {
+      const data: NotificationEntityPayload<BaseModel> = {
+        body: { ids: [1, 2, 3, 4, 5, 6] },
+        type: EVENT_TYPES.DELETE,
+      };
+      instance.handleIncomingData(data);
+      const models = instance.getData();
+      setTimeout(() => {
+        expect(Object.keys(models)).toHaveLength(0);
+        done();
+      },         0);
+    });
   });
 
-  it('should return true when model is mocked and did partial update', () => {
-    instance.set({
-      id: 9999,
-      isMocked: true,
+  describe('get()', () => {
+    it('get', () => {
+      postService.getById.mockResolvedValueOnce({ id: '1' });
+      instance.get(1);
+      const models = instance.getData();
+      expect(Object.keys(models)).toHaveLength(1);
+      expect(Object.keys(models).includes('1')).toBeTruthy();
     });
-    const map = new Map();
-    map.set(9999, {
-      created_at: 123,
+  });
+
+  describe('subtractedBy()', () => {
+    it('should return differences and interactions', () => {
+      getEntityMap(10);
+      const result = instance.subtractedBy([10, 11]);
+      expect(result).toEqual([[10, 11], []]);
     });
-    instance.batchUpdate(map);
-    expect(instance.hasValid(9999)).toBe(true);
+  });
+
+  describe('hasValid()', () => {
+    it('should return false when model not found', () => {
+      expect(instance.hasValid(9999)).toBe(false);
+    });
+
+    it('should return false when model is mocked', () => {
+      instance.set({
+        id: 9999,
+        isMocked: true,
+      });
+      expect(instance.hasValid(9999)).toBe(false);
+    });
+
+    it('should return true when model is mocked and did partial update', () => {
+      instance.set({
+        id: 9999,
+        isMocked: true,
+      });
+      const map = new Map();
+      map.set(9999, {
+        created_at: 123,
+      });
+      instance.batchUpdate(map);
+      expect(instance.hasValid(9999)).toBe(true);
+    });
+  });
+
+  describe('refresh Cache', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    function setHidden(hid: any) {
+      Object.defineProperty(global, 'document', {
+        get: jest.fn().mockReturnValue({
+          hidden: hid,
+        }),
+      });
+    }
+    const setting = ENTITY_SETTING[ENTITY_NAME.POST];
+    it('should not clear cache when size has not reach the limit', (done: any) => {
+      setHidden(false);
+      setting.cacheCount = 2;
+      instance = new MultiEntityMapStore(ENTITY_NAME.POST, setting);
+
+      instance.batchSet([{ id: 1 }]);
+      expect(Object.keys(instance.getData())).toEqual(['1']);
+
+      setTimeout(() => {
+        expect(Object.keys(instance.getData())).toEqual(['1']);
+        done();
+      },         120);
+    });
+
+    it('should not clear cache when document is not hidden', async (done: any) => {
+      setHidden(false);
+      setting.cacheCount = 1;
+      instance = new MultiEntityMapStore(ENTITY_NAME.POST, setting);
+
+      instance.batchSet([{ id: 1 }, { id: 2 }]);
+      expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+
+      setTimeout(() => {
+        expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+        done();
+      },         120);
+    });
+
+    it('should refresh cache when cache is oversized and app is hidden', async (done: any) => {
+      setHidden(true);
+      setting.cacheCount = 1;
+      instance = new MultiEntityMapStore(ENTITY_NAME.POST, setting);
+      instance.batchSet([{ id: 1 }, { id: 2 }]);
+      expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+      setTimeout(() => {
+        expect(Object.keys(instance.getData())).toEqual([]);
+        done();
+      },         120);
+    });
   });
 });

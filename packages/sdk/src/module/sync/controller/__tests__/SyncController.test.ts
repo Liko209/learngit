@@ -20,6 +20,7 @@ import { GroupService } from '../../../group';
 import { PostService } from '../../../post';
 import { ItemService } from '../../../item/service';
 import { AccountService } from '../../../../service/account/accountService';
+import socketManager from '../../../../service/socket';
 
 jest.mock('../../config/SyncUserConfig');
 jest.mock('../../../../service/config/NewGlobalConfig');
@@ -32,6 +33,7 @@ jest.mock('../../../post');
 jest.mock('../../../item/service');
 jest.mock('../../../../service/account/config');
 jest.mock('../../../../service/account/accountService');
+jest.mock('../../../../service/socket');
 
 let groupConfigService: GroupConfigService;
 let personService: PersonService;
@@ -127,13 +129,23 @@ describe('SyncController ', () => {
       jest.clearAllMocks();
       jest.resetModules();
     });
-    it('should call updateCanUpdateIndexTimeStamp when forceUpdate is true', () => {
+    it('should call updateCanUpdateIndexTimeStamp when forceUpdate is true and socket is connected', () => {
       jest
         .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
         .mockImplementationOnce(() => {});
-
+      socketManager.isConnected.mockReturnValueOnce(true);
       syncController.updateIndexTimestamp(1, true);
       expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(1);
+      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
+    });
+
+    it('should not call updateCanUpdateIndexTimeStamp when forceUpdate is true but socket is not connected', () => {
+      jest
+        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
+        .mockImplementationOnce(() => {});
+      socketManager.isConnected.mockReturnValueOnce(false);
+      syncController.updateIndexTimestamp(1, true);
+      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
       expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
     });
 
