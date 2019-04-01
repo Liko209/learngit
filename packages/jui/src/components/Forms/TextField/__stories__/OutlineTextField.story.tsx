@@ -19,10 +19,11 @@ storiesOf('Components/Forms', module)
     const radius = select(
       'radiusType',
       {
-        square: 'square',
-        round: 'round',
+        circle: 'circle',
+        rounded: 'rounded',
+        rectangle: 'rectangle',
       },
-      'square',
+      'rounded',
     );
     return (
       <div style={{ padding: '0 30%' }}>

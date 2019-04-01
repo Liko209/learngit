@@ -26,15 +26,17 @@ type IconPosition = 'left' | 'right' | 'both';
 const INPUT_HEIGHT = 10;
 
 type InputRadius = {
-  square: string;
-  round: string;
+  circle: string; // half of height
+  rounded: string; // 4px
+  rectangle: number; // 0px
 };
 type InputRadiusKeys = keyof InputRadius;
 const getRadius = (theme: Theme, radiusType: InputRadiusKeys) => {
   const { radius, size } = theme;
   const type: InputRadius = {
-    square: radius.lg,
-    round: `${size.height * INPUT_HEIGHT * radius.round}px`,
+    rectangle: radius.zero,
+    rounded: radius.lg,
+    circle: `${size.height * INPUT_HEIGHT * radius.round}px`,
   };
   return type[radiusType];
 };
@@ -44,6 +46,7 @@ type CompositeWrapperProps = {
   focus: boolean;
   radius: InputRadiusKeys;
   disabled?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 const CompositeWrapper = ({
@@ -88,9 +91,6 @@ const StyledIcon = styled(JuiIconography)`
   width: ${width(5)};
   height: ${height(5)};
   align-items: center;
-  svg {
-    font-size: ${spacing(5)};
-  }
 `;
 const StyledIconLeft = styled(StyledIcon)`
   margin: 0 ${spacing(3)} 0 0;
@@ -105,11 +105,12 @@ type JuiOutlineTextFieldProps = {
   inputAfter?: JSX.Element;
   disabled?: boolean;
   radiusType?: InputRadiusKeys;
-  IconLeftProps?: JuiIconographyProps;
+  IconLeftProps?: JuiIconographyProps & { [propName: string]: string };
   IconRightProps?: JuiIconographyProps;
   onClickIconLeft?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onClickIconRight?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 } & (
   | {
     iconPosition?: Extract<IconPosition, 'both'>;
@@ -125,7 +126,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
     iconPosition,
     iconName = '',
     InputProps = { onFocus: () => {}, onBlur: () => {} },
-    radiusType = 'square',
+    radiusType = 'rounded',
     inputBefore,
     inputAfter,
     disabled,
@@ -134,6 +135,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
     IconRightProps,
     onClickIconLeft,
     onClickIconRight,
+    onClick,
     ...rest
   } = props;
   const { onFocus, onBlur, ...others } = InputProps;
@@ -154,10 +156,15 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
       focus={focus}
       radius={radiusType}
       disabled={disabled}
+      onClick={onClick}
       {...rest}
     >
       {(iconPosition === 'left' || iconPosition === 'both') && (
-        <StyledIconLeft {...IconLeftProps} onClick={onClickIconLeft}>
+        <StyledIconLeft
+          {...IconLeftProps}
+          iconSize="medium"
+          onClick={onClickIconLeft}
+        >
           {Array.isArray(iconName) ? iconName[0] : iconName}
         </StyledIconLeft>
       )}
@@ -171,7 +178,11 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
         {...others}
       />
       {(iconPosition === 'right' || iconPosition === 'both') && (
-        <StyledIconRight {...IconRightProps} onClick={onClickIconRight}>
+        <StyledIconRight
+          {...IconRightProps}
+          iconSize="medium"
+          onClick={onClickIconRight}
+        >
           {Array.isArray(iconName) ? iconName[1] : iconName}
         </StyledIconRight>
       )}
