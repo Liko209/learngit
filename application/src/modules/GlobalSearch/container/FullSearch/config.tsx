@@ -7,7 +7,7 @@ import React from 'react';
 
 type TabConfig = {
   title: string;
-  container: JSX.Element | React.ReactNode;
+  container: JSX.Element;
   automationID: string;
   empty: {
     text: string;
