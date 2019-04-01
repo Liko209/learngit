@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import i18next from 'i18next';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 import { Dialog } from '@/containers/Dialog';
 import { errorHelper } from 'sdk/error';
 import { GroupService } from 'sdk/module/group';
@@ -47,7 +47,7 @@ const joinTeam = (item: GroupModel) => (e?: React.MouseEvent<HTMLElement>) => {
     okText: i18next.t('people.team.joinTeamSubmit'),
     cancelText: i18next.t('common.dialog.cancel'),
     onOK: () =>
-      goToConversation({
+      goToConversationWithLoading({
         id: item.id,
         async beforeJump(conversationId: number) {
           await joinHander(conversationId);

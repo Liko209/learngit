@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { MenuProps, MenuViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
@@ -13,7 +13,9 @@ import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import { ConvertToTeam } from '@/containers/ConvertToTeam';
 
 @observer
-class Menu extends React.Component<WithNamespaces & MenuProps & MenuViewProps> {
+class Menu extends React.Component<
+  WithTranslation & MenuProps & MenuViewProps
+> {
   private _renderAnchor = () => {
     const { t } = this.props;
     return (
@@ -62,5 +64,5 @@ class Menu extends React.Component<WithNamespaces & MenuProps & MenuViewProps> {
     );
   }
 }
-const MenuView = translate('translations')(Menu);
+const MenuView = withTranslation('translations')(Menu);
 export { MenuView };

@@ -116,7 +116,7 @@ describe('Event Item Dao', () => {
         type: 'application/pdf',
         type_id: 10,
         version: 2271038454890496,
-        versions: [],
+        versions: [] as any[],
       };
       return {
         fileItem,
@@ -125,13 +125,27 @@ describe('Event Item Dao', () => {
 
     const { fileItem } = setUpData();
     it('should return sanitized item', () => {
-      expect(dao.toSanitizedItem(fileItem)).toEqual({
+      expect(dao.toSanitizedItem(fileItem as any)).toEqual({
         id: fileItem.id,
         group_ids: fileItem.group_ids,
         created_at: fileItem.created_at,
         modified_at: fileItem.modified_at,
         name: fileItem.name,
         type: fileItem.type,
+        __latest_version_date: fileItem.created_at,
+      });
+    });
+
+    it('should set _latest_version_date to latest valid version', () => {
+      fileItem.versions = [{ date: 999, deactivated: true }, { date: 888 }];
+      expect(dao.toSanitizedItem(fileItem as any)).toEqual({
+        id: fileItem.id,
+        group_ids: fileItem.group_ids,
+        created_at: fileItem.created_at,
+        modified_at: fileItem.modified_at,
+        name: fileItem.name,
+        type: fileItem.type,
+        __latest_version_date: 888,
       });
     });
   });

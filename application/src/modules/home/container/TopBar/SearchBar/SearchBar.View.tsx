@@ -14,7 +14,7 @@ import {
   JuiSearchTitle,
 } from 'jui/pattern/SearchBar';
 import { HotKeys } from 'jui/hoc/HotKeys';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 import GroupModel from '@/store/models/Group';
 import { joinTeam } from '@/common/joinPublicTeam';
@@ -99,7 +99,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
   private _goToConversation = async (id: number) => {
     this.onClear();
     this.onClose();
-    await goToConversation({ id });
+    await goToConversationWithLoading({ id });
   }
 
   handleJoinTeam = async (item: GroupModel) => {
@@ -145,6 +145,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
         title={title}
         goToConversation={this._goToConversation}
         onClose={this.onClose}
+        onClear={this.onClear}
         handleJoinTeam={this.handleJoinTeam}
         didChange={this.selectIndexChange}
         terms={terms}

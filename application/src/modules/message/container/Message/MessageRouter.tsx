@@ -19,7 +19,7 @@ import {
 } from 'jui/foundation/Layout/Responsive';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
 import {
-  goToConversation,
+  goToConversationWithLoading,
   GoToConversationParams,
 } from '@/common/goToConversation';
 import { ConversationPage } from '@/containers/ConversationPage';
@@ -102,7 +102,7 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   retryMessage = () => {
     const { retryParams } = this.state;
     if (!retryParams) return;
-    goToConversation(retryParams);
+    goToConversationWithLoading(retryParams);
   }
 
   render() {

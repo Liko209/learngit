@@ -16,7 +16,7 @@ import {
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 import { SortableModel } from '../../../framework/model';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../service/account/config';
 import { CompanyService } from '../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../service/constants';
 import { versionHash } from '../../../utils/mathUtils';
@@ -41,7 +41,8 @@ import { IGroupService } from '../service/IGroupService';
 import { GroupHandleDataController } from './GroupHandleDataController';
 
 function buildNewGroupInfo(members: number[]) {
-  const userId = AccountGlobalConfig.getCurrentUserId();
+  const userConfig = new AccountUserConfig();
+  const userId = userConfig.getGlipUserId();
   return {
     members,
     creator_id: Number(userId),
@@ -89,7 +90,8 @@ export class GroupFetchDataController {
         ? await extractHiddenGroupIdsWithoutUnread(profile)
         : [];
       const excludeIds = favoriteGroupIds.concat(hiddenIds);
-      const userId = AccountGlobalConfig.getCurrentUserId();
+      const userConfig = new AccountUserConfig();
+      const userId = userConfig.getGlipUserId();
       const isTeam = groupType === GROUP_QUERY_TYPE.TEAM;
       if (this.entityCacheSearchController.isInitialized()) {
         result = await this.entityCacheSearchController.getEntities(
@@ -211,7 +213,8 @@ export class GroupFetchDataController {
       PERFORMANCE_KEYS.SEARCH_GROUP,
       logId,
     );
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     if (!currentUserId) {
       return null;
     }
@@ -280,7 +283,8 @@ export class GroupFetchDataController {
       PERFORMANCE_KEYS.SEARCH_TEAM,
       logId,
     );
-    const currentUserId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     if (!currentUserId) {
       return null;
     }
@@ -452,7 +456,8 @@ export class GroupFetchDataController {
     const group = await this.entitySourceController.get(groupId);
     if (group) {
       isValid = this.groupService.isValid(group);
-      const currentUserId = AccountGlobalConfig.getCurrentUserId();
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
       isIncludeSelf = group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;
@@ -487,7 +492,8 @@ export class GroupFetchDataController {
   }
 
   private _addCurrentUserToMemList(ids: number[]) {
-    const userId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const userId = userConfig.getGlipUserId();
     if (userId) {
       ids.push(userId);
     }

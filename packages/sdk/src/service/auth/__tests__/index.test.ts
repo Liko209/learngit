@@ -21,6 +21,7 @@ import notificationCenter from '../../notificationCenter';
 import serviceManager from '../../serviceManager';
 import AuthService from '..';
 import { AccountManager } from '../../../framework';
+import { AuthUserConfig } from '../../auth/config';
 
 jest.mock('foundation');
 jest.mock('../../../api');
@@ -28,6 +29,7 @@ jest.mock('../../../api/ringcentral/auth');
 jest.mock('../../../dao');
 jest.mock('../../notificationCenter');
 jest.mock('../../../framework');
+jest.mock('../../auth/config');
 
 const accountManager: AccountManager = new AccountManager(null);
 const authService: AuthService = new AuthService(accountManager);

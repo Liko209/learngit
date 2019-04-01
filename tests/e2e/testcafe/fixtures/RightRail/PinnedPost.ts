@@ -1,6 +1,6 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-02-19 17:44:59 
+ * @Author: Potar.He
+ * @Date: 2019-02-19 17:44:59
  * @Last Modified by: Potar.He
  * @Last Modified time: 2019-02-21 14:23:00
  */
@@ -8,11 +8,14 @@
 
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
 import { IGroup } from '../../v2/models';
+import { ConversationPage } from '../../v2/page-models/AppRoot/HomePage/MessageTab/ConversationPage';
+import * as _ from 'lodash';
+import * as assert from 'assert';
 
 fixture('RightRail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -267,5 +270,77 @@ test(formalName('Pinned info will sync immediately when update', ['PinnedPost', 
 
   await h(t).withLog('Then the pinned item should be updated immediately', async () => {
     await pinnedTab.itemByPostId(notePostId).shouldHasAttachmentsText(newNoteTitle);
+  });
+});
+
+test(formalName('Locate the pinned post in the conversation thread in the center panel', ['PinnedPost', 'Aaron', 'P2', 'JPT-1079']), async t => {
+  const app = new AppRoot(t);
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).glip(loginUser).init();
+
+  const team = <IGroup> {
+    name: uuid(),
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser],
+  };
+
+  await h(t).withLog(`Given I have a team named: ${team.name}`,async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  let targetPostId: string;
+
+  await h(t).withLog('And I send two events', async () => {
+    await h(t).glip(loginUser).createSimpleEvent(team.glipId, uuid(), loginUser.rcId);
+    targetPostId =  await h(t).glip(loginUser).createSimpleEvent(team.glipId, uuid(), loginUser.rcId).then(res => res.data.post_ids[0]);
+  });
+
+  await h(t).withLog('And I send three multi-line text', async () => {
+    for (const i of _.range(3)) {
+      await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, loginUser);
+    }
+  });
+
+  await h(t).withLog('And I pin the second event post via API', async () => {
+    await h(t).glip(loginUser).updateGroup(team.glipId, { pinned_post_ids: [Number(targetPostId)] });
+  });
+
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const teamsSection = app.homePage.messageTab.teamsSection;
+
+  await h(t).withLog('And I open the team conversation, scroll to bottom', async () => {
+    await teamsSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.scrollToBottom();
+  });
+
+  const rightRail = app.homePage.messageTab.rightRail;
+
+  await h(t).withLog('When I open the team pined tab and click the pin of the second event above', async () => {
+    await rightRail.pinnedEntry.enter();
+    await rightRail.pinnedTab.waitUntilItemsListExist();
+    const targetPin = rightRail.pinnedTab.itemByPostId(targetPostId);
+    await t.click(targetPin.self);
+  });
+
+  await h(t).withLog('Then the pined event should be visible', async () => {
+    await conversationPage.postByIdExpectVisible(targetPostId, true);
+  });
+
+  const header = conversationPage.header;
+  await h(t).withLog('And the pined event at the top of conversation page.', async () => {
+    const targetPostCard = conversationPage.getSelector(`[data-id="${targetPostId}"]`);
+
+    const containerTop = await conversationPage.self.getBoundingClientRectProperty('top');
+    const headerHeight = await header.getBoundingClientRectProperty('height');
+    const targetTop = await targetPostCard.getBoundingClientRectProperty('top');
+
+    assert.strictEqual(containerTop + headerHeight, targetTop, 'equal');
   });
 });

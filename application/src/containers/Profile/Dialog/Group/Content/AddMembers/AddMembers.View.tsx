@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { Notification } from '@/containers/Notification';
 import { ContactSearch } from '@/containers/ContactSearch';
@@ -63,6 +63,11 @@ class AddMembers extends React.Component<ViewProps> {
         onOK={this.handleAddTeam}
         okText={t('people.team.addTeamMemberSubmit')}
         cancelText={t('common.dialog.cancel')}
+        modalProps={{
+          classes: {
+            paper: 'overflow-y',
+          },
+        }}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}
@@ -78,7 +83,7 @@ class AddMembers extends React.Component<ViewProps> {
   }
 }
 
-const AddMembersView = translate('translations')(AddMembers);
+const AddMembersView = withTranslation('translations')(AddMembers);
 const AddMembersComponent = AddMembers;
 
 export { AddMembersView, AddMembersComponent };

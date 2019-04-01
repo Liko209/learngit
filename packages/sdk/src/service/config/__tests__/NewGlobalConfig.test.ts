@@ -26,22 +26,6 @@ describe('NewGlobalConfig', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
-  it('should call get when try to getAccountType', () => {
-    NewGlobalConfig.getAccountType();
-    expect(mockConfigService.get).toHaveBeenCalledWith(
-      MODULE,
-      CONFIG_KEYS.ACCOUNT_TYPE,
-    );
-  });
-
-  it('should call put when try to setAccountType', () => {
-    NewGlobalConfig.setAccountType(TEST);
-    expect(mockConfigService.put).toHaveBeenCalledWith(
-      MODULE,
-      CONFIG_KEYS.ACCOUNT_TYPE,
-      TEST,
-    );
-  });
 
   it('should call get when try to getDBSchemaVersion', () => {
     NewGlobalConfig.getDBSchemaVersion();
@@ -70,22 +54,6 @@ describe('NewGlobalConfig', () => {
     expect(mockConfigService.put).toHaveBeenCalledWith(
       MODULE,
       CONFIG_KEYS.ENV,
-      TEST,
-    );
-  });
-
-  it('should call get when try to getLastIndexTimestamp', () => {
-    NewGlobalConfig.getLastIndexTimestamp();
-    expect(mockConfigService.get).toHaveBeenCalledWith(
-      MODULE,
-      CONFIG_KEYS.LAST_INDEX_TIMESTAMP,
-    );
-  });
-  it('should call put when try to setLastIndexTimestamp', () => {
-    NewGlobalConfig.setLastIndexTimestamp(TEST);
-    expect(mockConfigService.put).toHaveBeenCalledWith(
-      MODULE,
-      CONFIG_KEYS.LAST_INDEX_TIMESTAMP,
       TEST,
     );
   });

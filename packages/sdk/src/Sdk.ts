@@ -26,8 +26,9 @@ import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
 import { AccountService } from './service';
-import { AuthGlobalConfig } from './service/auth/config';
 import { DataMigration, UserConfigService } from './module/config';
+import { setGlipToken } from './authenticator/utils';
+import { AuthUserConfig } from './service/auth/config';
 import { AccountGlobalConfig } from './service/account/config';
 
 const AM = AccountManager;
@@ -37,6 +38,8 @@ const defaultDBConfig: DBConfig = {
 };
 
 class Sdk {
+  private _glipToken: string;
+
   constructor(
     public daoManager: DaoManager,
     public accountManager: AccountManager,
@@ -100,7 +103,14 @@ class Sdk {
   }
 
   async onAuthSuccess() {
-    this.updateNetworkToken();
+    // need to set token if it's not first login
+    if (AccountGlobalConfig.getUserDictionary()) {
+      const authConfig = new AuthUserConfig();
+      this.updateNetworkToken({
+        rcToken: authConfig.getRcToken(),
+        glipToken: authConfig.getGlipToken(),
+      });
+    }
 
     await this.syncService.syncData({
       /**
@@ -113,6 +123,9 @@ class Sdk {
       onInitialHandled: async () => {
         const accountService: AccountService = AccountService.getInstance();
         accountService.onBoardingPreparation();
+        if (this._glipToken) {
+          await setGlipToken(this._glipToken);
+        }
       },
       /**
        * LifeCycle when refresh page
@@ -124,30 +137,36 @@ class Sdk {
   }
 
   async onLogout() {
-    await UserConfigService.getInstance().clear();
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     await this.daoManager.deleteDatabase();
-    AccountGlobalConfig.clear();
+    UserConfigService.getInstance().clear();
+    AccountGlobalConfig.removeUserDictionary();
   }
 
-  updateNetworkToken() {
-    const glipToken: string = AuthGlobalConfig.getGlipToken();
-    const rcToken: Token = AuthGlobalConfig.getRcToken();
-    const glip2Token: Token = AuthGlobalConfig.getGlip2Token();
-
-    if (glipToken) {
-      this.networkManager.setOAuthToken(new Token(glipToken), HandleByGlip);
-      this.networkManager.setOAuthToken(new Token(glipToken), HandleByUpload);
+  updateNetworkToken(tokens: {
+    rcToken?: Token;
+    glipToken?: string;
+    glip2Token?: Token;
+  }) {
+    if (tokens.glipToken) {
+      this._glipToken = tokens.glipToken;
+      this.networkManager.setOAuthToken(
+        new Token(tokens.glipToken),
+        HandleByGlip,
+      );
+      this.networkManager.setOAuthToken(
+        new Token(tokens.glipToken),
+        HandleByUpload,
+      );
+    }
+    if (tokens.rcToken) {
+      this.networkManager.setOAuthToken(tokens.rcToken, HandleByRingCentral);
+      this.networkManager.setOAuthToken(tokens.rcToken, HandleByGlip2);
     }
 
-    if (rcToken) {
-      this.networkManager.setOAuthToken(rcToken, HandleByRingCentral);
-      this.networkManager.setOAuthToken(rcToken, HandleByGlip2);
-    }
-
-    if (glip2Token) {
-      this.networkManager.setOAuthToken(glip2Token, HandleByGlip2);
+    if (tokens.glip2Token) {
+      this.networkManager.setOAuthToken(tokens.glip2Token, HandleByGlip2);
     }
   }
 

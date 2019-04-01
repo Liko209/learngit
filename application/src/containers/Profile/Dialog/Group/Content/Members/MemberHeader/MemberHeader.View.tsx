@@ -5,7 +5,7 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { MemberHeaderViewProps, MemberHeaderProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import {
@@ -21,7 +21,7 @@ import { AddMembers } from '../../AddMembers';
 
 @observer
 class MemberHeader extends React.Component<
-  WithNamespaces & MemberHeaderViewProps & MemberHeaderProps
+  WithTranslation & MemberHeaderViewProps & MemberHeaderProps
 > {
   addTeamMembers = () => {
     const { group } = this.props;
@@ -59,11 +59,15 @@ class MemberHeader extends React.Component<
         {hasSearch && (
           <JuiProfileDialogContentMemberHeaderSearch>
             <JuiOutlineTextField
-              placeholder={t('people.team.searchMembers')}
+              InputProps={{
+                placeholder: t('people.team.searchMembers'),
+                inputProps: {
+                  maxLength: 30,
+                },
+              }}
+              onChange={onSearch}
               iconName="search"
               iconPosition="left"
-              maxLength={30}
-              onChange={onSearch}
               data-test-automation-id="profileDialogMemberSearch"
             />
           </JuiProfileDialogContentMemberHeaderSearch>
@@ -72,6 +76,6 @@ class MemberHeader extends React.Component<
     );
   }
 }
-const MemberHeaderView = translate('translations')(MemberHeader);
+const MemberHeaderView = withTranslation('translations')(MemberHeader);
 
 export { MemberHeaderView };

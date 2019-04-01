@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/MarkFavoriteOrUnfavorite.ts"
+    ],
+    "include_tags": [
+      "JPT-8"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

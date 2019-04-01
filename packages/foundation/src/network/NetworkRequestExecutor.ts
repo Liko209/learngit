@@ -5,7 +5,6 @@
  */
 import BaseClient from './client/BaseClient';
 import { HttpResponseBuilder } from './client/http';
-import doLog from './log';
 
 import {
   INetworkRequestExecutorListener,
@@ -23,13 +22,14 @@ import {
   IRequestDecoration,
   NETWORK_HANDLE_TYPE,
 } from './network';
-import { SERVER_ERROR_CODE } from './Constants';
+import { SERVER_ERROR_CODE, DEFAULT_RETRY_COUNT } from './Constants';
+import { doResponseLog, doRequestLog } from './log';
 export class NetworkRequestExecutor
   implements INetworkRequestExecutorListener, INetworkRequestExecutor {
   request: IRequest;
   via: NETWORK_VIA;
   handlerType: IHandleType;
-  retryCount: number = 10;
+  retryCount: number = DEFAULT_RETRY_COUNT;
   client: BaseClient;
   status: NETWORK_REQUEST_EXECUTOR_STATUS =
     NETWORK_REQUEST_EXECUTOR_STATUS.IDLE;
@@ -59,7 +59,7 @@ export class NetworkRequestExecutor
 
     this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
     this._callXApiResponseCallback(response);
-    doLog(response);
+    doResponseLog(response);
   }
 
   onFailure(response: IResponse): void {
@@ -70,7 +70,7 @@ export class NetworkRequestExecutor
     if (response.statusText !== NETWORK_FAIL_TYPE.TIME_OUT) {
       this.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
       this._callXApiResponseCallback(response);
-      doLog(response);
+      doResponseLog(response);
     } else {
       this._retry();
     }
@@ -109,8 +109,9 @@ export class NetworkRequestExecutor
   }
 
   private _performNetworkRequest() {
+    doRequestLog(this.request);
     if (this._requestDecoration) {
-      this._requestDecoration.decorate(this.getRequest());
+      this._requestDecoration.decorate(this.request);
     }
     this.client.request(this.request, this);
   }
@@ -146,6 +147,9 @@ export class NetworkRequestExecutor
         break;
       case HTTP_STATUS_CODE.SERVICE_UNAVAILABLE:
         this._handle503XApiCompletionCallback(response);
+        break;
+      case HTTP_STATUS_CODE.DEFAULT:
+        response.request = this.request;
         break;
     }
 

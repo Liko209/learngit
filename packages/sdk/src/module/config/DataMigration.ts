@@ -31,6 +31,21 @@ class DataMigration {
       return;
     }
 
+    // create user dictionary
+    store.set('global.account.UD', userId);
+
+    const globalOldKey = [
+      'config/DB_SCHEMA_VERSION',
+      'config/ENV',
+      'config/STATIC_HTTP_SERVER',
+    ];
+    const globalNewKey = [
+      'config.DB_SCHEMA_VERSION',
+      'config.ENV',
+      'config.STATIC_HTTP_SERVER',
+    ];
+    this._doMigrateKVStorage('global', globalOldKey, globalNewKey);
+
     const accountOldKey = [
       'account/client_config',
       'account/company_id',
@@ -41,30 +56,27 @@ class DataMigration {
       'account.client_config',
       'account.company_id',
       'account.profile_id',
-      'account.user_id',
+      'account.glip_user_id',
     ];
-    this._doMigrateKVStorage('global', accountOldKey, accountNewKey);
+    this._doMigrateKVStorage(userId, accountOldKey, accountNewKey);
 
     const authOldKey = ['auth/GLIP_TOKEN', 'auth/RC_TOKEN'];
     const authNewKey = ['auth.GLIP_TOKEN', 'auth.RC_TOKEN'];
-    this._doMigrateKVStorage('global', authOldKey, authNewKey);
+    this._doMigrateKVStorage(userId, authOldKey, authNewKey);
+
     const configOldKey = [
       'config/ACCOUNT_TYPE',
       'config/CLIENT_ID',
-      'config/DB_SCHEMA_VERSION',
-      'config/ENV',
       'config/LAST_INDEX_TIMESTAMP',
-      'config/STATIC_HTTP_SERVER',
+      'config/post_PREINSERT_KEY_ID',
     ];
     const configNewKey = [
-      'config.ACCOUNT_TYPE',
+      'account.ACCOUNT_TYPE',
       'account.CLIENT_ID',
-      'config.DB_SCHEMA_VERSION',
-      'config.ENV',
-      'config.LAST_INDEX_TIMESTAMP',
-      'config.STATIC_HTTP_SERVER',
+      'sync.LAST_INDEX_TIMESTAMP',
+      'post.PREINSERT_KEY_ID',
     ];
-    this._doMigrateKVStorage('global', configOldKey, configNewKey);
+    this._doMigrateKVStorage(userId, configOldKey, configNewKey);
 
     const userOldKey = ['config/MY_STATE_ID', 'config/SOCKET_SERVER_HOST'];
     const userNewKey = ['config.MY_STATE_ID', 'sync.socket_server_host'];

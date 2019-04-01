@@ -14,7 +14,7 @@ import {
 } from 'jui/pattern/ConversationPageHeader';
 import { JuiButtonBar } from 'jui/components/Buttons';
 import { Favorite, Privacy, Member } from '@/containers/common';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MessageStore } from '@/modules/message/store';
 import { Menu } from './Menu';
@@ -30,7 +30,7 @@ type HeaderProps = {
   }[];
   customStatus: string | null;
   groupId: number;
-} & WithNamespaces;
+} & WithTranslation;
 
 @observer
 class Header extends Component<HeaderProps, { awake: boolean }> {
@@ -111,6 +111,6 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
   }
 }
 
-const HeaderView = translate('translations')(Header);
+const HeaderView = withTranslation('translations')(Header);
 
 export { HeaderView, HeaderProps };

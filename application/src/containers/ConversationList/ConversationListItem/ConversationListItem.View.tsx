@@ -78,6 +78,11 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
     });
   }
 
+  private _handleMouseDown = (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
   render() {
     const { isHover } = this.state;
     return (
@@ -97,6 +102,7 @@ class ConversationListItemViewComponent extends React.Component<Props, State> {
           hidden={this.props.hidden}
           onMouseOver={this._handleMouseOver}
           onMouseLeave={this._handleMouseLeave}
+          onMouseDown={this._handleMouseDown}
         >
           {isHover && (
             <Menu

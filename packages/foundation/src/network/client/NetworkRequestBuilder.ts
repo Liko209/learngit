@@ -11,16 +11,17 @@ import config from '../../config';
 import NetworkManager from '../NetworkManager';
 import BaseRequest from '../BaseRequest';
 import {
-  IRequestBuilderOption,
   IHandleType,
   REQUEST_PRIORITY,
   NETWORK_VIA,
   NETWORK_METHOD,
   Header,
   HA_PRIORITY,
+  IRequest,
 } from '../network';
+import { JNetworkError, ERROR_CODES_NETWORK } from '../../error';
 
-class NetworkRequestBuilder implements IRequestBuilderOption {
+class NetworkRequestBuilder implements IRequest {
   id: string = '';
   path: string = '';
   data: any;
@@ -38,7 +39,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
   method: NETWORK_METHOD = NETWORK_METHOD.GET;
   networkManager: NetworkManager;
 
-  options(options: IRequestBuilderOption) {
+  options(options: IRequest) {
     const {
       host,
       path,
@@ -63,6 +64,13 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
     this.requestConfig = requestConfig || {};
     this.HAPriority = HAPriority || HA_PRIORITY.BASIC;
     return this;
+  }
+
+  needAuth(): boolean {
+    throw new JNetworkError(
+      ERROR_CODES_NETWORK.NETWORK_ERROR,
+      'Builder Error: needAuth method not implemented.',
+    );
   }
 
   /**

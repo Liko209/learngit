@@ -6,7 +6,7 @@
 
 import { EntityBaseService } from '../../../framework/service';
 import { SubscribeController } from '../../base/controller/SubscribeController';
-import { SERVICE, SOCKET } from '../../../service/eventKey';
+import { SERVICE, SOCKET, WINDOW } from '../../../service/eventKey';
 import { SyncListener } from './SyncListener';
 import { SyncController } from '../controller/SyncController';
 
@@ -21,6 +21,7 @@ class SyncService extends EntityBaseService {
         ),
         [SOCKET.TIMESTAMP]: this.updateIndexTimestamp.bind(this),
         [SERVICE.STOPPING_SOCKET]: this._handleStoppingSocketEvent.bind(this),
+        [WINDOW.FOCUS]: this._handleWindowFocused.bind(this),
       }),
     );
   }
@@ -50,6 +51,10 @@ class SyncService extends EntityBaseService {
 
   private _handleStoppingSocketEvent() {
     this.getSyncController().handleStoppingSocketEvent();
+  }
+
+  private _handleWindowFocused() {
+    this.getSyncController().handleWindowFocused();
   }
 }
 

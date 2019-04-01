@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import getUrl from './getUrl';
 import { observer } from 'mobx-react';
@@ -55,7 +55,7 @@ const Button = styled.button`
   }
 `;
 
-type Props = RouteComponentProps<{}> & WithNamespaces;
+type Props = RouteComponentProps<{}> & WithTranslation;
 
 interface IStates {
   isShowDialog: boolean;
@@ -142,6 +142,8 @@ class UnifiedLogin extends React.Component<Props, IStates> {
   }
 }
 
-const TranslatedUnifiedLogin = translate('translations')(UnifiedLogin);
+const withTranslationdUnifiedLogin = withTranslation('translations')(
+  UnifiedLogin,
+);
 
-export { TranslatedUnifiedLogin as UnifiedLogin };
+export { withTranslationdUnifiedLogin as UnifiedLogin };

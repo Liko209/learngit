@@ -17,11 +17,12 @@ import {
   grey,
   palette,
   spacing,
+  width,
   typography,
 } from '../../foundation/utils/styles';
 
-const MaxWidth = 200;
-const MinWidth = 72;
+const MaxWidth = 180;
+const MinWidth = 64;
 type LeftNavProps = {
   expand: boolean;
 } & DrawerProps;
@@ -104,6 +105,16 @@ const StyledListItem = styled(MuiListItem)`
     }
   }
 `;
+
+const StyledListItemIcon = styled(MuiListItemIcon)`
+  width: ${width(16)};
+  display: flex;
+  justify-content: center;
+  && {
+    margin-right: 0;
+  }
+`;
+
 const StyledListItemText = styled(MuiListItemText)`
   && {
     color: ${grey('500')}; // 500
@@ -120,9 +131,7 @@ const ListLink = styled.a`
   outline: none;
   display: flex;
   height: 100%;
-  padding: 0 ${spacing(5)};
   width: 100%;
-  margin-left: ${spacing(1)};
   align-items: center;
   text-decoration: none;
   &&&:active {
@@ -140,7 +149,6 @@ const ListLink = styled.a`
   }
   .nav-icon {
     color: ${palette('accent', 'ash')};
-    margin-right: ${spacing(6)};
   }
   .nav-text span {
     color: ${palette('accent', 'ash')};
@@ -149,9 +157,11 @@ const ListLink = styled.a`
 
 const UmiWrapper = styled.div<{ expand: boolean }>`
   display: flex;
-  position: ${props => (!props.expand ? 'absolute' : 'static')};
+  position: absolute;
   top: ${props => (!props.expand ? spacing(1) : '')};
   left: ${props => (!props.expand ? spacing(8) : '')};
+  right: ${props => (props.expand ? spacing(4) : '')};
+  transition: all 1s;
   .umi {
     color: #fff !important;
   }
@@ -211,9 +221,9 @@ class JuiLeftNav extends PureComponent<JuiLeftNavProps> {
                   className={`left-link ${selected ? 'active' : ''}`}
                   onClick={this.onRouteChange(navUrl)}
                 >
-                  <MuiListItemIcon className={'nav-icon'}>
+                  <StyledListItemIcon className={'nav-icon'}>
                     {selected ? item.IconSelected : item.Icon}
-                  </MuiListItemIcon>
+                  </StyledListItemIcon>
                   <StyledListItemText
                     primary={item.title}
                     className={'nav-text'}

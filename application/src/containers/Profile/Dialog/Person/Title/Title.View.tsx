@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogPersonTitleViewProps } from './types';
 import {
   JuiDialogHeaderTitle,
@@ -18,7 +18,7 @@ import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileDialogPersonTitleViewComponent extends Component<
-  WithNamespaces & ProfileDialogPersonTitleViewProps
+  WithTranslation & ProfileDialogPersonTitleViewProps
 > {
   onClick = () => portalManager.dismissLast();
   render() {
@@ -41,7 +41,7 @@ class ProfileDialogPersonTitleViewComponent extends Component<
   }
 }
 
-const ProfileDialogPersonTitleView = translate('translations')(
+const ProfileDialogPersonTitleView = withTranslation('translations')(
   ProfileDialogPersonTitleViewComponent,
 );
 

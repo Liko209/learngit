@@ -1,7 +1,7 @@
 import 'testcafe';
 import * as _ from 'lodash';
 import * as fs from 'fs';
-import { UAParser } from 'ua-parser-js';
+import { parse as parseUserAgent } from 'useragent';
 import { identity } from 'lodash';
 
 import { getLogger } from 'log4js';
@@ -54,7 +54,7 @@ export class DashboardHelper {
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
     const tags = parseFormalName(testRun.test.name).tags;
-    const userAgent = new UAParser(await H.getUserAgent());
+    const userAgent = parseUserAgent(await H.getUserAgent());
 
     const beatsTest = new Test();
     beatsTest.run = runId;
@@ -65,10 +65,10 @@ export class DashboardHelper {
     beatsTest.endTime = new Date();
 
     beatsTest.metadata = {
-      browser: userAgent.getBrowser().name,
-      browserVer: userAgent.getBrowser().version,
-      os: userAgent.getOS().name,
-      osVer: userAgent.getOS().version,
+      browser: userAgent.family,
+      browserVer: userAgent.toVersion(),
+      os: userAgent.os.family,
+      osVer: userAgent.os.toVersion(),
       user_agent: testRun.browserConnection.browserInfo.userAgent,
       mockRequestId: h(this.t).mockRequestId,
     }

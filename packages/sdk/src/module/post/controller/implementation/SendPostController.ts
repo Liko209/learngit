@@ -22,7 +22,7 @@ import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { Raw } from '../../../../framework/model';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 
@@ -45,8 +45,9 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPost(params: SendPostType) {
-    const userId: number = AccountGlobalConfig.getCurrentUserId();
-    const companyId: number = AccountGlobalConfig.getCurrentCompanyId();
+    const userConfig = new AccountUserConfig();
+    const userId: number = userConfig.getGlipUserId();
+    const companyId: number = userConfig.getCurrentCompanyId();
     const paramsInfo = {
       userId,
       companyId,

@@ -6,10 +6,10 @@
 import { canConnect, CanConnectModel } from '../../api/glip/user';
 import { PresenceService } from '../../module/presence/service/PresenceService';
 import { PRESENCE } from '../../module/presence/constant/Presence';
-import { NewGlobalConfig } from '../config';
-import { AccountGlobalConfig } from '../account/config';
-import { AuthGlobalConfig } from '../../service/auth/config';
+import { AccountUserConfig } from '../account/config';
+import { AuthUserConfig } from '../../service/auth/config';
 import { mainLogger } from 'foundation';
+import { SyncUserConfig } from '../../module/sync/config';
 
 const NEXT_RECONNECT_TIME = 500;
 const MAX_RECONNECT_INTERVAL_TIME = 60 * 1000;
@@ -120,9 +120,12 @@ class SocketCanConnectController {
   private async _requestCanConnectInfo(
     forceOnline: boolean,
   ): Promise<CanConnectModel> {
-    const userId = AccountGlobalConfig.getCurrentUserId();
-    const time = NewGlobalConfig.getLastIndexTimestamp();
-    const glipAccessToken = AuthGlobalConfig.getGlipToken();
+    const userConfig = new AccountUserConfig();
+    const userId = userConfig.getGlipUserId();
+    const synConfig = new SyncUserConfig();
+    const time = synConfig.getLastIndexTimestamp();
+    const authConfig = new AuthUserConfig();
+    const glipAccessToken = authConfig.getGlipToken();
     const params = {
       presence: await this._generateUserPresence(forceOnline),
       uidtk: glipAccessToken,

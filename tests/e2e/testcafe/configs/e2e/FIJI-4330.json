@@ -1,0 +1,21 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationList/OpenConversation.ts",
+      "./fixtures/CreateTeam/CreateTeam.ts",
+      "./fixtures/TeamSetting/AddTeamMembersPermission.ts",
+      "./fixtures/TeamSetting/ArchiveTeam.ts",
+      "./fixtures/TeamSetting/LeaveTeam.ts"
+    ],
+    "include_tags": [
+      "JPT-566",
+      "JPT-127",
+      "JPT-949",
+      "JPT-1132",
+      "JPT-935"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

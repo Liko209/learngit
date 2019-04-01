@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 
@@ -13,13 +13,13 @@ const config: SubModuleConfig = {
     path: '/notes',
     component: () => <div>Notes</div>,
   },
-  nav: () => ({
+  nav: async () => ({
     url: '/notes',
     Icon: <JuiIconography iconSize="medium">leftNavNote_border</JuiIconography>,
     IconSelected: (
       <JuiIconography iconSize="medium">leftNavNote</JuiIconography>
     ),
-    title: i18next.t('item.notes'),
+    title: await i18nT('item.notes'),
     placement: 'bottom',
   }),
 };

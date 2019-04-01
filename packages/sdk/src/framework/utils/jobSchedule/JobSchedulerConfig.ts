@@ -10,7 +10,7 @@ import { JOB_KEY } from './constants';
 
 class JobSchedulerConfig extends UserConfig {
   constructor() {
-    super(AccountGlobalConfig.getCurrentUserId(), 'job_scheduled');
+    super(AccountGlobalConfig.getUserDictionary(), 'job_scheduled');
   }
 
   setLastSuccessTime(key: JOB_KEY, time: number) {

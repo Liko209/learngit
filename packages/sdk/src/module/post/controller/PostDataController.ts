@@ -175,6 +175,11 @@ class PostDataController {
     });
 
     const removedIds = await this.removeDiscontinuousPosts(groupPosts);
+    mainLogger.info(
+      TAG,
+      'handleIndexModifiedPosts remove post ids:',
+      removedIds,
+    );
     const resultPosts = posts.filter(
       (post: Post) => !removedIds.includes(post.id),
     );
@@ -291,7 +296,11 @@ class PostDataController {
         }
       }),
     );
-
+    mainLogger.info(
+      TAG,
+      'handleIndexModifiedPosts remove group ids:',
+      deleteGroupIdSet,
+    );
     if (deleteGroupIdSet.size > 0) {
       // mark group has more as true
       notificationCenter.emit(

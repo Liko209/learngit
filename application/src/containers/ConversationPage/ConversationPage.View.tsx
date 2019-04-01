@@ -5,7 +5,7 @@
  */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { DropTargetMonitor } from 'react-dnd';
 import {
@@ -29,6 +29,7 @@ import { Stream } from './Stream';
 import { AttachmentManager } from './MessageInput/Attachments';
 import { AttachmentManagerViewComponent } from './MessageInput/Attachments/AttachmentManager.View';
 import { withRouter } from 'react-router';
+import { goToConversation } from '@/common/goToConversation';
 
 const STREAM = 'stream';
 const INPUT = 'input';
@@ -52,6 +53,7 @@ class ConversationPageViewComponent extends Component<
       return;
     }
     if (stream.props.hasMore('down')) {
+      goToConversation({ conversationId: this.props.groupId });
       this.remountStream();
     }
   }
@@ -155,7 +157,7 @@ class ConversationPageViewComponent extends Component<
 }
 
 const ConversationPageView = withDragDropContext(
-  withRouter(translate('translations')(ConversationPageViewComponent)),
+  withRouter(withTranslation('translations')(ConversationPageViewComponent)),
 );
 
 export { ConversationPageView };
