@@ -1,6 +1,6 @@
 /*
- * @Author: Devin Lin (devin.lin@ringcentral.com)
- * @Date: 2019-02-28 10:50:37
+ * @Author: Nello Huang (nello.huang@ringcentral.com)
+ * @Date: 2019-04-01 10:19:35
  * Copyright © RingCentral. All rights reserved.
  */
 
@@ -73,9 +73,11 @@ const StyledWrapper = styled<CompositeWrapperProps>(CompositeWrapper)`
 `;
 
 const StyledInput = styled(InputBase)`
-  flex: 1;
-  ${typography('body1')};
-  color: ${grey('900')};
+  && {
+    flex: 1;
+    ${typography('body1')};
+    color: ${grey('900')};
+  }
 `;
 
 const StyledIcon = styled(JuiIconography)`
@@ -94,37 +96,40 @@ const StyledIconRight = styled(StyledIcon)`
   margin: 0 0 0 ${spacing(3)};
 `;
 
-type JuiOutlineTextFieldProps = InputBaseProps & {
+type JuiOutlineTextFieldProps = {
+  InputProps?: InputBaseProps;
   inputBefore?: JSX.Element;
   inputAfter?: JSX.Element;
-  maxLength?: number;
+  disabled?: boolean;
   radiusType?: InputRadiusKeys;
   onClickIconLeft?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onClickIconRight?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
+  onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 } & (
-    | {
-      iconPosition?: Extract<IconPosition, 'both'>;
-      iconName?: string[];
-    }
-    | {
-      iconPosition?: Exclude<IconPosition, 'both'>;
-      iconName?: string;
-    });
+  | {
+    iconPosition?: Extract<IconPosition, 'both'>;
+    iconName?: string[];
+  }
+  | {
+    iconPosition?: Exclude<IconPosition, 'both'>;
+    iconName?: string;
+  });
 
 const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
   const {
     iconPosition,
     iconName = '',
-    inputProps,
+    InputProps = { onFocus: () => {}, onBlur: () => {} },
     radiusType = 'square',
     inputBefore,
     inputAfter,
     disabled,
+    onChange,
     onClickIconLeft,
     onClickIconRight,
     ...rest
   } = props;
-  const { onFocus, onBlur, ...others } = rest;
+  const { onFocus, onBlur, ...others } = InputProps;
   const [focus, setFocus] = useState(false);
 
   const baseOnFocus = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -149,15 +154,15 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
           {Array.isArray(iconName) ? iconName[0] : iconName}
         </StyledIconLeft>
       )}
-      {inputBefore && inputBefore}
       <StyledInput
-        inputProps={inputProps}
         onFocus={baseOnFocus}
         onBlur={baseOnBlur}
+        onChange={onChange}
         disabled={disabled}
+        startAdornment={inputBefore || null}
+        endAdornment={inputAfter || null}
         {...others}
       />
-      {inputAfter && inputAfter}
       {(iconPosition === 'right' || iconPosition === 'both') && (
         <StyledIconRight onClick={onClickIconRight}>
           {Array.isArray(iconName) ? iconName[1] : iconName}
