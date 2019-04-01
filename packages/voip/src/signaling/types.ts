@@ -59,6 +59,7 @@ type ProvisionDataOptions = {
   reconnectionTimeout?: number;
   connectionTimeout?: number;
   modifiers?: any;
+  enableMidLinesInSDP?: boolean;
 };
 
 type InboundRtpReport = {
