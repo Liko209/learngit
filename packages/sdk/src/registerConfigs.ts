@@ -9,6 +9,7 @@ import {
   AutoAuthenticator,
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
+  ReLoginAuthenticator,
 } from './authenticator';
 import { daoManager } from './dao';
 import DaoManager from './dao/DaoManager';
@@ -45,12 +46,9 @@ const registerConfigs = {
     { name: UserConfigService.name, value: UserConfigService },
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
-    {
-      name: AutoAuthenticator.name,
-      value: AutoAuthenticator,
-      injects: [DaoManager.name],
-    },
+    { name: AutoAuthenticator.name, value: AutoAuthenticator },
     { name: UnifiedLoginAuthenticator.name, value: UnifiedLoginAuthenticator },
+    { name: ReLoginAuthenticator.name, value: ReLoginAuthenticator },
 
     // Account
     { name: RCAccount.name, value: RCAccount },

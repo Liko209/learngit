@@ -69,7 +69,6 @@ class RcInfoController {
       accountService.isAccountReady() &&
       accountType === ACCOUNT_TYPE_ENUM.RC
     ) {
-      // todo: will remove it after config ready
       if (this._shouldIgnoreFirstTime) {
         this.storeRcAccountRelativeInfo();
       }
