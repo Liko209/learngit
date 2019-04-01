@@ -371,4 +371,40 @@ describe('LogConsumer', () => {
       logConsumer['_persistenceTaskQueueLoop'].peekAll();
     });
   });
+  describe('_uploadAvailable()', () => {
+    it('should uploadAvailable falsy when disable consumer', () => {
+      const logConsumer = new LogConsumer();
+      configManager.mergeConfig({
+        consumer: consumerConfigFactory.build({
+          enabled: true,
+          uploadQueueLimit: 10,
+        }),
+      });
+      expect(logConsumer['_uploadAvailable']()).toBeTruthy();
+      configManager.mergeConfig({
+        consumer: consumerConfigFactory.build({
+          enabled: false,
+          uploadQueueLimit: 10,
+        }),
+      });
+      expect(logConsumer['_uploadAvailable']()).toBeFalsy();
+    });
+    it('should uploadAvailable falsy when disable uploadAccessor', () => {
+      const logConsumer = new LogConsumer();
+      const uploadAccessor = {
+        isAccessible: jest.fn().mockReturnValue(true),
+        subscribe: jest.fn(),
+      };
+      configManager.mergeConfig({
+        uploadAccessor,
+        consumer: consumerConfigFactory.build({
+          enabled: true,
+          uploadQueueLimit: 10,
+        }),
+      });
+      expect(logConsumer['_uploadAvailable']()).toBeTruthy();
+      uploadAccessor.isAccessible.mockReturnValue(false);
+      expect(logConsumer['_uploadAvailable']()).toBeFalsy();
+    });
+  });
 });
