@@ -42,7 +42,6 @@ class TopBarViewModel extends AbstractViewModel {
 
   @action
   openGlobalSearch = () => {
-    console.log('nello ---s');
     this._globalSearchService.openGlobalSearch();
   }
 }
