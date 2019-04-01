@@ -31,7 +31,6 @@ const TAB_CONFIG = [
       text: 'item.youHaveNothingPinnedYet',
     },
     automationID: 'globalSearch-people',
-    offlinePrompt: 'item.networkErrorPinnedPrompt',
   },
   {
     title: 'globalSearch.groups',
@@ -40,7 +39,6 @@ const TAB_CONFIG = [
       text: 'item.youHaveNothingPinnedYet',
     },
     automationID: 'globalSearch-groups',
-    offlinePrompt: 'item.networkErrorPinnedPrompt',
   },
   {
     title: 'globalSearch.team',
@@ -49,7 +47,6 @@ const TAB_CONFIG = [
       text: 'item.youHaveNothingPinnedYet',
     },
     automationID: 'globalSearch-team',
-    offlinePrompt: 'item.networkErrorPinnedPrompt',
   },
 ];
 
