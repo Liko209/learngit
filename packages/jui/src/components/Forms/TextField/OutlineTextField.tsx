@@ -93,7 +93,7 @@ const StyledIcon = styled(JuiIconography)`
   align-items: center;
 `;
 const StyledIconLeft = styled(StyledIcon)`
-  margin: 0 ${spacing(3)} 0 0;
+  margin: 0 ${spacing(2)} 0 0;
 `;
 const StyledIconRight = styled(StyledIcon)`
   margin: 0 0 0 ${spacing(3)};
