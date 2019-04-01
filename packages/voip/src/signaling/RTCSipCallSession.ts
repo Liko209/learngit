@@ -121,23 +121,22 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.onMediaConnectionStateChange = this._onMediaConnectionStateChange;
   }
 
-  private _onSessionAccepted() {
+  private _initAudioDeviceChannel() {
     if (this._mediaDeviceManager.hasDefaultInputAudioDeviceId()) {
       this._setAudioInputDevice(defaultAudioID);
     }
     if (this._mediaDeviceManager.hasDefaultOutputAudioDeviceId()) {
       this._setAudioOutputDevice(defaultAudioID);
     }
+  }
+
+  private _onSessionAccepted() {
+    this._initAudioDeviceChannel();
     this.emit(CALL_SESSION_STATE.ACCEPTED);
   }
 
   private _onSessionConfirmed() {
-    if (this._mediaDeviceManager.hasDefaultInputAudioDeviceId()) {
-      this._setAudioInputDevice(defaultAudioID);
-    }
-    if (this._mediaDeviceManager.hasDefaultOutputAudioDeviceId()) {
-      this._setAudioOutputDevice(defaultAudioID);
-    }
+    this._initAudioDeviceChannel();
     this.emit(CALL_SESSION_STATE.CONFIRMED);
   }
 
