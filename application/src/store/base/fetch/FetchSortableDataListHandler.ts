@@ -66,7 +66,9 @@ export class FetchSortableDataListHandler<
   constructor(
     dataProvider: IFetchSortableDataProvider<T> | undefined,
     options: IFetchSortableDataListHandlerOptions<T>,
-    listStore: SortableListStore<T> = new SortableListStore<T>(options.sortFunc),
+    listStore: SortableListStore<T> = new SortableListStore<T>(
+      options.sortFunc,
+    ),
   ) {
     super(null, options, listStore);
     this._isMatchFunc = options.isMatchFunc;
