@@ -71,7 +71,8 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
   }, true);
 });
 
-test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314']), async (t: TestController) => {
+// skip due to: https://jira.ringcentral.com/browse/FIJI-4527
+test.skip(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
@@ -102,7 +103,10 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
   await h(t).withLog(`And and each has a post with mention`, async () => {
     for (const mentionGroup of mentionGroups) {
       const postId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi, ![:Person](${loginUser.rcId})`, mentionGroup, otherUser);
-      postIds.push(postId)
+      postIds.push(postId);
+      for (const i of _.range(3)) {
+        await h(t).scenarioHelper.sentAndGetTextPostId(H.multilineString(), mentionGroup, otherUser);
+      }
     }
   });
 
@@ -213,8 +217,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
   }, true);
 });
 
-// skip by bug:https://jira.ringcentral.com/browse/FIJI-3933 
-test.skip(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
+test(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
   const otherUser = users[5];
@@ -301,7 +304,7 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
 });
 
-test(formalName('Jump to post position when click button or clickable area of post.[AtMention]', ['P1', 'JPT-315', 'zack', 'AtMention']), async (t: TestController) => {
+test(formalName('Jump to post position when click jump to conversation button.[AtMention]', ['P1', 'JPT-315', 'zack', 'AtMention']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];

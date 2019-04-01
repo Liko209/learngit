@@ -144,7 +144,6 @@ class BaseConversationPage extends BaseWebComponent {
 
   /* scroll */
   get scrollDiv() {
-    this.warnFlakySelector();
     return this.getSelectorByAutomationId('virtualized-list', this.stream);
   }
 
@@ -722,9 +721,7 @@ export class PostItem extends BaseWebComponent {
   }
 
   get jumpToConversationButton() {
-    // FIXME: should take i18n into account
-    this.warnFlakySelector();
-    return this.self.find(`span`).withText(/Jump To Conversation/i).parent('button');
+    return this.getSelectorByAutomationId('jumpToConversation', this.self);
   }
 
   async hoverPostAndClickJumpToConversationButton() {
