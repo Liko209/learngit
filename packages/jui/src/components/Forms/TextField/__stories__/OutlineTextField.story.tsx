@@ -27,14 +27,23 @@ storiesOf('Components/Forms', module)
     return (
       <div style={{ padding: '0 30%' }}>
         <JuiOutlineTextField
-          placeholder="Typing keywords"
-          maxLength={maxLength}
+          InputProps={{
+            placeholder: 'Typing keywords',
+            inputProps: {
+              maxLength,
+            },
+          }}
           disabled={disabled}
           radiusType={radius}
         />
         <br />
         <JuiOutlineTextField
-          placeholder="Search members"
+          InputProps={{
+            placeholder: 'Typing keywords',
+            inputProps: {
+              maxLength,
+            },
+          }}
           iconName="search"
           iconPosition="left"
           disabled={disabled}
@@ -42,7 +51,13 @@ storiesOf('Components/Forms', module)
         />
         <br />
         <JuiOutlineTextField
-          placeholder="Password"
+          InputProps={{
+            placeholder: 'Typing keywords',
+            type: 'password',
+            inputProps: {
+              maxLength,
+            },
+          }}
           iconName="lock"
           iconPosition="right"
           disabled={disabled}
@@ -50,13 +65,25 @@ storiesOf('Components/Forms', module)
         />
         <br />
         <JuiOutlineTextField
-          placeholder="Password"
+          InputProps={{
+            placeholder: 'Typing keywords',
+            inputProps: {
+              maxLength,
+            },
+          }}
           iconName={['search', 'close']}
           iconPosition="both"
           disabled={disabled}
           radiusType={radius}
           onClickIconRight={() => alert('close')}
-          inputAfter={<div onClick={() => alert('clear')}>clear</div>}
+          inputAfter={
+            <div
+              style={{ padding: '0 0 0 12px' }}
+              onClick={() => alert('clear')}
+            >
+              clear
+            </div>
+          }
         />
       </div>
     );
