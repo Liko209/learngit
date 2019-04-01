@@ -9,7 +9,7 @@ import { TelephonyStore } from './store';
 
 const config = {
   entry: TelephonyModule,
-  provides: { TelephonyService, TelephonyStore },
+  provides: [TelephonyService, TelephonyStore],
 };
 
 export { config };

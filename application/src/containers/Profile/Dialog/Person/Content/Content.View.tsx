@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Markdown } from 'glipdown';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogPersonContentViewProps, FormGroupType } from './types';
 import { JuiDivider } from 'jui/components/Divider';
 import { Avatar } from '@/containers/Avatar';
@@ -41,7 +41,7 @@ import { Call } from '@/modules/telephony';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
-  WithNamespaces & ProfileDialogPersonContentViewProps
+  WithTranslation & ProfileDialogPersonContentViewProps
 > {
   renderPresence = () => {
     const { id } = this.props;
@@ -254,7 +254,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
   }
 }
 
-const ProfileDialogPersonContentView = translate('translations')(
+const ProfileDialogPersonContentView = withTranslation('translations')(
   ProfileDialogPersonContentViewComponent,
 );
 

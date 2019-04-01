@@ -6,7 +6,7 @@
 
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import {
   JuiItemContent,
@@ -17,7 +17,7 @@ import { JuiLink } from 'jui/components/Link';
 
 import { ViewProps } from './types';
 
-type conferenceViewProps = WithNamespaces & ViewProps;
+type conferenceViewProps = WithTranslation & ViewProps;
 
 @observer
 class Conference extends React.Component<conferenceViewProps> {
@@ -65,6 +65,6 @@ class Conference extends React.Component<conferenceViewProps> {
   }
 }
 
-const ConferenceView = translate('translations')(Conference);
+const ConferenceView = withTranslation('translations')(Conference);
 
 export { ConferenceView };

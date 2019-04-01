@@ -6,7 +6,7 @@
 
 import React, { Component, ReactElement } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { withResponsive, VISUAL_MODE } from 'jui/foundation/Layout/Responsive';
 import { ViewerContentViewProps } from './types';
 import { JuiImageViewerContent } from 'jui/pattern/ImageViewer';
@@ -32,7 +32,7 @@ const RightResponsive = withResponsive(
 
 @observer
 class ViewerContentViewComponent extends Component<
-  WithNamespaces & ViewerContentViewProps
+  WithTranslation & ViewerContentViewProps
 > {
   render() {
     return (
@@ -44,6 +44,8 @@ class ViewerContentViewComponent extends Component<
   }
 }
 
-const ViewerContentView = translate('translations')(ViewerContentViewComponent);
+const ViewerContentView = withTranslation('translations')(
+  ViewerContentViewComponent,
+);
 
 export { ViewerContentView };

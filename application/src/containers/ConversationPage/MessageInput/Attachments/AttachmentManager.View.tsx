@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
@@ -14,7 +14,7 @@ import i18next from 'i18next';
 
 @observer
 class AttachmentManagerViewComponent extends Component<
-  AttachmentsViewProps & WithNamespaces
+  AttachmentsViewProps & WithTranslation
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles } = this.props;
@@ -53,9 +53,9 @@ class AttachmentManagerViewComponent extends Component<
   }
 }
 
-const view = extractView<WithNamespaces & AttachmentsViewProps>(
+const view = extractView<WithTranslation & AttachmentsViewProps>(
   AttachmentManagerViewComponent,
 );
-const AttachmentManagerView = translate('translations')(view);
+const AttachmentManagerView = withTranslation('translations')(view);
 
 export { AttachmentManagerView, AttachmentManagerViewComponent };

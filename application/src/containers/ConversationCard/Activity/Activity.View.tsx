@@ -5,10 +5,10 @@
  */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ActivityViewProps } from './types';
 
-type Props = WithNamespaces & ActivityViewProps;
+type Props = WithTranslation & ActivityViewProps;
 
 @observer
 class Activity extends Component<Props> {
@@ -26,6 +26,6 @@ class Activity extends Component<Props> {
   }
 }
 
-const ActivityView = translate('translations')(Activity);
+const ActivityView = withTranslation('translations')(Activity);
 
 export { ActivityView };

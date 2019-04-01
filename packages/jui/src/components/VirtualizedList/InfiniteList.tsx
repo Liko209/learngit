@@ -35,6 +35,7 @@ type JuiInfiniteListProps = {
   stickToBottom?: boolean;
   fallBackRenderer?: JSX.Element;
   contentStyle?: React.CSSProperties;
+  stickToLastPosition?: boolean;
 };
 
 const JuiInfiniteList: RefForwardingComponent<
@@ -59,6 +60,7 @@ const JuiInfiniteList: RefForwardingComponent<
     fallBackRenderer,
     children,
     contentStyle,
+    stickToLastPosition,
   }: JuiInfiniteListProps,
   forwardRef,
 ) => {
@@ -93,12 +95,14 @@ const JuiInfiniteList: RefForwardingComponent<
         if (loadingInitialFailed) {
           return fallBackRenderer || <></>;
         }
-
-        const isEmpty =
-          children.length === 0 && !hasMore('up') && !hasMore('down');
-        if (isEmpty) {
-          return noRowsRenderer;
+        if (children.length === 0) {
+          const isEmpty = !hasMore('up') && !hasMore('down');
+          if (isEmpty) {
+            return noRowsRenderer;
+          }
+          return null;
         }
+
         return (
           <JuiVirtualizedList
             ref={forwardRef}
@@ -116,6 +120,7 @@ const JuiInfiniteList: RefForwardingComponent<
             onVisibleRangeChange={onVisibleRangeChange}
             onRenderedRangeChange={onRenderedRangeChange}
             stickToBottom={stickToBottom && isStickToBottomEnabled}
+            stickToLastPosition={stickToLastPosition}
           >
             {children}
           </JuiVirtualizedList>

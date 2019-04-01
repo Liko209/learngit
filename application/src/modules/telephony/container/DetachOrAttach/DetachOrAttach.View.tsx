@@ -6,11 +6,11 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { DetachOrAttachViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 
-type Props = DetachOrAttachViewProps & WithNamespaces;
+type Props = DetachOrAttachViewProps & WithTranslation;
 
 @observer
 class DetachOrAttachViewComponent extends Component<Props> {
@@ -39,7 +39,7 @@ class DetachOrAttachViewComponent extends Component<Props> {
   }
 }
 
-const DetachOrAttachView = translate('translations')(
+const DetachOrAttachView = withTranslation('translations')(
   DetachOrAttachViewComponent,
 );
 

@@ -5,14 +5,14 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
 import JuiConversationCard from 'jui/src/pattern/ConversationCard';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { StreamViewProps } from './types';
 import { observer } from 'mobx-react';
 import { ConversationPost } from '@/containers/ConversationPost';
 
-type Props = WithNamespaces & StreamViewProps;
+type Props = WithTranslation & StreamViewProps;
 @observer
 class StreamViewComponent extends Component<Props> {
   listRef: React.RefObject<HTMLElement> = React.createRef();
@@ -38,6 +38,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 
-const StreamView = translate('translations')(StreamViewComponent);
+const StreamView = withTranslation('translations')(StreamViewComponent);
 
 export { StreamView };

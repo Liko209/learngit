@@ -15,13 +15,14 @@ import {
   ITokenModel,
   requestServerStatus,
 } from '../../api';
-import { Aware } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
 import { SERVICE } from '../eventKey';
 import { ProfileService } from '../../module/profile';
 import { setRcToken } from '../../authenticator/utils';
-import { ERROR_CODES_SDK } from '../../error';
-import { AccountUserConfig } from '../../service/account/config';
+import {
+  AccountUserConfig,
+  AccountGlobalConfig,
+} from '../../service/account/config';
 import { AuthUserConfig } from '../../service/auth/config';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
@@ -75,16 +76,11 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
   }
 
   async refreshRCToken(): Promise<ITokenModel | null> {
-    try {
-      const authConfig = new AuthUserConfig();
-      const oldRcToken = authConfig.getRcToken();
-      const newRcToken = (await refreshToken(oldRcToken)) as ITokenModel;
-      setRcToken(newRcToken);
-      return newRcToken;
-    } catch (err) {
-      Aware(ERROR_CODES_SDK.OAUTH, err.message);
-      return null;
-    }
+    const authConfig = new AuthUserConfig();
+    const oldRcToken = authConfig.getRcToken();
+    const newRcToken = (await refreshToken(oldRcToken)) as ITokenModel;
+    setRcToken(newRcToken);
+    return newRcToken;
   }
 
   async onBoardingPreparation() {
@@ -110,8 +106,19 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
     requestServerStatus(callback);
   }
 
-  onRefreshTokenFailure() {
-    notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+  onRefreshTokenFailure(forceLogout: boolean) {
+    if (forceLogout) {
+      notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+    }
+  }
+
+  isGlipLogin(): boolean {
+    const userDict = AccountGlobalConfig.getUserDictionary();
+    if (!userDict) {
+      return false;
+    }
+    const userConfig = new AccountUserConfig();
+    return userConfig && userConfig.getGlipUserId() !== null;
   }
 }
 

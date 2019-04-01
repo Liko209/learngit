@@ -84,7 +84,6 @@ class ItemUtils {
 
         const effectEnd = EventUtils.getEffectiveEnd(event);
         if (effectEnd < Number.MAX_SAFE_INTEGER) {
-          const effectEnd = EventUtils.getEffectiveEnd(event);
           const endDate = new Date(effectEnd).toLocaleDateString();
           const today = new Date(Date.now()).toLocaleDateString();
 

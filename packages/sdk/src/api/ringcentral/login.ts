@@ -12,10 +12,10 @@ import {
   SURVIVAL_MODE,
   NETWORK_HANDLE_TYPE,
   RESPONSE_HEADER_KEY,
+  HA_PRIORITY,
 } from 'foundation';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
-import { responseParser } from '../parser';
 import { stringify } from 'qs';
 
 interface ITokenModel extends Token {
@@ -95,7 +95,7 @@ function refreshToken(data: ITokenModel) {
           handler.onSurvivalModeDetected(SURVIVAL_MODE.SURVIVAL, 0);
         }
       }
-      reject(responseParser.parse(response));
+      reject(response.status);
     };
 
     const request = Api.rcNetworkClient.getRequestByVia(
@@ -124,6 +124,7 @@ function requestServerStatus(
     method: NETWORK_METHOD.GET,
     authFree: true,
     via: NETWORK_VIA.HTTP,
+    HAPriority: HA_PRIORITY.HIGH,
   };
 
   const callbackFunc = (response: BaseResponse) => {

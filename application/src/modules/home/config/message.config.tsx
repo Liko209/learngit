@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { container } from 'framework';
 import { MessageService } from '@/modules/message/service/MessageService';
 import { Call } from '@/modules/telephony/container';
@@ -23,7 +23,7 @@ const config: SubModuleConfig = {
     //     webpackChunkName: "c.message" */ './lazy/Message'),
     // }),
   },
-  nav: () => {
+  nav: async () => {
     return {
       url: '/messages',
       Icon: (
@@ -32,7 +32,7 @@ const config: SubModuleConfig = {
         </JuiIconography>
       ),
       IconSelected: <JuiIconography>messages</JuiIconography>,
-      title: i18next.t('message.Messages'),
+      title: await i18nT('message.Messages'),
       umi: <MessageUmi />,
       placement: 'top',
     };
