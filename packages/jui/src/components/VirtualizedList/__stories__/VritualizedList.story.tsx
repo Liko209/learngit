@@ -15,6 +15,7 @@ import {
   JuiVirtualizedListHandles,
 } from '../VirtualizedList';
 import { IndexRange } from '../types';
+import { ThresholdStrategy } from '../LoadMoreStrategy';
 import { DemoItem } from './DemoItem';
 import { itemFactory } from './itemFactory';
 import { useDemoHelper } from './useDemoHelper';
@@ -171,7 +172,15 @@ storiesOf('Components/VirtualizedList', module)
     const initialDataCount = number('initialDataCount', 10);
     const totalDataCount = number('totalDataCount', 1000);
     const initialLoadTime = number('initialLoadTime', 0);
+    const threshold = number('threshold', 15);
+    const overscan = number('overscan', 5);
     const moreLoadTime = number('moreLoadTime', 500);
+
+    const loadMoreStrategy = new ThresholdStrategy({
+      threshold,
+      minBatchCount: 10,
+      maxBatchCount: 100,
+    });
 
     const InfiniteListDemo = () => {
       const {
@@ -193,7 +202,6 @@ storiesOf('Components/VirtualizedList', module)
       );
 
       const startId = 10000;
-      const pageSize = 10;
 
       const hasMore = (direction: 'up' | 'down') =>
         totalDataCount > items.length;
@@ -208,12 +216,12 @@ storiesOf('Components/VirtualizedList', module)
         );
       };
 
-      const loadMore = async (direction: 'up' | 'down') => {
+      const loadMore = async (direction: 'up' | 'down', count: number) => {
         await sleep(moreLoadTime);
         if (direction === 'up') {
-          prependItems(pageSize);
+          prependItems(count);
         } else {
-          appendItems(pageSize);
+          appendItems(count);
         }
       };
 
@@ -227,7 +235,8 @@ storiesOf('Components/VirtualizedList', module)
             <JuiInfiniteList
               height={300}
               minRowHeight={40}
-              overscan={5}
+              loadMoreStrategy={loadMoreStrategy}
+              overscan={overscan}
               loadInitialData={loadInitialData}
               loadMore={loadMore}
               hasMore={hasMore}
@@ -244,6 +253,10 @@ storiesOf('Components/VirtualizedList', module)
           <DebugTable
             visibleRange={visibleRange}
             renderedRange={renderedRange}
+            loadedRange={{
+              startIndex: 0,
+              stopIndex: children.length - 1,
+            }}
           />
         </>
       );

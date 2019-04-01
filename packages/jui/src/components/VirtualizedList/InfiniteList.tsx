@@ -15,15 +15,17 @@ import {
   JuiVirtualizedList,
   JuiVirtualizedListHandles,
 } from './VirtualizedList';
+import { ILoadMoreStrategy, ThresholdStrategy } from './LoadMoreStrategy';
 import { IndexRange } from './types';
 
 type JuiInfiniteListProps = {
   height?: number;
   minRowHeight: number;
   overscan?: number;
+  loadMoreStrategy?: ILoadMoreStrategy;
   hasMore: (direction: 'up' | 'down') => boolean;
   loadInitialData: () => Promise<void>;
-  loadMore: (direction: 'up' | 'down') => Promise<void>;
+  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
   initialScrollToIndex?: number;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
   onVisibleRangeChange?: (range: IndexRange) => void;
@@ -46,6 +48,11 @@ const JuiInfiniteList: RefForwardingComponent<
     height,
     minRowHeight,
     overscan,
+    loadMoreStrategy = new ThresholdStrategy({
+      threshold: 15,
+      minBatchCount: 10,
+      maxBatchCount: 100,
+    }),
     hasMore,
     loadInitialData,
     loadMore,
@@ -62,13 +69,13 @@ const JuiInfiniteList: RefForwardingComponent<
     contentStyle,
     stickToLastPosition,
   }: JuiInfiniteListProps,
-  forwardRef,
+  forwardRef: React.RefObject<JuiVirtualizedListHandles>,
 ) => {
   const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
 
-  const _loadMore = async (direction: 'up' | 'down') => {
+  const _loadMore = async (direction: 'up' | 'down', count: number) => {
     enableStickToBottom(false);
-    await loadMore(direction);
+    await loadMore(direction, count);
     enableStickToBottom(true);
   };
 
@@ -81,6 +88,7 @@ const JuiInfiniteList: RefForwardingComponent<
       hasMore={hasMore}
       loadInitialData={loadInitialData}
       loadMore={_loadMore}
+      loadMoreStrategy={loadMoreStrategy}
     >
       {({
         loadingInitial,
@@ -112,12 +120,17 @@ const JuiInfiniteList: RefForwardingComponent<
             overscan={overscan}
             before={loadingUp ? loadingMoreRenderer : null}
             after={loadingDown ? loadingMoreRenderer : null}
-            onScroll={(event: React.UIEvent<HTMLElement>) => {
-              handleScroll(event);
-              onScroll(event);
+            onScroll={() => {
+              if (forwardRef.current) {
+                const visibleRange = forwardRef.current.getVisibleRange();
+                handleScroll(visibleRange, {
+                  minIndex: 0,
+                  maxIndex: children.length - 1,
+                });
+                onVisibleRangeChange(visibleRange);
+              }
             }}
             contentStyle={contentStyle}
-            onVisibleRangeChange={onVisibleRangeChange}
             onRenderedRangeChange={onRenderedRangeChange}
             stickToBottom={stickToBottom && isStickToBottomEnabled}
             stickToLastPosition={stickToLastPosition}
