@@ -291,6 +291,15 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+  async postCardByIdShouldBeOnTheTop(postId: string) {
+    await H.retryUntilPass(async () => {
+      const containerTop = await this.self.getBoundingClientRectProperty('top');
+      const headerHeight = await this.header.getBoundingClientRectProperty('height');
+      const targetTop = await this.postItemById(postId).self.getBoundingClientRectProperty('top');
+      assert.strictEqual(containerTop + headerHeight, targetTop, 'this post card is not on the top of conversation page')
+    });
+  }
+
   async shouldFocusOnMessageInputArea() {
     await this.t.expect(this.messageInputArea.focused).ok({ timeout: 5e3 });
   }
@@ -718,11 +727,7 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`span`).withText(/Jump To Conversation/i).parent('button');
   }
 
-  async jumpToConversationByClickPost() {
-    await this.t.click(this.self);
-  }
-
-  async clickConversationByButton() {
+  async hoverPostAndClickJumpToConversationButton() {
     const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
       buttonElement().style["opacity"] = "1";
@@ -752,6 +757,15 @@ export class PostItem extends BaseWebComponent {
       ele.scrollIntoView()
     })(this.self)
   }
+
+  get isHighLight() {
+    return this.self.hasClass('highlight')
+  }
+
+  async shouldBeHighLight() {
+    await this.t.expect(this.isHighLight).ok();
+  }
+
 }
 
 class AudioConference extends BaseWebComponent {

@@ -11,102 +11,81 @@ fixture('Bookmarks/Bookmarks')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'Bookmarks']),
-  async (t: TestController) => {
-    const users = h(t).rcData.mainCompany.users;
-    const loginUser = users[4];
-    await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfileAndState();
+test(formalName('Jump to post position when click button or clickable area of post.[Bookmarks]', ['P1', 'JPT-315', 'zack', 'Bookmarks']), async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  const otherUser = users[5];
 
-    const otherUser = users[5];
-    await h(t).platform(otherUser).init();
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
 
-    const teamBookmarkMessage = `team bookmark message ${uuid()}`;
-    const privateChatBookmarkMessage = `private chat bookmark message ${uuid()}`;
-
-    let team = <IGroup>{
-      type: "Team",
-      name: uuid(),
-      owner: loginUser,
-      members: [loginUser, otherUser]
-    }
-    let chat = <IGroup>{
-      type: "DirectMessage",
-      owner: loginUser,
-      members: [loginUser, otherUser]
-    }
-
-    let bookmarksPostTeamId: string, bookmarksPostChatId: string;
-    await h(t).withLog('Given I have an extension with one Bookmarks post in team and one in group (out of screen)', async () => {
-      await h(t).scenarioHelper.createTeamsOrChats([team, chat]);
-      bookmarksPostTeamId = await h(t).platform(loginUser).sentAndGetTextPostId(
-        teamBookmarkMessage,
-        team.glipId,
+  const conversations = [team, chat]
+  let postIds: string[] = [];
+  await h(t).withLog('Given I have 1 bookmark post in team, 1 in group.(out of screen)', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats(conversations);
+    for (const conversation of conversations) {
+      const postId = await h(t).scenarioHelper.sentAndGetTextPostId(
+        `${uuid()}, ![:Person](${loginUser.rcId})`,
+        conversation, otherUser
       );
-      bookmarksPostChatId = await h(t).platform(loginUser).sentAndGetTextPostId(
-        privateChatBookmarkMessage,
-        chat.glipId,
-      );
-      await h(t).glip(loginUser).bookmarkPosts([+bookmarksPostTeamId, +bookmarksPostChatId]);
+      
+      postIds.push(postId);
       for (const i of _.range(3)) {
-        await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, otherUser);
-        await h(t).scenarioHelper.sendTextPost(H.multilineString(), chat, otherUser);
+        await h(t).scenarioHelper.sendTextPost(H.multilineString(), conversation, otherUser);
       }
-    });
-
-    const app = new AppRoot(t);
-    await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
-      await h(t).directLoginWithUser(SITE_URL, loginUser);
-      await app.homePage.ensureLoaded();
-    });
-
-    const conversationPage = app.homePage.messageTab.conversationPage;
-    const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
-    const bookmarkPage = app.homePage.messageTab.bookmarkPage;
-    await h(t).withLog('When I go to Bookmarks page', async () => {
-      await bookmarksEntry.enter();
-    });
-
-    await h(t).withLog('Then I should find the bookmarked post', async () => {
-      await t.expect(bookmarkPage.postItemById(bookmarksPostTeamId).exists).ok();
-      await t.expect(bookmarkPage.postItemById(bookmarksPostChatId).exists).ok();
-    }, true);
-
-    await h(t).withLog('When I click clickable area of team post. (except team name)', async () => {
-      await bookmarkPage.postItemById(bookmarksPostTeamId).jumpToConversationByClickPost();
-    });
-
-    await h(t).withLog('Then I should jump to the bookmarked post position in the team', async () => {
-      await conversationPage.waitUntilPostsBeLoaded();
-      await conversationPage.groupIdShouldBe(team.glipId);
-      await conversationPage.postByIdExpectVisible(bookmarksPostTeamId, true);
-      await t
-        .expect(conversationPage.postItemById(bookmarksPostTeamId).body.withText(teamBookmarkMessage).exists)
-        .ok({ timeout: 5e3 });
-    }, true);
-
-    await h(t).withLog('When I go back to Bookmarks page', async () => {
-      await bookmarksEntry.enter();
-    });
-
-    await h(t).withLog('Then I should find the bookmarked post', async () => {
-      await t.expect(bookmarkPage.postItemById(bookmarksPostChatId).exists).ok();
-    }, true);
-
-    await h(t).withLog(`When I hover the private chat message then click button - "Jump to conversation"`, async () => {
-      await bookmarkPage.postItemById(bookmarksPostChatId).clickConversationByButton();
-    });
-
-    await h(t).withLog('Then I should jump to the bookmarked post position in the private chat', async () => {
-      await conversationPage.waitUntilPostsBeLoaded();
-      await conversationPage.groupIdShouldBe(chat.glipId);
-      await conversationPage.postByIdExpectVisible(bookmarksPostChatId, true);
-      await t
-        .expect(conversationPage.postItemById(bookmarksPostChatId).body.withText(privateChatBookmarkMessage).exists)
-        .ok({ timeout: 5e3 });
-    });
+    }
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).bookmarkPosts(postIds);
   });
+
+  const app = new AppRoot(t);
+  const bookmarkEntry = app.homePage.messageTab.bookmarksEntry;
+  const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+
+  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  for (const i in conversations) {
+    await h(t).withLog('When I enter bookmark page', async () => {
+      await bookmarkEntry.enter();
+    });
+
+    await h(t).withLog(`And I click the ${conversations[i].type} post. (except team name)`, async () => {
+      await bookmarkPage.postItemById(postIds[i]).clickSelf();
+    });
+
+    await h(t).withLog('Then No response after clicking', async () => {
+      await bookmarkEntry.ensureLoaded();
+      await bookmarkPage.postItemById(postIds[i]).ensureLoaded();
+    }, true);
+
+    await h(t).withLog('When I hover the at bookmark post then click button - "Jump to conversation"', async () => {
+      await bookmarkPage.postItemById(postIds[i]).hoverPostAndClickJumpToConversationButton();
+    });
+
+    await h(t).withLog(`Then I should jump to the bookmark post position in the team `, async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.groupIdShouldBe(conversations[i].glipId);
+      await conversationPage.postCardByIdShouldBeOnTheTop(postIds[i]);
+    });
+
+    await h(t).withLog('And this post will be highlighted', async () => {
+      await conversationPage.postItemById(postIds[i]).shouldBeHighLight();
+    });
+  }
+});
 
 
 test(formalName('Data in bookmarks page should be dynamically sync.', ['P2', 'JPT-311', 'zack']), async (t: TestController) => {
@@ -238,7 +217,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
   })
 
   await h(t).withLog('When I click the post and jump to the conversation', async () => {
-    await bookmarkPage.postItemById(postId).jumpToConversationByClickPost();
+    await bookmarkPage.postItemById(postId).hoverPostAndClickJumpToConversationButton();
   });
 
   await h(t).withLog('And the UMI should dismiss', async () => {
@@ -315,7 +294,7 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
   });
 
   await h(t).withLog('And I jump to conversation from Bookmarks page ', async () => {
-    await bookmarkPage.postItemById(bookmarkId).jumpToConversationByClickPost();
+    await bookmarkPage.postItemById(bookmarkId).hoverPostAndClickJumpToConversationButton();
   });
 
   await h(t).withLog('Then the bookmark should be visible', async () => {
@@ -415,7 +394,7 @@ test(formalName('Bookmark/Remove Bookmark a message in a conversation', ['P2', '
     }, true);
 
     await h(t).withLog('When I click the post and jump to the conversation', async () => {
-      await bookmarkPage.postItemById(bookmarkPostId).jumpToConversationByClickPost();
+      await bookmarkPage.postItemById(bookmarkPostId).hoverPostAndClickJumpToConversationButton();
     });
 
     await h(t).withLog('And I cancel the bookmark in the post then make sure bookmark icon is correct', async () => {

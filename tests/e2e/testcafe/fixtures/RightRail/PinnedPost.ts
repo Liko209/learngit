@@ -335,12 +335,6 @@ test(formalName('Locate the pinned post in the conversation thread in the center
 
   const header = conversationPage.header;
   await h(t).withLog('And the pined event at the top of conversation page.', async () => {
-    const targetPostCard = conversationPage.getSelector(`[data-id="${targetPostId}"]`);
-
-    const containerTop = await conversationPage.self.getBoundingClientRectProperty('top');
-    const headerHeight = await header.getBoundingClientRectProperty('height');
-    const targetTop = await targetPostCard.getBoundingClientRectProperty('top');
-
-    assert.strictEqual(containerTop + headerHeight, targetTop, 'equal');
+    await conversationPage.postCardByIdShouldBeOnTheTop(targetPostId);
   });
 });

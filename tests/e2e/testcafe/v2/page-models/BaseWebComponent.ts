@@ -60,6 +60,14 @@ export abstract class BaseWebComponent {
     return this.self.find;
   }
 
+  async clickSelf(options?: ClickActionOptions) {
+    return this.t.click(this.self, options);
+  }
+
+  async hoverSelf(options?: ClickActionOptions) {
+    return this.t.hover(this.self, options);
+  }
+
   getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
     const component = new ctor(this.t);
     if (root) {
