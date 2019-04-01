@@ -54,6 +54,16 @@ class AccountManager extends EventEmitter2 {
     return this._handleAuthResponse(resp);
   }
 
+  async reLogin(authType: string): Promise<boolean> {
+    const authenticator = this._container.get<IAuthenticator>(authType);
+    const resp = await authenticator.authenticate({});
+    if (!resp.success) {
+      return false;
+    }
+    this._handleAuthResponse(resp);
+    return true;
+  }
+
   async makeSureUserInWhitelist(mailboxID: string) {
     const isValid = await this.sanitizeUser(mailboxID);
     if (!isValid) {
@@ -128,7 +138,9 @@ class AccountManager extends EventEmitter2 {
         return account === mailboxID;
       });
       mainLogger.info(
-        `[Auth]${mailboxID} ${isLegalUser ? '' : 'not '}in whitelist for ${env}`,
+        `[Auth]${mailboxID} ${
+          isLegalUser ? '' : 'not '
+        }in whitelist for ${env}`,
       );
       return isLegalUser;
     }
@@ -141,11 +153,12 @@ class AccountManager extends EventEmitter2 {
     if (!resp.accountInfos || resp.accountInfos.length <= 0) {
       return { success: false, error: new Error('Auth fail') };
     }
-    this.emit(AUTH_SUCCESS, resp.accountInfos);
     this._isLogin = true;
     const accounts = this._createAccounts(resp.accountInfos);
+    this.emit(AUTH_SUCCESS, resp.isRCOnlyMode);
     return {
       accounts,
+      isRCOnlyMode: resp.isRCOnlyMode,
       success: true,
     };
   }

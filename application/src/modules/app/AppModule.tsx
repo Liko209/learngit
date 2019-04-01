@@ -92,7 +92,7 @@ class AppModule extends AbstractModule {
     // subscribe service notification to global store
     const globalStore = storeManager.getGlobalStore();
 
-    const updateAccountInfoForGlobalStore = () => {
+    const updateAccountInfoForGlobalStore = (isRCOnlyMode: boolean = false) => {
       const accountService: service.AccountService = AccountService.getInstance();
 
       if (accountService.isAccountReady()) {
@@ -137,8 +137,8 @@ class AppModule extends AbstractModule {
 
     setStaticHttpServer(); // When the browser refreshes, it needs to be fetched locally
 
-    notificationCenter.on(SERVICE.LOGIN, () => {
-      updateAccountInfoForGlobalStore();
+    notificationCenter.on(SERVICE.LOGIN, (isRCOnlyMode: boolean) => {
+      updateAccountInfoForGlobalStore(isRCOnlyMode);
     });
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
