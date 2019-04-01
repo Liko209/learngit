@@ -41,6 +41,11 @@ describe('TelephonyService', () => {
       mute: jest.fn(),
       unmute: jest.fn(),
       getCallCount: jest.fn(),
+      hold: jest.fn(),
+      unhold: jest.fn(),
+      startRecord: jest.fn(),
+      stopRecord: jest.fn(),
+      dtmf: jest.fn(),
     };
 
     engineController.getAccountController = jest
@@ -108,6 +113,36 @@ describe('TelephonyService', () => {
     it('should call account controller to unmute', () => {
       telephonyService.unmute('123');
       expect(accountController.unmute).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('hold', () => {
+    it('should call account controller to hold', () => {
+      telephonyService.hold('123');
+      expect(accountController.hold).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('unhold', () => {
+    it('should call account controller to unhold', () => {
+      telephonyService.unhold('123');
+      expect(accountController.unhold).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('startRecord', () => {
+    it('should call account controller to startRecord', () => {
+      telephonyService.startRecord('123');
+      expect(accountController.startRecord).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('stopRecord', () => {
+    it('should call account controller to stopRecord', () => {
+      telephonyService.stopRecord('123');
+      expect(accountController.stopRecord).toHaveBeenCalledWith('123');
+    });
+  });
+  describe('dtmf', () => {
+    it('should call account controller to dtmf', () => {
+      telephonyService.dtmf('123', '456');
+      expect(accountController.dtmf).toHaveBeenCalledWith('123', '456');
     });
   });
   describe('getAllCallCount', () => {

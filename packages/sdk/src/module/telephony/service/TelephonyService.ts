@@ -43,15 +43,15 @@ class TelephonyService extends EntityBaseService {
     this._makeCallController = new MakeCallController();
   }
 
-  createAccount(delegate: ITelephonyAccountDelegate) {
+  createAccount = (delegate: ITelephonyAccountDelegate) => {
     this.telephonyController.createAccount(delegate);
   }
 
-  getAllCallCount() {
+  getAllCallCount = () => {
     return this.telephonyController.getAccountController().getCallCount();
   }
 
-  async makeCall(toNumber: string, callDelegate: ITelephonyCallDelegate) {
+  makeCall = async (toNumber: string, callDelegate: ITelephonyCallDelegate) => {
     const e164ToNumber = this._makeCallController.getE164PhoneNumber(toNumber);
     let result = await this._makeCallController.tryMakeCall(e164ToNumber);
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
@@ -77,16 +77,36 @@ class TelephonyService extends EntityBaseService {
     return result;
   }
 
-  hangUp(callId: string) {
+  hangUp = (callId: string) => {
     this.telephonyController.getAccountController().hangUp(callId);
   }
 
-  mute(callId: string) {
+  mute = (callId: string) => {
     this.telephonyController.getAccountController().mute(callId);
   }
 
-  unmute(callId: string) {
+  unmute = (callId: string) => {
     this.telephonyController.getAccountController().unmute(callId);
+  }
+
+  hold = (callId: string) => {
+    this.telephonyController.getAccountController().hold(callId);
+  }
+
+  unhold = (callId: string) => {
+    this.telephonyController.getAccountController().unhold(callId);
+  }
+
+  startRecord = (callId: string) => {
+    this.telephonyController.getAccountController().startRecord(callId);
+  }
+
+  stopRecord = (callId: string) => {
+    this.telephonyController.getAccountController().stopRecord(callId);
+  }
+
+  dtmf = (callId: string, digits: string) => {
+    this.telephonyController.getAccountController().dtmf(callId, digits);
   }
 }
 
