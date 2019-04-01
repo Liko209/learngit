@@ -7,9 +7,12 @@
 import { LifeCycle } from 'ts-javascript-state-machine';
 import { observable, computed } from 'mobx';
 import {
+  HOLD_STATE,
+  HOLD_TRANSITION_NAMES,
   CALL_STATE,
   CALL_WINDOW_STATUS,
   CallFSM,
+  HoldFSM,
   CallWindowFSM,
   CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
@@ -31,20 +34,30 @@ class TelephonyStore {
   @observable
   callType: CALL_TYPE = CALL_TYPE.NULL;
   @observable
+  holdState: HOLD_STATE = HOLD_STATE.IDLE;
+  @observable
   phoneNumber?: string;
   @observable
   activeCallTime?: number;
+  @observable
+  pendingForHold: boolean = false;
 
   private _callFSM = new CallFSM();
   private _callWindowFSM = new CallWindowFSM();
+  private _holdFSM = new HoldFSM();
 
   constructor() {
+    this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
+      const { to } = lifecycle;
+      this.holdState = to as HOLD_STATE;
+    });
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
       const { to } = lifecycle;
       this.callState = to as CALL_STATE;
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
           this.activeCallTime = Date.now();
+          this._holdFSM[HOLD_TRANSITION_NAMES.CONNECTED]();
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
@@ -161,6 +174,18 @@ class TelephonyStore {
 
   connected = () => {
     this._callFSM[CALL_TRANSITION_NAMES.HAS_CONNECTED]();
+  }
+
+  hold = () => {
+    this._holdFSM[HOLD_TRANSITION_NAMES.HOLD]();
+  }
+
+  unhold = () => {
+    this._holdFSM[HOLD_TRANSITION_NAMES.UNHOLD]();
+  }
+
+  setPendingForHoldBtn(val: boolean) {
+    this.pendingForHold = val;
   }
 
   @computed

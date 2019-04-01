@@ -421,7 +421,9 @@
       "CallTimeout": "Sorry, we weren't able to place the call. Try again later.",
       "LogoutTitle": "Log out?",
       "LogoutContent": "Your call will be disconnected if you log out. Do you want to log out and end the call?",
-      "LogoutOk": "Log out"
+      "LogoutOk": "Log out",
+      "FailedToHold": "Sorry, something went wrong on our end, we weren't able to hold the call",
+      "FailedToResume": "Sorry, something went wrong on our end, we weren't able to resume the call"
     }
   },
   "meeting": {

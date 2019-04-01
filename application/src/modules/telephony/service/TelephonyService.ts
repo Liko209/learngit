@@ -84,15 +84,35 @@ class TelephonyService {
   ) => {
     mainLogger.info(
       `${
-        TelephonyService.TAG
+      TelephonyService.TAG
       }Call action: ${callAction} succeed, options: ${options}`,
     );
+    switch (callAction) {
+      case RTC_CALL_ACTION.HOLD: {
+        this._telephonyStore.unhold();
+        this._telephonyStore.setPendingForHoldBtn(false);
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._telephonyStore.hold();
+        this._telephonyStore.setPendingForHoldBtn(false);
+      }
+    }
   }
 
   private _onCallActionFailed = (callAction: RTC_CALL_ACTION): void => {
     switch (callAction) {
       case RTC_CALL_ACTION.CALL_TIME_OUT: {
         ToastCallError.toastCallTimeout();
+      }
+      case RTC_CALL_ACTION.HOLD: {
+        ToastCallError.toastFailedToHold();
+        this._telephonyStore.setPendingForHoldBtn(false);
+        this._telephonyStore.unhold();
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        ToastCallError.toastFailedToResume();
+        this._telephonyStore.setPendingForHoldBtn(false);
+        this._telephonyStore.hold();
       }
     }
   }
@@ -194,7 +214,7 @@ class TelephonyService {
     if (this._callId) {
       mainLogger.info(
         `${TelephonyService.TAG}${mute ? 'mute' : 'unmute'} call id=${
-          this._callId
+        this._callId
         }`,
       );
       mute
@@ -216,6 +236,29 @@ class TelephonyService {
 
   getAllCallCount = () => {
     return this._serverTelephonyService.getAllCallCount();
+  }
+
+  hold = () => {
+    if (this._callId) {
+      mainLogger.info(
+        `${TelephonyService.TAG}hold call id=${
+        this._callId
+        }`,
+      );
+      this._telephonyStore.setPendingForHoldBtn(true);
+      return this._serverTelephonyService.hold(this._callId);
+    }
+  }
+  unhold = () => {
+    if (this._callId) {
+      mainLogger.info(
+        `${TelephonyService.TAG}unhold call id=${
+        this._callId
+        }`,
+      );
+      this._telephonyStore.setPendingForHoldBtn(true);
+      return this._serverTelephonyService.unhold(this._callId);
+    }
   }
 }
 

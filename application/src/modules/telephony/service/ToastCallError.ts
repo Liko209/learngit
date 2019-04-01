@@ -37,6 +37,14 @@ class ToastCallError {
     ToastCallError.toast(i18next.t('telephony.prompt.CallTimeout'), 2000);
     mainLogger.info('Call error: Call timeout');
   }
+  static toastFailedToHold(): void {
+    ToastCallError.toast(i18next.t('telephony.prompt.FailedToHold'), 2000);
+    mainLogger.info('Call error: Call timeout');
+  }
+  static toastFailedToResume(): void {
+    ToastCallError.toast(i18next.t('telephony.prompt.FailedToResume'), 2000);
+    mainLogger.info('Call error: Call timeout');
+  }
 }
 
 export { ToastCallError };
