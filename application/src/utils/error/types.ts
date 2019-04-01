@@ -5,5 +5,5 @@
  */
 export interface IErrorReporter {
   report: (error: Error) => void;
-  setUser: (user: { id: number; companyId: number }) => void;
+  setUser: (user: { id: number; companyId: number; email: string }) => void;
 }

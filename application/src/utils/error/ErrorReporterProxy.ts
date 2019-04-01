@@ -24,7 +24,7 @@ export class ErrorReporterProxy implements IErrorReporter {
     }
   }
 
-  setUser = (user: { id: number; companyId: number }) => {
+  setUser = (user: { id: number; companyId: number; email: string }) => {
     if (this._isInit) {
       this._reporter.setUser(user);
     } else {

@@ -36,6 +36,7 @@ describe('SentryErrorReporter', () => {
       const mockUser = {
         id: 111,
         companyId: 333,
+        email: 'xx',
       };
       await errorReporter.setUser(mockUser);
       expect(Sentry.configureScope).toBeCalled();

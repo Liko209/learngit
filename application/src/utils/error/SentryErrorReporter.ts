@@ -15,6 +15,7 @@ export class SentryErrorReporter implements IErrorReporter {
     Sentry.init({
       dsn: DSN,
       debug: false,
+      environment: window.jupiterElectron ? 'Electron' : 'Browser',
       // release format: {project-name}@{version}
       // https://docs.sentry.io/workflow/releases/?platform=browsernpm
       release: `jupiter@${deployedVersion || pkg.version}`,
@@ -25,9 +26,11 @@ export class SentryErrorReporter implements IErrorReporter {
     Sentry.captureException(error);
   }
 
-  setUser = (user: { id: number; companyId: number }) => {
+  setUser = (user: { id: number; companyId: number; email: string }) => {
     Sentry.configureScope((scope: Sentry.Scope) => {
       scope.setUser({ ...user, id: String(user.id) });
+      const Config = require('@/config');
+      scope.setExtra('env', Config.getEnv());
     });
   }
 }

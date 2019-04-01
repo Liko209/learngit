@@ -33,6 +33,7 @@ describe('ErrorReporterProxy', () => {
       const mockUser = {
         id: 111,
         companyId: 222,
+        email: 'xx',
       };
       const mockError = new Error('ddd');
       const proxy = new ErrorReporterProxy(true);
@@ -56,6 +57,7 @@ describe('ErrorReporterProxy', () => {
       const mockUser = {
         id: 111,
         companyId: 222,
+        email: 'xx',
       };
       const mockError = new Error('ddd');
       const proxy = new ErrorReporterProxy(true);
