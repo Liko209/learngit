@@ -21,6 +21,7 @@ import { RTCMediaElementManager } from '../utils/RTCMediaElementManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCMediaDeviceManager } from '../api/RTCMediaDeviceManager';
+import { defaultAudioID } from '../account/constants';
 
 const {
   MediaStreams,
@@ -54,12 +55,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
     this._mediaDeviceManager.off(
       RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-      this._setDefaultAudioInputDevice,
+      this._setAudioInputDevice,
     );
 
     this._mediaDeviceManager.off(
       RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      this._setDefaultAudioOutputDevice,
+      this._setAudioOutputDevice,
     );
 
     const sdh = this._session.sessionDescriptionHandler;
@@ -75,14 +76,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (!this._session) {
       return;
     }
-    this._mediaDeviceManager.on(
-      RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
-      this._setDefaultAudioInputDevice,
-    );
-    this._mediaDeviceManager.on(
-      RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
-      this._setDefaultAudioOutputDevice,
-    );
+
     this._session.on(WEBPHONE_SESSION_STATE.ACCEPTED, (inviteRes: any) => {
       this._inviteResponse = inviteRes;
       this._onSessionAccepted();
@@ -116,14 +110,34 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     this._session.on(WEBPHONE_SESSION_STATE.REINVITE_FAILED, (session: any) => {
       this._onSessionReinviteFailed(session);
     });
+    this._mediaDeviceManager.on(
+      RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED,
+      this._setAudioInputDevice,
+    );
+    this._mediaDeviceManager.on(
+      RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED,
+      this._setAudioOutputDevice,
+    );
     this._session.onMediaConnectionStateChange = this._onMediaConnectionStateChange;
   }
 
   private _onSessionAccepted() {
+    if (this._mediaDeviceManager.hasDefaultInputAudioDeviceId()) {
+      this._setAudioInputDevice(defaultAudioID);
+    }
+    if (this._mediaDeviceManager.hasDefaultOutputAudioDeviceId()) {
+      this._setAudioOutputDevice(defaultAudioID);
+    }
     this.emit(CALL_SESSION_STATE.ACCEPTED);
   }
 
   private _onSessionConfirmed() {
+    if (this._mediaDeviceManager.hasDefaultInputAudioDeviceId()) {
+      this._setAudioInputDevice(defaultAudioID);
+    }
+    if (this._mediaDeviceManager.hasDefaultOutputAudioDeviceId()) {
+      this._setAudioOutputDevice(defaultAudioID);
+    }
     this.emit(CALL_SESSION_STATE.CONFIRMED);
   }
 
@@ -417,7 +431,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     }
   }
 
-  private _setDefaultAudioInputDevice(deviceID: string) {
+  private _setAudioInputDevice = (deviceID: string) => {
     navigator.mediaDevices
       .getUserMedia({
         audio: {
@@ -428,42 +442,48 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         video: false,
       })
       .then((stream: any) => {
-        // self.audio_settings.refresh_audio_devices_list();
         this._refreshPc(stream);
       })
       .catch((error: any) => {
         rtcLogger.debug(
           LOG_TAG,
-          `Cannot switch audio input device because if error while getting input stream : ${error}`,
+          `Cannot switch audio input device because : ${error.message}`,
         );
       });
   }
 
   private _refreshPc(stream: any) {
-    if (this._session) {
-      const pc = this._session.sessionDescriptionHandler.peerConnection;
-      const oldLocalStreams = pc.getLocalStreams() || [];
-      let wasEnabled = false;
-      oldLocalStreams.array.forEach((localStream: any) => {
-        const tracks = localStream.getTracks();
-        wasEnabled = tracks[0].enabled;
-        tracks.forEach((track: any) => {
-          track.stop();
-        });
-        pc.removeStream(localStream);
-      });
-      const newStreamTracks = stream.getTracks();
-      newStreamTracks.forEach((newStreamTrack: any) => {
-        newStreamTrack.enabled = wasEnabled;
-      });
-
-      /** Add new audio input stream & re-init sip session */
-      pc.addStream(stream);
-      this._session.sessionDescriptionHandler.getDescription();
+    if (
+      !this._session ||
+      !this._session.sessionDescriptionHandler ||
+      !this._session.sessionDescriptionHandler.peerConnection
+    ) {
+      return;
     }
+
+    const pc = this._session.sessionDescriptionHandler.peerConnection;
+    let wasEnabled = false;
+    const oldLocalStreams = pc.getLocalStreams() || [];
+    oldLocalStreams.forEach((localStream: any) => {
+      const tracks = localStream.getTracks();
+      wasEnabled = tracks[0].enabled;
+      tracks.forEach((track: any) => {
+        track.stop();
+      });
+      pc.removeStream(localStream);
+    });
+
+    const newStreamTracks = stream.getTracks();
+    newStreamTracks.forEach((newStreamTrack: any) => {
+      newStreamTrack.enabled = wasEnabled;
+    });
+
+    /** Add new audio input stream & re-init sip session */
+    pc.addStream(stream);
+    this._session.sessionDescriptionHandler.getDescription();
   }
 
-  private _setDefaultAudioOutputDevice(deviceID: string) {
+  private _setAudioOutputDevice = (deviceID: string) => {
     if (this._mediaElement && this._mediaElement.local.setSinkId) {
       rtcLogger.debug(
         LOG_TAG,
@@ -471,8 +491,39 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
           this._mediaElement.local.setSinkId
         }`,
       );
-      this._mediaElement.local.setSinkId(deviceID);
-      this._mediaElement.remote.setSinkId(deviceID);
+      this._mediaElement.local
+        .setSinkId(deviceID)
+        .then(() => {
+          rtcLogger.debug(
+            LOG_TAG,
+            `set local audio output device ${deviceID} success`,
+          );
+        })
+        .catch((error: any) => {
+          rtcLogger.debug(
+            LOG_TAG,
+            `set local audio output device ${deviceID} failed with: ${
+              error.message
+            }`,
+          );
+        });
+
+      this._mediaElement.remote
+        .setSinkId(deviceID)
+        .then(() => {
+          rtcLogger.debug(
+            LOG_TAG,
+            `set remote audio output device ${deviceID} success`,
+          );
+        })
+        .catch((error: any) => {
+          rtcLogger.debug(
+            LOG_TAG,
+            `set remote audio output device ${deviceID} failed with: ${
+              error.message
+            }`,
+          );
+        });
     }
   }
 }

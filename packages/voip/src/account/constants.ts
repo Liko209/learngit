@@ -28,3 +28,5 @@ export const kRTCProvisioningOptions = {
   reconnectionTimeout: '5',
   connectionTimeout: '5',
 };
+
+export const defaultAudioID = 'default';
