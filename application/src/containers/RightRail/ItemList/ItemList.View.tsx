@@ -70,7 +70,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
         )}
         <JuiInfiniteList
           height={h}
-          minRowHeight={ITEM_HEIGHT} // extract to const
+          minRowHeight={ITEM_HEIGHT}
           loadInitialData={this.props.loadInitialData}
           loadMore={this.props.loadMore}
           loadMoreStrategy={this._loadMoreStrategy}
