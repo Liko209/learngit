@@ -20,7 +20,7 @@ import { Item } from 'sdk/module/item/entity';
 import GlipTypeUtil from 'sdk/utils/glip-type-dictionary/util';
 import { TypeDictionary } from 'sdk/utils';
 import { mainLogger } from 'sdk';
-import IUsedCache from '@/store/base/IUsedCache';
+
 import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
 import _ from 'lodash';
@@ -31,6 +31,8 @@ import { ThumbnailPreloadController } from './ThumbnailPreloadController';
 import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
 import PrefetchPostProcessor from '@/store/handler/PrefetchPostProcessor';
 import { ICacheController } from './ICacheController';
+import { FetchPostDataListHandler } from '@/store/base/fetch/FetchPostDataListHandler';
+import { PostUsedItemCache } from './PostUsedItemCache';
 
 const isMatchedFunc = (groupId: number) => (dataModel: Post) =>
   dataModel.group_id === Number(groupId) && !dataModel.deactivated;
@@ -57,25 +59,6 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
     }
 
     return { hasMore, data: posts };
-  }
-}
-
-class PostUsedItemCache implements IUsedCache {
-  getUsedId(): number[] {
-    let usedItemIds: number[] = [];
-    const data = (storeManager.getEntityMapStore(
-      ENTITY_NAME.POST,
-    ) as MultiEntityMapStore<Post, PostModel>).getData();
-
-    usedItemIds = [
-      ...new Set(
-        Object.values(data)
-          .map((a: PostModel) => a.id)
-          .flat(),
-      ),
-    ];
-
-    return usedItemIds;
   }
 }
 
@@ -203,9 +186,10 @@ class PostCacheController implements ICacheController<Post> {
         dataChangeCallBack: fetchDataCallback,
       };
 
-      listHandler = new FetchSortableDataListHandler(
+      listHandler = new FetchPostDataListHandler(
         new PostDataProvider(groupId),
         options,
+        groupId,
       );
 
       if (!jump2PostId) {
