@@ -172,4 +172,9 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   }
 }
 
-export { JuiPreviewImage, JuiPreviewImageProps, JuiDelayPlaceholder };
+export {
+  JuiPreviewImage,
+  JuiPreviewImageProps,
+  JuiDelayPlaceholder,
+  StyledImg,
+};
