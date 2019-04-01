@@ -15,7 +15,10 @@ import {
   typography,
   width,
 } from '../../../foundation/utils';
-import { JuiIconography } from '../../../foundation/Iconography';
+import {
+  JuiIconography,
+  JuiIconographyProps,
+} from '../../../foundation/Iconography';
 import { Theme } from '../../../foundation/theme/theme';
 
 type IconPosition = 'left' | 'right' | 'both';
@@ -102,6 +105,8 @@ type JuiOutlineTextFieldProps = {
   inputAfter?: JSX.Element;
   disabled?: boolean;
   radiusType?: InputRadiusKeys;
+  IconLeftProps?: JuiIconographyProps;
+  IconRightProps?: JuiIconographyProps;
   onClickIconLeft?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onClickIconRight?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
@@ -125,6 +130,8 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
     inputAfter,
     disabled,
     onChange,
+    IconLeftProps,
+    IconRightProps,
     onClickIconLeft,
     onClickIconRight,
     ...rest
@@ -150,7 +157,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
       {...rest}
     >
       {(iconPosition === 'left' || iconPosition === 'both') && (
-        <StyledIconLeft onClick={onClickIconLeft}>
+        <StyledIconLeft {...IconLeftProps} onClick={onClickIconLeft}>
           {Array.isArray(iconName) ? iconName[0] : iconName}
         </StyledIconLeft>
       )}
@@ -164,7 +171,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
         {...others}
       />
       {(iconPosition === 'right' || iconPosition === 'both') && (
-        <StyledIconRight onClick={onClickIconRight}>
+        <StyledIconRight {...IconRightProps} onClick={onClickIconRight}>
           {Array.isArray(iconName) ? iconName[1] : iconName}
         </StyledIconRight>
       )}
