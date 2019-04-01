@@ -72,6 +72,7 @@ test(formalName('Should not display in conversation list when last conversation 
   const loginUser = users[7];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfileAndState();
 
   let chat = <IGroup>{
     members: [loginUser, users[0]],

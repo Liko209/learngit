@@ -9,7 +9,7 @@ import { JuiConversationPage } from 'jui/pattern/ConversationPage';
 import { JuiConversationPageHeader } from 'jui/pattern/ConversationPageHeader';
 import { PostListPageViewProps } from './types';
 import { Stream } from './Stream';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 
 @observer
 class PostListPageViewComponent extends Component<PostListPageViewProps> {
@@ -33,6 +33,6 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
   }
 }
 
-const PostListPageView = translate()(PostListPageViewComponent);
+const PostListPageView = withTranslation()(PostListPageViewComponent);
 
 export { PostListPageView };

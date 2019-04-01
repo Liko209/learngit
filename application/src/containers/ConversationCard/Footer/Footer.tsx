@@ -9,13 +9,13 @@ import { FooterView } from './Footer.View';
 import { FooterViewModel } from './Footer.ViewModel';
 import { withPostLike } from './withPostLike';
 import { FooterViewModelProps } from './types';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 
 const Container = buildContainer<FooterViewModelProps>({
   View: FooterView,
   ViewModel: FooterViewModel,
 });
 
-const Footer = translate('translations')(withPostLike(Container));
+const Footer = withTranslation('translations')(withPostLike(Container));
 
 export { Footer };

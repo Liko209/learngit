@@ -13,7 +13,8 @@ type PinnedListProps = {
 type PinnedListViewProps = {
   totalCount: number;
   ids: number[];
-  loadMore: (startIndex: number, stopIndex: number) => Promise<void>;
+  loadMore: () => Promise<void>;
+  loadInitialData: () => Promise<void>;
 };
 
 export { PinnedListProps, PinnedListViewProps };

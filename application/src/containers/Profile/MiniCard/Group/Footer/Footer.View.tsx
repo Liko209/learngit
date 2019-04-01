@@ -7,24 +7,24 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { ProfileMiniCardGroupFooterViewProps } from './types';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiProfileMiniCardFooterLeft,
   JuiProfileMiniCardFooterRight,
 } from 'jui/pattern/Profile/MiniCard';
 import { JuiIconButton, JuiButton } from 'jui/components/Buttons';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 import { TypeDictionary } from 'sdk/utils';
 import portalManager from '@/common/PortalManager';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
 @observer
 class ProfileMiniCardGroupFooter extends Component<
-  WithNamespaces & ProfileMiniCardGroupFooterViewProps
+  WithTranslation & ProfileMiniCardGroupFooterViewProps
 > {
   onClickMessage = () => {
     const { id } = this.props;
-    const result = goToConversation({ id });
+    const result = goToConversationWithLoading({ id });
     if (result) {
       portalManager.dismissLast();
     }
@@ -73,7 +73,7 @@ class ProfileMiniCardGroupFooter extends Component<
   }
 }
 
-const ProfileMiniCardGroupFooterView = translate('translations')(
+const ProfileMiniCardGroupFooterView = withTranslation('translations')(
   ProfileMiniCardGroupFooter,
 );
 

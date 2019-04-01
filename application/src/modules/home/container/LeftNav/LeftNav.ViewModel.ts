@@ -6,6 +6,7 @@
 import { computed } from 'mobx';
 import _ from 'lodash';
 import { container } from 'framework';
+import { promisedComputed } from 'computed-async-mobx';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import StoreViewModel from '@/store/ViewModel';
@@ -39,9 +40,8 @@ class LeftNavViewModel extends StoreViewModel {
     return `${userId}-expanded`;
   }
 
-  @computed
-  get icons() {
-    const navConfigs = this._homeStore.navConfigs;
+  icons = promisedComputed([[], []], async () => {
+    const navConfigs = await Promise.all(this._homeStore.navConfigs);
 
     const topIcons = navConfigs
       .filter((navItem: NavConfig) => navItem.placement === 'top')
@@ -52,7 +52,7 @@ class LeftNavViewModel extends StoreViewModel {
       .map(removePlacement);
 
     return [topIcons, bottomIcons];
-  }
+  });
 
   @computed
   get groupIds() {

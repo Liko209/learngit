@@ -13,7 +13,7 @@ import {
   WEBPHONE_SESSION_EVENT,
   WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
 } from '../signaling/types';
-import { rtcMediaManager } from '../utils/RTCMediaManager';
+import { RTCMediaManager } from '../utils/RTCMediaManager';
 import { RTCMediaElement } from '../utils/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 const {
@@ -30,7 +30,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
   constructor(uuid: string) {
     super();
     this._uuid = uuid;
-    this._mediaElement = rtcMediaManager.createMediaElement(this._uuid);
+    this._mediaElement = RTCMediaManager.instance().createMediaElement(
+      this._uuid,
+    );
   }
   destroy() {
     if (!this._session) {
@@ -47,7 +49,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (pc) {
       sdh.close();
     }
-    rtcMediaManager.removeMediaElement(this._uuid);
+    RTCMediaManager.instance().removeMediaElement(this._uuid);
     this._session = null;
   }
 
@@ -204,7 +206,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   hangup() {
     if (this._session != null) {
-      this._session.terminate();
+      try {
+        this._session.terminate();
+      } catch (error) {
+        rtcLogger.error(LOG_TAG, `Exception when hangup call: ${error}`);
+      }
     }
   }
 
@@ -231,6 +237,10 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         this.emit(CALL_FSM_NOTIFY.CALL_ACTION_FAILED, RTC_CALL_ACTION.TRANSFER);
       },
     );
+  }
+
+  forward(target: string) {
+    this._session.forward(target);
   }
 
   park() {
@@ -333,7 +343,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   dtmf(digits: string) {
     if (this._session) {
-      this._session.dtmf(digits);
+      try {
+        this._session.dtmf(digits);
+      } catch (error) {
+        rtcLogger.warn(LOG_TAG, error.message);
+      }
     }
   }
 

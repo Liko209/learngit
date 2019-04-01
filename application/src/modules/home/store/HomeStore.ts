@@ -43,13 +43,13 @@ class HomeStore {
 
   @computed
   get navConfigs() {
-    const hasNav = (
-      config: SubModuleConfig,
-    ): config is { nav: () => NavConfig } => {
+    const hasNav = (config: SubModuleConfig) => {
       return !!config.nav;
     };
 
-    return this._subModuleConfigs.filter(hasNav).map(config => config.nav());
+    return this._subModuleConfigs
+      .filter(hasNav)
+      .map(config => config.nav!()) as Promise<NavConfig>[];
   }
 
   @action

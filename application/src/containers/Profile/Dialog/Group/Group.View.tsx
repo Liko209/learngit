@@ -10,6 +10,7 @@ import {
   JuiDialogContentWithFill,
   JuiDialogHeader,
 } from 'jui/components/Dialog';
+import { JuiDivider } from 'jui/components/Divider';
 import { ProfileDialogGroupTitle } from './Title';
 import { ProfileDialogGroupContent } from './Content';
 import { JuiProfileDialogContentMemberShadow } from 'jui/pattern/Profile/Dialog';
@@ -24,6 +25,7 @@ class ProfileDialogGroupView extends Component<ProfileDialogGroupViewProps> {
         <JuiDialogHeader data-test-automation-id="profileDialogTitle">
           <ProfileDialogGroupTitle id={id} />
         </JuiDialogHeader>
+        <JuiDivider />
         <JuiDialogContentWithFill data-test-automation-id="profileDialogContent">
           <ProfileDialogGroupContent id={id} />
         </JuiDialogContentWithFill>

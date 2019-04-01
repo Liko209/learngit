@@ -116,7 +116,7 @@ test(formalName('Covert group to team', ['P0', 'JPT-1396', 'Potar.He', 'ConvertT
   await h(t).withLog('Then group1 should only has one admin is login user', async () => {
     await viewProfile.memberEntryById(loginUserGlipId).showAdminLabel();
     await t.expect(viewProfile.adminLabel.count).eql(1);
-    await viewProfile.close();
+    await viewProfile.clickCloseButton();
   });
 
   // favoriteSection

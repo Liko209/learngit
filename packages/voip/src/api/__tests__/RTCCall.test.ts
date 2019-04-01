@@ -125,6 +125,7 @@ describe('RTC call', () => {
     hold = jest.fn();
     unhold = jest.fn();
     dtmf = jest.fn();
+    forward = jest.fn();
 
     mockSignal(signal: string, response?: any): void {
       this.emit(signal, response);
@@ -2010,6 +2011,145 @@ describe('RTC call', () => {
         setImmediate(() => {
           expect(call._fsm.state()).toBe('holded');
           expect(session.mediaStreams.stopMediaStats).toBeCalled();
+          done();
+        });
+      });
+    });
+  });
+
+  describe('forward()', () => {
+    const forwardNumber = '10000';
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      session = new MockSession();
+      call = new RTCCall(true, '123', session, account, account);
+    }
+
+    it('should report forward failed when forward incoming call without phone number [JPT-1301]', done => {
+      setup();
+      jest.spyOn(account, 'onCallActionFailed');
+      call.forward('');
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('idle');
+        expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+        done();
+      });
+    });
+
+    describe('should report forward failed when forward incoming call and FSM is not idle state [JPT-1302]', () => {
+      it('should report forward failed when forward incoming call and FSM is pending state', done => {
+        setup();
+        call._fsm.accountNotReady();
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('pending');
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          done();
+        });
+      });
+
+      it('should report forward failed when forward incoming call and FSM is answering state', done => {
+        setup();
+        call._fsm.answer();
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('answering');
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          done();
+        });
+      });
+
+      it('should report forward failed when forward incoming call and FSM is forwarding state', done => {
+        setup();
+        call._fsm.forward();
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('forwarding');
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          done();
+        });
+      });
+
+      it('should report forward failed when forward incoming call and FSM is connecting state', done => {
+        setup();
+        call._fsm.accountReady();
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connecting');
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          done();
+        });
+      });
+
+      it('should report forward failed when forward incoming call and FSM is connected state', done => {
+        setup();
+        call._fsm.answer();
+        call._fsm.sessionConfirmed();
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('connected');
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          done();
+        });
+      });
+
+      it('should report forward failed when forward incoming call and FSM is holding state', done => {
+        setup();
+        session.hold.mockResolvedValue(null);
+        call._fsm.answer();
+        call._fsm.sessionConfirmed();
+        call._fsm.hold();
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('holding');
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          done();
+        });
+      });
+
+      it('should report forward failed when forward incoming call and FSM is holded state', done => {
+        setup();
+        session.hold.mockResolvedValue(null);
+        call._fsm.answer();
+        call._fsm.sessionConfirmed();
+        call._fsm.hold();
+        call._fsm.holdSuccess();
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('holded');
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          done();
+        });
+      });
+
+      it('should report forward failed when forward incoming call and FSM is unholding state', done => {
+        setup();
+        session.hold.mockResolvedValue(null);
+        session.unhold.mockResolvedValue(null);
+        call.answer();
+        session.mockSignal(WEBPHONE_SESSION_STATE.CONFIRMED);
+        call.hold();
+        session.emitSessionReinviteAccepted();
+        call.unhold();
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('unholding');
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          done();
+        });
+      });
+
+      it('should report forward failed when forward incoming call and FSM is disconnected state', done => {
+        setup();
+        call._fsm.accountReady();
+        call._fsm.hangup();
+        call.forward(forwardNumber);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('disconnected');
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
           done();
         });
       });

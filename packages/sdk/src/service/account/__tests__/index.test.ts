@@ -7,17 +7,16 @@ import AccountService from '..';
 import { daoManager } from '../../../dao';
 import { PersonDao } from '../../../module/person/dao';
 import { refreshToken } from '../../../api';
-import { GlobalConfigService } from '../../../module/config/service/GlobalConfigService';
-import { AccountGlobalConfig } from '../../../service/account/config';
-import { UserConfigService } from '../../../module/config';
+import { AccountUserConfig } from '../../../service/account/config/AccountUserConfig';
+import { AuthUserConfig } from '../../../service/auth/config';
+import { AccountGlobalConfig } from '../../../service/account/config/AccountGlobalConfig';
 
 jest.mock('../../../dao');
 jest.mock('../../../module/person/dao');
 jest.mock('../../../api');
-jest.mock('../../../module/config');
-jest.mock('../../../service/account/config');
-GlobalConfigService.getInstance = jest.fn();
-UserConfigService.getInstance = jest.fn();
+jest.mock('../../../service/auth/config');
+jest.mock('../../../service/account/config/AccountUserConfig');
+jest.mock('../../../service/account/config/AccountGlobalConfig');
 
 describe('AccountService', () => {
   let accountService: AccountService;
@@ -37,9 +36,12 @@ describe('AccountService', () => {
         email: 'a@gmail.com',
         display_name: 'display_name',
       });
-
-      AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(222);
-      AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(222);
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(222);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValue(222);
 
       const user = accountService.getCurrentUserInfo();
       return expect(user).resolves.toEqual({
@@ -104,11 +106,34 @@ describe('AccountService', () => {
       });
     });
 
-    it('should not refresh rc token if api return error', () => {
+    it('should not refresh rc token if api return error', async () => {
       refreshToken.mockRejectedValueOnce('error');
       expect.assertions(1);
-      const token = accountService.refreshRCToken();
-      return expect(token).resolves.toEqual(null);
+      try {
+        await accountService.refreshRCToken();
+      } catch (err) {
+        expect(err).toEqual('error');
+      }
+    });
+  });
+
+  describe('isGlipLogin', () => {
+    it('should return false when user dictionary is not ready', () => {
+      AccountGlobalConfig.getUserDictionary.mockReturnValue(null);
+      expect(accountService.isGlipLogin()).toBe(false);
+    });
+    it('should return false when there is no glip user id', () => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+      jest.restoreAllMocks();
+      AccountGlobalConfig.getUserDictionary.mockReturnValue(1);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue(null);
+      expect(accountService.isGlipLogin()).toBe(false);
+    });
+    it('should return true when glip user id is set', () => {
+      AccountGlobalConfig.getUserDictionary.mockReturnValue(1);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValue('123');
+      expect(accountService.isGlipLogin()).toBe(true);
     });
   });
 });

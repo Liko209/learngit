@@ -5,13 +5,14 @@
  */
 
 import React from 'react';
+import { observer } from 'mobx-react';
 import { IndicatorViewProps } from './types';
 import {
   JuiIndicatorDraft,
   JuiIndicatorFailure,
 } from 'jui/pattern/ConversationList/Indicator';
 
-const IndicatorView = (props: IndicatorViewProps) => {
+const IndicatorView = observer((props: IndicatorViewProps) => {
   let tag;
   if (props.hasDraft) {
     tag = <JuiIndicatorDraft />; // '[Draft]'
@@ -23,6 +24,6 @@ const IndicatorView = (props: IndicatorViewProps) => {
     return null;
   }
   return tag;
-};
+});
 
 export { IndicatorView };

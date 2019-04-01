@@ -41,7 +41,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _itemService: ItemService = ItemService.getInstance();
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
-  private _initialized = false;
 
   @observable loadInitialPostsError?: Error;
 
@@ -88,14 +87,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @computed
   get mostRecentPostId() {
     let result: number | undefined;
-    if (this.hasMore('down')) {
-      result = getEntity<Group, GroupModel>(
-        ENTITY_NAME.GROUP,
-        this.props.groupId,
-      ).mostRecentPostId;
-    } else {
-      result = _.last(this.postIds);
-    }
+    result = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
+      .mostRecentPostId;
     return result || 0;
   }
 
@@ -129,7 +122,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
     this._historyHandler = new HistoryHandler();
     this.initialize(props.groupId);
-
     this._streamController = new StreamController(
       props.groupId,
       this._historyHandler,
@@ -207,24 +199,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
-  handleNewMessageSeparatorState = (event: React.UIEvent<HTMLElement>) => {
-    if (!event.currentTarget) return;
-    const scrollEl = event.currentTarget;
-    const atBottom =
-      scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
-    const isFocused = document.hasFocus();
-    const shouldHideUmi = atBottom && isFocused;
-
-    storeManager
-      .getGlobalStore()
-      .set(GLOBAL_KEYS.SHOULD_SHOW_UMI, !shouldHideUmi);
-    if (shouldHideUmi && this._initialized) {
-      this._streamController.disableNewMessageSep();
-    } else {
-      this._streamController.enableNewMessageSep();
-    }
-  }
-
   @action
   private _syncGroupItems = () => {
     this._itemService.requestSyncGroupItems(this.props.groupId);
@@ -295,7 +269,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.props.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
     globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-    this._initialized = false;
   }
 
   private _canHandleError(err: Error) {
@@ -307,12 +280,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _handleLoadInitialPostsError(err: Error) {
     if (this._canHandleError(err)) {
-      this.loadInitialPostsError = err;
+      throw err; // let view catch the error
     } else {
       generalErrorHandler(err);
     }
   }
-
   private _handleLoadMoreError(err: Error, direction: QUERY_DIRECTION) {
     if (this._canHandleError(err)) {
       this._debouncedToast(direction);

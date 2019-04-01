@@ -5,12 +5,14 @@
  */
 
 import React, { Component, MouseEvent } from 'react';
+import { observer } from 'mobx-react';
 import { OpenProfileDialogProps, OpenProfileDialogViewProps } from './types';
 
 import { OpenProfile } from '@/common/OpenProfile';
 
 type Props = OpenProfileDialogProps & OpenProfileDialogViewProps;
 
+@observer
 class OpenProfileDialogView extends Component<Props> {
   constructor(props: Props) {
     super(props);

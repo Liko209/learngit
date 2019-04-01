@@ -9,7 +9,7 @@ import { Item } from '../../../entity';
 import { FileItemUtils } from '../utils';
 import { Api } from '../../../../../api';
 import { FileItem } from '../entity';
-import { AuthGlobalConfig } from '../../../../../service/auth/config';
+import { AuthUserConfig } from '../../../../../service/auth/config';
 
 class FileActionController {
   constructor(private _sourceController: IEntitySourceController<Item>) {}
@@ -40,8 +40,8 @@ class FileActionController {
       if (storageId === 0) {
         break;
       }
-
-      const glipAccessToken = AuthGlobalConfig.getGlipToken();
+      const authConfig = new AuthUserConfig();
+      const glipAccessToken = authConfig.getGlipToken();
       if (!glipAccessToken) {
         break;
       }

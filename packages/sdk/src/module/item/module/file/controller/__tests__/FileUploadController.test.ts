@@ -16,7 +16,7 @@ import notificationCenter from '../../../../../../service/notificationCenter';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
 import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
-import { AccountGlobalConfig } from '../../../../../../service/account/config';
+import { AccountGlobalConfig, AccountUserConfig } from '../../../../../../service/account/config';
 import { isInBeta } from '../../../../../../service/account/clientConfig';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
@@ -77,8 +77,8 @@ describe('fileUploadController', () => {
 
     daoManager.getDao = jest.fn().mockReturnValue(itemDao);
 
-    AccountGlobalConfig.getCurrentCompanyId.mockReturnValue(companyId);
-    AccountGlobalConfig.getCurrentUserId.mockReturnValue(userId);
+    AccountUserConfig.prototype.getCurrentCompanyId.mockReturnValue(companyId);
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(userId);
 
     notificationCenter.emitEntityReplace.mockImplementation(() => {});
     GroupConfigService.getInstance = jest
@@ -227,7 +227,7 @@ describe('fileUploadController', () => {
           ],
         );
         expect(partialModifyController.updatePartially).toBeCalledTimes(1);
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
             status: PROGRESS_STATUS.INPROGRESS,
@@ -252,7 +252,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(ItemAPI.uploadFileItem).toBeCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalled();
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
@@ -576,7 +576,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(fileRequestController.put).not.toBeCalled();
         expect(fileRequestController.post).toBeCalled();
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
             status: PROGRESS_STATUS.SUCCESS,
@@ -635,7 +635,7 @@ describe('fileUploadController', () => {
 
       setTimeout(() => {
         expect(progressCaches.get(-3).progress.rate.loaded).toBe(-1);
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
             status: PROGRESS_STATUS.FAIL,
@@ -732,7 +732,7 @@ describe('fileUploadController', () => {
 
       await fileUploadController.sendItemData(groupId, [-10, -11]);
 
-      expect(notificationCenter.emit).toHaveBeenCalledWith(
+      expect(notificationCenter.emitAsync).toHaveBeenCalledWith(
         SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
         {
           preInsertId: expect.anything(),
@@ -741,7 +741,7 @@ describe('fileUploadController', () => {
         },
       );
       expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(2);
-      expect(notificationCenter.emit).toBeCalledTimes(2);
+      expect(notificationCenter.emitAsync).toBeCalledTimes(2);
     });
   });
 
@@ -1055,7 +1055,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(spySendItemFile).not.toHaveBeenCalled();
         expect(spyUploadItem).not.toHaveBeenCalled();
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
@@ -1086,7 +1086,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(spySendItemFile).not.toHaveBeenCalled();
         expect(spyUploadItem).not.toHaveBeenCalled();
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );

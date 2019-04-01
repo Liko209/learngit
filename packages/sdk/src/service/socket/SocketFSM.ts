@@ -67,7 +67,9 @@ export class SocketFSM extends StateMachine {
 
         onEnterState() {
           this.info(
-            `onEnterState ${this.state} isManualStopped:${this.isManualStopped}`,
+            `onEnterState ${this.state} isManualStopped:${
+              this.isManualStopped
+            }`,
           );
           if (!this.isManualStopped && this.stateHandler) {
             this.stateHandler(this.name, this.state);
@@ -131,6 +133,26 @@ export class SocketFSM extends StateMachine {
     return this.state === 'connected';
   }
 
+  public isStateDisconnected() {
+    return this.state === 'disconnected';
+  }
+
+  public stopFSM() {
+    this.info('stopping FSM');
+    this.isManualStopped = true;
+    delete this.glipPingPongStatusCallback;
+    delete this.stateHandler;
+    if (
+      this.socketClient &&
+      this.socketClient.socket &&
+      !this.socketClient.socket.disconnected
+    ) {
+      this.stop();
+    } else {
+      this.cleanup();
+    }
+  }
+
   public setReconnection(bOn: boolean) {
     if (
       this.socketClient &&
@@ -149,6 +171,7 @@ export class SocketFSM extends StateMachine {
   }
 
   cleanup() {
+    this.info('cleaning socketFSM');
     if (this._glipPingPong) {
       this._glipPingPong.cleanup();
       this._glipPingPong = undefined;
@@ -276,6 +299,6 @@ export class SocketFSM extends StateMachine {
         this.state
       } isManualStopped :${this.isManualStopped}`,
     );
-    this.glipPingPongStatusCallback(success);
+    this.glipPingPongStatusCallback && this.glipPingPongStatusCallback(success);
   }
 }

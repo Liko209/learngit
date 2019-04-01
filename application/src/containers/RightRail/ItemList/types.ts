@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
-import { IVirtualListDataSource } from 'jui/pattern/VirtualList';
 
 type LoadStatus = {
   firstLoaded: boolean;
@@ -25,7 +24,12 @@ type Props = {
 };
 
 type ViewProps = {
-  dataSource: IVirtualListDataSource<any, number>;
+  size: number;
+  total: number;
+  getIds: number[];
+  isLoadingContent: () => boolean;
+  loadMore: () => Promise<void>;
+  loadInitialData: () => Promise<void>;
 };
 
 export { Props, ViewProps, LoadStatus, InitLoadStatus };

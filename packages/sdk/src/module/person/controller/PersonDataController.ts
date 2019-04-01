@@ -7,7 +7,7 @@
 import { Person } from '../entity';
 import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../service/account/config';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import notificationCenter from '../../../service/notificationCenter';
@@ -19,7 +19,8 @@ class PersonDataController {
   constructor(public entitySourceController: IEntitySourceController<Person>) {}
 
   handleTeamRemovedIds = async (people: any[]) => {
-    const userId: Number = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const userId: Number = userConfig.getGlipUserId();
     if (userId) {
       let ids: number[] = [];
       people.some((person: Person) => {

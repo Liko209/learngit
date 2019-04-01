@@ -15,17 +15,15 @@ import {
   ITokenModel,
   requestServerStatus,
 } from '../../api';
-import { Aware } from '../../utils/error';
 import notificationCenter from '../notificationCenter';
 import { SERVICE } from '../eventKey';
 import { ProfileService } from '../../module/profile';
 import { setRcToken } from '../../authenticator/utils';
-import { ERROR_CODES_SDK } from '../../error';
 import {
-  AccountGlobalConfig,
   AccountUserConfig,
+  AccountGlobalConfig,
 } from '../../service/account/config';
-import { AuthGlobalConfig } from '../../service/auth/config';
+import { AuthUserConfig } from '../../service/auth/config';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 class AccountService extends BaseService implements IPlatformHandleDelegate {
@@ -36,12 +34,14 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
   }
 
   isAccountReady(): boolean {
-    return !!AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    return userConfig.getGlipUserId() ? true : false;
   }
 
   async getCurrentUserInfo(): Promise<UserInfo | {}> {
-    const userId = Number(AccountGlobalConfig.getCurrentUserId());
-    const company_id = Number(AccountGlobalConfig.getCurrentCompanyId());
+    const userConfig = new AccountUserConfig();
+    const userId = userConfig.getGlipUserId();
+    const company_id = Number(userConfig.getCurrentCompanyId());
     if (!userId) return {};
     const personDao = daoManager.getDao(PersonDao);
     const personInfo = await personDao.get(userId);
@@ -55,7 +55,8 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
   }
 
   async getUserEmail(): Promise<string> {
-    const userId = Number(AccountGlobalConfig.getCurrentUserId());
+    const userConfig = new AccountUserConfig();
+    const userId = userConfig.getGlipUserId();
     if (!userId) return '';
     const personDao = daoManager.getDao(PersonDao);
     const personInfo = await personDao.get(userId);
@@ -64,25 +65,22 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
   }
 
   getClientId(): string {
-    let id = AccountGlobalConfig.getClientId();
+    const userConfig = new AccountUserConfig();
+    let id = userConfig.getClientId();
     if (id) {
       return id;
     }
     id = generateUUID();
-    AccountGlobalConfig.setClientId(id);
+    userConfig.setClientId(id);
     return id;
   }
 
   async refreshRCToken(): Promise<ITokenModel | null> {
-    try {
-      const oldRcToken = AuthGlobalConfig.getRcToken();
-      const newRcToken = (await refreshToken(oldRcToken)) as ITokenModel;
-      setRcToken(newRcToken);
-      return newRcToken;
-    } catch (err) {
-      Aware(ERROR_CODES_SDK.OAUTH, err.message);
-      return null;
-    }
+    const authConfig = new AuthUserConfig();
+    const oldRcToken = authConfig.getRcToken();
+    const newRcToken = (await refreshToken(oldRcToken)) as ITokenModel;
+    setRcToken(newRcToken);
+    return newRcToken;
   }
 
   async onBoardingPreparation() {
@@ -108,8 +106,19 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
     requestServerStatus(callback);
   }
 
-  onRefreshTokenFailure() {
-    notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+  onRefreshTokenFailure(forceLogout: boolean) {
+    if (forceLogout) {
+      notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+    }
+  }
+
+  isGlipLogin(): boolean {
+    const userDict = AccountGlobalConfig.getUserDictionary();
+    if (!userDict) {
+      return false;
+    }
+    const userConfig = new AccountUserConfig();
+    return userConfig && userConfig.getGlipUserId() !== null;
   }
 }
 

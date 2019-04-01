@@ -7,13 +7,13 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiHeader } from 'jui/pattern/Dialer';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { DialerHeaderViewProps } from './types';
 import { Avatar } from '@/containers/Avatar';
 
 @observer
 class DialerHeaderViewComponent extends React.Component<
-  DialerHeaderViewProps & WithNamespaces
+  DialerHeaderViewProps & WithTranslation
 > {
   private _Avatar = () => {
     const { uid } = this.props;
@@ -35,6 +35,8 @@ class DialerHeaderViewComponent extends React.Component<
   }
 }
 
-const DialerHeaderView = translate('translations')(DialerHeaderViewComponent);
+const DialerHeaderView = withTranslation('translations')(
+  DialerHeaderViewComponent,
+);
 
 export { DialerHeaderView };

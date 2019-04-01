@@ -5,12 +5,12 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observable, action } from 'mobx';
 import { observer } from 'mobx-react';
 import { fetchVersionInfo } from './helper';
 
-type Props = WithNamespaces;
+type Props = WithTranslation;
 
 type versionInfoType = {
   deployedTime: string;
@@ -61,6 +61,8 @@ class LoginVersionStatusView extends React.Component<Props> {
   }
 }
 
-const LoginVersionStatus = translate('translations')(LoginVersionStatusView);
+const LoginVersionStatus = withTranslation('translations')(
+  LoginVersionStatusView,
+);
 
 export default LoginVersionStatus;

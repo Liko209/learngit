@@ -12,10 +12,10 @@ import {
   SURVIVAL_MODE,
   NETWORK_HANDLE_TYPE,
   RESPONSE_HEADER_KEY,
+  HA_PRIORITY,
 } from 'foundation';
 import Api from '../api';
 import { RINGCENTRAL_API } from './constants';
-import { responseParser } from '../parser';
 import { stringify } from 'qs';
 
 interface ITokenModel extends Token {
@@ -68,7 +68,8 @@ function loginGlip2ByPassword(data: object) {
 
 function refreshToken(data: ITokenModel) {
   const model = {
-    ...data,
+    refresh_token: data.refresh_token,
+    endpoint_id: data.endpoint_id,
     grant_type: 'refresh_token',
   };
 
@@ -94,7 +95,7 @@ function refreshToken(data: ITokenModel) {
           handler.onSurvivalModeDetected(SURVIVAL_MODE.SURVIVAL, 0);
         }
       }
-      reject(responseParser.parse(response));
+      reject(response.status);
     };
 
     const request = Api.rcNetworkClient.getRequestByVia(
@@ -123,6 +124,7 @@ function requestServerStatus(
     method: NETWORK_METHOD.GET,
     authFree: true,
     via: NETWORK_VIA.HTTP,
+    HAPriority: HA_PRIORITY.HIGH,
   };
 
   const callbackFunc = (response: BaseResponse) => {

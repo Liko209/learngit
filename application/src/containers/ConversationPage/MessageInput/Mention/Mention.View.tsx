@@ -5,7 +5,7 @@
  */
 
 import React, { Component, RefObject, createRef } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { MentionViewProps } from './types';
 import { JuiMentionPanel } from 'jui/pattern/MessageInput/Mention/MentionPanel';
@@ -27,7 +27,7 @@ import {
 } from './constants';
 
 @observer
-class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
+class MentionViewComponent extends Component<MentionViewProps & WithTranslation>
   implements IVirtualListDataSource<any, number> {
   _listRef: RefObject<JuiVirtualList<number, number>> = createRef();
 
@@ -125,6 +125,6 @@ class MentionViewComponent extends Component<MentionViewProps & WithNamespaces>
   }
 }
 
-const MentionView = translate('translations')(MentionViewComponent);
+const MentionView = withTranslation('translations')(MentionViewComponent);
 
 export { MentionView };

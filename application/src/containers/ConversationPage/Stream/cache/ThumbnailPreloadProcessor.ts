@@ -4,46 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IProcessor, SequenceProcessorHandler } from 'sdk/framework/processor';
-import { FileItem } from 'sdk/module/item/module/file/entity';
+import { IProcessor } from 'sdk/framework/processor';
 import { ItemService, FileItemUtils } from 'sdk/module/item';
-import { getThumbnailURL } from '@/common/getThumbnailURL';
+import { getThumbnailURLWithType, IMAGE_TYPE } from '@/common/getThumbnailURL';
 import { Pal, DownloadItemInfo, IImageDownloadedListener } from 'sdk/pal';
 
-import {
-  generateModifiedImageURL,
-  RULE,
-  Result,
-} from '../../../../common/generateModifiedImageURL';
 import { mainLogger } from 'sdk';
+import { RULE } from '@/common/generateModifiedImageURL';
+import { GLOBAL_KEYS } from '@/store/constants';
+import { getGlobalValue } from '@/store/utils/entities';
 
 class ImageDownloadedListener implements IImageDownloadedListener {
-  constructor(
-    private _sequenceProcessorHandler: SequenceProcessorHandler,
-    private _waiter: any,
-  ) {}
+  constructor(private _waiter: any) {}
   onSuccess(item: DownloadItemInfo, width: number, height: number): void {
-    if (!item.thumbnail) {
-      const rule = item.count ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
-
-      generateModifiedImageURL({
-        rule,
-        id: item.id,
-        origWidth: width,
-        origHeight: height,
-        squareSize: 180,
-      }).then((result: Result) => {
-        this._sequenceProcessorHandler.addProcessor(
-          new ThumbnailPreloadProcessor(this._sequenceProcessorHandler, {
-            id: item.id,
-            url: result.url,
-            thumbnail: true,
-            autoPreload: true,
-          }),
-        );
-      });
-    }
-
     this._waiter();
   }
 
@@ -65,7 +38,7 @@ class ThumbnailPreloadProcessor implements IProcessor {
     autoPreload?: boolean;
   };
   constructor(
-    private _sequenceProcessorHandler: SequenceProcessorHandler,
+    private _itemsObserver: Map<number, number>,
     item: {
       id: number;
       url?: string;
@@ -77,85 +50,79 @@ class ThumbnailPreloadProcessor implements IProcessor {
     this._item = item;
   }
 
-  private _hasVersions(file: FileItem) {
-    return file.versions && file.versions.length > 0;
-  }
-
-  private _getVersionsValue(file: FileItem, type: string) {
-    return file.versions[0][type];
-  }
-
-  private _getOrigHeight(file: FileItem) {
-    return this._hasVersions(file)
-      ? this._getVersionsValue(file, 'orig_height')
-      : null;
-  }
-
-  private _getOrigWidth(file: FileItem) {
-    return this._hasVersions(file)
-      ? this._getVersionsValue(file, 'orig_width')
-      : null;
-  }
-
-  toThumbnailUrl(fileItem: FileItem) {
-    const originalWidth = this._getOrigWidth(fileItem);
-    const originalHeight = this._getOrigHeight(fileItem);
-    if (originalWidth && originalHeight) {
-      const url = getThumbnailURL(fileItem);
-      if (url && url.length) {
-        return { url, thumbnail: true };
-      }
-    }
-
-    if (fileItem.versions.length && fileItem.versions[0].url) {
-      return {
-        url: fileItem.versions[0].url,
-        thumbnail: false,
-      };
-    }
-
-    return null;
-  }
-
   protected preload(item: DownloadItemInfo) {
     return new Promise((resolve: any, reject: any) => {
       Pal.instance
         .getImageDownloader()
-        .download(
-          item,
-          new ImageDownloadedListener(this._sequenceProcessorHandler, resolve),
-        );
+        .download(item, new ImageDownloadedListener(resolve));
     });
   }
 
   async process(): Promise<boolean> {
-    if (this._item.autoPreload) {
-      await this.preload(this._item);
-    } else {
-      try {
-        const itemService = ItemService.getInstance() as ItemService;
-        const item = await itemService.getById(this._item.id);
-        if (item && item.id > 0) {
-          if (!FileItemUtils.isSupportPreview(item)) {
-            return false;
-          }
+    try {
+      if (!this._item || this._item.id < 0) {
+        return false;
+      }
 
-          const thumbnail = this.toThumbnailUrl(item);
-          if (!thumbnail) {
-            return true;
-          }
+      const itemService = ItemService.getInstance() as ItemService;
+      const item = await itemService.getById(this._item.id);
+      if (
+        item &&
+        !item.deactivated &&
+        item.group_ids &&
+        !item.group_ids.includes(
+          getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID),
+        )
+      ) {
+        if (!FileItemUtils.isSupportPreview(item)) {
+          return false;
+        }
 
-          this._item.url = thumbnail.url;
-          this._item.thumbnail = thumbnail.thumbnail;
+        const thumbnail = await getThumbnailURLWithType(
+          {
+            id: item.id,
+            type: item.type,
+            versionUrl:
+              item.versions.length && item.versions[0].url
+                ? item.versions[0].url
+                : '',
+            versions: item.versions,
+          },
+          this._item.count && this._item.count > 1
+            ? RULE.SQUARE_IMAGE
+            : RULE.RECTANGLE_IMAGE,
+        );
 
+        let url: string = '';
+        switch (thumbnail.type) {
+          case IMAGE_TYPE.THUMBNAIL_IMAGE:
+            url = thumbnail.url;
+            break;
+          case IMAGE_TYPE.MODIFY_IMAGE:
+            url = thumbnail.url;
+            this._itemsObserver.set(
+              item.id,
+              this._item.count ? this._item.count : 1,
+            );
+            break;
+          default:
+            this._itemsObserver.set(
+              item.id,
+              this._item.count ? this._item.count : 1,
+            );
+            break;
+        }
+
+        if (url && url.length) {
+          this._item.url = url;
           await this.preload(this._item);
         }
-      } catch (err) {
-        mainLogger.warn(
-          'ThumbnailPreloadProcessor: process(): error=',
-          err.message,
-        );
       }
+    } catch (err) {
+      mainLogger.warn(
+        'ThumbnailPreloadProcessor: process(): error=',
+        err.message,
+      );
     }
 
     return true;

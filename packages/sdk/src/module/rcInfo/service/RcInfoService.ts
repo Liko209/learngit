@@ -9,8 +9,8 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
 import { RcInfoController } from '../controller/RcInfoController';
 import { ERcServiceFeaturePermission } from '../types';
-import { NewGlobalConfig } from '../../../service/config';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
+import { AccountUserConfig } from '../../../service/account/config';
 class RcInfoService extends EntityBaseService {
   private _rcInfoController: RcInfoController;
 
@@ -59,9 +59,10 @@ class RcInfoService extends EntityBaseService {
   }
 
   isVoipCallingAvailable() {
+    const userConfig = new AccountUserConfig();
     return (
-      NewGlobalConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
-      this._rcInfoController.isRcFeaturePermissionEnabled(
+      userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
+      this.rcInfoController.isRcFeaturePermissionEnabled(
         ERcServiceFeaturePermission.VOIP_CALLING,
       )
     );

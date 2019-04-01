@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { LikeViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
@@ -14,7 +14,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-type Props = LikeViewProps & WithNamespaces;
+type Props = LikeViewProps & WithTranslation;
 
 @observer
 class LikeViewComponent extends Component<Props> {
@@ -54,6 +54,6 @@ class LikeViewComponent extends Component<Props> {
   }
 }
 
-const LikeView = translate('translations')(LikeViewComponent);
+const LikeView = withTranslation('translations')(LikeViewComponent);
 
 export { LikeView };

@@ -142,6 +142,7 @@ class BaseConversationPage extends BaseWebComponent {
     return await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
   }
 
+  /* scroll */
   get scrollDiv() {
     this.warnFlakySelector();
     return this.getSelectorByAutomationId('virtualized-list', this.stream);
@@ -161,11 +162,11 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async scrollToY(y: number) {
-    const scrollDivElement=  this.scrollDiv;
+    const scrollDivElement = this.scrollDiv;
     await ClientFunction((_y) => {
       scrollDivElement().scrollTop = _y;
     },
-    { dependencies: { scrollDivElement } })(y);
+      { dependencies: { scrollDivElement } })(y);
   }
 
   async scrollToMiddle() {
@@ -187,6 +188,44 @@ class BaseConversationPage extends BaseWebComponent {
       const clientHeight = await this.scrollDiv.clientHeight;
       await this.scrollToY(scrollHeight - clientHeight);
     }
+  }
+
+  async scrollToCurrentFirstPost() {
+    const scrollTop = await this.posts.nth(0).scrollTop;
+    await this.scrollToY(scrollTop);
+  }
+
+  async scrollToCurrentLastPost() {
+    const scrollTop = await this.posts.nth(-1).scrollTop;
+    await this.scrollToY(scrollTop);
+  }
+
+  async scrollUpToViewPostById(postId: string) {
+    const postItem = this.postItemById(postId)
+    for (const i of _.range(10)) {
+      if (await postItem.exists) {
+        await postItem.scrollIntoView()
+        break
+      } else {
+        await this.scrollToCurrentFirstPost();
+        await this.t.wait(1e3);
+      }
+    }
+    assert(await postItem.visible, "this post does not exist");
+  }
+
+  async scrollDownToViewPostById(postId: string) {
+    const postItem = this.postItemById(postId)
+    for (const i of _.range(10)) {
+      if (await postItem.exists) {
+        await postItem.scrollIntoView()
+        break
+      } else {
+        await this.scrollToCurrentLastPost();
+        await this.t.wait(1e3);
+      }
+    }
+    assert(await postItem.visible, "this post does not exist");
   }
 
   get newMessageDeadLine() {
@@ -268,21 +307,21 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.pressKey('enter');
   }
 
-  get privateButton() {
+  get privacyToggle() {
     this.warnFlakySelector();
     return this.self.find('.privacy');
   }
 
   async clickPrivate() {
-    await this.t.click(this.privateButton);
+    await this.t.click(this.privacyToggle);
   }
 
   get privateTeamIcon() {
-    return this.getSelectorByIcon('lock', this.privateButton);
+    return this.getSelectorByIcon('lock', this.privacyToggle);
   }
 
   get publicTeamIcon() {
-    return this.getSelectorByIcon('lock_open', this.privateButton);
+    return this.getSelectorByIcon('lock_open', this.privacyToggle);
   }
 
   get favoriteButton() {

@@ -9,7 +9,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { getGlobalValue } from '@/store/utils';
 import { PostService } from 'sdk/module/post';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable
@@ -48,7 +48,7 @@ class NewMessageViewModel extends StoreViewModel {
 
   @action
   newMessage = async (message: string) => {
-    goToConversation({
+    goToConversationWithLoading({
       id: Array.from(this.members) as number[],
       async beforeJump(conversationId: number) {
         if (message && conversationId) {

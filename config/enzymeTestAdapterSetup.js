@@ -10,15 +10,14 @@ import 'reflect-metadata';
 // Use fixed seed to make UT stable
 faker.seed(1);
 
-const withNamespaces = () => Component => {
+const withTranslation = () => Component => {
   Component.defaultProps = { ...Component.defaultProps, t: () => '' };
   return Component;
 };
 
 const mockReactI18nNext = {
-  // this mock makes sure any components using the translate HoC receive the t function as a prop
-  translate: withNamespaces,
-  withNamespaces: withNamespaces
+  // this mock makes sure any components using the withTranslation HoC receive the t function as a prop
+  withTranslation,
 };
 
 jest.mock('react-i18next', () => mockReactI18nNext);

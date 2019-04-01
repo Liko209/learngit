@@ -63,7 +63,7 @@ describe('PinnedList ViewModel', () => {
     await pinnedListViewModel.loadMore(5, 5);
     expect(discontinuousPosListHandler.loadMorePosts).toBeCalledWith(
       QUERY_DIRECTION.NEWER,
-      1,
+      20,
     );
   });
 

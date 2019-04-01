@@ -15,6 +15,8 @@ import { CodeSnippetViewModelProps } from './types';
 export class CodeSnippetViewModel extends StoreViewModel<
   CodeSnippetViewModelProps
 > {
+  private static _isCollapseMap = new Map<number, boolean>();
+
   @computed
   private get _id() {
     return this.props.ids[0];
@@ -23,5 +25,18 @@ export class CodeSnippetViewModel extends StoreViewModel<
   @computed
   get postItem() {
     return getEntity<Item, CodeSnippetItem>(ENTITY_NAME.ITEM, this._id);
+  }
+
+  @computed
+  get isCollapse() {
+    let isCollapse = CodeSnippetViewModel._isCollapseMap.get(this._id);
+    if (isCollapse === undefined) {
+      isCollapse = true;
+    }
+    return isCollapse;
+  }
+
+  setCollapse = (isCollapse: boolean) => {
+    CodeSnippetViewModel._isCollapseMap.set(this._id, isCollapse);
   }
 }

@@ -228,18 +228,8 @@ module.exports = {
               options: {
                 cacheDirectory: true,
                 babelrc: false,
-                presets: [
-                  [
-                    "@babel/preset-env",
-                    { targets: { browsers: ["last 2 versions", "ie 11"] } } // or whatever your project requires
-                  ],
-                  "@babel/preset-typescript",
-                  "@babel/preset-react"
-                ],
+                presets: [['react-app', { flow: false, typescript: true }]],
                 plugins: [
-                  // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
-                  ["@babel/plugin-proposal-decorators", { legacy: true }],
-                  ["@babel/plugin-proposal-class-properties", { loose: true }],
                   ["@babel/plugin-syntax-dynamic-import"],
                   [
                     "babel-plugin-styled-components",

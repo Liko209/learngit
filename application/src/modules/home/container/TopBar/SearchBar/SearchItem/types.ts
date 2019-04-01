@@ -35,6 +35,7 @@ type BaseViewProps = {
   hovered: boolean;
   addRecentRecord: () => void;
   onClose: () => void;
+  onClear: () => void;
 };
 
 export {

@@ -6,23 +6,15 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
 import { CallViewProps, CallProps } from './types';
 
-type Props = WithNamespaces & CallViewProps & CallProps;
-
-type State = {
-  isShowIcon: boolean;
-};
+type Props = WithTranslation & CallViewProps & CallProps;
 
 @observer
-class CallViewComponent extends Component<Props, State> {
-  state = {
-    isShowIcon: false,
-  };
-
+class CallViewComponent extends Component<Props> {
   private _handleClick = (evt: React.MouseEvent) => {
     evt.stopPropagation();
     const { directCall, onClick } = this.props;
@@ -34,31 +26,12 @@ class CallViewComponent extends Component<Props, State> {
     directCall();
   }
 
-  private _checkShowIcon = () => {
-    const { showIcon } = this.props;
-    const { isShowIcon } = this.state;
-    if (showIcon !== isShowIcon) {
-      this.setState({
-        isShowIcon: showIcon,
-      });
-    }
-  }
-
-  componentDidMount() {
-    this._checkShowIcon();
-  }
-
-  componentDidUpdate() {
-    this._checkShowIcon();
-  }
-
   render() {
-    const { isShowIcon } = this.state;
-    if (!isShowIcon) {
+    const { t, phoneNumber, size, variant, color, showIcon } = this.props;
+
+    if (!showIcon.get()) {
       return null;
     }
-
-    const { t, phone, size, variant, color } = this.props;
 
     return (
       <JuiIconButton
@@ -66,7 +39,7 @@ class CallViewComponent extends Component<Props, State> {
         onClick={this._handleClick}
         tooltipTitle={t('common.call')}
         ariaLabel={t('common.ariaCall', {
-          value: phone,
+          value: phoneNumber,
         })}
         variant={variant}
         color={color}
@@ -77,6 +50,6 @@ class CallViewComponent extends Component<Props, State> {
   }
 }
 
-const CallView = translate('translations')(CallViewComponent);
+const CallView = withTranslation('translations')(CallViewComponent);
 
 export { CallView };

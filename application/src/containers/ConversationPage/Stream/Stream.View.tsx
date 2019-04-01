@@ -6,8 +6,8 @@
 import _ from 'lodash';
 import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
-import { observable, runInAction } from 'mobx';
-import { observer } from 'mobx-react';
+import { observable, runInAction, reaction, action } from 'mobx';
+import { observer, Observer, Disposer } from 'mobx-react';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -25,7 +25,7 @@ import {
 } from './types';
 import { TimeNodeDivider } from '../TimeNodeDivider';
 import { toTitleCase } from '@/utils/string';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiInfiniteList,
   IndexRange,
@@ -33,10 +33,10 @@ import {
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
+import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
 import JuiConversationCard from 'jui/src/pattern/ConversationCard';
-// import { findDOMNode } from 'react-dom';
 
-type Props = WithNamespaces & StreamViewProps & StreamProps;
+type Props = WithTranslation & StreamViewProps & StreamProps;
 
 type StreamItemPost = StreamItem & { value: number[] };
 
@@ -52,6 +52,7 @@ class StreamViewComponent extends Component<Props> {
   private _historyViewed = false;
   private _timeout: NodeJS.Timeout | null;
   private _jumpToPostRef: RefObject<JuiConversationCard> = createRef();
+  private _disposers: Disposer[] = [];
 
   @observable private _jumpToFirstUnreadLoading = false;
 
@@ -61,6 +62,7 @@ class StreamViewComponent extends Component<Props> {
   }
 
   componentWillUnmount() {
+    this._disposers.forEach((disposer: Disposer) => disposer());
     window.removeEventListener('focus', this._focusHandler);
     window.removeEventListener('blur', this._blurHandler);
   }
@@ -172,11 +174,9 @@ class StreamViewComponent extends Component<Props> {
   private _renderInitialPost() {
     const { groupId, notEmpty } = this.props;
     return (
-      <ConversationInitialPost
-        notEmpty={notEmpty}
-        id={groupId}
-        key="ConversationInitialPost"
-      />
+      <JuiConversationInitialPostWrapper key="ConversationInitialPost">
+        <ConversationInitialPost notEmpty={notEmpty} id={groupId} />
+      </JuiConversationInitialPostWrapper>
     );
   }
 
@@ -257,15 +257,13 @@ class StreamViewComponent extends Component<Props> {
       historyReadThrough = 0,
     } = this.props;
     const visibleItems = items.slice(startIndex, stopIndex + 1);
-    const lastPostItem = _.findLast(
-      visibleItems,
-      this.findPost,
-    ) as StreamItemPost;
-
-    if (lastPostItem && lastPostItem.value.includes(mostRecentPostId)) {
-      this.handleMostRecentViewed();
-    } else {
+    const visiblePosts = _(visibleItems)
+      .flatMap('value')
+      .concat();
+    if (this.props.hasMore('down') || !visiblePosts.includes(mostRecentPostId)) {
       this.handleMostRecentHidden();
+    } else {
+      this.handleMostRecentViewed();
     }
     if (this._historyViewed) {
       return;
@@ -290,11 +288,13 @@ class StreamViewComponent extends Component<Props> {
   handleMostRecentViewed = () => {
     if (document.hasFocus()) {
       this.props.markAsRead();
+      this.props.disableNewMessageSeparatorHandler();
       this._setUmiDisplay(false);
     }
   }
 
   handleMostRecentHidden = () => {
+    this.props.enableNewMessageSeparatorHandler();
     this._setUmiDisplay(true);
   }
 
@@ -308,57 +308,70 @@ class StreamViewComponent extends Component<Props> {
     });
   }
 
+  private _contentStyleGen = _.memoize(
+    (height?: number) =>
+      ({
+        minHeight: height,
+        display: 'flex',
+        flexDirection: 'column',
+      } as React.CSSProperties),
+  );
+
+  private _onInitialDataFailed = (
+    <JuiStreamLoading
+      showTip={true}
+      tip={this.props.t('translations:message.prompt.MessageLoadingErrorTip')}
+      linkText={this.props.t('translations:common.prompt.tryAgain')}
+      onClick={this._loadInitialPosts}
+    />
+  );
+
   render() {
-    const {
-      t,
-      loadMore,
-      hasMore,
-      items,
-      handleNewMessageSeparatorState,
-    } = this.props;
+    const { loadMore, hasMore, items } = this.props;
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
       : items.length - 1;
 
     const defaultLoading = <DefaultLoadingWithDelay delay={100} />;
     const defaultLoadingMore = <DefaultLoadingMore />;
-    const onInitialDataFailed = (
-      <JuiStreamLoading
-        showTip={true}
-        tip={t('translations:message.prompt.MessageLoadingErrorTip')}
-        linkText={t('translations:common.prompt.tryAgain')}
-        onClick={this._loadInitialPosts}
-      />
-    );
 
     return (
       <JuiSizeMeasurer>
         {({ ref, height }) => (
-          <JuiStream ref={ref}>
-            {this._renderJumpToFirstUnreadButton()}
-            <JuiInfiniteList
-              ref={this._listRef}
-              height={height}
-              stickToBottom={true}
-              initialScrollToIndex={initialPosition}
-              minRowHeight={50} // extract to const
-              loadInitialData={this._loadInitialPosts}
-              loadMore={loadMore}
-              loadingRenderer={defaultLoading}
-              hasMore={hasMore}
-              loadingMoreRenderer={defaultLoadingMore}
-              fallBackRenderer={onInitialDataFailed}
-              onScroll={handleNewMessageSeparatorState}
-              onVisibleRangeChange={this._handleVisibilityChanged}
-            >
-              {this._renderStreamItems()}
-            </JuiInfiniteList>
-          </JuiStream>
+          // MobX only tracks data accessed for observer components
+          // if they are directly accessed by render, for render
+          // callback, we can wrap it with <Observer>
+          // See: https://tinyurl.com/y3nfuybu
+          <Observer>
+            {() => (
+              <JuiStream ref={ref}>
+                {this._renderJumpToFirstUnreadButton()}
+                <JuiInfiniteList
+                  contentStyle={this._contentStyleGen(height)}
+                  ref={this._listRef}
+                  height={height}
+                  stickToBottom={true}
+                  initialScrollToIndex={initialPosition}
+                  minRowHeight={50} // extract to const
+                  loadInitialData={this._loadInitialPosts}
+                  loadMore={loadMore}
+                  loadingRenderer={defaultLoading}
+                  hasMore={hasMore}
+                  loadingMoreRenderer={defaultLoadingMore}
+                  fallBackRenderer={this._onInitialDataFailed}
+                  onVisibleRangeChange={this._handleVisibilityChanged}
+                >
+                  {this._renderStreamItems()}
+                </JuiInfiniteList>
+              </JuiStream>
+            )}
+          </Observer>
         )}
       </JuiSizeMeasurer>
     );
   }
 
+  @action
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead } = this.props;
     await loadInitialPosts();
@@ -371,6 +384,26 @@ class StreamViewComponent extends Component<Props> {
         this._jumpToPostRef.current.highlight();
       }
     });
+    this._watchUnreadCount();
+  }
+
+  private _watchUnreadCount() {
+    const disposer = reaction(
+      () => {
+        return this.props.mostRecentPostId;
+      },
+      (mostRecentPostId) => {
+        if (this._listRef.current && !this.props.hasMore('down')) {
+          const isLastPostVisible =
+            this._listRef.current.getVisibleRange().stopIndex >=
+            this.props.items.length - 1;
+          if (isLastPostVisible) {
+            this.handleMostRecentViewed();
+          }
+        }
+      },
+    );
+    this._disposers.push(disposer);
   }
 
   private _focusHandler = () => {
@@ -380,6 +413,7 @@ class StreamViewComponent extends Component<Props> {
       this._listRef.current && this._listRef.current.isAtBottom();
     if (atBottom) {
       markAsRead();
+      this.props.disableNewMessageSeparatorHandler();
       this._setUmiDisplay(false);
     }
   }
@@ -394,6 +428,6 @@ class StreamViewComponent extends Component<Props> {
   }
 }
 const view = extractView<Props>(StreamViewComponent);
-const StreamView = translate('translations')(view);
+const StreamView = withTranslation('translations')(view);
 
 export { StreamView, StreamViewComponent };

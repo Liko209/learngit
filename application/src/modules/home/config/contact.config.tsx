@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 
@@ -14,11 +14,11 @@ const config: SubModuleConfig = {
     path: '/contacts',
     component: () => <div>Contacts</div>,
   },
-  nav: () => ({
+  nav: async () => ({
     url: '/contacts',
     Icon: <JuiIconography iconSize="medium">contacts_border</JuiIconography>,
     IconSelected: <JuiIconography iconSize="medium">contacts</JuiIconography>,
-    title: i18next.t('contact.Contacts'),
+    title: await i18nT('contact.Contacts'),
     placement: 'bottom',
   }),
 };

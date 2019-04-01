@@ -1,0 +1,3 @@
+const MATH_SERVICE = 'MATH_SERVICE';
+
+export { MATH_SERVICE };

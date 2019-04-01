@@ -22,7 +22,16 @@ class FooterViewModel extends StoreViewModel<FooterViewModelProps> {
   get likedUsersNameMessage() {
     if (!this.likedUsersCount) return '';
 
-    const { t } = this.props;
+    const { t, iLiked } = this.props;
+
+    const likeText =
+      this.likedUsersCount === 1 && !iLiked
+        ? `${t('common.verb.likes')} ${t('common.pronoun.this')}`
+        : `${t('common.verb.like')} ${t('common.pronoun.this')}`;
+    const andText =
+      this.likedUsersCount > 2
+        ? `, ${t('common.conj.and')}`
+        : ` ${t('common.conj.and')}`;
 
     const usersName = this.props.likedUsers.reduce(
       (acc, { id, userDisplayName }) =>
@@ -33,10 +42,10 @@ class FooterViewModel extends StoreViewModel<FooterViewModelProps> {
     );
 
     const lastUserName = usersName.pop();
-    const suffix = `${lastUserName} ${t('message.likeThis')}`;
+    const suffix = `${lastUserName} ${likeText}`;
 
     return usersName.length
-      ? `${usersName.join(', ')}, ${t('common.and')} ${suffix}`
+      ? `${usersName.join(', ')}${andText} ${suffix}`
       : suffix;
   }
 }
