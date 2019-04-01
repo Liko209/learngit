@@ -9,32 +9,38 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { BookmarkViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { Notification } from '@/containers/Notification';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
+import { CatchError } from '@/common/catchError';
 
 type Props = BookmarkViewProps & WithTranslation;
 
 @observer
 class BookmarkViewComponent extends Component<Props> {
-  private _handleClick = async () => {
-    const { isBookmark, bookmark } = this.props;
-    try {
-      await bookmark(!isBookmark);
-    } catch (error) {
-      const message = isBookmark
-        ? 'message.prompt.SorryWeWereNotAbleToRemoveYourBookmark'
-        : 'message.prompt.SorryWeWereNotAbleToBookmarkThisMessage';
-      Notification.flashToast({
-        message,
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
-    }
+  constructor(props: Props) {
+    super(props);
+    this._handleBookmark = this._handleBookmark.bind(this);
+    this._handleRemoveBookmark = this._handleRemoveBookmark.bind(this);
+    this._handleToggleBookmark = this._handleToggleBookmark.bind(this);
+  }
+
+  private async _handleToggleBookmark() {
+    const { bookmark, isBookmark } = this.props;
+    await bookmark(!isBookmark);
+  }
+
+  @CatchError.flash({
+    network: 'message.prompt.notAbleToRemoveYourBookmarkForNetworkIssue',
+    server: 'message.prompt.notAbleToRemoveYourBookmarkForServerIssue',
+  })
+  private _handleRemoveBookmark() {
+    return this._handleToggleBookmark();
+  }
+
+  @CatchError.flash({
+    network: 'message.prompt.notAbleToBookmarkThisMessageForNetworkIssue',
+    server: 'message.prompt.notAbleToBookmarkThisMessageForServerIssue',
+  })
+  private _handleBookmark() {
+    return this._handleToggleBookmark();
   }
 
   render() {
@@ -43,12 +49,10 @@ class BookmarkViewComponent extends Component<Props> {
       <JuiIconButton
         size="small"
         tooltipTitle={
-          isBookmark
-            ? t('message.action.removeBookmark')
-            : t('message.action.bookmark')
+          isBookmark ? t('message.action.removeBookmark') : t('message.action.bookmark')
         }
         color={isBookmark ? 'primary' : undefined}
-        onClick={this._handleClick}
+        onClick={isBookmark ? this._handleRemoveBookmark : this._handleBookmark}
         variant="plain"
         data-name="actionBarBookmark"
       >
