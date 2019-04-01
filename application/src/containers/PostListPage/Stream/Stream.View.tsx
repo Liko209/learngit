@@ -6,22 +6,31 @@
 
 import React, { Component } from 'react';
 import { translate, WithNamespaces } from 'react-i18next';
-import { ConversationCard } from '@/containers/ConversationCard';
+import JuiConversationCard from 'jui/src/pattern/ConversationCard';
 import { JuiStream } from 'jui/pattern/ConversationPage';
 import { StreamViewProps } from './types';
 import { observer } from 'mobx-react';
+import { ConversationPost } from '@/containers/ConversationPost';
 
 type Props = WithNamespaces & StreamViewProps;
 @observer
 class StreamViewComponent extends Component<Props> {
   listRef: React.RefObject<HTMLElement> = React.createRef();
+  private _jumpToPostRef: React.RefObject<
+    JuiConversationCard
+  > = React.createRef();
   render() {
     const { ids } = this.props;
     return (
       <JuiStream>
         <section ref={this.listRef}>
           {ids.map(id => (
-            <ConversationCard id={id} key={id} mode="navigation" />
+            <ConversationPost
+              id={id}
+              key={`ConversationPost${id}`}
+              cardRef={this._jumpToPostRef}
+              mode="navigation"
+            />
           ))}
         </section>
       </JuiStream>

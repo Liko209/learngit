@@ -48,6 +48,12 @@ const Wrapper = styled.div`
   }
 `;
 
+const StyledImg = styled.img`
+  &:hover {
+    cursor: pointer;
+  }
+`;
+
 const Icon = withDelay(() => (
   <JuiIconography iconSize="extraLarge">image_preview</JuiIconography>
 ));
@@ -72,7 +78,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     justifyHeight: false,
     justifyWidth: false,
   };
-  private _imageRef: RefObject<HTMLImageElement> = createRef();
+  private _imageRef: RefObject<any> = createRef();
   private _mounted: boolean = false;
   private _loaded: boolean = false;
   private _updating: boolean = false;
@@ -139,7 +145,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
       <>
         {!this._loaded && placeholder}
         {(!this._loaded || this._updating) && url && (
-          <img
+          <StyledImg
             style={{ display: 'none' }}
             ref={this._imageRef}
             src={url}
@@ -149,7 +155,7 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
         )}
         {this._loaded && (
           <Jui.ImageCard width={width} height={height}>
-            <img
+            <StyledImg
               style={imageStyle}
               src={url}
               onClick={this._handleImageClick}
