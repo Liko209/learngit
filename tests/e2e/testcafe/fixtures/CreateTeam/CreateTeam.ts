@@ -287,14 +287,14 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
   }
 
   // send new Message entry
+  const sendNewMessageModal = app.homePage.sendNewMessageModal;
   await h(t).withLog('When I click "Send New Message" on AddActionMenu', async () => {
     await createTeamModal.clickCancelButton();
     await app.homePage.openAddActionMenu();
     await app.homePage.addActionMenu.sendNewMessageEntry.enter();
-    await createTeamModal.ensureLoaded();
+    await sendNewMessageModal.ensureLoaded();
   });
 
-  const sendNewMessageModal = app.homePage.sendNewMessageModal;
   await h(t).withLog('Then the "New Message" dialog should be popup', async () => {
     await t.expect(sendNewMessageModal.exists).ok();
   });
