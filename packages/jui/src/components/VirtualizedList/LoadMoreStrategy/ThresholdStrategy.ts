@@ -12,20 +12,16 @@ import {
 class ThresholdStrategy implements ILoadMoreStrategy {
   private _threshold: number;
   private _minBatchCount: number;
-  private _maxBatchCount: number;
 
   constructor({
     threshold,
     minBatchCount,
-    maxBatchCount,
   }: {
     threshold: number;
     minBatchCount: number;
-    maxBatchCount: number;
   }) {
     this._threshold = threshold;
     this._minBatchCount = minBatchCount;
-    this._maxBatchCount = maxBatchCount;
   }
 
   getLoadMoreInfo({
@@ -45,7 +41,7 @@ class ThresholdStrategy implements ILoadMoreStrategy {
     ) {
       return {
         direction: 'up',
-        count: Math.min(unloadCountUp, this._maxBatchCount),
+        count: unloadCountUp,
       };
     }
 
@@ -59,7 +55,7 @@ class ThresholdStrategy implements ILoadMoreStrategy {
     ) {
       return {
         direction: 'down',
-        count: Math.min(unloadCountDown, this._maxBatchCount),
+        count: unloadCountDown,
       };
     }
 

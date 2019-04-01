@@ -179,7 +179,6 @@ storiesOf('Components/VirtualizedList', module)
     const loadMoreStrategy = new ThresholdStrategy({
       threshold,
       minBatchCount: 10,
-      maxBatchCount: 100,
     });
 
     const InfiniteListDemo = () => {

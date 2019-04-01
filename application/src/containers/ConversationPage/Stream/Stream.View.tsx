@@ -49,7 +49,6 @@ class StreamViewComponent extends Component<Props> {
   private _loadMoreStrategy = new ThresholdStrategy({
     threshold: 60,
     minBatchCount: 10,
-    maxBatchCount: 200,
   });
   private _listRef: React.RefObject<
     JuiVirtualizedListHandles

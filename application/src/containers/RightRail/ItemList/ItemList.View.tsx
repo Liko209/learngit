@@ -8,7 +8,10 @@ import { observer } from 'mobx-react';
 import i18next from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
-import { JuiInfiniteList } from 'jui/components/VirtualizedList';
+import {
+  JuiInfiniteList,
+  ThresholdStrategy,
+} from 'jui/components/VirtualizedList';
 import { emptyView } from './Empty';
 import {
   JuiRightShelfContent,
@@ -16,12 +19,16 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import { getTabConfig } from './utils';
-import { ITEM_HEIGHT } from './config';
-
-const HEADER_HEIGHT = 36;
+import {
+  ITEM_HEIGHT,
+  LOAD_MORE_STRATEGY_CONFIG,
+  HEADER_HEIGHT,
+} from '../constants';
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
+  private _loadMoreStrategy = new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG);
+
   private _renderItems = () => {
     const { type } = this.props;
     const tabConfig = getTabConfig(type);
@@ -66,6 +73,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
           minRowHeight={ITEM_HEIGHT} // extract to const
           loadInitialData={this.props.loadInitialData}
           loadMore={this.props.loadMore}
+          loadMoreStrategy={this._loadMoreStrategy}
           loadingRenderer={this.defaultLoading()}
           hasMore={this.hasMore}
           loadingMoreRenderer={this.defaultLoadingMore()}

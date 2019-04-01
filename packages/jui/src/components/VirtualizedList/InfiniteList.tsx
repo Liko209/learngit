@@ -8,6 +8,7 @@ import React, {
   RefForwardingComponent,
   memo,
   forwardRef,
+  useRef,
 } from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
@@ -51,7 +52,6 @@ const JuiInfiniteList: RefForwardingComponent<
     loadMoreStrategy = new ThresholdStrategy({
       threshold: 15,
       minBatchCount: 10,
-      maxBatchCount: 100,
     }),
     hasMore,
     loadInitialData,
@@ -69,8 +69,12 @@ const JuiInfiniteList: RefForwardingComponent<
     contentStyle,
     stickToLastPosition,
   }: JuiInfiniteListProps,
-  forwardRef: React.RefObject<JuiVirtualizedListHandles>,
+  forwardRef: React.RefObject<JuiVirtualizedListHandles> | null,
 ) => {
+  let ref = useRef<JuiVirtualizedListHandles>(null);
+  if (forwardRef) {
+    ref = forwardRef;
+  }
   const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
 
   const _loadMore = async (direction: 'up' | 'down', count: number) => {
@@ -113,24 +117,25 @@ const JuiInfiniteList: RefForwardingComponent<
 
         return (
           <JuiVirtualizedList
-            ref={forwardRef}
+            ref={ref}
             height={height}
             minRowHeight={minRowHeight}
             initialScrollToIndex={initialScrollToIndex}
             overscan={overscan}
             before={loadingUp ? loadingMoreRenderer : null}
             after={loadingDown ? loadingMoreRenderer : null}
-            onScroll={() => {
-              if (forwardRef.current) {
-                const visibleRange = forwardRef.current.getVisibleRange();
+            onScroll={(event: React.UIEvent<HTMLElement>) => {
+              if (ref.current) {
+                const visibleRange = ref.current.getVisibleRange();
                 handleScroll(visibleRange, {
                   minIndex: 0,
                   maxIndex: children.length - 1,
                 });
-                onVisibleRangeChange(visibleRange);
               }
+              onScroll(event);
             }}
             contentStyle={contentStyle}
+            onVisibleRangeChange={onVisibleRangeChange}
             onRenderedRangeChange={onRenderedRangeChange}
             stickToBottom={stickToBottom && isStickToBottomEnabled}
             stickToLastPosition={stickToLastPosition}
