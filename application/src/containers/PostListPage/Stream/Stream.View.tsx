@@ -27,7 +27,7 @@ class StreamViewComponent extends Component<Props> {
           {ids.map(id => (
             <ConversationPost
               id={id}
-              key={`ConversationPost${id}`}
+              key={id}
               cardRef={this._jumpToPostRef}
               mode="navigation"
             />

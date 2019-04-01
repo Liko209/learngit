@@ -12,15 +12,13 @@ enum POST_TYPE {
   POST,
 }
 
-type props = {
+type ConversationPostProps = {
   cardRef?: RefObject<JuiConversationCard>;
   id: number;
   mode?: 'navigation';
 };
 
-type ConversationPostProps = props;
-
-type ConversationPostViewProps = props & {
+type ConversationPostViewProps = ConversationPostProps & {
   type: POST_TYPE;
 };
 
