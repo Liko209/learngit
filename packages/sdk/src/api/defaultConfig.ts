@@ -9,6 +9,7 @@ const defaultConfig: ApiConfig = {
   },
   glip: {
     server: '',
+    apiServer: '',
   },
   glip2: {
     server: '',

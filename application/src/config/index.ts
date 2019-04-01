@@ -9,8 +9,9 @@ const deployHost = `${protocol}//${hostname}${port && `:${port}`}`;
 function parseConfigFiles() {
   const requireContext = require.context('./', true, /.json$/);
   const keys = requireContext.keys();
+  console.log('TCL: parseConfigFiles -> keys', keys);
   const modules = keys.map(requireContext);
-
+  console.log('TCL: parseConfigFiles -> modules', modules);
   return {
     modules,
     keys: keys.map(clean),
@@ -26,6 +27,7 @@ function parseConfigFiles() {
 
 function loadFileConfigs(env: string) {
   const { keys, modules } = parseConfigFiles();
+  console.log('TCL: keys, modules', keys, modules);
   const config = keys.reduce((config, names: string[], currentIndex) => {
     const value = modules[currentIndex];
     const name = names[0];

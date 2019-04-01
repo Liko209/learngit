@@ -12,18 +12,22 @@ type BaseConfig = {
 
 type RcConfig = BaseConfig & {
   clientId: string;
-  redirectUri: string;
   clientSecret: string;
+  redirectUri: string;
 };
 
 type Glip2Config = BaseConfig & {
   clientId: string;
-  redirectUri: string;
   clientSecret: string;
+  redirectUri: string;
   brandId: number;
 };
 
-type GlipConfig = BaseConfig;
+type GlipConfig = BaseConfig & {
+  apiServer: string;
+};
+
+type DeskTopConfig = BaseConfig & {};
 
 type UploadConfig = BaseConfig;
 
@@ -44,21 +48,17 @@ type ApiConfig = {
   rc: RcConfig;
   glip: GlipConfig;
   glip2: Glip2Config;
+  glip_desktop: DeskTopConfig;
   upload: UploadConfig;
   splitio: SplitIOConfig;
   launchdarkly: LaunchDarklyConfig;
   sumologic: SumologicConfig;
 };
 
-type PartialApiConfig = {
-  rc?: Partial<RcConfig>;
-  glip?: Partial<GlipConfig>;
-  glip2?: Partial<Glip2Config>;
-  upload?: Partial<UploadConfig>;
-  splitio?: Partial<SplitIOConfig>;
-  launchdarkly: Partial<LaunchDarklyConfig>;
-  sumologic?: Partial<SumologicConfig>;
+type DeepPartial<T> = {
+  [P in keyof T]?: DeepPartial<T[P]>;
 };
+type PartialApiConfig = DeepPartial<ApiConfig>;
 
 type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload' | 'glip_desktop';
 
