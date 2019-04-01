@@ -49,8 +49,7 @@ const joinTeam = (item: GroupModel) => (e?: React.MouseEvent<HTMLElement>) => {
         <Trans
           i18nKey="people.team.joinTeamContent"
           values={{ teamName: item.displayName }}
-          // tslint:disable-next-line:jsx-key
-          components={[<strong>0</strong>]}
+          components={[<strong key="0" />]}
         />
       </JuiDialogContentText>
     ),

@@ -132,9 +132,15 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       size: 'small',
       okType: 'negative',
       title: t('people.team.leaveTeamConfirmTitle'),
-      content: t('people.team.leaveTeamConfirmContent', {
-        teamName: groupName,
-      }),
+      content: (
+        <JuiDialogContentText>
+          <Trans
+            i18nKey="people.team.leaveTeamConfirmContent"
+            values={{ teamName: groupName }}
+            components={[<strong key="0" />]}
+          />
+        </JuiDialogContentText>
+      ),
       okText: toTitleCase(t('people.team.leaveTeamConfirmOk')),
       cancelText: toTitleCase(t('common.dialog.cancel')),
       onOK: this.leaveTeamOKButtonHandler,
@@ -155,8 +161,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
           <Trans
             i18nKey="people.team.deleteTeamConfirmContent"
             values={{ teamName: groupName }}
-            // tslint:disable-next-line:jsx-key
-            components={[<strong>0</strong>]}
+            components={[<strong key="0" />]}
           />
         </JuiDialogContentText>
       ),

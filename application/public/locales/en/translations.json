@@ -301,7 +301,7 @@
       "pinPosts": "Pin posts",
       "leaveTeam": "Leave team",
       "leaveTeamConfirmTitle": "Leave team",
-      "leaveTeamConfirmContent": "Once you leave {{teamName}}, you will no longer have access to the content.",
+      "leaveTeamConfirmContent": "Once you leave <0>{{teamName}}</0>, you will no longer have access to the content.",
       "leaveTeamConfirmOk": "leave",
       "deleteTeam": "Delete team",
       "deleteTeamToolTip": "Delete a team permanently.",
