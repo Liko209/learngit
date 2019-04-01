@@ -14,6 +14,7 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 function fileSizeOf(filePath: string, unit: string = 'KB', num: number = 1) {
   // filePath is relative to current script (thanks to testcafe!), so we have to get absolute path before read stat
@@ -793,5 +794,75 @@ test(formalName('JPT-889 Check focus on input box when remove files', ['P2', 'Up
 
   await h(t).withLog('Then the mouse is focus on the input area', async () => {
     await conversationPage.shouldFocusOnMessageInputArea();
+  });
+});
+
+
+test(formalName('Can update image size in the duplicate prompt when the same name image is sent', ['P1', 'UploadFiles', 'Potar', 'JPT-1438']), async t => {
+  const loginUser = h(t).rcData.mainCompany.users[0];
+
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser]
+  }
+  await h(t).withLog(`Given I create one new team named "${team.name}"`, async () => {
+    await h(t).scenarioHelper.createTeam(team);
+  });
+
+  const fileName = '1.jpg';
+  const initWidth = 360;
+  const initHeight = 240;
+  const finalWidth = 180;
+  const finalHeight = 120;
+  const filesPaths = ['../../sources/files/1.jpg', '../../sources/files1/1.jpg'];
+  await h(t).log(`and prepare same name "${fileName}" image files, their size: ${initWidth}x${initHeight} and ${finalWidth}x${finalHeight}`);
+
+  const app = new AppRoot(t);
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('And open the created conversation', async () => {
+    await teamsSection.conversationEntryById(team.glipId).enter();
+  });
+
+  await h(t).withLog(`When I send the big size image file named: "${fileName}"`, async () => {
+    await conversationPage.uploadFilesToMessageAttachment(filesPaths[0]);
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+    await conversationPage.nthPostItem(-1).waitImageVisible(20e3);
+  });
+
+  await h(t).withLog(`Then the image file size should be ${initWidth}x${initHeight}`, async () => {
+    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('width')).eql(initWidth);
+    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('height')).eql(initHeight);
+  }, true);
+
+  await h(t).withLog(`When I upload the same name file to the conversation whose size is ${finalWidth}x${finalHeight}`, async () => {
+    await conversationPage.uploadFilesToMessageAttachment(filesPaths[1]);
+  });
+
+  const duplicatePromptPage = app.homePage.messageTab.duplicatePromptPage;
+  await h(t).withLog('And I click "update" button in the duplicate prompt', async () => {
+    await t.expect(duplicatePromptPage.duplicateModal.exists).ok();
+    await duplicatePromptPage.clickUpdateButton();
+    await conversationPage.pressEnterWhenFocusOnMessageInputArea();
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+    await conversationPage.nthPostItem(-1).waitImageVisible(20e3);
+  });
+
+  await h(t).withLog(`Then the last image size should be ${finalWidth}x${finalHeight}`, async () => {
+    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('width')).eql(finalWidth);
+    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('height')).eql(finalHeight);
+  }, true);
+
+  await h(t).withLog(`Then the first image size should be ${finalWidth}x${finalHeight}`, async () => {
+    await t.expect(conversationPage.nthPostItem(0).img.getBoundingClientRectProperty('width')).eql(finalWidth);
+    await t.expect(conversationPage.nthPostItem(0).img.getBoundingClientRectProperty('height')).eql(finalHeight);
   });
 });
