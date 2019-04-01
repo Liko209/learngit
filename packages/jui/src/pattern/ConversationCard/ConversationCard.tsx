@@ -110,8 +110,7 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
           <StyledNavigationButton
             variant="round"
             onClick={jumpToPost}
-            date-={true}
-            data-test-automation-id={'Jump to conversation'}
+            data-test-automation-id={'jumpToConversation'}
           >
             Jump to conversation
           </StyledNavigationButton>
