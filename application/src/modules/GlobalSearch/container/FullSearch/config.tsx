@@ -7,7 +7,7 @@ import React from 'react';
 
 type TabConfig = {
   title: string;
-  container: JSX.Element;
+  container: React.ComponentType;
   automationID: string;
   empty: {
     text: string;
@@ -17,7 +17,7 @@ type TabConfig = {
 const TAB_CONFIG = [
   {
     title: 'globalSearch.Messages',
-    container: <div>Messages</div>, // react component
+    container: () => <div>Messages</div>,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
@@ -26,7 +26,7 @@ const TAB_CONFIG = [
   },
   {
     title: 'globalSearch.people',
-    container: <div>people</div>, // react component
+    container: () => <div>people</div>,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
@@ -34,7 +34,7 @@ const TAB_CONFIG = [
   },
   {
     title: 'globalSearch.groups',
-    container: <div>groups</div>, // react component
+    container: () => <div>groups</div>,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
@@ -42,7 +42,7 @@ const TAB_CONFIG = [
   },
   {
     title: 'globalSearch.team',
-    container: <div>team</div>, // react component
+    container: () => <div>team</div>,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },

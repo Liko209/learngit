@@ -20,11 +20,14 @@ class FullSearchViewComponent extends Component<Props> {
     return (
       <JuiTabs defaultActiveIndex={0}>
         {TAB_CONFIG.map(
-          ({ title, container, automationID }: TabConfig, index: number) => (
-            <JuiTab key={index} title={t(title)} automationId={automationID}>
-              {container}
-            </JuiTab>
-          ),
+          ({ title, container, automationID }: TabConfig, index: number) => {
+            const Component = container;
+            return (
+              <JuiTab key={index} title={t(title)} automationId={automationID}>
+                <Component />
+              </JuiTab>
+            );
+          },
         )}
       </JuiTabs>
     );
