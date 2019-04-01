@@ -34,6 +34,7 @@ import { SYNC_SOURCE } from '../types';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
 import { AccountService } from '../../../service/account/accountService';
+import socketManager from '../../../service/socket';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -78,7 +79,7 @@ class SyncController {
         `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
       );
       syncConfig.setLastIndexTimestamp(time);
-      this.updateCanUpdateIndexTimeStamp(true);
+      socketManager.isConnected() && this.updateCanUpdateIndexTimeStamp(true);
     } else if (this.canUpdateIndexTimeStamp()) {
       mainLogger.log(
         LOG_TAG,
@@ -186,6 +187,7 @@ class SyncController {
         onIndexHandled && (await onIndexHandled());
         syncConfig.updateIndexSucceed(true);
       } catch (error) {
+        this.updateCanUpdateIndexTimeStamp(false);
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
       }

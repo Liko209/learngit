@@ -56,7 +56,9 @@ class PermissionController {
     const permissions = await this._getAllPermissions();
     const userConfig = new AccountUserConfig();
     const id = userConfig.getGlipUserId();
-    mainLogger.log(`user:${id}, refreshPermissions:${permissions}`);
+    mainLogger.log(
+      `user:${id}, refreshPermissions:${JSON.stringify(permissions)}`,
+    );
     notificationCenter.emitEntityUpdate(ENTITY.USER_PERMISSION, [
       {
         id,
