@@ -19,7 +19,10 @@ import notificationCenter from '../notificationCenter';
 import { SERVICE } from '../eventKey';
 import { ProfileService } from '../../module/profile';
 import { setRcToken } from '../../authenticator/utils';
-import { AccountUserConfig } from '../../service/account/config';
+import {
+  AccountUserConfig,
+  AccountGlobalConfig,
+} from '../../service/account/config';
 import { AuthUserConfig } from '../../service/auth/config';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
@@ -107,6 +110,15 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
     if (forceLogout) {
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
+  }
+
+  isGlipLogin(): boolean {
+    const userDict = AccountGlobalConfig.getUserDictionary();
+    if (!userDict) {
+      return false;
+    }
+    const userConfig = new AccountUserConfig();
+    return userConfig && userConfig.getGlipUserId() !== null;
   }
 }
 

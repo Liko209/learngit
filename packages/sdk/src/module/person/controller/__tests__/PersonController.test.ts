@@ -415,6 +415,12 @@ describe('PersonService', () => {
       const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(originalURL);
     });
+
+    it('should return url when headshot is an url string', () => {
+      const headshot = originalURL;
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      expect(url).toBe(originalURL);
+    });
   });
 
   describe('matchContactByPhoneNumber', () => {
