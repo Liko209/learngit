@@ -43,15 +43,18 @@ class TelephonyService extends EntityBaseService {
     this._makeCallController = new MakeCallController();
   }
 
-  createAccount = (delegate: ITelephonyAccountDelegate) => {
-    this.telephonyController.createAccount(delegate);
+  createAccount = (
+    accountDelegate: ITelephonyAccountDelegate,
+    callDelegate: ITelephonyCallDelegate,
+  ) => {
+    this.telephonyController.createAccount(accountDelegate, callDelegate);
   }
 
   getAllCallCount = () => {
     return this.telephonyController.getAccountController().getCallCount();
   }
 
-  makeCall = async (toNumber: string, callDelegate: ITelephonyCallDelegate) => {
+  makeCall = async (toNumber: string) => {
     const e164ToNumber = this._makeCallController.getE164PhoneNumber(toNumber);
     let result = await this._makeCallController.tryMakeCall(e164ToNumber);
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
@@ -59,7 +62,7 @@ class TelephonyService extends EntityBaseService {
     }
     const makeCallResult = this.telephonyController
       .getAccountController()
-      .makeCall(toNumber, callDelegate);
+      .makeCall(toNumber);
     switch (makeCallResult) {
       case RTC_STATUS_CODE.NUMBER_INVALID: {
         result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;

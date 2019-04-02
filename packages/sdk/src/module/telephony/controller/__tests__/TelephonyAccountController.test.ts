@@ -5,12 +5,15 @@
  */
 import { TelephonyAccountController } from '../TelephonyAccountController';
 import { ITelephonyAccountDelegate } from '../../service/ITelephonyAccountDelegate';
-import { RTC_ACCOUNT_STATE, RTCAccount } from 'voip/src';
+import { RTC_ACCOUNT_STATE, RTCAccount, RTCCall, RTCCallInfo } from 'voip/src';
+import { TelephonyCallInfo } from '../../types';
+import { PersonService } from '../../../person';
 
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: RTC_ACCOUNT_STATE) {}
     onMadeOutgoingCall(callId: string) {}
+    onReceiveIncomingCall(callInfo: TelephonyCallInfo) {}
   }
 
   function clearMocks() {
@@ -35,6 +38,7 @@ describe('TelephonyAccountController', () => {
     accountController = new TelephonyAccountController(
       { createAccount: jest.fn().mockReturnValue(rtcAccount) },
       mockAcc,
+      null,
     );
     callController = {
       hangUp: jest.fn(),
@@ -44,7 +48,7 @@ describe('TelephonyAccountController', () => {
     };
 
     Object.assign(accountController, {
-      _callController: callController,
+      _telephonyCallDelegate: callController,
     });
   }
 
@@ -55,7 +59,7 @@ describe('TelephonyAccountController', () => {
 
   describe('makeCall', () => {
     it('should call rtcAccount to make call', () => {
-      accountController.makeCall('123', null);
+      accountController.makeCall('123');
       expect(rtcAccount.makeCall).toBeCalled();
     });
   });
@@ -141,6 +145,34 @@ describe('TelephonyAccountController', () => {
       expect(mockAcc.onAccountStateChanged).toBeCalledWith(
         RTC_ACCOUNT_STATE.UNREGISTERED,
       );
+    });
+  });
+
+  describe('onReceiveIncomingCall', () => {
+    const NUM = '123';
+    const NAME = 'test';
+    const CALL_ID = '789';
+    it('should call incoming call delegate when there is an incoming call', async () => {
+      const rtcCall = new RTCCall(false, '', null, null);
+      rtcCall.getCallInfo = jest.fn().mockReturnValue({
+        fromName: NAME,
+        fromNum: NUM,
+        toName: '',
+        toNum: '',
+        uuid: CALL_ID,
+        partyId: '',
+        sessionId: '',
+      });
+
+      spyOn(mockAcc, 'onReceiveIncomingCall');
+
+      await accountController.onReceiveIncomingCall(rtcCall);
+      expect(mockAcc.onReceiveIncomingCall).toBeCalledWith({
+        fromName: NAME,
+        fromNum: NUM,
+        toNum: '',
+        callId: CALL_ID,
+      });
     });
   });
 });
