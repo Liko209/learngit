@@ -22,12 +22,12 @@ const HEADER_HEIGHT = 36;
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
-  private _renderItems = () => {
+  private _renderItems = (groupId: number) => {
     const { type } = this.props;
     const tabConfig = getTabConfig(type);
     const Component: any = tabConfig.item;
     return this.props.getIds.map((itemId: number) => (
-      <Component id={itemId} key={itemId} />
+      <Component id={itemId} key={itemId} groupId={groupId} />
     ));
   }
 
@@ -51,7 +51,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
   defaultLoadingMore = () => <JuiRightRailLoadingMore />;
 
   render() {
-    const { type, height, size, total } = this.props;
+    const { type, height, size, total, groupId } = this.props;
     const { subheader } = getTabConfig(type);
     const h = Math.max(height - HEADER_HEIGHT, 0);
     return (
@@ -72,7 +72,7 @@ class ItemListView extends React.Component<ViewProps & Props> {
           noRowsRenderer={this.renderEmptyContent()}
           stickToLastPosition={false}
         >
-          {this._renderItems()}
+          {this._renderItems(groupId)}
         </JuiInfiniteList>
       </JuiRightShelfContent>
     );
