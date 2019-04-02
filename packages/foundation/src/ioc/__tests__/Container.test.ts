@@ -1,6 +1,6 @@
 import Container from '../Container';
 
-class AService { }
+class AService {}
 class BService {
   aService: AService;
   constructor(aService: AService) {
@@ -58,7 +58,7 @@ describe('Container', () => {
     });
   });
 
-  describe('registerClass()', () => {
+  describe('registerAsyncClass()', () => {
     it('should instantiate async class ', async () => {
       const container = new Container();
       container.registerAsyncClass({ name: AService.name, value: AsyncAService });
@@ -134,7 +134,7 @@ describe('Container', () => {
     });
   });
 
-  describe('is()', () => {
+  describe('isAsync()', () => {
     it('should be false when register as normal class', () => {
       const container = new Container();
       container.registerClass({ name: AService.name, value: AService });
@@ -161,7 +161,7 @@ describe('Container', () => {
     });
   });
 
-  describe('Get()', () => {
+  describe('asyncGet()', () => {
     it('should be able to get sync', async () => {
       const container = new Container();
       container.registerClass({ name: AService.name, value: AService });
