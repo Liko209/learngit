@@ -71,6 +71,16 @@
     "deployedTime": "Date",
     "allRightsReserved": "All rights reserved"
   },
+  "globalSearch": {
+    "search": "Search",
+    "showMore": "Show more",
+    "ClearHistory": "Clear History",
+    "RecentSearches": "Recent searches",
+    "Messages": "Messages",
+    "people": "people",
+    "groups": "groups",
+    "team": "team"
+  },
   "dashboard": {
     "Dashboard": "Dashboard"
   },
