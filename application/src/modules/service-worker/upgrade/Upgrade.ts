@@ -150,7 +150,7 @@ class Upgrade {
       return false;
     }
 
-    if (this._hasCallInProgress()) {
+    if (this._hasInProgressCall()) {
       return false;
     }
 
@@ -196,7 +196,7 @@ class Upgrade {
     });
   }
 
-  private _hasCallInProgress() {
+  private _hasInProgressCall() {
     const telephony: TelephonyService = TelephonyService.getInstance();
     return telephony.getAllCallCount() > 0;
   }

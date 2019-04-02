@@ -21,7 +21,6 @@ import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
 
 @observer
 class App extends React.Component {
-  // TODO use @lazyInject(Upgrade)
   private _appStore: AppStore = container.get(AppStore);
 
   componentDidCatch(error: Error) {
