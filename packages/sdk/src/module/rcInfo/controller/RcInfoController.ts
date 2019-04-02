@@ -4,8 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RcInfoUserConfig } from '../config';
-import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
+import { RcInfoUserConfig, RcInfoCommonGlobalConfig } from '../config';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { RcInfoApi, TelephonyApi } from '../../../api/ringcentral';
 import {
@@ -170,7 +169,7 @@ class RcInfoController {
     const phoneDataVersion: string =
       PhoneParserUtility.getPhoneDataFileVersion() || '';
     const result = await TelephonyApi.getPhoneParserData(phoneDataVersion);
-    NewGlobalConfig.setPhoneData(result);
+    RcInfoCommonGlobalConfig.setPhoneData(result);
     PhoneParserUtility.initPhoneParser(true);
     notificationCenter.emit(RC_INFO.PHONE_DATA, result);
   }

@@ -6,7 +6,7 @@
 
 import { RcInfoUserConfig } from '../../../module/rcInfo/config';
 import { PhoneParserUtility } from '../PhoneParserUtility';
-import { NewGlobalConfig } from '../../../service/config';
+import { RcInfoCommonGlobalConfig } from '../../../module/rcInfo/config';
 
 jest.mock('../../../module/rcInfo/config');
 
@@ -47,8 +47,8 @@ describe('PhoneParserUtility', () => {
   jest.spyOn(PhoneParserUtility, 'getRegionalInfo');
   jest.spyOn(PhoneParserUtility, 'isStationUK');
   jest.spyOn(PhoneParserUtility, 'isStationUSorCA');
-  NewGlobalConfig.getPhoneData = jest.fn();
-  NewGlobalConfig.setPhoneData = jest.fn();
+  RcInfoCommonGlobalConfig.getPhoneData = jest.fn();
+  RcInfoCommonGlobalConfig.setPhoneData = jest.fn();
 
   beforeEach(() => {
     PhoneParserUtility['_moduleLoadingTime'] = 0;
@@ -133,10 +133,10 @@ describe('PhoneParserUtility', () => {
     it('should return false when _initialized = false and phoneData is invalid', () => {
       PhoneParserUtility['_moduleLoaded'] = true;
       PhoneParserUtility['_initialized'] = false;
-      NewGlobalConfig.getPhoneData.mockReturnValueOnce(undefined);
+      RcInfoCommonGlobalConfig.getPhoneData.mockReturnValueOnce(undefined);
       expect(PhoneParserUtility.initPhoneParser(false)).toBeFalsy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
-      expect(NewGlobalConfig.getPhoneData).toBeCalledTimes(1);
+      expect(RcInfoCommonGlobalConfig.getPhoneData).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString,
       ).toBeCalledTimes(0);
@@ -146,12 +146,12 @@ describe('PhoneParserUtility', () => {
     it('should do init when _initialized = true and force = true', () => {
       PhoneParserUtility['_moduleLoaded'] = true;
       PhoneParserUtility['_initialized'] = true;
-      NewGlobalConfig.getPhoneData.mockReturnValueOnce(123456);
+      RcInfoCommonGlobalConfig.getPhoneData.mockReturnValueOnce(123456);
       PhoneParserUtility[ '_phoneParserModule'
 ].ReadRootNodeByString.mockReturnValueOnce(true);
       expect(PhoneParserUtility.initPhoneParser(true)).toBeTruthy();
       expect(PhoneParserUtility.loadModule).toBeCalledTimes(0);
-      expect(NewGlobalConfig.getPhoneData).toBeCalledTimes(1);
+      expect(RcInfoCommonGlobalConfig.getPhoneData).toBeCalledTimes(1);
       expect(
         PhoneParserUtility['_phoneParserModule'].ReadRootNodeByString,
       ).toBeCalledWith(123456);

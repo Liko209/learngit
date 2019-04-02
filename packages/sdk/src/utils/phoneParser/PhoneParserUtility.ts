@@ -17,7 +17,7 @@ import {
 } from 'foundation';
 import { RcInfoUserConfig } from '../../module/rcInfo/config';
 import { RcAccountInfo } from '../../api/ringcentral/types/RcAccountInfo';
-import { NewGlobalConfig } from '../../service/config';
+import { RcInfoCommonGlobalConfig } from '../../module/rcInfo/config';
 
 const MODULE_LOADING_TIME_OUT: number = 60000; // 1 minute
 const PhoneParserModule: ModuleClass = Module;
@@ -41,7 +41,7 @@ class PhoneParserUtility {
     if (PhoneParserUtility._localPhoneDataLoaded) {
       return;
     }
-    if (NewGlobalConfig.getPhoneData()) {
+    if (RcInfoCommonGlobalConfig.getPhoneData()) {
       return;
     }
     fetch(localPhoneDataPath)
@@ -51,7 +51,7 @@ class PhoneParserUtility {
           return;
         }
         const result = await response.text();
-        NewGlobalConfig.setPhoneData(result);
+        RcInfoCommonGlobalConfig.setPhoneData(result);
         PhoneParserUtility._localPhoneDataLoaded = true;
       })
       .catch((error: any) => {
@@ -117,7 +117,7 @@ class PhoneParserUtility {
       return true;
     }
 
-    const phoneData = NewGlobalConfig.getPhoneData();
+    const phoneData = RcInfoCommonGlobalConfig.getPhoneData();
     if (!phoneData || phoneData.length === 0) {
       mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
       return false;
