@@ -18,6 +18,7 @@ type TopBarProps = WithTranslation & {
   updateLeftNavState: (event: React.MouseEvent<HTMLElement>) => void;
   brandName: string;
   currentUserId: number;
+  openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
 @observer
@@ -50,6 +51,8 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
+    const { openGlobalSearch } = this.props;
+
     return (
       <React.Fragment>
         <JuiTopBar
@@ -59,6 +62,7 @@ class TopBar extends React.Component<TopBarProps> {
           SearchBar={SearchBar}
           Logo={this._Logo}
           BackNForward={BackNForward}
+          openGlobalSearch={openGlobalSearch}
         />
       </React.Fragment>
     );
