@@ -13,6 +13,8 @@ import {
   JuiTeamSettingButtonListItem as ButtonListItem,
   JuiTeamSettingButtonListItemText as ButtonListItemText,
 } from 'jui/pattern/TeamSetting';
+import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
+import { Trans } from 'react-i18next';
 
 const t_mock = (text: string, options?: object) => {
   if (!options) {
@@ -111,7 +113,15 @@ describe('TeamSettingsView', () => {
       setTimeout(() => {
         expect(Dialog.confirm).toHaveBeenCalledWith(
           expect.objectContaining({
-            content: 'leaveTeamConfirmContent {"teamName":"my team"}',
+            content: (
+              <JuiDialogContentText>
+                <Trans
+                  components={[<strong key="0" />]}
+                  i18nKey="people.team.leaveTeamConfirmContent"
+                  values={{ teamName: 'my team' }}
+                />
+              </JuiDialogContentText>
+            ),
             okText: 'Leaveteamconfirmok',
             cancelText: 'Cancel',
           }),

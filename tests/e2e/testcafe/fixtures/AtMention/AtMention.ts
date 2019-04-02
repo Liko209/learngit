@@ -71,7 +71,8 @@ test(formalName('Data in mention page should be dynamically sync', ['P2', 'JPT-3
   }, true);
 });
 
-test(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314']), async (t: TestController) => {
+// skip due to: https://jira.ringcentral.com/browse/FIJI-4527
+test.skip(formalName('Jump to conversation bottom when click name and conversation show in the top of conversation list', ['P2', 'JPT-314']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
@@ -102,7 +103,10 @@ test(formalName('Jump to conversation bottom when click name and conversation sh
   await h(t).withLog(`And and each has a post with mention`, async () => {
     for (const mentionGroup of mentionGroups) {
       const postId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi, ![:Person](${loginUser.rcId})`, mentionGroup, otherUser);
-      postIds.push(postId)
+      postIds.push(postId);
+      for (const i of _.range(3)) {
+        await h(t).scenarioHelper.sentAndGetTextPostId(H.multilineString(), mentionGroup, otherUser);
+      }
     }
   });
 
@@ -194,7 +198,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
   })
 
   await h(t).withLog('When I click the post and jump to the conversation', async () => {
-    await mentionPage.postItemById(postId).jumpToConversationByClickPost();
+    await mentionPage.postItemById(postId).hoverPostAndClickJumpToConversationButton();
   });
 
   await h(t).withLog('And the UMI should dismiss', async () => {
@@ -213,8 +217,7 @@ test(formalName('Remove UMI when jump to conversation which have unread messages
   }, true);
 });
 
-// skip by bug:https://jira.ringcentral.com/browse/FIJI-3933 
-test.skip(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
+test(formalName('Show UMI when receive new messages after jump to conversation.', ['P2', 'JPT-384', 'zack']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[7];
   const otherUser = users[5];
@@ -251,7 +254,7 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
   await h(t).withLog('When I jump to conversation from AtMentions page should no UMI', async () => {
     await mentionsEntry.enter();
-    await postMentionPage.postItemById(newPostId).jumpToConversationByClickPost();
+    await postMentionPage.postItemById(newPostId).hoverPostAndClickJumpToConversationButton();
   });
 
   await h(t).withLog('Then the at mention post should be visible', async () => {
@@ -261,7 +264,6 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
   });
 
   await h(t).withLog('And the conversation should have no UMI', async () => {
-
     await chatEntry.umi.shouldBeNumber(0);
   });
 
@@ -302,7 +304,7 @@ test.skip(formalName('Show UMI when receive new messages after jump to conversat
 
 });
 
-test(formalName('Jump to post position when click button or clickable area of post.', ['P1', 'JPT-315', 'zack', 'AtMention']), async (t: TestController) => {
+test(formalName('Jump to post position when click jump to conversation button.[AtMention]', ['P1', 'JPT-315', 'zack', 'AtMention']), async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
   const otherUser = users[5];
@@ -319,24 +321,20 @@ test(formalName('Jump to post position when click button or clickable area of po
     members: [loginUser, otherUser]
   }
 
-  let atMentionTeamPostId, atMentionChatPostId;
+  const conversations = [team, chat]
+  let postIds: string[] = [];
   await h(t).withLog('Given I have 1 AtMention post in team ,one in group.(out of screen)', async () => {
-    await h(t).scenarioHelper.createTeamsOrChats([team, chat]);
-
-    atMentionTeamPostId = await h(t).scenarioHelper.sentAndGetTextPostId(
-      `${uuid()}, ![:Person](${loginUser.rcId})`,
-      team, otherUser
-    );
-    atMentionChatPostId = await h(t).scenarioHelper.sentAndGetTextPostId(
-      `${uuid()}, ![:Person](${loginUser.rcId})`,
-      chat, otherUser
-    );
-
-    for (const i of _.range(3)) {
-      await h(t).scenarioHelper.sendTextPost(H.multilineString(), team, otherUser);
-      await h(t).scenarioHelper.sendTextPost(H.multilineString(), chat, otherUser);
+    await h(t).scenarioHelper.createTeamsOrChats(conversations);
+    for (const conversation of conversations) {
+      const postId = await h(t).scenarioHelper.sentAndGetTextPostId(
+        `${uuid()}, ![:Person](${loginUser.rcId})`,
+        conversation, otherUser
+      );
+      postIds.push(postId);
+      for (const i of _.range(3)) {
+        await h(t).scenarioHelper.sendTextPost(H.multilineString(), conversation, otherUser);
+      }
     }
-
   });
 
   const app = new AppRoot(t);
@@ -344,38 +342,39 @@ test(formalName('Jump to post position when click button or clickable area of po
   const postMentionPage = app.homePage.messageTab.mentionPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
 
-  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog('And I enter AtMentions page', async () => {
-    await mentionsEntry.enter();
-  });
+  for (const i in conversations) {
+    await h(t).withLog('When I enter AtMentions page', async () => {
+      await mentionsEntry.enter();
+    });
 
-  await h(t).withLog('And I click clickable area of team post. (except team name)', async () => {
-    await postMentionPage.postItemById(atMentionTeamPostId).jumpToConversationByClickPost();
-  });
+    await h(t).withLog(`And I click the ${conversations[i].type} post. (except team name)`, async () => {
+      await postMentionPage.postItemById(postIds[i]).clickSelf();
+    });
 
-  await h(t).withLog('Then I should jump to the AtMention post position in the team', async () => {
-    await conversationPage.waitUntilPostsBeLoaded();
-    await conversationPage.groupIdShouldBe(team.glipId);
-    await conversationPage.postByIdExpectVisible(atMentionTeamPostId, true);
-  }, true);
+    await h(t).withLog('Then No response after clicking', async () => {
+      await mentionsEntry.ensureLoaded();
+      await postMentionPage.postItemById(postIds[i]).ensureLoaded();
+    }, true);
 
-  await h(t).withLog('When I back to AtMention page', async () => {
-    await mentionsEntry.enter();
-  });
+    await h(t).withLog('When I hover the at mention post then click button - "Jump to conversation"', async () => {
+      await postMentionPage.postItemById(postIds[i]).hoverPostAndClickJumpToConversationButton();
+    });
 
-  await h(t).withLog('And I hover the private chat message then click button - "Jump to conversation"', async () => {
-    await postMentionPage.postItemById(atMentionChatPostId).clickConversationByButton();
-  });
+    await h(t).withLog(`Then I should jump to the AtMention post position in the team `, async () => {
+      await conversationPage.waitUntilPostsBeLoaded();
+      await conversationPage.groupIdShouldBe(conversations[i].glipId);
+      await conversationPage.postCardByIdShouldBeOnTheTop(postIds[i]);
+    });
 
-  await h(t).withLog('Then I should jump to the AtMention post position in the pvChat', async () => {
-    await conversationPage.waitUntilPostsBeLoaded();
-    await conversationPage.groupIdShouldBe(chat.glipId);
-    await conversationPage.postByIdExpectVisible(atMentionChatPostId, true);
-  });
+    await h(t).withLog('And this post will be highlighted', async () => {
+      await conversationPage.postItemById(postIds[i]).shouldBeHighLight();
+    });
+  }
 });
 
 test(formalName('JPT-733 Can\'t show all received posts when open mentions page', ['P2', 'JPT-733', 'Mia.Cai', 'AtMention']), async (t: TestController) => {

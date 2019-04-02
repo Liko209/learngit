@@ -27,6 +27,6 @@
     "@types/qs": "6.5.1",
     "factory.ts": "0.2.2",
     "faker": "4.1.0",
-    "typescript": "3.3.3"
+    "typescript": "3.3.3333"
   }
 }

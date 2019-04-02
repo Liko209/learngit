@@ -1,4 +1,4 @@
-import React, { PureComponent, RefObject } from 'react';
+import React, { PureComponent } from 'react';
 import styled from '../../../foundation/styled-components';
 import {
   height,
@@ -40,46 +40,12 @@ type Props = {
 };
 
 class JuiMentionPanelSectionItem extends PureComponent<Props> {
-  private _itemRef: RefObject<any> = React.createRef();
-  private _item: HTMLElement;
-  private _container: HTMLElement;
-
-  private _scrollItemInView() {
-    const itemHeight = this._item.offsetHeight;
-    const itemTop = this._item.offsetTop;
-    const containerTop = this._container.scrollTop;
-    const containerBottom = containerTop + this._container.offsetHeight;
-    if (itemTop < containerTop) {
-      // Scroll up if the item is above the top of the container
-      this._container.scrollTop = itemTop;
-    } else if (itemTop > containerBottom - itemHeight) {
-      // scroll down if any part of the element is below the bottom of the container
-      this._container.scrollTop += itemTop - containerBottom + itemHeight;
-    }
-  }
-
-  componentDidUpdate(prevProps: Readonly<Props>) {
-    const { selected } = this.props;
-    if (selected && selected !== prevProps.selected) {
-      this._scrollItemInView();
-    }
-  }
-
-  componentDidMount() {
-    const item = this._itemRef.current;
-    if (item) {
-      this._item = item;
-      this._container = item.parentElement.parentElement;
-    }
-  }
-
   render() {
     const { Avatar, displayName, selected, selectHandler } = this.props;
     return (
       <Wrapper
         className={selected ? 'selected' : ''}
         onMouseDown={selectHandler}
-        ref={this._itemRef}
       >
         {Avatar}
         <DisplayName>{displayName}</DisplayName>

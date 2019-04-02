@@ -149,8 +149,9 @@ class TotalUnreadController {
     payload: NotificationEntityPayload<Group>,
   ): Promise<void> {
     if (payload.type === EVENT_TYPES.UPDATE) {
+      const groupService: GroupService = GroupService.getInstance();
       const userConfig = new AccountUserConfig();
-      const currentUserId = userConfig.getGlipUserId();
+      const glipId = userConfig.getGlipUserId();
       await Promise.all(
         payload.body.ids.map(async (id: number) => {
           const group = payload.body.entities.get(id);
@@ -158,11 +159,7 @@ class TotalUnreadController {
             return;
           }
           const groupUnread = this._groupSectionUnread.get(id);
-          if (
-            group.deactivated ||
-            group.is_archived ||
-            !group.members.includes(currentUserId)
-          ) {
+          if (!groupService.isValid(group) || !group.members.includes(glipId)) {
             if (groupUnread) {
               this._deleteFromTotalUnread(groupUnread);
               this._groupSectionUnread.delete(id);
@@ -279,7 +276,7 @@ class TotalUnreadController {
       mentionCount = groupState.unread_mentions_count || 0;
     }
 
-    if (this._favoriteGroupIds.includes(group.id)) {
+    if (this._favoriteGroupIds && this._favoriteGroupIds.includes(group.id)) {
       section = UMI_SECTION_TYPE.FAVORITE;
     } else if (!group.is_team) {
       section = UMI_SECTION_TYPE.DIRECT_MESSAGE;

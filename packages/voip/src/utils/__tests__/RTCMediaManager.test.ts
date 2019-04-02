@@ -6,7 +6,7 @@
 
 import { RTCMediaElementManager } from '../RTCMediaElementManager';
 
-describe('RTCMediaElementManager', async () => {
+describe('RTCMediaElementManager', () => {
   it('should do nothing when set volume value out of [0, 1]. [JPT-1279]', () => {
     expect(RTCMediaElementManager.instance().getVolume()).toBe(1);
     RTCMediaElementManager.instance().setVolume(2);

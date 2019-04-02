@@ -157,7 +157,7 @@ describe('GroupFetchDataController', () => {
       ]);
     });
   });
-  describe('getGroupByMemberList()', async () => {
+  describe('getGroupByMemberList()', () => {
     it('should return result with group if it already existed in local', async () => {
       const mockNormal = { id: 1 };
       const memberIDs = [1, 2];
@@ -736,7 +736,7 @@ describe('GroupFetchDataController', () => {
     });
   });
 
-  describe('isTeamAdmin', async () => {
+  describe('isTeamAdmin', () => {
     it('should return true if no team permission model', async () => {
       expect(groupFetchDataController.isTeamAdmin(11, undefined)).toBeTruthy;
     });

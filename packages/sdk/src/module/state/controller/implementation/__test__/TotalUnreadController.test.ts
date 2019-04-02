@@ -270,11 +270,9 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_taskArray'] = [task, task2];
       totalUnreadController['_unreadInitialized'] = true;
       totalUnreadController['_initializeTotalUnread'] = jest.fn();
-      totalUnreadController['_updateTotalUnreadByStateChanges'] = jest
-        .fn()
-        .mockImplementation(() => {
-          throw Error('error');
-        });
+      totalUnreadController['_updateTotalUnreadByStateChanges'] = jest.fn().mockImplementation(() => {
+        throw Error('error');
+      });
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
       totalUnreadController['_updateTotalUnreadByProfileChanges'] = jest.fn();
       totalUnreadController['_doNotification'] = jest.fn();
@@ -416,13 +414,22 @@ describe('TotalUnreadController', () => {
     beforeEach(() => {});
 
     it('should update correctly when update groups', async () => {
-      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5683);
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(5683);
       totalUnreadController['_modifyTotalUnread'] = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
       totalUnreadController['_groupSectionUnread'].set(1, {
         section: UMI_SECTION_TYPE.DIRECT_MESSAGE,
         unreadCount: 8,
         mentionCount: 2,
+      });
+      GroupService.getInstance = jest.fn().mockReturnValue({
+        isValid: jest.fn().mockImplementation((group: Group) => {
+          return (
+            group && !group.is_archived && !group.deactivated && !!group.members
+          );
+        }),
       });
       const entityMap = new Map<number, Group>();
       entityMap.set(1, {
@@ -616,7 +623,9 @@ describe('TotalUnreadController', () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
 
-      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5683);
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(5683);
       GroupService.getInstance = jest.fn().mockReturnValue({
         getEntitySource: jest.fn().mockReturnValue({
           getEntities: jest
@@ -660,7 +669,9 @@ describe('TotalUnreadController', () => {
       totalUnreadController.reset = jest.fn();
       totalUnreadController['_addNewGroupUnread'] = jest.fn();
 
-      AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(5683);
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(5683);
       GroupService.getInstance = jest.fn().mockReturnValue({
         getEntitySource: jest.fn().mockReturnValue({
           getEntities: jest

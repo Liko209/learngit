@@ -6,7 +6,9 @@
 
 import { PostCacheController } from '../PostCacheController';
 import { FetchSortableDataListHandler } from '@/store/base';
+
 jest.mock('sdk/api');
+
 describe('PostCacheController', () => {
   let postCacheController: PostCacheController;
   beforeEach(() => {

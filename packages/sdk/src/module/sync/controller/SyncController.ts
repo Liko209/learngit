@@ -26,14 +26,15 @@ import { PersonService } from '../../person';
 import { GroupService } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
-import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
 import { IndexRequestProcessor } from './IndexRequestProcessor';
 import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
+import { SyncGlobalConfig } from '../config';
 import { AccountService } from '../../../service/account/accountService';
+import socketManager from '../../../service/socket';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -78,7 +79,7 @@ class SyncController {
         `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
       );
       syncConfig.setLastIndexTimestamp(time);
-      this.updateCanUpdateIndexTimeStamp(true);
+      socketManager.isConnected() && this.updateCanUpdateIndexTimeStamp(true);
     } else if (this.canUpdateIndexTimeStamp()) {
       mainLogger.log(
         LOG_TAG,
@@ -186,6 +187,7 @@ class SyncController {
         onIndexHandled && (await onIndexHandled());
         syncConfig.updateIndexSucceed(true);
       } catch (error) {
+        this.updateCanUpdateIndexTimeStamp(false);
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
       }
@@ -360,7 +362,7 @@ class SyncController {
       }
 
       if (staticHttpServer) {
-        NewGlobalConfig.setStaticHttpServer(staticHttpServer);
+        SyncGlobalConfig.setStaticHttpServer(staticHttpServer);
         notificationCenter.emitKVChange(
           CONFIG.STATIC_HTTP_SERVER,
           staticHttpServer,

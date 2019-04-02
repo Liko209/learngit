@@ -353,7 +353,7 @@ describe('SectionGroupHandler', () => {
       ).toEqual([]);
     });
   });
-  describe('getRemovedIds', async () => {
+  describe('getRemovedIds', () => {
     it('should return [] because its length less or equal than limit', () => {
       const result = SectionGroupHandler.getInstance().getRemovedIds(
         [],
@@ -514,7 +514,7 @@ describe('SectionGroupHandler', () => {
       expect(directMessageHandler.removeByIds).not.toHaveBeenCalled();
     });
   });
-  describe('handleIncomesGroupState', async () => {
+  describe('handleIncomesGroupState', () => {
     function setup(ids: number[]) {
       const handler = SectionGroupHandler.getInstance();
       jest
@@ -634,7 +634,7 @@ describe('SectionGroupHandler', () => {
       });
     });
   });
-  describe('checkIfGroupOpenedFromHidden', async () => {
+  describe('checkIfGroupOpenedFromHidden', () => {
     it('should not change because of more hidden group ids', async () => {
       const handler = SectionGroupHandler.getInstance();
       await handler.checkIfGroupOpenedFromHidden([], [1]);

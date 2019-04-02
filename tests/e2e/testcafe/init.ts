@@ -56,30 +56,42 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
     }
     for (const key in RUNNER_OPTS) {
       if ([
-        'EXCLUDE_TAGS',
-        'INCLUDE_TAGS'
-      ].indexOf(key) > 0)
+          'EXCLUDE_TAGS',
+          'INCLUDE_TAGS'
+        ].indexOf(key) > 0)
         metadata[key] = JSON.stringify(RUNNER_OPTS[key]);
     }
     for (const key in process.env) {
       if ([
-        'SELENIUM_SERVER',
-        'HOST_NAME',
-        'BUILD_URL',
-        'SITE_URL',
-        'SITE_ENV',
-      ].indexOf(key) > 0 || key.startsWith('gitlab'))
+          'SELENIUM_SERVER',
+          'HOST_NAME',
+          'BUILD_URL',
+          'SITE_URL',
+          'SITE_ENV',
+        ].indexOf(key) > 0 || key.startsWith('gitlab'))
         metadata[key] = process.env[key];
     }
     const run = new Run();
     run.name = runName;
     run.metadata = metadata;
+    run.startTime = new Date();
     run.hostName = process.env.HOST_NAME;
     const res = await beatsClient.createRun(run).catch(() => null);
     _runId = res ? res.body.id : null;
     console.log(`a new Run Id is created: ${_runId}`);
   }
   return _runId;
+}
+
+export async function finishRun() {
+  let result = '';
+  if (_runId) {
+    const run = new Run();
+    run.process = 1;
+    run.endTime = new Date();
+    result = await beatsClient.runApi.runPartialUpdate(_runId, run);
+  }
+  return result;
 }
 
 // inject external service into test case

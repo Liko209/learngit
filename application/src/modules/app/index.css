@@ -1,4 +1,5 @@
 @import '~typeface-roboto/index.css';
+
 html,
 body {
   height: 100%;
@@ -42,4 +43,13 @@ input::-ms-clear {
 .ReactVirtualized__Grid,
 .ReactVirtualized__List {
   outline: 0;
+}
+
+/* change the nprogress's color */
+#nprogress .bar {
+  background: #f5f6fb;
+}
+
+#nprogress .peg {
+  box-shadow: 0 0 10px #f5f6fb, 0 0 5px #f5f6fb;
 }

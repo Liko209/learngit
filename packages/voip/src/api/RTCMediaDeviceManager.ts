@@ -21,8 +21,8 @@ class RTCMediaDeviceManager extends EventEmitter2 {
   private _delegate: IRTCMediaDeviceDelegate;
   private _audioOutputs: MediaDeviceInfo[] = [];
   private _audioInputs: MediaDeviceInfo[] = [];
-  private _hasDefaultInputAudioDeviceId: boolean;
-  private _hasDefaultOutputAudioDeviceId: boolean;
+  private _hasDefaultInputAudioDeviceId: boolean = false;
+  private _hasDefaultOutputAudioDeviceId: boolean = false;
 
   constructor() {
     super();

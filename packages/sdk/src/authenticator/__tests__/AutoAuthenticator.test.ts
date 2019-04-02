@@ -5,7 +5,6 @@
  */
 
 import { AutoAuthenticator } from '../AutoAuthenticator';
-import { daoManager } from '../../dao';
 import { ACCOUNT_TYPE_ENUM } from '../constants';
 import { GlobalConfigService } from '../../module/config';
 import { AuthUserConfig } from '../../service/auth/config';
@@ -22,15 +21,11 @@ jest.mock('../../service/account/config');
 GlobalConfigService.getInstance = jest.fn();
 
 describe('AutoAuthenticator', () => {
-  const autoAuthenticator = new AutoAuthenticator(daoManager);
-  let authConfig: AuthUserConfig;
-  let accountConfig: AccountUserConfig;
+  const autoAuthenticator = new AutoAuthenticator();
 
   beforeEach(() => {
     jest.clearAllMocks();
     AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValue('12');
-    authConfig = new AuthUserConfig();
-    accountConfig = new AccountUserConfig();
   });
 
   describe('user has not loggin', () => {
@@ -74,6 +69,20 @@ describe('AutoAuthenticator', () => {
         .mockReturnValue('rc_token');
       const resp = autoAuthenticator.authenticate();
       expect(resp.success).toBe(true);
+      expect(resp.accountInfos!.length).toBe(2);
+    });
+    it('RC user type and only has rc token', () => {
+      AuthUserConfig.prototype.getGlipToken = jest
+        .fn()
+        .mockReturnValue(undefined);
+      AuthUserConfig.prototype.getRcToken = jest
+        .fn()
+        .mockReturnValue('rc_token');
+      const resp = autoAuthenticator.authenticate();
+
+      // todo: for now, ui can not support the rc only mode
+      // so will return false to logout when glip is down
+      expect(resp.success).toBe(false);
     });
   });
 });

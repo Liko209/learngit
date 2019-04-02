@@ -15,7 +15,7 @@ import { Person } from 'sdk/module/person/entity';
 jest.mock('sdk/module/group');
 jest.mock('sdk/module/person');
 
-describe('SortableGroupMemberHandler', async () => {
+describe('SortableGroupMemberHandler', () => {
   const groupService = new GroupService();
   const personService = new PersonService();
   beforeEach(() => {
