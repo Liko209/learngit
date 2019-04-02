@@ -15,22 +15,27 @@ type Props = HoldViewProps & WithTranslation;
 
 @observer
 class HoldViewComponent extends Component<Props> {
-  private _handleHold = async () => {
-    const { handleClick } = this.props;
-    return handleClick();
+  private _handleHold: () => void;
+
+  constructor(props: Props) {
+    super(props);
+    this._handleHold = () => {
+      const { handleClick } = this.props;
+      return handleClick();
+    };
   }
 
   render() {
-    const { t, disabled, awake } = this.props;
+    const { t, disabled, held } = this.props;
     return (
       <JuiKeypadAction>
         <JuiIconButton
-          color="grey.900"
+          color={held ? 'grey.500' : 'grey.900'}
           disableToolTip={true}
           onClick={this._handleHold}
           size="xxlarge"
           disabled={disabled}
-          awake={awake}
+        // awake={awake}
         >
           hold
         </JuiIconButton>

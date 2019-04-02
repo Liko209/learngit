@@ -8,7 +8,7 @@ type HoldProps = {};
 type HoldViewProps = {
   handleClick: () => void;
   disabled: boolean;
-  awake: boolean;
+  held: boolean;
 };
 
 export { HoldProps, HoldViewProps };

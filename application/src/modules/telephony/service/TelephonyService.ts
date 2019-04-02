@@ -89,12 +89,14 @@ class TelephonyService {
     );
     switch (callAction) {
       case RTC_CALL_ACTION.HOLD: {
-        this._telephonyStore.unhold();
-        this._telephonyStore.setPendingForHoldBtn(false);
-      }
-      case RTC_CALL_ACTION.UNHOLD: {
         this._telephonyStore.hold();
         this._telephonyStore.setPendingForHoldBtn(false);
+        break;
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._telephonyStore.unhold();
+        this._telephonyStore.setPendingForHoldBtn(false);
+        break;
       }
     }
   }
@@ -106,12 +108,10 @@ class TelephonyService {
       }
       case RTC_CALL_ACTION.HOLD: {
         ToastCallError.toastFailedToHold();
-        this._telephonyStore.setPendingForHoldBtn(false);
         this._telephonyStore.unhold();
       }
       case RTC_CALL_ACTION.UNHOLD: {
         ToastCallError.toastFailedToResume();
-        this._telephonyStore.setPendingForHoldBtn(false);
         this._telephonyStore.hold();
       }
     }

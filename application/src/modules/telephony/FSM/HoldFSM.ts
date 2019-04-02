@@ -20,6 +20,7 @@ enum HOLD_TRANSITION_NAMES {
   HOLD = 'hold',
   UNHOLD = 'unhold',
   CONNECTED = 'connected',
+  DISCONNECT = 'disconnect',
 }
 
 const HoldFSM = StateMachine.factory({
@@ -39,6 +40,11 @@ const HoldFSM = StateMachine.factory({
       name: HOLD_TRANSITION_NAMES.UNHOLD,
       from: HOLD_STATE.HOLDED,
       to: HOLD_STATE.IDLE,
+    },
+    {
+      name: HOLD_TRANSITION_NAMES.DISCONNECT,
+      from: [HOLD_STATE.HOLDED, HOLD_STATE.IDLE, HOLD_STATE.DISABLED],
+      to: HOLD_STATE.DISABLED,
     },
   ],
   plugins: [new StateMachineHistory()],

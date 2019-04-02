@@ -136,6 +136,8 @@ class TelephonyStore {
       END_WIDGET_CALL,
       END_DIALER_CALL,
     } = CALL_TRANSITION_NAMES;
+    this._holdFSM[HOLD_TRANSITION_NAMES.DISCONNECT]();
+
     switch (true) {
       case history.includes(CALL_STATE.INCOMING):
         this._closeCallWindow();
@@ -178,10 +180,12 @@ class TelephonyStore {
 
   hold = () => {
     this._holdFSM[HOLD_TRANSITION_NAMES.HOLD]();
+    this.setPendingForHoldBtn(false);
   }
 
   unhold = () => {
     this._holdFSM[HOLD_TRANSITION_NAMES.UNHOLD]();
+    this.setPendingForHoldBtn(false);
   }
 
   setPendingForHoldBtn(val: boolean) {

@@ -8,7 +8,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { HoldProps, HoldViewProps } from './types';
 import { TelephonyService } from '../../service';
 import { TelephonyStore } from '../../store';
-import { computed, action } from 'mobx';
+import { computed } from 'mobx';
 import { mainLogger } from 'sdk';
 import {
   HOLD_STATE,
@@ -24,13 +24,21 @@ class HoldViewModel extends StoreViewModel<HoldProps> implements HoldViewProps {
   }
 
   @computed
-  get awake() {
+  get held() {
     return this._telephonyStore.holdState === HOLD_STATE.HOLDED;
   }
 
-  @action.bound
-  handleClick() {
-    const method = this._telephonyStore.holdState === HOLD_STATE.HOLDED ? HOLD_TRANSITION_NAMES.UNHOLD : HOLD_TRANSITION_NAMES.HOLD;
+  handleClick = () => {
+    if (this.disabled || this._telephonyStore.pendingForHold) {
+      mainLogger.debug(
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_PENDING_STATE]: ${this._telephonyStore.pendingForHold}`,
+      );
+      mainLogger.debug(
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${this.disabled}`,
+      );
+      return;
+    }
+    const method = this.held ? HOLD_TRANSITION_NAMES.UNHOLD : HOLD_TRANSITION_NAMES.HOLD;
 
     this._telephonyStore[method](); // for swift UX
 
@@ -38,10 +46,7 @@ class HoldViewModel extends StoreViewModel<HoldProps> implements HoldViewProps {
       `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_PENDING_STATE]: ${this._telephonyStore.pendingForHold}`,
     );
 
-    if (!this._telephonyStore.pendingForHold) {
-      this._telephonyService[method]();
-      return;
-    }
+    this._telephonyService[method]();
   }
 }
 
