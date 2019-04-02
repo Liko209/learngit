@@ -419,8 +419,6 @@ module.exports = {
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],
-      skipWaiting: true,
-      clientsClaim: true,
       navigateFallback: publicUrl + '/index.html',
       navigateFallbackBlacklist: [
         // Exclude URLs starting with /_, as they're likely an API call
@@ -430,7 +428,11 @@ module.exports = {
         new RegExp('/[^/]+\\.[^/]+$'),
       ],
       globDirectory: paths.appPublic,
-      globPatterns: ['**/!(whiteListedId.json)'],
+      globIgnores: ['node_modules/**/*', 'whiteListedId.json', 'index.html'],
+      globPatterns: ['**/*'],
+      modifyURLPrefix: {
+        '': '/',
+      },
       runtimeCaching,
     }),
     ...[
