@@ -9,19 +9,21 @@ import { grey } from '../../foundation/utils/styles';
 import { JuiIconography } from '../../foundation/Iconography';
 import { Theme } from '../../foundation/theme/theme';
 
-type JuiThumbnailProps = {
+type baseProps = {
   size?: 'small' | 'large';
   style?: React.CSSProperties;
+  onClick?: (event: React.MouseEvent) => void;
 };
 
 type JuiThumbnailWithUrlProps = {
   url: string;
-  onClick?: (event: React.MouseEvent) => void;
-} & JuiThumbnailProps;
+} & baseProps;
 
 type JuiThumbnailWithIconProps = {
   iconType: string;
-} & JuiThumbnailProps;
+} & baseProps;
+
+type JuiThumbnailProps = JuiThumbnailWithUrlProps | JuiThumbnailWithIconProps;
 
 const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>(
   'span',
@@ -49,12 +51,20 @@ const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>(
   background-position: center;
 `;
 
-class JuiThumbnail extends React.PureComponent<
-  JuiThumbnailWithUrlProps | JuiThumbnailWithIconProps
-> {
+class JuiThumbnail extends React.PureComponent<JuiThumbnailProps> {
   render() {
-    const { size, url, iconType, onClick } = this
-      .props as JuiThumbnailWithIconProps & JuiThumbnailWithUrlProps;
+    const hasUrl = (props: any): props is JuiThumbnailWithUrlProps => {
+      return props.url;
+    };
+    let url: string = '';
+    let iconType: string = '';
+    const { size, onClick } = this.props;
+
+    if (hasUrl(this.props)) {
+      ({ url } = this.props);
+    } else {
+      ({ iconType } = this.props);
+    }
 
     return (
       <>
