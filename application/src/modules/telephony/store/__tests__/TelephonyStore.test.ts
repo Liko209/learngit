@@ -5,7 +5,7 @@
  */
 
 import { TelephonyStore } from '../TelephonyStore';
-import { CALL_STATE, CALL_WINDOW_STATUS } from '../../FSM';
+import { CALL_STATE, CALL_WINDOW_STATUS, HOLD_STATE } from '../../FSM';
 
 function createStore() {
   return new TelephonyStore();
@@ -116,5 +116,18 @@ describe('Telephony store', () => {
     store.end();
     expect(store.callWindowState).toBe(CALL_WINDOW_STATUS.MINIMIZED);
     expect(store.callState).toBe(CALL_STATE.IDLE);
+  });
+
+  it('holdState should to be HOLD_STATE.DISABLED when instantiated TelephonyStore [JPT-1545]', () => {
+    const store = createStore();
+    store.directCall();
+    expect(store.holdState).toBe(HOLD_STATE.DISABLED);
+  });
+
+  it('holdState should change to HOLD_STATE.IDLE when connected', () => {
+    const store = createStore();
+    store.directCall();
+    store.connected();
+    expect(store.holdState).toBe(HOLD_STATE.IDLE);
   });
 });

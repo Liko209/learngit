@@ -48,7 +48,7 @@ describe('ToastCallError', () => {
     expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
-  it('should display call error: time out [JPT-XXXX]', () => {
+  it('should display call error: time out [JPT-1547]', () => {
     ToastCallError.toast = jest.fn();
     const i18nkey = 'telephony.prompt.FailedToHold';
     ToastCallError.toastFailedToHold();
@@ -56,7 +56,7 @@ describe('ToastCallError', () => {
     expect(i18next.t).toHaveBeenCalledWith(i18nkey);
   });
 
-  it('should display call error: time out [JPT-XXXX]', () => {
+  it('should display call error: time out [JPT-1549]', () => {
     ToastCallError.toast = jest.fn();
     const i18nkey = 'telephony.prompt.FailedToResume';
     ToastCallError.toastFailedToResume();

@@ -110,11 +110,13 @@ class TelephonyService {
       case RTC_CALL_ACTION.HOLD: {
         ToastCallError.toastFailedToHold();
         this._telephonyStore.unhold();
+        this._telephonyStore.setPendingForHoldBtn(false);
         break;
       }
       case RTC_CALL_ACTION.UNHOLD: {
         ToastCallError.toastFailedToResume();
         this._telephonyStore.hold();
+        this._telephonyStore.setPendingForHoldBtn(false);
         break;
       }
     }

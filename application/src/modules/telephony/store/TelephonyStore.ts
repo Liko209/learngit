@@ -180,12 +180,10 @@ class TelephonyStore {
 
   hold = () => {
     this._holdFSM[HOLD_TRANSITION_NAMES.HOLD]();
-    this.setPendingForHoldBtn(false);
   }
 
   unhold = () => {
     this._holdFSM[HOLD_TRANSITION_NAMES.UNHOLD]();
-    this.setPendingForHoldBtn(false);
   }
 
   setPendingForHoldBtn(val: boolean) {
