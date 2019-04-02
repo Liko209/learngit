@@ -109,6 +109,13 @@ class AppModule extends AbstractModule {
               id: currentUserId,
               companyId: currentCompanyId,
             });
+            window.jupiterElectron &&
+              window.jupiterElectron.setUserInfo &&
+              window.jupiterElectron.setUserInfo(
+                currentUserId,
+                userInfo['display_name'],
+                userInfo['email'],
+              );
           });
 
         if (!this._subModuleRegistered) {
