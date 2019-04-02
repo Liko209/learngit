@@ -58,7 +58,7 @@ describe('Container', () => {
     });
   });
 
-  describe('registerAsyncClass()', () => {
+  describe('registerClass()', () => {
     it('should instantiate async class ', async () => {
       const container = new Container();
       container.registerAsyncClass({ name: AService.name, value: AsyncAService });
@@ -134,7 +134,7 @@ describe('Container', () => {
     });
   });
 
-  describe('isAsync()', () => {
+  describe('is()', () => {
     it('should be false when register as normal class', () => {
       const container = new Container();
       container.registerClass({ name: AService.name, value: AService });
@@ -161,7 +161,7 @@ describe('Container', () => {
     });
   });
 
-  describe('asyncGet()', () => {
+  describe('Get()', () => {
     it('should be able to get sync', async () => {
       const container = new Container();
       container.registerClass({ name: AService.name, value: AService });

@@ -8,7 +8,7 @@ import { GroupConfigDao } from '../GroupConfigDao';
 import { setup } from '../../../../dao/__tests__/utils';
 import { QUERY_DIRECTION } from '../../../../dao/constants';
 
-describe('groupConfig Dao', async () => {
+describe('groupConfig Dao', () => {
   let groupConfigDao: GroupConfigDao;
 
   beforeAll(() => {
@@ -16,7 +16,7 @@ describe('groupConfig Dao', async () => {
     groupConfigDao = new GroupConfigDao(database);
   });
 
-  describe('hasMoreRemotePost', async () => {
+  describe('hasMoreRemotePost', () => {
     it('has more because of this object does not exit', async () => {
       const hasMoreRemotePost = await groupConfigDao.hasMoreRemotePost(
         123,
