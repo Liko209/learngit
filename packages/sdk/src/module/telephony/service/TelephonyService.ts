@@ -111,6 +111,14 @@ class TelephonyService extends EntityBaseService {
   dtmf = (callId: string, digits: string) => {
     this.telephonyController.getAccountController().dtmf(callId, digits);
   }
+
+  answer = (callId: string) => {
+    this.telephonyController.getAccountController().answer(callId);
+  }
+
+  sendToVoiceMail = (callId: string) => {
+    this.telephonyController.getAccountController().sendToVoiceMail(callId);
+  }
 }
 
 export { TelephonyService };

@@ -15,6 +15,7 @@ import {
   RTC_CALL_STATE,
   RTCCallActionSuccessOptions,
 } from 'voip';
+import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
@@ -28,6 +29,7 @@ describe('TelephonyService', () => {
   let accountController;
   let makeCallController: MakeCallController;
 
+  const callId = '123';
   class MockAcc implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: TELEPHONY_ACCOUNT_STATE) {}
   }
@@ -50,18 +52,7 @@ describe('TelephonyService', () => {
   function setup() {
     telephonyService = new TelephonyService();
     engineController = new TelephonyEngineController();
-    accountController = {
-      makeCall: jest.fn(),
-      hangUp: jest.fn(),
-      mute: jest.fn(),
-      unmute: jest.fn(),
-      getCallCount: jest.fn(),
-      hold: jest.fn(),
-      unhold: jest.fn(),
-      startRecord: jest.fn(),
-      stopRecord: jest.fn(),
-      dtmf: jest.fn(),
-    };
+    accountController = new TelephonyAccountController(null, null, null);
 
     engineController.getAccountController = jest
       .fn()
@@ -168,6 +159,20 @@ describe('TelephonyService', () => {
     it('should call account controller to get call count', () => {
       telephonyService.getAllCallCount();
       expect(accountController.getCallCount).toHaveBeenCalled();
+    });
+  });
+
+  describe('answer', () => {
+    it('should call account controller to answer call', () => {
+      telephonyService.answer(callId);
+      expect(accountController.answer).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('sendToVoiceMail', () => {
+    it('should call account controller to send call to voice mail', () => {
+      telephonyService.sendToVoiceMail(callId);
+      expect(accountController.sendToVoiceMail).toHaveBeenCalledWith(callId);
     });
   });
 });

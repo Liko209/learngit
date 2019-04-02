@@ -7,7 +7,9 @@ import { TelephonyAccountController } from '../TelephonyAccountController';
 import { ITelephonyAccountDelegate } from '../../service/ITelephonyAccountDelegate';
 import { RTC_ACCOUNT_STATE, RTCAccount, RTCCall, RTCCallInfo } from 'voip/src';
 import { TelephonyCallInfo } from '../../types';
-import { PersonService } from '../../../person';
+import { TelephonyCallController } from '../TelephonyCallController';
+
+jest.mock('../TelephonyCallController');
 
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyAccountDelegate {
@@ -27,6 +29,8 @@ describe('TelephonyAccountController', () => {
   let rtcAccount;
   let callController;
 
+  const callId = '123';
+
   function setup() {
     mockAcc = new MockAccount();
 
@@ -40,12 +44,8 @@ describe('TelephonyAccountController', () => {
       mockAcc,
       null,
     );
-    callController = {
-      hangUp: jest.fn(),
-      mute: jest.fn(),
-      unmute: jest.fn(),
-      setRtcCall: jest.fn(),
-    };
+
+    callController = new TelephonyCallController(null);
 
     Object.assign(accountController, {
       _telephonyCallDelegate: callController,
@@ -92,6 +92,22 @@ describe('TelephonyAccountController', () => {
       jest.spyOn(callController, 'unmute');
       accountController.unmute('123');
       expect(callController.unmute).toBeCalled();
+    });
+  });
+
+  describe('answer', () => {
+    it('should call controller to answer call', () => {
+      jest.spyOn(callController, 'answer');
+      accountController.answer(callId);
+      expect(callController.answer).toBeCalled();
+    });
+  });
+
+  describe('sendToVoiceMail', () => {
+    it('should call controller to send call to voice mail', () => {
+      jest.spyOn(callController, 'sendToVoiceMail');
+      accountController.sendToVoiceMail(callId);
+      expect(callController.sendToVoiceMail).toBeCalled();
     });
   });
 
