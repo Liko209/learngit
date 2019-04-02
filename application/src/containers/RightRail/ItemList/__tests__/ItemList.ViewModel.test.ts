@@ -178,5 +178,25 @@ describe('ItemListViewModel', () => {
       });
       expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.CREATE_TIME);
     });
+
+    it('should image files display by order of files update time', async () => {
+      dataSource = new ItemListViewModel({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
+      });
+      expect(dataSource.getSort().sortKey).toBe(
+        ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      );
+    });
+
+    it('should files but not image display by order of files update time', async () => {
+      dataSource = new ItemListViewModel({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
+      });
+      expect(dataSource.getSort().sortKey).toBe(
+        ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      );
+    });
   });
 });
