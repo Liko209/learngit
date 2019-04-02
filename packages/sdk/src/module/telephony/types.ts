@@ -16,6 +16,14 @@ enum E911_STATUS {
   DISCLINED,
 }
 
+type TelephonyCallInfo = {
+  fromName?: string;
+  fromNum: string;
+  toName?: string;
+  toNum: string;
+  callId: string;
+};
+
 enum MAKE_CALL_ERROR_CODE {
   NO_ERROR,
   E911_ACCEPT_REQUIRED,
@@ -51,4 +59,5 @@ export {
   FEATURE_PERMISSIONS,
   MAKE_CALL_ERROR_CODE,
   E911_STATUS,
+  TelephonyCallInfo,
 };
