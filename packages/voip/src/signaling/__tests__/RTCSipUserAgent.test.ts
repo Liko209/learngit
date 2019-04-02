@@ -25,6 +25,7 @@ class MockUserAgent extends EventEmitter2 {
 class MockWebPhone {
   constructor(provisionData: any, mockOptions: any) {
     this.userAgent = new MockUserAgent(provisionData, mockOptions);
+    this.Options = mockOptions;
   }
 }
 
@@ -148,6 +149,20 @@ describe('RTCSipUserAgent', () => {
         },
       );
       expect(count).toBe(1);
+    });
+
+    it('Enable Hold/Resume on FireFox', () => {
+      const userAgent = new RTCSipUserAgent();
+      options.enableMidLinesInSDP = true;
+      userAgent._createWebPhone(provisionData, options);
+      expect(userAgent._webphone.Options.enableMidLinesInSDP).toBe(true);
+    });
+
+    it('Disable Hold/Resume on FireFox', () => {
+      const userAgent = new RTCSipUserAgent();
+      options.enableMidLinesInSDP = false;
+      userAgent._createWebPhone(provisionData, options);
+      expect(userAgent._webphone.Options.enableMidLinesInSDP).toBe(false);
     });
   });
 });
