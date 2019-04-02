@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SentryErrorReporter } from './SentryErrorReporter';
-import { IErrorReporter } from './types';
+import { IErrorReporter, User } from './types';
 
 export class ErrorReporterProxy implements IErrorReporter {
   private _enabled: boolean;
@@ -24,7 +24,7 @@ export class ErrorReporterProxy implements IErrorReporter {
     }
   }
 
-  setUser = (user: { id: number; companyId: number; email: string }) => {
+  setUser = (user: User) => {
     if (this._isInit) {
       this._reporter.setUser(user);
     } else {

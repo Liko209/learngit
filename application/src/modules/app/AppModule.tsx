@@ -101,10 +101,11 @@ class AppModule extends AbstractModule {
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
         AccountService.getInstance<AccountService>()
-          .getUserEmail()
-          .then((email: string) => {
+          .getCurrentUserInfo()
+          .then(userInfo => {
             errorReporter.setUser({
-              email,
+              username: userInfo['display_name'],
+              email: userInfo['email'],
               id: currentUserId,
               companyId: currentCompanyId,
             });

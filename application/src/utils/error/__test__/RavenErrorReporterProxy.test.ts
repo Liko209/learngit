@@ -32,6 +32,7 @@ describe('ErrorReporterProxy', () => {
       const mockErrorReporter = new SentryErrorReporter();
       const mockUser = {
         id: 111,
+        username: 'mm',
         companyId: 222,
         email: 'xx',
       };
@@ -56,6 +57,7 @@ describe('ErrorReporterProxy', () => {
       const mockErrorReporter = new SentryErrorReporter();
       const mockUser = {
         id: 111,
+        username: 'mm',
         companyId: 222,
         email: 'xx',
       };

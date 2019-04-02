@@ -35,6 +35,7 @@ describe('SentryErrorReporter', () => {
       const errorReporter = new SentryErrorReporter();
       const mockUser = {
         id: 111,
+        username: 'mm',
         companyId: 333,
         email: 'xx',
       };

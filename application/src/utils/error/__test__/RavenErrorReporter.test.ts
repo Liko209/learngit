@@ -39,7 +39,9 @@ describe('RavenErrorReporter', () => {
       const errorReporter = new RavenErrorReporter();
       const mockUser = {
         id: 111,
+        username: 'mm',
         companyId: 333,
+        email: 'xx',
       };
       await errorReporter.setUser(mockUser);
       expect(Raven.setUserContext).toBeCalledWith(mockUser);
