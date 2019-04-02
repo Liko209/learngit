@@ -7,9 +7,9 @@ import _ from 'lodash';
 import { RTCProvManager } from '../RTCProvManager';
 import { RTCRestApiManager } from '../../utils/RTCRestApiManager';
 import {
-  kRTCProvParamsErrorRetryTimer,
-  kRTCProvRequestErrorRetryTimerMax,
-  kRTCProvRequestErrorRetryTimerMin,
+  kRTCProvParamsErrorRertyTimer,
+  kRTCProvRequestErrorRertyTimerMax,
+  kRTCProvRequestErrorRertyTimerMin,
 } from '../constants';
 import { RTCDaoManager } from '../../utils/RTCDaoManager';
 import { ITelephonyDaoDelegate } from 'foundation';
@@ -148,7 +148,7 @@ describe('RTCProvManager', () => {
       expect(pm.emit).toBeCalled();
       expect(pm._resetFreshTimer).toBeCalled();
       expect(pm._requestErrorRetryInterval).toBe(
-        kRTCProvRequestErrorRetryTimerMin,
+        kRTCProvRequestErrorRertyTimerMin,
       );
     });
 
@@ -163,11 +163,11 @@ describe('RTCProvManager', () => {
       expect(pm.emit).toBeCalled();
       expect(pm._resetFreshTimer).toBeCalled();
       expect(pm._requestErrorRetryInterval).toBe(
-        kRTCProvRequestErrorRetryTimerMin,
+        kRTCProvRequestErrorRertyTimerMin,
       );
     });
 
-    it('should Retry request provision at kRTCProvRequestErrorRetryTimerMin,16,32...3600s(retryAfter < kRTCProvRequestErrorRetryTimerMin)  interval when request sip provision failed JPT-633', async () => {
+    it('should Retry request provision at kRTCProvRequestErrorRertyTimerMin,16,32...3600s(retryAfter < kRTCProvRequestErrorRertyTimerMin)  interval when request sip provision failed JPT-633', async () => {
       jest.useFakeTimers();
       const pm = new RTCProvManager();
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
@@ -178,19 +178,19 @@ describe('RTCProvManager', () => {
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
       for (
-        let i = kRTCProvRequestErrorRetryTimerMin;
-        i <= kRTCProvRequestErrorRetryTimerMax;
+        let i = kRTCProvRequestErrorRertyTimerMin;
+        i <= kRTCProvRequestErrorRertyTimerMax;
         i = i * 2
       ) {
         await setImmediate(() => {});
-        const interval = Math.min(i, kRTCProvRequestErrorRetryTimerMax);
+        const interval = Math.min(i, kRTCProvRequestErrorRertyTimerMax);
         expect(pm.retrySeconds).toBe(interval);
         jest.advanceTimersByTime(interval * 1000);
       }
       expect(pm._clearFreshTimer).toBeCalled();
     });
 
-    it('should Retry request provision at max(kRTCProvRequestErrorRetryTimerMin,16,32...3600s,retryAfter)(retryAfter > kRTCProvRequestErrorRetryTimerMin)  interval when request sip provision failed ', async () => {
+    it('should Retry request provision at max(kRTCProvRequestErrorRertyTimerMin,16,32...3600s,retryAfter)(retryAfter > kRTCProvRequestErrorRertyTimerMin)  interval when request sip provision failed ', async () => {
       jest.useFakeTimers();
       const pm = new RTCProvManager();
       const mockProvResponse_unnormal = _.cloneDeep(mockProvResponse_normal);
@@ -202,13 +202,13 @@ describe('RTCProvManager', () => {
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
       for (
-        let i = kRTCProvRequestErrorRetryTimerMin;
-        i <= kRTCProvRequestErrorRetryTimerMax;
+        let i = kRTCProvRequestErrorRertyTimerMin;
+        i <= kRTCProvRequestErrorRertyTimerMax;
         i = i * 2
       ) {
         await setImmediate(() => {});
         const interval = Math.max(
-          Math.min(i, kRTCProvRequestErrorRetryTimerMax),
+          Math.min(i, kRTCProvRequestErrorRertyTimerMax),
           2000,
         );
         expect(pm.retrySeconds).toBe(interval);
@@ -226,7 +226,7 @@ describe('RTCProvManager', () => {
         .mockReturnValue(mockProvResponse_unnormal);
       jest.spyOn(pm, '_clearFreshTimer');
       await pm.acquireSipProv();
-      expect(pm.retrySeconds).toBe(kRTCProvParamsErrorRetryTimer);
+      expect(pm.retrySeconds).toBe(kRTCProvParamsErrorRertyTimer);
       expect(pm._clearFreshTimer).toBeCalled();
     });
 
@@ -257,7 +257,7 @@ describe('RTCProvManager', () => {
       expect(pm.emit).not.toBeCalled();
       expect(pm._resetFreshTimer).toBeCalled();
       expect(pm._requestErrorRetryInterval).toBe(
-        kRTCProvRequestErrorRetryTimerMin,
+        kRTCProvRequestErrorRertyTimerMin,
       );
     });
 
