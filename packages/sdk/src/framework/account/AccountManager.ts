@@ -9,7 +9,7 @@ import { mainLogger, Container } from 'foundation';
 import { fetchWhiteList } from './helper';
 import { AbstractAccount } from './AbstractAccount';
 import { IAccount } from './IAccount';
-import { NewGlobalConfig } from '../../service/config/NewGlobalConfig';
+import { AppEnvSetting } from '../../module/env';
 
 import {
   IAccountInfo,
@@ -130,7 +130,7 @@ class AccountManager extends EventEmitter2 {
   }
 
   async sanitizeUser(mailboxID: string) {
-    const env = NewGlobalConfig.getEnv();
+    const env = AppEnvSetting.getEnv();
     const whiteList = await fetchWhiteList();
     const allAccount = whiteList[env];
     if (allAccount !== undefined) {

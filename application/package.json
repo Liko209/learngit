@@ -52,7 +52,7 @@
     "@types/i18next-browser-languagedetector": "3.0.0",
     "@types/i18next-xhr-backend": "1.4.1",
     "@types/lodash": "4.14.120",
-    "@types/react": "16.8.5",
+    "@types/react": "16.8.8",
     "@types/react-dom": "16.8.2",
     "@types/react-resize-detector": "3.1.0",
     "@types/react-router-dom": "4.3.1",
@@ -80,7 +80,7 @@
     "postcss-loader": "3.0.0",
     "postcss-preset-env": "6.3.0",
     "postcss-safe-parser": "4.0.1",
-    "react-dev-utils": "6.0.5",
+    "react-dev-utils": "8.0.0",
     "react-hot-loader": "4.6.3",
     "serve": "10.0.2",
     "source-map-loader": "0.2.4",
@@ -88,13 +88,13 @@
     "terser-webpack-plugin": "1.1.0",
     "test-util": "1.2.0",
     "tsconfig-paths-webpack-plugin": "3.2.0",
-    "typescript": "3.3.3",
+    "typescript": "3.3.3333",
     "url-loader": "1.1.2",
     "webpack": "4.23.1",
     "webpack-bundle-analyzer": "3.0.3",
     "webpack-cli": "3.1.2",
     "webpack-dev-server": "3.1.10",
     "webpack-manifest-plugin": "2.0.4 ",
-    "workbox-webpack-plugin": "3.6.3"
+    "workbox-webpack-plugin": "4.1.1"
   }
 }

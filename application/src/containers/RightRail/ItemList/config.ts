@@ -70,6 +70,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: FilesEmptyImage,
     },
     sort: {
+      sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
       desc: true,
     },
     automationID: 'files',
@@ -86,6 +87,7 @@ const TAB_CONFIG: TabConfig[] = [
       image: ImagesEmptyImage,
     },
     sort: {
+      sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
       desc: true,
     },
     automationID: 'images',

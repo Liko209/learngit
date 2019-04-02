@@ -19,6 +19,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { TAB_CONFIG } from './config';
 import { Props } from './types';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -136,6 +137,13 @@ class ItemListViewModel extends StoreViewModel<Props> {
     };
 
     const transformFunc = (model: Item) => {
+      if (
+        this._type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
+        this._type === RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES
+      ) {
+        model[sortKey] =
+          FileItemUtils.getVersionDate(model) || model.created_at;
+      }
       return {
         id: model.id,
         sortValue: model.id,

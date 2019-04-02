@@ -19,7 +19,6 @@ import Sdk from './Sdk';
 import AccountService from './service/account';
 import AuthService from './service/auth';
 import { CompanyService } from './module/company';
-import ConfigService from './service/config';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
 import { PresenceService } from './module/presence';
@@ -67,11 +66,6 @@ const registerConfigs = {
     { name: PermissionService.name, value: PermissionService },
     { name: GroupService.name, value: GroupService },
     { name: RcInfoService.name, value: RcInfoService },
-    {
-      name: ConfigService.name,
-      value: ConfigService,
-      injects: [AuthService.name],
-    },
     {
       name: AuthService.name,
       value: AuthService,

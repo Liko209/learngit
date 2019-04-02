@@ -9,6 +9,12 @@ import { ITelephonyAccountDelegate } from '../ITelephonyAccountDelegate';
 import { TELEPHONY_ACCOUNT_STATE, MAKE_CALL_ERROR_CODE } from '../../types';
 import { GlobalConfigService } from '../../../config';
 import { MakeCallController } from '../../controller/MakeCallController';
+import { ITelephonyCallDelegate } from '../ITelephonyCallDelegate';
+import {
+  RTC_CALL_ACTION,
+  RTC_CALL_STATE,
+  RTCCallActionSuccessOptions,
+} from 'voip';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
@@ -24,6 +30,15 @@ describe('TelephonyService', () => {
 
   class MockAcc implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: TELEPHONY_ACCOUNT_STATE) {}
+  }
+
+  class MockCall implements ITelephonyCallDelegate {
+    onCallStateChange(callId: string, state: RTC_CALL_STATE) {}
+    onCallActionSuccess(
+      callAction: RTC_CALL_ACTION,
+      options: RTCCallActionSuccessOptions,
+    ) {}
+    onCallActionFailed(callAction: RTC_CALL_ACTION) {}
   }
 
   function clearMocks() {
@@ -66,8 +81,12 @@ describe('TelephonyService', () => {
   describe('createAccount', () => {
     it('should call controller to create account', () => {
       const mockAcc = new MockAcc();
-      telephonyService.createAccount(mockAcc);
-      expect(engineController.createAccount).toHaveBeenCalledWith(mockAcc);
+      const mockCall = new MockCall();
+      telephonyService.createAccount(mockAcc, mockCall);
+      expect(engineController.createAccount).toHaveBeenCalledWith(
+        mockAcc,
+        mockCall,
+      );
     });
   });
   describe('makeCall', () => {
@@ -78,9 +97,9 @@ describe('TelephonyService', () => {
       jest
         .spyOn(makeCallController, 'tryMakeCall')
         .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
-      const res = await telephonyService.makeCall('123', null);
+      const res = await telephonyService.makeCall('123');
       expect(makeCallController.getE164PhoneNumber).toHaveBeenCalled();
-      expect(accountController.makeCall).toHaveBeenCalledWith('123', null);
+      expect(accountController.makeCall).toHaveBeenCalledWith('123');
       expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
     });
 

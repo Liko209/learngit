@@ -26,13 +26,13 @@ import { PersonService } from '../../person';
 import { GroupService } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
-import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
 import { IndexRequestProcessor } from './IndexRequestProcessor';
 import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
+import { SyncGlobalConfig } from '../config';
 import { AccountService } from '../../../service/account/accountService';
 import socketManager from '../../../service/socket';
 
@@ -362,7 +362,7 @@ class SyncController {
       }
 
       if (staticHttpServer) {
-        NewGlobalConfig.setStaticHttpServer(staticHttpServer);
+        SyncGlobalConfig.setStaticHttpServer(staticHttpServer);
         notificationCenter.emitKVChange(
           CONFIG.STATIC_HTTP_SERVER,
           staticHttpServer,

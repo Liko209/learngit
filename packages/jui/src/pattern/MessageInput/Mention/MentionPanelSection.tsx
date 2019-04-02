@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { spacing } from '../../../foundation/utils/styles';
+import { height } from '../../../foundation/utils/styles';
 import styled from '../../../foundation/styled-components';
 
 type Props = {
@@ -7,7 +7,7 @@ type Props = {
 };
 
 const Wrapper = styled.div<Props>`
-  padding: ${spacing(2, 0)};
+  max-height: ${height(68)}px;
 `;
 
 class JuiMentionPanelSection extends PureComponent<Props> {
