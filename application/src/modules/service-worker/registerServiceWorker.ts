@@ -124,7 +124,9 @@ function registerValidSW(
                   `${logTag}New content is available; please refresh.`,
                 );
 
-                updateInstalledHandler();
+                setTimeout(() => {
+                  updateInstalledHandler();
+                });
               } else {
                 // At this point, everything has been precached.
                 // It's the perfect time to display a
