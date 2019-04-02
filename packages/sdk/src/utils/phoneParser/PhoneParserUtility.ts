@@ -15,9 +15,11 @@ import {
   ModuleType,
   mainLogger,
 } from 'foundation';
-import { RcInfoUserConfig } from '../../module/rcInfo/config';
+import {
+  RcInfoUserConfig,
+  RcInfoCommonGlobalConfig,
+} from '../../module/rcInfo/config';
 import { RcAccountInfo } from '../../api/ringcentral/types/RcAccountInfo';
-import { RcInfoCommonGlobalConfig } from '../../module/rcInfo/config';
 
 const MODULE_LOADING_TIME_OUT: number = 60000; // 1 minute
 const PhoneParserModule: ModuleClass = Module;
