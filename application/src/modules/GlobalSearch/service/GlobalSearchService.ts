@@ -4,13 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container } from 'framework';
+import { inject } from 'framework';
 import { GlobalSearchStore } from '../store';
 
 class GlobalSearchService {
-  private _globalSearchStore: GlobalSearchStore = container.get(
-    GlobalSearchStore,
-  );
+  @inject(GlobalSearchStore) _globalSearchStore: GlobalSearchStore;
 
   openGlobalSearch() {
     this._globalSearchStore.setOpen(true);

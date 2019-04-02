@@ -5,14 +5,14 @@
  */
 import React from 'react';
 import { JuiDialog } from '../../components/Dialog/Dialog';
-import { spacing } from '../../foundation/utils/styles';
+import { spacing, radius } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
 
 const StyledGlobalSearch = styled(JuiDialog)`
   && {
     .paper {
       margin: 0;
-      border-radius: ${({ theme }) => theme.radius.xl};
+      border-radius: ${radius('xl')};
     }
   }
   .container {
