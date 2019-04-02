@@ -412,8 +412,8 @@ module.exports = {
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],
-      skipWaiting: true,
-      clientsClaim: true,
+      skipWaiting: false,
+      clientsClaim: false,
       navigateFallback: publicUrl + '/index.html',
       navigateFallbackBlacklist: [
         // Exclude URLs starting with /_, as they're likely an API call
