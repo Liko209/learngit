@@ -1,9 +1,7 @@
 // Replace ${deployHost} with real deployHost
 import _ from 'lodash';
 import merge from 'lodash/merge';
-import { service } from 'sdk';
-
-const { ConfigService } = service;
+import { AppEnvSetting } from 'sdk/module/env';
 
 const { protocol, hostname, port } = window.location;
 const deployHost = `${protocol}//${hostname}${port && `:${port}`}`;
@@ -102,8 +100,7 @@ class Config {
   }
 
   loadEnvConfig() {
-    const configService: service.ConfigService = ConfigService.getInstance();
-    const value = configService.getEnv() || this.defaultEnv();
+    const value = AppEnvSetting.getEnv() || this.defaultEnv();
     this._env = value;
     this._config = loadFileConfigs(value);
   }

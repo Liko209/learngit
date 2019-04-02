@@ -26,6 +26,8 @@ import './index.css';
 import { generalErrorHandler } from '@/utils/error';
 import { AccountUserConfig } from 'sdk/service/account/config';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
+import { AppEnvSetting } from 'sdk/module/env';
+import { SyncGlobalConfig } from 'sdk/module/sync/config';
 
 /**
  * The root module, we call it AppModule,
@@ -59,8 +61,10 @@ class AppModule extends AbstractModule {
       const stateSearch = state.substring(state.indexOf('?'));
       const { env } = parse(stateSearch, { ignoreQueryPrefix: true });
       if (env && env.length) {
-        const configService: service.ConfigService = service.ConfigService.getInstance();
-        const envChanged = await configService.switchEnv(env);
+        const envChanged = await AppEnvSetting.switchEnv(
+          env,
+          service.AuthService.getInstance(),
+        );
         if (envChanged) {
           config.loadEnvConfig();
         }
@@ -77,7 +81,6 @@ class AppModule extends AbstractModule {
       notificationCenter,
       AccountService,
       socketManager,
-      ConfigService,
       SOCKET,
       SERVICE,
       CONFIG,
@@ -129,8 +132,7 @@ class AppModule extends AbstractModule {
     const setStaticHttpServer = (url?: string) => {
       let staticHttpServer = url;
       if (!staticHttpServer) {
-        const configService: service.ConfigService = ConfigService.getInstance();
-        staticHttpServer = configService.getStaticHttpServer();
+        staticHttpServer = SyncGlobalConfig.getStaticHttpServer();
       }
       globalStore.set(GLOBAL_KEYS.STATIC_HTTP_SERVER, staticHttpServer || '');
     };
