@@ -445,17 +445,17 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         video: false,
       })
       .then((stream: any) => {
-        this._refreshPc(stream);
+        this._updatePeerConnection(stream);
       })
       .catch((error: any) => {
-        rtcLogger.debug(
+        rtcLogger.warn(
           LOG_TAG,
           `Cannot switch audio input device because : ${error.message}`,
         );
       });
   }
 
-  private _refreshPc(stream: any) {
+  private _updatePeerConnection(stream: any) {
     if (
       !this._session ||
       !this._session.sessionDescriptionHandler ||
@@ -503,7 +503,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
           );
         })
         .catch((error: any) => {
-          rtcLogger.debug(
+          rtcLogger.warn(
             LOG_TAG,
             `set local audio output device ${deviceID} failed with: ${
               error.message
@@ -520,7 +520,7 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
           );
         })
         .catch((error: any) => {
-          rtcLogger.debug(
+          rtcLogger.warn(
             LOG_TAG,
             `set remote audio output device ${deviceID} failed with: ${
               error.message
