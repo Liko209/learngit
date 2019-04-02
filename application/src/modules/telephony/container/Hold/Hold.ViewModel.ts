@@ -40,8 +40,6 @@ class HoldViewModel extends StoreViewModel<HoldProps> implements HoldViewProps {
     }
     const method = this.held ? HOLD_TRANSITION_NAMES.UNHOLD : HOLD_TRANSITION_NAMES.HOLD;
 
-    this._telephonyStore[method](); // for swift UX
-
     mainLogger.debug(
       `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_PENDING_STATE]: ${this._telephonyStore.pendingForHold}`,
     );
