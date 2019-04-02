@@ -30,12 +30,13 @@ class HoldViewComponent extends Component<Props> {
     return (
       <JuiKeypadAction>
         <JuiIconButton
-          color={held ? 'grey.500' : 'grey.900'}
+          color={held ? 'primary.600' : 'grey.900'}
           disableToolTip={true}
           onClick={this._handleHold}
           size="xxlarge"
           disabled={disabled}
-        // awake={awake}
+          awake={held}
+          shouldPersistBg={held}
         >
           hold
         </JuiIconButton>

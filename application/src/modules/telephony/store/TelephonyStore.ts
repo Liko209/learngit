@@ -27,24 +27,24 @@ enum CALL_TYPE {
 }
 
 class TelephonyStore {
+  private _callFSM = new CallFSM();
+  private _callWindowFSM = new CallWindowFSM();
+  private _holdFSM = new HoldFSM();
+
   @observable
-  callWindowState: CALL_WINDOW_STATUS = CALL_WINDOW_STATUS.MINIMIZED;
+  callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
   @observable
-  callState: CALL_STATE = CALL_STATE.IDLE;
+  callState: CALL_STATE = this._callFSM.state;
   @observable
   callType: CALL_TYPE = CALL_TYPE.NULL;
   @observable
-  holdState: HOLD_STATE = HOLD_STATE.IDLE;
+  holdState: HOLD_STATE = this._holdFSM.state;
   @observable
   phoneNumber?: string;
   @observable
   activeCallTime?: number;
   @observable
   pendingForHold: boolean = false;
-
-  private _callFSM = new CallFSM();
-  private _callWindowFSM = new CallWindowFSM();
-  private _holdFSM = new HoldFSM();
 
   constructor() {
     this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
