@@ -424,6 +424,10 @@
       "LogoutOk": "Log out",
       "FailedToHold": "Sorry, something went wrong on our end, we weren't able to hold the call",
       "FailedToResume": "Sorry, something went wrong on our end, we weren't able to resume the call"
+    },
+    "accessibility": {
+      "hold": "Hold the call",
+      "resume": "Resume the call"
     }
   },
   "meeting": {

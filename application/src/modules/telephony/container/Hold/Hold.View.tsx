@@ -37,6 +37,8 @@ class HoldViewComponent extends Component<Props> {
           disabled={disabled}
           awake={held}
           shouldPersistBg={held}
+          data-test-automation-id={'holdBtn'}
+          aria-label={held ? t('telephony.accessibility.resume') : t('telephony.accessibility.hold')}
         >
           hold
         </JuiIconButton>
