@@ -9,8 +9,7 @@ import { UA_EVENT, ProvisionDataOptions, WEBPHONE_LOG_LEVEL } from './types';
 import { RTCCallOptions } from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 import { RTCSipProvisionInfo } from '../account/types';
-import { opusModifier } from '../utils/utils';
-import { PlatformUtils } from '../../../sdk/src/utils/PlatformUtils';
+import { opusModifier, isFireFox } from '../utils/utils';
 
 const WebPhone = require('ringcentral-web-phone');
 const LOG_TAG = 'RTCSipUserAgent';
@@ -64,7 +63,7 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
       }
     } else if (options) {
       options.modifiers = [opusModifier];
-      if (PlatformUtils.isFireFox()) {
+      if (isFireFox()) {
         options.enableMidLinesInSDP = true;
       } else {
         options.enableMidLinesInSDP = false;
