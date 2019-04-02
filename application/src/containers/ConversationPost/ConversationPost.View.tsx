@@ -37,10 +37,15 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
   }
 
   render() {
-    const { type, id, cardRef } = this.props;
+    const { type, id, cardRef, mode } = this.props;
     const Component = PostTypeMappingComponent[type];
     return (
-      <Component id={id} onClick={this.onClickAtMention} cardRef={cardRef} />
+      <Component
+        id={id}
+        onClick={this.onClickAtMention}
+        cardRef={cardRef}
+        mode={mode}
+      />
     );
   }
 }
