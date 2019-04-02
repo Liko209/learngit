@@ -9,6 +9,7 @@ import { observer } from 'mobx-react';
 import { JuiMenuItem } from 'jui/components';
 import { Dialog } from '@/containers/Dialog';
 import { ViewProps } from './types';
+import { mainLogger } from 'sdk';
 
 @observer
 class DeleteView extends React.Component<ViewProps> {
@@ -22,7 +23,7 @@ class DeleteView extends React.Component<ViewProps> {
       cancelText: i18next.t('common.dialog.cancel'),
       onOK() {
         deletePost().catch((e: any) => {
-          console.log(e);
+          mainLogger.error(e);
         });
       },
     });

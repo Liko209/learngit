@@ -14,6 +14,7 @@ import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
 import i18next from 'i18next';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { Dialog } from '@/containers/Dialog';
+import { mainLogger } from 'sdk';
 
 type Props = ProgressActionsViewProps & WithTranslation;
 
@@ -31,7 +32,7 @@ class ProgressActionsViewComponent extends Component<Props> {
         try {
           await deletePost();
         } catch (e) {
-          console.log(e);
+          mainLogger.error(e);
         }
       },
     });
