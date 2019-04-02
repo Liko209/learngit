@@ -40,6 +40,12 @@ class PersonService extends EntityBaseService<Person>
     );
   }
 
+  protected buildEntityCacheController() {
+    const entityCacheController = super.buildEntityCacheController();
+    entityCacheController.setFilter(this.getPersonController().isCacheValid);
+    return entityCacheController;
+  }
+
   protected getPersonController() {
     if (!this._personController) {
       this._personController = new PersonController();

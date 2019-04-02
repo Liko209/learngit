@@ -354,14 +354,16 @@ const JuiVirtualizedList: RefForwardingComponent<
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
-      const observer = new ResizeObserver(() => {
-        const { diff } = handleRowSizeChange(el, i);
+      const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+        for (const entry of entries) {
+          const { diff } = handleRowSizeChange(entry.target as HTMLElement, i);
 
-        // Fix blank area:
-        // When row shrinks, the list didn't recompute rendered range
-        // automatically, which may leave a blank area in the list.
-        if (diff < 0) {
-          ensureNoBlankArea();
+          // Fix blank area:
+          // When row shrinks, the list didn't recompute rendered range
+          // automatically, which may leave a blank area in the list.
+          if (diff < 0) {
+            ensureNoBlankArea();
+          }
         }
       });
       observer.observe(el);

@@ -261,15 +261,18 @@ class PersonController {
     return person.flags === 0;
   }
 
-  isValid(person: Person) {
+  isCacheValid = (person: Person) => {
     return (
       !this._isUnregistered(person) &&
-      !this._isDeactivated(person) &&
       this._isVisible(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
       !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
       !person.is_pseudo_user
     );
+  }
+
+  isValid(person: Person) {
+    return this.isCacheValid(person) && !this._isDeactivated(person);
   }
 
   getAvailablePhoneNumbers(

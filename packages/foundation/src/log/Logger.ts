@@ -107,28 +107,39 @@ class ConsoleLogCore implements ILoggerCore {
   constructor(private _consoleLogPrettier: IConsoleLogPrettier) {}
 
   doLog(logEntity: LogEntity): void {
-    if (typeof window === 'undefined') return;
-    this._browserLog(logEntity.level)(
-      ...this._consoleLogPrettier.prettier(logEntity),
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    this._browserLog(
+      logEntity.level,
+      this._consoleLogPrettier.prettier(logEntity),
     );
   }
 
-  private _browserLog(level: LOG_LEVEL): Function {
+  private _browserLog(level: LOG_LEVEL, params: any[]) {
     switch (level) {
       case LOG_LEVEL.FATAL:
-        return window.console.error.bind(window.console);
+        window.console.error(...params);
+        break;
       case LOG_LEVEL.ERROR:
-        return window.console.error.bind(window.console);
+        window.console.error(...params);
+        break;
       case LOG_LEVEL.WARN:
-        return window.console.warn.bind(window.console);
+        window.console.warn(...params);
+        break;
       case LOG_LEVEL.INFO:
-        return window.console.info.bind(window.console);
+        window.console.info(...params);
+        break;
       case LOG_LEVEL.DEBUG:
-        return window.console.debug.bind(window.console);
+        window.console.debug(...params);
+        break;
       case LOG_LEVEL.TRACE:
-        return window.console.trace.bind(window.console);
+        window.console.trace(...params);
+        break;
       default:
-        return window.console.log.bind(window.console);
+        window.console.log(...params);
+        break;
     }
   }
 }
