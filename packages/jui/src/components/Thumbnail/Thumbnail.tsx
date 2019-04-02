@@ -16,7 +16,7 @@ type JuiThumbnailProps = {
 
 type JuiThumbnailWithUrlProps = {
   url: string;
-  handleClick?: (event: React.MouseEvent) => void;
+  onClick?: (event: React.MouseEvent) => void;
 } & JuiThumbnailProps;
 
 type JuiThumbnailWithIconProps = {
@@ -53,13 +53,13 @@ class JuiThumbnail extends React.PureComponent<
   JuiThumbnailWithUrlProps | JuiThumbnailWithIconProps
 > {
   render() {
-    const { size, url, iconType, handleClick } = this
+    const { size, url, iconType, onClick } = this
       .props as JuiThumbnailWithIconProps & JuiThumbnailWithUrlProps;
 
     return (
       <>
         {url ? (
-          <StyledModifyImage url={url} onClick={handleClick} />
+          <StyledModifyImage url={url} onClick={onClick} />
         ) : (
           <JuiIconography iconSize={size === 'small' ? 'small' : 'extraLarge'}>
             {iconType}

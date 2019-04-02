@@ -22,28 +22,11 @@ const SQUARE_SIZE = 36;
 @observer
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
   private _renderItem = (hover: boolean) => {
-    const {
-      fileName,
-      id,
-      personName,
-      createdTime,
-      downloadUrl,
-      groupId,
-    } = this.props;
+    const { fileName, id, personName, createdTime, downloadUrl } = this.props;
     return (
       <>
         <JuiListItemIcon>
-          <Thumbnail
-            id={id}
-            type="image"
-            handleClick={this._handleImageClick(
-              groupId,
-              id,
-              downloadUrl || '',
-              SQUARE_SIZE,
-              SQUARE_SIZE,
-            )}
-          />
+          <Thumbnail id={id} type="image" onClick={this._handleImageClick} />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={fileName} />}
@@ -59,18 +42,13 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     );
   }
 
-  _handleImageClick = (
-    groupId: number,
-    id: number,
-    thumbnailSrc: string,
-    origWidth: number,
-    origHeight: number,
-  ) => async (ev: React.MouseEvent) => {
-    const target = ev.currentTarget as HTMLElement;
+  _handleImageClick = async (event: React.MouseEvent<HTMLElement>) => {
+    const { id, downloadUrl, groupId } = this.props;
+    const target = event.currentTarget;
     showImageViewer(groupId, id, {
-      thumbnailSrc,
-      initialWidth: origWidth,
-      initialHeight: origHeight,
+      thumbnailSrc: downloadUrl,
+      initialWidth: SQUARE_SIZE,
+      initialHeight: SQUARE_SIZE,
       originElement: target,
     });
   }
