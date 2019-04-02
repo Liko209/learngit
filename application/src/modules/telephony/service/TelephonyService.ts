@@ -105,14 +105,17 @@ class TelephonyService {
     switch (callAction) {
       case RTC_CALL_ACTION.CALL_TIME_OUT: {
         ToastCallError.toastCallTimeout();
+        break;
       }
       case RTC_CALL_ACTION.HOLD: {
         ToastCallError.toastFailedToHold();
         this._telephonyStore.unhold();
+        break;
       }
       case RTC_CALL_ACTION.UNHOLD: {
         ToastCallError.toastFailedToResume();
         this._telephonyStore.hold();
+        break;
       }
     }
   }
