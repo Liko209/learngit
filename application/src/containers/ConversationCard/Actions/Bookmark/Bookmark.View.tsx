@@ -9,37 +9,30 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { BookmarkViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
-import { CatchError } from '@/common/catchError';
+import { catchError } from '@/common/catchError';
 
 type Props = BookmarkViewProps & WithTranslation;
 
 @observer
 class BookmarkViewComponent extends Component<Props> {
-  constructor(props: Props) {
-    super(props);
-    this._handleBookmark = this._handleBookmark.bind(this);
-    this._handleRemoveBookmark = this._handleRemoveBookmark.bind(this);
-    this._handleToggleBookmark = this._handleToggleBookmark.bind(this);
-  }
-
-  private async _handleToggleBookmark() {
+  private _handleToggleBookmark = async () => {
     const { bookmark, isBookmark } = this.props;
     await bookmark(!isBookmark);
   }
 
-  @CatchError.flash({
+  @catchError.flash({
     network: 'message.prompt.notAbleToRemoveYourBookmarkForNetworkIssue',
     server: 'message.prompt.notAbleToRemoveYourBookmarkForServerIssue',
   })
-  private _handleRemoveBookmark() {
+  private _handleRemoveBookmark = () => {
     return this._handleToggleBookmark();
   }
 
-  @CatchError.flash({
+  @catchError.flash({
     network: 'message.prompt.notAbleToBookmarkThisMessageForNetworkIssue',
     server: 'message.prompt.notAbleToBookmarkThisMessageForServerIssue',
   })
-  private _handleBookmark() {
+  private _handleBookmark = () => {
     return this._handleToggleBookmark();
   }
 

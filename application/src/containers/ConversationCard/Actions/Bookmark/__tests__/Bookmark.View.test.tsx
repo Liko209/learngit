@@ -16,14 +16,14 @@ jest.mock('@/containers/Notification');
 function setUpMock(isBookmark: boolean, isFailed: boolean, errorType: 'network' | 'server') {
   return {
     isBookmark,
-    bookmark: async (toBookmark: boolean): Promise<void> => {
+    bookmark: jest.fn().mockImplementationOnce(() => {
       if (errorType === 'network') {
-        throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, '');
+        throw new JNetworkError(ERROR_CODES_NETWORK.NOT_NETWORK, 'NOT_NETWORK');
       }
       if (errorType === 'server') {
-        throw new JServerError(ERROR_CODES_SERVER.GENERAL, '');
+        throw new JServerError(ERROR_CODES_SERVER.GENERAL, 'GENERAL');
       }
-    },
+    }),
   };
 }
 
@@ -33,60 +33,56 @@ describe('BookmarkView', () => {
       Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
     });
 
-    it('should display flash toast notification when remove bookmark failed for backend issue.[JPT-1529]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification when remove bookmark failed for backend issue.[JPT-1529]', async (done: jest.DoneCallback) => {
       const props = setUpMock(true, true, 'server');
       const Wrapper = shallow(<BookmarkView {...props} />);
-      Wrapper.find(JuiIconButton).simulate('click');
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'message.prompt.notAbleToRemoveYourBookmarkForServerIssue',
-          }),
-        );
-        done();
-      },         0);
+      await Wrapper.find(JuiIconButton).simulate('click');
+      expect(props.bookmark).toHaveBeenCalledTimes(1);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'message.prompt.notAbleToRemoveYourBookmarkForServerIssue',
+        }),
+      );
+      done();
     });
 
-    it('should display flash toast notification when bookmark failed for backend issue.[JPT-1530]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification when bookmark failed for backend issue.[JPT-1530]', async (done: jest.DoneCallback) => {
       const props = setUpMock(false, true, 'server');
       const Wrapper = shallow(<BookmarkView {...props} />);
-      Wrapper.find(JuiIconButton).simulate('click');
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'message.prompt.notAbleToBookmarkThisMessageForServerIssue',
-          }),
-        );
-        done();
-      },         0);
+      await Wrapper.find(JuiIconButton).simulate('click');
+      expect(props.bookmark).toHaveBeenCalledTimes(1);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'message.prompt.notAbleToBookmarkThisMessageForServerIssue',
+        }),
+      );
+      done();
     });
 
-    it('should display flash toast notification when remove bookmark failed for network issue.[JPT-1531]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification when remove bookmark failed for network issue.[JPT-1531]', async (done: jest.DoneCallback) => {
       const props = setUpMock(true, true, 'network');
       const Wrapper = shallow(<BookmarkView {...props} />);
-      Wrapper.find(JuiIconButton).simulate('click');
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'message.prompt.notAbleToRemoveYourBookmarkForNetworkIssue',
-          }),
-        );
-        done();
-      },         0);
+      await Wrapper.find(JuiIconButton).simulate('click');
+      expect(props.bookmark).toHaveBeenCalledTimes(1);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'message.prompt.notAbleToRemoveYourBookmarkForNetworkIssue',
+        }),
+      );
+      done();
     });
 
-    it('should display flash toast notification when bookmark failed for network issue.[JPT-1532]', (done: jest.DoneCallback) => {
+    it('should display flash toast notification when bookmark failed for network issue.[JPT-1532]', async (done: jest.DoneCallback) => {
       const props = setUpMock(false, true, 'network');
       const Wrapper = shallow(<BookmarkView {...props} />);
-      Wrapper.find(JuiIconButton).simulate('click');
-      setTimeout(() => {
-        expect(Notification.flashToast).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'message.prompt.notAbleToBookmarkThisMessageForNetworkIssue',
-          }),
-        );
-        done();
-      },         0);
+      await Wrapper.find(JuiIconButton).simulate('click');
+      expect(props.bookmark).toHaveBeenCalledTimes(1);
+      expect(Notification.flashToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'message.prompt.notAbleToBookmarkThisMessageForNetworkIssue',
+        }),
+      );
+      done();
     });
   });
 });
