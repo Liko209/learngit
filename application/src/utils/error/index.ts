@@ -7,6 +7,7 @@ import { mainLogger } from 'sdk';
 import { ErrorParserHolder } from 'sdk/error';
 import { ErrorReporterProxy } from './ErrorReporterProxy';
 import { IErrorReporter } from './types';
+import { getAppContextInfo } from './helper';
 function generalErrorHandler(error: Error) {
   const jErr = ErrorParserHolder.getErrorParser().parse(error);
   mainLogger.error(jErr.message);
@@ -14,4 +15,4 @@ function generalErrorHandler(error: Error) {
 const errorReporter: IErrorReporter = new ErrorReporterProxy(
   process.env.NODE_ENV === 'production',
 );
-export { generalErrorHandler, errorReporter };
+export { generalErrorHandler, errorReporter, getAppContextInfo };

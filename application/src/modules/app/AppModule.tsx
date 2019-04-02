@@ -23,10 +23,13 @@ import { config as appConfig } from './app.config';
 import { HomeService } from '@/modules/home';
 
 import './index.css';
-import { generalErrorHandler, errorReporter } from '@/utils/error';
+import {
+  generalErrorHandler,
+  errorReporter,
+  getAppContextInfo,
+} from '@/utils/error';
 import { AccountUserConfig } from 'sdk/service/account/config';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
-import { AccountService } from 'sdk/service';
 
 /**
  * The root module, we call it AppModule,
@@ -100,23 +103,12 @@ class AppModule extends AbstractModule {
         const currentCompanyId = accountUserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
-        AccountService.getInstance<AccountService>()
-          .getCurrentUserInfo()
-          .then(userInfo => {
-            errorReporter.setUser({
-              username: userInfo['display_name'],
-              email: userInfo['email'],
-              id: currentUserId,
-              companyId: currentCompanyId,
-            });
-            window.jupiterElectron &&
-              window.jupiterElectron.setUserInfo &&
-              window.jupiterElectron.setUserInfo(
-                currentUserId,
-                userInfo['display_name'],
-                userInfo['email'],
-              );
-          });
+        getAppContextInfo().then(contextInfo => {
+          errorReporter.setContextInfo(contextInfo);
+          window.jupiterElectron &&
+            window.jupiterElectron.setContextInfo &&
+            window.jupiterElectron.setContextInfo(contextInfo);
+        });
 
         if (!this._subModuleRegistered) {
           // load phone parser module

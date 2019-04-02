@@ -6,7 +6,7 @@
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import * as Sentry from '@sentry/browser';
 import pkg from '../../../package.json';
-import { IErrorReporter, User } from './types';
+import { IErrorReporter, ContextInfo } from './types';
 const DSN = 'https://810a779037204886beeced1c4bd7fbba@sentry.io/1419520';
 
 export class SentryErrorReporter implements IErrorReporter {
@@ -26,9 +26,13 @@ export class SentryErrorReporter implements IErrorReporter {
     Sentry.captureException(error);
   }
 
-  setUser = (user: User) => {
+  setContextInfo = (contextInfo: ContextInfo) => {
     Sentry.configureScope((scope: Sentry.Scope) => {
-      scope.setUser({ ...user, id: String(user.id) });
+      scope.setUser({
+        id: String(contextInfo.id),
+        username: contextInfo.username,
+        email: contextInfo.email,
+      });
       const Config = require('@/config').default;
       scope.setExtra('env', Config.getEnv());
     });

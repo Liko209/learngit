@@ -37,14 +37,16 @@ describe('RavenErrorReporter', () => {
   describe('setUser()', () => {
     it('should call Raven.setUserContext()', async () => {
       const errorReporter = new RavenErrorReporter();
-      const mockUser = {
+      const mockContextInfo = {
         id: 111,
         username: 'mm',
         companyId: 333,
         email: 'xx',
+        env: 'xm-up',
+        version: '1.0.0',
       };
-      await errorReporter.setUser(mockUser);
-      expect(Raven.setUserContext).toBeCalledWith(mockUser);
+      await errorReporter.setContextInfo(mockContextInfo);
+      expect(Raven.setUserContext).toBeCalledWith(mockContextInfo);
     });
   });
 });

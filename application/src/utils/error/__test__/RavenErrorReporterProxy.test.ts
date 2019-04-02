@@ -9,7 +9,7 @@ jest.mock('../SentryErrorReporter', () => {
   const mock: SentryErrorReporter = {
     init: jest.fn().mockImplementation(() => Promise.resolve()),
     report: jest.fn(),
-    setUser: jest.fn(),
+    setContextInfo: jest.fn(),
   };
   return {
     SentryErrorReporter: () => mock,
@@ -30,23 +30,27 @@ describe('ErrorReporterProxy', () => {
   describe('directly call', () => {
     it('should call function directly when is init', (done: jest.DoneCallback) => {
       const mockErrorReporter = new SentryErrorReporter();
-      const mockUser = {
+      const mockContextInfo = {
         id: 111,
         username: 'mm',
         companyId: 222,
         email: 'xx',
+        env: 'xm-up',
+        version: '1.0.0',
       };
       const mockError = new Error('ddd');
       const proxy = new ErrorReporterProxy(true);
       expect(proxy['_isInit']).toBeFalsy();
       expect(mockErrorReporter.init).toBeCalled();
-      expect(mockErrorReporter.setUser).not.toBeCalled();
+      expect(mockErrorReporter.setContextInfo).not.toBeCalled();
       expect(mockErrorReporter.report).not.toBeCalled();
       setTimeout(() => {
         expect(proxy['_isInit']).toBeTruthy();
-        proxy.setUser(mockUser);
+        proxy.setContextInfo(mockContextInfo);
         proxy.report(mockError);
-        expect(mockErrorReporter.setUser).toBeCalledWith(mockUser);
+        expect(mockErrorReporter.setContextInfo).toBeCalledWith(
+          mockContextInfo,
+        );
         expect(mockErrorReporter.report).toBeCalledWith(mockError);
         done();
       });
@@ -55,23 +59,27 @@ describe('ErrorReporterProxy', () => {
   describe('proxy()', () => {
     it('should call function after init', (done: jest.DoneCallback) => {
       const mockErrorReporter = new SentryErrorReporter();
-      const mockUser = {
+      const mockContextInfo = {
         id: 111,
         username: 'mm',
         companyId: 222,
         email: 'xx',
+        env: 'xm-up',
+        version: '1.0.0',
       };
       const mockError = new Error('ddd');
       const proxy = new ErrorReporterProxy(true);
-      proxy.setUser(mockUser);
+      proxy.setContextInfo(mockContextInfo);
       proxy.report(mockError);
       expect(proxy['_isInit']).toBeFalsy();
       expect(mockErrorReporter.init).toBeCalled();
-      expect(mockErrorReporter.setUser).not.toBeCalled();
+      expect(mockErrorReporter.setContextInfo).not.toBeCalled();
       expect(mockErrorReporter.report).not.toBeCalled();
       setTimeout(() => {
         expect(proxy['_isInit']).toBeTruthy();
-        expect(mockErrorReporter.setUser).toBeCalledWith(mockUser);
+        expect(mockErrorReporter.setContextInfo).toBeCalledWith(
+          mockContextInfo,
+        );
         expect(mockErrorReporter.report).toBeCalledWith(mockError);
         done();
       });
