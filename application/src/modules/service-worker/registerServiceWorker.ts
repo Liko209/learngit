@@ -101,6 +101,13 @@ function registerValidSW(
     .register(swUrl)
     .then((registration: ServiceWorkerRegistration) => {
       console.log(`${logTag}registered ${swUrl}`);
+      const beforeunloadHandler = () => {
+        console.log(`${logTag}beforeunload, waiting ${!!registration.waiting}`);
+        registration.waiting &&
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+      };
+      window.addEventListener('beforeunload', beforeunloadHandler);
+
       registration.onupdatefound = () => {
         console.log(`${logTag}onupdatefound`);
         const installingWorker = registration.installing;
