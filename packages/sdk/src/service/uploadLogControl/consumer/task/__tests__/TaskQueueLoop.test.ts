@@ -1,12 +1,16 @@
 import { TaskQueueLoop } from '../TaskQueueLoop';
-import { Task, OnTaskCompletedController, OnTaskErrorController } from '../types';
+import {
+  Task,
+  OnTaskCompletedController,
+  OnTaskErrorController,
+} from '../types';
 
 const createCallbackObserver = (): [Function, Promise<any>] => {
-  let callback = () => { };
+  let callback = () => {};
   let called = false;
-  const observer = new Promise((resolve) => {
+  const observer = new Promise(resolve => {
     callback = async () => {
-      !called && await resolve();
+      !called && (await resolve());
       called = true;
     };
   });
@@ -14,13 +18,12 @@ const createCallbackObserver = (): [Function, Promise<any>] => {
 };
 
 describe('TaskQueueLoop', () => {
-
   describe('sleep()', () => {
     it('should sleep until timeout', async () => {
       const taskQueueLoop = new TaskQueueLoop();
       taskQueueLoop.sleep(100);
       expect(taskQueueLoop.isAvailable()).toBeFalsy();
-      await new Promise((resolve) => {
+      await new Promise(resolve => {
         setTimeout(resolve, 101);
       });
       expect(taskQueueLoop.isAvailable()).toBeTruthy();
@@ -31,7 +34,7 @@ describe('TaskQueueLoop', () => {
       taskQueueLoop.sleep(100);
       taskQueueLoop.sleep(100);
       expect(taskQueueLoop.isAvailable()).toBeFalsy();
-      await new Promise((resolve) => {
+      await new Promise(resolve => {
         setTimeout(resolve, 101);
       });
       expect(taskQueueLoop.isAvailable()).toBeTruthy();
@@ -45,36 +48,44 @@ describe('TaskQueueLoop', () => {
       taskQueueLoop.wake();
       expect(taskQueueLoop.isAvailable()).toBeTruthy();
     });
-
   });
 
   describe('loop()', () => {
     it('should loop normal', async () => {
       const [callback, observer] = createCallbackObserver();
-      const spyLoopCompleted = jest.fn();
+      const spyLoopCompleted = jest.fn().mockResolvedValue('');
       const taskQueueLoop = new TaskQueueLoop()
-        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.abort())
-        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnTaskError(
+          async (
+            task: Task,
+            error: Error,
+            loopController: OnTaskErrorController,
+          ) => await loopController.abort(),
+        )
+        .setOnTaskCompleted(
+          async (task: Task, loopController: OnTaskCompletedController) =>
+            await loopController.next(),
+        )
         .setOnLoopCompleted(async () => {
           spyLoopCompleted();
           callback();
         });
       const tasks = [
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
       ];
       tasks.forEach(task => taskQueueLoop.addTail(task));
       await observer;
@@ -101,34 +112,43 @@ describe('TaskQueueLoop', () => {
     it('should abort correctly when throw error: task1=>success, task2=>error, errorHandler.abort, task2.onAbort, task3=>task3.onExecute()', async () => {
       const [callback, observer] = createCallbackObserver();
       const taskQueueLoop = new TaskQueueLoop()
-        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.abort())
-        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnTaskError(
+          async (
+            task: Task,
+            error: Error,
+            loopController: OnTaskErrorController,
+          ) => await loopController.abort(),
+        )
+        .setOnTaskCompleted(
+          async (task: Task, loopController: OnTaskCompletedController) =>
+            await loopController.next(),
+        )
         .setOnLoopCompleted(async () => {
           callback();
         });
       const tasks = [
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
           .setOnExecute(async () => {
             throw new Error('testError');
           })
-          .setOnAbort(jest.fn())
-          .setOnError(async (error) => {
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(async error => {
             expect(error.message).toEqual('testError');
           })
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
       ];
       tasks.forEach(task => taskQueueLoop.addTail(task));
       await observer;
@@ -152,35 +172,44 @@ describe('TaskQueueLoop', () => {
     it('should abortAll correctly when throw error: task1=>success, task2=>error, errorHandler.abortAll, task2.onAbort, task3=>task3.onAbort()', async () => {
       const [callback, observer] = createCallbackObserver();
       const taskQueueLoop = new TaskQueueLoop()
-        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.abortAll())
-        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnTaskError(
+          async (
+            task: Task,
+            error: Error,
+            loopController: OnTaskErrorController,
+          ) => await loopController.abortAll(),
+        )
+        .setOnTaskCompleted(
+          async (task: Task, loopController: OnTaskCompletedController) =>
+            await loopController.next(),
+        )
         .setOnLoopCompleted(async () => {
           callback();
         });
       const tasks = [
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
           .setOnExecute(async () => {
             throw new Error('testError');
           })
-          .setOnAbort(jest.fn())
-          .setOnError(async (error) => {
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(async error => {
             expect(error.message).toEqual('testError');
             // await errorHandler.abortAll();
           })
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
       ];
       tasks.forEach(task => taskQueueLoop.addTail(task));
       await observer;
@@ -204,34 +233,43 @@ describe('TaskQueueLoop', () => {
     it('should ignore correctly when throw error: task1=>success, task2=>error, errorHandler.ignore, task2.onIgnore, task3=>task3.onExecute()', async () => {
       const [callback, observer] = createCallbackObserver();
       const taskQueueLoop = new TaskQueueLoop()
-        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.ignore())
-        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnTaskError(
+          async (
+            task: Task,
+            error: Error,
+            loopController: OnTaskErrorController,
+          ) => await loopController.ignore(),
+        )
+        .setOnTaskCompleted(
+          async (task: Task, loopController: OnTaskCompletedController) =>
+            await loopController.next(),
+        )
         .setOnLoopCompleted(async () => {
           callback();
         });
       const tasks = [
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
           .setOnExecute(async () => {
             throw new Error('testError');
           })
-          .setOnAbort(jest.fn())
-          .setOnError(async (error) => {
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(async error => {
             expect(error.message).toEqual('testError');
           })
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
       ];
       tasks.forEach(task => taskQueueLoop.addTail(task));
       await observer;
@@ -255,45 +293,53 @@ describe('TaskQueueLoop', () => {
     it('should retry N times correctly when throw error', async () => {
       const [callback, observer] = createCallbackObserver();
       const taskQueueLoop = new TaskQueueLoop()
-        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => {
-
-          const curTask = taskQueueLoop.getHead();
-          if (curTask.retryCount < 3) {
-            curTask.retryCount++;
-            await loopController.retry();
-          } else {
-            await loopController.abort();
-          }
-        })
-        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.next())
+        .setOnTaskError(
+          async (
+            task: Task,
+            error: Error,
+            loopController: OnTaskErrorController,
+          ) => {
+            const curTask = taskQueueLoop.getHead();
+            if (curTask.retryCount < 3) {
+              curTask.retryCount++;
+              await loopController.retry();
+            } else {
+              await loopController.abort();
+            }
+          },
+        )
+        .setOnTaskCompleted(
+          async (task: Task, loopController: OnTaskCompletedController) =>
+            await loopController.next(),
+        )
         .setOnLoopCompleted(async () => {
           callback();
         });
-      const mockExecute = jest.fn();
+      const mockExecute = jest.fn().mockResolvedValue('');
       const tasks = [
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
           .setOnExecute(async () => {
             mockExecute();
             throw new Error('testError');
           })
-          .setOnAbort(jest.fn())
-          .setOnError(async (error) => {
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(async error => {
             expect(error.message).toEqual('testError');
           })
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
       ];
       tasks.forEach(task => taskQueueLoop.addTail(task));
       await observer;
@@ -320,30 +366,39 @@ describe('TaskQueueLoop', () => {
     it('should abortAll task', async () => {
       const [callback, observer] = createCallbackObserver();
       const taskQueueLoop = new TaskQueueLoop()
-        .setOnTaskError(async (task: Task, error: Error, loopController: OnTaskErrorController) => await loopController.abortAll())
-        .setOnTaskCompleted(async (task: Task, loopController: OnTaskCompletedController) => await loopController.abortAll())
+        .setOnTaskError(
+          async (
+            task: Task,
+            error: Error,
+            loopController: OnTaskErrorController,
+          ) => await loopController.abortAll(),
+        )
+        .setOnTaskCompleted(
+          async (task: Task, loopController: OnTaskCompletedController) =>
+            await loopController.abortAll(),
+        )
         .setOnLoopCompleted(async () => {
           callback();
         });
       const tasks = [
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
         new Task()
-          .setOnExecute(jest.fn())
-          .setOnAbort(jest.fn())
-          .setOnError(jest.fn())
-          .setOnCompleted(jest.fn())
-          .setOnIgnore(jest.fn()),
+          .setOnExecute(jest.fn().mockResolvedValue(''))
+          .setOnAbort(jest.fn().mockResolvedValue(''))
+          .setOnError(jest.fn().mockResolvedValue(''))
+          .setOnCompleted(jest.fn().mockResolvedValue(''))
+          .setOnIgnore(jest.fn().mockResolvedValue('')),
       ];
       tasks.forEach(task => taskQueueLoop.addTail(task));
       await observer;
@@ -370,10 +425,7 @@ describe('TaskQueueLoop', () => {
   describe('addHead()', () => {
     it('should work correctly with IDque api', () => {
       const taskQueueLoop = new TaskQueueLoop();
-      const tasks = [
-        new Task(),
-        new Task(),
-      ];
+      const tasks = [new Task(), new Task()];
       taskQueueLoop.addHead(tasks[0]);
       expect(taskQueueLoop.getHead()).toEqual(tasks[0]);
       taskQueueLoop.addTail(tasks[1]);

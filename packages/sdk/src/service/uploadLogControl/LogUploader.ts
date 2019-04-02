@@ -1,13 +1,14 @@
-import {
-  ILogUploader,
-  LogEntity,
-  mainLogger,
-  HTTP_STATUS_CODE,
-} from 'foundation';
-import AccountService from '../account';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-03-24 11:06:33
+ * Copyright © RingCentral. All rights reserved.
+ */
 import axios, { AxiosError } from 'axios';
-import { AccountUserConfig } from '../../service/account/config';
+import { HTTP_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
 import { Api } from '../../api';
+import { AccountUserConfig } from '../../service/account/config';
+import AccountService from '../account';
+import { ILogUploader } from './consumer';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {

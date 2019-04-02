@@ -1,7 +1,6 @@
 import Factory, { Builder } from 'factory.ts';
 import { LogEntity, LogConfig } from '../types';
 import { LOG_LEVEL } from '../constants';
-import { PersistenceLogEntity } from '../consumer';
 const logEntityBuilder: Builder<LogEntity> = {
   id: Factory.each(i => String(i)),
   level: LOG_LEVEL.ALL,
@@ -25,37 +24,9 @@ const logConfigBuilder: Builder<LogConfig> = {
     enabled: false,
   },
   consumer: {
-    enabled: false,
-    memoryCountThreshold: 100,
-    memorySizeThreshold: 1024 * 1024,
-    combineSizeThreshold: 50 * 1024,
-    uploadQueueLimit: 4,
-    autoFlushTimeCycle: 30 * 1000,
+    enabled: true,
   },
-  logUploader: null,
-  uploadAccessor: null,
-  persistence: null,
   decorators: [],
 };
 
-const consumerConfigBuilder = {
-  enabled: false,
-  memoryCountThreshold: 100,
-  memorySizeThreshold: 1024 * 1024,
-  combineSizeThreshold: 50 * 1024,
-  uploadQueueLimit: 4,
-  autoFlushTimeCycle: 30 * 1000,
-};
-
 export const logConfigFactory = Factory.makeFactory(logConfigBuilder);
-export const consumerConfigFactory = Factory.makeFactory(consumerConfigBuilder);
-
-const persistenceLogBuilder: Builder<PersistenceLogEntity> = {
-  id: Factory.each(i => i),
-  sessionId: 'x1',
-  startTime: Factory.each(i => Date.now() + i * 600 * 1000),
-  endTime: Factory.each(i => Date.now() + i * 1000 * 1000),
-  logs: logEntityFactory.buildList(10),
-};
-
-export const persistenceLogFactory = Factory.makeFactory(persistenceLogBuilder);
