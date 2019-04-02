@@ -11,7 +11,13 @@ import {
   requestServerStatus,
 } from './ringcentral/login';
 import { IPlatformHandleDelegate } from './ringcentral/IPlatformHandleDelegate';
-import { loginGlip, indexData, initialData, remainingData } from './glip/user';
+import {
+  loginGlip,
+  indexData,
+  initialData,
+  remainingData,
+  glipStatus,
+} from './glip/user';
 export { default as Api } from './api';
 export {
   loginRCByPassword,
@@ -24,6 +30,7 @@ export {
   IPlatformHandleDelegate,
   ITokenModel,
   requestServerStatus,
+  glipStatus,
 };
 export * from './handlers';
 export * from './parser';

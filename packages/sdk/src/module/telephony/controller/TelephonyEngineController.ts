@@ -8,11 +8,12 @@ import {
   IRequest,
   ITelephonyDaoDelegate,
 } from 'foundation';
-import RTCEngine from 'voip';
+import { RTCEngine } from 'voip';
 import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { TelephonyLogController } from './TelephonyLogController';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
   async doHttpRequest(request: IRequest) {
@@ -61,6 +62,7 @@ class TelephonyEngineController {
   }
 
   initEngine() {
+    RTCEngine.setLogger(new TelephonyLogController());
     this.rtcEngine = RTCEngine.getInstance();
     this.rtcEngine.setNetworkDelegate(this.voipNetworkDelegate);
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);

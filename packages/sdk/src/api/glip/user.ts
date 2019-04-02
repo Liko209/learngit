@@ -140,7 +140,14 @@ function remainingData(params: object, requestConfig = {}, headers = {}) {
   );
 }
 
-// plugins data
+function glipStatus() {
+  return Api.glipNetworkClient.http({
+    via: NETWORK_VIA.HTTP,
+    path: '/status',
+    method: NETWORK_METHOD.GET,
+    authFree: true,
+  });
+}
 
 function canConnect(
   params: CanConnectParasType,
@@ -156,4 +163,11 @@ function canConnect(
   );
 }
 
-export { loginGlip, indexData, initialData, remainingData, canConnect };
+export {
+  loginGlip,
+  indexData,
+  initialData,
+  remainingData,
+  canConnect,
+  glipStatus,
+};
