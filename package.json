@@ -36,7 +36,7 @@
     "bt": "lerna bootstrap --hoist --no-ci -- --cache-min 9999999",
     "raise-coverage": "node scripts/raise-coverage",
     "generate": "plop --plopfile scripts/generators/index.js",
-    "tsc": "tsc -v && concurrently \"tsc -p application/tsconfig.dev.json\" \"tsc -p packages/sdk/tsconfig.dev.json\" \"tsc -p packages/jui/tsconfig.dev.json\" \"tsc -p packages/voip/tsconfig.dev.json\" \"tsc -p packages/foundation/tsconfig.dev.json\"",
+    "tsc": "tsc -v && concurrently \"./node_modules/.bin/tsc -p application/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/sdk/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/jui/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/voip/tsconfig.dev.json\" \"./node_modules/.bin/tsc -p packages/foundation/tsconfig.dev.json\"",
     "version": "npx lerna version --no-git-tag-version --exact --yes",
     "webpack": "cd application && npm run webpack",
     "terser": "3.14.1",
@@ -48,9 +48,9 @@
     "@jest-runner/electron": "1.1.1",
     "@types/enzyme": "3.1.14",
     "@types/glob": "7.1.1",
-    "@types/jest": "23.3.8",
-    "@types/node": "10.12.1",
-    "@types/react": "16.8.5",
+    "@types/jest": "24.0.11",
+    "@types/node": "11.11.3",
+    "@types/react": "16.8.8",
     "@types/react-dom": "16.8.2",
     "@types/react-transition-group": "2.0.15",
     "@types/webpack-env": "1.13.6",
@@ -96,7 +96,7 @@
     "tslint": "5.11.0",
     "tslint-config-airbnb": "5.11.0",
     "tslint-react": "3.6.0",
-    "typescript": "3.3.3"
+    "typescript": "3.3.3333"
   },
   "husky": {
     "hooks": {
