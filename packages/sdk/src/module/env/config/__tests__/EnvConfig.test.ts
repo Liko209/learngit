@@ -5,7 +5,7 @@
  */
 
 import { EnvConfig } from '../EnvConfig';
-import { CONFIG_KEYS } from '../configKeys';
+import { CONFIG_KEYS } from '../ConfigKeys';
 import { GlobalConfigService } from '../../../config';
 
 jest.mock('../../../config/service/GlobalConfigService');
