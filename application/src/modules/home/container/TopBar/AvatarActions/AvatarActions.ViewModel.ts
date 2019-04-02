@@ -11,6 +11,11 @@ import storeManager from '@/store';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
+import { container } from 'framework';
+import { TelephonyService } from '@/modules/telephony/service';
+import { Dialog } from '@/containers/Dialog';
+import i18next from 'i18next';
+import { mainLogger } from 'sdk';
 
 const globalStore = storeManager.getGlobalStore();
 
@@ -26,6 +31,40 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
 
   @action
   handleSignOut = async () => {
+    let callCount = 0;
+    try {
+      const telephonyService = container.get(TelephonyService);
+      callCount = telephonyService.getAllCallCount();
+    } catch (e) {
+      mainLogger.info(
+        '[AvatarActionsViewModel] [UI TelephonyService] User has no Telephony permission: ${e}',
+      );
+    }
+
+    if (callCount > 0) {
+      Dialog.confirm({
+        title: i18next.t('telephony.prompt.LogoutTitle'),
+        content: i18next.t('telephony.prompt.LogoutContent'),
+        okText: i18next.t('telephony.prompt.LogoutOk'),
+        cancelText: i18next.t('common.dialog.cancel'),
+        onOK: () => {
+          mainLogger.info(
+            `[AvatarActionsViewModel] [UI TelephonyService] User confirmed to logout and current call count: ${callCount}`,
+          );
+          this._doLogout();
+        },
+        onCancel: () => {
+          mainLogger.info(
+            `[AvatarActionsViewModel] [UI TelephonyService] User canceled to logout and current call count: ${callCount}`,
+          );
+        },
+      });
+    } else {
+      this._doLogout();
+    }
+  }
+
+  private _doLogout = async () => {
     const authService: AuthService = AuthService.getInstance();
     await authService.logout();
     window.location.href = '/';
