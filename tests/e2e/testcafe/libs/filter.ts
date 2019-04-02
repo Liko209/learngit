@@ -1,5 +1,7 @@
 import { AssertionError } from "assert";
 import * as assert from "assert";
+import { ITestMeta } from "../v2/models";
+import * as _ from "lodash";
 
 /*
  * @Author: Potar He(Potar.He@ringcentral.com)
@@ -58,14 +60,23 @@ export function filterByTags(includeTags?: string[], excludeTags?: string[]): Ca
   return (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any): boolean => {
     let flag: boolean = true;
     const nameTags = parseFormalName(caseName);
+    const testMetaTags = getTagsFromMeta(testMeta);
     if (includeTags && includeTags.length > 0) {
-      flag = flag && hasAtLeastOneTagInTargetLists(includeTags, nameTags.tags, testMeta.tags, fixtureMeta.tags);
+      flag = flag && hasAtLeastOneTagInTargetLists(includeTags, nameTags.tags, testMetaTags);
     }
     if (excludeTags && excludeTags.length > 0) {
-      flag = flag && !hasAtLeastOneTagInTargetLists(excludeTags, nameTags.tags, testMeta.tags, fixtureMeta.tags);
+      flag = flag && !hasAtLeastOneTagInTargetLists(excludeTags, nameTags.tags, testMetaTags);
     }
     return flag;
   }
+}
+
+function getTagsFromMeta(meta: ITestMeta) {
+  let tags = [];
+  for (const key in meta) {
+    tags = _.union(tags, meta[key]);
+  }
+  return tags;
 }
 
 function hasAtLeastOneTagInTargetLists(tags: string[], ...targetLists) {
@@ -73,10 +84,10 @@ function hasAtLeastOneTagInTargetLists(tags: string[], ...targetLists) {
   assert.ok(targetLists.length > 0, 'required target tags')
   for (const targetList of targetLists) {
     if (targetList) {
-      flag = flag || tags.some(tag => targetList.some(item => tag == item));
+      flag = flag || tags.some(tag => targetList.some(item => tag.toLowerCase() == item.toLowerCase()));
     }
   }
-  return flag
+  return flag;
 }
 
 export function getTmtIds(tags: string[], prefix: string) {

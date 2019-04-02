@@ -53,7 +53,7 @@ export class DashboardHelper {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
-    const tags = parseFormalName(testRun.test.name).tags;
+    const tags = _.union(parseFormalName(testRun.test.name).tags, testRun.test.meta.caseIds);
     const userAgent = new UAParser(await H.getUserAgent());
 
     const beatsTest = new Test();
