@@ -18,7 +18,7 @@ const ThemeDecorator = storyFn => {
   );
 };
 
-const req = require.context('../src', true, /\.story\.tsx?$/);
+const req = require.context('../src/components/VirtualizedList', true, /\.story\.tsx?$/);
 
 function loadStories() {
   req.keys().forEach(filename => req(filename));

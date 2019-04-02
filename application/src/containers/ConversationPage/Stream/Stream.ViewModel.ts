@@ -274,6 +274,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _canHandleError(err: Error) {
     return (
+      true ||
       errorHelper.isBackEndError(err) ||
       errorHelper.isNetworkConnectionError(err)
     );
