@@ -66,8 +66,11 @@ const regExpEmojiOne = new RegExp(
 );
 
 // Ascii keys regular expression
+// Refer to the emojione.js code regAscii regular expressions for backend
 const regExpAscii = new RegExp(
-  `(^|\\s)${Object.keys(convertMapAscii).join('(?!\\S)|(^|\\s)')}(?!\\S)`,
+  `(^|\\s)${Object.keys(convertMapAscii).join(
+    '(?=\\s|$|[!,.?])|(^|\\s)',
+  )}(?=\\s|$|[!,.?])`,
   'g',
 );
 

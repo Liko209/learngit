@@ -82,6 +82,16 @@ type Palette = {
 type Theme = {
   palette: Palette;
 
+  radius: {
+    circle: string;
+    round: number;
+    zero: number;
+    sm: string;
+    md: string;
+    lg: string;
+    xl: string;
+  };
+
   shape: {
     borderRadius: number;
     border1: string;

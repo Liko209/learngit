@@ -59,11 +59,15 @@ class MemberHeader extends React.Component<
         {hasSearch && (
           <JuiProfileDialogContentMemberHeaderSearch>
             <JuiOutlineTextField
-              placeholder={t('people.team.searchMembers')}
+              InputProps={{
+                placeholder: t('people.team.searchMembers'),
+                inputProps: {
+                  maxLength: 30,
+                },
+              }}
+              onChange={onSearch}
               iconName="search"
               iconPosition="left"
-              maxLength={30}
-              onChange={onSearch}
               data-test-automation-id="profileDialogMemberSearch"
             />
           </JuiProfileDialogContentMemberHeaderSearch>

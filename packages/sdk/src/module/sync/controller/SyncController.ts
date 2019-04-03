@@ -26,13 +26,15 @@ import { PersonService } from '../../person';
 import { GroupService } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
-import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
 import { IndexRequestProcessor } from './IndexRequestProcessor';
 import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
+import { SyncGlobalConfig } from '../config';
+import { AccountService } from '../../../service/account/accountService';
+import socketManager from '../../../service/socket';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -57,6 +59,10 @@ class SyncController {
     }
   }
 
+  handleWindowFocused() {
+    this._onPageFocused();
+  }
+
   getIndexTimestamp() {
     if (AccountGlobalConfig.getUserDictionary()) {
       const syncConfig = new SyncUserConfig();
@@ -66,15 +72,19 @@ class SyncController {
   }
 
   updateIndexTimestamp(time: number, forceUpdate: boolean) {
-    mainLogger.log(
-      LOG_TAG,
-      `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
-    );
     const syncConfig = new SyncUserConfig();
     if (forceUpdate) {
+      mainLogger.log(
+        LOG_TAG,
+        `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
+      );
       syncConfig.setLastIndexTimestamp(time);
-      this.updateCanUpdateIndexTimeStamp(true);
+      socketManager.isConnected() && this.updateCanUpdateIndexTimeStamp(true);
     } else if (this.canUpdateIndexTimeStamp()) {
+      mainLogger.log(
+        LOG_TAG,
+        `updateIndexTimestamp time: ${time} forceUpdate:false`,
+      );
       syncConfig.setLastIndexTimestamp(time);
     }
   }
@@ -168,13 +178,17 @@ class SyncController {
     const executeFunc = async () => {
       progressBar.start();
       const { onIndexLoaded, onIndexHandled } = this._syncListener;
+      const syncConfig = new SyncUserConfig();
       // 5 minutes ago to ensure data is correct
       try {
         const result = await this.fetchIndexData(String(timeStamp - 300000));
         onIndexLoaded && (await onIndexLoaded(result));
         await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
         onIndexHandled && (await onIndexHandled());
+        syncConfig.updateIndexSucceed(true);
       } catch (error) {
+        this.updateCanUpdateIndexTimeStamp(false);
+        syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
       }
       progressBar.stop();
@@ -348,7 +362,7 @@ class SyncController {
       }
 
       if (staticHttpServer) {
-        NewGlobalConfig.setStaticHttpServer(staticHttpServer);
+        SyncGlobalConfig.setStaticHttpServer(staticHttpServer);
         notificationCenter.emitKVChange(
           CONFIG.STATIC_HTTP_SERVER,
           staticHttpServer,
@@ -360,6 +374,23 @@ class SyncController {
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });
+    }
+  }
+
+  private async _onPageFocused() {
+    this._checkIndex();
+  }
+
+  private async _checkIndex() {
+    const accountService: AccountService = AccountService.getInstance();
+    if (accountService.isGlipLogin()) {
+      const socketUserConfig = new SyncUserConfig();
+      const succeed = socketUserConfig.getIndexSucceed();
+
+      if (!succeed) {
+        mainLogger.info(LOG_TAG, ' _checkIndex, last index was not succeed');
+        await this.syncData();
+      }
     }
   }
 }

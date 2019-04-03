@@ -10,9 +10,10 @@ type JobInfo = {
   key: JOB_KEY;
   intervalSeconds: number;
   periodic: boolean;
-  retryTime: number;
-  executeFunc: (callback: (successful: boolean) => void) => any;
   needNetwork: boolean;
+  executeFunc: (callback: (successful: boolean) => void) => any;
+  retryForever?: boolean;
+  retryTime?: number;
   jobId?: NodeJS.Timeout;
   isExecuting?: boolean;
   isDropt?: boolean;

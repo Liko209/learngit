@@ -19,13 +19,14 @@ const { SERVICE } = service;
 
 class TokenRouteViewModel extends StoreViewModel {
   private _authService: AuthService = AuthService.getInstance();
+  private _LoggedInHandled: boolean = false;
   @observable isError: boolean = false;
 
   constructor() {
     super();
-    this.subscribeNotificationOnce(
-      SERVICE.FETCH_INDEX_DATA_DONE,
-      this.handleHasLoggedIn,
+    this.subscribeNotification(
+      SERVICE.LOGIN,
+      this.handleHasLoggedIn.bind(this),
     );
   }
 
@@ -40,16 +41,21 @@ class TokenRouteViewModel extends StoreViewModel {
   }
 
   @action.bound
-  async handleHasLoggedIn() {
+  async handleHasLoggedIn(isRCOnlyMode: boolean) {
+    if (this._LoggedInHandled) {
+      return;
+    }
     const profileService: ProfileService = ProfileService.getInstance();
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
+
     await profileService.markMeConversationAsFav().catch((error: Error) => {
       mainLogger
         .tags('TokenRoute.ViewModel')
         .info('markMeConversationAsFav fail:', error);
     });
     this._redirect(state);
+    this._LoggedInHandled = true;
   }
 
   unifiedLogin = async () => {

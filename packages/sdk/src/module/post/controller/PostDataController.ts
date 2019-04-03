@@ -18,6 +18,7 @@ import { INDEX_POST_MAX_SIZE } from '../constant';
 import { IRawPostResult, Post } from '../entity';
 import { GroupService } from '../../group';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { SortUtils } from '../../../framework/utils';
 
 const TAG = 'PostDataController';
 
@@ -63,10 +64,18 @@ class PostDataController {
       this._handleModifiedDiscontinuousPosts(
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
-      await this.handelPostsOverThreshold(posts, maxPostsExceed);
+      const result = await this.handelPostsOverThreshold(posts, maxPostsExceed);
       await this.preInsertController.bulkDelete(posts);
       posts = await this.handleIndexModifiedPosts(posts);
-      return await this.filterAndSavePosts(posts, true);
+      posts = await this.filterAndSavePosts(posts, true);
+      if (result && result.deleteMap.size > 0) {
+        const groupService: GroupService = GroupService.getInstance();
+        result.deleteMap.forEach((value: number[], key: number) => {
+          groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
+          notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
+        });
+      }
+      return posts;
     }
     return [];
   }
@@ -129,7 +138,7 @@ class PostDataController {
         posts.length
       }`,
     );
-    if (maxPostsExceed && posts.length >= INDEX_POST_MAX_SIZE) {
+    if (maxPostsExceed || posts.length >= INDEX_POST_MAX_SIZE) {
       const groupPostsNumber: { [groupId: number]: number[] } = {};
       posts.forEach((post: Post) => {
         groupPostsNumber[post.group_id]
@@ -144,7 +153,8 @@ class PostDataController {
         }
       });
       if (shouldRemoveGroupIds.length) {
-        let deleteIds: number[] = [];
+        let deletePostIds: number[] = [];
+        const deleteMap: Map<number, number[]> = new Map();
         // TODO Need to refactor db interface to support delete by where
         // Will do this refactor after jerry refactor the dao layer
         await Promise.all(
@@ -152,15 +162,17 @@ class PostDataController {
             const postIds = await daoManager
               .getDao(PostDao)
               .queryPostIdsByGroupId(id);
-            deleteIds = deleteIds.concat(postIds);
+            deletePostIds = deletePostIds.concat(postIds);
+            deleteMap.set(id, postIds);
           }),
         );
-        if (deleteIds.length) {
-          this.entitySourceController.bulkDelete(deleteIds);
+        if (deletePostIds.length > 0) {
+          await this.entitySourceController.bulkDelete(deletePostIds);
         }
+        return { deleteMap };
       }
     }
-    return posts;
+    return undefined;
   }
 
   protected async handleIndexModifiedPosts(posts: Post[]) {
@@ -175,6 +187,11 @@ class PostDataController {
     });
 
     const removedIds = await this.removeDiscontinuousPosts(groupPosts);
+    mainLogger.info(
+      TAG,
+      'handleIndexModifiedPosts remove post ids:',
+      removedIds,
+    );
     const resultPosts = posts.filter(
       (post: Post) => !removedIds.includes(post.id),
     );
@@ -239,6 +256,10 @@ class PostDataController {
     return normalPosts;
   }
 
+  postCreationTimeSortingFn = (lhs: Post, rhs: Post) => {
+    return SortUtils.sortModelByKey(lhs, rhs, 'created_at', false);
+  }
+
   /**
    * 1, Check whether the group has discontinues post,
    *    the condition is the modification time is different with the creation time;
@@ -284,14 +305,24 @@ class PostDataController {
               }
             });
           } else {
-            // If do the message preview feature, should modify this code
-            deleteGroupIdSet.add(groupId);
-            deletePostIds.concat(posts.map((post: Post) => post.id));
+            const sortedPost = posts.sort(this.postCreationTimeSortingFn);
+            const index = sortedPost.findIndex(
+              (post: Post) => post.created_at === post.modified_at,
+            );
+            if (index !== -1) {
+              const deletePosts = sortedPost.slice(0, index);
+              deleteGroupIdSet.add(groupId);
+              deletePostIds.concat(deletePosts.map((post: Post) => post.id));
+            }
           }
         }
       }),
     );
-
+    mainLogger.info(
+      TAG,
+      'handleIndexModifiedPosts remove group ids:',
+      deleteGroupIdSet,
+    );
     if (deleteGroupIdSet.size > 0) {
       // mark group has more as true
       notificationCenter.emit(

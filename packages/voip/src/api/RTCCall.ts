@@ -62,6 +62,7 @@ class RTCCall {
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
   private _rtcMediaStatsManager: RTCMediaStatsManager;
+  private _isReinviteForHoldOrUnhold: boolean;
 
   constructor(
     isIncoming: boolean,
@@ -146,6 +147,10 @@ class RTCCall {
     this._fsm.reject();
   }
 
+  ignore(): void {
+    this._fsm.ignore();
+  }
+
   sendToVoicemail(): void {
     this._fsm.sendToVoicemail();
   }
@@ -167,10 +172,12 @@ class RTCCall {
   }
 
   hold(): void {
+    this._isReinviteForHoldOrUnhold = true;
     this._fsm.hold();
   }
 
   unhold(): void {
+    this._isReinviteForHoldOrUnhold = true;
     this._fsm.unhold();
   }
 
@@ -200,6 +207,14 @@ class RTCCall {
       return;
     }
     this._fsm.transfer(target);
+  }
+
+  forward(target: string): void {
+    if (target.length === 0 || !this._isIncomingCall) {
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.FORWARD);
+      return;
+    }
+    this._fsm.forward(target);
   }
 
   dtmf(digits: string): void {
@@ -319,6 +334,9 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
       this._onTransferAction(target);
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.FORWARD_ACTION, (target: string) => {
+      this._onForwardAction(target);
     });
     this._fsm.on(CALL_FSM_NOTIFY.PARK_ACTION, () => {
       this._onParkAction();
@@ -462,11 +480,17 @@ class RTCCall {
   }
 
   private _onSessionReinviteAccepted(session: any) {
-    this._onCallActionSuccess(this._getSessionReinviteAction(session));
+    if (this._isReinviteForHoldOrUnhold) {
+      this._onCallActionSuccess(this._getSessionReinviteAction(session));
+      this._isReinviteForHoldOrUnhold = false;
+    }
   }
 
   private _onSessionReinviteFailed(session: any) {
-    this._onCallActionFailed(this._getSessionReinviteAction(session));
+    if (this._isReinviteForHoldOrUnhold) {
+      this._onCallActionFailed(this._getSessionReinviteAction(session));
+      this._isReinviteForHoldOrUnhold = false;
+    }
   }
 
   // fsm listener
@@ -500,6 +524,10 @@ class RTCCall {
 
   private _onTransferAction(target: string) {
     this._callSession.transfer(target);
+  }
+
+  private _onForwardAction(target: string) {
+    this._callSession.forward(target);
   }
 
   private _onParkAction() {

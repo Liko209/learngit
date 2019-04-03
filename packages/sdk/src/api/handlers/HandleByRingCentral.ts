@@ -58,12 +58,12 @@ const HandleByRingCentral = new class extends AbstractHandleType {
       try {
         if (this.platformHandleDelegate) {
           const refreshedToken = await this.platformHandleDelegate.refreshRCToken();
-          refreshedToken ? resolve(refreshedToken) : reject(refreshedToken);
+          refreshedToken ? resolve(refreshedToken) : reject();
         } else {
-          reject(token);
+          reject();
         }
-      } catch (err) {
-        reject(token);
+      } catch (errorCode) {
+        reject(errorCode);
       }
     });
   }
@@ -78,11 +78,11 @@ const HandleByRingCentral = new class extends AbstractHandleType {
     this.platformHandleDelegate.checkServerStatus(callback);
   }
 
-  onRefreshTokenFailure = () => {
+  onRefreshTokenFailure = (forceLogout: boolean) => {
     if (!this.platformHandleDelegate) {
       return;
     }
-    this.platformHandleDelegate.onRefreshTokenFailure();
+    this.platformHandleDelegate.onRefreshTokenFailure(forceLogout);
   }
 }();
 

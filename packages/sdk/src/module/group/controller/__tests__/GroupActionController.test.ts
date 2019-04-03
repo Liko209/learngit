@@ -375,7 +375,7 @@ describe('GroupFetchDataController', () => {
       );
     });
   });
-  describe('removeTeamsByIds()', async () => {
+  describe('removeTeamsByIds()', () => {
     it('should not do notify', async () => {
       daoManager.getDao.mockReturnValueOnce(groupDao);
       daoManager.getDao.mockReturnValueOnce(groupConfigDao);

@@ -19,6 +19,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { TAB_CONFIG } from './config';
 import { Props } from './types';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -136,6 +137,13 @@ class ItemListViewModel extends StoreViewModel<Props> {
     };
 
     const transformFunc = (model: Item) => {
+      if (
+        this._type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
+        this._type === RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES
+      ) {
+        model[sortKey] =
+          FileItemUtils.getVersionDate(model) || model.created_at;
+      }
       return {
         id: model.id,
         sortValue: model.id,
@@ -174,7 +182,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
       entityName: ENTITY_NAME.ITEM,
       eventName: ItemNotification.getItemNotificationKey(typeId, groupId),
       hasMoreDown: true,
-      hasMoreUp: false,
+      hasMoreUp: true,
     });
   }
 
@@ -194,6 +202,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
           (this._getFilterFunc(groupId, type) as (valid: Item) => boolean)(
             item,
           );
+        break;
       default:
         isValidItem =
           isValidItem &&
@@ -223,20 +232,17 @@ class ItemListViewModel extends StoreViewModel<Props> {
   }
 
   @computed
-  get dataSource() {
-    return this;
-  }
-
-  @computed
   get getIds() {
     return this._sortableDataHandler.sortableListStore.getIds;
   }
 
-  size() {
+  @computed
+  get size() {
     return this._sortableDataHandler.sortableListStore.size;
   }
 
-  total() {
+  @computed
+  get total() {
     return this._total;
   }
 
@@ -268,23 +274,22 @@ class ItemListViewModel extends StoreViewModel<Props> {
   }
 
   @action
-  loadMore = async (startIndex: number, stopIndex: number) => {
+  loadMore = async () => {
     this._loadingMoreDown = true;
-    await this._sortableDataHandler.fetchData(
-      QUERY_DIRECTION.NEWER,
-      stopIndex - startIndex + 1,
-    );
+    await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER, 20);
     this._loadingMoreDown = false;
   }
 
   @action
-  async loadInitialData() {
+  loadInitialData = async () => {
     this._loadingContent = true;
     await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
+    this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
     this._loadingContent = false;
   }
 
   dispose() {
+    super.dispose();
     return this._sortableDataHandler.dispose();
   }
 }

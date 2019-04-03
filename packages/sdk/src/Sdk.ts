@@ -25,7 +25,7 @@ import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
-import { AccountService } from './service';
+import { AccountService, AuthService } from './service';
 import { DataMigration, UserConfigService } from './module/config';
 import { setGlipToken } from './authenticator/utils';
 import { AuthUserConfig } from './service/auth/config';
@@ -94,7 +94,12 @@ class Sdk {
     const loginResp = await this.accountManager.syncLogin(
       AutoAuthenticator.name,
     );
-    if (loginResp && loginResp.success) {
+
+    if (loginResp.isRCOnlyMode) {
+      this.accountManager.updateSupportedServices();
+      const authService: AuthService = AuthService.getInstance();
+      authService.reLoginGlip();
+    } else if (loginResp && loginResp.success) {
       // TODO replace all LOGIN listen on notificationCenter
       // with accountManager.on(EVENT_LOGIN)
       this.accountManager.updateSupportedServices();
@@ -102,7 +107,7 @@ class Sdk {
     }
   }
 
-  async onAuthSuccess() {
+  async onAuthSuccess(isRCOnlyMode: boolean) {
     // need to set token if it's not first login
     if (AccountGlobalConfig.getUserDictionary()) {
       const authConfig = new AuthUserConfig();
@@ -110,6 +115,14 @@ class Sdk {
         rcToken: authConfig.getRcToken(),
         glipToken: authConfig.getGlipToken(),
       });
+    }
+
+    if (isRCOnlyMode) {
+      this.accountManager.updateSupportedServices();
+      notificationCenter.emitKVChange(SERVICE.LOGIN, isRCOnlyMode);
+      const authService: AuthService = AuthService.getInstance();
+      authService.scheduleReLoginGlipJob();
+      return;
     }
 
     await this.syncService.syncData({

@@ -102,7 +102,10 @@ export class SocketManager {
     //  TO-DO: to be test. Should get this event once
     // 1. get scoreboard event from IDL
     // 2. get socket reconnect event
-    notificationCenter.on(SERVICE.LOGIN, () => {
+    notificationCenter.on(SERVICE.LOGIN, (isRCOnlyMode: boolean) => {
+      if (isRCOnlyMode) {
+        return;
+      }
       this._onLogin();
     });
 
@@ -347,7 +350,7 @@ export class SocketManager {
   private _stopActiveFSM() {
     notificationCenter.emitKVChange(SERVICE.STOPPING_SOCKET);
     if (this.activeFSM) {
-      this.activeFSM.stop();
+      this.activeFSM.stopFSM();
       this.activeFSM = null;
     }
     if (this._canReconnectController) {
@@ -388,7 +391,7 @@ export class SocketManager {
   }
 
   private _restartFSM() {
-    this.info('restartFSM ', this._isScreenLocked);
+    this.info('restartFSM _isScreenLocked:', this._isScreenLocked);
     if (!this._isScreenLocked) {
       this._stopActiveFSM();
       this._startFSM();

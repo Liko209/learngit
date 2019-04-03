@@ -5,6 +5,7 @@ import {
   inject,
   injectable,
   interfaces,
+  METADATA_KEY,
 } from 'inversify';
 import {
   provide,
@@ -30,4 +31,5 @@ export {
   buildProviderModule,
   autoProvide,
   inject,
+  METADATA_KEY,
 };

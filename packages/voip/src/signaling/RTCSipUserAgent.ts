@@ -136,6 +136,12 @@ class RTCSipUserAgent extends EventEmitter2 implements IRTCUserAgent {
         this.emit(UA_EVENT.REG_FAILED, response, cause);
       },
     );
+    this._webphone.userAgent.on(
+      WEBPHONE_REGISTER_EVENT.INVITE,
+      (session: any) => {
+        this.emit(UA_EVENT.RECEIVE_INVITE, session);
+      },
+    );
     if (this._webphone.userAgent.transport) {
       this._initTransportListener();
     } else {

@@ -9,6 +9,7 @@ import {
   loginGlip,
   loginGlip2ByPassword,
   loginRCByPassword,
+  glipStatus,
   Api,
 } from '../../../api';
 import {
@@ -21,7 +22,8 @@ import notificationCenter from '../../notificationCenter';
 import serviceManager from '../../serviceManager';
 import AuthService from '..';
 import { AccountManager } from '../../../framework';
-import { AuthUserConfig } from '../../auth/config';
+import { jobScheduler } from '../../../framework/utils/jobSchedule';
+import { mainLogger } from 'foundation/src';
 
 jest.mock('foundation');
 jest.mock('../../../api');
@@ -132,6 +134,47 @@ describe('AuthService', () => {
     it('should call accountManger.isLoggedIn()', () => {
       authService.isLoggedIn();
       expect(accountManager.isLoggedIn).toHaveBeenCalled();
+    });
+  });
+
+  describe('scheduleReLoginGlipJob', () => {
+    it('should schedule job', () => {
+      jest
+        .spyOn(jobScheduler, 'scheduleAndIgnoreFirstTime')
+        .mockImplementationOnce(() => {});
+      authService.scheduleReLoginGlipJob();
+      expect(jobScheduler.scheduleAndIgnoreFirstTime).toBeCalled();
+    });
+  });
+
+  describe('reLoginGlip', () => {
+    beforeAll(() => {
+      jest.spyOn(authService['_accountManager'], 'reLogin');
+    });
+    it('should return true when re login success', async () => {
+      glipStatus.mockReturnValueOnce('OK');
+      authService['_accountManager'].reLogin.mockReturnValueOnce(true);
+      expect(await authService.reLoginGlip()).toBeTruthy();
+    });
+
+    it('should return false when glip status failed', async () => {
+      glipStatus.mockReturnValueOnce('error');
+      expect(await authService.reLoginGlip()).toBeFalsy();
+    });
+
+    it('should return false when re login glip failed', async () => {
+      glipStatus.mockReturnValueOnce('OK');
+      authService['_accountManager'].reLogin.mockReturnValueOnce(false);
+      expect(await authService.reLoginGlip()).toBeFalsy();
+    });
+
+    it('should return false when crash', async () => {
+      glipStatus.mockReturnValueOnce('OK');
+      jest.spyOn(mainLogger, 'tags').mockReturnValueOnce(mainLogger);
+      authService['_accountManager'].reLogin.mockImplementationOnce(() => {
+        throw Error('error');
+      });
+      expect(await authService.reLoginGlip()).toBeFalsy();
     });
   });
 });

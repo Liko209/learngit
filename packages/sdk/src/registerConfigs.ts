@@ -9,6 +9,7 @@ import {
   AutoAuthenticator,
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
+  ReLoginAuthenticator,
 } from './authenticator';
 import { daoManager } from './dao';
 import DaoManager from './dao/DaoManager';
@@ -18,7 +19,6 @@ import Sdk from './Sdk';
 import AccountService from './service/account';
 import AuthService from './service/auth';
 import { CompanyService } from './module/company';
-import ConfigService from './service/config';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
 import { PresenceService } from './module/presence';
@@ -45,12 +45,9 @@ const registerConfigs = {
     { name: UserConfigService.name, value: UserConfigService },
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
-    {
-      name: AutoAuthenticator.name,
-      value: AutoAuthenticator,
-      injects: [DaoManager.name],
-    },
+    { name: AutoAuthenticator.name, value: AutoAuthenticator },
     { name: UnifiedLoginAuthenticator.name, value: UnifiedLoginAuthenticator },
+    { name: ReLoginAuthenticator.name, value: ReLoginAuthenticator },
 
     // Account
     { name: RCAccount.name, value: RCAccount },
@@ -69,11 +66,6 @@ const registerConfigs = {
     { name: PermissionService.name, value: PermissionService },
     { name: GroupService.name, value: GroupService },
     { name: RcInfoService.name, value: RcInfoService },
-    {
-      name: ConfigService.name,
-      value: ConfigService,
-      injects: [AuthService.name],
-    },
     {
       name: AuthService.name,
       value: AuthService,

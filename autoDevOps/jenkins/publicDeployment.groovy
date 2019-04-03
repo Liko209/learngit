@@ -34,15 +34,16 @@ class Context {
     String buildDirectory
     String whiteListFile
     String buildPackageName
+    String electronBuildDirectory
 
     URI[] deployTargets
     String deployCredentialId
     String deployDirectory
+    String[] electronBuildUrls
 }
 
 
 Context context = new Context(
-
     buildNode: params.BUILD_NODE ?: env.BUILD_NODE,
     timestamp: System.currentTimeMillis(),
     timeLabel: new Date().format("yyyyMMddhhmmss", TimeZone.getTimeZone("Asia/Shanghai")),
@@ -56,10 +57,12 @@ Context context = new Context(
 
     buildDirectory: 'application/build',
     whiteListFile: 'application/build/whiteListedId.json',
+    electronBuildDirectory: 'application/build/downloads',
 
-    deployTargets:  params.DEPLOY_TARGETS.split('\n').collect{ new URI(it) },
+    deployTargets:  params.DEPLOY_TARGETS.trim().split('\n').collect{ new URI(it) },
     deployCredentialId: params.DEPLOY_CREDENTIAL,
     deployDirectory: params.DEPLOY_DIRECTORY,
+    electronBuildUrls: params.ELECTRON_BUILD_URLS.trim().split('\n'),
 )
 
 
@@ -89,7 +92,6 @@ def checkoutStage(Context context) {
 
 def installDependencyStage(Context context) {
     sh "echo 'registry=${context.npmRegistry}' > .npmrc"
-    sh "[ -f package-lock.json ] && rm package-lock.json || true"
     sshagent (credentials: [context.gitCredentialId]) {
         sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
         sh 'npm install --ignore-scripts --unsafe-perm'
@@ -106,10 +108,16 @@ def buildStage(Context context) {
     sh 'npm run build:public'
     // write white list file
     writeFile file: context.whiteListFile, text: context.whiteList, encoding: 'utf-8'
+    // download electron clients
+    sh "mkdir -p ${context.electronBuildDirectory}"
+    context.electronBuildUrls.each { url ->
+        sh "wget --no-check-certificate -P ${context.electronBuildDirectory} ${url}"
+    }
     // update version info
     sh "sed -i 's/{{deployedCommit}}/${context.gitHead.substring(0,9)}/;s/{{deployedTime}}/${context.timestamp}/' ${context.buildDirectory}/static/js/versionInfo.*.chunk.js || true"
+    sh "sed -i 's/{{buildCommit}}/${context.gitHead.substring(0,9)}/;s/{{buildTime}}/${context.timestamp}/' ${context.buildDirectory}/static/js/versionInfo.*.chunk.js || true"
     // make package
-    context.buildPackageName = "${context.gitBranch}-${context.timeLabel}.tar.gz".toString()
+    context.buildPackageName = "${context.gitBranch}-${context.gitHead}-${context.timeLabel}.tar.gz".toString()
     sh "tar -czvf ${context.buildPackageName} -C ${context.buildDirectory} ."
     // archive for trace back
     archiveArtifacts artifacts: context.buildPackageName, fingerprint: true
@@ -117,6 +125,8 @@ def buildStage(Context context) {
 
 def deployStage(Context context) {
     context.deployTargets.each { deployTarget ->
+        // ensure dir exists
+        sshCmd(deployTarget, context.deployCredentialId, "mkdir -p ${context.deployDirectory}".toString())
         // clean old deployment
         // TODO: maybe we should make a backup
         sshCmd(deployTarget, context.deployCredentialId, "rm -rf ${context.deployDirectory}/*".toString())
@@ -130,9 +140,9 @@ def deployStage(Context context) {
 }
 
 node(context.buildNode) {
-    prepareStage(context)
-    checkoutStage(context)
-    installDependencyStage(context)
-    buildStage(context)
-    deployStage(context)
+    stage('prepare') {prepareStage(context)}
+    stage('checkout') {checkoutStage(context)}
+    stage('install dependencies') {installDependencyStage(context)}
+    stage('build') {buildStage(context)}
+    stage('deploy') {deployStage(context)}
 }

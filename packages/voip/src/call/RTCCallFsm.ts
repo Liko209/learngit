@@ -16,8 +16,10 @@ const CallFsmEvent = {
   MUTE: 'muteEvent',
   UNMUTE: 'unmuteEvent',
   TRANSFER: 'transferEvent',
+  FORWARD: 'forwardEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
+  IGNORE: 'ignoreEvent',
   SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
   HOLD: 'holdEvent',
   UNHOLD: 'unholdEvent',
@@ -83,6 +85,12 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     });
   }
 
+  public ignore() {
+    this._eventQueue.push({ name: CallFsmEvent.IGNORE }, () => {
+      this._callFsmTable.ignore();
+    });
+  }
+
   public sendToVoicemail() {
     this._eventQueue.push({ name: CallFsmEvent.SEND_TO_VOICEMAIL }, () => {
       this._onSendToVoicemail();
@@ -139,6 +147,15 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
       { name: CallFsmEvent.TRANSFER, params: target },
       (params: any) => {
         this._onTransfer(params);
+      },
+    );
+  }
+
+  forward(target: string): void {
+    this._eventQueue.push(
+      { name: CallFsmEvent.FORWARD, params: target },
+      (params: any) => {
+        this._onForward(params);
       },
     );
   }
@@ -252,6 +269,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.TRANSFER_ACTION, target);
   }
 
+  onForwardAction(target: string) {
+    this.emit(CALL_FSM_NOTIFY.FORWARD_ACTION, target);
+  }
+
   onParkAction() {
     this.emit(CALL_FSM_NOTIFY.PARK_ACTION);
   }
@@ -298,6 +319,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onTransfer(target: string) {
     this._callFsmTable.transfer(target);
+  }
+
+  private _onForward(target: string) {
+    this._callFsmTable.forward(target);
   }
 
   private _onPark() {
