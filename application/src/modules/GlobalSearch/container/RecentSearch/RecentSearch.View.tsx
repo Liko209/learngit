@@ -20,13 +20,30 @@ type Props = RecentSearchViewProps &
 
 @observer
 class RecentSearchViewComponent extends Component<Props> {
-  hoverHighlight = (index: number) => () => {
-    this.props.setSelectIndex(index);
+  private _hoverHighlightMap: Map<string, Function> = new Map();
+  private _selectChangeMap: Map<string, Function> = new Map();
+
+  private _cacheIndexPathFn = (
+    type: '_hoverHighlightMap' | '_selectChangeMap',
+    index: number,
+  ) => {
+    const fnKey = `${index}`;
+    const fnMap = this[type];
+    if (!fnMap.get(fnKey)) {
+      fnMap.set(fnKey, () => {
+        this.props.setSelectIndex(index);
+      });
+    }
+    return fnMap.get(fnKey);
+  }
+
+  hoverHighlight = (index: number) => {
+    return this._cacheIndexPathFn('_hoverHighlightMap', index);
   }
 
   // if search item removed need update selectIndex
-  selectIndexChange = (index: number) => () => {
-    this.props.selectIndexChange(index);
+  selectIndexChange = (index: number) => {
+    return this._cacheIndexPathFn('_selectChangeMap', index);
   }
 
   createSearchItem = (config: {

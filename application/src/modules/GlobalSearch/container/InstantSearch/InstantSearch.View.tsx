@@ -17,13 +17,35 @@ type Props = InstantSearchViewProps & WithTranslation;
 
 @observer
 class InstantSearchViewComponent extends Component<Props> {
-  hoverHighlight = (sectionIndex: number, cellIndex: number) => () => {
-    this.props.setSelectIndex(sectionIndex, cellIndex);
+  private _hoverHighlightMap: Map<string, Function> = new Map();
+  private _selectChangeMap: Map<string, Function> = new Map();
+
+  private _cacheIndexPathFn = (
+    type: '_hoverHighlightMap' | '_selectChangeMap',
+    sectionIndex: number,
+    cellIndex: number,
+  ) => {
+    const fnKey = `${sectionIndex}${cellIndex}`;
+    const fnMap = this[type];
+    if (!fnMap.get(fnKey)) {
+      fnMap.set(fnKey, () => {
+        this.props.setSelectIndex(sectionIndex, cellIndex);
+      });
+    }
+    return fnMap.get(fnKey);
+  }
+
+  hoverHighlight = (sectionIndex: number, cellIndex: number) => {
+    return this._cacheIndexPathFn(
+      '_hoverHighlightMap',
+      sectionIndex,
+      cellIndex,
+    );
   }
 
   // if search item removed need update selectIndex
-  selectIndexChange = (sectionIndex: number, cellIndex: number) => () => {
-    this.props.selectIndexChange(sectionIndex, cellIndex);
+  selectIndexChange = (sectionIndex: number, cellIndex: number) => {
+    return this._cacheIndexPathFn('_selectChangeMap', sectionIndex, cellIndex);
   }
 
   createSearchItem = (config: {
