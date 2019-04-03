@@ -16,15 +16,16 @@ import {
   JuiLeftRail,
   JuiLeftRailStickyTop,
 } from 'jui/pattern/LeftRail/LeftRail';
-import styled from 'jui/src/foundation/styled-components';
+import styled from 'jui/foundation/styled-components';
 import history from '@/history';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
 import { observer } from 'mobx-react';
+import { spacing } from 'jui/foundation/utils';
 
 const StyledList = styled(JuiList)`
   && {
-    padding-top: 17px;
+    padding-top: ${spacing(4.25)};
     padding-bottom: 0;
     width: 100%;
   }
