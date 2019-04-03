@@ -49,7 +49,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
   render() {
     const { open, onClose, searchKey, onClear, showClear } = this.props;
     const CurrentView = this.currentView;
-    console.log(showClear, '---nello showClear');
+    
     return (
       <JuiGlobalSearch open={open} onClose={onClose}>
         <JuiGlobalSearchInput
