@@ -4,23 +4,36 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import history from '@/history';
 import { mainLogger } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
+import { TelephonyService } from 'sdk/module/telephony';
+
 const logTag = '[Upgrade]';
+const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
+const ONLINE_UPDATE_THRESHOLD = 20 * 60 * 1000;
+const FOREGROUND_RELOAD_THRESHOLD = 60 * 60 * 1000;
 
 class Upgrade {
   private _hasNewVersion: boolean = false;
   private _swURL: string;
-  private _lastCheckTime: Date;
+  private _lastCheckTime?: Date;
+  private _lastRouterChangeTime?: Date;
   private _queryTimer: NodeJS.Timeout;
 
-  constructor(public queryInterval = 60 * 60 * 1000) {
+  constructor(public queryInterval = DEFAULT_UPDATE_INTERVAL) {
     mainLogger.info(
       `${logTag}constructor with interval: ${this.queryInterval}`,
     );
 
     this._resetQueryTimer();
     window.addEventListener('online', this._onlineHandler.bind(this));
+    window.addEventListener('blur', this._blurHandler.bind(this));
+    history.listen((location: any, action: string) => {
+      if (action === 'PUSH') {
+        this._lastRouterChangeTime = new Date();
+      }
+    });
   }
 
   public setServiceWorkerURL(swURL: string) {
@@ -32,12 +45,18 @@ class Upgrade {
     mainLogger.info(`${logTag}New content available`);
     this._hasNewVersion = true;
 
-    if (!document.hasFocus()) {
-      this.upgradeIfAvailable('Background upgrade');
+    if (document.hasFocus()) {
+      if (
+        this._isTimeOut(FOREGROUND_RELOAD_THRESHOLD, this._lastRouterChangeTime)
+      ) {
+        this.reloadIfAvailable('Foreground upgrade');
+      }
+    } else {
+      this.reloadIfAvailable('Background upgrade');
     }
   }
 
-  public upgradeIfAvailable(triggerSource: string) {
+  public reloadIfAvailable(triggerSource: string) {
     if (this._hasNewVersion && this._canDoReload()) {
       this._hasNewVersion = false;
       mainLogger.info(
@@ -49,6 +68,11 @@ class Upgrade {
   }
 
   private _queryIfHasNewVersion() {
+    if (!window.navigator.onLine) {
+      mainLogger.info(`${logTag}Ignore update due to offline`);
+      return;
+    }
+
     if (this._swURL && navigator.serviceWorker) {
       mainLogger.info(`${logTag}Will check new version`);
       navigator.serviceWorker
@@ -73,18 +97,27 @@ class Upgrade {
     }
   }
 
-  private _onlineHandler() {
-    if (this._lastCheckTime) {
-      const now = new Date();
-      const duration = now.getTime() - this._lastCheckTime.getTime();
-      if (duration < 20 * 60 * 1000) {
-        mainLogger.info(`${logTag}Ignore online immediately update`);
-        return;
-      }
+  private _isTimeOut(interval: number, fromDate?: Date) {
+    if (!fromDate) {
+      return true;
     }
 
-    this._resetQueryTimer();
-    this._queryIfHasNewVersion();
+    const now = new Date();
+    const duration = now.getTime() - fromDate.getTime();
+    return duration > interval;
+  }
+
+  private _onlineHandler() {
+    if (this._isTimeOut(ONLINE_UPDATE_THRESHOLD, this._lastCheckTime)) {
+      this._resetQueryTimer();
+      this._queryIfHasNewVersion();
+    } else {
+      mainLogger.info(`${logTag}Ignore online immediately update`);
+    }
+  }
+
+  private _blurHandler() {
+    this.reloadIfAvailable('Blur upgrade');
   }
 
   private _resetQueryTimer() {
@@ -99,6 +132,11 @@ class Upgrade {
   }
 
   private _canDoReload() {
+    if (this._hasInProgressCall()) {
+      mainLogger.info(`${logTag}Forbidden to reload due to call in progress`);
+      return false;
+    }
+
     if (this._dialogIsPresenting()) {
       mainLogger.info(
         `${logTag}Forbidden to reload due to dialog is presenting`,
@@ -117,7 +155,7 @@ class Upgrade {
       return false;
     }
 
-    // TO-DO in future, disallow reload when there is any call or meeting.
+    // TO-DO in future, disallow reload when there is any meeting.
     return true;
   }
 
@@ -157,6 +195,11 @@ class Upgrade {
       }
       return false;
     });
+  }
+
+  private _hasInProgressCall() {
+    const telephony: TelephonyService = TelephonyService.getInstance();
+    return telephony.getAllCallCount() > 0;
   }
 
   private _reloadApp() {

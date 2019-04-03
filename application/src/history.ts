@@ -1,6 +1,10 @@
 import _ from 'lodash';
-import { LocationDescriptorObject, Path, LocationState } from 'history';
-import createBrowserHistory from 'history/createBrowserHistory';
+import {
+  LocationDescriptorObject,
+  Path,
+  LocationState,
+  createBrowserHistory,
+} from 'history';
 
 const history = createBrowserHistory();
 const historyPush = history.push;

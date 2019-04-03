@@ -5,7 +5,7 @@
  */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { FavoriteViewProps } from './types';
@@ -14,7 +14,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
-type Props = FavoriteViewProps & WithNamespaces;
+type Props = FavoriteViewProps & WithTranslation;
 
 @observer
 class FavoriteViewComponent extends Component<Props> {
@@ -66,6 +66,6 @@ class FavoriteViewComponent extends Component<Props> {
   }
 }
 
-const FavoriteView = translate('translations')(FavoriteViewComponent);
+const FavoriteView = withTranslation('translations')(FavoriteViewComponent);
 
 export { FavoriteView };

@@ -5,14 +5,14 @@
  */
 import { CONVERSATION_TYPES } from '@/constants';
 import PersonModel from '@/store/models/Person';
-import { WithNamespaces } from 'react-i18next';
+import { WithTranslation } from 'react-i18next';
 
 type ConversationInitialPostProps = {
   id: number; // group id
   notEmpty: boolean;
 };
 
-type ConversationInitialPostViewProps = WithNamespaces & {
+type ConversationInitialPostViewProps = WithTranslation & {
   displayName: string;
   groupType: CONVERSATION_TYPES;
   groupDescription: string;

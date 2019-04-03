@@ -17,9 +17,11 @@ import { EntitySourceController } from '../../../../framework/controller/impl/En
 import { IEntityPersistentController } from '../../../../framework/controller/interface/IEntityPersistentController';
 import _ from 'lodash';
 import { notificationCenter, ENTITY } from '../../../../service';
+import GroupService from '../../../../module/group';
 
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../item');
+jest.mock('../../../../module/group');
 jest.mock('../../../../dao');
 jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
@@ -46,6 +48,7 @@ class MockPreInsertController<T extends ExtendedBaseModel>
 
 describe('PostDataController', () => {
   const itemService = new ItemService();
+  const groupService = new GroupService();
   const postDao = new PostDao(null);
   const deactivatedDao = new DeactivatedDao(null);
   const postDiscontinuousDao = new PostDiscontinuousDao(null);
@@ -68,6 +71,8 @@ describe('PostDataController', () => {
   function setup() {
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     itemService.handleIncomingData = jest.fn();
+    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+    groupService.updateHasMore = jest.fn();
     daoManager.getDao.mockImplementation(arg => {
       if (arg === PostDao) {
         return postDao;
@@ -404,7 +409,8 @@ describe('PostDataController', () => {
 
       const result = await postDataController.handleIndexPosts(posts, true);
       const deactivatedPost = posts.filter(
-        (post: Post) => post.created_at !== post.modified_at && post.deactivated,
+        (post: Post) =>
+          post.created_at !== post.modified_at && post.deactivated,
       );
 
       expect(deactivatedDao.bulkPut).toHaveBeenCalledWith(deactivatedPost);
@@ -489,7 +495,8 @@ describe('PostDataController', () => {
       const result = await postDataController.handleSexioPosts(posts);
 
       const deactivatedPost = posts.filter(
-        (post: Post) => post.created_at !== post.modified_at && post.deactivated,
+        (post: Post) =>
+          post.created_at !== post.modified_at && post.deactivated,
       );
 
       expect(deactivatedDao.bulkPut).toHaveBeenCalledWith(deactivatedPost);

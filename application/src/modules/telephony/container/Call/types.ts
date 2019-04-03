@@ -16,6 +16,7 @@ type CallProps = {
 };
 
 type CallViewProps = {
+  phoneNumber: string;
   directCall: () => void;
   showIcon: PromisedComputedValue<boolean>;
 };

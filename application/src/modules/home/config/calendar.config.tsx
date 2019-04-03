@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 
@@ -13,7 +13,7 @@ const config: SubModuleConfig = {
     path: '/calendar',
     component: () => <div>Calendar</div>,
   },
-  nav: () => ({
+  nav: async () => ({
     url: '/calendar',
     Icon: (
       <JuiIconography iconSize="medium">leftNavEvent_border</JuiIconography>
@@ -21,7 +21,7 @@ const config: SubModuleConfig = {
     IconSelected: (
       <JuiIconography iconSize="medium">leftNavEvent</JuiIconography>
     ),
-    title: i18next.t('calendar.Calendar'),
+    title: await i18nT('calendar.Calendar'),
     placement: 'bottom',
   }),
 };

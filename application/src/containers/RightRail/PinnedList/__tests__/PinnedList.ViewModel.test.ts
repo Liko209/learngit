@@ -60,10 +60,10 @@ describe('PinnedList ViewModel', () => {
 
     pinnedListViewModel.discontinuousPosListHandler = discontinuousPosListHandler;
 
-    await pinnedListViewModel.loadMore(5, 5);
+    await pinnedListViewModel.loadMore('down', 20);
     expect(discontinuousPosListHandler.loadMorePosts).toBeCalledWith(
       QUERY_DIRECTION.NEWER,
-      1,
+      20,
     );
   });
 

@@ -27,16 +27,9 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import {
-  RULE,
-  generateModifiedImageURL,
-} from '@/common/generateModifiedImageURL';
-import { FileItemUtils } from 'sdk/module/item/module/file/utils';
-import { getThumbnailSize } from 'jui/foundation/utils';
+import { RULE } from '@/common/generateModifiedImageURL';
 import { UploadFileTracker } from './UploadFileTracker';
-import { getThumbnailURL } from '@/common/getThumbnailURL';
-
-const SQUARE_SIZE = 180;
+import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
@@ -83,53 +76,22 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     { item }: ExtendFileItem,
     rule: RULE,
   ): Promise<string> => {
-    const { id, origWidth, origHeight, type, versionUrl } = item;
-    let url = '';
-    if (!type) {
-      return url;
-    }
-    // Notes
-    // 1. There is no thumbnail for the image just uploaded.
-    // 2. tif has thumbnail field.
-    // 3. gif use original url.
-    if (FileItemUtils.isGifItem({ type })) {
-      url = versionUrl || '';
-    }
-
-    const size = getThumbnailSize(origWidth, origHeight);
-    url = getThumbnailURL(item, {
-      width: size.imageWidth,
-      height: size.imageHeight,
-    });
-    // fallback to origin size url
-    if (!url) {
-      url = getThumbnailURL(item, {
-        width: origWidth,
-        height: origHeight,
-      });
-    }
-    if (
-      !url &&
-      origWidth > 0 &&
-      origHeight > 0 &&
-      FileItemUtils.isSupportPreview({ type })
-    ) {
-      const result = await generateModifiedImageURL({
-        rule,
-        origHeight,
-        origWidth,
+    const thumbnail = await getThumbnailURLWithType(
+      {
         id: item.id,
-        squareSize: SQUARE_SIZE,
-      });
-      url = result.url;
+        type: item.type,
+        versionUrl:
+          item.versions.length && item.versions[0].url
+            ? item.versions[0].url
+            : '',
+        versions: item.versions,
+      },
+      rule,
+    );
+    if (thumbnail.url) {
+      this.urlMap.set(item.id, thumbnail.url);
     }
-    if (!url) {
-      url = versionUrl || '';
-    }
-    if (url) {
-      this.urlMap.set(id, url);
-    }
-    return url;
+    return thumbnail.url;
   }
 
   private _handleItemChanged = (
@@ -211,19 +173,14 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   @computed
-  get _postId() {
-    return this.props.postId;
-  }
-
-  @computed
   get post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.postId);
   }
 
   private _getPostStatus() {
     const progress = getEntity<Progress, ProgressModel>(
       ENTITY_NAME.PROGRESS,
-      this._postId,
+      this.props.postId,
     );
     return progress.progressStatus;
   }
@@ -250,7 +207,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         if (postLoading) {
           await this._itemService.cancelUpload(id);
         } else {
-          await this._postService.removeItemFromPost(this._postId, id);
+          await this._postService.removeItemFromPost(this.props.postId, id);
         }
         this._deleteIds.add(id);
       } catch (e) {

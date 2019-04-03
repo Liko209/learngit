@@ -132,6 +132,10 @@ export class LogManager {
     return this.getLogger(LOG_TAGS.NETWORK);
   }
 
+  getTelephonyLogger(): ILogger {
+    return this.getLogger(LOG_TAGS.TELEPHONY);
+  }
+
   setAllLoggerLevel(level: LOG_LEVEL) {
     configManager.mergeConfig({
       level,

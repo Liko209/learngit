@@ -63,6 +63,7 @@ type StreamViewProps = {
   markAsRead: () => void;
   loadInitialPosts: () => Promise<void>;
   enableNewMessageSeparatorHandler: () => void;
+  disableNewMessageSeparatorHandler: () => void;
   handleNewMessageSeparatorState: (event: React.UIEvent<HTMLElement>) => void;
   loadPostUntilFirstUnread: () => Promise<number | undefined>;
   updateHistoryHandler: () => void;
@@ -74,7 +75,7 @@ type StreamViewProps = {
   loadInitialPostsError?: Error;
   loading?: boolean;
   lastPost?: PostModel;
-  loadMore: (direction: 'up' | 'down') => Promise<void>;
+  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
 };
 
 type StreamSnapshot = {

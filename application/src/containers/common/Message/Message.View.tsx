@@ -5,11 +5,13 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { MessageProps, MessageViewProps } from './types';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 
 type Props = MessageProps & MessageViewProps;
 
+@observer
 class MessageView extends Component<Props> {
   constructor(props: Props) {
     super(props);

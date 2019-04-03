@@ -41,7 +41,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   private _itemService: ItemService = ItemService.getInstance();
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
-  private _initialized = false;
 
   @observable loadInitialPostsError?: Error;
 
@@ -88,14 +87,8 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @computed
   get mostRecentPostId() {
     let result: number | undefined;
-    if (this.hasMore('down')) {
-      result = getEntity<Group, GroupModel>(
-        ENTITY_NAME.GROUP,
-        this.props.groupId,
-      ).mostRecentPostId;
-    } else {
-      result = _.last(this.postIds);
-    }
+    result = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.groupId)
+      .mostRecentPostId;
     return result || 0;
   }
 
@@ -129,7 +122,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
     this._historyHandler = new HistoryHandler();
     this.initialize(props.groupId);
-
     this._streamController = new StreamController(
       props.groupId,
       this._historyHandler,
@@ -173,9 +165,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @action
-  async loadPrevPosts() {
+  async loadPrevPosts(count: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER, count);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
@@ -184,44 +176,27 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @action
-  async loadNextPosts() {
+  async loadNextPosts(count: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER, count);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.NEWER);
       return;
     }
   }
+
   @action
-  loadMore = async (direction: 'up' | 'down') => {
+  loadMore = async (direction: 'up' | 'down', count: number) => {
     switch (direction) {
       case 'up':
-        await this.loadPrevPosts();
+        await this.loadPrevPosts(count);
         break;
       case 'down':
-        await this.loadNextPosts();
+        await this.loadNextPosts(count);
         break;
       default:
         mainLogger.warn('please nominate the direction');
-    }
-  }
-
-  handleNewMessageSeparatorState = (event: React.UIEvent<HTMLElement>) => {
-    if (!event.currentTarget) return;
-    const scrollEl = event.currentTarget;
-    const atBottom =
-      scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight === 0;
-    const isFocused = document.hasFocus();
-    const shouldHideUmi = atBottom && isFocused;
-
-    storeManager
-      .getGlobalStore()
-      .set(GLOBAL_KEYS.SHOULD_SHOW_UMI, !shouldHideUmi);
-    if (shouldHideUmi && this._initialized) {
-      this._streamController.disableNewMessageSep();
-    } else {
-      this._streamController.enableNewMessageSep();
     }
   }
 
@@ -295,7 +270,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     this.props.jumpToPostId = getGlobalValue(GLOBAL_KEYS.JUMP_TO_POST_ID);
     globalStore.set(GLOBAL_KEYS.SHOULD_SHOW_UMI, false);
     globalStore.set(GLOBAL_KEYS.JUMP_TO_POST_ID, 0);
-    this._initialized = false;
   }
 
   private _canHandleError(err: Error) {
@@ -307,12 +281,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _handleLoadInitialPostsError(err: Error) {
     if (this._canHandleError(err)) {
-      this.loadInitialPostsError = err;
+      throw err; // let view catch the error
     } else {
       generalErrorHandler(err);
     }
   }
-
   private _handleLoadMoreError(err: Error, direction: QUERY_DIRECTION) {
     if (this._canHandleError(err)) {
       this._debouncedToast(direction);

@@ -52,8 +52,6 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
 class ItemListViewModel extends StoreViewModel<Props> {
   @observable private _sortableDataHandler: FetchSortableDataListHandler<Item>;
   @observable private _total: number = Infinity;
-  @observable private _loadingContent = false;
-  @observable private _loadingMoreDown = false;
 
   constructor(props: Props) {
     super(props);
@@ -174,7 +172,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
       entityName: ENTITY_NAME.ITEM,
       eventName: ItemNotification.getItemNotificationKey(typeId, groupId),
       hasMoreDown: true,
-      hasMoreUp: false,
+      hasMoreUp: true,
     });
   }
 
@@ -194,6 +192,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
           (this._getFilterFunc(groupId, type) as (valid: Item) => boolean)(
             item,
           );
+        break;
       default:
         isValidItem =
           isValidItem &&
@@ -223,20 +222,17 @@ class ItemListViewModel extends StoreViewModel<Props> {
   }
 
   @computed
-  get dataSource() {
-    return this;
-  }
-
-  @computed
   get getIds() {
     return this._sortableDataHandler.sortableListStore.getIds;
   }
 
-  size() {
+  @computed
+  get size() {
     return this._sortableDataHandler.sortableListStore.size;
   }
 
-  total() {
+  @computed
+  get total() {
     return this._total;
   }
 
@@ -244,47 +240,23 @@ class ItemListViewModel extends StoreViewModel<Props> {
     return this._sortableDataHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
-  isLoadingContent = () => {
-    return this._loadingContent;
-  }
-
-  isLoadingMore = (direction: 'up' | 'down') => {
-    if ('down' === direction) {
-      return this._loadingMoreDown;
-    }
-    return false;
-  }
-
-  isLoading = () => {
-    return (
-      this.isLoadingContent() ||
-      this.isLoadingMore('up') ||
-      this.isLoadingMore('down')
-    );
-  }
-
   get = (index: number) => {
     return this.getIds[index];
   }
 
   @action
-  loadMore = async (startIndex: number, stopIndex: number) => {
-    this._loadingMoreDown = true;
-    await this._sortableDataHandler.fetchData(
-      QUERY_DIRECTION.NEWER,
-      stopIndex - startIndex + 1,
-    );
-    this._loadingMoreDown = false;
+  loadMore = async (direction: 'up' | 'down', count: number) => {
+    await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER, count);
   }
 
   @action
-  async loadInitialData() {
-    this._loadingContent = true;
+  loadInitialData = async () => {
     await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
-    this._loadingContent = false;
+    this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
   }
 
   dispose() {
+    super.dispose();
     return this._sortableDataHandler.dispose();
   }
 }

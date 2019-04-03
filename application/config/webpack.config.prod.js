@@ -259,21 +259,8 @@ module.exports = {
               options: {
                 cacheDirectory: true,
                 babelrc: false,
-                presets: [
-                  [
-                    '@babel/preset-env',
-                    { targets: { browsers: ['last 2 versions', 'ie 11'] } }, // or whatever your project requires
-                  ],
-                  '@babel/preset-typescript',
-                  '@babel/preset-react',
-                ],
-                plugins: [
-                  // plugin-proposal-decorators is only needed if you're using experimental decorators in TypeScript
-                  ['@babel/plugin-proposal-decorators', { legacy: true }],
-                  ['@babel/plugin-proposal-class-properties', { loose: true }],
-                  'react-hot-loader/babel',
-                  '@babel/plugin-syntax-dynamic-import',
-                ],
+                presets: [['react-app', { flow: false, typescript: true }]],
+                plugins: ['@babel/plugin-syntax-dynamic-import'],
               },
             },
           },
@@ -429,8 +416,6 @@ module.exports = {
     // generate service worker
     new GenerateSW({
       exclude: [/\.map$/, /asset-manifest\.json$/],
-      skipWaiting: true,
-      clientsClaim: true,
       navigateFallback: publicUrl + '/index.html',
       navigateFallbackBlacklist: [
         // Exclude URLs starting with /_, as they're likely an API call
@@ -440,7 +425,11 @@ module.exports = {
         new RegExp('/[^/]+\\.[^/]+$'),
       ],
       globDirectory: paths.appPublic,
-      globPatterns: ['**/!(whiteListedId.json)'],
+      globIgnores: ['node_modules/**/*', 'whiteListedId.json', 'index.html'],
+      globPatterns: ['**/*'],
+      modifyURLPrefix: {
+        '': '/',
+      },
       runtimeCaching,
     }),
     shouldUploadMapToSentry

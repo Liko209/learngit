@@ -294,6 +294,7 @@ describe('PersonService', () => {
     const thumbsSize150 = 'https://glip.com/thumbs150.jpg';
     const thumbsSizeX = 'https://glip.com/thumbsx.jpg';
     const serverUrl = 'https://glip.com/headurl.jpg';
+    const gifUrl = 'https://glip.com/test.gif?test=1';
 
     beforeEach(() => {
       jest.spyOn(PersonAPI, 'getHeadShotUrl').mockReturnValueOnce(serverUrl);
@@ -311,7 +312,7 @@ describe('PersonService', () => {
 
       const headshot = {
         thumbs: thumbsString,
-        url: URL,
+        url: originalURL,
       };
       const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
       expect(url).toBe(thumbsSize150);
@@ -414,6 +415,27 @@ describe('PersonService', () => {
 
       const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(originalURL);
+    });
+
+    it('should return url when headshot is an url string', () => {
+      const headshot = originalURL;
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      expect(url).toBe(originalURL);
+    });
+
+    it('should return original url when the original headshot is gif', () => {
+      const headshot = {
+        url: gifUrl,
+        stored_file_id: '123',
+      };
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      expect(url).toBe(gifUrl);
+    });
+
+    it('should return original url when the headshot is string and the original url is gif', () => {
+      const headshot = gifUrl;
+      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      expect(url).toBe(gifUrl);
     });
   });
 

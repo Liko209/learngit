@@ -137,11 +137,11 @@ class Sdk {
   }
 
   async onLogout() {
-    AccountGlobalConfig.removeUserDictionary();
-    await UserConfigService.getInstance().clear();
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     await this.daoManager.deleteDatabase();
+    UserConfigService.getInstance().clear();
+    AccountGlobalConfig.removeUserDictionary();
   }
 
   updateNetworkToken(tokens: {

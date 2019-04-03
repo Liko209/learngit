@@ -28,6 +28,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 import { AuthUserConfig } from '../../../service/auth/config';
+import { FileTypeUtils } from '../../../utils/file/FileTypeUtils';
 
 const PersonFlags = {
   is_webmail: 1,
@@ -161,6 +162,13 @@ class PersonController {
           );
         }
         originalUrl = headshot.url;
+      } else {
+        originalUrl = headshot;
+      }
+
+      // in case of gif FIJI-4678
+      if (originalUrl && FileTypeUtils.isGif(originalUrl)) {
+        url = originalUrl;
       }
 
       if (url) {
@@ -259,15 +267,18 @@ class PersonController {
     return person.flags === 0;
   }
 
-  isValid(person: Person) {
+  isCacheValid = (person: Person) => {
     return (
       !this._isUnregistered(person) &&
-      !this._isDeactivated(person) &&
       this._isVisible(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
       !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
       !person.is_pseudo_user
     );
+  }
+
+  isValid(person: Person) {
+    return this.isCacheValid(person) && !this._isDeactivated(person);
   }
 
   getAvailablePhoneNumbers(

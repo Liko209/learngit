@@ -11,8 +11,6 @@ import { Group } from 'sdk/module/group/entity';
 import GroupModel from '@/store/models/Group';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
-// import { Post } from 'sdk/module/post/entity';
-// import PostModel from '@/store/models/Post';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { DiscontinuousPosListHandler } from '@/store/handler/DiscontinuousPosListHandler';
 
@@ -26,10 +24,8 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
     // url change need build first
     this.build(this.pinnedPostIds);
     this.reaction(
-      () => ({
-        id: this._groupId,
-      }),
-      ({ id }) => {
+      () => this._groupId,
+      (id: number) => {
         if (id) {
           this.firstInit = true;
           this.discontinuousPosListHandler &&
@@ -39,11 +35,9 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
       },
     );
     this.reaction(
-      () => ({
-        pinnedPostIds: this.pinnedPostIds,
-      }),
-      ({ pinnedPostIds }) => {
-        this.build(pinnedPostIds);
+      () => this.pinnedPostIds.length,
+      () => {
+        this.build(this.pinnedPostIds);
       },
     );
   }
@@ -70,19 +64,23 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   }
 
   @action
-  async loadInitialData() {
-    await this.discontinuousPosListHandler.loadMorePosts(
-      QUERY_DIRECTION.NEWER,
-      15,
-    );
+  loadInitialData = async () => {
+    if (this.discontinuousPosListHandler) {
+      await this.discontinuousPosListHandler.loadMorePosts(
+        QUERY_DIRECTION.NEWER,
+        15,
+      );
+    }
   }
 
   @action
-  loadMore = async (startIndex: number, stopIndex: number) => {
-    await this.discontinuousPosListHandler.loadMorePosts(
-      QUERY_DIRECTION.NEWER,
-      stopIndex - startIndex + 1,
-    );
+  loadMore = async (direction: 'up' | 'down', count: number) => {
+    if (this.discontinuousPosListHandler) {
+      await this.discontinuousPosListHandler.loadMorePosts(
+        QUERY_DIRECTION.NEWER,
+        count,
+      );
+    }
   }
 
   @computed
@@ -102,8 +100,7 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
 
   @computed
   get totalCount() {
-    const { pinnedPostIds = [] } = this.group;
-    return pinnedPostIds.length;
+    return this.pinnedPostIds.length;
   }
 
   @computed

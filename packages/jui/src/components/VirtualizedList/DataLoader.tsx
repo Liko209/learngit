@@ -3,92 +3,112 @@
  * @Date: 2019-03-04 10:14:48
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { useRef, useState, useEffect, memo } from 'react';
+import _ from 'lodash';
+import { useRef, useState, useEffect, memo, useCallback } from 'react';
 import { noop } from '../../foundation/utils';
-
-type Direction = 'up' | 'down';
+import { ILoadMoreStrategy } from './LoadMoreStrategy/ILoadMoreStrategy';
+import { IndexRange, Direction, IndexConstraint, Delta } from './types';
 
 type JuiDataLoaderProps = {
-  loadMore: (direction: Direction) => Promise<void>;
+  threshold?: number;
+  loadMore: (direction: Direction, count: number) => Promise<void>;
   loadInitialData: () => Promise<void>;
   hasMore: (direction: Direction) => boolean;
+  loadMoreStrategy: ILoadMoreStrategy;
   children: (params: {
     loadingInitial: boolean;
     loadingUp: boolean;
     loadingDown: boolean;
     loadingInitialFailed: boolean;
-    onScroll: (event: React.UIEvent) => void;
+    onScroll: (
+      range: IndexRange,
+      constraint: IndexConstraint,
+      delta?: Delta,
+    ) => void;
   }) => JSX.Element | null | void;
 };
 
 const JuiDataLoader = ({
   hasMore,
   loadInitialData,
+  loadMoreStrategy,
   loadMore,
   children,
 }: JuiDataLoaderProps) => {
-  const prevScrollTopRef = useRef(0);
+  const prevVisibleRangeRef = useRef({ startIndex: 0, stopIndex: 0 });
+  const prevVisibleRangeTimeRef = useRef(Date.now());
   const [loadingUp, setLoadingUp] = useState(false);
   const [loadingDown, setLoadingDown] = useState(false);
   const [loadingInitial, setLoadingInitial] = useState(false);
   const [loadingInitialFailed, setLoadingInitialFailed] = useState(false);
   const loading = loadingUp || loadingDown || loadingInitial;
 
-  const map = {
-    up: {
-      setLoading: setLoadingUp,
-      load: () => loadMore('up'),
-      onFailed: noop,
+  const getMap = useCallback(() => {
+    return {
+      up: {
+        setLoading: setLoadingUp,
+        load: (count: number) => loadMore('up', count),
+        onFailed: noop,
+      },
+      down: {
+        setLoading: setLoadingDown,
+        load: (count: number) => loadMore('down', count),
+        onFailed: noop,
+      },
+      initial: {
+        setLoading: setLoadingInitial,
+        load: () => loadInitialData(),
+        onFailed: setLoadingInitialFailed,
+      },
+    };
+  },                         [loadMore, loadMore, loadInitialData]);
+
+  const loadData = useCallback(
+    _.throttle(async (type: 'initial' | 'up' | 'down', count: number = 10) => {
+      const map = getMap();
+      const { setLoading, load, onFailed } = map[type];
+      setLoading(true);
+      onFailed(false);
+      try {
+        await load(count);
+      } catch {
+        onFailed(true);
+      }
+      setLoading(false);
+    },         1000),
+    [getMap],
+  );
+
+  const handleScroll = useCallback(
+    (
+      visibleRange: Readonly<IndexRange>,
+      indexConstraint: IndexConstraint,
+      delta?: Delta,
+    ) => {
+      if (loading) {
+        return;
+      }
+
+      const { direction, count } = loadMoreStrategy.getLoadMoreInfo({
+        indexConstraint,
+        delta,
+        visibleRange,
+        prevVisibleRange: prevVisibleRangeRef.current,
+        prevVisibleRangeTime: prevVisibleRangeTimeRef.current,
+      });
+      prevVisibleRangeRef.current = visibleRange;
+      prevVisibleRangeTimeRef.current = Date.now();
+
+      if (direction && count > 0 && hasMore(direction)) {
+        loadData(direction, count);
+      }
     },
-    down: {
-      setLoading: setLoadingDown,
-      load: () => loadMore('down'),
-      onFailed: noop,
-    },
-    initial: {
-      setLoading: setLoadingInitial,
-      load: () => loadInitialData(),
-      onFailed: setLoadingInitialFailed,
-    },
-  };
+    [loadData, loadMoreStrategy],
+  );
 
   useEffect(() => {
     loadData('initial');
   },        []);
-
-  const loadData = async (type: 'initial' | 'up' | 'down') => {
-    const { setLoading, load, onFailed } = map[type];
-    setLoading(true);
-    onFailed(false);
-    try {
-      await load();
-    } catch {
-      onFailed(true);
-    }
-    setLoading(false);
-  };
-
-  const handleScroll = ({ currentTarget }: React.UIEvent) => {
-    if (loading) {
-      return;
-    }
-
-    const { scrollTop, scrollHeight, clientHeight } = currentTarget;
-    const atTop = 0 === scrollTop;
-    const atBottom = scrollHeight === scrollTop + clientHeight;
-    const direction = scrollTop - prevScrollTopRef.current > 0 ? 'down' : 'up';
-    prevScrollTopRef.current = currentTarget.scrollTop;
-
-    if (atTop && direction === 'up') {
-      if (hasMore('up')) {
-        loadData('up');
-      }
-    } else if (atBottom && direction === 'down') {
-      if (hasMore('down')) {
-        loadData('down');
-      }
-    }
-  };
 
   const childrenElement = children({
     loadingInitial,
@@ -101,4 +121,4 @@ const JuiDataLoader = ({
 };
 
 const MemoDataLoader = memo(JuiDataLoader);
-export { MemoDataLoader as JuiDataLoader, JuiDataLoaderProps };
+export { MemoDataLoader as JuiDataLoader, JuiDataLoaderProps, Delta };

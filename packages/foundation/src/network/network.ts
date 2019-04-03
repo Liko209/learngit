@@ -105,19 +105,6 @@ interface IRequest {
   needAuth(): boolean;
 }
 
-interface IRequestBuilderOption {
-  host?: string;
-  path: string;
-  method: NETWORK_METHOD;
-  handlerType: IHandleType;
-  headers?: Header;
-  params?: object;
-  data?: object;
-  authFree?: boolean;
-  requestConfig?: object;
-  HAPriority?: HA_PRIORITY;
-}
-
 interface IClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void;
   cancelRequest(request: IRequest): void;
@@ -181,6 +168,7 @@ enum NETWORK_FAIL_TYPE {
   BAD_REQUEST = 'BAD REQUEST',
   BAD_GATEWAY = 'Bad Gateway',
   SERVICE_UNAVAILABLE = 'Service Unavailable',
+  SOCKET_DISCONNECTED = 'SOCKET_DISCONNECTED',
 }
 
 enum SURVIVAL_MODE {
@@ -221,7 +209,6 @@ export {
   Header,
   IRequest,
   IResponse,
-  IRequestBuilderOption,
   INetworkRequestExecutor,
   INetworkRequestExecutorListener,
   IResponseListener,

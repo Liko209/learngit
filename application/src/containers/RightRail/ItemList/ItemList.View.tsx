@@ -8,12 +8,10 @@ import { observer } from 'mobx-react';
 import i18next from 'i18next';
 import { ViewProps, Props } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
-import { ITEM_HEIGHT } from './config';
 import {
-  JuiVirtualList,
-  JuiVirtualCellWrapper,
-  JuiVirtualCellProps,
-} from 'jui/pattern/VirtualList';
+  JuiInfiniteList,
+  ThresholdStrategy,
+} from 'jui/components/VirtualizedList';
 import { emptyView } from './Empty';
 import {
   JuiRightShelfContent,
@@ -21,69 +19,69 @@ import {
   JuiRightRailLoadingMore,
 } from 'jui/pattern/RightShelf';
 import { getTabConfig } from './utils';
-
-const HEADER_HEIGHT = 36;
+import {
+  ITEM_HEIGHT,
+  LOAD_MORE_STRATEGY_CONFIG,
+  HEADER_HEIGHT,
+} from '../constants';
 
 @observer
 class ItemListView extends React.Component<ViewProps & Props> {
-  rowRenderer = ({
-    index,
-    item: itemId,
-    style,
-  }: JuiVirtualCellProps<number>) => {
-    const { type, active } = this.props;
+  private _loadMoreStrategy = new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG);
+
+  private _renderItems = () => {
+    const { type } = this.props;
     const tabConfig = getTabConfig(type);
     const Component: any = tabConfig.item;
-    let content;
-    if (itemId) {
-      content = <Component id={itemId} />;
-    }
-
-    if (!active) return null;
-
-    return (
-      <JuiVirtualCellWrapper key={itemId} style={style}>
-        {content}
-      </JuiVirtualCellWrapper>
-    );
+    return this.props.getIds.map((itemId: number) => (
+      <Component id={itemId} key={itemId} />
+    ));
   }
 
-  noContentRenderer = () => {
+  hasMore = (direction: string) => {
+    if (direction === 'up') {
+      return false;
+    }
+    const { size, total } = this.props;
+    return size !== total;
+  }
+
+  renderEmptyContent = () => {
     const { type } = this.props;
     return emptyView(type);
   }
 
-  firstLoader = () => {
+  defaultLoading = () => {
     return <JuiRightRailContentLoading delay={500} />;
   }
 
-  moreLoader = () => <JuiRightRailLoadingMore />;
+  defaultLoadingMore = () => <JuiRightRailLoadingMore />;
 
   render() {
-    const { type, width, height, dataSource } = this.props;
+    const { type, height, size, total } = this.props;
     const { subheader } = getTabConfig(type);
-    const totalCount = dataSource.total!();
+    const h = Math.max(height - HEADER_HEIGHT, 0);
     return (
       <JuiRightShelfContent>
-        {dataSource.isLoadingContent!() && this.firstLoader()}
-        {!dataSource.isLoadingContent!() &&
-          totalCount > 0 &&
-          dataSource.size() > 0 && (
-            <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
-              {i18next.t(subheader)}
-            </JuiListSubheader>
-          )}
-        <JuiVirtualList
-          overscan={5}
-          threshold={40}
-          dataSource={dataSource}
-          rowRenderer={this.rowRenderer}
-          noContentRenderer={this.noContentRenderer}
-          moreLoader={this.moreLoader}
-          fixedCellHeight={ITEM_HEIGHT}
-          width={width}
-          height={height - HEADER_HEIGHT}
-        />
+        {(total > 0 || size > 0) && (
+          <JuiListSubheader data-test-automation-id="rightRail-list-subtitle">
+            {i18next.t(subheader)}
+          </JuiListSubheader>
+        )}
+        <JuiInfiniteList
+          height={h}
+          minRowHeight={ITEM_HEIGHT}
+          loadInitialData={this.props.loadInitialData}
+          loadMore={this.props.loadMore}
+          loadMoreStrategy={this._loadMoreStrategy}
+          loadingRenderer={this.defaultLoading()}
+          hasMore={this.hasMore}
+          loadingMoreRenderer={this.defaultLoadingMore()}
+          noRowsRenderer={this.renderEmptyContent()}
+          stickToLastPosition={false}
+        >
+          {this._renderItems()}
+        </JuiInfiniteList>
       </JuiRightShelfContent>
     );
   }

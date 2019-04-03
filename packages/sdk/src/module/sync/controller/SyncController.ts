@@ -32,6 +32,9 @@ import { IndexRequestProcessor } from './IndexRequestProcessor';
 import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
 import { AccountGlobalConfig } from '../../../service/account/config';
+import { GroupConfigService } from '../../../module/groupConfig';
+import { AccountService } from '../../../service/account/accountService';
+import socketManager from '../../../service/socket';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -56,6 +59,10 @@ class SyncController {
     }
   }
 
+  handleWindowFocused() {
+    this._onPageFocused();
+  }
+
   getIndexTimestamp() {
     if (AccountGlobalConfig.getUserDictionary()) {
       const syncConfig = new SyncUserConfig();
@@ -65,15 +72,19 @@ class SyncController {
   }
 
   updateIndexTimestamp(time: number, forceUpdate: boolean) {
-    mainLogger.log(
-      LOG_TAG,
-      `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
-    );
     const syncConfig = new SyncUserConfig();
     if (forceUpdate) {
+      mainLogger.log(
+        LOG_TAG,
+        `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
+      );
       syncConfig.setLastIndexTimestamp(time);
-      this.updateCanUpdateIndexTimeStamp(true);
+      socketManager.isConnected() && this.updateCanUpdateIndexTimeStamp(true);
     } else if (this.canUpdateIndexTimeStamp()) {
+      mainLogger.log(
+        LOG_TAG,
+        `updateIndexTimestamp time: ${time} forceUpdate:false`,
+      );
       syncConfig.setLastIndexTimestamp(time);
     }
   }
@@ -95,7 +106,7 @@ class SyncController {
     try {
       if (lastIndexTimestamp) {
         await this._syncIndexData(lastIndexTimestamp);
-        this._checkFetchedRemaining(lastIndexTimestamp);
+        await this._checkFetchedRemaining(lastIndexTimestamp);
       } else {
         await this._firstLogin();
       }
@@ -145,7 +156,7 @@ class SyncController {
     const syncConfig = new SyncUserConfig();
     if (!syncConfig.getFetchedRemaining()) {
       try {
-        this._fetchRemaining(time);
+        await this._fetchRemaining(time);
       } catch (e) {
         mainLogger.error('fetch remaining data error');
       }
@@ -167,13 +178,17 @@ class SyncController {
     const executeFunc = async () => {
       progressBar.start();
       const { onIndexLoaded, onIndexHandled } = this._syncListener;
+      const syncConfig = new SyncUserConfig();
       // 5 minutes ago to ensure data is correct
       try {
         const result = await this.fetchIndexData(String(timeStamp - 300000));
         onIndexLoaded && (await onIndexLoaded(result));
         await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
         onIndexHandled && (await onIndexHandled());
+        syncConfig.updateIndexSucceed(true);
       } catch (error) {
+        this.updateCanUpdateIndexTimeStamp(false);
+        syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
       }
       progressBar.stop();
@@ -205,6 +220,7 @@ class SyncController {
     await Promise.all([
       ItemService.getInstance<ItemService>().clear(),
       PostService.getInstance<PostService>().clear(),
+      GroupConfigService.getInstance<GroupConfigService>().clear(),
       GroupService.getInstance<GroupService>().clear(),
       PersonService.getInstance<PersonService>().clear(),
     ]);
@@ -358,6 +374,23 @@ class SyncController {
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });
+    }
+  }
+
+  private async _onPageFocused() {
+    this._checkIndex();
+  }
+
+  private async _checkIndex() {
+    const accountService: AccountService = AccountService.getInstance();
+    if (accountService.isGlipLogin()) {
+      const socketUserConfig = new SyncUserConfig();
+      const succeed = socketUserConfig.getIndexSucceed();
+
+      if (!succeed) {
+        mainLogger.info(LOG_TAG, ' _checkIndex, last index was not succeed');
+        await this.syncData();
+      }
     }
   }
 }

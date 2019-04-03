@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import {
@@ -17,7 +17,7 @@ import { getFileIcon } from '@/common/getFileIcon';
 
 @observer
 class AttachmentsViewComponent extends Component<
-  AttachmentsViewProps & WithNamespaces
+  AttachmentsViewProps & WithTranslation
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles } = this.props;
@@ -72,6 +72,8 @@ class AttachmentsViewComponent extends Component<
   }
 }
 
-const AttachmentsView = translate('translations')(AttachmentsViewComponent);
+const AttachmentsView = withTranslation('translations')(
+  AttachmentsViewComponent,
+);
 
 export { AttachmentsView };

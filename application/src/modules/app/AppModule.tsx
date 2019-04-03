@@ -72,7 +72,9 @@ class AppModule extends AbstractModule {
     }
 
     window.addEventListener('error', (event: ErrorEvent) => {
-      generalErrorHandler(event.error);
+      generalErrorHandler(
+        event.error instanceof Error ? event.error : new Error(event.message),
+      );
     });
 
     const {

@@ -5,3 +5,4 @@ export * from './api/RTCCall';
 export * from './api/IRTCAccountDelegate';
 export * from './api/IRTCCallDelegate';
 export * from './api/types';
+export * from './utils/IRTCLogger';

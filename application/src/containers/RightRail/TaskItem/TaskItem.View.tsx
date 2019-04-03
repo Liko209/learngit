@@ -11,9 +11,11 @@ import {
   JuiListItemSecondaryText,
   JuiListItemSecondarySpan,
 } from 'jui/components/Lists';
+import { observer } from 'mobx-react';
 import { JuiTaskIcon } from 'jui/pattern/RightShelf/TaskItem';
 import { TaskItemProps } from './types';
 
+@observer
 class TaskItemView extends React.Component<TaskItemProps, {}> {
   constructor(props: TaskItemProps) {
     super(props);

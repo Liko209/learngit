@@ -232,11 +232,18 @@ export class SocketManager {
   }
 
   private _onFocus() {
+    if (!this._hasLoggedIn) {
+      return;
+    }
+
     // reset to empty when focused
     this._successConnectedUrls = [];
 
-    if (!this.activeFSM) return;
-
+    if (!this.activeFSM) {
+      this.info('focused and has not active FSM, try to restart one');
+      this._restartFSM();
+      return;
+    }
     this.activeFSM.doGlipPing();
 
     const state = this.activeFSM.state;
@@ -340,11 +347,12 @@ export class SocketManager {
   private _stopActiveFSM() {
     notificationCenter.emitKVChange(SERVICE.STOPPING_SOCKET);
     if (this.activeFSM) {
-      this.activeFSM.stop();
+      this.activeFSM.stopFSM();
       this.activeFSM = null;
     }
     if (this._canReconnectController) {
       this._canReconnectController.cleanup();
+      delete this._canReconnectController;
       this._canReconnectController = undefined;
     }
 
@@ -380,7 +388,7 @@ export class SocketManager {
   }
 
   private _restartFSM() {
-    this.info('restartFSM ', this._isScreenLocked);
+    this.info('restartFSM _isScreenLocked:', this._isScreenLocked);
     if (!this._isScreenLocked) {
       this._stopActiveFSM();
       this._startFSM();
