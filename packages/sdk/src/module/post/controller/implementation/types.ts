@@ -8,33 +8,7 @@ import { Raw } from '../../../../framework/model';
 import { Post } from '../../entity';
 import { Item } from '../../../item/entity';
 
-export enum ESearchContentTypes {
-  ALL = 'all',
-  CHATS = 'chats',
-  LINKS = 'links',
-  TASKS = 'tasks',
-  WEB_HOOKS = 'custom_items',
-  FILES = 'files',
-  NOTES = 'pages',
-  SNIPPETS = 'snippets',
-}
-
-export type ContentSearchParams = {
-  q: string;
-  type?: string;
-  creator_id?: number;
-  group_id?: number;
-  scroll_size?: number;
-  begin_time?: number;
-  end_time?: number;
-  for_at_mention?: boolean;
-};
-
-export interface InitialSearchResp {
-  request_id: number;
-}
-
-export type ContentTypes = {
+export type SearchContentTypesCount = {
   [key: number]: number;
 };
 
@@ -45,7 +19,7 @@ export type SearchResult = {
   response_id?: number;
   scroll_request_id?: number;
   client_request_id?: number;
-  content_types?: ContentTypes;
+  content_types?: SearchContentTypesCount;
 };
 
 export type SearchedResultData = {

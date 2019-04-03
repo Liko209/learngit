@@ -12,8 +12,7 @@ import { SOCKET } from '../../../../service/eventKey';
 import { SubscribeController } from '../../../base/controller/SubscribeController';
 import {
   SearchResult,
-  ESearchContentTypes,
-  ContentTypes,
+  SearchContentTypesCount,
   SearchedResultData,
   SearchRequestInfo,
 } from './types';
@@ -93,7 +92,9 @@ class PostSearchController {
     }
   }
 
-  getContentsCount(options: ContentSearchParams): Promise<{ string: number }> {
+  getContentsCount(
+    options: ContentSearchParams,
+  ): Promise<SearchContentTypesCount> {
     return new Promise(async (resolve, reject) => {
       options.count_types = 1;
       const result = await SearchAPI.search(options);
@@ -216,7 +217,7 @@ class PostSearchController {
 
   private _notifyContentsCountComes(
     requestId: number,
-    contentCounts: ContentTypes,
+    contentCounts: SearchContentTypesCount,
   ) {
     const info = this._queryInfos.get(requestId);
     if (info && info.contentCountResolve) {
@@ -230,4 +231,4 @@ class PostSearchController {
   }
 }
 
-export { PostSearchController, ESearchContentTypes, ContentSearchParams };
+export { PostSearchController, ContentSearchParams };
