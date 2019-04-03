@@ -34,7 +34,7 @@ export class LogPersistent implements ILogPersistent {
       this._db = this._dbManager.getDatabase();
       this._collection = this._db.getCollection<PersistentLogEntity>(TABLE_LOG);
       await this.cleanPersistentWhenReachLimit(
-        configManager.getConfig().persistanceLimit,
+        configManager.getConfig().persistentLimit,
       );
     }
   }

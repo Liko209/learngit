@@ -79,7 +79,7 @@ function timeout(time: number) {
   });
 }
 
-export class LogConsumer implements ILogConsumer {
+export class LogUploadConsumer implements ILogConsumer {
   private _persistentFSM: StateMachine;
   private _memoryQueue: MemoryQueue<LogEntity>;
   private _memorySize: number;
@@ -173,7 +173,7 @@ export class LogConsumer implements ILogConsumer {
     this._flushInTimeout();
   }
 
-  async onLog(logEntity: LogEntity): Promise<void> {
+  onLog(logEntity: LogEntity) {
     this._memoryQueue.addTail(logEntity);
     this._memorySize += logEntity.size;
     const {
