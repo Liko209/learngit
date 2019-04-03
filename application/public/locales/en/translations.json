@@ -420,7 +420,13 @@
   "integration": {},
   "setting": {
     "Settings": "Settings",
-    "teamSettings": "Settings"
+    "teamSettings": "Settings",
+    "general": "General",
+    "notificationAndSounds": "Notification and Sounds",
+    "messaging": "Messaging",
+    "phone": "Phone",
+    "meetings": "Meetings",
+    "calendar": "Calendar"
   },
   "viewer": {
     "ZoomIn": "Scale file up",
