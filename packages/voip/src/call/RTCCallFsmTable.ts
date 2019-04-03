@@ -4,13 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import StateMachine from 'ts-javascript-state-machine';
-import { RTC_CALL_ACTION } from '../api/types';
+import {
+  RTC_CALL_ACTION,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
+} from '../api/types';
 import { rtcLogger } from '../utils/RTCLoggerProxy';
 
 const CallFsmState = {
   IDLE: 'idle',
   PENDING: 'pending',
   ANSWERING: 'answering',
+  REPLYING: 'replying',
   FORWARDING: 'forwarding',
   CONNECTING: 'connecting',
   CONNECTED: 'connected',
@@ -39,6 +44,9 @@ const CallFsmEvent = {
   UNHOLD: 'unhold',
   PARK: 'park',
   DTMF: 'dtmf',
+  START_REPLY: 'startReplyWithMessage',
+  REPLY_WITH_MESSAGE: 'replyWithMessage',
+  REPLY_WITH_PATTERN: 'replyWithPattern',
   SESSION_ACCEPTED: 'sessionAccepted',
   SESSION_CONFIRMED: 'sessionConfirmed',
   SESSION_DISCONNECTED: 'sessionDisconnected',
@@ -67,6 +75,13 @@ interface IRTCCallFsmTableDependency {
   onUnholdAction(): void;
   onParkAction(): void;
   onDtmfAction(digits: string): void;
+  onStartReplyAction(): void;
+  onReplyWithMessageAction(msg: string): void;
+  onReplyWithPatternAction(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: string,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ): void;
 }
 
 class RTCCallFsmTable extends StateMachine {
@@ -89,7 +104,7 @@ class RTCCallFsmTable extends StateMachine {
         },
         {
           name: CallFsmEvent.ANSWER,
-          from: CallFsmState.IDLE,
+          from: [CallFsmState.IDLE, CallFsmState.REPLYING],
           to: () => {
             dependency.onAnswerAction();
             return CallFsmState.ANSWERING;
@@ -97,7 +112,7 @@ class RTCCallFsmTable extends StateMachine {
         },
         {
           name: CallFsmEvent.REJECT,
-          from: CallFsmState.IDLE,
+          from: [CallFsmState.IDLE, CallFsmState.REPLYING],
           to: () => {
             dependency.onRejectAction();
             return CallFsmState.DISCONNECTED;
@@ -105,15 +120,99 @@ class RTCCallFsmTable extends StateMachine {
         },
         {
           name: CallFsmEvent.IGNORE,
-          from: CallFsmState.IDLE,
+          from: [CallFsmState.IDLE, CallFsmState.REPLYING],
           to: CallFsmState.DISCONNECTED,
         },
         {
           name: CallFsmEvent.SEND_TO_VOICEMAIL,
-          from: CallFsmState.IDLE,
+          from: [CallFsmState.IDLE, CallFsmState.REPLYING],
           to: () => {
             dependency.onSendToVoicemailAction();
             return CallFsmState.DISCONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.START_REPLY,
+          from: CallFsmState.IDLE,
+          to: () => {
+            dependency.onStartReplyAction();
+            return CallFsmState.REPLYING;
+          },
+        },
+        {
+          name: CallFsmEvent.START_REPLY,
+          from: [
+            CallFsmState.ANSWERING,
+            CallFsmState.PENDING,
+            CallFsmState.CONNECTING,
+            CallFsmState.CONNECTED,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
+            CallFsmState.REPLYING,
+          ],
+          to: () => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.START_REPLY);
+            return undefined;
+          },
+        },
+        {
+          name: CallFsmEvent.REPLY_WITH_MESSAGE,
+          from: CallFsmState.REPLYING,
+          to: (msg: string) => {
+            dependency.onReplyWithMessageAction(msg);
+            return CallFsmState.DISCONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.REPLY_WITH_MESSAGE,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.PENDING,
+            CallFsmState.CONNECTING,
+            CallFsmState.CONNECTED,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
+          ],
+          to: () => {
+            dependency.onReportCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG);
+            return undefined;
+          },
+        },
+        {
+          name: CallFsmEvent.REPLY_WITH_PATTERN,
+          from: CallFsmState.REPLYING,
+          to: (
+            pattern: RTC_REPLY_MSG_PATTERN,
+            time: string,
+            timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+          ) => {
+            dependency.onReplyWithPatternAction(pattern, time, timeUnit);
+            return CallFsmState.DISCONNECTED;
+          },
+        },
+        {
+          name: CallFsmEvent.REPLY_WITH_PATTERN,
+          from: [
+            CallFsmState.IDLE,
+            CallFsmState.ANSWERING,
+            CallFsmState.PENDING,
+            CallFsmState.CONNECTING,
+            CallFsmState.CONNECTED,
+            CallFsmState.HOLDING,
+            CallFsmState.HOLDED,
+            CallFsmState.UNHOLDING,
+            CallFsmState.FORWARDING,
+          ],
+          to: () => {
+            dependency.onReportCallActionFailed(
+              RTC_CALL_ACTION.REPLY_WITH_PATTERN,
+            );
+            return undefined;
           },
         },
         {
@@ -128,6 +227,7 @@ class RTCCallFsmTable extends StateMachine {
             CallFsmState.HOLDED,
             CallFsmState.UNHOLDING,
             CallFsmState.FORWARDING,
+            CallFsmState.REPLYING,
           ],
           to: () => {
             dependency.onHangupAction();

@@ -7,7 +7,12 @@
 import { EventEmitter2 } from 'eventemitter2';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
-import { RTC_CALL_ACTION, RTCCallActionSuccessOptions } from '../api/types';
+import {
+  RTC_CALL_ACTION,
+  RTCCallActionSuccessOptions,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
+} from '../api/types';
 import {
   WEBPHONE_SESSION_STATE,
   WEBPHONE_SESSION_EVENT,
@@ -348,6 +353,70 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
       } catch (error) {
         rtcLogger.warn(LOG_TAG, error.message);
       }
+    }
+  }
+
+  startReply() {
+    if (this._session) {
+      this._session.sendSessionMessage({ reqid: 13 });
+    }
+  }
+
+  replyWithPattern(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ) {
+    let index = 1;
+    let dir = 0;
+    let units = 0;
+    switch (pattern) {
+      case RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER:
+        index = 4;
+        break;
+      case RTC_REPLY_MSG_PATTERN.IN_A_MEETING:
+        index = 5;
+        break;
+      case RTC_REPLY_MSG_PATTERN.ON_MY_WAY:
+        index = 2;
+        break;
+      case RTC_REPLY_MSG_PATTERN.ON_THE_OTHER_LINE:
+        index = 6;
+      case RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER:
+        index = 4;
+        dir = 1;
+      default:
+        break;
+    }
+    switch (timeUnit) {
+      case RTC_REPLY_MSG_TIME_UNIT.MINUTE:
+        units = 0;
+        break;
+      case RTC_REPLY_MSG_TIME_UNIT.HOUR:
+        units = 1;
+        break;
+      case RTC_REPLY_MSG_TIME_UNIT.DAY:
+        units = 2;
+        break;
+      default:
+        break;
+    }
+    if (this._session) {
+      this._session.replyWithMessage({
+        replyType: index,
+        callbackDirection: dir,
+        timeUnits: units,
+        timeValue: time,
+      });
+    }
+  }
+
+  replyWithMessage(msg: string) {
+    if (this._session) {
+      this._session.replyWithMessage({
+        replyType: 0,
+        replyText: msg,
+      });
     }
   }
 

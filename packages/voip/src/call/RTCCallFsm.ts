@@ -7,6 +7,7 @@ import { RTCCallFsmTable, IRTCCallFsmTableDependency } from './RTCCallFsmTable';
 import { EventEmitter2 } from 'eventemitter2';
 import async from 'async';
 import { CALL_FSM_NOTIFY } from './types';
+import { RTC_REPLY_MSG_PATTERN, RTC_REPLY_MSG_TIME_UNIT } from '../api/types';
 
 const CallFsmEvent = {
   HANGUP: 'hangupEvent',
@@ -25,6 +26,9 @@ const CallFsmEvent = {
   UNHOLD: 'unholdEvent',
   PARK: 'parkEvent',
   DTMF: 'dtmfEvent',
+  START_REPLY: 'startReplyEvent',
+  REPLY_WITH_MSG: 'replyWithMsgEvent',
+  REPLY_WITH_PATTERN: 'replyWithPatternEvent',
   ACCOUNT_READY: 'accountReadyEvent',
   ACCOUNT_NOT_READY: 'accountNotReadyEvent',
   SESSION_ACCEPTED: 'sessionAcceptedEvent',
@@ -181,6 +185,20 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     );
   }
 
+  startReplyWithMessage(): void {
+    this._eventQueue.push({ name: CallFsmEvent.START_REPLY }, () => {
+      this._onStartReplyWithMessage();
+    });
+  }
+
+  replyWithMessage(message: string): void {}
+
+  replyWithPattern(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: string,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ): void {}
+
   public accountReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {
       this._onAccountReady();
@@ -309,6 +327,27 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     this.emit(CALL_FSM_NOTIFY.DTMF_ACTION, digits);
   }
 
+  onStartReplyAction() {
+    this.emit(CALL_FSM_NOTIFY.START_REPLY_ACTION);
+  }
+
+  onReplyWithPatternAction(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: string,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ): void {
+    this.emit(
+      CALL_FSM_NOTIFY.REPLY_WITH_PATTERN_ACTION,
+      pattern,
+      time,
+      timeUnit,
+    );
+  }
+
+  onReplyWithMessageAction(msg: string) {
+    this.emit(CALL_FSM_NOTIFY.REPLY_WITH_MESSAGE_ACTION, msg);
+  }
+
   private _onHangup() {
     this._callFsmTable.hangup();
   }
@@ -367,6 +406,10 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   private _onDtmf(digits: string) {
     this._callFsmTable.dtmf(digits);
+  }
+
+  private _onStartReplyWithMessage() {
+    this._callFsmTable.startReplyWithMessage();
   }
 
   private _onAccountReady() {
