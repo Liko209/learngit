@@ -56,7 +56,7 @@ class SettingLeftRailViewModel extends StoreViewModel {
       },
       {
         title: 'setting.calendar',
-        icon: 'event-new',
+        icon: 'event_new',
         type: SETTING_LIST_TYPE.calendar,
         testId: 'entry-calendar',
       },
