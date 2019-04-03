@@ -24,6 +24,12 @@ import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
+import { UploadRecentLogs } from '@/modules/feedback';
+import _ from 'lodash';
+
+const DEBUG_COMMAND_MAP = {
+  '/debug': () => UploadRecentLogs.show(),
+};
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -199,6 +205,11 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   private async _sendPost(content: string, ids: number[]) {
+    if (_.isEmpty(ids) && content && DEBUG_COMMAND_MAP[content.trim()]) {
+      DEBUG_COMMAND_MAP[content.trim()]();
+      this.contentChange('');
+      return;
+    }
     this.contentChange('');
     this.cleanDraft();
     const items = this.items;

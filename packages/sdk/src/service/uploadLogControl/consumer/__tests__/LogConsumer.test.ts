@@ -3,7 +3,7 @@
  * @Date: 2019-03-24 11:09:16
  * Copyright © RingCentral. All rights reserved.
  */
-import { LogConsumer } from '../LogUploadConsumer';
+import { LogUploadConsumer } from '../LogUploadConsumer';
 import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
 import { persistentLogFactory } from '../persistent/__tests__/LogPersistent.test';
 import { ILogUploader } from '../uploader/types';
@@ -98,7 +98,10 @@ describe('LogConsumer', () => {
       [callback, observer] = createCallbackObserver();
     });
     it('should write into memory after log process done [JPT-537]', async () => {
-      const logConsumer = new LogConsumer(mockUploader, mockLogPersistent);
+      const logConsumer = new LogUploadConsumer(
+        mockUploader,
+        mockLogPersistent,
+      );
       const mockLog = logEntityFactory.build();
       // todo logConsumer.setLogPersistent(mockLogPersistent);
       // memoryQueue is empty
@@ -115,7 +118,7 @@ describe('LogConsumer', () => {
         memoryCountThreshold: 0,
       });
       mockAccessor.isAccessible.mockReturnValue(true);
-      const logConsumer = new LogConsumer(
+      const logConsumer = new LogUploadConsumer(
         mockUploader,
         mockLogPersistent,
         mockAccessor,
@@ -159,7 +162,7 @@ describe('LogConsumer', () => {
       });
       mockAccessor.isAccessible.mockReturnValue(false);
       // network is not working
-      const logConsumer = new LogConsumer(
+      const logConsumer = new LogUploadConsumer(
         mockUploader,
         mockLogPersistent,
         mockAccessor,
@@ -201,7 +204,7 @@ describe('LogConsumer', () => {
         memoryCountThreshold: 0, // set to 0 to flush immediately while onLog
       });
       mockAccessor.isAccessible.mockReturnValue(false);
-      const logConsumer = new LogConsumer(
+      const logConsumer = new LogUploadConsumer(
         mockUploader,
         mockLogPersistent,
         mockAccessor,
@@ -245,7 +248,7 @@ describe('LogConsumer', () => {
       });
       // expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
       [callback, observer] = createCallbackObserver();
-      const logConsumer = new LogConsumer(
+      const logConsumer = new LogUploadConsumer(
         mockUploader,
         mockLogPersistent,
         mockAccessor,
@@ -277,7 +280,7 @@ describe('LogConsumer', () => {
         memoryCountThreshold: 0,
       });
       mockAccessor.isAccessible.mockReturnValue(true);
-      const logConsumer = new LogConsumer(
+      const logConsumer = new LogUploadConsumer(
         mockUploader,
         mockLogPersistent,
         mockAccessor,
@@ -332,8 +335,7 @@ describe('LogConsumer', () => {
       });
       mockAccessor.isAccessible.mockReturnValue(true);
       (mockLogPersistent.count as jest.Mock).mockResolvedValue(0);
-      // [callback, observer] = createCallbackObserver();
-      const logConsumer = new LogConsumer(
+      const logConsumer = new LogUploadConsumer(
         mockUploader,
         mockLogPersistent,
         mockAccessor,
