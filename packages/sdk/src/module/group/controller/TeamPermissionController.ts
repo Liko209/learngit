@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../service/account/config';
 
 import {
   DEFAULT_ADMIN_PERMISSION_LEVEL,
@@ -22,7 +22,8 @@ class TeamPermissionController {
   constructor() {}
 
   isCurrentUserGuest(teamPermissionParams: TeamPermissionParams): boolean {
-    const companyId = AccountGlobalConfig.getCurrentCompanyId();
+    const userConfig = new AccountUserConfig();
+    const companyId = userConfig.getCurrentCompanyId();
     const guestUserCompanyIds = teamPermissionParams.guest_user_company_ids;
     return guestUserCompanyIds
       ? guestUserCompanyIds.includes(companyId)
@@ -43,7 +44,8 @@ class TeamPermissionController {
   getCurrentUserPermissionLevel(
     teamPermissionParams: TeamPermissionParams,
   ): number {
-    const userId = AccountGlobalConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const userId = userConfig.getGlipUserId();
 
     const {
       permissions: {

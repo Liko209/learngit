@@ -5,7 +5,7 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import ReactResizeDetector from 'react-resize-detector';
 import { JuiProfileDialogContentMemberList } from 'jui/pattern/Profile/Dialog';
 import {
@@ -19,12 +19,12 @@ import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 const ITEM_HEIGHT = 48;
-const MAX_ITEM_NUMBER = 8;
+const MAX_ITEM_NUMBER = 5.5;
 
 @observer
 class MemberList
   extends React.Component<
-    WithNamespaces & MemberListProps & MemberListViewProps
+    WithTranslation & MemberListProps & MemberListViewProps
   >
   implements IVirtualListDataSource<number, number> {
   componentWillUnmount() {
@@ -78,7 +78,7 @@ class MemberList
                 overscan={5}
                 rowRenderer={this.rowRenderer}
                 width={width}
-                height={virtualListHeight}
+                height={dialogHeight}
                 fixedCellHeight={ITEM_HEIGHT}
                 onScroll={this.onScroll}
                 data-test-automation-id="profileDialogMemberList"
@@ -90,6 +90,6 @@ class MemberList
     );
   }
 }
-const MemberListView = translate('translations')(MemberList);
+const MemberListView = withTranslation('translations')(MemberList);
 
 export { MemberListView };

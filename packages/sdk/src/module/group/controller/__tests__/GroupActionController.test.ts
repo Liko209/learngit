@@ -16,7 +16,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { Raw } from '../../../../framework/model';
 import { buildRequestController } from '../../../../framework/controller';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../service/account/config';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
@@ -93,7 +93,7 @@ describe('GroupFetchDataController', () => {
       return testTeamRequestController;
     });
 
-    AccountGlobalConfig.getCurrentUserId = jest
+    AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
     PostService.getInstance = jest.fn().mockReturnValue(postService);
@@ -306,7 +306,7 @@ describe('GroupFetchDataController', () => {
     });
 
     it('should call dependency apis with correct data user Id has already in members', async () => {
-      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.convertToTeam.mockResolvedValue(group);
 
@@ -332,7 +332,7 @@ describe('GroupFetchDataController', () => {
       });
     });
     it('should call dependency apis with correct data user Id has not in members', async () => {
-      AccountGlobalConfig.getCurrentUserId.mockReturnValueOnce(1);
+      AccountUserConfig.prototype.getGlipUserId.mockReturnValueOnce(1);
       data.members = [2, 3, 4, 1];
       const group: Raw<Group> = _.cloneDeep(data) as Raw<Group>;
       GroupAPI.convertToTeam.mockResolvedValue(group);
@@ -375,7 +375,7 @@ describe('GroupFetchDataController', () => {
       );
     });
   });
-  describe('removeTeamsByIds()', async () => {
+  describe('removeTeamsByIds()', () => {
     it('should not do notify', async () => {
       daoManager.getDao.mockReturnValueOnce(groupDao);
       daoManager.getDao.mockReturnValueOnce(groupConfigDao);

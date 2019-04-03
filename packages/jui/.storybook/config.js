@@ -3,7 +3,6 @@
  * @Date: 2018-08-30 08:41:05
  * Copyright © RingCentral. All rights reserved.
  */
-import '@babel/polyfill';
 import React from 'react';
 import { configure, addDecorator } from '@storybook/react';
 import { withKnobs } from '@storybook/addon-knobs';

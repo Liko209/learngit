@@ -308,7 +308,7 @@ describe('FileItemService', () => {
     });
   });
 
-  describe('getThumbsUrlWithSize', async () => {
+  describe('getThumbsUrlWithSize', () => {
     beforeEach(() => {
       clearMocks();
       setup();

@@ -305,7 +305,7 @@ describe('GroupService', () => {
     });
   });
 
-  describe('pinPost', async () => {
+  describe('pinPost', () => {
     beforeEach(() => {
       clearMocks();
       setup();

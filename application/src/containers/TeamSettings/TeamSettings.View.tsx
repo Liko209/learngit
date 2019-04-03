@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation, Trans } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
@@ -20,7 +20,6 @@ import {
   JuiTeamSettingButtonList as ButtonList,
   JuiTeamSettingButtonListItem as ButtonListItem,
   JuiTeamSettingButtonListItemText as ButtonListItemText,
-  JuiHighlightedTeamName,
 } from 'jui/pattern/TeamSetting';
 import portalManager from '@/common/PortalManager';
 import { ViewProps } from './types';
@@ -40,7 +39,7 @@ type State = {
   allowMemberPin: boolean;
 };
 
-type TeamSettingsProps = WithNamespaces & ViewProps;
+type TeamSettingsProps = WithTranslation & ViewProps;
 
 const NAME_MAX_LENGTH = 200;
 const DESC_MAX_LENGTH = 1000;
@@ -133,9 +132,15 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       size: 'small',
       okType: 'negative',
       title: t('people.team.leaveTeamConfirmTitle'),
-      content: t('people.team.leaveTeamConfirmContent', {
-        teamName: groupName,
-      }),
+      content: (
+        <JuiDialogContentText>
+          <Trans
+            i18nKey="people.team.leaveTeamConfirmContent"
+            values={{ teamName: groupName }}
+            components={[<strong key="0" />]}
+          />
+        </JuiDialogContentText>
+      ),
       okText: toTitleCase(t('people.team.leaveTeamConfirmOk')),
       cancelText: toTitleCase(t('common.dialog.cancel')),
       onOK: this.leaveTeamOKButtonHandler,
@@ -153,8 +158,11 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
       title: t('people.team.deleteTeamConfirmTitle'),
       content: (
         <JuiDialogContentText>
-          {t('people.team.deleteTeamConfirmContent')}
-          <JuiHighlightedTeamName> {groupName}</JuiHighlightedTeamName> team?
+          <Trans
+            i18nKey="people.team.deleteTeamConfirmContent"
+            values={{ teamName: groupName }}
+            components={[<strong key="0" />]}
+          />
         </JuiDialogContentText>
       ),
       okText: toTitleCase(t('people.team.deleteTeamConfirmOk')),
@@ -371,7 +379,7 @@ class TeamSettings extends React.Component<TeamSettingsProps, State> {
   }
 }
 
-const TeamSettingsView = translate()(TeamSettings);
+const TeamSettingsView = withTranslation()(TeamSettings);
 const TeamSettingsComponent = TeamSettings;
 
 export { TeamSettingsView, TeamSettingsComponent };

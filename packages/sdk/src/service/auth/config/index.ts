@@ -1,1 +1,1 @@
-export { AuthGlobalConfig } from './AuthGlobalConfig';
+export { AuthUserConfig } from './AuthUserConfig';

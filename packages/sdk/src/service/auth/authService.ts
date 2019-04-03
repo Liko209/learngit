@@ -6,19 +6,21 @@
 
 import { mainLogger } from 'foundation';
 
-import { loginGlip2ByPassword } from '../../api';
+import { loginGlip2ByPassword, glipStatus } from '../../api';
 import {
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
+  ReLoginAuthenticator,
 } from '../../authenticator';
-import { AuthDao, daoManager } from '../../dao';
-import { AUTH_GLIP2_TOKEN, AUTH_RC_TOKEN } from '../../dao/auth/constants';
+import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
 import { AccountManager } from '../../framework';
 import { Aware } from '../../utils/error';
 import BaseService from '../BaseService';
 import { SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
 import { ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
+import { jobScheduler, JOB_KEY } from '../../framework/utils/jobSchedule';
+import { AuthUserConfig } from './config';
 
 interface ILogin {
   username: string;
@@ -74,10 +76,10 @@ class AuthService extends BaseService {
   }
 
   async loginGlip2(params: ILogin) {
-    const authDao = daoManager.getKVDao(AuthDao);
+    const authConfig = new AuthUserConfig();
     try {
       const authToken = await loginGlip2ByPassword(params);
-      authDao.put(AUTH_GLIP2_TOKEN, authToken);
+      authConfig.setGlip2Token(authToken);
       notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
     } catch (err) {
       // Since glip2 api is no in use now, we can ignore all it's errors
@@ -86,8 +88,8 @@ class AuthService extends BaseService {
   }
 
   async makeSureUserInWhitelist() {
-    const authDao = daoManager.getKVDao(AuthDao);
-    const rc_token_info = authDao.get(AUTH_RC_TOKEN);
+    const authConfig = new AuthUserConfig();
+    const rc_token_info = authConfig.getRcToken();
     if (rc_token_info && rc_token_info.owner_id) {
       await this._accountManager.makeSureUserInWhitelist(
         rc_token_info.owner_id,
@@ -104,6 +106,36 @@ class AuthService extends BaseService {
 
   isLoggedIn(): boolean {
     return this._accountManager.isLoggedIn();
+  }
+
+  scheduleReLoginGlipJob() {
+    jobScheduler.scheduleAndIgnoreFirstTime({
+      key: JOB_KEY.RE_LOGIN_GLIP,
+      intervalSeconds: 3600,
+      periodic: false,
+      needNetwork: true,
+      retryForever: true,
+      executeFunc: async (callback: (successful: boolean) => void) => {
+        if (await this.reLoginGlip()) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+    });
+  }
+
+  async reLoginGlip(): Promise<boolean> {
+    try {
+      const status = await glipStatus();
+      if (status !== 'OK') {
+        return false;
+      }
+      return await this._accountManager.reLogin(ReLoginAuthenticator.name);
+    } catch (err) {
+      mainLogger.tags('ReLoginGlip').error(err);
+      return false;
+    }
   }
 }
 

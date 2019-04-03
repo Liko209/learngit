@@ -4,19 +4,15 @@
  * Copyright © RingCentral. All rights reserved
  */
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
-import { Api, loginGlip } from '../api';
+import { loginGlip, ITokenModel } from '../api';
 import { RcInfoApi } from '../api/ringcentral';
 import notificationCenter from '../service/notificationCenter';
 import { GlipAccount, RCAccount } from '../account';
-import { generateCode, oauthTokenViaAuthCode } from '../api/ringcentral/auth';
+import { oauthTokenViaAuthCode } from '../api/ringcentral/auth';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
 import { RcInfoService } from '../module/rcInfo';
-import {
-  setRcToken,
-  setRcAccountType,
-  setGlipToken,
-  setGlipAccountType,
-} from './utils';
+import { setRcToken, setRcAccountType } from './utils';
+import { AccountGlobalConfig } from '../service/account/config';
 
 interface IUnifiedLoginAuthenticateParams extends IAuthParams {
   code?: string;
@@ -49,8 +45,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
   // glip free user login
   private async _authenticateGlip(token: string): Promise<IAuthResponse> {
-    await setGlipAccountType();
-    await setGlipToken(token);
+    notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN, { glipToken: token });
     return {
       success: true,
       accountInfos: [
@@ -67,33 +62,45 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     // login rc
     const rcToken = await this._fetchRcToken(code);
     await this._requestRcAccountRelativeInfo();
+    await setRcToken(rcToken);
+    await setRcAccountType();
+    // TODO FIJI-4395
 
-    // login glip
-    const glipToken = await this._loginGlipByRcToken();
-
-    return {
+    const response = {
       success: true,
+      isRCOnlyMode: false,
       accountInfos: [
         {
           type: RCAccount.name,
           data: rcToken,
         },
-        {
-          type: GlipAccount.name,
-          data: glipToken,
-        },
       ],
     };
+
+    // login glip
+    try {
+      const glipToken = await this._loginGlipByRcToken(rcToken);
+      response.accountInfos.push({
+        type: GlipAccount.name,
+        data: glipToken,
+      });
+    } catch (err) {
+      // todo: for now, ui can not support the rc only mode
+      // so will throw error to logout when glip is down
+      // mainLogger.tags('UnifiedLogin').error(err);
+      // response.isRCOnlyMode = true;
+      throw err;
+    }
+    return response;
   }
 
-  private async _fetchRcToken(code: string) {
+  private async _fetchRcToken(code: string): Promise<ITokenModel> {
     const rcToken = await oauthTokenViaAuthCode({
       code,
       redirect_uri: window.location.origin,
     });
-    await setRcToken(rcToken);
-    await setRcAccountType();
-    notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN);
+
+    notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN, { rcToken });
     return rcToken;
   }
 
@@ -101,25 +108,22 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     await RcInfoApi.requestRcAPIVersion();
     const rcInfoService: RcInfoService = RcInfoService.getInstance();
     await rcInfoService.requestRcAccountRelativeInfo();
+    AccountGlobalConfig.setUserDictionary(
+      rcInfoService.getRcExtensionInfo().id.toString(),
+    );
   }
 
-  private async _loginGlipByRcToken() {
-    const { rc } = Api.httpConfig;
-
-    // fetch new code for glip token
-    const codeData = await generateCode(rc.clientId, rc.redirectUri);
-    const newCode = codeData.code;
-
-    // fetch request params for glip token
-    const glipParams = await oauthTokenViaAuthCode(
-      { code: newCode, redirect_uri: 'glip://rclogin' },
-      { Authorization: `Basic ${btoa(`${rc.clientId}:${rc.clientSecret}`)}` },
-    );
+  private async _loginGlipByRcToken(rcToken: ITokenModel) {
     // fetch glip token
-    const glipLoginResponse = await loginGlip(glipParams);
-    const glipToken = glipLoginResponse.headers['x-authorization'];
-    await setGlipToken(glipToken);
-    return glipToken;
+    const glipLoginResponse = await loginGlip(rcToken);
+    if (glipLoginResponse.status >= 200 && glipLoginResponse.status < 300) {
+      const glipToken = glipLoginResponse.headers['x-authorization'];
+      notificationCenter.emit(SHOULD_UPDATE_NETWORK_TOKEN, {
+        glipToken,
+      });
+      return glipToken;
+    }
+    throw Error(`login glip failed, ${glipLoginResponse.statusText}`);
   }
 }
 

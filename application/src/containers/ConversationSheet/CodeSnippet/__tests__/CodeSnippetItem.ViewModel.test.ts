@@ -23,4 +23,11 @@ describe('CodeSnippetItemViewModel', () => {
     const codeSnippetViewModel = new CodeSnippetViewModel(props);
     expect(codeSnippetViewModel.postItem).toEqual(token);
   });
+
+  it('should save collapse state in a static map field and default value is true', () => {
+    const codeSnippetViewModel = new CodeSnippetViewModel(props);
+    expect(codeSnippetViewModel.isCollapse).toBe(true);
+    codeSnippetViewModel.setCollapse(false);
+    expect(codeSnippetViewModel.isCollapse).toBe(false);
+  });
 });

@@ -62,7 +62,7 @@ export class ConversationCard extends React.Component<
 
   jumpToPost = () => {
     const { id, groupId } = this.props;
-    jumpToPost(id, groupId);
+    jumpToPost({ id, groupId });
   }
 
   private _focusEditor() {
@@ -106,7 +106,7 @@ export class ConversationCard extends React.Component<
     );
     const activity = <Activity id={id} />;
     const from = mode === 'navigation' ? <From id={post.groupId} /> : undefined;
-    const onClickHandler = mode ? this.jumpToPost : undefined;
+    const jumpToPost = mode ? this.jumpToPost : undefined;
     return (
       <JuiConversationCard
         data-name="conversation-card"
@@ -115,7 +115,7 @@ export class ConversationCard extends React.Component<
         onMouseOver={this.handleMouseOver}
         onMouseLeave={this.handleMouseLeave}
         mode={mode}
-        onClick={onClickHandler}
+        jumpToPost={jumpToPost}
         onAnimationStart={onAnimationStart}
         ref={cardRef}
         {...rest}

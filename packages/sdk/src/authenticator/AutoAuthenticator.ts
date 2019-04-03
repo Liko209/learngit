@@ -5,15 +5,17 @@
  */
 import { IAuthResponse, ISyncAuthenticator } from '../framework';
 import { ACCOUNT_TYPE_ENUM } from './constants';
-import DaoManager from '../dao/DaoManager';
-import { AuthGlobalConfig } from '../service/auth/config';
-import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
+import { AuthUserConfig } from '../service/auth/config';
 import { RCAccount, GlipAccount } from '../account';
+import {
+  AccountGlobalConfig,
+  AccountUserConfig,
+} from '../service/account/config';
 
 class AutoAuthenticator implements ISyncAuthenticator {
   private _accountTypeHandleMap: Map<string, any>;
 
-  constructor(daoManager: DaoManager) {
+  constructor() {
     this._accountTypeHandleMap = new Map<string, any>();
     this._accountTypeHandleMap.set(
       ACCOUNT_TYPE_ENUM.RC,
@@ -26,7 +28,11 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   authenticate(): IAuthResponse {
-    const type: string = NewGlobalConfig.getAccountType();
+    let type: string = '';
+    if (AccountGlobalConfig.getUserDictionary()) {
+      const userConfig = new AccountUserConfig();
+      type = userConfig.getAccountType();
+    }
     const func = this._accountTypeHandleMap.get(type);
 
     if (func) {
@@ -37,7 +43,8 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authGlipLogin(): IAuthResponse {
-    const glipToken: string = AuthGlobalConfig.getGlipToken();
+    const authConfig = new AuthUserConfig();
+    const glipToken: string = authConfig.getGlipToken();
 
     if (glipToken) {
       return {
@@ -55,26 +62,37 @@ class AutoAuthenticator implements ISyncAuthenticator {
   }
 
   private _authRCLogin(): IAuthResponse {
-    const rcToken: string = AuthGlobalConfig.getRcToken();
-    const glipToken: string = AuthGlobalConfig.getGlipToken();
-
-    if (rcToken && glipToken) {
-      return {
-        success: true,
-        accountInfos: [
-          {
-            type: RCAccount.name,
-            data: rcToken,
-          },
-          {
-            type: GlipAccount.name,
-            data: glipToken,
-          },
-        ],
-      };
+    const authConfig = new AuthUserConfig();
+    const rcToken: string = authConfig.getRcToken();
+    if (!rcToken) {
+      return { success: false };
     }
 
-    return { success: false };
+    const response = {
+      success: true,
+      isRCOnlyMode: false,
+      accountInfos: [
+        {
+          type: RCAccount.name,
+          data: rcToken,
+        },
+      ],
+    };
+
+    const glipToken: string = authConfig.getGlipToken();
+    if (glipToken) {
+      response.accountInfos.push({
+        type: GlipAccount.name,
+        data: glipToken,
+      });
+    } else {
+      // todo: for now, ui can not support the rc only mode
+      // so will return false to logout when glip is down
+      // response.isRCOnlyMode = true;
+      return { success: false };
+    }
+
+    return response;
   }
 }
 

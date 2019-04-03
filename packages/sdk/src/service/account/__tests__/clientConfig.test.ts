@@ -5,7 +5,7 @@
 
 import { EBETA_FLAG, isInBeta } from '../clientConfig';
 import { GlobalConfigService } from '../../../module/config';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../service/account/config';
 
 jest.mock('../../../module/config');
 jest.mock('../../../service/config/NewGlobalConfig');
@@ -21,32 +21,36 @@ describe('Client Config', () => {
   });
 
   function setS3UploadBeta() {
-    AccountGlobalConfig.getClientConfig = jest.fn().mockReturnValue({
+    AccountUserConfig.prototype.getClientConfig = jest.fn().mockReturnValue({
       beta_s3_direct_uploads_emails: '123,234,456',
       beta_s3_direct_uploads_domains: '1,2,3,4',
     });
   }
 
   it('beta log', async () => {
-    AccountGlobalConfig.getClientConfig = jest.fn().mockReturnValue({
+    AccountUserConfig.prototype.getClientConfig = jest.fn().mockReturnValue({
       beta_enable_log_emails: '123,234,456',
       beta_enable_log_domains: '1,2,3,4',
     });
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(123);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(123);
     expect(isInBeta(EBETA_FLAG.BETA_LOG)).toEqual(true);
 
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(10);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(10);
     expect(isInBeta(EBETA_FLAG.BETA_LOG)).toEqual(false);
 
-    AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(4);
+    AccountUserConfig.prototype.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(4);
     expect(isInBeta(EBETA_FLAG.BETA_LOG)).toEqual(true);
   });
 
   it('should return true when user id is in beta list', () => {
     setS3UploadBeta();
 
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(123);
-    AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(5);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(123);
+    AccountUserConfig.prototype.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(5);
 
     expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(true);
   });
@@ -54,8 +58,10 @@ describe('Client Config', () => {
   it('should return false when user id is not in beta list', () => {
     setS3UploadBeta();
 
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(123);
-    AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(5);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(123);
+    AccountUserConfig.prototype.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(5);
 
     expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(true);
   });
@@ -63,8 +69,10 @@ describe('Client Config', () => {
   it('should return true when user company is in beta domain list', async () => {
     setS3UploadBeta();
 
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(567);
-    AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(3);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(567);
+    AccountUserConfig.prototype.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(3);
 
     expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(true);
   });
@@ -72,20 +80,24 @@ describe('Client Config', () => {
   it('should return false when user company is not in beta domain list', async () => {
     setS3UploadBeta();
 
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(567);
-    AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(9);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(567);
+    AccountUserConfig.prototype.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(9);
 
     expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(false);
   });
 
   it('should return true when beta flag is on for all', async () => {
-    AccountGlobalConfig.getClientConfig = jest.fn().mockReturnValue({
+    AccountUserConfig.prototype.getClientConfig = jest.fn().mockReturnValue({
       beta_s3_direct_uploads_emails: '123,234,456',
       beta_s3_direct_uploads_domains: '1,2,3,4',
       beta_s3_direct_uploads: 'true',
     });
-    AccountGlobalConfig.getCurrentUserId = jest.fn().mockReturnValue(567);
-    AccountGlobalConfig.getCurrentCompanyId = jest.fn().mockReturnValue(9);
+    AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(567);
+    AccountUserConfig.prototype.getCurrentCompanyId = jest
+      .fn()
+      .mockReturnValue(9);
 
     expect(isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)).toEqual(true);
   });

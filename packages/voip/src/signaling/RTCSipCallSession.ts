@@ -206,7 +206,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   hangup() {
     if (this._session != null) {
-      this._session.terminate();
+      try {
+        this._session.terminate();
+      } catch (error) {
+        rtcLogger.error(LOG_TAG, `Exception when hangup call: ${error}`);
+      }
     }
   }
 
@@ -339,7 +343,11 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
 
   dtmf(digits: string) {
     if (this._session) {
-      this._session.dtmf(digits);
+      try {
+        this._session.dtmf(digits);
+      } catch (error) {
+        rtcLogger.warn(LOG_TAG, error.message);
+      }
     }
   }
 

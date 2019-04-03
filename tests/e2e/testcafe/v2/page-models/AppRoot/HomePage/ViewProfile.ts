@@ -205,7 +205,7 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByIcon('close');
   }
 
-  async close() {
+  async clickCloseButton() {
     await this.t.click(this.closeButton);
   }
 
@@ -327,20 +327,30 @@ export class ProfileDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('profileDialogMemberListItemPersonGuest', this.self);
   }
 
-  get privateButton() {
+  get privacyToggle() {
     return this.profileTitle.find('.privacy');
   }
 
   get publicIcon() {
-    return this.getSelectorByIcon("lock_open", this.privateButton);
+    return this.getSelectorByIcon("lock_open", this.privacyToggle);
   }
 
   get privateIcon() {
-    return this.getSelectorByIcon('lock', this.privateButton);
+    return this.getSelectorByIcon('lock', this.privacyToggle);
   }
 
-  async clickPrivate() {
-    await this.t.click(this.privateButton);
+  async shouldShowPublicIcon() {
+    await this.t.expect(this.publicIcon.exists).ok();
+    await this.t.expect(this.privateIcon.exists).notOk();
+  }
+
+  async shouldShowPrivateIcon() {
+    await this.t.expect(this.publicIcon.exists).notOk();
+    await this.t.expect(this.privateIcon.exists).ok();
+  }
+
+  async clickPrivacyToggle() {
+    await this.t.click(this.privacyToggle);
   }
 
   get settingButton() {

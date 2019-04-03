@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { BookmarkViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
@@ -15,7 +15,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
-type Props = BookmarkViewProps & WithNamespaces;
+type Props = BookmarkViewProps & WithTranslation;
 
 @observer
 class BookmarkViewComponent extends Component<Props> {
@@ -58,6 +58,6 @@ class BookmarkViewComponent extends Component<Props> {
   }
 }
 
-const BookmarkView = translate('translations')(BookmarkViewComponent);
+const BookmarkView = withTranslation('translations')(BookmarkViewComponent);
 
 export { BookmarkView };

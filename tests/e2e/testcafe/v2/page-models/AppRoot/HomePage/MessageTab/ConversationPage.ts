@@ -142,8 +142,8 @@ class BaseConversationPage extends BaseWebComponent {
     return await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
   }
 
+  /* scroll */
   get scrollDiv() {
-    this.warnFlakySelector();
     return this.getSelectorByAutomationId('virtualized-list', this.stream);
   }
 
@@ -161,11 +161,11 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   async scrollToY(y: number) {
-    const scrollDivElement=  this.scrollDiv;
+    const scrollDivElement = this.scrollDiv;
     await ClientFunction((_y) => {
       scrollDivElement().scrollTop = _y;
     },
-    { dependencies: { scrollDivElement } })(y);
+      { dependencies: { scrollDivElement } })(y);
   }
 
   async scrollToMiddle() {
@@ -187,6 +187,44 @@ class BaseConversationPage extends BaseWebComponent {
       const clientHeight = await this.scrollDiv.clientHeight;
       await this.scrollToY(scrollHeight - clientHeight);
     }
+  }
+
+  async scrollToCurrentFirstPost() {
+    const scrollTop = await this.posts.nth(0).scrollTop;
+    await this.scrollToY(scrollTop);
+  }
+
+  async scrollToCurrentLastPost() {
+    const scrollTop = await this.posts.nth(-1).scrollTop;
+    await this.scrollToY(scrollTop);
+  }
+
+  async scrollUpToViewPostById(postId: string) {
+    const postItem = this.postItemById(postId)
+    for (const i of _.range(10)) {
+      if (await postItem.exists) {
+        await postItem.scrollIntoView()
+        break
+      } else {
+        await this.scrollToCurrentFirstPost();
+        await this.t.wait(1e3);
+      }
+    }
+    assert(await postItem.visible, "this post does not exist");
+  }
+
+  async scrollDownToViewPostById(postId: string) {
+    const postItem = this.postItemById(postId)
+    for (const i of _.range(10)) {
+      if (await postItem.exists) {
+        await postItem.scrollIntoView()
+        break
+      } else {
+        await this.scrollToCurrentLastPost();
+        await this.t.wait(1e3);
+      }
+    }
+    assert(await postItem.visible, "this post does not exist");
   }
 
   get newMessageDeadLine() {
@@ -252,6 +290,15 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
+  async postCardByIdShouldBeOnTheTop(postId: string) {
+    await H.retryUntilPass(async () => {
+      const containerTop = await this.self.getBoundingClientRectProperty('top');
+      const headerHeight = await this.header.getBoundingClientRectProperty('height');
+      const targetTop = await this.postItemById(postId).self.getBoundingClientRectProperty('top');
+      assert.strictEqual(containerTop + headerHeight, targetTop, 'this post card is not on the top of conversation page')
+    });
+  }
+
   async shouldFocusOnMessageInputArea() {
     await this.t.expect(this.messageInputArea.focused).ok({ timeout: 5e3 });
   }
@@ -268,21 +315,21 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.pressKey('enter');
   }
 
-  get privateButton() {
+  get privacyToggle() {
     this.warnFlakySelector();
     return this.self.find('.privacy');
   }
 
   async clickPrivate() {
-    await this.t.click(this.privateButton);
+    await this.t.click(this.privacyToggle);
   }
 
   get privateTeamIcon() {
-    return this.getSelectorByIcon('lock', this.privateButton);
+    return this.getSelectorByIcon('lock', this.privacyToggle);
   }
 
   get publicTeamIcon() {
-    return this.getSelectorByIcon('lock_open', this.privateButton);
+    return this.getSelectorByIcon('lock_open', this.privacyToggle);
   }
 
   get favoriteButton() {
@@ -674,16 +721,10 @@ export class PostItem extends BaseWebComponent {
   }
 
   get jumpToConversationButton() {
-    // FIXME: should take i18n into account
-    this.warnFlakySelector();
-    return this.self.find(`span`).withText(/Jump To Conversation/i).parent('button');
+    return this.getSelectorByAutomationId('jumpToConversation', this.self);
   }
 
-  async jumpToConversationByClickPost() {
-    await this.t.click(this.self);
-  }
-
-  async clickConversationByButton() {
+  async hoverPostAndClickJumpToConversationButton() {
     const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
       buttonElement().style["opacity"] = "1";
@@ -713,6 +754,15 @@ export class PostItem extends BaseWebComponent {
       ele.scrollIntoView()
     })(this.self)
   }
+
+  get isHighLight() {
+    return this.self.hasClass('highlight')
+  }
+
+  async shouldBeHighLight() {
+    await this.t.expect(this.isHighLight).ok();
+  }
+
 }
 
 class AudioConference extends BaseWebComponent {

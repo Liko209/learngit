@@ -10,6 +10,7 @@ import {
   TEN_MINUTE_TIMEOUT,
   DEFAULT_RETRY_COUNT,
   REQUEST_PRIORITY,
+  HA_PRIORITY,
 } from 'foundation';
 import Api from '../api';
 import { GLIP_API } from './constants';
@@ -95,7 +96,6 @@ function loginGlip(authData: object) {
  * index data api
  */
 function indexData(params: object, requestConfig = {}, headers = {}) {
-  const retryCount = DEFAULT_RETRY_COUNT;
   const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipNetworkClient.get<IndexDataModel>(
     '/index',
@@ -103,14 +103,14 @@ function indexData(params: object, requestConfig = {}, headers = {}) {
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
-    retryCount,
+    DEFAULT_RETRY_COUNT,
     priority,
+    HA_PRIORITY.BASIC,
     TEN_MINUTE_TIMEOUT,
   );
 }
 
 function initialData(params: object, requestConfig = {}, headers = {}) {
-  const retryCount = 3;
   const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/initial',
@@ -118,15 +118,14 @@ function initialData(params: object, requestConfig = {}, headers = {}) {
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
-    retryCount,
-    priority,
     DEFAULT_RETRY_COUNT,
+    priority,
+    HA_PRIORITY.BASIC,
     TEN_MINUTE_TIMEOUT,
   );
 }
 
 function remainingData(params: object, requestConfig = {}, headers = {}) {
-  const retryCount = 3;
   const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/remaining',
@@ -134,14 +133,21 @@ function remainingData(params: object, requestConfig = {}, headers = {}) {
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
-    retryCount,
-    priority,
     DEFAULT_RETRY_COUNT,
+    priority,
+    HA_PRIORITY.BASIC,
     TEN_MINUTE_TIMEOUT,
   );
 }
 
-// plugins data
+function glipStatus() {
+  return Api.glipNetworkClient.http({
+    via: NETWORK_VIA.HTTP,
+    path: '/status',
+    method: NETWORK_METHOD.GET,
+    authFree: true,
+  });
+}
 
 function canConnect(
   params: CanConnectParasType,
@@ -157,4 +163,11 @@ function canConnect(
   );
 }
 
-export { loginGlip, indexData, initialData, remainingData, canConnect };
+export {
+  loginGlip,
+  indexData,
+  initialData,
+  remainingData,
+  canConnect,
+  glipStatus,
+};

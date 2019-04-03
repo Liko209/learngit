@@ -1,0 +1,37 @@
+import i18next from 'i18next';
+
+function hasLoadedNamespace() {
+  const lng = i18next.languages[0];
+  const fallbackLng = i18next.options ? i18next.options.fallbackLng : false;
+  const lastLng = i18next.languages[i18next.languages.length - 1];
+  const ns = (i18next.options && i18next.options.defaultNS) || 'translation';
+
+  const loadNotPending = (l: string, n: string) => {
+    const loadState = i18next.services.backendConnector.state[`${l}|${n}`];
+    return loadState === -1 || loadState === 2;
+  };
+
+  // failed loading ns - but at least fallback is not pending -> SEMI SUCCESS
+  if (
+    loadNotPending(lng, ns) &&
+    (!fallbackLng || loadNotPending(lastLng, ns))
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function i18nT(key: string) {
+  if (i18next.isInitialized && hasLoadedNamespace()) {
+    return i18next.t(key);
+  }
+
+  return new Promise((resolve: (value: string) => void) => {
+    i18next.on('loaded', () => {
+      resolve(i18next.t(key));
+    });
+  });
+}
+
+export default i18nT;

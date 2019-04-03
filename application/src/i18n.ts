@@ -3,7 +3,7 @@ import i18nextXhrBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguagedetector from 'i18next-browser-languagedetector';
 import intervalPlural from 'i18next-intervalplural-postprocessor';
 import moment from 'moment';
-import { reactI18nextModule } from 'react-i18next';
+import { initReactI18next } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
 
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
@@ -51,7 +51,7 @@ const config = {
   ns: ['translations'],
   defaultNS: 'translations',
   debug: true,
-  react: { wait: true },
+  react: { wait: true, useSuspense: false },
 };
 
 const ready = () => {
@@ -61,7 +61,7 @@ const ready = () => {
 i18next
   .use(i18nextXhrBackend)
   .use(i18nextBrowserLanguagedetector)
-  .use(reactI18nextModule)
+  .use(initReactI18next)
   .use(intervalPlural)
   .init(config, ready);
 

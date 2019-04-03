@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-02-28 14:12:13 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-03-01 15:28:40
+ * @Author: Potar.He
+ * @Date: 2019-02-28 14:12:13
+ * @Last Modified by: isaac.liu
+ * @Last Modified time: 2019-03-22 15:04:36
  */
 
 import { formalName } from '../../libs/filter';
@@ -32,7 +32,7 @@ test(formalName('Open and close the recently searched list', ['JPT-1216', 'P1', 
   await h(t).withLog(`And make some recently search history with ${beSearchedName}`, async () => {
     await searchBar.typeSearchKeyword(beSearchedName);
     await searchBar.nthPeople(0).enter();
-    await app.homePage.profileDialog.close();
+    await app.homePage.profileDialog.clickCloseButton();
     await searchBar.clearInputAreaText();
     await searchBar.quitByPressEsc();
   });
@@ -84,7 +84,8 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
   await h(t).withLog(`When make some recently search history with ${beSearchedName}`, async () => {
     await searchBar.typeSearchKeyword(beSearchedName);
     await searchBar.nthPeople(0).enter();
-    await app.homePage.profileDialog.close();
+    await app.homePage.profileDialog.clickCloseButton();
+
     await searchBar.clearInputAreaText();
     await searchBar.quitByPressEsc();
   });

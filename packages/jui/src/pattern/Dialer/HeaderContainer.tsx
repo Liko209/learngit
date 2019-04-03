@@ -1,3 +1,8 @@
+/*
+ * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
+ * @Date: 2019-03-21 18:11:48
+ * Copyright © RingCentral. All rights reserved.
+ */
 import React, { PureComponent } from 'react';
 // import { lighten } from '@material-ui/core/styles/colorManipulator';
 // import styled, { keyframes, css } from '../../foundation/styled-components';

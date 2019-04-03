@@ -1,0 +1,16 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/CreateTeam/CreateTeam.ts",
+      "./fixtures/LeftNav/LeftNavState.ts"
+    ],
+    "include_tags": [
+      "JPT-148",
+      "JPT-18",
+      "JPT-38"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -9,7 +9,7 @@ import { HomeModule } from './HomeModule';
 
 const config = {
   entry: HomeModule,
-  provides: { HomeStore, HomeService },
+  provides: [HomeStore, HomeService],
 };
 
 export { config };

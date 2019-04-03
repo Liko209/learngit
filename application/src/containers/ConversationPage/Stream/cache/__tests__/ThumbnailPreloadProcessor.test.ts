@@ -21,8 +21,12 @@ describe('ThumbnailPreloadProcessor', () => {
     );
   });
 
-  describe('toThumbnailUrl', () => {
-    it('should return correct thumbnail url', () => {
+  describe('process', () => {
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
+    it('should call preload with thumbnail url', async () => {
       const fileItem: FileItem = {
         created_at: 1,
         modified_at: 1,
@@ -30,7 +34,7 @@ describe('ThumbnailPreloadProcessor', () => {
         is_new: false,
         deactivated: false,
         version: 1,
-        id: 10,
+        id: 1,
         type: 'jpg',
         type_id: 1,
         source: 'upload',
@@ -53,116 +57,27 @@ describe('ThumbnailPreloadProcessor', () => {
         ],
       };
 
-      // ${version.stored_file_id}size=${width}x${height}
-      const url = thumbnailPreloadProcessor.toThumbnailUrl(fileItem);
-      expect(url).toEqual({
-        thumbnail: true,
+      const itemService = {
+        getById: jest.fn(),
+      };
+      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+      itemService.getById.mockResolvedValue(fileItem);
+
+      const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
+      spy.mockImplementationOnce(() => {});
+      await thumbnailPreloadProcessor.process();
+      expect(spy).toBeCalledWith({
+        id: 1,
         url: 'https://glipasialabnet-xmnup66666',
       });
     });
 
-    it('should return original url when thumb is nil', () => {
-      const fileItem: FileItem = {
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        id: 10,
-        type: 'jpg',
-        type_id: 1,
-        source: 'upload',
-        company_id: 122,
-        name: 'doc.jpg',
-        post_ids: [1],
-        group_ids: [1],
-        versions: [
-          {
-            download_url: 'https://glipasialabnet-xmnup',
-            size: 613850,
-            url: 'https://glipasialabnet-xmnup',
-            stored_file_id: 11112,
-            orig_width: 1000,
-            orig_height: 200,
-          },
-        ],
-      };
-
-      // ${version.stored_file_id}size=${width}x${height}
-      const url = thumbnailPreloadProcessor.toThumbnailUrl(fileItem);
-      expect(url).toEqual({
-        thumbnail: false,
-        url: 'https://glipasialabnet-xmnup',
-      });
-    });
-
-    it('should return original url when width/height is undefined', () => {
-      const fileItem: FileItem = {
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        id: 10,
-        type: 'jpg',
-        type_id: 1,
-        source: 'upload',
-        company_id: 122,
-        name: 'doc.jpg',
-        post_ids: [1],
-        group_ids: [1],
-        versions: [
-          {
-            download_url: 'https://glipasialabnet-xmnup',
-            size: 613850,
-            url: 'https://glipasialabnet-xmnup',
-            stored_file_id: 11112,
-          },
-        ],
-      };
-
-      // ${version.stored_file_id}size=${width}x${height}
-      const url = thumbnailPreloadProcessor.toThumbnailUrl(fileItem);
-      expect(url).toEqual({
-        thumbnail: false,
-        url: 'https://glipasialabnet-xmnup',
-      });
-    });
-
-    it('should return null when versions is empty', () => {
-      const fileItem: FileItem = {
-        created_at: 1,
-        modified_at: 1,
-        creator_id: 1,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        id: 10,
-        type: 'jpg',
-        type_id: 1,
-        source: 'upload',
-        company_id: 122,
-        name: 'doc.jpg',
-        post_ids: [1],
-        group_ids: [1],
-        versions: [],
-      };
-      // ${version.stored_file_id}size=${width}x${height}
-      const url = thumbnailPreloadProcessor.toThumbnailUrl(fileItem);
-      expect(url).toEqual(null);
-    });
-  });
-
-  describe('process', () => {
     it.each`
       imageType
       ${'jpg'}
       ${'png'}
       ${'jpeg'}
       ${'bmp'}
-      ${'gif'}
       ${'tif'}
       ${'tiff'}
     `(
@@ -210,7 +125,6 @@ describe('ThumbnailPreloadProcessor', () => {
         expect(spy).toBeCalledWith({
           id: 1,
           url: 'https://glipasialabnet-xmnup66666',
-          thumbnail: true,
         });
       },
     );
@@ -219,6 +133,7 @@ describe('ThumbnailPreloadProcessor', () => {
       imageType
       ${'giphy'}
       ${'ps'}
+      ${'gif'}
       ${'heic'}
     `(
       'should not call preload when imageType is $imageType',

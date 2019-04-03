@@ -7,7 +7,10 @@
 import PreInsertIdController from '../impl/PreInsertIdController';
 import { daoManager } from '../../../../dao';
 import { PostDao } from '../../../post/dao';
-import { GlobalConfigService } from '../../../../module/config';
+import {
+  GlobalConfigService,
+  UserConfigService,
+} from '../../../../module/config';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../dao');
@@ -23,7 +26,13 @@ function getController() {
 }
 
 describe('PreInsertIdController()', () => {
-  beforeEach(() => {});
+  beforeEach(() => {
+    UserConfigService.getInstance.mockReturnValue({
+      setUserId: jest.fn(),
+      get: jest.fn(),
+      put: jest.fn(),
+    });
+  });
   afterEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
@@ -37,7 +46,7 @@ describe('PreInsertIdController()', () => {
     });
   });
 
-  describe('insert()', async () => {
+  describe('insert()', () => {
     it('should have data after insert ids', async () => {
       const controller = getController();
       await controller.insert(10);
@@ -46,7 +55,7 @@ describe('PreInsertIdController()', () => {
     });
   });
 
-  describe('delete()', async () => {
+  describe('delete()', () => {
     it('should remove id from the map when it is existed in map', async () => {
       const controller = getController();
       await controller.insert(10);

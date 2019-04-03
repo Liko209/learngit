@@ -1,8 +1,8 @@
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import ThemeSwitcher from '@/containers/ThemeSwitcher';
 
-class Settings extends React.Component<WithNamespaces> {
+class Settings extends React.Component<WithTranslation> {
   render() {
     const { i18n } = this.props;
     const changeLanguage = (lng: string) => {
@@ -18,4 +18,4 @@ class Settings extends React.Component<WithNamespaces> {
   }
 }
 
-export default translate('translations')(Settings);
+export default withTranslation('translations')(Settings);

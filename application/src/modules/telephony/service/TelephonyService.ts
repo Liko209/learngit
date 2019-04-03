@@ -12,7 +12,10 @@ import {
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
 } from 'sdk/module/telephony';
-import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  TelephonyCallInfo,
+} from 'sdk/module/telephony/types';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { mainLogger } from 'sdk';
 import { TelephonyStore } from '../store';
@@ -25,7 +28,6 @@ class TelephonyService {
   private _serverTelephonyService: ServerTelephonyService = ServerTelephonyService.getInstance();
   private _personService: PersonService = PersonService.getInstance();
   private _callId?: string;
-  private _registeredOnbeforeunload: boolean = false;
 
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
     mainLogger.debug(
@@ -41,6 +43,12 @@ class TelephonyService {
     );
     this._callId = callId;
     this._telephonyStore.directCall();
+  }
+
+  private _onReceiveIncomingCall = (callInfo: TelephonyCallInfo) => {
+    mainLogger.info(
+      `${TelephonyService.TAG}Call object created, call id=${callInfo.callId}`,
+    );
   }
 
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
@@ -79,19 +87,23 @@ class TelephonyService {
     }
   }
 
-  constructor() {
-    this._serverTelephonyService.createAccount({
-      onAccountStateChanged: this._onAccountStateChanged,
-      onMadeOutgoingCall: this._onMadeOutgoingCall,
-    });
+  init = () => {
+    this._serverTelephonyService.createAccount(
+      {
+        onAccountStateChanged: this._onAccountStateChanged,
+        onMadeOutgoingCall: this._onMadeOutgoingCall,
+        onReceiveIncomingCall: this._onReceiveIncomingCall,
+      },
+      {
+        onCallStateChange: this._onCallStateChange,
+        onCallActionSuccess: this._onCallActionSuccess,
+        onCallActionFailed: this._onCallActionFailed,
+      },
+    );
   }
 
   makeCall = async (toNumber: string) => {
-    const rv = await this._serverTelephonyService.makeCall(toNumber, {
-      onCallStateChange: this._onCallStateChange,
-      onCallActionSuccess: this._onCallActionSuccess,
-      onCallActionFailed: this._onCallActionFailed,
-    });
+    const rv = await this._serverTelephonyService.makeCall(toNumber);
 
     if (MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv) {
       ToastCallError.toastNoNetwork();
@@ -106,32 +118,6 @@ class TelephonyService {
       return; // For other errors, need not show call UI
     }
     this._telephonyStore.phoneNumber = toNumber;
-    // TODO: There is a LeaveBlockerService, but it can't support multi-blocker. When it can support, we should use that service.
-    // Ticket: https://jira.ringcentral.com/browse/FIJI-4273
-    if (!this._registeredOnbeforeunload) {
-      // If makeCall return success, register this handle
-      window.addEventListener(
-        'beforeunload',
-        (e: Event) => {
-          e.preventDefault();
-          if (this._serverTelephonyService.getAllCallCount() > 0) {
-            mainLogger.info(
-              `${
-                TelephonyService.TAG
-              }Notify user has call count: ${this._serverTelephonyService.getAllCallCount()}`,
-            );
-            const confirmationMessage = true;
-
-            (e || window.event).returnValue = confirmationMessage; // Gecko + IE
-            return confirmationMessage;
-          }
-          // if we return nothing here (just calling return;) then there will be no pop-up question at all
-          return;
-        },
-        false,
-      );
-      this._registeredOnbeforeunload = true;
-    }
   }
 
   directCall = (toNumber: string) => {
@@ -183,6 +169,10 @@ class TelephonyService {
       phone,
       ContactType.GLIP_CONTACT,
     );
+  }
+
+  getAllCallCount = () => {
+    return this._serverTelephonyService.getAllCallCount();
   }
 }
 

@@ -37,7 +37,7 @@ describe('AvatarVM', () => {
         headshot: 'https://avatar.url',
         headShotVersion: '',
       });
-      expect(avatarViewModel.headShotUrl).toBe('');
+      expect(avatarViewModel.headShotUrl).toBe('https://avatar.url');
     });
     it('should return url if headshot is object and hasHeadShot is false', () => {
       (getEntity as jest.Mock).mockReturnValue({

@@ -12,10 +12,10 @@ import { Api } from '../../../../../../api';
 import { FileActionController } from '../FileActionController';
 import { BaseSubItemService } from '../../../base/service';
 import { GlobalConfigService } from '../../../../../config';
-import { AuthGlobalConfig } from '../../../../../../service/auth/config';
+import { AuthUserConfig } from '../../../../../../service/auth/config';
 
 jest.mock('../../../../../config');
-jest.mock('../../../../../../service/auth/config');
+jest.mock('../../../../../../service/auth/config/AuthUserConfig');
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../../../dao');
@@ -173,7 +173,6 @@ describe('FileActionController', () => {
       const { fileItemA } = setUpData();
       entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
 
-      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('');
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe('');
       expect(entitySourceController.get).toBeCalledWith(11);
@@ -181,8 +180,10 @@ describe('FileActionController', () => {
 
     it('should return expected url', async () => {
       const { fileItemA } = setUpData();
-      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('token');
       entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
+      AuthUserConfig.prototype.getGlipToken = jest
+        .fn()
+        .mockReturnValue('token');
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe(
         'cacheServer.com/modify-image?size=1x2&id=852746252&source_type=files&source_id=10&t=token',
@@ -191,7 +192,9 @@ describe('FileActionController', () => {
     });
     it('should return expected url', async () => {
       const { fileItemA } = setUpData();
-      AuthGlobalConfig.getGlipToken = jest.fn().mockReturnValue('token');
+      AuthUserConfig.prototype.getGlipToken = jest
+        .fn()
+        .mockReturnValue('token');
       entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
       const res = await fileActionController.getThumbsUrlWithSize(11);
       expect(res).toBe(

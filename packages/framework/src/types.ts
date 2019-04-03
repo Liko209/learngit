@@ -7,11 +7,16 @@
 import { interfaces } from './ioc';
 import { AbstractModule } from './AbstractModule';
 
+type Provide<T> =
+  | {
+    name: string | interfaces.Newable<T>;
+    value: interfaces.Newable<T>;
+  }
+  | interfaces.Newable<T>;
+
 type ModuleConfig = {
   entry?: interfaces.Newable<AbstractModule>;
-  provides?: {
-    [key: string]: interfaces.Newable<any>;
-  };
+  provides?: Provide<any>[];
 };
 
-export { ModuleConfig };
+export { Provide, ModuleConfig };

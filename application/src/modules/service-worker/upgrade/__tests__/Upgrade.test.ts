@@ -18,7 +18,7 @@ jest.mock('sdk/module/item/service', () => ({
   },
 }));
 
-describe('Upgrade', async () => {
+describe('Upgrade', () => {
   let upgradeHandler: Upgrade | undefined;
 
   afterEach(() => {

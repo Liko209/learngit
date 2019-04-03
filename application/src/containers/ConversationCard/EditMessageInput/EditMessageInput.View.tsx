@@ -5,7 +5,7 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { EditMessageInputViewProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 import { extractView } from 'jui/hoc/extractView';
@@ -19,7 +19,7 @@ type State = {
 
 @observer
 class EditMessageInputViewComponent extends Component<
-  EditMessageInputViewProps & WithNamespaces,
+  EditMessageInputViewProps & WithTranslation,
   State
 > {
   private _messageInputRef: React.RefObject<
@@ -74,9 +74,9 @@ class EditMessageInputViewComponent extends Component<
   }
 }
 
-const View = extractView<EditMessageInputViewProps & WithNamespaces>(
+const View = extractView<EditMessageInputViewProps & WithTranslation>(
   EditMessageInputViewComponent,
 );
-const EditMessageInputView = translate('translations')(View);
+const EditMessageInputView = withTranslation('translations')(View);
 
 export { EditMessageInputView, EditMessageInputViewComponent };

@@ -62,7 +62,7 @@ class TokenRefreshListener implements ITokenRefreshListener {
   constructor(
     private tokenHandler: OAuthTokenHandler,
     private requestHandler: NetworkRequestHandler,
-    private onFailure: () => void,
+    private onFailure: (forceLogout: boolean) => void,
   ) {}
   onRefreshTokenSuccess(handlerType: IHandleType, token: IToken) {
     if (_.isEmpty(token)) {
@@ -72,9 +72,9 @@ class TokenRefreshListener implements ITokenRefreshListener {
     this.requestHandler.notifyTokenRefreshed();
   }
 
-  onRefreshTokenFailure(handlerType: IHandleType) {
+  onRefreshTokenFailure(handlerType: IHandleType, forceLogout: boolean) {
     this.requestHandler.cancelAll();
-    this.onFailure();
+    this.onFailure(forceLogout);
   }
 }
 export default NetworkSetup;

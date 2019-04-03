@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { lazyComponent } from '@/modules/common/util/lazyComponent';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
@@ -18,7 +18,7 @@ const config: SubModuleConfig = {
         webpackChunkName: "c.telephony" */ './lazy/Telephony'),
     }),
   },
-  nav: () => ({
+  nav: async () => ({
     url: '/phone',
     icon: 'leftNavPhone_border',
     Icon: (
@@ -27,7 +27,7 @@ const config: SubModuleConfig = {
       </JuiIconography>
     ),
     IconSelected: <JuiIconography>leftNavPhone</JuiIconography>,
-    title: i18next.t('telephony.Phone'),
+    title: await i18nT('telephony.Phone'),
     placement: 'top',
   }),
   loader: () =>

@@ -147,6 +147,10 @@ class RTCCall {
     this._fsm.reject();
   }
 
+  ignore(): void {
+    this._fsm.ignore();
+  }
+
   sendToVoicemail(): void {
     this._fsm.sendToVoicemail();
   }

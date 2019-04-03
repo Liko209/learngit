@@ -28,6 +28,7 @@ import {
 import { RolePermissionController } from '../controller/RolePermissionController';
 import notificationCenter from '../../../service/notificationCenter';
 import { RC_INFO } from '../../../service/eventKey';
+import { AccountUserConfig } from '../../../service/account/config';
 
 class RcInfoController {
   private _rcInfoUserConfig: RcInfoUserConfig;
@@ -60,14 +61,14 @@ class RcInfoController {
   }
 
   async requestRcInfo() {
+    const userConfig = new AccountUserConfig();
     const accountService: AccountService = AccountService.getInstance();
-    const accountType = NewGlobalConfig.getAccountType();
+    const accountType = userConfig.getAccountType();
     if (
       !this._isRcInfoJobScheduled &&
       accountService.isAccountReady() &&
       accountType === ACCOUNT_TYPE_ENUM.RC
     ) {
-      // todo: will remove it after config ready
       if (this._shouldIgnoreFirstTime) {
         this.storeRcAccountRelativeInfo();
       }

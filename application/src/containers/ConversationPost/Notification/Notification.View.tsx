@@ -5,10 +5,12 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { NotificationViewProps, ActivityData } from './types';
 import { JuiNotification } from 'jui/pattern/ConversationPage/Notification';
 import { Added, Change, Join } from './Team';
 
+@observer
 class NotificationView extends Component<NotificationViewProps> {
   private _Members(activityData: ActivityData) {
     const { new_user_id: newUserId, inviter_id: inviterId } = activityData;

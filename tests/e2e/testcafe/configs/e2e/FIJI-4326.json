@@ -1,10 +1,11 @@
 {
-  "on_push": {
+  "on_merge": {
     "fixtures": [
-      "./fixtures/Profile/RemoveTeamMember.ts"
+      "./fixtures/ActionBar/LikeAndUnlike.ts"
     ],
     "include_tags": [
-      "JPT-1086"
+      "JPT-304",
+      "JPT-308"
     ],
     "browsers": [
       "selenium:chrome"

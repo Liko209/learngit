@@ -6,7 +6,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { FilesView } from '../Files.View';
-import { JuiPreviewImage } from 'jui/pattern/ConversationCard/Files';
+import { JuiPreviewImage, StyledImg } from 'jui/pattern/ConversationCard/Files';
 import * as Viewer from '@/containers/Viewer';
 
 const someProps = {
@@ -48,7 +48,7 @@ describe('FilesView', () => {
       wrapper
         .find(JuiPreviewImage)
         .shallow()
-        .find('img')
+        .find(StyledImg)
         .simulate('click', { stopPropagation: () => undefined });
 
       setTimeout(() => {
@@ -66,7 +66,7 @@ describe('FilesView', () => {
       wrapper
         .find(JuiPreviewImage)
         .shallow()
-        .find('img')
+        .find(StyledImg)
         .simulate('click', { stopPropagation: () => undefined });
 
       setTimeout(() => {

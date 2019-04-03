@@ -5,11 +5,13 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { MessageProps, MessageViewProps } from './types';
-import { goToConversation } from '@/common/goToConversation';
+import { goToConversationWithLoading } from '@/common/goToConversation';
 
 type Props = MessageProps & MessageViewProps;
 
+@observer
 class MessageView extends Component<Props> {
   constructor(props: Props) {
     super(props);
@@ -17,7 +19,7 @@ class MessageView extends Component<Props> {
 
   onClickMessage = async () => {
     const { id, afterClick } = this.props;
-    const result = await goToConversation({ id });
+    const result = await goToConversationWithLoading({ id });
     if (result) {
       afterClick && afterClick();
     }

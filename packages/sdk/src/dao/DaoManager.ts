@@ -7,8 +7,9 @@ import { BaseDao, BaseKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
-import { NewGlobalConfig } from '../service/config/NewGlobalConfig';
-import { AuthGlobalConfig } from '../service/auth/config';
+import { SyncUserConfig } from '../module/sync/config';
+import { AccountGlobalConfig } from '../service/account/config';
+import { DaoGlobalConfig } from './config';
 
 class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   private kvStorageManager: KVStorageManager;
@@ -33,28 +34,33 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
         this.dbManager.initDatabase(schema, DatabaseType.LokiDB);
         await this.dbManager.deleteDatabase();
       }
-      NewGlobalConfig.removeLastIndexTimestamp();
+      if (AccountGlobalConfig.getUserDictionary()) {
+        // TODO FIJI-4396
+        const synConfig = new SyncUserConfig();
+        synConfig.removeLastIndexTimestamp();
+        synConfig.removeCanUpdateIndexTimeStamp();
+        synConfig.removeFetchRemaining();
+      }
     }
 
     const db = this.dbManager.getDatabase();
 
     if (db instanceof DexieDB) {
       db.db.on('ready', () => {
-        NewGlobalConfig.setDBSchemaVersion(schema.version);
+        DaoGlobalConfig.setDBSchemaVersion(schema.version);
       });
       const isIEOrEdge = /(MSIE|Trident|Edge)/.test(navigator.userAgent);
       if (isIEOrEdge) {
-        const BLOCK_MESSAGE_KEY = 'DB_VERSION_CHANGE';
         const BLOCK_MESSAGE_VALUE = 1;
         db.db.on('blocked', () => {
-          NewGlobalConfig.putConfig(BLOCK_MESSAGE_KEY, BLOCK_MESSAGE_VALUE);
+          DaoGlobalConfig.setDBBlockMessageKey(BLOCK_MESSAGE_VALUE);
         });
         window.addEventListener('storage', async (e: any) => {
           if (
-            e.key === NewGlobalConfig.getConfig(BLOCK_MESSAGE_KEY) &&
+            e.key === DaoGlobalConfig.getDBBlockMessageKey() &&
             Number(e.newValue) === BLOCK_MESSAGE_VALUE
           ) {
-            NewGlobalConfig.removeConfig(BLOCK_MESSAGE_KEY);
+            DaoGlobalConfig.removeDBBlockMessageKey();
             await this.dbManager.deleteDatabase();
           }
         });
@@ -70,16 +76,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
     await this.dbManager.closeDatabase();
   }
 
-  private _clearLocalStorage() {
-    // need to remove last index timestamp or can't sync data when users re-login
-    NewGlobalConfig.removeLastIndexTimestamp();
-    // need to remove glip token or can't logout
-    AuthGlobalConfig.removeGlipToken();
-    AuthGlobalConfig.removeRcToken();
-  }
-
   async deleteDatabase(): Promise<void> {
-    this._clearLocalStorage();
     await this.dbManager.deleteDatabase();
   }
 
@@ -107,7 +104,7 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   }
 
   private _isSchemaCompatible() {
-    const currentSchemaVersion = NewGlobalConfig.getDBSchemaVersion();
+    const currentSchemaVersion = DaoGlobalConfig.getDBSchemaVersion();
     return (
       typeof currentSchemaVersion === 'number' &&
       currentSchemaVersion === schema.version

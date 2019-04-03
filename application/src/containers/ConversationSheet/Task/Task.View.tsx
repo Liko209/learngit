@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import i18next from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
@@ -27,7 +27,7 @@ import { ViewProps, FileType, ExtendFileItem } from './types';
 import { getFileIcon } from '@/common/getFileIcon';
 import { Download } from '@/containers/common/Download';
 
-type taskViewProps = WithNamespaces & ViewProps;
+type taskViewProps = WithTranslation & ViewProps;
 
 const FILE_COMPS = {
   [FileType.image]: (
@@ -223,6 +223,6 @@ class Task extends React.Component<taskViewProps> {
   }
 }
 
-const TaskView = translate('translations')(Task);
+const TaskView = withTranslation('translations')(Task);
 
 export { TaskView };

@@ -9,7 +9,7 @@ import { MessageModule } from './MessageModule';
 
 const config = {
   entry: MessageModule,
-  provides: { MessageStore, MessageService },
+  provides: [MessageStore, MessageService],
 };
 
 export { config };

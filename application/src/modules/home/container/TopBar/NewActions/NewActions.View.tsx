@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps } from './types';
 import { JuiMenuList, JuiMenuItem } from 'jui/components';
 import { JuiNewActions } from 'jui/pattern/TopBar';
@@ -13,7 +13,7 @@ import { JuiFabButton } from 'jui/components/Buttons';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { NewMessage } from '@/containers/NewMessage';
 
-type NewActionsProps = WithNamespaces & ViewProps;
+type NewActionsProps = WithTranslation & ViewProps;
 
 @observer
 class NewActions extends React.Component<NewActionsProps> {
@@ -82,6 +82,6 @@ class NewActions extends React.Component<NewActionsProps> {
     );
   }
 }
-const NewActionsView = translate('translations')(NewActions);
+const NewActionsView = withTranslation('translations')(NewActions);
 
 export { NewActionsView };

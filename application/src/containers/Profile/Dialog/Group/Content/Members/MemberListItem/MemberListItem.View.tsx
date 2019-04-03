@@ -5,7 +5,7 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
 import {
@@ -22,7 +22,7 @@ type State = {
 };
 @observer
 class MemberListItem extends React.Component<
-  WithNamespaces & MembersViewProps,
+  WithTranslation & MembersViewProps,
   State
 > {
   state = {
@@ -106,6 +106,6 @@ class MemberListItem extends React.Component<
     );
   }
 }
-const MemberListItemView = translate('translations')(MemberListItem);
+const MemberListItemView = withTranslation('translations')(MemberListItem);
 
 export { MemberListItemView };
