@@ -115,6 +115,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     };
   }
 
+  @action
   search = async (key: string) => {
     if (!key) return;
 
@@ -153,6 +154,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     };
   }
 
+  @action
   setSearchResult = async (value: string) => {
     const ret = await this.search(value);
     if (!ret) {

@@ -53,13 +53,8 @@ class RecentSearchViewComponent extends Component<Props> {
     );
   }
 
-  clearRecent = () => {
-    const { clearRecent } = this.props;
-    clearRecent();
-  }
-
   get searchRecordList() {
-    const { recentRecord, t } = this.props;
+    const { recentRecord, clearRecent, t } = this.props;
 
     if (recentRecord.length === 0) {
       return null;
@@ -68,7 +63,7 @@ class RecentSearchViewComponent extends Component<Props> {
     return (
       <>
         <JuiSearchTitle
-          onButtonClick={this.clearRecent}
+          onButtonClick={clearRecent}
           showButton={true}
           buttonText={t('globalSearch.ClearHistory')}
           title={t('globalSearch.RecentSearches')}
@@ -88,19 +83,15 @@ class RecentSearchViewComponent extends Component<Props> {
     );
   }
 
-  onEnter = (e: KeyboardEvent) => {
-    this.props.onEnter(e);
-  }
-
   render() {
-    const { onKeyUp, onKeyDown } = this.props;
+    const { onKeyUp, onKeyDown, onEnter } = this.props;
 
     return (
       <HotKeys
         keyMap={{
           up: onKeyUp,
           down: onKeyDown,
-          enter: this.onEnter,
+          enter: onEnter,
         }}
       >
         <JuiRecentSearch data-test-automation-id="search-records">

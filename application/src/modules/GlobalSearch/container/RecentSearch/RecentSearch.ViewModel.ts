@@ -35,12 +35,10 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
   constructor() {
     super();
     this.reaction(
-      () => ({
-        searchKey: this._globalSearchStore.searchKey,
-      }),
-      ({ searchKey }: { searchKey: string }) => {
+      () => this._globalSearchStore.searchKey,
+      (searchKey: string) => {
         if (searchKey === '') {
-          this.getRecent();
+          this.fetchRecent();
         }
       },
       {
@@ -64,15 +62,18 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
     this.selectIndex = InitIndex;
   }
 
+  @action
   setSelectIndex = (index: number) => {
     this.selectIndex = index;
   }
 
+  @action
   onKeyUp = () => {
     const selectIndex = this.selectIndex;
     this.selectIndex = selectIndex === 0 ? 0 : selectIndex - 1;
   }
 
+  @action
   onKeyDown = () => {
     const selectIndex = this.selectIndex;
     const len = this.recentRecord.length - 1;
@@ -80,6 +81,7 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
   }
 
   // if search item removed need update selectIndex
+  @action
   selectIndexChange = (index: number) => {
     const data = this.recentRecord.slice();
     data.splice(index, 1);
@@ -143,12 +145,14 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
     );
   }
 
+  @action
   clearRecent = () => {
     SearchService.getInstance().clearRecentSearchRecords();
     this.recentRecord = [];
   }
 
-  getRecent = () => {
+  @action
+  fetchRecent = () => {
     this.recentRecord = SearchService.getInstance().getRecentSearchRecords();
   }
 }

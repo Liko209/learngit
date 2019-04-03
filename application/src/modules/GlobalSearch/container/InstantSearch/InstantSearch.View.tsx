@@ -81,19 +81,15 @@ class InstantSearchViewComponent extends Component<Props> {
     );
   }
 
-  onEnter = (e: KeyboardEvent) => {
-    this.props.onEnter(e);
-  }
-
   render() {
-    const { onKeyUp, onKeyDown } = this.props;
+    const { onKeyUp, onKeyDown, onEnter } = this.props;
 
     return (
       <HotKeys
         keyMap={{
           up: onKeyUp,
           down: onKeyDown,
-          enter: this.onEnter,
+          enter: onEnter,
         }}
       >
         <JuiInstantSearch data-test-automation-id="search-results">

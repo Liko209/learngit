@@ -14,10 +14,7 @@ import { JuiButton, JuiIconButton } from 'jui/components/Buttons';
 import { ViewProps } from './types';
 
 @observer
-class GroupItemComponent extends React.Component<
-  ViewProps & WithTranslation,
-  {}
-> {
+class GroupItemComponent extends React.Component<ViewProps & WithTranslation> {
   handleJoinTeam = async (e: React.MouseEvent | KeyboardEvent) => {
     e.preventDefault();
     const { handleJoinTeam, group, addRecentRecord } = this.props;

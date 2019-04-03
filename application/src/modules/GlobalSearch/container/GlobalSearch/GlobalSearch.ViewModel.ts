@@ -41,12 +41,12 @@ class GlobalSearchViewModel extends StoreViewModel<GlobalSearchProps>
   }
 
   @action
-  onChange = (value: string) => {
+  onChange = (searchKey: string) => {
     const store = this._globalSearchStore;
     store.setCurrentView(
-      value === '' ? SEARCH_VIEW.RECENT_SEARCH : SEARCH_VIEW.INSTANT_SEARCH,
+      searchKey === '' ? SEARCH_VIEW.RECENT_SEARCH : SEARCH_VIEW.INSTANT_SEARCH,
     );
-    store.setSearchKey(value);
+    store.setSearchKey(searchKey);
   }
 
   @action

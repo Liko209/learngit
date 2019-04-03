@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { Avatar } from '@/containers/Avatar';
@@ -15,7 +15,7 @@ import { ViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 
 @observer
-class PersonItemView extends React.Component<ViewProps, {}> {
+class PersonItemComponent extends React.Component<ViewProps & WithTranslation> {
   goToConversation = async () => {
     const { goToConversation, person } = this.props;
     await goToConversation(person.id);
@@ -37,6 +37,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
 
   render() {
     const {
+      t,
       title,
       person,
       terms,
@@ -53,7 +54,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
     const goToConversationIcon = (
       <JuiIconButton
         data-test-automation-id="goToConversationIcon"
-        tooltipTitle={i18next.t('message.message')}
+        tooltipTitle={t('message.message')}
         onClick={this.handleGoToConversation}
         variant="plain"
         size="small"
@@ -90,5 +91,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
     );
   }
 }
+
+const PersonItemView = withTranslation('translations')(PersonItemComponent);
 
 export { PersonItemView };
