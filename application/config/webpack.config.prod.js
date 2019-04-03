@@ -85,7 +85,7 @@ module.exports = {
     // We inferred the "public path" (such as / or /my-project) from homepage.
     publicPath: publicPath,
     // Point sourcemap entries to original disk location (format as URL on Windows)
-    devtoolModuleFilenameTemplate: info =>
+    devtoolModuleFilenameTemplate: (info) =>
       path
         .relative(paths.appSrc, info.absoluteResourcePath)
         .replace(/\\/g, '/'),
@@ -434,6 +434,7 @@ module.exports = {
         '': '/',
       },
       runtimeCaching,
+      importScripts: ['sw-notification.js'],
     }),
     ...[
       argv.indexOf('--analyze') !== -1 ? new BundleAnalyzerPlugin() : () => {},
