@@ -3,17 +3,11 @@
  * @Date: 2019-03-04 10:14:48
  * Copyright © RingCentral. All rights reserved.
  */
-import { useRef, useState, useEffect, memo } from 'react';
+import _ from 'lodash';
+import { useRef, useState, useEffect, memo, useCallback } from 'react';
 import { noop } from '../../foundation/utils';
-import { IndexRange } from './types';
 import { ILoadMoreStrategy } from './LoadMoreStrategy/ILoadMoreStrategy';
-
-type Direction = 'up' | 'down';
-
-type IndexConstraint = {
-  minIndex: number;
-  maxIndex: number;
-};
+import { IndexRange, Direction, IndexConstraint, Delta } from './types';
 
 type JuiDataLoaderProps = {
   threshold?: number;
@@ -26,7 +20,11 @@ type JuiDataLoaderProps = {
     loadingUp: boolean;
     loadingDown: boolean;
     loadingInitialFailed: boolean;
-    onScroll: (range: IndexRange, constraint: IndexConstraint) => void;
+    onScroll: (
+      range: IndexRange,
+      constraint: IndexConstraint,
+      delta?: Delta,
+    ) => void;
   }) => JSX.Element | null | void;
 };
 
@@ -45,64 +43,72 @@ const JuiDataLoader = ({
   const [loadingInitialFailed, setLoadingInitialFailed] = useState(false);
   const loading = loadingUp || loadingDown || loadingInitial;
 
-  const map = {
-    up: {
-      setLoading: setLoadingUp,
-      load: (count: number) => loadMore('up', count),
-      onFailed: noop,
+  const getMap = useCallback(() => {
+    return {
+      up: {
+        setLoading: setLoadingUp,
+        load: (count: number) => loadMore('up', count),
+        onFailed: noop,
+      },
+      down: {
+        setLoading: setLoadingDown,
+        load: (count: number) => loadMore('down', count),
+        onFailed: noop,
+      },
+      initial: {
+        setLoading: setLoadingInitial,
+        load: () => loadInitialData(),
+        onFailed: setLoadingInitialFailed,
+      },
+    };
+  },                         [loadMore, loadMore, loadInitialData]);
+
+  const loadData = useCallback(
+    _.throttle(async (type: 'initial' | 'up' | 'down', count: number = 10) => {
+      const map = getMap();
+      const { setLoading, load, onFailed } = map[type];
+      setLoading(true);
+      onFailed(false);
+      try {
+        await load(count);
+      } catch {
+        onFailed(true);
+      }
+      setLoading(false);
+    },         1000),
+    [getMap],
+  );
+
+  const handleScroll = useCallback(
+    (
+      visibleRange: Readonly<IndexRange>,
+      indexConstraint: IndexConstraint,
+      delta?: Delta,
+    ) => {
+      if (loading) {
+        return;
+      }
+
+      const { direction, count } = loadMoreStrategy.getLoadMoreInfo({
+        indexConstraint,
+        delta,
+        visibleRange,
+        prevVisibleRange: prevVisibleRangeRef.current,
+        prevVisibleRangeTime: prevVisibleRangeTimeRef.current,
+      });
+      prevVisibleRangeRef.current = visibleRange;
+      prevVisibleRangeTimeRef.current = Date.now();
+
+      if (direction && count > 0 && hasMore(direction)) {
+        loadData(direction, count);
+      }
     },
-    down: {
-      setLoading: setLoadingDown,
-      load: (count: number) => loadMore('down', count),
-      onFailed: noop,
-    },
-    initial: {
-      setLoading: setLoadingInitial,
-      load: () => loadInitialData(),
-      onFailed: setLoadingInitialFailed,
-    },
-  };
+    [loadData, loadMoreStrategy],
+  );
 
   useEffect(() => {
     loadData('initial');
   },        []);
-
-  const loadData = async (
-    type: 'initial' | 'up' | 'down',
-    count: number = 10,
-  ) => {
-    const { setLoading, load, onFailed } = map[type];
-    setLoading(true);
-    onFailed(false);
-    try {
-      await load(count);
-    } catch {
-      onFailed(true);
-    }
-    setLoading(false);
-  };
-
-  const handleScroll = (
-    visibleRange: Readonly<IndexRange>,
-    indexConstraint: IndexConstraint,
-  ) => {
-    if (loading) {
-      return;
-    }
-
-    const { direction, count } = loadMoreStrategy.getLoadMoreInfo({
-      ...indexConstraint,
-      visibleRange,
-      prevVisibleRange: prevVisibleRangeRef.current,
-      prevVisibleRangeTime: prevVisibleRangeTimeRef.current,
-    });
-    prevVisibleRangeRef.current = visibleRange;
-    prevVisibleRangeTimeRef.current = Date.now();
-
-    if (direction && count > 0 && hasMore(direction)) {
-      loadData(direction, count);
-    }
-  };
 
   const childrenElement = children({
     loadingInitial,
@@ -115,4 +121,4 @@ const JuiDataLoader = ({
 };
 
 const MemoDataLoader = memo(JuiDataLoader);
-export { MemoDataLoader as JuiDataLoader, JuiDataLoaderProps };
+export { MemoDataLoader as JuiDataLoader, JuiDataLoaderProps, Delta };

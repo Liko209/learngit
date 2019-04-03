@@ -3,15 +3,15 @@
  * @Date: 2019-04-01 13:12:52
  * Copyright © RingCentral. All rights reserved.
  */
-import { IndexRange } from '../types';
+import { IndexRange, Delta, IndexConstraint } from '../types';
 
-type LoadMoreStrategyParams = {
+type LoadMoreStrategyParams = Readonly<{
   visibleRange: Readonly<IndexRange>;
   prevVisibleRange: Readonly<IndexRange>;
   prevVisibleRangeTime: number;
-  minIndex: number;
-  maxIndex: number;
-};
+  indexConstraint: Readonly<IndexConstraint>;
+  delta?: Readonly<Delta>;
+}>;
 
 type LoadMoreInfo = { direction?: 'up' | 'down'; count: number };
 
