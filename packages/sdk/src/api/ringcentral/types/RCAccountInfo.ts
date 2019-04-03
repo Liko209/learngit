@@ -4,28 +4,28 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RcCountryInfo, RcRegionalSetting, RcStatusInfo } from './common';
+import { RCCountryInfo, RCRegionalSetting, RCStatusInfo } from './common';
 
-type RcNestExtensionInfo = {
+type RCNestExtensionInfo = {
   uri?: string;
   id?: number;
   extensionNumber?: string;
   partnerId?: string;
 };
 
-type RcBrandInfo = {
+type RCBrandInfo = {
   id?: string;
   name?: string;
-  homeCountry?: RcCountryInfo;
+  homeCountry?: RCCountryInfo;
 };
 
-type RcServicePlanInfo = {
+type RCServicePlanInfo = {
   id?: string;
   name?: string;
   edition?: string;
 };
 
-type RcBillingPlanInfo = {
+type RCBillingPlanInfo = {
   id?: string;
   name?: string;
   durationUnit?: string;
@@ -34,31 +34,31 @@ type RcBillingPlanInfo = {
   includedPhoneLines?: number;
 };
 
-type RcTargetServicePlanInfo = {
+type RCTargetServicePlanInfo = {
   id?: string;
   name?: string;
 };
 
-type RcServiceInfo = {
+type RCServiceInfo = {
   uri?: string;
-  brand?: RcBrandInfo;
-  servicePlan?: RcServicePlanInfo;
-  billingPlan?: RcBillingPlanInfo;
-  targetServicePlan?: RcTargetServicePlanInfo;
+  brand?: RCBrandInfo;
+  servicePlan?: RCServicePlanInfo;
+  billingPlan?: RCBillingPlanInfo;
+  targetServicePlan?: RCTargetServicePlanInfo;
 };
 
-type RcAccountInfo = {
+type RCAccountInfo = {
   uri?: string;
   id?: number;
   mainNumber?: string;
-  operator?: RcNestExtensionInfo;
+  operator?: RCNestExtensionInfo;
   partnerId?: string;
-  serviceInfo?: RcServiceInfo;
+  serviceInfo?: RCServiceInfo;
   setupWizardState?: string;
-  regionalSettings?: RcRegionalSetting;
+  regionalSettings?: RCRegionalSetting;
   status?: string;
-  statusInfo?: RcStatusInfo;
+  statusInfo?: RCStatusInfo;
   outboundCallPrefix?: number;
 };
 
-export { RcAccountInfo };
+export { RCAccountInfo };

@@ -5,8 +5,7 @@
  */
 
 import { mainLogger } from 'foundation';
-
-import { loginGlip2ByPassword, glipStatus } from '../../api';
+import { glipStatus, RCAuthApi } from '../../api';
 import {
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
@@ -78,7 +77,7 @@ class AuthService extends BaseService {
   async loginGlip2(params: ILogin) {
     const authConfig = new AuthUserConfig();
     try {
-      const authToken = await loginGlip2ByPassword(params);
+      const authToken = await RCAuthApi.loginGlip2ByPassword(params);
       authConfig.setGlip2Token(authToken);
       notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
     } catch (err) {
@@ -89,7 +88,7 @@ class AuthService extends BaseService {
 
   async makeSureUserInWhitelist() {
     const authConfig = new AuthUserConfig();
-    const rc_token_info = authConfig.getRcToken();
+    const rc_token_info = authConfig.getRCToken();
     if (rc_token_info && rc_token_info.owner_id) {
       await this._accountManager.makeSureUserInWhitelist(
         rc_token_info.owner_id,

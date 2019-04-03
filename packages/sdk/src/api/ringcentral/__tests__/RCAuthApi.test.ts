@@ -1,15 +1,10 @@
 /*
- * @Author: Shining Miao (shining.miao@ringcentral.com)
- * @Date: 2018-05-17 18:11:46
+ * @Author: Rito.Xiao (rito.xiao@ringcentral.com)
+ * @Date: 2019-03-28 16:40:55
  * Copyright © RingCentral. All rights reserved.
  */
-import Api from '../../api';
-import {
-  loginRCByPassword,
-  loginGlip2ByPassword,
-  refreshToken,
-  requestServerStatus,
-} from '../login';
+
+import { RCAuthApi } from '../RCAuthApi';
 import { NETWORK_VIA, NETWORK_METHOD, HA_PRIORITY } from 'foundation';
 
 jest.mock('../../api');
@@ -21,15 +16,29 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('login', () => {
+describe('RCAuthApi', () => {
   beforeEach(() => {
     clearMocks();
   });
 
+  describe('oauthTokenViaAuthCode()', () => {
+    it('glipNetworkClient http() should be called with specific path', () => {
+      RCAuthApi.oauthTokenViaAuthCode({ name: 'aaa' }, { auth: 'xxxx' });
+      expect(RCAuthApi.rcNetworkClient.http).toHaveBeenCalledWith({
+        authFree: true,
+        data: { grant_type: 'authorization_code', name: 'aaa' },
+        headers: { auth: 'xxxx' },
+        method: 'post',
+        via: NETWORK_VIA.HTTP,
+        path: '/oauth/token',
+      });
+    });
+  });
+
   describe('loginRCByPassword()', () => {
     it('rcNetworkClient http() should be called with specific path', () => {
-      loginRCByPassword({ username: 'aaa', password: '123' });
-      expect(Api.rcNetworkClient.http).toHaveBeenCalledWith({
+      RCAuthApi.loginRCByPassword({ username: 'aaa', password: '123' });
+      expect(RCAuthApi.rcNetworkClient.http).toHaveBeenCalledWith({
         authFree: true,
         data: { grant_type: 'password', password: '123', username: 'aaa' },
         method: 'post',
@@ -38,10 +47,11 @@ describe('login', () => {
       });
     });
   });
+
   describe('loginGlip2ByPassword()', () => {
     it('glip2NetworkClient http() should be called with specific path', () => {
-      loginGlip2ByPassword({ username: 'aaa', password: '123' });
-      expect(Api.glip2NetworkClient.http).toHaveBeenCalledWith({
+      RCAuthApi.loginGlip2ByPassword({ username: 'aaa', password: '123' });
+      expect(RCAuthApi.glip2NetworkClient.http).toHaveBeenCalledWith({
         authFree: true,
         data: { grant_type: 'password', password: '123', username: 'aaa' },
         method: 'post',
@@ -75,13 +85,13 @@ describe('login', () => {
 
     beforeEach(() => {
       clearMocks();
-      Api.rcNetworkClient.networkManager = networkManager;
-      Api.rcNetworkClient.getRequestByVia.mockReturnValue(retRequest);
+      RCAuthApi.rcNetworkClient.networkManager = networkManager;
+      RCAuthApi.rcNetworkClient.getRequestByVia.mockReturnValue(retRequest);
     });
 
     it('should throw when get wrong error', async () => {
       const response = { status: '401', statusText: 'erroroooo' };
-      const promise = refreshToken(token);
+      const promise = RCAuthApi.refreshToken(token);
       setTimeout(() => {
         retRequest.callback(response);
       },         10);
@@ -89,7 +99,7 @@ describe('login', () => {
     });
 
     it('should call right path and return token data ', async () => {
-      const promise = refreshToken(token);
+      const promise = RCAuthApi.refreshToken(token);
       const response = { status: 200, data: '123123' };
       setTimeout(() => {
         retRequest.callback(response);
@@ -97,9 +107,9 @@ describe('login', () => {
       const retVal = await promise;
       expect(retVal).toEqual(response.data);
       expect(
-        Api.rcNetworkClient.networkManager.clientManager.getApiClient,
+        RCAuthApi.rcNetworkClient.networkManager.clientManager.getApiClient,
       ).toBeCalled();
-      expect(Api.rcNetworkClient.getRequestByVia).toHaveBeenCalledWith(
+      expect(RCAuthApi.rcNetworkClient.getRequestByVia).toHaveBeenCalledWith(
         {
           authFree: true,
           data: {
@@ -119,15 +129,15 @@ describe('login', () => {
   describe('requestServerStatus()', () => {
     const mockRequest = {};
     it('should call callback with true when request success', () => {
-      Api.rcNetworkClient.getRequestByVia.mockReturnValue(mockRequest);
-      Api.rcNetworkClient.networkManager = {
+      RCAuthApi.rcNetworkClient.getRequestByVia.mockReturnValue(mockRequest);
+      RCAuthApi.rcNetworkClient.networkManager = {
         addApiRequest: jest.fn().mockImplementation(({ callback }) => {
           callback({ status: 200 });
         }),
       } as any;
       const mockCallBack = jest.fn();
-      requestServerStatus(mockCallBack);
-      expect(Api.rcNetworkClient.getRequestByVia).toBeCalledWith(
+      RCAuthApi.requestServerStatus(mockCallBack);
+      expect(RCAuthApi.rcNetworkClient.getRequestByVia).toBeCalledWith(
         {
           path: '/v1.0/status',
           method: NETWORK_METHOD.GET,
@@ -141,8 +151,8 @@ describe('login', () => {
     });
 
     it('should call callback with true when request success', () => {
-      Api.rcNetworkClient.getRequestByVia.mockReturnValue(mockRequest);
-      Api.rcNetworkClient.networkManager = {
+      RCAuthApi.rcNetworkClient.getRequestByVia.mockReturnValue(mockRequest);
+      RCAuthApi.rcNetworkClient.networkManager = {
         addApiRequest: jest.fn().mockImplementation(({ callback }) => {
           callback({
             status: 500,
@@ -153,8 +163,8 @@ describe('login', () => {
         }),
       } as any;
       const mockCallBack = jest.fn();
-      requestServerStatus(mockCallBack);
-      expect(Api.rcNetworkClient.getRequestByVia).toBeCalledWith(
+      RCAuthApi.requestServerStatus(mockCallBack);
+      expect(RCAuthApi.rcNetworkClient.getRequestByVia).toBeCalledWith(
         {
           path: '/v1.0/status',
           method: NETWORK_METHOD.GET,

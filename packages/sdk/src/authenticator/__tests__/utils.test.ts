@@ -5,8 +5,8 @@
  */
 
 import {
-  setRcToken,
-  setRcAccountType,
+  setRCToken,
+  setRCAccountType,
   setGlipToken,
   setGlipAccountType,
 } from '../utils';
@@ -18,15 +18,15 @@ GlobalConfigService.getInstance = jest.fn();
 jest.mock('../../service/auth/config');
 
 describe('utils method', () => {
-  it('setRcToken method set success should be true', async () => {
+  it('setRCToken method set success should be true', async () => {
     const obj = { token: '123' };
-    const result = await setRcToken(obj);
+    const result = await setRCToken(obj);
     expect(result).toBe(true);
   });
 
-  it('setRcAccountType method set success should be true', async () => {
+  it('setRCAccountType method set success should be true', async () => {
     const obj = { token: '123' };
-    const result = await setRcAccountType();
+    const result = await setRCAccountType();
     expect(result).toBe(true);
   });
 

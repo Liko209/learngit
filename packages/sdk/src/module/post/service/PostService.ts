@@ -19,10 +19,11 @@ import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
+import { IGroupService } from '../../../module/group/service/IGroupService';
 class PostService extends EntityBaseService<Post> {
   static serviceName = 'PostService';
   postController: PostController;
-  constructor() {
+  constructor(private _groupService: IGroupService) {
     super(false, daoManager.getDao(PostDao), {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
@@ -36,7 +37,7 @@ class PostService extends EntityBaseService<Post> {
 
   protected getPostController() {
     if (!this.postController) {
-      this.postController = new PostController();
+      this.postController = new PostController(this._groupService);
     }
     return this.postController;
   }

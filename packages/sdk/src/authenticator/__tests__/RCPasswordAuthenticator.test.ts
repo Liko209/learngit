@@ -4,19 +4,11 @@
  * Copyright © RingCentral. All rights reserved
  */
 import { HttpResponseBuilder, HttpResponse } from 'foundation';
-import { loginRCByPassword, ITokenModel } from '../../api/ringcentral/login';
-import { loginGlip } from '../../api/glip/user';
+import { loginGlip, ITokenModel, RCAuthApi } from '../../api';
 import { RCPasswordAuthenticator } from '..';
-jest.mock('../../module/rcInfo/config/RcInfoCommonGlobalConfig');
 jest.mock('../../module/config');
 
-jest.mock('../../api/glip/user', () => ({
-  loginGlip: jest.fn(),
-}));
-
-jest.mock('../../api/ringcentral/login', () => ({
-  loginRCByPassword: jest.fn(),
-}));
+jest.mock('../../api');
 
 function createResponse(obj: any) {
   const builder = new HttpResponseBuilder();
@@ -36,8 +28,6 @@ describe('RCPasswordAuthenticator', () => {
       scope: 'scope',
       token_type: 'token_type',
       timestamp: 1,
-      accessTokenExpireIn: 2,
-      refreshTokenExpireIn: 2,
     };
     const loginGlipResult = createResponse({
       status: 200,
@@ -46,7 +36,7 @@ describe('RCPasswordAuthenticator', () => {
       },
     });
 
-    loginRCByPassword.mockResolvedValueOnce(loginRCResult);
+    RCAuthApi.loginRCByPassword.mockResolvedValueOnce(loginRCResult);
     loginGlip.mockResolvedValueOnce(loginGlipResult);
 
     const rc = new RCPasswordAuthenticator();

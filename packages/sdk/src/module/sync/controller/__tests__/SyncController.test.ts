@@ -10,7 +10,6 @@ import { GlobalConfigService } from '../../../config';
 import { SyncController } from '../SyncController';
 import {
   AccountGlobalConfig,
-  AccountUserConfig,
 } from '../../../../service/account/config';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../../error';
 import { GroupConfigService } from '../../../../module/groupConfig';
@@ -23,7 +22,6 @@ import socketManager from '../../../../service/socket';
 
 jest.mock('../../config/SyncUserConfig');
 
-jest.mock('../../../rcInfo/config/RcInfoCommonGlobalConfig');
 jest.mock('../../../../api');
 jest.mock('../../../config');
 jest.mock('../../../../module/groupConfig');

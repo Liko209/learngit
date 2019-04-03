@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RcRegionalSetting, RcStatusInfo } from './common';
+import { RCRegionalSetting, RCStatusInfo } from './common';
 
-type RcContactAddress = {
+type RCContactAddress = {
   country?: string;
   state?: string;
   city?: string;
@@ -14,35 +14,35 @@ type RcContactAddress = {
   zip?: string;
 };
 
-type RcPronouncedName = {
+type RCPronouncedName = {
   type?: string;
   text?: string;
 };
 
-type RcContactInfo = {
+type RCContactInfo = {
   firstName?: string;
   lastName?: string;
   company?: string;
   email?: string;
   businessPhone?: string;
-  businessAddress?: RcContactAddress;
+  businessAddress?: RCContactAddress;
   emailAsLoginName?: boolean;
-  pronouncedName?: RcPronouncedName;
+  pronouncedName?: RCPronouncedName;
   department?: string;
 };
 
-type RcDepartmentInfo = {
+type RCDepartmentInfo = {
   uri?: string;
   id?: string;
   extensionNumber?: string;
 };
 
-type RcExtensionAccount = {
+type RCExtensionAccount = {
   uri?: string;
   id?: string;
 };
 
-type RcExtensionPermissions = {
+type RCExtensionPermissions = {
   admin?: {
     enabled: boolean;
   };
@@ -51,7 +51,7 @@ type RcExtensionPermissions = {
   };
 };
 
-type RcProfileImageInfo = {
+type RCProfileImageInfo = {
   uri?: string;
   etag?: string;
   contentType?: string;
@@ -63,43 +63,43 @@ type RcProfileImageInfo = {
   ];
 };
 
-type RcReferenceInfo = {
+type RCReferenceInfo = {
   ref?: string;
   type?: string;
 };
 
-type RcServiceFeature = {
+type RCServiceFeature = {
   enabled?: boolean;
   featureName: string;
   reason?: string;
 };
 
-type RcSite = {
+type RCSite = {
   uri?: string;
   id?: string;
   name?: string;
   code?: string;
 };
 
-type RcExtensionInfo = {
+type RCExtensionInfo = {
   uri?: string;
   id: number;
-  contact?: RcContactInfo;
-  departments?: RcDepartmentInfo[];
+  contact?: RCContactInfo;
+  departments?: RCDepartmentInfo[];
   extensionNumber?: string;
-  account?: RcExtensionAccount;
+  account?: RCExtensionAccount;
   name?: string;
   partnerId?: string;
-  permissions?: RcExtensionPermissions;
-  profileImage?: RcProfileImageInfo;
-  references?: RcReferenceInfo[];
-  regionalSettings?: RcRegionalSetting;
-  serviceFeatures?: RcServiceFeature[];
+  permissions?: RCExtensionPermissions;
+  profileImage?: RCProfileImageInfo;
+  references?: RCReferenceInfo[];
+  regionalSettings?: RCRegionalSetting;
+  serviceFeatures?: RCServiceFeature[];
   setupWizardState?: string;
   status?: string;
-  statusInfo?: RcStatusInfo;
+  statusInfo?: RCStatusInfo;
   type?: string;
-  site?: RcSite;
+  site?: RCSite;
 };
 
-export { RcExtensionInfo, RcServiceFeature };
+export { RCExtensionInfo, RCServiceFeature };

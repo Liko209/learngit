@@ -16,7 +16,7 @@ import { IPreInsertController } from '../../common/controller/interface/IPreInse
 import { ItemService } from '../../item';
 import { INDEX_POST_MAX_SIZE } from '../constant';
 import { IRawPostResult, Post } from '../entity';
-import { GroupService } from '../../group';
+import { IGroupService } from '../../group/service/IGroupService';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { SortUtils } from '../../../framework/utils';
 
@@ -24,6 +24,7 @@ const TAG = 'PostDataController';
 
 class PostDataController {
   constructor(
+    private _groupService: IGroupService,
     public preInsertController: IPreInsertController,
     public entitySourceController: IEntitySourceController<Post>,
   ) {}
@@ -69,9 +70,8 @@ class PostDataController {
       posts = await this.handleIndexModifiedPosts(posts);
       posts = await this.filterAndSavePosts(posts, true);
       if (result && result.deleteMap.size > 0) {
-        const groupService: GroupService = GroupService.getInstance();
         result.deleteMap.forEach((value: number[], key: number) => {
-          groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
+          this._groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
           notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
         });
       }
@@ -257,7 +257,7 @@ class PostDataController {
   }
 
   postCreationTimeSortingFn = (lhs: Post, rhs: Post) => {
-    return SortUtils.sortModelByKey(lhs, rhs, 'created_at', false);
+    return SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
   }
 
   /**
@@ -350,9 +350,8 @@ class PostDataController {
   private async _ensureGroupExist(posts: Post[]): Promise<void> {
     if (posts.length) {
       posts.forEach(async (post: Post) => {
-        const groupService: GroupService = GroupService.getInstance();
         try {
-          await groupService.getById(post.group_id);
+          await this._groupService.getById(post.group_id);
         } catch (error) {
           mainLogger
             .tags('PostDataController')

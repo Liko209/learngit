@@ -63,7 +63,7 @@ class AutoAuthenticator implements ISyncAuthenticator {
 
   private _authRCLogin(): IAuthResponse {
     const authConfig = new AuthUserConfig();
-    const rcToken: string = authConfig.getRcToken();
+    const rcToken: string = authConfig.getRCToken();
     if (!rcToken) {
       return { success: false };
     }

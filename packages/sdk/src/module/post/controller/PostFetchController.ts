@@ -15,7 +15,7 @@ import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
-import { GroupService } from '../../../module/group';
+import { IGroupService } from '../../../module/group/service/IGroupService';
 import { IRemotePostRequest } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
@@ -23,6 +23,7 @@ const TAG = 'PostFetchController';
 
 class PostFetchController {
   constructor(
+    private _groupService: IGroupService,
     public postDataController: PostDataController,
     public entitySourceController: IEntitySourceController<Post>,
   ) {}
@@ -70,8 +71,7 @@ class PostFetchController {
     }
 
     if (result.posts.length < limit) {
-      const groupService: GroupService = GroupService.getInstance();
-      const shouldFetch = await groupService.hasMorePostInRemote(
+      const shouldFetch = await this._groupService.hasMorePostInRemote(
         groupId,
         direction,
       );
@@ -167,8 +167,11 @@ class PostFetchController {
         shouldSaveToDb,
       );
       if (shouldSaveToDb) {
-        const groupService: GroupService = GroupService.getInstance();
-        groupService.updateHasMore(groupId, direction, handledResult.hasMore);
+        this._groupService.updateHasMore(
+          groupId,
+          direction,
+          handledResult.hasMore,
+        );
       }
       return handledResult;
     }

@@ -1,6 +1,6 @@
-import { ITokenModel } from './login';
+import { IToken } from 'foundation';
 export interface IPlatformHandleDelegate {
-  refreshRCToken: () => Promise<ITokenModel | null>;
+  refreshRCToken: () => Promise<IToken | null>;
   checkServerStatus: (
     callback: (success: boolean, retryAfter: number) => void,
   ) => void;

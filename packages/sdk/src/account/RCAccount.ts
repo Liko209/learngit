@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractAccount } from '../framework';
-import { RcInfoService } from '../module/rcInfo/service/RcInfoService';
+import { RCInfoService } from '../module/rcInfo/service/RCInfoService';
 
 class RCAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {
-    this.setSupportedServices([RcInfoService.name]);
+    this.setSupportedServices([RCInfoService.name]);
   }
 }
 

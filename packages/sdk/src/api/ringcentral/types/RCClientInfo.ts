@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type RcClientApplicationInfo = {
+type RCClientApplicationInfo = {
   detected?: boolean;
   userAgent?: string;
   appId?: string;
@@ -15,7 +15,7 @@ type RcClientApplicationInfo = {
   locale?: string;
 };
 
-type RcClientProvisioningClientIds = {
+type RCClientProvisioningClientIds = {
   serviceWeb?: string;
   expressSetup?: string;
   liveReports?: string;
@@ -23,7 +23,7 @@ type RcClientProvisioningClientIds = {
   analyticsPortal?: string;
 };
 
-type RcClientProvisioningWebUris = {
+type RCClientProvisioningWebUris = {
   expressSetupMobile?: string;
   signUp?: string;
   support?: string;
@@ -50,27 +50,27 @@ type RcClientProvisioningWebUris = {
   timestamp?: number;
 };
 
-type RcHint = {
+type RCHint = {
   expiresIn?: number;
   actionRequired?: boolean;
 };
 
-type RcClientProvisioningHint = {
-  trialState?: RcHint;
-  userCredentialState?: RcHint;
-  appVersionUpgrade?: RcHint;
+type RCClientProvisioningHint = {
+  trialState?: RCHint;
+  userCredentialState?: RCHint;
+  appVersionUpgrade?: RCHint;
 };
 
-type RcClientProvisioningInfo = {
-  interopClientIds?: RcClientProvisioningClientIds;
-  webUris?: RcClientProvisioningWebUris;
-  hints?: RcClientProvisioningHint;
+type RCClientProvisioningInfo = {
+  interopClientIds?: RCClientProvisioningClientIds;
+  webUris?: RCClientProvisioningWebUris;
+  hints?: RCClientProvisioningHint;
 };
 
-type RcClientInfo = {
+type RCClientInfo = {
   uri?: string;
-  client?: RcClientApplicationInfo;
-  provisioning?: RcClientProvisioningInfo;
+  client?: RCClientApplicationInfo;
+  provisioning?: RCClientProvisioningInfo;
 };
 
-export { RcClientInfo };
+export { RCClientInfo };
