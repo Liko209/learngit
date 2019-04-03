@@ -8,7 +8,7 @@ import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../config';
 
-Object.keys(BrandTire).map((accountType) => BrandTire[accountType]).forEach(accountType => {
+for (const accountType of [BrandTire.RCOFFICE, BrandTire.RC_PROFESSIONAL_TIER, BrandTire.RC_FIJI_GUEST]) {
   fixture('Logout')
     .beforeEach(setupCase(accountType))
     .afterEach(teardownCase());
@@ -32,4 +32,4 @@ Object.keys(BrandTire).map((accountType) => BrandTire[accountType]).forEach(acco
       await t.expect(h(t).href).contains('unified-login');
     }, true);
   });
-});
+};
