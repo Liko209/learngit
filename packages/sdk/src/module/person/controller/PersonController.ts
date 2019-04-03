@@ -28,6 +28,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 import { AuthUserConfig } from '../../../service/auth/config';
+import { FileTypeUtils } from '../../../utils/file/FileTypeUtils';
 
 const PersonFlags = {
   is_webmail: 1,
@@ -163,6 +164,11 @@ class PersonController {
         originalUrl = headshot.url;
       } else {
         originalUrl = headshot;
+      }
+
+      // in case of gif FIJI-4678
+      if (originalUrl && FileTypeUtils.isGif(originalUrl)) {
+        url = originalUrl;
       }
 
       if (url) {
