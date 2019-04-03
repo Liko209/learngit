@@ -13,6 +13,7 @@ const defaultConfig: LogConfig = {
     enabled: true,
   },
   decorators: [],
+  truncateThreshold: 1024 * 1024,
 };
 
 class ConfigManager {

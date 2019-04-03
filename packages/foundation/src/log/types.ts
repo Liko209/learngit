@@ -50,6 +50,7 @@ type LogConfig = {
     enabled: boolean;
   };
   decorators: ILogEntityDecorator[];
+  truncateThreshold: number;
 };
 
 class LogEntity {

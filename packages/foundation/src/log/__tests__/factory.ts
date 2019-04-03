@@ -27,6 +27,7 @@ const logConfigBuilder: Builder<LogConfig> = {
     enabled: true,
   },
   decorators: [],
+  truncateThreshold: 1024 * 1024,
 };
 
 export const logConfigFactory = Factory.makeFactory(logConfigBuilder);

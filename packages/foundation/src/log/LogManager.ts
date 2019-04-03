@@ -26,6 +26,7 @@ export class LogManager {
   private _defaultLoaderMap: LoaderMap;
 
   public constructor() {
+    const { truncateThreshold } = configManager.getConfig();
     this._loggers = new Map();
     this._defaultLoaderMap = {
       SessionDecorator: new SessionDecorator(),
@@ -44,7 +45,7 @@ export class LogManager {
       {
         loader: 'TruncationDecorator',
         options: {
-          limit: 4000,
+          limit: truncateThreshold,
         },
       },
       {
