@@ -106,7 +106,10 @@ export default class MultiEntityMapStore<
     const model = this._data[id];
     if (model) {
       Object.keys(partialEntity).forEach((key: string) => {
-        model[_.camelCase(key)] = partialEntity[key];
+        const camelCaseKey = _.camelCase(key);
+        if (model.hasOwnProperty(camelCaseKey)) {
+          model[camelCaseKey] = partialEntity[key];
+        }
       });
       model.isMocked = false;
     }
