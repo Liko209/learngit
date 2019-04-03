@@ -102,7 +102,8 @@ const RUN_NAME = process.env.RUN_NAME || `[Jupiter][Debug][${new Date().toLocale
 
 enum BrandTire {
   "RCOFFICE" = "kamino(Fiji,Jupiter,1210,4488)",
-  "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)"
+  "RC_PROFESSIONAL_TIER" = "kamino(Fiji,Jupiter,1210,4442)",
+  "RC_FIJI_GUEST" = "kamino(Fiji-with-guest,Jupiter,1210,4488)"
 };
 
 export {
