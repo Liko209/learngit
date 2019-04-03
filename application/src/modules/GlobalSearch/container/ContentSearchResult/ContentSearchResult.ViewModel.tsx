@@ -7,8 +7,16 @@ import { computed, action, observable } from 'mobx';
 import { container } from 'framework';
 import { ContentSearchParams } from 'sdk/api/glip/search';
 import { PostService } from 'sdk/module/post';
+import { SearchedResultData } from 'sdk/src/module/post/controller/implementation/types';
 import { Post } from 'sdk/module/post/entity';
 import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
+import { errorHelper } from 'sdk/error';
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { Notification } from '@/containers/Notification';
+import { generalErrorHandler } from '@/utils/error';
 import { StoreViewModel } from '@/store/ViewModel';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
@@ -74,7 +82,9 @@ class ContentSearchResultViewModel
   setSearchOptions(options: ContentSearchOptions) {
     this.searchOptions = { ...this.searchOptions, ...options };
 
-    this._onPostsInit();
+    this._setSearchState({ requestId: null });
+
+    this.onPostsFetch();
   }
 
   onPostsFetch = async () => {
@@ -82,11 +92,11 @@ class ContentSearchResultViewModel
 
     const fetchFn = requestId ? this._onPostsInit : this._onPostsScroll;
 
-    const { posts, hasMore } = await fetchFn();
+    const { posts, hasMore } = await this._fetchHandleWrapper(fetchFn);
 
     this._updatePostIds(posts, requestId);
 
-    return { posts, hasMore };
+    return { hasMore, data: posts };
   }
 
   onSearchEnd = async () => {
@@ -129,11 +139,9 @@ class ContentSearchResultViewModel
       [TypeDictionary.TYPE_ID_POST]: postCount,
     } = await this._postService.getSearchContentsCount(this._searchParams);
 
-    this._setSearchState({ postCount, requestId: null });
-
     const result = await this._postService.searchPosts(this._searchParams);
 
-    this._setSearchState({ requestId: result.requestId });
+    this._setSearchState({ postCount, requestId: result.requestId });
 
     return result;
   }
@@ -146,6 +154,44 @@ class ContentSearchResultViewModel
     );
 
     return result;
+  }
+
+  private _fetchHandleWrapper = async (
+    fetchFn: () => Promise<SearchedResultData>,
+  ) => {
+    let result;
+
+    try {
+      result = await fetchFn();
+    } catch (error) {
+      this._fetchErrorHandler(error);
+
+      result = { hasMore: true, posts: [] };
+    }
+
+    return result;
+  }
+
+  private _fetchErrorHandler(error: Error) {
+    const isServiceError = errorHelper.isBackEndError(error);
+    const isNetworkError = errorHelper.isNetworkConnectionError(error);
+    const isResponseError = isServiceError || isNetworkError;
+
+    let message = 'common.globalSearch.';
+
+    if (isServiceError) message = `${message}.contentSearchServiceError`;
+
+    if (isNetworkError) message = `${message}.contentSearchNetworkError`;
+
+    isResponseError
+      ? Notification.flashToast({
+        message,
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      })
+      : generalErrorHandler(error);
   }
 }
 

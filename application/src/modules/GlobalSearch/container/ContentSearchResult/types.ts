@@ -15,7 +15,7 @@ type ContentSearchState = {
 };
 
 type ContentSearchResult = {
-  posts: Post[];
+  data: Post[];
   hasMore: boolean;
 };
 
@@ -38,6 +38,5 @@ export {
   ContentSearchResultViewProps,
   ContentSearchId,
   ContentSearchState,
-  ContentSearchResult,
   ContentSearchOptions,
 };
