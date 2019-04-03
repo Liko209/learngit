@@ -48,6 +48,6 @@ class ConfigManager {
   }
 }
 
-const logConsumerConfigManager = new ConfigManager();
+const configManager = new ConfigManager();
 
-export { logConsumerConfigManager as configManager };
+export { configManager };
