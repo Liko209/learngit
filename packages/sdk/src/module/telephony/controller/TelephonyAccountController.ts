@@ -82,6 +82,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyCallDelegate.sendToVoiceMail();
   }
 
+  ignore(callId: string) {
+    this._telephonyCallDelegate.ignore();
+  }
+
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
     this._telephonyAccountDelegate.onAccountStateChanged(state);
   }
