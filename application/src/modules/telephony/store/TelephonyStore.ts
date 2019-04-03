@@ -197,6 +197,16 @@ class TelephonyStore {
     }
     return true;
   }
+
+  @computed
+  get holdDisabled() {
+    return this.holdState === HOLD_STATE.DISABLED;
+  }
+
+  @computed
+  get held() {
+    return this.holdState === HOLD_STATE.HOLDED;
+  }
 }
 
 export { TelephonyStore, CALL_TYPE };

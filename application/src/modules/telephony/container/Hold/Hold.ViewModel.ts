@@ -28,8 +28,12 @@ class HoldViewModel extends StoreViewModel<HoldProps> implements HoldViewProps {
     return this._telephonyStore.holdState === HOLD_STATE.HOLDED;
   }
 
+  get isOnline() {
+    return window.navigator.onLine;
+  }
+
   handleClick = () => {
-    if (this.disabled || this._telephonyStore.pendingForHold) {
+    if (this.isOnline) {
       mainLogger.debug(
         `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_PENDING_STATE]: ${this._telephonyStore.pendingForHold}`,
       );
