@@ -105,6 +105,10 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     return group && !group.is_archived && !group.deactivated && !!group.members;
   }
 
+  async getEntities(): Promise<Group[]> {
+    return await this.getEntitySource().getEntities();
+  }
+
   isInTeam(userId: number, team: Group) {
     return this.getGroupController()
       .getGroupActionController()

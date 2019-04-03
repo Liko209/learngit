@@ -12,6 +12,7 @@ import { StateDataHandleController } from './implementation/StateDataHandleContr
 import { StateFetchDataController } from './implementation/StateFetchDataController';
 import { TotalUnreadController } from './implementation/TotalUnreadController';
 import { GroupState, State } from '../entity';
+import { IGroupService } from '../../../module/group/service/IGroupService';
 
 class StateController {
   private _stateActionController: StateActionController;
@@ -19,6 +20,7 @@ class StateController {
   private _stateFetchDataController: StateFetchDataController;
   private _totalUnreadController: TotalUnreadController;
   constructor(
+    private _groupService: IGroupService,
     private _entitySourceController: IEntitySourceController<GroupState>,
   ) {}
 
@@ -29,6 +31,7 @@ class StateController {
         networkClient: Api.glipNetworkClient,
       });
       this._stateActionController = new StateActionController(
+        this._groupService,
         this._entitySourceController,
         requestController,
         this.getStateFetchDataController(),
@@ -61,6 +64,7 @@ class StateController {
   getTotalUnreadController(): TotalUnreadController {
     if (!this._totalUnreadController) {
       this._totalUnreadController = new TotalUnreadController(
+        this._groupService,
         this._entitySourceController,
       );
     }

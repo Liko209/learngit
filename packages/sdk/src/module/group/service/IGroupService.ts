@@ -118,6 +118,12 @@ interface IGroupService {
   getIndividualGroups(): Map<number, Group>;
 
   isIndividualGroup(group: Group): boolean;
+
+  getById(id: number): Promise<Group | null>;
+
+  isValid(group: Group): boolean;
+
+  getEntities(): Promise<Group[]>;
 }
 
 export { IGroupService };

@@ -4,12 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-const RCINFO_KEYS = {
+const RC_INFO_KEYS = {
   ACCOUNT_INFO: 'account_info',
   CLIENT_INFO: 'client_info',
   EXTENSION_INFO: 'extension_info',
   ROLE_PERMISSIONS: 'role_permissions',
   SPECIAL_NUMBER_RULE: 'special_number_rule',
+  PHONE_DATA: 'PHONE_DATA',
+  PHONE_DATA_VERSION: 'PHONE_DATA_VERSION',
 };
 
-export { RCINFO_KEYS };
+export { RC_INFO_KEYS };

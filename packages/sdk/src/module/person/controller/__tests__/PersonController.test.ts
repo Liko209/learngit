@@ -178,7 +178,7 @@ describe('PersonService', () => {
       { id: 11, phoneNumber: '5', usageType: 'MainCompanyNumber' },
       { id: 12, phoneNumber: '234567', usageType: 'DirectNumber' },
     ];
-    const sanitizedRcExtension = { extensionNumber: '4711', type: 'User' };
+    const sanitizedRCExtension = { extensionNumber: '4711', type: 'User' };
     const ext = {
       type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
       phoneNumber: '4711',
@@ -200,15 +200,15 @@ describe('PersonService', () => {
         personController.getAvailablePhoneNumbers(
           123,
           rcPhoneNumbers,
-          sanitizedRcExtension,
+          sanitizedRCExtension,
         ),
       ).toEqual([did]);
     });
 
     it.each([
-      [rcPhoneNumbers, sanitizedRcExtension, [ext, did]],
+      [rcPhoneNumbers, sanitizedRCExtension, [ext, did]],
       [rcPhoneNumbers, undefined, [did]],
-      [undefined, sanitizedRcExtension, [ext]],
+      [undefined, sanitizedRCExtension, [ext]],
     ])(
       'should return all available phone numbers, case index: %#',
       (rcPhones, rcExt, expectRes) => {

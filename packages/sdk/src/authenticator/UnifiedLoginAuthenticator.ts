@@ -4,14 +4,12 @@
  * Copyright © RingCentral. All rights reserved
  */
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
-import { loginGlip, ITokenModel } from '../api';
-import { RcInfoApi } from '../api/ringcentral';
+import { loginGlip, RCInfoApi, RCAuthApi, ITokenModel } from '../api';
 import notificationCenter from '../service/notificationCenter';
 import { GlipAccount, RCAccount } from '../account';
-import { oauthTokenViaAuthCode } from '../api/ringcentral/auth';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
-import { RcInfoService } from '../module/rcInfo';
-import { setRcToken, setRcAccountType } from './utils';
+import { RCInfoService } from '../module/rcInfo';
+import { setRCToken, setRCAccountType } from './utils';
 import { AccountGlobalConfig } from '../service/account/config';
 
 interface IUnifiedLoginAuthenticateParams extends IAuthParams {
@@ -60,10 +58,10 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
   // rc user login
   private async _authenticateRC(code: string): Promise<IAuthResponse> {
     // login rc
-    const rcToken = await this._fetchRcToken(code);
-    await this._requestRcAccountRelativeInfo();
-    await setRcToken(rcToken);
-    await setRcAccountType();
+    const rcToken = await this._fetchRCToken(code);
+    await this._requestRCAccountRelativeInfo();
+    await setRCToken(rcToken);
+    await setRCAccountType();
     // TODO FIJI-4395
 
     const response = {
@@ -79,7 +77,7 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
     // login glip
     try {
-      const glipToken = await this._loginGlipByRcToken(rcToken);
+      const glipToken = await this._loginGlipByRCToken(rcToken);
       response.accountInfos.push({
         type: GlipAccount.name,
         data: glipToken,
@@ -94,8 +92,8 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     return response;
   }
 
-  private async _fetchRcToken(code: string): Promise<ITokenModel> {
-    const rcToken = await oauthTokenViaAuthCode({
+  private async _fetchRCToken(code: string): Promise<ITokenModel> {
+    const rcToken = await RCAuthApi.oauthTokenViaAuthCode({
       code,
       redirect_uri: window.location.origin,
     });
@@ -104,16 +102,16 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     return rcToken;
   }
 
-  private async _requestRcAccountRelativeInfo() {
-    await RcInfoApi.requestRcAPIVersion();
-    const rcInfoService: RcInfoService = RcInfoService.getInstance();
-    await rcInfoService.requestRcAccountRelativeInfo();
+  private async _requestRCAccountRelativeInfo() {
+    await RCInfoApi.requestRCAPIVersion();
+    const rcInfoService: RCInfoService = RCInfoService.getInstance();
+    await rcInfoService.requestRCAccountRelativeInfo();
     AccountGlobalConfig.setUserDictionary(
-      rcInfoService.getRcExtensionInfo().id.toString(),
+      (await rcInfoService.getRCExtensionInfo())!.id.toString(),
     );
   }
 
-  private async _loginGlipByRcToken(rcToken: ITokenModel) {
+  private async _loginGlipByRCToken(rcToken: ITokenModel) {
     // fetch glip token
     const glipLoginResponse = await loginGlip(rcToken);
     if (glipLoginResponse.status >= 200 && glipLoginResponse.status < 300) {

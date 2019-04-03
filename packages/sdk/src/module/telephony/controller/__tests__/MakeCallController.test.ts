@@ -9,7 +9,7 @@ import { GlobalConfigService } from '../../../../module/config';
 import { MAKE_CALL_ERROR_CODE, E911_STATUS } from '../../types';
 import { PhoneParserUtility } from '../../../../utils/phoneParser';
 import { PersonService } from '../../../person';
-import { RcInfoService } from '../../../rcInfo/service';
+import { RCInfoService } from '../../../rcInfo/service';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../utils/phoneParser');
@@ -43,15 +43,15 @@ describe('MakeCallController', () => {
       serviceFeatures: [{ featureName: 'VoipCalling', enabled: false }],
     };
 
-    RcInfoService.getInstance = jest.fn().mockReturnValue({
-      getRcExtensionInfo: jest.fn().mockReturnValue(extInfo),
+    RCInfoService.getInstance = jest.fn().mockReturnValue({
+      getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
     });
     jest
       .spyOn(makeCallController, '_checkVoipStatusAndCallSetting')
       .mockReturnValue(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
 
     jest
-      .spyOn(makeCallController, '_getRcE911Status')
+      .spyOn(makeCallController, '_getRCE911Status')
       .mockReturnValue(E911_STATUS.DISCLINED);
 
     const result = await makeCallController.tryMakeCall('102');
@@ -103,8 +103,8 @@ describe('MakeCallController', () => {
         },
       ],
     };
-    RcInfoService.getInstance = jest.fn().mockReturnValue({
-      getRcExtensionInfo: jest.fn(),
+    RCInfoService.getInstance = jest.fn().mockReturnValue({
+      getRCExtensionInfo: jest.fn(),
       getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
     });
     const result = await makeCallController.tryMakeCall('211');
@@ -156,8 +156,8 @@ describe('MakeCallController', () => {
         },
       ],
     };
-    RcInfoService.getInstance = jest.fn().mockReturnValue({
-      getRcExtensionInfo: jest.fn(),
+    RCInfoService.getInstance = jest.fn().mockReturnValue({
+      getRCExtensionInfo: jest.fn(),
       getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
     });
     const result = await makeCallController.tryMakeCall('511');
@@ -209,8 +209,8 @@ describe('MakeCallController', () => {
         },
       ],
     };
-    RcInfoService.getInstance = jest.fn().mockReturnValue({
-      getRcExtensionInfo: jest.fn(),
+    RCInfoService.getInstance = jest.fn().mockReturnValue({
+      getRCExtensionInfo: jest.fn(),
       getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
     });
     const result = await makeCallController.tryMakeCall('511');
@@ -224,8 +224,8 @@ describe('MakeCallController', () => {
         { featureName: 'InternationalCalling', enabled: false },
       ],
     };
-    RcInfoService.getInstance = jest.fn().mockReturnValue({
-      getRcExtensionInfo: jest.fn().mockReturnValue(extInfo),
+    RCInfoService.getInstance = jest.fn().mockReturnValue({
+      getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
       getSpecialNumberRule: jest.fn(),
     });
 

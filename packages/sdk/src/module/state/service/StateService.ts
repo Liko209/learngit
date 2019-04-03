@@ -13,6 +13,7 @@ import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { StateController } from '../controller/StateController';
 import { Group } from '../../group/entity';
+import { IGroupService } from '../../group/service/IGroupService';
 import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
@@ -22,7 +23,7 @@ class StateService extends EntityBaseService<GroupState>
   implements IStateService {
   static serviceName = 'StateService';
   private _stateController: StateController;
-  constructor() {
+  constructor(private _groupService: IGroupService) {
     super(true, daoManager.getDao(GroupStateDao));
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
@@ -38,7 +39,10 @@ class StateService extends EntityBaseService<GroupState>
 
   protected getStateController(): StateController {
     if (!this._stateController) {
-      this._stateController = new StateController(this.getEntitySource());
+      this._stateController = new StateController(
+        this._groupService,
+        this.getEntitySource(),
+      );
     }
     return this._stateController;
   }

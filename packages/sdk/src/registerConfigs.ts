@@ -34,7 +34,7 @@ import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
 import { SearchService } from './module/search';
-import { RcInfoService } from './module/rcInfo';
+import { RCInfoService } from './module/rcInfo';
 import { GlobalConfigService, UserConfigService } from './module/config';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
@@ -60,12 +60,19 @@ const registerConfigs = {
     { name: PersonService.name, value: PersonService },
     { name: PresenceService.name, value: PresenceService },
     { name: ProfileService.name, value: ProfileService },
-    { name: StateService.name, value: StateService },
+    {
+      name: StateService.name,
+      value: StateService,
+      injects: [GroupService.name],
+    },
     { name: ProgressService.name, value: ProgressService },
-    { name: PostService.name, value: PostService },
+    {
+      name: PostService.name,
+      value: PostService,
+      injects: [GroupService.name],
+    },
     { name: PermissionService.name, value: PermissionService },
-    { name: GroupService.name, value: GroupService },
-    { name: RcInfoService.name, value: RcInfoService },
+    { name: RCInfoService.name, value: RCInfoService },
     {
       name: AuthService.name,
       value: AuthService,

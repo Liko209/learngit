@@ -10,7 +10,7 @@ export class LogPersistence implements ILogPersistence {
   private _kvStorageManager: KVStorageManager;
   private _dbManager: DBManager;
   private _db: IDatabase;
-  private _collection: IDatabaseCollection<PersistenceLogEntity>;
+  private _collection: IDatabaseCollection<PersistenceLogEntity, number>;
 
   constructor() {
     this._kvStorageManager = new KVStorageManager();
@@ -21,7 +21,7 @@ export class LogPersistence implements ILogPersistence {
     const dbType = this._kvStorageManager.isLocalStorageSupported() ? DatabaseType.DexieDB : DatabaseType.LokiDB;
     this._dbManager.initDatabase(schema, dbType);
     this._db = this._dbManager.getDatabase();
-    this._collection = this._db.getCollection<PersistenceLogEntity>(TABLE_LOG);
+    this._collection = this._db.getCollection<PersistenceLogEntity, number>(TABLE_LOG);
   }
 
   put = async (item: PersistenceLogEntity) => {

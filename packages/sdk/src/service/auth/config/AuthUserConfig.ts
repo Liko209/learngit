@@ -32,15 +32,15 @@ class AuthUserConfig extends UserConfig {
     return this.get(AUTH_KEYS.GLIP2_TOKEN);
   }
 
-  setRcToken(token: any) {
+  setRCToken(token: any) {
     this.put(AUTH_KEYS.RC_TOKEN, token);
   }
 
-  getRcToken() {
+  getRCToken() {
     return this.get(AUTH_KEYS.RC_TOKEN);
   }
 
-  removeRcToken() {
+  removeRCToken() {
     this.remove(AUTH_KEYS.RC_TOKEN);
   }
 }
