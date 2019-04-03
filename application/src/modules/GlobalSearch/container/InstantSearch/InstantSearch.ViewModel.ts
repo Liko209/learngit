@@ -232,18 +232,22 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   @action
   onKeyUp = () => {
     const [section, cell] = this.selectIndex;
+
     if (cell > 0) {
       this.setSelectIndex(section, cell - 1);
-    } else {
-      if (section > 0) {
-        const [nextSection, sectionLength] = this.findNextValidSectionLength(
-          section - 1,
-          -1,
-        );
-        if (nextSection !== -1) {
-          this.setSelectIndex(nextSection, sectionLength - 1);
-        }
-      }
+      return;
+    }
+
+    if (section <= 0) {
+      return;
+    }
+
+    const [nextSection, sectionLength] = this.findNextValidSectionLength(
+      section - 1,
+      -1,
+    );
+    if (nextSection !== -1) {
+      this.setSelectIndex(nextSection, sectionLength - 1);
     }
   }
 
@@ -257,16 +261,20 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     if (!searchItem) {
       return;
     }
+
     const currentSectionLength = searchItem.ids.length;
     if (cell < currentSectionLength - 1) {
       this.setSelectIndex(currentSection, cell + 1);
-    } else {
-      if (currentSection < data.length - 1) {
-        const [nextSection] = this.findNextValidSectionLength(section + 1, 1);
-        if (nextSection !== -1) {
-          this.setSelectIndex(nextSection, 0);
-        }
-      }
+      return;
+    }
+
+    if (currentSection >= data.length - 1) {
+      return;
+    }
+
+    const [nextSection] = this.findNextValidSectionLength(section + 1, 1);
+    if (nextSection !== -1) {
+      this.setSelectIndex(nextSection, 0);
     }
   }
 
