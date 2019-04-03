@@ -23,7 +23,7 @@ class SettingLeftRailViewModel extends StoreViewModel {
   get currentSettingListType() {
     return (
       getGlobalValue(GLOBAL_KEYS.CURRENT_SETTING_LIST_TYPE) ||
-      SETTING_LIST_TYPE.general
+      SETTING_LIST_TYPE.GENERAL
     );
   }
 
@@ -33,31 +33,31 @@ class SettingLeftRailViewModel extends StoreViewModel {
       {
         title: 'setting.general',
         icon: 'settings',
-        type: SETTING_LIST_TYPE.general,
+        type: SETTING_LIST_TYPE.GENERAL,
         testId: 'entry-general',
       },
       {
         title: 'setting.notificationAndSounds',
         icon: 'bell',
-        type: SETTING_LIST_TYPE.notificationAndSounds,
+        type: SETTING_LIST_TYPE.NOTIFICATION_AND_SOUNDS,
         testId: 'entry-notificationAndSounds',
       },
       {
         title: 'setting.messaging',
         icon: 'bubble_lines',
-        type: SETTING_LIST_TYPE.messaging,
+        type: SETTING_LIST_TYPE.MESSAGING,
         testId: 'entry-messaging',
       },
       {
         title: 'setting.phone',
         icon: 'phone',
-        type: SETTING_LIST_TYPE.phone,
+        type: SETTING_LIST_TYPE.PHONE,
         testId: 'entry-phone',
       },
       {
         title: 'setting.calendar',
         icon: 'event_new',
-        type: SETTING_LIST_TYPE.calendar,
+        type: SETTING_LIST_TYPE.CALENDAR,
         testId: 'entry-calendar',
       },
     ];

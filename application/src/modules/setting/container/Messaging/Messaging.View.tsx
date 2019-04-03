@@ -24,7 +24,7 @@ class MessagingViewComponent extends Component<MessagingViewProps> {
 
   render() {
     return (
-      <SettingContainer type={SETTING_LIST_TYPE.messaging}>
+      <SettingContainer type={SETTING_LIST_TYPE.MESSAGING}>
         {this.renderPlaceHolderItems()}
       </SettingContainer>
     );

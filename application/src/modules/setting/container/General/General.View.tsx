@@ -24,7 +24,7 @@ class GeneralViewComponent extends Component<GeneralViewProps> {
 
   render() {
     return (
-      <SettingContainer type={SETTING_LIST_TYPE.general}>
+      <SettingContainer type={SETTING_LIST_TYPE.GENERAL}>
         {this.renderPlaceHolderItems()}
       </SettingContainer>
     );

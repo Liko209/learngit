@@ -5,12 +5,12 @@
  */
 
 enum SETTING_LIST_TYPE {
-  general = 'general',
-  notificationAndSounds = 'notification_and_sounds',
-  messaging = 'messaging',
-  phone = 'phone',
-  meetings = 'meetings',
-  calendar = 'calendar',
+  GENERAL = 'general',
+  NOTIFICATION_AND_SOUNDS = 'notification_and_sounds',
+  MESSAGING = 'messaging',
+  PHONE = 'phone',
+  MEETINGS = 'meetings',
+  CALENDAR = 'calendar',
 }
 
 type SettingLeftRailEntry = {
