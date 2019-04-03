@@ -13,28 +13,27 @@ import { UploadResult } from '../types';
 import { getAppContextInfo } from '@/utils/error';
 
 class FeedbackService {
-  uploadRecentLogs = async (): Promise<UploadResult | null> => {
+  zipRecentLogs = async (): Promise<[string, Blob] | null> => {
     const recentLogs = LogControlManager.instance().getRecentLogs();
     if (recentLogs.length < 1) {
       mainLogger.debug('Recent logs is empty');
       return null;
     }
+    const zipName = `LOG_${recentLogs[0].sessionId}.zip`;
     const contextInfo = await getAppContextInfo();
     const contextContent = Object.keys(contextInfo)
       .map(key => {
         return `${key}: ${contextInfo[key]}`;
       })
       .join('\n');
-    const logFileName = `LOG_${recentLogs[0].sessionId}`;
     const logContent = recentLogs
       .map((log, index: number) => {
         return `${index}: ${log.message}`;
       })
       .join('\n');
-    const client = filestack.init(FILE_STACK_API_KEY);
     const zip = new JSZip();
     zip.file('ContextInfo.txt', contextContent);
-    zip.file(`${logFileName}.txt`, logContent);
+    zip.file('RecentLogs.txt', logContent);
     const zipBlob = await zip.generateAsync({
       type: 'blob',
       compression: 'DEFLATE',
@@ -42,6 +41,17 @@ class FeedbackService {
         level: 9,
       },
     });
+    return [zipName, zipBlob];
+  }
+
+  uploadRecentLogs = async (): Promise<UploadResult | null> => {
+    const zipResult = await this.zipRecentLogs();
+    if (!zipResult) {
+      mainLogger.debug('Zip log file fail.');
+      return null;
+    }
+    const [zipName, zipBlob] = zipResult;
+    const client = filestack.init(FILE_STACK_API_KEY);
     return await client.upload(
       zipBlob,
       {
@@ -50,7 +60,7 @@ class FeedbackService {
         retry: 1,
       },
       {
-        filename: `${logFileName}.zip`,
+        filename: zipName,
       },
     );
   }
