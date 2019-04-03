@@ -104,10 +104,10 @@ class AppModule extends AbstractModule {
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
         getAppContextInfo().then(contextInfo => {
-          errorReporter.setUserContextInfo(contextInfo);
           window.jupiterElectron &&
             window.jupiterElectron.setContextInfo &&
             window.jupiterElectron.setContextInfo(contextInfo);
+          errorReporter.setUserContextInfo(contextInfo);
         });
 
         if (!this._subModuleRegistered) {

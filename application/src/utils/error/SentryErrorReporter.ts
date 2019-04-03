@@ -7,15 +7,18 @@ import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import * as Sentry from '@sentry/browser';
 import pkg from '../../../package.json';
 import { IErrorReporter, UserContextInfo } from './types';
+import { isProductionVersion, JUPITER_ENV } from '@/common/envUtils';
 const DSN = 'https://810a779037204886beeced1c4bd7fbba@sentry.io/1419520';
+const DSN_PRODUCTION =
+  'https://684e586feb974bb895d0a98411a92873@sentry.io/1430043';
 
 export class SentryErrorReporter implements IErrorReporter {
   init = async () => {
     const { deployedVersion } = await fetchVersionInfo();
     Sentry.init({
-      dsn: DSN,
+      dsn: isProductionVersion ? DSN_PRODUCTION : DSN,
       debug: false,
-      environment: window.jupiterElectron ? 'Electron' : 'Browser',
+      environment: JUPITER_ENV,
       // release format: {project-name}@{version}
       // https://docs.sentry.io/workflow/releases/?platform=browsernpm
       release: `jupiter@${deployedVersion || pkg.version}`,
