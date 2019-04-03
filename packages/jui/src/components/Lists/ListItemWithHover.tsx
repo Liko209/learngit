@@ -6,6 +6,7 @@
 
 import React, { Component } from 'react';
 import { JuiListItem, JuiListItemProps } from './ListItem';
+import styled from '../../foundation/styled-components';
 
 type Props = {
   render: (hover: boolean) => any; // any is children
@@ -14,6 +15,14 @@ type Props = {
 type States = {
   hover: boolean;
 };
+
+const StyledListItem = styled(JuiListItem)`
+  && {
+    :hover {
+      cursor: auto;
+    }
+  }
+`;
 
 class JuiListItemWithHover extends Component<Props, States> {
   constructor(props: Props) {
@@ -40,13 +49,13 @@ class JuiListItemWithHover extends Component<Props, States> {
   render() {
     const { render, ...rest } = this.props;
     return (
-      <JuiListItem
+      <StyledListItem
         {...rest}
         onMouseOver={this.handleMouseOver}
         onMouseOut={this.handleMouseOut}
       >
         {render(this.state.hover)}
-      </JuiListItem>
+      </StyledListItem>
     );
   }
 }
