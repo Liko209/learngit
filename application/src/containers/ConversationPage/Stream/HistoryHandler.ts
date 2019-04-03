@@ -64,9 +64,17 @@ class HistoryHandler {
   }
 
   getFirstUnreadPostId(currentPostIds: number[]) {
-    if (!this.latestPostId) return;
+    if (!this.latestPostId) return undefined;
+
     const posts = this.getPostsOrderThanLatest(currentPostIds);
-    return posts[posts.length - this.unreadCount];
+    const readThrough = this.readThrough;
+    if (readThrough) {
+      return posts.find(postId => postId > readThrough);
+    }
+
+    if (posts.length > 0) return posts[0];
+
+    return undefined;
   }
 
   getDistanceToFirstUnread(currentPostIds: number[]) {

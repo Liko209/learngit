@@ -16,6 +16,8 @@ import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
 import postCacheController from './cache/PostCacheController';
+import { PostService } from 'sdk/module/post';
+import { ISortableModel } from '@/store/base';
 
 const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   id: dataModel.id,
@@ -161,5 +163,22 @@ export class StreamController {
     }
     this._orderListHandler.refreshData();
     return this._orderListHandler.listStore.items;
+  }
+
+  @action
+  async fetchAllUnreadData(pageSize: number) {
+    const readThrough = this._readThrough;
+    let sortableModel: ISortableModel<Post> | undefined = undefined;
+    if (readThrough !== 0) {
+      const postService = PostService.getInstance() as PostService;
+      const post = await postService.getById(readThrough);
+      sortableModel = this._orderListHandler.transform2SortableModel(post!);
+    }
+
+    return await this._orderListHandler.fetchDataByAnchor(
+      QUERY_DIRECTION.NEWER,
+      pageSize,
+      sortableModel,
+    );
   }
 }

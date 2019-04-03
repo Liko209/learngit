@@ -35,6 +35,8 @@ import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
 
+const LOAD_UNREAD_POSTS_REDUNDANCY = 500;
+
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
@@ -236,6 +238,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return await this._streamController.fetchData(direction, limit);
   }
 
+  private async _loadAllUnreadPosts(): Promise<Post[]> {
+    if (!this._streamController.hasMore(QUERY_DIRECTION.OLDER)) {
+      return [];
+    }
+
+    return await this._streamController.fetchAllUnreadData(
+      this._historyHandler.unreadCount + LOAD_UNREAD_POSTS_REDUNDANCY,
+    );
+  }
+
   private async _loadSiblingPosts(anchorPostId: number) {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
@@ -260,6 +272,17 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
         throw err;
       }
+    }
+    return this.firstHistoryUnreadPostId;
+  }
+
+  getFirstUnreadPostByLoadAllUnread = async () => {
+    this._streamController.enableNewMessageSep();
+    try {
+      await this._loadAllUnreadPosts();
+    } catch (err) {
+      this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
+      throw err;
     }
     return this.firstHistoryUnreadPostId;
   }
