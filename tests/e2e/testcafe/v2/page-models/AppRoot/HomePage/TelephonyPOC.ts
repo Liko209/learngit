@@ -1,8 +1,12 @@
+import { getLogger } from 'log4js';
 import { BaseWebComponent } from "../../BaseWebComponent";
 
+const logger = getLogger(__filename);
+logger.level = 'info';
 export class TelephonyPOC extends BaseWebComponent {
 
   get self() {
+    logger.warn(`This page model is deprecated.`);
     return this.getSelectorByAutomationId('leftPanel').nextSibling('div');
   }
 
@@ -13,7 +17,7 @@ export class TelephonyPOC extends BaseWebComponent {
     return this.inputs.nth(0);
   }
 
-  async typeExtension(text: string){
+  async typeExtension(text: string) {
     await this.t.typeText(this.extensionInput, text);
   }
 
