@@ -33,11 +33,15 @@ describe('SentryErrorReporter', () => {
   describe('setUser()', () => {
     it('should call Sentry.setUserContext()', async () => {
       const errorReporter = new SentryErrorReporter();
-      const mockUser = {
+      const mockContextInfo = {
         id: 111,
+        username: 'mm',
         companyId: 333,
+        email: 'xx',
+        env: 'xm-up',
+        version: '1.0.0',
       };
-      await errorReporter.setUser(mockUser);
+      await errorReporter.setUserContextInfo(mockContextInfo);
       expect(Sentry.configureScope).toBeCalled();
     });
   });

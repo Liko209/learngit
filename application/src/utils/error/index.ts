@@ -7,11 +7,13 @@ import { mainLogger } from 'sdk';
 import { ErrorParserHolder } from 'sdk/error';
 import { ErrorReporterProxy } from './ErrorReporterProxy';
 import { IErrorReporter } from './types';
+import { getAppContextInfo } from './helper';
+import { isLocalDevelopment } from '@/common/envUtils';
 function generalErrorHandler(error: Error) {
   const jErr = ErrorParserHolder.getErrorParser().parse(error);
   mainLogger.error(jErr.message);
 }
 const errorReporter: IErrorReporter = new ErrorReporterProxy(
-  process.env.NODE_ENV === 'production',
+  !isLocalDevelopment,
 );
-export { generalErrorHandler, errorReporter };
+export { generalErrorHandler, errorReporter, getAppContextInfo };

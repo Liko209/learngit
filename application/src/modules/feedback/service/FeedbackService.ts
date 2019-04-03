@@ -10,6 +10,7 @@ import { mainLogger } from 'sdk';
 import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
 import { FILE_STACK_API_KEY } from '../constants';
 import { UploadResult } from '../types';
+import { getAppContextInfo } from '@/utils/error';
 
 class FeedbackService {
   uploadRecentLogs = async (): Promise<UploadResult | null> => {
@@ -18,6 +19,12 @@ class FeedbackService {
       mainLogger.debug('Recent logs is empty');
       return null;
     }
+    const contextInfo = await getAppContextInfo();
+    const contextContent = Object.keys(contextInfo)
+      .map(key => {
+        return `${key}: ${contextInfo[key]}`;
+      })
+      .join('\n');
     const logFileName = `LOG_${recentLogs[0].sessionId}`;
     const logContent = recentLogs
       .map((log, index: number) => {
@@ -26,6 +33,7 @@ class FeedbackService {
       .join('\n');
     const client = filestack.init(FILE_STACK_API_KEY);
     const zip = new JSZip();
+    zip.file('ContextInfo.txt', contextContent);
     zip.file(`${logFileName}.txt`, logContent);
     const zipBlob = await zip.generateAsync({
       type: 'blob',
