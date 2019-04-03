@@ -33,8 +33,10 @@ export class LogUploader implements ILogUploader {
   errorHandler(error: AxiosError) {
     // detail error types description see sumologic doc
     // https://help.sumologic.com/03Send-Data/Sources/02Sources-for-Hosted-Collectors/HTTP-Source/Troubleshooting-HTTP-Sources
+    mainLogger.debug('Log upload fail', error);
     const { response } = error;
     if (!response) {
+      mainLogger.debug('Log errorHandler: abortAll');
       return 'abortAll';
     }
     if (
@@ -45,9 +47,11 @@ export class LogUploader implements ILogUploader {
         HTTP_STATUS_CODE.GATEWAY_TIME_OUT,
       ].includes(response.status)
     ) {
+      mainLogger.debug('Log errorHandler: retry');
       return 'retry';
     }
-    return 'ignore';
+    mainLogger.debug('Log errorHandler: ignore=>retry');
+    return 'retry';
   }
 
   private async _getUserInfo() {
