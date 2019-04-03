@@ -8,6 +8,8 @@ import * as filestack from 'filestack-js';
 import JSZip from 'jszip';
 import { FeedbackService } from '../FeedbackService';
 import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
+import { getAppContextInfo } from '@/utils/error';
+jest.mock('@/utils/error');
 jest.mock('sdk/service/uploadLogControl/logControlManager', () => {
   const mockLogMng = {
     getRecentLogs: jest.fn(),
@@ -40,6 +42,7 @@ describe('FeedbackService', () => {
   describe('uploadRecentLogs()', () => {
     it('should zip logs', async () => {
       const feedbackService = new FeedbackService();
+      getAppContextInfo.mockReturnValue({});
       const jsZip = new JSZip();
       const filestackClient = filestack.init('');
       const logControlManager = LogControlManager.instance();
