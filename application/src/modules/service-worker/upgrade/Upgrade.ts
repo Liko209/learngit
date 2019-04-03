@@ -132,6 +132,11 @@ class Upgrade {
   }
 
   private _canDoReload() {
+    if (this._hasInProgressCall()) {
+      mainLogger.info(`${logTag}Forbidden to reload due to call in progress`);
+      return false;
+    }
+
     if (this._dialogIsPresenting()) {
       mainLogger.info(
         `${logTag}Forbidden to reload due to dialog is presenting`,
@@ -147,10 +152,6 @@ class Upgrade {
     const itemService = ItemService.getInstance() as ItemService;
     if (itemService.hasUploadingFiles()) {
       mainLogger.info(`${logTag}Forbidden to reload due to uploading file`);
-      return false;
-    }
-
-    if (this._hasInProgressCall()) {
       return false;
     }
 
