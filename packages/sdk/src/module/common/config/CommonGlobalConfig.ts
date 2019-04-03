@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GlobalConfig } from './GlobalConfig';
+import { GlobalConfig } from '../../config';
 
 class CommonGlobalConfig extends GlobalConfig {
   static moduleName = 'config';

@@ -46,7 +46,6 @@ jest.mock('../schema', () => ({
   },
 }));
 jest.mock('../../module/config');
-jest.mock('../../service/config/NewGlobalConfig');
 jest.mock('../../service/auth/config');
 jest.mock('../../service/account/config');
 jest.mock('../../module/sync/config');

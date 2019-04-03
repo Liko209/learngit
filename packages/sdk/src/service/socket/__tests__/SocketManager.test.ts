@@ -30,7 +30,6 @@ jest.mock('../SocketCanConnectController', () => {
   };
 });
 jest.mock('../../../utils/jsUtils');
-jest.mock('../../../service/config');
 
 GlobalConfigService.getInstance = jest.fn();
 

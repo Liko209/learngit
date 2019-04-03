@@ -14,7 +14,7 @@ import {
 } from '../../service/account/config';
 
 jest.mock('../../module/config');
-jest.mock('../../service/config/NewGlobalConfig');
+jest.mock('../../module/rcInfo/config/RcInfoCommonGlobalConfig');
 jest.mock('../../service/auth/config');
 jest.mock('../../service/account/config');
 

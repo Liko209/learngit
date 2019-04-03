@@ -7,8 +7,7 @@ import { HttpResponseBuilder, HttpResponse } from 'foundation';
 import { loginRCByPassword, ITokenModel } from '../../api/ringcentral/login';
 import { loginGlip } from '../../api/glip/user';
 import { RCPasswordAuthenticator } from '..';
-
-jest.mock('../../service/config/NewGlobalConfig');
+jest.mock('../../module/rcInfo/config/RcInfoCommonGlobalConfig');
 jest.mock('../../module/config');
 
 jest.mock('../../api/glip/user', () => ({

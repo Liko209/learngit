@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RcInfoUserConfig } from '../../config';
-import { NewGlobalConfig } from '../../../../service/config/NewGlobalConfig';
+import { RcInfoUserConfig, RcInfoCommonGlobalConfig } from '../../config';
+
 import { RcInfoController } from '../RcInfoController';
 import { RcInfoApi, TelephonyApi } from '../../../../api/ringcentral';
 import { PhoneParserUtility } from '../../../../utils/phoneParser';
@@ -21,6 +21,7 @@ import { AccountUserConfig } from '../../../../service/account/config';
 jest.mock('../../config');
 jest.mock('../../../permission');
 jest.mock('../../../../service/account/config');
+jest.mock('../../../config');
 
 describe('RcInfoController', () => {
   let rcInfoController: RcInfoController;
@@ -254,10 +255,12 @@ describe('RcInfoController', () => {
         .fn()
         .mockReturnValue('rcPhoneData');
       notificationCenter.emit.mockImplementationOnce(() => {});
-      NewGlobalConfig.setPhoneData = jest.fn();
+
       await rcInfoController.requestRcPhoneData();
       expect(TelephonyApi.getPhoneParserData).toBeCalledTimes(1);
-      expect(NewGlobalConfig.setPhoneData).toBeCalledWith('rcPhoneData');
+      expect(RcInfoCommonGlobalConfig.setPhoneData).toBeCalledWith(
+        'rcPhoneData',
+      );
       expect(PhoneParserUtility.getPhoneDataFileVersion).toBeCalledTimes(1);
       expect(PhoneParserUtility.initPhoneParser).toBeCalledTimes(1);
       expect(notificationCenter.emit).toBeCalledWith(
@@ -292,9 +295,9 @@ describe('RcInfoController', () => {
       rcInfoController['_extensionInfo'] = '_extensionInfo' as any;
       rcInfoController['_rolePermissions'] = '_rolePermissions' as any;
       rcInfoController.storeRcAccountRelativeInfo();
-      expect(
-        rcInfoController['rcInfoUserConfig'].setClientInfo,
-      ).toBeCalledWith('_clientInfo');
+      expect(rcInfoController['rcInfoUserConfig'].setClientInfo).toBeCalledWith(
+        '_clientInfo',
+      );
       expect(
         rcInfoController['rcInfoUserConfig'].setAccountInfo,
       ).toBeCalledWith('_accountInfo');
@@ -309,35 +312,40 @@ describe('RcInfoController', () => {
 
   describe('getRcClientInfo()', () => {
     it('should get value from config when value is invalid', () => {
-      rcInfoController['rcInfoUserConfig'].getClientInfo = jest.fn().mockReturnValue('test');
+      rcInfoController[ 'rcInfoUserConfig'
+].getClientInfo = jest.fn().mockReturnValue('test');
       expect(rcInfoController.getRcClientInfo()).toEqual('test');
     });
   });
 
   describe('getRcAccountInfo()', () => {
     it('should get value from config when value is invalid', () => {
-      rcInfoController['rcInfoUserConfig'].getAccountInfo = jest.fn().mockReturnValue('test');
+      rcInfoController[ 'rcInfoUserConfig'
+].getAccountInfo = jest.fn().mockReturnValue('test');
       expect(rcInfoController.getRcAccountInfo()).toEqual('test');
     });
   });
 
   describe('getRcExtensionInfo()', () => {
     it('should get value from config when value is invalid', () => {
-      rcInfoController['rcInfoUserConfig'].getExtensionInfo = jest.fn().mockReturnValue('test');
+      rcInfoController[ 'rcInfoUserConfig'
+].getExtensionInfo = jest.fn().mockReturnValue('test');
       expect(rcInfoController.getRcExtensionInfo()).toEqual('test');
     });
   });
 
   describe('getRcRolePermissions()', () => {
     it('should get value from config when value is invalid', () => {
-      rcInfoController['rcInfoUserConfig'].getRolePermissions = jest.fn().mockReturnValue('test');
+      rcInfoController[ 'rcInfoUserConfig'
+].getRolePermissions = jest.fn().mockReturnValue('test');
       expect(rcInfoController.getRcRolePermissions()).toEqual('test');
     });
   });
 
   describe('getSpecialNumberRule()', () => {
     it('should get value from config when value is invalid', () => {
-      rcInfoController['rcInfoUserConfig'].getSpecialNumberRule = jest.fn().mockReturnValue('test');
+      rcInfoController[ 'rcInfoUserConfig'
+].getSpecialNumberRule = jest.fn().mockReturnValue('test');
       expect(rcInfoController.getSpecialNumberRule()).toEqual('test');
     });
   });

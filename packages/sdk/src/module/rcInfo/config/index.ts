@@ -4,6 +4,5 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RcInfoUserConfig } from './RcInfoUserConfig';
-
-export { RcInfoUserConfig };
+export { RcInfoUserConfig } from './RcInfoUserConfig';
+export { RcInfoCommonGlobalConfig } from './RcInfoCommonGlobalConfig';

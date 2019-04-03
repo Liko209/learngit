@@ -8,7 +8,6 @@ import { GlobalConfigService } from './service/GlobalConfigService';
 import { GlobalConfig } from './GlobalConfig';
 import { UserConfig } from './UserConfig';
 import { DataMigration } from './DataMigration';
-import { CommonGlobalConfig } from './CommonGlobalConfig';
 
 export {
   GlobalConfig,
@@ -16,5 +15,4 @@ export {
   UserConfigService,
   GlobalConfigService,
   DataMigration,
-  CommonGlobalConfig,
 };
