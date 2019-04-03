@@ -74,12 +74,12 @@
   "globalSearch": {
     "search": "Search",
     "showMore": "Show more",
-    "ClearHistory": "Clear History",
+    "ClearHistory": "Clear history",
     "RecentSearches": "Recent searches",
     "Messages": "Messages",
-    "people": "people",
-    "groups": "groups",
-    "team": "team"
+    "People": "People",
+    "Groups": "Groups",
+    "Teams": "Teams"
   },
   "dashboard": {
     "Dashboard": "Dashboard"

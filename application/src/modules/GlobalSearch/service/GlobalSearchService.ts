@@ -8,7 +8,7 @@ import { inject } from 'framework';
 import { GlobalSearchStore } from '../store';
 
 class GlobalSearchService {
-  @inject(GlobalSearchStore) _globalSearchStore: GlobalSearchStore;
+  @inject(GlobalSearchStore) private _globalSearchStore: GlobalSearchStore;
 
   openGlobalSearch() {
     this._globalSearchStore.setOpen(true);

@@ -37,8 +37,7 @@ const joinHander = async (conversationId: number) => {
   }
 };
 
-const joinTeam = (item: GroupModel) => (e?: React.MouseEvent<HTMLElement>) => {
-  e && e.stopPropagation();
+const joinPublicTeam = (item: GroupModel) => {
   Dialog.confirm({
     title: i18next.t('people.team.joinTeamTitle'),
     content: i18next.t('people.team.joinTeamContent', {
@@ -56,4 +55,4 @@ const joinTeam = (item: GroupModel) => (e?: React.MouseEvent<HTMLElement>) => {
   });
 };
 
-export { joinTeam, joinHander };
+export { joinPublicTeam, joinHander };

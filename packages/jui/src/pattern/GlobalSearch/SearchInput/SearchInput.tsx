@@ -4,8 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { memo } from 'react';
-import { JuiOutlineTextField } from '../../../components/Forms/TextField/OutlineTextField';
+import {
+  JuiOutlineTextField,
+  JuiOutlineTextFieldProps,
+} from '../../../components/Forms/TextField/OutlineTextField';
 import styled from '../../../foundation/styled-components';
+import { spacing, grey } from '../../../foundation/utils';
 
 const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
   border-top: 0;
@@ -13,12 +17,29 @@ const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
   border-left: 0;
 `;
 
-const JuiGlobalSearchInput = memo(() => {
+const ClearButton = styled.span`
+  padding: ${spacing(0, 3)};
+  color: ${grey('600')};
+  border-right: 1px solid ${grey('400')};
+`;
+
+type JuiGlobalSearchInputProps = {
+  showClear: boolean;
+  onClear: () => void;
+  onClose: () => void;
+} & JuiOutlineTextFieldProps;
+
+const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
+  const { showClear, onClear, onClose, ...rest } = props;
   return (
     <StyledJuiOutlineTextField
       radiusType="rectangle"
       iconName={['search', 'close']}
+      onClickIconRight={onClose}
       iconPosition="both"
+      inputAfter={
+        showClear && <ClearButton onClick={onClear}>Clear</ClearButton>}
+      {...rest}
     />
   );
 });

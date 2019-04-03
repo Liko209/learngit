@@ -220,6 +220,7 @@ type Theme = {
   };
   opacity: {
     p05: number;
+    p20: number;
     p10: number;
     p50: number;
     p60: number;

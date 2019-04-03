@@ -78,7 +78,7 @@ const Joined = styled.span`
 type JuiSearchItemProps = {
   Avatar: JSX.Element;
   value: string;
-  terms: string[];
+  terms?: string[];
   Actions?: ReactNode;
   isJoined?: boolean;
   isPrivate?: boolean;

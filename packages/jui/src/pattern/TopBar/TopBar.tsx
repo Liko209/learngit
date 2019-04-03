@@ -21,7 +21,10 @@ type Props = {
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward: ComponentType<any>;
   SearchBar: ComponentType<any>;
-  openGlobalSearch?: (event: React.MouseEvent<HTMLElement>) => void;
+  openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
+  searchKey: string;
+  searchPlaceholder: string;
+  onClear: () => void;
 };
 
 type States = {
@@ -51,6 +54,9 @@ class JuiTopBar extends React.PureComponent<Props, States> {
       NewActions,
       BackNForward,
       openGlobalSearch,
+      searchKey,
+      searchPlaceholder,
+      onClear,
       // SearchBar,
     } = this.props;
     return (
@@ -64,6 +70,9 @@ class JuiTopBar extends React.PureComponent<Props, States> {
             <BackNForward />
             <StyledJuiSearchBar
               onClick={openGlobalSearch}
+              value={searchKey}
+              onClear={onClear}
+              placeholder={searchPlaceholder}
               // isShowSearchBar={isShowSearchBar}
               // closeSearchBar={this.showSearchBar}
             />
