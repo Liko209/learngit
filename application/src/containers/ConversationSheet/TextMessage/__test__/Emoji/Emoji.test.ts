@@ -6,7 +6,9 @@
 
 import { Markdown } from 'glipdown';
 import { Emoji } from '../../Emoji';
-import { mapEmojiOne, mapAscii, mapUnicode } from '../../Emoji/map';
+import { mapEmojiOne, mapAscii, mapUnicode, mapEscape } from '../../Emoji/map';
+import { mapUnicodeToShort } from '../../Emoji/mapUnicodeToShort';
+import { regExpEscape } from '../../Emoji/convertKeys';
 
 const staticHttpServer = 'https://www.emojione.com/';
 const customEmojiMap = {
@@ -30,7 +32,11 @@ describe('Format one kind emoji', () => {
   const _runAll = (mapOriginalData: object) => {
     Object.keys(mapOriginalData).forEach((originKey: string) => {
       const result = format(originKey);
-      const unicode = mapOriginalData[originKey];
+      let unicode = mapOriginalData[originKey]; // Temporary unicode
+      const shortName = mapUnicodeToShort[unicode];
+      if (shortName) {
+        unicode = mapEmojiOne[shortName].fname; // The actual unicode
+      }
       expect(result).toMatch(getRegExp(unicode));
     });
   };
@@ -155,5 +161,54 @@ describe('Emoji key colon regexp expression', () => {
     const regExp2 = `<img[^>]+?${unicode2}[^>]+?>$`;
     const regExp = new RegExp(regExp1 + regExp2);
     expect(result).toMatch(regExp);
+  });
+
+  describe('ASCII handle special punctuation', () => {
+    it('should be a img tag when The ASCII key is followed by an exclamation point', async () => {
+      const arr = ['<3', '!'];
+      const result = format(arr.join(''));
+      const regExp = new RegExp(
+        `^<img[^>]+?${mapAscii[arr[0]]}[^>]+?>${arr[1]}$`,
+      );
+      expect(result).toMatch(regExp);
+    });
+
+    it('should be a img tag when The ASCII key is followed by a comma', async () => {
+      const arr = ['<3', ','];
+      const result = format(arr.join(''));
+      const regExp = new RegExp(
+        `^<img[^>]+?${mapAscii[arr[0]]}[^>]+?>${arr[1]}$`,
+      );
+      expect(result).toMatch(regExp);
+    });
+
+    it('should be a img tag when The ASCII key is followed by a period', async () => {
+      const arr = ['<3', '.'];
+      const result = format(arr.join(''));
+      const regExp = new RegExp(
+        `^<img[^>]+?${mapAscii[arr[0]]}[^>]+?>${arr[1]}$`,
+      );
+      expect(result).toMatch(regExp);
+    });
+
+    it('should be a img tag when The ASCII key is followed by a question mark', async () => {
+      const arr = ['<3', '?'];
+      const result = format(arr.join(''));
+      const regExp = new RegExp(
+        `^<img[^>]+?${mapAscii[arr[0]]}[^>]+?>\\${arr[1]}$`,
+      );
+      expect(result).toMatch(regExp);
+    });
+
+    it('should be a string when The ASCII key other than [!,.?] The other punctuation marks', async () => {
+      const arr = ['<3', ';']; // You can replace [!,.?] other punctuation marks
+      const result = format(arr.join(''));
+      const resultEscape = result.replace(
+        regExpEscape,
+        (match: string) => mapEscape[match],
+      );
+      const regExp = new RegExp(`^${resultEscape}$`);
+      expect(resultEscape).toMatch(regExp);
+    });
   });
 });

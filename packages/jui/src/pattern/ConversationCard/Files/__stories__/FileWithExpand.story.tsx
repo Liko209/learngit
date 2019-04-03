@@ -3,7 +3,7 @@
  * @Date: 2018-10-28 12:07:26
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
@@ -18,6 +18,7 @@ storiesOf('Pattern/ConversationCard', module)
     return (
       <div>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
@@ -41,6 +42,7 @@ storiesOf('Pattern/ConversationCard', module)
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
@@ -64,6 +66,7 @@ storiesOf('Pattern/ConversationCard', module)
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
@@ -87,6 +90,7 @@ storiesOf('Pattern/ConversationCard', module)
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={
@@ -110,6 +114,7 @@ storiesOf('Pattern/ConversationCard', module)
           />
         </JuiFileWithExpand>
         <JuiFileWithExpand
+          icon="default_file"
           fileName={fileName}
           expand={expand}
           Actions={

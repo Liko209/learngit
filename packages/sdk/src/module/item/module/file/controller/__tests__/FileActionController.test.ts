@@ -7,11 +7,16 @@
 import { IEntitySourceController } from '../../../../../../framework/controller/interface/IEntitySourceController';
 import { Item } from '../../../../entity';
 import { FileItemUtils } from '../../utils';
-import { daoManager, AuthDao } from '../../../../../../dao';
-import { AUTH_GLIP_TOKEN } from '../../../../../../dao/auth/constants';
+import { daoManager } from '../../../../../../dao';
 import { Api } from '../../../../../../api';
 import { FileActionController } from '../FileActionController';
 import { BaseSubItemService } from '../../../base/service';
+import { GlobalConfigService } from '../../../../../config';
+import { AuthUserConfig } from '../../../../../../service/auth/config';
+
+jest.mock('../../../../../config');
+jest.mock('../../../../../../service/auth/config/AuthUserConfig');
+GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../../../dao');
 jest.mock(
@@ -30,7 +35,6 @@ describe('FileActionController', () => {
     get: jest.fn(),
   };
   const fileActionController = new FileActionController(entitySourceController);
-  const authDao = new AuthDao();
 
   function setUp() {
     Object.defineProperty(Api, 'httpConfig', {
@@ -41,8 +45,6 @@ describe('FileActionController', () => {
       },
       configurable: true,
     });
-    daoManager.getKVDao = jest.fn().mockReturnValue(authDao);
-    authDao.get = jest.fn().mockReturnValue('token');
   }
 
   beforeEach(() => {
@@ -170,22 +172,35 @@ describe('FileActionController', () => {
     it('should return empty when has no auth token', async () => {
       const { fileItemA } = setUpData();
       entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
-      authDao.get = jest.fn().mockReturnValue('');
+
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe('');
       expect(entitySourceController.get).toBeCalledWith(11);
-      expect(authDao.get).toBeCalledWith(AUTH_GLIP_TOKEN);
     });
 
     it('should return expected url', async () => {
       const { fileItemA } = setUpData();
       entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
+      AuthUserConfig.prototype.getGlipToken = jest
+        .fn()
+        .mockReturnValue('token');
       const res = await fileActionController.getThumbsUrlWithSize(11, 1, 2);
       expect(res).toBe(
         'cacheServer.com/modify-image?size=1x2&id=852746252&source_type=files&source_id=10&t=token',
       );
       expect(entitySourceController.get).toBeCalledWith(11);
-      expect(authDao.get).toBeCalledWith(AUTH_GLIP_TOKEN);
+    });
+    it('should return expected url', async () => {
+      const { fileItemA } = setUpData();
+      AuthUserConfig.prototype.getGlipToken = jest
+        .fn()
+        .mockReturnValue('token');
+      entitySourceController.get = jest.fn().mockResolvedValue(fileItemA);
+      const res = await fileActionController.getThumbsUrlWithSize(11);
+      expect(res).toBe(
+        'cacheServer.com/modify-image?id=852746252&source_type=files&source_id=10&t=token',
+      );
+      expect(entitySourceController.get).toBeCalledWith(11);
     });
   });
 });

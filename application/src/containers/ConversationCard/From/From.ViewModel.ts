@@ -17,12 +17,17 @@ class FromViewModel extends AbstractViewModel implements FromViewProps {
   id: number;
 
   @computed
+  private get _group() {
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+  }
+
+  @computed
   get displayName(): string {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id).displayName;
+    return this._group.displayName;
   }
   @computed
   get isTeam(): boolean {
-    return !!getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id).isTeam;
+    return !!this._group.isTeam;
   }
 
   onReceiveProps({ id }: FromProps) {

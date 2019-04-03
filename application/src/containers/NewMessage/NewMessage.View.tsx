@@ -3,11 +3,10 @@
  * @Date: 2018-11-22 09:55:58
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
-import { t } from 'i18next';
+import React, { createRef } from 'react';
+import i18next from 'i18next';
 import styled from 'jui/foundation/styled-components';
 import { spacing } from 'jui/foundation/utils';
-import { withRouter } from 'react-router-dom';
 import { observer } from 'mobx-react';
 import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
@@ -16,7 +15,7 @@ import { JuiSnackbarContent } from 'jui/components/Snackbars';
 import { ContactSearch } from '@/containers/ContactSearch';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
-import portalManager from '@/common/PortalManager';
+import { DialogContext } from '@/containers/Dialog';
 import { ViewProps } from './types';
 import {
   ToastType,
@@ -40,12 +39,31 @@ const StyledTextWithLink = styled.div`
 `;
 
 @observer
-class NewMessage extends React.Component<ViewProps, State> {
+class NewMessageView extends React.Component<ViewProps, State> {
+  static contextType = DialogContext;
+  messageRef = createRef<HTMLInputElement>();
+  focusTimer: NodeJS.Timeout;
+
   constructor(props: ViewProps) {
     super(props);
     this.state = {
       message: '',
     };
+  }
+
+  componentDidMount() {
+    // because of modal is dynamic append body
+    // so must be delay focus
+    this.focusTimer = setTimeout(() => {
+      const node = this.messageRef.current;
+      if (node) {
+        node.focus();
+      }
+    },                           300);
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.focusTimer);
   }
 
   sendNewMessage = async () => {
@@ -55,7 +73,7 @@ class NewMessage extends React.Component<ViewProps, State> {
     this.onClose();
   }
 
-  onClose = () => portalManager.dismiss();
+  onClose = () => this.context();
 
   openCreateTeam = () => {
     this.onClose();
@@ -67,7 +85,7 @@ class NewMessage extends React.Component<ViewProps, State> {
   }
 
   renderFailError() {
-    const message = 'SorryWeWereNotAbleToSendTheMessage';
+    const message = 'message.prompt.SorryWeWereNotAbleToSendTheMessage';
     Notification.flashToast({
       message,
       type: ToastType.ERROR,
@@ -92,34 +110,35 @@ class NewMessage extends React.Component<ViewProps, State> {
     }
     return (
       <JuiModal
+        modalProps={{ scroll: 'body' }}
         open={true}
         size={'medium'}
-        modalProps={{ scroll: 'body' }}
         okBtnProps={{ disabled: disabledOkBtn }}
-        title={t('New Message')}
+        title={i18next.t('message.prompt.NewMessage')}
         onCancel={this.onClose}
         onOK={this.sendNewMessage}
-        okText={t('Send')}
+        okText={i18next.t('common.dialog.send')}
         contentBefore={
           serverError && (
             <StyledSnackbarsContent type="error">
-              {t('New Message Error')}
+              {i18next.t('message.prompt.NewMessageError')}
             </StyledSnackbarsContent>
           )
         }
-        cancelText={t('Cancel')}
+        cancelText={i18next.t('common.dialog.cancel')}
       >
         <ContactSearch
           onSelectChange={handleSearchContactChange}
-          label={t('Members')}
-          placeholder={t('Search Contact Placeholder')}
+          label={i18next.t('people.team.Members')}
+          placeholder={i18next.t('people.team.SearchContactPlaceholder')}
           error={emailError}
-          helperText={emailError && t(emailErrorMsg)}
+          helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
+          messageRef={this.messageRef}
         />
         <JuiTextarea
-          id={t('Type new message')}
-          label={t('Type new message')}
+          id={i18next.t('message.action.typeNewMessage')}
+          label={i18next.t('message.action.typeNewMessage')}
           fullWidth={true}
           inputProps={{
             maxLength: 10000,
@@ -129,8 +148,8 @@ class NewMessage extends React.Component<ViewProps, State> {
         />
         <StyledTextWithLink>
           <JuiTextWithLink
-            text={t('newMessageTip')}
-            linkText={t('newMessageTipLink')}
+            text={i18next.t('message.prompt.newMessageTip')}
+            linkText={i18next.t('message.prompt.newMessageTipLink')}
             onClick={this.openCreateTeam}
           />
         </StyledTextWithLink>
@@ -139,7 +158,6 @@ class NewMessage extends React.Component<ViewProps, State> {
   }
 }
 
-const NewMessageView = withRouter(NewMessage);
-const NewMessageComponent = NewMessage;
+const NewMessageComponent = NewMessageView;
 
 export { NewMessageView, NewMessageComponent };

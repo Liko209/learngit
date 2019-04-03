@@ -7,19 +7,31 @@
 import { PostController } from '../controller/PostController';
 import { Post, IPostQuery, IPostResult } from '../entity';
 import { EntityBaseService } from '../../../framework/service/EntityBaseService';
-import { daoManager, PostDao, QUERY_DIRECTION } from '../../../dao';
+import { daoManager, QUERY_DIRECTION } from '../../../dao';
+import { PostDao } from '../../../module/post/dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
 import { DEFAULT_PAGE_SIZE } from '../constant';
-
-class NewPostService extends EntityBaseService<Post> {
-  static serviceName = 'NewPostService';
+import { ProfileService } from '../../profile';
+import { Item } from '../../../module/item/entity';
+import { SubscribeController } from '../../base/controller/SubscribeController';
+import { SOCKET } from '../../../service/eventKey';
+import { IRemotePostRequest } from '../entity/Post';
+import { Raw } from '../../../framework/model';
+import { ContentSearchParams } from '../../../api/glip/search';
+class PostService extends EntityBaseService<Post> {
+  static serviceName = 'PostService';
   postController: PostController;
   constructor() {
     super(false, daoManager.getDao(PostDao), {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
     });
+    this.setSubscriptionController(
+      SubscribeController.buildSubscriptionController({
+        [SOCKET.POST]: this.handleSexioData,
+      }),
+    );
   }
 
   protected getPostController() {
@@ -73,6 +85,86 @@ class NewPostService extends EntityBaseService<Post> {
       .getPostFetchController()
       .getPostsByGroupId({ groupId, postId, limit, direction });
   }
+
+  async getPostsByIds(
+    ids: number[],
+  ): Promise<{ posts: Post[]; items: Item[] }> {
+    return this.getPostController()
+      .getDiscontinuousPostFetchController()
+      .getPostsByIds(ids);
+  }
+
+  async bookmarkPost(postId: number, toBook: boolean) {
+    // favorite_post_ids in profile
+    const profileService: ProfileService = ProfileService.getInstance();
+    return await profileService.putFavoritePost(postId, toBook);
+  }
+
+  async getRemotePostsByGroupId(
+    params: IRemotePostRequest,
+  ): Promise<IPostResult | null> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getRemotePostsByGroupId(params);
+  }
+
+  async getPostCountByGroupId(groupId: number): Promise<number> {
+    return this.getPostController()
+      .getPostFetchController()
+      .getPostCountByGroupId(groupId);
+  }
+
+  async getPostFromLocal(postId: number): Promise<Post | null> {
+    return this.getEntitySource().getEntityLocally(postId);
+  }
+
+  async removeItemFromPost(postId: number, itemId: number) {
+    this.getPostController()
+      .getPostActionController()
+      .removeItemFromPost(postId, itemId);
+  }
+
+  async deletePostsByGroupIds(groupIds: number[], shouldNotify: boolean) {
+    this.getPostController()
+      .getPostActionController()
+      .deletePostsByGroupIds(groupIds, shouldNotify);
+  }
+
+  handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
+    this.getPostController()
+      .getPostDataController()
+      .handleIndexPosts(data, maxPostsExceed);
+  }
+
+  handleSexioData = async (data: Raw<Post>[]) => {
+    this.getPostController()
+      .getPostDataController()
+      .handleSexioPosts(data);
+  }
+
+  async searchPosts(params: ContentSearchParams) {
+    return await this.getPostController()
+      .getPostSearchController()
+      .searchPosts(params);
+  }
+
+  async scrollSearchPosts(requestId: number) {
+    return await this.getPostController()
+      .getPostSearchController()
+      .scrollSearchPosts(requestId);
+  }
+
+  async endPostSearch(requestId: number) {
+    return await this.getPostController()
+      .getPostSearchController()
+      .endPostSearch(requestId);
+  }
+
+  async getSearchContentsCount(params: ContentSearchParams) {
+    return await this.getPostController()
+      .getPostSearchController()
+      .getContentsCount(params);
+  }
 }
 
-export { NewPostService };
+export { PostService };

@@ -8,16 +8,14 @@ import {
   SortableContainer,
   SortableElement,
   arrayMove,
+  WrappedComponent,
 } from 'react-sortable-hoc';
-
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 import { select, number, boolean, text } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
-
-import { JuiIconography } from '../../../foundation/Iconography';
 import { JuiUmi } from '../../../components/Umi';
-import { JuiPresence } from '../../../components/Presence';
+import { JuiPresence, PRESENCE } from '../../../components/Presence';
 
 import {
   JuiConversationList as List,
@@ -57,37 +55,37 @@ storiesOf('Pattern/ConversationList', module)
           <List onChange={action('onChange')}>
             <ListItem
               title="Matthew"
-              presence={<JuiPresence presence="online" />}
+              presence={<JuiPresence presence={PRESENCE.AVAILABLE} />}
               umi={<JuiUmi unreadCount={10} />}
               indicator={<span />}
             />
             <ListItem
               title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
-              presence={<JuiPresence />}
+              presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
               umi={<JuiUmi unreadCount={12} variant="auto" important={true} />}
               indicator={<span />}
             />
             <ListItem
               title="Maria"
-              presence={<JuiPresence />}
+              presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
               umi={<JuiUmi unreadCount={9} />}
               indicator={<span />}
             />
             <ListItem
               title="Jupiter Team"
-              presence={<JuiPresence />}
+              presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
               umi={<JuiUmi unreadCount={0} />}
               indicator={<span />}
             />
             <ListItem
               title="Michael"
-              presence={<JuiPresence presence="away" />}
+              presence={<JuiPresence presence={PRESENCE.DND} />}
               umi={<JuiUmi unreadCount={0} />}
               indicator={<span />}
             />
             <ListItem
               title="Steve"
-              presence={<JuiPresence presence="offline" />}
+              presence={<JuiPresence presence={PRESENCE.NOTREADY} />}
               indicator={<span />}
             />
           </List>
@@ -103,37 +101,37 @@ storiesOf('Pattern/ConversationList', module)
         <List onChange={action('onChange')}>
           <ListItem
             title="Matthew"
-            presence={<JuiPresence presence="online" />}
+            presence={<JuiPresence presence={PRESENCE.AVAILABLE} />}
             umi={<JuiUmi unreadCount={10} />}
             indicator={<span />}
           />
           <ListItem
             title="Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello"
-            presence={<JuiPresence />}
+            presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
             umi={<JuiUmi unreadCount={12} variant="auto" important={true} />}
             indicator={<span />}
           />
           <ListItem
             title="Maria"
-            presence={<JuiPresence />}
+            presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
             umi={<JuiUmi unreadCount={9} />}
             indicator={<span />}
           />
           <ListItem
             title="Jupiter Team"
-            presence={<JuiPresence />}
+            presence={<JuiPresence presence={PRESENCE.UNAVAILABLE} />}
             umi={<JuiUmi unreadCount={0} />}
             indicator={<span />}
           />
           <ListItem
             title="Michael"
-            presence={<JuiPresence presence="away" />}
+            presence={<JuiPresence presence={PRESENCE.NOTREADY} />}
             umi={<JuiUmi unreadCount={0} />}
             indicator={<span />}
           />
           <ListItem
             title="Steve"
-            presence={<JuiPresence presence="offline" />}
+            presence={<JuiPresence presence={PRESENCE.ONCALL} />}
             indicator={<span />}
           />
         </List>
@@ -152,13 +150,13 @@ storiesOf('Pattern/ConversationList', module)
 
       // Make List and ListItem sortable
       const SortableList = SortableContainer(List);
-      const SortableItem = SortableElement(ListItem);
+      const SortableItem = SortableElement(ListItem as WrappedComponent<{}>);
 
       type SortableDemoStates = {
         items: any[];
       };
 
-      class SortableDemo extends React.Component<{}, SortableDemoStates> {
+      class SortableDemo extends React.PureComponent<{}, SortableDemoStates> {
         constructor(props: {}) {
           super(props);
 
@@ -166,31 +164,31 @@ storiesOf('Pattern/ConversationList', module)
             items: [
               {
                 title: 'Matthew',
-                presence: <JuiPresence presence="online" />,
+                presence: <JuiPresence presence={PRESENCE.AVAILABLE} />,
                 umi: <JuiUmi unreadCount={10} />,
               },
               {
                 title: 'Eric, Odeson, Helena, Lip, Valor, Steve, Lyman, Nello',
-                presence: <JuiPresence />,
+                presence: <JuiPresence presence={PRESENCE.UNAVAILABLE} />,
                 umi: <JuiUmi unreadCount={12} variant="auto" important={true} />,
               },
               {
                 title: 'Maria',
-                presence: <JuiPresence />,
+                presence: <JuiPresence presence={PRESENCE.UNAVAILABLE} />,
                 umi: <JuiUmi unreadCount={9} />,
               },
               {
                 title: 'Jupiter Team',
-                presence: <JuiPresence />,
+                presence: <JuiPresence presence={PRESENCE.UNAVAILABLE} />,
                 umi: <JuiUmi unreadCount={0} />,
               },
               {
                 title: 'Michael',
-                presence: <JuiPresence presence="away" />,
+                presence: <JuiPresence presence={PRESENCE.ONCALL} />,
               },
               {
                 title: 'Steve',
-                presence: <JuiPresence presence="offline" />,
+                presence: <JuiPresence presence={PRESENCE.INMEETING} />,
                 umi: <JuiUmi unreadCount={0} />,
               },
             ],
@@ -245,15 +243,6 @@ storiesOf('Pattern/ConversationList', module)
   .add(
     'ListItem',
     withInfo({ inline: true })(() => {
-      const presence = select(
-        'presence',
-        {
-          online: 'online',
-          offline: 'offline',
-          away: 'away',
-        },
-        'online',
-      );
       const important = boolean('Important', false);
       const unreadCount = number('Unread count', 120);
       const isTeam = boolean('is Team', true);
@@ -269,7 +258,7 @@ storiesOf('Pattern/ConversationList', module)
         <StoryWrapper>
           <ListItem
             title={title}
-            presence={<JuiPresence presence={presence} />}
+            presence={<JuiPresence presence={PRESENCE.ONCALL} />}
             umi={
               <JuiUmi
                 unreadCount={unreadCount}

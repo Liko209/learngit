@@ -3,7 +3,7 @@
  * @Date: 2018-10-24 15:44:40
  * Copyright © RingCentral. All rights reserved.
  */
-import { computed, observable } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { Item } from 'sdk/module/item/entity';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress';
@@ -12,30 +12,33 @@ import { Post } from 'sdk/module/post/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { Notification } from '@/containers/Notification';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
-import {
-  PostService,
-  notificationCenter,
-  ENTITY,
-  EVENT_TYPES,
-} from 'sdk/service';
+import { notificationCenter, ENTITY, EVENT_TYPES } from 'sdk/service';
 import { ItemService } from 'sdk/module/item';
+import { PostService } from 'sdk/module/post';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import FileItemModel from '@/store/models/FileItem';
-import { FilesViewProps, FileType } from './types';
+import { FilesViewProps, FileType, ExtendFileItem } from './types';
 import { getFileType } from '@/common/getFileType';
 import PostModel from '@/store/models/Post';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { RULE } from '@/common/generateModifiedImageURL';
+import { UploadFileTracker } from './UploadFileTracker';
+import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 
 class FilesViewModel extends StoreViewModel<FilesViewProps> {
   private _itemService: ItemService;
   private _postService: PostService;
+  private _deleteIds: Set<number> = new Set();
   @observable
   private _progressMap: Map<number, Progress> = new Map<number, Progress>();
+  @observable
+  urlMap: Map<number, string> = new Map();
 
   constructor(props: FilesViewProps) {
     super(props);
@@ -44,7 +47,51 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
     const { ids } = props;
     if (ids.some(looper => looper < 0)) {
       notificationCenter.on(ENTITY.PROGRESS, this._handleItemChanged);
+      UploadFileTracker.init();
     }
+    this.autorun(this.getCropImage);
+  }
+
+  isRecentlyUploaded = (id: number) => {
+    return UploadFileTracker.tracker().getMapID(id) !== id;
+  }
+
+  getCropImage = async () => {
+    const images = this.files[FileType.image];
+    const rule = images.length > 1 ? RULE.SQUARE_IMAGE : RULE.RECTANGLE_IMAGE;
+    await Promise.all(
+      images.map((file: ExtendFileItem) => this._fetchUrl(file, rule)),
+    );
+  }
+
+  getShowDialogPermission = async () => {
+    const permissionService: PermissionService = PermissionService.getInstance();
+    return await permissionService.hasPermission(
+      UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
+    );
+  }
+
+  @action
+  private _fetchUrl = async (
+    { item }: ExtendFileItem,
+    rule: RULE,
+  ): Promise<string> => {
+    const thumbnail = await getThumbnailURLWithType(
+      {
+        id: item.id,
+        type: item.type,
+        versionUrl:
+          item.versions.length && item.versions[0].url
+            ? item.versions[0].url
+            : '',
+        versions: item.versions,
+      },
+      rule,
+    );
+    if (thumbnail.url) {
+      this.urlMap.set(item.id, thumbnail.url);
+    }
+    return thumbnail.url;
   }
 
   private _handleItemChanged = (
@@ -62,7 +109,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   dispose = () => {
-    notificationCenter.off(ENTITY.ITEM, this._handleItemChanged);
+    notificationCenter.off(ENTITY.PROGRESS, this._handleItemChanged);
   }
 
   @computed
@@ -78,9 +125,14 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       [FileType.others]: [],
     };
     this.items.forEach((item: FileItemModel) => {
-      if (item.deactivated) return;
-
+      if (!item) {
+        return;
+      }
+      if (item.deactivated || item.isMocked) {
+        return;
+      }
       const file = getFileType(item);
+      file.item = item;
       files[file.type].push(file);
     });
     return files;
@@ -88,9 +140,14 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
 
   @computed
   get items() {
-    return this._ids.map((id: number) => {
-      return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
+    const result: FileItemModel[] = [];
+    this._ids.forEach((id: number) => {
+      if (!this._deleteIds.has(id)) {
+        const item = getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, id);
+        result.push(item);
+      }
     });
+    return result;
   }
 
   @computed
@@ -116,28 +173,28 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
   }
 
   @computed
-  get _postId() {
-    return this.props.postId;
-  }
-
-  @computed
   get post() {
-    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this._postId);
+    return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.props.postId);
   }
 
   private _getPostStatus() {
     const progress = getEntity<Progress, ProgressModel>(
       ENTITY_NAME.PROGRESS,
-      this._postId,
+      this.props.postId,
     );
     return progress.progressStatus;
+  }
+
+  @computed
+  get groupId() {
+    return this.post && this.post.groupId;
   }
 
   removeFile = async (id: number) => {
     const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
     if (status === 'offline') {
       Notification.flashToast({
-        message: t('notAbleToCancelUpload'),
+        message: i18next.t('item.prompt.notAbleToCancelUpload'),
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,
@@ -150,11 +207,12 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
         if (postLoading) {
           await this._itemService.cancelUpload(id);
         } else {
-          await this._postService.removeItemFromPost(this._postId, id);
+          await this._postService.removeItemFromPost(this.props.postId, id);
         }
+        this._deleteIds.add(id);
       } catch (e) {
         Notification.flashToast({
-          message: t('notAbleToCancelUploadTryAgain'),
+          message: i18next.t('item.prompt.notAbleToCancelUploadTryAgain'),
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,

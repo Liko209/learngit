@@ -3,11 +3,11 @@
  * @Date: 2018-10-28 12:07:26
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
-import { JuiPreviewImage } from '../';
+import { JuiPreviewImage, JuiDelayPlaceholder } from '../';
 import { JuiIconButton } from '../../../../components/Buttons/IconButton/IconButton';
 
 storiesOf('Pattern/ConversationCard', module)
@@ -60,6 +60,7 @@ storiesOf('Pattern/ConversationCard', module)
             </JuiIconButton>
           }
         />
+        <JuiDelayPlaceholder width={400} height={400} />
       </div>
     );
   });

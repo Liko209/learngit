@@ -59,7 +59,7 @@ const knobs = {
   },
 };
 
-class Popover extends React.Component {
+class Popover extends React.PureComponent {
   state = {
     anchorEl: null,
   };

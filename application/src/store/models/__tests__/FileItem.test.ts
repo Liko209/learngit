@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import FileItemModel, { FILE_ICON_MAP } from '../FileItem';
+import FileItemModel from '../FileItem';
 
 describe('FileItemModel', () => {
   describe('new FileItem', () => {
@@ -203,22 +203,6 @@ describe('FileItemModel', () => {
     it('should return null if versions not exist', () => {
       const fileItemModel = FileItemModel.fromJS({} as any);
       expect(fileItemModel.origWidth).toBeNull();
-    });
-  });
-
-  describe('get iconType', () => {
-    it('should return related iconType according to FILE_ICON_MAP', () => {
-      const fileItemModel = FileItemModel.fromJS({
-        type: 'doc',
-      } as any);
-      expect(fileItemModel.iconType).toBe('doc');
-    });
-
-    it('should return default file icon according to FILE_ICON_MAP', () => {
-      const fileItemModel = FileItemModel.fromJS({
-        type: 'xls',
-      } as any);
-      expect(fileItemModel.iconType).toBe(FILE_ICON_MAP.file);
     });
   });
 });

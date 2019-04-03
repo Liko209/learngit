@@ -1,8 +1,8 @@
-// /*
-//  * @Author: Thomas thomas.yang@ringcentral.com
-//  * @Date: 2018-11-20 14:37:25
-//  * Copyright © RingCentral. All rights reserved.
-//  */
+/*
+ * @Author: Thomas thomas.yang@ringcentral.com
+ * @Date: 2018-11-20 14:37:25
+ * Copyright © RingCentral. All rights reserved.
+ */
 
 import {
   FetchSortableDataListHandler,
@@ -11,7 +11,7 @@ import {
 } from '@/store/base/fetch';
 
 import { PersonService } from 'sdk/module/person';
-import GroupService from 'sdk/service/group';
+import GroupService from 'sdk/module/group';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
@@ -20,6 +20,7 @@ import { ENTITY_NAME } from '@/store/constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import _ from 'lodash';
 class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
   private _groupId: number;
 
@@ -52,7 +53,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       groupId,
     );
     if (group) {
-      return new SortableGroupMemberHandler(group);
+      return new SortableGroupMemberHandler(_.cloneDeep(group));
     }
     return null;
   }
@@ -162,7 +163,7 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       }
 
       // get again
-      this._group = newGroup;
+      this._group = _.cloneDeep(newGroup);
 
       if (needReplaceData) {
         this._replaceData();
@@ -173,7 +174,12 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private async _replaceData() {
     const personService = PersonService.getInstance<PersonService>();
     const groupService = GroupService.getInstance<GroupService>();
-    const group = await groupService.getById(this._group.id);
+    let group;
+    try {
+      group = await groupService.getById(this._group.id);
+    } catch (error) {
+      group = null;
+    }
     const result = await personService.getPersonsByIds(
       group && group.members ? group.members : [],
     );

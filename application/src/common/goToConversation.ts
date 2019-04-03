@@ -4,19 +4,28 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import history from '@/history';
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+
+type BaseGoToConversationParams = {
+  conversationId: number;
+  jumpToPostId?: number;
+  replaceHistory?: boolean;
+};
 
 type GoToConversationParams = {
   id: number | number[];
+  jumpToPostId?: number;
   message?: string;
   beforeJump?: (id: number) => {};
   hasBeforeJumpFun?: boolean;
 };
 
+const goToConversationCallBackName = Symbol('goToConversationCallBackName');
+const DELAY_LOADING = 500;
+
 const getConversationId = async (id: number | number[]) => {
-  const { GroupService } = service;
-  const groupService: service.GroupService = GroupService.getInstance();
+  const groupService: GroupService = GroupService.getInstance();
   const type = Array.isArray(id)
     ? TypeDictionary.TYPE_ID_PERSON
     : GlipTypeUtil.extractTypeId(id);
@@ -27,20 +36,24 @@ const getConversationId = async (id: number | number[]) => {
     return id as number;
   }
   if (type === TypeDictionary.TYPE_ID_PERSON) {
-    const result = await groupService.getOrCreateGroupByMemberList(
-      Array.isArray(id) ? id : [id],
-    );
-    if (result.isOk()) {
-      return result.data.id;
+    try {
+      const result = await groupService.getOrCreateGroupByMemberList(
+        Array.isArray(id) ? id : [id],
+      );
+      return result.id;
+    } catch (error) {
+      return null;
     }
   }
   return null;
 };
 
-const goToConversationCallBackName = Symbol('goToConversationCallBackName');
-async function goToConversation(params: GoToConversationParams) {
-  const { id, beforeJump, hasBeforeJumpFun } = params;
-  history.push('/messages/loading');
+async function goToConversationWithLoading(params: GoToConversationParams) {
+  const { id, jumpToPostId, beforeJump, hasBeforeJumpFun } = params;
+  const timer = setTimeout(() => {
+    history.push('/messages/loading');
+  },                       DELAY_LOADING);
+
   let beforeJumpFun;
   if (beforeJump) {
     beforeJumpFun = beforeJump;
@@ -53,8 +66,13 @@ async function goToConversation(params: GoToConversationParams) {
     if (!conversationId) {
       throw new Error('Conversation not found.');
     }
+    clearTimeout(timer);
     (beforeJump || hasBeforeJumpFun) && (await beforeJumpFun(conversationId));
-    history.replace(`/messages/${conversationId}`);
+    await goToConversation({
+      conversationId,
+      jumpToPostId,
+      replaceHistory: true,
+    });
     return true;
   } catch (err) {
     if (beforeJump) {
@@ -70,4 +88,27 @@ async function goToConversation(params: GoToConversationParams) {
   }
 }
 
-export { goToConversation, getConversationId, GoToConversationParams };
+function goToConversation({
+  conversationId,
+  jumpToPostId,
+  replaceHistory,
+}: BaseGoToConversationParams) {
+  const args: [string, any?] = [`/messages/${conversationId}`];
+  if (jumpToPostId) {
+    args.push({ jumpToPostId });
+  }
+
+  if (replaceHistory) {
+    history.replace(...args);
+  } else {
+    history.push(...args);
+  }
+}
+
+export {
+  goToConversationWithLoading,
+  goToConversation,
+  getConversationId,
+  GoToConversationParams,
+  DELAY_LOADING,
+};

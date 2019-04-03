@@ -8,15 +8,21 @@ type TeamSettingTypes = {
   name: string;
   description: string;
   allowMemberAddMember: boolean;
+  allowMemberPost: boolean;
+  allowMemberPin: boolean;
 };
 type ViewProps = {
   initialData: TeamSettingTypes;
   id: number;
   isAdmin: boolean;
+  isCompanyTeam: boolean;
   groupName: string;
   save: (params: TeamSettingTypes) => boolean;
   nameErrorMsg?: string;
   leaveTeam: () => void;
+  deleteTeam: () => boolean;
+  archiveTeam: () => boolean;
+  saving: boolean;
 };
 
 export { ViewProps, TeamSettingTypes };

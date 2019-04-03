@@ -5,33 +5,27 @@
  */
 
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { IPreInsertController } from '../../../module/common/controller/interface/IPreInsertController';
 import { Post, IPostQuery, IPostResult, IRawPostResult } from '../entity';
 import { QUERY_DIRECTION } from '../../../dao/constants';
-import { daoManager, GroupConfigDao, PostDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PostDao } from '../../../module/post/dao';
 import { mainLogger } from 'foundation';
 import { ItemService } from '../../item';
-import { Item } from '../../item/entity';
 import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
+import { GroupService } from '../../../module/group';
+import { IRemotePostRequest } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 const TAG = 'PostFetchController';
 
 class PostFetchController {
-  private _postDataController: PostDataController;
-
   constructor(
-    public preInsertController: IPreInsertController,
+    public postDataController: PostDataController,
     public entitySourceController: IEntitySourceController<Post>,
-  ) {
-    this._postDataController = new PostDataController(
-      preInsertController,
-      entitySourceController,
-    );
-  }
+  ) {}
 
   /** 1, Check does postId is 0 or post id is in db
    *  1) PostId is 0, means open conversation from group | contact | profile,
@@ -55,8 +49,10 @@ class PostFetchController {
       hasMore: true,
     };
 
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
+      logId,
     );
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
@@ -74,46 +70,40 @@ class PostFetchController {
     }
 
     if (result.posts.length < limit) {
-      const shouldFetch = await this._shouldFetchFromServer(direction, groupId);
+      const groupService: GroupService = GroupService.getInstance();
+      const shouldFetch = await groupService.hasMorePostInRemote(
+        groupId,
+        direction,
+      );
       if (!shouldSaveToDb || shouldFetch) {
-        mainLogger.debug(
-          TAG,
-          'getPostsByGroupId() db is not exceed limit, request from server',
-        );
         const validAnchorPostId = this._findValidAnchorPostId(
           direction,
           result.posts,
         );
-        const serverResult = await this.fetchPaginationPosts({
+        const serverResult = await this.getRemotePostsByGroupId({
           groupId,
-          direction,
           limit,
+          shouldSaveToDb,
           postId: validAnchorPostId ? validAnchorPostId : postId,
+          direction:
+            shouldSaveToDb && direction === QUERY_DIRECTION.BOTH
+              ? QUERY_DIRECTION.OLDER
+              : direction,
         });
         if (serverResult) {
-          const updateResult = (posts: Post[], items: Item[]) => {
-            result.posts.push(...posts);
-            result.items.push(...items);
-            result.hasMore = serverResult.hasMore;
-            if (shouldSaveToDb) {
-              this._updateHasMore(groupId, direction, serverResult.hasMore);
-            }
-          };
-
-          await this._postDataController.handleFetchedPosts(
-            serverResult,
-            shouldSaveToDb,
-            updateResult,
+          result.posts = this._handleDuplicatePosts(
+            result.posts,
+            serverResult.posts,
           );
+          result.items.push(...serverResult.items);
+          result.hasMore = serverResult.hasMore;
         }
       } else {
         result.hasMore = shouldFetch;
       }
     }
     result.limit = limit;
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_POSTS,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 
@@ -123,6 +113,11 @@ class PostFetchController {
     limit,
     direction,
   }: IPostQuery): Promise<IRawPostResult | null> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_SERVER,
+      logId,
+    );
     const result: IRawPostResult = {
       posts: [],
       items: [],
@@ -137,22 +132,70 @@ class PostFetchController {
     if (postId) {
       params.post_id = postId;
     }
-    const requestResult = await PostAPI.requestPosts(params);
-    if (requestResult.isOk()) {
-      const data = requestResult.data;
-      if (data) {
-        result.posts = data.posts;
-        result.items = data.items;
-        result.hasMore = result.posts.length === limit;
-      }
-      return result;
+    const data = await PostAPI.requestPosts(params);
+
+    if (data) {
+      result.posts = data.posts;
+      result.items = data.items;
+      result.hasMore = result.posts.length === limit;
     }
-    return null;
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    return result;
+  }
+
+  async getRemotePostsByGroupId({
+    direction,
+    groupId,
+    limit,
+    postId,
+    shouldSaveToDb,
+  }: IRemotePostRequest) {
+    mainLogger.debug(
+      TAG,
+      'getPostsByGroupId() db is not exceed limit, request from server',
+    );
+    const serverResult = await this.fetchPaginationPosts({
+      groupId,
+      direction,
+      limit,
+      postId,
+    });
+
+    if (serverResult) {
+      const handledResult = await this.postDataController.handleFetchedPosts(
+        serverResult,
+        shouldSaveToDb,
+      );
+      if (shouldSaveToDb) {
+        const groupService: GroupService = GroupService.getInstance();
+        groupService.updateHasMore(groupId, direction, handledResult.hasMore);
+      }
+      return handledResult;
+    }
+    return serverResult;
   }
 
   private async _isPostInDb(postId: number): Promise<boolean> {
     const post = await this.entitySourceController.getEntityLocally(postId);
     return post ? true : false;
+  }
+
+  private _handleDuplicatePosts(localPosts: Post[], remotePosts: Post[]) {
+    if (localPosts && localPosts.length > 0) {
+      if (remotePosts && remotePosts.length > 0) {
+        remotePosts.forEach((remotePost: Post) => {
+          const index = localPosts.findIndex(
+            (localPost: Post) => localPost.version === remotePost.version,
+          );
+          if (index !== -1) {
+            localPosts.splice(index, 1);
+          }
+        });
+        return localPosts.concat(remotePosts);
+      }
+      return localPosts;
+    }
+    return remotePosts;
   }
 
   private async _getPostsFromDb({
@@ -161,6 +204,20 @@ class PostFetchController {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
+      logId,
+    );
+    const result: IPostResult = {
+      limit,
+      posts: [],
+      items: [],
+      hasMore: true,
+    };
+    if (!postId && direction === QUERY_DIRECTION.NEWER) {
+      return result;
+    }
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
@@ -170,50 +227,28 @@ class PostFetchController {
     );
 
     const itemService: ItemService = ItemService.getInstance();
-    const result: IPostResult = {
-      limit,
-      posts,
-      hasMore: true,
-      items: posts.length === 0 ? [] : await itemService.getByPosts(posts),
-    };
+    result.limit = limit;
+    result.posts = posts;
+    result.items =
+      posts.length === 0 ? [] : await itemService.getByPosts(posts);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
-  }
-
-  /**
-   * If direction === QUERY_DIRECTION.OLDER, should check has more.
-   * If direction === QUERY_DIRECTION.NEWER, return true
-   */
-  private async _shouldFetchFromServer(
-    direction: QUERY_DIRECTION,
-    groupId: number,
-  ) {
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    return direction === QUERY_DIRECTION.OLDER
-      ? await groupConfigDao.hasMoreRemotePost(groupId, direction)
-      : true;
   }
 
   private _findValidAnchorPostId(direction: QUERY_DIRECTION, posts: Post[]) {
     if (posts && posts.length) {
       const validAnchorPost =
         direction === QUERY_DIRECTION.OLDER
-          ? _.findLast(posts, (p: Post) => p.id > 0)
-          : _.find(posts, (p: Post) => p.id > 0);
+          ? _.find(posts, (p: Post) => p.id > 0)
+          : _.findLast(posts, (p: Post) => p.id > 0);
       return validAnchorPost ? validAnchorPost.id : 0;
     }
     return 0;
   }
 
-  private _updateHasMore(
-    groupId: number,
-    direction: QUERY_DIRECTION,
-    hasMore: boolean,
-  ) {
-    const groupConfigDao = daoManager.getDao(GroupConfigDao);
-    groupConfigDao.update({
-      id: groupId,
-      [`has_more_${direction}`]: hasMore,
-    });
+  async getPostCountByGroupId(groupId: number): Promise<number> {
+    const dao = daoManager.getDao(PostDao);
+    return dao.groupPostCount(groupId);
   }
 }
 

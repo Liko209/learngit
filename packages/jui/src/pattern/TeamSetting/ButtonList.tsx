@@ -28,8 +28,7 @@ const JuiTeamSettingButtonListItem = styled(
   ),
 )`
   && {
-    padding-top: ${spacing(0)};
-    padding-bottom: ${spacing(0)};
+    padding: ${spacing(0, 6)};
     display: ${({ hide }) => (hide ? 'none' : 'block')};
   }
 `;
@@ -39,11 +38,14 @@ type JuiTeamSettingButtonListItemTextProps = ListItemTextProps & {
 };
 
 const JuiTeamSettingButtonListItemText = styled(
-  ({ color, ...rest }: JuiTeamSettingButtonListItemTextProps) => (
+  React.memo(({ color, ...rest }: JuiTeamSettingButtonListItemTextProps) => (
     <MuiListItemText {...rest} />
-  ),
+  )),
 )`
   && {
+    vertical-align: middle;
+    display: inline-block;
+    padding-right: ${spacing(3)};
     span {
       ${typography('body1')};
       line-height: ${height(10)};
@@ -58,6 +60,10 @@ const JuiTeamSettingButtonListItemText = styled(
   }
 `;
 
+const JuiHighlightedTeamName = styled.span`
+  color: ${palette('primary', 'main')};
+`;
+
 export {
   JuiTeamSettingButtonList,
   JuiTeamSettingButtonListProps,
@@ -65,4 +71,5 @@ export {
   JuiTeamSettingButtonListItemProps,
   JuiTeamSettingButtonListItemText,
   JuiTeamSettingButtonListItemTextProps,
+  JuiHighlightedTeamName,
 };

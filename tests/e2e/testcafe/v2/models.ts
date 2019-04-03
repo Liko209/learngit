@@ -28,8 +28,12 @@ export interface IUser {
 export interface IGroup {
   name?: string;
   glipId?: string;
+  owner?: IUser;
   members: IUser[];
-  type: string;
+  type: string; // Team or DirectMessage(Group, Direct, Personal)
+  privacy?: string;
+  isPublic?: boolean;
+  description?: string;
 }
 
 export interface ICredential {
@@ -54,6 +58,11 @@ export enum Status {
   SKIPPED = 'skipped',
   FAILED = 'failed',
   BROKEN = 'broken',
+}
+
+export enum Process {
+  RUN = 'run',
+  FINISH = 'finish',
 }
 
 export interface IConsoleLog {

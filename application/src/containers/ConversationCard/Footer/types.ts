@@ -3,14 +3,16 @@
  * @Date: 2018-11-07 17:56:52
  * Copyright © RingCentral. All rights reserved.
  */
+import { WithPostLikeComponentProps } from './withPostLike/types';
+import { WithTranslation } from 'react-i18next';
 
-type FooterProps = {
-  id: number; // post id
-};
+type FooterViewModelProps = WithPostLikeComponentProps & WithTranslation;
 
 type FooterViewProps = {
-  id: number;
-  likeCount: number;
+  iLiked: boolean;
+  likedUsersCount: number;
+  likedUsersNameMessage: string;
+  onToggleLike(): Promise<void> | void;
 };
 
-export { FooterProps, FooterViewProps };
+export { FooterViewModelProps, FooterViewProps };

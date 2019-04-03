@@ -7,9 +7,6 @@
 import { Item } from '../../module/base/entity';
 import { FileItem } from '../../module/file/entity';
 import { ItemUtils } from '../ItemUtils';
-import { TimeUtils } from '../../../../utils/TimeUtils';
-
-jest.mock('../../../../utils/TimeUtils');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -87,11 +84,15 @@ describe('ItemUtils', () => {
       start: 111,
       end: 333,
       effective_end: 3333,
+      created_at: 111,
+      modified_at: 111,
     };
 
     const item2 = {
       id: 111,
       group_ids: [11, 222, 33],
+      created_at: 111,
+      modified_at: 111,
     };
 
     const item3 = {
@@ -100,6 +101,18 @@ describe('ItemUtils', () => {
       start: 111,
       end: 333,
       effective_end: 9007199254740992,
+      created_at: 111,
+      modified_at: 111,
+    };
+
+    const item4 = {
+      id: 14,
+      group_ids: [11, 222, 33],
+      start: 111,
+      end: 333,
+      effective_end: 9007199254740,
+      created_at: 111,
+      modified_at: 111,
     };
 
     it('should return false when is not event', () => {
@@ -107,33 +120,15 @@ describe('ItemUtils', () => {
     });
 
     it('should return true when is not over due event', () => {
-      TimeUtils.compareDate = jest.fn().mockReturnValue(true);
-      expect(ItemUtils.eventFilter(11)(item1)).toBeTruthy();
+      expect(ItemUtils.eventFilter(11)(item4)).toBeTruthy();
     });
 
     it('should return false when is over due event', () => {
-      TimeUtils.compareDate = jest.fn().mockReturnValue(false);
       expect(ItemUtils.eventFilter(11)(item1)).toBeFalsy();
     });
 
     it('should return true when effect time is max int', () => {
       expect(ItemUtils.eventFilter(11)(item3)).toBeTruthy();
-    });
-  });
-  describe('toSanitizedItem', () => {
-    it('should return sanitized item', () => {
-      const item = {
-        id: 1111,
-        group_ids: [123123],
-        created_at: 1231233,
-        name: '1231233',
-      };
-
-      expect(ItemUtils.toSanitizedItem(item)).toEqual({
-        id: 1111,
-        group_ids: [123123],
-        created_at: 1231233,
-      });
     });
   });
 

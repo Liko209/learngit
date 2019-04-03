@@ -7,6 +7,7 @@
 import { getGlobalValue } from '../../../../../../../store/utils';
 import storeManager from '../../../../../../../store/index';
 import { AddMembersViewModel } from '../AddMembers.ViewModel';
+import { GroupService } from 'sdk/module/group';
 
 jest.mock('../../../../../../Notification');
 jest.mock('../../../../../../../store/utils');
@@ -16,8 +17,13 @@ jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
 }));
 
+const groupService: GroupService = new GroupService();
+
 const AddMembersVM = new AddMembersViewModel();
 describe('AddMembersViewModel', () => {
+  beforeEach(() => {
+    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+  });
   beforeAll(() => {
     jest.resetAllMocks();
     const gs = {

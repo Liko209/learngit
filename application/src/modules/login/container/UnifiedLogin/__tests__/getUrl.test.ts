@@ -14,6 +14,9 @@ jest.mock('@/config', () => ({
         apiPlatform: '/apiPlatform',
         clientId: 'clientId',
       },
+      glip: {
+        apiServer: 'API_SERVER',
+      },
     };
   }),
   getEnv: jest.fn(() => {
@@ -34,6 +37,8 @@ describe('getUrl method', () => {
     const options = {
       redirect_uri: window.location.origin,
       state: '/?env=test_sandbox',
+      glipApiBaseURL: 'API_SERVER',
+      glipAppRedirectURL: `${window.location.origin}?t=`,
       client_id: 'clientId',
       ui_locales: 'en-US',
     };

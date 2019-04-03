@@ -15,13 +15,13 @@ interface IDao<T> {
 
   bulkDelete(keys: number[]): Promise<void>;
 
-  update(item: Partial<T> | Partial<T>[]): Promise<void>;
+  update(item: Partial<T> | Partial<T>[], shouldDoPut?: boolean): Promise<void>;
 
-  bulkUpdate(array: Partial<T>[]): Promise<void>;
+  bulkUpdate(array: Partial<T>[], shouldDoPut?: boolean): Promise<void>;
 
   get(key: number): Promise<T | null>;
 
-  batchGet(ids: number[]): Promise<T[]>;
+  batchGet(ids: number[], order?: boolean): Promise<T[]>;
 
   getAll(): Promise<T[]>;
 

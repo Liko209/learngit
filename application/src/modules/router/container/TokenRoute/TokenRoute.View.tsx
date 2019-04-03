@@ -6,13 +6,13 @@
 
 import React, { Component } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
-import { Dialog } from '@/containers/Dialog';
+import { JuiModal } from 'jui/components/Dialog';
 
 type TokenRouteProps = RouteComponentProps<{}> &
-  WithNamespaces & {
+  WithTranslation & {
     unifiedLogin: Function;
     redirectToIndex: Function;
     isOffline: boolean;
@@ -21,8 +21,6 @@ type TokenRouteProps = RouteComponentProps<{}> &
 
 @observer
 class TokenRoute extends Component<TokenRouteProps> {
-  private _alert: { dismiss: () => void };
-
   constructor(props: TokenRouteProps) {
     super(props);
   }
@@ -37,46 +35,32 @@ class TokenRoute extends Component<TokenRouteProps> {
     redirectToIndex(location, history);
   }
 
-  showAlert = ({
-    isOffline,
-    isError,
-  }: {
-    isOffline?: boolean;
-    isError?: boolean;
-  }) => {
-    const { t } = this.props;
+  render() {
+    const { isOffline, isError, t } = this.props;
+
     let content = '';
     if (isError) {
-      content = t('signInFailedContent');
+      content = t('auth.signInFailedContent');
     }
     if (isOffline) {
-      content = t('signInFailedContentNetwork');
+      content = t('common.prompt.Network Error');
     }
-    if (content) {
-      if (this._alert) {
-        this._alert.dismiss();
-      }
-      this._alert = Dialog.alert({
-        content,
-        title: t('signInFailedTitle'),
-        onOK: () => {
-          this.onClose();
-        },
-      });
-    }
-  }
 
-  render() {
-    const { isOffline, isError } = this.props;
     return (
       <React.Fragment>
+        <JuiModal
+          open={isError || isOffline}
+          onOK={this.onClose}
+          title={t('auth.signInFailedTitle')}
+          okText={t('common.dialog.OK')}
+          content={content}
+        />
         <JuiContentLoader />
-        {this.showAlert({ isOffline, isError })}
       </React.Fragment>
     );
   }
 }
 
-const TokenRouteView = translate('login')(withRouter(TokenRoute));
+const TokenRouteView = withTranslation('translations')(withRouter(TokenRoute));
 
 export { TokenRouteView };

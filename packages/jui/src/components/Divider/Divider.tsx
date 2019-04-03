@@ -14,10 +14,10 @@ import { Omit } from '../../foundation/utils/typeHelper';
 export type JuiDividerProps = Omit<MuiDividerProps, 'innerRef'> &
   React.HTMLAttributes<HTMLHRElement>;
 
-export const JuiDivider = styled<JuiDividerProps>(MuiDivider)`
+export const JuiDivider = React.memo(styled<JuiDividerProps>(MuiDivider)`
   && {
     background-color: ${grey('300')};
   }
-`;
+`);
 
 JuiDivider.displayName = 'JuiDivider';

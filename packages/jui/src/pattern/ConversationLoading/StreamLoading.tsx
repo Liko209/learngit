@@ -30,7 +30,7 @@ const Progress = styled(JuiCircularProgress)`
 `;
 
 const Loading = styled.div`
-  position: relative;
+  position: absolute;
   background: ${palette('common', 'white')};
   display: flex;
   height: 100%;
@@ -60,7 +60,7 @@ type State = {
   showLink: boolean;
 };
 
-class JuiStreamLoading extends React.Component<
+class JuiStreamLoading extends React.PureComponent<
   JuiConversationLoadingProps,
   State
 > {

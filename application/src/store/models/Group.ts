@@ -13,11 +13,10 @@ import { getEntity, getSingleEntity } from '@/store/utils';
 import { compareName } from '../helper';
 import { CONVERSATION_TYPES } from '@/constants';
 import Base from './Base';
-import { t } from 'i18next';
-import { TeamPermission } from 'sdk/service/group';
-import { GroupService as NGroupService } from 'sdk/module/group';
+import i18next from 'i18next';
+import { TeamPermission, GroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
-import { UserConfig } from 'sdk/service/account';
+import { AccountUserConfig } from 'sdk/service/account/config';
 
 export default class GroupModel extends Base<Group> {
   @observable
@@ -42,9 +41,15 @@ export default class GroupModel extends Base<Group> {
   permissions?: TeamPermission;
   @observable
   mostRecentPostId?: number;
+  @observable
+  deactivated: boolean;
+  @observable
+  isArchived?: boolean;
+  @observable
+  convertedToTeam?: { team_id?: number; created?: number };
 
+  isCompanyTeam: boolean;
   latestTime: number;
-  private _nGroupService: NGroupService;
 
   constructor(data: Group) {
     super(data);
@@ -61,6 +66,10 @@ export default class GroupModel extends Base<Group> {
       creator_id,
       guest_user_company_ids,
       permissions,
+      deactivated,
+      is_company_team,
+      is_archived,
+      converted_to_team,
     } = data;
 
     this.setAbbreviation = set_abbreviation;
@@ -77,7 +86,11 @@ export default class GroupModel extends Base<Group> {
     this.guestUserCompanyIds = guest_user_company_ids;
     this.permissions = permissions;
     this.mostRecentPostId = most_recent_post_id;
-    this._nGroupService = new NGroupService();
+
+    this.deactivated = deactivated;
+    this.isArchived = is_archived;
+    this.isCompanyTeam = is_company_team;
+    this.convertedToTeam = converted_to_team;
   }
 
   @computed
@@ -92,7 +105,10 @@ export default class GroupModel extends Base<Group> {
   }
 
   get isMember() {
-    return this.members.indexOf(UserConfig.getCurrentUserId()) >= 0;
+    const userConfig = new AccountUserConfig();
+    return (
+      this.members && this.members.indexOf(userConfig.getGlipUserId()) >= 0
+    );
   }
 
   @computed
@@ -100,17 +116,16 @@ export default class GroupModel extends Base<Group> {
     if (this.type === CONVERSATION_TYPES.TEAM) {
       return this.setAbbreviation || '';
     }
-
-    const currentUserId = UserConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
     const members: number[] = this.members || [];
     const diffMembers = _.difference(members, [currentUserId]);
 
     if (this.type === CONVERSATION_TYPES.ME) {
       const person = getEntity(ENTITY_NAME.PERSON, currentUserId);
-      if (person.displayName) {
-        return `${person.displayName} (${t('me')})`;
-      }
-      return '';
+      return `${person.userDisplayNameForGroupName || ''} (${i18next.t(
+        'message.meGroup',
+      )})`;
     }
 
     if (
@@ -118,7 +133,7 @@ export default class GroupModel extends Base<Group> {
       this.type === CONVERSATION_TYPES.SMS
     ) {
       const person = getEntity(ENTITY_NAME.PERSON, diffMembers[0]);
-      return person.userDisplayName || '';
+      return person.userDisplayNameForGroupName || '';
     }
 
     if (this.type === CONVERSATION_TYPES.NORMAL_GROUP) {
@@ -146,7 +161,8 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get type(): CONVERSATION_TYPES {
-    const currentUserId = UserConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
 
     const members = this.members || [];
 
@@ -173,8 +189,9 @@ export default class GroupModel extends Base<Group> {
   @computed
   get membersExcludeMe() {
     const members = this.members || [];
+    const userConfig = new AccountUserConfig();
 
-    const currentUserId = UserConfig.getCurrentUserId();
+    const currentUserId = userConfig.getGlipUserId();
 
     return members.filter(member => member !== currentUserId);
   }
@@ -187,31 +204,34 @@ export default class GroupModel extends Base<Group> {
   @computed
   get teamPermissionParams() {
     return {
-      members: this.members || [],
+      members: this.members,
       is_team: this.isTeam,
-      guest_user_company_ids: this.guestUserCompanyIds || [],
+      guest_user_company_ids: this.guestUserCompanyIds,
       permissions: this.permissions,
     };
   }
 
   @computed
   get isCurrentUserHasPermissionAddMember() {
-    return this._nGroupService.isCurrentUserHasPermission(
-      this.teamPermissionParams,
+    const groupService: GroupService = GroupService.getInstance();
+    return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_ADD_MEMBER,
+      this.teamPermissionParams,
     );
   }
 
   get isAdmin() {
-    return this._nGroupService.isCurrentUserHasPermission(
-      this.teamPermissionParams,
+    const groupService: GroupService = GroupService.getInstance();
+    return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_ADMIN,
+      this.teamPermissionParams,
     );
   }
 
   isThePersonAdmin(personId: number) {
+    const groupService: GroupService = GroupService.getInstance();
     return this.type === CONVERSATION_TYPES.TEAM
-      ? this._nGroupService.isTeamAdmin(personId, this.permissions)
+      ? groupService.isTeamAdmin(personId, this.permissions)
       : false;
   }
 
@@ -229,9 +249,19 @@ export default class GroupModel extends Base<Group> {
 
   @computed
   get canPost() {
-    return this._nGroupService.isCurrentUserHasPermission(
-      this.teamPermissionParams,
+    const groupService: GroupService = GroupService.getInstance();
+    return groupService.isCurrentUserHasPermission(
       PERMISSION_ENUM.TEAM_POST,
+      this.teamPermissionParams,
+    );
+  }
+
+  @computed
+  get canPin() {
+    const groupService: GroupService = GroupService.getInstance();
+    return groupService.isCurrentUserHasPermission(
+      PERMISSION_ENUM.TEAM_PIN_POST,
+      this.teamPermissionParams,
     );
   }
 

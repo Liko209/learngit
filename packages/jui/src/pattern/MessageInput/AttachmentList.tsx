@@ -18,6 +18,7 @@ type ItemInfo = {
 type AttachmentListProps = {
   files?: ItemInfo[];
   removeAttachment: (file: ItemInfo) => void;
+  iconResolver?: (file: ItemInfo) => string;
 };
 
 const Wrapper = styled.div`
@@ -28,6 +29,8 @@ const Wrapper = styled.div`
   margin: ${spacing(2, 0, 0)};
   padding: ${spacing(0.25, 0, 0, 0.25)};
 `;
+
+const DEFAULT_FILE_ICON = 'default_file';
 
 class AttachmentList extends PureComponent<AttachmentListProps> {
   private _lastItemRef: RefObject<any> = createRef();
@@ -41,7 +44,7 @@ class AttachmentList extends PureComponent<AttachmentListProps> {
     }
   }
   render() {
-    const { files = [], removeAttachment } = this.props;
+    const { files = [], removeAttachment, iconResolver } = this.props;
     const count = files.length;
     return (
       <Wrapper data-test-automation-id="attachment-list">
@@ -50,6 +53,9 @@ class AttachmentList extends PureComponent<AttachmentListProps> {
           if (idx === count - 1) {
             content = (
               <AttachmentItem
+                fileIcon={
+                  iconResolver ? iconResolver(looper) : DEFAULT_FILE_ICON
+                }
                 ref={this._lastItemRef}
                 status={ITEM_STATUS.NORMAL}
                 name={looper.name}
@@ -60,6 +66,9 @@ class AttachmentList extends PureComponent<AttachmentListProps> {
           } else {
             content = (
               <AttachmentItem
+                fileIcon={
+                  iconResolver ? iconResolver(looper) : DEFAULT_FILE_ICON
+                }
                 status={ITEM_STATUS.NORMAL}
                 name={looper.name}
                 onClickDeleteButton={() => removeAttachment(looper)}

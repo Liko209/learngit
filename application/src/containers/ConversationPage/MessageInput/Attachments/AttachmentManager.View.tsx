@@ -5,25 +5,27 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
 import { extractView } from 'jui/hoc/extractView';
-import { t } from 'i18next';
+import i18next from 'i18next';
 
 @observer
 class AttachmentManagerViewComponent extends Component<
-  AttachmentsViewProps & WithNamespaces
+  AttachmentsViewProps & WithTranslation
 > {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles } = this.props;
     if (showDuplicateFiles) {
       return (
         <JuiDuplicateAlert
-          title={t('updateFiles')}
-          subtitle={t('theFollowingFilesAlreadyExist')}
-          footText={t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne')}
+          title={i18next.t('item.updateFiles')}
+          subtitle={i18next.t('item.theFollowingFilesAlreadyExist')}
+          footText={i18next.t(
+            'item.wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
+          )}
           duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
@@ -32,10 +34,6 @@ class AttachmentManagerViewComponent extends Component<
       );
     }
     return null;
-  }
-
-  componentWillMount() {
-    this.props.reloadFiles();
   }
 
   componentWillUnmount() {
@@ -47,7 +45,7 @@ class AttachmentManagerViewComponent extends Component<
   }
 
   directPostFiles = async (files: File[]) => {
-    await this.props.autoUploadFiles(files, this.props.sendFilesOnlyPost);
+    await this.props.autoUploadFiles(files, true, this.props.sendFilesOnlyPost);
   }
 
   render() {
@@ -55,9 +53,9 @@ class AttachmentManagerViewComponent extends Component<
   }
 }
 
-const view = extractView<WithNamespaces & AttachmentsViewProps>(
+const view = extractView<WithTranslation & AttachmentsViewProps>(
   AttachmentManagerViewComponent,
 );
-const AttachmentManagerView = translate('Conversations')(view);
+const AttachmentManagerView = withTranslation('translations')(view);
 
 export { AttachmentManagerView, AttachmentManagerViewComponent };

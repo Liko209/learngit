@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import moment from 'moment';
-import { t } from 'i18next';
+import i18next from 'i18next';
 
 import {
   dateFormatter,
@@ -15,7 +15,7 @@ import {
 function getDateAndTime(timestamp: number) {
   const getAMOrPM = dateFormatter.localTime(moment(timestamp));
   const date = recentlyTwoDayAndOther(timestamp);
-  return `${date} ${t('at')} ${getAMOrPM}`;
+  return `${date} ${i18next.t('common.time.at')} ${getAMOrPM}`;
 }
 
 function getDurationTime(startTimestamp: number, endTimestamp: number) {
@@ -39,29 +39,29 @@ function getDurationDate(startTimestamp: number, endTimestamp: number) {
 }
 
 function getI18Text(type: string, count: number) {
-  return t(type, { count, postProcess: 'interval' });
+  return i18next.t(type, { count, postProcess: 'interval' });
 }
 
 const REPEAT_TEXT = {
-  daily: 'repeatingEveryDay', // ', repeating every day',
-  weekdaily: 'repeatingEveryWeekday',
-  weekly: 'repeatingEveryWeek',
-  monthly: 'repeatingEveryMonth',
-  yearly: 'repeatingEveryYear',
+  daily: 'item.repeatingEveryDay', // ', repeating every day',
+  weekdaily: 'item.repeatingEveryWeekday',
+  weekly: 'item.repeatingEveryWeek',
+  monthly: 'item.repeatingEveryMonth',
+  yearly: 'item.repeatingEveryYear',
 };
 
 const TIMES_TEXT = {
-  daily: 'forDayTimes_interval',
-  weekly: 'forWeekTimes_interval',
-  weekdaily: 'forWeekdailyTimes_interval',
-  monthly: 'forMonthlyTimes_interval',
-  yearly: 'forYearlyTimes_interval',
+  daily: 'item.forDayTimes_interval',
+  weekly: 'item.forWeekTimes_interval',
+  weekdaily: 'item.forWeekdailyTimes_interval',
+  monthly: 'item.forMonthlyTimes_interval',
+  yearly: 'item.forYearlyTimes_interval',
 };
 
 function getDurationTimeText(
   repeat: string,
   repeatEndingAfter: string,
-  repeatEndingOn: string,
+  repeatEndingOn: number | null,
   repeatEnding: string,
 ) {
   const times =
@@ -81,26 +81,11 @@ function getDurationTimeText(
   // if has repeat and is forever need hide times
   const hideTimes = (repeatEndingAfter: string, repeatEnding: string) =>
     repeatEnding === 'none' || repeatEnding === 'on';
-  const repeatText = ` ${t('until')} ${date}`;
+  const repeatText = ` ${i18next.t('item.until')} ${date}`;
 
-  return `${t(REPEAT_TEXT[repeat]) || ''} ${
+  return `${i18next.t(REPEAT_TEXT[repeat]) || ''} ${
     hideTimes(repeatEndingAfter, repeatEnding) ? '' : times
   } ${hideUntil(repeat, repeatEnding) ? '' : repeatText}`;
-}
-
-const FILE_ICON_MAP = {
-  pdf: ['pdf'],
-  excel: ['xlsx', 'xls'],
-  ppt: ['ppt', 'pptx', 'potx'],
-};
-
-function getFileIcon(fileType: string) {
-  for (const key in FILE_ICON_MAP) {
-    if (FILE_ICON_MAP[key].includes(fileType)) {
-      return key;
-    }
-  }
-  return 'default_file';
 }
 
 export {
@@ -109,5 +94,4 @@ export {
   getDurationTime,
   getDurationDate,
   getDurationTimeText,
-  getFileIcon,
 };

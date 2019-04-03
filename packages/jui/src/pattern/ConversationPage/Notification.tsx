@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import {
   spacing,
@@ -37,8 +37,8 @@ type Props = {
   children: JSX.Element | null;
 };
 
-const JuiNotification = ({ onClick, children }: Props) => {
+const JuiNotification = memo(({ onClick, children }: Props) => {
   return <StyledBox onClick={onClick}>{children}</StyledBox>;
-};
+});
 
 export { JuiNotification };

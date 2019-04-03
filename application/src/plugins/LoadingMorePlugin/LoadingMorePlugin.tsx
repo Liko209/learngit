@@ -22,8 +22,8 @@ interface ILoadingMoreViewModel extends IViewModel, WithScrollerProps {
 type LoadingMorePluginOptions = {
   thresholdUp?: number;
   thresholdDown?: number;
-  initialScrollTop?: number;
   stickTo?: 'bottom' | 'top';
+  throttle?: number;
   triggerScrollToOnMount?: boolean;
 };
 
@@ -79,24 +79,36 @@ class LoadingMorePlugin implements IPlugin {
   }
 }
 
-const onScrollToTop = function (
-  vm: IViewModel,
-  propertyKey: string,
-  descriptor: PropertyDescriptor,
-) {
-  vm[topListeners] = vm[topListeners] || [];
-  vm[topListeners].push(descriptor.value);
-  return descriptor;
+const onScrollToTop = function (condition: (vm: IViewModel) => boolean) {
+  return function (
+    vm: IViewModel,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    vm[topListeners] = vm[topListeners] || [];
+    vm[topListeners].push(function (this: IViewModel) {
+      if (condition(this)) {
+        return descriptor.value.apply(this, arguments);
+      }
+    });
+    return descriptor;
+  };
 };
 
-const onScrollToBottom = function (
-  vm: IViewModel,
-  propertyKey: string,
-  descriptor: PropertyDescriptor,
-) {
-  vm[bottomListeners] = vm[bottomListeners] || [];
-  vm[bottomListeners].push(descriptor.value);
-  return descriptor;
+const onScrollToBottom = function (condition: (vm: IViewModel) => boolean) {
+  return function (
+    vm: IViewModel,
+    propertyKey: string,
+    descriptor: PropertyDescriptor,
+  ) {
+    vm[bottomListeners] = vm[bottomListeners] || [];
+    vm[bottomListeners].push(function (this: IViewModel) {
+      if (condition(this)) {
+        return descriptor.value.apply(this, arguments);
+      }
+    });
+    return descriptor;
+  };
 };
 
 const onScroll = function (

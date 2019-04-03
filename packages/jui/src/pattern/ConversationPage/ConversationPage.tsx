@@ -19,9 +19,9 @@ const StyledDiv = styled<JuiConversationPageProps, 'div'>('div')`
   position: relative;
 `;
 
-const JuiConversationPage = (props: JuiConversationPageProps) => (
+const JuiConversationPage = React.memo((props: JuiConversationPageProps) => (
   <StyledDiv {...props} />
-);
+));
 
 export { JuiConversationPage, JuiConversationPageProps };
 export default JuiConversationPage;

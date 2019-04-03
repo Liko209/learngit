@@ -10,11 +10,12 @@ import {
   JuiListItemText,
   JuiListItemWithHover,
   JuiListItemIcon,
+  JuiListItemSecondaryAction,
 } from 'jui/components/Lists';
 import { Thumbnail } from '@/containers/Thumbnail';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
 import { ImageItemViewProps } from './types';
-import { Download } from '../common/Download.View';
+import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
 
 @observer
@@ -31,12 +32,20 @@ class ImageItemView extends Component<ImageItemViewProps> {
           secondary={
             <SecondaryText personName={personName} createdTime={createdTime} />}
         />
-        {hover && <Download url={downloadUrl} />}
+        {hover && (
+          <JuiListItemSecondaryAction>
+            <Download url={downloadUrl} />
+          </JuiListItemSecondaryAction>
+        )}
       </>
     );
   }
 
   render() {
+    const { file } = this.props;
+    if (file.isMocked || file.id < 0) {
+      return <></>;
+    }
     return (
       <JuiListItemWithHover
         render={this._renderItem}

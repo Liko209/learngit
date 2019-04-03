@@ -6,7 +6,6 @@
 
 import { TaskItemController } from '../controller/TaskItemController';
 import { TaskItem, SanitizedTaskItem } from '../entity';
-import { IItemService } from '../../../service/IItemService';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 import { TaskItemDao } from '../dao/TaskItemDao';
 import { daoManager } from '../../../../../dao';
@@ -14,7 +13,7 @@ import { daoManager } from '../../../../../dao';
 class TaskItemService extends BaseSubItemService<TaskItem, SanitizedTaskItem> {
   private _taskItemController: TaskItemController;
 
-  constructor(itemService: IItemService) {
+  constructor() {
     super(daoManager.getDao<TaskItemDao>(TaskItemDao));
   }
 
@@ -23,16 +22,6 @@ class TaskItemService extends BaseSubItemService<TaskItem, SanitizedTaskItem> {
       this._taskItemController = new TaskItemController();
     }
     return this._taskItemController;
-  }
-
-  toSanitizedItem(task: TaskItem) {
-    return {
-      ...super.toSanitizedItem(task),
-      complete: task.complete,
-      due: task.due,
-      assigned_to_ids: task.assigned_to_ids,
-      color: task.color,
-    } as SanitizedTaskItem;
   }
 }
 

@@ -23,7 +23,7 @@ const StyledLeftSection = styled('div')`
 `;
 const StyledName = styled('div')`
   color: ${grey('900')};
-  ${typography('caption')} overflow: hidden;
+  ${typography('caption1')} overflow: hidden;
   ${ellipsis()};
 `;
 const StyledStatus = styled('div')`
@@ -68,7 +68,7 @@ type ConversationCardHeaderProps = {
   notification?: React.ReactNode;
 };
 
-class JuiConversationCardHeader extends React.Component<
+class JuiConversationCardHeader extends React.PureComponent<
   ConversationCardHeaderProps,
   { headerItemMaxWidth: null | number }
 > {
@@ -103,7 +103,11 @@ class JuiConversationCardHeader extends React.Component<
 
   componentDidMount() {
     this.setHeaderItemMaxWidth();
-    window.addEventListener('resize', this.setHeaderItemMaxWidth.bind(this));
+    window.addEventListener('resize', this.setHeaderItemMaxWidth);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.setHeaderItemMaxWidth);
   }
 
   componentDidUpdate() {
@@ -114,6 +118,7 @@ class JuiConversationCardHeader extends React.Component<
     const { name, status, notification, from, time, children } = this.props;
     const inlineStyle = {
       maxWidth: `${this.state.headerItemMaxWidth}px`,
+      cursor: 'pointer',
     };
     return (
       <StyledConversationCardHeader>

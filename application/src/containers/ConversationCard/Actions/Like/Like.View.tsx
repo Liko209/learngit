@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { LikeViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
@@ -14,17 +14,18 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-type Props = LikeViewProps & WithNamespaces;
+type Props = LikeViewProps & WithTranslation;
 
 @observer
 class LikeViewComponent extends Component<Props> {
   private _handleLikeButton = async () => {
     const { isLike, like } = this.props;
-    const result = await like(!isLike);
-    if (result.isFailed) {
+    try {
+      await like(!isLike);
+    } catch (error) {
       const message = !isLike
-        ? 'SorryWeWereNotAbleToLikeTheMessage'
-        : 'SorryWeWereNotAbleToUnlikeTheMessage';
+        ? 'message.prompt.SorryWeWereNotAbleToLikeTheMessage'
+        : 'message.prompt.SorryWeWereNotAbleToUnlikeTheMessage';
       Notification.flashToast({
         message,
         type: ToastType.ERROR,
@@ -39,7 +40,9 @@ class LikeViewComponent extends Component<Props> {
     return (
       <JuiIconButton
         size="small"
-        tooltipTitle={isLike ? t('Unlike') : t('Like')}
+        tooltipTitle={
+          isLike ? t('message.action.unlike') : t('message.action.like')
+        }
         color={isLike ? 'primary' : undefined}
         onClick={this._handleLikeButton}
         variant="plain"
@@ -51,6 +54,6 @@ class LikeViewComponent extends Component<Props> {
   }
 }
 
-const LikeView = translate('Conversations')(LikeViewComponent);
+const LikeView = withTranslation('translations')(LikeViewComponent);
 
 export { LikeView };

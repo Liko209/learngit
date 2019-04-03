@@ -9,17 +9,12 @@ import { Item, ItemFile } from '../entity';
 import { Progress, PROGRESS_STATUS } from '../../progress/entity';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { Raw } from '../../../framework/model';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 
 interface IItemService {
+  getEntitySource(): IEntitySourceController;
+
   getItems(options: ItemQueryOptions): Promise<Item[]>;
-
-  handleSanitizedItems(items: Item[]): void;
-
-  createItem(item: Item): Promise<void>;
-
-  updateItem(item: Item): Promise<void>;
-
-  deleteItem(itemId: number): Promise<void>;
 
   sendItemFile(
     groupId: number,
@@ -69,10 +64,19 @@ interface IItemService {
 
   requestSyncGroupItems(groupId: number): Promise<void>;
 
+  getThumbsUrlWithSize(itemId: number): Promise<string>;
+
   getThumbsUrlWithSize(
     itemId: number,
     width: number,
     height: number,
   ): Promise<string>;
+
+  hasUploadingFiles(): boolean;
+
+  getItemIndexInfo(
+    itemId: number,
+    options: ItemQueryOptions,
+  ): Promise<{ index: number; totalCount: number }>;
 }
 export { IItemService };

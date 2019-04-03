@@ -5,43 +5,77 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { MemberHeaderViewProps, MemberHeaderProps } from './types';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import {
   JuiProfileDialogContentMemberHeader,
+  JuiProfileDialogContentMemberHeaderTitle,
+  JuiProfileDialogContentMemberHeaderSearch,
   JuiProfileDialogContentSummaryButtonInRight as ButtonInRight,
 } from 'jui/pattern/Profile/Dialog';
+import { JuiOutlineTextField } from 'jui/components';
+import portalManager from '@/common/PortalManager';
+import { Dialog } from '@/containers/Dialog';
+import { AddMembers } from '../../AddMembers';
 
 @observer
 class MemberHeader extends React.Component<
-  WithNamespaces & MemberHeaderViewProps & MemberHeaderProps
+  WithTranslation & MemberHeaderViewProps & MemberHeaderProps
 > {
+  addTeamMembers = () => {
+    const { group } = this.props;
+    portalManager.dismissLast();
+    Dialog.simple(<AddMembers group={group} />, {
+      size: 'medium',
+    });
+  }
+
   render() {
     const {
       group,
       t,
       hasShadow,
-      AddTeamMembers,
       isCurrentUserHasPermissionAddMember,
+      onSearch,
     } = this.props;
-    const key = group.isTeam ? 'teamMembers' : 'groupMembers';
+    const { isTeam, members = [] } = group;
+    const key = isTeam ? 'people.team.teamMembers' : 'people.team.groupMembers';
+    const hasSearch = members.length > 10;
     return (
       <JuiProfileDialogContentMemberHeader
         className={hasShadow ? 'shadow' : ''}
         data-test-automation-id="profileDialogMemberHeader"
       >
-        {`${t(key)} (${group.members && group.members.length})`}
-        {isCurrentUserHasPermissionAddMember ? (
-          <ButtonInRight onClick={AddTeamMembers}>
-            <JuiIconography fontSize="small">add_team</JuiIconography>
-            {t('AddTeamMembers')}
-          </ButtonInRight>
-        ) : null}
+        <JuiProfileDialogContentMemberHeaderTitle>
+          {`${t(key)} (${members.length})`}
+          {isTeam && isCurrentUserHasPermissionAddMember && (
+            <ButtonInRight onClick={this.addTeamMembers}>
+              <JuiIconography iconSize="medium">add_team</JuiIconography>
+              {t('people.team.AddTeamMembers')}
+            </ButtonInRight>
+          )}
+        </JuiProfileDialogContentMemberHeaderTitle>
+        {hasSearch && (
+          <JuiProfileDialogContentMemberHeaderSearch>
+            <JuiOutlineTextField
+              InputProps={{
+                placeholder: t('people.team.searchMembers'),
+                inputProps: {
+                  maxLength: 30,
+                },
+              }}
+              onChange={onSearch}
+              iconName="search"
+              iconPosition="left"
+              data-test-automation-id="profileDialogMemberSearch"
+            />
+          </JuiProfileDialogContentMemberHeaderSearch>
+        )}
       </JuiProfileDialogContentMemberHeader>
     );
   }
 }
-const MemberHeaderView = translate('translations')(MemberHeader);
+const MemberHeaderView = withTranslation('translations')(MemberHeader);
 
 export { MemberHeaderView };

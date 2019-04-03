@@ -8,6 +8,10 @@ class PostControllerUtils {
   static isValidPost(post: Post) {
     return post && (post.text.length > 0 || post.item_ids.length > 0);
   }
+
+  static isValidTextMessage(message: string) {
+    return message.trim() !== '';
+  }
 }
 
 export { PostControllerUtils };

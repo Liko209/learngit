@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import styled from 'styled-components';
+import styled from '../../../foundation/styled-components';
 import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 import { spacing, palette } from '../../../foundation/utils/styles';
+import isOutlinedTextFieldProps from '../isOutlinedTextFieldProps';
 
 const TextField = styled(MuiTextField)`
   && {
@@ -23,15 +24,11 @@ const TextField = styled(MuiTextField)`
       border-bottom-color: ${palette('primary', 'main')};
     }
   }
-`;
+` as typeof MuiTextField;
 
 type Props = TextFieldProps;
 
-class JuiTextField extends React.Component<Props, {}> {
-  constructor(props: Props) {
-    super(props);
-  }
-
+class JuiTextField extends React.PureComponent<Props> {
   onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { onKeyDown } = this.props;
     if (e.key === 'ArrowUp') {
@@ -70,10 +67,12 @@ class JuiTextField extends React.Component<Props, {}> {
           ...inputLabelRest,
         }}
         InputProps={{
-          classes: {
-            underline: 'underline',
-            ...inputPropsClasses,
-          },
+          classes: isOutlinedTextFieldProps(this.props)
+            ? inputPropsClasses
+            : {
+              underline: 'underline',
+              ...inputPropsClasses,
+            },
           ...inputPropsRest,
         }}
       />

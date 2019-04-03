@@ -3,7 +3,7 @@
  * @Date: 2018-03-14 20:26:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { NETWORK_METHOD, NETWORK_VIA, Result } from 'foundation';
+import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
 import { IdModel, Raw } from '../../framework/model';
@@ -21,8 +21,8 @@ interface IRightRailItemModel extends IdModel {
 }
 
 type ProgressCallback = (e: ProgressEventInit) => any;
-type UploadFileResult = Result<StoredFile>;
-type FileResult = Result<Raw<ItemFile>>;
+type UploadFileResult = StoredFile;
+type FileResult = Raw<ItemFile>;
 
 const ITEMPATH = {
   [TypeDictionary.TYPE_ID_TASK]: 'task',

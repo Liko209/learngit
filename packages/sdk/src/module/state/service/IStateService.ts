@@ -6,10 +6,17 @@
 
 import { GroupState, MyState, State } from '../entity';
 import { Group } from '../../group/entity';
-import { Raw } from '../../../framework/model';
+import { Profile } from '../../profile/entity';
+import { NotificationEntityPayload } from '../../../service/notificationCenter';
+import { SectionUnread } from '../types';
+import { SYNC_SOURCE } from '../../sync/types';
 
 interface IStateService {
-  updateReadStatus(groupId: number, isUnread: boolean): Promise<void>;
+  updateReadStatus(
+    groupId: number,
+    isUnread: boolean,
+    ignoreError: boolean,
+  ): Promise<void>;
 
   updateLastGroup(groupId: number): Promise<void>;
 
@@ -21,16 +28,19 @@ interface IStateService {
 
   getMyStateId(): number;
 
-  handleState(states: Raw<State>[]): Promise<void>;
+  handleState(states: Partial<State>[], source: SYNC_SOURCE): Promise<void>;
 
-  handlePartialGroup(groups: Partial<Group>[]): Promise<void>;
+  handleGroupCursor(groups: Partial<Group>[]): Promise<void>;
 
-  handleGroupChanges(groups?: Group[]): Promise<void>;
+  handleGroupChangeForTotalUnread(
+    payload: NotificationEntityPayload<Group>,
+  ): void;
 
-  getUmiByIds(
-    ids: number[],
-    updateUmi: (unreadCounts: Map<number, number>, important: boolean) => void,
-  ): Promise<void>;
+  handleProfileChangeForTotalUnread(
+    payload: NotificationEntityPayload<Profile>,
+  ): void;
+
+  getSingleUnreadInfo(id: number): SectionUnread | undefined;
 }
 
 export { IStateService };

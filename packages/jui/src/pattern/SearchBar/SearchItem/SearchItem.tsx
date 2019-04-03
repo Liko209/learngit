@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 15:06:52
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ReactNode } from 'react';
+import React, { ReactNode, memo } from 'react';
 import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
 import MuiLock from '@material-ui/icons/Lock';
 import { JuiSearchItemValue } from '../';
@@ -21,6 +21,9 @@ import {
 const SearchItemActions = styled.div`
   display: flex;
   display: none;
+  & button {
+    margin-left: ${spacing(3)};
+  }
 `;
 
 const SearchItemWrapper = styled(MenuItem)`
@@ -82,7 +85,7 @@ type JuiSearchItemProps = {
   hovered?: boolean;
 } & MenuItemProps;
 
-const JuiSearchItem = (props: JuiSearchItemProps) => {
+const JuiSearchItem = memo((props: JuiSearchItemProps) => {
   const {
     Avatar,
     Actions,
@@ -115,6 +118,6 @@ const JuiSearchItem = (props: JuiSearchItemProps) => {
       {Actions && <SearchItemActions>{Actions}</SearchItemActions>}
     </SearchItemWrapper>
   );
-};
+});
 
 export { JuiSearchItem, JuiSearchItemProps };

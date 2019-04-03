@@ -4,7 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { NETWORK_VIA, NETWORK_METHOD } from 'foundation';
+import {
+  NETWORK_VIA,
+  NETWORK_METHOD,
+  TEN_MINUTE_TIMEOUT,
+  DEFAULT_RETRY_COUNT,
+  REQUEST_PRIORITY,
+  HA_PRIORITY,
+} from 'foundation';
 import Api from '../api';
 import { GLIP_API } from './constants';
 import { Raw } from '../../framework/model';
@@ -38,6 +45,26 @@ export type IndexDataModel = {
   client_config: IFlag;
   static_http_server: string;
 };
+
+export type CanConnectModel = {
+  deployment_state?: {
+    level: number;
+    number: number;
+  };
+  scoreboard?: string;
+  socket_version?: string;
+  version?: string;
+  reconnect_retry_in?: number;
+  reconnect_in?: number;
+};
+
+export type CanConnectParasType = {
+  newer_than?: number;
+  presence: string;
+  user_id?: number;
+  uidtk: string;
+};
+
 /**
  * @param {string} rcAccessTokenData
  * @param {string} username
@@ -54,8 +81,9 @@ function loginGlip(authData: object) {
     method: NETWORK_METHOD.PUT,
     data: model,
     authFree: true,
+    timeout: TEN_MINUTE_TIMEOUT,
   };
-  return Api.glipNetworkClient.http<Object>({
+  return Api.glipNetworkClient.rawRequest<Object>({
     ...query,
     via: NETWORK_VIA.HTTP,
   });
@@ -68,28 +96,66 @@ function loginGlip(authData: object) {
  * index data api
  */
 function indexData(params: object, requestConfig = {}, headers = {}) {
+  const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipNetworkClient.get<IndexDataModel>(
     '/index',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    DEFAULT_RETRY_COUNT,
+    priority,
+    HA_PRIORITY.BASIC,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
 function initialData(params: object, requestConfig = {}, headers = {}) {
+  const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/initial',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
     headers,
+    DEFAULT_RETRY_COUNT,
+    priority,
+    HA_PRIORITY.BASIC,
+    TEN_MINUTE_TIMEOUT,
   );
 }
 
 function remainingData(params: object, requestConfig = {}, headers = {}) {
+  const priority = REQUEST_PRIORITY.HIGH;
   return Api.glipDesktopNetworkClient.get<IndexDataModel>(
     '/remaining',
+    params,
+    NETWORK_VIA.HTTP,
+    requestConfig,
+    headers,
+    DEFAULT_RETRY_COUNT,
+    priority,
+    HA_PRIORITY.BASIC,
+    TEN_MINUTE_TIMEOUT,
+  );
+}
+
+function glipStatus() {
+  return Api.glipNetworkClient.http({
+    via: NETWORK_VIA.HTTP,
+    path: '/status',
+    method: NETWORK_METHOD.GET,
+    authFree: true,
+  });
+}
+
+function canConnect(
+  params: CanConnectParasType,
+  requestConfig = {},
+  headers = {},
+) {
+  return Api.glipNetworkClient.get<CanConnectModel>(
+    '/can-reconnect-v2',
     params,
     NETWORK_VIA.HTTP,
     requestConfig,
@@ -97,6 +163,11 @@ function remainingData(params: object, requestConfig = {}, headers = {}) {
   );
 }
 
-// plugins data
-
-export { loginGlip, indexData, initialData, remainingData };
+export {
+  loginGlip,
+  indexData,
+  initialData,
+  remainingData,
+  canConnect,
+  glipStatus,
+};

@@ -10,10 +10,10 @@ describe('Page', () => {
     const data = page();
     expect(data).toEqual({
       parameter: {
-        verb: 'shared',
-        noun: 'note',
+        verb: 'item.activity.shared',
+        noun: 'item.activity.note',
       },
-      key: 'verb-article-noun',
+      key: 'item.activity.verb-article-noun',
     });
   });
 });

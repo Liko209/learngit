@@ -4,18 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GroupService, notificationCenter, ENTITY } from 'sdk/service';
+import { notificationCenter, ENTITY } from 'sdk/service';
 
 import { PersonService } from 'sdk/module/person';
 
-import { TeamPermission } from 'sdk/service/group';
+import { TeamPermission, GroupService } from 'sdk/module/group';
 import SortableGroupMemberHandler from '../SortableGroupMemberHandler';
 import { Person } from 'sdk/module/person/entity';
 
-jest.mock('sdk/service/group');
+jest.mock('sdk/module/group');
 jest.mock('sdk/module/person');
 
-describe('SortableGroupMemberHandler', async () => {
+describe('SortableGroupMemberHandler', () => {
   const groupService = new GroupService();
   const personService = new PersonService();
   beforeEach(() => {

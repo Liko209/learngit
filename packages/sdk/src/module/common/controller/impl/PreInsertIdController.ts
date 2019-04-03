@@ -4,9 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, ConfigDao } from '../../../../dao';
 import { IPreInsertIdController } from '../interface/IPreInsertIdController';
 import { mainLogger } from 'foundation';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+import { UserConfigService } from '../../../../module/config';
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
@@ -15,18 +16,20 @@ class PreInsertIdController implements IPreInsertIdController {
   private _versions: number[];
   private _modelName: string;
   constructor(modelName: string) {
-    this._modelName = `${modelName}_${PREINSERT_KEY_ID}`;
+    this._modelName = modelName;
     this._initVersions();
   }
 
   private _initVersions() {
-    const dao: ConfigDao = daoManager.getKVDao(ConfigDao);
-    this._versions = dao.get(this._modelName) || [];
+    const configService: UserConfigService = UserConfigService.getInstance();
+    configService.setUserId(AccountGlobalConfig.getUserDictionary());
+    this._versions = configService.get(this._modelName, PREINSERT_KEY_ID) || [];
   }
 
   private _syncDataDB() {
-    const dao: ConfigDao = daoManager.getKVDao(ConfigDao);
-    dao.put(this._modelName, this._versions);
+    const configService: UserConfigService = UserConfigService.getInstance();
+    configService.setUserId(AccountGlobalConfig.getUserDictionary());
+    configService.put(this._modelName, PREINSERT_KEY_ID, this._versions);
   }
 
   isInPreInsert(version: number): boolean {

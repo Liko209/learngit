@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import { grey, spacing, typography } from '../../foundation/utils/styles';
 import { DialogTitleProps as MuiDialogTitleProps } from '@material-ui/core/DialogTitle';
@@ -22,9 +22,11 @@ const StyledDialogTitle = styled('div')`
   padding: ${spacing(5, 6)};
 `;
 
-const JuiDialogTitleWithAction = (props: JuiDialogTitleWithActionProps) => {
-  return <StyledDialogTitle {...props} />;
-};
+const JuiDialogTitleWithAction = memo(
+  (props: JuiDialogTitleWithActionProps) => {
+    return <StyledDialogTitle {...props} />;
+  },
+);
 
 const JuiDialogTitleWithActionLeft = styled('div')`
   display: inline-flex;

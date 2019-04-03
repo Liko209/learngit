@@ -5,7 +5,6 @@
  */
 
 import { LinkItemController } from '../controller/LinkItemController';
-import { IItemService } from '../../../service/IItemService';
 import { LinkItem, SanitizedLinkItem } from '../entity';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 import { LinkItemDao } from '../dao/LinkItemDao';
@@ -14,7 +13,7 @@ import { daoManager } from '../../../../../dao';
 class LinkItemService extends BaseSubItemService<LinkItem, SanitizedLinkItem> {
   private _linkItemController: LinkItemController;
 
-  constructor(itemService: IItemService) {
+  constructor() {
     super(daoManager.getDao<LinkItemDao>(LinkItemDao));
   }
 

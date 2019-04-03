@@ -3,17 +3,13 @@
  * @Date: 2018-11-07 10:23:13
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Fragment } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
-import EventIcon from '@material-ui/icons/Event';
 import Checkbox from '@material-ui/core/Checkbox';
-import { boolean } from '@storybook/addon-knobs';
-import styled, { css } from '../../../foundation/styled-components';
+import styled from '../../../foundation/styled-components';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiConversationItemCard } from '../';
 import { JuiCodeSnippetBody } from '../ConversationItemCardBody';
-import { CodeEditor } from '../../CodeEditor';
-import { JuiLozengeButton } from '../../../components/Buttons/LozengeButton';
 
 const CheckboxTest = styled(Checkbox)`
   && {
@@ -27,8 +23,11 @@ const Wrapper = styled.div``;
 storiesOf('Pattern/ConversationItemCard', module)
   .addDecorator(withInfoDecorator(JuiConversationItemCard, { inline: true }))
   .add('JuiConversationItemCard', () => {
-    class ConversationItem extends React.Component<{}, { checked: boolean }> {
-      constructor(p) {
+    class ConversationItem extends React.PureComponent<
+      {},
+      { checked: boolean }
+    > {
+      constructor(p: any) {
         super(p);
         this.state = {
           checked: false,
@@ -75,7 +74,7 @@ storiesOf('Pattern/ConversationItemCard', module)
     const StyledCodeSnippetContainer = styled('div')`
       padding: 12px;
     `;
-    class CodeSnippet extends React.Component<{}> {
+    class CodeSnippet extends React.PureComponent<{}> {
       render() {
         return (
           <StyledCodeSnippetContainer>

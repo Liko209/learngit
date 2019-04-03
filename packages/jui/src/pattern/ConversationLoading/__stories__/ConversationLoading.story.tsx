@@ -8,19 +8,28 @@
  * @Date: 2018-11-22 09:53:22
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiConversationLoading } from '../';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import { text, boolean } from '@storybook/addon-knobs';
 
 storiesOf('Pattern/ConversationLoading', module)
   .addDecorator(withInfoDecorator(JuiConversationLoading, { inline: true }))
   .add('JuiConversationLoading', () => {
-    class Test extends React.Component {
+    const tip = text('tip', 'loading');
+    const linkText = text('linkText', 'www.google.com');
+    const showTip = boolean('showTip', true);
+    class Test extends React.PureComponent {
       render() {
         return (
           <div>
-            <JuiConversationLoading onClick={() => {}} />
+            <JuiConversationLoading
+              tip={tip}
+              showTip={showTip}
+              linkText={linkText}
+              onClick={() => {}}
+            />
           </div>
         );
       }

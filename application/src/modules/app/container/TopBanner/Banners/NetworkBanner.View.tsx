@@ -4,13 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
-import { WithNamespaces } from 'react-i18next';
+import i18next from 'i18next';
+import { WithTranslation } from 'react-i18next';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
+import { observer } from 'mobx-react';
 import { NetworkBannerViewProps, NetworkBannerProps } from './types';
 
-type Props = WithNamespaces & NetworkBannerProps & NetworkBannerViewProps;
+type Props = WithTranslation & NetworkBannerProps & NetworkBannerViewProps;
 
+@observer
 class NetworkBannerView extends React.Component<Props> {
   render() {
     const { banner } = this.props;
@@ -20,7 +22,7 @@ class NetworkBannerView extends React.Component<Props> {
     return (
       <JuiSnackbarContent
         type={banner.type}
-        message={t(banner.message)}
+        message={i18next.t(banner.message)}
         messageAlign="center"
         fullWidth={true}
       />

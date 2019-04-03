@@ -3,10 +3,11 @@
  * @Date: 2019-01-12 23:14:52
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { FileItemUtils } from '../module/file/utils';
-import { GlipTypeUtil, TypeDictionary, TimeUtils } from '../../../utils';
-import { Item, SanitizedItem } from '../module/base/entity';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { SanitizedEventItem } from '../module/event/entity';
+import { EventUtils } from '../module/event/utils';
+import moment from 'moment';
 
 class ItemUtils {
   static isValidItem<T extends { id: number; group_ids: number[] }>(
@@ -67,9 +68,7 @@ class ItemUtils {
     };
   }
 
-  static eventFilter<
-    T extends { id: number; group_ids: number[]; effective_end: number }
-  >(groupId: number) {
+  static eventFilter<T extends SanitizedEventItem>(groupId: number) {
     return (event: T) => {
       let result = false;
       do {
@@ -83,11 +82,14 @@ class ItemUtils {
           break;
         }
 
-        if (
-          event.effective_end < Number.MAX_SAFE_INTEGER &&
-          !TimeUtils.compareDate(event.effective_end, Date.now())
-        ) {
-          break;
+        const effectEnd = EventUtils.getEffectiveEnd(event);
+        if (effectEnd < Number.MAX_SAFE_INTEGER) {
+          const endDate = new Date(effectEnd).toLocaleDateString();
+          const today = new Date(Date.now()).toLocaleDateString();
+
+          if (!moment(endDate).isSameOrAfter(today)) {
+            break;
+          }
         }
 
         result = true;
@@ -95,13 +97,6 @@ class ItemUtils {
 
       return result;
     };
-  }
-  static toSanitizedItem(item: Item) {
-    return {
-      id: item.id,
-      group_ids: item.group_ids,
-      created_at: item.created_at,
-    } as SanitizedItem;
   }
 }
 

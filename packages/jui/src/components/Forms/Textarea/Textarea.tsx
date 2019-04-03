@@ -6,6 +6,7 @@
 import React from 'react';
 import styled from '../../../foundation/styled-components';
 import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
+import isOutlinedTextFieldProps from '../isOutlinedTextFieldProps';
 
 import {
   typography,
@@ -15,21 +16,9 @@ import {
   height,
 } from '../../../foundation/utils/styles';
 
-type State = {
-  hasValue: boolean;
-};
+type JuiTextFieldProps = TextFieldProps;
 
-type Props = {
-  onChange(e: React.ChangeEvent<HTMLInputElement>): void;
-} & TextFieldProps;
-
-type Textarea = State & Props;
-
-const WrapperTextField = ({ hasValue, ...rest }: State) => {
-  return <MuiTextField {...rest} />;
-};
-
-const Textarea = styled<Textarea>(WrapperTextField)`
+const Textarea = styled<JuiTextFieldProps>(MuiTextField)`
   && {
     textarea {
       height: ${height(18)};
@@ -58,26 +47,14 @@ const Textarea = styled<Textarea>(WrapperTextField)`
       color: ${palette('primary', 'main')};
     }
   }
-`;
+` as typeof MuiTextField;
 
-class JuiTextarea extends React.Component<Props, State> {
-  // static displayName = 'JuiTextarea';
-  // static dependencies = [MuiTextField];
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      hasValue: false,
-    };
-  }
-
+class JuiTextarea extends React.PureComponent<TextFieldProps> {
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({
-      hasValue: e.target.value !== '',
-    });
     this.props.onChange && this.props.onChange(e);
   }
 
-  onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const { onKeyDown } = this.props;
     if (e.key === 'ArrowUp') {
       e.preventDefault();
@@ -85,21 +62,22 @@ class JuiTextarea extends React.Component<Props, State> {
     onKeyDown && onKeyDown(e);
   }
 
+  InputProps = isOutlinedTextFieldProps(this.props)
+    ? {
+      classes: { root: 'input-root' },
+    }
+    : {
+      classes: { root: 'input-root', underline: 'input-underline' },
+    };
+
   render() {
-    const { innerRef, rows, ...textFieldRest } = this.props;
-    const { hasValue } = this.state;
+    const { rows, ...textFieldRest } = this.props;
     const { onChange, ...rest } = textFieldRest;
     return (
       <Textarea
         multiline={true}
-        hasValue={hasValue}
-        onKeyDown={this.onKeyDown}
-        InputProps={{
-          classes: {
-            root: 'input-root',
-            underline: 'input-underline',
-          },
-        }}
+        onKeyDown={this.handleKeyDown}
+        InputProps={this.InputProps}
         InputLabelProps={{
           FormLabelClasses: {
             root: 'form-label-root',

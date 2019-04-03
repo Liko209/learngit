@@ -16,8 +16,8 @@ import {
 } from '../../../utils/glip-type-dictionary';
 import notificationCenter from '../../../service/notificationCenter';
 import { ProgressService } from '../../progress';
-import { ENTITY } from '../../../service/eventKey';
-import { IItemService } from '../service/IItemService';
+import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { ItemNotification } from '../utils/ItemNotification';
 
 const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_FILE, 'file'],
@@ -31,6 +31,7 @@ const itemPathMap: Map<number, string> = new Map([
 class ItemActionController {
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
+    private _entitySourceController: IEntitySourceController<Item>,
   ) {}
 
   async doNotRenderItem(id: number, type: string) {
@@ -62,19 +63,48 @@ class ItemActionController {
     });
   }
 
-  async deleteItem(itemId: number, itemService: IItemService) {
+  async deleteItem(itemId: number) {
     if (itemId > 0) {
-      const requestController = this._buildItemRequestController(
-        itemPathMap.get(GlipTypeUtil.extractTypeId(itemId)) as string,
-      );
-      const partialData = {
-        id: itemId,
-        deactivated: true,
+      const preHandlePartial = (
+        partialItem: Partial<Raw<Item>>,
+        originalItem: Item,
+      ): Partial<Raw<Item>> => {
+        return {
+          ...partialItem,
+          deactivated: true,
+        };
       };
-      await requestController.put(partialData);
+
+      const doUpdateModel = async (updateItem: Item) => {
+        const requestController = this._buildItemRequestController(
+          itemPathMap.get(GlipTypeUtil.extractTypeId(itemId)) as string,
+        );
+        return await requestController.put(updateItem);
+      };
+
+      await this._partialModifyController.updatePartially(
+        itemId,
+        preHandlePartial,
+        doUpdateModel,
+      );
     } else {
-      await itemService.deleteItem(itemId);
-      notificationCenter.emitEntityDelete(ENTITY.ITEM, [itemId]);
+      const item = await this._entitySourceController.get(itemId);
+      this._entitySourceController.delete(itemId);
+
+      if (item) {
+        const notifications = ItemNotification.getItemsNotifications([item]);
+        notifications.forEach(
+          (notification: { eventKey: string; entities: Item[] }) => {
+            notificationCenter.emitEntityDelete(
+              notification.eventKey,
+              notification.entities.map((item: Item) => {
+                return item.id;
+              }),
+            );
+          },
+        );
+      }
+
       const progressService: ProgressService = ProgressService.getInstance();
       progressService.deleteProgress(itemId);
     }

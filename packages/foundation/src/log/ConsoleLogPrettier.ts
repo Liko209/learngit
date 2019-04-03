@@ -4,26 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { LogEntity, IConsoleLogPrettier } from './types';
-const COLORS = [
-  '#ff8800',
-  '#516bf0',
-  '#008b8b',
-];
+const COLORS = ['#ff8800', '#516bf0', '#008b8b'];
 export class ConsoleLogPrettier implements IConsoleLogPrettier {
-
   prettier(logEntity: LogEntity): any[] {
-    const { tags, message } = logEntity;
-    let params: any[] = [];
+    const { tags, params } = logEntity;
+    let finalParams: any[] = [];
     if (tags && tags.length > 0) {
-      params = [...this.addColor(tags), ...params];
+      finalParams = [...this.addColor(tags), ...finalParams];
     }
-    return [...params, message];
+    return [...finalParams, ...params];
   }
 
   addColor(tags: string[]): string[] {
     const tagString = `%c${tags.join('%c ')}`;
     const colors = tags.map((tag, index) => {
-      return `color: ${COLORS[index % (COLORS.length)]}`;
+      return `color: ${COLORS[index % COLORS.length]}`;
     });
     return [tagString, ...colors];
   }

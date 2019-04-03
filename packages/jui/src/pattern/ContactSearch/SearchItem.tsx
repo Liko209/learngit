@@ -3,7 +3,7 @@
  * @Date: 2018-10-12 09:42:40
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
 import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
 import { spacing, height } from '../../foundation/utils/styles';
@@ -25,11 +25,11 @@ const StyledMenuItem = styled(MenuItem)`
   }
 `;
 
-const JuiSearchItem: React.SFC<TJuiSearchItemProps> = (
-  props: TJuiSearchItemProps,
-) => {
-  const { children, innerRef, ...rest } = props;
-  return <StyledMenuItem {...rest}>{children}</StyledMenuItem>;
-};
+const JuiSearchItem: React.SFC<TJuiSearchItemProps> = memo(
+  (props: TJuiSearchItemProps) => {
+    const { children, innerRef, ...rest } = props;
+    return <StyledMenuItem {...rest}>{children}</StyledMenuItem>;
+  },
+);
 
 export { JuiSearchItem };

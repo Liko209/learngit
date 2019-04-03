@@ -7,10 +7,10 @@ import { mainLogger } from 'foundation';
 import { TypeDictionary } from '../../../utils';
 import ItemApi from '../../../api/glip/item';
 import { IItemService } from '../service/IItemService';
-import { GroupConfigService } from '../../../service/groupConfig';
+import { GroupConfigService } from '../../groupConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
-import { GroupConfig } from '../../../models';
+import { GroupConfig } from '../../groupConfig/entity';
 
 const AvailableSocketStatus = ['connected', 'connecting'];
 const GroupItemKeyMap = {
@@ -59,13 +59,15 @@ class ItemSyncController {
     typeId: number,
     newerThen: number,
   ) {
-    const response = await ItemApi.getItems(typeId, groupId, newerThen);
-    if (response.isOk()) {
+    let result;
+    try {
+      result = await ItemApi.getItems(typeId, groupId, newerThen);
       await this._updateGroupItemNewerThan(groupId, typeId);
-      await this._itemService.getItemDataHandler()(response.data);
-    } else {
+      await this._itemService.getItemDataHandler()(result);
+    } catch (error) {
       mainLogger.info(
-        `failed to request type:${typeId} of group($groupId), response: ${response}`,
+        `failed to request type:${typeId} of group($groupId)`,
+        error,
       );
     }
   }
@@ -81,7 +83,7 @@ class ItemSyncController {
       [GroupItemKeyMap[typeId]]: Date.now(),
     };
 
-    await groupConfigService.updateGroupConfigPartialData(partialData);
+    await groupConfigService.saveAndDoNotify(partialData);
   }
 }
 

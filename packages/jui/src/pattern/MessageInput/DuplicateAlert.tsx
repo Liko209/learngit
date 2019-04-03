@@ -3,7 +3,7 @@
  * @Date: 2018-12-08 00:15:34
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import { JuiButton } from '../../components/Buttons/Button';
 import { JuiModal } from '../../components/Dialog';
 import styled from '../../foundation/styled-components';
@@ -56,7 +56,7 @@ const Item = styled.li`
   ${ellipsis()};
 `;
 
-const JuiDuplicateAlert: React.SFC<Props> = (props: Props) => {
+const JuiDuplicateAlert: React.SFC<Props> = memo((props: Props) => {
   const {
     onCancel,
     onUpdate,
@@ -124,6 +124,6 @@ const JuiDuplicateAlert: React.SFC<Props> = (props: Props) => {
     );
   }
   return null;
-};
+});
 
 export { JuiDuplicateAlert };

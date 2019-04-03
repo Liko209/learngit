@@ -1,4 +1,4 @@
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
@@ -19,20 +19,20 @@ function getMessagesTitle(messagePath?: string) {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, +messagePath);
     return group.displayName;
   }
-  return t('Messages');
+  return i18next.t('message.Messages');
 }
 
 const DOC_TITLE = {
   messages: getMessagesTitle,
-  dashboard: () => t('Dashboard'),
-  phone: () => t('Phone'),
-  meetings: () => t('Meetings'),
-  contacts: () => t('Contacts'),
-  calendar: () => t('Calendar'),
-  tasks: () => t('Tasks'),
-  notes: () => t('Notes'),
-  files: () => t('Files'),
-  settings: () => t('Settings'),
+  dashboard: () => i18next.t('dashboard.Dashboard'),
+  phone: () => i18next.t('telephony.Phone'),
+  meetings: () => i18next.t('meeting.Meetings'),
+  contacts: () => i18next.t('contact.Contacts'),
+  calendar: () => i18next.t('calendar.Calendar'),
+  tasks: () => i18next.t('item.tasks'),
+  notes: () => i18next.t('item.notes'),
+  files: () => i18next.t('item.files'),
+  settings: () => i18next.t('setting.Settings'),
 };
 
 function getDocTitle(pathname: string) {

@@ -3,12 +3,17 @@ import i18nextXhrBackend from 'i18next-xhr-backend';
 import i18nextBrowserLanguagedetector from 'i18next-browser-languagedetector';
 import intervalPlural from 'i18next-intervalplural-postprocessor';
 import moment from 'moment';
-import { reactI18nextModule } from 'react-i18next';
+import { initReactI18next } from 'react-i18next';
 import { toTitleCase } from '@/utils/string';
 
 const getVariationOfAOrAn = function (value: string, capitalize: boolean) {
   const letters = ['a', 'e', 'i', 'o', 'u', 'h'];
-  const firstLetter = value.substring(0, 1);
+  const lastDotChar = value.lastIndexOf('.');
+  const actualValue =
+    lastDotChar > 0 && lastDotChar !== value.length - 1
+      ? value.substring(lastDotChar + 1)
+      : value;
+  const firstLetter = actualValue.substring(0, 1);
   let correctWordForm = '';
   if (
     letters.find((l: string) => {
@@ -46,7 +51,7 @@ const config = {
   ns: ['translations'],
   defaultNS: 'translations',
   debug: true,
-  react: { wait: true },
+  react: { wait: true, useSuspense: false },
 };
 
 const ready = () => {
@@ -56,7 +61,7 @@ const ready = () => {
 i18next
   .use(i18nextXhrBackend)
   .use(i18nextBrowserLanguagedetector)
-  .use(reactI18nextModule)
+  .use(initReactI18next)
   .use(intervalPlural)
   .init(config, ready);
 

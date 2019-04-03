@@ -7,14 +7,18 @@ import React from 'react';
 import styled from 'styled-components';
 import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
-import { JuiPresence } from '../index';
+import { JuiPresence, PRESENCE } from '../index';
 
 const StyledWrapper = styled.div`
   display: flex;
+  padding: 10px;
 `;
 const Wrapper = (props: { children: any }) => (
   <StyledWrapper>{props.children}</StyledWrapper>
 );
+const StyledText = styled.span`
+  margin-left: 5px;
+`;
 
 storiesOf('Components', module).add(
   'Presence🔜',
@@ -22,13 +26,28 @@ storiesOf('Components', module).add(
     return (
       <div>
         <Wrapper>
-          <JuiPresence presence="Available" /> Available
+          <JuiPresence presence={PRESENCE.AVAILABLE} />
+          <StyledText>Avaiable</StyledText>
         </Wrapper>
         <Wrapper>
-          <JuiPresence presence="InMeeting" /> InMeeting
+          <JuiPresence presence={PRESENCE.INMEETING} />
+          <StyledText>InMeeting</StyledText>
         </Wrapper>
         <Wrapper>
-          <JuiPresence presence="Unavailable" /> Unavailable
+          <JuiPresence presence={PRESENCE.DND} />
+          <StyledText>DND</StyledText>
+        </Wrapper>
+        <Wrapper>
+          <JuiPresence presence={PRESENCE.UNAVAILABLE} />
+          <StyledText>Unavailable</StyledText>
+        </Wrapper>
+        <Wrapper>
+          <JuiPresence presence={PRESENCE.NOTREADY} />
+          <StyledText>NotReady</StyledText>
+        </Wrapper>
+        <Wrapper>
+          <JuiPresence presence={PRESENCE.ONCALL} />
+          <StyledText>OnCall</StyledText>
         </Wrapper>
       </div>
     );

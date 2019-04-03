@@ -1,7 +1,5 @@
 type MessageUmiProps = {};
 
-type MessageUmiViewProps = {
-  groupIds: number[];
-};
+type MessageUmiViewProps = {};
 
 export { MessageUmiProps, MessageUmiViewProps };

@@ -7,15 +7,10 @@
 import { ItemService } from '../ItemService';
 import { ItemServiceController } from '../../controller/ItemServiceController';
 import { FileItemService } from '../../module/file';
-import { daoManager, ItemDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
 import { ItemFile, Item } from '../../entity';
 import { postFactory, rawItemFactory } from '../../../../__tests__/factories';
 import { ItemActionController } from '../../controller/ItemActionController';
-import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
-import { SubscribeController } from '../../../base/controller/SubscribeController';
-import { Api } from '../../../../api';
-import ItemAPI from '../../../../api/glip/item';
-import { ApiResultOk } from '../../../../api/ApiResult';
 import { transform, baseHandleData } from '../../../../service/utils';
 import { TypeDictionary } from '../../../../utils';
 import { ItemSyncController } from '../../controller/ItemSyncController';
@@ -44,10 +39,8 @@ describe('ItemService', () => {
   function setup() {
     itemService = new ItemService();
     itemServiceController = new ItemServiceController(null, null);
-    fileItemService = new FileItemService(itemService);
-    itemActionController = new ItemActionController(
-      undefined as IPartialModifyController<Item>,
-    );
+    fileItemService = new FileItemService();
+    itemActionController = new ItemActionController(undefined, undefined);
 
     Object.assign(itemService, {
       _itemServiceController: itemServiceController,
@@ -110,6 +103,17 @@ describe('ItemService', () => {
         .mockImplementation(() => {
           return fileItemService;
         });
+    });
+
+    describe('initialUploadItemsFromDraft', () => {
+      it('should call file item service with correct parameter', async () => {
+        expect.assertions(1);
+        fileItemService.initialUploadItemsFromDraft = jest.fn();
+        await itemService.initialUploadItemsFromDraft(groupId);
+        expect(fileItemService.initialUploadItemsFromDraft).toBeCalledWith(
+          groupId,
+        );
+      });
     });
 
     describe('getThumbsUrlWithSize', () => {
@@ -237,6 +241,14 @@ describe('ItemService', () => {
         ]);
       });
     });
+
+    describe('hasUploadingFiles', () => {
+      it('should call file item service', () => {
+        fileItemService.hasUploadingFiles = jest.fn().mockReturnValue(true);
+        expect(itemService.hasUploadingFiles()).toBeTruthy();
+        expect(fileItemService.hasUploadingFiles).toBeCalled();
+      });
+    });
   });
 
   describe('getItems()', () => {
@@ -262,110 +274,9 @@ describe('ItemService', () => {
     });
   });
 
-  describe('createItem()', () => {
-    it('should controller with correct parameter', async () => {
-      Object.assign(itemService, {
-        _itemServiceController: itemServiceController,
-      });
-
-      itemServiceController.createItem = jest.fn();
-
-      await itemService.createItem({
-        id: -1,
-        created_at: 1234,
-        modified_at: 1234,
-        creator_id: 2222,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        group_ids: [1],
-        post_ids: [1],
-        company_id: 1,
-        name: 'test name',
-        type_id: 1,
-        type: 'jpg',
-        versions: [],
-      });
-
-      expect(itemServiceController.createItem).toBeCalledWith({
-        id: -1,
-        created_at: 1234,
-        modified_at: 1234,
-        creator_id: 2222,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        group_ids: [1],
-        post_ids: [1],
-        company_id: 1,
-        name: 'test name',
-        type_id: 1,
-        type: 'jpg',
-        versions: [],
-      });
-    });
-  });
-
-  describe('updateItem()', () => {
-    it('should controller with correct parameter', async () => {
-      Object.assign(itemService, {
-        _itemServiceController: itemServiceController,
-      });
-
-      itemServiceController.updateItem = jest.fn();
-
-      await itemService.updateItem({
-        id: 1,
-        created_at: 1234,
-        modified_at: 1234,
-        creator_id: 2222,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        group_ids: [1],
-        post_ids: [1],
-        company_id: 1,
-        name: 'test name',
-        type_id: 1,
-        type: 'jpg',
-        versions: [],
-      });
-      expect(itemServiceController.updateItem).toBeCalledWith({
-        id: 1,
-        created_at: 1234,
-        modified_at: 1234,
-        creator_id: 2222,
-        is_new: false,
-        deactivated: false,
-        version: 1,
-        group_ids: [1],
-        post_ids: [1],
-        company_id: 1,
-        name: 'test name',
-        type_id: 1,
-        type: 'jpg',
-        versions: [],
-      });
-    });
-  });
-
-  describe('deleteItem()', () => {
-    it('should controller with correct parameter', async () => {
-      Object.assign(itemService, {
-        _itemServiceController: itemServiceController,
-      });
-
-      itemServiceController.deleteItem = jest.fn();
-
-      itemService.deleteItem(1);
-
-      expect(itemServiceController.deleteItem).toBeCalledWith(1);
-    });
-  });
-
   describe('getByPosts', () => {
     const itemDao = {
-      getItemsByIds: jest.fn(),
+      batchGet: jest.fn(),
     };
 
     const entitySourceController = {
@@ -474,15 +385,12 @@ describe('ItemService', () => {
       Object.assign(itemService, {
         _itemServiceController: itemServiceController,
       });
-
-      itemServiceController.handleSanitizedItems = jest.fn();
     });
 
     it('should insert transformed data', async () => {
       const item = rawItemFactory.build({ _id: 1 });
       delete item.id;
       await itemService.handleIncomingData([item]);
-      expect(itemServiceController.handleSanitizedItems).toHaveBeenCalled();
       expect(baseHandleData).toHaveBeenCalled();
       expect(transform).toHaveBeenCalledTimes(1);
       expect(daoManager.getDao).toHaveBeenCalled();
@@ -490,7 +398,6 @@ describe('ItemService', () => {
 
     it('should insert nothing', async () => {
       const ret = await itemService.handleIncomingData([]);
-      expect(itemServiceController.handleSanitizedItems).not.toHaveBeenCalled();
       expect(baseHandleData).not.toHaveBeenCalled();
       expect(ret).toBeUndefined();
     });

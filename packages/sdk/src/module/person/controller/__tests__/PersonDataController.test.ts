@@ -4,11 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { transform, baseHandleData } from '../../../../service/utils';
 import { PersonDataController } from '../PersonDataController';
 import { rawPersonFactory } from '../../../../__tests__/factories';
+import { SYNC_SOURCE } from '../../../../module/sync';
+import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
+import { Person } from '../../entity';
+import { AccountGlobalConfig } from '../../../../service/account/config';
+import notificationCenter from '../../../../service/notificationCenter';
 
 jest.mock('../../../../service/notificationCenter');
+jest.mock('../../../../framework/controller/impl/EntitySourceController');
+jest.mock('../../../../service/account/config');
 
 jest.mock('../../../../dao', () => ({
   daoManager: {
@@ -16,35 +22,40 @@ jest.mock('../../../../dao', () => ({
   },
 }));
 
-jest.mock('../../../../service/utils', () => ({
-  transform: jest.fn(),
-  baseHandleData: jest.fn(),
-}));
-
 describe('PersonDataController', () => {
   let personDataController: PersonDataController;
+  const entitySourceController = new EntitySourceController<Person>(null, null);
 
   function setUp() {
-    personDataController = new PersonDataController();
+    personDataController = new PersonDataController(entitySourceController);
+    AccountGlobalConfig.getCurrentUserId = jest.fn();
   }
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
+    jest.restoreAllMocks();
     setUp();
   });
 
-  it('empty array', async () => {
-    await personDataController.handleIncomingData([]);
-    expect(transform).toHaveBeenCalledTimes(0);
-    expect(baseHandleData).not.toHaveBeenCalled();
+  it('should return directly when handle empty array', async () => {
+    personDataController.handleTeamRemovedIds = jest.fn();
+    await personDataController.handleIncomingData([], SYNC_SOURCE.INDEX);
+    expect(personDataController.handleTeamRemovedIds).toHaveBeenCalledTimes(0);
   });
 
-  it('pass params type error', async () => {
+  it('should emit notification when handle index data', async () => {
+    await personDataController.handleIncomingData(
+      [rawPersonFactory.build({ _id: 1 })],
+      SYNC_SOURCE.INDEX,
+    );
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not emit notification when handle index data', async () => {
     await personDataController.handleIncomingData([
-      rawPersonFactory.build({ _id: 1 }),
+      rawPersonFactory.build({ _id: 1 }, SYNC_SOURCE.REMAINING),
     ]);
-    expect(transform).toHaveBeenCalledTimes(1);
-    expect(baseHandleData).toHaveBeenCalled();
+    expect(notificationCenter.emitEntityUpdate).toHaveBeenCalledTimes(1);
   });
 });

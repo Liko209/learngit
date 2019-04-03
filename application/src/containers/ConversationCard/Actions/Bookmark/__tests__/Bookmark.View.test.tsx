@@ -9,16 +9,15 @@ import { shallow } from 'enzyme';
 import { BookmarkView } from '../Bookmark.View';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
+import { JError } from 'sdk/error';
 
 jest.mock('@/containers/Notification');
 
 describe('BookmarkView', () => {
   describe('render()', () => {
     function setUpMock(isBookmark: boolean, isFailed: boolean) {
-      const bookmark = async (
-        toBookmark: boolean,
-      ): Promise<{ isFailed: boolean }> => {
-        return { isFailed };
+      const bookmark = async (toBookmark: boolean): Promise<void> => {
+        throw new JError('test', 'test', '');
       };
       const props = {
         isBookmark,

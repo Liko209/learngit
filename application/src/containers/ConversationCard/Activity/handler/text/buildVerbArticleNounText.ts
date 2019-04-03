@@ -9,6 +9,6 @@ export default ({ verb, noun }: Parameter) => {
       verb,
       noun,
     },
-    key: 'verb-article-noun',
+    key: 'item.activity.verb-article-noun',
   };
 };

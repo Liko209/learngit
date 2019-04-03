@@ -5,35 +5,27 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { t } from 'i18next';
 import {
   JuiFileWithoutPreview,
   JuiFileWithPreview,
   JuiPreviewImage,
+  JuiDelayPlaceholder,
 } from 'jui/pattern/ConversationCard/Files';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { getThumbnailSize } from 'jui/foundation/utils/calculateImageSize';
+import { getThumbnailSize } from 'jui/foundation/utils';
 import {
   AttachmentItem,
   ITEM_STATUS,
 } from 'jui/pattern/MessageInput/AttachmentItem';
+import { showImageViewer } from '@/containers/Viewer';
 import { getFileSize } from './helper';
-import { getFileIcon } from '../helper';
 import { FilesViewProps, FileType, ExtendFileItem } from './types';
+import { getFileIcon } from '@/common/getFileIcon';
+import { withFuture, FutureCreator } from 'jui/hoc/withFuture';
+import { UploadFileTracker } from './UploadFileTracker';
+import { Download } from '@/containers/common/Download';
 
 const SQUARE_SIZE = 180;
-
-const downloadBtn = (downloadUrl: string) => (
-  <JuiIconButton
-    component="a"
-    download={true}
-    href={downloadUrl}
-    variant="plain"
-    tooltipTitle={t('download')}
-  >
-    download
-  </JuiIconButton>
-);
+const FutureAttachmentItem = withFuture(AttachmentItem);
 
 @observer
 class FilesView extends React.Component<FilesViewProps> {
@@ -44,6 +36,7 @@ class FilesView extends React.Component<FilesViewProps> {
     id: number,
     progresses: Map<number, number>,
     name: string,
+    future?: FutureCreator,
   ) => {
     const progress = progresses.get(id);
     let realStatus: ITEM_STATUS = ITEM_STATUS.NORMAL;
@@ -59,48 +52,117 @@ class FilesView extends React.Component<FilesViewProps> {
       realStatus = ITEM_STATUS.ERROR;
     }
     return (
-      <AttachmentItem
+      <FutureAttachmentItem
+        fileIcon={getFileIcon(name)}
         status={realStatus}
         key={id}
         name={name}
         progress={progress}
         onClickDeleteButton={() => this.props.removeFile(id)}
+        future={future}
       />
     );
   }
+
+  _handleImageClick = (
+    groupId: number,
+    postId: number,
+    id: number,
+    thumbnailSrc: string,
+    origWidth: number,
+    origHeight: number,
+  ) => async (ev: React.MouseEvent, loaded?: boolean) => {
+    if (postId < 0) return;
+    const target = ev.currentTarget as HTMLElement;
+    showImageViewer(groupId, id, {
+      thumbnailSrc,
+      initialWidth: origWidth,
+      initialHeight: origHeight,
+      originElement: target,
+    });
+  }
+
+  async componentDidMount() {
+    await this.props.getCropImage();
+  }
+
+  private _handleImageDidLoad = (id: number, callback: Function) => {
+    UploadFileTracker.tracker().clear(this.props.ids);
+    callback();
+  }
+
   render() {
-    const { files, progresses } = this.props;
+    const { files, progresses, urlMap, groupId, postId } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
         {files[FileType.image].map((file: ExtendFileItem) => {
-          const { item, previewUrl } = file;
+          const { item } = file;
           const { origHeight, id, origWidth, name, downloadUrl } = item;
-          if (id < 0) {
-            return this._renderItem(id, progresses, name);
-          }
           let size = { width: SQUARE_SIZE, height: SQUARE_SIZE };
           if (singleImage) {
             size = getThumbnailSize(origWidth, origHeight);
           }
+          const placeholder = (
+            <JuiDelayPlaceholder width={size.width} height={size.height} />
+          );
+          if (id < 0 || this.props.isRecentlyUploaded(id)) {
+            return this._renderItem(
+              id,
+              progresses,
+              name,
+              (callback: Function) => (
+                <JuiPreviewImage
+                  key={id}
+                  didLoad={() => this._handleImageDidLoad(id, callback)}
+                  handleImageClick={this._handleImageClick(
+                    groupId,
+                    postId,
+                    id,
+                    urlMap.get(id) || '',
+                    origWidth,
+                    origHeight,
+                  )}
+                  placeholder={placeholder}
+                  width={size.width}
+                  height={size.height}
+                  forceSize={!singleImage}
+                  squareSize={SQUARE_SIZE}
+                  fileName={name}
+                  url={urlMap.get(id) || ''}
+                  Actions={<Download url={downloadUrl} />}
+                />
+              ),
+            );
+          }
           return (
             <JuiPreviewImage
               key={id}
-              placeholder={
-                <JuiFileWithoutPreview
-                  fileName={name}
-                  size={`${getFileSize(item.size)}`}
-                  iconType="image_preview"
-                  Actions={downloadBtn(downloadUrl)}
-                />
-              }
-              width={size.width || SQUARE_SIZE}
-              height={size.height || SQUARE_SIZE}
+              placeholder={React.cloneElement(placeholder, {
+                onClick: this._handleImageClick(
+                  groupId,
+                  postId,
+                  id,
+                  urlMap.get(id) || '',
+                  size.width,
+                  size.height,
+                ),
+              })}
+              handleImageClick={this._handleImageClick(
+                groupId,
+                postId,
+                id,
+                urlMap.get(id) || '',
+                size.width,
+                size.height,
+              )}
+              width={size.width}
+              height={size.height}
               forceSize={!singleImage}
               squareSize={SQUARE_SIZE}
               fileName={name}
-              url={previewUrl}
-              Actions={downloadBtn(downloadUrl)}
+              url={urlMap.get(id) || ''}
+              Actions={<Download url={downloadUrl} />}
             />
           );
         })}
@@ -118,7 +180,7 @@ class FilesView extends React.Component<FilesViewProps> {
               size={`${getFileSize(size)}`}
               url={previewUrl}
               iconType={iconType}
-              Actions={downloadBtn(downloadUrl)}
+              Actions={<Download url={downloadUrl} />}
             />
           );
         })}
@@ -135,7 +197,7 @@ class FilesView extends React.Component<FilesViewProps> {
               fileName={name}
               size={`${getFileSize(size)}`}
               iconType={iconType}
-              Actions={downloadBtn(downloadUrl)}
+              Actions={<Download url={downloadUrl} />}
             />
           );
         })}

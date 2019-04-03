@@ -19,7 +19,7 @@ export default class SingleEntityMapStore<
   init: boolean;
   getService: Function;
   service: BaseService<T>;
-  constructor(entityName: ENTITY_NAME, { service, event }: EntitySetting) {
+  constructor(entityName: ENTITY_NAME, { service, event }: EntitySetting<K>) {
     super(entityName);
     this.init = false;
     this.getService = service as Function;
@@ -61,10 +61,12 @@ export default class SingleEntityMapStore<
 
   get(property: keyof K) {
     if (!this.init) {
+      this.init = true;
       this.getByService().then((data: any) => {
         if (data) {
           this.batchSet(data);
-          this.init = true;
+        } else {
+          this.init = false;
         }
       });
     }

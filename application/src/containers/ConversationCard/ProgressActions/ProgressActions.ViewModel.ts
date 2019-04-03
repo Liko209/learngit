@@ -7,7 +7,7 @@
 import { observable, computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
 import { ProgressActionsProps, ProgressActionsViewProps } from './types';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { ItemService } from 'sdk/module/item';
 import { Post } from 'sdk/module/post/entity';
 import { Progress, PROGRESS_STATUS } from 'sdk/module/progress/entity';
@@ -23,7 +23,7 @@ import {
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
-  private _postService: NewPostService = NewPostService.getInstance();
+  private _postService: PostService = PostService.getInstance();
   private _itemService: ItemService = ItemService.getInstance();
   private _timer: NodeJS.Timer;
   @observable
@@ -75,7 +75,7 @@ class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
       await this._postService.reSendPost(this.id);
     } else {
       Notification.flashToast({
-        message: 'fileNoLongerExists',
+        message: 'item.prompt.fileNoLongerExists',
         type: ToastType.ERROR,
         messageAlign: ToastMessageAlign.LEFT,
         fullWidth: false,

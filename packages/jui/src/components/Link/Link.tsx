@@ -38,20 +38,19 @@ const StyledComponent = styled<JuiLinkProps, 'span'>('span')`
 `;
 
 type ILink = React.ComponentType<JuiLinkProps>;
-const JuiLink: ILink = ({
-  Component,
-  handleOnClick,
-  ...rest
-}: JuiLinkProps) => {
-  return Component ? (
-    <Component {...rest}>
-      <StyledComponent onClick={handleOnClick} {...rest} />
-    </Component>
-  ) : null;
-};
+const JuiLink: ILink = React.memo(
+  ({ Component, handleOnClick, ...rest }: JuiLinkProps) => {
+    const { size, ...componentRest } = rest;
+    return Component ? (
+      <Component {...componentRest}>
+        <StyledComponent onClick={handleOnClick} {...rest} />
+      </Component>
+    ) : null;
+  },
+);
 
 const typographySizeMap: { [key in Size]: keyof Theme['typography'] } = {
-  small: 'caption',
+  small: 'caption1',
   medium: 'body2',
   large: 'headline',
 };

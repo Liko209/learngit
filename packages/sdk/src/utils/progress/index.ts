@@ -12,43 +12,26 @@ interface IProgressEvent {
   [prop: string]: any;
 }
 export default class ProgressBar {
-  private _counter: number = 0;
-  private _step: number = 1;
-  private _isDone: boolean = false;
+  private _start: boolean = false;
 
-  get counter() {
-    return this._counter;
-  }
   start() {
-    this._counter += 1;
-    NProgress.configure({ showSpinner: false });
-    NProgress.start();
+    if (!this._start) {
+      this._start = true;
+      NProgress.configure({ showSpinner: false });
+      NProgress.start();
+    }
   }
 
   update(e: IProgressEvent) {
-    let percentage = Math.min(Math.floor(Number(e.loaded) / e.total), 1);
-    if (!e.lengthComputable) {
-      this._step > 0 ? (this._step -= 0.1) : (this._step = 0);
-      percentage -= this._step;
-      requestAnimationFrame(() => {
-        console.log(`${(percentage * 100).toFixed(2)}%`);
-        if (percentage <= 0.9 && !this._isDone) {
-          NProgress.inc(percentage);
-          this.update(e);
-        } else {
-          this.stop();
-        }
-      });
-      return;
+    if (e.lengthComputable) {
+      const percentage = Math.min(Math.floor(Number(e.loaded) / e.total), 1);
+      NProgress.inc(percentage);
     }
-    NProgress.inc(percentage);
   }
 
   stop() {
-    this._counter -= 1;
-
-    if (this._counter <= 0) {
-      this._isDone = true;
+    if (this._start) {
+      this._start = false;
       NProgress.done();
     }
   }

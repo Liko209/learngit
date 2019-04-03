@@ -20,9 +20,14 @@ class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
   }
   @computed
   get postItems() {
-    return this._ids.map((id: number) => {
-      return getEntity<Item, LinkItemModel>(ENTITY_NAME.LINK_ITEM, id);
+    const items: LinkItemModel[] = [];
+    this._ids.forEach((id: number) => {
+      const item = getEntity<Item, LinkItemModel>(ENTITY_NAME.ITEM, id);
+      if (item && !item.deactivated) {
+        items.push(item);
+      }
     });
+    return items;
   }
   @action
   onLinkItemClose = async (itemId: number = 0) => {

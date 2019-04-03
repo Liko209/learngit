@@ -6,61 +6,99 @@
 import React, { Component, MouseEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
-import { JuiMenu, JuiMenuItem } from 'jui/components';
+import { withTranslation, WithTranslation } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
+import { JuiMenuItem } from 'jui/components';
 import { JuiCheckboxLabel } from 'jui/components/Checkbox';
 import { JuiTypography } from 'jui/foundation/Typography';
 import { Dialog } from '@/containers/Dialog';
 import { Notification } from '@/containers/Notification';
 import { MenuViewProps } from './types';
-import {
-  ProfileDialogGroup,
-  ProfileDialogPerson,
-} from '@/containers/Profile/Dialog';
-import { TranslationFunction } from 'i18next';
+import { JuiMenuContain } from 'jui/pattern/ConversationList/ConversationListItem';
 import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
-type Props = MenuViewProps & RouteComponentProps & WithNamespaces;
-type State = {
-  checked: boolean;
-};
+type Props = MenuViewProps & RouteComponentProps & WithTranslation;
+
 @observer
-class MenuViewComponent extends Component<Props, State> {
-  state = {
-    checked: false,
-  };
+class MenuViewComponent extends Component<Props> {
+  checked: boolean = false;
 
-  constructor(props: Props) {
-    super(props);
-    this._handleToggleFavorite = this._handleToggleFavorite.bind(this);
-    this._handleCloseConversation = this._handleCloseConversation.bind(this);
-    this._checkboxChange = this._checkboxChange.bind(this);
-  }
-
-  renderCloseMenuItem(t: TranslationFunction, closable: boolean) {
+  renderCloseMenuItem() {
+    const { t, closable } = this.props;
     return (
       <JuiMenuItem
         data-test-automation-id="closeConversation"
         onClick={this._handleCloseConversation}
         disabled={!closable}
       >
-        {t('conversationMenuItem:close')}
+        {t('people.team.close')}
       </JuiMenuItem>
     );
   }
 
-  private async _handleToggleFavorite(event: MouseEvent<HTMLElement>) {
+  _handleResize = (event: UIEvent) => {
+    this.props.onClose(event);
+  }
+
+  componentDidMount() {
+    window.addEventListener('resize', this._handleResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._handleResize);
+  }
+
+  private _getKeyReadOrUnread = () => {
+    const { isUnread } = this.props;
+    return isUnread ? 'markAsRead' : 'markAsUnread';
+  }
+
+  private _renderReadOrUnreadMenuItem = () => {
+    const { t, disabledReadOrUnread } = this.props;
+    return (
+      <JuiMenuItem
+        data-test-automation-id="readOrUnreadConversation"
+        onClick={this._handleReadOrUnreadConversation}
+        disabled={disabledReadOrUnread}
+      >
+        {t(`people.team.${this._getKeyReadOrUnread()}`)}
+      </JuiMenuItem>
+    );
+  }
+
+  private _handleReadOrUnreadConversation = async (
+    event: MouseEvent<HTMLElement>,
+  ) => {
+    const { onClose, toggleRead } = this.props;
+    try {
+      event.stopPropagation();
+      onClose(event);
+      await toggleRead();
+    } catch {
+      const message = `people.prompt.${this._getKeyReadOrUnread()}`;
+      Notification.flashToast({
+        message,
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
+    }
+  }
+
+  private _handleToggleFavorite = async (event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     const { isFavorite } = this.props;
     this.props.onClose(event);
-    const result = await this.props.toggleFavorite();
-    if (result.isErr()) {
+    try {
+      await this.props.toggleFavorite();
+    } catch {
       const message = isFavorite
-        ? 'markUnFavoriteServerErrorContent'
-        : 'markFavoriteServerErrorContent';
+        ? 'people.prompt.markUnFavoriteServerErrorContent'
+        : 'people.prompt.markFavoriteServerErrorContent';
 
       Notification.flashToast({
         message,
@@ -72,38 +110,38 @@ class MenuViewComponent extends Component<Props, State> {
     }
   }
 
-  private _checkboxChange(event: React.ChangeEvent<{}>, checked: boolean) {
-    this.setState({
-      checked,
-    });
+  private _checkboxChange = (
+    event: React.ChangeEvent<{}>,
+    checked: boolean,
+  ) => {
+    this.checked = checked;
   }
 
-  private _handleCloseConversation(event: MouseEvent<HTMLElement>) {
+  private _handleCloseConversation = (event: MouseEvent<HTMLElement>) => {
     const { t } = this.props;
     event.stopPropagation();
     this.props.onClose(event);
     if (this.props.shouldSkipCloseConfirmation) {
       this._closeConversationWithoutConfirmDialog();
     } else {
-      this.setState({
-        checked: false,
-      });
       Dialog.alert({
-        title: t('conversationMenuItem:closeConfirmDialogHeader'),
+        title: t('people.prompt.closeConfirmDialogHeader'),
         content: (
           <>
             <JuiTypography>
-              {t('conversationMenuItem:closeConfirmDialogContent')}
+              {t('people.prompt.closeConfirmDialogContent')}
             </JuiTypography>
             <JuiCheckboxLabel
-              label={t('conversationMenuItem:closeConfirmDialogDontAskMeAgain')}
-              checked={false}
+              label={t('people.prompt.closeConfirmDialogDontAskMeAgain')}
+              checked={this.checked}
               handleChange={this._checkboxChange}
             />
           </>
         ),
-        okText: t('conversationMenuItem:Close Conversation'),
-        okVariant: 'text',
+        okText: t('people.team.close'),
+        cancelText: t('common.dialog.cancel'),
+        okVariant: 'contained',
+        okType: 'primary',
         onOK: () => {
           this._closeConversationWithConfirm();
         },
@@ -112,8 +150,7 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private async _closeConversationWithConfirm() {
-    const { checked } = this.state;
-    this._closeConversation(checked);
+    this._closeConversation(this.checked);
   }
 
   private async _closeConversationWithoutConfirmDialog() {
@@ -121,71 +158,70 @@ class MenuViewComponent extends Component<Props, State> {
   }
 
   private async _closeConversation(shouldSkipCloseConfirmation: boolean) {
-    const result = await this.props.closeConversation(
-      shouldSkipCloseConfirmation,
-    );
-    result.match({
-      Ok: () => {
-        // jump to section
-        const match = /messages\/(\d+)/.exec(window.location.href);
-        if (match && this.props.groupId === Number(match[1])) {
-          const { history } = this.props;
-          history.replace('/messages');
-        }
-      },
-      Err: () => {
-        Notification.flashToast({
-          message: 'SorryWeWereNotAbleToCloseTheConversation',
-          type: ToastType.ERROR,
-          messageAlign: ToastMessageAlign.LEFT,
-          fullWidth: false,
-          dismissible: false,
-        });
-      },
-    });
-  }
-  private _handleProfileDialog = (event: MouseEvent<HTMLElement>) => {
-    this.props.onClose(event);
-    const { personId, groupId } = this.props;
-    let ProfileDialog = ProfileDialogGroup;
-    let id = groupId;
-    if (personId) {
-      ProfileDialog = ProfileDialogPerson;
-      id = personId;
+    try {
+      await this.props.closeConversation(shouldSkipCloseConfirmation);
+      // jump to section
+      const match = /messages\/(\d+)/.exec(window.location.href);
+      if (match && this.props.groupId === Number(match[1])) {
+        const { history } = this.props;
+        history.replace('/messages');
+      }
+    } catch {
+      Notification.flashToast({
+        message: 'people.prompt.SorryWeWereNotAbleToCloseTheConversation',
+        type: ToastType.ERROR,
+        messageAlign: ToastMessageAlign.LEFT,
+        fullWidth: false,
+        dismissible: false,
+      });
     }
-    Dialog.simple(<ProfileDialog id={id} />, {
-      size: 'medium',
-    });
   }
+
+  private _onClose = (event: MouseEvent<HTMLElement>) => {
+    this.props.onClose(event);
+  }
+
+  private _mouseEventHandler = (e: React.TouchEvent | MouseEvent) => {
+    e.stopPropagation();
+  }
+
   render() {
-    const { anchorEl, onClose, favoriteText, t, closable } = this.props;
+    const {
+      personId,
+      groupId,
+      anchorEl,
+      onClose,
+      favoriteText,
+      t,
+    } = this.props;
     return (
-      <JuiMenu
+      <JuiMenuContain
         id="render-props-menu"
         anchorEl={anchorEl}
         open={!!anchorEl}
-        onClose={onClose}
+        onClose={this._onClose}
+        onClick={this._mouseEventHandler}
+        onTouchStart={this._mouseEventHandler}
+        onMouseDown={this._mouseEventHandler}
       >
+        {this._renderReadOrUnreadMenuItem()}
         <JuiMenuItem
           data-test-automation-id="favToggler"
           onClick={this._handleToggleFavorite}
         >
-          {t(`conversationMenuItem:${favoriteText}`)}
+          {t(`${favoriteText}`)}
         </JuiMenuItem>
-        <JuiMenuItem
-          data-test-automation-id="profileEntry"
-          onClick={this._handleProfileDialog}
-        >
-          {t('viewProfile')}
-        </JuiMenuItem>
-        {this.renderCloseMenuItem(t, closable)}
-      </JuiMenu>
+        <OpenProfileDialog id={personId || groupId} beforeClick={onClose}>
+          <JuiMenuItem data-test-automation-id="profileEntry">
+            {t('people.team.profile')}
+          </JuiMenuItem>
+        </OpenProfileDialog>
+        {this.renderCloseMenuItem()}
+      </JuiMenuContain>
     );
   }
 }
 
-const MenuView = withRouter(
-  translate('conversationMenuItem')(MenuViewComponent),
-);
+const MenuView = withRouter(withTranslation('translations')(MenuViewComponent));
 
 export { MenuView, MenuViewComponent };

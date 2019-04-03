@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { Markdown } from 'glipdown';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogPersonContentViewProps, FormGroupType } from './types';
 import { JuiDivider } from 'jui/components/Divider';
 import { Avatar } from '@/containers/Avatar';
@@ -37,10 +37,11 @@ import copy from 'copy-to-clipboard';
 import { PhoneNumberInfo } from 'sdk/module/person/entity';
 import { JuiIconButton } from 'jui/components/Buttons';
 import portalManager from '@/common/PortalManager';
+import { Call } from '@/modules/telephony';
 
 @observer
 class ProfileDialogPersonContentViewComponent extends Component<
-  WithNamespaces & ProfileDialogPersonContentViewProps
+  WithTranslation & ProfileDialogPersonContentViewProps
 > {
   renderPresence = () => {
     const { id } = this.props;
@@ -49,7 +50,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
 
   getAriaLabelKey = () => {
     const { isMe } = this.props;
-    return isMe ? 'ariaGoToMe' : 'ariaGoToOther';
+    return isMe ? 'people.profile.ariaGoToMe' : 'people.profile.ariaGoToOther';
   }
 
   renderMessage = () => {
@@ -60,24 +61,25 @@ class ProfileDialogPersonContentViewComponent extends Component<
         aria-label={t(this.getAriaLabelKey(), { name: person.userDisplayName })}
       >
         {this.renderIcon('chat_bubble')}
-        {t('message')}
+        {t('message.message')}
       </JuiProfileDialogContentSummaryButton>
     );
   }
 
   renderIcon = (key: string) => {
-    return <JuiIconography fontSize="small">{key}</JuiIconography>;
+    return <JuiIconography iconSize="medium">{key}</JuiIconography>;
   }
 
-  renderCopy = (value: string, aria?: string) => {
-    const { t } = this.props;
+  renderIcons = (value: string, aria?: string, showCall?: boolean) => {
+    const { t, id } = this.props;
     return (
       <FormCopy>
+        {showCall && <Call phone={value} size="small" id={id} />}
         <JuiIconButton
           size="small"
           onClick={this.onClickCopy.bind(this, value)}
-          tooltipTitle={t('copy')}
-          ariaLabel={t('ariaCopy', {
+          tooltipTitle={t('common.copy')}
+          ariaLabel={t('common.ariaCopy', {
             value: aria || value,
           })}
         >
@@ -98,6 +100,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     valueEmphasize = false,
     copyAria,
     copyValue,
+    showCall,
   }: FormGroupType) => {
     return (
       <FormGroup key={value}>
@@ -106,7 +109,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
           <FormLabel>{label}</FormLabel>
           <FormValue emphasize={valueEmphasize}>{value}</FormValue>
         </FormRight>
-        {copyValue && this.renderCopy(copyValue, copyAria)}
+        {copyValue && this.renderIcons(copyValue, copyAria, showCall)}
       </FormGroup>
     );
   }
@@ -121,7 +124,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
     return <FormLink dangerouslySetInnerHTML={{ __html: html }} />;
   }
 
-  messageAfterClick = () => portalManager.dismiss();
+  messageAfterClick = () => portalManager.dismissLast();
 
   render() {
     const {
@@ -173,13 +176,13 @@ class ProfileDialogPersonContentViewComponent extends Component<
               {company.name &&
                 this.renderFormGroup({
                   icon: 'work',
-                  label: t('company'),
+                  label: t('people.profile.company'),
                   value: company.name,
                 })}
               {person.location &&
                 this.renderFormGroup({
                   icon: 'location',
-                  label: t('location'),
+                  label: t('people.profile.location'),
                   value: person.location,
                 })}
             </Grid>
@@ -187,11 +190,12 @@ class ProfileDialogPersonContentViewComponent extends Component<
               {extensionNumbers.map((info: PhoneNumberInfo, index: number) => {
                 return this.renderFormGroup({
                   icon: index === 0 ? 'call' : undefined,
-                  label: t('ext'),
+                  label: t('people.profile.extensionNumber'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
-                  copyAria: t('ariaExt'),
+                  copyAria: t('people.profile.ariaExtensionNumber'),
                   copyValue: info.phoneNumber,
+                  showCall: true,
                 });
               })}
               {directNumbers.map((info: PhoneNumberInfo, index: number) => {
@@ -200,20 +204,21 @@ class ProfileDialogPersonContentViewComponent extends Component<
                     index === 0 && extensionNumbers.length === 0
                       ? 'call'
                       : undefined,
-                  label: t('directNumber'),
+                  label: t('people.profile.directNumber'),
                   value: info.phoneNumber,
                   valueEmphasize: true,
-                  copyAria: t('ariaDirectNumber'),
+                  copyAria: t('people.profile.ariaDirectNumber'),
                   copyValue: info.phoneNumber,
+                  showCall: true,
                 });
               })}
               {person.email &&
                 this.renderFormGroup({
                   icon: 'email',
-                  label: t('email'),
+                  label: t('people.profile.email'),
                   value: this.renderEmail(person.email),
                   valueEmphasize: true,
-                  copyAria: t('ariaEmail'),
+                  copyAria: t('people.profile.ariaEmail'),
                   copyValue: person.email,
                 })}
             </Grid>
@@ -228,15 +233,15 @@ class ProfileDialogPersonContentViewComponent extends Component<
                   {/* {person.linkedIn &&
                 this.renderFormGroup({
                   icon: 'link',
-                  label: t('location'),
+                  label: t('people.profile.linkedIn'),
                   value: person.linkedIn,
                 })} */}
                   {person.homepage &&
                     this.renderFormGroup({
                       icon: 'link',
-                      label: t('webpage'),
+                      label: t('people.profile.webpage'),
                       value: this.renderHomepage(person.homepage),
-                      copyAria: t('ariaWebpage'),
+                      copyAria: t('people.profile.ariaWebpage'),
                       copyValue: person.homepage,
                     })}
                 </Grid>
@@ -249,7 +254,7 @@ class ProfileDialogPersonContentViewComponent extends Component<
   }
 }
 
-const ProfileDialogPersonContentView = translate('translations')(
+const ProfileDialogPersonContentView = withTranslation('translations')(
   ProfileDialogPersonContentViewComponent,
 );
 

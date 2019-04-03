@@ -11,6 +11,6 @@ export default ({ verb, numerals, noun }: Parameter) => {
       noun,
       count: numerals,
     },
-    key: 'verb-numerals-prepositions-noun',
+    key: 'item.activity.verb-numerals-prepositions-noun',
   };
 };

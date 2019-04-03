@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiActions } from '../Actions';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';

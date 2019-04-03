@@ -3,9 +3,16 @@
  * @Date: 2019-01-07 10:31:32
  * Copyright © RingCentral. All rights reserved.
  */
+import getDecorators from 'inversify-inject-decorators';
 import { AbstractModule } from './AbstractModule';
-import { Container, container, decorate, injectable, interfaces } from './ioc';
-import { ModuleConfig } from './types';
+import {
+  METADATA_KEY,
+  Container,
+  decorate,
+  injectable,
+  interfaces,
+} from './ioc';
+import { ModuleConfig, Provide } from './types';
 
 /**
  * Jupiter Framework
@@ -46,15 +53,43 @@ class Jupiter {
     this._moduleEntries.push(m);
   }
 
-  bindProvides(provides: ModuleConfig['provides'] = {}) {
-    Object.keys(provides).forEach((key: string) => {
-      this.bindProvide(provides[key]);
+  bindProvides(provides: Provide<any>[] = []) {
+    provides.forEach((provide: Provide<any>) => {
+      this.bindProvide(provide);
     });
   }
 
-  bindProvide(provide: interfaces.Newable<AbstractModule>) {
-    decorate(injectable(), provide);
-    this._container.bind(provide).to(provide);
+  bindProvide<T>(provide: Provide<T>) {
+    const hasNameValue = (
+      provide: any,
+    ): provide is {
+      name: string | interfaces.Newable<T>;
+      value: interfaces.Newable<T>;
+    } => {
+      return !!provide.value;
+    };
+
+    let identifier;
+    let creator;
+
+    if (hasNameValue(provide)) {
+      identifier = provide.name;
+      creator = provide.value;
+    } else {
+      identifier = provide;
+      creator = provide;
+    }
+
+    if (!Reflect.hasOwnMetadata(METADATA_KEY.PARAM_TYPES, creator)) {
+      decorate(injectable(), creator);
+    }
+    this._container.bind(identifier).to(creator);
+  }
+
+  get<T>(
+    name: string | symbol | interfaces.Newable<T> | interfaces.Abstract<T>,
+  ) {
+    return this._container.get<T>(name);
   }
 
   async bootstrapModule<T extends AbstractModule>(
@@ -90,4 +125,24 @@ class Jupiter {
   }
 }
 
-export { Jupiter };
+const container = new Container({
+  defaultScope: 'Singleton',
+  skipBaseClassChecks: true,
+});
+
+container.bind<Jupiter>(Jupiter).to(Jupiter);
+const {
+  lazyInject,
+  lazyInjectNamed,
+  lazyInjectTagged,
+  lazyMultiInject,
+} = getDecorators(container, false);
+
+export {
+  Jupiter,
+  container,
+  lazyInject,
+  lazyInjectNamed,
+  lazyInjectTagged,
+  lazyMultiInject,
+};

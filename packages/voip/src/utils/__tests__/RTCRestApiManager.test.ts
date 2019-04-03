@@ -4,16 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { rtcRestApiManager } from '../RTCRestApiManager';
+import { RTCRestApiManager } from '../RTCRestApiManager';
 
-describe('rtcRestApiManager', async () => {
+describe('rtcRestApiManager', () => {
   describe('setNetworkDelegate()', () => {
     it('should _httpClientDelegate is null when initialization', () => {
-      const ram = rtcRestApiManager;
+      const ram = RTCRestApiManager.instance();
       expect(ram.getClient()).toBe(null);
     });
     it('should _httpClientDelegate is not null when setNetworkDelegate() be called', () => {
-      const ram = rtcRestApiManager;
+      const ram = RTCRestApiManager.instance();
       const mockClient = 'test';
       ram.setNetworkDelegate(mockClient);
       expect(ram.getClient()).toBe(mockClient);

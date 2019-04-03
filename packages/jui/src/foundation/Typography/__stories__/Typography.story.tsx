@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import styled from 'styled-components';
+import styled from '../../styled-components';
 import { typography } from '../../utils/styles';
 import { JuiPaper } from '../../../components/Paper';
 import { JuiDivider } from '../../../components/Divider';
@@ -46,10 +46,10 @@ const StyledContainer = styled.div`
   margin-top: 1rem;
 `;
 
-class TypographyShow extends React.Component<{ variant: string }> {
+class TypographyShow extends React.PureComponent<{ variant: string }> {
   text: React.RefObject<any>;
   state: any;
-  constructor(props) {
+  constructor(props: any) {
     super(props);
     this.text = React.createRef();
     this.state = {};

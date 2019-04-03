@@ -136,8 +136,8 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
     },
   };
 
-  textareaNode: React.RefObject<any> = React.createRef();
-  codeMirror: CodeMirror.EditorFromTextArea;
+  textareaNode = React.createRef<HTMLTextAreaElement | null>();
+  codeMirror?: CodeMirror.EditorFromTextArea;
 
   async componentDidMount() {
     const defaultOption = CodeEditor.codeMirrorOption[this.props.mode];
@@ -146,11 +146,14 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
       : defaultOption;
     const CodeMirror = await import('codemirror');
     await import('./importModes');
-    this.codeMirror = CodeMirror.fromTextArea(
-      this.textareaNode.current,
-      options,
-    );
-    this.codeMirror.setValue(this.props.value || '');
+
+    if (this.textareaNode.current) {
+      this.codeMirror = CodeMirror.fromTextArea(
+        this.textareaNode.current,
+        options,
+      );
+      this.codeMirror.setValue(this.props.value || '');
+    }
   }
 
   shouldComponentUpdate(nextProps: CodeEditorProp) {
@@ -194,6 +197,8 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
   }
 
   setOptionIfChanged(optionName: string, newValue: string) {
+    if (!this.codeMirror) return;
+
     const oldValue = this.codeMirror.getOption(optionName);
     if (!isEqual(oldValue, newValue)) {
       this.codeMirror.setOption(optionName, newValue);
@@ -238,7 +243,7 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
           data-test-automation-id="codeSnippetBody"
         >
           <StyledTextArea
-            ref={this.textareaNode}
+            ref={this.textareaNode as any}
             defaultValue={this.props.value}
             autoComplete="off"
           />

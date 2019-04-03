@@ -4,4 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { StateService } from './service';
+import { IStateService, StateService } from './service';
+import { SectionUnread } from './types';
+import { UMI_SECTION_TYPE } from './constants';
+export * from './entity';
+
+export { IStateService, StateService, SectionUnread, UMI_SECTION_TYPE };

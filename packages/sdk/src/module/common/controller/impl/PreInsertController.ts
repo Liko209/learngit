@@ -18,7 +18,11 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
   implements IPreInsertController<T> {
   private _preInsertIdController: IPreInsertIdController;
 
-  constructor(public dao: IDao<T>, public progressService: IProgressService) {
+  constructor(
+    public dao: IDao<T>,
+    public progressService: IProgressService,
+    public entityNotificationKey?: (entity: T) => string,
+  ) {
     this._preInsertIdController = new PreInsertIdController(
       dao.getEntityName(),
     );
@@ -43,9 +47,11 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
           id: entity.id,
           status: PROGRESS_STATUS.INPROGRESS,
         });
-        notificationCenter.emitEntityUpdate(this.getEntityNotificationKey(), [
-          entity,
-        ]);
+
+        notificationCenter.emitEntityUpdate(
+          this.getEntityNotificationKey(entity),
+          [entity],
+        );
         break;
 
       case PROGRESS_STATUS.FAIL:
@@ -58,9 +64,10 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
       case PROGRESS_STATUS.SUCCESS:
       case PROGRESS_STATUS.CANCELED:
         this.progressService.deleteProgress(entity.id);
-        notificationCenter.emitEntityDelete(this.getEntityNotificationKey(), [
-          entity.id,
-        ]);
+        notificationCenter.emitEntityDelete(
+          this.getEntityNotificationKey(entity),
+          [entity.id],
+        );
         break;
     }
   }
@@ -73,7 +80,6 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     entities.map(async (entity: T) => {
       if (this.isInPreInsert(entity.version)) {
         entityMap.set(entity.id, entity.version);
-        this.updateStatus(entity, PROGRESS_STATUS.SUCCESS);
       }
     });
 
@@ -87,7 +93,10 @@ class PreInsertController<T extends ExtendedBaseModel = ExtendedBaseModel>
     return this._preInsertIdController.isInPreInsert(version);
   }
 
-  getEntityNotificationKey() {
+  getEntityNotificationKey(entity: T) {
+    if (this.entityNotificationKey) {
+      return this.entityNotificationKey(entity);
+    }
     return ControllerUtils.getEntityNotificationKey(this.dao);
   }
 }

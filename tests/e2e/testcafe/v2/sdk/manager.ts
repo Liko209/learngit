@@ -1,5 +1,4 @@
 import * as assert from 'assert';
-import Ringcentral from 'ringcentral-js-concise';
 
 import { RcPlatformSdk } from "./platform";
 import { GlipSdk, GlipDb } from "./glip";
@@ -20,8 +19,10 @@ export class SdkManager {
   }
 
   private createPlatform(user: IUser) {
-    const sdk = new Ringcentral(this.platformKey, this.platformSecret, this.platformUrl);
-    return new RcPlatformSdk(sdk, { username: user.company.number, extension: user.extension, password: user.password });
+    return new RcPlatformSdk(
+      this.platformKey, this.platformSecret, this.platformUrl,
+      { username: user.company.number, extension: user.extension, password: user.password }
+    );
   }
 
   async getPlatform(user: IUser) {
@@ -35,10 +36,10 @@ export class SdkManager {
     return platform;
   }
 
-  private createGlip(user: IUser ) {
+  private createGlip(user: IUser) {
     return new GlipSdk(this.glipUrl, this.platform(user), this.glipDb);
   }
-  
+
   async getGlip(user: IUser) {
     assert(user);
     let glip: GlipSdk = this.glips[user.rcId];

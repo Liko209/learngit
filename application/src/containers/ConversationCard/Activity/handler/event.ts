@@ -13,12 +13,12 @@ export default function ({
 }) {
   if (activityData) {
     return buildVerbNounText({
-      verb: 'updated',
-      noun: 'event',
+      verb: 'item.activity.updated',
+      noun: 'item.activity.event',
     });
   }
   return buildVerbArticleNounText({
-    verb: 'created',
-    noun: 'event',
+    verb: 'item.activity.created',
+    noun: 'item.activity.event',
   });
 }

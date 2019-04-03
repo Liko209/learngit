@@ -12,7 +12,9 @@ import {
 } from 'jui/components/Lists';
 import { JuiIconWrapper, JuiNoteIcon } from 'jui/pattern/RightShelf';
 import { NoteItemProps } from './types';
+import { observer } from 'mobx-react';
 
+@observer
 class NoteItemView extends Component<NoteItemProps> {
   render() {
     const { disabled, title, subTitle } = this.props;

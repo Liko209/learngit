@@ -6,36 +6,33 @@
 
 import { Api } from '../../../api';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import {
-  buildPartialModifyController,
-  buildRequestController,
-} from '../../../framework/controller';
+import { buildRequestController } from '../../../framework/controller';
 import { StateActionController } from './implementation/StateActionController';
 import { StateDataHandleController } from './implementation/StateDataHandleController';
 import { StateFetchDataController } from './implementation/StateFetchDataController';
+import { TotalUnreadController } from './implementation/TotalUnreadController';
 import { GroupState, State } from '../entity';
 
 class StateController {
   private _stateActionController: StateActionController;
   private _stateDataHandleController: StateDataHandleController;
   private _stateFetchDataController: StateFetchDataController;
+  private _totalUnreadController: TotalUnreadController;
   constructor(
     private _entitySourceController: IEntitySourceController<GroupState>,
   ) {}
 
   getStateActionController(): StateActionController {
     if (!this._stateActionController) {
-      const partialModifyController = buildPartialModifyController<GroupState>(
-        this._entitySourceController,
-      );
       const requestController = buildRequestController<State>({
         basePath: '/save_state_partial',
         networkClient: Api.glipNetworkClient,
       });
       this._stateActionController = new StateActionController(
-        partialModifyController,
+        this._entitySourceController,
         requestController,
         this.getStateFetchDataController(),
+        this.getTotalUnreadController(),
       );
     }
     return this._stateActionController;
@@ -46,6 +43,7 @@ class StateController {
       this._stateDataHandleController = new StateDataHandleController(
         this._entitySourceController,
         this.getStateFetchDataController(),
+        this.getTotalUnreadController(),
       );
     }
     return this._stateDataHandleController;
@@ -58,6 +56,15 @@ class StateController {
       );
     }
     return this._stateFetchDataController;
+  }
+
+  getTotalUnreadController(): TotalUnreadController {
+    if (!this._totalUnreadController) {
+      this._totalUnreadController = new TotalUnreadController(
+        this._entitySourceController,
+      );
+    }
+    return this._totalUnreadController;
   }
 }
 export { StateController };

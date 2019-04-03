@@ -9,28 +9,50 @@ type PreloadImgProps = {
   url?: string;
   placeholder: React.ReactNode;
   children: React.ReactNode;
+  animationForLoad?: boolean;
+  delayForPlaceholder?: boolean;
 };
 
-class PreloadImg extends Component<PreloadImgProps> {
-  state = { loaded: false, isError: false };
-  img: any;
+type PreloadImgState = {
+  loaded: boolean;
+  isError: boolean;
+};
+
+class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
+  constructor(props: PreloadImgProps) {
+    super(props);
+    this.state = {
+      loaded: false,
+      isError: false,
+    };
+  }
 
   handleLoad = () => {
-    this.setState({ loaded: true });
+    return this.setState({ loaded: true });
   }
 
   handleError = () => {
-    this.setState({ isError: true, loaded: true });
+    const { url } = this.props;
+    if (url) {
+      this.setState({ isError: true, loaded: true });
+    }
   }
 
   render() {
     const { children, placeholder, url } = this.props;
+    const { loaded, isError } = this.state;
+
     return (
       <>
-        {!this.state.loaded && url && (
-          <img src={url} onLoad={this.handleLoad} onError={this.handleError} />
+        {url && !loaded && (
+          <img
+            src={url}
+            onLoad={this.handleLoad}
+            onError={this.handleError}
+            style={{ display: 'none' }}
+          />
         )}
-        {this.state.loaded && !this.state.isError ? children : placeholder}
+        {isError ? placeholder : children}
       </>
     );
   }

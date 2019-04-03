@@ -4,14 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SplitIOController } from './splitIO/SplitIOController';
+import { LaunchDarklyController } from './launchDarkly/LaunchDarklyController';
 import UserPermissionType from '../types';
-import SplitIODefaultPermissions from './splitIO/SplitIODefaultPermissions';
 import { notificationCenter, ENTITY } from '../../../service';
-import { UserConfig } from '../../../service/account';
+import { AccountUserConfig } from '../../../service/account/config';
 import { UserPermission } from '../entity';
-import { mainLogger } from 'foundation/src';
+import { mainLogger } from 'foundation';
 class PermissionController {
   private splitIOController: SplitIOController;
+  private launchDarklyController: LaunchDarklyController;
   constructor() {
     this._initControllers();
   }
@@ -21,11 +22,13 @@ class PermissionController {
      * 1. get from beta
      * 2. get frm rc
      * 3. get from split IO
-     * result = 1 & 2 & 3;
+     * result = 1 || 2 || 3;
      */
     // TODO: beta / RC
-    const result = await this.splitIOController.hasPermission(type);
-    return result;
+    const sp = await this.splitIOController.hasPermission(type);
+    const ld = this.launchDarklyController.hasPermission(type);
+    mainLogger.log(`hasPermission of ${type} launchDarkly:${ld} splitIO:${sp}`);
+    return ld || sp;
   }
 
   async getById(id: number): Promise<UserPermission> {
@@ -44,12 +47,18 @@ class PermissionController {
     this.splitIOController = new SplitIOController(
       this._refreshPermissions.bind(this),
     );
+    this.launchDarklyController = new LaunchDarklyController(
+      this._refreshPermissions.bind(this),
+    );
   }
 
   private async _refreshPermissions() {
     const permissions = await this._getAllPermissions();
-    const id = UserConfig.getCurrentUserId();
-    mainLogger.log(`user:${id}, refreshPermissions:${permissions}`);
+    const userConfig = new AccountUserConfig();
+    const id = userConfig.getGlipUserId();
+    mainLogger.log(
+      `user:${id}, refreshPermissions:${JSON.stringify(permissions)}`,
+    );
     notificationCenter.emitEntityUpdate(ENTITY.USER_PERMISSION, [
       {
         id,
@@ -59,7 +68,7 @@ class PermissionController {
   }
 
   private async _getAllPermissions() {
-    const keys = Object.keys(SplitIODefaultPermissions);
+    const keys = Object.keys(UserPermissionType);
 
     const permissions = {};
     await Promise.all(

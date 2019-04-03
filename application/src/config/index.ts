@@ -1,9 +1,7 @@
 // Replace ${deployHost} with real deployHost
 import _ from 'lodash';
 import merge from 'lodash/merge';
-import { service } from 'sdk';
-
-const { ConfigService } = service;
+import { AppEnvSetting } from 'sdk/module/env';
 
 const { protocol, hostname, port } = window.location;
 const deployHost = `${protocol}//${hostname}${port && `:${port}`}`;
@@ -102,26 +100,22 @@ class Config {
   }
 
   loadEnvConfig() {
-    const configService: service.ConfigService = ConfigService.getInstance();
-    const value = configService.getEnv() || this.defaultEnv();
+    const value = AppEnvSetting.getEnv() || this.defaultEnv();
     this._env = value;
     this._config = loadFileConfigs(value);
-    this._config.iconLink = this._selectIconLink(this._config.iconLinkSet);
-  }
-
-  private _selectIconLink(iconLinkSet: any) {
-    if (this.isProductionBuild) {
-      return iconLinkSet.production;
-    }
-    return iconLinkSet.development;
   }
 
   public isProductionBuild() {
     return process.env.JUPITER_ENV === 'production';
   }
 
+  public isPublicBuild() {
+    return process.env.JUPITER_ENV === 'public';
+  }
+
   public defaultEnv() {
-    return this.isProductionBuild() ? 'production' : 'GLP-DEV-XMN';
+    const productionEnv = this.isProductionBuild() || this.isPublicBuild();
+    return productionEnv ? 'production' : 'GLP-DEV-XMN';
   }
 
   getEnv() {

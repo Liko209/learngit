@@ -3,7 +3,7 @@
  * @Date: 2019-01-21 17:18:00
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
 import {
   Person,
   HeadShotModel,
@@ -12,32 +12,44 @@ import {
   PhoneNumberInfo,
   SanitizedExtensionModel,
   CALL_ID_USAGE_TYPE,
-  SortingOrder,
 } from '../entity';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
-import { SortableModel, Raw } from '../../../framework/model';
-import { daoManager, AuthDao, AUTH_GLIP_TOKEN } from '../../../dao';
+import { Raw } from '../../../framework/model';
 import PersonAPI from '../../../api/glip/person';
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-} from '../../../utils/performance';
-import { UserConfig } from '../../../service/account/UserConfig';
+import { AccountUserConfig } from '../../../service/account/config';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
-import { IEntityCacheSearchController } from '../../../framework/controller/interface/IEntityCacheSearchController';
+import {
+  IEntityCacheSearchController,
+  Terms,
+} from '../../../framework/controller/interface/IEntityCacheSearchController';
 import { PersonDataController } from './PersonDataController';
+import { ContactType } from '../types';
+import notificationCenter from '../../../service/notificationCenter';
+import { ENTITY } from '../../../service/eventKey';
+import { SYNC_SOURCE } from '../../../module/sync/types';
+import { AuthUserConfig } from '../../../service/auth/config';
 
 const PersonFlags = {
+  is_webmail: 1,
   deactivated: 2,
   has_registered: 4,
+  externally_registered: 8,
+  externally_registered_password_set: 16,
+  rc_registered: 32,
+  locked: 64,
+  amazon_ses_suppressed: 128,
+  is_kip: 256,
+  has_bogus_email: 512,
   is_removed_guest: 1024,
   am_removed_guest: 2048,
+  is_hosted: 4096,
+  invited_by_me: 8192,
 };
 
 const SERVICE_ACCOUNT_EMAIL = 'service@glip.com';
 const HEADSHOT_THUMB_WIDTH = 'width';
 const HEADSHOT_THUMB_HEIGHT = 'height';
-const HEADSHOT_THUMB_SIZE_LIMIT = 500;
+
 const SIZE = 'size';
 
 class PersonController {
@@ -54,8 +66,10 @@ class PersonController {
     this._cacheSearchController = _cacheSearchController;
   }
 
-  async handleIncomingData(persons: Raw<Person>[]) {
-    await new PersonDataController().handleIncomingData(persons);
+  async handleIncomingData(persons: Raw<Person>[], source: SYNC_SOURCE) {
+    await new PersonDataController(
+      this._entitySourceController,
+    ).handleIncomingData(persons, source);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {
@@ -79,8 +93,8 @@ class PersonController {
     headShotVersion: string,
     size: number,
   ) {
-    const authDao = daoManager.getKVDao(AuthDao);
-    const token = authDao.get(AUTH_GLIP_TOKEN);
+    const auth = new AuthUserConfig();
+    const token = auth.getGlipToken();
     const glipToken = token && token.replace(/\"/g, '');
     if (headShotVersion) {
       return PersonAPI.getHeadShotUrl({
@@ -95,12 +109,11 @@ class PersonController {
 
   private _getHighestResolutionHeadshotUrlFromThumbs(
     thumbs: { key: string; value: string }[],
+    desiredSize: number,
     stored_file_id?: string,
-  ): string {
+  ): string | null {
     const keys = Object.keys(thumbs);
-    let maxKey = keys[0];
-    let maxWidth: number = 0;
-    let firstKey: string = '';
+    let matchKey: string = '';
     for (let i = 0; i < keys.length; i++) {
       if (
         keys[i].startsWith(HEADSHOT_THUMB_WIDTH) ||
@@ -112,27 +125,21 @@ class PersonController {
         continue;
       }
 
-      if (firstKey === '') {
-        firstKey = keys[i];
-      }
-
       const index = keys[i].indexOf(SIZE);
       if (index !== -1) {
         const sizeString = keys[i].substr(index + SIZE.length + 1);
         const sizeWidth = Number(sizeString);
-        if (sizeWidth < HEADSHOT_THUMB_SIZE_LIMIT) {
-          if (sizeWidth > maxWidth) {
-            maxWidth = sizeWidth;
-            maxKey = keys[i];
-          }
+        if (sizeWidth === desiredSize) {
+          matchKey = keys[i];
+          break;
         }
       }
     }
-    let url = thumbs[firstKey];
-    if (maxWidth !== 0) {
-      url = thumbs[maxKey];
+
+    if (matchKey) {
+      return thumbs[matchKey];
     }
-    return url;
+    return null;
   }
 
   getHeadShotWithSize(
@@ -142,23 +149,33 @@ class PersonController {
     size: number,
   ) {
     let url: string | null = null;
-    if (headshot_version) {
-      url = this._getHeadShotByVersion(uid, headshot_version, size);
-    } else if (headshot) {
-      if (typeof headshot === 'string') {
-        url = headshot;
-      } else {
+    let originalUrl: string | null = null;
+
+    do {
+      if (typeof headshot !== 'string') {
         if (headshot.thumbs) {
           url = this._getHighestResolutionHeadshotUrlFromThumbs(
             headshot.thumbs,
+            size,
             headshot.stored_file_id,
           );
         }
-        if (!url) {
-          url = headshot.url;
-        }
+        originalUrl = headshot.url;
+      } else {
+        originalUrl = headshot;
       }
-    }
+
+      if (url) {
+        break;
+      }
+
+      if (headshot_version) {
+        url = this._getHeadShotByVersion(uid, headshot_version, size);
+        break;
+      }
+
+      url = originalUrl;
+    } while (false);
 
     return url;
   }
@@ -184,110 +201,6 @@ class PersonController {
       actionMap.set(FEATURE_TYPE.CALL, FEATURE_STATUS.INVISIBLE);
     }
     return actionMap;
-  }
-
-  async doFuzzySearchPersons(
-    searchKey?: string,
-    excludeSelf?: boolean,
-    arrangeIds?: number[],
-    fetchAllIfSearchKeyEmpty?: boolean,
-  ): Promise<{
-    terms: string[];
-    sortableModels: SortableModel<Person>[];
-  } | null> {
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_PERSON,
-    );
-    let currentUserId: number | null = null;
-    if (excludeSelf) {
-      currentUserId = UserConfig.getCurrentUserId();
-    }
-
-    const result = await this._cacheSearchController.searchEntities(
-      (person: Person, terms: string[]) => {
-        do {
-          if (
-            !this._isValid(person) ||
-            (currentUserId && person.id === currentUserId)
-          ) {
-            break;
-          }
-
-          if (!fetchAllIfSearchKeyEmpty && terms.length === 0) {
-            break;
-          }
-
-          let name: string = this.getName(person);
-          let sortValue = 0;
-
-          if (terms.length > 0) {
-            if (this._cacheSearchController.isFuzzyMatched(name, terms)) {
-              sortValue = SortingOrder.FullNameMatching;
-              if (
-                person.first_name &&
-                this._cacheSearchController.isStartWithMatched(
-                  person.first_name,
-                  [terms[0]],
-                )
-              ) {
-                sortValue += SortingOrder.FirstNameMatching;
-              }
-              if (
-                person.last_name &&
-                this._cacheSearchController.isStartWithMatched(
-                  person.last_name,
-                  terms,
-                )
-              ) {
-                sortValue += SortingOrder.LastNameMatching;
-              }
-            } else if (
-              person.email &&
-              this._cacheSearchController.isFuzzyMatched(person.email, terms)
-            ) {
-              sortValue = SortingOrder.EmailMatching;
-            } else {
-              break;
-            }
-          }
-
-          if (name.length <= 0) {
-            name = this.getEmailAsName(person);
-          }
-
-          return {
-            id: person.id,
-            displayName: name,
-            firstSortKey: sortValue,
-            secondSortKey: name.toLowerCase(),
-            entity: person,
-          };
-        } while (false);
-        return null;
-      },
-      searchKey,
-      arrangeIds,
-      (personA: SortableModel<Person>, personB: SortableModel<Person>) => {
-        if (personA.firstSortKey > personB.firstSortKey) {
-          return -1;
-        }
-        if (personA.firstSortKey < personB.firstSortKey) {
-          return 1;
-        }
-
-        if (personA.secondSortKey < personB.secondSortKey) {
-          return -1;
-        }
-        if (personA.secondSortKey > personB.secondSortKey) {
-          return 1;
-        }
-        return 0;
-      },
-    );
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.SEARCH_PERSON,
-    );
-    return result;
   }
 
   getName(person: Person) {
@@ -344,8 +257,13 @@ class PersonController {
     );
   }
 
-  private _isValid(person: Person) {
+  private _isUnregistered(person: Person) {
+    return person.flags === 0;
+  }
+
+  isValid(person: Person) {
     return (
+      !this._isUnregistered(person) &&
       !this._isDeactivated(person) &&
       this._isVisible(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
@@ -360,7 +278,8 @@ class PersonController {
     extensionData?: SanitizedExtensionModel,
   ) {
     const availNumbers: PhoneNumberInfo[] = [];
-    const isCoWorker = UserConfig.getCurrentCompanyId() === companyId;
+    const userConfig = new AccountUserConfig();
+    const isCoWorker = userConfig.getCurrentCompanyId() === companyId;
     if (isCoWorker && extensionData) {
       availNumbers.push({
         type: PHONE_NUMBER_TYPE.EXTENSION_NUMBER,
@@ -379,6 +298,53 @@ class PersonController {
       });
     }
     return availNumbers;
+  }
+
+  async matchContactByPhoneNumber(
+    e164PhoneNumber: string,
+    contactType: ContactType,
+  ): Promise<Person | null> {
+    const result = await this._cacheSearchController.searchEntities(
+      (person: Person, terms: Terms) => {
+        if (
+          person.sanitized_rc_extension &&
+          person.sanitized_rc_extension.extensionNumber === e164PhoneNumber
+        ) {
+          return {
+            id: person.id,
+            displayName: name,
+            entity: person,
+          };
+        }
+
+        if (person.rc_phone_numbers) {
+          for (const index in person.rc_phone_numbers) {
+            if (
+              person.rc_phone_numbers[index].phoneNumber === e164PhoneNumber
+            ) {
+              return {
+                id: person.id,
+                displayName: name,
+                entity: person,
+              };
+            }
+          }
+        }
+        return null;
+      },
+    );
+
+    return result && result.sortableModels.length > 0
+      ? result.sortableModels[0].entity
+      : null;
+  }
+
+  public async refreshPersonData(personId: number): Promise<void> {
+    const requestController = this._entitySourceController.getRequestController();
+    if (requestController) {
+      const person = await requestController.get(personId);
+      person && notificationCenter.emitEntityUpdate(ENTITY.PERSON, [person]);
+    }
   }
 }
 

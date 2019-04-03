@@ -21,7 +21,7 @@ test(formalName('Open last conversation when login and group show in the top of 
     const directMessageSection = app.homePage.messageTab.directMessagesSection;
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     let groupId;
     await h(t).withLog('Given I have an extension with a group chat', async () => {

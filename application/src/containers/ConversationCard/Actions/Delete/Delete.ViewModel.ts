@@ -8,17 +8,17 @@ import { computed } from 'mobx';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { StoreViewModel } from '@/store/ViewModel';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { Props, ViewProps } from './types';
 
 class DeleteViewModel extends StoreViewModel<Props> implements ViewProps {
-  private _postService: NewPostService;
+  private _postService: PostService;
 
   constructor(props: Props) {
     super(props);
-    this._postService = NewPostService.getInstance();
+    this._postService = PostService.getInstance();
   }
 
   @computed

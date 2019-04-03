@@ -4,17 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
-import { TabConfig } from './config';
 
 type LoadStatus = {
   firstLoaded: boolean;
-  loadError: boolean;
   loading: boolean;
 };
 
 const InitLoadStatus: LoadStatus = {
   firstLoaded: false,
-  loadError: false,
   loading: false,
 };
 
@@ -22,15 +19,17 @@ type Props = {
   groupId: number;
   type: RIGHT_RAIL_ITEM_TYPE;
   active: boolean;
+  width: number;
+  height: number;
 };
 
 type ViewProps = {
-  ids: number[];
-  totalCount: number;
-  loadStatus: LoadStatus;
-  tabConfig: TabConfig;
-  forceReload: () => void;
-  fetchNextPageItems: () => Promise<any>;
+  size: number;
+  total: number;
+  getIds: number[];
+  isLoadingContent: () => boolean;
+  loadMore: () => Promise<void>;
+  loadInitialData: () => Promise<void>;
 };
 
 export { Props, ViewProps, LoadStatus, InitLoadStatus };

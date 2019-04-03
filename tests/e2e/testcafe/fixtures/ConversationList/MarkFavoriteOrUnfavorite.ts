@@ -9,6 +9,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('ConversationList/MarkFavoriteOrUnfavorite')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -22,7 +23,7 @@ test(formalName('Display Favorite button when user tap more button of a conversa
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
@@ -95,9 +96,9 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init(); 
-    await h(t).glip(loginUser).resetProfile();
- 
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfileAndState();
+
     const favoritesSection = app.homePage.messageTab.favoritesSection;
     const favoriteToggler = app.homePage.messageTab.moreMenu.favoriteToggler;
     const conversationPage = app.homePage.messageTab.conversationPage;
@@ -180,7 +181,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
       await t.expect(teamItem.exists).ok();
     });
 
-    // JPT-184 page header entry(DM) 
+    // JPT-184 page header entry(DM)
     await h(t).withLog('When I open the fav DM conversation', async () => {
       await favoritesSection.conversationEntryById(groupId1).enter();
     });
@@ -209,7 +210,7 @@ test(formalName('Display Unfavorite button when user tap more button of a conver
       await t.expect(directMessagesSection.conversationEntryById(groupId1).exists).notOk()
     });
 
-    // JPT-184 page header entry(Team) 
+    // JPT-184 page header entry(Team)
     await h(t).withLog('When I open the fav team conversation ', async () => {
       await favoritesSection.conversationEntryById(teamId1).enter();
     });
@@ -248,8 +249,8 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init(); 
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).init();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     let meChatId;
     await h(t).withLog('Given I have an extension with a me conversation', async () => {
@@ -290,3 +291,49 @@ test(formalName('When Me conversation is removed favorite mark, it should be dis
     );
   },
 );
+
+test(formalName("The list of 'Favorite' section should order by the added time if user doesn't reorder.", ['MarkFavoriteOrUnfavorite', 'Aaron', 'P2', 'JPT-8']), async (t) => {
+  const loginUser = h(t).rcData.mainCompany.users[4];
+  await h(t).glip(loginUser).init();
+
+  const teamNames = Array(5).fill(null).map(() => uuid());
+  const teams: IGroup[] = teamNames.map(name => ({
+    name,
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser],
+  }));
+
+  await h(t).withLog(`Given I have five teams named: ${teamNames.join()}`, async () => {
+    await h(t).scenarioHelper.createTeams(teams);
+  });
+
+  const app = new AppRoot(t);
+
+  await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const teamsSection = app.homePage.messageTab.teamsSection;
+  const moreMenu = app.homePage.messageTab.moreMenu;
+
+  await h(t).withLog('And I enter teamSection favorite these five teams in reverse order', async () => {
+    const teamsId = teams.map(({ glipId }) => glipId).reverse();
+    await teamsSection.ensureLoaded();
+
+    for (const index in teamsId) {
+      await teamsSection.conversationEntryById(teamsId[index]).openMoreMenu();
+      await moreMenu.favoriteToggler.enter();
+    }
+  });
+
+  const favoritesSection = app.homePage.messageTab.favoritesSection;
+  await favoritesSection.ensureLoaded();
+
+  await h(t).withLog('Then the favorite list order should be same as the teams', async () => {
+    for (const [index, name] of teamNames.entries()) {
+      await t.expect(favoritesSection.nthConversationEntry(index).self.withText(name)).ok();
+    }
+  });
+});

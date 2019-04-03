@@ -19,6 +19,7 @@ type JuiSnackbarContentProps = {
 
 type JuiSnackbarIcon = {
   color: SnackbarContentColor;
+  children: string;
 };
 
 const WrapperSnackbarIcon = ({ color, ...rest }: JuiSnackbarIcon) => (

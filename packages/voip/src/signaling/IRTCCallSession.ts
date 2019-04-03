@@ -9,9 +9,11 @@ import { EventEmitter2 } from 'eventemitter2';
 interface IRTCCallSession extends EventEmitter2 {
   destroy(): void;
   setSession(session: any): void;
+  getInviteResponse(): any;
   hangup(): void;
   flip(target: number): void;
   transfer(target: string): void;
+  forward(target: string): void;
   startRecord(): void;
   stopRecord(): void;
   answer(): void;
@@ -23,6 +25,9 @@ interface IRTCCallSession extends EventEmitter2 {
   hold(): void;
   unhold(): void;
   dtmf(digits: string): void;
+  reconnectMedia(options: any): void;
+  getMediaStats(callback: any, interval: number): void;
+  stopMediaStats(): void;
 }
 
 export { IRTCCallSession };

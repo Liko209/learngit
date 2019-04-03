@@ -14,8 +14,12 @@ export abstract class BaseWebComponent {
   public self: Selector;
   constructor(protected t: TestController) { }
 
-  async ensureLoaded(timeout: number = 5e3) {
+  async ensureLoaded(timeout: number = 10e3) {
     await this.t.expect(this.exists).ok({ timeout });
+  }
+
+  async ensureDismiss(timeout: number = 10e3) {
+    await this.t.expect(this.exists).notOk({ timeout });
   }
 
   async waitUntilExist(selector: Selector | BaseWebComponent, timeout: number = 5e3) {
@@ -52,6 +56,18 @@ export abstract class BaseWebComponent {
     return this.self.getAttribute(attributeName);
   }
 
+  get findSelector() {
+    return this.self.find;
+  }
+
+  async clickSelf(options?: ClickActionOptions) {
+    return this.t.click(this.self, options);
+  }
+
+  async hoverSelf(options?: ClickActionOptions) {
+    return this.t.hover(this.self, options);
+  }
+
   getComponent<T extends BaseWebComponent>(ctor: { new(t: TestController): T }, root: Selector = null): T {
     const component = new ctor(this.t);
     if (root) {
@@ -79,9 +95,9 @@ export abstract class BaseWebComponent {
 
   getSelectorByIcon(icon: string, root: Selector = null): Selector {
     if (root) {
-      return root.find('.material-icons').withExactText(icon);
+      return root.find(`.icon.${icon}`)
     } else {
-      return this.self.find('.material-icons').withExactText(icon);
+      return this.self.find(`.icon.${icon}`);
     }
   }
 
@@ -104,6 +120,14 @@ export abstract class BaseWebComponent {
     return this.self.find('button').withText(name);
   }
 
+  checkboxOf(sel: Selector) {
+    return sel.find('input[type="checkbox"]');
+  }
+
+  async quitByPressEsc() {
+    await this.t.pressKey('esc');
+  }
+
   // misc
   warnFlakySelector() {
     const stack = (new Error()).stack;
@@ -122,7 +146,11 @@ export abstract class BaseWebComponent {
     if (text == '99+') {
       return 100;
     }
-    return Number(text);
+    return +text;
   }
 
+  // hover some selector will show
+  async showTooltip(text: string) {
+    await this.t.expect(this.getSelector('[role="tooltip"]').withExactText(text).exists).ok();
+  }
 }

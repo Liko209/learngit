@@ -1,0 +1,10 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ContentPanel/CodeSnippet.ts"
+    ],
+   "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

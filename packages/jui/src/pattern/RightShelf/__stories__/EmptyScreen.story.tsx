@@ -6,11 +6,8 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
-import styled from '../../../foundation/styled-components';
-
 import { JuiRightShelfEmptyScreen } from '../../EmptyScreen';
 import { JuiButton } from '../../../components/Buttons';
-import { JuiLink } from '../../../components/Link';
 import image from './Files.svg';
 
 const Action1 = (

@@ -68,7 +68,7 @@ export default class PostModel extends Base<Post> {
     this.text = text;
     this.atMentionNonItemIds = at_mention_non_item_ids;
     this.itemId = item_id;
-    this.itemIds = item_ids;
+    this.itemIds = item_ids || [];
     this.likes = likes;
     this.groupId = group_id;
     this.itemData = item_data;
@@ -85,9 +85,9 @@ export default class PostModel extends Base<Post> {
         const typeId = GlipTypeUtil.extractTypeId(id);
         switch (typeId) {
           case TypeDictionary.TYPE_ID_FILE:
-            return getEntity<Item, FileItemModel>(ENTITY_NAME.FILE_ITEM, id);
+            return getEntity<Item, FileItemModel>(ENTITY_NAME.ITEM, id);
           case TypeDictionary.TYPE_ID_LINK:
-            return getEntity<Item, LinkItemModel>(ENTITY_NAME.LINK_ITEM, id);
+            return getEntity<Item, LinkItemModel>(ENTITY_NAME.ITEM, id);
           default:
             return {
               id,

@@ -23,17 +23,15 @@ test(formalName('JPT-58 Show conversations with limit count conversations, older
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[7];
     const otherUser = users[5];
-    await h(t).resetGlipAccount(loginUser);
-    await h(t).platform(loginUser).init();
-    await h(t).glip(loginUser).init();
-    await h(t).platform(otherUser).init();
-
 
     const teamsSection = app.homePage.messageTab.teamsSection;
     const favoritesSection = app.homePage.messageTab.favoritesSection;
 
-    await h(t).withLog('Given I clear all UMIs before login', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
+    await h(t).withLog('Given I have a new account (via resetGlipAccount)', async () => {
+      await h(t).platform(loginUser).init();
+      await h(t).glip(loginUser).init();
+      await h(t).glip(loginUser).resetProfileAndState();
+      await h(t).platform(otherUser).init();    
     });
 
     let teamId;
@@ -160,7 +158,6 @@ test(formalName('JPT-353 maxConversation=limit conversation count(without unread
 
     const teamsSection = app.homePage.messageTab.teamsSection;
     const favoritesSection = app.homePage.messageTab.favoritesSection;
-
 
     await h(t).withLog('Given clear all UMIs before login', async () => {
       await h(t).glip(loginUser).clearAllUmi();

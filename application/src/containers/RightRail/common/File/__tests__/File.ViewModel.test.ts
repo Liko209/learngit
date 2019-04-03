@@ -22,7 +22,7 @@ const mockPerson = {
 };
 
 const mappingEntity = {
-  [ENTITY_NAME.FILE_ITEM]: mockFile,
+  [ENTITY_NAME.ITEM]: mockFile,
   [ENTITY_NAME.PERSON]: mockPerson,
 };
 

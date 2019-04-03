@@ -17,6 +17,8 @@ type RTCCallInfo = {
   toName: string;
   toNum: string;
   uuid: string;
+  partyId: string;
+  sessionId: string;
 };
 
 type RTCCallOptions = {
@@ -40,11 +42,30 @@ enum RTC_CALL_ACTION {
   START_RECORD = 'startRecord',
   STOP_RECORD = 'stopRecord',
   TRANSFER = 'transfer',
+  FORWARD = 'forward',
   HOLD = 'hold',
   UNHOLD = 'unhold',
   MUTE = 'mute',
   UNMUTE = 'unmute',
   PARK = 'park',
+  CALL_TIME_OUT = 'callTimeOut',
+}
+
+type RTCSipFlags = {
+  voipFeatureEnabled: boolean;
+  voipCountryBlocked: boolean;
+  outboundCallsEnabled: boolean;
+  dscpEnabled: boolean;
+  dscpSignaling: Number;
+  dscpVoice: Number;
+  dscpVideo: Number;
+};
+
+enum RTC_STATUS_CODE {
+  OK = 0,
+  NUMBER_INVALID = 1000,
+  MAX_CALLS_REACHED = 1001,
+  INVALID_STATE = 1002,
 }
 
 export {
@@ -52,6 +73,8 @@ export {
   RTCCallInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
+  RTC_STATUS_CODE,
   RTCCallOptions,
   RTCCallActionSuccessOptions,
+  RTCSipFlags,
 };

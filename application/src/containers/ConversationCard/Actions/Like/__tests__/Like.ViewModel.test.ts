@@ -4,17 +4,16 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { serviceOk, serviceErr } from 'sdk/service/ServiceResult';
 import { getEntity, getGlobalValue } from '../../../../../store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { LikeViewModel } from '../Like.ViewModel';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 const mockPostService = {
   likePost: jest.fn(),
 };
 
-NewPostService.getInstance = jest.fn().mockReturnValue(mockPostService);
+PostService.getInstance = jest.fn().mockReturnValue(mockPostService);
 
 jest.mock('../../../../../store/utils');
 
@@ -60,11 +59,10 @@ describe('likeViewModel', () => {
 
   describe('like()', () => {
     it('should like post', async () => {
-      mockPostService.likePost.mockImplementation(() => serviceOk({}));
+      mockPostService.likePost.mockResolvedValue({});
 
-      const result = await likeViewModel.like(true);
+      await likeViewModel.like(true);
 
-      expect(result.isFailed).toBeFalsy();
       expect(mockPostService.likePost).toBeCalledWith(
         1,
         mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],
@@ -72,10 +70,9 @@ describe('likeViewModel', () => {
       );
     });
     it('should unlike post', async () => {
-      mockPostService.likePost.mockImplementation(() => serviceOk({}));
-      const result = await likeViewModel.like(false);
+      mockPostService.likePost.mockResolvedValue({});
+      await likeViewModel.like(false);
 
-      expect(result.isFailed).toBeFalsy();
       expect(mockPostService.likePost).toBeCalledWith(
         1,
         mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],
@@ -85,9 +82,7 @@ describe('likeViewModel', () => {
 
     it('should return hasError=true when like failed', async () => {
       mockPostService.likePost.mockRejectedValueOnce({});
-      const result = await likeViewModel.like(true);
-
-      expect(result.isFailed).toBeTruthy();
+      await expect(likeViewModel.like(true)).rejects.toEqual({});
       expect(mockPostService.likePost).toBeCalledWith(
         1,
         mockGlobalValue[GLOBAL_KEYS.CURRENT_USER_ID],

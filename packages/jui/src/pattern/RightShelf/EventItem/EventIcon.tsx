@@ -3,7 +3,7 @@
  * @Date: 2019-01-17 15:18:08
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 
 import {
   JuiIconography,
@@ -25,9 +25,9 @@ type Props = {
   iconColor?: [keyof Palette, string];
 };
 
-const WrapperEventIcon = ({ iconColor, ...rest }: EventIconProps) => (
+const WrapperEventIcon = memo(({ iconColor, ...rest }: EventIconProps) => (
   <JuiIconography {...rest} />
-);
+));
 
 const EventIcon = styled<EventIconProps>(WrapperEventIcon)`
   && {
@@ -36,10 +36,10 @@ const EventIcon = styled<EventIconProps>(WrapperEventIcon)`
   }
 `;
 
-const JuiEventIcon = (props: Props) => {
+const JuiEventIcon = memo((props: Props) => {
   const { iconColor } = props;
 
   return <EventIcon iconColor={iconColor}>{EVENT_ICON_TYPE.event}</EventIcon>;
-};
+});
 
 export { JuiEventIcon };

@@ -1,5 +1,4 @@
 import 'testcafe';
-import * as JSZip from 'jszip';
 import * as zipdir from 'zip-dir';
 import * as path from 'path';
 import * as attestCheck from 'attest-testcafe';
@@ -7,7 +6,6 @@ import { report } from 'attest-node';
 import { H } from './utils';
 import { MiscUtils } from '../utils';
 import { v4 as uuid } from 'uuid';
-import * as fs from 'fs';
 import { TMPFILE_PATH } from '../../config';
 
 export class A11yHelper {
@@ -79,7 +77,7 @@ export class A11yHelper {
     H.jsonDump(path.join(jsonDir, 'a11y.json'), this.jsonPreprocess(result["results"], testSubjectName, htmlName, attestId, browserName));
     await this.json2html(jsonDir, htmlDir);
 
-    zipdir(zipDir, { "saveTo": zipFile}, function (err, buffer) {
+    zipdir(zipDir, { "saveTo": zipFile }, function (err, buffer) {
       if (err) console.log(err);
     });
     return zipFile;

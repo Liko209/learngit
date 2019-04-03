@@ -10,6 +10,7 @@ import { ConversationPostViewProps, POST_TYPE } from './types';
 import { ConversationCard } from '../ConversationCard';
 import { Notification } from './Notification';
 import { MiniCard } from '@/containers/MiniCard';
+import { Profile, PROFILE_TYPE } from '@/containers/Profile';
 
 const PostTypeMappingComponent = {
   [POST_TYPE.POST]: ConversationCard,
@@ -29,22 +30,21 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
     const id = Number(target.getAttribute('id'));
     if (className.indexOf('at_mention_compose') > -1 && id > 0) {
       event.stopPropagation();
-      MiniCard.showProfile({
-        id,
-        anchor: target,
+      MiniCard.show(<Profile id={id} type={PROFILE_TYPE.MINI_CARD} />, {
+        anchor: target as HTMLElement,
       });
     }
   }
 
   render() {
-    const { type, id, highlight, onHighlightAnimationStart } = this.props;
+    const { type, id, cardRef, mode } = this.props;
     const Component = PostTypeMappingComponent[type];
     return (
       <Component
         id={id}
         onClick={this.onClickAtMention}
-        highlight={highlight}
-        onHighlightAnimationStart={onHighlightAnimationStart}
+        cardRef={cardRef}
+        mode={mode}
       />
     );
   }

@@ -5,43 +5,43 @@
  */
 import { mainLogger } from 'foundation';
 import BaseService from '../../service/BaseService';
-import {
-  ACCOUNT_USER_ID,
-  ACCOUNT_COMPANY_ID,
-  UNREAD_TOGGLE_ON,
-} from '../../dao/account/constants';
-import { daoManager, AuthDao } from '../../dao';
-import AccountDao from '../../dao/account';
-import PersonDao from '../../dao/person';
-import ConfigDao from '../../dao/config';
-import { CLIENT_ID } from '../../dao/config/constants';
+import { daoManager } from '../../dao';
+import { PersonDao } from '../../module/person/dao';
 import { UserInfo } from '../../models';
 import { generateUUID } from '../../utils/mathUtils';
-import { refreshToken, ITokenRefreshDelegate, ITokenModel } from '../../api';
-import { AUTH_RC_TOKEN } from '../../dao/auth/constants';
-import { Aware } from '../../utils/error';
+import {
+  refreshToken,
+  IPlatformHandleDelegate,
+  ITokenModel,
+  requestServerStatus,
+} from '../../api';
 import notificationCenter from '../notificationCenter';
-import ProfileService from '../profile/index';
-import { setRcToken } from '../../authenticator';
-import { ERROR_CODES_SDK } from '../../error';
+import { SERVICE } from '../eventKey';
+import { ProfileService } from '../../module/profile';
+import { setRcToken } from '../../authenticator/utils';
+import {
+  AccountUserConfig,
+  AccountGlobalConfig,
+} from '../../service/account/config';
+import { AuthUserConfig } from '../../service/auth/config';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
-class AccountService extends BaseService implements ITokenRefreshDelegate {
+class AccountService extends BaseService implements IPlatformHandleDelegate {
   static serviceName = 'AccountService';
 
-  private accountDao: AccountDao;
   constructor() {
     super();
-    this.accountDao = daoManager.getKVDao(AccountDao);
   }
 
   isAccountReady(): boolean {
-    return !!this.accountDao.get(ACCOUNT_USER_ID);
+    const userConfig = new AccountUserConfig();
+    return userConfig.getGlipUserId() ? true : false;
   }
 
   async getCurrentUserInfo(): Promise<UserInfo | {}> {
-    const userId = Number(this.accountDao.get(ACCOUNT_USER_ID));
-    const company_id = Number(this.accountDao.get(ACCOUNT_COMPANY_ID));
+    const userConfig = new AccountUserConfig();
+    const userId = userConfig.getGlipUserId();
+    const company_id = Number(userConfig.getCurrentCompanyId());
     if (!userId) return {};
     const personDao = daoManager.getDao(PersonDao);
     const personInfo = await personDao.get(userId);
@@ -55,7 +55,8 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   }
 
   async getUserEmail(): Promise<string> {
-    const userId = Number(this.accountDao.get(ACCOUNT_USER_ID));
+    const userConfig = new AccountUserConfig();
+    const userId = userConfig.getGlipUserId();
     if (!userId) return '';
     const personDao = daoManager.getDao(PersonDao);
     const personInfo = await personDao.get(userId);
@@ -64,44 +65,60 @@ class AccountService extends BaseService implements ITokenRefreshDelegate {
   }
 
   getClientId(): string {
-    const configDao = daoManager.getKVDao(ConfigDao);
-    let id = configDao.get(CLIENT_ID);
+    const userConfig = new AccountUserConfig();
+    let id = userConfig.getClientId();
     if (id) {
       return id;
     }
     id = generateUUID();
-    configDao.put(CLIENT_ID, id);
+    userConfig.setClientId(id);
     return id;
   }
 
   async refreshRCToken(): Promise<ITokenModel | null> {
-    const authDao = daoManager.getKVDao(AuthDao);
-    try {
-      const oldRcToken = authDao.get(AUTH_RC_TOKEN);
-      const refreshResult = await refreshToken(oldRcToken);
-      const newRcToken = refreshResult.expect('Failed to refresh rcToken');
-      setRcToken(newRcToken);
-      notificationCenter.emitKVChange(AUTH_RC_TOKEN, newRcToken);
-      return newRcToken;
-    } catch (err) {
-      Aware(ERROR_CODES_SDK.OAUTH, err.message);
-      return null;
-    }
+    const authConfig = new AuthUserConfig();
+    const oldRcToken = authConfig.getRcToken();
+    const newRcToken = (await refreshToken(oldRcToken)) as ITokenModel;
+    setRcToken(newRcToken);
+    return newRcToken;
   }
 
   async onBoardingPreparation() {
     const profileService: ProfileService = ProfileService.getInstance();
-    await profileService.markMeConversationAsFav();
+    await profileService.markMeConversationAsFav().catch((error: Error) => {
+      mainLogger
+        .tags('AccountService')
+        .info('markMeConversationAsFav fail:', error);
+    });
   }
 
   getUnreadToggleSetting() {
-    return (
-      this.accountDao.get(UNREAD_TOGGLE_ON) || DEFAULT_UNREAD_TOGGLE_SETTING
-    );
+    const userConfig = new AccountUserConfig();
+    return userConfig.getUnreadToggleSetting() || DEFAULT_UNREAD_TOGGLE_SETTING;
   }
 
   setUnreadToggleSetting(value: boolean) {
-    this.accountDao.put(UNREAD_TOGGLE_ON, value);
+    const userConfig = new AccountUserConfig();
+    userConfig.setUnreadToggleSetting(value);
+  }
+
+  checkServerStatus(callback: (success: boolean, retryAfter: number) => void) {
+    requestServerStatus(callback);
+  }
+
+  onRefreshTokenFailure(forceLogout: boolean) {
+    if (forceLogout) {
+      notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
+    }
+  }
+
+  isGlipLogin(): boolean {
+    const userDict = AccountGlobalConfig.getUserDictionary();
+    if (!userDict) {
+      return false;
+    }
+    const userConfig = new AccountUserConfig();
+    return userConfig && userConfig.getGlipUserId() !== null;
   }
 }
 

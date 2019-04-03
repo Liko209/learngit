@@ -7,7 +7,7 @@ import { getEntity } from '../../../store/utils';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
 
 jest.mock('i18next', () => ({
-  t: (text: string) => text,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
 
 jest.mock('../../../store/utils');
@@ -16,13 +16,13 @@ const conversationCardVM = new ConversationCardViewModel();
 
 const DAY = 24 * 3600 * 1000;
 const DATE_2019_1_4 = 1546564919703;
-const DATE_2019_1_3 = 1546564919703 - DAY;
-const DATE_2019_1_2 = 1546564919703 - 2 * DAY;
-const DATE_2019_1_1 = 1546564919703 - 3 * DAY;
-const DATE_2018_12_30 = 1546564919703 - 5 * DAY;
-const DATE_2018_12_29 = 1546564919703 - 6 * DAY;
-const DATE_2018_12_28 = 1546564919703 - 7 * DAY;
-const DATE_2019_1_5 = 1546564919703 + DAY;
+const DATE_2019_1_3 = DATE_2019_1_4 - DAY;
+const DATE_2019_1_2 = DATE_2019_1_4 - 2 * DAY;
+const DATE_2019_1_1 = DATE_2019_1_4 - 3 * DAY;
+const DATE_2018_12_30 = DATE_2019_1_4 - 5 * DAY;
+const DATE_2018_12_29 = DATE_2019_1_4 - 6 * DAY;
+const DATE_2018_12_28 = DATE_2019_1_4 - 7 * DAY;
+const DATE_2019_1_5 = DATE_2019_1_4 + DAY;
 describe('ConversationCardViewModel', () => {
   beforeAll(() => {
     jest.resetAllMocks();

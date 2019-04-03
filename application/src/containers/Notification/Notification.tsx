@@ -70,6 +70,7 @@ class Notification extends AbstractViewModel {
 
   static checkBufferAvailability() {
     if (
+      Notification.data &&
       Notification.data.length === MAX_SHOW_COUNT - 1 &&
       Notification._buffer.length > 0
     ) {

@@ -13,15 +13,17 @@ import { Theme, Palette } from '../../../foundation/theme/theme';
 import { JuiArrowTip } from '../../../components/Tooltip/ArrowTip';
 
 type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-type JuiCheckboxButtonProps = {
+type CheckboxButtonProps = {
   tooltipTitle?: string;
   invisible?: boolean;
   awake?: boolean;
   size?: 'small' | 'medium' | 'large';
-  iconName?: string;
   color?: string;
-  checkedIconName?: string;
 } & Omit<CheckboxProps, 'color'>;
+type JuiCheckboxButtonProps = CheckboxButtonProps & {
+  iconName: string;
+  checkedIconName: string;
+};
 
 const iconSizes = {
   large: 6,
@@ -50,7 +52,7 @@ const WrappedMuiCheckboxButton = ({
   colorScope,
   colorName,
   ...rest
-}: JuiCheckboxButtonProps & {
+}: CheckboxButtonProps & {
   colorScope: keyof Palette;
   colorName: string;
 }) => (
@@ -66,7 +68,7 @@ const WrappedMuiCheckboxButton = ({
   />
 );
 const StyledCheckboxButton = styled<
-  JuiCheckboxButtonProps & {
+  CheckboxButtonProps & {
     colorScope: keyof Palette;
     colorName: string;
   }
@@ -118,7 +120,7 @@ const StyledCheckboxButton = styled<
 `;
 
 // Tooltip does not work on disabled CheckboxButton without this: https://github.com/mui-org/material-ui/issues/8416
-const WrapperForTooltip = styled<JuiCheckboxButtonProps, 'div'>('div')`
+const WrapperForTooltip = styled<CheckboxButtonProps, 'div'>('div')`
   display: inline-block;
   width: ${({ size = 'medium', theme }) =>
     width(iconSizes[size] * 2)({ theme })};
@@ -127,10 +129,7 @@ const WrapperForTooltip = styled<JuiCheckboxButtonProps, 'div'>('div')`
   font-size: 0;
 `;
 
-class JuiCheckboxButton extends React.Component<
-  JuiCheckboxButtonProps,
-  { checked: boolean }
-> {
+class JuiCheckboxButton extends React.PureComponent<JuiCheckboxButtonProps> {
   static defaultProps = {
     color: 'primary',
     size: 'medium',
@@ -139,18 +138,15 @@ class JuiCheckboxButton extends React.Component<
     iconName: 'check_box_outline_blank',
     checkedIconName: 'check_box',
   };
-
   static dependencies = [MuiCheckbox, JuiIconography, JuiArrowTip];
+  state = {
+    checked: false,
+  };
 
-  constructor(props: JuiCheckboxButtonProps) {
-    super(props);
-    this.changeHandler = this.changeHandler.bind(this);
-    this.state = {
-      checked: false,
-    };
-  }
-
-  changeHandler(event: React.ChangeEvent<HTMLInputElement>, checked: boolean) {
+  changeHandler = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean,
+  ) => {
     this.setState({ checked });
     this.props.onChange && this.props.onChange(event, checked);
   }
@@ -198,4 +194,4 @@ class JuiCheckboxButton extends React.Component<
   }
 }
 
-export { JuiCheckboxButton, JuiCheckboxButtonProps };
+export { JuiCheckboxButton, CheckboxButtonProps };

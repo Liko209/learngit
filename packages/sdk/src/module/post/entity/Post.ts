@@ -29,6 +29,13 @@ export type Post = ExtendedBaseModel & {
   items?: object[];
   source?: string;
   parent_id?: number;
+  annotation?: {
+    x_percent: number;
+    y_percent: number;
+    stored_file_version: number;
+    anno_id?: string;
+    page?: number; // page and anno_id is for document only
+  };
 };
 
 export type PostView = IdModel & {
@@ -59,4 +66,12 @@ export type IRawPostResult = {
   posts: Raw<Post>[];
   items: Raw<Item>[];
   hasMore: boolean;
+};
+
+export type IRemotePostRequest = {
+  direction: QUERY_DIRECTION;
+  groupId: number;
+  limit: number;
+  postId: number;
+  shouldSaveToDb: boolean;
 };

@@ -8,25 +8,24 @@ import { observer } from 'mobx-react';
 import { JuiThumbnail } from 'jui/components/Thumbnail';
 import { JuiIconography } from 'jui/foundation/Iconography';
 import { PreloadImg } from '@/containers/common';
-import { ViewProps } from './types';
+import { ViewProps, Props } from './types';
 
 @observer
-class ThumbnailView extends React.Component<ViewProps> {
+class ThumbnailView extends React.Component<ViewProps & Props> {
   render() {
-    const {
-      fileTypeOrUrl: { icon, url },
-      type,
-    } = this.props;
+    const { icon, thumbsUrlWithSize, type } = this.props;
     return (
       <>
         {type === 'image' ? (
           <PreloadImg
-            url={url}
+            url={thumbsUrlWithSize}
             placeholder={
-              <JuiIconography fontSize="large">image_preview</JuiIconography>
+              <JuiIconography iconSize="extraLarge">
+                image_preview
+              </JuiIconography>
             }
           >
-            <JuiThumbnail url={url} />
+            <JuiThumbnail url={thumbsUrlWithSize} />
           </PreloadImg>
         ) : (
           <JuiThumbnail iconType={icon} />

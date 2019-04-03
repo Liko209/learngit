@@ -20,7 +20,7 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     const users = h(t).rcData.mainCompany.users;
     const loginUser = users[4];
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
+    await h(t).glip(loginUser).resetProfileAndState();
 
     const otherUser = users[5];
     await h(t).glip(otherUser).init();
@@ -47,8 +47,8 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     );
 
     await h(t).withLog('Then I open the private chat with user5', async () => {
-      await directMessagesSection.nthConversationEntry(chatId).enter();
-      await t.wait(1e3);
+      await directMessagesSection.conversationEntryById(chatId).enter();
+      await conversationPage.waitUntilPostsBeLoaded();
     });
 
     const conversationPage = app.homePage.messageTab.conversationPage;

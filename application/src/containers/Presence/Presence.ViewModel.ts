@@ -10,7 +10,7 @@ import { getEntity } from '@/store/utils';
 import { Presence } from 'sdk/module/presence/entity';
 import PresenceModel from '@/store/models/Presence';
 import { PresenceProps, PresenceViewProps } from './types';
-import { PRESENCE } from 'sdk/service';
+import { PRESENCE } from 'sdk/module/presence/constant';
 
 class PresenceViewModel extends StoreViewModel<PresenceProps>
   implements PresenceViewProps {

@@ -3,16 +3,19 @@
  * @Date: 2019-01-21 13:27:24
  * Copyright © RingCentral. All rights reserved.
  */
-import { UserConfig } from '../../../../service/account/UserConfig';
+
 import { SplitIOClient } from './SplitIOClient';
 import UserPermissionType from '../../types';
 import { Api } from '../../../../api';
 import SplitIODefaultPermissions from './SplitIODefaultPermissions';
 import { notificationCenter, SERVICE } from '../../../../service';
-
+import { mainLogger } from 'foundation';
+import { AccountUserConfig } from '../../../../service/account/config';
+import { PersonService } from '../../../person';
 class SplitIOController {
   private splitIOClient: SplitIOClient;
   private isClientReady: boolean = false;
+  private isIniting = false;
   private splitIOUpdateCallback: () => void;
   constructor(callback: () => void) {
     this.splitIOUpdateCallback = callback;
@@ -26,43 +29,60 @@ class SplitIOController {
   }
 
   private _subscribeNotifications() {
-    notificationCenter.on(SERVICE.LOGIN, () => {
-      this._initClient();
+    notificationCenter.on(SERVICE.LOGIN, async () => {
+      await this._initClient();
     });
-    notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
-      this._initClient();
+    notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, async () => {
+      await this._initClient();
+    });
+    window.addEventListener('unload', () => {
+      this._shutdownClient();
     });
     notificationCenter.on(SERVICE.LOGOUT, () => {
-      this.splitIOClient && this.splitIOClient.shutdown();
+      this._shutdownClient();
     });
+  }
+
+  private _shutdownClient() {
+    this.splitIOClient && this.splitIOClient.shutdown();
+    this.isClientReady = false;
+    this.isIniting = false;
   }
 
   private _defaultPermission(type: UserPermissionType) {
     return !!SplitIODefaultPermissions[type];
   }
 
-  private _initClient() {
-    if (this.isClientReady) {
+  private async _initClient() {
+    if (this.isIniting || this.isClientReady) {
       return;
     }
-    const userId: number = UserConfig.getCurrentUserId();
-    const companyId: number = UserConfig.getCurrentCompanyId();
-    if (!userId || !companyId) {
+    const userConfig = new AccountUserConfig();
+    const userId: number = userConfig.getGlipUserId();
+    if (!userId) {
       return;
     }
+    this.isIniting = true;
+
+    const personService: PersonService = PersonService.getInstance();
+    const person = await personService.getById(userId);
     const params = {
       userId: userId.toString(),
       attributes: {
-        companyId,
+        companyId: (person && person['company_id']) || '',
+        name: (person && person['display_name']) || '',
+        email: (person && person['email']) || '',
       },
       authKey: Api.httpConfig.splitio.clientSecret,
       permissions: Object.keys(SplitIODefaultPermissions),
       splitIOReady: (): void => {
         this.isClientReady = true;
         this.splitIOUpdateCallback && this.splitIOUpdateCallback();
+        mainLogger.log('incoming event splitIOReady');
       },
       splitIOUpdate: (): void => {
         this.splitIOUpdateCallback && this.splitIOUpdateCallback();
+        mainLogger.log('incoming event splitIOUpdate');
       },
     };
     this.splitIOClient = new SplitIOClient(params);

@@ -6,8 +6,9 @@
 import * as React from 'react';
 import { observer } from 'mobx-react';
 import { JuiAvatar } from 'jui/components/Avatar';
-// import { PreloadImg } from '@/containers/common';
 import { AvatarViewProps } from './types';
+import { PreloadImg } from '../common/PreloadImg';
+import defaultAvatar from './defaultAvatar.svg';
 
 @observer
 class AvatarView extends React.Component<AvatarViewProps> {
@@ -21,15 +22,8 @@ class AvatarView extends React.Component<AvatarViewProps> {
       presence,
       ...rest
     } = this.props;
-    return !shouldShowShortName ? (
-      <JuiAvatar
-        src={headShotUrl}
-        data-test-automation-id={automationId}
-        color=""
-        presence={presence}
-        {...rest}
-      />
-    ) : (
+
+    const AvatarWithName = (
       <JuiAvatar
         color={bgColor}
         data-test-automation-id={automationId}
@@ -38,6 +32,33 @@ class AvatarView extends React.Component<AvatarViewProps> {
       >
         {shortName}
       </JuiAvatar>
+    );
+
+    const DefaultAvatar = (
+      <JuiAvatar
+        src={defaultAvatar}
+        data-test-automation-id={automationId}
+        color=""
+        {...rest}
+      />
+    );
+
+    return !shouldShowShortName ? (
+      <PreloadImg
+        url={headShotUrl}
+        placeholder={DefaultAvatar}
+        animationForLoad={true}
+      >
+        <JuiAvatar
+          src={headShotUrl}
+          data-test-automation-id={automationId}
+          color=""
+          presence={presence}
+          {...rest}
+        />
+      </PreloadImg>
+    ) : (
+      AvatarWithName
     );
   }
 }

@@ -4,9 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../foundation/styled-components';
-import { grey, height, spacing } from '../../foundation/utils/styles';
+import {
+  grey,
+  height,
+  spacing,
+  typography,
+} from '../../foundation/utils/styles';
 import { JuiDivider } from '../../components/Divider';
 
 const StyledBox = styled('div')`
@@ -22,6 +27,7 @@ const StyledDivider = styled(JuiDivider)`
 `;
 
 const StyledText = styled('div')`
+  ${typography('caption1')}
   position: absolute;
   bottom: ${spacing(3)};
   width: 100%;
@@ -37,13 +43,15 @@ type Props = {
   text: string;
 };
 
-const JuiTimeNodeDivider = ({ text }: Props) => {
+const JuiTimeNodeDivider = memo(({ text }: Props) => {
   return (
     <StyledBox>
       <StyledDivider />
-      <StyledText><span>{text}</span></StyledText>
+      <StyledText>
+        <span>{text}</span>
+      </StyledText>
     </StyledBox>
   );
-};
+});
 
 export { JuiTimeNodeDivider };

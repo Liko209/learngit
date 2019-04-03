@@ -41,7 +41,7 @@ class UnReadToggler extends BaseWebComponent {
 
   async isExpand() {
     this.warnFlakySelector();
-    return await this.self.child().withText('arrow_up').exists;
+    return await this.self.child().find('.arrow_up').exists;
   }
 
   private async turn(on: boolean) {
@@ -85,6 +85,10 @@ class MoreMenu extends Entry {
   get close() {
     return this.getComponent(MenuItem, this.self.find('li').withText('Close'));
   }
+
+  async openProfile() {
+    return await this.t.click(this.profile.self);
+  }
 }
 
 class MenuItem extends Entry {
@@ -107,8 +111,7 @@ class MenuItem extends Entry {
 
 class ConversationEntry extends BaseWebComponent {
   get moreMenuEntry() {
-    this.warnFlakySelector();
-    return this.self.find('span').withText('more_vert');
+    return this.self.find('.icon.more_vert');
   }
 
   get name() {
@@ -163,7 +166,7 @@ class ConversationEntry extends BaseWebComponent {
     const moreButton = this.moreMenuEntry;
     await this.t.expect(moreButton.exists).ok();
     const displayMoreButton = ClientFunction(
-      () => { moreButton().style["display"] = "inline-block"; },
+      () => { moreButton().style["display"] = "inline-flex"; },
       { dependencies: { moreButton } }
     );
     await displayMoreButton();
@@ -181,7 +184,7 @@ class ConversationEntry extends BaseWebComponent {
   }
 }
 
-class ConversationListSection extends BaseWebComponent {
+class ConversationSection extends BaseWebComponent {
   ensureLoaded() {
     return this.waitUntilExist(this.self);
   }
@@ -217,7 +220,7 @@ class ConversationListSection extends BaseWebComponent {
 
   get isExpand() {
     this.warnFlakySelector();
-    return this.self.child().withText('arrow_up').exists;
+    return this.self.child().find('.arrow_up').exists;
   }
 
   private async toggle(expand: boolean) {
@@ -272,20 +275,29 @@ class CloseConversationModal extends BaseWebComponent {
 
   get dontAskAgainCheckbox() {
     this.warnFlakySelector();
-    return this.self.find('input');
+    return this.self.find('label');
   }
 
-  get confirmButton() {
+  get cancelButton() {
     this.warnFlakySelector();
-    return this.self.find('button');
+    return this.button('Cancel');
+  }
+
+  get closeButton() {
+    this.warnFlakySelector();
+    return this.button('Close');
   }
 
   async toggleDontAskAgain() {
     await this.t.click(this.dontAskAgainCheckbox);
   }
 
-  async confirm() {
-    await this.t.click(this.confirmButton);
+  async clickCancelButton() {
+    await this.t.click(this.cancelButton);
+  }
+
+  async clickCloseButton() {
+    await this.t.click(this.closeButton);
   }
 }
 
@@ -297,7 +309,7 @@ export class MessageTab extends BaseWebComponent {
 
   private getSection(name: string) {
     return this.getComponent(
-      ConversationListSection,
+      ConversationSection,
       this.getSelector(`*[data-name="${name}"]`),
     );
   }

@@ -26,7 +26,7 @@ type JuiMenuItemProps = {
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
   && {
     margin-right: ${spacing(2)};
-    font-size: ${typography('subheading1')};
+    ${typography('subheading1')};
     color: ${grey('700')};
   }
 `;
@@ -56,14 +56,14 @@ const StyledMenuItem = styled(MuiMenuItem)`
   }
 `;
 
-class JuiMenuItem extends React.Component<JuiMenuItemProps> {
+class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
   render() {
     const { icon, children, disabled, ...rest } = this.props;
     let iconElement: any;
     if (typeof icon !== 'string') {
       iconElement = icon;
     } else {
-      iconElement = <JuiIconography fontSize="small">{icon}</JuiIconography>;
+      iconElement = <JuiIconography iconSize="small">{icon}</JuiIconography>;
     }
     return (
       <StyledMenuItem disabled={disabled} data-disabled={disabled} {...rest}>

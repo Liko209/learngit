@@ -5,14 +5,13 @@
  */
 
 /// <reference path="../../../../../__tests__/types.d.ts" />
-import { PostService, notificationCenter } from 'sdk/service';
+import React from 'react';
+import { notificationCenter } from 'sdk/service';
 import { StateService } from 'sdk/module/state';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { StreamViewModel } from '../Stream.ViewModel';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import _ from 'lodash';
-import { id } from 'inversify';
 import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
 import { Notification } from '@/containers/Notification';
 import * as errorUtil from '@/utils/error';
@@ -22,22 +21,20 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { ItemService } from 'sdk/module/item';
-import * as SCM from '../StreamController';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { StreamProps, StreamItemType } from '../types';
+import { StreamViewModel } from '../Stream.ViewModel';
 
 jest.mock('sdk/module/item');
-jest.mock('sdk/service/post');
-jest.mock('@/store');
+jest.mock('sdk/module/post');
 jest.mock('../../../../store/base/visibilityChangeEvent');
-
-const postService = {
-  getPostsByGroupId: jest.fn(),
-};
 
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
-  const vm = new StreamViewModel({ groupId: obj.groupId || 1 });
+  const vm = new StreamViewModel({
+    viewRef: React.createRef(),
+    groupId: obj.groupId || 1,
+  });
   delete obj.groupId;
   Object.assign(vm, obj);
   return vm;
@@ -45,18 +42,22 @@ function setup(obj?: any) {
 
 describe('StreamViewModel', () => {
   let itemService: ItemService;
+  let postService: PostService;
+
   const streamController = {
     dispose: jest.fn(),
     hasMore: jest.fn(),
     enableNewMessageSep: jest.fn(),
     disableNewMessageSep: jest.fn(),
   };
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     itemService = new ItemService();
-    NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+    postService = new PostService();
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+    PostService.getInstance = jest.fn().mockReturnValue(postService);
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
@@ -147,7 +148,10 @@ describe('StreamViewModel', () => {
 
       Object.assign(vm, {
         _streamController: {
-          hasMoreUp: props.hasMoreUp,
+          hasMore: (direction: QUERY_DIRECTION) => {
+            return props.hasMoreUp;
+          },
+
           items: props.id
             ? [{ id: props.id, value: [props.id], type: StreamItemType.POST }]
             : [],
@@ -184,13 +188,12 @@ describe('StreamViewModel', () => {
   describe('updateHistoryHandler()', () => {
     it('should update historyHandler with arguments', () => {
       const mockUpdate = jest.fn();
-      const groupState = Math.random();
       const postIds = [Math.random(), Math.random()];
       const vm = setup({
         _historyHandler: { update: mockUpdate },
         _streamController: {
           postIds,
-          items: postIds.map(i => ({
+          items: postIds.map((i) => ({
             id: i,
             value: i,
             type: StreamItemType.POST,
@@ -198,13 +201,9 @@ describe('StreamViewModel', () => {
         },
       });
 
-      Object.defineProperty(vm, '_groupState', {
-        value: groupState,
-      });
-
       vm.updateHistoryHandler();
       expect(mockUpdate).toBeCalledTimes(1);
-      expect(mockUpdate).toBeCalledWith(groupState, postIds);
+      expect(mockUpdate).toBeCalledWith(vm._groupState, postIds);
     });
   });
 
@@ -217,7 +216,7 @@ describe('StreamViewModel', () => {
       const vm = setup({ groupId });
       vm.markAsRead();
 
-      expect(spy).toBeCalledWith(groupId, false);
+      expect(spy).toBeCalledWith(groupId, false, true);
 
       spy.mockRestore();
     });
@@ -351,7 +350,7 @@ describe('StreamViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
-        message: 'SorryWeWereNotAbleToLoadOlderMessages',
+        message: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });
@@ -435,122 +434,38 @@ describe('StreamViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
         fullWidth: false,
-        message: 'SorryWeWereNotAbleToLoadNewerMessages',
+        message: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
         messageAlign: ToastMessageAlign.LEFT,
         type: ToastType.ERROR,
       });
     });
-  });
 
-  describe('handleNewMessageSeparatorState()', () => {
-    let streamController: any;
-    const globalStore = {
-      set: jest.fn(),
-      get: jest.fn().mockReturnValue(1),
-    };
-    const atBottomEvent = {
-      target: {
-        scrollHeight: 0,
-        scrollTop: 0,
-        clientHeight: 0,
-      },
-    } as any;
-    const notAtBottomEvent = {
-      target: {
-        scrollHeight: 10,
-        scrollTop: 0,
-        clientHeight: 0,
-      },
-    } as any;
+    it('should not show toast multiple times if calling error catched frequently', async () => {
+      const fetchData = jest.fn(() =>
+        Promise.reject(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.GENERAL,
+            'Backend error',
+          ),
+        ),
+      );
+      const hasMore = jest.fn().mockReturnValue(true);
 
-    function mockStoreManager() {
-      jest.spyOn(storeManager, 'getGlobalStore').mockReturnValue(globalStore);
-    }
-
-    function mockDocumentFocus(hasFocus: boolean) {
-      jest.spyOn(document, 'hasFocus').mockReturnValue(hasFocus);
-    }
-
-    function localSetup(args: object, initialized: boolean = true) {
-      jest.spyOn(SCM, 'StreamController').mockImplementation();
-      streamController = {
-        disableNewMessageSep: jest.fn(),
-        enableNewMessageSep: jest.fn(),
-        dispose: jest.fn(),
-      };
       const vm = setup({
-        _streamController: streamController,
-        _initialized: initialized,
-        ...args,
+        _streamController: {
+          hasMore,
+          fetchData,
+        },
       });
-      vm.dispose();
-      return vm;
-    }
 
-    afterAll(() => {
-      jest.restoreAllMocks();
+      Notification.flashToast = jest.fn();
+
+      await vm.loadNextPosts();
+      await vm.loadNextPosts();
+      await vm.loadNextPosts();
+
+      expect(Notification.flashToast).toHaveBeenCalledTimes(1);
     });
-
-    describe('when viewModel is initialized', () => {
-      function hideUMIAndDisableMessageHandler() {
-        expect(globalStore.set).toBeCalledWith(
-          GLOBAL_KEYS.SHOULD_SHOW_UMI,
-          false,
-        );
-        expect(streamController.disableNewMessageSep).toBeCalled();
-      }
-
-      function showUMIAndEnableMessageHandler() {
-        expect(globalStore.set).toBeCalledWith(
-          GLOBAL_KEYS.SHOULD_SHOW_UMI,
-          true,
-        );
-        expect(streamController.enableNewMessageSep).toBeCalled();
-      }
-
-      it('should disable newMessageSeparatorHandler when at bottom and document has focus', () => {
-        mockStoreManager();
-        mockDocumentFocus(true);
-        const vm = localSetup({});
-        vm.handleNewMessageSeparatorState(atBottomEvent);
-        hideUMIAndDisableMessageHandler();
-      });
-
-      it('should enable newMessageSeparatorHandler when at bottom and document without focus', () => {
-        mockStoreManager();
-        mockDocumentFocus(false);
-        const vm = localSetup({});
-        vm.handleNewMessageSeparatorState(atBottomEvent);
-        showUMIAndEnableMessageHandler();
-      });
-
-      it('should enable newMessageSeparatorHandler when not at bottom and document has focus', () => {
-        mockStoreManager();
-        mockDocumentFocus(true);
-        const vm = localSetup({});
-        vm.handleNewMessageSeparatorState(notAtBottomEvent);
-        showUMIAndEnableMessageHandler();
-      });
-
-      it('should enable newMessageSeparatorHandler when not at bottom and document without focus', () => {
-        mockStoreManager();
-        mockDocumentFocus(false);
-        const vm = localSetup({});
-        vm.handleNewMessageSeparatorState(notAtBottomEvent);
-        showUMIAndEnableMessageHandler();
-      });
-    });
-
-    describe('when viewModel is not initialized', () => {
-      it('should enable newMessageSeparatorHandler when at bottom and document has focus', () => {
-        mockStoreManager();
-        mockDocumentFocus(true);
-        const vm = localSetup({}, false);
-        vm.handleNewMessageSeparatorState(atBottomEvent);
-
-        expect(streamController.enableNewMessageSep).toBeCalled();
-      });
-    });
-    jest.restoreAllMocks();
   });
 });

@@ -9,9 +9,21 @@ import { EventEmitter2 } from 'eventemitter2';
 import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from './types';
 
 class RTCNetworkNotificationCenter extends EventEmitter2 {
+  private static _singleton: RTCNetworkNotificationCenter | null = null;
   private _isOnline: boolean = true;
 
-  constructor() {
+  public static instance(): RTCNetworkNotificationCenter {
+    if (!RTCNetworkNotificationCenter._singleton) {
+      RTCNetworkNotificationCenter._singleton = new RTCNetworkNotificationCenter();
+    }
+    return RTCNetworkNotificationCenter._singleton;
+  }
+
+  public static destroy() {
+    RTCNetworkNotificationCenter._singleton = null;
+  }
+
+  private constructor() {
     super();
     this._listenEvevt();
   }
@@ -45,6 +57,4 @@ class RTCNetworkNotificationCenter extends EventEmitter2 {
   }
 }
 
-const rtcNetworkNotificationCenter: RTCNetworkNotificationCenter = new RTCNetworkNotificationCenter();
-
-export { rtcNetworkNotificationCenter };
+export { RTCNetworkNotificationCenter };

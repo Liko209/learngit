@@ -7,7 +7,8 @@
 import { PostController } from '../PostController';
 import { PostActionController } from '../implementation/PostActionController';
 import { Api } from '../../../../api';
-import { daoManager, PostDao, ConfigDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
 import {
   buildEntitySourceController,
   buildRequestController,
@@ -15,22 +16,29 @@ import {
 } from '../../../../framework/controller';
 
 import { SendPostController } from '../implementation/SendPostController';
+import { PostSearchController } from '../implementation/PostSearchController';
 import { ProgressService } from '../../../progress';
+import { UserConfigService } from '../../../../module/config';
 
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../api');
 jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../../progress');
+jest.mock('../../../../module/config');
 
 describe('PostController', () => {
   const progressService: ProgressService = new ProgressService();
   const postDao: PostDao = new PostDao(null);
-  const configDao: ConfigDao = new ConfigDao(null);
 
   beforeEach(() => {
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
     jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
-    jest.spyOn(daoManager, 'getKVDao').mockReturnValue(configDao);
+    UserConfigService.getInstance.mockReturnValue({
+      setUserId: jest.fn(),
+      get: jest.fn(),
+      put: jest.fn(),
+    });
   });
 
   describe('getPostActionController()', () => {
@@ -72,6 +80,14 @@ describe('PostController', () => {
         .mockReturnValueOnce(null);
       const result = postController.getSendPostController();
       expect(result instanceof SendPostController).toBe(true);
+    });
+  });
+
+  describe('getPostSearchController', () => {
+    it('getPostSearchController should not be null/undefined', () => {
+      const postController = new PostController();
+      const result = postController.getPostSearchController();
+      expect(result instanceof PostSearchController).toBe(true);
     });
   });
 });

@@ -16,6 +16,7 @@ const JuiTeamSettingEditSectionLeft = styled.div`
 `;
 const JuiTeamSettingEditSectionRight = styled.div`
   flex: 1;
+  transform: translateZ(0);
 `;
 
 export {

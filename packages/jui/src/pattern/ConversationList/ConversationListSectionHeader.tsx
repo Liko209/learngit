@@ -3,7 +3,7 @@
  * @Date: 2018-08-17 10:34:57
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 
 import MuiListItem from '@material-ui/core/ListItem';
 
@@ -19,6 +19,7 @@ import { JuiIconography } from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import tinycolor from 'tinycolor2';
 import { Theme } from '../../foundation/theme/theme';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 const rippleEnter = (theme: Theme) => keyframes`
   from {
     transform: scale(0);
@@ -45,7 +46,6 @@ const StyledJuiIconography = styled(JuiIconography)``;
 const StyledListItem = styled(MuiListItem)`
   && {
     padding: ${spacing(2, 4, 2, 3)};
-    background: white;
     color: ${grey('900')};
     height: ${height(11)};
     line-height: ${height(11)};
@@ -58,14 +58,14 @@ const StyledListItem = styled(MuiListItem)`
   }
 
   &&:hover {
-    background-color: ${grey('50')};
+    background-color: ${({ theme }) =>
+      fade(palette('grey', '700')({ theme }), theme.opacity.p05)};
   }
 
   &&.selected {
-    background: white;
-
     &&:hover {
-      background-color: ${grey('50')};
+      background-color: ${({ theme }) =>
+        fade(palette('grey', '700')({ theme }), theme.opacity.p10)};
     }
 
     p {
@@ -118,46 +118,50 @@ type JuiSectionHeaderProps = {
   onArrowClick?: (e: React.MouseEvent) => any;
 };
 
-const JuiConversationListSectionHeader = (props: JuiSectionHeaderProps) => {
-  const {
-    icon,
-    title,
-    umi,
-    expanded,
-    className,
-    hideArrow,
-    onClick,
-    onArrowClick,
-    selected,
-    ...rest
-  } = props;
+const JuiConversationListSectionHeader = memo(
+  (props: JuiSectionHeaderProps) => {
+    const {
+      icon,
+      title,
+      umi,
+      expanded,
+      className,
+      hideArrow,
+      onClick,
+      onArrowClick,
+      selected,
+      ...rest
+    } = props;
 
-  const arrow = expanded ? 'arrow_up' : 'arrow_down';
+    const arrow = expanded ? 'arrow_up' : 'arrow_down';
 
-  return (
-    <StyledListItem
-      className={className}
-      data-test-automation-id="conversation-list-section-header"
-      button={true}
-      selected={selected}
-      classes={{ selected: 'selected' }}
-      TouchRippleProps={{ classes: touchRippleClasses }}
-      onClick={onClick}
-      {...rest}
-    >
-      <StyledJuiIconographyLeft>{icon}</StyledJuiIconographyLeft>
-      <ItemText disableTooltip={true}>{title}</ItemText>
-      <StyledRightWrapper>
-        {!expanded ? umi : null}
-        {!hideArrow ? (
-          <StyledJuiIconography onClick={onArrowClick}>
-            {arrow}
-          </StyledJuiIconography>
-        ) : null}
-      </StyledRightWrapper>
-    </StyledListItem>
-  );
-};
+    return (
+      <StyledListItem
+        className={className}
+        data-test-automation-id="conversation-list-section-header"
+        button={true}
+        selected={selected}
+        classes={{ selected: 'selected' }}
+        TouchRippleProps={{ classes: touchRippleClasses }}
+        onClick={onClick}
+        {...rest}
+      >
+        <StyledJuiIconographyLeft iconSize="small">
+          {icon}
+        </StyledJuiIconographyLeft>
+        <ItemText disableTooltip={true}>{title}</ItemText>
+        <StyledRightWrapper>
+          {!expanded ? umi : null}
+          {!hideArrow ? (
+            <StyledJuiIconography iconSize="medium" onClick={onArrowClick}>
+              {arrow}
+            </StyledJuiIconography>
+          ) : null}
+        </StyledRightWrapper>
+      </StyledListItem>
+    );
+  },
+);
 
 export default JuiConversationListSectionHeader;
 export { JuiConversationListSectionHeader, JuiSectionHeaderProps };

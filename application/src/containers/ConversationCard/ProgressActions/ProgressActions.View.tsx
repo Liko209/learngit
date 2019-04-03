@@ -6,27 +6,27 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProgressActionsViewProps } from './types';
 import { JuiActions } from 'jui/pattern/ConversationCard/Actions';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import { JuiCircularProgress } from 'jui/components/Progress/CircularProgress';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { Dialog } from '@/containers/Dialog';
 
-type Props = ProgressActionsViewProps & WithNamespaces;
+type Props = ProgressActionsViewProps & WithTranslation;
 
 @observer
 class ProgressActionsViewComponent extends Component<Props> {
   private _deletePost = () => {
     const { deletePost } = this.props;
     Dialog.confirm({
-      title: t('deletePostTitle'),
-      content: t('deletePostContent'),
-      okText: t('delete'),
+      title: i18next.t('message.prompt.deletePostTitle'),
+      content: i18next.t('message.prompt.deletePostContent'),
+      okText: i18next.t('common.dialog.delete'),
       okType: 'negative',
-      cancelText: t('Cancel'),
+      cancelText: i18next.t('common.dialog.cancel'),
       async onOK() {
         try {
           await deletePost();
@@ -57,7 +57,7 @@ class ProgressActionsViewComponent extends Component<Props> {
       return (
         <JuiIconButton
           variant="plain"
-          tooltipTitle={t('resendPost')}
+          tooltipTitle={t('message.action.resendPost')}
           onClick={this._resendPost}
           size="small"
           color="semantic.negative"
@@ -75,7 +75,7 @@ class ProgressActionsViewComponent extends Component<Props> {
       return (
         <JuiIconButton
           variant="plain"
-          tooltipTitle={t('deletePost')}
+          tooltipTitle={t('message.action.deletePost')}
           onClick={this._deletePost}
           size="small"
         >
@@ -97,7 +97,7 @@ class ProgressActionsViewComponent extends Component<Props> {
   }
 }
 
-const ProgressActionsView = translate('Conversations')(
+const ProgressActionsView = withTranslation('translations')(
   ProgressActionsViewComponent,
 );
 

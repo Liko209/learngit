@@ -5,13 +5,15 @@
  */
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
-import { daoManager, PostDao } from '../../../../dao';
+import { daoManager } from '../../../../dao';
+import { PostDao } from '../../dao';
 import { Post } from '../../entity';
 import { SendPostType, PostItemsReadyCallbackType } from '../../types';
 import SendPostControllerHelper from './SendPostControllerHelper';
 import { ItemService } from '../../../item/service';
 
-import { notificationCenter, GroupConfigService } from '../../../../service';
+import notificationCenter from '../../../../service/notificationCenter';
+import { GroupConfigService } from '../../../groupConfig';
 import { ENTITY } from '../../../../service/eventKey';
 import { ErrorParserHolder } from '../../../../error';
 import { PostActionController } from './PostActionController';
@@ -20,7 +22,7 @@ import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { Raw } from '../../../../framework/model';
-import { UserConfig } from '../../../../service/account';
+import { AccountUserConfig } from '../../../../service/account/config';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 
@@ -43,15 +45,16 @@ class SendPostController implements ISendPostController {
   }
 
   async sendPost(params: SendPostType) {
-    const userId: number = UserConfig.getCurrentUserId();
-    const companyId: number = UserConfig.getCurrentCompanyId();
+    const userConfig = new AccountUserConfig();
+    const userId: number = userConfig.getGlipUserId();
+    const companyId: number = userConfig.getCurrentCompanyId();
     const paramsInfo = {
       userId,
       companyId,
       ...params,
     };
     const rawInfo = this._helper.buildRawPostInfo(paramsInfo);
-    this.innerSendPost(rawInfo, false);
+    await this.innerSendPost(rawInfo, false);
   }
 
   async reSendPost(id: number) {
@@ -85,20 +88,22 @@ class SendPostController implements ISendPostController {
 
     await this.preInsertController.insert(post);
 
-    const sendPostAfterItemsReady = (result: PostItemsReadyCallbackType) => {
+    const sendPostAfterItemsReady = async (
+      result: PostItemsReadyCallbackType,
+    ) => {
       Object.keys(result.obj).forEach((key: string) => {
         post[key] = _.cloneDeep(result.obj[key]);
       });
       if (PostControllerUtils.isValidPost(post)) {
         if (result.success) {
-          this.sendPostToServer(post);
+          await this.sendPostToServer(post);
         } else {
           // handle failed
-          this.handleSendPostFail(post, post.group_id);
+          await this.handleSendPostFail(post, post.group_id);
         }
       } else {
         // delete post
-        this.postActionController.deletePost(post.id);
+        await this.postActionController.deletePost(post.id);
       }
     };
 
@@ -134,6 +139,17 @@ class SendPostController implements ISendPostController {
         async (newPost: Post) => {
           return newPost;
         },
+        (
+          originalEntities: Post[],
+          updatedEntities: Post[],
+          partialEntities: Partial<Raw<Post>>[],
+        ) => {
+          notificationCenter.emitEntityUpdate(
+            `${ENTITY.POST}.${post.group_id}`,
+            updatedEntities,
+            partialEntities,
+          );
+        },
       );
     }
     throw new Error('updateLocalPost error invalid id');
@@ -146,7 +162,7 @@ class SendPostController implements ISendPostController {
       const result = await this.postActionController.requestController.post(
         sendPost,
       );
-      return this.handleSendPostSuccess(result, post);
+      return await this.handleSendPostSuccess(result, post);
     } catch (e) {
       this.handleSendPostFail(post, post.group_id);
       throw ErrorParserHolder.getErrorParser().parse(e);
@@ -165,7 +181,10 @@ class SendPostController implements ISendPostController {
     const replacePosts = new Map<number, Post>();
     replacePosts.set(originalPost.id, post);
 
-    notificationCenter.emitEntityReplace(ENTITY.POST, replacePosts);
+    notificationCenter.emitEntityReplace(
+      `${ENTITY.POST}.${post.group_id}`,
+      replacePosts,
+    );
     const dao = daoManager.getDao(PostDao);
 
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();

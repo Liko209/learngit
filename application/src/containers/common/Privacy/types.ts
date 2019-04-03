@@ -11,10 +11,11 @@ type PrivacyProps = {
   size?: IconButtonSize;
 };
 
-type PrivacyViewProps = PrivacyProps & {
+type PrivacyViewProps = {
   isPublic: boolean;
   isAdmin: boolean;
-  handlePrivacy: () => Promise<boolean>;
+  isTeam: boolean;
+  handlePrivacy: () => Promise<void>;
 };
 
 export { PrivacyProps, PrivacyViewProps };

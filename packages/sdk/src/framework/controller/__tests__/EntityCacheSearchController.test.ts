@@ -13,8 +13,9 @@ import { IEntityCacheController } from '../interface/IEntityCacheController';
 import {
   IEntityCacheSearchController,
   SortableModel,
+  Terms,
 } from '../interface/IEntityCacheSearchController';
-
+import { SearchUtils } from '../../utils/SearchUtils';
 export type TestModel = IdModel & {
   name?: string;
   note?: string;
@@ -45,6 +46,9 @@ describe('Entity Cache Search Controller', () => {
   });
 
   describe('Check Cache Search', () => {
+    beforeEach(() => {
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(false);
+    });
     it('get from cache', async () => {
       const entityA = { id: 1, name: 'mr.dog', note: 'likes to eat bone' };
       const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
@@ -80,11 +84,18 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        (entity: TestModel, terms: string[]) => {
-          if (
-            entity.name &&
-            entityCacheSearchController.isFuzzyMatched(entity.name, terms)
-          ) {
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
             return {
               entity,
               id: entity.id,
@@ -113,11 +124,18 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        (entity: TestModel, terms: string[]) => {
-          if (
-            entity.name &&
-            entityCacheSearchController.isFuzzyMatched(entity.name, terms)
-          ) {
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
             return {
               entity,
               id: entity.id,
@@ -145,11 +163,18 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        (entity: TestModel, terms: string[]) => {
-          if (
-            entity.name &&
-            entityCacheSearchController.isFuzzyMatched(entity.name, terms)
-          ) {
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
             return {
               entity,
               id: entity.id,
@@ -178,11 +203,18 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        (entity: TestModel, terms: string[]) => {
-          if (
-            entity.name &&
-            entityCacheSearchController.isFuzzyMatched(entity.name, terms)
-          ) {
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
             return {
               entity,
               id: entity.id,
@@ -211,11 +243,18 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        (entity: TestModel, terms: string[]) => {
-          if (
-            entity.name &&
-            entityCacheSearchController.isFuzzyMatched(entity.name, terms)
-          ) {
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
             return {
               entity,
               id: entity.id,
@@ -245,11 +284,18 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        (entity: TestModel, terms: string[]) => {
-          if (
-            entity.name &&
-            entityCacheSearchController.isFuzzyMatched(entity.name, terms)
-          ) {
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
             return {
               entity,
               id: entity.id,
@@ -278,11 +324,18 @@ describe('Entity Cache Search Controller', () => {
       await entityCacheController.put(entityC);
 
       const result = await entityCacheSearchController.searchEntities(
-        (entity: TestModel, terms: string[]) => {
-          if (
-            entity.name &&
-            entityCacheSearchController.isFuzzyMatched(entity.name, terms)
-          ) {
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
             return {
               entity,
               id: entity.id,
@@ -301,6 +354,49 @@ describe('Entity Cache Search Controller', () => {
       expect(result.sortableModels[0].entity).toBe(entityC);
       expect(result.sortableModels[1].entity).toBe(entityB);
       expect(result.sortableModels[2].entity).toBe(entityA);
+    });
+
+    it('should match entityA when the parameter of searchEntities has special charactor search key, ', async () => {
+      const entityA = {
+        id: 1,
+        name: 'abc([.?*+^$[]\\(){}|-])',
+        note: 'likes to eat bone',
+      };
+      const entityB = { id: 2, name: 'mr.cat', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
+
+      const result = await entityCacheSearchController.searchEntities(
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              firstSortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        '([.?*+ ^$[] \\(){} |-])',
+        undefined,
+        undefined,
+      );
+
+      expect(result.sortableModels.length).toBe(1);
+      expect(result.sortableModels[0].entity).toBe(entityA);
     });
   });
 
@@ -330,6 +426,84 @@ describe('Entity Cache Search Controller', () => {
         },
       );
       expect(res).toEqual(models.splice(3, 2));
+    });
+  });
+
+  describe('Check Cache Search when use soundex', () => {
+    beforeEach(() => {
+      SearchUtils.isUseSoundex = jest.fn().mockReturnValue(true);
+    });
+    it('should return two results with soundex when no arrangeIds, has search key, no sort', async () => {
+      const entityA = { id: 1, name: 'mr.Knuth', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.Kant', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
+      const result = await entityCacheSearchController.searchEntities(
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              firstSortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        'Mr.knt',
+      );
+
+      expect(result.sortableModels.length).toBe(2);
+      expect(result.sortableModels[0].entity).toBe(entityA);
+      expect(result.sortableModels[1].entity).toBe(entityB);
+    });
+    it('should return two results with soundex when no arrangeIds, has search key, no sort', async () => {
+      const entityA = { id: 1, name: 'mr.Knuth', note: 'likes to eat bone' };
+      const entityB = { id: 2, name: 'mr.Kant', note: 'likes to eat fish' };
+      const entityC = { id: 3, name: 'miss.snake', note: 'likes to eat blood' };
+      await entityCacheController.put(entityA);
+      await entityCacheController.put(entityB);
+      await entityCacheController.put(entityC);
+      const result = await entityCacheSearchController.searchEntities(
+        (entity: TestModel, terms: Terms) => {
+          const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
+          const isMatched =
+            entityCacheSearchController.isFuzzyMatched(
+              entity.name.toLowerCase() || '',
+              searchKeyTerms,
+            ) ||
+            entityCacheSearchController.isSoundexMatched(
+              entity.name.toLowerCase() || '',
+              searchKeyTermsToSoundex,
+            );
+          if (entity.name && isMatched) {
+            return {
+              entity,
+              id: entity.id,
+              displayName: entity.name,
+              firstSortKey: entity.name.toLowerCase(),
+            };
+          }
+          return null;
+        },
+        'Mr.k',
+      );
+
+      expect(result.sortableModels.length).toBe(2);
+      expect(result.sortableModels[0].entity).toBe(entityA);
+      expect(result.sortableModels[1].entity).toBe(entityB);
     });
   });
 });

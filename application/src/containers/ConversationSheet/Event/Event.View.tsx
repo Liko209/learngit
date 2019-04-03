@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
+import { observer } from 'mobx-react';
+import { withTranslation, WithTranslation } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import {
   JuiEventContent,
@@ -19,8 +20,9 @@ import {
 } from '../helper';
 import { EventViewProps } from './types';
 
-type Props = WithNamespaces & EventViewProps;
+type Props = WithTranslation & EventViewProps;
 
+@observer
 class Event extends React.Component<Props, {}> {
   render() {
     const { event, t, color } = this.props;
@@ -46,12 +48,17 @@ class Event extends React.Component<Props, {}> {
       repeatEnding,
     );
     return (
-      <JuiConversationItemCard title={text} titleColor={color} Icon="event">
-        <JuiEventContent title={t('due')}>
+      <JuiConversationItemCard
+        title={text}
+        iconColor={color}
+        titleColor={color}
+        Icon="event"
+      >
+        <JuiEventContent title={t('item.due')}>
           <JuiTimeMessage time={`${time} ${timeText}`} />
         </JuiEventContent>
         {location && (
-          <JuiEventContent title={t('locationTitle')}>
+          <JuiEventContent title={t('item.locationTitle')}>
             <JuiEventLocation location={location} />
           </JuiEventContent>
         )}
@@ -61,6 +68,6 @@ class Event extends React.Component<Props, {}> {
   }
 }
 
-const EventView = translate('translations')(Event);
+const EventView = withTranslation('translations')(Event);
 
 export { EventView };

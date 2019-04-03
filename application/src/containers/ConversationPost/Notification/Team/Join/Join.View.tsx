@@ -5,15 +5,17 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { JoinViewProps } from './types';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { renderPerson } from '@/common/renderPerson';
 
-class JoinViewComponent extends Component<JoinViewProps & WithNamespaces> {
+@observer
+class JoinViewComponent extends Component<JoinViewProps & WithTranslation> {
   render() {
     const { newUserId, newUserName, createdAt, t } = this.props;
     const newUser = renderPerson(newUserId, newUserName);
-    const html = t('joinTheTeam', { newUser });
+    const html = t('message.stream.joinTheTeam', { newUser });
     return (
       <React.Fragment>
         <div dangerouslySetInnerHTML={{ __html: html }} />
@@ -23,6 +25,6 @@ class JoinViewComponent extends Component<JoinViewProps & WithNamespaces> {
   }
 }
 
-const JoinView = translate('translations')(JoinViewComponent);
+const JoinView = withTranslation('translations')(JoinViewComponent);
 
 export { JoinView };

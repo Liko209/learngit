@@ -1,4 +1,6 @@
 import 'testcafe';
+import { MockClient } from 'mock-client';
+
 import { ClientFunction, Role } from 'testcafe';
 import { getLogger } from 'log4js';
 
@@ -9,6 +11,7 @@ import { A11yHelper } from "./a11y-helper";
 import { LogHelper } from './log-helper';
 import { DashboardHelper } from './dashboard-helper';
 import { AllureHelper } from './allure-helper';
+import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
 import { IUser, IStep } from '../models';
@@ -20,6 +23,22 @@ const logger = getLogger(__filename);
 logger.level = 'info';
 
 class Helper {
+
+  get mockRequestId(): string {
+    return this.t.ctx.__mockRequestId;
+  }
+
+  set mockRequestId(mockRequestId: string) {
+    this.t.ctx.__mockRequestId = mockRequestId;
+  }
+
+  get mockClient(): MockClient {
+    return this.t.ctx.__mockClient;
+  }
+
+  set mockClient(mockClient: MockClient) {
+    this.t.ctx.__mockClient = mockClient;
+  }
 
   constructor(private t: TestController) { };
 
@@ -53,6 +72,10 @@ class Helper {
 
   get webphoneHelper() {
     return new WebphoneHelper(this.t);
+  }
+  
+  get scenarioHelper() {
+    return new ScenarioHelper(this.t, this.sdkHelper);
   }
 
   /* delegate following method */
@@ -167,6 +190,8 @@ class Helper {
   async resetGlipAccount(user: IUser) {
     const adminGlip = await this.sdkHelper.sdkManager.getGlip(user.company.admin);
     await adminGlip.deactivated(user.rcId);
+    if (this.mockClient)
+      await this.mockClient.resetAccount(user.company.number, user.extension, SITE_ENV);
     await this.sdkHelper.sdkManager.getGlip(user);
   }
 }

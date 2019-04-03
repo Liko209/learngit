@@ -10,7 +10,8 @@ import {
   MessageInputViewProps,
   OnPostCallback,
 } from './types';
-import { GroupConfigService, notificationCenter } from 'sdk/service';
+import { notificationCenter } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService } from 'sdk/module/item';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
@@ -21,18 +22,19 @@ import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import { Group } from 'sdk/module/group/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
+import { FileItem } from 'sdk/module/item/module/file/entity';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
 enum ERROR_TYPES {
-  CONTENT_LENGTH = 'contentLength',
-  CONTENT_ILLEGAL = 'contentIllegal',
+  CONTENT_LENGTH = 'message.prompt.contentLength',
+  CONTENT_ILLEGAL = 'message.prompt.contentIllegal',
 }
 
 class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   implements MessageInputViewProps {
-  private _postService: NewPostService;
+  private _postService: PostService;
   private _itemService: ItemService;
 
   private _onPostCallbacks: OnPostCallback[] = [];
@@ -41,16 +43,11 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   @observable
   private _memoryDraftMap: Map<number, string> = new Map();
 
-  @computed
-  get id() {
-    return this.props.id;
-  }
-
   get items() {
-    return this._itemService.getUploadItems(this.id);
+    return this._itemService.getUploadItems(this.props.id);
   }
 
-  private _oldId: number = this.id;
+  private _oldId: number;
 
   @observable
   error: string = '';
@@ -64,34 +61,48 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   constructor(props: MessageInputProps) {
     super(props);
-    this._postService = NewPostService.getInstance();
+    this._postService = PostService.getInstance();
 
     this._itemService = ItemService.getInstance();
     this._groupConfigService = GroupConfigService.getInstance();
     this._sendPost = this._sendPost.bind(this);
+    this._oldId = props.id;
     this.reaction(
-      () => this.id,
-      () => {
-        this._oldId = this.id;
+      () => this.props.id,
+      (id: number) => {
+        this._oldId = id;
         this.error = '';
         this.forceSaveDraft();
       },
     );
-    notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, ({ quote, groupId }) => {
-      this._memoryDraftMap.set(groupId, quote);
-    });
+    notificationCenter.on(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+  }
+
+  dispose = () => {
+    notificationCenter.off(UI_NOTIFICATION_KEY.QUOTE, this._handleQuoteChanged);
+  }
+
+  @action
+  private _handleQuoteChanged = ({
+    quote,
+    groupId,
+  }: {
+    quote: string;
+    groupId: number;
+  }) => {
+    this._memoryDraftMap.set(groupId, quote);
   }
 
   private _isEmpty = (content: string) => {
     const commentText = content.trim();
-    const re = /^<p>(<br>|<br\/>|<br\s\/>|\s+|)<\/p>$/gm;
+    const re = /^(<p>(<br>|<br\/>|<br\s\/>|\s+|)<\/p>)+$/gm;
     return re.test(commentText);
   }
 
   @action
   contentChange = (draft: string) => {
     this.error = '';
-    this.draft = this._isEmpty(draft) ? '' : draft;
+    this.draft = draft;
   }
 
   @action
@@ -107,33 +118,42 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   forceSaveDraft = () => {
     const draft = this._isEmpty(this.draft) ? '' : this.draft;
+    this._memoryDraftMap.set(this.props.id, draft);
     this._groupConfigService.updateDraft({
       draft,
       id: this._oldId,
     });
   }
 
+  cleanDraft = () => {
+    this._groupConfigService.updateDraft({
+      draft: '',
+      id: this._oldId,
+      attachment_item_ids: [],
+    });
+  }
+
   @computed
   get _group() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
   @computed
   get draft() {
-    if (this._memoryDraftMap.has(this.id)) {
-      return this._memoryDraftMap.get(this.id) || '';
+    if (this._memoryDraftMap.has(this.props.id)) {
+      return this._memoryDraftMap.get(this.props.id) || '';
     }
     this.getDraftFromLocal();
     return '';
   }
 
   async getDraftFromLocal() {
-    const draft = await this._groupConfigService.getDraft(this.id);
-    this._memoryDraftMap.set(this.id, draft);
+    const draft = await this._groupConfigService.getDraft(this.props.id);
+    this._memoryDraftMap.set(this.props.id, draft);
   }
 
   set draft(draft: string) {
-    this._memoryDraftMap.set(this.id, draft);
+    this._memoryDraftMap.set(this.props.id, draft);
   }
 
   @computed
@@ -180,7 +200,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   private async _sendPost(content: string, ids: number[]) {
     this.contentChange('');
-    this.forceSaveDraft();
+    this.cleanDraft();
     const items = this.items;
     try {
       let realContent: string = content;
@@ -190,18 +210,19 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
       }
       await this._postService.sendPost({
         text: realContent,
-        groupId: this.id,
-        itemIds: items.map(item => item.id),
-        mentionIds: ids,
+        groupId: this.props.id,
+        itemIds: items.map((item: FileItem) => item.id),
+        mentionNonItemIds: ids,
       });
       // clear context (attachments) after post
       //
-      const onPostHandler = this.props.onPost;
-      onPostHandler && onPostHandler();
-      this._onPostCallbacks.forEach(callback => callback());
+      this._onPostCallbacks.forEach((callback: OnPostCallback) => callback());
     } catch (e) {
       mainLogger.error(`send post error ${e}`);
       // You do not need to handle the error because the message will display a resend
+    } finally {
+      const onPostHandler = this.props.onPost;
+      onPostHandler && onPostHandler();
     }
   }
 

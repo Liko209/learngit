@@ -3,7 +3,7 @@
  * @Date: 2018-12-27 17:42:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { ProvisionDataOptions } from '../signaling/types';
+import { RTCSipFlags } from '../api/types';
 
 type RTCSipProvisionInfo = {
   device: object;
@@ -15,13 +15,12 @@ type RTCSipProvisionInfo = {
     authorizationId: string;
     outboundProxy: string;
   }[];
-  sipFlags: object;
+  sipFlags: RTCSipFlags;
 };
 
 type RTCRegisterAsyncTask = {
   name: string;
-  provData?: any;
-  provOptions?: ProvisionDataOptions;
+  data?: any;
 };
 
 enum RTC_PROV_EVENT {
@@ -29,19 +28,28 @@ enum RTC_PROV_EVENT {
 }
 
 enum REGISTRATION_ERROR_CODE {
-  TIME_OUT = 500,
+  SERVER_TIME_OUT = 504,
+  UNAUTHORIZED = 401,
+  FORBIDDEN = 403,
+  PROXY_AUTHENTICATION_REQUIRED = 407,
 }
 
 enum REGISTRATION_EVENT {
   PROVISION_READY = 'provisionReady',
   RE_REGISTER = 'reRegister',
   ACCOUNT_STATE_CHANGED = 'accountStateChanged',
-  RECEIVER_INCOMING_SESSION = 'receiveIncomingSession',
+  MAKE_OUTGOING_CALL_TASK = 'makeOutgoingCallTask',
+  RECEIVE_INCOMING_INVITE_TASK = 'receiveIncomingInviteTask',
   UA_REGISTER_SUCCESS = 'uaRegisterSuccess',
   UA_REGISTER_FAILED = 'uaRegisterFailed',
   UA_REGISTER_TIMEOUT = 'uaRegisterTimeout',
   UA_UNREGISTERED = 'uaUnregistered',
+  UA_TRANSPORT_ERROR = 'uaTransportError',
   NETWORK_CHANGE_TO_ONLINE = 'networkChangeToOnline',
+  LOGOUT = 'logout',
+  LOGOUT_ACTION = 'logoutAction',
+  RECEIVE_INCOMING_INVITE = 'receiveIncomingInvite',
+  REFRESH_PROV = 'refreshProvisioning',
 }
 
 enum REGISTRATION_FSM_STATE {

@@ -8,15 +8,15 @@ import { ListStore } from './ListStore';
 import { ISortableModel, ISortFunc } from './types';
 import _ from 'lodash';
 
-const defaultSortFunc: ISortFunc<ISortableModel> = (
-  first: ISortableModel,
-  second: ISortableModel,
-) => first.sortValue - second.sortValue;
+// const defaultSortFunc: ISortFunc<ISortableModel> = (
+//   first: ISortableModel,
+//   second: ISortableModel,
+// ) => first.sortValue - second.sortValue;
 
 export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
-  private _sortFunc: ISortFunc<ISortableModel<T>>;
+  private _sortFunc?: ISortFunc<ISortableModel<T>>;
 
-  constructor(sortFunc: ISortFunc<ISortableModel<T>> = defaultSortFunc) {
+  constructor(sortFunc?: ISortFunc<ISortableModel<T>>) {
     super();
     this._sortFunc = sortFunc;
   }
@@ -24,9 +24,10 @@ export class SortableListStore<T = any> extends ListStore<ISortableModel<T>> {
   @action
   upsert(idArray: ISortableModel<T>[]) {
     if (idArray.length) {
-      const unionAndSortIds = _.unionBy(idArray, this.items, 'id').sort(
-        this._sortFunc,
-      );
+      const unionArray = _.unionBy(idArray, this.items, 'id');
+      const unionAndSortIds = this._sortFunc
+        ? unionArray.sort(this._sortFunc)
+        : _.sortBy(unionArray, 'sortValue');
       this.replaceAll(unionAndSortIds);
     }
   }

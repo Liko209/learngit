@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ComponentType } from 'react';
+import { PinnedCell } from '../PinnedList/PinnedCell';
 import { FileItem } from '../FileItem';
-
 import { NoteItem } from '../NoteItem';
 import { ImageItem } from '../ImageItem';
 import { LinkItem } from '../LinkItem';
@@ -41,129 +41,132 @@ type TabConfig = {
     sortKey?: ITEM_SORT_KEYS;
     desc?: boolean;
   };
+  automationID: string;
   offlinePrompt: string;
-  tryAgainPrompt: string;
 };
 
 const TAB_CONFIG: TabConfig[] = [
   {
-    title: 'pinned',
+    title: 'item.pinned',
     type: RIGHT_RAIL_ITEM_TYPE.PIN_POSTS,
-    item: FileItem,
-    subheader: '',
+    item: PinnedCell,
+    subheader: 'item.pinnedListSubheader',
     empty: {
-      text: 'youHaveNothingPinnedYet',
-      content: 'noPinSubText',
+      text: 'item.youHaveNothingPinnedYet',
+      content: 'item.noPinSubText',
       image: PinnedEmptyImage,
     },
-    offlinePrompt: 'networkErrorPinnedPrompt',
-    tryAgainPrompt: 'tryAgainPinnedPrompt',
+    automationID: 'pinned',
+    offlinePrompt: 'item.networkErrorPinnedPrompt',
   },
   {
-    title: 'files',
+    title: 'item.files',
     type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
     item: FileItem,
-    subheader: 'fileListSubheader',
+    subheader: 'item.fileListSubheader',
     empty: {
-      text: 'noFilesSharedYet',
-      content: 'noFileSubText',
+      text: 'item.noFilesSharedYet',
+      content: 'item.noFileSubText',
       image: FilesEmptyImage,
     },
     sort: {
+      sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
       desc: true,
     },
-    offlinePrompt: 'networkErrorFilesPrompt',
-    tryAgainPrompt: 'tryAgainFilesPrompt',
+    automationID: 'files',
+    offlinePrompt: 'item.networkErrorFilesPrompt',
   },
   {
-    title: 'images',
+    title: 'item.images',
     type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
     item: ImageItem,
-    subheader: 'imageListSubheader',
+    subheader: 'item.imageListSubheader',
     empty: {
-      text: 'noImagesSharedYet',
-      content: 'noImageSubText',
+      text: 'item.noImagesSharedYet',
+      content: 'item.noImageSubText',
       image: ImagesEmptyImage,
     },
     sort: {
+      sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
       desc: true,
     },
-    offlinePrompt: 'networkErrorImagesPrompt',
-    tryAgainPrompt: 'tryAgainImagesPrompt',
+    automationID: 'images',
+    offlinePrompt: 'item.networkErrorImagesPrompt',
   },
   {
-    title: 'tasks',
+    title: 'item.tasks',
     type: RIGHT_RAIL_ITEM_TYPE.TASKS,
     item: TaskItem,
-    subheader: 'taskListSubheader',
+    subheader: 'item.taskListSubheader',
     empty: {
-      text: 'noTasksYet',
-      content: 'noTaskSubText',
+      text: 'item.noTasksYet',
+      content: 'item.noTaskSubText',
       image: TasksEmptyImage,
     },
-    offlinePrompt: 'networkErrorTasksPrompt',
-    tryAgainPrompt: 'tryAgainTasksPrompt',
+    automationID: 'tasks',
+    offlinePrompt: 'item.networkErrorTasksPrompt',
   },
   {
-    title: 'links',
+    title: 'item.links',
     type: RIGHT_RAIL_ITEM_TYPE.LINKS,
     item: LinkItem,
-    subheader: 'linkListSubheader',
+    subheader: 'item.linkListSubheader',
     empty: {
-      text: 'noLinksSharedYet',
-      content: 'noLinkSubText',
+      text: 'item.noLinksSharedYet',
+      content: 'item.noLinkSubText',
       image: LinksEmptyImage,
     },
     sort: {
       desc: true,
     },
-    offlinePrompt: 'networkErrorLinksPrompt',
-    tryAgainPrompt: 'tryAgainLinksPrompt',
+    automationID: 'links',
+    offlinePrompt: 'item.networkErrorLinksPrompt',
   },
   {
-    title: 'notes',
+    title: 'item.notes',
     type: RIGHT_RAIL_ITEM_TYPE.NOTES,
     item: NoteItem,
-    subheader: 'noteListSubheader',
+    subheader: 'item.noteListSubheader',
     empty: {
-      text: 'noNotesCreatedYet',
-      content: 'noNoteSubText',
+      text: 'item.noNotesCreatedYet',
+      content: 'item.noNoteSubText',
       image: NotesEmptyImage,
     },
     sort: {
       desc: true,
     },
-    offlinePrompt: 'networkErrorNotesPrompt',
-    tryAgainPrompt: 'tryAgainNotesPrompt',
+    automationID: 'notes',
+    offlinePrompt: 'item.networkErrorNotesPrompt',
   },
   {
-    title: 'events',
+    title: 'item.events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
     sort: {
-      sortKey: ITEM_SORT_KEYS.START_TIME,
+      // FIJI-4497: for service's sort bug, use `ITEM_SORT_KEYS.CREATE_TIME` now.
+      sortKey: ITEM_SORT_KEYS.CREATE_TIME,
     },
     item: EventItem,
-    subheader: 'eventListSubheader',
+    subheader: 'item.eventListSubheader',
     empty: {
-      text: 'noEventsCreatedYet',
-      content: 'noEventSubText',
+      text: 'item.noEventsCreatedYet',
+      content: 'item.noEventSubText',
       image: EventsEmptyImage,
     },
-    offlinePrompt: 'networkErrorEventsPrompt',
-    tryAgainPrompt: 'tryAgainEventsPrompt',
+    automationID: 'events',
+    offlinePrompt: 'item.networkErrorEventsPrompt',
   },
   {
-    title: 'integrations',
+    title: 'item.integrations',
     type: RIGHT_RAIL_ITEM_TYPE.INTEGRATIONS,
     item: FileItem,
     subheader: '',
     empty: {
-      text: 'noIntegrationInstallationYet',
-      content: 'noIntegrationSubText',
+      text: 'item.noIntegrationInstallationYet',
+      content: 'item.noIntegrationSubText',
       image: IntegrationsEmptyImage,
     },
-    offlinePrompt: 'networkErrorIntegrationsPrompt',
-    tryAgainPrompt: 'tryAgainIntegrationsPrompt',
+    automationID: 'integrations',
+    offlinePrompt: 'item.networkErrorIntegrationsPrompt',
   },
 ];
 

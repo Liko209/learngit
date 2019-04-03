@@ -5,8 +5,7 @@
  */
 import { computed, untracked } from 'mobx';
 import { ConversationListItemViewProps } from './types';
-import { service } from 'sdk';
-const { GroupService } = service;
+import { GroupService } from 'sdk/module/group';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -21,7 +20,7 @@ class ConversationListItemViewModel extends StoreViewModel<
 > {
   firstUnreadCount: number;
   important?: boolean | undefined;
-  groupService: service.GroupService = GroupService.getInstance();
+  groupService: GroupService = GroupService.getInstance();
   hasShowedUmi: boolean = false;
 
   @computed

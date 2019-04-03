@@ -7,6 +7,7 @@ import * as React from 'react';
 import MuiButton, {
   ButtonProps as MuiButtonProps,
 } from '@material-ui/core/Button';
+import { JuiCircularProgress } from '../../Progress';
 import { Palette } from '../../../foundation/theme/theme';
 import styled, { css } from '../../../foundation/styled-components';
 import {
@@ -30,6 +31,7 @@ type JuiButtonProps = Omit<MuiButtonProps, 'innerRef' | 'variant' | 'color'> & {
   variant?: Variant;
   disabled?: boolean;
   color?: JuiButtonColor;
+  loading?: boolean;
 };
 
 const ColorMap: {
@@ -43,8 +45,9 @@ const ColorMap: {
 const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
+
 const WrappedMuiButton = (props: JuiButtonProps) => {
-  const { variant, color, ...restProps } = props;
+  const { variant, color, children, loading, ...restProps } = props;
   let _variant = variant;
   if (_variant === 'round') {
     _variant = 'fab';
@@ -63,7 +66,9 @@ const WrappedMuiButton = (props: JuiButtonProps) => {
       TouchRippleProps={{ classes: touchRippleClasses }}
       variant={_variant}
       {...restProps}
-    />
+    >
+      {loading ? <JuiCircularProgress size={20} color="inherit" /> : children}
+    </MuiButton>
   );
 };
 
@@ -84,12 +89,13 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       color: ${palette('common', 'white')};
       ${shadow(3)}
       background-color: ${({ color = 'primary' }) =>
-        palette(ColorMap[color][0], ColorMap[color][1])}
+        palette(ColorMap[color][0], ColorMap[color][1])};
       &:hover {
         opacity: ${({ theme }) => 1 - theme.palette.action.hoverOpacity}
       }
       &.disabled {
-        background-color: ${palette('accent', 'ash')};
+        background-color: ${({ theme, loading }) =>
+          loading ? '' : palette('accent', 'ash')({ theme })};
         color: ${palette('common', 'while')};
       }
       &:active {
@@ -99,7 +105,8 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
 
     &.textButtonStyle {
       &.disabled {
-        color: ${palette('accent', 'ash')};
+        color: ${({ theme, loading }) =>
+          loading ? '' : palette('accent', 'ash')({ theme })};
       }
       &:hover {
         background-color: ${palette('primary', 'main', 1)};
@@ -116,7 +123,7 @@ const StyledButton = styled<JuiButtonProps>(WrappedMuiButton)`
       padding: ${({ theme }) => spacing(0, 4)({ theme })};
       background-color: ${palette('common', 'white')};
       color:${primary('700')};
-      ${typography('caption')};
+      ${typography('caption1')};
       min-height:unset;
       width:inherit;
       &:hover {
@@ -145,6 +152,6 @@ JuiButtonComponent.defaultProps = {
   disabled: false,
 };
 
-const JuiButton = styled(JuiButtonComponent)``;
+const JuiButton = styled(React.memo(JuiButtonComponent))``;
 
-export { JuiButton, JuiButtonProps, JuiButtonColor };
+export { JuiButton, JuiButtonProps, JuiButtonColor, ColorMap };

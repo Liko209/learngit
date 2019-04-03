@@ -10,7 +10,6 @@ import dataDispatcher from '../../component/DataDispatcher/index';
 import { SortableModel } from '../../models';
 import { IdModel, Raw } from '../../framework/model';
 import _ from 'lodash';
-import { ApiResultOk } from '../../api/ApiResult';
 import {
   BaseResponse,
   JNetworkError,
@@ -104,16 +103,11 @@ describe('BaseService', () => {
     it('should return data from API when Dao not return value', async () => {
       const service = new AService();
       jest.spyOn(service, 'getByIdFromDao').mockResolvedValue(null);
-      jest.spyOn(service, 'getByIdFromAPI').mockResolvedValue(
-        new ApiResultOk({ id: 2 }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      jest.spyOn(service, 'getByIdFromAPI').mockResolvedValue({ id: 2 });
 
       const result = await service.getById(2);
 
-      expect(result).toHaveProperty('data', { id: 2 });
+      expect(result).toEqual({ id: 2 });
     });
   });
 
@@ -162,12 +156,7 @@ describe('BaseService', () => {
   describe('getByIdFromAPI()', () => {
     it('should return data from API', async () => {
       const service = new AService();
-      fakeApi.getDataById.mockResolvedValue(
-        new ApiResultOk({ _id: 4 }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      fakeApi.getDataById.mockResolvedValue({ _id: 4 });
 
       const result = await service.getByIdFromAPI(4);
 
@@ -305,8 +294,7 @@ describe('BaseService', () => {
         service.doPartialNotify,
       );
 
-      expect(result.isOk()).toBeTruthy();
-      expect(result).toHaveProperty('data', updateModel);
+      expect(result).toEqual(updateModel);
       expect(service.doPartialNotify).toBeCalledTimes(1);
     });
   });
@@ -322,7 +310,7 @@ describe('BaseService', () => {
 
       jest
         .spyOn(service, 'doUpdateModel')
-        .mockResolvedValue(
+        .mockRejectedValue(
           new JNetworkError(
             ERROR_CODES_NETWORK.NOT_NETWORK,
             'fake network error',
@@ -335,14 +323,14 @@ describe('BaseService', () => {
 
       service.doPartialNotify = jest.fn();
 
-      const result = await service.handlePartialUpdate(
-        partialModel,
-        service.preHandlePartialModel,
-        service.doUpdateModel,
-        service.doPartialNotify,
-      );
-
-      expect(result.isErr()).toBeTruthy();
+      await expect(
+        service.handlePartialUpdate(
+          partialModel,
+          service.preHandlePartialModel,
+          service.doUpdateModel,
+          service.doPartialNotify,
+        ),
+      ).rejects.toBeInstanceOf(JNetworkError);
 
       expect(service.doPartialNotify).toBeCalledTimes(2);
     });
@@ -361,14 +349,14 @@ describe('BaseService', () => {
 
       service.doPartialNotify = jest.fn();
 
-      const result = await service.handlePartialUpdate(
-        partialModel,
-        service.preHandlePartialModel,
-        service.doUpdateModel,
-        service.doPartialNotify,
-      );
-
-      expect(result.isErr()).toBeTruthy();
+      await expect(
+        service.handlePartialUpdate(
+          partialModel,
+          service.preHandlePartialModel,
+          service.doUpdateModel,
+          service.doPartialNotify,
+        ),
+      ).rejects.not.toBeNull();
 
       expect(service.doPartialNotify).toBeCalledTimes(0);
     });
@@ -395,8 +383,7 @@ describe('BaseService', () => {
         service.doUpdateModel,
         service.doPartialNotify,
       );
-      expect(result.isOk()).toBeTruthy();
-      expect(result).toHaveProperty('data', originalModel);
+      expect(result).toEqual(originalModel);
       expect(service.doPartialNotify).toBeCalledTimes(0);
     });
   });
@@ -511,7 +498,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -545,7 +532,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -578,7 +565,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -612,7 +599,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -646,7 +633,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -681,7 +668,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,
@@ -715,7 +702,7 @@ describe('BaseService', () => {
       cacheManager.set(entityC);
 
       const result = await service.searchEntitiesFromCache(
-        (entity: BaseServiceTestModel, terms: string[]) => {
+        async (entity: BaseServiceTestModel, terms: string[]) => {
           if (entity.name && service.isFuzzyMatched(entity.name, terms)) {
             return {
               entity,

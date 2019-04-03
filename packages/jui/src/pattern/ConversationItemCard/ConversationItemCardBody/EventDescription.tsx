@@ -3,7 +3,7 @@
  * @Date: 2018-11-07 10:05:39
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey, spacing } from '../../../foundation/utils/styles';
 
@@ -17,9 +17,9 @@ const StyledEventDescription = styled.div`
   color: ${grey('500')};
 `;
 
-const JuiEventDescription = (props: Props) => (
+const JuiEventDescription = memo((props: Props) => (
   <StyledEventDescription>{props.description}</StyledEventDescription>
-);
+));
 
 JuiEventDescription.displayName = 'JuiEventDescription';
 

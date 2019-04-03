@@ -9,36 +9,41 @@ import { BaseResponse, NETWORK_FAIL_TYPE } from 'foundation';
 import { ItemFile } from '../../../../../../module/item/entity';
 import { daoManager } from '../../../../../../dao';
 import { ItemDao } from '../../../../dao';
+import { Item } from '../../../../entity';
 
 import ItemAPI from '../../../../../../api/glip/item';
-import { ApiResultOk, ApiResultErr } from '../../../../../../api/ApiResult';
 import notificationCenter from '../../../../../../service/notificationCenter';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
 import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
-import { UserConfig } from '../../../../../../service/account/UserConfig';
+import { AccountGlobalConfig, AccountUserConfig } from '../../../../../../service/account/config';
 import { isInBeta } from '../../../../../../service/account/clientConfig';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
+import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
 import {
   FileUploadController,
   ItemFileUploadStatus,
 } from '../FileUploadController';
-import { ItemService } from '../../../../service/ItemService';
 import {
   JServerError,
   ERROR_CODES_SERVER,
   JSdkError,
   ERROR_CODES_SDK,
 } from '../../../../../../error';
+import { IPartialModifyController } from '../../../../../../framework/controller/interface/IPartialModifyController';
+import { GroupConfigService } from '../../../../../groupConfig';
+import { ItemNotification } from '../../../../utils/ItemNotification';
 
+jest.mock('../../../../../groupConfig');
 jest.mock('../../../../service/ItemService');
 jest.mock(
   '../../../../../../framework/controller/impl/PartialModifyController',
 );
+jest.mock('../../../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../../../../framework/controller/impl/RequestController');
 jest.mock('../../../../../../service/account/clientConfig');
-jest.mock('../../../../../../service/account/UserConfig');
+jest.mock('../../../../../../service/account/config');
 jest.mock('../../../../../../api/glip/item');
 jest.mock('../../../../dao');
 jest.mock('../../../../../../dao');
@@ -53,32 +58,40 @@ function clearMocks() {
 }
 
 describe('fileUploadController', () => {
-  const itemService = new ItemService();
   const itemDao = new ItemDao(null);
-  const partialModifyController = new PartialModifyController(null);
-  const fileRequestController = new RequestController(null);
+  const partialModifyController = new PartialModifyController(
+    null,
+  ) as IPartialModifyController<Item>;
+  const fileRequestController = new RequestController(
+    null,
+  ) as RequestController<Item>;
   let fileUploadController: FileUploadController;
+
+  const groupConfigService = new GroupConfigService();
+
+  const entitySourceController = new EntitySourceController(null, null, null);
 
   function setup() {
     const userId = 2;
     const companyId = 3;
-    daoManager.getDao.mockReturnValue(itemDao);
 
-    UserConfig.getCurrentCompanyId.mockReturnValue(companyId);
-    UserConfig.getCurrentUserId.mockReturnValue(userId);
+    daoManager.getDao = jest.fn().mockReturnValue(itemDao);
 
-    itemService.createItem.mockImplementation(() => {});
-    itemService.updateItem.mockImplementation(() => {});
-    itemService.deleteItem.mockImplementation(() => {});
+    AccountUserConfig.prototype.getCurrentCompanyId.mockReturnValue(companyId);
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(userId);
 
     notificationCenter.emitEntityReplace.mockImplementation(() => {});
+    GroupConfigService.getInstance = jest
+      .fn()
+      .mockReturnValue(groupConfigService);
+
     notificationCenter.emit.mockImplementation(() => {});
     notificationCenter.removeListener.mockImplementation(() => {});
 
     fileUploadController = new FileUploadController(
-      itemService,
       partialModifyController,
       fileRequestController,
+      entitySourceController,
     );
     partialModifyController.updatePartially = jest.fn();
   }
@@ -114,8 +127,6 @@ describe('fileUploadController', () => {
     const groupId = 1;
     const userId = 2;
     const companyId = 3;
-
-    const itemDao = new ItemDao(null);
 
     beforeEach(() => {
       clearMocks();
@@ -168,10 +179,7 @@ describe('fileUploadController', () => {
       size: 1111,
     };
 
-    const mockStoredFileRes = new ApiResultOk([storedFile], {
-      status: 200,
-      headers: {},
-    } as BaseResponse);
+    const mockStoredFileRes = [storedFile];
 
     const itemFile = {
       id: 1,
@@ -179,7 +187,8 @@ describe('fileUploadController', () => {
     };
 
     it('should insert pseudo item to db and return pseudo item', async (done: jest.DoneCallback) => {
-      itemDao.get.mockResolvedValue(itemFile);
+      entitySourceController.get.mockResolvedValue(itemFile);
+      entitySourceController.put = jest.fn();
       ItemAPI.uploadFileItem.mockImplementation(
         (files: FormData, callback: ProgressCallback) => {
           callback({ lengthComputable: false, loaded: 0, total: 100 });
@@ -206,13 +215,19 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(ItemAPI.putItem).not.toHaveBeenCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalledTimes(1);
-        expect(itemService.createItem).toBeCalledTimes(1);
+        expect(entitySourceController.put).toBeCalledTimes(1);
         expect(notificationCenter.emitEntityUpdate).toBeCalledWith(
           ENTITY.PROGRESS,
-          [{ id: expect.any(Number), rate: { loaded: 10, total: 100 } }],
+          [
+            {
+              id: expect.any(Number),
+              rate: { loaded: 10, total: 100 },
+              status: PROGRESS_STATUS.INPROGRESS,
+            },
+          ],
         );
         expect(partialModifyController.updatePartially).toBeCalledTimes(1);
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
             status: PROGRESS_STATUS.INPROGRESS,
@@ -225,18 +240,10 @@ describe('fileUploadController', () => {
     });
 
     it('should go to _handleItemFileSendFailed process when upload file failed ', async (done: jest.DoneCallback) => {
-      const errResponse = new ApiResultErr(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 403,
-          headers: {},
-        } as BaseResponse,
-      );
+      const errResponse = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
 
-      itemDao.get.mockResolvedValue(itemFile);
+      entitySourceController.get.mockResolvedValue(itemFile);
       ItemAPI.uploadFileItem.mockResolvedValue(errResponse);
-
-      // fileService.handlePartialUpdate = jest.fn();
 
       const file = new FormData();
       file.append('file', { name: '1.ts', type: 'ts' } as File);
@@ -245,7 +252,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(ItemAPI.uploadFileItem).toBeCalled();
         expect(ItemAPI.sendFileItem).not.toBeCalled();
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
@@ -260,15 +267,8 @@ describe('fileUploadController', () => {
     });
 
     it('should not handle failed result when the request is failed because the user canceled it.  ', async (done: jest.DoneCallback) => {
-      const errRes = new ApiResultErr(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 403,
-          statusText: NETWORK_FAIL_TYPE.CANCELLED,
-          headers: {},
-        } as BaseResponse,
-      );
-      ItemAPI.uploadFileItem.mockResolvedValue(errRes);
+      const errRes = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
+      ItemAPI.uploadFileItem.mockRejectedValue(errRes);
       jest
         .spyOn(fileUploadController, '_handleFileUploadSuccess')
         .mockImplementation(() => {});
@@ -468,7 +468,7 @@ describe('fileUploadController', () => {
         id: -3,
         is_new: true,
         versions: [validStoredFile],
-      } as ItemFile;
+      };
 
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
@@ -477,13 +477,16 @@ describe('fileUploadController', () => {
         type: 'ts',
         size: 123123,
       } as File;
+
       const itemFileUploadStatus = {
         file,
         progress: p,
         requestHolder: r,
-        itemFile: fileItem,
+        itemFile: fileItem as ItemFile,
       } as ItemFileUploadStatus;
+
       progressCaches.set(-3, itemFileUploadStatus);
+
       const itemFileUploadStatus2 = _.cloneDeep(itemFileUploadStatus);
       itemFileUploadStatus2.itemFile.id = -4;
       itemFileUploadStatus2.itemFile.versions = [invalidStoredFile];
@@ -496,18 +499,9 @@ describe('fileUploadController', () => {
 
       const groupId = 3;
 
-      const okRes = new ApiResultOk({ id: 10 }, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const okRes = { id: 10 };
 
-      const errRes = new ApiResultErr<ItemFile>(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 403,
-          headers: {},
-        } as BaseResponse,
-      );
+      const errRes = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
 
       return {
         progressCaches,
@@ -526,7 +520,42 @@ describe('fileUploadController', () => {
     });
 
     it('should just send item to server when all file has beed uploaded and has stored file', async (done: jest.DoneCallback) => {
-      const { progressCaches, groupId, fileItem } = sendItemData_setUp();
+      const groupId = 3;
+      const validStoredFile = {
+        _id: 123,
+        creator_id: 2588675,
+        last_modified: 1542274244897,
+        download_url: 'url/123.pdf',
+        url: 'url/123',
+        stored_file_id: 5701644,
+        size: 1111,
+      };
+
+      const progressCaches = new Map();
+      const fileItem = {
+        id: -10,
+        is_new: true,
+        versions: [validStoredFile],
+        group_ids: [groupId],
+      };
+
+      const r: RequestHolder = { request: undefined };
+      const p: Progress = { id: -10, rate: { total: 3, loaded: 5 } };
+      const file = {
+        name: '1.ts',
+        type: 'ts',
+        size: 123123,
+      } as File;
+
+      const itemFileUploadStatus = {
+        file,
+        progress: p,
+        requestHolder: r,
+        itemFile: fileItem as any,
+      } as ItemFileUploadStatus;
+
+      progressCaches.set(-10, itemFileUploadStatus);
+
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
@@ -536,26 +565,26 @@ describe('fileUploadController', () => {
         '_waitUntilAllItemCreated',
       );
 
-      const responseItem = { id: 10 };
+      const responseItem = { id: 10, group_ids: [groupId] };
       fileRequestController.put.mockResolvedValue(responseItem);
       fileRequestController.post.mockResolvedValue(responseItem);
 
       itemDao.getExistGroupFilesByName.mockResolvedValue([]);
 
-      await fileUploadController.sendItemData(groupId, [-3]);
+      await fileUploadController.sendItemData(groupId, [-10]);
 
       setTimeout(() => {
         expect(fileRequestController.put).not.toBeCalled();
         expect(fileRequestController.post).toBeCalled();
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
             status: PROGRESS_STATUS.SUCCESS,
-            preInsertId: -3,
+            preInsertId: -10,
             updatedId: 10,
           },
         );
-        expect(progressCaches.get(-3)).toBeUndefined;
+        expect(progressCaches.get(-10)).toBeUndefined;
         expect(spy_waitUntilAllItemCreated).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();
         done();
@@ -563,7 +592,7 @@ describe('fileUploadController', () => {
     });
 
     it('should update item when user want to update the file item', async (done: jest.DoneCallback) => {
-      const { progressCaches, groupId, okRes } = sendItemData_setUp();
+      const { progressCaches, groupId } = sendItemData_setUp();
       progressCaches.get(-3).itemFile.is_new = false;
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
@@ -606,7 +635,7 @@ describe('fileUploadController', () => {
 
       setTimeout(() => {
         expect(progressCaches.get(-3).progress.rate.loaded).toBe(-1);
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           {
             status: PROGRESS_STATUS.FAIL,
@@ -668,6 +697,52 @@ describe('fileUploadController', () => {
         done();
       });
     });
+
+    it('it should notify item upload failed when the item has no stored info and file', async () => {
+      const { progressCaches, groupId } = sendItemData_setUp();
+
+      progressCaches.set(-10, {
+        itemFile: { id: -10, versions: [{ download_url: '' }] },
+        progress: {
+          id: -11,
+          rate: {
+            loaded: 0,
+            total: 1,
+          },
+          status: PROGRESS_STATUS.INPROGRESS,
+        },
+        file: undefined,
+      });
+      progressCaches.set(-11, {
+        itemFile: { id: -11, versions: [{ download_url: '' }] },
+        file: undefined,
+        progress: {
+          id: -11,
+          rate: {
+            loaded: 0,
+            total: 1,
+          },
+          status: PROGRESS_STATUS.INPROGRESS,
+        },
+      });
+
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+
+      await fileUploadController.sendItemData(groupId, [-10, -11]);
+
+      expect(notificationCenter.emitAsync).toHaveBeenCalledWith(
+        SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
+        {
+          preInsertId: expect.anything(),
+          status: 1,
+          updatedId: expect.anything(),
+        },
+      );
+      expect(notificationCenter.emitEntityUpdate).toBeCalledTimes(2);
+      expect(notificationCenter.emitAsync).toBeCalledTimes(2);
+    });
   });
 
   describe('uploadFileToAmazonS3', () => {
@@ -691,18 +766,9 @@ describe('fileUploadController', () => {
         },
       };
 
-      const okRes = new ApiResultOk(policy, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const okRes = policy;
 
-      const errRes = new ApiResultErr(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 403,
-          headers: {},
-        } as BaseResponse,
-      );
+      const errRes = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
 
       const groupId = 123123;
 
@@ -724,7 +790,7 @@ describe('fileUploadController', () => {
       );
       spyHandleFailed.mockImplementation(() => {});
 
-      ItemAPI.requestAmazonFilePolicy.mockResolvedValue(errRes);
+      ItemAPI.requestAmazonFilePolicy.mockRejectedValue(errRes);
       ItemAPI.uploadFileToAmazonS3.mockResolvedValue(okRes);
 
       await fileUploadController.sendItemFile(groupId, file, false);
@@ -752,7 +818,7 @@ describe('fileUploadController', () => {
       spyHandleFailed.mockImplementation(() => {});
 
       ItemAPI.requestAmazonFilePolicy.mockResolvedValue(okRes);
-      ItemAPI.uploadFileToAmazonS3.mockResolvedValue(errRes);
+      ItemAPI.uploadFileToAmazonS3.mockRejectedValue(errRes);
 
       await fileUploadController.sendItemFile(groupId, file, false);
       setTimeout(() => {
@@ -798,7 +864,6 @@ describe('fileUploadController', () => {
     let progressCaches: Map<number, ItemFileUploadStatus> = undefined;
     let uploadingFiles = undefined;
 
-    const itemDao = new ItemDao(null);
     beforeEach(() => {
       clearMocks();
       setup();
@@ -808,7 +873,7 @@ describe('fileUploadController', () => {
       progressCaches = new Map();
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
-      const f = new FormData();
+      const f = { name: 'file' };
       const itemFileUploadStatus = {
         progress: p,
         requestHolder: r,
@@ -831,25 +896,43 @@ describe('fileUploadController', () => {
       });
     });
 
-    it('should not call cancel api and update when item id is not in progress', async () => {
+    it('should not call cancel api and update when item id is not in progress', async (done: any) => {
       const itemId = 10;
+      entitySourceController.get.mockImplementationOnce(() => {
+        return {
+          id: 10,
+          group_ids: [1],
+        };
+      });
+
       await fileUploadController.cancelUpload(itemId);
       expect(ItemAPI.cancelUploadRequest).not.toBeCalled();
       expect(notificationCenter.emitEntityDelete).toBeCalledWith(
-        ENTITY.ITEM,
+        ItemNotification.getItemNotificationKey(10, 1),
         expect.anything(),
       );
-      expect(itemService.deleteItem).toBeCalledTimes(1);
-      expect(uploadingFiles.get(1)).toHaveLength(1);
-      expect(uploadingFiles.get(2)).toHaveLength(3);
-      expect(progressCaches.get(-3)).not.toBeUndefined();
-      expect(progressCaches.get(-4)).not.toBeUndefined();
+
+      setTimeout(() => {
+        expect(entitySourceController.delete).toBeCalledWith(itemId);
+        expect(uploadingFiles.get(1)).toHaveLength(1);
+        expect(uploadingFiles.get(2)).toHaveLength(3);
+        expect(progressCaches.get(-3)).not.toBeUndefined();
+        expect(progressCaches.get(-4)).not.toBeUndefined();
+        done();
+      });
     });
 
     it('should delete item and send notification', async () => {
       const itemId = -3;
+      entitySourceController.get.mockImplementationOnce(() => {
+        return {
+          id: -3,
+          group_ids: [1],
+        };
+      });
+
       await fileUploadController.cancelUpload(itemId);
-      expect(itemService.deleteItem).toBeCalledTimes(1);
+      expect(entitySourceController.delete).toBeCalledTimes(1);
       expect(ItemAPI.cancelUploadRequest).toBeCalledWith(expect.anything());
       expect(progressCaches.get(itemId)).toBeUndefined();
       expect(progressCaches.get(-4)).not.toBeUndefined();
@@ -858,7 +941,7 @@ describe('fileUploadController', () => {
       expect(uploadingFiles.get(3)).toBeUndefined();
       expect(uploadingFiles.get(5)).toHaveLength(1);
       expect(notificationCenter.emitEntityDelete).toBeCalledWith(
-        ENTITY.ITEM,
+        ItemNotification.getItemNotificationKey(3, 1),
         expect.anything(),
       );
     });
@@ -896,14 +979,15 @@ describe('fileUploadController', () => {
     };
 
     it('should just upload item when file has beed send successfully', async (done: jest.DoneCallback) => {
-      const existItem = { id: 11, versions: [] };
+      const existItem = { id: 10, versions: [], group_ids: [1] };
       itemDao.getExistGroupFilesByName.mockResolvedValue([existItem]);
-      itemDao.get.mockResolvedValue(itemWithVersion);
+      entitySourceController.get.mockResolvedValue(itemWithVersion);
       const serverItemFile = {
-        id: 11,
+        id: 10,
         versions: itemWithVersion.versions,
+        group_ids: [1],
       };
-      const mockItemFileRes = new ApiResultOk(serverItemFile, 200, undefined);
+      const mockItemFileRes = serverItemFile;
       ItemAPI.putItem.mockResolvedValue(mockItemFileRes);
       fileRequestController.put.mockResolvedValue(serverItemFile);
       const spyNewItem = jest.spyOn(fileUploadController, '_newItem');
@@ -916,8 +1000,10 @@ describe('fileUploadController', () => {
           itemWithVersion.name,
           true,
         );
-        expect(itemService.deleteItem).toBeCalledWith(itemWithVersion.id);
-        expect(itemService.updateItem).toBeCalledWith(serverItemFile);
+        expect(entitySourceController.delete).toBeCalledWith(
+          itemWithVersion.id,
+        );
+        expect(entitySourceController.update).toBeCalledWith(serverItemFile);
         expect(fileRequestController.put).toBeCalledTimes(1);
         expect(spyNewItem).not.toBeCalled();
         expect(notificationCenter.emitEntityReplace).toBeCalled();
@@ -926,7 +1012,7 @@ describe('fileUploadController', () => {
     });
 
     it('should upload file again when file has not beed sent', async (done: jest.DoneCallback) => {
-      itemDao.get.mockResolvedValue(itemWithOutVersion);
+      entitySourceController.get.mockResolvedValue(itemWithOutVersion);
       const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
       spySendItemFile.mockImplementation(() => {});
       const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
@@ -937,7 +1023,7 @@ describe('fileUploadController', () => {
       const progressCaches: Map<number, ItemFileUploadStatus> = new Map();
       const r: RequestHolder = { request: undefined };
       const p: Progress = { id: -3, rate: { total: 3, loaded: 5 } };
-      const f = new FormData();
+      const f = { name: 'name' };
       const itemFileUploadStatus = {
         progress: p,
         requestHolder: r,
@@ -959,7 +1045,7 @@ describe('fileUploadController', () => {
     });
 
     it('should notify upload failed when the file does not exist in db', async (done: jest.DoneCallback) => {
-      itemDao.get.mockResolvedValue(null);
+      entitySourceController.get.mockResolvedValue(null);
       const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
       const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
 
@@ -969,7 +1055,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(spySendItemFile).not.toHaveBeenCalled();
         expect(spyUploadItem).not.toHaveBeenCalled();
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
@@ -992,7 +1078,7 @@ describe('fileUploadController', () => {
 
       const itemId = 5;
       const item = { id: itemId, group_ids: [1], versions: [] };
-      itemDao.get.mockResolvedValue(item);
+      entitySourceController.get.mockResolvedValue(item);
       const spySendItemFile = jest.spyOn(fileUploadController, '_sendItemFile');
       const spyUploadItem = jest.spyOn(fileUploadController, '_uploadItem');
 
@@ -1000,7 +1086,7 @@ describe('fileUploadController', () => {
       setTimeout(() => {
         expect(spySendItemFile).not.toHaveBeenCalled();
         expect(spyUploadItem).not.toHaveBeenCalled();
-        expect(notificationCenter.emit).toBeCalledWith(
+        expect(notificationCenter.emitAsync).toBeCalledWith(
           SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS,
           expect.anything(),
         );
@@ -1047,7 +1133,7 @@ describe('fileUploadController', () => {
 
       progressCaches = new Map();
       const r: RequestHolder = { request: undefined };
-      const p: Progress = { id: 1, total: 3, loaded: 5, groupId: 1 };
+      const p: Progress = { id: 1, rate: { total: 3, loaded: 5 } };
       const itemFileUploadStatus = {
         progress: p,
         requestHolder: r,
@@ -1132,7 +1218,7 @@ describe('fileUploadController', () => {
     });
 
     it('should return true when has valid store file', async () => {
-      itemDao.get.mockResolvedValue({
+      entitySourceController.get.mockResolvedValue({
         id: -1,
         versions: [
           {
@@ -1147,18 +1233,18 @@ describe('fileUploadController', () => {
         ],
       });
       expect(await fileUploadController.hasValidItemFile(-1)).toBeTruthy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
 
     it('should return true input id > 0', async () => {
       expect(await fileUploadController.hasValidItemFile(1)).toBeTruthy();
-      expect(itemDao.get).not.toBeCalled();
+      expect(entitySourceController.get).not.toBeCalled();
     });
 
     it('should return false when can not find item in db', async () => {
-      itemDao.get.mockResolvedValue(null);
+      entitySourceController.get.mockResolvedValue(null);
       expect(await fileUploadController.hasValidItemFile(-1)).toBeFalsy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
 
     it('should return true when has valid file', async () => {
@@ -1169,11 +1255,11 @@ describe('fileUploadController', () => {
 
       progressCaches.set(-1, {
         itemFile: { group_ids: [1], versions: [{ size: 1 }] },
-        progress: { loaded: 10 },
+        progress: { rate: { loaded: 10, total: 100 } },
         file: { size: 1, name: 'name' } as File,
       } as ItemFileUploadStatus);
 
-      itemDao.get.mockResolvedValue({
+      entitySourceController.get.mockResolvedValue({
         id: -1,
         group_ids: [1],
         versions: [
@@ -1185,7 +1271,7 @@ describe('fileUploadController', () => {
         ],
       });
       expect(await fileUploadController.hasValidItemFile(-1)).toBeTruthy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
 
     it('should return false when the cached file has no size', async () => {
@@ -1196,11 +1282,11 @@ describe('fileUploadController', () => {
 
       progressCaches.set(-1, {
         itemFile: { group_ids: [1], versions: [{ size: 1 }] },
-        progress: { loaded: 10 },
+        progress: { rate: { loaded: 10, total: 100 } },
         file: { size: 0, name: 'name' } as File,
       } as ItemFileUploadStatus);
 
-      itemDao.get.mockResolvedValue({
+      entitySourceController.get.mockResolvedValue({
         id: -1,
         group_ids: [1],
         versions: [
@@ -1212,7 +1298,7 @@ describe('fileUploadController', () => {
         ],
       });
       expect(await fileUploadController.hasValidItemFile(-1)).toBeFalsy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
 
     it('should return false when can not find file cache', async () => {
@@ -1220,7 +1306,7 @@ describe('fileUploadController', () => {
       Object.assign(fileUploadController, {
         _progressCaches: progressCaches,
       });
-      itemDao.get.mockResolvedValue({
+      entitySourceController.get.mockResolvedValue({
         id: -1,
         group_ids: [1],
         versions: [
@@ -1232,7 +1318,7 @@ describe('fileUploadController', () => {
         ],
       });
       expect(await fileUploadController.hasValidItemFile(-1)).toBeFalsy();
-      expect(itemDao.get).toBeCalledWith(-1);
+      expect(entitySourceController.get).toBeCalledWith(-1);
     });
   });
 
@@ -1261,6 +1347,200 @@ describe('fileUploadController', () => {
       fileUploadController.cleanUploadingFiles(1, [1, 2]);
       expect(uploadingFiles.get(1)).toBeUndefined();
       expect(uploadingFiles.get(2)).not.toBeUndefined();
+    });
+  });
+
+  describe('hasUploadingFiles', () => {
+    let progressCaches: Map<number, any>;
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      progressCaches = new Map();
+    });
+
+    function setFileCache(status: any, version: any) {
+      progressCaches.set(-1, {
+        progress: status,
+        itemFile: { versions: [version] },
+      } as ItemFileUploadStatus);
+
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+    }
+
+    it.each`
+      progress                                  | fileVersion                        | expectRes
+      ${{}}                                     | ${undefined}                       | ${false}
+      ${{ status: PROGRESS_STATUS.CANCELED }}   | ${{ download_url: '', url: '' }}   | ${false}
+      ${{ status: PROGRESS_STATUS.SUCCESS }}    | ${{ download_url: '1', url: '1' }} | ${false}
+      ${{ status: PROGRESS_STATUS.FAIL }}       | ${{ download_url: '', url: '' }}   | ${false}
+      ${{ status: PROGRESS_STATUS.INPROGRESS }} | ${{ download_url: '1', url: '1' }} | ${false}
+      ${{ status: PROGRESS_STATUS.INPROGRESS }} | ${{ download_url: '', url: '' }}   | ${true}
+    `(
+      'should return true when has file in upload, progress: $progress',
+      ({ progress, expectRes, fileVersion }) => {
+        setFileCache(progress, fileVersion);
+
+        expect(fileUploadController.hasUploadingFiles()).toEqual(expectRes);
+      },
+    );
+  });
+
+  describe('initialUploadItemsFromDraft', () => {
+    let uploadingFiles = undefined;
+    const progressCaches = new Map();
+    beforeEach(() => {
+      clearMocks();
+      setup();
+      uploadingFiles = new Map();
+      Object.assign(fileUploadController, {
+        _progressCaches: progressCaches,
+      });
+    });
+
+    function setUpUploadingFiles(groupId: number, itemFiles: any[]) {
+      uploadingFiles.set(groupId, itemFiles);
+      Object.assign(fileUploadController, {
+        _uploadingFiles: uploadingFiles,
+      });
+    }
+    const groupId = 2;
+
+    it('should just return [] when has no file id', async () => {
+      groupConfigService.getDraftAttachmentItemIds = jest
+        .fn()
+        .mockReturnValue([1]);
+      jest
+        .spyOn(fileUploadController, '_setUploadItems')
+        .mockImplementation(() => {});
+      const res = await fileUploadController.initialUploadItemsFromDraft(
+        groupId,
+      );
+      expect(res).toEqual([]);
+    });
+
+    it('should use draft ids directly when has no upload files before', async () => {
+      const incomingIds = [-10, -376842];
+      groupConfigService.getDraftAttachmentItemIds = jest
+        .fn()
+        .mockReturnValue(incomingIds);
+
+      const itemFiles: any[] = [];
+      setUpUploadingFiles(groupId, itemFiles);
+
+      const invalidVersions = [
+        {
+          url: 'url',
+          download_url: '',
+          stored_file_id: 0,
+        },
+      ];
+
+      const validVersions = [
+        {
+          url: 'url',
+          download_url: '123123',
+          stored_file_id: 123123,
+        },
+      ];
+      entitySourceController.getEntitiesLocally = jest.fn().mockResolvedValue([
+        {
+          id: -10,
+          name: 'name',
+          is_new: true,
+          versions: validVersions,
+        },
+        {
+          id: -376842,
+          name: 'name',
+          is_new: false,
+          versions: invalidVersions,
+        },
+      ]);
+
+      const res = await fileUploadController.initialUploadItemsFromDraft(
+        groupId,
+      );
+
+      expect(res.map(x => x.id)).toEqual(incomingIds);
+      const uploadInfo_376842 = progressCaches.get(-376842);
+      const uploadInfo_10 = progressCaches.get(-10);
+      expect(uploadInfo_376842).not.toBeUndefined();
+      expect(uploadInfo_376842.progress.status).toEqual(PROGRESS_STATUS.FAIL);
+      expect(uploadInfo_10).not.toBeUndefined();
+      expect(uploadInfo_10.progress.status).toEqual(PROGRESS_STATUS.SUCCESS);
+    });
+
+    it('should compare and insert draft itemIds to uploadFiles when has uploadFiles before', async () => {
+      const incomingIds = [-10, -385034];
+      groupConfigService.getDraftAttachmentItemIds = jest
+        .fn()
+        .mockReturnValue(incomingIds);
+
+      const versions = [
+        {
+          download_url: '',
+          stored_file_id: 0,
+        },
+      ];
+      const itemFiles = [
+        { versions, id: -10, name: 'name', is_new: true } as ItemFile,
+        { versions, id: -376842, name: 'name', is_new: false } as ItemFile,
+      ];
+
+      setUpUploadingFiles(groupId, itemFiles);
+      const previousItems = fileUploadController
+        .getUploadItems(groupId)
+        .map(x => x.id);
+
+      entitySourceController.getEntitiesLocally = jest
+        .fn()
+        .mockReturnValue([
+          { versions, id: -385034, name: 'name', is_new: false } as ItemFile,
+        ]);
+
+      const res = await fileUploadController.initialUploadItemsFromDraft(
+        groupId,
+      );
+
+      expect(previousItems).toEqual([-10, -376842]);
+      expect(res.map(x => x.id)).toEqual([-10, -376842, -385034]);
+      const uploadInfo = progressCaches.get(-385034) as ItemFileUploadStatus;
+      expect(uploadInfo).not.toBeUndefined();
+      expect(uploadInfo.progress.status).toEqual(PROGRESS_STATUS.FAIL);
+    });
+  });
+  describe('_updateItem()', () => {
+    it('should combine versions', async () => {
+      const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
+      const preInsertItem: ItemFile = {
+        group_ids: [11],
+        versions: [{ size: 11 }],
+      };
+      await fileUploadController['_updateItem'](existItem, preInsertItem);
+      expect(fileRequestController.put).toBeCalledWith(existItem);
+      expect(existItem.versions).toEqual([{ size: 11 }, { size: 10 }]);
+    });
+    it('should not update modified_at', async () => {
+      const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
+      const preInsertItem: ItemFile = {
+        group_ids: [11],
+        versions: [{ size: 11 }],
+      };
+      await fileUploadController['_updateItem'](existItem, preInsertItem);
+      expect(fileRequestController.put).toBeCalledWith(existItem);
+      expect(existItem).not.toHaveProperty('modified_at');
+    });
+    it('should update modified_at', async () => {
+      const existItem: ItemFile = { group_ids: [11], versions: [{ size: 10 }] };
+      const preInsertItem: ItemFile = {
+        group_ids: [11],
+        versions: [{ size: 11 }],
+      };
+      await fileUploadController['_updateItem'](existItem, preInsertItem, true);
+      expect(fileRequestController.put).toBeCalledWith(existItem);
+      expect(existItem).toHaveProperty('modified_at');
     });
   });
 });

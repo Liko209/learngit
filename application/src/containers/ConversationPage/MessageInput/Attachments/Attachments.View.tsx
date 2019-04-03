@@ -5,22 +5,31 @@
  */
 
 import React, { Component } from 'react';
-import { t } from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { AttachmentsViewProps } from './types';
-import { AttachmentList } from 'jui/pattern/MessageInput/AttachmentList';
+import {
+  AttachmentList,
+  ItemInfo,
+} from 'jui/pattern/MessageInput/AttachmentList';
 import { JuiDuplicateAlert } from 'jui/pattern/MessageInput/DuplicateAlert';
+import { getFileIcon } from '@/common/getFileIcon';
 
 @observer
-class AttachmentsView extends Component<AttachmentsViewProps> {
+class AttachmentsViewComponent extends Component<
+  AttachmentsViewProps & WithTranslation
+> {
   private _showDuplicateFilesDialogIfNeeded = () => {
     const { duplicateFiles, showDuplicateFiles } = this.props;
     if (showDuplicateFiles) {
+      const { t } = this.props;
       return (
         <JuiDuplicateAlert
-          title={t('updateFiles')}
-          subtitle={t('theFollowingFilesAlreadyExist')}
-          footText={t('wouldYouLikeToUpdateTheExistingFileOrCreateANewOne')}
+          title={t('item.updateFiles')}
+          subtitle={t('item.theFollowingFilesAlreadyExist')}
+          footText={t(
+            'item.wouldYouLikeToUpdateTheExistingFileOrCreateANewOne',
+          )}
           duplicateFiles={duplicateFiles}
           onCancel={this.props.cancelDuplicateFiles}
           onCreate={this.props.uploadDuplicateFiles}
@@ -36,6 +45,7 @@ class AttachmentsView extends Component<AttachmentsViewProps> {
   }
 
   componentWillUnmount() {
+    this.props.forceSaveDraftItems();
     this.props.cleanFiles();
     this.props.dispose();
   }
@@ -44,11 +54,14 @@ class AttachmentsView extends Component<AttachmentsViewProps> {
     this.props.autoUploadFiles(files);
   }
 
+  private _resolveIcon = (item: ItemInfo) => getFileIcon(item.name);
+
   render() {
     const { files, cancelUploadFile } = this.props;
     return (
       <>
         <AttachmentList
+          iconResolver={this._resolveIcon}
           files={files}
           removeAttachment={cancelUploadFile}
           data-test-automation-id="message-attachment-node"
@@ -58,5 +71,9 @@ class AttachmentsView extends Component<AttachmentsViewProps> {
     );
   }
 }
+
+const AttachmentsView = withTranslation('translations')(
+  AttachmentsViewComponent,
+);
 
 export { AttachmentsView };

@@ -6,7 +6,19 @@
 
 import { Upgrade } from '../Upgrade';
 
-describe('Upgrade', async () => {
+jest.mock('sdk/module/item/service', () => ({
+  ItemService: {
+    getInstance: () => {
+      return {
+        hasUploadingFiles: () => {
+          return false;
+        },
+      };
+    },
+  },
+}));
+
+describe('Upgrade', () => {
   let upgradeHandler: Upgrade | undefined;
 
   afterEach(() => {
@@ -19,7 +31,7 @@ describe('Upgrade', async () => {
     const mockFn = jest.fn();
     jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
     upgradeHandler.onNewContentAvailable();
-    upgradeHandler.upgradeIfAvailable();
+    upgradeHandler.upgradeIfAvailable('Test');
     expect(mockFn).toBeCalled();
   });
 });

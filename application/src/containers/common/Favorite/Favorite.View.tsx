@@ -5,9 +5,7 @@
  */
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
-import { ServiceResult } from 'sdk/service/ServiceResult';
-import { Profile } from 'sdk/module/profile/entity';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { FavoriteViewProps } from './types';
@@ -16,7 +14,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
-type Props = FavoriteViewProps & WithNamespaces;
+type Props = FavoriteViewProps & WithTranslation;
 
 @observer
 class FavoriteViewComponent extends Component<Props> {
@@ -26,13 +24,12 @@ class FavoriteViewComponent extends Component<Props> {
 
   onClickFavorite = async () => {
     const { handlerFavorite, isFavorite } = this.props;
-    const result: ServiceResult<Profile> = await handlerFavorite();
-
-    if (result.isErr()) {
+    try {
+      await handlerFavorite();
+    } catch {
       const message = isFavorite
-        ? 'markUnFavoriteServerErrorContent'
-        : 'markFavoriteServerErrorContent';
-
+        ? 'people.prompt.markUnFavoriteServerErrorContent'
+        : 'people.prompt.markFavoriteServerErrorContent';
       Notification.flashToast({
         message,
         type: ToastType.ERROR,
@@ -44,11 +41,15 @@ class FavoriteViewComponent extends Component<Props> {
   }
 
   render() {
-    const { conversationId, isFavorite, size, t } = this.props;
-    if (!conversationId) {
+    const { conversationId, isMember, isFavorite, size, t } = this.props;
+    if (!conversationId || !isMember) {
+      // 1. not create a conversation
+      // 2. not a member
       return null;
     }
-    const tooltipKey = isFavorite ? 'setStateUnFavorites' : 'setStateFavorites';
+    const tooltipKey = isFavorite
+      ? 'people.team.removeFromFavorites'
+      : 'people.team.addToFavorites';
     return (
       <JuiIconButton
         size={size}
@@ -65,6 +66,6 @@ class FavoriteViewComponent extends Component<Props> {
   }
 }
 
-const FavoriteView = translate('translations')(FavoriteViewComponent);
+const FavoriteView = withTranslation('translations')(FavoriteViewComponent);
 
 export { FavoriteView };

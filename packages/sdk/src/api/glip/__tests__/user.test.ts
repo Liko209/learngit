@@ -5,30 +5,46 @@
  */
 import Api from '../../api';
 import { loginGlip, indexData } from '../user';
+import {
+  TEN_MINUTE_TIMEOUT,
+  NETWORK_VIA,
+  REQUEST_PRIORITY,
+  HA_PRIORITY,
+} from 'foundation';
 
 jest.mock('../../api');
 
 describe('UserAPI', () => {
   describe('loginGlip()', () => {
-    it('glipNetworkClient http() should be called with specific path', () => {
-      loginGlip({ auth: 'asdfsd' });
-      expect(Api.glipNetworkClient.http).toHaveBeenCalledWith({
+    it('glipNetworkClient rawRequest() should be called with specific path', async () => {
+      await loginGlip({ auth: 'asdfsd' });
+      expect(Api.glipNetworkClient.rawRequest).toHaveBeenCalledWith({
         authFree: true,
         data: { rc_access_token_data: 'eyJhdXRoIjoiYXNkZnNkIn0=' },
         method: 'put',
         path: '/login',
+        timeout: TEN_MINUTE_TIMEOUT,
         via: 0,
       });
     });
   });
   describe('indexData()', () => {
-    it('glipNetworkClient get() should be called with specific path', () => {
+    it('glipNetworkClient get() should be called with specific path', async () => {
       const mock = { id: 111 };
       const requestConfig = {};
       const header = {};
-      indexData(mock);
-      expect(Api.glipNetworkClient.get)
-        .toHaveBeenCalledWith('/index', mock, 0, requestConfig, header);
+      await indexData(mock);
+      expect(Api.glipNetworkClient.get).toHaveBeenCalledWith(
+        '/index',
+        mock,
+        NETWORK_VIA.HTTP,
+        requestConfig,
+        header,
+        3,
+        REQUEST_PRIORITY.HIGH,
+        HA_PRIORITY.BASIC,
+        TEN_MINUTE_TIMEOUT,
+      );
     });
   });
 });

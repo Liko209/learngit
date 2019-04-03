@@ -11,16 +11,30 @@ import {
 import { SendPostController } from '../SendPostController';
 import { PostActionController } from '../PostActionController';
 
-import { GroupConfigService } from '../../../../../service/groupConfig';
+import { GroupConfigService } from '../../../../groupConfig';
 
 import _ from 'lodash';
 import { IPreInsertController } from '../../../../common/controller/interface/IPreInsertController';
-import { IdModel } from '../../../../../framework/model';
 import { Post } from '../../../entity/Post';
-import { daoManager, PostDao, AccountDao } from '../../../../../dao';
+import { daoManager, AccountDao } from '../../../../../dao';
+import { PostDao } from '../../../dao/PostDao';
 import notificationCenter from '../../../../../service/notificationCenter';
 import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
+import { GlobalConfigService } from '../../../../../module/config';
+import { AccountUserConfig } from '../../../../../service/account/config';
+
+jest.mock('../../../../../module/config');
+jest.mock('../../../../../service/account/config/AccountUserConfig');
+GlobalConfigService.getInstance = jest.fn();
+
+jest.mock('../PostActionController');
+jest.mock('../../../../groupConfig');
+jest.mock('../../../../../service/notificationCenter');
+jest.mock('../../../../common/controller/impl/PreInsertController');
+jest.mock('../../../../../dao');
+jest.mock('../../../../groupConfig/dao');
+jest.mock('../../../dao/PostDao');
 
 class MockPreInsertController<T extends ExtendedBaseModel>
   implements IPreInsertController {
@@ -44,11 +58,6 @@ class MockPreInsertController<T extends ExtendedBaseModel>
     return false;
   }
 }
-jest.mock('../PostActionController');
-jest.mock('../../../../../service/groupConfig');
-jest.mock('../../../../../service/notificationCenter');
-jest.mock('../../../../common/controller/impl/PreInsertController');
-jest.mock('../../../../../dao');
 
 describe('SendPostController', () => {
   let sendPostController: SendPostController;
@@ -74,8 +83,12 @@ describe('SendPostController', () => {
   describe('sendPost', () => {
     it('should add user id and company id into parameters', async () => {
       let correct = false;
-      daoManager.getKVDao.mockReturnValue(accountDao);
-      accountDao.get.mockReturnValueOnce(4).mockReturnValueOnce(1);
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValueOnce(4);
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
       jest
         .spyOn(sendPostController, 'innerSendPost')
         .mockImplementationOnce((parameters: any, isRend: boolean) => {

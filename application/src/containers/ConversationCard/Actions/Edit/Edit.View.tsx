@@ -6,11 +6,11 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { EditViewProps } from './types';
 import { JuiMenuItem } from 'jui/components';
 
-type Props = EditViewProps & WithNamespaces;
+type Props = EditViewProps & WithTranslation;
 
 @observer
 class EditViewComponent extends Component<Props> {
@@ -28,12 +28,12 @@ class EditViewComponent extends Component<Props> {
       };
     return (
       <JuiMenuItem {...menuItemOnClickProp} icon="edit" disabled={disabled}>
-        {t('edit')}
+        {t('message.action.editPost')}
       </JuiMenuItem>
     );
   }
 }
 
-const EditView = translate('translations')(EditViewComponent);
+const EditView = withTranslation('translations')(EditViewComponent);
 
 export { EditView };

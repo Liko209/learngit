@@ -97,14 +97,27 @@ class EntityPersistentController<T extends IdModel = IdModel>
     return item;
   }
 
-  async batchGet(ids: number[]): Promise<T[]> {
+  async batchGet(ids: number[], order?: boolean): Promise<T[]> {
     let items: T[] = [];
     if (this.entityCacheController) {
-      items = await this.entityCacheController.batchGet(ids);
+      items = await this.entityCacheController.batchGet(ids, order);
     }
 
     if (items.length !== ids.length && this.dao) {
-      items = await this.dao.batchGet(ids);
+      items = await this.dao.batchGet(ids, order);
+    }
+
+    return items;
+  }
+
+  async getEntities(filterFunc?: (entity: T) => boolean): Promise<T[]> {
+    let items: T[] = [];
+    if (this.entityCacheController) {
+      items = await this.entityCacheController.getEntities(filterFunc);
+    }
+
+    if (items.length === 0 && this.dao) {
+      items = await this.dao.getAll();
     }
 
     return items;

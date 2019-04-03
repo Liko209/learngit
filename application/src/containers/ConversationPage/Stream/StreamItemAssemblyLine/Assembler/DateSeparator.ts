@@ -9,22 +9,22 @@ import {
   AssemblerDelFuncArgs,
 } from './types';
 import _ from 'lodash';
-import { Post } from 'sdk/module/post/entity';
 import { Assembler } from './Assembler';
 import { StreamItemType, StreamItem } from '../../types';
 import { getDateTimeStamp } from '@/utils/date';
 
 export class DateSeparator extends Assembler {
   onAdd: AssemblerAddFunc = ({ added, postList, streamItemList, ...rest }) => {
-    const criteria = (post: Post) => getDateTimeStamp(post.created_at);
-    const postByDay = _(added).groupBy(raw_post => criteria(raw_post.data));
+    const criteria = (createdAt: number) => getDateTimeStamp(createdAt);
+    const postByDay = _(added).groupBy(sortModel =>
+      criteria(sortModel.sortValue),
+    );
     const convertDateToStreamItem: (t: number) => StreamItem = (
       timeStamp: number,
     ) => ({
       id: Number(timeStamp),
       timeStart: Number(timeStamp),
       type: StreamItemType.DATE_SEPARATOR,
-      value: Number(timeStamp),
     });
     const dates = postByDay
       .keys()

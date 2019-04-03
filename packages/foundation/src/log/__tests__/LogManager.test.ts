@@ -4,7 +4,7 @@ import { logConfigFactory } from './factory';
 
 describe('LogManager', () => {
   configManager.setConfig(logConfigFactory.build());
-  const logManager = LogManager.Instance;
+  const logManager = LogManager.getInstance();
   describe('getLogger()', () => {
     it('should get log single instance', () => {
       const loggers = [
@@ -16,6 +16,5 @@ describe('LogManager', () => {
       expect(loggers[0]).toEqual(loggers[1]);
       expect(loggers[2]).toEqual(loggers[3]);
     });
-
   });
 });

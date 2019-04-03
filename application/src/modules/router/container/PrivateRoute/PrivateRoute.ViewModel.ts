@@ -3,27 +3,25 @@
  * @Date: 2018-09-30 10:25:13
  * Copyright © RingCentral. All rights reserved.
  */
-import { RouteComponentProps } from 'react-router-dom';
 import { computed } from 'mobx';
-
 import { AuthService } from 'sdk/service';
-import { AbstractViewModel } from '@/base';
+import { StoreViewModel } from '@/store/ViewModel';
+import { PrivateRouteProps, PrivateRouteViewProps } from './types';
 
-type RouteComponent =
-  | React.StatelessComponent<RouteComponentProps<{}>>
-  | React.ComponentClass<any>;
-
-class PrivateRouteViewModel extends AbstractViewModel {
+class PrivateRouteViewModel extends StoreViewModel<PrivateRouteProps>
+  implements PrivateRouteViewProps {
   private _authService: AuthService = AuthService.getInstance();
-  component: RouteComponent;
+  component: PrivateRouteProps['component'];
+
+  constructor(props: PrivateRouteProps) {
+    super(props);
+    const { component } = props;
+    this.component = component;
+  }
 
   @computed
   get isAuthenticated() {
     return this._authService.isLoggedIn();
-  }
-
-  onReceiveProps({ component }: { component: RouteComponent }) {
-    this.component = component;
   }
 }
 

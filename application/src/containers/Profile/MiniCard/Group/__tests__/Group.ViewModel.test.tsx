@@ -26,7 +26,8 @@ const mockData = {
   displayName: 'Group name',
   isTeam: true,
 };
-
+const groupService: GroupService = new GroupService();
+GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 const props = {
   id: 1,
 };
@@ -49,15 +50,7 @@ describe('ProfileMiniCardGroupViewModel', () => {
   });
 
   describe('group', () => {
-    let groupService: any;
-    beforeEach(() => {
-      groupService = {
-        getById: jest.fn(),
-      };
-      (GroupService as any).mockImplementation(() => {
-        return groupService;
-      });
-    });
+    beforeEach(() => {});
     it('should be get group entity when invoke class instance property group [JPT-405]', () => {
       groupService.getById = jest.fn().mockResolvedValueOnce(mockData);
       expect(vm.group).toEqual(mockData);
@@ -107,7 +100,7 @@ describe('ProfileMiniCardGroupViewModel', () => {
         expect(Notification.flashToast).toHaveBeenCalledWith({
           dismissible: false,
           fullWidth: false,
-          message: 'SorryWeWereNotAbleToOpenThisProfile',
+          message: 'people.prompt.SorryWeWereNotAbleToOpenThisProfile',
           messageAlign: ToastMessageAlign.LEFT,
           type: ToastType.ERROR,
         });

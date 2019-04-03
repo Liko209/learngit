@@ -1,0 +1,15 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ConversationStream/ConversationStream.ts",
+      "./fixtures/ConversationList/UMI.ts"
+    ],
+    "include_tags": [
+      "JPT-106",
+      "JPT-189"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

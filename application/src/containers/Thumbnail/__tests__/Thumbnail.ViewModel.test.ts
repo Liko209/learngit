@@ -29,7 +29,7 @@ describe('ThumbnailViewModel', () => {
   beforeEach(() => {
     ItemService.getInstance.mockReturnValue(itemService);
   });
-  describe('get fileTypeOrUrl()', () => {
+  describe('_getThumbsUrlWithSize()', () => {
     it('should get image url', () => {
       (getEntity as jest.Mock).mockReturnValue({
         type: 'application/json',
@@ -42,75 +42,61 @@ describe('ThumbnailViewModel', () => {
       thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
 
       setTimeout(() => {
-        expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
-          url: previewUrl,
-          icon: '',
-        });
+        expect(thumbnailViewModel.thumbsUrlWithSize).toEqual(previewUrl);
       });
     });
     it('should get file type', async () => {
       (getEntity as jest.Mock).mockReturnValue({
         type: 'doc',
         iconType: 'doc',
+        versions: [],
       });
 
       FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
 
-      thumbnailViewModel = new ThumbnailViewModel();
+      thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
 
-      expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
-        url: '',
-        icon: 'doc',
-      });
+      expect(thumbnailViewModel.icon).toEqual('doc');
     });
     it('should get default type', async () => {
       (getEntity as jest.Mock).mockReturnValue({
         type: '',
-      });
-
-      FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
-
-      thumbnailViewModel = new ThumbnailViewModel();
-
-      expect(thumbnailViewModel.fileTypeOrUrl).toEqual({
-        url: '',
-        icon: '',
-      });
-    });
-
-    it('should get size by origWidth > origHeight', () => {
-      (getEntity as jest.Mock).mockReturnValue({
-        type: 'png',
-        origWidth: 400,
-        origHeight: 70,
+        iconType: 'default_file',
       });
 
       FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
 
       thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
 
-      expect(itemService.getThumbsUrlWithSize).toHaveBeenCalledWith(
-        123,
-        thumbnailViewModel._size.width,
-        thumbnailViewModel._size.height,
-      );
+      expect(thumbnailViewModel.icon).toEqual('default_file');
     });
-    it('should get size by origWidth < origHeight', () => {
+    it('should get default type', async () => {
       (getEntity as jest.Mock).mockReturnValue({
-        type: 'png',
-        origWidth: 70,
-        origHeight: 400,
+        type: '',
+        iconType: 'default_file',
       });
 
       FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
 
       thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
 
-      expect(itemService.getThumbsUrlWithSize).toHaveBeenCalledWith(
-        123,
-        thumbnailViewModel._size.width,
-        thumbnailViewModel._size.height,
-      );
+      expect(thumbnailViewModel.icon).toEqual('default_file');
+    });
+    it('should the last url when versions store id is same as the last store id', async () => {
+      const storeFileId = 111;
+      const thumbUrl = 'https://www.google.com';
+      (getEntity as jest.Mock).mockReturnValue({
+        versions: [{ stored_file_id: storeFileId }],
+      });
+
+      FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
+
+      thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
+
+      thumbnailViewModel._lastStoreFileId = storeFileId;
+      thumbnailViewModel.thumbsUrlWithSize = thumbUrl;
+
+      expect(thumbnailViewModel.thumbsUrlWithSize).toEqual(thumbUrl);
     });
   });
 });

@@ -10,7 +10,6 @@ import { BaseDao } from '../../../framework/dao';
 import { TestDatabase, TestEntity } from '../../controller/__tests__/TestTypes';
 import NetworkClient from '../../../api/NetworkClient';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../error';
-import { ApiResultErr, ApiResultOk } from '../../../api/ApiResult';
 import { BaseResponse } from 'foundation/';
 
 describe('EntityBaseService', () => {
@@ -62,12 +61,9 @@ describe('EntityBaseService', () => {
         return null;
       });
 
-      jest.spyOn(networkConfig.networkClient, 'get').mockResolvedValueOnce(
-        new ApiResultOk({ id: 1, name: 'jupiter' }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      jest
+        .spyOn(networkConfig.networkClient, 'get')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
       expect(service.getById(1)).resolves.toEqual({ id: 1, name: 'jupiter' });
     });
 
@@ -85,12 +81,9 @@ describe('EntityBaseService', () => {
         ERROR_CODES_NETWORK.NOT_FOUND,
         'Not Found',
       );
-      jest.spyOn(networkConfig.networkClient, 'get').mockResolvedValueOnce(
-        new ApiResultErr(error, {
-          status: 404,
-          headers: {},
-        } as BaseResponse),
-      );
+      jest
+        .spyOn(networkConfig.networkClient, 'get')
+        .mockRejectedValueOnce(error);
       expect(service.getById(1)).resolves.toThrow();
     });
   });

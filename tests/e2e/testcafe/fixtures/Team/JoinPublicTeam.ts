@@ -8,175 +8,153 @@ import * as _ from 'lodash';
 import * as assert from 'assert';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { IGroup } from '../../v2/models';
 
 fixture('Team/PublicTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-// skip due to join button css does not change to display when testcafe hover a public team of search result
-test.skip(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PublicTeam', 'Potar.He']), async t => {
+test(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PublicTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(otherUser).init();
-  await h(t).glip(otherUser).init();
-  const otherUserName = await h(t).glip(otherUser).getPerson()
-    .then(res => res.data.display_name);
+  const users = h(t).rcData.mainCompany.users
+  const me = users[4];
+  const anotherUser = users[5];
+  await h(t).glip(me).init();
+  const otherUserName = await h(t).glip(me).getPersonPartialData('display_name', anotherUser.rcId)
 
-  const publicTeamName = uuid();
-  console.log(publicTeamName);
-  const joinedTeamName = uuid();
+  const searchKeyWord = H.uuid();
+  let publicTeamWithoutMe = <IGroup>{
+    type: "Team",
+    isPublic: true,
+    name: `${searchKeyWord} publicWithoutMe`,
+    owner: anotherUser,
+    members: [anotherUser]
+  }
 
-  let publicTeamId, joinedTeamId;
-  await h(t).withLog('Given I have a public team A but loginUser did not join it, team B (loginUser joined),and some group', async () => {
-    publicTeamId = await h(t).platform(otherUser).createAndGetGroupId({
-      name: publicTeamName,
-      type: 'Team',
-      members: [otherUser.rcId],
-    });
-    await h(t).glip(otherUser).updateGroup(publicTeamId, {
-      privacy: 'protected',
-      is_public: true
-    })
-    joinedTeamId = await h(t).platform(otherUser).createAndGetGroupId({
-      isPublic: true,
-      privacy: 'protected',
-      name: joinedTeamName,
-      type: 'Team',
-      members: [otherUser.rcId, loginUser.rcId],
-    });
+  let publicTeamWithMe = <IGroup>{
+    type: "Team",
+    isPublic: true,
+    name: `${searchKeyWord} publicWithMe`,
+    owner: anotherUser,
+    members: [anotherUser, me]
+  }
 
-    await h(t).platform(otherUser).createGroup({
-      type: 'Group',
-      members: [loginUser.rcId, otherUser.rcId],
-    });
+  let otherChat = <IGroup>{
+    type: "Chat",
+    owner: me,
+    members: [me, anotherUser, users[0]]
+  }
 
-    await h(t).platform(otherUser).createGroup({
-      type: 'Group',
-      members: [otherUser.rcId],
-    });
+  await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
+  await h(t).withLog(`And there are public teams (I joined and did not join), people and group chat`, async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([publicTeamWithMe, publicTeamWithoutMe, otherChat]);
   });
 
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
+  await h(t).withLog(`When I login Jupiter with this extension`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, me);
     await app.homePage.ensureLoaded();
   });
 
   const search = app.homePage.header.search;
+  await h(t).withLog(`When I search keyword “${searchKeyWord}”`, async () => {
+    await search.typeSearchKeyword(searchKeyWord, { replace: true, paste: true });
+    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+  });
 
-  await h(t).withLog(`When I search and hover the public team A ${publicTeamName}`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    // https://jira.ringcentral.com/browse/FIJI-2500
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(publicTeamId).self);
+  await h(t).withLog(`And I hover search result “${publicTeamWithoutMe.name}”`, async () => {
+    await t.hover(search.getSearchItemByCid(publicTeamWithoutMe.glipId).self);
   });
 
   await h(t).withLog(`Then the join button should be showed `, async () => {
-    await search.itemEntryByCid(publicTeamId).shouldHasJoinButton();
-  })
+    await search.getSearchItemByCid(publicTeamWithoutMe.glipId).shouldHaveJoinButton();
+  });
 
-  await h(t).withLog(`When I search and hover the joined team B ${joinedTeamName}`, async () => {
-    await search.typeText(joinedTeamName, { replace: true, paste: true });
-    await t.hover(search.itemEntryByCid(joinedTeamId).self);
+  await h(t).withLog(`When I hover search result “${publicTeamWithMe.name}”`, async () => {
+    await t.hover(search.getSearchItemByCid(publicTeamWithMe.glipId).self);
   });
 
   await h(t).withLog(`Then the join button should not be showed `, async () => {
-    await search.itemEntryByCid(joinedTeamId).shouldNotHasJoinButton();
+    await search.getSearchItemByCid(publicTeamWithMe.glipId).shouldNotHaveJoinButton();
   });
 
   let peopleCount, groupCount;
-  await h(t).withLog(`When I search the people ${otherUserName}`, async () => {
-    await search.typeText(otherUserName, { replace: true, paste: true });
-
-  });
-  await h(t).withLog(`Then at least one people and one group should be showed`, async () => {
-    await t.expect(search.peoples.count).gte(1);
-    await t.expect(search.groups.count).gte(1);
+  await h(t).withLog(`When I search keyword "${otherUserName}”`, async () => {
+    await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
+    await t.expect(search.allResultItems.count).gte(1, { timeout: 10e3 });
     peopleCount = await search.peoples.count;
     groupCount = await search.groups.count;
   });
 
   for (let i of _.range(peopleCount)) {
     const item = search.nthPeople(i);
-    await h(t).withLog(`When I hover each one group result ${i}/${peopleCount}`, async () => {
+    await h(t).withLog(`When I hover each one group result ${i + 1}/${peopleCount}`, async () => {
       await t.hover(item.self);
     });
 
     await h(t).withLog(`Then the join button should not be showed`, async () => {
-      await item.shouldNotHasJoinButton();
+      await item.shouldNotHaveJoinButton();
     });
   }
+
   for (let i of _.range(groupCount)) {
     const item = search.nthGroup(i);
-    await h(t).withLog(`When I hover each one people result ${i}/${groupCount}`, async () => {
+    await h(t).withLog(`When I hover each one people result ${i + 1}/${groupCount}`, async () => {
       await t.hover(item.self);
     });
 
     await h(t).withLog(`Then the join button should not be showed`, async () => {
-      await item.shouldNotHasJoinButton();
+      await item.shouldNotHaveJoinButton();
     });
   }
 });
 
 test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'JPT-704', 'PublicTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[4];
-  const otherUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(otherUser).init();
-  await h(t).glip(otherUser).init()
+  const me = h(t).rcData.mainCompany.users[4];
+  const anotherUser = h(t).rcData.mainCompany.users[5];
 
-  const publicTeamName = uuid();
-  const newTeamName = uuid();
+  const searchKeyword = uuid();
 
-  let publicTeamId;
-  await h(t).withLog('Given I have a public team A but loginUser did not join it', async () => {
-    publicTeamId = await h(t).platform(otherUser).createAndGetGroupId({
-      name: publicTeamName,
-      type: 'Team',
-      members: [otherUser.rcId],
-    });
-    await h(t).glip(otherUser).updateGroup(publicTeamId, {
-      privacy: 'protected',
-      is_public: true
-    });
+  let publicTeamWithoutMe = <IGroup>{
+    type: 'Team', isPublic: true,
+    name: `${searchKeyword} PublicTeamWithoutMe`,
+    owner: anotherUser,
+    members: [anotherUser],
+  };
+
+  await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
+  await h(t).withLog(`And there is a public team named "${publicTeamWithoutMe.name}" without me`, async () => {
+    await h(t).scenarioHelper.createTeam(publicTeamWithoutMe);
   });
 
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
+  await h(t).withLog(`When I login Jupiter with the extension`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, me);
     await app.homePage.ensureLoaded();
   });
 
   const search = app.homePage.header.search;
 
-  await h(t).withLog(`When I search the public team A ${publicTeamName}`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.wait(3e3);
-    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.wait(3e3); // wait search result show;
+  await h(t).withLog(`When I search the public team ${searchKeyword}`, async () => {
+    await search.typeSearchKeyword(searchKeyword, { replace: true, paste: true });
   });
-  await h(t).withLog(`And I click join button of the public team A`, async () => {
-    await t.hover(search.itemEntryByCid(publicTeamId).self)
 
-    await search.itemEntryByCid(publicTeamId).join();
+  await h(t).withLog(`And I click join button of the public team A`, async () => {
+    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await search.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
   });
 
   await h(t).withLog(`Then search result list dismiss`, async () => {
-    await t.expect(search.itemEntryByCid(publicTeamId).exists).notOk();
+    await t.expect(search.getSearchItemByCid(publicTeamWithoutMe.glipId).exists).notOk();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
   await h(t).withLog(`And display a confirmation`, async () => {
     await t.expect(joinTeamDialog.title.exists).ok();
-    await joinTeamDialog.shouldBeTeam(publicTeamName);
+    await joinTeamDialog.shouldBeTeam(publicTeamWithoutMe.name);
     await t.expect(joinTeamDialog.joinButton.exists).ok();
     await t.expect(joinTeamDialog.cancelButton.exists).ok();
   });
@@ -196,54 +174,47 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
 
   await h(t).withLog(`And The confirmation dismiss, loginUser did not join team A`, async () => {
     await t.expect(joinTeamDialog.exists).notOk();
-    await t.expect(app.homePage.messageTab.teamsSection.conversationEntryById(publicTeamId).exists).notOk();
+    await t.expect(app.homePage.messageTab.teamsSection.conversationEntryById(publicTeamWithoutMe.glipId).exists).notOk();
   });
 });
 
-//https://jira.ringcentral.com/projects/FIJI/issues/FIJI-2802
-test.skip(formalName(`Joined team successful after clicking join button in confirmation.`, ['P1', 'JPT-718', 'PublicTeam', 'Potar.He']), async t => {
+test(formalName(`Joined team successful after clicking join button in confirmation.`, ['P1', 'JPT-718', 'PublicTeam', 'Potar.He']), async t => {
   const app = new AppRoot(t);
-  const loginUser = h(t).rcData.mainCompany.users[4];
+  const me = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
-  await h(t).platform(otherUser).init();
-  await h(t).glip(otherUser).init()
+  await h(t).glip(otherUser).init();
 
-  const publicTeamName = uuid();
+  let publicTeamWithoutMe = <IGroup>{
+    type: "Team",
+    isPublic: true,
+    name: `${uuid()} publicTeamWithoutMe`,
+    owner: otherUser,
+    members: [otherUser]
+  }
 
-  let publicTeamId;
-  await h(t).withLog('Given I have a public team A but loginUser did not join it', async () => {
-    publicTeamId = await h(t).platform(otherUser).createAndGetGroupId({
-      name: publicTeamName,
-      type: 'Team',
-      members: [otherUser.rcId],
-    });
-    await h(t).glip(otherUser).updateGroup(publicTeamId, {
-      privacy: 'protected',
-      is_public: true
-    });
+  await h(t).log(`Given I have an extension "${me.company.number}#${me.extension}"`);
+
+  await h(t).withLog(`And there is public team A without me: ${publicTeamWithoutMe.name}`, async () => {
+    await h(t).scenarioHelper.createTeam(publicTeamWithoutMe);
   });
 
-  await h(t).withLog(`When I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
-    await h(t).directLoginWithUser(SITE_URL, loginUser);
+  await h(t).withLog(`When I login Jupiter with this extension`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, me);
     await app.homePage.ensureLoaded();
   });
 
   const search = app.homePage.header.search;
-  await h(t).withLog(`When I search the public team A ${publicTeamName}, and click Join button of team A`, async () => {
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    // this is a bug: https://jira.ringcentral.com/browse/FIJI-2500
-    await h(t).reload();
-    await app.homePage.ensureLoaded();
-    await search.typeText(publicTeamName, { replace: true, paste: true });
-    await t.wait(3e3); // wait search result show;
-    await search.itemEntryByCid(publicTeamId).join();
+  await h(t).withLog(`When I search the public team A ${publicTeamWithoutMe.name}, and click Join button of team A`, async () => {
+    await search.typeSearchKeyword(publicTeamWithoutMe.name, { replace: true, paste: true });
+    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await search.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
   });
 
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
   await h(t).withLog(`Then display a confirmation`, async () => {
     await t.expect(joinTeamDialog.title.exists).ok();
-    await joinTeamDialog.shouldBeTeam(publicTeamName);
+    await joinTeamDialog.shouldBeTeam(publicTeamWithoutMe.name);
     await t.expect(joinTeamDialog.joinButton.exists).ok();
     await t.expect(joinTeamDialog.cancelButton.exists).ok();
   });
@@ -253,17 +224,17 @@ test.skip(formalName(`Joined team successful after clicking join button in confi
   });
 
   await h(t).withLog(`Then team A should be opened, and displayed on the top of conversation list`, async () => {
-    await app.homePage.messageTab.conversationPage.groupIdShouldBe(publicTeamId);
-    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).groupIdShouldBe(publicTeamId);
+    await app.homePage.messageTab.conversationPage.groupIdShouldBe(publicTeamWithoutMe.glipId);
+    await app.homePage.messageTab.teamsSection.nthConversationEntry(0).groupIdShouldBe(publicTeamWithoutMe.glipId);
   });
 
   let members;
   await h(t).withLog(`When admin of team A check the team members`, async () => {
-    members = await h(t).glip(otherUser).getGroup(publicTeamId).then(res => res.data.members);
+    members = await h(t).glip(otherUser).getGroup(publicTeamWithoutMe.glipId).then(res => res.data.members);
   });
 
   await h(t).withLog(`Then can see loginUser in it`, async () => {
-    const loginUserGlipId = await h(t).glip(otherUser).toPersonId(loginUser.rcId);
+    const loginUserGlipId = await h(t).glip(otherUser).toPersonId(me.rcId);
     assert.ok(_.includes(members, loginUserGlipId), "loginUser is not in team A");
   });
 
@@ -273,32 +244,30 @@ test(formalName(`The user should see go to conversation icon instead of the join
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const adminUser = h(t).rcData.mainCompany.users[5];
-  await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
-  await h(t).platform(adminUser).init();
-  await h(t).glip(adminUser).init()
 
-  let publicTeamId, directMessageChatId, teamMentionPostId;
+  let publicTeamWithoutMe = <IGroup>{
+    type: "Team",
+    isPublic: true,
+    name: uuid(),
+    owner: adminUser,
+    members: [adminUser]
+  }
+
+  let chatWithMe = <IGroup>{
+    type: "Chat",
+    owner: loginUser,
+    members: [adminUser, loginUser]
+  }
+
   await h(t).withLog('Given I have a public_team but loginUser did not join it, and 1:1 conversation ', async () => {
-    publicTeamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [adminUser.rcId, h(t).rcData.mainCompany.users[6].rcId],
-    });
-    await h(t).glip(adminUser).updateGroup(publicTeamId, {
-      privacy: 'protected',
-      is_public: true
-    });
-    directMessageChatId = await h(t).platform(adminUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [adminUser.rcId, loginUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeamsOrChats([publicTeamWithoutMe, chatWithMe]);
   });
 
+  let teamMentionPostId;
   await h(t).withLog(`And adminUser send @public_team post to loginUser`, async () => {
     teamMentionPostId = await h(t).platform(adminUser).sentAndGetTextPostId(
-      `Join public team, ![:Team](${publicTeamId})`,
-      directMessageChatId,
+      `Join public team, ![:Team](${publicTeamWithoutMe.glipId})`,
+      chatWithMe.glipId,
     );
   });
 
@@ -310,7 +279,7 @@ test(formalName(`The user should see go to conversation icon instead of the join
   const conversationPage = app.homePage.messageTab.conversationPage;
   const post = conversationPage.postItemById(teamMentionPostId);
   await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
-    await app.homePage.messageTab.directMessagesSection.conversationEntryById(directMessageChatId).enter();
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chatWithMe.glipId).enter();
     await t.click(post.mentions);
   });
 
@@ -327,11 +296,11 @@ test(formalName(`The user should see go to conversation icon instead of the join
   await h(t).withLog(`Then profile dialog should be popped up and show 'Join the team' button`, async () => {
     await profileDialog.shouldBePopUp();
     await t.expect(profileDialog.joinTeamButton.exists).ok();
-    await profileDialog.close();
+    await profileDialog.clickCloseButton();
   });
 
   await h(t).withLog(`When adminUser add loginUser to the Public_team`, async () => {
-    await h(t).glip(adminUser).addGroupMembers(publicTeamId, loginUser.rcId);
+    await h(t).scenarioHelper.addMemberToTeam(publicTeamWithoutMe,[loginUser])
   });
 
   await h(t).withLog(`And loginUser checks the display of the button on profile dialog`, async () => {
@@ -349,32 +318,30 @@ test(formalName(`Will show confirmation dialog when joining the public team from
   const app = new AppRoot(t);
   const loginUser = h(t).rcData.mainCompany.users[4];
   const adminUser = h(t).rcData.mainCompany.users[5];
-  await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
-  await h(t).platform(adminUser).init();
-  await h(t).glip(adminUser).init()
 
-  let publicTeamId, directMessageChatId, teamMentionPostId;
+  let publicTeamWithoutMe = <IGroup>{
+    type: "Team",
+    isPublic: true,
+    name: uuid(),
+    owner: adminUser,
+    members: [adminUser]
+  }
+
+  let chatWithMe = <IGroup>{
+    type: "Chat",
+    owner: loginUser,
+    members: [adminUser, loginUser]
+  }
+
   await h(t).withLog('Given I have a public_team but loginUser did not join it, and 1:1 conversation ', async () => {
-    publicTeamId = await h(t).platform(adminUser).createAndGetGroupId({
-      name: uuid(),
-      type: 'Team',
-      members: [adminUser.rcId],
-    });
-    await h(t).glip(adminUser).updateGroup(publicTeamId, {
-      privacy: 'protected',
-      is_public: true
-    });
-    directMessageChatId = await h(t).platform(adminUser).createAndGetGroupId({
-      type: 'PrivateChat',
-      members: [adminUser.rcId, loginUser.rcId],
-    });
+    await h(t).scenarioHelper.createTeamsOrChats([publicTeamWithoutMe, chatWithMe]);
   });
 
+  let teamMentionPostId;
   await h(t).withLog(`And adminUser send @public_team post to loginUser`, async () => {
     teamMentionPostId = await h(t).platform(adminUser).sentAndGetTextPostId(
-      `Join public team, ![:Team](${publicTeamId})`,
-      directMessageChatId,
+      `Join public team, ![:Team](${publicTeamWithoutMe.glipId})`,
+      chatWithMe.glipId,
     );
   });
 
@@ -386,7 +353,7 @@ test(formalName(`Will show confirmation dialog when joining the public team from
   const conversationPage = app.homePage.messageTab.conversationPage;
   const post = conversationPage.postItemById(teamMentionPostId);
   await h(t).withLog(`When loginUser click the @public_team mention`, async () => {
-    await app.homePage.messageTab.directMessagesSection.conversationEntryById(directMessageChatId).enter();
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(chatWithMe.glipId).enter();
     await t.click(post.mentions);
   });
 

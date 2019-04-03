@@ -36,7 +36,7 @@ const StyledToggle = styled.div`
   cursor: pointer;
 `;
 
-class JuiEventCollapse extends React.Component<Props, States> {
+class JuiEventCollapse extends React.PureComponent<Props, States> {
   constructor(props: Props) {
     super(props);
     this.state = {

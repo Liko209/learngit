@@ -4,8 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 'use strict';
-
 if (process.env.NODE_ENV === 'test') {
+  const moment = require('moment-timezone');
+  moment.tz.setDefault('Asia/Shanghai');
   // In tests, polyfill requestAnimationFrame since jsdom doesn't provide it yet.
   // We don't polyfill it in the browser--this is user's responsibility.
   require('raf').polyfill(global);
@@ -13,10 +14,10 @@ if (process.env.NODE_ENV === 'test') {
   // Create an IDBFactory at window.indexedDB so your code can use IndexedDB.
   // Make IDBKeyRange global so your code can create key ranges.
   Object.defineProperty(window, 'indexedDB', {
-    value: require('fake-indexeddb')
+    value: require('fake-indexeddb'),
   });
   Object.defineProperty(window, 'IDBKeyRange', {
-    value: require('fake-indexeddb/lib/FDBKeyRange')
+    value: require('fake-indexeddb/lib/FDBKeyRange'),
   });
 
   // Create a localStorage and sessionStorage at window
@@ -40,10 +41,10 @@ if (process.env.NODE_ENV === 'test') {
   }
 
   Object.defineProperty(window, 'localStorage', {
-    value: new FakeStorage()
+    value: new FakeStorage(),
   });
 
   Object.defineProperty(window, 'sessionStorage', {
-    value: new FakeStorage()
+    value: new FakeStorage(),
   });
 }

@@ -13,18 +13,12 @@ import GroupModel from '@/store/models/Group';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { IconButtonSize } from 'jui/components/Buttons';
-const { GroupService } = service;
 
 class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
   implements PrivacyViewProps {
-  private _groupService: service.GroupService = GroupService.getInstance();
-
-  @computed
-  get id() {
-    return this.props.id; // teamId
-  }
+  private _groupService: GroupService = GroupService.getInstance();
 
   @computed
   get size(): IconButtonSize {
@@ -33,7 +27,7 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
 
   @computed
   private get _group() {
-    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.id);
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 
   @computed
@@ -46,10 +40,15 @@ class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
     return this._group.isAdmin;
   }
 
+  @computed
+  get isTeam() {
+    return this._group.isTeam || false;
+  }
+
   handlePrivacy = () => {
     const newData = this._group.privacy === 'private' ? 'protected' : 'private';
     return this._groupService.updateGroupPrivacy({
-      id: this.id,
+      id: this.props.id,
       privacy: newData,
     });
   }

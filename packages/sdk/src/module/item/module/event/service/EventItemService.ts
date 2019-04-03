@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IItemService } from '../../../service/IItemService';
 import { EventItem, SanitizedEventItem } from '../entity';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 import { EventItemDao } from '../dao/EventItemDao';
@@ -13,17 +12,8 @@ class EventItemService extends BaseSubItemService<
   EventItem,
   SanitizedEventItem
 > {
-  constructor(itemService: IItemService) {
+  constructor() {
     super(daoManager.getDao<EventItemDao>(EventItemDao));
-  }
-
-  toSanitizedItem(event: EventItem) {
-    return {
-      ...super.toSanitizedItem(event),
-      start: event.start,
-      end: event.end,
-      effective_end: event.effective_end,
-    } as SanitizedEventItem;
   }
 }
 

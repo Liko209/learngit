@@ -11,7 +11,7 @@ import {
   Switch,
   withRouter,
 } from 'react-router-dom';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import {
   JuiResponsiveLayout,
   VISUAL_MODE,
@@ -19,7 +19,7 @@ import {
 } from 'jui/foundation/Layout/Responsive';
 import { JuiConversationLoading } from 'jui/pattern/ConversationLoading';
 import {
-  goToConversation,
+  goToConversationWithLoading,
   GoToConversationParams,
 } from '@/common/goToConversation';
 import { ConversationPage } from '@/containers/ConversationPage';
@@ -81,9 +81,9 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   componentDidUpdate(prevProps: MessagesWrapperPops) {
     const subPath = this.props.match.params.subPath;
     const prevSubPath = prevProps.match.params.subPath;
-
     if (subPath !== prevSubPath) {
       MessageRouterChangeHelper.updateCurrentConversationId(subPath);
+      MessageRouterChangeHelper.ensureGroupIsOpened(Number(subPath));
     }
   }
 
@@ -102,7 +102,7 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
   retryMessage = () => {
     const { retryParams } = this.state;
     if (!retryParams) return;
-    goToConversation(retryParams);
+    goToConversationWithLoading(retryParams);
   }
 
   render() {
@@ -118,21 +118,21 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
             render={() => (
               <JuiConversationLoading
                 showTip={messageError}
-                tip={t('messageLoadingErrorTip')}
-                linkText={t('tryAgain')}
+                tip={i18next.t('message.prompt.MessageLoadingErrorTip')}
+                linkText={i18next.t('common.prompt.tryAgain')}
                 onClick={this.retryMessage}
               />
             )}
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.mentions}`}
-            render={props => (
+            render={(props: MessagesWrapperPops) => (
               <PostListPage {...props} type={POST_LIST_TYPE.mentions} />
             )}
           />
           <Route
             path={`/messages/${POST_LIST_TYPE.bookmarks}`}
-            render={props => (
+            render={(props: MessagesWrapperPops) => (
               <PostListPage {...props} type={POST_LIST_TYPE.bookmarks} />
             )}
           />

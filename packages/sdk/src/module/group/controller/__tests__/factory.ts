@@ -3,7 +3,8 @@ import faker from 'faker';
 import { Group } from '../../entity';
 import { ExtendedBaseModel } from '../../../models';
 
-const uniqueNumber = () => Factory.each(i => faker.random.number(Date.now() + i));
+const uniqueNumber = () =>
+  Factory.each(i => faker.random.number(Date.now() + i));
 
 const base = {
   id: uniqueNumber(),
@@ -30,6 +31,7 @@ const group = {
   most_recent_post_created_at: uniqueNumber(),
   post_cursor: faker.random.number(1000),
   deactivated_post_cursor: faker.random.number(1000),
+  is_company_team: false,
 };
 export const groupFactory = Factory.makeFactory<Group>({
   ...base,

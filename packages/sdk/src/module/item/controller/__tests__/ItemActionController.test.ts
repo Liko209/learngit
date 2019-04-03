@@ -12,10 +12,15 @@ import {
 import { buildRequestController } from '../../../../framework/controller';
 import { ItemActionController } from '../ItemActionController';
 import { PartialModifyController } from '../../../../framework/controller/impl/PartialModifyController';
+import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { Item } from '../../entity';
 import { RequestController } from '../../../../framework/controller/impl/RequestController';
 import { Api } from '../../../../api';
+import { ItemDao } from '../../dao';
+import { daoManager } from '../../../../dao';
 
+jest.mock('../../../../dao');
+jest.mock('../../dao');
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller');
 jest.mock('../../../progress');
@@ -28,22 +33,24 @@ function clearMocks() {
   jest.restoreAllMocks();
 }
 
-describe('', () => {
-  const itemService = {
-    deleteItem: jest.fn(),
-  };
+describe('ItemActionController', () => {
+  const itemDao = new ItemDao(null);
   const requestController = new RequestController<Item>(null);
   const partialUpdateController = new PartialModifyController<Item>(null);
+  const entitySourceController = new EntitySourceController(null, null, null);
   const itemActionController = new ItemActionController(
     partialUpdateController,
+    entitySourceController,
   );
   const progressService = new ProgressService();
 
   function setUp() {
     ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
-
     buildRequestController.mockReturnValue(requestController);
+    daoManager.getDao = jest.fn().mockReturnValue(itemDao);
+    entitySourceController.delete = jest.fn();
   }
+
   beforeEach(() => {
     clearMocks();
   });
@@ -52,18 +59,37 @@ describe('', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
-
+      itemDao.delete = jest.fn();
       requestController.put = jest.fn();
       progressService.deleteProgress = jest.fn();
       notificationCenter.emitEntityDelete = jest.fn();
+      partialUpdateController.updatePartially = jest.fn();
     });
 
-    it('should call ItemAPI when item id > 0', async () => {
+    it('should call partialUpdateController and send request to update item when item id > 0', async () => {
       const normalId = Math.abs(
         GlipTypeUtil.generatePseudoIdByType(TypeDictionary.TYPE_ID_FILE),
       );
-
-      await itemActionController.deleteItem(normalId, itemService);
+      partialUpdateController.updatePartially = jest
+        .fn()
+        .mockImplementation(
+          (itemId: number, prehandleFunc: any, doUpdateFunc: any) => {
+            expect(itemId).toBe(normalId);
+            expect(
+              prehandleFunc(
+                { id: normalId, deactivated: true },
+                { id: normalId, deactivated: false, name: 'name' },
+              ),
+            ).toEqual({ id: normalId, deactivated: true });
+            doUpdateFunc({ id: normalId, deactivated: true });
+          },
+        );
+      await itemActionController.deleteItem(normalId);
+      expect(partialUpdateController.updatePartially).toBeCalledWith(
+        normalId,
+        expect.anything(),
+        expect.anything(),
+      );
       expect(requestController.put).toBeCalledWith({
         id: normalId,
         deactivated: true,
@@ -76,7 +102,12 @@ describe('', () => {
       const negativeId = GlipTypeUtil.generatePseudoIdByType(
         TypeDictionary.TYPE_ID_FILE,
       );
-      await itemActionController.deleteItem(negativeId, itemService);
+      entitySourceController.get = jest.fn();
+      entitySourceController.get.mockImplementationOnce(() => {
+        return { id: TypeDictionary.TYPE_ID_FILE, group_ids: [1] };
+      });
+      await itemActionController.deleteItem(negativeId);
+      expect(entitySourceController.delete).toBeCalledWith(negativeId);
       expect(requestController.put).not.toBeCalled();
       expect(notificationCenter.emitEntityDelete).toBeCalled();
       expect(progressService.deleteProgress).toBeCalled();

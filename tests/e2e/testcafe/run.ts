@@ -7,7 +7,7 @@ import { getLogger } from 'log4js';
 
 import { filterByTags } from './libs/filter';
 import { RUNNER_OPTS } from './config';
-import { accountPoolClient } from './init';
+import { accountPoolClient, finishRun } from './init';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -29,13 +29,15 @@ async function runTests(runnerOpts) {
     .concurrency(runnerOpts.CONCURRENCY);
 
   try {
-    failed = await runner.run({ 
-      quarantineMode: runnerOpts.QUARANTINE_MODE, 
-      skipUncaughtErrors: true, 
-      skipJsErrors: true,
-      stopOnFirstFail: runnerOpts.STOP_ON_FIRST_FAIL, 
-     });
+    failed = await runner.run({
+      quarantineMode: runnerOpts.QUARANTINE_MODE,
+      skipUncaughtErrors: true,
+      skipJsErrors: runnerOpts.SKIP_JS_ERROR,
+      stopOnFirstFail: runnerOpts.STOP_ON_FIRST_FAIL,
+      assertionTimeout: runnerOpts.ASSERTION_TIMEOUT,
+    });
   } finally {
+    await finishRun().catch(error => logger.error(error));
     await testCafe.close();
   }
   return failed;

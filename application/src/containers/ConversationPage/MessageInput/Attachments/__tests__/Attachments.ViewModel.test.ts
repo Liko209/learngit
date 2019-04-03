@@ -5,15 +5,16 @@
  */
 
 import { Notification } from '@/containers/Notification';
-import { service } from 'sdk';
+import { GroupService } from 'sdk/module/group';
 import { ItemService } from 'sdk/module/item';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemFile } from 'sdk/module/item/entity';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
 import { SelectFile } from '../types';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('@/containers/Notification');
 const mockGroupEntityData = {
@@ -23,13 +24,16 @@ const mockGroupEntityData = {
 jest.mock('@/store/utils', () => ({
   getEntity: jest.fn(() => mockGroupEntityData),
 }));
+jest.mock('sdk/api');
 
-const { GroupService } = service;
 const postService = {
   sendPost: jest.fn(),
 };
 const groupService = {
   updateGroupDraft: jest.fn(),
+};
+const groupConfigService = {
+  updateDraft: jest.fn(),
 };
 
 let fileIDs: number = -1001;
@@ -43,7 +47,7 @@ function mockUpload() {
       firstItem.id = -firstItem.id;
       _uploadedItems.push(firstItem);
       _uploadingItems.splice(0, 1);
-    },         3 * 1000);
+    },         3);
   }
 }
 
@@ -97,9 +101,10 @@ const itemService = {
   canUploadFiles: jest.fn().mockImplementation(() => true),
 };
 
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+GroupConfigService.getInstance = jest.fn().mockReturnValue(groupConfigService);
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -113,9 +118,10 @@ describe('AttachmentsViewModel', () => {
   let vm: AttachmentsViewModel;
 
   beforeEach(() => {
-    vm = new AttachmentsViewModel({ id: 456 });
+    vm = new AttachmentsViewModel({ id: 456, forceSaveDraft: true });
     _uploadedItems = [];
     _uploadingItems = [];
+    fileIDs = -1001;
   });
 
   describe('_sendPost()', () => {
@@ -182,6 +188,12 @@ describe('AttachmentsViewModel', () => {
       await vm.autoUploadFiles([file]);
       expect(itemService.sendItemFile).toBeCalledTimes(1);
     });
+
+    it('should not show duplicate dialog', async () => {
+      await vm.autoUploadFiles([file], false);
+      expect(vm.duplicateFiles.length).toBe(0);
+      expect(vm.showDuplicateFiles).toBeFalsy();
+    });
   });
 
   describe('uploadFile()', () => {
@@ -190,7 +202,7 @@ describe('AttachmentsViewModel', () => {
       await vm.uploadFile(info, false);
       expect(vm.items.size).toBe(1);
       expect(itemService.sendItemFile).toBeCalledTimes(1);
-      const exists = await itemService.isFileExists(vm.id, file.name);
+      const exists = await itemService.isFileExists(vm.props.id, file.name);
       expect(exists).toBe(true);
     });
   });
@@ -198,11 +210,11 @@ describe('AttachmentsViewModel', () => {
   describe('cancelUploadFile()', () => {
     it('should cancel uploading file', async () => {
       await vm.autoUploadFiles([file]);
-      let exists = await itemService.isFileExists(vm.id, file.name);
+      let exists = await itemService.isFileExists(vm.props.id, file.name);
       expect(exists).toBe(true);
       expect(vm.files.length).toBe(1);
       expect(vm.items.size).toBe(1);
-      const items = itemService.getUploadItems(vm.id);
+      const items = itemService.getUploadItems(vm.props.id);
       const item = items[0];
       await vm.cancelUploadFile({
         id: item.id,
@@ -211,7 +223,7 @@ describe('AttachmentsViewModel', () => {
       } as ItemInfo);
       expect(itemService.cancelUpload).toBeCalledTimes(1);
 
-      exists = await itemService.isFileExists(vm.id, file.name);
+      exists = await itemService.isFileExists(vm.props.id, file.name);
       expect(exists).toBe(false);
     });
   });
@@ -288,6 +300,28 @@ describe('AttachmentsViewModel', () => {
       const vm2 = new AttachmentsViewModel({ id: 789 });
       await vm2.autoUploadFiles([file]);
       expect(vm.showDuplicateFiles).toBe(false);
+    });
+  });
+
+  describe('forceSaveDraftItems()', () => {
+    beforeEach(() => {
+      fileIDs = -1001;
+    });
+    it('should call forceSaveDraftItems after uploading a file', async () => {
+      const info: SelectFile = { data: file, duplicate: false };
+      jest.spyOn(vm, 'forceSaveDraftItems');
+      await vm.uploadFile(info, false);
+      expect(vm.forceSaveDraftItems).toHaveBeenCalled();
+    });
+
+    it('should call updateDraft with forceSaveDraftItems', async () => {
+      const info: SelectFile = { data: file, duplicate: false };
+      jest.spyOn(vm, 'forceSaveDraftItems');
+      await vm.uploadFile(info, false);
+      expect(groupConfigService.updateDraft).toHaveBeenCalledWith({
+        attachment_item_ids: [fileIDs + 1],
+        id: 456,
+      });
     });
   });
 });

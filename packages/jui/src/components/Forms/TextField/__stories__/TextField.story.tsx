@@ -5,7 +5,6 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 
 import { JuiTextField } from '../';
@@ -13,7 +12,7 @@ import { JuiTextField } from '../';
 storiesOf('Components/Forms', module)
   .addDecorator(withInfoDecorator(JuiTextField, { inline: true }))
   .add('TextField', () => {
-    const onKeyDown = e => console.log(e);
+    const onKeyDown = (e: any) => console.log(e);
     return (
       <JuiTextField
         id="Team name"

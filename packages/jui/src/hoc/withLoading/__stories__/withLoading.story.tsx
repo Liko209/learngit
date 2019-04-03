@@ -3,11 +3,11 @@
  * @Date: 2018-09-18 10:10:56
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Fragment, PureComponent } from 'react';
+import React, { PureComponent, ReactNode } from 'react';
 import { storiesOf } from '@storybook/react';
 import { boolean } from '@storybook/addon-knobs';
 import styled from '../../../foundation/styled-components';
-import { withLoading } from '../withLoading';
+import { withLoading, DefaultLoadingWithDelay } from '../withLoading';
 import { withLoadingMore } from '../withLoadingMore';
 
 const DemoWrapper = styled.div`
@@ -48,7 +48,7 @@ type Item = {
 };
 
 type ListProps = {
-  children: JSX.Element;
+  children?: ReactNode;
 };
 
 storiesOf('HoC/withLoading', module).add('demo', () => {
@@ -61,9 +61,14 @@ storiesOf('HoC/withLoading', module).add('demo', () => {
   const CustomizedLoading = () => (
     <StyledCustomizedLoading>🚄 Loading...</StyledCustomizedLoading>
   );
+  const CustomizedLoadingWithMask = () => (
+    <DefaultLoadingWithDelay backgroundType={'mask'} />
+  );
 
   // Step 1, wrap your component with default loading
   const ListWithLoading = withLoading(List);
+  // Or with a default loading component but always show component
+  const ListLoadingWithMask = withLoading(List, CustomizedLoadingWithMask);
   // Or with a customized loading component
   const ListWithCustomizedLoading = withLoading(List, CustomizedLoading);
   // Or with loading more
@@ -112,6 +117,18 @@ storiesOf('HoC/withLoading', module).add('demo', () => {
           <DemoWrapper>
             <ListWithLoading loading={_loading}>{children}</ListWithLoading>
           </DemoWrapper>
+          without delay:
+          <DemoWrapper>
+            <ListWithLoading loading={_loading} delay={0}>
+              {children}
+            </ListWithLoading>
+          </DemoWrapper>
+          always show component:
+          <DemoWrapper>
+            <ListLoadingWithMask loading={_loading} alwaysComponentShow={true}>
+              {children}
+            </ListLoadingWithMask>
+          </DemoWrapper>
           customized:
           <DemoWrapper>
             <ListWithCustomizedLoading loading={_loading}>
@@ -120,7 +137,11 @@ storiesOf('HoC/withLoading', module).add('demo', () => {
           </DemoWrapper>
           loading more:
           <DemoWrapper>
-            <ListWithLoadingMore loadingTop={_loading} loadingBottom={false}>
+            <ListWithLoadingMore
+              viewRef={{} as any}
+              loadingTop={_loading}
+              loadingBottom={false}
+            >
               {loadingMoreChildren}
             </ListWithLoadingMore>
           </DemoWrapper>

@@ -6,7 +6,7 @@
 import { ElectronService } from './service';
 
 const config = {
-  provides: { ElectronService },
+  provides: [ElectronService],
 };
 
 export { config };

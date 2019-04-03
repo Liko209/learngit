@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { typography, grey, height } from '../../../foundation/utils/styles';
 
@@ -28,13 +28,13 @@ const StyledTaskOther = styled.div`
   height: ${height(6)};
 `;
 
-const JuiTaskAvatarNames = ({ children, otherText, count }: Props) => (
+const JuiTaskAvatarNames = memo(({ children, otherText, count }: Props) => (
   <StyledTaskAvatarNames className="task-avatar-name">
     {children}
     {otherText && count && (
       <StyledTaskOther>{count > 2 ? otherText : ''}</StyledTaskOther>
     )}
   </StyledTaskAvatarNames>
-);
+));
 
 export { JuiTaskAvatarNames };

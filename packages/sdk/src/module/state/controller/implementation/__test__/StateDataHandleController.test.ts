@@ -7,22 +7,38 @@
 import { Group } from '../../../../group/entity';
 import { StateDataHandleController } from '../StateDataHandleController';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
-import { daoManager, DeactivatedDao } from '../../../../../dao';
+import { DeactivatedDao } from '../../../../../dao';
 import { StateFetchDataController } from '../StateFetchDataController';
 import { State, GroupState } from '../../../entity';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 import { TASK_DATA_TYPE } from '../../../constants';
-import { dataHandleTask } from '../../../types';
+import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
+import { TotalUnreadController } from '../TotalUnreadController';
+import { GlobalConfigService } from '../../../../../module/config/service/GlobalConfigService';
+import { UserConfigService } from '../../../../../module/config/service/UserConfigService';
+import { SYNC_SOURCE } from '../../../../../module/sync';
 
+jest.mock('../../../../../service/notificationCenter');
+jest.mock('../../../../../module/config/service/GlobalConfigService');
+jest.mock('../../../../../module/config/service/UserConfigService');
+jest.mock('../../../../../service/account/config/AccountGlobalConfig');
+GlobalConfigService.getInstance = jest
+  .fn()
+  .mockReturnValue(new GlobalConfigService());
 jest.mock('../StateFetchDataController');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
+
+type DataHandleTask = StateHandleTask | GroupCursorHandleTask;
 
 describe('StateDataHandleController', () => {
   let stateDataHandleController: StateDataHandleController;
   let mockEntitySourceController: EntitySourceController;
   let mockStateFetchDataController: StateFetchDataController;
+  let mockTotalUnreadController: TotalUnreadController;
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
     mockEntitySourceController = new EntitySourceController<GroupState>(
       {} as IEntityPersistentController,
       {} as DeactivatedDao,
@@ -30,9 +46,13 @@ describe('StateDataHandleController', () => {
     mockStateFetchDataController = new StateFetchDataController(
       mockEntitySourceController,
     );
+    mockTotalUnreadController = new TotalUnreadController(
+      mockEntitySourceController,
+    );
     stateDataHandleController = new StateDataHandleController(
       mockEntitySourceController,
       mockStateFetchDataController,
+      mockTotalUnreadController,
     );
   });
 
@@ -40,11 +60,14 @@ describe('StateDataHandleController', () => {
     it('should start handle task when array only has one task', async () => {
       const states: Partial<State>[] = [{ id: 123 }];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleState(states);
-      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.STATE,
-        data: states,
-      });
+      await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
+      expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith(
+        {
+          type: TASK_DATA_TYPE.STATE,
+          data: states,
+        },
+        SYNC_SOURCE.INDEX,
+      );
     });
 
     it('should only add task to array when array has more than one task', async () => {
@@ -53,20 +76,20 @@ describe('StateDataHandleController', () => {
         { type: TASK_DATA_TYPE.STATE, data: states },
       ];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handleState(states);
+      await stateDataHandleController.handleState(states, SYNC_SOURCE.INDEX);
       expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
         0,
       );
     });
   });
 
-  describe('handlePartialGroup()', () => {
+  describe('handleGroupCursor()', () => {
     it('should start handle task when array only has one task', async () => {
       const groups: Partial<Group>[] = [{ id: 123 }];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handlePartialGroup(groups);
+      await stateDataHandleController.handleGroupCursor(groups);
       expect(stateDataHandleController['_startDataHandleTask']).toBeCalledWith({
-        type: TASK_DATA_TYPE.GROUP,
+        type: TASK_DATA_TYPE.GROUP_CURSOR,
         data: groups,
       });
     });
@@ -74,10 +97,10 @@ describe('StateDataHandleController', () => {
     it('should only add task to array when array has more than one task', async () => {
       const groups: Partial<Group>[] = [{ id: 123 }];
       stateDataHandleController['_taskArray'] = [
-        { type: TASK_DATA_TYPE.GROUP, data: groups },
+        { type: TASK_DATA_TYPE.GROUP_CURSOR, data: groups },
       ];
       stateDataHandleController['_startDataHandleTask'] = jest.fn();
-      await stateDataHandleController.handlePartialGroup(groups);
+      await stateDataHandleController.handleGroupCursor(groups);
       expect(stateDataHandleController['_startDataHandleTask']).toBeCalledTimes(
         0,
       );
@@ -86,11 +109,14 @@ describe('StateDataHandleController', () => {
 
   describe('_startDataHandleTask', () => {
     it('should handle state task and stop the queue', async () => {
-      const task: dataHandleTask = { type: TASK_DATA_TYPE.STATE, data: [] };
+      const task: DataHandleTask = { type: TASK_DATA_TYPE.STATE, data: [] };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController['_generateUpdatedState'] = jest.fn();
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+        groupStates: [],
+      });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
+      mockTotalUnreadController.handleGroupState = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
       expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
@@ -105,14 +131,21 @@ describe('StateDataHandleController', () => {
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
       ).toBeCalledTimes(1);
+      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
     });
 
     it('should handle group task and stop the queue', async () => {
-      const task: dataHandleTask = { type: TASK_DATA_TYPE.GROUP, data: [] };
+      const task: DataHandleTask = {
+        type: TASK_DATA_TYPE.GROUP_CURSOR,
+        data: [],
+      };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
-      stateDataHandleController['_generateUpdatedState'] = jest.fn();
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+        groupStates: [],
+      });
       stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
+      mockTotalUnreadController.handleGroupState = jest.fn();
 
       await stateDataHandleController['_startDataHandleTask'](task);
       expect(stateDataHandleController['_transformStateData']).toBeCalledTimes(
@@ -127,6 +160,43 @@ describe('StateDataHandleController', () => {
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
       ).toBeCalledTimes(1);
+      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
+    });
+
+    it('should handle next task when crashing', async () => {
+      const task: DataHandleTask = {
+        type: TASK_DATA_TYPE.GROUP_CURSOR,
+        data: 'data' as any,
+      };
+      const task2: DataHandleTask = {
+        type: TASK_DATA_TYPE.STATE,
+        data: 'data2' as any,
+      };
+      stateDataHandleController['_taskArray'] = [task, task2];
+      stateDataHandleController['_transformStateData'] = jest.fn();
+      stateDataHandleController['_transformGroupData'] = jest.fn().mockImplementation(() => {
+        throw Error('error');
+      });
+      stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
+        groupStates: [],
+      });
+      stateDataHandleController['_updateEntitiesAndDoNotification'] = jest.fn();
+      mockTotalUnreadController.handleGroupState = jest.fn();
+
+      await stateDataHandleController['_startDataHandleTask'](task);
+      expect(stateDataHandleController['_transformStateData']).toBeCalledWith(
+        task2.data,
+      );
+      expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
+        task.data,
+      );
+      expect(
+        stateDataHandleController['_generateUpdatedState'],
+      ).toBeCalledTimes(1);
+      expect(
+        stateDataHandleController['_updateEntitiesAndDoNotification'],
+      ).toBeCalledTimes(1);
+      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
     });
   });
 
@@ -137,18 +207,19 @@ describe('StateDataHandleController', () => {
           id: 55668833,
           __trigger_ids: [123],
           post_cursor: 456,
-          drp_post_cursor: 789,
+          post_drp_cursor: 789,
         },
         {
           id: 11223344,
           __trigger_ids: [5683],
           post_cursor: 654,
-          drp_post_cursor: 321,
+          post_drp_cursor: 321,
         },
       ];
-      daoManager.getKVDao = jest.fn().mockReturnValue({
+      UserConfigService.getInstance = jest.fn().mockReturnValue({
         get: jest.fn().mockReturnValue(5683),
       });
+
       expect(stateDataHandleController['_transformGroupData'](groups)).toEqual({
         groupStates: [
           {
@@ -200,7 +271,6 @@ describe('StateDataHandleController', () => {
             unread_mentions_count: 5,
           },
         ],
-        isSelf: false,
         myState: {
           id: 5683,
         },
@@ -249,7 +319,9 @@ describe('StateDataHandleController', () => {
             read_through: 7,
             unread_deactivated_count: 1,
             unread_mentions_count: 6,
-            unread_count: 3,
+            group_post_cursor: 15,
+            group_post_drp_cursor: 9,
+            unread_count: 0,
           },
           {
             id: 2,
@@ -271,6 +343,17 @@ describe('StateDataHandleController', () => {
       ).toEqual({
         groupStates: [
           {
+            id: 1,
+            marked_as_unread: true,
+            post_cursor: 18,
+            read_through: 7,
+            unread_deactivated_count: 1,
+            unread_mentions_count: 6,
+            group_post_cursor: 15,
+            group_post_drp_cursor: 9,
+            unread_count: 5,
+          },
+          {
             group_post_cursor: 15,
             group_post_drp_cursor: 9,
             id: 2,
@@ -291,7 +374,6 @@ describe('StateDataHandleController', () => {
             unread_count: 0,
           },
         ],
-        isSelf: false,
         myState: undefined,
       });
     });
@@ -339,7 +421,6 @@ describe('StateDataHandleController', () => {
             unread_count: 0,
           },
         ],
-        isSelf: true,
         myState: undefined,
       });
     });

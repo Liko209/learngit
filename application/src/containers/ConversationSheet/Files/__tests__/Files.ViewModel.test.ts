@@ -5,32 +5,30 @@
  */
 import { getEntity, getGlobalValue } from '../../../../store/utils';
 import { FilesViewModel } from '../Files.ViewModel';
-import { service } from 'sdk';
 
 import { FileType, FilesViewProps } from '../types';
 import { Notification } from '@/containers/Notification';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
 import { ItemService } from 'sdk/module/item';
+import { PostService } from 'sdk/module/post';
+import FileItemModel from '@/store/models/FileItem';
+import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
 
-jest.mock('sdk/service/post');
+jest.mock('sdk/module/post');
 jest.mock('../../../../store/utils');
 jest.mock('@/containers/Notification');
+jest.mock('@/common/getThumbnailURL');
 
 const itemService = {
   cancelUpload: jest.fn(),
 };
 ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
-const { PostService } = service;
-const postService = {
-  removeItemFromPost: jest.fn(),
-};
+const postService = new PostService();
 PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 ItemService.getInstance = jest.fn().mockReturnValue({});
 Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
-
-const filesItemVM = new FilesViewModel({ ids: [1, 2, -3] });
 
 const mockItemValue = {
   name: 'filename',
@@ -42,6 +40,21 @@ const mockItemValue = {
     },
   ],
 };
+
+(getEntity as jest.Mock).mockReturnValue({
+  ...mockItemValue,
+});
+
+const filesItemVM = new FilesViewModel({ ids: [1, 2, -3] });
+
+function waitResult(callback: Function) {
+  return new Promise((resolve: any) => {
+    setTimeout(() => {
+      callback();
+      resolve();
+    },         0);
+  });
+}
 
 describe('filesItemVM', () => {
   beforeEach(() => {
@@ -91,25 +104,17 @@ describe('filesItemVM', () => {
         },
       );
       await filesItemVM.removeFile(123);
-      const p = new Promise((resolve: any) => {
-        setTimeout(() => {
-          expect(Notification.flashToast).toHaveBeenCalled();
-          resolve();
-        },         0);
-      });
-      await p;
+      await waitResult(() =>
+        expect(Notification.flashToast).toHaveBeenCalled(),
+      );
     });
 
     it('should show network error', async () => {
       (getGlobalValue as jest.Mock).mockImplementationOnce(() => 'offline');
       await filesItemVM.removeFile(123);
-      const p = new Promise((resolve: any) => {
-        setTimeout(() => {
-          expect(Notification.flashToast).toHaveBeenCalled();
-          resolve();
-        },         0);
-      });
-      await p;
+      await waitResult(() =>
+        expect(Notification.flashToast).toHaveBeenCalled(),
+      );
     });
 
     it('should cancel upload file', async () => {
@@ -119,14 +124,86 @@ describe('filesItemVM', () => {
       });
       ItemService.getInstance = jest.fn().mockReturnValue(itemService);
       const vm = new FilesViewModel({ ids: [123, 2, 3] } as FilesViewProps);
+      const _deleteIds = new Set<number>();
+      Object.assign(vm, { _deleteIds });
       await vm.removeFile(123);
-      const p = new Promise((resolve: any) => {
-        setTimeout(() => {
-          expect(itemService.cancelUpload).toBeCalledTimes(1);
-          resolve();
-        },         0);
+      await waitResult(() => {
+        expect(itemService.cancelUpload).toBeCalledTimes(1);
+        expect(_deleteIds.has(123)).toBeTruthy();
       });
-      await p;
+    });
+  });
+
+  describe('getCropImage', () => {
+    const imageItem: FileItemModel = {
+      name: 'a.png',
+      id: 1,
+      type: 'png',
+      isNew: true,
+      deactivated: false,
+      versionUrl: 'a-version-url',
+      versions: [],
+    } as FileItemModel;
+
+    beforeEach(() => {
+      filesItemVM.urlMap.clear();
+      jest.resetAllMocks();
+    });
+
+    it('should fallback url to versionUrl for multiple images', async () => {
+      filesItemVM.files[0] = [
+        {
+          item: imageItem,
+          type: 10,
+        },
+      ];
+      (getThumbnailURLWithType as jest.Mock).mockReturnValue({
+        url: imageItem.versionUrl,
+      });
+      await filesItemVM.getCropImage();
+      expect(filesItemVM.urlMap.get(imageItem.id)).toEqual(
+        imageItem.versionUrl,
+      );
+    });
+
+    it('should get undefined url when type invalid', async () => {
+      const invalidItem: FileItemModel = {
+        type: 0,
+        versions: [],
+      } as FileItemModel;
+      filesItemVM.files[0] = [
+        {
+          item: invalidItem,
+          type: 10,
+        },
+      ];
+      (getThumbnailURLWithType as jest.Mock).mockReturnValue({
+        url: imageItem.versionUrl,
+      });
+      await filesItemVM.getCropImage();
+      await waitResult(() =>
+        expect(filesItemVM.urlMap.get(imageItem.id)).toBeUndefined(),
+      );
+    });
+
+    it('should use version url for gif file', async () => {
+      const gifItem: FileItemModel = {
+        type: 'gif',
+        versionUrl: 'gif-url',
+        id: 456,
+        versions: [],
+      } as FileItemModel;
+      filesItemVM.files[0] = [
+        {
+          item: gifItem,
+          type: 10,
+        },
+      ];
+      (getThumbnailURLWithType as jest.Mock).mockReturnValue({
+        url: gifItem.versionUrl,
+      });
+      await filesItemVM.getCropImage();
+      expect(filesItemVM.urlMap.get(gifItem.id)).toEqual(gifItem.versionUrl);
     });
   });
 });

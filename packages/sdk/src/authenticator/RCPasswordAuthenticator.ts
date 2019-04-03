@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { loginGlip, loginRCByPassword } from '../api';
-import { AuthDao, daoManager, ConfigDao } from '../dao';
-import { AUTH_GLIP_TOKEN } from '../dao/auth/constants';
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
-import { GlipAccount, RCAccount } from '../account';
-import { ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM } from './constants';
+import { ACCOUNT_TYPE_ENUM } from './constants';
 import { setRcToken } from './utils';
+import { AuthUserConfig } from '../service/auth/config';
+import { RCAccount, GlipAccount } from '../account';
+import { AccountUserConfig } from '../service/account/config';
 
 interface IRCPasswordAuthenticateParams extends IAuthParams {
   username: string;
@@ -23,29 +23,27 @@ class RCPasswordAuthenticator implements IAuthenticator {
   ): Promise<IAuthResponse> {
     params.username = this.parsePhoneNumber(params.username);
 
-    const rcLoginResult = await loginRCByPassword(params);
-    const rcAuthData = rcLoginResult.expect('Failed to login RC By password.');
-    const glipAuthResult = await loginGlip(rcAuthData);
-    glipAuthResult.expect('Failed to login Glip.');
+    const rcAuthData = await loginRCByPassword(params);
+    const glipAuthResponse = await loginGlip(rcAuthData);
 
     setRcToken(rcAuthData);
 
-    const authDao = daoManager.getKVDao(AuthDao);
-    authDao.put(AUTH_GLIP_TOKEN, glipAuthResult.headers['x-authorization']);
+    const authConfig = new AuthUserConfig();
+    authConfig.setGlipToken(glipAuthResponse.headers['x-authorization']);
 
-    const configDao = daoManager.getKVDao(ConfigDao);
-    configDao.put(ACCOUNT_TYPE, ACCOUNT_TYPE_ENUM.RC);
+    const userConfig = new AccountUserConfig();
+    userConfig.setAccountType(ACCOUNT_TYPE_ENUM.RC);
 
     return {
       success: true,
       accountInfos: [
         {
           type: RCAccount.name,
-          data: rcLoginResult,
+          data: rcAuthData,
         },
         {
           type: GlipAccount.name,
-          data: glipAuthResult,
+          data: glipAuthResponse.data,
         },
       ],
     };

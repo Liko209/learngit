@@ -15,10 +15,12 @@ const AuthRoute: React.StatelessComponent<RouteProps> = ({
   ...rest
 }: RouteProps) => {
   const params = parse(window.location.search, { ignoreQueryPrefix: true });
-  if (params.code || params.id_token) {
-    // RC User
+  if (params.code || params.id_token || params.t) {
+    // RC user
     // http://localhost:3000/?state=STATE&code=CODE
-    // Glip User (Free User)
+    // Glip only user
+    // http://localhost:3000/?state=STATE&t=TOKEN
+    // Google user
     // http://localhost:3000/?state=STATE&id_token=TOKEN
     return <Route {...rest} component={TokenRoute} />;
   }

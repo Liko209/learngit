@@ -7,27 +7,36 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { ProfileMiniCardPersonFooterViewProps } from './types';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiProfileMiniCardFooterLeft,
   JuiProfileMiniCardFooterRight,
 } from 'jui/pattern/Profile/MiniCard';
-import { ProfileButton } from '@/containers/common/ProfileButton';
-import { JuiIconButton } from 'jui/components/Buttons';
-import { goToConversation } from '@/common/goToConversation';
+import { JuiIconButton, JuiLinkButton } from 'jui/components/Buttons';
+import { goToConversationWithLoading } from '@/common/goToConversation';
+import portalManager from '@/common/PortalManager';
+import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+import { Call } from '@/modules/telephony';
 
 @observer
 class ProfileMiniCardPersonFooter extends Component<
-  WithNamespaces & ProfileMiniCardPersonFooterViewProps
+  WithTranslation & ProfileMiniCardPersonFooterViewProps
 > {
   onClickMessage = () => {
     const { id } = this.props;
-    goToConversation({ id });
+    const result = goToConversationWithLoading({ id });
+    if (result) {
+      portalManager.dismissLast();
+    }
   }
 
   getAriaLabelKey = () => {
     const { isMe } = this.props;
-    return isMe ? 'ariaGoToMe' : 'ariaGoToOther';
+    return isMe ? 'people.profile.ariaGoToMe' : 'people.profile.ariaGoToOther';
+  }
+
+  handleCloseMiniCard = () => {
+    portalManager.dismissLast();
   }
 
   render() {
@@ -35,14 +44,16 @@ class ProfileMiniCardPersonFooter extends Component<
     return (
       <>
         <JuiProfileMiniCardFooterLeft>
-          <ProfileButton id={id} />
+          <OpenProfileDialog id={id} beforeClick={this.handleCloseMiniCard}>
+            <JuiLinkButton>{t('people.team.profile')}</JuiLinkButton>
+          </OpenProfileDialog>
         </JuiProfileMiniCardFooterLeft>
         <JuiProfileMiniCardFooterRight>
           <JuiIconButton
             size="medium"
             color="primary"
             variant="plain"
-            tooltipTitle={t('Messages')}
+            tooltipTitle={t('message.Messages')}
             onClick={this.onClickMessage}
             ariaLabel={t(this.getAriaLabelKey(), {
               name: person.userDisplayName,
@@ -50,13 +61,14 @@ class ProfileMiniCardPersonFooter extends Component<
           >
             chat_bubble
           </JuiIconButton>
+          <Call color="primary" variant="plain" id={id} />
         </JuiProfileMiniCardFooterRight>
       </>
     );
   }
 }
 
-const ProfileMiniCardPersonFooterView = translate('translations')(
+const ProfileMiniCardPersonFooterView = withTranslation('translations')(
   ProfileMiniCardPersonFooter,
 );
 

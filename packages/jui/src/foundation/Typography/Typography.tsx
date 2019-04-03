@@ -13,7 +13,7 @@ type JuiTypographyProps = MuiTypographyProps;
 
 const JuiTypography: React.SFC<JuiTypographyProps> & {
   dependencies?: any[];
-} = props => <MuiTypography {...props} />;
+} = React.memo(props => <MuiTypography {...props} />);
 
 JuiTypography.displayName = 'MuiTypography';
 JuiTypography.dependencies = [MuiTypography];

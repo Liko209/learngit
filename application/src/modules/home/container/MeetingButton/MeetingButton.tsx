@@ -4,11 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
-import { JuiIconButton } from 'jui/src/components/Buttons';
+import i18next from 'i18next';
+import { JuiIconButton } from 'jui/components/Buttons';
 
 const MeetingButton = () => {
-  return <JuiIconButton tooltipTitle={t('Meetings')}>meetings</JuiIconButton>;
+  return (
+    <JuiIconButton tooltipTitle={i18next.t('meeting.Meetings')}>
+      meetings
+    </JuiIconButton>
+  );
 };
 
 export { MeetingButton };

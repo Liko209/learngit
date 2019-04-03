@@ -8,13 +8,16 @@ import MuiListItemAvatar, {
 } from '@material-ui/core/ListItemAvatar';
 import styled from '../../foundation/styled-components';
 import { spacing } from '../../foundation/utils';
+import { memo } from 'react';
 
 type JuiListItemAvatarProps = MuiListItemAvatarProps;
 
-const JuiListItemAvatar = styled(MuiListItemAvatar)`
+const JuiListItemAvatarComponent = styled(MuiListItemAvatar)`
   margin-right: ${spacing(2)};
 `;
 
-JuiListItemAvatar.displayName = 'JuiListItemAvatar';
+JuiListItemAvatarComponent.displayName = 'JuiListItemAvatar';
+
+const JuiListItemAvatar = memo(MuiListItemAvatar);
 
 export { JuiListItemAvatar, JuiListItemAvatarProps };

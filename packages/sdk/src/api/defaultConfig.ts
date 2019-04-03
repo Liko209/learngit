@@ -30,6 +30,13 @@ const defaultConfig: ApiConfig = {
     apiPlatform: '',
     clientSecret: '',
   },
+  launchdarkly: {
+    clientId: '',
+  },
+  sumologic: {
+    server: '',
+    uniqueHttpCollectorCode: '',
+  },
 };
 
 export { defaultConfig };

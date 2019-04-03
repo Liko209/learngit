@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import PresenceAPI from '../presence';
-import Api from '../../api';
 import { NETWORK_VIA } from 'foundation';
 
 jest.mock('../../api');

@@ -13,19 +13,27 @@ import {
   buildEntitySourceController,
   buildPartialModifyController,
 } from '../../../framework/controller';
-import { daoManager, PostDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { PostDao, PostDiscontinuousDao } from '../dao';
 import { SendPostController } from './implementation/SendPostController';
 import { PreInsertController } from '../../common/controller/impl/PreInsertController';
 import { ProgressService } from '../../progress';
 import { PostFetchController } from './PostFetchController';
+import { DiscontinuousPostController } from './DiscontinuousPostController';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
+import { ISendPostController } from './interface/ISendPostController';
+import { PostDataController } from './PostDataController';
+import { ENTITY } from '../../../service/eventKey';
+import { PostSearchController } from './implementation/PostSearchController';
 
 class PostController {
   private _actionController: PostActionController;
-  private _sendController: SendPostController;
+  private _sendController: ISendPostController;
   private _preInsertController: IPreInsertController;
-  private _fetchController: PostFetchController;
-
+  private _postFetchController: PostFetchController;
+  private _discontinuousPostController: DiscontinuousPostController;
+  private _postDataController: PostDataController;
+  private _postSearchController: PostSearchController;
   constructor() {}
 
   getPostActionController(): PostActionController {
@@ -51,12 +59,13 @@ class PostController {
         partialModifyController,
         requestController,
         this._getPreInsertController(),
+        entitySourceController,
       );
     }
     return this._actionController;
   }
 
-  getSendPostController(): SendPostController {
+  getSendPostController(): ISendPostController {
     if (!this._sendController) {
       this._sendController = new SendPostController(
         this.getPostActionController(),
@@ -67,7 +76,7 @@ class PostController {
   }
 
   getPostFetchController() {
-    if (!this._fetchController) {
+    if (!this._postFetchController) {
       const persistentController = buildEntityPersistentController<Post>(
         daoManager.getDao(PostDao),
       );
@@ -75,12 +84,53 @@ class PostController {
         persistentController,
       );
 
-      this._fetchController = new PostFetchController(
+      this._postFetchController = new PostFetchController(
+        this.getPostDataController(),
+        entitySourceController,
+      );
+    }
+    return this._postFetchController;
+  }
+
+  getDiscontinuousPostFetchController() {
+    if (!this._discontinuousPostController) {
+      const persistentController = buildEntityPersistentController<Post>(
+        daoManager.getDao(PostDiscontinuousDao),
+      );
+      const entitySourceController = buildEntitySourceController<Post>(
+        persistentController,
+      );
+
+      this._discontinuousPostController = new DiscontinuousPostController(
+        entitySourceController,
+      );
+    }
+    return this._discontinuousPostController;
+  }
+
+  getPostDataController() {
+    if (!this._postDataController) {
+      const persistentController = buildEntityPersistentController<Post>(
+        daoManager.getDao(PostDao),
+      );
+      const entitySourceController = buildEntitySourceController<Post>(
+        persistentController,
+      );
+
+      this._postDataController = new PostDataController(
         this._getPreInsertController(),
         entitySourceController,
       );
     }
-    return this._fetchController;
+    return this._postDataController;
+  }
+
+  getPostSearchController() {
+    if (!this._postSearchController) {
+      this._postSearchController = new PostSearchController();
+    }
+
+    return this._postSearchController;
   }
 
   private _getPreInsertController() {
@@ -89,6 +139,9 @@ class PostController {
       this._preInsertController = new PreInsertController<Post>(
         daoManager.getDao(PostDao),
         progressService,
+        (entity: Post) => {
+          return `${ENTITY.POST}.${entity.group_id}`;
+        },
       );
     }
     return this._preInsertController;

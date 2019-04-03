@@ -6,11 +6,13 @@
 import { IRTCCallDelegate } from './IRTCCallDelegate';
 import { IRTCCallSession } from '../signaling/IRTCCallSession';
 import { RTCSipCallSession } from '../signaling/RTCSipCallSession';
+import { RTCMediaStatsManager } from '../signaling/RTCMediaStatsManager';
 import { IRTCAccount } from '../account/IRTCAccount';
 import { RTCCallFsm } from '../call/RTCCallFsm';
 import {
   kRTCAnonymous,
   kRTCHangupInvalidCallInterval,
+  kRTCGetStatsInterval,
 } from '../account/constants';
 
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../call/types';
@@ -22,6 +24,21 @@ import {
   RTCCallActionSuccessOptions,
 } from './types';
 import { v4 as uuid } from 'uuid';
+import { RC_SIP_HEADER_NAME } from '../signaling/types';
+import { rtcLogger } from '../utils/RTCLoggerProxy';
+
+const LOG_TAG = 'RTCCall';
+
+enum SDH_DIRECTION {
+  SEND_ONLY = 'sendonly',
+  SEND_RECV = 'sendrecv',
+}
+
+enum RECORD_STATE {
+  IDLE = 'idle',
+  RECORDING = 'recording',
+  RECORD_IN_PROGRESS = 'recordInProgress',
+}
 
 class RTCCall {
   private _callState: RTC_CALL_STATE = RTC_CALL_STATE.IDLE;
@@ -31,17 +48,21 @@ class RTCCall {
     toName: '',
     toNum: '',
     uuid: '',
+    partyId: '',
+    sessionId: '',
   };
   private _callSession: IRTCCallSession;
   private _fsm: RTCCallFsm;
   private _account: IRTCAccount;
   private _delegate: IRTCCallDelegate;
   private _isIncomingCall: boolean;
-  private _isRecording: boolean = false;
+  private _recordState: RECORD_STATE = RECORD_STATE.IDLE;
   private _isMute: boolean = false;
   private _options: RTCCallOptions = {};
   private _isAnonymous: boolean = false;
   private _hangupInvalidCallTimer: NodeJS.Timeout | null = null;
+  private _rtcMediaStatsManager: RTCMediaStatsManager;
+  private _isReinviteForHoldOrUnhold: boolean;
 
   constructor(
     isIncoming: boolean,
@@ -64,7 +85,7 @@ class RTCCall {
     this._isIncomingCall = isIncoming;
     this._callInfo.uuid = uuid();
     this._fsm = new RTCCallFsm();
-    this._callSession = new RTCSipCallSession();
+    this._callSession = new RTCSipCallSession(this._callInfo.uuid);
     if (this._isIncomingCall) {
       this._callInfo.fromName = session.remoteIdentity.displayName;
       this._callInfo.fromNum = session.remoteIdentity.uri.aor.split('@')[0];
@@ -72,8 +93,8 @@ class RTCCall {
     } else {
       this._addHangupTimer();
       this._callInfo.toNum = toNumber;
-      this._startOutCallFSM();
     }
+    this._rtcMediaStatsManager = new RTCMediaStatsManager();
     this._prepare();
   }
 
@@ -83,12 +104,19 @@ class RTCCall {
 
   private _addHangupTimer(): void {
     this._hangupInvalidCallTimer = setTimeout(() => {
+      rtcLogger.info(LOG_TAG, 'call time out and be hangup');
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.CALL_TIME_OUT);
       this.hangup();
     },                                        kRTCHangupInvalidCallInterval * 1000);
   }
 
   setCallDelegate(delegate: IRTCCallDelegate) {
     this._delegate = delegate;
+  }
+
+  // This api is only for UT
+  setCallState(newstate: RTC_CALL_STATE) {
+    this._callState = newstate;
   }
 
   getCallState(): RTC_CALL_STATE {
@@ -103,6 +131,10 @@ class RTCCall {
     return this._callInfo;
   }
 
+  getRecordState(): RECORD_STATE {
+    return this._recordState;
+  }
+
   isMuted(): boolean {
     return this._isMute;
   }
@@ -113,6 +145,10 @@ class RTCCall {
 
   reject(): void {
     this._fsm.reject();
+  }
+
+  ignore(): void {
+    this._fsm.ignore();
   }
 
   sendToVoicemail(): void {
@@ -136,10 +172,12 @@ class RTCCall {
   }
 
   hold(): void {
+    this._isReinviteForHoldOrUnhold = true;
     this._fsm.hold();
   }
 
   unhold(): void {
+    this._isReinviteForHoldOrUnhold = true;
     this._fsm.unhold();
   }
 
@@ -171,6 +209,14 @@ class RTCCall {
     this._fsm.transfer(target);
   }
 
+  forward(target: string): void {
+    if (target.length === 0 || !this._isIncomingCall) {
+      this._delegate.onCallActionFailed(RTC_CALL_ACTION.FORWARD);
+      return;
+    }
+    this._fsm.forward(target);
+  }
+
   dtmf(digits: string): void {
     if (digits.length === 0) {
       return;
@@ -178,24 +224,42 @@ class RTCCall {
     this._fsm.dtmf(digits);
   }
 
-  onAccountReady(): void {
+  onAccountReady() {
     this._fsm.accountReady();
+  }
+
+  onAccountNotReady() {
+    this._fsm.accountNotReady();
   }
 
   setCallSession(session: any): void {
     this._callSession.setSession(session);
-  }
-
-  private _startOutCallFSM(): void {
-    if (this._account.isReady()) {
-      this._fsm.accountReady();
-    } else {
-      this._fsm.accountNotReady();
+    if (
+      this._isIncomingCall &&
+      session &&
+      session.request &&
+      session.request.headers
+    ) {
+      // Update party id and session id in incoming call sip message
+      this._parseRcApiIds(session.request.headers);
     }
   }
 
   private _prepare(): void {
     // listen session
+    this._callSession.on(CALL_SESSION_STATE.ACCEPTED, () => {
+      // Update party id and session id in invite response sip message
+      const inviteRes = this._callSession.getInviteResponse();
+      if (inviteRes && inviteRes.headers) {
+        this._parseRcApiIds(inviteRes.headers);
+      } else {
+        rtcLogger.warn(
+          LOG_TAG,
+          "Can't get invite response for parsing partyid and sessionid",
+        );
+      }
+      this._onSessionAccepted();
+    });
     this._callSession.on(CALL_SESSION_STATE.CONFIRMED, () => {
       this._onSessionConfirmed();
     });
@@ -207,6 +271,15 @@ class RTCCall {
     });
     this._callSession.on(CALL_SESSION_STATE.PROGRESS, (response: any) => {
       this._onSessionProgress(response);
+    });
+    this._callSession.on(
+      CALL_SESSION_STATE.REINVITE_ACCEPTED,
+      (session: any) => {
+        this._onSessionReinviteAccepted(session);
+      },
+    );
+    this._callSession.on(CALL_SESSION_STATE.REINVITE_FAILED, (session: any) => {
+      this._onSessionReinviteFailed(session);
     });
     this._callSession.on(
       CALL_FSM_NOTIFY.CALL_ACTION_SUCCESS,
@@ -234,17 +307,21 @@ class RTCCall {
       this._onCallStateChange(RTC_CALL_STATE.CONNECTING);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_CONNECTED, () => {
-      if (this._hangupInvalidCallTimer) {
-        clearTimeout(this._hangupInvalidCallTimer);
-        this._hangupInvalidCallTimer = null;
-      }
+      this._clearHangupTimer();
+      this._callSession.getMediaStats((report: any, session: any) => {
+        this._rtcMediaStatsManager.setMediaStatsReport(report);
+      },                              kRTCGetStatsInterval * 1000);
       this._isMute ? this._callSession.mute() : this._callSession.unmute();
       this._onCallStateChange(RTC_CALL_STATE.CONNECTED);
     });
     this._fsm.on(CALL_FSM_NOTIFY.ENTER_DISCONNECTED, () => {
+      this._clearHangupTimer();
       this._onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
       this._account.removeCallFromCallManager(this._callInfo.uuid);
       this._destroy();
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.LEAVE_CONNECTED, () => {
+      this._callSession.stopMediaStats();
     });
     this._fsm.on(CALL_FSM_NOTIFY.HANGUP_ACTION, () => {
       this._onHangupAction();
@@ -257,6 +334,9 @@ class RTCCall {
     });
     this._fsm.on(CALL_FSM_NOTIFY.TRANSFER_ACTION, (target: string) => {
       this._onTransferAction(target);
+    });
+    this._fsm.on(CALL_FSM_NOTIFY.FORWARD_ACTION, (target: string) => {
+      this._onForwardAction(target);
     });
     this._fsm.on(CALL_FSM_NOTIFY.PARK_ACTION, () => {
       this._onParkAction();
@@ -310,11 +390,11 @@ class RTCCall {
   ) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
-        this._isRecording = true;
+        this._recordState = RECORD_STATE.RECORDING;
         break;
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
-        this._isRecording = false;
+        this._recordState = RECORD_STATE.IDLE;
         break;
       }
       case RTC_CALL_ACTION.HOLD: {
@@ -337,11 +417,11 @@ class RTCCall {
   private _onCallActionFailed(callAction: RTC_CALL_ACTION) {
     switch (callAction) {
       case RTC_CALL_ACTION.START_RECORD: {
-        this._isRecording = false;
+        this._recordState = RECORD_STATE.IDLE;
         break;
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
-        this._isRecording = true;
+        this._recordState = RECORD_STATE.RECORDING;
         break;
       }
       case RTC_CALL_ACTION.HOLD: {
@@ -360,7 +440,17 @@ class RTCCall {
     }
   }
 
+  private _clearHangupTimer() {
+    if (this._hangupInvalidCallTimer) {
+      clearTimeout(this._hangupInvalidCallTimer);
+      this._hangupInvalidCallTimer = null;
+    }
+  }
+
   // session listener
+  private _onSessionAccepted() {
+    this._fsm.sessionAccepted();
+  }
   private _onSessionConfirmed() {
     this._fsm.sessionConfirmed();
   }
@@ -374,11 +464,35 @@ class RTCCall {
   }
 
   private _onSessionProgress(response: any) {
-    if (response.status_code === 183 && this._hangupInvalidCallTimer) {
-      clearTimeout(this._hangupInvalidCallTimer);
-      this._hangupInvalidCallTimer = null;
+    if (response.status_code === 183) {
+      this._clearHangupTimer();
     }
   }
+
+  private _getSessionReinviteAction(session: any): RTC_CALL_ACTION {
+    if (
+      SDH_DIRECTION.SEND_ONLY ===
+      session.sessionDescriptionHandler.getDirection()
+    ) {
+      return RTC_CALL_ACTION.HOLD;
+    }
+    return RTC_CALL_ACTION.UNHOLD;
+  }
+
+  private _onSessionReinviteAccepted(session: any) {
+    if (this._isReinviteForHoldOrUnhold) {
+      this._onCallActionSuccess(this._getSessionReinviteAction(session));
+      this._isReinviteForHoldOrUnhold = false;
+    }
+  }
+
+  private _onSessionReinviteFailed(session: any) {
+    if (this._isReinviteForHoldOrUnhold) {
+      this._onCallActionFailed(this._getSessionReinviteAction(session));
+      this._isReinviteForHoldOrUnhold = false;
+    }
+  }
+
   // fsm listener
   private _onAnswerAction() {
     this._callSession.answer();
@@ -412,24 +526,28 @@ class RTCCall {
     this._callSession.transfer(target);
   }
 
+  private _onForwardAction(target: string) {
+    this._callSession.forward(target);
+  }
+
   private _onParkAction() {
     this._callSession.park();
   }
 
   private _onStartRecordAction() {
-    if (this._isRecording) {
+    if (RECORD_STATE.RECORDING === this._recordState) {
       this._onCallActionSuccess(RTC_CALL_ACTION.START_RECORD);
-    } else {
-      this._isRecording = true;
+    } else if (RECORD_STATE.IDLE === this._recordState) {
+      this._recordState = RECORD_STATE.RECORD_IN_PROGRESS;
       this._callSession.startRecord();
     }
   }
 
   private _onStopRecordAction() {
-    if (this._isRecording) {
-      this._isRecording = false;
+    if (RECORD_STATE.RECORDING === this._recordState) {
+      this._recordState = RECORD_STATE.RECORD_IN_PROGRESS;
       this._callSession.stopRecord();
-    } else {
+    } else if (RECORD_STATE.IDLE === this._recordState) {
       this._onCallActionSuccess(RTC_CALL_ACTION.STOP_RECORD);
     }
   }
@@ -462,6 +580,33 @@ class RTCCall {
     if (this._delegate) {
       this._delegate.onCallStateChange(state);
     }
+  }
+
+  // Header name: P-Rc-Api-Ids
+  // Example: party-id=cs172622609264474468-2;session-id=Y3MxNzI2MjI2MDkyNjQ0NzQ0NjhAMTAuNzQuMy4xNw"
+  private _parseRcApiIds(headers: any) {
+    if (!headers) {
+      return;
+    }
+    const apiIds = headers[RC_SIP_HEADER_NAME.RC_API_IDS];
+    if (!apiIds) {
+      rtcLogger.warn(
+        LOG_TAG,
+        `Sip headers have no ${RC_SIP_HEADER_NAME.RC_API_IDS}`,
+      );
+      return;
+    }
+    const idMap = apiIds[0]['raw'].split(';').map((sub: string) => {
+      return sub.split('=');
+    });
+    this._callInfo.partyId = idMap[0][1];
+    this._callInfo.sessionId = idMap[1][1];
+    rtcLogger.info(
+      LOG_TAG,
+      `Got party id=${this._callInfo.partyId} session id=${
+        this._callInfo.sessionId
+      }`,
+    );
   }
 }
 

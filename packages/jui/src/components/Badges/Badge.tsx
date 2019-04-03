@@ -3,7 +3,7 @@
  * @Date: 2018-08-17 10:37:19
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { SFC } from 'react';
+import React, { SFC, memo } from 'react';
 import MuiBadge, { BadgeProps as MuiBadgeProps } from '@material-ui/core/Badge';
 import styled, { css } from '../../foundation/styled-components';
 import { Omit } from '../../foundation/utils/typeHelper';
@@ -55,7 +55,7 @@ export type JuiBadgeProps = Omit<MuiBadgeProps, 'innerRef'> & {
   placement?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 };
 
-const JuiBadge: SFC<JuiBadgeProps> = (props: JuiBadgeProps) => (
+const JuiBadge: SFC<JuiBadgeProps> = memo((props: JuiBadgeProps) => (
   <StyledBadge
     {...props}
     classes={{
@@ -64,11 +64,12 @@ const JuiBadge: SFC<JuiBadgeProps> = (props: JuiBadgeProps) => (
   >
     {props.children}
   </StyledBadge>
-);
+));
 
 JuiBadge.defaultProps = {
   placement: 'top-right',
 };
+
 JuiBadge.displayName = 'JuiBadge';
 
 export { JuiBadge, MuiBadgeProps };

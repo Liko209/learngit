@@ -4,17 +4,17 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { rtcNetworkNotificationCenter } from '../RTCNetworkNotificationCenter';
+import { RTCNetworkNotificationCenter } from '../RTCNetworkNotificationCenter';
 
 import { RTC_NETWORK_EVENT, RTC_NETWORK_STATE } from '../types';
 
-describe('Network Notification Center', async () => {
+describe('Network Notification Center', () => {
   class TestListener {
     constructor() {
       this.listenEvevt();
     }
     listenEvevt() {
-      rtcNetworkNotificationCenter.on(
+      RTCNetworkNotificationCenter.instance().on(
         RTC_NETWORK_EVENT.NETWORK_CHANGE,
         ({ state }: any) => {
           switch (state) {
@@ -37,7 +37,7 @@ describe('Network Notification Center', async () => {
   }
   describe('onOnline()', () => {
     it('should network evevt emit online when listen online JPT-540', () => {
-      const nnc = rtcNetworkNotificationCenter;
+      const nnc = RTCNetworkNotificationCenter.instance();
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOnline');
       nnc._onOnline();
@@ -46,7 +46,7 @@ describe('Network Notification Center', async () => {
     });
 
     it('should network evevt emit online twice when listen online twice JPT-542', () => {
-      const nnc = rtcNetworkNotificationCenter;
+      const nnc = RTCNetworkNotificationCenter.instance();
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOnline');
       nnc._onOnline();
@@ -58,7 +58,7 @@ describe('Network Notification Center', async () => {
 
   describe('onOffline()', () => {
     it('should network evevt emit offline when listen offline JPT-541', async () => {
-      const nnc = rtcNetworkNotificationCenter;
+      const nnc = RTCNetworkNotificationCenter.instance();
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOffline');
       nnc._onOffline();
@@ -67,7 +67,7 @@ describe('Network Notification Center', async () => {
     });
 
     it('should network evevt emit offline twice when listen offline twice JPT-543', async () => {
-      const nnc = rtcNetworkNotificationCenter;
+      const nnc = RTCNetworkNotificationCenter.instance();
       const testListener = new TestListener();
       jest.spyOn(testListener, 'onOffline');
       nnc._onOffline();

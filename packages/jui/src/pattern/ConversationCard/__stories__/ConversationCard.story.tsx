@@ -8,14 +8,13 @@ import { storiesOf } from '@storybook/react';
 import { text, boolean } from '@storybook/addon-knobs';
 import backgrounds from '@storybook/addon-backgrounds';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-
+import { JuiConversationPostLike } from '../../ConversationPostLike';
 import {
   JuiConversationCard,
   JuiConversationCardHeader,
   JuiConversationCardFooter,
 } from '..';
 import { JuiAvatar } from '../../../components/Avatar';
-import { JuiIconButton } from '../../../components/Buttons/IconButton/IconButton';
 import JuiConversationCardFrom from '../ConversationCardFrom';
 import JuiConversationCardBody from '../ConversationCardBody';
 
@@ -29,7 +28,7 @@ storiesOf('Pattern', module)
     const groupName = text('Group name', 'Team AAA');
     const activity = text('activity', 'shared 22 files');
     const status = text('status', '🏃 in the meeting');
-    const mode = boolean('navigation', false) ? 'navigation' : null;
+    const mode = boolean('navigation', false) ? 'navigation' : undefined;
     const from = mode && (
       <JuiConversationCardFrom
         name={groupName}
@@ -55,21 +54,14 @@ storiesOf('Pattern', module)
           notification={<span>{activity}</span>}
         />
         <JuiConversationCardBody>any content</JuiConversationCardBody>
-        <JuiConversationCardFooter
-          likeCount={5}
-          Like={
-            <JuiIconButton
-              size="small"
-              tooltipTitle="like"
-              color="primary"
-              onClick={() => {}}
-              variant="plain"
-              data-name="actionBarLike"
-            >
-              thumb_up
-            </JuiIconButton>
-          }
-        />
+        <JuiConversationCardFooter>
+          <JuiConversationPostLike
+            title="like"
+            iLiked={true}
+            likedUsersCount={10}
+            onClick={() => {}}
+          />
+        </JuiConversationCardFooter>
       </JuiConversationCard>
     );
     return (

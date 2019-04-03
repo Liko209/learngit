@@ -3,17 +3,18 @@
  * @Date: 2019-01-14 14:08:02
  * Copyright © RingCentral. All rights reserved.
  */
-
 import _ from 'lodash';
+
+import { AccountUserConfig } from '../../../service/account/config';
+
 import {
-  MAX_PERMISSION_LEVEL,
-  PERMISSION_ENUM,
   DEFAULT_ADMIN_PERMISSION_LEVEL,
   DEFAULT_USER_PERMISSION_LEVEL,
+  MAX_PERMISSION_LEVEL,
+  PERMISSION_ENUM,
 } from '../constants';
 import { TeamPermission, TeamPermissionParams } from '../entity';
-import { PermissionFlags } from '../types';
-import { UserConfig } from '../../../service/account/UserConfig';
+import { PermissionFlags, TeamSetting } from '../types';
 
 const REGEXP_IS_NUMBER = /^\d+(\.{0,1}\d+){0,1}$/;
 
@@ -21,7 +22,8 @@ class TeamPermissionController {
   constructor() {}
 
   isCurrentUserGuest(teamPermissionParams: TeamPermissionParams): boolean {
-    const companyId = UserConfig.getCurrentCompanyId();
+    const userConfig = new AccountUserConfig();
+    const companyId = userConfig.getCurrentCompanyId();
     const guestUserCompanyIds = teamPermissionParams.guest_user_company_ids;
     return guestUserCompanyIds
       ? guestUserCompanyIds.includes(companyId)
@@ -32,7 +34,7 @@ class TeamPermissionController {
     teamPermissionParams: TeamPermissionParams,
     userId: number,
   ): boolean {
-    return (
+    return !!(
       teamPermissionParams.members &&
       teamPermissionParams.members.length === 1 &&
       userId === teamPermissionParams.members[0]
@@ -42,10 +44,10 @@ class TeamPermissionController {
   getCurrentUserPermissionLevel(
     teamPermissionParams: TeamPermissionParams,
   ): number {
-    const userId = UserConfig.getCurrentUserId();
+    const userConfig = new AccountUserConfig();
+    const userId = userConfig.getGlipUserId();
 
     const {
-      members = [],
       permissions: {
         admin: {
           uids: adminUids = [],
@@ -54,7 +56,6 @@ class TeamPermissionController {
         user: { level: userLevel = DEFAULT_USER_PERMISSION_LEVEL } = {},
       } = {},
     } = teamPermissionParams;
-    if (!members.includes(userId)) return 0;
 
     if (!teamPermissionParams.is_team) {
       if (this.isSelfGroup(teamPermissionParams, userId)) {
@@ -90,9 +91,20 @@ class TeamPermissionController {
   }
 
   isCurrentUserHasPermission(
-    teamPermissionParams: TeamPermissionParams,
     type: PERMISSION_ENUM,
+    teamPermissionParams: TeamPermissionParams,
   ): boolean {
+    if (
+      !teamPermissionParams.members &&
+      !teamPermissionParams.guest_user_company_ids &&
+      !teamPermissionParams.is_team &&
+      !teamPermissionParams.permissions
+    ) {
+      const defaultPermissions = this._permissionLevelToArray(
+        PERMISSION_ENUM.TEAM_POST,
+      );
+      return defaultPermissions.includes(type);
+    }
     const permissionList = this.getCurrentUserPermissions(teamPermissionParams);
     return permissionList.includes(type);
   }
@@ -109,8 +121,8 @@ class TeamPermissionController {
 
   hasTeamAdminPermission(teamPermissionParams: TeamPermissionParams): boolean {
     return this.isCurrentUserHasPermission(
-      teamPermissionParams,
       PERMISSION_ENUM.TEAM_ADMIN,
+      teamPermissionParams,
     );
   }
 
@@ -132,6 +144,24 @@ class TeamPermissionController {
       }
     }
     return permissionFlags;
+  }
+
+  processLinkTeamSetting(teamSetting: TeamSetting) {
+    const { permissionFlags: rawPermissionFlags = {} } = teamSetting;
+    const result: TeamSetting = {
+      ...teamSetting,
+      permissionFlags: rawPermissionFlags,
+    };
+    if (teamSetting.isPublic) {
+      // in dthor, when team is public, all member can add member
+      result.permissionFlags!.TEAM_ADD_MEMBER = true;
+    }
+    if (!rawPermissionFlags.TEAM_POST) {
+      // in dthor, when disabled TEAM_POST, disabled TEAM_ADD_INTEGRATIONS, TEAM_PIN_POST too
+      result.permissionFlags!.TEAM_ADD_INTEGRATIONS = false;
+      result.permissionFlags!.TEAM_PIN_POST = false;
+    }
+    return result;
   }
 
   mergePermissionFlagsWithLevel(

@@ -6,7 +6,6 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, boolean } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiIconButton } from '../../Buttons/IconButton';
 import { JuiThumbnail } from '../../Thumbnail';
 import { JuiAvatar } from '../../Avatar';
@@ -21,7 +20,7 @@ import {
 } from '../index';
 import avatar from '../../Avatar/__stories__/img/avatar.jpg';
 
-class TwoLineItem extends React.Component {
+class TwoLineItem extends React.PureComponent {
   state = {
     isHover: false,
   };

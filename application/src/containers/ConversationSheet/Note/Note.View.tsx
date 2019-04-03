@@ -11,7 +11,9 @@ import {
   JuiNoteContent,
 } from 'jui/pattern/ConversationItemCard';
 import NoteIcon from '@material-ui/icons/EventNote';
+import { observer } from 'mobx-react';
 
+@observer
 class NoteView extends Component<NoteViewProps> {
   render() {
     const { title, summary } = this.props;

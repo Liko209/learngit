@@ -41,15 +41,16 @@ type JuiSearchTitleProps = {
   title: String;
   isShowMore?: boolean;
   showMore: string;
+  onClick?: (event: React.MouseEvent<HTMLSpanElement, MouseEvent>) => void;
 };
 
 const JuiSearchTitle = (props: JuiSearchTitleProps) => {
-  const { title, isShowMore, showMore, ...rest } = props;
+  const { title, isShowMore, showMore, onClick, ...rest } = props;
 
   return (
     <SearchTitleWrapper {...rest}>
       <SearchTitleText>{title}</SearchTitleText>
-      {isShowMore && <ShowMoreBtn>{showMore}</ShowMoreBtn>}
+      {isShowMore && <ShowMoreBtn onClick={onClick}>{showMore}</ShowMoreBtn>}
     </SearchTitleWrapper>
   );
 };

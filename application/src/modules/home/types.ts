@@ -8,22 +8,22 @@ import { ModuleConfig } from 'framework';
 
 type NavConfig = {
   url: string;
-  icon: string;
-  title: string;
+  Icon: React.ReactElement;
+  IconSelected: React.ReactElement;
+  title: string | Promise<string>;
   placement: 'top' | 'bottom';
   umi?: JSX.Element;
 };
 
 type SubModuleConfig = {
   route?: RouteProps;
-  nav?: () => NavConfig;
+  nav?: () => Promise<NavConfig>;
   loader?: () => Promise<{ config: ModuleConfig }>;
   afterBootstrap?: (...args: any[]) => void;
-  isDefault?: boolean;
 };
 
 type HomeConfig = {
-  defaultRouterPath: string;
+  defaultRouterPaths: string[];
   subModules: { [key: string]: SubModuleConfig };
 };
 

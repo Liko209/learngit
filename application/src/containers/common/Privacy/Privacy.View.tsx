@@ -5,8 +5,9 @@
  */
 
 import React, { Component } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
-import { PrivacyViewProps } from './types';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { observer } from 'mobx-react';
+import { PrivacyViewProps, PrivacyProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
 import { errorHelper } from 'sdk/error';
@@ -15,8 +16,9 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
-type Props = PrivacyViewProps & WithNamespaces;
+type Props = PrivacyViewProps & WithTranslation & PrivacyProps;
 
+@observer
 class PrivacyViewComponent extends Component<Props> {
   flashToast = (message: string) => {
     Notification.flashToast({
@@ -34,9 +36,9 @@ class PrivacyViewComponent extends Component<Props> {
       await handlePrivacy();
     } catch (error) {
       if (errorHelper.isNetworkConnectionError(error)) {
-        this.flashToast('teamNetError');
+        this.flashToast('people.prompt.teamNetError');
       } else {
-        this.flashToast('markPrivateServerErrorForTeam');
+        this.flashToast('people.prompt.markPrivateServerErrorForTeam');
       }
     }
   }
@@ -44,13 +46,18 @@ class PrivacyViewComponent extends Component<Props> {
   getTipText = () => {
     const { isPublic, isAdmin } = this.props;
     if (isAdmin) {
-      return isPublic ? 'setStatePrivate' : 'setStatePublic';
+      return isPublic
+        ? 'people.team.changeToPrivate'
+        : 'people.team.changeToPublic';
     }
-    return isPublic ? 'publicTeam' : 'privateTeam';
+    return isPublic ? 'people.team.publicTeam' : 'people.team.privateTeam';
   }
 
   render() {
-    const { isPublic, size, t, isAdmin } = this.props;
+    const { isPublic, size, t, isAdmin, isTeam } = this.props;
+    if (!isTeam) {
+      return null;
+    }
     const tooltipKey = this.getTipText();
     return (
       <JuiIconButton
@@ -68,6 +75,6 @@ class PrivacyViewComponent extends Component<Props> {
   }
 }
 
-const PrivacyView = translate('translations')(PrivacyViewComponent);
+const PrivacyView = withTranslation('translations')(PrivacyViewComponent);
 
 export { PrivacyView };

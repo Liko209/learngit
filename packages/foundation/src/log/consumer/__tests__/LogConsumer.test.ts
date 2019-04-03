@@ -1,21 +1,27 @@
 import { LogConsumer } from '../LogConsumer';
-import { logEntityFactory, persistenceLogFactory, logConfigFactory, consumerConfigFactory } from '../../__tests__/factory';
-import { ILogApi } from '../api';
+import {
+  logEntityFactory,
+  persistenceLogFactory,
+  logConfigFactory,
+  consumerConfigFactory,
+} from '../../__tests__/factory';
+import { ILogUploader } from '../api';
 import { LogPersistence, PersistenceLogEntity } from '../persistence';
 import { configManager } from '../../config';
 import { Task } from '../task';
 import { LogEntity } from '../../types';
 jest.mock('../persistence');
-class MockApi implements ILogApi {
+class MockApi implements ILogUploader {
   upload = jest.fn();
+  errorHandler = jest.fn();
 }
 
 const createCallbackObserver = (): [Function, Promise<any>] => {
-  let callback = () => { };
+  let callback = () => {};
   let called = false;
-  const observer = new Promise((resolve) => {
+  const observer = new Promise(resolve => {
     callback = async () => {
-      !called && await resolve();
+      !called && (await resolve());
       called = true;
     };
   });
@@ -23,7 +29,6 @@ const createCallbackObserver = (): [Function, Promise<any>] => {
 };
 
 describe('LogConsumer', () => {
-
   let mockLogPersistence;
   let mockApi;
   let [callback, observer] = createCallbackObserver();
@@ -41,33 +46,42 @@ describe('LogConsumer', () => {
       mockLogPersistence.bulkPut = jest.fn();
       mockLogPersistence.bulkDelete = jest.fn();
 
-      mockLogPersistence.put.mockImplementation(async (persistenceLog: PersistenceLogEntity) => {
-        persistenceLogsStore.push(persistenceLog);
-      });
-      mockLogPersistence.bulkPut.mockImplementation(async (persistenceLogs: PersistenceLogEntity[]) => {
-        persistenceLogs.forEach((item) => {
-
-          persistenceLogsStore.push(item);
-        });
-      });
+      mockLogPersistence.put.mockImplementation(
+        async (persistenceLog: PersistenceLogEntity) => {
+          persistenceLogsStore.push(persistenceLog);
+        },
+      );
+      mockLogPersistence.bulkPut.mockImplementation(
+        async (persistenceLogs: PersistenceLogEntity[]) => {
+          persistenceLogs.forEach(item => {
+            persistenceLogsStore.push(item);
+          });
+        },
+      );
       const deleteItem = (persistenceLog: PersistenceLogEntity) => {
-        const index = persistenceLogsStore.findIndex(item => item.id === persistenceLog.id);
+        const index = persistenceLogsStore.findIndex(
+          item => item.id === persistenceLog.id,
+        );
         if (index > -1) {
           persistenceLogsStore.splice(index, 1);
         }
       };
-      mockLogPersistence.delete.mockImplementation(async (persistenceLog: PersistenceLogEntity) => {
-        deleteItem(persistenceLog);
-      });
-      mockLogPersistence.bulkDelete.mockImplementation(async (persistenceLogs: PersistenceLogEntity[]) => {
-        for (let index = 0; index < persistenceLogs.length; index++) {
-          deleteItem(persistenceLogs[index]);
-        }
-      });
+      mockLogPersistence.delete.mockImplementation(
+        async (persistenceLog: PersistenceLogEntity) => {
+          deleteItem(persistenceLog);
+        },
+      );
+      mockLogPersistence.bulkDelete.mockImplementation(
+        async (persistenceLogs: PersistenceLogEntity[]) => {
+          for (let index = 0; index < persistenceLogs.length; index++) {
+            deleteItem(persistenceLogs[index]);
+          }
+        },
+      );
       mockLogPersistence.count.mockImplementation(async () => {
         return persistenceLogsStore.length;
       });
-      mockLogPersistence.getAll.mockImplementation(async (limit) => {
+      mockLogPersistence.getAll.mockImplementation(async limit => {
         return persistenceLogsStore.slice(0, limit).filter(item => !!item);
       });
 
@@ -76,18 +90,20 @@ describe('LogConsumer', () => {
 
       [callback, observer] = createCallbackObserver();
 
-      configManager.setConfig(logConfigFactory.build({
-        uploadLogApi: mockApi,
-        uploadAccessor: {
-          isAccessible: jest.fn().mockReturnValue(true),
-          subscribe: jest.fn(),
-        },
-        consumer: consumerConfigFactory.build({
-          enabled: true,
-          uploadQueueLimit: 10,
-          memoryCountThreshold: 10,
+      configManager.setConfig(
+        logConfigFactory.build({
+          logUploader: mockApi,
+          uploadAccessor: {
+            isAccessible: jest.fn().mockReturnValue(true),
+            subscribe: jest.fn(),
+          },
+          consumer: consumerConfigFactory.build({
+            enabled: true,
+            uploadQueueLimit: 10,
+            memoryCountThreshold: 10,
+          }),
         }),
-      }));
+      );
     });
     it('should write into memory after log process done [JPT-537]', async () => {
       const logConsumer = new LogConsumer();
@@ -170,12 +186,16 @@ describe('LogConsumer', () => {
       // will add to persistenceTaskQueue
       logConsumer.onLog(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
-      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(++taskQueueSize);
+      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(
+        ++taskQueueSize,
+      );
 
       // will add to persistenceTaskQueue
       logConsumer.onLog(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
-      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(++taskQueueSize);
+      expect(logConsumer['_persistenceTaskQueueLoop'].size()).toEqual(
+        ++taskQueueSize,
+      );
       // clear
       logConsumer['_uploadTaskQueueLoop'].peekAll();
       logConsumer['_persistenceTaskQueueLoop'].peekAll();
@@ -251,21 +271,24 @@ describe('LogConsumer', () => {
       const mockAccessor = {
         networkAccessible: true,
       };
-      configManager.setConfig(logConfigFactory.build({
-        uploadLogApi: mockApi,
-        uploadAccessor: {
-          isAccessible: () => mockAccessor.networkAccessible,
-          subscribe: jest.fn(),
-        },
-        consumer: consumerConfigFactory.build({
-          enabled: true,
-          uploadQueueLimit: 4,
-          memoryCountThreshold: 0,
+      configManager.setConfig(
+        logConfigFactory.build({
+          logUploader: mockApi,
+          uploadAccessor: {
+            isAccessible: () => mockAccessor.networkAccessible,
+            subscribe: jest.fn(),
+          },
+          consumer: consumerConfigFactory.build({
+            enabled: true,
+            uploadQueueLimit: 4,
+            memoryCountThreshold: 0,
+          }),
         }),
-      }));
+      );
       const logConsumer = new LogConsumer();
       const logs = logEntityFactory.buildList(3);
-      const rawOnLoopCompleted = logConsumer['_uploadTaskQueueLoop']['_onLoopCompleted'];
+      const rawOnLoopCompleted =
+        logConsumer['_uploadTaskQueueLoop']['_onLoopCompleted'];
       const [callback1, observer1] = createCallbackObserver();
       logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback1();
@@ -306,21 +329,24 @@ describe('LogConsumer', () => {
     });
 
     it('When uploading not complete, network error occur, log should write into DB cache [JPT-550]', async () => {
-      configManager.setConfig(logConfigFactory.build({
-        uploadLogApi: mockApi,
-        uploadAccessor: {
-          isAccessible: jest.fn().mockReturnValue(true),
-          subscribe: jest.fn(),
-        },
-        consumer: consumerConfigFactory.build({
-          enabled: true,
-          uploadQueueLimit: 10,
-          memoryCountThreshold: 0,
+      configManager.setConfig(
+        logConfigFactory.build({
+          logUploader: mockApi,
+          uploadAccessor: {
+            isAccessible: jest.fn().mockReturnValue(true),
+            subscribe: jest.fn(),
+          },
+          consumer: consumerConfigFactory.build({
+            enabled: true,
+            uploadQueueLimit: 10,
+            memoryCountThreshold: 0,
+          }),
         }),
-      }));
+      );
       const logConsumer = new LogConsumer();
       // mock network error
       mockApi.upload.mockRejectedValue(new Error('abort error'));
+      mockApi.errorHandler.mockReturnValue('abortAll');
       logConsumer.setLogPersistence(mockLogPersistence);
       logConsumer['_persistenceTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
@@ -343,7 +369,42 @@ describe('LogConsumer', () => {
       // clear
       logConsumer['_uploadTaskQueueLoop'].peekAll();
       logConsumer['_persistenceTaskQueueLoop'].peekAll();
-
+    });
+  });
+  describe('_uploadAvailable()', () => {
+    it('should uploadAvailable falsy when disable consumer', () => {
+      const logConsumer = new LogConsumer();
+      configManager.mergeConfig({
+        consumer: consumerConfigFactory.build({
+          enabled: true,
+          uploadQueueLimit: 10,
+        }),
+      });
+      expect(logConsumer['_uploadAvailable']()).toBeTruthy();
+      configManager.mergeConfig({
+        consumer: consumerConfigFactory.build({
+          enabled: false,
+          uploadQueueLimit: 10,
+        }),
+      });
+      expect(logConsumer['_uploadAvailable']()).toBeFalsy();
+    });
+    it('should uploadAvailable falsy when disable uploadAccessor', () => {
+      const logConsumer = new LogConsumer();
+      const uploadAccessor = {
+        isAccessible: jest.fn().mockReturnValue(true),
+        subscribe: jest.fn(),
+      };
+      configManager.mergeConfig({
+        uploadAccessor,
+        consumer: consumerConfigFactory.build({
+          enabled: true,
+          uploadQueueLimit: 10,
+        }),
+      });
+      expect(logConsumer['_uploadAvailable']()).toBeTruthy();
+      uploadAccessor.isAccessible.mockReturnValue(false);
+      expect(logConsumer['_uploadAvailable']()).toBeFalsy();
     });
   });
 });

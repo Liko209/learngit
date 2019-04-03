@@ -13,9 +13,9 @@ jest.mock('@/store/utils', () => ({
 describe('get doc title', () => {
   it('should return current title when pathname not have id', () => {
     let title = getDocTitle('/dashboard');
-    expect(title).toEqual('Dashboard');
+    expect(title).toEqual('dashboard.Dashboard');
     title = getDocTitle('/messages');
-    expect(title).toEqual('Messages');
+    expect(title).toEqual('message.Messages');
   });
 
   it('should return current title when pathname have id', () => {

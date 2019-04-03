@@ -26,17 +26,39 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 
+type ActionErrorOptions = {
+  backendErrorMessage: string;
+  networkErrorMessage: string;
+};
 class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   @observable
   nameErrorMsg?: string = '';
 
+  @observable
+  saving: boolean = false;
+
   @computed
-  get allowMemberAddMember() {
-    const groupService = new GroupService();
+  get permissionFlags() {
+    const groupService: GroupService = GroupService.getInstance();
     const permissionFlags = groupService.getTeamUserPermissionFlags(
       this._group.permissions || {},
     );
-    return !!permissionFlags.TEAM_ADD_MEMBER;
+    return permissionFlags;
+  }
+
+  @computed
+  get allowMemberAddMember() {
+    return !!this.permissionFlags.TEAM_ADD_MEMBER;
+  }
+
+  @computed
+  get allowMemberPost() {
+    return !!this.permissionFlags.TEAM_POST;
+  }
+
+  @computed
+  get allowMemberPin() {
+    return !!this.permissionFlags.TEAM_PIN_POST;
   }
 
   @computed
@@ -48,8 +70,10 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   get initialData() {
     return {
       name: this._group.displayName,
-      description: this._group.description,
+      description: this._group.description || '',
       allowMemberAddMember: this.allowMemberAddMember,
+      allowMemberPost: this.allowMemberPost,
+      allowMemberPin: this.allowMemberPin,
     };
   }
 
@@ -68,26 +92,78 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     return this._group.isAdmin;
   }
 
+  @computed
+  get isCompanyTeam() {
+    return this._group.isCompanyTeam;
+  }
+
   leaveTeam = async () => {
-    const groupService = new GroupService();
+    const groupService: GroupService = GroupService.getInstance();
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
     try {
       await groupService.leaveTeam(userId, this.id);
     } catch (e) {
-      this.onLeaveTeamError(e);
+      this._onActionError(e, {
+        backendErrorMessage: 'people.prompt.leaveTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.leaveTeamNetworkErrorContent',
+      });
     }
   }
 
-  onLeaveTeamError = (e: Error) => {
+  @action
+  deleteTeam = async () => {
+    const groupService: GroupService = GroupService.getInstance();
+
+    try {
+      await groupService.deleteTeam(this.id);
+      this._onActionSuccess('people.team.deleteTeamSuccessMsg');
+      return true;
+    } catch (e) {
+      this._onActionError(e, {
+        backendErrorMessage: 'people.prompt.deleteTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.deleteTeamNetworkErrorContent',
+      });
+      return false;
+    }
+  }
+
+  @action
+  archiveTeam = async () => {
+    const groupService: GroupService = GroupService.getInstance();
+
+    try {
+      await groupService.archiveTeam(this.id);
+      this._onActionSuccess('people.team.archiveTeamSuccessMsg');
+      return true;
+    } catch (e) {
+      this._onActionError(e, {
+        backendErrorMessage: 'people.prompt.archiveTeamServerErrorContent',
+        networkErrorMessage: 'people.prompt.archiveTeamNetworkErrorContent',
+      });
+      return false;
+    }
+  }
+
+  private _onActionSuccess = (message: string) => {
+    Notification.flashToast({
+      message,
+      type: ToastType.SUCCESS,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    });
+  }
+
+  private _onActionError = (e: Error, options: ActionErrorOptions) => {
     const isBackEndError = errorHelper.isBackEndError(e);
     const isNetworkError = errorHelper.isNetworkConnectionError(e);
     let message = '';
     if (isBackEndError) {
-      message = 'leaveTeamServerErrorContent';
+      message = options.backendErrorMessage;
     }
     if (isNetworkError) {
-      message = 'leaveTeamNetworkErrorContent';
+      message = options.networkErrorMessage;
     }
     if (message) {
       return Notification.flashToast({
@@ -106,17 +182,24 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     this.nameErrorMsg = msg;
   }
 
+  @action
   save = async (params: TeamSettingTypes) => {
+    if (this.saving) {
+      return false;
+    }
     const name = params.name.trim();
     const description = params.description.trim();
-    const groupService = new GroupService();
+    const groupService: GroupService = GroupService.getInstance();
     this.setNameError('');
+    this.saving = true;
     try {
       await groupService.updateTeamSetting(this.id, {
         name,
         description,
         permissionFlags: {
           TEAM_ADD_MEMBER: params.allowMemberAddMember,
+          TEAM_POST: params.allowMemberPost,
+          TEAM_PIN_POST: params.allowMemberPin,
         },
       });
       return true;
@@ -129,12 +212,12 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
             codes: [ERROR_CODES_SERVER.ALREADY_TAKEN],
           })
       ) {
-        this.setNameError('alreadyTaken');
+        this.setNameError('people.prompt.alreadyTaken');
         return false;
       }
       if (errorHelper.isNetworkConnectionError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToSaveTheUpdate',
+          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdate',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
@@ -144,7 +227,7 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       }
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToSaveTheUpdateTryAgain',
+          message: 'people.prompt.SorryWeWereNotAbleToSaveTheUpdateTryAgain',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
@@ -154,6 +237,8 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
       }
       generalErrorHandler(error);
       return true;
+    } finally {
+      this.saving = false;
     }
   }
 }

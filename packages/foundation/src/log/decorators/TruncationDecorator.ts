@@ -10,11 +10,13 @@ export class TruncationDecorator implements ILogEntityDecorator {
 
   decorate(data: LogEntity): LogEntity {
     if (!this.options || !this.options.limit) return data;
-    if (data.params) {
+    if (data.params.length) {
       data.params = data.params.map((param: string) => {
         if (Object.prototype.toString.call(param) === '[object String]') {
           if (param.length > this.options.limit) {
-            return param.substring(0, this.options.limit);
+            return JSON.stringify({
+              truncation: param.substring(0, this.options.limit),
+            });
           }
         }
         return param;

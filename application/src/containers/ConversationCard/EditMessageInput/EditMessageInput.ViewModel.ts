@@ -6,7 +6,7 @@
 
 import { action, observable, computed } from 'mobx';
 import { EditMessageInputProps, EditMessageInputViewProps } from './types';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 import { getEntity } from '@/store/utils';
 import storeManager from '@/store';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
@@ -19,13 +19,14 @@ import Keys from 'jui/pattern/MessageInput/keys';
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
 enum ERROR_TYPES {
-  CONTENT_LENGTH = 'contentLength',
-  CONTENT_ILLEGAL = 'contentIllegal',
+  CONTENT_LENGTH = 'message.prompt.contentLength',
+  CONTENT_ILLEGAL = 'message.prompt.contentIllegal',
 }
 
 class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   implements EditMessageInputViewProps {
-  private _postService: NewPostService;
+  private static _draftMap = new Map<number, string>();
+  private _postService: PostService;
   @computed
   get id() {
     return this.props.id;
@@ -45,9 +46,10 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   constructor(props: EditMessageInputProps) {
     super(props);
-    this._postService = NewPostService.getInstance();
+    this._postService = PostService.getInstance();
     this._exitEditMode = this._exitEditMode.bind(this);
     this._editPost = this._editPost.bind(this);
+    this.saveDraft = this.saveDraft.bind(this);
   }
 
   @computed
@@ -63,6 +65,22 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   @computed
   get text() {
     return this._post.text;
+  }
+
+  @computed
+  get draft() {
+    const draftMap = EditMessageInputViewModel._draftMap;
+    return draftMap.get(this.props.id) || '';
+  }
+
+  saveDraft(draft: string) {
+    const draftMap = EditMessageInputViewModel._draftMap;
+    draftMap.set(this.props.id, draft);
+  }
+
+  removeDraft() {
+    const draftMap = EditMessageInputViewModel._draftMap;
+    draftMap.delete(this.props.id);
   }
 
   @action
@@ -83,6 +101,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
       if (content.trim()) {
         vm._editPost(content, mentionIds);
       }
+      vm.removeDraft();
     };
   }
 
@@ -98,6 +117,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     );
     inEditModePostIds.splice(inEditModePostIds.indexOf(this.id), 1);
     globalStore.set(GLOBAL_KEYS.IN_EDIT_MODE_POST_IDS, [...inEditModePostIds]);
+    this.removeDraft();
   }
 
   private async _editPost(content: string, ids: number[]) {
@@ -106,7 +126,7 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
         text: content,
         groupId: this.gid,
         postId: this.id,
-        mentionIds: ids,
+        mentionNonItemIds: ids,
       });
       this._exitEditMode();
     } catch (e) {

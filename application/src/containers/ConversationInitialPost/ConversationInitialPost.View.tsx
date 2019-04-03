@@ -5,7 +5,6 @@
  */
 import React from 'react';
 import {
-  JuiConversationInitialPost,
   JuiConversationInitialPostHeader,
   StyledTitle,
   StyledSpan,
@@ -14,27 +13,24 @@ import {
 } from 'jui/pattern/ConversationInitialPost';
 import { JuiConversationPageInit } from 'jui/pattern/EmptyScreen';
 import { JuiButton } from 'jui/components/Buttons';
-// import { Link } from 'react-router-dom';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { JuiLink } from 'jui/components/Link';
 import { ConversationInitialPostViewProps } from '@/containers/ConversationInitialPost/types';
 import image from './img/illustrator.svg';
 import { MiniCard } from '../MiniCard';
+import { Profile, PROFILE_TYPE } from '@/containers/Profile';
+import { observer } from 'mobx-react';
 
+@observer
 class ConversationInitialPost extends React.Component<
   ConversationInitialPostViewProps
 > {
-  constructor(props: ConversationInitialPostViewProps) {
-    super(props);
-  }
-
   showProfile = (event: React.MouseEvent) => {
     const { creator } = this.props;
     const target = event.target as HTMLElement;
     event.stopPropagation();
-    MiniCard.showProfile({
-      id: creator.id,
-      anchor: target,
+    MiniCard.show(<Profile id={creator.id} type={PROFILE_TYPE.MINI_CARD} />, {
+      anchor: target as HTMLElement,
     });
   }
 
@@ -49,36 +45,56 @@ class ConversationInitialPost extends React.Component<
   }
 
   private get _conversationInitialPostHeader() {
-    const { isTeam, displayName, groupDescription, t, createTime } = this.props;
-
     return (
       <JuiConversationInitialPostHeader>
-        {isTeam ? (
-          <StyledTitle>
-            {this._name}
-            <StyledSpan>&nbsp;{t('createTeam')}&nbsp;</StyledSpan>
-            <StyledTeamName>{displayName}</StyledTeamName>
-            <StyledSpan>
-              &nbsp;{t('on')} {createTime}
-            </StyledSpan>
-          </StyledTitle>
-        ) : (
-          <StyledSpan>
-            {t('directMessageDescription', { displayName })}
-          </StyledSpan>
-        )}
-        {isTeam && groupDescription ? (
-          <StyledDescription>{groupDescription}</StyledDescription>
-        ) : null}
+        {this._groupCreateInfo()}
+        {this._teamDescription()}
       </JuiConversationInitialPostHeader>
     );
+  }
+
+  private _groupCreateInfo() {
+    const { isTeam, displayName, t, createTime, isCompanyTeam } = this.props;
+    if (!isTeam) {
+      return (
+        <StyledSpan>
+          {t('message.initialPost.directMessageDescription', { displayName })}
+        </StyledSpan>
+      );
+    }
+
+    if (!isCompanyTeam) {
+      return (
+        <StyledTitle>
+          {this._name}
+          <StyledSpan>
+            &nbsp;{t('message.initialPost.createATeam')}&nbsp;
+          </StyledSpan>
+          <StyledTeamName>{displayName}</StyledTeamName>
+          <StyledSpan>
+            &nbsp;{t('message.initialPost.on')} {createTime}
+          </StyledSpan>
+        </StyledTitle>
+      );
+    }
+
+    return null;
+  }
+
+  private _teamDescription() {
+    const { isTeam, groupDescription } = this.props;
+    if (!isTeam) return null;
+    if (groupDescription) {
+      return <StyledDescription>{groupDescription}</StyledDescription>;
+    }
+    return null;
   }
 
   private get _handleShareFile() {
     const { t } = this.props;
     return (
       <JuiButton variant="outlined" color="primary">
-        {t('shareFile')}
+        {t('message.initialPost.shareFile')}
       </JuiButton>
     );
   }
@@ -87,7 +103,7 @@ class ConversationInitialPost extends React.Component<
     const { t } = this.props;
     return (
       <JuiButton variant="outlined" color="primary">
-        {t('createTask')}
+        {t('message.initialPost.createTask')}
       </JuiButton>
     );
   }
@@ -96,7 +112,7 @@ class ConversationInitialPost extends React.Component<
     const { t } = this.props;
     return (
       <JuiButton variant="outlined" color="primary">
-        {t('integrateApps')}
+        {t('message.initialPost.integrateApps')}
       </JuiButton>
     );
   }
@@ -106,8 +122,8 @@ class ConversationInitialPost extends React.Component<
 
     return (
       <JuiConversationPageInit
-        text={t('postInitialTitle')}
-        content={t('postInitialContent')}
+        text={t('message.initialPost.postInitialTitle')}
+        content={t('message.initialPost.postInitialContent')}
         actions={[
           this._handleShareFile,
           this._handleCreateTask,
@@ -121,15 +137,15 @@ class ConversationInitialPost extends React.Component<
   render() {
     const streamIsEmpty = !this.props.notEmpty;
     return (
-      <JuiConversationInitialPost>
+      <>
         {this._conversationInitialPostHeader}
         {streamIsEmpty ? this._conversationInitialPostBody : null}
-      </JuiConversationInitialPost>
+      </>
     );
   }
 }
 
-const ConversationInitialPostView = translate('Conversations')(
+const ConversationInitialPostView = withTranslation('translations')(
   ConversationInitialPost,
 );
 

@@ -31,8 +31,18 @@ module.exports = [
   //   urlPattern: new RegExp("https://fonts.gstatic.com/s/materialicons"),
   //   handler: "staleWhileRevalidate"
   // }
+
   {
-    urlPattern: new RegExp("https://i.icomoon.io/public/6483cc0f53/Jupiter/*"),
+    urlPattern: new RegExp("jupiter-icon.svg"),
+    handler: "staleWhileRevalidate",
+    options: {
+      cacheableResponse: {
+        statuses: [0, 200]
+      }
+    }
+  },
+  {
+    urlPattern: new RegExp("load-svg-icon.js"),
     handler: "cacheFirst"
   }
 ];

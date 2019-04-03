@@ -6,54 +6,42 @@
 
 import { MemberListViewModel } from '../MemberList.ViewModel';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 jest.mock('../../../../../../../../store/handler/SectionGroupHandler');
 
-const mockData: number[] = [];
+const allMembersIds: number[] = [];
 for (let i = 0; i < 50; i++) {
-  mockData[i] = i;
+  allMembersIds[i] = i;
 }
 
 SortableGroupMemberHandler.createSortableGroupMemberHandler = jest
   .fn()
   .mockResolvedValue({
-    getSortedGroupMembersIds: jest.fn().mockReturnValue(mockData),
+    getSortedGroupMembersIds: jest.fn().mockReturnValue(allMembersIds),
   });
-
-const props = {
-  id: 123,
-};
-const vm = new MemberListViewModel(props);
 
 describe('MemberListViewModel', () => {
   beforeEach(() => {
     jest.restoreAllMocks();
   });
 
-  describe('id', () => {
-    it('should be get conversation id when the component is instantiated', () => {
-      expect(vm.id).toEqual(props.id);
+  describe('onScrollEvent()', () => {
+    it('should be true when scrollTop is greater than 20', () => {
+      const vm = new MemberListViewModel();
+      vm.onScrollEvent({ scrollTop: 40 });
+      expect(
+        getGlobalValue(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW),
+      ).toBe(true);
     });
-  });
 
-  describe('memberIds', () => {
-    it('should be get correct memberIds when scrolling [JPT-405]', () => {
-      // first page
-      const firstPageMemberIds = mockData.slice(0, 20);
-      jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(firstPageMemberIds);
-      expect(vm.memberIds).toMatchObject(firstPageMemberIds);
-      // second page
-      vm.toBottom(); // next page
-      const secondPageMemberIds = mockData.slice(20, 40);
-      jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(secondPageMemberIds);
-      expect(vm.memberIds).toMatchObject(secondPageMemberIds);
-      // third page
-      vm.toBottom(); // next page
-      const thirdPageMemberIds = mockData.slice(40, 50);
-      jest.spyOn(vm, 'memberIds', 'get').mockReturnValue(thirdPageMemberIds);
-      expect(vm.memberIds).toMatchObject(thirdPageMemberIds);
-      // fourth page
-      vm.toBottom(); // next page
+    it('should be true when scrollTop is less than 20', () => {
+      const vm = new MemberListViewModel();
+      vm.onScrollEvent({ scrollTop: 10 });
+      expect(
+        getGlobalValue(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW),
+      ).toBe(false);
     });
   });
 });

@@ -5,8 +5,8 @@
  */
 
 import React, { Component, RefObject, createRef } from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
-import { MessageInputViewProps } from './types';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { MessageInputViewProps, MessageInputProps } from './types';
 import { JuiMessageInput } from 'jui/pattern/MessageInput';
 import { Mention } from './Mention';
 import keyboardEventDefaultHandler from 'jui/pattern/MessageInput/keyboardEventDefaultHandler';
@@ -16,9 +16,10 @@ import { AttachmentView } from 'jui/pattern/MessageInput/Attachment';
 import { Attachments } from './Attachments';
 import { extractView } from 'jui/hoc/extractView';
 
+type Props = MessageInputProps & MessageInputViewProps & WithTranslation;
 @observer
 class MessageInputViewComponent extends Component<
-  MessageInputViewProps & WithNamespaces,
+  Props,
   {
     modules: object;
   }
@@ -44,7 +45,7 @@ class MessageInputViewComponent extends Component<
     this.props.forceSaveDraft();
   }
 
-  componentWillReceiveProps(nextProps: MessageInputViewProps) {
+  componentWillReceiveProps(nextProps: Props) {
     if (this.props.id !== nextProps.id) {
       this.props.cellWillChange(nextProps.id, this.props.id);
     }
@@ -78,6 +79,13 @@ class MessageInputViewComponent extends Component<
     }
   }
 
+  handleCopyPasteFile = (files: File[]) => {
+    const { current } = this._attachmentsRef;
+    if (current && files && files.length > 0) {
+      current.vm.autoUploadFiles(files, false);
+    }
+  }
+
   handleDropFile = (files: File[]) => {
     const { current } = this._attachmentsRef;
     if (current && files && files.length > 0) {
@@ -96,7 +104,9 @@ class MessageInputViewComponent extends Component<
         />
       </MessageActionBar>
     );
-    const attachmentsNode = <Attachments ref={this._attachmentsRef} id={id} />;
+    const attachmentsNode = (
+      <Attachments ref={this._attachmentsRef} id={id} forceSaveDraft={true} />
+    );
     return (
       <JuiMessageInput
         value={draft}
@@ -106,7 +116,7 @@ class MessageInputViewComponent extends Component<
         id={id}
         toolbarNode={toolbarNode}
         attachmentsNode={attachmentsNode}
-        didDropFile={this.handleDropFile}
+        didDropFile={this.handleCopyPasteFile}
       >
         <Mention id={id} ref={this._mentionRef} />
       </JuiMessageInput>
@@ -114,9 +124,9 @@ class MessageInputViewComponent extends Component<
   }
 }
 
-const view = extractView<WithNamespaces & MessageInputViewProps>(
+const view = extractView<WithTranslation & MessageInputViewProps>(
   MessageInputViewComponent,
 );
-const MessageInputView = translate('Conversations')(view);
+const MessageInputView = withTranslation('translations')(view);
 
 export { MessageInputView, MessageInputViewComponent };

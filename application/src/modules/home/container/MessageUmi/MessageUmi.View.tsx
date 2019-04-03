@@ -4,13 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
-import { Umi } from '@/containers/Umi';
+import { Umi, UMI_SECTION_TYPE } from '@/containers/Umi';
+import { observer } from 'mobx-react';
 import { MessageUmiViewProps } from './types';
 
+@observer
 class MessageUmiView extends Component<MessageUmiViewProps> {
   render() {
-    const { groupIds } = this.props;
-    return <Umi ids={groupIds} global="UMI.app" />;
+    return <Umi type={UMI_SECTION_TYPE.ALL} global="UMI.app" />;
   }
 }
 

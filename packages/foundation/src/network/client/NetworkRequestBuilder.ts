@@ -11,15 +11,17 @@ import config from '../../config';
 import NetworkManager from '../NetworkManager';
 import BaseRequest from '../BaseRequest';
 import {
-  IRequestBuilderOption,
   IHandleType,
   REQUEST_PRIORITY,
   NETWORK_VIA,
   NETWORK_METHOD,
   Header,
+  HA_PRIORITY,
+  IRequest,
 } from '../network';
+import { JNetworkError, ERROR_CODES_NETWORK } from '../../error';
 
-class NetworkRequestBuilder implements IRequestBuilderOption {
+class NetworkRequestBuilder implements IRequest {
   id: string = '';
   path: string = '';
   data: any;
@@ -32,11 +34,12 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
   timeout: number = config.timeout;
   handlerType: IHandleType;
   priority: REQUEST_PRIORITY = REQUEST_PRIORITY.NORMAL;
+  HAPriority: HA_PRIORITY = HA_PRIORITY.BASIC;
   via: NETWORK_VIA = NETWORK_VIA.HTTP;
   method: NETWORK_METHOD = NETWORK_METHOD.GET;
   networkManager: NetworkManager;
 
-  options(options: IRequestBuilderOption) {
+  options(options: IRequest) {
     const {
       host,
       path,
@@ -47,6 +50,7 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
       headers,
       authFree,
       requestConfig,
+      HAPriority,
     } = options;
 
     this.headers = headers || {};
@@ -58,7 +62,15 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
     this.params = params || {};
     this.data = data || {};
     this.requestConfig = requestConfig || {};
+    this.HAPriority = HAPriority || HA_PRIORITY.BASIC;
     return this;
+  }
+
+  needAuth(): boolean {
+    throw new JNetworkError(
+      ERROR_CODES_NETWORK.NETWORK_ERROR,
+      'Builder Error: needAuth method not implemented.',
+    );
   }
 
   /**
@@ -85,6 +97,15 @@ class NetworkRequestBuilder implements IRequestBuilderOption {
    */
   public setPriority(value: REQUEST_PRIORITY) {
     this.priority = value;
+    return this;
+  }
+
+  /**
+   * Setter HAPriority
+   * @param {HA_PRIORITY} value
+   */
+  public setHAPriority(value: HA_PRIORITY) {
+    this.HAPriority = value;
     return this;
   }
 

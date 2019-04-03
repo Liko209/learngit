@@ -6,68 +6,63 @@
 import { ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { ItemListViewModel } from '../ItemList.ViewModel';
 import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
+import { observable, reaction } from 'mobx';
 
 jest.mock('sdk/module/item');
 
-let ViewModel: ItemListViewModel;
+let dataSource: ItemListViewModel;
 let itemService: ItemService;
 
 describe('ItemListViewModel', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     itemService = {
-      getGroupItemsCount: jest.fn().mockReturnValue(1),
+      getGroupItemsCount: jest.fn(),
     };
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
   });
 
-  describe('fetchNextPageItems()', () => {
+  describe('loadInitialData()', () => {
     it('Should be call sortableDataHandler fetchData', async () => {
       const _sortableDataHandler = {
         sortableListStore: {
           getIds: jest.fn().mockReturnValue([1, 2]),
         },
         fetchData: jest.fn(),
+        setHasMore: jest.fn(),
       };
-      ViewModel = new ItemListViewModel({
+      dataSource = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
-        active: true,
       });
-      Object.assign(ViewModel, {
+      Object.assign(dataSource, {
         _sortableDataHandler,
-        _sortKey: 'time',
-        _desc: false,
       });
-      ViewModel.loadStatus.loading = false;
-      await ViewModel.fetchNextPageItems();
+      await dataSource.loadInitialData();
       expect(_sortableDataHandler.fetchData).toHaveBeenCalled();
     });
   });
 
-  describe('get ids', () => {
+  describe('getIds()', () => {
     it('Should be add id if getIds change [JPT-850, JPT-843]', () => {
-      ViewModel = new ItemListViewModel({
+      dataSource = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
-        active: true,
       });
-      const sortableListStore = {};
       let _sortableDataHandler = {
         sortableListStore: {
           get getIds() {
             return jest.fn().mockReturnValue([1, 2])();
           },
+          fetchData: jest.fn(),
         },
       };
 
-      Object.assign(ViewModel, {
+      Object.assign(dataSource, {
         _sortableDataHandler,
-        _sortKey: 'time',
-        _desc: false,
       });
 
-      expect(ViewModel.ids).toEqual([1, 2]);
+      expect(dataSource.getIds).toEqual([1, 2]);
 
       _sortableDataHandler = {
         sortableListStore: {
@@ -77,17 +72,16 @@ describe('ItemListViewModel', () => {
         },
       };
 
-      Object.assign(ViewModel, {
+      Object.assign(dataSource, {
         _sortableDataHandler,
       });
-      expect(ViewModel.ids).toEqual([1, 2, 3]);
+      expect(dataSource.getIds).toEqual([1, 2, 3]);
     });
 
     it('Should be remove id if getIds change [JPT-851, JPT-844]', () => {
-      ViewModel = new ItemListViewModel({
+      dataSource = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
-        active: true,
       });
       let _sortableDataHandler = {
         sortableListStore: {
@@ -97,12 +91,10 @@ describe('ItemListViewModel', () => {
         },
       };
 
-      Object.assign(ViewModel, {
+      Object.assign(dataSource, {
         _sortableDataHandler,
-        _sortKey: 'time',
-        _desc: false,
       });
-      expect(ViewModel.ids).toEqual([1, 2]);
+      expect(dataSource.getIds).toEqual([1, 2]);
 
       _sortableDataHandler = {
         sortableListStore: {
@@ -112,54 +104,99 @@ describe('ItemListViewModel', () => {
         },
       };
 
-      Object.assign(ViewModel, {
+      Object.assign(dataSource, {
         _sortableDataHandler,
       });
-      expect(ViewModel.ids).toEqual([1]);
+      expect(dataSource.getIds).toEqual([1]);
     });
   });
 
-  describe('loadTotalCount()', () => {
-    it('Check the sum of events when add/deleted event [JPT-983, JPT-984]', async () => {
-      jest.spyOn(itemService, 'getGroupItemsCount').mockResolvedValue(1);
-      ViewModel = new ItemListViewModel({
+  describe('total()', () => {
+    it.skip('Check the sum of events when add/deleted event [JPT-983, JPT-984]', (done: jest.DoneCallback) => {
+      itemService.getGroupItemsCount.mockResolvedValue(10);
+      dataSource = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
-        active: true,
       });
-      const _getFilterFunc = () => {};
-      Object.assign(ViewModel, {
-        _getFilterFunc,
+
+      const ids = observable.array([1, 2, 3, 4, 5]);
+      const _sortableDataHandler = {
+        sortableListStore: observable.object({
+          get getIds() {
+            return ids;
+          },
+        }),
+        fetchData: jest.fn(),
+      };
+
+      Object.assign(dataSource, {
+        _sortableDataHandler,
       });
-      await ViewModel.loadTotalCount();
-      expect(ViewModel.totalCount).toBe(1);
 
-      jest.spyOn(itemService, 'getGroupItemsCount').mockResolvedValue(2);
-      await ViewModel.loadTotalCount();
-      expect(ViewModel.totalCount).toBe(2);
+      setImmediate(() => {
+        // Initial total
+        expect(itemService.getGroupItemsCount).toHaveBeenCalled();
+        expect(dataSource.total()).toBe(10);
 
-      jest.spyOn(itemService, 'getGroupItemsCount').mockResolvedValue(1);
-      await ViewModel.loadTotalCount();
-      expect(ViewModel.totalCount).toBe(1);
+        itemService.getGroupItemsCount.mockClear();
+
+        // When add item, should fetch total again
+        itemService.getGroupItemsCount.mockResolvedValue(11);
+        ids.push(6);
+        dataSource.groupId = 2;
+        setImmediate(() => {
+          expect(itemService.getGroupItemsCount).toHaveBeenCalled();
+          expect(dataSource.total()).toBe(11);
+
+          itemService.getGroupItemsCount.mockClear();
+
+          // When remove item, should fetch total again
+          itemService.getGroupItemsCount.mockResolvedValue(10);
+          ids.remove(1);
+          setImmediate(() => {
+            expect(dataSource.total()).toBe(10);
+            done();
+          });
+        });
+      });
     });
   });
 
-  describe('sort key', () => {
+  describe('getSort()', () => {
     it('Events displays by order of start time [JPT-981]', async () => {
-      ViewModel = new ItemListViewModel({
+      dataSource = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
-        active: true,
       });
-      expect(ViewModel.sort.sortKey).toBe(ITEM_SORT_KEYS.START_TIME);
+      expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.CREATE_TIME);
     });
+
     it('Tasks displays by order of tasks created time [JPT-982]', async () => {
-      ViewModel = new ItemListViewModel({
+      dataSource = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
-        active: true,
       });
-      expect(ViewModel.sort.sortKey).toBe(ITEM_SORT_KEYS.CREATE_TIME);
+      expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.CREATE_TIME);
+    });
+
+    it('should image files display by order of files update time', async () => {
+      dataSource = new ItemListViewModel({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
+      });
+      expect(dataSource.getSort().sortKey).toBe(
+        ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      );
+    });
+
+    it('should files but not image display by order of files update time', async () => {
+      dataSource = new ItemListViewModel({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
+      });
+      expect(dataSource.getSort().sortKey).toBe(
+        ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      );
     });
   });
 });

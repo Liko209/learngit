@@ -7,7 +7,7 @@
 import { StoreViewModel } from '@/store/ViewModel';
 import { computed, observable, action } from 'mobx';
 import { MoreProps } from './types';
-import { GroupService } from 'sdk/service';
+import { GroupService } from 'sdk/module/group';
 // import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 class MoreViewModel extends StoreViewModel<MoreProps> {

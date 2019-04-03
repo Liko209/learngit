@@ -5,68 +5,85 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
-import { t } from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
-  JuiTaskSection,
-  JuiTaskNotes,
+  JuiTaskSectionOrDescription,
   JuiTaskAvatarNames,
   JuiTaskContent,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
-import { JuiIconButton } from 'jui/components/Buttons/IconButton';
 import {
   JuiFileWithExpand,
   JuiExpandImage,
 } from 'jui/pattern/ConversationCard/Files';
+import { showImageViewer } from '@/containers/Viewer';
 
 import { AvatarName } from './AvatarName';
 import { getDurationTimeText } from '../helper';
 import { ViewProps, FileType, ExtendFileItem } from './types';
+import { getFileIcon } from '@/common/getFileIcon';
+import { Download } from '@/containers/common/Download';
 
-type taskViewProps = WithNamespaces & ViewProps;
-
-const downloadBtn = (downloadUrl: string) => (
-  <JuiIconButton
-    component="a"
-    download={true}
-    href={downloadUrl}
-    variant="plain"
-    tooltipTitle={t('download')}
-  >
-    download
-  </JuiIconButton>
-);
+type taskViewProps = WithTranslation & ViewProps;
 
 const FILE_COMPS = {
-  [FileType.image]: (file: ExtendFileItem, props: ViewProps) => {
+  [FileType.image]: (
+    file: ExtendFileItem,
+    props: ViewProps,
+    handleImageClick: (
+      groupId: number,
+      id: number,
+      url: string,
+      origWidth: number,
+      origHeight: number,
+    ) => (ev: React.MouseEvent, loaded: boolean) => void,
+  ) => {
     const { item, previewUrl } = file;
-    const { id, name, downloadUrl, deactivated } = item;
+    const { groupId } = props;
+    const {
+      origHeight,
+      id,
+      origWidth,
+      name,
+      downloadUrl,
+      deactivated,
+      type,
+    } = item;
     return (
       !deactivated && (
         <JuiExpandImage
+          icon={getFileIcon(type)}
           key={id}
           previewUrl={previewUrl}
           fileName={name}
-          i18UnfoldLess={t('collapse')}
-          i18UnfoldMore={t('expand')}
-          Actions={downloadBtn(downloadUrl)}
-          ImageActions={downloadBtn(downloadUrl)}
+          i18UnfoldLess={i18next.t('common.collapse')}
+          i18UnfoldMore={i18next.t('common.expand')}
+          handleImageClick={handleImageClick(
+            groupId,
+            id,
+            previewUrl,
+            origWidth,
+            origHeight,
+          )}
+          Actions={<Download url={downloadUrl} />}
+          ImageActions={<Download url={downloadUrl} />}
         />
       )
     );
   },
   [FileType.others]: (file: ExtendFileItem) => {
     const { item } = file;
-    const { name, downloadUrl, id, deactivated } = item;
+    const { name, downloadUrl, id, deactivated, type } = item;
     return (
       !deactivated && (
         <JuiFileWithExpand
+          icon={getFileIcon(type)}
           key={id}
           fileName={name}
-          Actions={downloadBtn(downloadUrl)}
+          Actions={<Download url={downloadUrl} />}
         />
       )
     );
@@ -84,6 +101,23 @@ class Task extends React.Component<taskViewProps> {
     return assignedIds.map((assignedId: number) => (
       <AvatarName key={assignedId} id={assignedId} />
     ));
+  }
+
+  _handleImageClick = (
+    groupId: number,
+    id: number,
+    url: string,
+    origWidth: number,
+    origHeight: number,
+  ) => async (ev: React.MouseEvent, loaded?: boolean) => {
+    const target = ev.currentTarget as HTMLElement;
+
+    return await showImageViewer(groupId, id, {
+      originElement: target,
+      thumbnailSrc: url,
+      initialWidth: origWidth,
+      initialHeight: origHeight,
+    });
   }
 
   private _getTitleText(text: string) {
@@ -108,11 +142,19 @@ class Task extends React.Component<taskViewProps> {
   }
 
   render() {
-    const { task, files, startTime, endTime, hasTime, color, t } = this.props;
     const {
-      section,
-      text,
+      task,
+      files,
+      startTime,
+      endTime,
+      hasTime,
+      color,
+      t,
       notes,
+      section,
+    } = this.props;
+    const {
+      text,
       complete,
       assignedToIds,
       repeat,
@@ -132,10 +174,11 @@ class Task extends React.Component<taskViewProps> {
         complete={complete}
         title={this._getTitleText(text)}
         titleColor={color}
-        Icon={<JuiTaskCheckbox checked={complete || false} />}
+        Icon={
+          <JuiTaskCheckbox customColor={color} checked={complete || false} />}
       >
         {endTime && (
-          <JuiTaskContent title={t('due')}>
+          <JuiTaskContent title={t('item.due')}>
             <JuiTimeMessage
               time={`${startTime} ${hasTime ? '-' : ''} ${endTime} ${timeText}`}
             />
@@ -143,10 +186,10 @@ class Task extends React.Component<taskViewProps> {
         )}
 
         {assignedToIds && assignedToIds.length > 0 && (
-          <JuiTaskContent title={t('assignee')}>
+          <JuiTaskContent title={t('item.assignee')}>
             <JuiTaskAvatarNames
               count={assignedToIds && assignedToIds.length}
-              otherText={t('avatarnamesWithOthers', {
+              otherText={t('item.avatarNamesWithOthers', {
                 count: assignedToIds.length - 2,
               })}
             >
@@ -155,19 +198,23 @@ class Task extends React.Component<taskViewProps> {
           </JuiTaskContent>
         )}
         {section && (
-          <JuiTaskContent title={t('section')}>
-            <JuiTaskSection section={section} />
+          <JuiTaskContent title={t('item.section')}>
+            <JuiTaskSectionOrDescription text={section} />
           </JuiTaskContent>
         )}
         {notes && (
-          <JuiTaskContent title={t('descriptionNotes')}>
-            <JuiTaskNotes notes={notes} />
+          <JuiTaskContent title={t('item.descriptionNotes')}>
+            <JuiTaskSectionOrDescription text={notes} />
           </JuiTaskContent>
         )}
         {files && files.length > 0 && (
-          <JuiTaskContent title={t('Attachments')}>
+          <JuiTaskContent title={t('item.attachments')}>
             {files.map((file: ExtendFileItem) => {
-              return FILE_COMPS[file.type](file, this.props);
+              return FILE_COMPS[file.type](
+                file,
+                this.props,
+                this._handleImageClick,
+              );
             })}
           </JuiTaskContent>
         )}
@@ -176,6 +223,6 @@ class Task extends React.Component<taskViewProps> {
   }
 }
 
-const TaskView = translate('translations')(Task);
+const TaskView = withTranslation('translations')(Task);
 
 export { TaskView };

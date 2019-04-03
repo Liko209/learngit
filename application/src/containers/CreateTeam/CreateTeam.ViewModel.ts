@@ -5,8 +5,9 @@
  */
 import { action, computed, observable } from 'mobx';
 
-import GroupService, { CreateTeamOptions } from 'sdk/service/group';
-import { UserConfig } from 'sdk/service/account';
+import GroupService, { TeamSetting, Group } from 'sdk/module/group';
+import { AccountUserConfig } from 'sdk/service/account/config';
+
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -35,7 +36,7 @@ class CreateTeamViewModel extends AbstractViewModel {
   @observable
   errorEmail: string;
   @observable
-  serverUnknownError: boolean = false;
+  loading: boolean = false;
 
   @computed
   get isOffline() {
@@ -68,39 +69,40 @@ class CreateTeamViewModel extends AbstractViewModel {
 
   @action
   create = async (
-    name: string,
     memberIds: (number | string)[],
-    description: string,
-    options: CreateTeamOptions,
-  ) => {
-    const { isPublic, canPost } = options;
+    options: TeamSetting,
+  ): Promise<Group | null> => {
     const groupService: GroupService = GroupService.getInstance();
-    const creatorId = Number(UserConfig.getCurrentUserId());
-    const result = await groupService.createTeam(
-      name,
-      creatorId,
-      memberIds,
-      description,
-      {
-        isPublic,
-        canPost,
-      },
-    );
-    if (result.isErr()) {
-      this.createErrorHandler(result.error);
+    const userConfig = new AccountUserConfig();
+    const creatorId = userConfig.getGlipUserId();
+    try {
+      this.loading = true;
+      const result = await groupService.createTeam(
+        creatorId,
+        memberIds,
+        options,
+      );
+      this.loading = false;
+      return result;
+    } catch (error) {
+      this.loading = false;
+      const unkonwnError = this.createErrorHandler(error);
+      if (unkonwnError) {
+        throw new Error();
+      }
+      return null;
     }
-    return result;
   }
 
   createErrorHandler(error: JError) {
-    this.serverUnknownError = false;
+    let serverUnknownError = false;
     if (
       error.isMatch({
         type: ERROR_TYPES.SERVER,
         codes: [ERROR_CODES_SERVER.ALREADY_TAKEN],
       })
     ) {
-      this.errorMsg = 'alreadyTaken';
+      this.errorMsg = 'people.prompt.alreadyTaken';
       this.nameError = true;
     } else if (
       error.isMatch({
@@ -111,13 +113,14 @@ class CreateTeamViewModel extends AbstractViewModel {
       const message = error.message;
       if (matchInvalidEmail(message).length > 0) {
         this.errorEmail = matchInvalidEmail(message);
-        this.emailErrorMsg = 'Invalid Email';
+        this.emailErrorMsg = 'people.prompt.InvalidEmail';
         this.emailError = true;
       }
     } else {
-      this.serverUnknownError = true;
+      serverUnknownError = true;
     }
+    return serverUnknownError;
   }
 }
 
-export { CreateTeamViewModel };
+export { CreateTeamViewModel, TeamSetting };

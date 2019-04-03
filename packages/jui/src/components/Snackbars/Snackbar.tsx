@@ -14,10 +14,11 @@ type JuiSnackbarProps = MuiSnackbarProps & {
   noFix?: boolean;
 };
 
-const WrappedMuiSnackbar = (props: JuiSnackbarProps) => {
+const WrappedMuiSnackbar = React.memo((props: JuiSnackbarProps) => {
   const { noFix, ...rest } = props;
   return <MuiSnackbar className="snackbar" {...rest} />;
-};
+});
+
 const JuiSnackbar = styled<JuiSnackbarProps>(WrappedMuiSnackbar)`
   && {
     position: ${({ noFix }) => (noFix ? 'relative' : 'fixed')};

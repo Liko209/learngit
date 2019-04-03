@@ -10,10 +10,10 @@ describe('Video', () => {
     const data = video();
     expect(data).toEqual({
       parameter: {
-        verb: 'started',
-        noun: 'video chat',
+        verb: 'item.activity.started',
+        noun: 'item.activity.video chat',
       },
-      key: 'verb-article-noun',
+      key: 'item.activity.verb-article-noun',
     });
   });
 });

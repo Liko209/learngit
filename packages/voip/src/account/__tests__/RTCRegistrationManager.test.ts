@@ -26,6 +26,7 @@ class MockUserAgent extends EventEmitter2 {
 
   makeCall = jest.fn();
   reRegister = jest.fn();
+  unregister = jest.fn();
 
   mockSignal(signal: string) {
     this.emit(signal);
@@ -37,7 +38,7 @@ const options = 'options';
 const phoneNumber = 'phoneNumber';
 
 describe('RTCRegistrationManager', () => {
-  describe('reRegister()', async () => {
+  describe('reRegister()', () => {
     function initRegManager(regManager: RTCRegistrationManager) {
       jest
         .spyOn(regManager, 'onProvisionReadyAction')
@@ -94,7 +95,7 @@ describe('RTCRegistrationManager', () => {
       });
     });
   });
-  describe('Registration failed retry', async () => {
+  describe('Registration failed retry', () => {
     let regManager: RTCRegistrationManager;
     let ua: MockUserAgent;
     function setup() {
@@ -108,44 +109,25 @@ describe('RTCRegistrationManager', () => {
       regManager.provisionReady(provisionData, options);
     }
 
-    it('Should reset retry timer interval to 2s when account state enter ready. [JPT-811]', done => {
-      setup();
-      ua.mockSignal(UA_EVENT.REG_FAILED);
-      regManager.reRegister();
-      ua.mockSignal(UA_EVENT.REG_SUCCESS);
-      setImmediate(() => {
-        expect(regManager._retryInterval).toBe(2);
-        done();
-      });
-    });
-
     it('Should send reRegister when retry timer reached. [JPT-812]', done => {
       jest.useFakeTimers();
       setup();
       jest.spyOn(regManager, 'reRegister');
       ua.mockSignal(UA_EVENT.REG_FAILED);
       setImmediate(() => {
-        jest.advanceTimersByTime(2000);
+        jest.advanceTimersByTime(60 * 1000);
         expect(regManager.reRegister).toBeCalled();
         done();
       });
     });
 
-    it('Should schedule nex retry interval as max(60, current_interval * 2). [JPT-813]', () => {
+    it('Should set retry interval from 30s to 60s. [JPT-813]', () => {
       setup();
-      expect(regManager._retryInterval).toBe(2);
       regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(4);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(8);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(16);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(32);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(60);
-      regManager._calculateNextRetryInterval();
-      expect(regManager._retryInterval).toBe(60);
+      const minExpected = 30;
+      const maxExpected = 60;
+      expect(regManager._retryInterval).toBeLessThanOrEqual(maxExpected);
+      expect(regManager._retryInterval).toBeGreaterThanOrEqual(minExpected);
     });
   });
 

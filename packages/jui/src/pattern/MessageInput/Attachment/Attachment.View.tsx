@@ -5,10 +5,9 @@
  */
 
 import React, {
-  Component,
   MouseEvent,
   Fragment,
-  PureComponent,
+  Component,
   RefObject,
   createRef,
 } from 'react';
@@ -23,7 +22,6 @@ import {
   JuiMenuList,
   JuiDivider,
 } from '../../../components';
-import { JuiIconography } from '../../../foundation/Iconography';
 import { withUploadFile } from '../../../hoc/withUploadFile';
 
 const Menu = styled(JuiMenu)`
@@ -41,7 +39,7 @@ const MenuList = styled(JuiMenuList)`
 type Props = AttachmentViewProps;
 
 @withUploadFile
-class UploadArea extends PureComponent<any> {
+class UploadArea extends Component<any> {
   render() {
     return <div />;
   }
@@ -66,10 +64,13 @@ class AttachmentView extends Component<Props> {
 
   private _hideMenuAndShowDialog = () => {
     this._hideMenu();
-    const ref = this._uploadRef.current;
-    if (ref) {
-      ref.showFileDialog();
-    }
+    // fix for Edge bug: FIJI-2818
+    setTimeout(() => {
+      const ref = this._uploadRef.current;
+      if (ref) {
+        ref.showFileDialog();
+      }
+    },         0);
   }
 
   render() {
@@ -78,23 +79,23 @@ class AttachmentView extends Component<Props> {
     const open = !!anchorEl;
     const menus = [
       {
-        icon: <JuiIconography>google</JuiIconography>,
+        icon: 'google',
         label: 'Google Drive',
       },
       {
-        icon: <JuiIconography>dropbox</JuiIconography>,
+        icon: 'dropbox',
         label: 'Dropbox',
       },
       {
-        icon: <JuiIconography>box</JuiIconography>,
+        icon: 'box',
         label: 'Box',
       },
       {
-        icon: <JuiIconography>evernote</JuiIconography>,
+        icon: 'evernote',
         label: 'Evernote',
       },
       {
-        icon: <JuiIconography>onedrive</JuiIconography>,
+        icon: 'onedrive',
         label: 'OneDrive',
       },
     ];

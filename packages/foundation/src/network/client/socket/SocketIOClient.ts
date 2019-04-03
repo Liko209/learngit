@@ -21,7 +21,7 @@ class SocketClient implements ISocketRequestDelegate {
     this.socket = io(`https://${socketServer}`, {
       transports: ['polling', 'websocket'],
       autoConnect: false,
-      reconnection: true,
+      reconnection: false,
       reconnectionDelay: 5000,
       reconnectionDelayMax: 25000,
       forceNew: true,
@@ -31,7 +31,9 @@ class SocketClient implements ISocketRequestDelegate {
     this.socket.on('response', (response: any) => {
       this.socketRequestHelper.newResponse(response);
     });
-
+    this.socket.on('disconnect', () => {
+      this.socketRequestHelper.onSocketDisconnect();
+    });
     SocketClient.get = () => {
       return this as ISocketRequestDelegate;
     };

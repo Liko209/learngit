@@ -25,8 +25,7 @@ test(formalName(`Display a toggle that controls whether to show only new message
     const loginUser = users[7];
     await h(t).platform(loginUser).init();
     await h(t).glip(loginUser).init();
-    await h(t).glip(loginUser).resetProfile();
-    const otherUser = users[5];
+     const otherUser = users[5];
     await h(t).platform(otherUser).init();
 
     const directMessagesSection = app.homePage.messageTab.directMessagesSection;
@@ -68,14 +67,15 @@ test(formalName(`Display a toggle that controls whether to show only new message
         members: [loginUser.rcId, users[5].rcId],
       });
     });
-
+    await h(t).withLog('And clear all UMIs before login', async () => {
+      await h(t).glip(loginUser).resetProfileAndState();
+    });
+    
     await h(t).withLog('And favorite 2 conversation before login', async () => {
       await h(t).glip(loginUser).favoriteGroups([+favPrivateChatId, +favTeamId]);
     });
 
-    await h(t).withLog('And clear all UMIs before login', async () => {
-      await h(t).glip(loginUser).clearAllUmi();
-    });
+
 
     await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
       await h(t).directLoginWithUser(SITE_URL, loginUser);

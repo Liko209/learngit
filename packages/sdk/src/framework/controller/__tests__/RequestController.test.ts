@@ -5,9 +5,12 @@
  */
 
 import { RequestController } from '../impl/RequestController';
-import { ApiResultOk, ApiResultErr } from '../../../api/ApiResult';
 import { IdModel } from '../../../framework/model';
-import { BaseResponse, JNetworkError, ERROR_CODES_NETWORK } from 'foundation/src';
+import {
+  BaseResponse,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+} from 'foundation/src';
 import NetworkClient from '../../../api/NetworkClient';
 
 type TestEntity = IdModel & {
@@ -43,12 +46,9 @@ describe('RequestController', () => {
     });
 
     it('should return entity when api result is ok', async () => {
-      jest.spyOn(networkConfig.networkClient, 'get').mockResolvedValueOnce(
-        new ApiResultOk({ id: 1, name: 'jupiter' }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      jest
+        .spyOn(networkConfig.networkClient, 'get')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
 
       const entity = await requestController.get(1);
       expect(entity.id).toBe(1);
@@ -56,13 +56,13 @@ describe('RequestController', () => {
     });
 
     it('should return exception when error', async () => {
-      const error = new JNetworkError(ERROR_CODES_NETWORK.NOT_FOUND, 'Not Found');
-      jest.spyOn(networkConfig.networkClient, 'get').mockResolvedValueOnce(
-        new ApiResultErr(error, {
-          status: 404,
-          headers: {},
-        } as BaseResponse),
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.NOT_FOUND,
+        'Not Found',
       );
+      jest
+        .spyOn(networkConfig.networkClient, 'get')
+        .mockRejectedValueOnce(error);
       expect(requestController.get(1)).resolves.toThrow();
     });
   });
@@ -75,12 +75,9 @@ describe('RequestController', () => {
     });
 
     it('should return entity when api success and has _id', async () => {
-      jest.spyOn(networkConfig.networkClient, 'put').mockResolvedValueOnce(
-        new ApiResultOk({ id: 1, name: 'jupiter' }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      jest
+        .spyOn(networkConfig.networkClient, 'put')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
 
       const result = await requestController.put({ _id: 1, name: 'jupiter' });
 
@@ -89,12 +86,9 @@ describe('RequestController', () => {
     });
 
     it('should return entity when api success and has id', async () => {
-      jest.spyOn(networkConfig.networkClient, 'put').mockResolvedValueOnce(
-        new ApiResultOk({ id: 1, name: 'jupiter' }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      jest
+        .spyOn(networkConfig.networkClient, 'put')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
 
       const result = await requestController.put({ id: 1, name: 'jupiter' });
 
@@ -107,12 +101,9 @@ describe('RequestController', () => {
     });
 
     it('should return entity when api success and has id, -id', async () => {
-      jest.spyOn(networkConfig.networkClient, 'put').mockResolvedValueOnce(
-        new ApiResultOk({ id: 1, name: 'jupiter' }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      jest
+        .spyOn(networkConfig.networkClient, 'put')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
 
       const result = await requestController.put({
         id: 1,
@@ -125,13 +116,13 @@ describe('RequestController', () => {
     });
 
     it('should throw exception when api fail', async () => {
-      const error = new JNetworkError(ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR, 'Not Found');
-      jest.spyOn(networkConfig.networkClient, 'put').mockResolvedValueOnce(
-        new ApiResultErr(error, {
-          status: 500,
-          headers: {},
-        } as BaseResponse),
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.INTERNAL_SERVER_ERROR,
+        'Not Found',
       );
+      jest
+        .spyOn(networkConfig.networkClient, 'put')
+        .mockRejectedValueOnce(error);
       expect(
         requestController.put({
           id: 1,
@@ -144,13 +135,13 @@ describe('RequestController', () => {
 
   describe('postData()', () => {
     it('should throw exception api error', async () => {
-      const error = new JNetworkError(ERROR_CODES_NETWORK.BAD_REQUEST, 'Not Found');
-      jest.spyOn(networkConfig.networkClient, 'post').mockResolvedValueOnce(
-        new ApiResultErr(error, {
-          status: 400,
-          headers: {},
-        } as BaseResponse),
+      const error = new JNetworkError(
+        ERROR_CODES_NETWORK.BAD_REQUEST,
+        'Not Found',
       );
+      jest
+        .spyOn(networkConfig.networkClient, 'post')
+        .mockRejectedValueOnce(error);
 
       expect(
         requestController.post({ _id: -1, name: 'jupiter' }),
@@ -158,12 +149,9 @@ describe('RequestController', () => {
     });
 
     it('should return entity when api success', async () => {
-      jest.spyOn(networkConfig.networkClient, 'post').mockResolvedValueOnce(
-        new ApiResultOk({ id: 1, name: 'jupiter' }, {
-          status: 200,
-          headers: {},
-        } as BaseResponse),
-      );
+      jest
+        .spyOn(networkConfig.networkClient, 'post')
+        .mockResolvedValueOnce({ id: 1, name: 'jupiter' });
       const result = await requestController.post({ _id: 1, name: 'jupiter' });
       expect(result.id).toBe(1);
       expect(result.name).toBe('jupiter');

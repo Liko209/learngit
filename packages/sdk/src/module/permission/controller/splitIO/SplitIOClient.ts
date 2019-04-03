@@ -23,11 +23,13 @@ class SplitIOClient {
   private splitUpdateCallback: any;
   private splitReadyCallback: any;
   private featureName: string[];
+  private attributes: any;
   constructor(params: SplitIOClientParams) {
     this.trafficType = TRAFFIC_TYPE_USER;
     this.splitUpdateCallback = params.splitIOUpdate;
     this.splitReadyCallback = params.splitIOReady;
     this.featureName = params.permissions;
+    this.attributes = params.attributes || {};
 
     const settings: SplitIO.IBrowserSettings = {
       core: {
@@ -50,11 +52,11 @@ class SplitIOClient {
   }
 
   async getAllPermissions() {
-    return this.client.getTreatments(this.featureName);
+    return await this.client.getTreatments(this.featureName, this.attributes);
   }
 
   async hasPermission(type: UserPermissionType): Promise<boolean> {
-    const result = await this.client.getTreatments(this.featureName);
+    const result = await this.client.getTreatments([type], this.attributes);
     return result[type] === 'on';
   }
 

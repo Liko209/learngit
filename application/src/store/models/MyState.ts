@@ -1,4 +1,4 @@
-import { MyState } from 'sdk/models';
+import { MyState } from 'sdk/module/state/entity';
 import Base from './Base';
 import { observable } from 'mobx';
 

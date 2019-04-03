@@ -4,18 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 const config: SubModuleConfig = {
   route: {
     path: '/calendar',
     component: () => <div>Calendar</div>,
   },
-  nav: () => ({
+  nav: async () => ({
     url: '/calendar',
-    icon: 'calendar',
-    title: t('Calendar'),
+    Icon: (
+      <JuiIconography iconSize="medium">leftNavEvent_border</JuiIconography>
+    ),
+    IconSelected: (
+      <JuiIconography iconSize="medium">leftNavEvent</JuiIconography>
+    ),
+    title: await i18nT('calendar.Calendar'),
     placement: 'bottom',
   }),
 };

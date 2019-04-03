@@ -23,7 +23,7 @@ class ProfileMiniCardGroupHeaderView extends Component<
 > {
   render() {
     const { id, group } = this.props;
-    const { displayName, isTeam } = group;
+    const { displayName } = group;
     return (
       <JuiProfileMiniCardHeader>
         <JuiProfileMiniCardHeaderLeft>
@@ -39,8 +39,8 @@ class ProfileMiniCardGroupHeaderView extends Component<
           </JuiProfileMiniCardGroupName>
         </JuiProfileMiniCardHeaderMiddle>
         <JuiProfileMiniCardHeaderRight>
-          {isTeam && <Privacy id={id} />}
-          <Favorite id={id} />
+          <Privacy id={id} size="small" />
+          <Favorite id={id} size="small" />
         </JuiProfileMiniCardHeaderRight>
       </JuiProfileMiniCardHeader>
     );

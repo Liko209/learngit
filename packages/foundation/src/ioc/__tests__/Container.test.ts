@@ -1,6 +1,6 @@
 import Container from '../Container';
 
-class AService { }
+class AService {}
 class BService {
   aService: AService;
   constructor(aService: AService) {

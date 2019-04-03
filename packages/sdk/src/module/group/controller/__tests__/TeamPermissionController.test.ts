@@ -3,17 +3,25 @@
  * @Date: 2019-01-14 14:30:55
  * Copyright © RingCentral. All rights reserved.
  */
+import { GlobalConfigService } from '../../../../module/config';
 
-import { TeamPermissionController } from '../TeamPermissionController';
-import { TeamPermission, TeamPermissionParams } from '../../entity';
 import {
-  PERMISSION_ENUM,
   DEFAULT_USER_PERMISSION_LEVEL,
+  PERMISSION_ENUM,
 } from '../../constants';
-import { UserConfig } from 'sdk/service/account/UserConfig';
-jest.mock('sdk/service/account/UserConfig');
+import { TeamPermission, TeamPermissionParams } from '../../entity';
+import { TeamPermissionController } from '../TeamPermissionController';
+import { AccountUserConfig } from '../../../../service/account/config';
+
+jest.mock('../../../../module/config/service/GlobalConfigService');
+jest.mock('../../../../service/account/config');
+jest.mock('../../../../service/account/config/AccountUserConfig');
+
 const mockCurrentUserId = 5683;
 const mockCurrentUserCompanyId = 55668833;
+
+GlobalConfigService.getInstance = jest.fn();
+
 describe('TeamPermissionController', () => {
   let teamPermissionController: TeamPermissionController;
   beforeEach(() => {
@@ -23,12 +31,13 @@ describe('TeamPermissionController', () => {
 
   describe('isCurrentUserGuest()', () => {
     beforeAll(() => {
-      UserConfig.getCurrentUserId = jest
+      AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
-        .mockImplementation(() => mockCurrentUserId);
-      UserConfig.getCurrentCompanyId = jest
+        .mockReturnValue(mockCurrentUserId);
+
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
         .fn()
-        .mockImplementation(() => mockCurrentUserCompanyId);
+        .mockReturnValue(mockCurrentUserCompanyId);
     });
     it('should return false when guestUserCompanyIds is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -61,6 +70,7 @@ describe('TeamPermissionController', () => {
         members: [mockCurrentUserId],
         guest_user_company_ids: [mockCurrentUserCompanyId],
       };
+
       expect(
         teamPermissionController.isCurrentUserGuest(teamPermissionParams),
       ).toBeTruthy();
@@ -137,7 +147,7 @@ describe('TeamPermissionController', () => {
         ),
       ).toEqual(15);
     });
-    it('should return 0 level when user is not a team member', () => {
+    it('should return default team admin permission level when there is not permissions info', () => {
       const teamPermissionParams: TeamPermissionParams = {
         members: [],
         is_team: true,
@@ -146,7 +156,7 @@ describe('TeamPermissionController', () => {
         teamPermissionController.getCurrentUserPermissionLevel(
           teamPermissionParams,
         ),
-      ).toEqual(0);
+      ).toEqual(31);
     });
     it('should return team permission level when permissions is undefined', () => {
       const teamPermissionParams: TeamPermissionParams = {
@@ -324,32 +334,32 @@ describe('TeamPermissionController', () => {
         ]);
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_POST,
+          teamPermissionParams,
         ),
       ).toBeTruthy();
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADD_MEMBER,
+          teamPermissionParams,
         ),
       ).toBeTruthy();
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_PIN_POST,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
     });
@@ -367,8 +377,8 @@ describe('TeamPermissionController', () => {
       };
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
     });
@@ -386,8 +396,8 @@ describe('TeamPermissionController', () => {
       };
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
         ),
       ).toBeTruthy();
     });
@@ -405,14 +415,48 @@ describe('TeamPermissionController', () => {
       };
       expect(
         teamPermissionController.isCurrentUserHasPermission(
-          teamPermissionParams,
           PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
+        ),
+      ).toBeFalsy();
+    });
+
+    it('should has default permission when do not have info', () => {
+      const teamPermissionParams: TeamPermissionParams = {};
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_POST,
+          teamPermissionParams,
+        ),
+      ).toBeTruthy();
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_ADD_MEMBER,
+          teamPermissionParams,
+        ),
+      ).toBeFalsy();
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_PIN_POST,
+          teamPermissionParams,
+        ),
+      ).toBeFalsy();
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
+          teamPermissionParams,
+        ),
+      ).toBeFalsy();
+      expect(
+        teamPermissionController.isCurrentUserHasPermission(
+          PERMISSION_ENUM.TEAM_ADMIN,
+          teamPermissionParams,
         ),
       ).toBeFalsy();
     });
   });
 
-  describe('isTeamAdmin()', async () => {
+  describe('isTeamAdmin()', () => {
     it('should return true if no team permission model', async () => {
       expect(teamPermissionController.isTeamAdmin(11, undefined)).toBeFalsy();
     });

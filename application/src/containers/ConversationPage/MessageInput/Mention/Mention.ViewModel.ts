@@ -4,16 +4,23 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { action, observable, computed, runInAction, comparer } from 'mobx';
+import { action, observable, computed, comparer, runInAction } from 'mobx';
 import { MentionProps, MentionViewProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
-import { PersonService } from 'sdk/module/person';
+import { SearchService } from 'sdk/module/search';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
 import Keys from 'jui/pattern/MessageInput/keys';
 import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
+import { INIT_CURRENT_INDEX } from './constants';
+import { CONVERSATION_TYPES } from '@/constants';
+
+type searchMember = {
+  displayName: string;
+  id: number;
+};
 
 const canTriggerDefaultEventHandler = (vm: MentionViewModel) => {
   if (vm.members.length && vm.open) {
@@ -34,10 +41,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @observable
   currentIndex: number = 0;
   @observable
-  members: {
-    displayName: string;
-    id: number;
-  }[] = [];
+  members: searchMember[] = [];
   @observable
   searchTerm?: string;
 
@@ -68,26 +72,31 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     super(props);
     this.reaction(
       () => ({ searchTerm: this.searchTerm, memberIds: this._memberIds }),
-      (data: { searchTerm?: string; memberIds: number[] }) => {
+      async (data: { searchTerm?: string; memberIds: number[] }) => {
         if (this._canDoFuzzySearch || this.isEditMode) {
-          this._doFuzzySearchPersons(data);
+          await this._doFuzzySearchPersons(data);
         }
         this._canDoFuzzySearch = true;
       },
       {
-        delay: DELAY,
+        delay: this.searchTerm ? DELAY : 0,
         equals: comparer.structural,
       },
     );
     this.reaction(
       () => this.props.id,
       () => {
-        this._canDoFuzzySearch = false;
-        this.open = false;
-        this.currentIndex = 0;
-        this.members = [];
+        this.reset();
       },
     );
+  }
+
+  @action
+  reset() {
+    this._canDoFuzzySearch = false;
+    this.open = false;
+    this.currentIndex = 0;
+    this.members = [];
   }
 
   @computed
@@ -102,7 +111,7 @@ class MentionViewModel extends StoreViewModel<MentionProps>
 
   @computed
   private get _memberIds() {
-    return this._group.members;
+    return this._group.members || [];
   }
 
   @action
@@ -131,19 +140,16 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     memberIds: number[];
   }) => {
     const term = searchTerm ? searchTerm.trim() : '';
-    const personService: PersonService = PersonService.getInstance();
-    const res = await personService.doFuzzySearchPersons(
-      term,
-      true,
-      memberIds,
-      true,
-    );
+    const searchService = SearchService.getInstance();
+    const res = await searchService.doFuzzySearchPersons({
+      searchKey: term,
+      excludeSelf: true,
+      arrangeIds: memberIds,
+      fetchAllIfSearchKeyEmpty: true,
+    });
     if (res) {
       runInAction(() => {
-        if (res.sortableModels.length > 20) {
-          res.sortableModels.length = 20;
-        }
-        this.currentIndex = 0;
+        this.currentIndex = this.initIndex;
         this.members = res.sortableModels;
       });
     }
@@ -159,8 +165,8 @@ class MentionViewModel extends StoreViewModel<MentionProps>
       const quill: Quill = this.quill;
       const mentionModules = quill.getModule('mention');
       mentionModules.select(
-        vm.members[vm.currentIndex].id,
-        vm.members[vm.currentIndex].displayName,
+        vm.members[vm.currentIndex - vm.initIndex].id,
+        vm.members[vm.currentIndex - vm.initIndex].displayName,
         vm._denotationChar,
       );
       vm.currentIndex = 0;
@@ -169,7 +175,8 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     };
   }
 
-  @action selectHandler = (selectIndex: number) => {
+  @action
+  selectHandler = (selectIndex: number) => {
     return () => {
       this.currentIndex = selectIndex;
       const { pid } = this.props;
@@ -195,8 +202,9 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action
   private _upHandler(vm: MentionViewModel) {
     return function () {
-      vm.currentIndex =
-        (vm.currentIndex + vm.members.length - 1) % vm.members.length;
+      const size = vm.members.length + INIT_CURRENT_INDEX;
+      const currentIndex = (vm.currentIndex + size - 1) % size;
+      vm.currentIndex = currentIndex === 0 ? vm.members.length : currentIndex;
       return canTriggerDefaultEventHandler(vm);
     };
   }
@@ -204,14 +212,32 @@ class MentionViewModel extends StoreViewModel<MentionProps>
   @action
   private _downHandler(vm: MentionViewModel) {
     return function () {
-      vm.currentIndex = (vm.currentIndex + 1) % vm.members.length;
+      const size = vm.members.length + INIT_CURRENT_INDEX;
+      const currentIndex = (vm.currentIndex + 1) % size;
+      vm.currentIndex = currentIndex === 0 ? INIT_CURRENT_INDEX : currentIndex;
       return canTriggerDefaultEventHandler(vm);
     };
   }
 
   @computed
+  get initIndex() {
+    // because of title will within VL
+    return this.isOneToOneGroup ? 0 : INIT_CURRENT_INDEX;
+  }
+
+  @computed
+  get isOneToOneGroup() {
+    return this.groupType === CONVERSATION_TYPES.NORMAL_ONE_TO_ONE;
+  }
+
+  @computed
   get isEditMode() {
     return this.props.isEditMode;
+  }
+
+  @computed
+  get ids() {
+    return this.members.map((member: searchMember) => member.id);
   }
 
   mentionOptions = {

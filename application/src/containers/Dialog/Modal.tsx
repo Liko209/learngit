@@ -1,56 +1,32 @@
 /*
  * @Author: Nello Huang (nello.huang@ringcentral.com)
- * @Date: 2018-10-11 13:21:43
+ * @Date: 2018-11-21 13:28:06
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
-import { JuiModal, JuiModalProps } from 'jui/components/Dialog/Modal';
+import { JuiDialog, JuiDialogProps } from 'jui/components/Dialog';
 import portalManager from '@/common/PortalManager';
 
-type BaseType = {
-  isAlert?: boolean;
-} & JuiModalProps;
+type Props = {
+  componentProps?: any;
+} & JuiDialogProps;
 
-function modal(config: BaseType) {
-  const { onOK, onCancel, isAlert, ...newConfig } = config;
-
-  const BaseModal = (props: BaseType) => {
-    const { isAlert, ...newConfig } = props;
-    const defaultBtnText = {
-      okText: t('OK'),
-      cancelText: t('Cancel'),
-    };
-
-    if (isAlert) {
-      Reflect.deleteProperty(defaultBtnText, 'cancelText');
-    }
-
-    const currentConfig = {
-      ...defaultBtnText,
-      ...newConfig,
-    };
-
-    return <JuiModal {...currentConfig} />;
+function modal(
+  component: React.ComponentType<any> | JSX.Element,
+  props: Props,
+) {
+  const Component = component;
+  const Dialog = () => {
+    return (
+      <JuiDialog {...props}>
+        {Component instanceof Function ? <Component /> : Component}
+      </JuiDialog>
+    );
   };
 
-  const { dismiss, show } = portalManager.wrapper(BaseModal);
+  const { dismiss, show } = portalManager.wrapper(Dialog);
 
-  const currentConfig = {
-    ...newConfig,
-    isAlert,
-    open: true,
-    async onOK() {
-      onOK && (await onOK());
-      dismiss();
-    },
-    onCancel() {
-      onCancel && onCancel();
-      dismiss();
-    },
-  };
-
-  show(undefined, currentConfig);
+  show();
   return {
     dismiss,
   };

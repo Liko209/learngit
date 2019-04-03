@@ -12,7 +12,7 @@ const StyledToolbar = styled(JuiToolbar)`
   && {
     min-height: ${height(16)};
     justify-content: space-between;
-    padding: 0 ${spacing(4)};
+    padding: ${spacing(0, 4, 0, 2)};
   }
 `;
 

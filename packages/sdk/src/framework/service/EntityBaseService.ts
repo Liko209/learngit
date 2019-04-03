@@ -44,8 +44,16 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     return buildEntityCacheSearchController<T>(this._entityCacheController);
   }
 
+  getEntityCacheController(): IEntityCacheController<T> {
+    return this._entityCacheController;
+  }
+
   setSubscriptionController(subscribeController: ISubscribeController) {
     this._subscribeController = subscribeController;
+  }
+
+  async clear() {
+    await this._entitySourceController.clear();
   }
 
   protected onStarted() {
@@ -57,13 +65,32 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     if (this._subscribeController) {
       this._subscribeController.unsubscribe();
     }
+
+    delete this._subscribeController;
+    delete this._entitySourceController;
+    delete this._entityCacheController;
   }
 
-  getById(id: number): Promise<T | null> {
+  async getById(id: number): Promise<T | null> {
     if (this._entitySourceController) {
-      return Promise.resolve(this._entitySourceController.get(id));
+      return await this._entitySourceController.get(id);
     }
     throw new Error('entitySourceController is null');
+  }
+
+  async batchGet(ids: number[]): Promise<T[]> {
+    if (this._entitySourceController) {
+      return await this._entitySourceController.batchGet(ids);
+    }
+
+    throw new Error('entitySourceController is null');
+  }
+
+  getSynchronously(id: number): T | null {
+    if (this._entityCacheController) {
+      return this._entityCacheController.getSynchronously(id);
+    }
+    return null;
   }
 
   isCacheInitialized() {
@@ -74,18 +101,27 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     return this._entityCacheController ? true : false;
   }
 
+  protected buildEntityCacheController() {
+    return buildEntityCacheController<T>();
+  }
+
   private _initControllers() {
     if (this.isSupportedCache && !this._entityCacheController) {
-      this._entityCacheController = buildEntityCacheController<T>();
+      this._entityCacheController = this.buildEntityCacheController();
       this._initialEntitiesCache();
     }
 
-    this._entitySourceController = buildEntitySourceController(
-      buildEntityPersistentController<T>(this.dao, this._entityCacheController),
-      this.networkConfig
-        ? buildRequestController<T>(this.networkConfig)
-        : undefined,
-    );
+    if (this.dao || this._entityCacheController) {
+      this._entitySourceController = buildEntitySourceController(
+        buildEntityPersistentController<T>(
+          this.dao,
+          this._entityCacheController,
+        ),
+        this.networkConfig
+          ? buildRequestController<T>(this.networkConfig)
+          : undefined,
+      );
+    }
   }
 
   private async _initialEntitiesCache() {
@@ -102,6 +138,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
       mainLogger.debug(
         'initial cache without permission or already initialized',
       );
+      this._entityCacheController.initialize([]);
     }
   }
 

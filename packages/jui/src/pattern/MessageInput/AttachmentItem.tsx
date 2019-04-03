@@ -3,10 +3,10 @@
  * @Date: 2018-12-10 18:40:06
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { PureComponent, MouseEvent } from 'react';
+import React, { PureComponent, MouseEvent, memo } from 'react';
 import styled from '../../foundation/styled-components';
 
-import { t } from 'i18next';
+import i18next from 'i18next';
 import {
   height,
   width,
@@ -39,6 +39,7 @@ type AttachmentItemProps = StatusProps &
     name: string;
     hideRemoveButton?: boolean;
     onClickDeleteButton?: (event: MouseEvent) => void;
+    fileIcon: string;
   };
 
 const StatusMap = {
@@ -69,8 +70,8 @@ const IconWrapper = styled.div`
   color: ${grey('500')};
   width: ${width(5)};
   height: ${height(5)};
-  top: ${spacing(0.5)};
-  right: ${spacing(-1)};
+  top: ${spacing(0.75)};
+  right: ${spacing(-0.75)};
 `;
 
 const ProgressWrapper = styled.div`
@@ -87,29 +88,33 @@ type AttachmentItemActionProps = StatusProps & {
   icon?: string | JSX.Element;
 };
 
-const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = (
-  props: AttachmentItemActionProps,
-) => (
-  <ActionWrapper
-    onClick={!props.hideRemoveButton ? props.onClick : undefined}
-    data-test-automation-id="attachment-action-button"
-  >
-    {typeof props.value !== 'undefined' &&
-      props.status === ITEM_STATUS.LOADING && (
-        <ProgressWrapper>
-          <JuiCircularProgress variant="static" size={24} value={props.value} />
-        </ProgressWrapper>
-      )}
-    <IconWrapper>
-      {typeof props.icon === 'string'
-        ? !props.hideRemoveButton && (
-            <JuiIconButton variant="plain" tooltipTitle={t('Remove')}>
-              close
-            </JuiIconButton>
-          )
-        : props.icon}
-    </IconWrapper>
-  </ActionWrapper>
+const AttachmentItemAction: React.SFC<AttachmentItemActionProps> = memo(
+  (props: AttachmentItemActionProps) => (
+    <ActionWrapper
+      onClick={!props.hideRemoveButton ? props.onClick : undefined}
+      data-test-automation-id="attachment-action-button"
+    >
+      {typeof props.value !== 'undefined' &&
+        props.status === ITEM_STATUS.LOADING && (
+          <ProgressWrapper>
+            <JuiCircularProgress
+              variant="static"
+              size={24}
+              value={props.value}
+            />
+          </ProgressWrapper>
+        )}
+      <IconWrapper>
+        {typeof props.icon === 'string'
+          ? !props.hideRemoveButton && (
+              <JuiIconButton variant="plain" tooltipTitle={i18next.t('Remove')}>
+                close
+              </JuiIconButton>
+            )
+          : props.icon}
+      </IconWrapper>
+    </ActionWrapper>
+  ),
 );
 
 class AttachmentItem extends PureComponent<AttachmentItemProps> {
@@ -120,6 +125,7 @@ class AttachmentItem extends PureComponent<AttachmentItemProps> {
       hideRemoveButton,
       onClickDeleteButton,
       progress,
+      fileIcon,
     } = this.props;
     const loading = status === ITEM_STATUS.LOADING;
     const action = (
@@ -135,6 +141,7 @@ class AttachmentItem extends PureComponent<AttachmentItemProps> {
     return (
       <Wrapper>
         <JuiFileWithExpand
+          icon={fileIcon}
           fileNameColor={StatusMap[status]}
           fileNameOpacity={loading ? 0.26 : 1}
           fileName={name}

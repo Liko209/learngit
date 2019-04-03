@@ -24,7 +24,7 @@ class NoteItemViewModel extends AbstractViewModel<NoteProps> {
   get note() {
     const id = this._id;
     if (typeof id !== 'undefined') {
-      return getEntity<Item, NoteItemModel>(ENTITY_NAME.NOTE_ITEM, id);
+      return getEntity<Item, NoteItemModel>(ENTITY_NAME.ITEM, id);
     }
     return null;
   }
@@ -43,11 +43,14 @@ class NoteItemViewModel extends AbstractViewModel<NoteProps> {
     const note = this.note;
     if (note) {
       const { creatorId } = note;
-      const personName = getEntity<Person, PersonModel>(
-        ENTITY_NAME.PERSON,
-        creatorId,
-      ).userDisplayName;
-      return personName;
+      if (creatorId) {
+        const personName = getEntity<Person, PersonModel>(
+          ENTITY_NAME.PERSON,
+          creatorId,
+        ).userDisplayName;
+        return personName;
+      }
+      return '';
     }
     return '';
   }

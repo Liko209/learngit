@@ -6,4 +6,7 @@ export type CodeSnippetViewModelProps = {
 
 export type CodeSnippetViewProps = {
   postItem: CodeSnippetItem;
+  body: string;
+  isCollapse: boolean;
+  setCollapse: (isCollapse: boolean) => void;
 };

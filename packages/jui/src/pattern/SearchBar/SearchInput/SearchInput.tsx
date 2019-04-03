@@ -3,21 +3,30 @@
  * @Date: 2018-11-22 10:16:03
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { ChangeEvent, createRef, FocusEventHandler } from 'react';
+import React, {
+  MouseEvent,
+  ChangeEvent,
+  createRef,
+  FocusEventHandler,
+} from 'react';
 import * as Jui from './style';
+import moize from 'moize';
+import { IconColor } from '../../../foundation/Iconography';
 
 type JuiSearchInputProps = {
   value: string;
   placeholder: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onClick?: (e: MouseEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEventHandler<HTMLInputElement>) => void;
   onFocus?: (e: FocusEventHandler<HTMLInputElement>) => void;
   onClear: () => void;
   focus: boolean;
   showCloseBtn: boolean;
+  hasValue?: boolean;
 };
 
-class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
+class JuiSearchInput extends React.PureComponent<JuiSearchInputProps, {}> {
   private _inputDom = createRef<HTMLInputElement>();
 
   constructor(props: JuiSearchInputProps) {
@@ -52,14 +61,36 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
     }
   }
 
+  focusTextInput = () => {
+    const node = this._inputDom.current;
+    if (node) {
+      node.focus();
+    }
+  }
+
+  private _color = moize((scope: string, name: string) => {
+    return [scope, name] as IconColor;
+  });
+
   render() {
-    const { value, focus, onFocus, placeholder, showCloseBtn } = this.props;
+    const {
+      value,
+      hasValue,
+      focus,
+      onFocus,
+      onClick,
+      placeholder,
+      showCloseBtn,
+    } = this.props;
 
     return (
-      <Jui.SearchWrapper hasValue={value} focus={focus}>
+      <Jui.SearchWrapper hasValue={hasValue} focus={focus}>
         <Jui.SearchIcon
           data-test-automation-id="search-icon"
-          disableToolTip={true}
+          iconColor={
+            focus ? this._color('grey', '500') : this._color('common', 'white')
+          }
+          iconSize="small"
         >
           search
         </Jui.SearchIcon>
@@ -68,6 +99,7 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
           onChange={this.onChange}
           onFocus={onFocus}
           onBlur={this.onBlur}
+          onClick={onClick}
           inputRef={this._inputDom}
           inputProps={{
             placeholder,
@@ -84,6 +116,7 @@ class JuiSearchInput extends React.Component<JuiSearchInputProps, {}> {
             disableToolTip={true}
             variant="plain"
             onClick={this.onClose}
+            color={focus ? 'grey.500' : 'common.white'}
           >
             close
           </Jui.CloseBtn>

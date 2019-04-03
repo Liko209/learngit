@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { t } from 'i18next';
+import i18next from 'i18next';
 import _ from 'lodash';
 
 function getDateMessage(
@@ -18,13 +18,13 @@ function getDateMessage(
     .millisecond(0);
   const diff = now.diff(m, 'days', true);
   if (diff === 0) {
-    return t('today');
+    return i18next.t('common.time.today');
   }
   if (diff === 1) {
-    return t('yesterday');
+    return i18next.t('common.time.yesterday');
   }
   if (diff === -1) {
-    return t('tomorrow');
+    return i18next.t('common.time.tomorrow');
   }
   if (diff <= 7) {
     return m.format(format); // Tue, Oct 30th  周二, 10月30日
@@ -33,13 +33,13 @@ function getDateMessage(
 }
 
 const WEEKDAY = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
+  'common.time.Sunday',
+  'common.time.Monday',
+  'common.time.Tuesday',
+  'common.time.Wednesday',
+  'common.time.Thursday',
+  'common.time.Friday',
+  'common.time.Saturday',
 ];
 type Moment = moment.Moment;
 const dateFormatter = {
@@ -47,14 +47,13 @@ const dateFormatter = {
     return m.format('LT');
   },
   today: () => {
-    return t('today');
+    return i18next.t('common.time.today');
   },
   yesterday: () => {
-    return t('yesterday');
+    return i18next.t('common.time.yesterday');
   },
   weekday: (m: Moment) => {
-    const date = new Date(m.format());
-    return t(WEEKDAY[date.getDay()]);
+    return i18next.t(WEEKDAY[m.day()]);
   },
   exactDate: (m: Moment) => {
     return `${dateFormatter.weekday(m).slice(0, 3)}, ${m.format('l')}`;
@@ -177,6 +176,42 @@ function getDateTimeStamp(timestamp: number) {
     .startOf('day')
     .valueOf();
 }
+function handleTimeZoneOffset(
+  timestamp: number,
+  timezoneOffset: number,
+): number {
+  const localTimezoneOffset = moment().utcOffset();
+  const MINUTE = 60 * 1000;
+  return timestamp + (localTimezoneOffset - timezoneOffset) * MINUTE;
+}
+
+function twoDigit(n: number) {
+  return (n < 10 ? '0' : '') + n;
+}
+
+function formatSeconds(seconds: number) {
+  let secondTime = seconds;
+  let minuteTime = 0;
+  let hourTime = 0;
+  if (secondTime >= 60) {
+    // @ts-ignore
+    minuteTime = parseInt(secondTime / 60, 10);
+    // @ts-ignore
+    secondTime = parseInt(secondTime % 60, 10);
+    if (minuteTime >= 60) {
+      // @ts-ignore
+      hourTime = parseInt(minuteTime / 60, 10);
+      // @ts-ignore
+      minuteTime = parseInt(minuteTime % 60, 10);
+    }
+  }
+  return {
+    secondTime: twoDigit(secondTime),
+    minuteTime: twoDigit(minuteTime),
+    hourTime: twoDigit(hourTime),
+  };
+}
+
 export {
   getDateTimeStamp,
   getDateMessage,
@@ -184,6 +219,8 @@ export {
   dividerTimestamp,
   postTimestamp,
   dateFormatter,
+  handleTimeZoneOffset,
+  formatSeconds,
 };
 
 // 7 days inside

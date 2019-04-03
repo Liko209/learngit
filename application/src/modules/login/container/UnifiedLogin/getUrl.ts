@@ -25,7 +25,7 @@ const defaultOptions = {
 };
 
 const getUrl = (location: History.LocationState) => {
-  const { glip2 } = config.get('api');
+  const { glip2, glip } = config.get('api');
   const url = `${glip2.server}${glip2.apiPlatform}/oauth/authorize`;
   const { from } = location.state || { from: {} };
   const { pathname = '/', search = '', hash = '' } = from;
@@ -34,9 +34,13 @@ const getUrl = (location: History.LocationState) => {
   const updatedSearch = `?${stringify(parsedSearch)}`;
   const state = pathname + updatedSearch.replace('&', '$') + hash;
   const redirect_uri = window.location.origin; // The URI must match exactly with the sandbox configuration
+  const glipApiBaseURL = glip.apiServer;
+  const glipAppRedirectURL = `${redirect_uri}?t=`;
   const options = {
     redirect_uri,
     state,
+    glipApiBaseURL,
+    glipAppRedirectURL,
     client_id: glip2.clientId,
     ui_locales: getLanguage(), // default en_US
   };

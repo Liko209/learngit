@@ -20,4 +20,7 @@ export enum PERFORMANCE_KEYS {
   GOTO_CONVERSATION_SHELF_FETCH_ITEMS = 'goto_conversation_shelf_fetch_items',
   GOTO_CONVERSATION_FETCH_POSTS = 'goto_conversation_fetch_posts',
   GOTO_CONVERSATION_FETCH_ITEMS = 'goto_conversation_fetch_items',
+  CONVERSATION_FETCH_FROM_DB = 'conversation_fetch_from_db',
+  CONVERSATION_FETCH_FROM_SERVER = 'conversation_fetch_from_server',
+  CONVERSATION_HANDLE_DATA_FROM_SERVER = 'conversation_handle_data_from_server',
 }

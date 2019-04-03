@@ -4,13 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ILogConsumer, LogEntity } from '../types';
-import { ILogApi, LogApiProxy } from './api';
+import { ILogUploader, LogUploaderProxy } from './uploader';
 import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistenceLogEntity, ILogPersistence } from './persistence';
 import StateMachine from 'ts-javascript-state-machine';
 import { configManager } from '../config';
 import { randomInt, sleep } from '../utils';
-import { NO_INJECT_ERROR, NETWORK_ERROR } from '../constants';
 import sumBy from 'lodash/sumBy';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -21,20 +20,30 @@ const PERSISTENCE_STATE = {
   EMPTY: 'EMPTY',
 };
 
-class PersistenceTask extends Task { }
+class PersistenceTask extends Task {}
 class UploadMemoryLogTask extends Task {
-  constructor(public logs: LogEntity[], public _logApi: ILogApi, public _logPersistence: ILogPersistence) {
+  constructor(
+    public logs: LogEntity[],
+    public _logUploader: ILogUploader,
+    public _logPersistence: ILogPersistence,
+  ) {
     super();
-    this.setOnExecute(async () => await _logApi.upload(logs));
+    this.setOnExecute(async () => await _logUploader.upload(logs));
     this.setOnAbort(async () => {
       await _logPersistence.put(transform.toPersistence(logs));
     });
   }
 }
 class UploadPersistenceLogTask extends Task {
-  constructor(public log: PersistenceLogEntity, public _logApi: ILogApi, public _logPersistence: ILogPersistence) {
+  constructor(
+    public log: PersistenceLogEntity,
+    public _logUploader: ILogUploader,
+    public _logPersistence: ILogPersistence,
+  ) {
     super();
-    this.setOnExecute(async () => await _logApi.upload(transform.toLogEntity(log)));
+    this.setOnExecute(
+      async () => await _logUploader.upload(transform.toLogEntity(log)),
+    );
     this.setOnCompleted(async () => await _logPersistence.delete(log));
     this.setOnAbort(async () => {
       await _logPersistence.put(log);
@@ -59,8 +68,12 @@ const transform = {
   },
 };
 
+function retryDelay(retryCount: number) {
+  return Math.min(5000 + retryCount * 20000, 60 * 1000);
+}
+
 export class LogConsumer implements ILogConsumer {
-  private _logApi: ILogApi;
+  private _logUploader: ILogUploader;
   private _logPersistence: ILogPersistence;
   private _persistenceFSM: StateMachine;
   private _memoryQueue: MemoryQueue<LogEntity>;
@@ -74,17 +87,31 @@ export class LogConsumer implements ILogConsumer {
     this._memoryQueue = new MemoryQueue();
     this._memorySize = 0;
     this._flushMode = false;
-    this._logApi = new LogApiProxy();
+    this._logUploader = new LogUploaderProxy();
     this._uploadTaskQueueLoop = new TaskQueueLoop()
       .setOnTaskError(async (task, error, loopController) => {
-        console.error('LogConsumer onTaskError:', error);
-        if (error.message === NO_INJECT_ERROR || error.message === NETWORK_ERROR) {
-          await sleep(5000);
-          await loopController.retry();
-        } else if (error.message === 'abort error') {
-          await loopController.abortAll();
-        } else {
-          await loopController.ignore();
+        const handlerType = this._logUploader.errorHandler(error);
+        console.info(
+          'LogConsumer onTaskError:',
+          error,
+          ' handlerType:',
+          handlerType,
+        );
+        switch (handlerType) {
+          case 'abort':
+            await loopController.abort();
+            break;
+          case 'abortAll':
+            await loopController.abortAll();
+            break;
+          case 'retry':
+            await sleep(retryDelay(task.retryCount));
+            task.retryCount += 1;
+            await loopController.retry();
+            break;
+          case 'ignore':
+            await loopController.ignore();
+            break;
         }
       })
       .setOnTaskCompleted(async (task, loopController) => {
@@ -97,18 +124,37 @@ export class LogConsumer implements ILogConsumer {
     this._persistenceFSM = new StateMachine({
       init: PERSISTENCE_STATE.INIT,
       transitions: [
-        { name: 'initial', from: PERSISTENCE_STATE.INIT, to: PERSISTENCE_STATE.NO_SURE },
-        { name: 'ensureEmpty', from: PERSISTENCE_STATE.NO_SURE, to: PERSISTENCE_STATE.EMPTY },
-        { name: 'ensureNotEmpty', from: PERSISTENCE_STATE.NO_SURE, to: PERSISTENCE_STATE.NOT_EMPTY },
-        { name: 'consume', from: PERSISTENCE_STATE.NOT_EMPTY, to: PERSISTENCE_STATE.EMPTY },
-        { name: 'append', from: PERSISTENCE_STATE.EMPTY, to: PERSISTENCE_STATE.NOT_EMPTY },
+        {
+          name: 'initial',
+          from: PERSISTENCE_STATE.INIT,
+          to: PERSISTENCE_STATE.NO_SURE,
+        },
+        {
+          name: 'ensureEmpty',
+          from: PERSISTENCE_STATE.NO_SURE,
+          to: PERSISTENCE_STATE.EMPTY,
+        },
+        {
+          name: 'ensureNotEmpty',
+          from: PERSISTENCE_STATE.NO_SURE,
+          to: PERSISTENCE_STATE.NOT_EMPTY,
+        },
+        {
+          name: 'consume',
+          from: PERSISTENCE_STATE.NOT_EMPTY,
+          to: PERSISTENCE_STATE.EMPTY,
+        },
+        {
+          name: 'append',
+          from: PERSISTENCE_STATE.EMPTY,
+          to: PERSISTENCE_STATE.NOT_EMPTY,
+        },
       ],
       methods: {
         onInitial: () => {
           this._ensurePersistenceState();
         },
-        onEnsureEmpty: () => {
-        },
+        onEnsureEmpty: () => {},
         onEnsureNotEmpty: () => {
           this._consumePersistenceIfNeed();
         },
@@ -129,8 +175,10 @@ export class LogConsumer implements ILogConsumer {
       memoryCountThreshold,
       memorySizeThreshold,
     } = configManager.getConfig().consumer;
-    if (this._memoryQueue.size() > memoryCountThreshold
-      || this._memorySize > memorySizeThreshold) {
+    if (
+      this._memoryQueue.size() > memoryCountThreshold ||
+      this._memorySize > memorySizeThreshold
+    ) {
       this._flushMemory();
     }
   }
@@ -153,10 +201,9 @@ export class LogConsumer implements ILogConsumer {
 
   private _init() {
     this._persistenceTaskQueueLoop.addTail(
-      new PersistenceTask()
-        .setOnExecute(async () => {
-          await this._logPersistence.init();
-        }),
+      new PersistenceTask().setOnExecute(async () => {
+        await this._logPersistence.init();
+      }),
     );
     this._persistenceFSM.initial();
     this._flushInTimeout();
@@ -167,7 +214,6 @@ export class LogConsumer implements ILogConsumer {
       clearTimeout(this._timeoutId);
     }
     this._timeoutId = setTimeout(() => {
-
       this._consumePersistenceIfNeed();
       this._flushMemory();
     },                           configManager.getConfig().consumer.autoFlushTimeCycle);
@@ -178,9 +224,12 @@ export class LogConsumer implements ILogConsumer {
     this._memorySize = 0;
     this._flushInTimeout();
     if (logs.length < 1) return;
-    if (this._persistenceFSM.state === PERSISTENCE_STATE.EMPTY && this._uploadAvailable()) {
+    if (
+      this._persistenceFSM.state === PERSISTENCE_STATE.EMPTY &&
+      this._uploadAvailable()
+    ) {
       this._uploadTaskQueueLoop.addTail(
-        new UploadMemoryLogTask(logs, this._logApi, this._logPersistence),
+        new UploadMemoryLogTask(logs, this._logUploader, this._logPersistence),
       );
     } else {
       this._persistenceTaskQueueLoop.addTail(
@@ -197,43 +246,46 @@ export class LogConsumer implements ILogConsumer {
 
   private _ensurePersistenceState() {
     this._persistenceTaskQueueLoop.addTail(
-      new PersistenceTask()
-        .setOnExecute(async () => {
-          const count = await this._logPersistence.count();
-          if (this._persistenceFSM.state === PERSISTENCE_STATE.NO_SURE) {
-            count ? this._persistenceFSM.ensureNotEmpty() : this._persistenceFSM.ensureEmpty();
-          }
-        }),
+      new PersistenceTask().setOnExecute(async () => {
+        const count = await this._logPersistence.count();
+        if (this._persistenceFSM.state === PERSISTENCE_STATE.NO_SURE) {
+          count
+            ? this._persistenceFSM.ensureNotEmpty()
+            : this._persistenceFSM.ensureEmpty();
+        }
+      }),
     );
   }
 
   private _consumePersistenceIfNeed() {
     const {
-      consumer: {
-        uploadQueueLimit,
-      },
+      consumer: { uploadQueueLimit },
     } = configManager.getConfig();
-    if (this._uploadTaskQueueLoop.size() === 0
-      && this._uploadAvailable()) {
+    if (this._uploadTaskQueueLoop.size() === 0 && this._uploadAvailable()) {
       this._persistenceTaskQueueLoop.addTail(
-        new PersistenceTask()
-          .setOnExecute(async () => {
-            const persistenceLogs = await this._logPersistence.getAll(3 * uploadQueueLimit);
-            if (persistenceLogs && persistenceLogs.length) {
-              await this._logPersistence.bulkDelete(persistenceLogs);
-              const combineLogs = this._combinePersistenceLogs(persistenceLogs);
-              combineLogs.forEach((combineLog) => {
-                this._uploadTaskQueueLoop.addTail(
-                  new UploadPersistenceLogTask(combineLog, this._logApi, this._logPersistence),
-                );
-              });
+        new PersistenceTask().setOnExecute(async () => {
+          const persistenceLogs = await this._logPersistence.getAll(
+            3 * uploadQueueLimit,
+          );
+          if (persistenceLogs && persistenceLogs.length) {
+            await this._logPersistence.bulkDelete(persistenceLogs);
+            const combineLogs = this._combinePersistenceLogs(persistenceLogs);
+            combineLogs.forEach((combineLog: PersistenceLogEntity) => {
+              this._uploadTaskQueueLoop.addTail(
+                new UploadPersistenceLogTask(
+                  combineLog,
+                  this._logUploader,
+                  this._logPersistence,
+                ),
+              );
+            });
+            this._persistenceFSM.consume();
+          } else {
+            if (this._persistenceFSM.state === PERSISTENCE_STATE.NOT_EMPTY) {
               this._persistenceFSM.consume();
-            } else {
-              if (this._persistenceFSM.state === PERSISTENCE_STATE.NOT_EMPTY) {
-                this._persistenceFSM.consume();
-              }
             }
-          }),
+          }
+        }),
       );
     }
   }
@@ -242,14 +294,16 @@ export class LogConsumer implements ILogConsumer {
     const combineLogs = [];
     let size = 0;
     for (let i = 0; i < persistenceLogs.length; i++) {
-      size += (persistenceLogs[i].size || 0);
+      size += persistenceLogs[i].size || 0;
       const currentLog = combineLogs[combineLogs.length - 1];
       if (!currentLog) {
         combineLogs.push(cloneDeep(persistenceLogs[i]));
-      } else if (size > configManager.getConfig().consumer.combineSizeThreshold
-        || currentLog.sessionId !== persistenceLogs[i].sessionId) {
+      } else if (
+        size > configManager.getConfig().consumer.combineSizeThreshold ||
+        currentLog.sessionId !== persistenceLogs[i].sessionId
+      ) {
         combineLogs.push(cloneDeep(persistenceLogs[i]));
-        size = (persistenceLogs[i].size || 0);
+        size = persistenceLogs[i].size || 0;
       } else {
         // combine
         currentLog.size = size;
@@ -263,11 +317,10 @@ export class LogConsumer implements ILogConsumer {
   private _uploadAvailable(): boolean {
     const {
       uploadAccessor,
-      consumer: {
-        uploadQueueLimit,
-      },
+      consumer: { uploadQueueLimit, enabled },
     } = configManager.getConfig();
     do {
+      if (!enabled) break;
       if (this._flushMode) break;
       if (uploadAccessor && !uploadAccessor.isAccessible()) break;
       if (this._uploadTaskQueueLoop.size() >= uploadQueueLimit) break;

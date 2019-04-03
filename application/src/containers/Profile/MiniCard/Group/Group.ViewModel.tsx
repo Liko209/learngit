@@ -38,7 +38,7 @@ class ProfileMiniCardGroupViewModel
     const onError = (error: Error) => {
       if (errorHelper.isBackEndError(error)) {
         Notification.flashToast({
-          message: 'SorryWeWereNotAbleToOpenThisProfile',
+          message: 'people.prompt.SorryWeWereNotAbleToOpenThisProfile',
           type: ToastType.ERROR,
           messageAlign: ToastMessageAlign.LEFT,
           fullWidth: false,
@@ -52,7 +52,7 @@ class ProfileMiniCardGroupViewModel
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
     if (!groupStore.hasValid(this.id)) {
-      const groupService = new GroupService();
+      const groupService: GroupService = GroupService.getInstance();
       groupService
         .getById(this.id)
         .then((group: Group | null) => {

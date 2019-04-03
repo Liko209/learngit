@@ -9,9 +9,6 @@ import { SubItemServiceRegister } from '../config';
 import { ItemActionController } from './ItemActionController';
 import { buildPartialModifyController } from '../../../framework/controller';
 import { Item } from '../entity';
-import { daoManager } from '../../../dao';
-import { ItemDao } from '../dao';
-import { GlipTypeUtil } from '../../../utils';
 import { IItemService } from '../service/IItemService';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { ItemSyncController } from './ItemSyncController';
@@ -26,9 +23,7 @@ class ItemServiceController {
     private _itemService: IItemService,
     private _entitySourceController: IEntitySourceController<Item>,
   ) {
-    this._subItemServices = SubItemServiceRegister.buildSubItemServices(
-      _itemService,
-    );
+    this._subItemServices = SubItemServiceRegister.buildSubItemServices();
   }
 
   getSubItemService(typeId: number) {
@@ -51,6 +46,7 @@ class ItemServiceController {
 
       this._itemActionController = new ItemActionController(
         partialModifyController,
+        this._entitySourceController,
       );
     }
     return this._itemActionController;
@@ -70,102 +66,29 @@ class ItemServiceController {
   }
 
   async getItems(options: ItemQueryOptions) {
+    const ids: number[] = await this._getSortedItemIds(options);
+    if (ids.length === 0) {
+      return [];
+    }
+
+    return await this._entitySourceController.batchGet(ids, true);
+  }
+
+  async getItemIndexInfo(
+    itemId: number,
+    options: ItemQueryOptions,
+  ): Promise<{ index: number; totalCount: number }> {
+    const itemIds = await this._getSortedItemIds(options);
+    return { index: itemIds.indexOf(itemId), totalCount: itemIds.length };
+  }
+
+  private async _getSortedItemIds(options: ItemQueryOptions) {
     let ids: number[] = [];
     const subItemService = this.getSubItemService(options.typeId);
     if (subItemService) {
       ids = await subItemService.getSortedIds(options);
     }
-
-    if (ids.length === 0) {
-      return [];
-    }
-
-    const itemDao = daoManager.getDao(ItemDao);
-    const items = await itemDao.getItemsByIds(ids);
-
-    const itemMap: Map<number, Item> = new Map();
-    items.forEach((item: Item) => {
-      itemMap.set(item.id, item);
-    });
-
-    return ids.map((id: number) => {
-      return itemMap.get(id) as Item;
-    });
-  }
-
-  async createItem(item: Item) {
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.put(item);
-
-    this._shouldSaveSanitizedItem(item) &&
-      (await this._getSubItemServiceByITemId(item.id).createItem(item));
-  }
-
-  async updateItem(item: Item) {
-    const itemDao = daoManager.getDao(ItemDao);
-    await itemDao.update(item);
-
-    this._shouldSaveSanitizedItem(item) &&
-      (await this._getSubItemServiceByITemId(item.id).updateItem(item));
-  }
-
-  async deleteItem(itemId: number) {
-    await daoManager.getDao(ItemDao).delete(itemId);
-
-    itemId > 0 &&
-      (await this._getSubItemServiceByITemId(itemId).deleteItem(itemId));
-  }
-
-  private _getSubItemServiceByITemId(itemId: number) {
-    const typeId = GlipTypeUtil.extractTypeId(itemId);
-    return this.getSubItemService(typeId);
-  }
-
-  async handleSanitizedItems(incomingItems: Item[]) {
-    const typeItemsMap: Map<number, Item[]> = new Map();
-    incomingItems.forEach((item: Item) => {
-      this._saveItemsToTypeIdMap(
-        GlipTypeUtil.extractTypeId(item.id),
-        typeItemsMap,
-        item,
-      );
-    });
-
-    typeItemsMap.forEach(
-      (value: Item[], key: number, map: Map<number, Item[]>) => {
-        this._updateSanitizedItems(key, value);
-      },
-    );
-  }
-
-  private _saveItemsToTypeIdMap(
-    typeId: number,
-    typeItemsMap: Map<number, Item[]>,
-    item: Item,
-  ) {
-    typeItemsMap.has(typeId)
-      ? (typeItemsMap.get(typeId) as Item[]).push(item)
-      : typeItemsMap.set(typeId, [item]);
-  }
-
-  private async _updateSanitizedItems(typeId: number, items: Item[]) {
-    const subItemService = this.getSubItemService(typeId);
-    if (!subItemService) {
-      return;
-    }
-    const deactivatedItems = items.filter(item => item.deactivated);
-    deactivatedItems.forEach((item: Item) => {
-      subItemService.deleteItem(item.id);
-    });
-
-    const normalData = items.filter(item => !item.deactivated);
-    normalData.forEach((item: Item) => {
-      subItemService.createItem(item);
-    });
-  }
-
-  private _shouldSaveSanitizedItem(item: Item) {
-    return item.id > 0 && item.post_ids && item.post_ids.length > 0;
+    return ids;
   }
 }
 

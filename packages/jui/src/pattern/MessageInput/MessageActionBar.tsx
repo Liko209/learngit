@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { Component, ReactNode } from 'react';
+import React, { PureComponent, ReactNode } from 'react';
 import styled from '../../foundation/styled-components';
 
 type Props = {
@@ -19,7 +19,7 @@ const Wrapper = styled.div`
   flex-shrink: 0;
 `;
 
-class MessageActionBar extends Component<Props> {
+class MessageActionBar extends PureComponent<Props> {
   render() {
     const { children } = this.props;
     return <Wrapper>{children}</Wrapper>;

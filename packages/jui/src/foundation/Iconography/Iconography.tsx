@@ -4,50 +4,77 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import MuiIcon, { IconProps as MuiIconProps } from '@material-ui/core/Icon';
-import name2icon from './name2icon';
+import { name2icon } from './name2icon';
 import styled, { css } from '../../foundation/styled-components';
-import { Omit } from '../utils/typeHelper';
 import { Palette } from '../theme/theme';
-import { palette } from '../../foundation/utils/styles';
+import { palette, width } from '../../foundation/utils/styles';
 
-type JuiIconographyProps = Omit<MuiIconProps, 'color'> & {
-  color?: [keyof Palette, string];
+export type IconColor = [keyof Palette, string];
+
+const sizes = {
+  extraSmall: 3,
+  small: 4,
+  medium: 5,
+  large: 6,
+  extraLarge: 9,
 };
 
-const WrappedMuiIcon = ({ color, ...rest }: JuiIconographyProps) => (
-  <MuiIcon {...rest} />
-);
+export type IconSize =
+  | 'extraSmall'
+  | 'small'
+  | 'medium'
+  | 'large'
+  | 'inherit'
+  | 'extraLarge';
 
-const StyledIcon = styled<JuiIconographyProps>(WrappedMuiIcon)`
-  display: block;
-  ${({ theme, color }) => {
-    if (!color) {
-      return;
-    }
-    const colorScope = color[0] || 'grey';
-    const colorName = color[1] || '500';
-    return css`
-      color: ${palette(colorScope, colorName)({ theme })}};
-    `;
-  }}
+type JuiIconographyProps = {
+  iconColor?: IconColor;
+  iconSize?: IconSize;
+  children: string;
+} & React.HTMLAttributes<HTMLElement>;
+
+const StyledSpan = styled('span')`
+  display: inline-flex;
 `;
 
-const JuiIconography: React.SFC<JuiIconographyProps> & {
-  dependencies?: any[];
-} = (props: JuiIconographyProps) => {
-  const { children, className, color } = props;
-  const iconName = children as string;
-  const _className = `${className} ${name2icon[iconName]} icon`;
+const StyledSvg = styled('svg')<{ iconColor?: IconColor; size?: IconSize }>`
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  pointer-events: none;
+  font-size: ${({ size = 'large' }) =>
+    size !== 'inherit' ? width(sizes[size]) : 'inherit'};
+  ${({ theme, iconColor }) => {
+    if (!iconColor) {
+      return;
+    }
+    const colorScope = iconColor[0] || 'grey';
+    const colorName = iconColor[1] || '400';
+    return css`
+      fill: ${palette(colorScope, colorName)({ theme })}};
+    `;
+  }};
+`;
 
+const JuiIconographyComponent: React.SFC<JuiIconographyProps> = (
+  props: JuiIconographyProps,
+) => {
+  const { children, className, iconColor, iconSize, ...rest } = props;
+  const iconName = name2icon[children as string];
+  const _className = `${className || ''} ${children} icon`;
   return (
-    <StyledIcon {...props} className={_className} color={color}>
-      {iconName}
-    </StyledIcon>
+    <StyledSpan className={_className} {...rest}>
+      <StyledSvg iconColor={iconColor} size={iconSize}>
+        <use xlinkHref={`#icon-${iconName}`} href={`#icon-${iconName}`} />
+      </StyledSvg>
+    </StyledSpan>
   );
 };
 
-JuiIconography.displayName = 'JuiIconography';
-JuiIconography.dependencies = [MuiIcon];
+JuiIconographyComponent.displayName = 'JuiIconography';
 
+const JuiIconography = React.memo(JuiIconographyComponent);
 export { JuiIconographyProps, JuiIconography };

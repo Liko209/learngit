@@ -4,37 +4,34 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { JuiModalProps, JuiDialogFuncProps } from 'jui/components/Dialog';
-import { modal } from './Modal';
 import { dialog } from './Dialog';
-import { DialogPortal } from './DialogPortal';
-
-type ReturnFunc = {
-  dismiss: () => void;
-};
+import { modal } from './Modal';
+import { ModalPortal } from './ModalPortal';
+export { default as DialogContext } from './DialogContext';
 
 class Dialog {
   static simple(
     component: JSX.Element | React.ComponentType<any>,
     config?: JuiDialogFuncProps,
-  ): ReturnFunc {
+  ) {
     const newConfig = {
       open: true,
       ...config,
     };
-    return dialog(component, newConfig);
+    return modal(component, newConfig);
   }
 
-  static alert(props: JuiModalProps): ReturnFunc {
+  static alert(props: JuiModalProps) {
     const config = {
       isAlert: true,
       ...props,
     };
-    return modal(config);
+    return dialog(config);
   }
 
-  static confirm(props: JuiModalProps): ReturnFunc {
-    return modal(props);
+  static confirm(props: JuiModalProps) {
+    return dialog(props);
   }
 }
 
-export { Dialog, DialogPortal };
+export { Dialog, ModalPortal };

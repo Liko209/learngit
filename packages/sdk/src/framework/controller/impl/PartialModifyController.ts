@@ -132,7 +132,7 @@ class PartialModifyController<T extends IdModel = IdModel>
 
       if (_.isEqual(partialEntity, rollbackPartialEntity)) {
         result = originalEntity;
-        mainLogger.warn('handlePartialUpdate: no changes, no need update');
+        mainLogger.info('handlePartialUpdate: no changes, no need update');
         break;
       }
 
@@ -189,7 +189,6 @@ class PartialModifyController<T extends IdModel = IdModel>
         return transform(item);
       },
     );
-
     await this.entitySourceController.bulkUpdate(transformedModels);
     if (doPartialNotify) {
       doPartialNotify(originalEntities, updatedEntities, partialEntities);

@@ -1,8 +1,4 @@
 import { getEntity } from '@/store/utils';
-import {
-  IFetchSortableDataProvider,
-  IFetchSortableDataListHandlerOptions,
-} from './../../../store/base/fetch/FetchSortableDataListHandler';
 import { OrdinaryPostWrapper } from './StreamItemAssemblyLine/Assembler/OrdinaryPostWrapper';
 import { SingletonTagChecker } from './StreamItemAssemblyLine/Assembler/CalcItems';
 import { DateSeparator } from './StreamItemAssemblyLine/Assembler/DateSeparator';
@@ -16,9 +12,10 @@ import { computed, action } from 'mobx';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { ENTITY_NAME } from '@/store';
 
-import { GroupState } from 'sdk/models';
+import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
+import postCacheController from './cache/PostCacheController';
 
 const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   id: dataModel.id,
@@ -50,27 +47,22 @@ export class StreamController {
     return this._groupState.readThrough || 0;
   }
 
-  @computed
-  get hasMoreUp() {
-    return this._orderListHandler.hasMore(QUERY_DIRECTION.OLDER);
-  }
-
-  @computed
-  get hasMoreDown() {
-    return this._orderListHandler.hasMore(QUERY_DIRECTION.NEWER);
-  }
-
   constructor(
     private _groupId: number,
     private _historyHandler: HistoryHandler,
-    postDataProvider: IFetchSortableDataProvider<Post>,
-    options: IFetchSortableDataListHandlerOptions<Post>,
+    private _jumpToPostId?: number,
   ) {
-    this._orderListHandler = new FetchSortableDataListHandler(
-      postDataProvider,
-      options,
+    const listHandler = postCacheController.get(
+      this._groupId,
+      this._jumpToPostId,
     );
-    this._orderListHandler.setUpDataChangeCallback(this.handlePostsChanged);
+    if (!this._jumpToPostId) {
+      postCacheController.setCurrentConversation(this._groupId);
+    }
+
+    this._orderListHandler = listHandler;
+    this._orderListHandler.addDataChangeCallback(this.handlePostsChanged);
+
     this._newMessageSeparatorHandler = new NewMessageSeparatorHandler();
     this._streamListHandler = new FetchSortableDataListHandler<StreamItem>(
       undefined,
@@ -100,19 +92,31 @@ export class StreamController {
     if (!isFirstItemPost) {
       startIndex = 1;
     }
-    return _(items)
+    let chain = _(items)
       .slice(startIndex)
       .map('data')
-      .compact()
-      .value();
+      .compact();
+
+    if (!this.hasMore(QUERY_DIRECTION.OLDER)) {
+      const initialPost: StreamItem = {
+        id: 1,
+        type: StreamItemType.INITIAL_POST,
+        timeStart: 1,
+      };
+      chain = chain.unshift(initialPost);
+    }
+    return chain.value();
   }
 
   dispose() {
     if (this._orderListHandler) {
-      this._orderListHandler.dispose();
+      this._orderListHandler.removeDataChangeCallback(this.handlePostsChanged);
     }
     if (this._streamListHandler) {
       this._streamListHandler.dispose();
+    }
+    if (!this._jumpToPostId) {
+      postCacheController.releaseCurrentConversation(this._groupId);
     }
   }
 
@@ -125,7 +129,7 @@ export class StreamController {
     const { streamItems } = this._assemblyLine.process(
       delta,
       this._orderListHandler.listStore.items,
-      this.hasMoreUp,
+      this.hasMore(QUERY_DIRECTION.OLDER),
       items,
       this._readThrough,
     );
@@ -146,7 +150,16 @@ export class StreamController {
   hasMore(direction: QUERY_DIRECTION) {
     return this._orderListHandler.hasMore(direction);
   }
+
   fetchData(direction: QUERY_DIRECTION, pageSize?: number) {
     return this._orderListHandler.fetchData(direction, pageSize);
+  }
+
+  fetchInitialData(direction: QUERY_DIRECTION, pageSize?: number) {
+    if (this._orderListHandler.size === 0) {
+      return this._orderListHandler.fetchData(direction, pageSize);
+    }
+    this._orderListHandler.refreshData();
+    return this._orderListHandler.listStore.items;
   }
 }

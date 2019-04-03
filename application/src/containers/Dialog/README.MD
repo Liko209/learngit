@@ -33,7 +33,7 @@ JuiModal.open(Test, {
 // alert
 const alert = JuiModal.alert({
   content,
-  title: t("signInFailedTitle"),
+  title: t("auth.signInFailedTitle"),
   onOK: () => {
     this.onClose();
   }
@@ -42,10 +42,10 @@ alert.dismiss();
 
 // confirm
 JuiModal.confirm({
-  title: t("deletePostTitle"),
-  content: t("deletePostContent"),
-  okText: t("deletePostOk"),
-  cancelText: t("deletePostCancel"),
+  title: t("message.prompt.deletePostTitle"),
+  content: t("message.prompt.deletePostContent"),
+  okText: t("common.dialog.delete"),
+  cancelText: t("common.dialog.cancel"),
   async onOK() {
     try {
       await deletePost();

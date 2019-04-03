@@ -5,10 +5,10 @@
  */
 import React, { Component } from 'react';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
-import { translate, WithNamespaces } from 'react-i18next';
-import { JuiLeftNav, JuiLeftNavProps } from 'jui/pattern/LeftNav';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { JuiLeftNav } from 'jui/pattern/LeftNav';
 import { LeftNavViewProps } from './types';
-import { computed, observable } from 'mobx';
+import { observable } from 'mobx';
 import _ from 'lodash';
 import { observer } from 'mobx-react';
 
@@ -16,7 +16,7 @@ type LeftNavProps = {
   isLeftNavOpen: boolean;
 } & LeftNavViewProps &
   RouteComponentProps &
-  WithNamespaces;
+  WithTranslation;
 
 @observer
 class LeftNav extends Component<LeftNavProps> {
@@ -33,23 +33,22 @@ class LeftNav extends Component<LeftNavProps> {
     });
   }
 
-  @computed
-  get icons(): JuiLeftNavProps['icons'] {
-    return this.props.icons;
-  }
-
   onRouteChange = (url: string) => {
     const { history, location } = this.props;
     if (url === location.pathname) return;
+    if (location.pathname.includes(url)) {
+      // FIJI-3794
+      return;
+    }
     history.push(url);
   }
 
   render() {
     const { isLeftNavOpen } = this.props;
-
+    const icons = this.props.icons.get();
     return (
       <JuiLeftNav
-        icons={this.icons}
+        icons={icons}
         expand={isLeftNavOpen}
         onRouteChange={this.onRouteChange}
         selectedPath={this.selectedPath}
@@ -58,6 +57,6 @@ class LeftNav extends Component<LeftNavProps> {
   }
 }
 
-const LeftNavView = translate('translations')(withRouter(LeftNav));
+const LeftNavView = withTranslation('translations')(withRouter(LeftNav));
 
 export { LeftNavView };

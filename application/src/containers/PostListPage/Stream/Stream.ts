@@ -17,7 +17,6 @@ const Stream = buildContainer<StreamProps>({
     return {
       loadingMorePlugin: new LoadingMorePlugin({
         thresholdDown: 600,
-        initialScrollTop: 0,
         stickTo: 'top',
       }),
       loadingPlugin: new LoadingPlugin(),

@@ -171,26 +171,29 @@ test(formalName('JPT-286 New Message can be created successfully', ['P1', 'SendN
 
   await h(t).withLog('Then the created conversation is at the top of the section', async () => {
     await dmSection.expand();
-    await t.expect(dmSection.conversations.nth(0).withText(`${user2Name}`).exists).ok();
+    await dmSection.nthConversationEntry(0).nameShouldBe(user2Name);
   });
 
-  const conversationSection = app.homePage.messageTab.conversationPage;
+  const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog('And the new message was sent successfully', async () => {
-    await t.expect(conversationSection.posts.child().withText(newMessages).exists).ok();
+    await conversationPage.waitUntilPostsBeLoaded();
+    await t.expect(conversationPage.posts.child().withText(newMessages).exists).ok();
   }, true);
 
   await h(t).withLog('When I refresh page', async () => {
     await h(t).reload();
+    await app.homePage.ensureLoaded();
     await app.homePage.messageTab.directMessagesSection.ensureLoaded();
   });
 
   await h(t).withLog('Then the created conversation is at the top of the section', async () => {
     await dmSection.expand();
-    await t.expect(dmSection.conversations.nth(0).withText(`${user2Name}`).exists).ok();
+    await dmSection.nthConversationEntry(0).nameShouldBe(user2Name);
   });
 
   await h(t).withLog('And the new message was sent successfully', async () => {
-    await t.expect(conversationSection.posts.child().withText(newMessages).exists).ok();
+    await conversationPage.waitUntilPostsBeLoaded();
+    await t.expect(conversationPage.posts.child().withText(newMessages).exists).ok();
   }, true);
 });
 

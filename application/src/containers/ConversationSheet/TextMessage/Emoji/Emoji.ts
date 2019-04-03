@@ -15,6 +15,7 @@ import {
   regExpUnescape,
 } from './convertKeys';
 import { CustomEmojiMap } from '../types';
+import { mapUnicodeToShort } from './mapUnicodeToShort';
 
 class Emoji {
   text: string;
@@ -49,8 +50,7 @@ class Emoji {
       // console.log(match); // :smile:
       const obj = mapEmojiOne[match]; // :smile:
       if (obj instanceof Object) {
-        const arr = obj.unicode;
-        const unicode = arr[arr.length - 1];
+        const unicode = obj.fname;
         return this._getImg(match, unicode);
       }
       return match;
@@ -85,7 +85,12 @@ class Emoji {
       const key = match
         .trim()
         .replace(regExpSpecial, (match: string) => mapSpecial[match]);
-      const unicode = mapData[key];
+      let unicode = mapData[key]; // Temporary unicode
+      // Look at the mapUnicodeToShort method for backend file emojione.js
+      const shortName = mapUnicodeToShort[unicode];
+      if (shortName) {
+        unicode = mapEmojiOne[shortName].fname; // The actual unicode
+      }
       return this._getImg(match, unicode);
     });
     return this;

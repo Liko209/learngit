@@ -5,31 +5,91 @@
  */
 import { observer } from 'mobx-react';
 import React from 'react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import ReactResizeDetector from 'react-resize-detector';
 import { JuiProfileDialogContentMemberList } from 'jui/pattern/Profile/Dialog';
-import { MemberListViewProps } from './types';
+import {
+  JuiVirtualList,
+  IVirtualListDataSource,
+  JuiVirtualCellWrapper,
+  JuiVirtualCellProps,
+} from 'jui/pattern/VirtualList';
+import { MemberListProps, MemberListViewProps } from './types';
 import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
+const ITEM_HEIGHT = 48;
+const MAX_ITEM_NUMBER = 5.5;
 
 @observer
-class MemberList extends React.Component<WithNamespaces & MemberListViewProps> {
+class MemberList
+  extends React.Component<
+    WithTranslation & MemberListProps & MemberListViewProps
+  >
+  implements IVirtualListDataSource<number, number> {
   componentWillUnmount() {
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.IS_SHOW_MEMBER_LIST_HEADER_SHADOW, false);
   }
 
-  render() {
-    const { memberIds, id } = this.props;
+  get(index: number) {
+    return this.props.filteredMemberIds[index];
+  }
+
+  size() {
+    const { filteredMemberIds } = this.props;
+    return filteredMemberIds.length;
+  }
+
+  rowRenderer = ({ style, item: memberId }: JuiVirtualCellProps<number>) => {
+    const { id } = this.props;
     return (
-      <JuiProfileDialogContentMemberList data-test-automation-id="profileDialogMemberList">
-        {memberIds.map((pid: number) => {
-          return <MemberListItem key={pid} cid={id} pid={pid} />;
-        })}
-      </JuiProfileDialogContentMemberList>
+      <JuiVirtualCellWrapper key={memberId} style={style}>
+        <MemberListItem key={memberId} cid={id} pid={memberId} />
+      </JuiVirtualCellWrapper>
+    );
+  }
+
+  onScroll = (event: { scrollTop: number }) => {
+    this.props.onScrollEvent(event);
+  }
+
+  render() {
+    const { sortedAllMemberIds } = this.props;
+    const memberIdsLength = sortedAllMemberIds.length;
+    const dialogHeight =
+      memberIdsLength >= MAX_ITEM_NUMBER
+        ? MAX_ITEM_NUMBER * ITEM_HEIGHT
+        : ITEM_HEIGHT * memberIdsLength;
+    return (
+      <ReactResizeDetector handleWidth={true} handleHeight={true}>
+        {({ width = 0, height = dialogHeight }) => {
+          let virtualListHeight =
+            memberIdsLength >= MAX_ITEM_NUMBER ? height : dialogHeight;
+          if (virtualListHeight === 0) {
+            virtualListHeight = dialogHeight;
+          }
+          return (
+            <JuiProfileDialogContentMemberList
+              style={{ height: dialogHeight, minHeight: dialogHeight }}
+            >
+              <JuiVirtualList
+                dataSource={this}
+                overscan={5}
+                rowRenderer={this.rowRenderer}
+                width={width}
+                height={dialogHeight}
+                fixedCellHeight={ITEM_HEIGHT}
+                onScroll={this.onScroll}
+                data-test-automation-id="profileDialogMemberList"
+              />
+            </JuiProfileDialogContentMemberList>
+          );
+        }}
+      </ReactResizeDetector>
     );
   }
 }
-const MemberListView = translate('translations')(MemberList);
+const MemberListView = withTranslation('translations')(MemberList);
 
 export { MemberListView };

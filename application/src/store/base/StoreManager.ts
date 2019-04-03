@@ -117,7 +117,10 @@ class StoreManager {
     store.batchSet(entities);
   }
 
-  dispatchReplacedDataModels(entityStoreName: ENTITY_NAME, entities: any[]) {
+  dispatchReplacedDataModels(
+    entityStoreName: ENTITY_NAME,
+    entities: Map<number, any>,
+  ) {
     const store = this.getEntityMapStore(
       entityStoreName,
     ) as MultiEntityMapStore<any, any>;

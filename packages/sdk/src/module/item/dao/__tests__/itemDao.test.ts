@@ -9,16 +9,49 @@ import { setup } from '../../../../dao/__tests__/utils';
 import { Item } from '../../entity';
 import { itemFactory } from '../../../../__tests__/factories';
 
+import { FileItemDao } from '../../module/file/dao';
+import { TaskItemDao } from '../../module/task/dao';
+import { EventItemDao } from '../../module/event/dao';
+import { NoteItemDao } from '../../module/note/dao';
+import { LinkItemDao } from '../../module/link/dao';
+import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
+
+jest.mock('../../module/file/dao');
+jest.mock('../../module/task/dao');
+jest.mock('../../module/event/dao');
+jest.mock('../../module/note/dao');
+jest.mock('../../module/link/dao');
+
+function clearMocks() {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+  jest.restoreAllMocks();
+}
+
 describe('Item Dao', () => {
   let itemDao: ItemDao;
 
+  const viewDaosMap = new Map([
+    [TypeDictionary.TYPE_ID_FILE, new FileItemDao(null)],
+    [TypeDictionary.TYPE_ID_TASK, new TaskItemDao(null)],
+    [TypeDictionary.TYPE_ID_EVENT, new EventItemDao(null)],
+    [TypeDictionary.TYPE_ID_PAGE, new NoteItemDao(null)],
+    [TypeDictionary.TYPE_ID_LINK, new LinkItemDao(null)],
+  ]);
+
+  function setUpViewDaos() {
+    Object.assign(itemDao, { _viewDaoMap: viewDaosMap });
+  }
+
   beforeAll(() => {
+    clearMocks();
     const { database } = setup();
     itemDao = new ItemDao(database);
   });
 
   afterEach(async () => {
     await itemDao.clear();
+    clearMocks();
   });
 
   it('Save item', async () => {
@@ -26,17 +59,6 @@ describe('Item Dao', () => {
     await itemDao.put(item);
     const matchedItem = await itemDao.get(100);
     expect(matchedItem).toMatchObject(item);
-  });
-
-  it('getItemsByIds()', async () => {
-    const items = [
-      itemFactory.build({ id: 1 }),
-      itemFactory.build({ id: 2 }),
-      itemFactory.build({ id: 3 }),
-      itemFactory.build({ id: 4 }),
-    ];
-    await itemDao.bulkPut(items);
-    expect(itemDao.getItemsByIds([1, 2, 3, 4])).resolves.toEqual(items);
   });
 
   function buildTestItems(): Item[] {
@@ -126,5 +148,199 @@ describe('Item Dao', () => {
         expect(result).toEqual(res);
       },
     );
+  });
+
+  describe('put', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUpViewDaos();
+    });
+
+    const testItem = itemFactory.build({
+      id: 10,
+      created_at: 111,
+      group_ids: [123],
+      post_ids: [123123],
+      name: 'name',
+      type: 'type',
+      mod: 'mod',
+    });
+
+    it('should call view dao when item is type that should be saved', async () => {
+      const viewDao = viewDaosMap.get(GlipTypeUtil.extractTypeId(testItem.id));
+      viewDao.shouldSaveSubItem = jest.fn().mockReturnValue(true);
+      viewDao.toSanitizedItem = jest.fn().mockImplementation((item: any) => {
+        return item;
+      });
+      await itemDao.put(testItem);
+
+      expect(viewDao.shouldSaveSubItem).toBeCalled();
+      expect(viewDao.toSanitizedItem).toBeCalled();
+      expect(viewDao.put).toBeCalledWith(testItem);
+    });
+
+    it('should not call view dao when item is type that should not be saved', async () => {
+      const viewDao = viewDaosMap.get(GlipTypeUtil.extractTypeId(testItem.id));
+      viewDao.shouldSaveSubItem = jest.fn().mockReturnValue(false);
+      viewDao.toSanitizedItem = jest.fn().mockImplementation((item: any) => {
+        return item;
+      });
+      await itemDao.put(testItem);
+
+      expect(viewDao.shouldSaveSubItem).toBeCalled();
+      expect(viewDao.toSanitizedItem).not.toBeCalled();
+      expect(viewDao.put).not.toBeCalled();
+    });
+  });
+
+  describe('bulkPut', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUpViewDaos();
+    });
+
+    const testItem = itemFactory.build({
+      id: 10,
+      created_at: 111,
+      group_ids: [123],
+      post_ids: [123123],
+      name: 'name',
+      type: 'type',
+      mod: 'mod',
+    });
+
+    it('should call bulkPut in view dao when item is type that should be saved', async () => {
+      const viewDao = viewDaosMap.get(GlipTypeUtil.extractTypeId(testItem.id));
+      viewDao.shouldSaveSubItem = jest.fn().mockReturnValue(true);
+      viewDao.toSanitizedItem = jest.fn().mockImplementation((item: any) => {
+        return item;
+      });
+      await itemDao.bulkPut([testItem]);
+
+      expect(viewDao.shouldSaveSubItem).toBeCalled();
+      expect(viewDao.toSanitizedItem).toBeCalled();
+      expect(viewDao.bulkPut).toBeCalledWith([testItem]);
+    });
+  });
+
+  describe('update', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUpViewDaos();
+    });
+
+    const testItem = itemFactory.build({
+      id: 10,
+      created_at: 111,
+      group_ids: [123],
+      post_ids: [123123],
+      name: 'name',
+      type: 'type',
+      mod: 'mod',
+    });
+
+    it('should call view dao when item is doing update', async () => {
+      const viewDao = viewDaosMap.get(GlipTypeUtil.extractTypeId(testItem.id));
+      viewDao.toPartialSanitizedItem = jest
+        .fn()
+        .mockImplementation((item: any) => {
+          return item;
+        });
+      await itemDao.update(testItem);
+
+      expect(viewDao.toPartialSanitizedItem).toBeCalled();
+      expect(viewDao.update).toBeCalledWith(testItem);
+    });
+  });
+
+  describe('bulkUpdate', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUpViewDaos();
+    });
+
+    const testItem = itemFactory.build({
+      id: 10,
+      created_at: 111,
+      group_ids: [123],
+      post_ids: [123123],
+      name: 'name',
+      type: 'type',
+      mod: 'mod',
+    });
+
+    it('should call view dao when item is doing update', async () => {
+      const viewDao = viewDaosMap.get(GlipTypeUtil.extractTypeId(testItem.id));
+      viewDao.toPartialSanitizedItem = jest
+        .fn()
+        .mockImplementation((item: any) => {
+          return item;
+        });
+      await itemDao.bulkUpdate([testItem]);
+
+      expect(viewDao.toPartialSanitizedItem).toBeCalled();
+      expect(viewDao.bulkUpdate).toBeCalledWith([testItem]);
+    });
+  });
+
+  describe('delete', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUpViewDaos();
+    });
+
+    it('should call delete and delete items in view daos when item has its view dao ', async () => {
+      const itemId = TypeDictionary.TYPE_ID_FILE;
+      await itemDao.delete(itemId);
+
+      expect(
+        (viewDaosMap.get(TypeDictionary.TYPE_ID_FILE) as FileItemDao).delete,
+      ).toBeCalledWith(itemId);
+    });
+
+    it('should not call delete items in view daos when item has no its view dao ', async () => {
+      const itemId = TypeDictionary.TYPE_ID_FILE + 1;
+      await itemDao.delete(itemId);
+
+      expect(
+        (viewDaosMap.get(TypeDictionary.TYPE_ID_FILE) as FileItemDao).delete,
+      ).not.toBeCalled();
+    });
+  });
+
+  describe('bulkDelete', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUpViewDaos();
+    });
+
+    const itemIds = Array.from(viewDaosMap.keys());
+    it('should call bulk delete and delete items in view daos ', async () => {
+      await itemDao.bulkDelete(itemIds);
+      const viewDaos = Array.from(viewDaosMap.values());
+      const keys = Array.from(viewDaosMap.keys());
+      let i = 0;
+      viewDaos.forEach((val: any) => {
+        expect(val.bulkDelete).toBeCalledWith([keys[i]]);
+        i++;
+      });
+    });
+  });
+
+  describe('clear', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUpViewDaos();
+    });
+
+    it('should clear dao and all view daos', async () => {
+      expect.assertions(5);
+      await itemDao.clear();
+
+      const viewDaos = Array.from(viewDaosMap.values());
+      viewDaos.forEach((val: any) => {
+        expect(val.clear).toBeCalled();
+      });
+    });
   });
 });

@@ -25,33 +25,14 @@ class SendPostControllerHelper {
   constructor() {}
 
   buildLinksInfo(text: string): LinksArray {
-    let res: string[] = [];
-    let matchedUrl: string[] = [];
-    const urlArray: string[] = [];
     const links: LinksArray = [];
-    res = res.concat(text);
-    res &&
-      res.forEach((item: string, index: number) => {
-        matchedUrl = res[index].match(/[^\(\)]+(?=\))/g) || [];
-        if (!matchedUrl.length) {
-          urlArray.push(item);
-        }
-      });
-    if (matchedUrl.length) {
-      for (const k of matchedUrl) {
-        if (k) {
-          urlArray.push(k);
-        }
-      }
-    }
-    const matchedNoneMdUrl = urlArray
-      .toString()
-      .match(Markdown.global_url_regex);
+    const matchedNoneMdUrl = text.match(Markdown.global_url_regex);
     matchedNoneMdUrl &&
       matchedNoneMdUrl.forEach((item: string) => {
-        links.push({
-          url: item,
-        });
+        !item.includes('@') &&
+          links.push({
+            url: item,
+          });
       });
     return links;
   }
@@ -76,11 +57,23 @@ class SendPostControllerHelper {
       item_id: params.itemId,
       item_ids: params.itemIds || [],
       post_ids: [],
-      at_mention_item_ids: [],
-      at_mention_non_item_ids: params.mentionIds || [],
+      at_mention_item_ids: params.mentionItemIds || [],
+      at_mention_non_item_ids: params.mentionNonItemIds || [],
       company_id: params.companyId,
       deactivated: false,
+      parent_id: params.parentId,
     };
+
+    if (params.annotation) {
+      buildPost.annotation = {
+        x_percent: params.annotation.xPercent,
+        y_percent: params.annotation.yPercent,
+        stored_file_version: params.annotation.storedFileVersion,
+        page: params.annotation.page,
+        anno_id: params.annotation.annoId,
+      };
+    }
+
     return buildPost;
   }
 

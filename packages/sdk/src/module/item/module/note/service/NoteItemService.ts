@@ -5,7 +5,6 @@
  */
 
 import { NoteItemController } from '../controller/NoteItemController';
-import { IItemService } from '../../../service/IItemService';
 import { NoteItem, SanitizedNoteItem } from '../entity';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 import { NoteItemDao } from '../dao/NoteItemDao';
@@ -14,7 +13,7 @@ import { daoManager } from '../../../../../dao';
 class NoteItemService extends BaseSubItemService<NoteItem, SanitizedNoteItem> {
   private _noteItemController: NoteItemController;
 
-  constructor(itemService: IItemService) {
+  constructor() {
     super(daoManager.getDao<NoteItemDao>(NoteItemDao));
   }
 

@@ -10,20 +10,36 @@ import { CodeEditor } from 'jui/pattern/CodeEditor';
 import { CodeSnippetViewProps } from './types';
 import { memoize } from 'lodash';
 import copy from 'copy-to-clipboard';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
+import { observer } from 'mobx-react';
 
 const DEFAULT_LINE_LIMIT = 15;
 const COLLAPSE_TO = 10;
 const MAX_EDITOR_LINES = 200;
 
+@observer
 class CodeSnippet extends React.Component<
-  WithNamespaces & CodeSnippetViewProps
+  WithTranslation & CodeSnippetViewProps
 > {
   state = {
     showHeaderActions: false,
     isCollapse: true,
     hover: false,
   };
+
+  componentDidMount() {
+    this.setState({
+      isCollapse: this.props.isCollapse,
+    });
+  }
+
+  componentDidUpdate(prevProps: CodeSnippetViewProps) {
+    if (this.props.isCollapse !== prevProps.isCollapse) {
+      this.setState({
+        isCollapse: this.props.isCollapse,
+      });
+    }
+  }
 
   handleCopy = () => {
     copy(this.props.postItem.body);
@@ -44,12 +60,12 @@ class CodeSnippet extends React.Component<
     return [
       {
         iconName: 'copy',
-        tooltip: t('copy'),
+        tooltip: t('common.copy'),
         handler: this.handleCopy,
       },
       {
         iconName: 'download',
-        tooltip: t('download'),
+        tooltip: t('common.download'),
         handler: this.handleDownload,
       },
     ];
@@ -66,19 +82,22 @@ class CodeSnippet extends React.Component<
 
     if (collapsed) {
       actions.push({
-        text: t('expandLine', { lineNumber }),
+        text: t('item.expandLines', { lineNumber }),
         handler: this.handleExpand,
       });
     } else {
       actions.push({
-        text: t('collapseLine'),
+        text: t('common.collapse'),
         handler: this.handleCollapse,
       });
     }
 
     if (!collapsed && showDownload) {
       actions.push({
-        text: t('DownloadToSeeTheRestLine', { restLines }),
+        text: t('item.downloadToSeeTheRestLine', {
+          restLines,
+          count: restLines,
+        }),
         handler: this.handleDownload,
       });
     }
@@ -96,10 +115,12 @@ class CodeSnippet extends React.Component<
 
   handleExpand = () => {
     this.setState({ isCollapse: false });
+    this.props.setCollapse(false);
   }
 
   handleCollapse = () => {
     this.setState({ isCollapse: true });
+    this.props.setCollapse(true);
   }
 
   calcTotalLines = (content: string) => {
@@ -107,7 +128,7 @@ class CodeSnippet extends React.Component<
   }
 
   render() {
-    const { title, body = '', mode: language, mimeType } = this.props.postItem;
+    const { title, mode: language, mimeType, body = '' } = this.props.postItem;
     const lineNumber = this.calcTotalLines(body);
     const showHoverAction = lineNumber > DEFAULT_LINE_LIMIT && this.state.hover;
     const showDownloadButton = lineNumber > MAX_EDITOR_LINES;
@@ -154,5 +175,5 @@ class CodeSnippet extends React.Component<
   }
 }
 
-const CodeSnippetView = translate('translations')(CodeSnippet);
+const CodeSnippetView = withTranslation('translations')(CodeSnippet);
 export { CodeSnippetView };

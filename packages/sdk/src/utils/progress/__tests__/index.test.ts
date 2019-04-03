@@ -1,24 +1,28 @@
 import ProgressBar from '../index';
 
+import NProgress from 'nprogress';
+
+jest.mock('nprogress');
+
 describe('ProgressBar', () => {
   let progressBar: ProgressBar;
   beforeEach(() => {
     progressBar = new ProgressBar();
-    jest.spyOn(window, 'requestAnimationFrame').mockImplementation(cb => cb());
   });
-  it('start(): _counter should add 1', () => {
-    const mock = 1;
+  it('start(): _start should true', () => {
     progressBar.start();
-    expect(progressBar.counter).toBe(mock);
+    expect(progressBar._start).toBe(true);
   });
 
-  it('stop(): _counter should less than 0', () => {
-    const mock = -1;
+  it('stop(): _start should false', () => {
     progressBar.stop();
-    expect(progressBar.counter).toBe(mock);
+    expect(progressBar._start).toBe(false);
   });
 
   describe('update(e)', () => {
+    beforeEach(() => {
+      NProgress.inc = jest.fn();
+    });
     it('update(e): self reduce when lengthComputable = true', () => {
       const mock = {
         lengthComputable: true,
@@ -26,7 +30,7 @@ describe('ProgressBar', () => {
         total: 30,
       };
       progressBar.update(mock);
-      expect(progressBar.counter).toBe(0);
+      expect(NProgress.inc).toBeCalledWith(Math.floor(10 / 30));
     });
 
     it('update(e): reduce when lengthComputable = false', () => {
@@ -36,7 +40,7 @@ describe('ProgressBar', () => {
         total: 0,
       };
       progressBar.update(mock);
-      expect(progressBar.counter).toBe(-1);
+      expect(NProgress.inc).not.toBeCalled();
     });
   });
 });

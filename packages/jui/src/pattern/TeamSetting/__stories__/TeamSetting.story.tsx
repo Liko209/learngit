@@ -30,8 +30,9 @@ import defaultTeamAvatar from './defaultTeamAvatar.png';
 import { boolean, number } from '@storybook/addon-knobs';
 import { action } from '@storybook/addon-actions';
 import { JuiDivider } from '../../../components/Divider/Divider';
+import { JuiIconButton } from '../../../components/Buttons/IconButton';
 
-storiesOf('Pattern/SettingDialogs', module)
+storiesOf('Pattern/TeamSetting', module)
   .add('Admin', () => {
     const nameTakenError = boolean('name taken error', false);
     const forbidSave = boolean('forbid saving', false);
@@ -90,9 +91,43 @@ storiesOf('Pattern/SettingDialogs', module)
             <JuiTeamSettingSubSectionListItem label="Add team members">
               <JuiToggleButton onChange={action('on allowMemberAdd change')} />
             </JuiTeamSettingSubSectionListItem>
+            <JuiDivider />
+            <JuiTeamSettingSubSectionListItem label="Post messages">
+              <JuiToggleButton onChange={action('on allowMemberPost change')} />
+            </JuiTeamSettingSubSectionListItem>
+            <JuiDivider />
+            <JuiTeamSettingSubSectionListItem label="Pin posts">
+              <JuiToggleButton onChange={action('on allowMemberPin change')} />
+            </JuiTeamSettingSubSectionListItem>
           </JuiTeamSettingSubSectionList>
         </JuiTeamSettingSubSection>
         <JuiDivider />
+        <JuiTeamSettingButtonList>
+          <JuiTeamSettingButtonListItem color="semantic.negative">
+            <JuiTeamSettingButtonListItemText color="semantic.negative">
+              Delete team
+            </JuiTeamSettingButtonListItemText>
+            <JuiIconButton
+              variant="plain"
+              tooltipTitle="Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit."
+            >
+              remove
+            </JuiIconButton>
+          </JuiTeamSettingButtonListItem>
+          <JuiDivider />
+          <JuiTeamSettingButtonListItem color="semantic.negative">
+            <JuiTeamSettingButtonListItemText color="semantic.negative">
+              Archive team
+            </JuiTeamSettingButtonListItemText>
+            <JuiIconButton
+              variant="plain"
+              tooltipTitle="Fugiat excepteur non excepteur adipisicing quis magna tempor tempor est ex mollit."
+            >
+              remove
+            </JuiIconButton>
+          </JuiTeamSettingButtonListItem>
+          <JuiDivider />
+        </JuiTeamSettingButtonList>
       </JuiModal>
     );
   })

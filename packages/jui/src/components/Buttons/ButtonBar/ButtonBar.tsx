@@ -12,6 +12,7 @@ import { spacing } from '../../../foundation/utils/styles';
 type JuiButtonBarProps = {
   overlapSize: number;
   direction?: 'horizontal' | 'vertical';
+  children: JSX.Element | (JSX.Element | Element | null)[];
 } & {
   className?: string;
   style?: React.CSSProperties;
@@ -48,13 +49,13 @@ const StyledButtonBar = styled<JuiButtonBarProps, 'div'>('div')`
 `;
 
 type IButtonBar = React.SFC<JuiButtonBarProps>;
-const JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
+const _JuiButtonBar: IButtonBar = ({ children, ...rest }) => {
   return <StyledButtonBar {...rest}>{children}</StyledButtonBar>;
 };
 
-JuiButtonBar.defaultProps = {
+_JuiButtonBar.defaultProps = {
   overlapSize: 0,
   direction: 'horizontal',
 };
-
+const JuiButtonBar = React.memo(_JuiButtonBar);
 export { JuiButtonBar, JuiButtonBarProps };

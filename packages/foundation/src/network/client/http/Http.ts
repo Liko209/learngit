@@ -11,7 +11,8 @@ import {
   NETWORK_FAIL_TYPE,
 } from '../../network';
 import BaseClient from '../BaseClient';
-import HttpResponse from './HttpResponse';
+import HttpResponseBuilder from './HttpResponseBuilder';
+import { RESPONSE_HEADER_KEY } from '../../Constants';
 
 class Http extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
@@ -36,7 +37,7 @@ class Http extends BaseClient {
       withCredentials: false,
       data: {},
       params: {},
-      cancelToken: new CancelToken((cancel) => {
+      cancelToken: new CancelToken((cancel: any) => {
         this.tasks[request.id].cancel = cancel;
       }),
     };
@@ -52,10 +53,10 @@ class Http extends BaseClient {
     }
 
     axios(options)
-      .then((res) => {
+      .then((res: any) => {
         delete this.tasks[request.id];
         const { data, status, statusText } = res;
-        const response = HttpResponse.builder
+        const response = HttpResponseBuilder.builder
           .setData(data)
           .setStatus(status)
           .setStatusText(statusText)
@@ -64,7 +65,7 @@ class Http extends BaseClient {
           .build();
         listener.onSuccess(response);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         delete this.tasks[request.id];
         const { response = {}, code, message } = err;
         const { data } = response;
@@ -77,12 +78,22 @@ class Http extends BaseClient {
           status = 0;
           statusText = NETWORK_FAIL_TYPE.CANCELLED;
         }
-        const res = HttpResponse.builder
+
+        let retryAfter = 0;
+        if (
+          response.headers &&
+          response.headers.hasOwnProperty(RESPONSE_HEADER_KEY.RETRY_AFTER)
+        ) {
+          retryAfter = response.headers[RESPONSE_HEADER_KEY.RETRY_AFTER];
+        }
+
+        const res = HttpResponseBuilder.builder
           .setData(data)
           .setStatus(status)
           .setStatusText(statusText || message)
           .setHeaders(response.headers)
           .setRequest(request)
+          .setRetryAfter(retryAfter)
           .build();
         listener.onFailure(res);
       });

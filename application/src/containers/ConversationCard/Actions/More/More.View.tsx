@@ -5,16 +5,16 @@
  */
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ViewProps, MENU_LIST_ITEM_TYPE } from './types';
 import { JuiMenuList } from 'jui/components';
-import { JuiPopperMenu } from 'jui/pattern/PopperMenu';
+import { JuiPopperMenu, AnchorProps } from 'jui/pattern/PopperMenu';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Quote } from '../Quote';
 import { Delete } from '../Delete';
 import { Edit } from '../Edit';
 
-type MoreViewProps = ViewProps & WithNamespaces;
+type MoreViewProps = ViewProps & WithTranslation;
 
 const menuItems = {
   [MENU_LIST_ITEM_TYPE.QUOTE]: Quote,
@@ -27,14 +27,15 @@ class More extends React.Component<MoreViewProps, { open: boolean }> {
   state = {
     open: false,
   };
-  private _Anchor = () => {
+  private _Anchor = ({ tooltipForceHide }: AnchorProps) => {
     const { t } = this.props;
     return (
       <JuiIconButton
         size="small"
         variant="plain"
         data-name="actionBarMore"
-        tooltipTitle={t('more')}
+        tooltipTitle={t('common.more')}
+        tooltipForceHide={tooltipForceHide}
         onClick={this.openPopper}
       >
         more_horiz
@@ -81,6 +82,6 @@ class More extends React.Component<MoreViewProps, { open: boolean }> {
   }
 }
 
-const MoreView = translate('Conversations')(More);
+const MoreView = withTranslation('translations')(More);
 
 export { MoreView };

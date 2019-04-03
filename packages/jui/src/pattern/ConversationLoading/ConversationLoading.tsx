@@ -27,7 +27,7 @@ type State = {
 
 const DELAY_LOADING = 300;
 
-class JuiConversationLoading extends React.Component<
+class JuiConversationLoading extends React.PureComponent<
   JuiConversationLoadingProps,
   State
 > {

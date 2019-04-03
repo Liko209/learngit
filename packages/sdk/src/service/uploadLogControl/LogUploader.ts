@@ -1,25 +1,64 @@
-import { ILogApi, LogEntity, mainLogger } from 'foundation';
+import {
+  ILogUploader,
+  LogEntity,
+  mainLogger,
+  HTTP_STATUS_CODE,
+} from 'foundation';
 import AccountService from '../account';
-import axios from 'axios';
-import { UserConfig } from '../../service/account';
-const DEFAULT_EMAIL = 'service@glip.com';
+import axios, { AxiosError } from 'axios';
+import { AccountUserConfig } from '../../service/account/config';
+import { Api } from '../../api';
 
-export class LogUploader implements ILogApi {
-  async upload(logs: LogEntity[]): Promise<any> {
+const DEFAULT_EMAIL = 'service@glip.com';
+export class LogUploader implements ILogUploader {
+  async upload(logs: LogEntity[]): Promise<void> {
     const userInfo = await this._getUserInfo();
-    const logMsgs = logs.map(log => this._getLogText(log));
+    const message = this.transform(logs);
     const sessionId = logs[0].sessionId;
-    await this.doUpload(userInfo, { [sessionId]: logMsgs });
+    const { server, uniqueHttpCollectorCode } = Api.httpConfig.sumologic;
+    const postUrl = `${server}${uniqueHttpCollectorCode}`;
+    await axios.post(postUrl, message, {
+      headers: {
+        'X-Sumo-Name': `${userInfo.email}| ${userInfo.userId}| ${sessionId}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
+  transform(logs: LogEntity[]) {
+    return logs.map(log => this._getLogText(log)).join('\n');
+  }
+
+  errorHandler(error: AxiosError) {
+    // detail error types description see sumologic doc
+    // https://help.sumologic.com/03Send-Data/Sources/02Sources-for-Hosted-Collectors/HTTP-Source/Troubleshooting-HTTP-Sources
+    const { response } = error;
+    if (!response) {
+      return 'abortAll';
+    }
+    if (
+      [
+        HTTP_STATUS_CODE.UNAUTHORIZED,
+        HTTP_STATUS_CODE.TOO_MANY_REQUESTS,
+        HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,
+        HTTP_STATUS_CODE.GATEWAY_TIME_OUT,
+      ].includes(response.status)
+    ) {
+      return 'retry';
+    }
+    return 'ignore';
   }
 
   private async _getUserInfo() {
     const accountService: AccountService = AccountService.getInstance();
-    const email = (await accountService.getUserEmail()) || DEFAULT_EMAIL;
     let id;
+    let email = DEFAULT_EMAIL;
     try {
-      id = UserConfig.getCurrentUserId();
+      const userConfig = new AccountUserConfig();
+      id = userConfig.getGlipUserId();
+      email = await accountService.getUserEmail();
     } catch (error) {
-      mainLogger.error(error);
+      mainLogger.warn(error);
     }
     const userId = id ? id.toString() : '';
     const clientId = accountService.getClientId();
@@ -30,32 +69,8 @@ export class LogUploader implements ILogApi {
     };
   }
 
-  async doUpload(
-    userInfo: {
-      email: string;
-      userId: string;
-      clientId: string;
-    },
-    logInfo: object,
-  ) {
-    await axios({
-      method: 'post',
-      url: 'https://fijilog.lab.nordigy.ru/log/',
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods':
-          'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
-        'Access-Control-Allow-Headers':
-          'Origin,X-Requested-With,Content-Type,Accept,Authorization,User-Agent,Access-Control-Allow-Origin,Access-Control-Allow-Methods,Access-Control-Allow-Headers',
-      },
-      data: { userInfo, logInfo },
-    });
-  }
-
   private _getLogText(log: LogEntity) {
-    if (log.tags) {
-      return `${log.tags.join(' ')} ${log.message}`;
-    }
-    return log.message;
+    const { message = '' } = log;
+    return message;
   }
 }

@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { BookmarkViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 import { Notification } from '@/containers/Notification';
@@ -15,17 +15,18 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 
-type Props = BookmarkViewProps & WithNamespaces;
+type Props = BookmarkViewProps & WithTranslation;
 
 @observer
 class BookmarkViewComponent extends Component<Props> {
   private _handleClick = async () => {
     const { isBookmark, bookmark } = this.props;
-    const result = await bookmark(!isBookmark);
-    if (result.isFailed) {
+    try {
+      await bookmark(!isBookmark);
+    } catch (error) {
       const message = isBookmark
-        ? 'SorryWeWereNotAbleToRemoveYourBookmark'
-        : 'SorryWeWereNotAbleToBookmarkThisMessage';
+        ? 'message.prompt.SorryWeWereNotAbleToRemoveYourBookmark'
+        : 'message.prompt.SorryWeWereNotAbleToBookmarkThisMessage';
       Notification.flashToast({
         message,
         type: ToastType.ERROR,
@@ -41,7 +42,11 @@ class BookmarkViewComponent extends Component<Props> {
     return (
       <JuiIconButton
         size="small"
-        tooltipTitle={isBookmark ? t('Remove bookmark') : t('Bookmark')}
+        tooltipTitle={
+          isBookmark
+            ? t('message.action.removeBookmark')
+            : t('message.action.bookmark')
+        }
         color={isBookmark ? 'primary' : undefined}
         onClick={this._handleClick}
         variant="plain"
@@ -53,6 +58,6 @@ class BookmarkViewComponent extends Component<Props> {
   }
 }
 
-const BookmarkView = translate('Conversations')(BookmarkViewComponent);
+const BookmarkView = withTranslation('translations')(BookmarkViewComponent);
 
 export { BookmarkView };

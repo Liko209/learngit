@@ -7,7 +7,6 @@
 import { FileItemController } from '../../controller/FileItemController';
 import { FileUploadController } from '../../controller/FileUploadController';
 import { daoManager } from '../../../../../../dao';
-import { IItemService } from '../../../../service/IItemService';
 import { FileItemDao } from '../../dao/FileItemDao';
 import { FileItemService } from '../FileItemService';
 import { FileItem } from '../../entity';
@@ -28,7 +27,6 @@ function clearMocks() {
 describe('FileItemService', () => {
   let fileUploadController: FileUploadController;
   let fileItemController: FileItemController;
-  const itemService = {};
   let fileItemService: FileItemService;
   let fileItemDao: FileItemDao;
   let fileActionController: FileActionController;
@@ -37,8 +35,8 @@ describe('FileItemService', () => {
     daoManager.getDao = jest.fn().mockReturnValue(fileItemDao);
     fileActionController = new FileActionController(null);
     fileUploadController = new FileUploadController(null, null, null);
-    fileItemController = new FileItemController(null);
-    fileItemService = new FileItemService(itemService as IItemService);
+    fileItemController = new FileItemController();
+    fileItemService = new FileItemService();
     Object.defineProperties(fileItemService, {
       fileUploadController: {
         get: jest.fn(() => fileUploadController),
@@ -310,7 +308,7 @@ describe('FileItemService', () => {
     });
   });
 
-  describe('getThumbsUrlWithSize', async () => {
+  describe('getThumbsUrlWithSize', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -326,16 +324,30 @@ describe('FileItemService', () => {
     });
   });
 
-  describe('toSanitizedItem', () => {
-    const { fileItem } = setUpData();
-    it('should return sanitized item', () => {
-      expect(fileItemService.toSanitizedItem(fileItem)).toEqual({
-        id: fileItem.id,
-        group_ids: fileItem.group_ids,
-        created_at: fileItem.created_at,
-        name: fileItem.name,
-        type: fileItem.type,
-      });
+  describe('hasUploadingFiles', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call fileUploadController to get result', () => {
+      fileUploadController.hasUploadingFiles = jest.fn().mockReturnValue(true);
+      expect(fileItemService.hasUploadingFiles()).toBeTruthy();
+      expect(fileUploadController.hasUploadingFiles).toBeCalled();
+    });
+  });
+
+  describe('initialUploadItemsFromDraft', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call fileUploadController to get result', () => {
+      const groupId = 10;
+      fileUploadController.initialUploadItemsFromDraft = jest.fn();
+      fileItemService.initialUploadItemsFromDraft(groupId);
+      expect(fileUploadController.initialUploadItemsFromDraft).toBeCalled();
     });
   });
 });

@@ -4,7 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+import { observer } from 'mobx-react';
+import i18next from 'i18next';
 import { JuiConversationItemCard as TaskUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
@@ -18,6 +19,7 @@ import {
 import { AvatarName } from './AvatarName';
 import { TaskUpdateViewProps } from './types';
 
+@observer
 class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
   private _getTaskAvatarNames = (assignedIds: number[]) =>
     assignedIds.map((assignedId: number) => (
@@ -48,12 +50,13 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
       <TaskUpdateViewCard
         title={this._getTitleText(text)}
         titleColor={color}
-        Icon={<JuiTaskCheckbox checked={complete || false} />}
+        Icon={
+          <JuiTaskCheckbox customColor={color} checked={complete || false} />}
         Footer={
           key === 'assigned_to_ids' && old_value.length > 0 ? (
             <JuiEventCollapse
-              showText={t('showEventHistory')}
-              hideText={t('hideEventHistory')}
+              showText={i18next.t('item.showEventHistory')}
+              hideText={i18next.t('item.hideEventHistory')}
             >
               {
                 <JuiEventCollapseContent>
@@ -67,7 +70,7 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
         }
       >
         {key === 'assigned_to_ids' ? (
-          <JuiTaskContent title={t('assignee')}>
+          <JuiTaskContent title={i18next.t('item.assignee')}>
             <JuiTaskAvatarNames>
               {this._getTaskAvatarNames(value)}
             </JuiTaskAvatarNames>

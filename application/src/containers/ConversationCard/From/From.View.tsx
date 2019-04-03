@@ -6,12 +6,12 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { FromViewProps } from './types';
 import { JuiConversationCardFrom } from 'jui/pattern/ConversationCard/ConversationCardFrom';
 import history from '@/history';
 
-type Props = FromViewProps & WithNamespaces;
+type Props = FromViewProps & WithTranslation;
 
 @observer
 class FromViewComponent extends Component<Props> {
@@ -32,6 +32,6 @@ class FromViewComponent extends Component<Props> {
   }
 }
 
-const FromView = translate('Conversations')(FromViewComponent);
+const FromView = withTranslation('translations')(FromViewComponent);
 
 export { FromView };

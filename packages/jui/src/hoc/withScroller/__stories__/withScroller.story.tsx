@@ -3,9 +3,8 @@
  * @Date: 2018-09-18 10:10:39
  * Copyright © RingCentral. All rights reserved.
  */
-/// <reference path="../../../../.storybook/storybook.d.ts" />
 import _ from 'lodash';
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
 
@@ -28,7 +27,6 @@ storiesOf('HoC/withScroller', module)
     return (
       <DemoWrapper>
         <DemoWithScroller
-          initialScrollTop={999999}
           onScrollToTop={action('onScrollToTop')}
           onScrollToBottom={action('onScrollToBottom')}
         >
@@ -40,7 +38,7 @@ storiesOf('HoC/withScroller', module)
     );
   })
   .add('stick to bottom', () => {
-    class DemoContent extends Component<any, any> {
+    class DemoContent extends PureComponent<any, any> {
       render() {
         const { children } = this.props;
         return <ul>{children}</ul>;
@@ -49,7 +47,7 @@ storiesOf('HoC/withScroller', module)
 
     const DemoContentWithScroller = withScroller(DemoContent);
 
-    class Demo extends Component<any, any> {
+    class Demo extends PureComponent<any, any> {
       constructor(props: any) {
         super(props);
         this.state = { items: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] };
@@ -60,8 +58,8 @@ storiesOf('HoC/withScroller', module)
         const { items } = this.state;
         return (
           <DemoWrapper>
-            <DemoContentWithScroller initialScrollTop={99999} stickTo="bottom">
-              {items.map(n => (
+            <DemoContentWithScroller stickTo="bottom">
+              {items.map((n: any) => (
                 <li key={n}>{n}</li>
               ))}
             </DemoContentWithScroller>

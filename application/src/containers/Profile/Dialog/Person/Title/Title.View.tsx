@@ -6,11 +6,11 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogPersonTitleViewProps } from './types';
 import {
-  JuiDialogTitleWithActionLeft,
-  JuiDialogTitleWithActionRight,
+  JuiDialogHeaderTitle,
+  JuiDialogHeaderActions,
 } from 'jui/components/Dialog';
 import { Favorite } from '@/containers/common/Favorite';
 import { JuiIconButton } from 'jui/components/Buttons/IconButton';
@@ -18,32 +18,30 @@ import portalManager from '@/common/PortalManager';
 
 @observer
 class ProfileDialogPersonTitleViewComponent extends Component<
-  WithNamespaces & ProfileDialogPersonTitleViewProps
+  WithTranslation & ProfileDialogPersonTitleViewProps
 > {
-  onClick = () => portalManager.dismiss();
+  onClick = () => portalManager.dismissLast();
   render() {
     const { id, t } = this.props;
     return (
       <>
-        <JuiDialogTitleWithActionLeft>
-          {t('profile')}
-        </JuiDialogTitleWithActionLeft>
-        <JuiDialogTitleWithActionRight>
+        <JuiDialogHeaderTitle>{t('people.team.profile')}</JuiDialogHeaderTitle>
+        <JuiDialogHeaderActions>
           <Favorite id={id} size="medium" />
           <JuiIconButton
             onClick={this.onClick}
-            tooltipTitle={t('close')}
-            ariaLabel={t('close')}
+            tooltipTitle={t('common.dialog.close')}
+            ariaLabel={t('common.dialog.close')}
           >
             close
           </JuiIconButton>
-        </JuiDialogTitleWithActionRight>
+        </JuiDialogHeaderActions>
       </>
     );
   }
 }
 
-const ProfileDialogPersonTitleView = translate('translations')(
+const ProfileDialogPersonTitleView = withTranslation('translations')(
   ProfileDialogPersonTitleViewComponent,
 );
 

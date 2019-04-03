@@ -5,7 +5,7 @@
  */
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean, number, select, text } from '@storybook/addon-knobs';
+import { number, text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import { JuiMessageInput } from '..';
@@ -18,14 +18,24 @@ import { AttachmentView } from '../Attachment';
 storiesOf('Pattern/MessageInput', module)
   .addDecorator(withInfoDecorator(JuiMessageInput, { inline: true }))
   .add('MessageInput', () => {
+    const value = text('value', 'default text');
     const onChange = () => {};
+    const ref = React.createRef<JuiMessageInput>();
     return (
-      <JuiMessageInput
-        value="test"
-        onChange={onChange}
-        keyboardEventHandler={{}}
-        error=""
-      />
+      <>
+        <JuiMessageInput
+          ref={ref}
+          value={value}
+          onChange={onChange}
+          error=""
+          modules={{}}
+        >
+          <div />
+        </JuiMessageInput>
+        <button onClick={() => ref.current!.focusEditor()}>
+          focusEditor()
+        </button>
+      </>
     );
   });
 
@@ -46,11 +56,21 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
 
   return (
     <div>
-      <AttachmentItem name="test" status={ITEM_STATUS.NORMAL} />
-      <br />
-      <AttachmentItem name="test" progress={-1} status={ITEM_STATUS.ERROR} />
+      <AttachmentItem
+        fileIcon="default_file"
+        name="test"
+        status={ITEM_STATUS.NORMAL}
+      />
       <br />
       <AttachmentItem
+        fileIcon="default_file"
+        name="test"
+        progress={-1}
+        status={ITEM_STATUS.ERROR}
+      />
+      <br />
+      <AttachmentItem
+        fileIcon="default_file"
         name="test"
         progress={value}
         status={ITEM_STATUS.LOADING}
@@ -58,12 +78,17 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentItem', () => {
       <br />
       <div>Long title example:</div>
       <AttachmentItem
+        fileIcon="default_file"
         name="this is a really long title this is a really long title this is a really long title"
         status={ITEM_STATUS.NORMAL}
       />
       <br />
       <div>Property test</div>
-      <AttachmentItem name={name} status={ITEM_STATUS.NORMAL} />
+      <AttachmentItem
+        fileIcon="default_file"
+        name={name}
+        status={ITEM_STATUS.NORMAL}
+      />
     </div>
   );
 });
@@ -89,7 +114,6 @@ storiesOf('Pattern/MessageInput', module).add('AttachmentList', () => {
 });
 
 storiesOf('Pattern/MessageInput', module).add('JuiDuplicateAlert', () => {
-  const removeAttachment = () => {};
   const f2 = 'f2.txt';
   const f1 = 'f1.txt';
   const f3 =

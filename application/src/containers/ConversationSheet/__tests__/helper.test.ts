@@ -3,30 +3,19 @@
  * @Date: 2018-11-09 13:12:42
  * Copyright © RingCentral. All rights reserved.
  */
-import {
-  getFileIcon,
-  getDurationTime,
-  getDateAndTime,
-  getDurationDate,
-} from '../helper';
+import { getDurationTime, getDateAndTime, getDurationDate } from '../helper';
 
 jest.mock('i18next', () => ({
-  t: (text: string) => text,
+  t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
 }));
 
 const DAY = 24 * 3600 * 1000;
 const DATE_2019_1_4 = 1546564919703;
-const DATE_2019_1_3 = 1546564919703 - DAY;
-const DATE_2019_1_5 = 1546564919703 + DAY;
+const DATE_2019_1_3 = DATE_2019_1_4 - DAY;
+const DATE_2019_1_5 = DATE_2019_1_4 + DAY;
 const DATE_2019_1_5_12 = 1546617600000;
 
 describe('Conversation sheet helpers', () => {
-  it('getFileIcon()', () => {
-    const type = getFileIcon('xlsx');
-    expect(type).toBe('excel');
-    const type1 = getFileIcon('xxx');
-    expect(type1).toBe('default_file');
-  });
   describe('getDateAndTime()', () => {
     it('should be today and time when event Date is DATE_2019_1_4 [JPT-712][JPT-713]', () => {
       global.Date.now = jest.fn(() => DATE_2019_1_4);

@@ -3,16 +3,22 @@ import { LOG_LEVEL, LOG_TAGS } from './constants';
 import { ILogger, ILogEntityDecorator, LogConfig } from './types';
 import { configManager } from './config';
 import mergeWith from 'lodash/mergeWith';
-import { MessageDecorator, SessionDecorator, TruncationDecorator, TimestampDecorator } from './decorators';
+import {
+  MessageDecorator,
+  SessionDecorator,
+  TruncationDecorator,
+  TimestampDecorator,
+  StringifyDecorator,
+} from './decorators';
 import { LogConsumer, LogPersistence } from './consumer';
 
 type LoaderMap = {
-  [name: string]: ILogEntityDecorator,
+  [name: string]: ILogEntityDecorator;
 };
 
 type LoaderItem = {
-  loader: string | ILogEntityDecorator,
-  options?: object,
+  loader: string | ILogEntityDecorator;
+  options?: object;
 };
 class LogManager {
   private static _instance: LogManager;
@@ -28,6 +34,7 @@ class LogManager {
       TruncationDecorator: new TruncationDecorator(),
       TimestampDecorator: new TimestampDecorator(),
       MessageDecorator: new MessageDecorator(),
+      StringifyDecorator: new StringifyDecorator(),
     };
     configManager.mergeConfig({
       persistence: new LogPersistence(),
@@ -37,9 +44,12 @@ class LogManager {
         loader: 'SessionDecorator',
       },
       {
+        loader: 'StringifyDecorator',
+      },
+      {
         loader: 'TruncationDecorator',
         options: {
-          limit: 2000,
+          limit: 4000,
         },
       },
       {
@@ -59,9 +69,17 @@ class LogManager {
         this.flush();
       });
     }
+    if (process.env.NODE_ENV === 'test') {
+      configManager.mergeConfig({
+        enabled: false,
+        browser: {
+          enabled: false,
+        },
+      });
+    }
   }
 
-  static get Instance() {
+  static getInstance() {
     this._instance || (this._instance = new this());
     return this._instance;
   }
@@ -79,16 +97,28 @@ class LogManager {
     return this;
   }
 
+  getConfig() {
+    return configManager.getConfig();
+  }
+
   configDecorators(loaderItems: LoaderItem[], customLoaderMap?: LoaderMap) {
-    const loaderMap = customLoaderMap ? mergeWith({}, this._defaultLoaderMap, customLoaderMap) : this._defaultLoaderMap;
-    const decorators: ILogEntityDecorator[] = (loaderItems || []).map((loaderItem) => {
-      if (Object.prototype.toString.call(loaderItem.loader) === '[object String]') {
-        const loader: ILogEntityDecorator = loaderMap[loaderItem.loader as string];
-        loader.options = loaderItem.options || {};
-        return loader;
-      }
-      return loaderItem.loader as ILogEntityDecorator;
-    });
+    const loaderMap = customLoaderMap
+      ? mergeWith({}, this._defaultLoaderMap, customLoaderMap)
+      : this._defaultLoaderMap;
+    const decorators: ILogEntityDecorator[] = (loaderItems || []).map(
+      (loaderItem: LoaderItem) => {
+        if (
+          Object.prototype.toString.call(loaderItem.loader) ===
+          '[object String]'
+        ) {
+          const loader: ILogEntityDecorator =
+            loaderMap[loaderItem.loader as string];
+          loader.options = loaderItem.options || {};
+          return loader;
+        }
+        return loaderItem.loader as ILogEntityDecorator;
+      },
+    );
     configManager.mergeConfig({
       decorators,
     });
@@ -112,6 +142,10 @@ class LogManager {
     return this.getLogger(LOG_TAGS.NETWORK);
   }
 
+  getTelephonyLogger(): ILogger {
+    return this.getLogger(LOG_TAGS.TELEPHONY);
+  }
+
   setAllLoggerLevel(level: LOG_LEVEL) {
     configManager.mergeConfig({
       level,
@@ -124,7 +158,6 @@ class LogManager {
     this.getMainLogger().fatal(message);
     this.flush();
   }
-
 }
 
 export default LogManager;

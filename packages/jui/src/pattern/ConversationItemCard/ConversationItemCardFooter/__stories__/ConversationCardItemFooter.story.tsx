@@ -12,11 +12,5 @@ import { JuiEventCollapse } from '..';
 storiesOf('Pattern/ConversationItemCard/ConversationItemCardFooter', module)
   .addDecorator(withInfoDecorator(JuiEventCollapse, { inline: true }))
   .add('EventCollapse', () => {
-    return (
-      <JuiEventCollapse
-        history={[{ text: 'zigo is an er bi' }]}
-        tHide="Hide"
-        tShow="Show old"
-      />
-    );
+    return <JuiEventCollapse hideText="hide text" showText="show text" />;
   });

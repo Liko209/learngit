@@ -1,5 +1,5 @@
 import { LOG_LEVEL } from './constants';
-import { ILogApi } from './consumer';
+import { ILogUploader } from './consumer';
 import { ILogPersistence } from './consumer/persistence';
 
 interface ILogger {
@@ -43,24 +43,24 @@ interface IConsoleLogPrettier {
 }
 
 type LogConfig = {
-  level: LOG_LEVEL,
-  enabled: boolean,
-  filter: (logEntity: LogEntity) => boolean | null,
+  level: LOG_LEVEL;
+  enabled: boolean;
+  filter: (logEntity: LogEntity) => boolean | null;
   browser: {
-    enabled: boolean,
-  },
+    enabled: boolean;
+  };
   consumer: {
-    enabled: boolean,
-    memoryCountThreshold: number,
-    memorySizeThreshold: number,
-    uploadQueueLimit: number,
-    autoFlushTimeCycle: number,
-    combineSizeThreshold: number,
-  },
-  uploadLogApi: ILogApi | null,
-  persistence: ILogPersistence | null,
-  uploadAccessor: IAccessor | null,
-  decorators: ILogEntityDecorator[],
+    enabled: boolean;
+    memoryCountThreshold: number;
+    memorySizeThreshold: number;
+    uploadQueueLimit: number;
+    autoFlushTimeCycle: number;
+    combineSizeThreshold: number;
+  };
+  logUploader: ILogUploader | null;
+  persistence: ILogPersistence | null;
+  uploadAccessor: IAccessor | null;
+  decorators: ILogEntityDecorator[];
 };
 
 class LogEntity {

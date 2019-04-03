@@ -8,14 +8,9 @@ import { withTheme } from 'styled-components';
 import ReactContentLoader from 'react-content-loader';
 import styled from '../../foundation/styled-components';
 import { ThemeProps } from '../../foundation/theme/theme';
-import { palette, height, typography, grey } from '../../foundation/utils';
-import {
-  LoadingWrapper,
-  Loading,
-  Progress,
-  TipLink,
-} from '../ConversationLoading';
-import { JuiTypography } from '../../foundation/Typography';
+import { palette, height, spacing } from '../../foundation/utils';
+import { LoadingWrapper, Loading, Progress } from '../ConversationLoading';
+import { withDelay } from '../../hoc/withDelay';
 
 const Wrapper = styled.div`
   height: 100%;
@@ -74,38 +69,20 @@ type JuiRightRailContentLoadingProps = {
   onClick?: () => void;
 };
 
-const JuiRightRailContentLoading = (props: JuiRightRailContentLoadingProps) => {
-  return (
-    <LoadingWrapper>
-      <Loading>{props.loading !== false && <Progress />}</Loading>
-    </LoadingWrapper>
-  );
-};
-
-const Tip = styled(JuiTypography)`
-  ${typography('body1')};
-  text-align: center;
-  color: ${grey('900')};
-`;
-
-const JuiRightRailContentLoadError = (
-  props: JuiRightRailContentLoadingProps,
-) => {
-  return (
-    <LoadingWrapper>
-      <Loading>
-        <Tip>
-          {props.tip}
-          <TipLink handleOnClick={props.onClick}>{props.linkText}</TipLink>
-        </Tip>
-      </Loading>
-    </LoadingWrapper>
-  );
-};
+const JuiRightRailContentLoading = withDelay(
+  (props: JuiRightRailContentLoadingProps) => {
+    return (
+      <LoadingWrapper>
+        <Loading>{props.loading !== false && <Progress />}</Loading>
+      </LoadingWrapper>
+    );
+  },
+);
 
 const LoadingMoreWrapper = styled.div`
   display: flex;
-  height: ${height(13)};
+  height: ${height(24)};
+  padding: ${spacing(4.5, 0, 0, 0)};
   width: 100%;
 `;
 
@@ -121,5 +98,4 @@ export {
   JuiRightRailItemLoading,
   JuiRightRailContentLoading,
   JuiRightRailLoadingMore,
-  JuiRightRailContentLoadError,
 };

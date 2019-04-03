@@ -48,8 +48,8 @@ storiesOf('HoC/withUploadFile', module).add('demo', () => {
 
   class Demo extends PureComponent<any, any> {
     state = {
-      files: null,
-      fileData: null,
+      files: '',
+      fileData: '',
       file: {},
     };
 

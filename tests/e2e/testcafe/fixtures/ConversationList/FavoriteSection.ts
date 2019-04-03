@@ -22,7 +22,7 @@ test(formalName('Expand & Collapse', ['JPT-6', 'P2', 'ConversationList']), async
   const favoritesSection = app.homePage.messageTab.favoritesSection;
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
 
   let pvtChatId, teamId;
   await h(t).withLog('Given I have an extension with a private chat and a team', async () => {

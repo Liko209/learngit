@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 // import { JuiHorizMenu } from 'jui/pattern/GroupTeamProfile';
 import { JuiIconButton } from 'jui/components/Buttons';
 // import copy from 'copy-to-clipboard';
@@ -16,15 +16,15 @@ import { JuiPopoverMenu } from 'jui/pattern/PopoverMenu';
 import copy from 'copy-to-clipboard';
 
 @observer
-class More extends React.Component<WithNamespaces & MoreViewProps> {
+class More extends React.Component<WithTranslation & MoreViewProps> {
   renderAnchor = () => {
     const { t, size } = this.props;
     return (
       <JuiIconButton
         size={size}
         data-name="actionBarMore"
-        tooltipTitle={t('more')}
-        ariaLabel={t('checkMoreTeamOption')}
+        tooltipTitle={t('common.more')}
+        ariaLabel={t('people.profile.checkMoreTeamOption')}
       >
         more_horiz
       </JuiIconButton>
@@ -57,15 +57,15 @@ class More extends React.Component<WithNamespaces & MoreViewProps> {
       >
         <JuiMenuList>
           <JuiMenuItem onClick={this.onClickCopyUrl}>
-            {t('copyUrl')}
+            {t('people.profile.copyUrl')}
           </JuiMenuItem>
           <JuiMenuItem onClick={this.onClickCopyEmail}>
-            {t('copyEmail')}
+            {t('people.profile.copyEmail')}
           </JuiMenuItem>
         </JuiMenuList>
       </JuiPopoverMenu>
     );
   }
 }
-const MoreView = translate('translations')(More);
+const MoreView = withTranslation('translations')(More);
 export { MoreView };

@@ -6,7 +6,7 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { ProfileDialogGroupContentViewProps } from './types';
 import { JuiDivider } from 'jui/components/Divider';
 import { GroupAvatar } from '@/containers/Avatar';
@@ -17,38 +17,27 @@ import {
   JuiProfileDialogContentSummaryName as Name,
   JuiProfileDialogContentSummaryDescription as Description,
   JuiProfileDialogContentSummaryButtons as Buttons,
-  JuiProfileDialogContentMembers as Members,
 } from 'jui/pattern/Profile/Dialog';
-import { goToConversation } from '@/common/goToConversation';
-import { MemberHeader, MemberList } from './Members';
-import { AddMembers } from './AddMembers';
-import { Dialog } from '@/containers/Dialog';
+import { goToConversationWithLoading } from '@/common/goToConversation';
+import { Members } from './Members';
 import { joinTeam } from '@/common/joinPublicTeam';
 import portalManager from '@/common/PortalManager';
 import { renderButton } from './common/button';
 
 @observer
 class ProfileDialogGroupContentViewComponent extends Component<
-  WithNamespaces & ProfileDialogGroupContentViewProps
+  WithTranslation & ProfileDialogGroupContentViewProps
 > {
   joinTeamAfterClick = () => {
     const handerJoinTeam = joinTeam(this.props.group);
-    portalManager.dismiss();
+    portalManager.dismissLast();
     handerJoinTeam();
   }
 
   messageAfterClick = async () => {
-    const { id } = this.props;
-    await goToConversation({ id });
-    portalManager.dismiss();
-  }
-
-  addTeamMembers = () => {
-    const { group } = this.props;
-    portalManager.dismiss();
-    Dialog.simple(<AddMembers group={group} />, {
-      size: 'medium',
-    });
+    const { destinationId } = this.props;
+    await goToConversationWithLoading({ id: destinationId });
+    portalManager.dismissLast();
   }
 
   render() {
@@ -77,16 +66,16 @@ class ProfileDialogGroupContentViewComponent extends Component<
               {showMessage &&
                 renderButton(
                   'chat_bubble',
-                  'message',
-                  ['ariaGoToTeam', 'ariaGoToGroup'],
+                  'message.message',
+                  ['people.team.ariaGoToTeam', 'people.team.ariaGoToGroup'],
                   this.props,
                   this.messageAfterClick,
                 )}
               {showJoinTeam &&
                 renderButton(
                   'add_member',
-                  'joinTeam',
-                  ['ariaJoinTeam', 'ariaJoinTeam'],
+                  'people.team.joinTeam',
+                  ['people.team.ariaJoinTeam', 'people.team.ariaJoinTeam'],
                   this.props,
                   this.joinTeamAfterClick,
                 )}
@@ -94,16 +83,13 @@ class ProfileDialogGroupContentViewComponent extends Component<
           </Right>
         </Summary>
         <JuiDivider />
-        <Members>
-          <MemberHeader id={id} AddTeamMembers={this.addTeamMembers} />
-          <MemberList id={id} />
-        </Members>
+        <Members id={id} />
       </>
     );
   }
 }
 
-const ProfileDialogGroupContentView = translate('translations')(
+const ProfileDialogGroupContentView = withTranslation('translations')(
   ProfileDialogGroupContentViewComponent,
 );
 

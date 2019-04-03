@@ -3,15 +3,19 @@
  * @Date: 2018-08-17 10:34:48
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 
 import MuiMenuItem, {
   MenuItemProps as MuiMenuItemProps,
 } from '@material-ui/core/MenuItem';
-
-import styled, { keyframes } from '../../foundation/styled-components';
+import { JuiMenu } from '../../components';
+import styled, { keyframes, css } from '../../foundation/styled-components';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import { spacing, grey, palette, width, height } from '../../foundation/utils';
-import { JuiIconography } from '../../foundation/Iconography';
+import {
+  JuiIconography,
+  JuiIconographyProps,
+} from '../../foundation/Iconography';
 import { ConversationListItemText as ItemText } from './ConversationListItemText';
 import { StyledIconographyDraft, StyledIconographyFailure } from './Indicator';
 import { Theme } from '../../foundation/theme/theme';
@@ -34,13 +38,35 @@ const rippleEnter = (theme: Theme) => keyframes`
     opacity: ${1 - theme.palette.action.hoverOpacity};
   }
 `;
-const StyledIconographyMore = styled(JuiIconography)``;
+const StyledIconographyMore = styled(JuiIconography)<JuiIconographyProps>``;
 
-const StyledListItem = styled(MuiMenuItem)`
+const WrapperListItem = ({
+  isItemHover,
+  ...rest
+}: MuiMenuItemProps & { isItemHover?: boolean }) => <MuiMenuItem {...rest} />;
+
+const hoverStyle = css`
+  background-color: ${({ theme }) =>
+    fade(grey('700')({ theme }), theme.opacity.p05)};
+  ${StyledIconographyMore} {
+    display: inline-flex;
+  }
+  ${StyledIconographyDraft}, ${StyledIconographyFailure} {
+    display: none;
+  }
+`;
+const JuiMenuContain = styled(JuiMenu)`
+  && {
+    li {
+      background: ${palette('common', 'white')};
+    }
+  }
+`;
+const StyledListItem = styled(WrapperListItem)`
+
   && {
     display: ${({ hidden }) => (hidden ? 'none' : 'flex')};
     white-space: nowrap;
-    background: ${palette('common', 'white')};
     padding: ${spacing(0, 4, 0, 3)};
     height: ${height(8)};
     line-height: ${height(8)};
@@ -50,7 +76,14 @@ const StyledListItem = styled(MuiMenuItem)`
      * Details at https://github.com/clauderic/react-sortable-hoc/issues/334
      */
     transition: transform 0s ease,
-      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      ${({ theme }) =>
+        theme.transitions.create('background-color', {
+          duration: theme.transitions.duration.shortest,
+          easing: theme.transitions.easing.easeInOut,
+        })};
+  }
+  &&&& {
+    ${({ isItemHover }) => (isItemHover ? hoverStyle : {})};
   }
 
   &&.dragging {
@@ -68,17 +101,12 @@ const StyledListItem = styled(MuiMenuItem)`
   }
 
   &&&:hover {
-    background-color: ${grey('50')};
-    ${StyledIconographyMore} {
-      display: inline-block;
-    }
-    ${StyledIconographyDraft}, ${StyledIconographyFailure} {
-      display: none;
-    }
+    ${hoverStyle}
   }
 
   &&.selected {
-    background: ${palette('common', 'white')};
+    background-color: ${({ theme }) =>
+      fade(grey('700')({ theme }), theme.opacity.p10)};
     p {
       color: ${palette('primary', 'main')};
     }
@@ -119,6 +147,7 @@ type JuiConversationListItemProps = {
   onMoreClick?: (e: React.MouseEvent) => any;
   umiHint?: boolean;
   hidden?: boolean;
+  isItemHover?: boolean;
 } & MuiMenuItemProps;
 
 type IConversationListItem = {
@@ -130,51 +159,57 @@ const touchRippleClasses = {
   rippleVisible: 'rippleVisible',
 };
 
-const JuiConversationListItem: IConversationListItem = (
-  props: JuiConversationListItemProps,
-) => {
-  const {
-    title,
-    indicator,
-    presence,
-    umi,
-    onClick,
-    onMoreClick,
-    component,
-    selected,
-    innerRef,
-    umiHint,
-    children,
-    ...rest
-  } = props;
+const JuiConversationListItem: IConversationListItem = memo(
+  (props: JuiConversationListItemProps) => {
+    const {
+      title,
+      indicator,
+      presence,
+      umi,
+      onClick,
+      onMoreClick,
+      component,
+      selected,
+      innerRef,
+      umiHint,
+      children,
+      isItemHover,
+      ...rest
+    } = props;
 
-  const fontWeight = umiHint ? 'bold' : 'normal';
-  return (
-    <StyledListItem
-      onClick={onClick}
-      component={component}
-      selected={selected}
-      classes={{ selected: 'selected' }}
-      TouchRippleProps={{ classes: touchRippleClasses }}
-      {...rest}
-    >
-      <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
-      <ItemText disableTooltip={true} style={{ fontWeight }}>
-        {title}
-      </ItemText>
-      {umi}
-      <StyledRightWrapper>
-        {indicator}
-        <StyledIconographyMore onClick={onMoreClick}>
-          more_vert
-        </StyledIconographyMore>
-      </StyledRightWrapper>
-      {children}
-    </StyledListItem>
-  );
-};
+    const fontWeight = umiHint ? 'bold' : 'normal';
+    return (
+      <StyledListItem
+        onClick={onClick}
+        component={component}
+        selected={selected}
+        classes={{ selected: 'selected' }}
+        TouchRippleProps={{ classes: touchRippleClasses }}
+        isItemHover={isItemHover}
+        {...rest}
+      >
+        <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
+        <ItemText disableTooltip={true} style={{ fontWeight }}>
+          {title}
+        </ItemText>
+        {umi}
+        <StyledRightWrapper>
+          {indicator}
+          <StyledIconographyMore onClick={onMoreClick}>
+            more_vert
+          </StyledIconographyMore>
+        </StyledRightWrapper>
+        {children}
+      </StyledListItem>
+    );
+  },
+);
 
 JuiConversationListItem.dependencies = [ItemText, JuiIconography];
 
 export default JuiConversationListItem;
-export { JuiConversationListItemProps, JuiConversationListItem };
+export {
+  JuiConversationListItemProps,
+  JuiConversationListItem,
+  JuiMenuContain,
+};

@@ -12,8 +12,19 @@ import {
 } from '../ImageFileExtensions';
 
 describe('FileItemUtils', () => {
+  describe('filterType', () => {
+    it('should get type', () => {
+      const type = 'a';
+      expect(FileItemUtils.filterType({ type })).toEqual(type);
+    });
+
+    it('should filter image type', () => {
+      const type = 'image/jpeg';
+      expect(FileItemUtils.filterType({ type })).toEqual('jpeg');
+    });
+  });
   describe('isSupportPreview', () => {
-    it('should return true when is support preview ', () => {
+    it('should return true when is support preview', () => {
       SupportPreviewImageExtensions.forEach((element: string) => {
         expect(FileItemUtils.isSupportPreview({ type: element })).toBeTruthy();
       });
@@ -25,13 +36,13 @@ describe('FileItemUtils', () => {
   });
 
   describe('isImageResizable', () => {
-    it('should return true when is support resize ', () => {
+    it('should return true when is support resize', () => {
       ResizableExtensions.forEach((element: string) => {
         expect(FileItemUtils.isImageResizable({ type: element })).toBeTruthy();
       });
     });
 
-    it('should return false when is not support resize ', () => {
+    it('should return false when is not support resize', () => {
       expect(FileItemUtils.isImageResizable({ type: 'gg' })).toBeFalsy();
     });
   });
@@ -63,6 +74,23 @@ describe('FileItemUtils', () => {
 
     it('should return true when type is mime and include is image', () => {
       expect(FileItemUtils.isImageItem(itemC)).toBeTruthy();
+    });
+
+    it('[JPT-1100] Image should be listed under Image tab', () => {
+      const images = [
+        'tif',
+        'tiff',
+        'ai',
+        'psd',
+        'bmp',
+        'jpg',
+        'jpeg',
+        'png',
+        'gif',
+      ];
+      images.forEach((type: string) => {
+        expect(FileItemUtils.isImageItem({ type })).toBeTruthy();
+      });
     });
   });
 

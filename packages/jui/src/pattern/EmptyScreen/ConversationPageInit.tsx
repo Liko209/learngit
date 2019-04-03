@@ -14,7 +14,7 @@ const Pic = styled(EmptyScreen.Pic)`
   height: ${height(53)};
 `;
 
-const JuiConversationPageInit = (props: JuiEmptyScreenProps) => {
+const JuiConversationPageInit = React.memo((props: JuiEmptyScreenProps) => {
   const { image, text, content, actions } = props;
 
   return (
@@ -33,6 +33,6 @@ const JuiConversationPageInit = (props: JuiEmptyScreenProps) => {
       </EmptyScreen.Actions>
     </EmptyScreen.Wrapper>
   );
-};
+});
 
 export { JuiConversationPageInit };

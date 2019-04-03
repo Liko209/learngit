@@ -3,14 +3,15 @@
  * @Date: 2019-1-2 15:50:00
  * Copyright © RingCentral. All rights reserved.
  */
-import _ from 'lodash';
-import { SortUtils } from '../../../../../framework/utils';
 import { IDatabase } from 'foundation';
-import { BaseDao } from '../../../../../framework/dao';
-import { SanitizedItem } from '../entity';
-import { ItemQueryOptions, ItemFilterFunction } from '../../../types';
 import { isIEOrEdge } from 'foundation/src/db/adapter/dexie/utils';
-
+import _ from 'lodash';
+import { BaseDao } from '../../../../../framework/dao';
+import { SortUtils } from '../../../../../framework/utils';
+import { ItemFilterFunction, ItemQueryOptions } from '../../../types';
+import { Item, SanitizedItem } from '../entity';
+import { ArrayUtils } from '../../../../../utils/ArrayUtils';
+import { QUERY_DIRECTION } from '../../../../../dao/constants';
 class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   constructor(collectionName: string, db: IDatabase) {
     super(collectionName, db);
@@ -22,7 +23,15 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
   }
 
   async getSortedIds(options: ItemQueryOptions): Promise<number[]> {
-    const { groupId, sortKey, desc, limit, offsetItemId, filterFunc } = options;
+    const {
+      groupId,
+      sortKey,
+      desc,
+      limit,
+      offsetItemId,
+      filterFunc,
+      direction = QUERY_DIRECTION.NEWER,
+    } = options;
     let sanitizedItems = await this.queryItemsByGroupId(groupId);
 
     if (sanitizedItems.length === 0) {
@@ -38,22 +47,14 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     };
 
     sanitizedItems = sanitizedItems.sort(sortFunc);
-    const itemIds: number[] = [];
-    let insertAble: boolean = offsetItemId ? false : true;
-    for (let i = 0; i < sanitizedItems.length; ++i) {
-      const itemId = sanitizedItems[i].id;
-      if (!insertAble && itemId === offsetItemId) {
-        insertAble = true;
-      }
-      if (insertAble && itemId !== offsetItemId) {
-        if (itemIds.length < limit) {
-          itemIds.push(itemId);
-        } else {
-          break;
-        }
-      }
-    }
+    const allItemIds = sanitizedItems.map((x: T) => x.id);
 
+    const itemIds = ArrayUtils.sliceIdArray(
+      allItemIds,
+      limit,
+      offsetItemId,
+      direction,
+    );
     return itemIds;
   }
 
@@ -69,7 +70,34 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     const query = this.createQuery();
     return isIEOrEdge
       ? query.filter(item => item.group_ids.includes(groupId))
-      : query.contain('group_ids', groupId);
+      : query.equal('group_ids', groupId);
+  }
+
+  toSanitizedItem(item: Item) {
+    return {
+      id: item.id,
+      group_ids: item.group_ids,
+      created_at: item.created_at,
+      modified_at: item.modified_at,
+    };
+  }
+
+  toPartialSanitizedItem(partialItem: Partial<Item>) {
+    return {
+      ..._.pick(partialItem, ['id', 'created_at', 'group_ids', 'modified_at']),
+    };
+  }
+
+  shouldSaveSubItem<K extends { id: number; post_ids?: number[] }>(item: K) {
+    return item.id > 0 && item.post_ids && item.post_ids.length > 0;
+  }
+
+  async update(item: Partial<T> | Partial<T>[]): Promise<void> {
+    await super.update(item, false);
+  }
+
+  async bulkUpdate(partialItems: Partial<T>[]): Promise<void> {
+    await super.bulkUpdate(partialItems, false);
   }
 }
 

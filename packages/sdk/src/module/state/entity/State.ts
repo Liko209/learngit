@@ -33,5 +33,6 @@ export type GroupState = {
 export type TransformedState = {
   groupStates: GroupState[];
   myState?: State;
-  isSelf: boolean;
+  isSelf?: boolean;
+  isFromIndexData?: boolean;
 };

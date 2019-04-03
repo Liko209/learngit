@@ -11,7 +11,7 @@ import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscriba
 import { QUERY_DIRECTION } from 'sdk/dao';
 
 const PAGE_SIZE = 20;
-type DeltaDataHandler = (delta: TDelta) => any;
+export type DeltaDataHandler = (delta: TDelta) => any;
 export interface IFetchDataListHandlerOptions {
   pageSize?: number;
   hasMoreUp?: boolean;
@@ -33,7 +33,7 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
   private _listStore: ListStore<T>;
   protected _pageSize: number;
   protected _entityName?: ENTITY_NAME;
-  protected _dataChangeCallBack: DeltaDataHandler;
+  protected _dataChangeCallBacks: DeltaDataHandler[] = [];
 
   constructor(
     dataProvider: IFetchDataProvider<T> | null,
@@ -48,11 +48,15 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
       hasMoreDown = false,
       hasMoreUp = false,
       entityName,
+      dataChangeCallBack,
     } = options;
     this._pageSize = pageSize;
     this._entityName = entityName;
     this.listStore._hasMoreUp = hasMoreUp;
     this.listStore._hasMoreDown = hasMoreDown;
+    if (dataChangeCallBack) {
+      this.addDataChangeCallback(dataChangeCallBack);
+    }
   }
 
   get listStore() {
@@ -71,8 +75,20 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
       direction === QUERY_DIRECTION.OLDER,
     );
   }
-  setUpDataChangeCallback(cb: DeltaDataHandler) {
-    this._dataChangeCallBack = cb;
+
+  addDataChangeCallback(cb: DeltaDataHandler) {
+    if (cb && !this._dataChangeCallBacks.includes(cb)) {
+      this._dataChangeCallBacks.push(cb);
+    }
+  }
+
+  removeDataChangeCallback(cb: DeltaDataHandler) {
+    if (cb) {
+      const index = this._dataChangeCallBacks.indexOf(cb);
+      if (index >= 0) {
+        this._dataChangeCallBacks.splice(index, 1);
+      }
+    }
   }
 
   async fetchData(direction: QUERY_DIRECTION, pageSize?: number) {
@@ -113,13 +129,16 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     }
   }
 
-  protected replaceEntityStore<Entity>(entities: Entity[]) {
-    if (!entities.length) {
+  protected replaceEntityStore<Entity>(replaceEntities: Map<number, Entity>) {
+    if (!replaceEntities.size) {
       return;
     }
 
     if (this._entityName) {
-      storeManager.dispatchReplacedDataModels(this._entityName, entities);
+      storeManager.dispatchReplacedDataModels(
+        this._entityName,
+        replaceEntities,
+      );
     }
   }
 
@@ -133,5 +152,13 @@ export class FetchDataListHandler<T> extends BaseNotificationSubscribable {
     if (result.length > 0) {
       this._listStore.append(result, inFront);
     }
+  }
+
+  get size() {
+    return this._listStore.size;
+  }
+
+  dispose() {
+    super.dispose();
   }
 }

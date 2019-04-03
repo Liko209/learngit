@@ -5,26 +5,31 @@
  */
 import GroupModel from '../Group';
 import { Group } from 'sdk/models';
-import { UserConfig } from 'sdk/service/account/UserConfig';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
+import { GlobalConfigService } from 'sdk/module/config';
+import { AccountUserConfig } from 'sdk/service/account/config';
+import i18next from 'i18next';
 
 jest.mock('sdk/api');
-jest.mock('sdk/service/account/UserConfig');
+jest.mock('sdk/service/account/config');
 jest.mock('@/store/utils/entities');
+jest.mock('sdk/module/config');
+jest.mock('sdk/service/account/config');
+GlobalConfigService.getInstance = jest.fn();
 
 describe('GroupModel', () => {
   const mockUserId = 1;
   const mockUserCompanyId = 11;
   beforeEach(() => {
     jest.resetAllMocks();
-    UserConfig.getCurrentUserId = jest
-      .fn()
-      .mockImplementation(() => mockUserId);
-    UserConfig.getCurrentCompanyId = jest
-      .fn()
-      .mockImplementation(() => mockUserCompanyId);
+
+    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(mockUserId);
+
+    AccountUserConfig.prototype.getCurrentCompanyId.mockReturnValue(
+      mockUserCompanyId,
+    );
 
     (getEntity as jest.Mock).mockImplementation((name: string) => {
       if (name === ENTITY_NAME.PERSON) {
@@ -132,6 +137,10 @@ describe('GroupModel', () => {
           },
         },
       } as Group);
+      expect(gmAdmin.canPost).toBeTruthy();
+    });
+    it('should return true when group data is not ready', () => {
+      const gmAdmin = new GroupModel({ id: 1, isMocked: true } as Group);
       expect(gmAdmin.canPost).toBeTruthy();
     });
   });
@@ -302,23 +311,12 @@ describe('GroupModel', () => {
   });
 
   describe('isCurrentUserHasPermissionAddMember', () => {
-    const groupService = {
-      isCurrentUserHasPermission: jest.fn(),
-    };
     beforeEach(() => {
       // (GroupService as any).mockImplementation(() => groupService);
     });
     afterEach(() => {
       jest.resetAllMocks();
       jest.clearAllMocks();
-    });
-    it('should return false if current user is not a member', () => {
-      const gm = GroupModel.fromJS({
-        id: 1,
-        is_team: true,
-        members: [mockUserId + 1],
-      } as Group);
-      expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
     });
     it('should return false when user is a member but has not permission', () => {
       const gm = GroupModel.fromJS({
@@ -351,6 +349,45 @@ describe('GroupModel', () => {
         },
       } as Group);
       expect(gm.isCurrentUserHasPermissionAddMember).toBe(true);
+    });
+    it('should return false when group info not ready', () => {
+      const gm = GroupModel.fromJS({
+        id: 1,
+        isMocked: true,
+      } as Group);
+      expect(gm.isCurrentUserHasPermissionAddMember).toBe(false);
+    });
+  });
+
+  describe('displayName', () => {
+    it('should return team name if it is team', () => {
+      const gm = GroupModel.fromJS({
+        set_abbreviation: 'TEAM NAME',
+        is_team: true,
+      } as Group);
+      expect(gm.displayName).toBe('TEAM NAME');
+    });
+
+    it('should return empty string if it is team and no team name', () => {
+      const gm = GroupModel.fromJS({
+        is_team: true,
+      } as Group);
+      expect(gm.displayName).toBe('');
+    });
+
+    it('should return userDisplayNameForGroupName if it is me conversation', () => {
+      const gm = GroupModel.fromJS({
+        members: [mockUserId],
+      } as Group);
+      (getEntity as jest.Mock).mockImplementation((name: string) => {
+        if (name === ENTITY_NAME.PERSON) {
+          return {
+            userDisplayNameForGroupName: 'Chris',
+          };
+        }
+      });
+      jest.spyOn(i18next, 't').mockReturnValueOnce('me');
+      expect(gm.displayName).toBe('Chris (me)');
     });
   });
 });

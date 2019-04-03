@@ -42,11 +42,29 @@ class ActionBarMoreMenu extends BaseWebComponent {
   }
 }
 
+class HeaderMoreMenu extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="menu"]');
+  }
+
+  private getEntry(menuName: string) {
+    return this.getComponent(Entry, this.self.find('li').withExactText(menuName));
+  }
+
+  get convertToTeam() {
+    return this.getEntry('Convert to team');
+  }
+}
 
 class BaseConversationPage extends BaseWebComponent {
 
   get jumpToFirstUnreadButtonWrapper() {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
+  }
+
+  async countOnUnreadButtonShouldBe(n: string | number) {
+    const reg = new RegExp(`^\\D*${n}\\D+$`)
+    await this.t.expect(this.jumpToFirstUnreadButtonWrapper.find('span').textContent).match(reg);
   }
 
   async clickJumpToFirstUnreadButton() {
@@ -124,22 +142,30 @@ class BaseConversationPage extends BaseWebComponent {
     return await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
   }
 
+  /* scroll */
   get scrollDiv() {
-    this.warnFlakySelector();
-    return this.stream.parent('div');
+    return this.getSelectorByAutomationId('virtualized-list', this.stream);
+  }
+
+  async expectStreamScrollToY(y: number) {
+    await this.t.expect(this.scrollDiv.scrollTop).eql(y);
   }
 
   async expectStreamScrollToBottom() {
-    const scrollTop = await this.scrollDiv.scrollTop;
-    const scrollHeight = await this.scrollDiv.scrollHeight;
-    const clientHeight = await this.scrollDiv.clientHeight;
-    await this.t.expect(scrollTop).eql(scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`);
+    await H.retryUntilPass(async () => {
+      const scrollTop = await this.scrollDiv.scrollTop;
+      const scrollHeight = await this.scrollDiv.scrollHeight;
+      const clientHeight = await this.scrollDiv.clientHeight;
+      assert.deepStrictEqual(scrollTop, scrollHeight - clientHeight, `${scrollTop} != ${scrollHeight} - ${clientHeight}`)
+    });
   }
 
   async scrollToY(y: number) {
+    const scrollDivElement = this.scrollDiv;
     await ClientFunction((_y) => {
-      document.querySelector('[data-test-automation-id="jui-stream-wrapper"] div').scrollTop = _y;
-    })(y);
+      scrollDivElement().scrollTop = _y;
+    },
+      { dependencies: { scrollDivElement } })(y);
   }
 
   async scrollToMiddle() {
@@ -163,17 +189,64 @@ class BaseConversationPage extends BaseWebComponent {
     }
   }
 
+  async scrollToCurrentFirstPost() {
+    const scrollTop = await this.posts.nth(0).scrollTop;
+    await this.scrollToY(scrollTop);
+  }
+
+  async scrollToCurrentLastPost() {
+    const scrollTop = await this.posts.nth(-1).scrollTop;
+    await this.scrollToY(scrollTop);
+  }
+
+  async scrollUpToViewPostById(postId: string) {
+    const postItem = this.postItemById(postId)
+    for (const i of _.range(10)) {
+      if (await postItem.exists) {
+        await postItem.scrollIntoView()
+        break
+      } else {
+        await this.scrollToCurrentFirstPost();
+        await this.t.wait(1e3);
+      }
+    }
+    assert(await postItem.visible, "this post does not exist");
+  }
+
+  async scrollDownToViewPostById(postId: string) {
+    const postItem = this.postItemById(postId)
+    for (const i of _.range(10)) {
+      if (await postItem.exists) {
+        await postItem.scrollIntoView()
+        break
+      } else {
+        await this.scrollToCurrentLastPost();
+        await this.t.wait(1e3);
+      }
+    }
+    assert(await postItem.visible, "this post does not exist");
+  }
+
   get newMessageDeadLine() {
     return this.stream.find('span').withText('New Messages');
   }
 
   async isVisible(el: Selector) {
+    await this.t.expect(el.exists).ok();
     const wrapper = this.streamWrapper;
     const itemTop = await el.getBoundingClientRectProperty('top');
     const itemBottom = await el.getBoundingClientRectProperty('bottom');
     const wrapperTop = await wrapper.getBoundingClientRectProperty('top');
     const wrapperBottom = await wrapper.getBoundingClientRectProperty('bottom');
     return itemTop >= wrapperTop && itemBottom <= wrapperBottom;
+  }
+
+  async postByIdExpectVisible(postId: string, visible: boolean) {
+    await H.retryUntilPass(async () => {
+      const postCard = this.posts.filter(`[data-id="${postId}"]`)
+      const result = await this.isVisible(postCard);
+      assert.strictEqual(result, visible, `This post expect visible: ${visible}, but actual: ${result}`);
+    });
   }
 
   async nthPostExpectVisible(n: number, isVisible: boolean = true) {
@@ -183,11 +256,23 @@ class BaseConversationPage extends BaseWebComponent {
     });
   }
 
-  async newMessageDeadLineExpectVisible(isVisible: boolean) {
+  async newMessageDeadLineExpectVisible(visible: boolean) {
     await H.retryUntilPass(async () => {
       const result = await this.isVisible(this.newMessageDeadLine);
-      assert.strictEqual(result, isVisible, `This 'New Messages' deadline expect visible: ${isVisible}, but actual: ${result}`);
+      assert.strictEqual(result, visible, `This 'New Messages' deadline expect visible: ${visible}, but actual: ${result}`);
     });
+  }
+
+  get moreButtonOnHeader() {
+    return this.getSelectorByIcon('more_vert', this.header);
+  }
+
+  async openMoreButtonOnHeader() {
+    return this.t.click(this.moreButtonOnHeader);
+  }
+
+  get headerMoreMenu() {
+    return this.getComponent(HeaderMoreMenu);
   }
 }
 
@@ -203,6 +288,15 @@ export class ConversationPage extends BaseConversationPage {
 
   get currentGroupId() {
     return this.self.getAttribute('data-group-id');
+  }
+
+  async postCardByIdShouldBeOnTheTop(postId: string) {
+    await H.retryUntilPass(async () => {
+      const containerTop = await this.self.getBoundingClientRectProperty('top');
+      const headerHeight = await this.header.getBoundingClientRectProperty('height');
+      const targetTop = await this.postItemById(postId).self.getBoundingClientRectProperty('top');
+      assert.strictEqual(containerTop + headerHeight, targetTop, 'this post card is not on the top of conversation page')
+    });
   }
 
   async shouldFocusOnMessageInputArea() {
@@ -221,25 +315,49 @@ export class ConversationPage extends BaseConversationPage {
     await this.t.pressKey('enter');
   }
 
-  get privateButton() {
+  get privacyToggle() {
     this.warnFlakySelector();
     return this.self.find('.privacy');
   }
 
   async clickPrivate() {
-    await this.t.click(this.privateButton);
+    await this.t.click(this.privacyToggle);
+  }
+
+  get privateTeamIcon() {
+    return this.getSelectorByIcon('lock', this.privacyToggle);
+  }
+
+  get publicTeamIcon() {
+    return this.getSelectorByIcon('lock_open', this.privacyToggle);
+  }
+
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon('star', this.favoriteButton);
+  }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon('star_border', this.favoriteButton);
   }
 
   async favorite() {
-    await this.t.click(this.leftWrapper.find('span').withText('star').nextSibling('input'));
+    await this.t.click(this.leftWrapper.find('.icon.star').nextSibling('input'));
   }
 
   async unFavorite() {
-    await this.t.click(this.leftWrapper.find('span').withText('star_border').nextSibling('input'));
+    await this.t.click(this.leftWrapper.find('.icon.star_border').nextSibling('input'));
   }
 
   async groupIdShouldBe(id: string | number) {
     await this.t.expect(this.currentGroupId).eql(id.toString());
+  }
+
+  async titleShouldBe(title: string) {
+    await this.t.expect(this.title.withExactText(title).exists).ok();
   }
 
   get messageFilesArea() {
@@ -276,6 +394,28 @@ export class ConversationPage extends BaseConversationPage {
 
   async removeFileOnMessageArea(n = 0) {
     await this.t.click(this.removeFileButtons.nth(n));
+  }
+
+  get readOnlyDiv() {
+    return this.getSelectorByAutomationId("disabled-message-input", this.self);
+  }
+
+  async shouldBeReadOnly() {
+    await this.t.expect(this.messageInputArea.exists).notOk();
+    await this.t.expect(this.readOnlyDiv.exists).ok();
+  }
+
+  /* 1:1 */
+  get telephonyButton() {
+    return this.telephonyIcon.parent('button'); //TODO: add automationId
+  }
+
+  get telephonyIcon() {
+    return this.getSelectorByIcon('phone', this.self);
+  }
+
+  async clickTelephonyButton() {
+    await this.t.click(this.telephonyButton);
   }
 }
 
@@ -317,21 +457,35 @@ export class DuplicatePromptPage extends BaseWebComponent {
   async clickCreateButton() {
     await this.t.click(this.duplicateCreateButton);
   }
-
 }
 
 export class MentionPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
+
+  async waitUntilPostsBeLoaded(timeout = 20e3) {
+    await this.t.wait(1e3); // loading circle is invisible in first 1 second.
+    await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
+    await this.t.expect(this.title.withText("@Mentions").exists).ok();
+  }
 }
 export class BookmarkPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
   }
+
+  async waitUntilPostsBeLoaded(timeout = 20e3) {
+    await this.t.wait(1e3); // loading circle is invisible in first 1 second.
+    await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
+    await this.t.expect(this.title.withText("Bookmarks").exists).ok();
+  }
 }
 
 export class PostItem extends BaseWebComponent {
+  get postId() {
+    return this.self.getAttribute('data-id');
+  }
 
   get actionBarMoreMenu() {
     return this.getComponent(ActionBarMoreMenu);
@@ -361,12 +515,16 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="text"]`);
   }
 
+  get img() {
+    this.warnFlakySelector(); // todo: all specify item...
+    return this.body.find('img');
+  }
 
   get editTextArea() {
     return this.self.find('[data-placeholder="Type new message"]');
   }
 
-  async editMessage(message: string, options?) {
+  async editMessage(message: string, options?: TypeActionOptions) {
     await this.t
       .wait(1e3) // need time to wait edit text area loaded
       .typeText(this.editTextArea, message, options)
@@ -385,7 +543,7 @@ export class PostItem extends BaseWebComponent {
     return this.mentions.filter((el) => el.textContent === name);
   }
 
-  imgTitle(text) {
+  emojiTitle(text) {
     return this.text.find("img").withAttribute("title", text);
   }
 
@@ -393,9 +551,26 @@ export class PostItem extends BaseWebComponent {
     return this.self.find(`[data-name="actionBarLike"]`);
   }
 
+  get likeIconOnActionBar() {
+    return this.getSelectorByIcon('thumbup_border', this.likeToggleOnActionBar);
+  }
+
+  get unlikeIconOnActionBar() {
+    return this.getSelectorByIcon('thumbup', this.likeToggleOnActionBar);
+  }
+
   get likeButtonOnFooter() {
     return this.self.find(`[data-name="footerLikeButton"]`).find(`[data-name="actionBarLike"]`);
   }
+
+  get likeIconOnFooter() {
+    return this.getSelectorByIcon('thumbup_border', this.likeButtonOnFooter);
+  }
+
+  get unlikeIconOnFooter() {
+    return this.getSelectorByIcon('thumbup', this.likeButtonOnFooter);
+  }
+
 
   get likeCount() {
     return this.likeButtonOnFooter.nextSibling('span');
@@ -414,16 +589,46 @@ export class PostItem extends BaseWebComponent {
     return this.getSelectorByIcon('bookmark_border', this.self);
   }
 
+  get pinToggle() {
+    return this.self.find('button').withAttribute('data-name', 'actionBarPin');
+  }
+
+  get pinButton() {
+    return this.pinToggle.withAttribute('aria-label', 'Pin');
+  }
+
+  get unpinButton() {
+    return this.pinToggle.withAttribute('aria-label', 'Unpin');
+  }
+
+  async clickPinToggle() {
+    await this.t.click(this.pinToggle);
+  }
+
+  get isPinned() {
+    return this.unpinButton.exists;
+  }
+
+  async pinPost() {
+    if (!await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
+  }
+
+  async unpinPost() {
+    if (await this.isPinned) {
+      await this.t.hover(this.self);
+      await this.clickPinToggle();
+    };
+  }
+
   get moreMenu() {
     return this.self.find(`[data-name="actionBarMore"]`);
   }
 
   async clickMoreItemOnActionBar() {
     await this.t.hover(this.self).click(this.moreMenu);
-  }
-
-  get prompt() {
-    return this.getSelector('.tooltipPlacementBottom').textContent;
   }
 
   async clickAvatar() {
@@ -477,6 +682,11 @@ export class PostItem extends BaseWebComponent {
     await this.t.wait(1e3);
   }
 
+  async waitImageVisible(timeout = 10e3) {
+    await this.t.expect(this.self.find('img').clientHeight).gt(0, { timeout });
+    await this.t.expect(this.self.find('img').clientWidth).gt(0, { timeout });
+  }
+
   get fileNames() {
     return this.getSelectorByAutomationId('file-name', this.self);
   }
@@ -498,21 +708,23 @@ export class PostItem extends BaseWebComponent {
     return this.self.find('.conversation-name')
   }
 
+  get conversationSource() {
+    return this.self.find(`[data-name="cardHeaderFrom"]`);
+  }
+
+  get conversationSourceId() {
+    return this.conversationSource.getAttribute('id');
+  }
+
   async jumpToConversationByClickName() {
     await this.t.click(this.conversationName, { offsetX: 3 });
   }
 
   get jumpToConversationButton() {
-    // FIXME: should take i18n into account
-    this.warnFlakySelector();
-    return this.self.find(`span`).withText(/Jump To Conversation/i).parent('button');
+    return this.getSelectorByAutomationId('jumpToConversation', this.self);
   }
 
-  async jumpToConversationByClickPost() {
-    await this.t.click(this.self);
-  }
-
-  async clickConversationByButton() {
+  async hoverPostAndClickJumpToConversationButton() {
     const buttonElement = this.jumpToConversationButton;
     const displayJumpButton = ClientFunction(() => {
       buttonElement().style["opacity"] = "1";
@@ -534,6 +746,21 @@ export class PostItem extends BaseWebComponent {
 
   get audioConference() {
     return this.getComponent(AudioConference, this.self);
+  }
+
+  async scrollIntoView() {
+    await ClientFunction((_self) => {
+      const ele: any = _self()
+      ele.scrollIntoView()
+    })(this.self)
+  }
+
+  get isHighLight() {
+    return this.self.hasClass('highlight')
+  }
+
+  async shouldBeHighLight() {
+    await this.t.expect(this.isHighLight).ok();
   }
 
 }

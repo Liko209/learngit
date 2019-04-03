@@ -1,0 +1,16 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/ContentPanel/CodeSnippet.ts",
+      "./fixtures/Profile/RemoveTeamMember.ts"
+    ],
+    "include_tags": [
+      "JPT-958",
+      "JPT-1081",
+      "JPT-1086"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

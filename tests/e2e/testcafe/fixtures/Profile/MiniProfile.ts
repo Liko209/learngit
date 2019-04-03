@@ -167,7 +167,7 @@ test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 
     await h(t).withLog(`And the profile dialog id should be same as mini Profile id: ${miniProfileId}`, async () => {
       const profileDialogId = await profileDialog.getId();
       await t.expect(profileDialogId).eql(miniProfileId);
-      await profileDialog.close();
+      await profileDialog.clickCloseButton();
     });
   }
 });
@@ -178,7 +178,7 @@ test(formalName('Favorite/Unfavorite a conversation from mini profile', ['JPT-56
   const loginUser = users[4];
   await h(t).platform(loginUser).init();
   await h(t).glip(loginUser).init();
-  await h(t).glip(loginUser).resetProfile();
+  await h(t).glip(loginUser).resetProfileAndState();
   
   const otherUser = users[5];
   await h(t).platform(otherUser).init();

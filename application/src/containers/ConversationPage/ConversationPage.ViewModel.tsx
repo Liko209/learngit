@@ -5,7 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { GroupService } from 'sdk/service';
+import { GroupService } from 'sdk/module/group';
 import { StateService } from 'sdk/module/state';
 import { Group } from 'sdk/module/group/entity';
 import { getEntity } from '@/store/utils';
@@ -15,6 +15,7 @@ import { ENTITY_NAME } from '@/store';
 import { ConversationPageProps } from './types';
 import _ from 'lodash';
 import history from '@/history';
+import { mainLogger } from 'sdk';
 
 class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   private _groupService: GroupService = GroupService.getInstance();
@@ -25,8 +26,16 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
     this.reaction(
       () => this.props.groupId,
       async (groupId: number) => {
-        const group = await this._groupService.getById(groupId);
-        if (!group) {
+        let group;
+        try {
+          group = await this._groupService.getById(groupId);
+        } catch (error) {
+          group = null;
+          mainLogger
+            .tags('ConversationPageViewModel')
+            .info(`get group ${groupId} fail:`, error);
+        }
+        if (!group || !this._groupService.isValid(group!)) {
           history.replace('/messages/loading', {
             id: groupId,
             error: true,

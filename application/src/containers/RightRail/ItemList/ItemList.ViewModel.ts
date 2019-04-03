@@ -1,33 +1,25 @@
-/*
- * @Author: Shining (shining.miao@ringcentral.com)
- * @Date: 2019-01-09 10:01:24
- * Copyright © RingCentral. All rights reserved.
- */
-
-import { computed, observable, action } from 'mobx';
-import { StoreViewModel } from '@/store/ViewModel';
-import { Props, ViewProps, LoadStatus, InitLoadStatus } from './types';
-import { QUERY_DIRECTION } from 'sdk/dao';
-import { getGlobalValue } from '@/store/utils';
-import { t } from 'i18next';
-import { Notification } from '@/containers/Notification';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
-import { ItemService, ItemUtils, ITEM_SORT_KEYS } from 'sdk/module/item';
-import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
-import { SortUtils } from 'sdk/framework/utils';
-import { Item } from 'sdk/module/item/entity';
+import { observable, action, computed } from 'mobx';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
   ISortableModel,
 } from '@/store/base/fetch';
-import { ENTITY } from 'sdk/service';
-import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
+import { ENTITY_NAME } from '@/store/constants';
+import { QUERY_DIRECTION } from 'sdk/dao';
+import { SortUtils } from 'sdk/framework/utils';
+import {
+  ITEM_SORT_KEYS,
+  ItemService,
+  ItemUtils,
+  ItemNotification,
+} from 'sdk/module/item';
+import { Item } from 'sdk/module/item/entity';
 import { GlipTypeUtil } from 'sdk/utils';
+import { StoreViewModel } from '@/store/ViewModel';
+import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { TAB_CONFIG } from './config';
+import { Props } from './types';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -58,29 +50,37 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   }
 }
 
-class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
-  @observable
-  private _loadStatus: LoadStatus;
-  @observable
-  totalCount: number = 0;
-  @observable
-  private _sortableDataHandler: FetchSortableDataListHandler<Item>;
-  @computed
-  private get _groupId() {
-    return this.props.groupId;
+class ItemListViewModel extends StoreViewModel<Props> {
+  @observable private _sortableDataHandler: FetchSortableDataListHandler<Item>;
+  @observable private _total: number = Infinity;
+  @observable private _loadingContent = false;
+  @observable private _loadingMoreDown = false;
+
+  constructor(props: Props) {
+    super(props);
+    this.reaction(
+      () => this._groupID,
+      () => {
+        this.setType(this._type);
+        this._loadTotalCount();
+        this.loadInitialData();
+      },
+      { fireImmediately: true },
+    );
+
+    this.reaction(() => this.getIds.length, () => this._loadTotalCount(), {
+      fireImmediately: true,
+    });
   }
+
   @computed
-  get type() {
+  get _type() {
     return this.props.type;
   }
 
   @computed
-  get tabConfig() {
-    return TAB_CONFIG.find(looper => looper.type === this.type)!;
-  }
-
-  private get _typeId() {
-    return RightRailItemTypeIdMap[this.type];
+  get _groupID() {
+    return this.props.groupId;
   }
 
   @computed
@@ -88,92 +88,62 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
     return this.props.active;
   }
 
-  private _getFilterFunc() {
-    switch (this.type) {
-      case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
-        return ItemUtils.fileFilter(this._groupId, true);
-      case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
-        return ItemUtils.fileFilter(this._groupId, false);
-      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
-        return ItemUtils.eventFilter(this._groupId);
-      case RIGHT_RAIL_ITEM_TYPE.TASKS:
-        return ItemUtils.taskFilter(this._groupId, false);
-      default:
-        return undefined;
-    }
-  }
-
-  @computed
-  get sort() {
-    return (
-      this.tabConfig.sort || {
-        sortKey: ITEM_SORT_KEYS.CREATE_TIME,
-        desc: false,
-      }
+  @action
+  setType = (type: RIGHT_RAIL_ITEM_TYPE) => {
+    const { sortKey, desc } = this.getSort();
+    this._buildSortableMemberListHandler(
+      this.props.groupId,
+      type,
+      sortKey,
+      desc,
     );
   }
 
-  constructor(props: Props) {
-    super(props);
-    this._loadStatus = { ...InitLoadStatus };
-    this.reaction(
-      () => this._groupId,
-      () => {
-        const {
-          sortKey = ITEM_SORT_KEYS.CREATE_TIME,
-          desc = false,
-        } = this.sort;
-        this.props.groupId &&
-          this._buildSortableMemberListHandler(
-            this._groupId,
-            this._typeId,
-            sortKey,
-            desc,
-          );
-        this.loadTotalCount();
-        this.forceReload();
-      },
-      { fireImmediately: true },
-    );
-    this.reaction(() => this.ids, () => this.loadTotalCount());
-    this.reaction(
-      () => this._active,
-      (active: boolean) => {
-        if (active && !this._loadStatus.firstLoaded) {
-          this.forceReload();
-        }
-      },
-    );
-    this.reaction(
-      () => this._loadStatus.firstLoaded,
-      (firstLoaded: boolean) => {
-        if (firstLoaded) {
-          this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
-        }
-      },
-    );
-  }
-
-  async loadTotalCount() {
+  @action
+  private _loadTotalCount = async () => {
     const itemService: ItemService = ItemService.getInstance();
-    this.totalCount = await itemService.getGroupItemsCount(
-      this._groupId,
-      this._typeId,
-      this._getFilterFunc(),
+    this._total = await itemService.getGroupItemsCount(
+      this.props.groupId,
+      this._getTypeId(this._type),
+      this._getFilterFunc(this.props.groupId, this._type),
     );
   }
 
-  private _buildSortableMemberListHandler(
+  private _getTabConfig(type: RIGHT_RAIL_ITEM_TYPE) {
+    return TAB_CONFIG.find(looper => looper.type === type)!;
+  }
+
+  getSort() {
+    return {
+      sortKey: ITEM_SORT_KEYS.CREATE_TIME,
+      desc: false,
+      ...this._getTabConfig(this._type).sort,
+    };
+  }
+
+  @action
+  private _buildSortableMemberListHandler = async (
     groupId: number,
-    typeId: number,
+    type: number,
     sortKey: ITEM_SORT_KEYS,
     desc: boolean,
-  ) {
+  ) => {
+    const typeId = this._getTypeId(type);
+
     const isMatchFunc = (model: Item) => {
-      return model ? this._isExpectedItemOfThisGroup(model) : false;
+      return model
+        ? this._isExpectedItemOfThisGroup(groupId, type, model)
+        : false;
     };
 
     const transformFunc = (model: Item) => {
+      if (
+        this._type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
+        this._type === RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES
+      ) {
+        model[sortKey] =
+          FileItemUtils.getVersionDate(model) || model.created_at;
+      }
       return {
         id: model.id,
         sortValue: model.id,
@@ -198,90 +168,129 @@ class ItemListViewModel extends StoreViewModel<Props> implements ViewProps {
       typeId,
       sortKey,
       desc,
-      this._getFilterFunc(),
+      this._getFilterFunc(groupId, type),
     );
+
+    if (this._sortableDataHandler) {
+      this._sortableDataHandler.dispose();
+    }
 
     this._sortableDataHandler = new FetchSortableDataListHandler(dataProvider, {
       isMatchFunc,
       transformFunc,
       sortFunc,
       entityName: ENTITY_NAME.ITEM,
-      eventName: ENTITY.ITEM,
+      eventName: ItemNotification.getItemNotificationKey(typeId, groupId),
       hasMoreDown: true,
       hasMoreUp: true,
     });
-    this.fetchNextPageItems();
   }
 
-  private _isExpectedItemOfThisGroup(item: Item) {
+  private _isExpectedItemOfThisGroup(
+    groupId: number,
+    type: RIGHT_RAIL_ITEM_TYPE,
+    item: Item,
+  ) {
     let isValidItem = !item.deactivated && item.post_ids.length > 0;
-    switch (this.type) {
+    switch (type) {
       case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
       case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
       case RIGHT_RAIL_ITEM_TYPE.EVENTS:
       case RIGHT_RAIL_ITEM_TYPE.TASKS:
         isValidItem =
           isValidItem &&
-          (this._getFilterFunc() as (valid: Item) => boolean)(item);
+          (this._getFilterFunc(groupId, type) as (valid: Item) => boolean)(
+            item,
+          );
+        break;
       default:
         isValidItem =
           isValidItem &&
-          GlipTypeUtil.extractTypeId(item.id) === this._typeId &&
-          ItemUtils.isValidItem(this._groupId, item);
+          GlipTypeUtil.extractTypeId(item.id) === this._getTypeId(type) &&
+          ItemUtils.isValidItem(groupId, item);
     }
     return isValidItem;
   }
 
-  @action
-  forceReload = async () => {
-    this._loadStatus.firstLoaded = false;
-    this._loadStatus.loading = false;
-    await this.fetchNextPageItems();
+  private _getFilterFunc(groupId: number, type: RIGHT_RAIL_ITEM_TYPE) {
+    switch (type) {
+      case RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES:
+        return ItemUtils.fileFilter(groupId, true);
+      case RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES:
+        return ItemUtils.fileFilter(groupId, false);
+      case RIGHT_RAIL_ITEM_TYPE.EVENTS:
+        return ItemUtils.eventFilter(groupId);
+      case RIGHT_RAIL_ITEM_TYPE.TASKS:
+        return ItemUtils.taskFilter(groupId, false);
+      default:
+        return undefined;
+    }
   }
 
-  @action
-  fetchNextPageItems = async () => {
-    const { active } = this.props;
-    const { loading, firstLoaded } = this._loadStatus;
-    const noMore = firstLoaded && this.totalCount === this.ids.length;
-    if (!active || loading || noMore) {
-      return;
-    }
-    const status = getGlobalValue(GLOBAL_KEYS.NETWORK);
-    if (status === 'offline') {
-      const { offlinePrompt } = this.tabConfig;
-      Notification.flashToast({
-        message: t(offlinePrompt),
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      });
-      Object.assign(this._loadStatus, { loadError: true, loading: false });
-      return;
-    }
-
-    try {
-      this._loadStatus.loading = true;
-      await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
-      Object.assign(this._loadStatus, { firstLoaded: true, loading: false });
-    } catch (e) {
-      Object.assign(this._loadStatus, { loadError: true, loading: false });
-    }
+  private _getTypeId(type: RIGHT_RAIL_ITEM_TYPE) {
+    return RightRailItemTypeIdMap[type];
   }
 
   @computed
-  get loadStatus() {
-    return this._loadStatus;
+  get getIds() {
+    return this._sortableDataHandler.sortableListStore.getIds;
+  }
+
+  @computed
+  get size() {
+    return this._sortableDataHandler.sortableListStore.size;
+  }
+
+  @computed
+  get total() {
+    return this._total;
+  }
+
+  hasMore = () => {
+    return this._sortableDataHandler.hasMore(QUERY_DIRECTION.NEWER);
+  }
+
+  isLoadingContent = () => {
+    return this._loadingContent;
+  }
+
+  isLoadingMore = (direction: 'up' | 'down') => {
+    if ('down' === direction) {
+      return this._loadingMoreDown;
+    }
+    return false;
+  }
+
+  isLoading = () => {
+    return (
+      this.isLoadingContent() ||
+      this.isLoadingMore('up') ||
+      this.isLoadingMore('down')
+    );
+  }
+
+  get = (index: number) => {
+    return this.getIds[index];
+  }
+
+  @action
+  loadMore = async () => {
+    this._loadingMoreDown = true;
+    await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER, 20);
+    this._loadingMoreDown = false;
+  }
+
+  @action
+  loadInitialData = async () => {
+    this._loadingContent = true;
+    await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
+    this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
+    this._loadingContent = false;
   }
 
   dispose() {
-    this._sortableDataHandler.dispose();
-  }
-
-  @computed
-  get ids() {
-    return this._sortableDataHandler.sortableListStore.getIds;
+    super.dispose();
+    return this._sortableDataHandler.dispose();
   }
 }
 

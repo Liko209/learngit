@@ -6,6 +6,7 @@
 import { ThemeProps as StyledThemeProps } from 'styled-components';
 import { Theme as MuiTheme } from '@material-ui/core/styles/createMuiTheme';
 import { Palette as MuiPalette } from '@material-ui/core/styles/createPalette';
+import { Omit } from '../../foundation/utils/typeHelper';
 
 type Palette = {
   primary: {
@@ -81,6 +82,16 @@ type Palette = {
 type Theme = {
   palette: Palette;
 
+  radius: {
+    circle: string;
+    round: number;
+    zero: number;
+    sm: string;
+    md: string;
+    lg: string;
+    xl: string;
+  };
+
   shape: {
     borderRadius: number;
     border1: string;
@@ -100,13 +111,39 @@ type Theme = {
     toast: number;
     floatButton: number;
     codeEditor: number;
+    modal: number;
+    makeZIndexStackingContext: number;
   };
   size: {
     width: number;
     height: number;
   };
   typography: {
-    title1: {
+    display4: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    display3: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    display2: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    display1: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    headline: {
       fontSize: string;
       fontWeight: number;
       fontFamily: string;
@@ -118,7 +155,7 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    subheading1: {
+    title1: {
       fontSize: string;
       fontWeight: number;
       fontFamily: string;
@@ -130,7 +167,19 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    caption1: {
+    subheading1: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    body2: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    body1: {
       fontSize: string;
       fontWeight: number;
       fontFamily: string;
@@ -142,7 +191,13 @@ type Theme = {
       fontFamily: string;
       lineHeight: string;
     };
-    h6: {
+    caption1: {
+      fontSize: string;
+      fontWeight: number;
+      fontFamily: string;
+      lineHeight: string;
+    };
+    button: {
       fontSize: string;
       fontWeight: number;
       fontFamily: string;
@@ -153,11 +208,24 @@ type Theme = {
     val1: string;
     val2: string;
     val3: string;
+    val16: string;
   };
   maxHeight: {
     dialog: string;
   };
-} & MuiTheme;
+  transitions: {
+    easing: {
+      openCloseDialog: string;
+    };
+  };
+  opacity: {
+    p05: number;
+    p10: number;
+    p50: number;
+    p60: number;
+    p80: number;
+  };
+} & Omit<MuiTheme, 'typography'>;
 
 type ThemeProps = StyledThemeProps<Theme & MuiTheme>;
 export { Palette, Theme, ThemeProps };

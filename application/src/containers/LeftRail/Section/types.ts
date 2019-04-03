@@ -26,6 +26,7 @@ type SectionViewProps = {
   isLast: boolean;
   handleCollapse: Function;
   handleExpand: Function;
+  type: SECTION_TYPE;
 };
 
 type SectionConfig = {

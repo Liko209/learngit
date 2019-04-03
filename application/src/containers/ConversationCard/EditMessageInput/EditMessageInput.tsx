@@ -5,7 +5,10 @@
  */
 
 import { buildContainer } from '@/base';
-import { EditMessageInputView } from './EditMessageInput.View';
+import {
+  EditMessageInputView,
+  EditMessageInputViewComponent,
+} from './EditMessageInput.View';
 import { EditMessageInputViewModel } from './EditMessageInput.ViewModel';
 import { EditMessageInputProps } from './types';
 
@@ -14,4 +17,4 @@ const EditMessageInput = buildContainer<EditMessageInputProps>({
   ViewModel: EditMessageInputViewModel,
 });
 
-export { EditMessageInput };
+export { EditMessageInput, EditMessageInputViewComponent };

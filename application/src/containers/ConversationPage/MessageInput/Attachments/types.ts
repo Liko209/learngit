@@ -19,6 +19,7 @@ type SelectFile = {
 type AttachmentsProps = {
   id: number;
   viewRef?: React.RefObject<any>;
+  forceSaveDraft: boolean;
 };
 
 type DidUploadFileCallback = () => Promise<void>;
@@ -29,6 +30,7 @@ type AttachmentsViewProps = {
   showDuplicateFiles: boolean;
   autoUploadFiles: (
     files: File[],
+    checkDuplicate?: boolean,
     callback?: DidUploadFileCallback,
   ) => Promise<void>;
   cancelUploadFile: (info: ItemInfo) => void;
@@ -39,6 +41,7 @@ type AttachmentsViewProps = {
   reloadFiles: () => void;
   sendFilesOnlyPost: () => Promise<void>;
   dispose: () => void;
+  forceSaveDraftItems: () => void;
 };
 
 export {

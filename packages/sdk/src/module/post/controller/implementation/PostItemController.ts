@@ -10,7 +10,7 @@ import { ItemFile } from '../../../item/entity';
 import { Post } from '../../entity/Post';
 import { uniqueArray } from '../../../../utils';
 import { PROGRESS_STATUS } from '../../../progress';
-import { notificationCenter } from '../../../../service';
+import notificationCenter from '../../../../service/notificationCenter';
 import { SERVICE } from '../../../../service/eventKey';
 import { IPostActionController } from '../interface/IPostActionController';
 import {
@@ -42,7 +42,7 @@ class PostItemController implements IPostItemController {
       }
       if (!this.hasItemInTargetStatus(post, PROGRESS_STATUS.INPROGRESS)) {
         // return ;
-        itemReadyCallback({
+        await itemReadyCallback({
           success: false,
           obj: {},
         });
@@ -50,7 +50,7 @@ class PostItemController implements IPostItemController {
         await this.waiting4Items(post, itemReadyCallback, postUpdateCallback);
       }
     } else {
-      itemReadyCallback({
+      await itemReadyCallback({
         success: true,
         obj: {},
       });
@@ -121,13 +121,13 @@ class PostItemController implements IPostItemController {
         if (!isPostSent && this.getPseudoItemIds(clonePost).length === 0) {
           isPostSent = true;
           // callback
-          itemReadyCallback({
+          await itemReadyCallback({
             success: true,
             obj: { item_ids: clonePost.item_ids },
           });
         }
       } else {
-        itemReadyCallback({
+        await itemReadyCallback({
           success: false,
           obj: { item_ids: clonePost.item_ids },
         });
@@ -138,7 +138,7 @@ class PostItemController implements IPostItemController {
         // has failed
         if (itemStatuses.includes(PROGRESS_STATUS.FAIL)) {
           // callback
-          itemReadyCallback({
+          await itemReadyCallback({
             success: false,
             obj: { item_ids: clonePost.item_ids },
           });
@@ -173,9 +173,11 @@ class PostItemController implements IPostItemController {
       });
     } else if (status === PROGRESS_STATUS.SUCCESS) {
       if (updatedId !== preInsertId) {
-        post.item_ids = post.item_ids.map((id: number) => {
-          return id === preInsertId ? updatedId : id;
-        });
+        const hasPreInsert = post.item_ids.includes(preInsertId);
+        if (hasPreInsert) {
+          post.item_ids = post.item_ids.filter(x => x !== preInsertId);
+          post.item_ids.push(updatedId);
+        }
 
         if (post.item_data && post.item_data.version_map) {
           const versionMap = post.item_data.version_map;

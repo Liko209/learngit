@@ -40,7 +40,7 @@ const MenuListCompositionWrapper = styled.div`
 
 const MenuWrapper = styled(Popper)``;
 
-class JuiMenuListComposition extends React.Component<
+class JuiMenuListComposition extends React.PureComponent<
   MenuListCompositionProps,
   { open: boolean; anchorEl: HTMLElement | null }
 > {

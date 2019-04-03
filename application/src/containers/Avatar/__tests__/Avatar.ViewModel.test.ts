@@ -25,10 +25,12 @@ describe('AvatarVM', () => {
   });
 
   describe('headShotUrl()', () => {
-    it('should return defaultAvatar if headShot not exist', () => {
+    it('should return "" if headShot not exist', () => {
       (getEntity as jest.Mock).mockReturnValue({ hasHeadShot: '' });
-      expect(avatarViewModel.headShotUrl).toBe('defaultAvatar.svg');
+      expect(avatarViewModel.headShotUrl).toBe('');
     });
+
+    // With the current design, this case is no longer supported
     it('should return url if headshot is string and hasHeadShot is false', () => {
       (getEntity as jest.Mock).mockReturnValue({
         hasHeadShot: true,

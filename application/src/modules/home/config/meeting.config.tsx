@@ -4,18 +4,25 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { t } from 'i18next';
+import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
+import { JuiIconography } from 'jui/foundation/Iconography';
 
 const config: SubModuleConfig = {
   route: {
     path: '/meetings',
     component: () => <div>Meetings</div>,
   },
-  nav: () => ({
+  nav: async () => ({
     url: '/meetings',
-    icon: 'meetings',
-    title: t('Meetings'),
+    icon: 'meetings_border',
+    Icon: (
+      <JuiIconography iconColor={['grey', '900']}>
+        meetings_border
+      </JuiIconography>
+    ),
+    IconSelected: <JuiIconography>meetings</JuiIconography>,
+    title: await i18nT('meeting.Meetings'),
     placement: 'top',
   }),
 };

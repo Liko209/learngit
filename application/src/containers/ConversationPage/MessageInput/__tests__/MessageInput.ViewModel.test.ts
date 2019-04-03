@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { service } from 'sdk';
 import {
   MessageInputViewModel,
   ERROR_TYPES,
@@ -13,22 +12,22 @@ import {
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
-import { GroupConfigService } from 'sdk/service';
+import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemService } from 'sdk/module/item';
-import { daoManager } from 'sdk/src/dao';
+import { PostService } from 'sdk/module/post';
+
+jest.mock('sdk/module/post');
+jest.mock('sdk/module/groupConfig');
+jest.mock('sdk/api');
+
+const postService = new PostService();
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 const groupConfigService = {
   updateDraft: jest.fn(),
   getDraft: jest.fn(),
 };
-
 GroupConfigService.getInstance = () => groupConfigService;
-jest.mock('sdk/service/groupConfig');
-jest.mock('sdk/api');
-
-const postService = {
-  sendPost: jest.fn().mockResolvedValue(null),
-};
 
 const itemService = {
   getUploadItems: jest.fn(),
@@ -38,15 +37,12 @@ const mockGroupEntityData = {
   draft: 'draft',
 };
 
-const { PostService } = service;
-
 let messageInputViewModel;
 describe('MessageInputViewModel', () => {
   beforeEach(() => {
     jest
       .spyOn(GroupConfigService, 'getInstance')
       .mockReturnValue(groupConfigService);
-    jest.spyOn(PostService, 'getInstance').mockReturnValue(postService);
     jest.spyOn(ItemService, 'getInstance').mockReturnValue(itemService);
     jest.mock('@/store/utils', () => ({
       getEntity: jest.fn(() => mockGroupEntityData),
@@ -57,18 +53,10 @@ describe('MessageInputViewModel', () => {
     jest.clearAllMocks();
   });
 
-  describe('ActionsViewModel', () => {
-    it('method forceSaveDraft', () => {
-      messageInputViewModel.forceSaveDraft();
-      expect(groupConfigService.updateDraft).toBeCalled();
-    });
-  });
-
   describe('MessageInputViewModel', () => {
     describe('_sendPost()', () => {
       let mockThis;
       let enterHandler;
-      let markdownFromDelta;
       function markdownFromDeltaGen(text) {
         const markdownFromDeltaRes = {
           content: text,
@@ -135,6 +123,25 @@ describe('MessageInputViewModel', () => {
         const result = handler();
         expect(result).toBeUndefined();
       });
+      it('should always call onPostHandler of the props when a post sent successfully', async () => {
+        const onPostHandler = jest.fn();
+        messageInputViewModel = new MessageInputViewModel({
+          id: 123,
+          onPost: onPostHandler,
+        });
+        await messageInputViewModel._sendPost();
+        expect(onPostHandler).toBeCalled();
+      });
+      it('should always call onPostHandler of the props when a post fails to sent', async () => {
+        const onPostHandler = jest.fn();
+        jest.spyOn(postService, 'sendPost').mockRejectedValue('');
+        messageInputViewModel = new MessageInputViewModel({
+          id: 123,
+          onPost: onPostHandler,
+        });
+        await messageInputViewModel._sendPost();
+        expect(onPostHandler).toBeCalled();
+      });
     });
     describe('cellWillChange', () => {
       it('should call groupConfigService.updateDraft when cellWillChange called', () => {
@@ -153,6 +160,23 @@ describe('MessageInputViewModel', () => {
         messageInputViewModel._memoryDraftMap = new Map();
         messageInputViewModel._memoryDraftMap.set(9999, '9999');
         expect(groupConfigService.getDraft).toHaveBeenCalledTimes(0);
+      });
+    });
+    describe('forceSaveDraft', () => {
+      it('should call groupConfigService updateDraft', () => {
+        messageInputViewModel.forceSaveDraft();
+        expect(groupConfigService.updateDraft).toBeCalled();
+      });
+      it('should not remove empty line with any text when save draft', () => {
+        const draft = '<p><br></p><p>111</p>';
+        messageInputViewModel.draft = draft;
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe(draft);
+      });
+      it('should remove empty line without any text when save draft', () => {
+        messageInputViewModel.draft = '<p><br></p><p><br></p>';
+        messageInputViewModel.forceSaveDraft();
+        expect(messageInputViewModel._memoryDraftMap.get(123)).toBe('');
       });
     });
   });

@@ -1,9 +1,16 @@
 import styled from '../../foundation/styled-components';
-import { grey, height, width, spacing, primary, palette } from '../../foundation/utils/styles';
+import {
+  grey,
+  height,
+  width,
+  spacing,
+  primary,
+  palette,
+  typography,
+} from '../../foundation/utils/styles';
 
 const JuiConversationPostText = styled('div')`
-  font-size: ${({ theme }) => theme.typography.fontSize}px;
-  line-height: ${({ theme }) => theme.typography.body2.lineHeight};
+  ${typography('body1')}
   color: ${grey('700')};
   word-wrap: break-word;
   white-space: pre-wrap;

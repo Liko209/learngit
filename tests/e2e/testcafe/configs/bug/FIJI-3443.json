@@ -1,0 +1,18 @@
+
+{
+    "on_merge": {
+        "fixtures": [
+            "./fixtures/ContentPanel/JumpToUnreadButton.ts"
+        ],
+            "include_tags": [
+                "P0",
+                "P1",
+                "P2"
+            ],
+        "browsers": [
+            "selenium:chrome",
+            "selenium:MicrosoftEdge",
+            "selenium:safari"
+        ]
+    }
+}

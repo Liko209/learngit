@@ -4,12 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { DeleteViewModel } from '../Delete.ViewModel';
-import { NewPostService } from 'sdk/module/post';
+import { PostService } from 'sdk/module/post';
 
 const postService = {
   deletePost: jest.fn(),
 };
-NewPostService.getInstance = jest.fn().mockReturnValue(postService);
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 let viewModel: DeleteViewModel;
 

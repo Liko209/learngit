@@ -5,25 +5,23 @@
  */
 
 import * as goToConversation from '@/common/goToConversation';
-import { service } from 'sdk';
 import { NewMessageViewModel } from '../NewMessage.ViewModel';
+import { PostService } from 'sdk/module/post';
+
+jest.mock('sdk/module/post');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');
 jest.mock('@/common/goToConversation');
 
-const { PostService } = service;
-
-const postService = {
-  sendPost() {},
-};
+const postService = new PostService();
+PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 const newMessageVM = new NewMessageViewModel();
 
 describe('NewMessageVM', () => {
   beforeAll(() => {
     jest.resetAllMocks();
-    jest.spyOn(PostService, 'getInstance').mockReturnValue(postService);
     const gs = {
       get: jest.fn(),
       set: jest.fn(),
@@ -37,6 +35,6 @@ describe('NewMessageVM', () => {
     const message = 'test';
     newMessageVM.members = [1, 2];
     await newMessageVM.newMessage(message);
-    expect(goToConversation.goToConversation).toHaveBeenCalled();
+    expect(goToConversation.goToConversationWithLoading).toHaveBeenCalled();
   });
 });

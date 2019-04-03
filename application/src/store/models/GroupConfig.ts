@@ -11,12 +11,15 @@ export default class GroupConfigModel extends Base<GroupConfig> {
   @observable
   draft?: string;
   @observable
+  attachmentItemIds?: number[];
+  @observable
   sendFailurePostIds?: number[];
 
   constructor(data: GroupConfig) {
     super(data);
-    const { draft, send_failure_post_ids } = data;
+    const { draft, send_failure_post_ids, attachment_item_ids } = data;
     this.draft = draft;
+    this.attachmentItemIds = attachment_item_ids;
     this.sendFailurePostIds = send_failure_post_ids;
   }
 

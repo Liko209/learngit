@@ -3,6 +3,7 @@
  * @Date: 2019-01-10 11:22:52
  * Copyright © RingCentral. All rights reserved.
  */
+
 import FileItemModel, {
   ExtendFileItem,
   FileType,
@@ -34,7 +35,7 @@ function getFileType(item: FileItemModel): ExtendFileItem {
 }
 
 function image(item: FileItemModel) {
-  const { thumbs, type, versionUrl } = item;
+  const { type, versionUrl, name } = item;
   const image = {
     isImage: false,
     previewUrl: '',
@@ -43,24 +44,19 @@ function image(item: FileItemModel) {
   // In order to show image
   // If upload doc and image together, image will not has thumbs
   // FIXME: FIJI-2565
+  let isImage = false;
+  let t = '';
   if (type) {
-    const t = type.toLocaleLowerCase();
-    if (FileItemUtils.isSupportPreview({ type }) || t.includes('image/')) {
-      image.isImage = true;
-      image.previewUrl = versionUrl || '';
-      return image;
-    }
+    t = type.toLowerCase();
+  } else if (name) {
+    t = (name && name.split('.').pop()) || '';
+    t = t.toLowerCase();
   }
 
-  // The thumbnail will blur
-  if (thumbs) {
-    for (const key in thumbs) {
-      const value = thumbs[key];
-      if (typeof value === 'string' && value.indexOf('http') > -1) {
-        image.isImage = true;
-        image.previewUrl = thumbs[key];
-      }
-    }
+  isImage = FileItemUtils.isSupportPreview({ type: t }) || t.includes('image/');
+  if (isImage) {
+    image.isImage = true;
+    image.previewUrl = versionUrl || '';
   }
   return image;
 }

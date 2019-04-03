@@ -1,5 +1,5 @@
 import { observable } from 'mobx';
-import { GroupState } from 'sdk/models';
+import { GroupState } from 'sdk/module/state/entity';
 import Base from './Base';
 
 export default class GroupStateModel extends Base<GroupState> {

@@ -4,10 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 enum CALL_SESSION_STATE {
-  CONFIRMED = 'callsessionstate.confirmed',
-  DISCONNECTED = 'callsessionstate.disconnected',
-  ERROR = 'callsessionstate.error',
-  PROGRESS = 'callsessionstate.progress',
+  ACCEPTED = 'callsessionAccepted',
+  CONFIRMED = 'callSessionConfirmed',
+  DISCONNECTED = 'callSessionDisconnected',
+  ERROR = 'callSessionError',
+  PROGRESS = 'callSessionProgress',
+  REINVITE_ACCEPTED = 'callSessionReinviteAccepted',
+  REINVITE_FAILED = 'callSessionReinviteFailed',
 }
 
 enum CALL_FSM_NOTIFY {
@@ -16,11 +19,13 @@ enum CALL_FSM_NOTIFY {
   ON_CONNECTING = 'onConnecting',
   ON_CONNECTED = 'onConnected',
   ON_DISCONNECTED = 'onDisconnected',
+  ON_LEAVE_CONNECTED = 'onLeaveConnected',
   ENTER_ANSWERING = 'enterAnswering',
   ENTER_PENDING = 'enterPending',
   ENTER_CONNECTING = 'enterConnecting',
   ENTER_CONNECTED = 'enterConnected',
   ENTER_DISCONNECTED = 'enterDisconnected',
+  LEAVE_CONNECTED = 'leaveConnected',
   ANSWER_ACTION = 'answerAction',
   REJECT_ACTION = 'rejectAction',
   SEND_TO_VOICEMAIL_ACTION = 'sendToVoicemailAction',
@@ -28,6 +33,7 @@ enum CALL_FSM_NOTIFY {
   CREATE_OUTGOING_CALL_SESSION = 'createOutgoingCallSession',
   FLIP_ACTION = 'flipAction',
   TRANSFER_ACTION = 'transferAction',
+  FORWARD_ACTION = 'forwardAction',
   START_RECORD_ACTION = 'startRecordAction',
   STOP_RECORD_ACTION = 'stopRecordAction',
   MUTE_ACTION = 'muteAction',

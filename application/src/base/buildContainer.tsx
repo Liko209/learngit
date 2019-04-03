@@ -24,13 +24,11 @@ function buildContainer<P = {}, S = {}, SS = any>({
   ViewModel,
   plugins,
 }: BuildContainerOptions<P>) {
-  const ObserverView = observer(View);
+  const viewName = View.displayName || View.name;
 
   @observer
   class Container extends Component<P, S, SS> {
-    static displayName = View.displayName
-      ? `Container(${View.displayName})`
-      : 'Container';
+    static displayName = viewName ? `Container(${viewName})` : 'Container';
     @observable
     vm: StoreViewModel;
     View: ComponentType<any>;
@@ -39,7 +37,7 @@ function buildContainer<P = {}, S = {}, SS = any>({
     constructor(props: P) {
       super(props);
       this.plugins = this._createPlugins();
-      this.View = this._createView(ObserverView);
+      this.View = this._createView(View);
       this.vm = this._createViewModel(props);
     }
 

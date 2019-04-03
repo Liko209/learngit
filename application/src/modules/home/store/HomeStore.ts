@@ -9,16 +9,29 @@ import { SubModuleConfig, NavConfig } from '../types';
 
 class HomeStore {
   @observable private _subModuleConfigs: SubModuleConfig[] = [];
-  @observable private _defaultRouterPath: string;
+  @observable private _defaultRouterPaths: string[];
 
   @computed
   get defaultRouterPath() {
-    return this._defaultRouterPath;
+    let path = '';
+    this._defaultRouterPaths.some((value: string) => {
+      return this._subModuleConfigs.some((subModule: SubModuleConfig) => {
+        return !!(
+          subModule.route &&
+          subModule.route.path &&
+          subModule.route.path === value
+        );
+      })
+        ? ((path = value), true)
+        : false;
+    });
+
+    return path;
   }
 
   @action
-  setDefaultRouterPath(path: string) {
-    this._defaultRouterPath = path;
+  setDefaultRouterPaths(paths: string[]) {
+    this._defaultRouterPaths = paths;
   }
 
   @computed
@@ -30,13 +43,13 @@ class HomeStore {
 
   @computed
   get navConfigs() {
-    const hasNav = (
-      config: SubModuleConfig,
-    ): config is { nav: () => NavConfig } => {
+    const hasNav = (config: SubModuleConfig) => {
       return !!config.nav;
     };
 
-    return this._subModuleConfigs.filter(hasNav).map(config => config.nav());
+    return this._subModuleConfigs
+      .filter(hasNav)
+      .map(config => config.nav!()) as Promise<NavConfig>[];
   }
 
   @action
@@ -45,8 +58,8 @@ class HomeStore {
   }
 
   @action
-  addSubSubModules(configs: SubModuleConfig[]) {
-    configs.forEach(route => this.addSubModule(route));
+  addSubModules(configs: SubModuleConfig[]) {
+    configs.forEach(config => this.addSubModule(config));
   }
 }
 

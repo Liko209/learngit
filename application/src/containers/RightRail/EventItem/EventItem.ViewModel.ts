@@ -21,7 +21,7 @@ class EventItemViewModel extends AbstractViewModel<Props> implements ViewProps {
 
   @computed
   get event() {
-    return getEntity<Item, EventItemModel>(ENTITY_NAME.EVENT_ITEM, this._id);
+    return getEntity<Item, EventItemModel>(ENTITY_NAME.ITEM, this._id);
   }
 
   @computed
@@ -32,6 +32,12 @@ class EventItemViewModel extends AbstractViewModel<Props> implements ViewProps {
   @computed
   get color() {
     return accentColor[this.event.color];
+  }
+
+  @computed
+  get localTime() {
+    const { start } = this.event;
+    return dateFormatter.localTime(moment(start));
   }
 
   @computed

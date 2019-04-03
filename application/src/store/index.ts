@@ -8,6 +8,6 @@ configure({
   // enforceActions: 'observed',
 });
 
-export { ENTITY_NAME, ENTITY_SETTING };
+export { ENTITY_NAME, ENTITY_SETTING, storeManager };
 
 export default storeManager;

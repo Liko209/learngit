@@ -3,7 +3,7 @@
  * @Date: 2018-11-22 15:14:00
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { memo } from 'react';
 import styled from '../../../foundation/styled-components';
 import { grey, typography } from '../../../foundation/utils/styles';
 
@@ -25,17 +25,20 @@ type JuiSearchItemValueProps = {
 
 function highlight(value: string, terms: string[]) {
   let v = value;
-  const reg = terms.join('|');
-  v = v.replace(
-    new RegExp(reg, 'gi'),
-    (term: string) => `<span>${term}</span>`,
-  );
+  if (terms.length > 0) {
+    let reg = terms.join('|');
+    reg = reg.replace(/([.?*+^$[\]\\(){}-])/g, '\\$1'); // replace invalid characters
+    v = v.replace(new RegExp(reg, 'gi'), (term: string) => {
+      return `<span>${term}</span>`;
+    });
+  }
+
   return {
     __html: v,
   };
 }
 
-const JuiSearchItemValue = (props: JuiSearchItemValueProps) => {
+const JuiSearchItemValue = memo((props: JuiSearchItemValueProps) => {
   const { value, terms, ...rest } = props;
   const highlightValue = highlight(value, terms);
   return (
@@ -44,6 +47,6 @@ const JuiSearchItemValue = (props: JuiSearchItemValueProps) => {
       dangerouslySetInnerHTML={highlightValue}
     />
   );
-};
+});
 
 export { JuiSearchItemValue, JuiSearchItemValueProps };

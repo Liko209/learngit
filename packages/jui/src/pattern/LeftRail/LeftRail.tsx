@@ -4,15 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
+import { palette } from '../../foundation/utils';
 
 const JuiLeftRail = styled.div`
   position: relative;
   height: 100%;
+  width: 100%;
   overflow: hidden;
   border-right: 1px solid ${({ theme }) => theme.palette.divider};
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  background: ${palette('grey', '100')};
 `;
 
 const JuiLeftRailStickyTop = styled.div``;

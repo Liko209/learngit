@@ -7,7 +7,6 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { text } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiDivider } from '../../Divider';
 import { JuiListSubheader } from '../index';
 
 storiesOf('Components/Lists', module)

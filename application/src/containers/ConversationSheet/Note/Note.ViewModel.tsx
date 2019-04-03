@@ -5,7 +5,7 @@
  */
 
 import { computed } from 'mobx';
-import { AbstractViewModel } from '@/base';
+import { StoreViewModel } from '@/store/ViewModel';
 import { NoteProps, NoteViewProps } from './types';
 
 import { Item } from 'sdk/module/item/entity';
@@ -13,18 +13,17 @@ import NoteItemModel from '@/store/models/NoteItem';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 
-class NoteViewModel extends AbstractViewModel<NoteProps>
-  implements NoteViewProps {
-  @computed
-  get _ids() {
-    return this.props.ids;
-  }
-
+class NoteViewModel extends StoreViewModel<NoteProps> implements NoteViewProps {
   @computed
   get _items() {
-    return this._ids.map((id: number) => {
-      return getEntity<Item, NoteItemModel>(ENTITY_NAME.NOTE_ITEM, id);
+    const items: NoteItemModel[] = [];
+    this.props.ids.map((id: number) => {
+      const item = getEntity<Item, NoteItemModel>(ENTITY_NAME.ITEM, id);
+      if (item && !item.deactivated) {
+        items.push(item);
+      }
     });
+    return items;
   }
 
   @computed

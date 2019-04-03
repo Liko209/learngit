@@ -11,10 +11,10 @@ describe('Event', () => {
     const data = event({ activityData });
     expect(data).toEqual({
       parameter: {
-        verb: 'updated',
-        noun: 'event',
+        verb: 'item.activity.updated',
+        noun: 'item.activity.event',
       },
-      key: 'verb-noun',
+      key: 'item.activity.verb-noun',
     });
   });
   it('Should return a object that key is equal to the verb-article-noun', () => {
@@ -22,10 +22,10 @@ describe('Event', () => {
     const data = event({ activityData });
     expect(data).toEqual({
       parameter: {
-        verb: 'created',
-        noun: 'event',
+        verb: 'item.activity.created',
+        noun: 'item.activity.event',
       },
-      key: 'verb-article-noun',
+      key: 'item.activity.verb-article-noun',
     });
   });
 });

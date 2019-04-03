@@ -5,11 +5,13 @@
  */
 
 import React, { Component } from 'react';
+import { observer } from 'mobx-react';
 import { ChangeViewProps } from './types';
-import { translate, WithNamespaces } from 'react-i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { renderPerson } from '@/common/renderPerson';
 
-class ChangeViewComponent extends Component<ChangeViewProps & WithNamespaces> {
+@observer
+class ChangeViewComponent extends Component<ChangeViewProps & WithTranslation> {
   render() {
     const {
       changerId,
@@ -20,7 +22,7 @@ class ChangeViewComponent extends Component<ChangeViewProps & WithNamespaces> {
       t,
     } = this.props;
     const changer = renderPerson(changerId, changerName);
-    const html = t('changeTeamName', {
+    const html = t('message.stream.changeTeamName', {
       changer,
       value: `"${value}"`,
       oldValue: `"${oldValue}"`,
@@ -34,6 +36,6 @@ class ChangeViewComponent extends Component<ChangeViewProps & WithNamespaces> {
   }
 }
 
-const ChangeView = translate('translations')(ChangeViewComponent);
+const ChangeView = withTranslation('translations')(ChangeViewComponent);
 
 export { ChangeView };

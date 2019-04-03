@@ -43,7 +43,11 @@ class NetworkSetup {
           }
         }(),
       );
-      tokenHandler.listener = new TokenRefreshListener(tokenHandler, handler);
+      tokenHandler.listener = new TokenRefreshListener(
+        tokenHandler,
+        handler,
+        type.onRefreshTokenFailure,
+      );
       tokenHandler.basic = type.basic();
 
       const tokenManager = networkManager.getTokenManager();
@@ -58,10 +62,8 @@ class TokenRefreshListener implements ITokenRefreshListener {
   constructor(
     private tokenHandler: OAuthTokenHandler,
     private requestHandler: NetworkRequestHandler,
-  ) {
-    this.tokenHandler = tokenHandler;
-    this.requestHandler = requestHandler;
-  }
+    private onFailure: (forceLogout: boolean) => void,
+  ) {}
   onRefreshTokenSuccess(handlerType: IHandleType, token: IToken) {
     if (_.isEmpty(token)) {
       throw new Error('token can not be null.');
@@ -70,8 +72,9 @@ class TokenRefreshListener implements ITokenRefreshListener {
     this.requestHandler.notifyTokenRefreshed();
   }
 
-  onRefreshTokenFailure(handlerType: IHandleType) {
+  onRefreshTokenFailure(handlerType: IHandleType, forceLogout: boolean) {
     this.requestHandler.cancelAll();
+    this.onFailure(forceLogout);
   }
 }
 export default NetworkSetup;

@@ -10,6 +10,6 @@ export type JuiPaperProps = MuiPaperProps;
 
 export const JuiPaper: React.SFC<JuiPaperProps> & {
   dependencies?: any[];
-} = props => <MuiPaper {...props} />;
+} = React.memo(props => <MuiPaper {...props} />);
 
 JuiPaper.displayName = 'JuiPaper';

@@ -4,14 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { daoManager, GroupStateDao } from '../../../dao';
+import { daoManager } from '../../../dao';
+import { GroupStateDao } from '../dao';
 import { EntityBaseService } from '../../../framework';
 import { IStateService } from './IStateService';
 import { GroupState, MyState, State } from '../entity';
-import { SOCKET, SERVICE } from '../../../service/eventKey';
+import { SOCKET, SERVICE, ENTITY } from '../../../service/eventKey';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { StateController } from '../controller/StateController';
 import { Group } from '../../group/entity';
+import { Profile } from '../../profile/entity';
+import { NotificationEntityPayload } from '../../../service/notificationCenter';
+import { SectionUnread } from '../types';
+import { SYNC_SOURCE } from '../../sync/types';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
@@ -23,8 +28,10 @@ class StateService extends EntityBaseService<GroupState>
       SubscribeController.buildSubscriptionController({
         [SOCKET.STATE]: this.handleState,
         [SOCKET.PARTIAL_STATE]: this.handleState,
-        [SOCKET.PARTIAL_GROUP]: this.handlePartialGroup,
-        [SERVICE.GROUP_CURSOR]: this.handleGroupChanges,
+        [SOCKET.PARTIAL_GROUP]: this.handleGroupCursor,
+        [SERVICE.GROUP_CURSOR]: this.handleGroupCursor,
+        [ENTITY.GROUP]: this.handleGroupChangeForTotalUnread,
+        [ENTITY.PROFILE]: this.handleProfileChangeForTotalUnread,
       }),
     );
   }
@@ -36,10 +43,14 @@ class StateService extends EntityBaseService<GroupState>
     return this._stateController;
   }
 
-  async updateReadStatus(groupId: number, isUnread: boolean): Promise<void> {
+  async updateReadStatus(
+    groupId: number,
+    isUnread: boolean,
+    ignoreError: boolean,
+  ): Promise<void> {
     await this.getStateController()
       .getStateActionController()
-      .updateReadStatus(groupId, isUnread);
+      .updateReadStatus(groupId, isUnread, ignoreError);
   }
 
   async updateLastGroup(groupId: number): Promise<void> {
@@ -74,31 +85,41 @@ class StateService extends EntityBaseService<GroupState>
       .getMyStateId();
   }
 
-  handleState = async (states: Partial<State>[]): Promise<void> => {
+  handleState = async (
+    states: Partial<State>[],
+    source: SYNC_SOURCE,
+  ): Promise<void> => {
     await this.getStateController()
       .getStateDataHandleController()
-      .handleState(states);
+      .handleState(states, source);
   }
 
-  handlePartialGroup = async (groups: Partial<Group>[]): Promise<void> => {
+  handleGroupCursor = async (groups: Partial<Group>[]): Promise<void> => {
     await this.getStateController()
       .getStateDataHandleController()
-      .handlePartialGroup(groups);
+      .handleGroupCursor(groups);
   }
 
-  handleGroupChanges = async (groups?: Group[]): Promise<void> => {
-    await this.getStateController()
-      .getStateDataHandleController()
-      .handleGroupChanges(groups);
+  handleGroupChangeForTotalUnread = (
+    payload: NotificationEntityPayload<Group>,
+  ): void => {
+    this.getStateController()
+      .getTotalUnreadController()
+      .handleGroup(payload);
   }
 
-  async getUmiByIds(
-    ids: number[],
-    updateUmi: (unreadCounts: Map<number, number>, important: boolean) => void,
-  ): Promise<void> {
-    await this.getStateController()
-      .getStateFetchDataController()
-      .getUmiByIds(ids, updateUmi);
+  handleProfileChangeForTotalUnread = (
+    payload: NotificationEntityPayload<Profile>,
+  ): void => {
+    this.getStateController()
+      .getTotalUnreadController()
+      .handleProfile(payload);
+  }
+
+  getSingleUnreadInfo(id: number): SectionUnread | undefined {
+    return this.getStateController()
+      .getTotalUnreadController()
+      .getSingleUnreadInfo(id);
   }
 }
 

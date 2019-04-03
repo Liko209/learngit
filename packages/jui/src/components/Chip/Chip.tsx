@@ -52,33 +52,35 @@ const StyledChip = styled<JuiChipProps>(WrappedChip)`
   }
 `;
 
-export const JuiChip: React.SFC<JuiChipProps> = (props: JuiChipProps) => {
-  const { onDelete, ChipAvatar, isError, ...rest } = props;
-  const avatar: any = ChipAvatar ? (
-    <ChipAvatar size="small" uid={rest.uid} />
-  ) : null;
+export const JuiChip: React.SFC<JuiChipProps> = React.memo(
+  (props: JuiChipProps) => {
+    const { onDelete, ChipAvatar, isError, ...rest } = props;
+    const avatar: any = ChipAvatar ? (
+      <ChipAvatar size="small" uid={rest.uid} />
+    ) : null;
 
-  return (
-    <StyledChip
-      {...rest}
-      onDelete={onDelete}
-      avatar={avatar}
-      variant={isError ? 'outlined' : 'default'}
-      isError={isError}
-      classes={{
-        deleteIcon: 'deleteIcon',
-        label: 'label',
-        avatar: 'avatar',
-      }}
-      deleteIcon={
-        <JuiIconButton
-          variant="plain"
-          tooltipTitle="Remove"
-          color={isError ? 'semantic.negative' : 'grey.500'}
-        >
-          remove
-        </JuiIconButton>
-      }
-    />
-  );
-};
+    return (
+      <StyledChip
+        {...rest}
+        onDelete={onDelete}
+        avatar={avatar}
+        variant={isError ? 'outlined' : 'default'}
+        isError={isError}
+        classes={{
+          deleteIcon: 'deleteIcon',
+          label: 'label',
+          avatar: 'avatar',
+        }}
+        deleteIcon={
+          <JuiIconButton
+            variant="plain"
+            tooltipTitle="Remove"
+            color={isError ? 'semantic.negative' : 'grey.500'}
+          >
+            remove
+          </JuiIconButton>
+        }
+      />
+    );
+  },
+);

@@ -23,7 +23,7 @@ describe('NetworkBannerViewModel', () => {
       (getGlobalValue as jest.Mock).mockReturnValueOnce('userId');
       const viewModel = new NetworkBannerViewModel();
       expect(viewModel.banner).toEqual({
-        message: 'NoInternetConnection',
+        message: 'common.prompt.NoInternetConnection',
         type: ToastType.ERROR,
       });
     });

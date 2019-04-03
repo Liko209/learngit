@@ -13,13 +13,26 @@ import { ENTITY_NAME } from '@/store/constants';
 import { ISortableModel } from '@/store/base/fetch/types';
 import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
 import { Post } from 'sdk/module/post/entity';
-import { EVENT_TYPES, ENTITY, PostService } from 'sdk/service';
+import { EVENT_TYPES, ENTITY } from 'sdk/service';
+import { PostService } from 'sdk/module/post';
 import { transform2Map, getEntity } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store/base/StoreManager';
 import MultiEntityMapStore from '../../../store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
 
+type OrderedPost = Post & {
+  _index: number;
+};
+
+function addOrderIndicatorForPosts(
+  posts: (Post | PostModel)[],
+  sourceIdArr: number[],
+) {
+  posts.forEach((post: Post) => {
+    (post as OrderedPost)._index = sourceIdArr.findIndex(id => id === post.id);
+  });
+}
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
   private _isMatchFunc(post: Post) {
@@ -28,11 +41,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   private _options = {
     isMatchFunc: this._isMatchFunc.bind(this),
-    transformFunc: (post: SuccinctPost) => ({
+    transformFunc: (post: OrderedPost) => ({
       id: post.id,
-      sortValue: -post.id,
+      sortValue: post._index,
     }),
-    pageSize: 50,
+    pageSize: 20,
     hasMoreUp: false,
     hasMoreDown: true,
     entityName: ENTITY_NAME.POST,
@@ -41,6 +54,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @computed
   get ids() {
     return this._sortableListHandler.sortableListStore.getIds;
+  }
+
+  @computed
+  get hasMoreDown() {
+    return this._sortableListHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
   private _sortableListHandler: FetchSortableDataListHandler<SuccinctPost>;
@@ -56,7 +74,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     pageSize: number,
     anchor?: ISortableModel<Post>,
   ) => {
-    const postService: PostService = PostService.getInstance<PostService>();
+    const postService: PostService = PostService.getInstance();
     let ids;
     let hasMore;
     if (anchor) {
@@ -80,7 +98,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     let postsFromService: Post[] = [];
 
     const postsFromStore = idsInStore
-      .map(id => getEntity(ENTITY_NAME.POST, id))
+      .map(id => getEntity<Post, PostModel>(ENTITY_NAME.POST, id))
       .filter((post: PostModel) => !post.deactivated);
     try {
       if (idsOutOfStore.length) {
@@ -90,6 +108,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         );
       }
       const data = [...postsFromService, ...postsFromStore];
+      addOrderIndicatorForPosts(data, this._postIds);
       return { hasMore, data };
     } catch (err) {
       return { hasMore: true, data: [] };
@@ -106,11 +125,11 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   async onReceiveProps(props: StreamProps) {
-    const postIds = props.postIds.sort((a, b) => b - a);
+    const { postIds } = props;
     // when comp did mount
     if (!this._postIds.length && postIds.length) {
       this._postIds = postIds;
-      this.fetchInitialPosts();
+      await this.fetchInitialPosts();
       return;
     }
     // when comp did update
@@ -125,6 +144,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this._postIds = postIds;
       if (added.length) {
         const { posts } = await postService.getPostsByIds(added);
+        addOrderIndicatorForPosts(posts, this._postIds);
         this._sortableListHandler.onDataChanged({
           type: EVENT_TYPES.UPDATE,
           body: {
@@ -149,7 +169,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this._batchFetchPosts();
   }
 
-  @onScrollToBottom
+  @onScrollToBottom((vm: StreamViewModel) => vm.hasMoreDown)
   @loadingBottom
   fetchNextPagePosts() {
     return this._batchFetchPosts();
@@ -163,12 +183,17 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   hackPostChange() {
-    this.subscribeNotification(ENTITY.POST, ({ type, body }) => {
+    this.subscribeNotification(`${ENTITY.POST}.*`, ({ type, body }) => {
       if (type !== EVENT_TYPES.UPDATE) {
         return;
       }
+      const posts: Post[] = Array.from(body.entities.values());
+      addOrderIndicatorForPosts(posts, this._postIds);
       this._sortableListHandler.onDataChanged({
-        body,
+        body: {
+          ids: body.ids,
+          entities: transform2Map(posts),
+        },
         type: EVENT_TYPES.UPDATE,
       });
     });

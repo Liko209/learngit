@@ -3,11 +3,13 @@
  * @Date: 2018-09-18 10:07:45
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
 import { mount } from 'enzyme';
-import { JuiCircularProgress } from 'jui/components';
+import React from 'react';
+import { unwrapMemo } from 'test-util/unwrapMemo';
 import { AbstractViewModel } from '../../../base/AbstractViewModel';
-import { LoadingPlugin, loading } from '../LoadingPlugin';
+import { loading, LoadingPlugin } from '../LoadingPlugin';
+
+jest.useFakeTimers();
 
 function sleep(time: number) {
   return new Promise((resolve: Function) => {
@@ -25,6 +27,7 @@ class MyViewModel extends AbstractViewModel {
 }
 
 describe('LoadingPlugin', () => {
+  jest.spyOn(React, 'memo').mockImplementation(r => r);
   describe('install()', () => {
     it('should add loading property to vm', () => {
       const plugin = new LoadingPlugin();
@@ -36,10 +39,35 @@ describe('LoadingPlugin', () => {
 
   describe('wrapView()', () => {
     it('should wrap View with loading', () => {
-      const plugin = new LoadingPlugin();
+      const _Loading = () => <div>loading</div>;
+      const plugin = new LoadingPlugin({
+        CustomizedLoading: _Loading,
+      });
       const View = plugin.wrapView(() => <div>Hello World</div>);
-      const wrapper = mount(<View loading={true} />);
-      expect(wrapper.find(JuiCircularProgress)).toBeTruthy();
+
+      const wrapper = mount(unwrapMemo(<View loading={true} />));
+
+      jest.runAllTimers();
+
+      expect(wrapper.update().find(_Loading)).toHaveLength(1);
+    });
+
+    it('should have delay before Progress is visible [JPT-169][JPT-170]', () => {
+      const _Loading = () => <div>loading</div>;
+      const plugin = new LoadingPlugin({
+        CustomizedLoading: _Loading,
+      });
+      const View = plugin.wrapView(() => <div>Hello World</div>);
+
+      const wrapper = mount(unwrapMemo(<View loading={true} />));
+
+      // JPT-170 No progress animation when sync data <= 100 ms
+      jest.advanceTimersByTime(90);
+      expect(wrapper.find(_Loading)).toHaveLength(0);
+
+      // JPT-169 Display a progress animation when sync data more than 100ms
+      jest.advanceTimersByTime(20);
+      expect(wrapper.update().find(_Loading)).toHaveLength(1);
     });
 
     it('should wrap View with CustomLoading view component', () => {
@@ -47,9 +75,16 @@ describe('LoadingPlugin', () => {
       const plugin = new LoadingPlugin({ CustomizedLoading });
       const View = plugin.wrapView(() => <div>Hello World</div>);
 
-      const wrapper = mount(<View loading={true} />);
+      const wrapper = mount(unwrapMemo(<View loading={true} />));
 
-      expect(wrapper.find(CustomizedLoading).text()).toBe('Custom Loading');
+      jest.runAllTimers();
+
+      expect(
+        wrapper
+          .update()
+          .find(CustomizedLoading)
+          .html(),
+      ).toBe('<span>Custom Loading</span>');
     });
   });
 
@@ -60,6 +95,7 @@ describe('LoadingPlugin', () => {
       expect.assertions(2);
       const promise = vm.sleep(1);
       expect(vm).toHaveProperty('loading', true);
+      jest.runAllTimers();
       await promise;
       expect(vm).toHaveProperty('loading', false);
     });

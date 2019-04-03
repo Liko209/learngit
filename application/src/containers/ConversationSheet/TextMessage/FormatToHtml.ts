@@ -3,42 +3,69 @@
  * @Date: 2018-10-25 17:29:02
  * Copyright © RingCentral. All rights reserved.
  */
-
 import { Markdown } from 'glipdown';
+import moize from 'moize';
 import { handleAtMentionName } from './utils/handleAtMentionName';
 import { CustomEmojiMap, AtMentions, FormatToHtmlParams } from './types';
 import { Emoji } from './Emoji';
 
 class FormatToHtml {
   text: string;
-  private _atMentions: AtMentions;
-  private _currentUserId: number;
-  private _staticHttpServer: string;
-  private _customEmojiMap: CustomEmojiMap;
 
   constructor(params: FormatToHtmlParams) {
-    const { text, atMentions, currentUserId, staticHttpServer, customEmojiMap } = params;
-    this.text = text;
-    this._atMentions = atMentions;
-    this._currentUserId = currentUserId;
-    this._staticHttpServer = staticHttpServer;
-    this._customEmojiMap = customEmojiMap;
-    this.formatToGlipdown();
-    this.formatToEmoji();
+    this.text = FormatToHtml.formatToHtml(params);
   }
 
-  formatToGlipdown() {
-    const toMdString = Markdown(this.text);
-    const atMentionId = this._atMentions;
-    const currentUserId = this._currentUserId;
-    this.text = handleAtMentionName(toMdString, atMentionId, currentUserId);
-    return this;
+  static formatToHtml({
+    text,
+    atMentions,
+    currentUserId,
+    staticHttpServer,
+    customEmojiMap,
+  }: FormatToHtmlParams) {
+    const glipDownText = FormatToHtml.formatToGlipdown(
+      text,
+      atMentions,
+      currentUserId,
+    );
+
+    const glipDownTextWithEmoji = FormatToHtml.formatToEmoji(
+      glipDownText,
+      staticHttpServer,
+      customEmojiMap,
+    );
+
+    return glipDownTextWithEmoji;
   }
 
-  formatToEmoji() {
-    const e = new Emoji(this.text, this._staticHttpServer, this._customEmojiMap);
-    this.text = e.text;
-    return this;
+  static formatToGlipdown(
+    text: string,
+    atMentions: AtMentions,
+    currentUserId: number,
+  ) {
+    const mdText = Markdown(text);
+    const mdTextWithAtMention = handleAtMentionName(
+      mdText,
+      atMentions,
+      currentUserId,
+    );
+    return mdTextWithAtMention;
+  }
+
+  static formatToEmoji(
+    text: string,
+    staticHttpServer: string,
+    customEmojiMap: CustomEmojiMap,
+  ) {
+    return new Emoji(text, staticHttpServer, customEmojiMap).text;
   }
 }
+
+FormatToHtml.formatToHtml = moize(FormatToHtml.formatToHtml, {
+  maxSize: 100,
+  transformArgs([{ text, atMentions }]: [FormatToHtmlParams]) {
+    return [text, JSON.stringify(atMentions)];
+  },
+});
+
 export { FormatToHtml };

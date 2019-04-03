@@ -1,9 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { serviceErr } from 'sdk/service/ServiceResult';
 import { Notification } from '@/containers/Notification';
 import { MenuViewComponent } from '../Menu.View';
-import { ERROR_CODES_SDK } from 'sdk/error';
+import { ERROR_CODES_SDK, JSdkError } from 'sdk/error';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 
 jest.mock('@/common/genDivAndDismiss');
@@ -21,8 +20,13 @@ describe('MenuView', () => {
       const props: any = {
         groupId: 1,
         showClose: true,
-        closeConversation: () =>
-          serviceErr(ERROR_CODES_SDK.GENERAL, 'Failed to close conversation'),
+        closeConversation: () => {
+          throw new JSdkError(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to close conversation',
+          );
+        },
+
         shouldSkipCloseConfirmation: true,
         onClose: () => {},
       };
@@ -36,7 +40,7 @@ describe('MenuView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'SorryWeWereNotAbleToCloseTheConversation',
+            message: 'people.prompt.SorryWeWereNotAbleToCloseTheConversation',
             type: ToastType.ERROR,
           }),
         );
@@ -48,8 +52,12 @@ describe('MenuView', () => {
       const props: any = {
         isFavorite: false,
         onClose: () => {},
-        toggleFavorite: () =>
-          serviceErr(ERROR_CODES_SDK.GENERAL, 'Failed to favorite conversation'),
+        toggleFavorite: () => {
+          throw new JSdkError(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to favorite conversation',
+          );
+        },
       };
 
       const wrapper = shallow(<MenuViewComponent {...props} />);
@@ -61,7 +69,7 @@ describe('MenuView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'markFavoriteServerErrorContent',
+            message: 'people.prompt.markFavoriteServerErrorContent',
             type: ToastType.ERROR,
           }),
         );
@@ -73,11 +81,12 @@ describe('MenuView', () => {
       const props: any = {
         isFavorite: true,
         onClose: () => {},
-        toggleFavorite: () =>
-          serviceErr(
+        toggleFavorite: () => {
+          throw new JSdkError(
             ERROR_CODES_SDK.GENERAL,
             'Failed to unFavorite conversation',
-          ),
+          );
+        },
       };
 
       const wrapper = shallow(<MenuViewComponent {...props} />);
@@ -89,7 +98,65 @@ describe('MenuView', () => {
       setTimeout(() => {
         expect(Notification.flashToast).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'markUnFavoriteServerErrorContent',
+            message: 'people.prompt.markUnFavoriteServerErrorContent',
+            type: ToastType.ERROR,
+          }),
+        );
+        done();
+      },         0);
+    }, 2);
+
+    it('should display flash toast notification when read conversation failed [JPT-1272]', (done: jest.DoneCallback) => {
+      const props: any = {
+        isUnread: true,
+        onClose: () => {},
+        toggleRead: () => {
+          throw new JSdkError(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to read conversation',
+          );
+        },
+      };
+
+      const wrapper = shallow(<MenuViewComponent {...props} />);
+
+      wrapper
+        .find('[data-test-automation-id="readOrUnreadConversation"]')
+        .simulate('click', { stopPropagation: () => undefined });
+
+      setTimeout(() => {
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'people.prompt.markAsRead',
+            type: ToastType.ERROR,
+          }),
+        );
+        done();
+      },         0);
+    }, 2);
+
+    it('should display flash toast notification when unread conversation failed [JPT-1272]', (done: jest.DoneCallback) => {
+      const props: any = {
+        isUnread: false,
+        onClose: () => {},
+        toggleRead: () => {
+          throw new JSdkError(
+            ERROR_CODES_SDK.GENERAL,
+            'Failed to unread conversation',
+          );
+        },
+      };
+
+      const wrapper = shallow(<MenuViewComponent {...props} />);
+
+      wrapper
+        .find('[data-test-automation-id="readOrUnreadConversation"]')
+        .simulate('click', { stopPropagation: () => undefined });
+
+      setTimeout(() => {
+        expect(Notification.flashToast).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'people.prompt.markAsUnread',
             type: ToastType.ERROR,
           }),
         );

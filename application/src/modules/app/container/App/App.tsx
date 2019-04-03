@@ -6,7 +6,7 @@
 import _ from 'lodash';
 import * as React from 'react';
 import { observer } from 'mobx-react';
-import { hot } from 'react-hot-loader';
+import { hot } from 'react-hot-loader/root';
 import { container } from 'framework';
 import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import ThemeProvider from '@/containers/ThemeProvider';
@@ -20,7 +20,6 @@ import { TopBanner } from '../TopBanner';
 import { AppStore } from '../../store';
 import { Title } from './Title';
 import { ElectronBadgeWithAppUmi } from './ElectronBadgeWithAppUmi';
-import config from '@/config';
 
 @observer
 class App extends React.Component {
@@ -41,7 +40,7 @@ class App extends React.Component {
   componentDidMount() {
     this._unListenHistory = history.listen((location: any, action: string) => {
       if (action === 'PUSH') {
-        this._upgradeHandler.upgradeIfAvailable();
+        this._upgradeHandler.upgradeIfAvailable('History push');
       }
     });
 
@@ -53,35 +52,27 @@ class App extends React.Component {
   public render() {
     const { globalLoading } = this._appStore;
     return (
-      <>
-        <link
-          rel="stylesheet"
-          type="text/css"
-          href={config.get('iconLink')}
-          crossOrigin="anonymous"
-        />
-        <ThemeProvider>
-          {globalLoading ? (
-            <JuiContentLoader />
-          ) : (
-            <>
-              <Title />
-              <TopBanner />
-              <Router />
-              <AboutView />
-              {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
-            </>
-          )}
-        </ThemeProvider>
-      </>
+      <ThemeProvider>
+        {globalLoading ? (
+          <JuiContentLoader />
+        ) : (
+          <>
+            <Title />
+            <TopBanner />
+            <Router />
+            <AboutView />
+            {window.jupiterElectron && <ElectronBadgeWithAppUmi />}
+          </>
+        )}
+      </ThemeProvider>
     );
   }
 
   private _focusHandler = () => {
-    this._upgradeHandler.upgradeIfAvailable();
+    this._upgradeHandler.upgradeIfAvailable('Get focused');
   }
 }
-const HotApp = hot(module)(App);
+const HotApp = hot(App);
 
 export { HotApp as App };
 export default HotApp;

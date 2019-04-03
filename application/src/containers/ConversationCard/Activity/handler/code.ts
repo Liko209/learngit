@@ -7,7 +7,7 @@ import buildVerbArticleNounText from './text/buildVerbArticleNounText';
 
 export default function () {
   return buildVerbArticleNounText({
-    verb: 'shared',
-    noun: 'snippet',
+    verb: 'item.activity.shared',
+    noun: 'item.activity.snippet',
   });
 }

@@ -1,6 +1,8 @@
 import 'testcafe';
 import * as fs from 'fs';
 import * as assert from 'assert';
+import * as shortid from 'shortid';
+
 import { ClientFunction } from 'testcafe';
 
 export class H {
@@ -31,6 +33,18 @@ export class H {
     });
   }
 
+  static uuid() {
+    return shortid.generate();
+  }
+
+  static multilineString(lineNumber: number = 10, prefixText: string = 'lineStart', suffixText: string = 'lineEnd') {
+    let lines = '\n'
+    for (let i = 1; i < lineNumber + 1; i++) {
+      lines += `line${i}\n`;
+    }
+    return prefixText + lines + suffixText;
+  }
+
   static escapePostText(origin: string) {
     // ref: https://en.wikipedia.org/wiki/Non-breaking_space
     return origin.replace(/ /g, '\u00A0').replace(/$/, '\n');
@@ -51,5 +65,9 @@ export class H {
         }
       }
     }
+  }
+
+  static toNumberArray(data: string | number | string[] | number[]): number[] {
+    return [].concat(data).map(item => +item);
   }
 }

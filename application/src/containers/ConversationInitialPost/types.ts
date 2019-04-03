@@ -5,24 +5,21 @@
  */
 import { CONVERSATION_TYPES } from '@/constants';
 import PersonModel from '@/store/models/Person';
-import { TranslationFunction } from 'i18next';
-import { WithNamespaces } from 'react-i18next';
+import { WithTranslation } from 'react-i18next';
 
 type ConversationInitialPostProps = {
   id: number; // group id
   notEmpty: boolean;
 };
 
-type ConversationInitialPostViewProps = WithNamespaces & {
-  id: number; // group id
+type ConversationInitialPostViewProps = WithTranslation & {
   displayName: string;
   groupType: CONVERSATION_TYPES;
   groupDescription: string;
   creator: PersonModel;
-  t: TranslationFunction;
   isTeam: boolean;
-  notEmpty: boolean;
   createTime: number;
-};
+  isCompanyTeam: boolean;
+} & ConversationInitialPostProps;
 
 export { ConversationInitialPostProps, ConversationInitialPostViewProps };

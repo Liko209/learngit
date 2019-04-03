@@ -3,10 +3,14 @@
  * @Date: 2018-10-30 09:53:07
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component, RefObject, createRef, CSSProperties } from 'react';
+import React, {
+  RefObject,
+  createRef,
+  CSSProperties,
+  PureComponent,
+} from 'react';
 import { storiesOf } from '@storybook/react';
 import { text, number } from '@storybook/addon-knobs';
-import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import {
   JuiPreviewImage,
   JuiFileWithExpand,
@@ -63,6 +67,7 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
         {[1, 2, 3, 4].map((id: number) => {
           return (
             <JuiFileWithExpand
+              icon="default_file"
               key={id}
               fileName={fileName}
               Actions={
@@ -79,7 +84,10 @@ storiesOf('Pattern/ConversationCard', module).add('PreviewFiles', () => {
           return (
             <JuiExpandImage
               key={id}
+              icon="file"
               fileName={fileName}
+              i18UnfoldLess="less"
+              i18UnfoldMore="more"
               previewUrl="https://material-ui.com/static/images/cards/contemplative-reptile.jpg"
               Actions={
                 <>
@@ -120,17 +128,17 @@ storiesOf('Pattern/ConversationCard', module).add(
       title: string;
     };
 
-    class Thumbnail extends Component<ThumbnailProps> {
+    class Thumbnail extends PureComponent<ThumbnailProps> {
       private _canvas: RefObject<HTMLCanvasElement> = createRef();
-      private _image;
+      private _image: any;
 
       componentDidMount() {
         const { width, height } = this.props;
         const { current } = this._canvas;
         if (current) {
           const ctx = current.getContext('2d');
-          ctx.fillStyle = randomColor();
-          ctx.fillRect(0, 0, width, height);
+          ctx!.fillStyle = randomColor();
+          ctx!.fillRect(0, 0, width, height);
           this._image = current.toDataURL('image/png');
           this.forceUpdate();
         }

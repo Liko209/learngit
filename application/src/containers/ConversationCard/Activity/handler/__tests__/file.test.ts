@@ -17,10 +17,10 @@ describe('File', () => {
     expect(data).toEqual({
       parameter: {
         count: 2,
-        verb: 'uploaded',
-        noun: 'version',
+        verb: 'item.activity.uploaded',
+        noun: 'item.activity.version',
       },
-      key: 'verb-noun-numerals',
+      key: 'item.activity.verb-noun-numerals',
     });
   });
   it('Should return a object that key is equal to the verb-article-noun', () => {
@@ -33,10 +33,10 @@ describe('File', () => {
     const data = file({ ids, itemData });
     expect(data).toEqual({
       parameter: {
-        verb: 'shared',
-        noun: 'file',
+        verb: 'item.activity.shared',
+        noun: 'item.activity.file',
       },
-      key: 'verb-article-noun',
+      key: 'item.activity.verb-article-noun',
     });
   });
   it('Should return a object that key is equal to the verb-numerals-noun', () => {
@@ -51,10 +51,10 @@ describe('File', () => {
     expect(data).toEqual({
       parameter: {
         count: 2,
-        verb: 'shared',
-        noun: 'file',
+        verb: 'item.activity.shared',
+        noun: 'item.activity.file',
       },
-      key: 'verb-numerals-noun',
+      key: 'item.activity.verb-numerals-noun',
     });
   });
 });

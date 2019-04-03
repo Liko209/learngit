@@ -7,7 +7,6 @@ import throttle from 'lodash/throttle';
 import React, { ComponentType, PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { noop } from '../../foundation/utils';
-import _ from 'lodash';
 
 type StickType = 'top' | 'bottom';
 
@@ -19,9 +18,8 @@ type ScrollerProps = {
   thresholdUp: number;
   thresholdDown: number;
   throttle: number;
-  initialScrollTop: number;
   stickTo: StickType;
-  onScroll: (event: WheelEvent) => void;
+  onScroll: (event: Event) => void;
   onScrollToTop: () => void;
   onScrollToBottom: () => void;
   triggerScrollToOnMount: boolean;
@@ -48,7 +46,6 @@ function withScroller(Comp: ComponentType<any>) {
       thresholdUp: 100,
       thresholdDown: 0,
       throttle: 100,
-      initialScrollTop: 0,
       stickTo: 'top',
       onScroll: noop,
       onScrollToTop: noop,
@@ -56,6 +53,7 @@ function withScroller(Comp: ComponentType<any>) {
       triggerScrollToOnMount: false,
     };
     private _scrollElRef: React.RefObject<any> = React.createRef();
+    private _lastScrollTop: number = 0;
 
     private get _scrollEl(): HTMLElement {
       return this._scrollElRef.current;
@@ -70,7 +68,6 @@ function withScroller(Comp: ComponentType<any>) {
     }
 
     componentDidMount() {
-      this._scrollEl.scrollTop = this.props.initialScrollTop;
       this.attachScrollListener();
     }
 
@@ -86,17 +83,20 @@ function withScroller(Comp: ComponentType<any>) {
       this._scrollEl.removeEventListener('scroll', this._handleScroll, false);
     }
 
-    private _handleScroll(event: WheelEvent) {
+    private _handleScroll(event: Event) {
+      if (this._scrollEl.scrollHeight === this._scrollEl.clientHeight) {
+        return;
+      }
       this.props.onScroll(event);
       const atTop = this._isAtTop();
       const atBottom = this._isAtBottom();
-      const deltaY = event ? event.deltaY : 0;
-
-      if (atTop || deltaY < 0) {
+      const currentScrollTop = this._scrollEl.scrollTop;
+      const deltaY = this._scrollEl.scrollTop - this._lastScrollTop;
+      this._lastScrollTop = currentScrollTop;
+      if (atTop && deltaY < 0) {
         this.props.onScrollToTop && this.props.onScrollToTop();
       }
-
-      if (atBottom || deltaY > 0) {
+      if (atBottom && deltaY > 0) {
         this.props.onScrollToBottom && this.props.onScrollToBottom();
       }
     }
@@ -124,7 +124,6 @@ function withScroller(Comp: ComponentType<any>) {
         thresholdUp,
         thresholdDown,
         throttle,
-        initialScrollTop,
         onScroll,
         onScrollToTop,
         onScrollToBottom,

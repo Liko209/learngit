@@ -1,3 +1,5 @@
+import * as assert from 'assert';
+import { H } from '../../../../helpers';
 import { BaseWebComponent } from "../../../BaseWebComponent";
 
 
@@ -96,8 +98,16 @@ export class RightRail extends BaseWebComponent {
     return this.getComponent(TasksTab);
   }
 
-  get linkTab() {
+  get linksTab() {
     return this.getComponent(LinksTab);
+  }
+
+  get notesTab() {
+    return this.getComponent(NotesTab);
+  }
+
+  get pinnedTab() {
+    return this.getComponent(PinnedTab);
   }
 }
 
@@ -115,23 +125,66 @@ class TabEntry extends BaseWebComponent {
   }
 }
 
-class FilesTab extends BaseWebComponent {
+class BaseTab extends BaseWebComponent {
+  public subTitle: Selector;
+  public items: Selector;
+
   // this is a temp. selector
   get self() {
     return this.getSelectorByAutomationId('rightRail');
   }
 
-  get subTitle() {
-    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Files/);
+  getSubTitle(name: string) {
+    const reg = new RegExp(`^${name}`);
+    return this.getSelectorByAutomationId('rightRail-list-subtitle', this.self).withText(reg);
   }
 
   async countOnSubTitleShouldBe(n: number) {
-    const reg = new RegExp(`\(${n}\)`)
-    await this.t.expect(this.subTitle.textContent).match(reg);
+    const reg = new RegExp(`\(${n}\)`);
+    await H.retryUntilPass(async () => {
+      const subTitleText = await this.subTitle.textContent;
+      assert.ok(reg.test(subTitleText), `${subTitleText} not match (${n})`);
+    }, 10);
   }
 
-  async waitUntilFilesItemExist(timeout = 10e3) {
+  async waitUntilItemsListExist(timeout = 10e3) {
     await this.t.expect(this.items.exists).ok({ timeout });
+  }
+
+  async countInListShouldBe(n: number) {
+    await this.t.expect(this.items.count).eql(n);
+  }
+
+
+  get titles() {
+    return this.items.find('.list-item-primary');
+  }
+
+  get secondaryTexts() {
+    return this.items.find('.list-item-secondary');
+  }
+
+
+  async nthItemTitleShouldBe(n: number, title: string) {
+    await this.t.expect(this.titles.nth(n).withText(title).exists).ok(
+      `n: ${n} , title: ${title}`
+    );
+  }
+
+  async shouldHasTitle(title: string) {
+    await this.t.expect(this.titles.withText(title).exists).ok(title);
+  }
+
+  async shouldHasNoTitle(title: string) {
+    await this.t.expect(this.titles.withText(title).exists).notOk(title);
+  }
+}
+
+class FilesTab extends BaseTab {
+
+
+  get subTitle() {
+    return this.getSubTitle('Files');
   }
 
   get items() {
@@ -143,23 +196,9 @@ class FilesTab extends BaseWebComponent {
   }
 
 }
-class ImagesTab extends BaseWebComponent {
-  // this is a temp. selector
-  get self() {
-    return this.getSelectorByAutomationId('rightRail');
-  }
-
+class ImagesTab extends BaseTab {
   get subTitle() {
-    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Images/);
-  }
-
-  async countOnSubTitleShouldBe(n: number) {
-    const reg = new RegExp(`\(${n}\)`)
-    await this.t.expect(this.subTitle.textContent).match(reg);
-  }
-
-  async waitUntilImagesItemExist(timeout = 10e3) {
-    await this.t.expect(this.items.exists).ok({ timeout });
+    return this.getSubTitle('Images');
   }
 
   get items() {
@@ -172,31 +211,23 @@ class ImagesTab extends BaseWebComponent {
 
 }
 
-class EventsTab extends BaseWebComponent {
-  // this is a temp. selector
-  get self() {
-    return this.getSelectorByAutomationId('rightRail');
-  }
-
+class EventsTab extends BaseTab {
   get subTitle() {
-    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Events/);
-  }
-
-  async countOnSubTitleShouldBe(n: number) {
-    const reg = new RegExp(`\(${n}\)`)
-    await this.t.expect(this.subTitle.textContent).match(reg);
-  }
-
-  async waitUntilEventsItemExist(timeout = 10e3) {
-    await this.t.expect(this.items.exists).ok({ timeout });
+    return this.getSubTitle('Events');
   }
 
   get items() {
     return this.getSelectorByAutomationId('rightRail-event-item');
   }
+}
 
-  nthItem(n: number) {
-    return this.items.nth(n).find('.list-item-primary');
+class NotesTab extends BaseTab {
+  get subTitle() {
+    return this.getSubTitle('Notes');
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('rightRail-note-item');
   }
 }
 
@@ -230,60 +261,113 @@ class ImageAndFileItem extends BaseWebComponent {
   }
 }
 
-class LinksTab extends BaseWebComponent {
-  // this is a temp. selector
-  get self() {
-    return this.getSelectorByAutomationId('rightRail');
-  }
-
+class LinksTab extends BaseTab {
   get subTitle() {
-    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Links/);
-  }
-
-  async countOnSubTitleShouldBe(n: number) {
-    const reg = new RegExp(`\(${n}\)`)
-    await this.t.expect(this.subTitle.textContent).match(reg);
-  }
-
-  async waitUntilLinksItemExist(timeout = 10e3) {
-    await this.t.expect(this.items.exists).ok({ timeout });
+    return this.getSubTitle('Links');
   }
 
   get items() {
     return this.getSelectorByAutomationId('rightRail-link-item');
   }
 
-  async linksCountsShouldBe(n: number) {
-    await this.t.expect(this.items.count).eql(n);
+  get titles() {
+    return this.items.find('.list-item-primary');
   }
 
+  get secondaryTexts() {
+    return this.getSelectorByAutomationId('list-item-secondary-text', this.self);
+  }
 }
 
-class TasksTab extends BaseWebComponent {
-
-  get self() {
-    return this.getSelectorByAutomationId('rightRail');
-  }
-
+class TasksTab extends BaseTab {
   get subTitle() {
-    return this.getSelectorByAutomationId('rightRail-list-subtitle').withText(/^Tasks/);
-  }
-
-  async countOnSubTitleShouldBe(n: number) {
-    const reg = new RegExp(`\(${n}\)`)
-    await this.t.expect(this.subTitle.textContent).match(reg);
-  }
-
-  async waitUntilImagesItemExist(timeout = 10e3) {
-    await this.t.expect(this.items.exists).ok({ timeout });
+    return this.getSubTitle('Tasks');
   }
 
   get items() {
     return this.getSelectorByAutomationId('rightRail-task-item');
   }
+}
+
+class PinnedTab extends BaseTab {
+  get subTitle() {
+    return this.getSubTitle('Pinned');
+  }
+
+  get items() {
+    return this.getSelectorByAutomationId('pinned-section');
+  }
 
   nthItem(n: number) {
-    return this.items.nth(n).find('.list-item-primary');
+    return this.getComponent(PinnedItem, this.items.nth(n))
   }
+
+  itemByPostId(postId: string) {
+    return this.getComponent(PinnedItem, this.items.filter(`[data-postid="${postId}"]`));
+  }
+
+  async shouldContainPostItem(postId: string) {
+    await this.t.expect(this.items.withAttribute('data-postid', postId).exists).ok();
+  }
+}
+
+class PinnedItem extends BaseWebComponent {
+  get postId() {
+    return this.self.getAttribute('data-postid');
+  }
+  get creator() {
+    return this.getSelectorByAutomationId("pinned-creator", this.self);
+  }
+
+  get createTime() {
+    return this.getSelectorByAutomationId("pinned-createTime", this.self);
+  }
+
+  get postText() {
+    return this.getSelectorByAutomationId("pinned-text", this.self);
+  }
+
+  get attachmentIcons() {
+    return this.getSelectorByAutomationId("pinned-item-icon", this.self);
+  }
+
+  get nonFileOrImageAttachmentsTexts() {
+    return this.getSelectorByAutomationId('pinned-item-text', this.self);
+  }
+
+  get fileOrImageFileNames() {
+    return this.getSelectorByAutomationId('file-name', this.self);
+  }
+
+  get moreAttachmentsInfo() {
+    return // TODO
+  }
+
+  async shouldBePostId(postId: string) {
+    await this.t.expect(this.postId).eql(postId);
+  }
+
+  async shouldBeCreator(name: string) {
+    await this.t.expect(this.creator.withExactText(name).exists).ok();
+  }
+
+  async postTextShouldBe(text: string | RegExp) {
+    if (typeof text == "string") {
+      await this.t.expect(this.postText.withText(text).exists).ok();
+    } else {
+      await this.t.expect(this.postText.textContent).match(text);
+    }
+
+  }
+
+  async shouldHasFileOrImage(fileName: string) {
+    await this.t.expect(this.fileOrImageFileNames.withText(fileName).exists).ok();
+  }
+
+  async shouldHasAttachmentsText(text: string) {
+    await this.t.expect(this.nonFileOrImageAttachmentsTexts.withText(text).exists).ok();
+  }
+
+
 
 }

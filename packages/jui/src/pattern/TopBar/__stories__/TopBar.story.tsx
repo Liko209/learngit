@@ -7,15 +7,22 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
-import { JuiTopBar, JuiLogo, JuiAddMenu, JuiAvatarMenu } from '..';
+import { JuiTopBar, JuiLogo, JuiAvatarActions } from '..';
 import {
   JuiIconButton,
   JuiIconButtonProps,
 } from '../../../components/Buttons/IconButton';
 import { MenuListCompositionProps } from '../../MenuListComposition';
 import { JuiAvatar } from '../../../components/Avatar';
+import { JuiMenuList, JuiMenuItem } from '../../../components';
+import { JuiNewActions } from '../../../pattern/TopBar';
+import {
+  JuiHistoryOperation,
+  OPERATION,
+} from '../../../pattern/HistoryOperation';
+import { JuiSearchBar } from '../../../pattern/SearchBar';
 
-const handleClick = () => {};
+const fakeHandler = () => null;
 
 const MainMenu = (props: JuiIconButtonProps) => {
   return (
@@ -37,18 +44,23 @@ const AddIconButton = (props: JuiIconButtonProps) => {
   );
 };
 
-const AddMenu = (props: MenuListCompositionProps) => {
+const NewActions = (props: MenuListCompositionProps) => {
   return (
-    <JuiAddMenu
-      menuItems={[
-        {
-          label: 'Create Team',
-          onClick: handleClick,
-        },
-      ]}
-      MenuExpandTrigger={AddIconButton}
-      {...props}
-    />
+    <JuiNewActions
+      Anchor={AddIconButton}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}
+    >
+      <JuiMenuItem data-test-automation-id="viewYourProfile">
+        Profile
+      </JuiMenuItem>
+    </JuiNewActions>
   );
 };
 
@@ -60,17 +72,59 @@ const Avatar = (props: JuiIconButtonProps) => {
   );
 };
 
-const AvatarMenu = (props: MenuListCompositionProps) => {
+const AvatarActions = (props: MenuListCompositionProps) => {
   return (
-    <JuiAvatarMenu
-      menuItems={[
-        {
-          label: 'Logout',
-          onClick: handleClick,
-        },
-      ]}
-      MenuExpandTrigger={Avatar}
-      {...props}
+    <JuiAvatarActions
+      Anchor={Avatar}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}
+    >
+      <JuiMenuList>
+        <JuiMenuItem data-test-automation-id="viewYourProfile">
+          Profile
+        </JuiMenuItem>
+      </JuiMenuList>
+    </JuiAvatarActions>
+  );
+};
+
+const BackNForward = () => {
+  return (
+    <>
+      <JuiHistoryOperation
+        type={OPERATION.BACK}
+        menu={[]}
+        disabled={false}
+        tooltipTitle={'Back'}
+        onClick={fakeHandler}
+        onClickMenu={fakeHandler}
+      />
+      <JuiHistoryOperation
+        type={OPERATION.FORWARD}
+        menu={[]}
+        tooltipTitle={'Forward'}
+        disabled={false}
+        onClick={fakeHandler}
+        onClickMenu={fakeHandler}
+      />
+    </>
+  );
+};
+
+const SearchBar = () => {
+  return (
+    <JuiSearchBar
+      onClose={fakeHandler}
+      focus={false}
+      tabIndex={0}
+      onBlur={fakeHandler}
+      onFocus={fakeHandler}
     />
   );
 };
@@ -78,10 +132,14 @@ const AvatarMenu = (props: MenuListCompositionProps) => {
 storiesOf('Pattern/TopBar', module)
   .addDecorator(withInfoDecorator(JuiTopBar, { inline: true }))
   .add('TopBar', () => (
-    <JuiTopBar
-      MainMenu={MainMenu}
-      Logo={Logo}
-      AddMenu={AddMenu}
-      AvatarMenu={AvatarMenu}
-    />
+    <div style={{ padding: '20px', background: 'silver' }}>
+      <JuiTopBar
+        NewActions={NewActions}
+        MainMenu={MainMenu}
+        Logo={Logo}
+        BackNForward={BackNForward}
+        SearchBar={SearchBar}
+        AvatarActions={AvatarActions}
+      />
+    </div>
   ));

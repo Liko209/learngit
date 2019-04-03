@@ -26,6 +26,7 @@ import { transform, baseHandleData } from '../../../service/utils';
 import { Raw } from '../../../framework/model';
 import { ItemQueryOptions, ItemFilterFunction } from '../types';
 import { mainLogger } from 'foundation';
+import { ItemNotification } from '../utils/ItemNotification';
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
   static serviceName = 'ItemService';
@@ -53,13 +54,14 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       return;
     }
     const transformedData = items.map(item => transform<Item>(item));
-    // handle deactivated data and normal data
-    this.handleSanitizedItems(transformedData);
-    return baseHandleData({
-      data: transformedData,
-      dao: daoManager.getDao(ItemDao),
-      eventKey: ENTITY.ITEM,
-    });
+    return await baseHandleData(
+      {
+        data: transformedData,
+        dao: daoManager.getDao(ItemDao),
+        eventKey: ENTITY.ITEM,
+      },
+      ItemNotification.getItemsNotifications,
+    );
   }
 
   protected get itemServiceController() {
@@ -85,32 +87,21 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getItems(options: ItemQueryOptions) {
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS,
+      `${PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS}_${
+        options.typeId
+      }`,
+      logId,
     );
     const result = await this.itemServiceController.getItems(options);
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_SHELF_FETCH_ITEMS,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 
-  async createItem(item: Item) {
-    return await this.itemServiceController.createItem(item);
-  }
-
-  async updateItem(item: Item) {
-    return await this.itemServiceController.updateItem(item);
-  }
-
   async deleteItem(itemId: number) {
-    return await this.itemServiceController.deleteItem(itemId);
-  }
-
-  async deleteItemData(itemId: number) {
     return await this.itemServiceController.itemActionController.deleteItem(
       itemId,
-      this,
     );
   }
 
@@ -149,6 +140,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
 
   getUploadItems(groupId: number): ItemFile[] {
     return this.fileService.getUploadItems(groupId);
+  }
+
+  async initialUploadItemsFromDraft(groupId: number) {
+    return await this.fileService.initialUploadItemsFromDraft(groupId);
   }
 
   async canResendFailedItems(itemIds: number[]) {
@@ -202,8 +197,10 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
   }
 
   async getByPosts(posts: Post[]): Promise<Item[]> {
+    const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
+      logId,
     );
     let itemIds: number[] = [];
     posts.forEach((post: Post) => {
@@ -227,9 +224,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       ': item count:',
       String(itemIds.length),
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(
-      PERFORMANCE_KEYS.GOTO_CONVERSATION_FETCH_ITEMS,
-    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
 
     return items;
   }
@@ -241,18 +236,25 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     );
   }
 
-  async handleSanitizedItems(items: Item[]) {
-    return await this.itemServiceController.handleSanitizedItems(items);
-  }
-
   async requestSyncGroupItems(groupId: number) {
     await this.itemServiceController.itemSyncController.requestSyncGroupItems(
       groupId,
     );
   }
 
-  async getThumbsUrlWithSize(itemId: number, width: number, height: number) {
+  async getThumbsUrlWithSize(itemId: number, width?: number, height?: number) {
     return this.fileService.getThumbsUrlWithSize(itemId, width, height);
+  }
+
+  hasUploadingFiles() {
+    return this.fileService.hasUploadingFiles();
+  }
+
+  async getItemIndexInfo(
+    itemId: number,
+    options: ItemQueryOptions,
+  ): Promise<{ index: number; totalCount: number }> {
+    return this.itemServiceController.getItemIndexInfo(itemId, options);
   }
 }
 

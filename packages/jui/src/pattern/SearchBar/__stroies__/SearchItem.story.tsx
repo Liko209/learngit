@@ -8,7 +8,6 @@ import { storiesOf } from '@storybook/react';
 import { text, array } from '@storybook/addon-knobs';
 import { JuiSearchItem } from '../';
 import { JuiAvatar } from '../../../components/Avatar';
-import { JuiIconography } from '../../../foundation/Iconography';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 
 import avatar from './img/avatar.jpg';

@@ -15,6 +15,6 @@ export type JuiBackdropProps = Omit<MuiBackdropProps, 'innerRef'> & {
 
 export const JuiBackdrop: React.SFC<JuiBackdropProps> & {
   dependencies?: any[];
-} = props => <MuiBackdrop {...props} />;
+} = React.memo(props => <MuiBackdrop {...props} />);
 
 JuiBackdrop.displayName = 'JuiBackdrop';

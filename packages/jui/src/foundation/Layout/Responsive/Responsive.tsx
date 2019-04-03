@@ -4,10 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { PureComponent, ComponentType } from 'react';
+import React, { PureComponent, ComponentType, ReactNode } from 'react';
 import ReactResizeDetector from 'react-resize-detector';
-import Resizable from 're-resizable';
-import { StyledPanel, StyledContent } from './StyledPanel';
+import Resizable, { ResizableProps } from 're-resizable';
+import styled from '../../styled-components';
 import { StyledMain } from './StyledMain';
 
 enum VISUAL_MODE {
@@ -36,13 +36,27 @@ type ResponsiveProps = ResponsiveInfo & {
   visual?: boolean;
   TriggerButton?: React.ComponentType<any>;
   addResponsiveInfo?: (info: ResponsiveInfo) => {};
+  children: (width: number, height: number) => ReactNode | ReactNode;
 };
 
 type ResponsiveState = {
   isShow: boolean;
   width: number;
+  height: number;
   prevVisual?: boolean;
 };
+
+const StyledResizable = styled<ResizableProps & any>(Resizable)`
+  overflow: hidden;
+  top: 0;
+  bottom: 0;
+  left: ${({ styled: { position } }) => (position === 'left' ? 0 : 'auto')};
+  right: ${({ styled: { position } }) => (position === 'right' ? 0 : 'auto')};
+  z-index: ${({ styled: { absolute }, theme }) =>
+    absolute ? theme.zIndex.appBar + 1 : 'auto'};
+  display: ${({ styled: { show } }) => (show ? 'flex' : 'none')};
+  flex: ${({ styled: { priority } }) => `0 ${priority} auto`};
+`;
 
 class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   static DEFAULT_OPTIONS = {
@@ -69,7 +83,13 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   state = {
     isShow: false,
     width: this.localWidth,
+    height: 0,
     prevVisual: this.props.visual,
+  };
+
+  enableResizable = {
+    ...Responsive.DEFAULT_OPTIONS.enable,
+    ...this.props.enable,
   };
 
   componentDidMount() {
@@ -102,6 +122,8 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     if (visual === false && prevVisual !== visual) {
       return {
         prevVisual: visual,
+        isShow: false,
+        width: 0,
       };
     }
     if (defaultWidth && prevVisual === false && visual === true) {
@@ -137,15 +159,19 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     localStorage.setItem(`${tag}-show-state`, `${value}`);
   }
 
-  onResize = (width: number) => {
-    this.localWidth = width;
-    this.setState({
-      width,
-    });
+  onResize = (width: number, height: number) => {
+    if (width) {
+      this.localWidth = width;
+      this.setState({
+        width,
+        height,
+      });
+    }
   }
 
   handlerClickShowPanel = () => {
-    this.setState({ isShow: true });
+    const { minWidth } = this.props;
+    this.setState({ isShow: true, width: Number(minWidth) });
   }
 
   handlerClickHidePanel = () => {
@@ -186,52 +212,61 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
     return visualMode === VISUAL_MODE.MANUAL || visualMode === VISUAL_MODE.BOTH;
   }
 
+  private _renderChildren = () => {
+    const { children } = this.props;
+    const { width, height } = this.state;
+    return typeof children === 'function' ? children(width, height) : children;
+  }
+
   renderMode = () => {
     const { isShow, width } = this.state;
-    const {
-      enable = {},
-      children,
-      minWidth,
-      maxWidth,
-      visual,
-      priority,
-    } = this.props;
-    if (this.isManualMode && !this.localShowState) {
-      return this.renderButton();
+    const { enable = {}, minWidth, maxWidth, visual, priority } = this.props;
+    if (visual === undefined) {
+      return null;
     }
     return (
       <>
-        {(this.isManualMode || visual === false) && this.renderButton()}
-        {visual ? (
-          <Resizable
-            enable={{ ...Responsive.DEFAULT_OPTIONS.enable, ...enable }}
-            minWidth={minWidth}
-            maxWidth={maxWidth}
-            size={{
-              width,
-              height: 'auto',
-            }}
-            style={{
-              flex: `0 ${priority} auto`,
-            }}
-          >
-            {children}
-            <ReactResizeDetector handleWidth={true} onResize={this.onResize} />
-          </Resizable>
-        ) : (
-          <StyledPanel position={enable.left ? 'right' : 'left'}>
-            <StyledContent width={isShow ? Number(minWidth) : 0}>
-              {children}
-            </StyledContent>
-          </StyledPanel>
-        )}
+        {(this.isManualMode || !visual) && this.renderButton()}
+        <StyledResizable
+          enable={
+            visual ? this.enableResizable : Responsive.DEFAULT_OPTIONS.enable
+          }
+          minWidth={visual || isShow ? minWidth : 0}
+          maxWidth={maxWidth}
+          size={{
+            width,
+            height: '100%',
+          }}
+          style={{
+            position: !visual ? 'absolute' : 'relative',
+          }}
+          styled={{
+            priority,
+            absolute: !visual,
+            show: !this.isManualMode || this.localShowState,
+            position: enable.right ? 'left' : 'right',
+          }}
+        >
+          {this._renderChildren()}
+          {visual && (
+            <ReactResizeDetector
+              handleWidth={true}
+              handleHeight={true}
+              onResize={this.onResize}
+            />
+          )}
+        </StyledResizable>
       </>
     );
   }
 
   renderMain = () => {
-    const { children, minWidth } = this.props;
-    return <StyledMain minWidth={Number(minWidth)}>{children}</StyledMain>;
+    const { minWidth } = this.props;
+    return (
+      <StyledMain minWidth={Number(minWidth)}>
+        {this._renderChildren()}
+      </StyledMain>
+    );
   }
 
   render() {
@@ -255,7 +290,9 @@ const withResponsive = (
     render() {
       return (
         <Responsive {...props} {...this.props} tag={ResponsiveHOC.tag}>
-          <WrappedComponent {...this.props} />
+          {(width: number, height: number) => (
+            <WrappedComponent {...this.props} width={width} height={height} />
+          )}
         </Responsive>
       );
     }

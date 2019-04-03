@@ -26,7 +26,7 @@ const mockItemValue = {
   url: 'https://material-ui.com/',
 };
 describe('LinkItemViewModel', () => {
-  beforeAll(() => {
+  beforeEach(() => {
     (getEntity as jest.Mock).mockReturnValue({
       ...mockItemValue,
     });

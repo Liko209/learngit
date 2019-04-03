@@ -1,14 +1,15 @@
 import 'testcafe';
 import * as _ from 'lodash';
 import * as fs from 'fs';
-import { UAParser } from 'ua-parser-js';
+import { parse as parseUserAgent } from 'useragent';
+import { identity } from 'lodash';
 
 import { getLogger } from 'log4js';
-import { IStep, Status, IConsoleLog } from "../models";
+import {IStep, Status, IConsoleLog, Process} from '../models';
 import { MiscUtils } from '../utils';
 import { getTmtIds, parseFormalName } from '../../libs/filter';
 import { BrandTire } from '../../config';
-import { H } from '.';
+import { H, h } from '.';
 import { BeatsClient, Test, Step } from 'bendapi-ts';
 
 const logger = getLogger(__filename);
@@ -17,7 +18,12 @@ logger.level = 'info';
 const StatusMap = {
   [Status.PASSED]: 5,
   [Status.FAILED]: 8,
-}
+};
+
+const ProccessMap = {
+  [Process.RUN]: 0,
+  [Process.FINISH]: 1,
+};
 
 export class DashboardHelper {
 
@@ -53,7 +59,7 @@ export class DashboardHelper {
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
     const tags = parseFormalName(testRun.test.name).tags;
-    const userAgent = new UAParser(await H.getUserAgent());
+    const userAgent = parseUserAgent(await H.getUserAgent());
 
     const beatsTest = new Test();
     beatsTest.run = runId;
@@ -62,14 +68,16 @@ export class DashboardHelper {
     beatsTest.manualIds = getTmtIds(tags, 'JPT');
     beatsTest.startTime = testRun.startTime;
     beatsTest.endTime = new Date();
+    beatsTest.process = ProccessMap[Process.FINISH];
 
     beatsTest.metadata = {
-      browser: userAgent.getBrowser().name,
-      browserVer: userAgent.getBrowser().version,
-      os: userAgent.getOS().name,
-      osVer: userAgent.getOS().version,
+      browser: userAgent.family,
+      browserVer: userAgent.toVersion(),
+      os: userAgent.os.family,
+      osVer: userAgent.os.toVersion(),
       user_agent: testRun.browserConnection.browserInfo.userAgent,
-    }
+      mockRequestId: h(this.t).mockRequestId,
+    };
     const res = await this.beatsClient.createTest(beatsTest);
 
     for (const step of this.t.ctx.logs) {
@@ -88,13 +96,16 @@ export class DashboardHelper {
     detailStep.attachments.push(consoleLog.errorConsoleLogPath);
     detailStep.attachments.push(rcDataPath);
     if (status === Status.FAILED) {
-      const errorDetailPath = MiscUtils.createTmpFile(JSON.stringify(errs, null, 2))
-      detailStep.attachments.push(errorDetailPath);
+      const errList = [];
       for (const err of errs) {
         if (err.screenshotPath) {
           detailStep.attachments.push(err.screenshotPath);
+          const errorText = err.formatMessage(newErrorDecorator(), 2048);
+          errList.push(errorText);
         }
       }
+      const errorDetailPath = MiscUtils.createTmpFile(errList.join('\n'));
+      detailStep.attachments.push(errorDetailPath);
     }
     detailStep.endTime = Date.now();
     await this.createStepInDashboard(detailStep, res.body.id);
@@ -110,4 +121,35 @@ export class DashboardHelper {
     }
     logger.info(`it takes ${Date.now() - ts} ms to upload result to dashboard`);
   }
+}
+
+function newErrorDecorator() {
+  return {
+    'span user-agent': str => str,
+    'span subtitle': str => `- str -`,
+    'div message': str => str,
+    'div screenshot-info': identity,
+    'a screenshot-path': str => str,
+    code: identity,
+    'span syntax-string': str => str,
+    'span syntax-punctuator': str => str,
+    'span syntax-keyword': str => str,
+    'span syntax-number': str => str,
+    'span syntax-regex': str => str,
+    'span syntax-comment': str => str,
+    'span syntax-invalid': str => str,
+    'div code-frame': identity,
+    'div code-line': str => str + '\n',
+    'div code-line-last': identity,
+    'div code-line-num': str => `${str} |`,
+    'div code-line-num-base': str => ` > ${str} ` + '|',
+    'div code-line-src': identity,
+    'div stack': str => '\n\n' + str,
+    'div stack-line': str => str + '\n',
+    'div stack-line-last': identity,
+    'div stack-line-name': str => `   at ${str}`,
+    'div stack-line-location': str => ` (${str})`,
+    strong: str => str,
+    a: str => `"${str}"`,
+  };
 }

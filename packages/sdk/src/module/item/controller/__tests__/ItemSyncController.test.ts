@@ -5,18 +5,16 @@
  */
 import { TypeDictionary } from '../../../../utils';
 import ItemApi from '../../../../api/glip/item';
-import { GroupConfigService } from '../../../../service/groupConfig';
+import { GroupConfigService } from '../../../groupConfig';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ItemSyncController } from '../ItemSyncController';
 import { Listener } from 'eventemitter2';
 import { SERVICE } from '../../../../service/eventKey';
-import { ApiResultOk, ApiResultErr } from '../../../../api/ApiResult';
-import { BaseResponse } from 'foundation';
 import { JServerError, ERROR_CODES_SERVER } from '../../../../error';
 
 jest.mock('../../../../api/glip/item');
 jest.mock('../../service/IItemService');
-jest.mock('../../../../service/groupConfig');
+jest.mock('../../../groupConfig');
 jest.mock('../../../../service/notificationCenter');
 
 function clearMocks() {
@@ -103,13 +101,10 @@ describe('ItemSyncController', () => {
         last_index_of_notes: 4,
         last_index_of_links: 5,
       };
-      const response = new ApiResultOk({ id: 1, name: 'jupiter' }, {
-        status: 200,
-        headers: {},
-      } as BaseResponse);
+      const response = { id: 1, name: 'jupiter' };
       ItemApi.getItems = jest.fn().mockResolvedValue(response);
       groupConfigService.getById = jest.fn().mockReturnValue(groupConfig);
-      groupConfigService.updateGroupConfigPartialData = jest.fn();
+      groupConfigService.saveAndDoNotify = jest.fn();
 
       await itemSyncController.requestSyncGroupItems(groupConfig.id);
       setTimeout(() => {
@@ -140,27 +135,25 @@ describe('ItemSyncController', () => {
           10,
           5,
         );
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledTimes(
-          5,
-        );
+        expect(groupConfigService.saveAndDoNotify).toBeCalledTimes(5);
 
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_links: expect.any(Number),
         });
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_tasks: expect.any(Number),
         });
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_notes: expect.any(Number),
         });
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_events: expect.any(Number),
         });
-        expect(groupConfigService.updateGroupConfigPartialData).toBeCalledWith({
+        expect(groupConfigService.saveAndDoNotify).toBeCalledWith({
           id: 10,
           last_index_of_files: expect.any(Number),
         });
@@ -170,6 +163,7 @@ describe('ItemSyncController', () => {
     });
 
     it('should throw error when request sync item failed', async () => {
+      const error = new JServerError(ERROR_CODES_SERVER.GENERAL, 'error');
       const groupConfig = {
         id: 10,
         last_index_of_files: 1,
@@ -178,21 +172,14 @@ describe('ItemSyncController', () => {
         last_index_of_notes: 4,
         last_index_of_links: 5,
       };
-      const response = new ApiResultErr(
-        new JServerError(ERROR_CODES_SERVER.GENERAL, 'error'),
-        {
-          status: 400,
-          headers: {},
-        } as BaseResponse,
-      );
-      ItemApi.getItems = jest.fn().mockResolvedValue(response);
+      ItemApi.getItems = jest.fn().mockRejectedValue(error);
       groupConfigService.getById = jest.fn().mockReturnValue(groupConfig);
-      groupConfigService.updateGroupConfigPartialData = jest.fn();
+      groupConfigService.saveAndDoNotify = jest.fn();
       expect(
         itemSyncController.requestSyncGroupItems(groupConfig.id),
       ).resolves.toThrow();
       expect(
-        (groupConfigService.updateGroupConfigPartialData = jest.fn()),
+        (groupConfigService.saveAndDoNotify = jest.fn()),
       ).not.toHaveBeenCalled();
     });
   });

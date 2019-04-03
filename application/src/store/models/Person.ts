@@ -52,6 +52,8 @@ export default class PersonModel extends Base<Person> {
   homepage?: string;
   @observable
   sanitizedRcExtension?: SanitizedExtensionModel;
+  @observable
+  deactivated: boolean;
 
   constructor(data: Person) {
     super(data);
@@ -74,6 +76,7 @@ export default class PersonModel extends Base<Person> {
       location,
       homepage,
       sanitized_rc_extension,
+      deactivated,
     } = data;
     this.companyId = company_id;
     this.firstName = first_name;
@@ -93,6 +96,7 @@ export default class PersonModel extends Base<Person> {
     this.location = location;
     this.homepage = homepage;
     this.sanitizedRcExtension = sanitized_rc_extension;
+    this.deactivated = deactivated;
   }
 
   static fromJS(data: Person) {
@@ -117,8 +121,7 @@ export default class PersonModel extends Base<Person> {
     return '';
   }
 
-  @computed
-  get userDisplayName(): string {
+  private _getCommonName() {
     if (this.isPseudoUser) {
       let pseudoUserDisplayName = '';
       if (this.glipUserId) {
@@ -146,9 +149,24 @@ export default class PersonModel extends Base<Person> {
       }
       dName += this.lastName;
     }
+    return dName;
+  }
 
+  @computed
+  get userDisplayName(): string {
+    let dName = this._getCommonName();
     if (dName.length === 0) {
       dName = this._getEmailAsName(this.email);
+    }
+
+    return dName;
+  }
+
+  @computed
+  get userDisplayNameForGroupName(): string {
+    let dName = this._getCommonName();
+    if (dName.length === 0) {
+      dName = this.email;
     }
 
     return dName;
@@ -170,7 +188,7 @@ export default class PersonModel extends Base<Person> {
     ) {
       return handleOneOfName(this.firstName, this.lastName);
     }
-    return '';
+    return handleOnlyLetterOrNumbers(this.email, '');
   }
   @computed
   get hasHeadShot() {

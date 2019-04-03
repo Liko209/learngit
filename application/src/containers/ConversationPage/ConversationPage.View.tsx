@@ -5,7 +5,7 @@
  */
 import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { DropTargetMonitor } from 'react-dnd';
 import {
@@ -24,12 +24,12 @@ import { Header } from './Header';
 import { MessageInput } from './MessageInput';
 import { MessageInputViewComponent } from './MessageInput/MessageInput.View';
 import { ConversationPageViewProps } from './types';
-import { action, observable } from 'mobx';
-
 import { StreamViewComponent } from './Stream/Stream.View';
 import { Stream } from './Stream';
 import { AttachmentManager } from './MessageInput/Attachments';
 import { AttachmentManagerViewComponent } from './MessageInput/Attachments/AttachmentManager.View';
+import { withRouter } from 'react-router';
+import { goToConversation } from '@/common/goToConversation';
 
 const STREAM = 'stream';
 const INPUT = 'input';
@@ -45,7 +45,6 @@ class ConversationPageViewComponent extends Component<
   > = createRef();
   private _folderDetectMap: { string: boolean } = {} as { string: boolean };
 
-  @observable
   streamKey = 0;
 
   sendHandler = () => {
@@ -53,15 +52,15 @@ class ConversationPageViewComponent extends Component<
     if (!stream) {
       return;
     }
-    if (stream.props.hasMoreDown) {
-      return this.remountStream();
+    if (stream.props.hasMore('down')) {
+      goToConversation({ conversationId: this.props.groupId });
+      this.remountStream();
     }
-    return stream.scrollToBottom();
   }
 
-  @action.bound
-  remountStream() {
-    return this.streamKey++;
+  remountStream = () => {
+    this.streamKey++;
+    this.forceUpdate();
   }
 
   _handleDropFileInStream = (item: any, monitor: DropTargetMonitor) => {
@@ -93,13 +92,17 @@ class ConversationPageViewComponent extends Component<
   }
 
   render() {
-    const { t, groupId, canPost } = this.props;
+    const { t, groupId, canPost, location } = this.props;
     const streamNode = (
       <JuiStreamWrapper>
         <Stream
           groupId={groupId}
           viewRef={this._streamRef}
           key={`Stream_${groupId}_${this.streamKey}`}
+          refresh={this.remountStream}
+          jumpToPostId={
+            location.state ? location.state.jumpToPostId : undefined
+          }
         />
         <div id="jumpToFirstUnreadButtonRoot" />
       </JuiStreamWrapper>
@@ -111,20 +114,17 @@ class ConversationPageViewComponent extends Component<
         data-test-automation-id="messagePanel"
       >
         <Header id={groupId} />
-        {canPost ? (
-          <JuiDropZone
-            accepts={[NativeTypes.FILE]}
-            onDrop={this._handleDropFileInStream}
-            dropzoneClass={StreamDropZoneClasses}
-            detectedFolderDrop={this._preventStreamFolderDrop}
-            hasDroppedFolder={() => this._folderDetectMap[STREAM]}
-            clearFolderDetection={() => delete this._folderDetectMap[STREAM]}
-          >
-            {streamNode}
-          </JuiDropZone>
-        ) : (
-          streamNode
-        )}
+        <JuiDropZone
+          disabled={!canPost}
+          accepts={[NativeTypes.FILE]}
+          onDrop={this._handleDropFileInStream}
+          dropzoneClass={StreamDropZoneClasses}
+          detectedFolderDrop={this._preventStreamFolderDrop}
+          hasDroppedFolder={() => this._folderDetectMap[STREAM]}
+          clearFolderDetection={() => delete this._folderDetectMap[STREAM]}
+        >
+          {streamNode}
+        </JuiDropZone>
         {canPost ? (
           <JuiDropZone
             accepts={[NativeTypes.FILE]}
@@ -141,16 +141,23 @@ class ConversationPageViewComponent extends Component<
             />
           </JuiDropZone>
         ) : (
-          <JuiDisabledInput text={t('disabledText')} />
+          <JuiDisabledInput
+            data-test-automation-id="disabled-message-input"
+            text={t('message.prompt.disabledText')}
+          />
         )}
-        <AttachmentManager id={groupId} viewRef={this._attachmentManagerRef} />
+        <AttachmentManager
+          id={groupId}
+          viewRef={this._attachmentManagerRef}
+          forceSaveDraft={false}
+        />
       </JuiConversationPage>
     ) : null;
   }
 }
 
 const ConversationPageView = withDragDropContext(
-  translate('translations')(ConversationPageViewComponent),
+  withRouter(withTranslation('translations')(ConversationPageViewComponent)),
 );
 
 export { ConversationPageView };

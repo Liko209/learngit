@@ -59,7 +59,7 @@ const knobs = {
   },
 };
 
-class PopoverMenu extends React.Component {
+class PopoverMenu extends React.PureComponent {
   private _Anchor = () => {
     return <JuiButton>Open Popover</JuiButton>;
   }
