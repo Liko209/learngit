@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { SentryErrorReporter } from './SentryErrorReporter';
-import { IErrorReporter, ContextInfo } from './types';
+import { IErrorReporter, UserContextInfo } from './types';
 
 export class ErrorReporterProxy implements IErrorReporter {
   private _enabled: boolean;
@@ -24,11 +24,11 @@ export class ErrorReporterProxy implements IErrorReporter {
     }
   }
 
-  setContextInfo = (contextInfo: ContextInfo) => {
+  setUserContextInfo = (contextInfo: UserContextInfo) => {
     if (this._isInit) {
-      this._reporter.setContextInfo(contextInfo);
+      this._reporter.setUserContextInfo(contextInfo);
     } else {
-      this._pushToQueue(() => this._reporter.setContextInfo(contextInfo));
+      this._pushToQueue(() => this._reporter.setUserContextInfo(contextInfo));
     }
   }
 

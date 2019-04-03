@@ -6,10 +6,10 @@
 
 export interface IErrorReporter {
   report: (error: Error) => void;
-  setContextInfo: (contextInfo: ContextInfo) => void;
+  setUserContextInfo: (contextInfo: UserContextInfo) => void;
 }
 
-export type ContextInfo = {
+export type UserContextInfo = {
   id: number;
   companyId: number;
   email: string;

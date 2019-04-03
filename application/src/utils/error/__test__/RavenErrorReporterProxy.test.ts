@@ -9,7 +9,7 @@ jest.mock('../SentryErrorReporter', () => {
   const mock: SentryErrorReporter = {
     init: jest.fn().mockImplementation(() => Promise.resolve()),
     report: jest.fn(),
-    setContextInfo: jest.fn(),
+    setUserContextInfo: jest.fn(),
   };
   return {
     SentryErrorReporter: () => mock,
@@ -42,13 +42,13 @@ describe('ErrorReporterProxy', () => {
       const proxy = new ErrorReporterProxy(true);
       expect(proxy['_isInit']).toBeFalsy();
       expect(mockErrorReporter.init).toBeCalled();
-      expect(mockErrorReporter.setContextInfo).not.toBeCalled();
+      expect(mockErrorReporter.setUserContextInfo).not.toBeCalled();
       expect(mockErrorReporter.report).not.toBeCalled();
       setTimeout(() => {
         expect(proxy['_isInit']).toBeTruthy();
-        proxy.setContextInfo(mockContextInfo);
+        proxy.setUserContextInfo(mockContextInfo);
         proxy.report(mockError);
-        expect(mockErrorReporter.setContextInfo).toBeCalledWith(
+        expect(mockErrorReporter.setUserContextInfo).toBeCalledWith(
           mockContextInfo,
         );
         expect(mockErrorReporter.report).toBeCalledWith(mockError);
@@ -69,15 +69,15 @@ describe('ErrorReporterProxy', () => {
       };
       const mockError = new Error('ddd');
       const proxy = new ErrorReporterProxy(true);
-      proxy.setContextInfo(mockContextInfo);
+      proxy.setUserContextInfo(mockContextInfo);
       proxy.report(mockError);
       expect(proxy['_isInit']).toBeFalsy();
       expect(mockErrorReporter.init).toBeCalled();
-      expect(mockErrorReporter.setContextInfo).not.toBeCalled();
+      expect(mockErrorReporter.setUserContextInfo).not.toBeCalled();
       expect(mockErrorReporter.report).not.toBeCalled();
       setTimeout(() => {
         expect(proxy['_isInit']).toBeTruthy();
-        expect(mockErrorReporter.setContextInfo).toBeCalledWith(
+        expect(mockErrorReporter.setUserContextInfo).toBeCalledWith(
           mockContextInfo,
         );
         expect(mockErrorReporter.report).toBeCalledWith(mockError);

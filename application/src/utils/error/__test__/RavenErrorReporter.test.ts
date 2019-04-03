@@ -45,7 +45,7 @@ describe('RavenErrorReporter', () => {
         env: 'xm-up',
         version: '1.0.0',
       };
-      await errorReporter.setContextInfo(mockContextInfo);
+      await errorReporter.setUserContextInfo(mockContextInfo);
       expect(Raven.setUserContext).toBeCalledWith(mockContextInfo);
     });
   });

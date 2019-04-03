@@ -20,7 +20,6 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 
 type State = {};
-
 @observer
 class UploadRecentLogsView extends React.Component<
   UploadRecentLogsViewProps & UploadRecentLogsViewModelProps,

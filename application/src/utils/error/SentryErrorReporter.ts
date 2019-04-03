@@ -6,7 +6,7 @@
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import * as Sentry from '@sentry/browser';
 import pkg from '../../../package.json';
-import { IErrorReporter, ContextInfo } from './types';
+import { IErrorReporter, UserContextInfo } from './types';
 const DSN = 'https://810a779037204886beeced1c4bd7fbba@sentry.io/1419520';
 
 export class SentryErrorReporter implements IErrorReporter {
@@ -26,7 +26,7 @@ export class SentryErrorReporter implements IErrorReporter {
     Sentry.captureException(error);
   }
 
-  setContextInfo = (contextInfo: ContextInfo) => {
+  setUserContextInfo = (contextInfo: UserContextInfo) => {
     Sentry.configureScope((scope: Sentry.Scope) => {
       scope.setUser({
         id: String(contextInfo.id),
