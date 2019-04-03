@@ -142,8 +142,7 @@ const TAB_CONFIG: TabConfig[] = [
     title: 'item.events',
     type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
     sort: {
-      // FIJI-4497: for service's sort bug, use `ITEM_SORT_KEYS.CREATE_TIME` now.
-      sortKey: ITEM_SORT_KEYS.CREATE_TIME,
+      sortKey: ITEM_SORT_KEYS.START_TIME,
     },
     item: EventItem,
     subheader: 'item.eventListSubheader',
