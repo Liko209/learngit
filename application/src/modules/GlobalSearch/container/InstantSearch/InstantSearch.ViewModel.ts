@@ -3,7 +3,7 @@
  * @Date: 2019-03-31 21:49:32
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action } from 'mobx';
+import { observable, action, comparer } from 'mobx';
 import { container } from 'framework';
 import storeManager from '@/store/base/StoreManager';
 import { SearchService } from 'sdk/module/search';
@@ -57,11 +57,12 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       },
       {
         fireImmediately: true,
+        equals: comparer.structural,
       },
     );
   }
 
-  joinTeam(id: number) {
+  canJoinTeam(id: number) {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
     const { isMember, isTeam, privacy } = group;
     return {
@@ -279,7 +280,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     }
     this.addRecentRecord(currentItemId);
     if (currentItemType !== 'people') {
-      const { canJoin, group } = this.joinTeam(currentItemId);
+      const { canJoin, group } = this.canJoinTeam(currentItemId);
       if (canJoin) {
         e.preventDefault();
         this.handleJoinTeam(group);
