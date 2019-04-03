@@ -79,7 +79,12 @@
     "Messages": "Messages",
     "people": "people",
     "groups": "groups",
-    "team": "team"
+    "team": "team",
+
+    "prompt": {
+      "contentSearchNetworkError": "We weren't able to conduct the search. Check your network connection, then try again.",
+      "contentSearchServiceError": "Sorry, something went wrong on our end and we weren't able to conduct the search. Try again later."
+    }
   },
   "dashboard": {
     "Dashboard": "Dashboard"
