@@ -12,10 +12,6 @@ class Socket extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener) {
     super.request(request, listener);
     const socketRequest = request as SocketRequest;
-    if (request.params) {
-      socketRequest.parameters = request.params;
-    }
-
     const socket = SocketClient.get();
     if (socket) {
       socket.request(socketRequest).then(
