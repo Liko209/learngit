@@ -12,10 +12,6 @@ import {
   JuiListNavItemIconography,
 } from './../../components';
 
-const touchRippleClasses = {
-  child: 'child',
-  rippleVisible: 'rippleVisible',
-};
 const StyledRightWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -59,7 +55,6 @@ const JuiConversationListSectionHeader = memo(
         button={true}
         selected={selected}
         classes={{ selected: 'selected' }}
-        TouchRippleProps={{ classes: touchRippleClasses }}
         onClick={onClick}
         {...rest}
       >

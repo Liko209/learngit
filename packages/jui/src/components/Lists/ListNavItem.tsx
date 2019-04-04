@@ -116,8 +116,13 @@ const StyledNavListItem = styled(MuiListItem)`
   }
 `;
 
+const touchRippleClasses = {
+  child: 'child',
+  rippleVisible: 'rippleVisible',
+};
+
 const JuiListNavItemComponent = (props: JuiListNavItemProps) => {
-  return <StyledNavListItem {...props}>{props.children}</StyledNavListItem>;
+  return <StyledNavListItem TouchRippleProps={{ classes: touchRippleClasses }} {...props}>{props.children}</StyledNavListItem>;
 };
 
 JuiListNavItemComponent.defaultProps = {
