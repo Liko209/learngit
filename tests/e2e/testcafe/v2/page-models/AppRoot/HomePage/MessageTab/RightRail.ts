@@ -164,7 +164,6 @@ class BaseTab extends BaseWebComponent {
     return this.items.find('.list-item-secondary');
   }
 
-
   async nthItemTitleShouldBe(n: number, title: string) {
     await this.t.expect(this.titles.nth(n).withText(title).exists).ok(
       `n: ${n} , title: ${title}`
@@ -232,6 +231,11 @@ class NotesTab extends BaseTab {
 }
 
 class ImageAndFileItem extends BaseWebComponent {
+  get thumbnail() {
+    this.warnFlakySelector();
+    return this.self.find('div').nth(0);
+  }
+
   get name() {
     return this.getSelectorByAutomationId('file-name', this.self);
   }
