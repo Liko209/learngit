@@ -8,8 +8,10 @@ import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 
+import { SEARCH_SCOPE, TAB_TYPE, SEARCH_VIEW } from '../../types';
+
 type SearchItems = {
-  ids: number[];
+  ids: (number | string)[];
   type: RecentSearchTypes;
   hasMore: boolean;
 };
@@ -48,6 +50,8 @@ type InstantSearchViewProps = {
   resetSelectIndex: () => void;
   setSelectIndex: (section: number, cellIndex: number) => void;
   selectIndexChange: (sectionIndex: number, cellIndex: number) => void;
+  getSearchScope: (index: number) => void;
+  onShowMore: (type: RecentSearchTypes) => () => void;
 };
 
 export {
@@ -60,4 +64,7 @@ export {
   Group,
   SectionType,
   SortableModel,
+  SEARCH_SCOPE,
+  TAB_TYPE,
+  SEARCH_VIEW,
 };

@@ -55,6 +55,7 @@ const PrivateIcon = styled(MuiLock)`
 `;
 
 const SearchItemAvatar = styled.div`
+  display: flex;
   margin-right: ${spacing(2)};
 `;
 
