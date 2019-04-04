@@ -3,6 +3,7 @@
  * @Date: 2019-01-30 14:38:45
  * Copyright © RingCentral. All rights reserved.
  */
+import { action } from 'mobx';
 import { SearchService } from 'sdk/module/search';
 import { container } from 'framework';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
@@ -24,6 +25,7 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
     GlobalSearchStore,
   );
 
+  @action
   onClick = () => {
     const { searchScope } = this.props;
 
