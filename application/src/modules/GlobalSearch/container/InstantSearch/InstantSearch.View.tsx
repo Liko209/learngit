@@ -9,8 +9,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { JuiInstantSearch, JuiSearchTitle } from 'jui/pattern/GlobalSearch';
-
-import { InstantSearchViewProps, SearchItems } from './types';
+import { InstantSearchViewProps, SearchItems, TAB_TYPE } from './types';
 import { SearchSectionsConfig } from '../config';
 
 type Props = InstantSearchViewProps & WithTranslation;
@@ -134,8 +133,6 @@ class InstantSearchViewComponent extends Component<Props> {
   }
 }
 
-const InstantSearchView = withTranslation('translations')(
-  InstantSearchViewComponent,
-);
+const InstantSearchView = withTranslation('translations')(InstantSearchViewComponent);
 
 export { InstantSearchView };

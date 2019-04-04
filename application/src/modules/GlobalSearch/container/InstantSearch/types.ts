@@ -7,6 +7,7 @@ import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
+import { TAB_TYPE, SEARCH_VIEW } from '../../types';
 
 import { SEARCH_SCOPE, TAB_TYPE, SEARCH_VIEW } from '../../types';
 
@@ -44,6 +45,7 @@ type InstantSearchViewProps = {
   onKeyUp: () => void;
   onKeyDown: () => void;
   onEnter: (e: KeyboardEvent) => void;
+  changeView: (id: TAB_TYPE) => void;
   searchResult: SearchItems[];
   terms: string[];
   selectIndex: number[];
