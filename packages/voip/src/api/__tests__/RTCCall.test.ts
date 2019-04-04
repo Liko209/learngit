@@ -20,6 +20,10 @@ import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 import { rtcLogger } from '../../utils/RTCLoggerProxy';
 
 describe('RTC call', () => {
+  afterEach(() => {
+    RTCMediaDeviceManager.instance().removeAllListeners();
+  });
+
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
     createOutgoingCallSession(toNum: string): void {
       this.toNum = toNum;
@@ -136,7 +140,7 @@ describe('RTC call', () => {
     replyWithMessage = jest.fn();
     terminate = jest.fn();
     accept = jest.fn();
-    reject =jest.fn();
+    reject = jest.fn();
     toVoicemail = jest.fn();
 
     mockSignal(signal: string, response?: any): void {
@@ -2219,7 +2223,7 @@ describe('RTC call', () => {
     it('should call state changed to replying when call startReply api in idle state. [JPT-1422]', done => {
       setup();
       expect(call._fsm.state()).toBe('idle');
-      call.startReplyWithMessage();
+      call.startReply();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('replying');
         expect(session.sendSessionMessage).toBeCalled();
@@ -2230,7 +2234,7 @@ describe('RTC call', () => {
     it('should call state changed to answering when call answer api in replying state. [JPT-1423]', done => {
       setup();
       expect(call._fsm.state()).toBe('idle');
-      call.startReplyWithMessage();
+      call.startReply();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('replying');
         call.answer();
@@ -2245,7 +2249,7 @@ describe('RTC call', () => {
     it('should call state changed to disconnected when call replyWithMessage api in replying state. [JPT-1424]', done => {
       setup();
       expect(call._fsm.state()).toBe('idle');
-      call.startReplyWithMessage();
+      call.startReply();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('replying');
         call.replyWithMessage('123');
@@ -2260,7 +2264,7 @@ describe('RTC call', () => {
     it('should call state changed to disconnected when call replyWithPattern api in replying state. [JPT-1425]', done => {
       setup();
       expect(call._fsm.state()).toBe('idle');
-      call.startReplyWithMessage();
+      call.startReply();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('replying');
         call.replyWithPattern(RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER);
@@ -2275,7 +2279,7 @@ describe('RTC call', () => {
     it('should call state change to disconnected when receive sessionDisconnected in replying state. [JPT-1426]', done => {
       setup();
       expect(call._fsm.state()).toBe('idle');
-      call.startReplyWithMessage();
+      call.startReply();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('replying');
         session.mockSignal('bye');
@@ -2289,7 +2293,7 @@ describe('RTC call', () => {
     it("should call webphone's sendToVoicemail api when call sendToVoicemail api in replying state. [JPT-1427]", done => {
       setup();
       expect(call._fsm.state()).toBe('idle');
-      call.startReplyWithMessage();
+      call.startReply();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('replying');
         call.sendToVoicemail();
@@ -2319,7 +2323,7 @@ describe('RTC call', () => {
     it('should call state change to disconnected when call ignore api in replying state. [JPT-1470]', done => {
       setup();
       expect(call._fsm.state()).toBe('idle');
-      call.startReplyWithMessage();
+      call.startReply();
       setImmediate(() => {
         expect(call._fsm.state()).toBe('replying');
         call.ignore();
