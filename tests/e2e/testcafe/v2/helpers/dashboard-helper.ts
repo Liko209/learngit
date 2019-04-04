@@ -5,7 +5,7 @@ import { parse as parseUserAgent } from 'useragent';
 import { identity } from 'lodash';
 
 import { getLogger } from 'log4js';
-import {IStep, Status, IConsoleLog, Process} from '../models';
+import { IStep, Status, IConsoleLog, Process } from '../models';
 import { MiscUtils } from '../utils';
 import { getTmtIds, parseFormalName } from '../../libs/filter';
 import { BrandTire } from '../../config';
@@ -58,7 +58,7 @@ export class DashboardHelper {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
-    const tags = parseFormalName(testRun.test.name).tags;
+    const tags = _.union(parseFormalName(testRun.test.name).tags, testRun.test.meta.caseIds);
     const userAgent = parseUserAgent(await H.getUserAgent());
 
     const beatsTest = new Test();
