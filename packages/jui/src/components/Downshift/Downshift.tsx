@@ -63,7 +63,11 @@ class JuiDownshift extends React.PureComponent<
     let { selectedItems } = this.state;
 
     if (selectedItems.indexOf(item) === -1) {
-      selectedItems = [...selectedItems, item];
+      if (this.props.multiple) {
+        selectedItems = [...selectedItems, item];
+      } else {
+        selectedItems = [item];
+      }
     }
 
     this.setState(

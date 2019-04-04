@@ -6,6 +6,7 @@
 
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
+import { boolean } from '@storybook/addon-knobs';
 import { differenceBy } from 'lodash';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiDownshift } from '..';
@@ -27,6 +28,13 @@ const suggestions = [
   { id: 3, label: 'Bahamas' },
   { id: 4, label: 'Bahrain' },
 ];
+
+const getKnobs = () => {
+  const multiple = boolean('multiple', false);
+  return {
+    multiple,
+  };
+};
 
 type Item = {
   label: string;
@@ -82,10 +90,11 @@ const MultipleDownshift = () => {
   };
   return (
     <JuiDownshift
+      {...getKnobs()}
       suggestionItems={suggestionItems}
       MenuItem={SearchItem}
       InputItem={Chip}
-      inputLabel="contact search"
+      inputLabel="Downshift"
       inputPlaceholder="placeholder"
       onInputChange={handleInputChange}
       onSelectChange={handleSelectChange}
