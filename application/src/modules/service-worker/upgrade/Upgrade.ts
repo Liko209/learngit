@@ -42,7 +42,9 @@ class Upgrade {
   }
 
   public onNewContentAvailable() {
-    mainLogger.info(`${logTag}New content available`);
+    mainLogger.info(
+      `${logTag}New content available. hasFocus: ${document.hasFocus()}`,
+    );
     this._hasNewVersion = true;
 
     if (document.hasFocus()) {
@@ -199,7 +201,7 @@ class Upgrade {
 
   private _hasInProgressCall() {
     const telephony: TelephonyService = TelephonyService.getInstance();
-    return telephony.getAllCallCount() > 0;
+    return telephony && telephony.getAllCallCount() > 0;
   }
 
   private _reloadApp() {
