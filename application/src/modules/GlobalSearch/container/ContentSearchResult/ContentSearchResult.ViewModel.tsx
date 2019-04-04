@@ -23,7 +23,6 @@ import { getGlobalValue } from '@/store/utils';
 import { GlobalSearchStore } from '../../store';
 import { SEARCH_SCOPE } from '../../types';
 import {
-  ContentSearchId,
   ContentSearchState,
   ContentSearchOptions,
   ContentSearchResultProps,
@@ -79,22 +78,23 @@ class ContentSearchResultViewModel
   }
 
   @action
-  setSearchOptions(options: ContentSearchOptions) {
+  setSearchOptions = async (options: ContentSearchOptions) => {
     this.searchOptions = { ...this.searchOptions, ...options };
 
     this._setSearchState({ requestId: null });
 
-    this.onPostsFetch();
+    await this.onPostsFetch();
   }
 
   onPostsFetch = async () => {
     const { requestId } = this.searchState;
 
-    const fetchFn = requestId ? this._onPostsInit : this._onPostsScroll;
+    const fetchFn =
+      requestId === null ? this._onPostsInit : this._onPostsScroll;
 
     const { posts, hasMore } = await this._fetchHandleWrapper(fetchFn);
 
-    this._updatePostIds(posts, requestId);
+    this._updatePostIds(posts, requestId === null);
 
     return { hasMore, data: posts };
   }
@@ -123,13 +123,13 @@ class ContentSearchResultViewModel
   }
 
   @action
-  private _updatePostIds = (posts: Post[], requestId: ContentSearchId) => {
+  private _updatePostIds = (posts: Post[], isInitialize: boolean = false) => {
     const { postIds: fromPostIds } = this.searchState;
 
     const toPostIds = posts.map(({ id }) => id);
 
     const postIds =
-      requestId === null ? toPostIds : [...fromPostIds, ...toPostIds];
+      isInitialize === null ? toPostIds : [...fromPostIds, ...toPostIds];
 
     this._setSearchState({ postIds });
   }
@@ -177,7 +177,7 @@ class ContentSearchResultViewModel
     const isNetworkError = errorHelper.isNetworkConnectionError(error);
     const isResponseError = isServiceError || isNetworkError;
 
-    let message = 'common.globalSearch.';
+    let message = 'common.globalSearch';
 
     if (isServiceError) message = `${message}.contentSearchServiceError`;
 

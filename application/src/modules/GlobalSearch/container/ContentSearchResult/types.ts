@@ -6,10 +6,8 @@
 import { ContentSearchParams } from 'sdk/api/glip/search';
 import { Post } from 'sdk/module/post/entity';
 
-type ContentSearchId = number | null;
-
 type ContentSearchState = {
-  requestId: ContentSearchId;
+  requestId: number | null;
   postIds: number[];
   postCount: number;
 };
@@ -36,7 +34,6 @@ type ContentSearchResultViewProps = {
 export {
   ContentSearchResultProps,
   ContentSearchResultViewProps,
-  ContentSearchId,
   ContentSearchState,
   ContentSearchOptions,
 };
