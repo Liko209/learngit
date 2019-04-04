@@ -48,7 +48,7 @@ describe('ContentSearchResult [JPT-1558]', () => {
     await vm.onPostsFetch();
 
     expect(Notification.flashToast).toHaveBeenCalledWith({
-      message: 'common.globalSearch.contentSearchNetworkError',
+      message: 'common.globalSearch.prompt.contentSearchNetworkError',
       dismissible: false,
       fullWidth: false,
       messageAlign: ToastMessageAlign.LEFT,
@@ -65,7 +65,7 @@ describe('ContentSearchResult [JPT-1558]', () => {
     await vm.onPostsFetch();
 
     expect(Notification.flashToast).toHaveBeenCalledWith({
-      message: 'common.globalSearch.contentSearchServiceError',
+      message: 'common.globalSearch.prompt.contentSearchServiceError',
       dismissible: false,
       fullWidth: false,
       messageAlign: ToastMessageAlign.LEFT,

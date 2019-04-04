@@ -87,13 +87,13 @@ class ContentSearchResultViewModel
 
   onPostsFetch = async () => {
     const { requestId } = this.searchState;
+    const isInitialize = requestId === null;
 
-    const fetchFn =
-      requestId === null ? this._onPostsInit : this._onPostsScroll;
+    const fetchFn = isInitialize ? this._onPostsInit : this._onPostsScroll;
 
     const { posts, hasMore } = await this._fetchHandleWrapper(fetchFn);
 
-    this._updatePostIds(posts, requestId === null);
+    this._updatePostIds(posts, isInitialize);
 
     return { hasMore, data: posts };
   }
@@ -126,8 +126,7 @@ class ContentSearchResultViewModel
 
     const toPostIds = posts.map(({ id }) => id);
 
-    const postIds =
-      isInitialize === null ? toPostIds : [...fromPostIds, ...toPostIds];
+    const postIds = isInitialize ? toPostIds : [...fromPostIds, ...toPostIds];
 
     this._setSearchState({ postIds });
   }
@@ -175,7 +174,7 @@ class ContentSearchResultViewModel
     const isNetworkError = errorHelper.isNetworkConnectionError(error);
     const isResponseError = isServiceError || isNetworkError;
 
-    let message: string = 'common.globalSearch';
+    let message: string = 'common.globalSearch.prompt';
 
     isServiceError && (message = `${message}.contentSearchServiceError`);
 
