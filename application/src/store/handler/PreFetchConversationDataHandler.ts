@@ -77,7 +77,7 @@ class PreFetchConversationDataHandler {
       promises.push(controller.doPreFetch(groupId));
     }
 
-    promises.length > 0 && (await promises);
+    promises.length && (await Promise.all(promises));
   }
 
   setCurrentConversation(groupId: number) {
