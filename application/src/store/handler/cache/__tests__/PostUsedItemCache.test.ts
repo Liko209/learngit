@@ -22,7 +22,7 @@ describe('PostUsedItemCache.getUsedId()', () => {
       getData: jest.fn(() => storeData),
     };
     storeManager.getEntityMapStore = jest.fn().mockReturnValueOnce(postStore);
-    const ids = postUsedItemCache.getUsedId();
+    const ids = postUsedItemCache.getUsedIds();
     expect(ids).toEqual([2, 3, 4]);
   });
 
@@ -36,7 +36,7 @@ describe('PostUsedItemCache.getUsedId()', () => {
       getData: jest.fn(() => storeData),
     };
     storeManager.getEntityMapStore = jest.fn().mockReturnValueOnce(postStore);
-    const ids = postUsedItemCache.getUsedId();
+    const ids = postUsedItemCache.getUsedIds();
     expect(ids).toEqual([2, 3, 4, 5, 6]);
   });
 });
