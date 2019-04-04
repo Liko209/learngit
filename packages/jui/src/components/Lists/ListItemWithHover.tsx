@@ -18,9 +18,7 @@ type States = {
 
 const StyledListItem = styled(JuiListItem)`
   && {
-    :hover {
-      cursor: auto;
-    }
+    cursor: auto;
   }
 `;
 

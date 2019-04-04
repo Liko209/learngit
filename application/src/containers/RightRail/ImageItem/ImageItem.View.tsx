@@ -52,7 +52,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
     const { id, groupId } = this.props;
     const target = event.currentTarget;
     showImageViewer(groupId, id, {
-      thumbnailSrc: this._thumbnailRef.current!.vm.thumbsUrlWithSize,
+      thumbnailSrc: this._thumbnailRef.current.vm.thumbsUrlWithSize,
       initialWidth: SQUARE_SIZE,
       initialHeight: SQUARE_SIZE,
       originElement: target,
