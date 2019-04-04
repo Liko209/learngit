@@ -104,8 +104,10 @@ class PostDao extends BaseDao<Post> {
     await this.getDb().getTransaction(
       'rw',
       [
-        this.getDb().getCollection<PostDao>(PostDao.COLLECTION_NAME),
-        this.getDb().getCollection<PostViewDao>(PostViewDao.COLLECTION_NAME),
+        this.getDb().getCollection<PostDao, number>(PostDao.COLLECTION_NAME),
+        this.getDb().getCollection<PostViewDao, number>(
+          PostViewDao.COLLECTION_NAME,
+        ),
       ],
       async () => {
         await func();

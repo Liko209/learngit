@@ -132,14 +132,14 @@ describe('PersonDao', () => {
       let names = _.map(all, 'display_name');
       names = names.filter(item => item);
       expect(names).toEqual([
-        '-----tester',
-        'Albert Chen',
-        'Alvin Mao',
         'Bill Wang',
-        'boy lin',
+        'Alvin Mao',
+        'Albert Chen',
         'Devin Lin',
-        'I have no last_name',
+        'boy lin',
         'Lip Wang',
+        '-----tester',
+        'I have no last_name',
       ]);
     });
   });

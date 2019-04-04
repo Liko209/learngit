@@ -11,36 +11,68 @@ interface IRcData {
 
 class DataHelper {
   static formatKaminoRcData(data: any) {
-    const mainCompany = <ICompany>{
-      type: data.accountType,
-      brandId: String(data.brand),
-      number: String(data.mainNumber),
-      domain: data.companyEmailDomain,
-    }
-    // first_user of system user is true
-    const glipUsers = _.partition(data.glipUsers, { first_user: true });
-    const buildUsers = function (user) {
+    const buildUsers = function (user, company: ICompany) {
       return <IUser>{
-        company: mainCompany,
+        company: company,
         rcId: String(user.rc_extension_id),
         email: user.email,
         password: user.password || 'Test!123',
         extension: user.sanitized_rc_extension.extensionNumber,
       }
+    }
+    let companies = {}
+    let phoneNumbers = []
+    const getMainCompanyNumberFromUserData = (user) => {
+      const items = user.rc_phone_numbers
+        .filter(item => item.usageType == "MainCompanyNumber")
+        .map((rc_phone_number) => { return rc_phone_number.phoneNumber })
+      return items[0]
+    }
+    const glipUsers = _.partition(data.glipUsers, (user) => { return user.first_user == true });
+    for (const admin of glipUsers[0]) {
+      if (admin.rc_phone_numbers) {
+        const companyNumber = getMainCompanyNumberFromUserData(admin);
+        const companyEmailDomain = admin.email.split('@')[1];
+        companies[companyNumber] = <ICompany>{
+          type: data.accountType,
+          brandId: String(data.brand),
+          number: companyNumber,
+          domain: companyEmailDomain,
+        }
+        companies[companyNumber]["admin"] = buildUsers(admin, companies[companyNumber])
+        if (phoneNumbers.indexOf(companyNumber) < 0) {
+          phoneNumbers.push(companyNumber)
+        }
+      }
     };
-    const admins = glipUsers[0].map(user => buildUsers(user));
-    // exclude glip service user with 0 as rc_extension_id
-    const users = glipUsers[1].filter((user) => { return user['rc_extension_id'] }).map(user => buildUsers(user));
-    mainCompany.admin = admins[0];
-    mainCompany.users = users;
+
+    for (const phoneNumber in companies) {
+      const users = glipUsers[1]
+        .filter((user) => {
+          if (user.rc_phone_numbers) {
+            const companyNumber = getMainCompanyNumberFromUserData(user)
+            return user['rc_extension_id'] && companyNumber == phoneNumber;
+          }
+          return false
+        })
+        .map(user => buildUsers(user, companies[phoneNumber]));
+      companies[phoneNumber].users = users
+    }
+
+    const mainCompany = companies[data.mainNumber]
     const groups = data.teams.map((team) => {
       return <IGroup>{
         glipId: team._id,
       }
     })
     mainCompany.groups = groups;
-    // TODO: format guest company, another guest company
-    return <IRcData>{ mainCompany, };
+    let guestCompany: ICompany, anotherGuestCompany: ICompany;
+    if (phoneNumbers.length > 1) {
+      const guestPhoneNumbers = _.pull(phoneNumbers, data.mainNumber);
+      guestCompany = companies[guestPhoneNumbers[0]]
+      anotherGuestCompany = companies[guestPhoneNumbers[1]]
+    }
+    return <IRcData>{ mainCompany, guestCompany, anotherGuestCompany };
   }
 
 

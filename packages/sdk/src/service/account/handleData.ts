@@ -12,6 +12,7 @@ import {
 import notificationCenter from '../../service/notificationCenter';
 import { AccountGlobalConfig, AccountUserConfig } from './config';
 import { ACCOUNT_TYPE_ENUM } from '../../authenticator/constants';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../utils';
 
 export interface IHandleData {
   userId?: number;
@@ -26,6 +27,11 @@ const accountHandleData = ({
   profileId,
   clientConfig,
 }: IHandleData): void => {
+  const logId = Date.now();
+  PerformanceTracerHolder.getPerformanceTracer().start(
+    PERFORMANCE_KEYS.HANDLE_INCOMING_ACCOUNT,
+    logId,
+  );
   let userConfig = new AccountUserConfig();
   if (userId) {
     if (!AccountGlobalConfig.getUserDictionary()) {
@@ -50,6 +56,7 @@ const accountHandleData = ({
     notificationCenter.emitKVChange(ACCOUNT_CLIENT_CONFIG, clientConfig);
     userConfig.setClientConfig(clientConfig);
   }
+  PerformanceTracerHolder.getPerformanceTracer().end(logId);
 };
 
 export default accountHandleData;

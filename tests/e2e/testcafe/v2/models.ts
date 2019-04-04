@@ -72,3 +72,10 @@ export interface IConsoleLog {
   warnConsoleLogNumber?: number;
   errorConsoleLogNumber?: number;
 }
+
+export interface ITestMeta {
+  priority: string[];
+  caseIds: string[];
+  maintainers: string[];
+  keywords: string[];
+}

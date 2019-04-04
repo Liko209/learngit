@@ -7,6 +7,13 @@
 jest.mock('../../../../dao');
 
 import { SyncService } from '../SyncService';
+import {
+  notificationCenter,
+  SOCKET,
+  WINDOW,
+  SERVICE,
+} from '../../../../service';
+import dataDispatcher from '../../../../component/DataDispatcher';
 
 describe('SyncService ', () => {
   let syncService: SyncService = null;
@@ -14,6 +21,10 @@ describe('SyncService ', () => {
     getIndexTimestamp: jest.fn(),
     syncData: jest.fn(),
     handleSocketConnectionStateChanged: jest.fn(),
+    handleStoppingSocketEvent: jest.fn(),
+    handleWakeUpFromSleep: jest.fn(),
+    handleWindowFocused: jest.fn(),
+    updateIndexTimestamp: jest.fn(),
   };
   beforeEach(() => {
     syncService = new SyncService();
@@ -43,5 +54,26 @@ describe('SyncService ', () => {
         state: 'connected',
       });
     });
+  });
+  describe('notification events', () => {
+    it('SERVICE.STOPPING_SOCKET', () => {
+      syncService.start();
+      notificationCenter.emitKVChange(SERVICE.STOPPING_SOCKET);
+      expect(syncController.handleStoppingSocketEvent).toHaveBeenCalledTimes(1);
+    });
+    it('SERVICE.WAKE_UP_FROM_SLEEP', () => {
+      notificationCenter.emitKVChange(SERVICE.WAKE_UP_FROM_SLEEP);
+      expect(syncController.handleWakeUpFromSleep).toHaveBeenCalledTimes(1);
+    });
+    it('WINDOW.FOCUS', () => {
+      notificationCenter.emitKVChange(WINDOW.FOCUS);
+      expect(syncController.handleWindowFocused).toHaveBeenCalledTimes(1);
+    });
+    // it('SOCKET.TIMESTAMP', async (done: any) => {
+    //   await dataDispatcher.onDataArrived(
+    //     JSON.stringify({ body: { timestamp: 10, objects: [] } }),
+    //   );
+    //   expect(syncController.updateIndexTimestamp).toHaveBeenCalledTimes(1);
+    // });
   });
 });

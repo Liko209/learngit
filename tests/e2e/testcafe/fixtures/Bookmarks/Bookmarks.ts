@@ -522,3 +522,79 @@ test(formalName('JPT-733 Can\'t show all received posts when open bookmarks page
   }, true);
 
 });
+
+
+
+test(formalName('JPT-1147 Can like/unlike message in bookmark list', ['P2', 'JPT-1147', 'Foden.lin', 'Bookmarks']),
+async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const user = users[7];
+  const otherUser = users[5];
+
+
+  const bookmarksEntry = app.homePage.messageTab.bookmarksEntry;
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  const bookmarkPage = app.homePage.messageTab.bookmarkPage;
+  const dmSection = app.homePage.messageTab.directMessagesSection;
+  user.sdk = await h(t).getSdk(user);
+
+  let group;
+  await h(t).withLog('Given I have an only one group and the group should not be hidden', async () => {
+    group = await h(t).platform(user).createGroup({
+      type: 'Group', members: [user.rcId, users[5].rcId],
+    });
+  });
+
+  let bookmarkPost;
+  await h(t).withLog('And I have a post', async () => {
+    bookmarkPost = await h(t).platform(otherUser).sendTextPost(
+      `Hi I'm Bookmarks, (${user.rcId})`,
+      group.data.id,
+    );
+  }, true);
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${user.company.number}#${user.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, user);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog(`And I jump to the specific conversation`, async () => {
+    await dmSection.expand();
+    await dmSection.conversationEntryById(group.data.id).enter();
+  });
+
+  await h(t).withLog('And I bookmark the post then make sure bookmark icon is correct', async () => {
+    await conversationPage.postItemById(bookmarkPost.data.id).clickBookmarkToggle();
+    await t.expect(conversationPage.postItemById(bookmarkPost.data.id).bookmarkIcon.exists).ok();
+  });
+  await h(t).withLog('Then I enter Bookmark page and find the Bookmark posts', async () => {
+    await bookmarksEntry.enter();
+  }, true);
+
+  const BookPostCard = bookmarkPage.postItemById(bookmarkPost.data.id);
+  await h(t).withLog(`When I click "unlike" button`, async () => {
+    await BookPostCard.clickLikeOnActionBar();
+  });
+
+
+  await h(t).withLog(`Then bookmarkPost action bar 'unlike' icon change to 'like', and bookmarkPost card footer appear "like" icon with number 1`, async () => {
+    await t.hover(BookPostCard.self);
+    await t.expect(BookPostCard.unlikeIconOnActionBar.exists).ok();
+    await t.expect(BookPostCard.unlikeIconOnFooter.exists).ok();
+    await BookPostCard.likeShouldBe(1);
+  });
+
+
+  await h(t).withLog(`When I click solid 'like' icon on action bar`, async () => {
+    await BookPostCard.clickLikeOnActionBar();
+    });
+
+  await h(t).withLog(`Then Action bar solid "like" icon change to hollow "unlike" icon and like number should be 0 on message card `, async () => {
+    await t.hover(BookPostCard.self);
+    await t.expect(BookPostCard.likeIconOnActionBar.exists).ok();
+    await t.expect(BookPostCard.likeButtonOnFooter.exists).notOk();
+    await BookPostCard.likeShouldBe(0);
+  });
+
+});

@@ -19,10 +19,12 @@ import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
+import { IGroupService } from '../../../module/group/service/IGroupService';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 class PostService extends EntityBaseService<Post> {
   static serviceName = 'PostService';
   postController: PostController;
-  constructor() {
+  constructor(private _groupService: IGroupService) {
     super(false, daoManager.getDao(PostDao), {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
@@ -36,7 +38,7 @@ class PostService extends EntityBaseService<Post> {
 
   protected getPostController() {
     if (!this.postController) {
-      this.postController = new PostController();
+      this.postController = new PostController(this._groupService);
     }
     return this.postController;
   }
@@ -131,9 +133,15 @@ class PostService extends EntityBaseService<Post> {
   }
 
   handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
+      logId,
+    );
     this.getPostController()
       .getPostDataController()
       .handleIndexPosts(data, maxPostsExceed);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {

@@ -31,7 +31,7 @@ export class MessageDecorator implements ILogEntityDecorator {
     } INDEX: ${sessionIndex} TIME: ${this._formatTime(
       timestamp,
     )} MESSAGE: ${paramsString}`;
-    data.size = data.message.length;
+    data.size = paramsString.length;
     return data;
   }
 

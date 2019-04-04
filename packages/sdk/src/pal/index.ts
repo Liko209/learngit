@@ -9,4 +9,6 @@ export {
   IImageDownloadedListener,
   IImageDownloader,
 } from './downloader';
+
+export { IErrorReporter } from './errorReporter';
 export { Pal } from './pal';

@@ -3,23 +3,24 @@
  * @Date: 2018-06-04 15:43:48
  * Copyright © RingCentral. All rights reserved.
  */
-import { NETWORK_VIA } from '../../network';
-import { HttpRequest } from '../http';
+import BaseRequest from '../../BaseRequest';
 import NetworkRequestBuilder from '../NetworkRequestBuilder';
 
-class SocketRequest extends HttpRequest {
+class SocketRequest extends BaseRequest {
   parameters: object = {};
   uri: string = '';
-  params: SocketRequestParamsType;
   constructor(builder: NetworkRequestBuilder) {
     super(builder);
-    this.params = {
+    this.parameters = {
       ...builder.params,
       ...builder.data,
       request_id: builder.id,
     };
     this.uri = builder.path;
-    this.via = NETWORK_VIA.SOCKET;
+    delete this.params;
+  }
+  needAuth(): boolean {
+    return !this.authFree;
   }
 }
 type SocketRequestParamsType = { request_id: string };

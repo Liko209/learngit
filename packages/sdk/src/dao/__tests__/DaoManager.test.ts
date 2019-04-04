@@ -3,18 +3,11 @@
  * @Date: 2018-02-28 00:26:24
  */
 /// <reference path="../../__tests__/types.d.ts" />
-import {
-  KVStorage,
-  DBManager,
-  KVStorageManager,
-  DexieDB,
-  IDatabase,
-} from 'foundation';
+import { KVStorage, DBManager, DexieDB, IDatabase } from 'foundation';
 import DaoManager from '../DaoManager';
 import { BaseDao, BaseKVDao } from '../../framework/dao';
 import Dexie from 'dexie';
 import { IdModel } from '../../framework/model';
-import { GlobalConfigService, UserConfigService } from '../../module/config';
 import { DaoGlobalConfig } from '../config';
 import { AccountGlobalConfig } from '../../service/account/config';
 import { SyncUserConfig } from '../../module/sync/config';
@@ -46,13 +39,9 @@ jest.mock('../schema', () => ({
   },
 }));
 jest.mock('../../module/config');
-jest.mock('../../service/config/NewGlobalConfig');
 jest.mock('../../service/auth/config');
 jest.mock('../../service/account/config');
 jest.mock('../../module/sync/config');
-
-GlobalConfigService.getInstance = jest.fn();
-UserConfigService.getInstance = jest.fn();
 
 class TestKVDao extends BaseKVDao {
   static COLLECTION_NAME = 'TestKVDao';
