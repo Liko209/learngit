@@ -64,7 +64,7 @@ class JuiDownshiftTextField extends React.PureComponent<
   }
   handleBlur = () => {
     const { inputValue, selectedItems } = this.props;
-    if (!String(inputValue).length && !selectedItems.length) {
+    if (!inputValue.length && !selectedItems.length) {
       this.setState({
         showPlaceholder: true,
         shrink: false,
@@ -109,7 +109,7 @@ class JuiDownshiftTextField extends React.PureComponent<
     selectedItems = [...selectedItems];
     selectedItems.splice(selectedItems.indexOf(item), 1);
     const shrink = selectedItems.length !== 0 || inputValue.length !== 0;
-    const showPlaceholder = !String(inputValue).length && !selectedItems.length;
+    const showPlaceholder = !inputValue.length && !selectedItems.length;
     this.setState({
       shrink,
       showPlaceholder,
