@@ -56,6 +56,7 @@ class ViewerTitleViewComponent extends Component<
     const { item, total, currentIndex, person, t } = this.props;
     const { name, downloadUrl, createdAt } = item;
     const { userDisplayName, id } = person;
+    console.log('this.props', this.props);
     return (
       <ViewerContext.Consumer>
         {viewerContext => (

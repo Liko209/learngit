@@ -15,6 +15,8 @@ export const showImageViewer = (
   groupId: number,
   imageId: number,
   initialOptions: ImageViewerOptions,
+  mode?: string,
+  postId?: number,
 ) => {
   // const { thumbnailSrc, originElement, origWidth, origHeight} = options;
   const { dismiss } = Dialog.simple(
@@ -22,6 +24,8 @@ export const showImageViewer = (
       itemId={imageId}
       groupId={groupId}
       type={VIEWER_ITEM_TYPE.IMAGE_FILES}
+      mode={mode}
+      postId={postId}
       contentLeftRender={(props: ViewerViewModelProps) => {
         return <ImageViewer {...props} initialOptions={initialOptions} />;
       }}

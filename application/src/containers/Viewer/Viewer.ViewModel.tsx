@@ -116,7 +116,9 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   @action
   init = () => {
-    this._itemListDataSource.loadInitialData(this.props.itemId, PAGE_SIZE);
+    const { mode, itemId } = this.props;
+    if (mode === 'navigation') return;
+    this._itemListDataSource.loadInitialData(itemId, PAGE_SIZE);
     this._fetchIndexInfo();
   }
 

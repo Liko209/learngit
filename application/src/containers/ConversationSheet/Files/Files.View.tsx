@@ -65,21 +65,25 @@ class FilesView extends React.Component<FilesViewProps> {
   }
 
   _handleImageClick = (
-    groupId: number,
-    postId: number,
     id: number,
     thumbnailSrc: string,
     origWidth: number,
     origHeight: number,
-  ) => async (ev: React.MouseEvent, loaded?: boolean) => {
+  ) => async (ev: React.MouseEvent<HTMLElement>, loaded?: boolean) => {
+    const { groupId, postId, mode } = this.props;
     if (postId < 0) return;
-    const target = ev.currentTarget as HTMLElement;
-    showImageViewer(groupId, id, {
-      thumbnailSrc,
-      initialWidth: origWidth,
-      initialHeight: origHeight,
-      originElement: target,
-    });
+    const target = ev.currentTarget;
+    showImageViewer(
+      groupId,
+      id,
+      {
+        thumbnailSrc,
+        initialWidth: origWidth,
+        initialHeight: origHeight,
+        originElement: target,
+      },
+      mode,
+    );
   }
 
   async componentDidMount() {
@@ -92,7 +96,7 @@ class FilesView extends React.Component<FilesViewProps> {
   }
 
   render() {
-    const { files, progresses, urlMap, groupId, postId } = this.props;
+    const { files, progresses, urlMap } = this.props;
     const singleImage = files[FileType.image].length === 1;
     return (
       <>
@@ -116,8 +120,6 @@ class FilesView extends React.Component<FilesViewProps> {
                   key={id}
                   didLoad={() => this._handleImageDidLoad(id, callback)}
                   handleImageClick={this._handleImageClick(
-                    groupId,
-                    postId,
                     id,
                     urlMap.get(id) || '',
                     origWidth,
@@ -140,8 +142,6 @@ class FilesView extends React.Component<FilesViewProps> {
               key={id}
               placeholder={React.cloneElement(placeholder, {
                 onClick: this._handleImageClick(
-                  groupId,
-                  postId,
                   id,
                   urlMap.get(id) || '',
                   size.width,
@@ -149,8 +149,6 @@ class FilesView extends React.Component<FilesViewProps> {
                 ),
               })}
               handleImageClick={this._handleImageClick(
-                groupId,
-                postId,
                 id,
                 urlMap.get(id) || '',
                 size.width,

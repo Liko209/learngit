@@ -18,6 +18,7 @@ type PayLoad = {
   type: any;
   props: {
     postId: number;
+    mode?: string;
     ids: number[];
   };
 };
@@ -41,7 +42,11 @@ class ConversationSheet {
 
     const chain = this._compose(this._middleware)(this._defaultHandler);
 
-    this.dispatch = (sheets: { [type: string]: number[] }, postId: number) => {
+    this.dispatch = (
+      sheets: { [type: string]: number[] },
+      postId: number,
+      mode?: string,
+    ) => {
       if (!Object.keys(sheets).length) {
         return null;
       }
@@ -56,6 +61,7 @@ class ConversationSheet {
             type,
             props: {
               postId,
+              mode,
               ids: sheets[type],
             },
           }),
