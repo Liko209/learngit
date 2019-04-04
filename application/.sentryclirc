@@ -1,0 +1,11 @@
+## [auth]
+## token=b2b1dc0c4e3343f59008893500bde434e5e75b09b2a74ab89a29432f636ccf80
+##
+## [defaults]
+## url=http://ec2-13-124-226-35.ap-northeast-2.compute.amazonaws.com/
+[defaults]
+url=https://sentry.io/
+org=jupiter-ct
+project=javascript
+[auth]
+token=83afdd544cfb4c48bdb2ccc3a5f1e58b1fabcf6cb96d440680331fcfa9496743

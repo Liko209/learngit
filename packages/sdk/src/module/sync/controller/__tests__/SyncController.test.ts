@@ -280,4 +280,24 @@ describe('SyncController ', () => {
       });
     });
   });
+  describe('updateCanUpdateIndexTimeStamp', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
+        .mockReturnValueOnce(1);
+      AccountGlobalConfig.getUserDictionary.mockReturnValueOnce(1);
+    });
+    it('should call updateCanUpdateIndexTimeStamp when stopping FSM', () => {
+      syncController.handleStoppingSocketEvent();
+      expect(
+        syncController.updateCanUpdateIndexTimeStamp,
+      ).toHaveBeenCalledTimes(1);
+    });
+    it('should call updateCanUpdateIndexTimeStamp when wake up from sleep mode', () => {
+      syncController.handleWakeUpFromSleep();
+      expect(
+        syncController.updateCanUpdateIndexTimeStamp,
+      ).toHaveBeenCalledTimes(1);
+    });
+  });
 });

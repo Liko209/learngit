@@ -65,7 +65,7 @@ const GlobalStyle = createGlobalStyle<{}>`
         max-height: ${height(28.5)};
         height: auto;
         border-radius: ${spacing(1)};
-        color: ${grey('700')};
+        color: ${grey('900')};
         border: 1px solid ${grey('300')};
         caret-color: ${primary('700')};
         &::before {

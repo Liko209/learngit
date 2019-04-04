@@ -27,6 +27,7 @@ const paths = require('./paths');
 const getClientEnvironment = require('./env');
 const excludeNodeModulesExcept = require('./excludeNodeModulesExcept');
 const appPackage = require(paths.appPackageJson);
+const SentryWebpackPlugin = require('@sentry/webpack-plugin');
 const argv = process.argv;
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -36,6 +37,9 @@ const publicPath = paths.servedPath;
 const shouldUseRelativeAssetPaths = publicPath === './';
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
+const shouldUploadMapToSentry = ['production', 'public'].includes(
+  process.env.JUPITER_ENV,
+);
 // `publicUrl` is just like `publicPath`, but we will provide it to our app
 // as %PUBLIC_URL% in `index.html` and `process.env.PUBLIC_URL` in JavaScript.
 // Omit trailing slash as %PUBLIC_URL%/xyz looks better than %PUBLIC_URL%xyz.
@@ -428,6 +432,14 @@ module.exports = {
       },
       runtimeCaching,
     }),
+    shouldUploadMapToSentry
+      ? new SentryWebpackPlugin({
+          release: 'jupiter@' + appPackage.version,
+          include: './build/static/js',
+          urlPrefix: '~/static/js',
+          configFile: './sentryclirc',
+        })
+      : () => {},
     ...[
       argv.indexOf('--analyze') !== -1 ? new BundleAnalyzerPlugin() : () => {},
     ],

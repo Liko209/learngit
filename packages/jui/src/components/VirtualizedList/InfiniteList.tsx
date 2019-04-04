@@ -9,6 +9,7 @@ import React, {
   memo,
   forwardRef,
   useRef,
+  useCallback,
 } from 'react';
 import { noop } from '../../foundation/utils';
 import { JuiDataLoader } from './DataLoader';
@@ -29,6 +30,7 @@ type JuiInfiniteListProps = {
   loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
   initialScrollToIndex?: number;
   onScroll?: (event: React.UIEvent<HTMLElement>) => void;
+  onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
   onVisibleRangeChange?: (range: IndexRange) => void;
   onRenderedRangeChange?: (range: IndexRange) => void;
   noRowsRenderer?: JSX.Element;
@@ -61,6 +63,7 @@ const JuiInfiniteList: RefForwardingComponent<
     loadingRenderer,
     loadingMoreRenderer,
     onScroll = noop,
+    onWheel = noop,
     onVisibleRangeChange = noop,
     onRenderedRangeChange = noop,
     stickToBottom,
@@ -77,11 +80,14 @@ const JuiInfiniteList: RefForwardingComponent<
   }
   const [isStickToBottomEnabled, enableStickToBottom] = useState(true);
 
-  const _loadMore = async (direction: 'up' | 'down', count: number) => {
-    enableStickToBottom(false);
-    await loadMore(direction, count);
-    enableStickToBottom(true);
-  };
+  const _loadMore = useCallback(
+    async (direction: 'up' | 'down', count: number) => {
+      enableStickToBottom(false);
+      await loadMore(direction, count);
+      enableStickToBottom(true);
+    },
+    [loadMore, enableStickToBottom],
+  );
 
   if (!height) {
     return loadingRenderer;
@@ -101,12 +107,28 @@ const JuiInfiniteList: RefForwardingComponent<
         loadingInitialFailed,
         onScroll: handleScroll,
       }) => {
+        const _handleScroll = (delta?: { x: number; y: number; z: number }) => {
+          if (ref.current) {
+            const visibleRange = ref.current.getVisibleRange();
+            handleScroll(
+              visibleRange,
+              {
+                minIndex: 0,
+                maxIndex: children.length - 1,
+              },
+              delta,
+            );
+          }
+        };
+
         if (loadingInitial || !height) {
           return loadingRenderer;
         }
+
         if (loadingInitialFailed) {
           return fallBackRenderer || <></>;
         }
+
         if (children.length === 0) {
           const isEmpty = !hasMore('up') && !hasMore('down');
           if (isEmpty) {
@@ -125,14 +147,13 @@ const JuiInfiniteList: RefForwardingComponent<
             before={loadingUp ? loadingMoreRenderer : null}
             after={loadingDown ? loadingMoreRenderer : null}
             onScroll={(event: React.UIEvent<HTMLElement>) => {
-              if (ref.current) {
-                const visibleRange = ref.current.getVisibleRange();
-                handleScroll(visibleRange, {
-                  minIndex: 0,
-                  maxIndex: children.length - 1,
-                });
-              }
+              _handleScroll();
               onScroll(event);
+            }}
+            onWheel={(event: React.WheelEvent<HTMLElement>) => {
+              const { deltaX, deltaY, deltaZ } = event;
+              _handleScroll({ x: deltaX, y: deltaY, z: deltaZ });
+              onWheel(event);
             }}
             contentStyle={contentStyle}
             onVisibleRangeChange={onVisibleRangeChange}
