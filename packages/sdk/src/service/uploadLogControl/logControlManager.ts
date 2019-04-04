@@ -2,27 +2,55 @@
  * @Author: Lip Wang (lip.wangn@ringcentral.com)
  * @Date: 2018-06-08 11:05:46
  */
-import notificationCenter from '../notificationCenter';
-import { SERVICE, WINDOW, ENTITY } from '../../service/eventKey';
-import { logManager, LOG_LEVEL, mainLogger, IAccessor } from 'foundation';
-import { LogUploader } from './LogUploader';
+import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation';
 import { PermissionService, UserPermissionType } from '../../module/permission';
+import { ENTITY, SERVICE, WINDOW } from '../../service/eventKey';
+import notificationCenter from '../notificationCenter';
+import {
+  LogMemoryPersistent,
+  IAccessor,
+  configManager as logConsumerConfigManager,
+  LogUploadConsumer,
+  MemoryLogConsumer,
+} from './consumer';
+import { LogUploader } from './LogUploader';
+import _ from 'lodash';
 
-class LogControlManager implements IAccessor {
+export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
-  private _enabledLog: boolean;
-  private _isDebugMode: boolean; // if in debug mode, should not upload log
   private _onUploadAccessorChange: (accessible: boolean) => void;
+  private _tagBlackList: string[] = [];
+  private _tagWhiteList: string[] = [];
+  uploadLogConsumer: LogUploadConsumer;
+  memoryLogConsumer: MemoryLogConsumer;
   private constructor() {
-    this._enabledLog = true;
-    this._isDebugMode = true;
     this._isOnline = window.navigator.onLine;
-    logManager.config({
-      logUploader: new LogUploader(),
-      uploadAccessor: this,
+    this.uploadLogConsumer = new LogUploadConsumer(
+      new LogUploader(),
+      new LogMemoryPersistent(
+        logConsumerConfigManager.getConfig().persistentLimit,
+      ),
+      this,
+    );
+    this.memoryLogConsumer = new MemoryLogConsumer();
+    this.memoryLogConsumer.setSizeThreshold(
+      logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
+    );
+    this.memoryLogConsumer.setFilter((log: LogEntity) => {
+      return this._whiteListFilter(log) || !this._blackListFilter(log);
     });
+    logManager.addConsumer(this.memoryLogConsumer);
+    logManager.addConsumer(this.uploadLogConsumer);
     this.subscribeNotifications();
+  }
+
+  private _whiteListFilter = (log: LogEntity) => {
+    return _.intersection(this._tagWhiteList, log.tags).length > 0;
+  }
+
+  private _blackListFilter = (log: LogEntity) => {
+    return _.intersection(this._tagBlackList, log.tags).length > 0;
   }
 
   public static instance(): LogControlManager {
@@ -49,15 +77,21 @@ class LogControlManager implements IAccessor {
     notificationCenter.on(WINDOW.BLUR, () => {
       this.flush();
     });
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('error', this.windowError.bind(this));
+      window.addEventListener('beforeunload', (event: any) => {
+        this.flush();
+      });
+    }
   }
 
   public setDebugMode(isDebug: boolean) {
-    this._isDebugMode = isDebug;
-    this._updateLogSystemLevel();
+    isDebug && logManager.setAllLoggerLevel(LOG_LEVEL.ALL);
   }
 
   public async flush() {
-    logManager.flush();
+    this.uploadLogConsumer.flush();
   }
 
   public setNetworkState(isOnline: boolean) {
@@ -68,7 +102,7 @@ class LogControlManager implements IAccessor {
   }
 
   isAccessible(): boolean {
-    return this._isOnline;
+    return this._isOnline && window.navigator.onLine;
   }
 
   subscribe(onChange: (accessible: boolean) => void): void {
@@ -88,25 +122,39 @@ class LogControlManager implements IAccessor {
         browser: {
           enabled: logEnabled,
         },
-        consumer: {
-          ...(logManager.getConfig().consumer || {}),
-          enabled: logUploadEnabled,
-        },
+      });
+      logConsumerConfigManager.mergeConfig({
+        uploadEnabled: logUploadEnabled,
       });
     } catch (error) {
       mainLogger.warn('getUserPermission fail:', error);
     }
   }
 
-  private _updateLogSystemLevel() {
-    // set log level to log system
-    // TODO let it all level now, should reset to above code after implement service framework
-    mainLogger.info(
-      `_isDebugMode : ${this._isDebugMode} _enabledLog: ${this._enabledLog}`,
-    );
-    const level: LOG_LEVEL = LOG_LEVEL.ALL;
-    logManager.setAllLoggerLevel(level);
+  getRecentLogs(): LogEntity[] {
+    return this.memoryLogConsumer.getRecentLogs();
+  }
+
+  windowError(msg: string, url: string, line: number) {
+    const message = `Error in ('${url ||
+      window.location}) on line ${line} with message (${msg})`;
+    mainLogger.fatal(message);
+    this.flush();
+  }
+
+  addTag2BlackList(...tags: string[]) {
+    this._tagBlackList = _.uniq([...this._tagBlackList, ...tags]);
+  }
+
+  removeFromBlackList(...tags: string[]) {
+    this._tagBlackList = _.difference(tags, this._tagBlackList);
+  }
+
+  addTag2WhiteList(...tags: string[]) {
+    this._tagWhiteList = _.uniq([...this._tagWhiteList, ...tags]);
+  }
+
+  removeFromWhiteList(...tags: string[]) {
+    this._tagWhiteList = _.difference(tags, this._tagWhiteList);
   }
 }
-
-export default LogControlManager;

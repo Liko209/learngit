@@ -23,4 +23,5 @@ export enum PERFORMANCE_KEYS {
   CONVERSATION_FETCH_FROM_DB = 'conversation_fetch_from_db',
   CONVERSATION_FETCH_FROM_SERVER = 'conversation_fetch_from_server',
   CONVERSATION_HANDLE_DATA_FROM_SERVER = 'conversation_handle_data_from_server',
+  LOG_FETCH_FROM_DB = 'log_fetch_from_db',
 }

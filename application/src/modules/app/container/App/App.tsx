@@ -12,7 +12,7 @@ import { JuiContentLoader } from 'jui/pattern/ContentLoader';
 import ThemeProvider from '@/containers/ThemeProvider';
 import { analytics } from '@/Analytics';
 import { AboutView } from '@/containers/About';
-import { generalErrorHandler } from '@/utils/error';
+import { generalErrorHandler, errorReporter } from '@/utils/error';
 import { Router } from '@/modules/router';
 import { TopBanner } from '../TopBanner';
 import { AppStore } from '../../store';
@@ -25,6 +25,7 @@ class App extends React.Component {
 
   componentDidCatch(error: Error) {
     generalErrorHandler(error);
+    errorReporter.report(error);
   }
 
   componentDidMount() {

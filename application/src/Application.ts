@@ -10,7 +10,7 @@ import * as router from '@/modules/router/module.config';
 import * as home from '@/modules/home/module.config';
 import * as app from '@/modules/app/module.config';
 import * as FeaturesFlag from '@/modules/featuresFlags/module.config';
-
+import * as Feedback from '@/modules/feedback/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
 
@@ -28,6 +28,7 @@ class Application {
     jupiter.registerModule(router.config);
     jupiter.registerModule(home.config);
     jupiter.registerModule(app.config);
+    jupiter.registerModule(Feedback.config);
 
     if (window.jupiterElectron) {
       jupiter.registerModuleAsync(() =>

@@ -1,13 +1,14 @@
-import {
-  ILogUploader,
-  LogEntity,
-  mainLogger,
-  HTTP_STATUS_CODE,
-} from 'foundation';
-import AccountService from '../account';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-03-24 11:06:33
+ * Copyright © RingCentral. All rights reserved.
+ */
 import axios, { AxiosError } from 'axios';
-import { AccountUserConfig } from '../../service/account/config';
+import { HTTP_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
 import { Api } from '../../api';
+import { AccountUserConfig } from '../../service/account/config';
+import AccountService from '../account';
+import { ILogUploader } from './consumer';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {
@@ -32,8 +33,10 @@ export class LogUploader implements ILogUploader {
   errorHandler(error: AxiosError) {
     // detail error types description see sumologic doc
     // https://help.sumologic.com/03Send-Data/Sources/02Sources-for-Hosted-Collectors/HTTP-Source/Troubleshooting-HTTP-Sources
+    mainLogger.debug('Log upload fail', error);
     const { response } = error;
     if (!response) {
+      mainLogger.debug('Log errorHandler: abortAll');
       return 'abortAll';
     }
     if (
@@ -44,9 +47,11 @@ export class LogUploader implements ILogUploader {
         HTTP_STATUS_CODE.GATEWAY_TIME_OUT,
       ].includes(response.status)
     ) {
+      mainLogger.debug('Log errorHandler: retry');
       return 'retry';
     }
-    return 'ignore';
+    mainLogger.debug('Log errorHandler: ignore=>retry');
+    return 'retry';
   }
 
   private async _getUserInfo() {

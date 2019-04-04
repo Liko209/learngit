@@ -15,6 +15,7 @@ import {
 import { configManager } from './config';
 import { LogEntityProcessor } from './LogEntityProcessor';
 import { ConsoleLogPrettier } from './ConsoleLogPrettier';
+import _ from 'lodash';
 
 const buildLogEntity = (
   level: LOG_LEVEL,
@@ -30,15 +31,28 @@ const buildLogEntity = (
 
 export class Logger implements ILogger, ILoggerCore {
   private _logEntityProcessor: ILogEntityProcessor;
-  private _logConsumer: ILogConsumer;
+  private _logConsumers: ILogConsumer[] = [];
   private _consoleLoggerCore: ILoggerCore;
+  private _memoizeTags: ((_tags: string[]) => ILogger) & _.MemoizedFunction;
   constructor() {
     this._logEntityProcessor = new LogEntityProcessor();
     this._consoleLoggerCore = new ConsoleLogCore(new ConsoleLogPrettier());
+    this._memoizeTags = _.memoize(
+      (_tags: string[]): ILogger => {
+        return new LoggerTagDecorator(this, _tags);
+      },
+      (_tags: string[]) => {
+        return _tags.join(',');
+      },
+    );
   }
 
-  setConsumer(consumer: ILogConsumer) {
-    this._logConsumer = consumer;
+  addConsumer(consumer: ILogConsumer) {
+    this._logConsumers = [...this._logConsumers, consumer];
+  }
+
+  removeConsumer(consumer: ILogConsumer) {
+    this._logConsumers = this._logConsumers.filter(it => it === consumer);
   }
 
   log(...params: any) {
@@ -69,16 +83,20 @@ export class Logger implements ILogger, ILoggerCore {
     return this.doLog(buildLogEntity(LOG_LEVEL.FATAL, [], params));
   }
 
-  tags(...tags: string[]): ILogger {
-    return new LoggerTagDecorator(this, tags);
+  tags = (...tags: string[]): ILogger => {
+    return this._memoizeTags(tags);
   }
 
   doLog(logEntity: LogEntity = new LogEntity()) {
     if (!this._isLogEnabled(logEntity)) return;
     this._isBrowserEnabled(logEntity) &&
       this._consoleLoggerCore.doLog(logEntity);
-    this._isConsumerEnabled() &&
-      this._logConsumer.onLog(this._logEntityProcessor.process(logEntity));
+    if (this._isConsumerEnabled()) {
+      const log = this._logEntityProcessor.process(logEntity);
+      this._logConsumers.forEach((logConsumer: ILogConsumer) => {
+        logConsumer.onLog(log);
+      });
+    }
   }
 
   private _isLogEnabled(logEntity: LogEntity) {
@@ -92,7 +110,7 @@ export class Logger implements ILogger, ILoggerCore {
     const {
       consumer: { enabled },
     } = configManager.getConfig();
-    return enabled;
+    return enabled && this._logConsumers.length > 0;
   }
 
   private _isBrowserEnabled(logEntity: LogEntity) {
