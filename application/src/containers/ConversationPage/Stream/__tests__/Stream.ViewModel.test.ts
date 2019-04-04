@@ -92,6 +92,7 @@ describe('StreamViewModel', () => {
       expect(storeManager.dispatchUpdatedDataModels).toBeCalledWith(
         ENTITY_NAME.ITEM,
         [{ id: 1 }],
+        false,
       );
     });
   });

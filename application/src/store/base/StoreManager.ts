@@ -110,11 +110,15 @@ class StoreManager {
     return this._stores[STORE_TYPE.ENTITY];
   }
 
-  dispatchUpdatedDataModels(entityStoreName: ENTITY_NAME, entities: any[]) {
+  dispatchUpdatedDataModels(
+    entityStoreName: ENTITY_NAME,
+    entities: any[],
+    refreshCache = true,
+  ) {
     const store = this.getEntityMapStore(
       entityStoreName,
     ) as MultiEntityMapStore<any, any>;
-    store.batchSet(entities);
+    store.batchSet(entities, refreshCache);
   }
 
   dispatchReplacedDataModels(

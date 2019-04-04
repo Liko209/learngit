@@ -15,9 +15,11 @@ import { ENTITY_NAME } from '@/store';
 import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
-import postCacheController from './cache/PostCacheController';
 import { PostService } from 'sdk/module/post';
 import { ISortableModel } from '@/store/base';
+import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
+import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
+import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
 
 const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   id: dataModel.id,
@@ -54,12 +56,15 @@ export class StreamController {
     private _historyHandler: HistoryHandler,
     private _jumpToPostId?: number,
   ) {
-    const listHandler = postCacheController.get(
-      this._groupId,
-      this._jumpToPostId,
-    );
-    if (!this._jumpToPostId) {
-      postCacheController.setCurrentConversation(this._groupId);
+    let listHandler;
+    if (this._jumpToPostId) {
+      listHandler = ConversationPostFocBuilder.buildConversationPostFoc(
+        this._groupId,
+        this._jumpToPostId,
+      );
+    } else {
+      listHandler = conversationPostCacheController.get(this._groupId);
+      preFetchConversationDataHandler.setCurrentConversation(this._groupId);
     }
 
     this._orderListHandler = listHandler;
@@ -118,7 +123,7 @@ export class StreamController {
       this._streamListHandler.dispose();
     }
     if (!this._jumpToPostId) {
-      postCacheController.releaseCurrentConversation(this._groupId);
+      preFetchConversationDataHandler.releaseCurrentConversation(this._groupId);
     }
   }
 
