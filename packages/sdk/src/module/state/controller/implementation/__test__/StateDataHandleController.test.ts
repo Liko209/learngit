@@ -113,6 +113,7 @@ describe('StateDataHandleController', () => {
       const task: DataHandleTask = { type: TASK_DATA_TYPE.STATE, data: [] };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
+      // prettier-ignore
       stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
         groupStates: [],
       });
@@ -142,6 +143,7 @@ describe('StateDataHandleController', () => {
       };
       stateDataHandleController['_transformStateData'] = jest.fn();
       stateDataHandleController['_transformGroupData'] = jest.fn();
+      // prettier-ignore
       stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
         groupStates: [],
       });
@@ -175,7 +177,9 @@ describe('StateDataHandleController', () => {
       };
       stateDataHandleController['_taskArray'] = [task, task2];
       stateDataHandleController['_transformStateData'] = jest.fn();
+      // prettier-ignore
       stateDataHandleController['_transformGroupData'] = jest.fn().mockImplementation();
+      // prettier-ignore
       stateDataHandleController['_generateUpdatedState'] = jest.fn().mockReturnValue({
         groupStates: [],
       });
@@ -189,13 +193,11 @@ describe('StateDataHandleController', () => {
       expect(stateDataHandleController['_transformGroupData']).toBeCalledWith(
         task.data,
       );
-      expect(
-        stateDataHandleController['_generateUpdatedState'],
-      ).toBeCalledTimes(1);
+      expect(stateDataHandleController['_generateUpdatedState']).toBeCalled();
       expect(
         stateDataHandleController['_updateEntitiesAndDoNotification'],
-      ).toBeCalledTimes(1);
-      expect(mockTotalUnreadController.handleGroupState).toBeCalledTimes(1);
+      ).toBeCalled();
+      expect(mockTotalUnreadController.handleGroupState).toBeCalled();
     });
   });
 

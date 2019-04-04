@@ -273,8 +273,8 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_taskArray'] = [task, task2];
       totalUnreadController['_unreadInitialized'] = true;
       totalUnreadController['_initializeTotalUnread'] = jest.fn();
-      totalUnreadController[ '_updateTotalUnreadByStateChanges'
-] = jest.fn().mockImplementation(() => {
+      // prettier-ignore
+      totalUnreadController['_updateTotalUnreadByStateChanges'] = jest.fn().mockImplementation(() => {
         throw Error('error');
       });
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();
