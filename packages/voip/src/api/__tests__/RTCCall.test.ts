@@ -20,10 +20,6 @@ import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 import { rtcLogger } from '../../utils/RTCLoggerProxy';
 
 describe('RTC call', () => {
-  afterEach(() => {
-    RTCMediaDeviceManager.instance().removeAllListeners();
-  });
-
   class VirturlAccountAndCallObserver implements IRTCCallDelegate, IRTCAccount {
     createOutgoingCallSession(toNum: string): void {
       this.toNum = toNum;
