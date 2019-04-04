@@ -35,8 +35,6 @@ import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
 
-const LOAD_UNREAD_POSTS_REDUNDANCY = 500;
-
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService: StateService = StateService.getInstance();
   private _postService: PostService = PostService.getInstance();
@@ -239,9 +237,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       return [];
     }
 
-    return await this._streamController.fetchAllUnreadData(
-      this._historyHandler.unreadCount + LOAD_UNREAD_POSTS_REDUNDANCY,
-    );
+    return await this._streamController.fetchAllUnreadData();
   }
 
   private async _loadSiblingPosts(anchorPostId: number) {

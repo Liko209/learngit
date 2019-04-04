@@ -21,6 +21,8 @@ import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPo
 import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
 
+const LOAD_UNREAD_POSTS_REDUNDANCY = 500;
+
 const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   id: dataModel.id,
   sortValue: dataModel.id,
@@ -36,6 +38,11 @@ export class StreamController {
   @computed
   get historyReadThrough() {
     return this._historyHandler.readThrough;
+  }
+
+  @computed
+  get historyUnreadCount() {
+    return this._historyHandler.unreadCount;
   }
 
   @computed
@@ -171,8 +178,10 @@ export class StreamController {
   }
 
   @action
-  async fetchAllUnreadData(pageSize: number) {
-    const readThrough = this._readThrough;
+  async fetchAllUnreadData() {
+    const pageSize = this.historyUnreadCount + LOAD_UNREAD_POSTS_REDUNDANCY;
+    const readThrough = this.historyReadThrough || 0;
+
     let sortableModel: ISortableModel<Post> | undefined = undefined;
     if (readThrough !== 0) {
       const postService = PostService.getInstance() as PostService;
