@@ -3,12 +3,6 @@
  * @Date: 2019-01-30 14:38:45
  * Copyright © RingCentral. All rights reserved.
  */
-
-// import { computed } from 'mobx';
-// import { getEntity } from '@/store/utils';
-// import { ENTITY_NAME } from '@/store';
-// import { Group } from 'sdk/module/group/entity';
-// import GroupModel from '@/store/models/Group';
 import { SearchService } from 'sdk/module/search';
 import { container } from 'framework';
 import { RecentSearchTypes } from 'sdk/module/search/entity';

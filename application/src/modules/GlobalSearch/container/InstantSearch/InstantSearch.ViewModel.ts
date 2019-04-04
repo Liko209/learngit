@@ -343,18 +343,6 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
           this.goToConversation(currentItemId as number);
         }
     }
-
-    // if (currentItemType !== RecentSearchTypes.PEOPLE) {
-    //   const { canJoin, group } = this.canJoinTeam(currentItemId);
-    //   if (canJoin) {
-    //     e.preventDefault();
-    //     this.handleJoinTeam(group);
-    //   } else {
-    //     this.goToConversation(currentItemId);
-    //   }
-    // } else {
-    //   OpenProfile.show(currentItemId, null, this.onClose);
-    // }
   }
 
   // if search item removed need update selectIndex
