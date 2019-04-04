@@ -137,35 +137,50 @@ describe('HistoryHandler', () => {
   });
 
   describe('getFirstUnreadPostId()', () => {
-    it('should return first unread post id after readThrough if readThrough > 0', () => {
+    it('should return first unread post by readThrough when readThrough > 0', () => {
       const readThrough = 2;
       const latestPostId = 5;
       const postIds = [1, 2, 3, 4, 5];
+      const hasMore = false;
 
       const handler = setup({ latestPostId, groupState: { readThrough } });
-      const postId = handler.getFirstUnreadPostId(postIds);
+      const postId = handler.getFirstUnreadPostId(postIds, hasMore);
 
       expect(postId).toBe(3);
     });
 
-    it('should return first unread post id in postIds if readThrough === 0', () => {
+    it('should return first post id in postIds when readThrough === 0', () => {
       const readThrough = 0;
       const latestPostId = 5;
       const postIds = [1, 2, 3, 4, 5];
+      const hasMore = false;
 
       const handler = setup({ latestPostId, groupState: { readThrough } });
-      const postId = handler.getFirstUnreadPostId(postIds);
+      const postId = handler.getFirstUnreadPostId(postIds, hasMore);
 
       expect(postId).toBe(1);
     });
 
-    it('should return undefined if readThrough === 0 and postIds is empty', () => {
+    it('should return undefined when can not find first unread in postIds and hasMore', () => {
+      const readThrough = 1;
+      const latestPostId = 9;
+      const postIds = [6, 7, 8, 9];
+      const hasMore = true;
+
+      const handler = setup({ latestPostId, groupState: { readThrough } });
+      const postId = handler.getFirstUnreadPostId(postIds, hasMore);
+
+      expect(postId).toBe(undefined);
+    });
+
+    it('should return undefined when readThrough === 0 and postIds is empty', () => {
       const readThrough = 0;
       const latestPostId = 5;
       const postIds: number[] = [];
+      const hasMore = false;
 
       const handler = setup({ latestPostId, groupState: { readThrough } });
-      const postId = handler.getFirstUnreadPostId(postIds);
+      const postId = handler.getFirstUnreadPostId(postIds, hasMore);
 
       expect(postId).toBe(undefined);
     });

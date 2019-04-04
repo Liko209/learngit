@@ -17,7 +17,13 @@
       "request": "launch",
       "name": "Jest Current File",
       "program": "${workspaceFolder}/scripts/test.js",
-      "args": ["--no-cache", "${relativeFile}"],
+      "args": [
+        "--no-cache",
+        "--watch",
+        "--coverage",
+        "--collectCoverageFrom=${relativeFile}",
+        "${relativeFile}"
+      ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
