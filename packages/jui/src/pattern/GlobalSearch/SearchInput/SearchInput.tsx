@@ -9,7 +9,7 @@ import {
   JuiOutlineTextFieldProps,
 } from '../../../components/Forms/TextField/OutlineTextField';
 import styled from '../../../foundation/styled-components';
-import { spacing, grey } from '../../../foundation/utils';
+import { spacing, grey, typography } from '../../../foundation/utils';
 
 const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
   border-top: 0;
@@ -21,6 +21,7 @@ const ClearButton = styled.span`
   padding: ${spacing(0, 3)};
   color: ${grey('600')};
   border-right: 1px solid ${grey('400')};
+  ${typography('caption1')};
 `;
 
 type JuiGlobalSearchInputProps = {
