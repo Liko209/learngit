@@ -7,7 +7,7 @@ import { computed, action, observable } from 'mobx';
 import { container } from 'framework';
 import { ContentSearchParams } from 'sdk/api/glip/search';
 import { PostService } from 'sdk/module/post';
-import { SearchedResultData } from 'sdk/src/module/post/controller/implementation/types';
+import { SearchedResultData } from 'sdk/module/post/controller/implementation/types';
 import { Post } from 'sdk/module/post/entity';
 import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
 import { errorHelper } from 'sdk/error';
@@ -27,13 +27,12 @@ import {
   ContentSearchOptions,
   ContentSearchResultProps,
   ContentSearchResultViewProps,
+  CONTENT_SEARCH_FETCH_COUNT,
 } from './types';
 
 class ContentSearchResultViewModel
   extends StoreViewModel<ContentSearchResultProps>
   implements ContentSearchResultViewProps {
-  private _currentGroupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-
   private _postService: PostService = PostService.getInstance();
 
   private _globalSearchStore = container.get(GlobalSearchStore);
@@ -47,7 +46,7 @@ class ContentSearchResultViewModel
 
   @observable
   searchOptions: ContentSearchOptions = {
-    fetch_count: 20,
+    fetch_count: CONTENT_SEARCH_FETCH_COUNT,
   };
 
   constructor(props: ContentSearchResultProps) {
@@ -108,11 +107,10 @@ class ContentSearchResultViewModel
   @action
   private _onSearchInit() {
     const q = this._searchKey;
+    const currentGroupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
 
     const group_id =
-      this._searchScope === SEARCH_SCOPE.CONVERSATION
-        ? this._currentGroupId
-        : null;
+      this._searchScope === SEARCH_SCOPE.CONVERSATION ? currentGroupId : null;
 
     this.setSearchOptions({ q, group_id });
   }
@@ -177,11 +175,11 @@ class ContentSearchResultViewModel
     const isNetworkError = errorHelper.isNetworkConnectionError(error);
     const isResponseError = isServiceError || isNetworkError;
 
-    let message = 'common.globalSearch';
+    let message: string = 'common.globalSearch';
 
-    if (isServiceError) message = `${message}.contentSearchServiceError`;
+    isServiceError && (message = `${message}.contentSearchServiceError`);
 
-    if (isNetworkError) message = `${message}.contentSearchNetworkError`;
+    isNetworkError && (message = `${message}.contentSearchNetworkError`);
 
     isResponseError
       ? Notification.flashToast({

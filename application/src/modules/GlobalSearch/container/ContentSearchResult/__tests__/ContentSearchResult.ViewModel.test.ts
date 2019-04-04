@@ -13,6 +13,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
 import { ContentSearchResultViewModel } from '../ContentSearchResult.ViewModel';
+import { CONTENT_SEARCH_FETCH_COUNT } from '../types';
 import { SEARCH_SCOPE } from '../../../types';
 
 jest.mock('@/store/utils');
@@ -108,7 +109,10 @@ describe('ContentSearchResult [JPT-1562]', () => {
   it('Should search options be filtered when has invalid property.', () => {
     const vm = new ContentSearchResultViewModel({});
 
-    const fixedOptions = { q: 'searchKey', fetch_count: 20 };
+    const fixedOptions = {
+      q: 'searchKey',
+      fetch_count: CONTENT_SEARCH_FETCH_COUNT,
+    };
     const inputOptions = { type: null, creator_id: 1 };
     const outputOptions = { ...fixedOptions, creator_id: 1 };
 

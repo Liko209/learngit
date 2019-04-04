@@ -31,9 +31,12 @@ type ContentSearchResultViewProps = {
   onSearchEnd(): Promise<void>;
 };
 
+const CONTENT_SEARCH_FETCH_COUNT: number = 20;
+
 export {
   ContentSearchResultProps,
   ContentSearchResultViewProps,
   ContentSearchState,
   ContentSearchOptions,
+  CONTENT_SEARCH_FETCH_COUNT,
 };
