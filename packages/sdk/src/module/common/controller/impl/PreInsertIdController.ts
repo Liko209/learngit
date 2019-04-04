@@ -6,7 +6,7 @@
 
 import { IPreInsertIdController } from '../interface/IPreInsertIdController';
 import { mainLogger } from 'foundation';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountGlobalConfig } from '../../../../module/account/config';
 import { UserConfigService } from '../../../../module/config';
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';

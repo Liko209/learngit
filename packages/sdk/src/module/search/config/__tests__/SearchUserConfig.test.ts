@@ -5,12 +5,12 @@
  */
 
 import { SearchUserConfig } from '../SearchUserConfig';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountGlobalConfig } from '../../../../module/account/config';
 import { UserConfigService } from '../../../config/service/UserConfigService';
 import { SEARCH_CONFIG_KEYS } from '../configKeys';
 
 jest.mock('../../../config/service/UserConfigService');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 
 function clearMocks() {
   jest.clearAllMocks();

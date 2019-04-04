@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AvatarActionsViewModel } from '../AvatarActions.ViewModel';
-import { AuthService } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 
@@ -25,14 +25,14 @@ describe('AvatarActionsVM', () => {
   });
 
   describe('handleSignOut()', () => {
-    it('should call authService logout() [JPT-70]', async () => {
-      const authService = {
+    it('should call AccountService logout() [JPT-70]', async () => {
+      const accountService = {
         logout: jest.fn(),
       };
-      jest.spyOn(AuthService, 'getInstance').mockReturnValue(authService);
+      jest.spyOn(AccountService, 'getInstance').mockReturnValue(accountService);
 
       await ViewModel.handleSignOut();
-      expect(authService.logout).toHaveBeenCalled();
+      expect(accountService.logout).toHaveBeenCalled();
     });
   });
 });

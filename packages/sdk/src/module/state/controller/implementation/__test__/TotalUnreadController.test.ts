@@ -27,11 +27,11 @@ import {
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
 import { GlobalConfigService } from '../../../../../module/config';
-import { AccountUserConfig } from '../../../../../service/account/config';
+import { AccountUserConfig } from '../../../../../module/account/config';
 
 jest.mock('../../../../../module/config');
-jest.mock('../../../../../service/account/config');
 jest.mock('../../../../group');
+jest.mock('../../../../../module/account/config');
 GlobalConfigService.getInstance = jest.fn();
 
 type DataHandleTask =
@@ -273,7 +273,8 @@ describe('TotalUnreadController', () => {
       totalUnreadController['_taskArray'] = [task, task2];
       totalUnreadController['_unreadInitialized'] = true;
       totalUnreadController['_initializeTotalUnread'] = jest.fn();
-      totalUnreadController['_updateTotalUnreadByStateChanges'] = jest.fn().mockImplementation(() => {
+      totalUnreadController[ '_updateTotalUnreadByStateChanges'
+] = jest.fn().mockImplementation(() => {
         throw Error('error');
       });
       totalUnreadController['_updateTotalUnreadByGroupChanges'] = jest.fn();

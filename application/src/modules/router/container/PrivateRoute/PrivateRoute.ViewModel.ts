@@ -4,13 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { computed } from 'mobx';
-import { AuthService } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PrivateRouteProps, PrivateRouteViewProps } from './types';
 
 class PrivateRouteViewModel extends StoreViewModel<PrivateRouteProps>
   implements PrivateRouteViewProps {
-  private _authService: AuthService = AuthService.getInstance();
+  private _accountService = AccountService.getInstance();
   component: PrivateRouteProps['component'];
 
   constructor(props: PrivateRouteProps) {
@@ -21,7 +21,7 @@ class PrivateRouteViewModel extends StoreViewModel<PrivateRouteProps>
 
   @computed
   get isAuthenticated() {
-    return this._authService.isLoggedIn();
+    return this._accountService.isLoggedIn();
   }
 }
 

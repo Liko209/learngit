@@ -27,7 +27,7 @@ import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { PermissionFlags, TeamSetting } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 
 export class GroupActionController {
   teamRequestController: IRequestController<Group>;

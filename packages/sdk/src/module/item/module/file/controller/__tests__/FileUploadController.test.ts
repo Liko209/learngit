@@ -16,8 +16,11 @@ import notificationCenter from '../../../../../../service/notificationCenter';
 import { RequestHolder } from '../../../../../../api/requestHolder';
 import { Progress, PROGRESS_STATUS } from '../../../../../progress';
 import { ENTITY, SERVICE } from '../../../../../../service/eventKey';
-import { AccountGlobalConfig, AccountUserConfig } from '../../../../../../service/account/config';
-import { isInBeta } from '../../../../../../service/account/clientConfig';
+import {
+  AccountGlobalConfig,
+  AccountUserConfig,
+} from '../../../../../../module/account/config';
+import { isInBeta } from '../../../../../../module/account/service';
 import { PartialModifyController } from '../../../../../../framework/controller/impl/PartialModifyController';
 import { EntitySourceController } from '../../../../../../framework/controller/impl/EntitySourceController';
 import { RequestController } from '../../../../../../framework/controller/impl/RequestController';
@@ -42,8 +45,8 @@ jest.mock(
 );
 jest.mock('../../../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../../../../framework/controller/impl/RequestController');
-jest.mock('../../../../../../service/account/clientConfig');
-jest.mock('../../../../../../service/account/config');
+jest.mock('../../../../../../module/account/service/clientConfig');
+jest.mock('../../../../../../module/account/config');
 jest.mock('../../../../../../api/glip/item');
 jest.mock('../../../../dao');
 jest.mock('../../../../../../dao');

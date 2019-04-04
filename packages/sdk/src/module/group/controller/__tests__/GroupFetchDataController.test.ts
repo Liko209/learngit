@@ -14,8 +14,10 @@ import { IEntityCacheSearchController } from '../../../../framework/controller/i
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { AccountUserConfig } from '../../../../service/account/config';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import {
+  AccountUserConfig,
+  AccountGlobalConfig,
+} from '../../../../module/account/config';
 import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
 import { ProfileService } from '../../../profile';
@@ -36,7 +38,7 @@ jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../module/company');
 jest.mock('../../../post');

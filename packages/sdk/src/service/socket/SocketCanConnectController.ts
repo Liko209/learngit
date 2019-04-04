@@ -6,8 +6,7 @@
 import { canConnect, CanConnectModel } from '../../api/glip/user';
 import { PresenceService } from '../../module/presence/service/PresenceService';
 import { PRESENCE } from '../../module/presence/constant/Presence';
-import { AccountUserConfig } from '../account/config';
-import { AuthUserConfig } from '../../service/auth/config';
+import { AccountUserConfig, AuthUserConfig } from '../../module/account/config';
 import { mainLogger } from 'foundation';
 import { SyncUserConfig } from '../../module/sync/config';
 

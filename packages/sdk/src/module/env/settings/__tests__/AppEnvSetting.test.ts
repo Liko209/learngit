@@ -7,9 +7,9 @@
 import { GlobalConfigService } from '../../../config';
 import { AppEnvSetting } from '../AppEnvSetting';
 import { CONFIG_KEYS } from '../../config';
-import AuthService from '../../../../service/auth';
+import { AccountService } from '../../../../module/account';
 
-const authService = {
+const accountService = {
   logout: jest.fn(),
 };
 
@@ -51,7 +51,7 @@ describe('AppEnvSetting', () => {
 
   it('should call listener when switch env', async () => {
     mockConfigService.get.mockReturnValue('TEST1');
-    await AppEnvSetting.switchEnv('TEST2', authService as AuthService);
-    expect(authService.logout).toBeCalledTimes(1);
+    await AppEnvSetting.switchEnv('TEST2', accountService as AccountService);
+    expect(accountService.logout).toBeCalledTimes(1);
   });
 });

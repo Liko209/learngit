@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import { service } from 'sdk';
+import { AccountService } from 'sdk/module/account';
 
 import { AppEnvSetting } from 'sdk/module/env';
 
@@ -42,7 +42,7 @@ class EnvSelect extends React.Component<Props, States> {
 
   changeHandler(event: React.ChangeEvent<HTMLSelectElement>) {
     const value = event.target.value;
-    AppEnvSetting.switchEnv(value, service.AuthService.getInstance());
+    AppEnvSetting.switchEnv(value, AccountService.getInstance());
     this.setState({ value });
     location.reload();
   }

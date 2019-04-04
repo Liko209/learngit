@@ -13,7 +13,7 @@ import {
   LeftRailEntry,
 } from './types';
 import StoreViewModel from '@/store/ViewModel';
-import AccountService from 'sdk/service/account';
+import { AccountService } from 'sdk/module/account';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import GlobalStore from '@/store/base/GlobalStore';

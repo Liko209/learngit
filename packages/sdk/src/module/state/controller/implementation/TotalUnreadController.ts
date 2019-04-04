@@ -17,7 +17,7 @@ import { GroupState } from '../../entity';
 import { IGroupService } from '../../../group/service/IGroupService';
 import { ProfileService } from '../../../profile/service/ProfileService';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import notificationCenter, {
   NotificationEntityPayload,
 } from '../../../../service/notificationCenter';

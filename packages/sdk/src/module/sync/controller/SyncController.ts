@@ -7,7 +7,7 @@
 import { IndexDataModel } from '../../../api/glip/user';
 
 import { indexData, initialData, remainingData } from '../../../api';
-import accountHandleData from '../../../service/account/handleData';
+import { accountHandleData } from '../../../module/account/service';
 
 import { SERVICE, CONFIG } from '../../../service/eventKey';
 import { progressBar } from '../../../utils/progress';
@@ -30,10 +30,10 @@ import { SyncUserConfig } from '../config/SyncUserConfig';
 import { IndexRequestProcessor } from './IndexRequestProcessor';
 import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountGlobalConfig } from '../../../module/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
 import { SyncGlobalConfig } from '../config';
-import { AccountService } from '../../../service/account/accountService';
+import { AccountService } from '../../../module/account';
 import socketManager from '../../../service/socket';
 
 const LOG_TAG = 'SyncController';

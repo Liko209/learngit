@@ -6,7 +6,7 @@
 import { action, computed, observable } from 'mobx';
 
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
 import { AbstractViewModel } from '@/base';
 import { getGlobalValue } from '@/store/utils';

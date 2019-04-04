@@ -16,7 +16,7 @@ import Base from './Base';
 import i18next from 'i18next';
 import { TeamPermission, GroupService } from 'sdk/module/group';
 import { PERMISSION_ENUM } from 'sdk/service';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
 export default class GroupModel extends Base<Group> {
   @observable

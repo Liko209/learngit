@@ -5,14 +5,14 @@ import {
 } from 'foundation';
 import { stringify } from 'qs';
 import HandleByRingCentral from '../HandleByRingCentral';
-import AuthService from '../../../service/auth';
+import { AccountService } from '../../../module/account';
 import { AccountManager } from '../../../framework';
 const handler = new OAuthTokenHandler(HandleByRingCentral, null);
 
 jest.mock('../../api');
 const accountManager: AccountManager = new AccountManager(null);
-const authService: AuthService = new AuthService(accountManager);
-AuthService.getInstance = jest.fn().mockReturnValue(authService);
+const accountService: AccountService = new AccountService(accountManager);
+AccountService.getInstance = jest.fn().mockReturnValue(accountService);
 const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')

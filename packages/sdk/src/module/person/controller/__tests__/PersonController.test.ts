@@ -24,12 +24,12 @@ import { IEntityCacheController } from '../../../../framework/controller/interfa
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from '../../../../module/config';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { ContactType } from '../../types';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
 jest.mock('../../../../module/config');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 
 jest.mock('../../../../module/group');
 jest.mock('../../../../service/notificationCenter');

@@ -22,7 +22,7 @@ import { IPostItemController } from '../interface/IPostItemController';
 import { ISendPostController } from '../interface/ISendPostController';
 import { IPreInsertController } from '../../../common/controller/interface/IPreInsertController';
 import { Raw } from '../../../../framework/model';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { PostControllerUtils } from './PostControllerUtils';
 import { PROGRESS_STATUS } from '../../../progress';
 

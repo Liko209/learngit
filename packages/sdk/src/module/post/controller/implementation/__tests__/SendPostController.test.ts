@@ -22,10 +22,10 @@ import notificationCenter from '../../../../../service/notificationCenter';
 import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { GlobalConfigService } from '../../../../../module/config';
-import { AccountUserConfig } from '../../../../../service/account/config';
+import { AccountUserConfig } from '../../../../../module/account/config';
 
 jest.mock('../../../../../module/config');
-jest.mock('../../../../../service/account/config/AccountUserConfig');
+jest.mock('../../../../../module/account/config/AccountUserConfig');
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../PostActionController');

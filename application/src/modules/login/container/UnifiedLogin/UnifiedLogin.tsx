@@ -13,7 +13,7 @@ import { observer } from 'mobx-react';
 import EnvSelect from './EnvSelect';
 import Download from './Download';
 import LoginVersionStatus from '@/containers/VersionInfo/LoginVersionStatus';
-import { AuthService } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import config from '@/config';
@@ -76,8 +76,8 @@ class UnifiedLogin extends React.Component<Props, IStates> {
   };
 
   private _checkIfLogin() {
-    const authService: AuthService = AuthService.getInstance();
-    if (authService.isLoggedIn()) {
+    const accountService = AccountService.getInstance();
+    if (accountService.isLoggedIn()) {
       const { history } = this.props;
       history.replace('/messages');
     }

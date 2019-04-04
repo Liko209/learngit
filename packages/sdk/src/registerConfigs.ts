@@ -16,8 +16,7 @@ import DaoManager from './dao/DaoManager';
 import { AccountManager, ServiceManager } from './framework';
 import Sdk from './Sdk';
 // Service
-import AccountService from './service/account';
-import AuthService from './service/auth';
+import { AccountService } from './module/account';
 import { CompanyService } from './module/company';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
@@ -41,8 +40,8 @@ const networkManager = new NetworkManager(new OAuthTokenManager());
 
 const registerConfigs = {
   classes: [
-    { name: GlobalConfigService.name, value: GlobalConfigService },
-    { name: UserConfigService.name, value: UserConfigService },
+    { name: 'GlobalConfigService', value: GlobalConfigService },
+    { name: 'UserConfigService', value: UserConfigService },
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     { name: AutoAuthenticator.name, value: AutoAuthenticator },
@@ -54,35 +53,27 @@ const registerConfigs = {
     { name: GlipAccount.name, value: GlipAccount },
 
     // Services
-    { name: GroupService.name, value: GroupService },
-    { name: CompanyService.name, value: CompanyService },
-    { name: ItemService.name, value: ItemService },
-    { name: PersonService.name, value: PersonService },
-    { name: PresenceService.name, value: PresenceService },
-    { name: ProfileService.name, value: ProfileService },
+    { name: 'GroupService', value: GroupService },
+    { name: 'CompanyService', value: CompanyService },
+    { name: 'ItemService', value: ItemService },
+    { name: 'PersonService', value: PersonService },
+    { name: 'PresenceService', value: PresenceService },
+    { name: 'ProfileService', value: ProfileService },
+    { name: 'StateService', value: StateService, injects: ['GroupService'] },
+    { name: 'ProgressService', value: ProgressService },
+    { name: 'PostService', value: PostService, injects: ['GroupService'] },
+    { name: 'PermissionService', value: PermissionService },
+    { name: 'GroupService', value: GroupService },
+    { name: 'RCInfoService', value: RCInfoService },
     {
-      name: StateService.name,
-      value: StateService,
-      injects: [GroupService.name],
-    },
-    { name: ProgressService.name, value: ProgressService },
-    {
-      name: PostService.name,
-      value: PostService,
-      injects: [GroupService.name],
-    },
-    { name: PermissionService.name, value: PermissionService },
-    { name: RCInfoService.name, value: RCInfoService },
-    {
-      name: AuthService.name,
-      value: AuthService,
+      name: 'AccountService',
+      value: AccountService,
       injects: [AccountManager.name],
     },
-    { name: AccountService.name, value: AccountService },
-    { name: SyncService.name, value: SyncService },
-    { name: TelephonyService.name, value: TelephonyService },
-    { name: GroupConfigService.name, value: GroupConfigService },
-    { name: SearchService.name, value: SearchService },
+    { name: 'SyncService', value: SyncService },
+    { name: 'TelephonyService', value: TelephonyService },
+    { name: 'GroupConfigService', value: GroupConfigService },
+    { name: 'SearchService', value: SearchService },
 
     // Manager
     {
@@ -105,7 +96,7 @@ const registerConfigs = {
         AccountManager.name,
         ServiceManager.name,
         NetworkManager.name,
-        SyncService.name,
+        'SyncService',
       ],
     },
   ],

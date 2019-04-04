@@ -14,7 +14,7 @@ import {
   PerformanceTracerHolder,
   PERFORMANCE_KEYS,
 } from '../../../utils/performance';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import {
   RecentSearchTypes,
   FuzzySearchPersonOptions,

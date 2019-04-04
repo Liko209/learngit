@@ -10,7 +10,7 @@ import { Api } from '../../../../api';
 import SplitIODefaultPermissions from './SplitIODefaultPermissions';
 import { notificationCenter, SERVICE } from '../../../../service';
 import { mainLogger } from 'foundation';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { PersonService } from '../../../person';
 class SplitIOController {
   private splitIOClient: SplitIOClient;

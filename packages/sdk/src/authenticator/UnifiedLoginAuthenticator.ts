@@ -8,9 +8,10 @@ import { loginGlip, RCInfoApi, RCAuthApi, ITokenModel } from '../api';
 import notificationCenter from '../service/notificationCenter';
 import { GlipAccount, RCAccount } from '../account';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
+
 import { RCInfoService } from '../module/rcInfo';
 import { setRCToken, setRCAccountType } from './utils';
-import { AccountGlobalConfig } from '../service/account/config';
+import { AccountGlobalConfig } from '../module/account/config';
 
 interface IUnifiedLoginAuthenticateParams extends IAuthParams {
   code?: string;

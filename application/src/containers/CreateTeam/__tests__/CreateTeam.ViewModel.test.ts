@@ -14,9 +14,9 @@ import {
 import { getGlobalValue } from '../../../store/utils';
 import storeManager from '../../../store/index';
 import { CreateTeamViewModel } from '../CreateTeam.ViewModel';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
-jest.mock('sdk/service/account/config');
+jest.mock('sdk/module/account/config');
 jest.mock('../../Notification');
 jest.mock('../../../store/utils');
 jest.mock('../../../store/index');

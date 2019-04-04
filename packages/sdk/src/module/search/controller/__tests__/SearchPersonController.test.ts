@@ -16,11 +16,11 @@ import {
 import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { SortableModel } from '../../../../framework/model';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { GroupService } from '../../../group';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 jest.mock('../../../../api');
 jest.mock('../../../../dao/DaoManager');
 jest.mock('../../../group');

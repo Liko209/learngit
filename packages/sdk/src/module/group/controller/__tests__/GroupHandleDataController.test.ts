@@ -19,19 +19,19 @@ import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
 import { GlobalConfigService } from '../../../../module/config';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { SYNC_SOURCE } from '../../../../module/sync';
 
 jest.mock('../../../../module/config');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 
 jest.mock('../../../profile');
-jest.mock('../../../../service/account');
+jest.mock('../../../../module/account');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../state');
 jest.mock('../../../../dao', () => {

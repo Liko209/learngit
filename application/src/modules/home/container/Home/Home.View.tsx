@@ -17,7 +17,7 @@ import { HomeViewProps } from './types';
 import Wrapper from './Wrapper';
 
 import { dao, mainLogger } from 'sdk';
-import { AuthService } from 'sdk/service/auth/authService';
+import { AccountService } from 'sdk/module/account';
 import { ModalPortal } from '@/containers/Dialog';
 import { Dialer } from '@/modules/telephony';
 
@@ -25,8 +25,8 @@ import { Dialer } from '@/modules/telephony';
 class HomeView extends Component<HomeViewProps> {
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
-    const authService: AuthService = AuthService.getInstance();
-    authService.makeSureUserInWhitelist();
+    const accountService = AccountService.getInstance();
+    accountService.makeSureUserInWhitelist();
 
     analytics.identify();
   }

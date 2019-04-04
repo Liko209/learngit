@@ -8,16 +8,14 @@ import { indexData, initialData, remainingData } from '../../../../api';
 import { SyncUserConfig } from '../../config/SyncUserConfig';
 import { GlobalConfigService } from '../../../config';
 import { SyncController } from '../SyncController';
-import {
-  AccountGlobalConfig,
-} from '../../../../service/account/config';
+import { AccountGlobalConfig } from '../../../../module/account/config';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../../error';
 import { GroupConfigService } from '../../../../module/groupConfig';
 import { PersonService } from '../../../person';
 import { GroupService } from '../../../group';
 import { PostService } from '../../../post';
 import { ItemService } from '../../../item/service';
-import { AccountService } from '../../../../service/account/accountService';
+import { AccountService } from '../../../../module/account';
 import socketManager from '../../../../service/socket';
 
 jest.mock('../../config/SyncUserConfig');
@@ -29,8 +27,8 @@ jest.mock('../../../person');
 jest.mock('../../../group');
 jest.mock('../../../post');
 jest.mock('../../../item/service');
-jest.mock('../../../../service/account/config');
-jest.mock('../../../../service/account/accountService');
+jest.mock('../../../../module/account/config');
+jest.mock('../../../../module/account');
 jest.mock('../../../../service/socket');
 
 let groupConfigService: GroupConfigService;
@@ -68,7 +66,7 @@ describe('SyncController ', () => {
     itemService = new ItemService();
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
-    accountService = new AccountService();
+    accountService = new AccountService(null);
     AccountService.getInstance = jest.fn().mockReturnValue(accountService);
   });
 

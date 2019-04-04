@@ -3,11 +3,11 @@
  * @Date: 2019-02-28 20:27:29
  * Copyright © RingCentral. All rights reserved.
  */
-import { GlobalConfigService } from '../../../../module/config/service/GlobalConfigService';
+import { GlobalConfigService } from '../../../config/service/GlobalConfigService';
 import { AccountGlobalConfig } from '../AccountGlobalConfig';
 import { ACCOUNT_KEYS } from '../configKeys';
 
-jest.mock('../../../../module/config/service/GlobalConfigService');
+jest.mock('../../../config/service/GlobalConfigService');
 
 describe('AccountGlobalConfig', () => {
   let mockGlobalConfigService;

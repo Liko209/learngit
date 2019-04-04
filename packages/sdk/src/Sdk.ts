@@ -25,11 +25,10 @@ import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
-import { AccountService, AuthService } from './service';
+import { AccountService } from './module/account';
 import { DataMigration, UserConfigService } from './module/config';
 import { setGlipToken } from './authenticator/utils';
-import { AuthUserConfig } from './service/auth/config';
-import { AccountGlobalConfig } from './service/account/config';
+import { AuthUserConfig, AccountGlobalConfig } from './module/account/config';
 
 const AM = AccountManager;
 
@@ -97,8 +96,8 @@ class Sdk {
 
     if (loginResp.isRCOnlyMode) {
       this.accountManager.updateSupportedServices();
-      const authService: AuthService = AuthService.getInstance();
-      authService.reLoginGlip();
+      const accountService = AccountService.getInstance();
+      accountService.reLoginGlip();
     } else if (loginResp && loginResp.success) {
       // TODO replace all LOGIN listen on notificationCenter
       // with accountManager.on(EVENT_LOGIN)
@@ -120,8 +119,8 @@ class Sdk {
     if (isRCOnlyMode) {
       this.accountManager.updateSupportedServices();
       notificationCenter.emitKVChange(SERVICE.LOGIN, isRCOnlyMode);
-      const authService: AuthService = AuthService.getInstance();
-      authService.scheduleReLoginGlipJob();
+      const accountService = AccountService.getInstance();
+      accountService.scheduleReLoginGlipJob();
       return;
     }
 

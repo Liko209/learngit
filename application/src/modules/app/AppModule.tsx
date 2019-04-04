@@ -28,7 +28,8 @@ import {
   errorReporter,
   getAppContextInfo,
 } from '@/utils/error';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
@@ -67,7 +68,7 @@ class AppModule extends AbstractModule {
       if (env && env.length) {
         const envChanged = await AppEnvSetting.switchEnv(
           env,
-          service.AuthService.getInstance(),
+          AccountService.getInstance(),
         );
         if (envChanged) {
           config.loadEnvConfig();
@@ -83,7 +84,6 @@ class AppModule extends AbstractModule {
 
     const {
       notificationCenter,
-      AccountService,
       socketManager,
       SOCKET,
       SERVICE,
@@ -100,7 +100,7 @@ class AppModule extends AbstractModule {
     const globalStore = storeManager.getGlobalStore();
 
     const updateAccountInfoForGlobalStore = (isRCOnlyMode: boolean = false) => {
-      const accountService: service.AccountService = AccountService.getInstance();
+      const accountService = AccountService.getInstance();
 
       if (accountService.isAccountReady()) {
         const accountUserConfig = new AccountUserConfig();
@@ -207,8 +207,8 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {
       // force logout
-      const authService: service.AuthService = service.AuthService.getInstance();
-      await authService.logout();
+      const accountService = AccountService.getInstance();
+      await accountService.logout();
       window.location.href = '/';
     });
 

@@ -15,12 +15,13 @@ import {
   DataMigration,
 } from '../module/config';
 import notificationCenter from '../service/notificationCenter';
-import { AccountService, SERVICE, AuthService } from '../service';
+import { SERVICE } from '../service';
+import { AccountService } from '../module/account';
 import { SyncService } from '../module/sync';
-import { AccountGlobalConfig } from '../service/account/config';
+import { AccountGlobalConfig } from '../module/account/config';
 
 jest.mock('../module/config');
-jest.mock('../service/auth/config');
+jest.mock('../module/account/config');
 GlobalConfigService.getInstance = jest.fn();
 
 // Using manual mock to improve mock priority.
@@ -83,10 +84,14 @@ describe('Sdk', () => {
         success: true,
       });
       const mockReLogin = jest.fn();
-      AccountService.getInstance = jest.fn().mockReturnValue('accountService');
-      AuthService.getInstance = jest.fn().mockReturnValue({
+
+      const mockAccountService = {
         reLoginGlip: mockReLogin,
-      });
+      };
+
+      AccountService.getInstance = jest
+        .fn()
+        .mockReturnValue(mockAccountService);
 
       await sdk.init({ api: {}, db: {} });
       expect(Foundation.init).toBeCalled();
@@ -95,7 +100,7 @@ describe('Sdk', () => {
       expect(daoManager.initDatabase).toBeCalled();
       expect(serviceManager.startService).toBeCalled();
       expect(HandleByRingCentral.platformHandleDelegate).toEqual(
-        'accountService',
+        mockAccountService,
       );
       expect(mockReLogin).toBeCalled();
       expect(accountManager.updateSupportedServices).toBeCalled();

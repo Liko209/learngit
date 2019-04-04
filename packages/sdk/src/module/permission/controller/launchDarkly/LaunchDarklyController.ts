@@ -6,7 +6,7 @@
 
 import { LaunchDarklyClient } from './LaunchDarklyClient';
 import { notificationCenter, SERVICE } from '../../../../service';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { LaunchDarklyDefaultPermissions } from './LaunchDarklyDefaultPermissions';
 import UserPermissionType from '../../types';
 import { LDFlagSet } from 'ldclient-js';

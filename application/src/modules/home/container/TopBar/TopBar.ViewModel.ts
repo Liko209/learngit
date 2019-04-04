@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, computed } from 'mobx';
-import { AuthService } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
 
 import { AbstractViewModel } from '@/base';
 import storeManager from '@/store';
@@ -28,8 +28,8 @@ class TopBarViewModel extends AbstractViewModel {
 
   @action
   signOut = () => {
-    const authService: AuthService = AuthService.getInstance();
-    authService.logout();
+    const accountService = AccountService.getInstance();
+    accountService.logout();
     window.location.href = '/';
   }
 }

@@ -4,18 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IEntitySourceController } from '../../../../../../framework/controller/interface/IEntitySourceController';
-import { Item } from '../../../../entity';
-import { FileItemUtils } from '../../utils';
-import { daoManager } from '../../../../../../dao';
 import { Api } from '../../../../../../api';
 import { FileActionController } from '../FileActionController';
-import { BaseSubItemService } from '../../../base/service';
 import { GlobalConfigService } from '../../../../../config';
-import { AuthUserConfig } from '../../../../../../service/auth/config';
+import { AuthUserConfig } from '../../../../../account/config';
 
 jest.mock('../../../../../config');
-jest.mock('../../../../../../service/auth/config/AuthUserConfig');
+jest.mock('../../../../../account/config');
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../../../dao');

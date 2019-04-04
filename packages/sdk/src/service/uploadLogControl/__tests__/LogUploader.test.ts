@@ -1,14 +1,14 @@
 import { LogUploader } from '../LogUploader';
 import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import AccountService from '../../account';
+import { AccountService } from '../../../module/account';
 import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';
-import { AccountUserConfig } from '../../account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 
 jest.mock('sdk/api');
-jest.mock('../../account');
+jest.mock('../../../module/account');
 jest.mock('axios');
-jest.mock('../../account/config');
+jest.mock('../../../module/account/config');
 
 function createError(status: number): AxiosError {
   return (status

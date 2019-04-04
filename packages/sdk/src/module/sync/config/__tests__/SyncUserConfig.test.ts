@@ -9,7 +9,7 @@ import { UserConfigService } from '../../../config/service/UserConfigService';
 import { SYNC_CONFIG_KEYS } from '../configKeys';
 
 jest.mock('../../../../module/config/service/UserConfigService');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 
 function clearMocks() {
   jest.clearAllMocks();

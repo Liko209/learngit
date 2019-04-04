@@ -25,7 +25,7 @@ import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 
