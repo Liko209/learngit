@@ -196,12 +196,12 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     const { searchKey } = this._globalSearchStore;
     const defaultTip = i18nT('in this conversation');
 
-    return this._isConversation()
+    return this._isConversation
       ? [searchKey].concat(`${searchKey} ${defaultTip}`)
       : [searchKey];
   }
 
-  private _isConversation() {
+  private get _isConversation() {
     const { location } = history;
     const conversationPath = /messages\/\d+$/;
     return conversationPath.test(location.pathname);
