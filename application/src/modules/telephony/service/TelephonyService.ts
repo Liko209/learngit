@@ -242,26 +242,11 @@ class TelephonyService {
     return this._serverTelephonyService.getAllCallCount();
   }
 
-  hold = () => {
-    if (this._telephonyStore.holdDisabled || this._telephonyStore.pendingForHold) {
+  holdOrUnhold = () => {
+    if (this._telephonyStore.holdDisabled || this._telephonyStore.pendingForHold || !this._callId) {
       return;
     }
-    if (this._callId) {
-      mainLogger.info(
-        `${TelephonyService.TAG}hold call id=${
-        this._callId
-        }`,
-      );
-      this._telephonyStore.hold(); // for swift UX
-      this._telephonyStore.setPendingForHoldBtn(true);
-      return this._serverTelephonyService.hold(this._callId);
-    }
-  }
-  unhold = () => {
-    if (this._telephonyStore.holdDisabled || this._telephonyStore.pendingForHold) {
-      return;
-    }
-    if (this._callId) {
+    if (this._telephonyStore.held) {
       mainLogger.info(
         `${TelephonyService.TAG}unhold call id=${
         this._callId
@@ -270,17 +255,15 @@ class TelephonyService {
       this._telephonyStore.setPendingForHoldBtn(true);
       return this._serverTelephonyService.unhold(this._callId);
     }
+    mainLogger.info(
+      `${TelephonyService.TAG}hold call id=${
+      this._callId
+      }`,
+    );
+    this._telephonyStore.hold(); // for swift UX
+    this._telephonyStore.setPendingForHoldBtn(true);
+    return this._serverTelephonyService.hold(this._callId);
   }
-
-  // for unit test
-  isHoldDisabled() {
-    return this._telephonyStore.holdDisabled;
-  }
-
-  isHeld() {
-    return this._telephonyStore.held;
-  }
-
 }
 
 export { TelephonyService };

@@ -42,7 +42,7 @@ class HoldViewComponent extends Component<Props> {
         >
           hold
         </JuiIconButton>
-        <span className="disabled">{t('telephony.action.hold')}</span>
+        <span className={disabled ? 'disabled' : undefined}>{held ? t('telephony.action.unhold') : t('telephony.action.hold')}</span>
       </JuiKeypadAction>
     );
   }

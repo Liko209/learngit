@@ -405,6 +405,7 @@
       "unmute": "Unmute",
       "keypad": "Keypad",
       "hold": "Hold",
+      "unhold": "Unhold",
       "add": "Add",
       "record": "Record",
       "callActions": "Call Actions",

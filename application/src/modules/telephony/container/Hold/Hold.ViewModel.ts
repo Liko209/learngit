@@ -12,7 +12,6 @@ import { computed } from 'mobx';
 import { mainLogger } from 'sdk';
 import {
   HOLD_STATE,
-  HOLD_TRANSITION_NAMES,
 } from '../../FSM';
 class HoldViewModel extends StoreViewModel<HoldProps> implements HoldViewProps {
   private _telephonyService: TelephonyService = container.get(TelephonyService);
@@ -42,13 +41,12 @@ class HoldViewModel extends StoreViewModel<HoldProps> implements HoldViewProps {
       );
       return;
     }
-    const method = this.held ? HOLD_TRANSITION_NAMES.UNHOLD : HOLD_TRANSITION_NAMES.HOLD;
 
     mainLogger.debug(
       `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_PENDING_STATE]: ${this._telephonyStore.pendingForHold}`,
     );
 
-    this._telephonyService[method]();
+    this._telephonyService.holdOrUnhold();
   }
 }
 
