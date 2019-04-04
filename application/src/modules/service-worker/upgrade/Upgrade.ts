@@ -201,7 +201,7 @@ class Upgrade {
 
   private _hasInProgressCall() {
     const telephony: TelephonyService = TelephonyService.getInstance();
-    return telephony && telephony.getAllCallCount() > 0;
+    return telephony.getAllCallCount() > 0;
   }
 
   private _reloadApp() {
