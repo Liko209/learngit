@@ -155,15 +155,13 @@ describe('StreamViewModel', () => {
       return { vm, loadAllUnreadPosts };
     }
 
-    it('should try to load 506 posts when unread count is 6', async () => {
-      const { vm, loadAllUnreadPosts } = setupMock({
-        unreadCount: 6,
-      });
+    it('should try to load all unread posts', async () => {
+      const { vm, loadAllUnreadPosts } = setupMock({});
       jest
         .spyOn<StreamController, any>(vm._streamController, 'hasMore')
         .mockReturnValue(true);
       await vm.getFirstUnreadPostByLoadAllUnread();
-      expect(loadAllUnreadPosts).toHaveBeenCalledWith(506);
+      expect(loadAllUnreadPosts).toHaveBeenCalled();
     });
   });
 
@@ -228,7 +226,7 @@ describe('StreamViewModel', () => {
         _historyHandler: { update: mockUpdate },
         _streamController: {
           postIds,
-          items: postIds.map((i) => ({
+          items: postIds.map(i => ({
             id: i,
             value: i,
             type: StreamItemType.POST,
