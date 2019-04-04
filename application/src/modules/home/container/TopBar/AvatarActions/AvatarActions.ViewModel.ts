@@ -32,8 +32,9 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   @action
   handleSignOut = async () => {
     let callCount = 0;
+    let telephonyService: TelephonyService | null = null;
     try {
-      const telephonyService = container.get(TelephonyService);
+      telephonyService = container.get(TelephonyService);
       callCount = telephonyService.getAllCallCount();
     } catch (e) {
       mainLogger.info(
@@ -51,6 +52,10 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
           mainLogger.info(
             `[AvatarActionsViewModel] [UI TelephonyService] User confirmed to logout and current call count: ${callCount}`,
           );
+          // For firefox, its beforeunload event will emit first, so we should hangup call here, then there will be no duplicate alert.
+          if (telephonyService) {
+            telephonyService.hangUp();
+          }
           this._doLogout();
         },
         onCancel: () => {
