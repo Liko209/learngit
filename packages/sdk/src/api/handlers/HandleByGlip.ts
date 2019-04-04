@@ -20,9 +20,6 @@ const HandleByGlip = new class extends AbstractHandleType {
           throw new Error('token handler can not be null.');
         }
         if (handler && handler.isOAuthTokenAvailable()) {
-          request.params = {
-            ...request.params,
-          };
           request.headers = {
             ...request.headers,
             Authorization: `Bearer ${handler.accessToken()}`,
