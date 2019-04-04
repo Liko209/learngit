@@ -11,8 +11,11 @@ import {
   HOLD_TRANSITION_NAMES,
   CALL_STATE,
   CALL_WINDOW_STATUS,
+  RECORD_STATE,
+  RECORD_TRANSITION_NAMES,
   CallFSM,
   HoldFSM,
+  RecordFSM,
   CallWindowFSM,
   CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
@@ -30,6 +33,7 @@ class TelephonyStore {
   private _callFSM = new CallFSM();
   private _callWindowFSM = new CallWindowFSM();
   private _holdFSM = new HoldFSM();
+  private _recordFSM = new RecordFSM();
 
   @observable
   callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
@@ -40,11 +44,16 @@ class TelephonyStore {
   @observable
   holdState: HOLD_STATE = this._holdFSM.state;
   @observable
+  recordState: RECORD_STATE = this._recordFSM.state;
+
+  @observable
   phoneNumber?: string;
   @observable
   activeCallTime?: number;
   @observable
   pendingForHold: boolean = false;
+  @observable
+  pendingForRecord: boolean = false;
 
   constructor() {
     this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
@@ -57,7 +66,6 @@ class TelephonyStore {
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
           this.activeCallTime = Date.now();
-          this._holdFSM[HOLD_TRANSITION_NAMES.CONNECTED]();
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
@@ -136,7 +144,6 @@ class TelephonyStore {
       END_WIDGET_CALL,
       END_DIALER_CALL,
     } = CALL_TRANSITION_NAMES;
-    this._holdFSM[HOLD_TRANSITION_NAMES.DISCONNECT]();
 
     switch (true) {
       case history.includes(CALL_STATE.INCOMING):
@@ -186,8 +193,36 @@ class TelephonyStore {
     this._holdFSM[HOLD_TRANSITION_NAMES.UNHOLD]();
   }
 
+  startRecording = () => {
+    this._recordFSM[RECORD_TRANSITION_NAMES.START_RECORD]();
+  }
+
+  stopRecording = () => {
+    this._recordFSM[RECORD_TRANSITION_NAMES.STOP_RECORD]();
+  }
+
   setPendingForHoldBtn(val: boolean) {
     this.pendingForHold = val;
+  }
+
+  setPendingForRecordBtn(val: boolean) {
+    this.pendingForRecord = val;
+  }
+
+  enableHold = () => {
+    this._holdFSM[HOLD_TRANSITION_NAMES.CONNECTED]();
+  }
+
+  enableRecord = () => {
+    this._recordFSM[RECORD_TRANSITION_NAMES.CONNECTED]();
+  }
+
+  disableHold = () => {
+    this._holdFSM[HOLD_TRANSITION_NAMES.DISCONNECT]();
+  }
+
+  disableRecord = () => {
+    this._recordFSM[RECORD_TRANSITION_NAMES.DISCONNECT]();
   }
 
   @computed
@@ -206,6 +241,16 @@ class TelephonyStore {
   @computed
   get held() {
     return this.holdState === HOLD_STATE.HOLDED;
+  }
+
+  @computed
+  get isRecording() {
+    return this.recordState === RECORD_STATE.RECORDING;
+  }
+
+  @computed
+  get recordDisabled() {
+    return this.recordState === RECORD_STATE.DISABLED;
   }
 }
 
