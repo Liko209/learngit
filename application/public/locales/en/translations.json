@@ -433,5 +433,16 @@
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
+  },
+  "feedback": {
+    "name": "Feedback",
+    "uploading": "uploading",
+    "uploadRecentLogsDialogHeader": "Upload log?",
+    "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
+    "upload": "Upload",
+    "describeYourProblemHere": "Describe your problem here",
+    "uploadLogSuccess": "Upload log successfully, please send it via email.",
+    "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
+    "openEmailFailed": "Open email failed."
   }
 }

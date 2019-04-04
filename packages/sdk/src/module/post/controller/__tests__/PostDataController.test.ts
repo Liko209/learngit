@@ -141,7 +141,7 @@ describe('PostDataController', () => {
           deleteIds.push(i);
         }
       }
-      for (let i = 61; i < 100; i += 1) {
+      for (let i = 61; i < 110; i += 1) {
         posts.push({ id: i, group_id: 2 });
       }
       postDao.queryPostIdsByGroupId.mockResolvedValue(deleteIds);

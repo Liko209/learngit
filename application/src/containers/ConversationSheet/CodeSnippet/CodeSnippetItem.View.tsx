@@ -12,6 +12,7 @@ import { memoize } from 'lodash';
 import copy from 'copy-to-clipboard';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
+import { saveBlob } from '@/common/blobUtils';
 
 const DEFAULT_LINE_LIMIT = 15;
 const COLLAPSE_TO = 10;
@@ -46,13 +47,9 @@ class CodeSnippet extends React.Component<
   }
 
   handleDownload = () => {
-    const link = document.createElement('a');
-    link.download = `${this.props.postItem.title}.txt`;
+    const name = `${this.props.postItem.title}.txt`;
     const blob = new Blob([this.props.postItem.body], { type: 'text/plain' });
-    link.href = window.URL.createObjectURL(blob);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    saveBlob(name, blob);
   }
 
   _getHeaderActions = memoize(() => {

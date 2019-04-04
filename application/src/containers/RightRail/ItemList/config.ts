@@ -23,8 +23,6 @@ import TasksEmptyImage from '../images/Tasks.svg';
 import { RIGHT_RAIL_ITEM_TYPE } from './constants';
 import { ITEM_SORT_KEYS } from 'sdk/module/item';
 
-const ITEM_HEIGHT = 52;
-
 type EmptyConfig = {
   text: string;
   content: string;
@@ -169,4 +167,4 @@ const TAB_CONFIG: TabConfig[] = [
   },
 ];
 
-export { TAB_CONFIG, TabConfig, EmptyConfig, ITEM_HEIGHT };
+export { TAB_CONFIG, TabConfig, EmptyConfig };

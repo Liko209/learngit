@@ -58,7 +58,7 @@ class PostFetchController {
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
       TAG,
-      `getPostsByGroupId() postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
+      `getPostsByGroupId() groupId: ${groupId} postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
     );
 
     if (shouldSaveToDb) {
@@ -152,6 +152,7 @@ class PostFetchController {
   }: IRemotePostRequest) {
     mainLogger.debug(
       TAG,
+      groupId,
       'getPostsByGroupId() db is not exceed limit, request from server',
     );
     const serverResult = await this.fetchPaginationPosts({
@@ -207,11 +208,6 @@ class PostFetchController {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
-      logId,
-    );
     const result: IPostResult = {
       limit,
       posts: [],
@@ -221,6 +217,11 @@ class PostFetchController {
     if (!postId && direction === QUERY_DIRECTION.NEWER) {
       return result;
     }
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
+      logId,
+    );
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,
