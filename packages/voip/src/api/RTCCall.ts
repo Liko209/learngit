@@ -157,7 +157,7 @@ class RTCCall {
     this._fsm.sendToVoicemail();
   }
 
-  startReplyWithMessage(): void {
+  startReply(): void {
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(RTC_CALL_ACTION.START_REPLY);
       return;

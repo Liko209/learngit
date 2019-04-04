@@ -371,8 +371,12 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     let dir = 0;
     let units = 0;
     switch (pattern) {
-      case RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER:
-        index = 4;
+      case RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER:
+        if (time > 0) {
+          index = 1;
+        } else {
+          index = 4;
+        }
         break;
       case RTC_REPLY_MSG_PATTERN.IN_A_MEETING:
         index = 5;
@@ -382,9 +386,15 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
         break;
       case RTC_REPLY_MSG_PATTERN.ON_THE_OTHER_LINE:
         index = 6;
-      case RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER:
-        index = 4;
+        break;
+      case RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER:
+        if (time > 0) {
+          index = 1;
+        } else {
+          index = 4;
+        }
         dir = 1;
+        break;
       default:
         break;
     }
