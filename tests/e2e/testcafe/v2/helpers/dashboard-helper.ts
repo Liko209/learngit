@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import * as fs from 'fs';
 import { parse as parseUserAgent } from 'useragent';
 import { identity } from 'lodash';
-
+import * as format from 'string-format';
 import { getLogger } from 'log4js';
 import { IStep, Status, IConsoleLog, Process } from '../models';
 import { MiscUtils } from '../utils';
@@ -38,9 +38,9 @@ export class DashboardHelper {
   private async createStepInDashboard(step: IStep, testId: number) {
     const beatStep = new Step();
     beatStep.test = testId;
-    beatStep.name = step.message;
-    if (step.needDescription) {
-      beatStep.description = step.description;
+    beatStep.name = step.message.replace(/\{/g, '[').replace(/\}/g, ']');
+    if (step.metadata && Object.keys(step.metadata).length > 0) {
+      beatStep.description = format(step.message.replace(/\$\{/g, '{'), step.metadata);
     }
     beatStep.metadata = Object.assign({}, step.metadata);
     beatStep.status = StatusMap[step.status];
@@ -73,10 +73,11 @@ export class DashboardHelper {
     for (let child of children) {
       const s = new Step();
       s.test = testId;
-      s.name = child.message;
-      if (child.needDescription) {
-        s.description = child.description;
+      s.name = child.message.replace(/\{/g, '[').replace(/\}/g, ']');
+      if (child.metadata && Object.keys(child.metadata).length > 0) {
+        s.description = format(child.message.replace(/\$\{/g, '{'), child.metadata);
       }
+
       s.metadata = Object.assign({}, child.metadata);
       s.status = StatusMap[child.status];
       s.startTime = new Date(child.startTime);

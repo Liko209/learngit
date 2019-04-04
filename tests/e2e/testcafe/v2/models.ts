@@ -1,7 +1,6 @@
 import { GlipSdk } from './sdk/glip';
 import { RcPlatformSdk } from './sdk/platform';
 import { LogHelper } from './helpers/log-helper';
-import * as format from 'string-format';
 
 export interface Sdk {
   glip: GlipSdk;
@@ -47,55 +46,52 @@ export interface ICredential {
 export interface IStep {
   message: string;
   metadata?: { [key: string]: string };
-  description?: string;
   status?: Status;
   startTime?: number;
   endTime?: number;
   screenshotPath?: string;
   attachments?: string[];
-  needDescription?: boolean;
   children?: Array<IStep>;
   logHelper?: LogHelper;
 
   putMetadata(key: string, value: any);
 
-  newChildStep(message, args?: { [key: string]: any }): IStep;
+  putMetadatas(metadata: { [key: string]: string });
 
-  withLog(cb: (step: IStep) => Promise<any>, options: LogOptions);
+  subStep(message: string, args?: { [key: string]: any }): IStep;
+
+  withSubStep(message: string, cb: (step: IStep) => Promise<any>, options?: LogOptions);
 }
 
 export class Step implements IStep {
   message: string;
   metadata?: { [key: string]: string };
-  description?: string;
   status?: Status;
   startTime?: number;
   endTime?: number;
   screenshotPath?: string;
   attachments?: string[];
-  needDescription: boolean;
   children?: Array<IStep>;
   logHelper?: LogHelper;
 
-  constructor(message: string, args: { [key: string]: any }, logHelper: LogHelper) {
+  constructor(message: string, logHelper: LogHelper) {
     this.logHelper = logHelper;
-    this.metadata = Object.assign({}, args);
-    this.message = message.replace(/\{/g, '[').replace(/\}/g, ']');
-    this.description = format(message.replace(/\$\{/g, '{'), this.metadata);
+    this.metadata = {};
+    this.message = message;
     this.children = new Array();
-    if (Object.keys(this.metadata).length > 0) {
-      this.needDescription = true;
-    } else {
-      this.needDescription = false
-    }
   }
 
   putMetadata(key: string, value: string) {
     this.metadata[key] = value;
   }
 
-  newChildStep(message, args?: { [key: string]: any }): IStep {
-    const child = new Step(message, args, this.logHelper);
+  putMetadatas(metadata: { [key: string]: string }) {
+    this.metadata = Object.assign(this.metadata, metadata);
+  }
+
+  subStep(message: string, args?: { [key: string]: any }): IStep {
+    const child = new Step(message, this.logHelper);
+    child.putMetadatas(args);
     child.status = Status.PASSED;
     if (this.children.length === 0) {
       child.startTime = this.startTime;
@@ -112,25 +108,39 @@ export class Step implements IStep {
     return child;
   }
 
-  async withLog(cb: (step: IStep) => Promise<any>, options?: LogOptions) {
+  async withSubStep(message: string, cb: (step: IStep) => Promise<any>, options?: LogOptions) {
     this.startTime = Date.now();
+
+    const child = new Step(message, this.logHelper);
+    if (this.children.length === 0) {
+      child.startTime = this.startTime;
+    } else {
+      child.startTime = Date.now();
+      let lastChild = this.children[this.children.length - 1];
+      if (!lastChild.endTime) {
+        lastChild.endTime = child.startTime;
+      }
+    }
+
+    this.children.push(child);
+
     if (!options) {
       options = <LogOptions>{ takeScreenShot: false };
     }
     try {
-      const ret = await cb(this);
-      this.status = Status.PASSED;
+      const ret = await cb(child);
+      child.status = Status.PASSED;
       return ret;
     } catch (error) {
-      this.status = Status.FAILED;
+      child.status = Status.FAILED;
       options.takeScreenShot = false;
       throw error;
     } finally {
-      this.endTime = Date.now();
+      child.endTime = Date.now();
       if (options.takeScreenShot) {
-        this.screenshotPath = await this.logHelper.takeScreenShot();
+        child.screenshotPath = await child.logHelper.takeScreenShot();
       }
-      console.log(`${new Date(this.startTime).toLocaleString()} [${this.status}] ${this.message} (${this.endTime - this.startTime}ms)`);
+      console.log(`${new Date(child.startTime).toLocaleString()} [${child.status}] ${child.message} (${child.endTime - child.startTime}ms)`);
     }
   }
 }

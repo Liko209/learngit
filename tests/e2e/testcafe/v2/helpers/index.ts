@@ -92,16 +92,14 @@ class Helper {
   }
 
   async log(step: IStep | string,
-    args?: { [key: string]: any } | boolean | LogOptions,
     options?: boolean | LogOptions) {
-    return await this.logHelper.log(step, args, options);
+    return await this.logHelper.log(step, options);
   }
 
   async withLog(step: IStep | string,
-    args: { [key: string]: any } | ((step?: IStep) => Promise<any>),
-    cb?: boolean | LogOptions | ((step?: IStep) => Promise<any>),
+    cb: (step?: IStep) => Promise<any>,
     options?: boolean | LogOptions) {
-    return await this.logHelper.withLog(step, args, cb, options);
+    return await this.logHelper.withLog(step, cb, options);
   }
 
   async getGlip(user: IUser) {
