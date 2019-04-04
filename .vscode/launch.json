@@ -17,13 +17,16 @@
       "request": "launch",
       "name": "Jest Current File",
       "program": "${workspaceFolder}/scripts/test.js",
-      "args": [
-        "--no-cache",
-        "--watch",
-        "--coverage",
-        "--collectCoverageFrom=${relativeFile}",
-        "${relativeFile}"
-      ],
+      "args": ["--no-cache", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest Current File (With Coverage)",
+      "program": "${workspaceFolder}/scripts/test.js",
+      "args": ["--no-cache", "--watch", "--coverage", "${relativeFile}"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"
     },
