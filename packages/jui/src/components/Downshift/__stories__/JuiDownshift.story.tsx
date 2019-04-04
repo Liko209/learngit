@@ -45,7 +45,11 @@ const SearchItem = (props: any) => {
 const Chip = (props: any) => {
   const item = getItemById(suggestions, props.id);
 
-  return item ? <JuiChip {...props} label={item.label} /> : null;
+  return item ? (
+    <JuiChip {...props} label={item.label} />
+  ) : (
+    <JuiChip {...props} label={props.label} />
+  );
 };
 
 const MultipleDownshift = () => {
@@ -79,12 +83,14 @@ const MultipleDownshift = () => {
   return (
     <JuiDownshift
       suggestionItems={suggestionItems}
-      SuggestionItem={SearchItem}
+      MenuItem={SearchItem}
       InputItem={Chip}
       inputLabel="contact search"
       inputPlaceholder="placeholder"
       onInputChange={handleInputChange}
       onSelectChange={handleSelectChange}
+      minRowHeight={50}
+      autoSwitchEmail={true}
     />
   );
 };

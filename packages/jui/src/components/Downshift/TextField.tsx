@@ -4,11 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import keycode from 'keycode';
 import MuiTextField, { TextFieldProps } from '@material-ui/core/TextField';
 import styled from '../../foundation/styled-components';
 import { JuiTextField } from '../../components/Forms/TextField';
 import { GetInputPropsOptions } from 'downshift';
+import { isEmailByReg } from '../../foundation/utils';
 
 type SelectedItem = {
   label: string;
@@ -62,7 +62,7 @@ class JuiDownshiftTextField extends React.PureComponent<
       shrink: true,
     });
   }
-  handleBlur = (event: MouseEvent) => {
+  handleBlur = () => {
     const { inputValue, selectedItems } = this.props;
     if (!String(inputValue).length && !selectedItems.length) {
       this.setState({
@@ -72,14 +72,18 @@ class JuiDownshiftTextField extends React.PureComponent<
     }
   }
   handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { autoSwitchEmail, onSelectChange, onInputChange } = this.props;
+    const {
+      autoSwitchEmail,
+      onSelectChange,
+      onInputChange,
+      selectedItems,
+    } = this.props;
     const { value } = event.target;
-    const emailRegExp = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*\s/;
-    const { selectedItems } = this.props;
 
+    onInputChange(value);
     if (
       autoSwitchEmail &&
-      emailRegExp.test(value) &&
+      isEmailByReg(value) &&
       selectedItems.findIndex((item: SelectedItem) => item.email === value) ===
         -1
     ) {
@@ -92,15 +96,10 @@ class JuiDownshiftTextField extends React.PureComponent<
       ]);
       onInputChange('');
     }
-    onInputChange(value);
   }
-  handleKeyDown = (event: Event) => {
+  handleKeyDown = (event: KeyboardEvent) => {
     const { onSelectChange, inputValue, selectedItems } = this.props;
-    if (
-      selectedItems.length &&
-      !inputValue.length &&
-      keycode(event) === 'backspace'
-    ) {
+    if (selectedItems.length && !inputValue.length && event.keyCode === 8) {
       onSelectChange(selectedItems.slice(0, selectedItems.length - 1));
     }
   }
@@ -131,6 +130,8 @@ class JuiDownshiftTextField extends React.PureComponent<
       selectedItems,
     } = this.props;
     const { showPlaceholder, shrink } = this.state;
+    const placeholderText =
+      selectedItems.length === 0 && showPlaceholder ? placeholder : '';
     return (
       <StyledTextField
         label={showPlaceholder ? placeholder : label}
@@ -142,6 +143,7 @@ class JuiDownshiftTextField extends React.PureComponent<
             startAdornment: selectedItems.map((item: SelectedItem) => {
               return InputItem ? (
                 <InputItem
+                  label={item.label}
                   key={item.id}
                   tabIndex={0}
                   isError={emailError === item.label.trim()}
@@ -159,9 +161,7 @@ class JuiDownshiftTextField extends React.PureComponent<
               root: 'inputRoot',
               input: 'input',
             },
-            placeholder: `${
-              selectedItems.length === 0 && showPlaceholder ? placeholder : ''
-            }`,
+            placeholder: placeholderText,
           } as any),
         }}
         InputLabelProps={{
