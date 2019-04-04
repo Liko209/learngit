@@ -170,17 +170,19 @@ class RTCCall {
       this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG);
       return;
     }
+    this._fsm.replyWithMessage(message);
   }
 
   replyWithPattern(
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: string,
-    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+    time: number = 0,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT = RTC_REPLY_MSG_TIME_UNIT.MINUTE,
   ): void {
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_PATTERN);
       return;
     }
+    this._fsm.replyWithPattern(pattern, time, timeUnit);
   }
 
   hangup(): void {
@@ -391,7 +393,7 @@ class RTCCall {
       CALL_FSM_NOTIFY.REPLY_WITH_PATTERN_ACTION,
       (
         pattern: RTC_REPLY_MSG_PATTERN,
-        time: string,
+        time: number,
         timeUnit: RTC_REPLY_MSG_TIME_UNIT,
       ) => {
         this._onReplyWithPatternAction(pattern, time, timeUnit);
@@ -614,7 +616,7 @@ class RTCCall {
 
   private _onReplyWithPatternAction(
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: string,
+    time: number,
     timeUnit: RTC_REPLY_MSG_TIME_UNIT,
   ) {
     this._callSession.replyWithPattern(pattern, time, timeUnit);

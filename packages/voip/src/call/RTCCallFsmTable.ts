@@ -79,7 +79,7 @@ interface IRTCCallFsmTableDependency {
   onReplyWithMessageAction(msg: string): void;
   onReplyWithPatternAction(
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: string,
+    time: number,
     timeUnit: RTC_REPLY_MSG_TIME_UNIT,
   ): void;
 }
@@ -188,7 +188,7 @@ class RTCCallFsmTable extends StateMachine {
           from: CallFsmState.REPLYING,
           to: (
             pattern: RTC_REPLY_MSG_PATTERN,
-            time: string,
+            time: number,
             timeUnit: RTC_REPLY_MSG_TIME_UNIT,
           ) => {
             dependency.onReplyWithPatternAction(pattern, time, timeUnit);
@@ -473,6 +473,7 @@ class RTCCallFsmTable extends StateMachine {
           from: [
             CallFsmState.IDLE,
             CallFsmState.ANSWERING,
+            CallFsmState.REPLYING,
             CallFsmState.CONNECTING,
             CallFsmState.CONNECTED,
             CallFsmState.HOLDING,
@@ -487,6 +488,7 @@ class RTCCallFsmTable extends StateMachine {
           from: [
             CallFsmState.IDLE,
             CallFsmState.ANSWERING,
+            CallFsmState.REPLYING,
             CallFsmState.CONNECTING,
             CallFsmState.CONNECTED,
             CallFsmState.HOLDING,

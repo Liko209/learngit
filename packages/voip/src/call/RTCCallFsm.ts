@@ -191,13 +191,21 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
     });
   }
 
-  replyWithMessage(message: string): void {}
+  replyWithMessage(message: string): void {
+    this._eventQueue.push({ name: CallFsmEvent.REPLY_WITH_MSG }, () => {
+      this._callFsmTable.replyWithMessage(message);
+    });
+  }
 
   replyWithPattern(
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: string,
+    time: number,
     timeUnit: RTC_REPLY_MSG_TIME_UNIT,
-  ): void {}
+  ): void {
+    this._eventQueue.push({ name: CallFsmEvent.REPLY_WITH_MSG }, () => {
+      this._callFsmTable.replyWithPattern(pattern, time, timeUnit);
+    });
+  }
 
   public accountReady() {
     this._eventQueue.push({ name: CallFsmEvent.ACCOUNT_READY }, () => {
@@ -333,7 +341,7 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
 
   onReplyWithPatternAction(
     pattern: RTC_REPLY_MSG_PATTERN,
-    time: string,
+    time: number,
     timeUnit: RTC_REPLY_MSG_TIME_UNIT,
   ): void {
     this.emit(
