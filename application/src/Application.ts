@@ -13,6 +13,7 @@ import * as FeaturesFlag from '@/modules/featuresFlags/module.config';
 import * as Feedback from '@/modules/feedback/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
+import { errorReporter } from '@/utils/error';
 
 @injectable()
 class Application {
@@ -20,6 +21,7 @@ class Application {
 
   run() {
     Pal.instance.setImageDownloader(new ImageDownloader());
+    Pal.instance.setErrorReporter(errorReporter);
     const jupiter = this._jupiter;
     // TODO auto load modules
     jupiter.registerModule(sw.config);
