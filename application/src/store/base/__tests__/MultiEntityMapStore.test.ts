@@ -209,5 +209,17 @@ describe('MultiEntityMapStore', () => {
         done();
       },         120);
     });
+
+    it('should not refresh cache when refreshCache is false in batchSet ', async (done: any) => {
+      setHidden(false);
+      setting.cacheCount = 1;
+      instance = new MultiEntityMapStore(ENTITY_NAME.POST, setting);
+      instance.batchSet([{ id: 1 }, { id: 2 }]);
+      expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+      setTimeout(() => {
+        expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+        done();
+      },         120);
+    });
   });
 });

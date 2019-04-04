@@ -13,7 +13,7 @@ import { Post } from 'sdk/module/post/entity';
 import _ from 'lodash';
 
 class PostUsedItemCache implements IUsedCache {
-  getUsedId(): number[] {
+  getUsedIds(): number[] {
     let usedItemIds: number[] = [];
     const data = (storeManager.getEntityMapStore(
       ENTITY_NAME.POST,
