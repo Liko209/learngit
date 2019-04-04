@@ -14,7 +14,7 @@ import { AllureHelper } from './allure-helper';
 import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
-import { IUser, IStep } from '../models';
+import { IUser, IStep, LogOptions } from '../models';
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 
@@ -91,12 +91,17 @@ class Helper {
     return await Promise.all(promises);
   }
 
-  async log(step: IStep | string, takeScreenShot: boolean = false) {
-    return await this.logHelper.log(step, takeScreenShot);
+  async log(step: IStep | string,
+    args?: { [key: string]: any } | boolean | LogOptions,
+    options?: boolean | LogOptions) {
+    return await this.logHelper.log(step, args, options);
   }
 
-  async withLog(step: IStep | string, cb: (step?: IStep) => Promise<any>, takeScreenShot: boolean = false) {
-    return await this.logHelper.withLog(step, cb, takeScreenShot);
+  async withLog(step: IStep | string,
+    args: { [key: string]: any } | ((step?: IStep) => Promise<any>),
+    cb?: boolean | LogOptions | ((step?: IStep) => Promise<any>),
+    options?: boolean | LogOptions) {
+    return await this.logHelper.withLog(step, args, cb, options);
   }
 
   async getGlip(user: IUser) {
