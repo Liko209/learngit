@@ -19,6 +19,7 @@ import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 class PostService extends EntityBaseService<Post> {
   static serviceName = 'PostService';
   postController: PostController;
@@ -131,9 +132,15 @@ class PostService extends EntityBaseService<Post> {
   }
 
   handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
+      logId,
+    );
     this.getPostController()
       .getPostDataController()
       .handleIndexPosts(data, maxPostsExceed);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {

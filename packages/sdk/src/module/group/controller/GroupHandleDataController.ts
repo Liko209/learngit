@@ -212,9 +212,6 @@ class GroupHandleDataController {
     if (groups.length === 0) {
       return;
     }
-
-    const logLabel = `[Performance]grouphandleData ${Date.now()}`;
-    console.time(logLabel);
     const transformData = await this.getTransformData(groups);
     const data = transformData.filter(item => item);
 
@@ -225,7 +222,6 @@ class GroupHandleDataController {
     // if (shouldCheckIncompleteMembers) {
     //   await checkIncompleteGroupsMembers(normalGroups);
     // }
-    console.timeEnd(logLabel);
   }
 
   doFavoriteGroupsNotification = async (favIds: number[]) => {

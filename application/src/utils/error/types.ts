@@ -3,9 +3,9 @@
  * @Date: 2019-03-21 14:40:46
  * Copyright © RingCentral. All rights reserved.
  */
+import { IErrorReporter as ISdkErrorReporter } from 'sdk/pal';
 
-export interface IErrorReporter {
-  report: (error: Error) => void;
+export interface IErrorReporter extends ISdkErrorReporter {
   setUserContextInfo: (contextInfo: UserContextInfo) => void;
 }
 

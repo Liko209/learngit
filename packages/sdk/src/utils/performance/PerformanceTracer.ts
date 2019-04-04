@@ -18,7 +18,7 @@ class PerformanceTracer {
 
   start(key: string, id: number) {
     if (this.scenarios.has(id)) {
-      mainLogger.warn(`performanceStart already has key ${key}`);
+      mainLogger.info(`performanceStart already has key ${key}`);
     } else {
       this.scenarios.set(id, performance.now());
       this.keys.set(id, key);

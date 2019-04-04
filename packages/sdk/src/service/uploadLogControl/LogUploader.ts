@@ -9,6 +9,7 @@ import { Api } from '../../api';
 import { AccountUserConfig } from '../../service/account/config';
 import AccountService from '../account';
 import { ILogUploader } from './consumer';
+import { Pal } from '../../pal';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {
@@ -51,6 +52,8 @@ export class LogUploader implements ILogUploader {
       return 'retry';
     }
     mainLogger.debug('Log errorHandler: ignore=>retry');
+    Pal.instance.getErrorReporter() &&
+      Pal.instance.getErrorReporter().report(error);
     return 'retry';
   }
 

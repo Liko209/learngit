@@ -32,6 +32,7 @@ import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
 import { ProfileService } from 'sdk/module/profile';
 import { TDelta } from '../base/fetch/types';
+import { mainLogger } from 'sdk';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
@@ -65,10 +66,16 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   ): Promise<{ data: Group[]; hasMore: boolean }> {
     const groupService = GroupService.getInstance<GroupService>();
     const result = await groupService.getGroupsByType(this._queryType);
+    mainLogger.info(
+      `fetch left rail group: ${result && result.length} type: ${
+        this._queryType
+      }`,
+    );
     return { data: result, hasMore: false };
   }
 }
 
+const LOG_TAG = 'SectionGroupHandler';
 class SectionGroupHandler extends BaseNotificationSubscribable {
   private _stateService: StateService = StateService.getInstance();
 
@@ -257,6 +264,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const profileService: ProfileService = ProfileService.getInstance();
       limit = await profileService.getMaxLeftRailGroup();
     }
+    mainLogger.info(LOG_TAG, `_remove limit: ${limit}`);
     const directIdsShouldBeRemoved: number[] = [];
     const teamIdsShouldBeRemoved: number[] = [];
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
@@ -576,6 +584,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const profileService = ProfileService.getInstance<ProfileService>();
     const lastGroupId = this._lastGroupId;
     const limit = await profileService.getMaxLeftRailGroup();
+    mainLogger.info(
+      LOG_TAG,
+      `removeOverLimitGroupByChangingCurrentGroupId limit: ${limit}`,
+    );
     if (currentId !== lastGroupId) {
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.DIRECT_MESSAGE,
@@ -622,6 +634,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
     const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
     const limit = await profileService.getMaxLeftRailGroup();
+    mainLogger.info(
+      LOG_TAG,
+      `removeOverLimitGroupByChangingIds limit: ${limit}`,
+    );
     await this._removeOverLimitGroupByChangingIds(
       SECTION_TYPE.DIRECT_MESSAGE,
       directIds,
