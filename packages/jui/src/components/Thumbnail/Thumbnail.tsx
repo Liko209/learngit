@@ -49,6 +49,7 @@ const StyledModifyImage = styled<JuiThumbnailWithUrlProps, 'span'>(
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'auto')};
 `;
 
 class JuiThumbnail extends React.PureComponent<JuiThumbnailProps> {
@@ -69,7 +70,11 @@ class JuiThumbnail extends React.PureComponent<JuiThumbnailProps> {
     return (
       <>
         {url ? (
-          <StyledModifyImage url={url} onClick={onClick} />
+          <StyledModifyImage
+            url={url}
+            onClick={onClick}
+            data-test-automation-id="thumbnail"
+          />
         ) : (
           <JuiIconography iconSize={size === 'small' ? 'small' : 'extraLarge'}>
             {iconType}

@@ -21,12 +21,18 @@ import { SecondaryText } from '../common/SecondaryText.View';
 const SQUARE_SIZE = 36;
 @observer
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
+  private _thumbnailRef: React.RefObject<any> = React.createRef();
   private _renderItem = (hover: boolean) => {
     const { fileName, id, personName, createdTime, downloadUrl } = this.props;
     return (
       <>
         <JuiListItemIcon>
-          <Thumbnail id={id} type="image" onClick={this._handleImageClick} />
+          <Thumbnail
+            ref={this._thumbnailRef}
+            id={id}
+            type="image"
+            onClick={this._handleImageClick}
+          />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={fileName} />}
@@ -43,10 +49,10 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
   }
 
   _handleImageClick = async (event: React.MouseEvent<HTMLElement>) => {
-    const { id, downloadUrl, groupId } = this.props;
+    const { id, groupId } = this.props;
     const target = event.currentTarget;
     showImageViewer(groupId, id, {
-      thumbnailSrc: downloadUrl,
+      thumbnailSrc: this._thumbnailRef.current.vm.thumbsUrlWithSize,
       initialWidth: SQUARE_SIZE,
       initialHeight: SQUARE_SIZE,
       originElement: target,
