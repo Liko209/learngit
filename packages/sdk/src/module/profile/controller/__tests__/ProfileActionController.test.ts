@@ -1,7 +1,7 @@
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
  * @Date: 2019-02-14 15:55:54
- * Copyright © RingCentral. All rights reserved.
+ * Copyright ï¿½ RingCentral. All rights reserved.
  */
 import { Profile } from '../../entity';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
@@ -182,7 +182,7 @@ describe('ProfileActionController', () => {
       const controller = getActionController();
       try {
         const result = await controller.putFavoritePost(222, true);
-        expect(result).toEqual({ _id: 2, favorite_post_ids: [111, 222] });
+        expect(result).toEqual({ _id: 2, favorite_post_ids: [222, 111] });
       } catch (e) {
         expect(true).toBeFalsy();
       }
