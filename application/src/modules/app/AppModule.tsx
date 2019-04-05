@@ -28,7 +28,6 @@ import { AccountUserConfig } from 'sdk/service/account/config';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
-import { ApiConfig, DBConfig } from 'sdk/src/types';
 
 /**
  * The root module, we call it AppModule,
@@ -203,8 +202,8 @@ class AppModule extends AbstractModule {
       window.location.href = '/';
     });
 
-    const api: ApiConfig = config.get('api');
-    const db: DBConfig = config.get('db');
+    const api = config.get('api');
+    const db = config.get('db');
     console.log('TCL: AppModule -> private_init -> api', api);
     await Sdk.init({
       api,

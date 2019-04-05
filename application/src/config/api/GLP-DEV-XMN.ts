@@ -1,5 +1,5 @@
-import { ApiConfig } from 'sdk/types';
-const config: ApiConfig = {
+import { PartialApiConfig } from 'sdk/types';
+const config: PartialApiConfig = {
   rc: {
     server: 'https://api-glpdevxmn.lab.nordigy.ru',
     clientId: 'YCWFuqW8T7-GtSTb6KBS6g',

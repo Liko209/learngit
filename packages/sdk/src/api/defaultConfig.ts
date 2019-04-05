@@ -18,6 +18,7 @@ const defaultConfig: ApiConfig = {
     redirectUri: '',
     brandId: 0,
   },
+  glip_desktop: {},
   upload: {
     server: '',
   },

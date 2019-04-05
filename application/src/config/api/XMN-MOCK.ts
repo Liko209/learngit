@@ -1,5 +1,5 @@
-import { ApiConfig } from 'sdk/types';
-const config: ApiConfig = {
+import { PartialApiConfig } from 'sdk/types';
+const config: PartialApiConfig = {
   rc: {
     server: 'https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/rc',
     clientId: 'YCWFuqW8T7-GtSTb6KBS6g',

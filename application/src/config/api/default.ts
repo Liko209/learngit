@@ -13,6 +13,7 @@ const config: ApiConfig = {
     clientId: 'dQPxFL6KTWWnolcs74LM4Q',
     clientSecret: 'TT0X369AQ_q8-rUaT8NGzAg5KP_VrFSaGctmkvb4bNEQ',
     redirectUri: 'http://localhost:5000/unified-login/',
+    brandId: 0,
   },
   glip: {
     server: 'https://app.glip.com',
