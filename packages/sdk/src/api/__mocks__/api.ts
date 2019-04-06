@@ -13,7 +13,6 @@ Api.rcNetworkClient = new NetworkClient();
 Api.uploadNetworkClient = new NetworkClient();
 Api.httpConfig = {
   rc: { pathPrefix: '/v1.x', clientId: 'rc_id', clientSecret: 'rc_secret' },
-  glip2: { clientId: 'glip2_id', clientSecret: 'glip2_secret' },
 };
 Api.getDataById = jest.fn();
 Api.postData = jest.fn();

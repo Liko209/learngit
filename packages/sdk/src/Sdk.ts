@@ -9,13 +9,7 @@ import { Foundation, NetworkManager, Token } from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
-import {
-  Api,
-  HandleByGlip,
-  HandleByGlip2,
-  HandleByRingCentral,
-  HandleByUpload,
-} from './api';
+import { Api, HandleByGlip, HandleByRingCentral, HandleByUpload } from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
 import DaoManager from './dao/DaoManager';
@@ -149,11 +143,7 @@ class Sdk {
     AccountGlobalConfig.removeUserDictionary();
   }
 
-  updateNetworkToken(tokens: {
-    rcToken?: Token;
-    glipToken?: string;
-    glip2Token?: Token;
-  }) {
+  updateNetworkToken(tokens: { rcToken?: Token; glipToken?: string }) {
     if (tokens.glipToken) {
       this._glipToken = tokens.glipToken;
       this.networkManager.setOAuthToken(
@@ -167,11 +157,6 @@ class Sdk {
     }
     if (tokens.rcToken) {
       this.networkManager.setOAuthToken(tokens.rcToken, HandleByRingCentral);
-      this.networkManager.setOAuthToken(tokens.rcToken, HandleByGlip2);
-    }
-
-    if (tokens.glip2Token) {
-      this.networkManager.setOAuthToken(tokens.glip2Token, HandleByGlip2);
     }
   }
 

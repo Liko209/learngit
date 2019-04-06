@@ -18,14 +18,12 @@ import { IHandleType, NetworkSetup, NetworkManager } from 'foundation';
 import {
   HandleByGlip,
   HandleByRingCentral,
-  HandleByGlip2,
   HandleByUpload,
   HandleByCustom,
 } from './handlers';
 const types = [
   HandleByGlip,
   HandleByRingCentral,
-  HandleByGlip2,
   HandleByUpload,
   HandleByCustom,
 ];

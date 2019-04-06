@@ -50,7 +50,7 @@ type ApiConfig = {
 type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> };
 type PartialApiConfig = DeepPartial<ApiConfig>;
 
-type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload' | 'glip_desktop';
+type HttpConfigType = 'glip' | 'rc' | 'upload' | 'glip_desktop';
 
 export {
   BaseConfig,

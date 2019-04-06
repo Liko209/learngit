@@ -11,13 +11,6 @@ const defaultConfig: ApiConfig = {
     server: '',
     apiServer: '',
   },
-  glip2: {
-    server: '',
-    clientId: '',
-    clientSecret: '',
-    redirectUri: '',
-    brandId: 0,
-  },
   glip_desktop: {},
   upload: {
     server: '',
