@@ -6,27 +6,16 @@
 
 import { AppEnvSetting } from 'sdk/module/env';
 import _ from 'lodash';
-import { Config } from '../index';
+import { Config } from '../Config';
 import { RawConfig } from '../types';
 import { ApiConfig } from 'sdk/types';
-import { parseConfigMap } from '../utils';
-jest.mock('../utils', () => {
-  const mockRawConfig: RawConfig = {
-    api: {
-      default: {} as ApiConfig,
-      xm1: {},
-      xm2: {},
-    },
-    db: {
-      default: {
-        adapter: 'dexie',
-      },
-    },
-  };
+import { parseConfigMap } from '../requireUtil';
+jest.mock('../requireUtil', () => {
   return {
-    parseConfigMap: jest.fn().mockReturnValue(mockRawConfig),
+    parseConfigMap: jest.fn(),
   };
 });
+
 jest.mock('sdk/module/env', () => {
   const mockAppEnvSetting = {
     getEnv: jest.fn(),
@@ -36,14 +25,30 @@ jest.mock('sdk/module/env', () => {
   };
 });
 
+// utils.prototype.parseConfigMap = jest.fn();
 describe('config', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    const mockRawConfig: RawConfig = {
+      api: {
+        default: {} as ApiConfig,
+        xm1: {},
+        xm2: {},
+      },
+      db: {
+        default: {
+          adapter: 'dexie',
+        },
+      },
+    };
+    (parseConfigMap as jest.Mock).mockReturnValue(mockRawConfig);
+    // (jest.spyOn(utils, 'parse')).mockReturnValue(mockRawConfig);
+    // (jest.spyOn(utils, 'parse')).mockReturnValue(mockRawConfig);
   });
   describe('getEnv()', () => {
     it('should return env ', () => {
       (AppEnvSetting.getEnv as jest.Mock).mockReturnValue('xm1');
-      const config = require('../index').default;
+      const config = new Config();
       expect(config.getEnv()).toEqual('xm1');
       expect(AppEnvSetting.getEnv).toBeCalled();
     });
@@ -63,7 +68,7 @@ describe('config', () => {
         },
       };
       (parseConfigMap as jest.Mock).mockReturnValue(mockRawConfig);
-      const config = require('../index').default;
+      const config = new Config();
       jest.spyOn(config, 'isProductionBuild').mockReturnValue(true);
       expect(config.getAllEnv()).toEqual(['xm1', 'xm2']);
     });
@@ -84,7 +89,7 @@ describe('config', () => {
         },
       };
       (parseConfigMap as jest.Mock).mockReturnValue(mockRawConfig);
-      const config = require('../index').default;
+      const config = new Config();
       jest.spyOn(config, 'isProductionBuild').mockReturnValue(true);
       expect(config.getAllEnv()).toEqual(['xm1', 'xm2', 'xm3']);
     });
@@ -112,7 +117,8 @@ describe('config', () => {
       };
       (parseConfigMap as jest.Mock).mockReturnValue(mockRawConfig);
       (AppEnvSetting.getEnv as jest.Mock).mockReturnValue('xm1');
-      const config: Config = require('../index').default;
+      // const Config = require('../index').Config;
+      const config = new Config();
       const apiConfig = config.get('api');
       const dbConfig = config.get('db');
       // merge with default
