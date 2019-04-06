@@ -1,26 +1,14 @@
 // Replace ${deployHost} with real deployHost
 import _ from 'lodash';
 import { AppEnvSetting } from 'sdk/module/env';
-import { DBConfig, ApiConfig } from 'sdk/types';
+import {
+  DirectoryConfigMap,
+  EnvConfig,
+} from './types';
+import { parseConfigMap } from './utils';
 
 const { protocol, hostname, port } = window.location;
 const deployHost = `${protocol}//${hostname}${port && `:${port}`}`;
-type DirectoryConfigMap = {
-  api: ApiConfig;
-  db: DBConfig;
-};
-
-type Directories = keyof DirectoryConfigMap;
-type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> };
-
-type EnvConfig<T> = {
-  default: T;
-} & {
-  [env: string]: DeepPartial<T>;
-};
-
-type RawConfig = { [key in Directories]: EnvConfig<DirectoryConfigMap[key]> };
-
 function get(object: object, property: string | string[]): any {
   const elems = Array.isArray(property) ? property : property.split('.');
   const name = elems[0];
@@ -47,19 +35,6 @@ function set(object: object, property: string | string[], value: any) {
     obj = object[name];
   }
   set(obj, elems.slice(1), value);
-}
-
-function parseConfigMap(): RawConfig {
-  const requireContext = require.context('./', true, /^(?!.*\/index).*\.ts$/);
-  const keys = requireContext.keys();
-  const rawConfig = {} as RawConfig;
-  return keys.reduce((config, envPath) => {
-    const [, keyName, envFileName] = envPath.split('/');
-    const [envName] = envFileName.split('.');
-    config[keyName] = config[keyName] || {};
-    config[keyName][envName] = requireContext(envPath)['default'];
-    return config;
-  },                 rawConfig);
 }
 
 function getEnvArray() {
@@ -171,3 +146,4 @@ class Config {
 }
 
 export default Config.Instance;
+export { Config };

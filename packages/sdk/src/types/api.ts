@@ -55,9 +55,7 @@ type ApiConfig = {
   sumologic: SumologicConfig;
 };
 
-type DeepPartial<T> = {
-  [P in keyof T]?: DeepPartial<T[P]>;
-};
+type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> };
 type PartialApiConfig = DeepPartial<ApiConfig>;
 
 type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload' | 'glip_desktop';
@@ -72,4 +70,5 @@ export {
   ApiConfig,
   PartialApiConfig,
   HttpConfigType,
+  DeepPartial,
 };
