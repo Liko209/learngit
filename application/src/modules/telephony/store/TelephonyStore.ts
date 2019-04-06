@@ -56,10 +56,27 @@ class TelephonyStore {
   pendingForRecord: boolean = false;
 
   constructor() {
-    this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
-      this.holdState = to as HOLD_STATE;
-    });
+    type fsmPropsType = '_holdFSM' | '_recordFSM' | '_callWindowFSM';
+    type observablePropsType = 'holdState' | 'recordState' | 'callWindowState';
+    type toTypes = HOLD_STATE | RECORD_STATE | CALL_WINDOW_STATUS;
+
+    [
+      ['_holdFSM', 'holdState'],
+      ['_callWindowFSM', 'callWindowState'],
+      ['_recordFSM', 'recordState'],
+    ].forEach(
+      ([fsmProp, observableProps]: [fsmPropsType, observablePropsType]) => {
+        this[fsmProp]
+          .observe(
+            'onAfterTransition',
+            (lifecycle: LifeCycle) => {
+              const { to } = lifecycle;
+              this[observableProps] = to as toTypes;
+            },
+          );
+      },
+    );
+
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
       const { to } = lifecycle;
       this.callState = to as CALL_STATE;
@@ -76,10 +93,6 @@ class TelephonyStore {
           },         300);
           break;
       }
-    });
-    this._callWindowFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
-      this.callWindowState = to as CALL_WINDOW_STATUS;
     });
   }
 
