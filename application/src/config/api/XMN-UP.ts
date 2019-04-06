@@ -5,11 +5,6 @@ const config: DeepPartial<ApiConfig> = {
     clientId: 'YCWFuqW8T7-GtSTb6KBS6g',
     clientSecret: 'vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA',
   },
-  glip2: {
-    server: 'https://api-xmnup.lab.nordigy.ru',
-    clientId: 'YCWFuqW8T7-GtSTb6KBS6g',
-    clientSecret: 'vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA',
-  },
   glip: {
     server: 'https://xmnup.asialab.glip.net',
     apiServer: 'https://xmnup.asialab.glip.net:8443',

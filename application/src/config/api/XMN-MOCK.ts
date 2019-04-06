@@ -5,11 +5,6 @@ const config: DeepPartial<ApiConfig> = {
     clientId: 'YCWFuqW8T7-GtSTb6KBS6g',
     clientSecret: 'vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA',
   },
-  glip2: {
-    server: 'https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/glip2',
-    clientId: 'YCWFuqW8T7-GtSTb6KBS6g',
-    clientSecret: 'vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA',
-  },
   glip: {
     server: 'https://xmn02-i01-mck02.lab.nordigy.ru/jupiter/glip',
     apiServer: 'https://xmn02-i01-mck02.lab.nordigy.ru:8443/jupiter/glip',

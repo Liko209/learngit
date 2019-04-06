@@ -7,14 +7,6 @@ const config: ApiConfig = {
     clientSecret: 'bkUvnRtBQeCLi2n3EEwczQqv-HRcJmRbG4ec4pHI9wiQ',
     redirectUri: 'glip://rclogin',
   },
-  glip2: {
-    server: 'https://platform.ringcentral.com',
-    pathPrefix: '/restapi',
-    clientId: 'dQPxFL6KTWWnolcs74LM4Q',
-    clientSecret: 'TT0X369AQ_q8-rUaT8NGzAg5KP_VrFSaGctmkvb4bNEQ',
-    redirectUri: 'http://localhost:5000/unified-login/',
-    brandId: 0,
-  },
   glip: {
     server: 'https://app.glip.com',
     apiServer: 'https://app.glip.com',

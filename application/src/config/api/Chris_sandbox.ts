@@ -5,11 +5,6 @@ const config: DeepPartial<ApiConfig> = {
     clientId: 'YCWFuqW8T7-GtSTb6KBS6g',
     clientSecret: 'vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA',
   },
-  glip2: {
-    server: 'https://api-glpdevxmn.lab.nordigy.ru',
-    clientId: 'YCWFuqW8T7-GtSTb6KBS6g',
-    clientSecret: 'vRR_7-8uQgWpruNZNLEaKgcsoaFaxnS-uZh9uWu2zlsA',
-  },
   glip: {
     server: 'https://aws13-g04-uds02.asialab.glip.net:11904',
     apiServer: 'https://aws13-g04-uds02.asialab.glip.net:8443',

@@ -11,7 +11,6 @@ import {
   UnifiedLoginAuthenticator,
   ReLoginAuthenticator,
 } from '../../authenticator';
-import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
 import { AccountManager } from '../../framework';
 import { Aware } from '../../utils/error';
 import BaseService from '../BaseService';
@@ -55,7 +54,7 @@ class AuthService extends BaseService {
   }
 
   async login(params: ILogin) {
-    await Promise.all([this.loginGlip(params), this.loginGlip2(params)]);
+    await this.loginGlip(params);
     this.onLogin();
   }
 
@@ -71,18 +70,6 @@ class AuthService extends BaseService {
     } catch (err) {
       mainLogger.error(`err: ${err}`);
       throw ErrorParserHolder.getErrorParser().parse(err);
-    }
-  }
-
-  async loginGlip2(params: ILogin) {
-    const authConfig = new AuthUserConfig();
-    try {
-      const authToken = await RCAuthApi.loginGlip2ByPassword(params);
-      authConfig.setGlip2Token(authToken);
-      notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
-    } catch (err) {
-      // Since glip2 api is no in use now, we can ignore all it's errors
-      Aware(ERROR_CODES_SDK.OAUTH, err.message);
     }
   }
 

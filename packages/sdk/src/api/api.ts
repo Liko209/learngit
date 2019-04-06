@@ -108,10 +108,6 @@ class Api {
     return this.getNetworkClient('glip', HandleByGlip);
   }
 
-  static get glip2NetworkClient() {
-    return this.getNetworkClient('glip2', HandleByGlip2);
-  }
-
   static get glipDesktopNetworkClient() {
     return this.getNetworkClient('glip_desktop', HandleByGlip);
   }

@@ -1,4 +1,4 @@
-import { RcConfig, GlipConfig, Glip2Config, UploadConfig } from '../../types';
+import { RcConfig, GlipConfig, UploadConfig } from '../../types';
 
 const rc: RcConfig = {
   clientId: '',
@@ -6,17 +6,15 @@ const rc: RcConfig = {
   redirectUri: '/',
 };
 
-const glip: GlipConfig = {};
-
-const glip2: Glip2Config = {
-  clientId: '1',
-  clientSecret: '',
-  redirectUri: '/',
-  brandId: 0,
+const glip: GlipConfig = {
+  server: '',
+  cacheServer: '',
+  pathPrefix: '',
+  apiServer: '',
 };
 
 const upload: UploadConfig = {};
 
-const apiConfig = { rc, glip, glip2, upload };
+const apiConfig = { rc, glip, upload };
 
 export { apiConfig };

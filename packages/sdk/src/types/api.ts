@@ -16,13 +16,6 @@ type RcConfig = BaseConfig & {
   redirectUri: string;
 };
 
-type Glip2Config = BaseConfig & {
-  clientId: string;
-  clientSecret: string;
-  redirectUri: string;
-  brandId: number;
-};
-
 type GlipConfig = BaseConfig & {
   apiServer: string;
 };
@@ -47,7 +40,6 @@ type SumologicConfig = {
 type ApiConfig = {
   rc: RcConfig;
   glip: GlipConfig;
-  glip2: Glip2Config;
   glip_desktop: DeskTopConfig;
   upload: UploadConfig;
   splitio: SplitIOConfig;
@@ -63,7 +55,6 @@ type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload' | 'glip_desktop';
 export {
   BaseConfig,
   RcConfig,
-  Glip2Config,
   GlipConfig,
   SplitIOConfig,
   UploadConfig,

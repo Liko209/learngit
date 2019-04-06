@@ -5,12 +5,6 @@ const config: DeepPartial<ApiConfig> = {
     clientId: 'MkCdlSVqQ06H6i7KYcv9bg',
     clientSecret: '5_tFBXBQTLWaVcPF61LUGgngBfc8KGQCaZ0_UTw80vsw',
   },
-  glip2: {
-    server: 'https://api-glpbocams.lab.nordigy.ru',
-    clientId: 'MkCdlSVqQ06H6i7KYcv9bg',
-    clientSecret: '5_tFBXBQTLWaVcPF61LUGgngBfc8KGQCaZ0_UTw80vsw',
-    redirectUri: 'http://localhost:3000/unified-login/',
-  },
   glip: {
     server: 'https://app.glipdemo.com',
     apiServer: 'https://app.glipdemo.com:8443',

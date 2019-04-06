@@ -55,24 +55,6 @@ class RCAuthApi extends Api {
     return RCAuthApi.rcNetworkClient.http<ITokenModel>(query);
   }
 
-  /**
-   * @param {string} grant_type
-   * @param {string} username
-   * @param {string} password
-   * rc login for glip 2.0 api by password
-   */
-  static loginGlip2ByPassword(data: object) {
-    const model = { ...data, grant_type: 'password' };
-    const query = {
-      path: RINGCENTRAL_API.API_OAUTH_TOKEN,
-      method: NETWORK_METHOD.POST,
-      data: model,
-      authFree: true,
-      via: NETWORK_VIA.HTTP,
-    };
-    return Api.glip2NetworkClient.http<ITokenModel>(query);
-  }
-
   static refreshToken(data: ITokenModel) {
     const model = {
       refresh_token: data.refresh_token,

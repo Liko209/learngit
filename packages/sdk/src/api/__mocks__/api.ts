@@ -8,7 +8,6 @@ const Api = jest.genMockFromModule('../api');
 const { default: NetworkClient } = jest.genMockFromModule('../NetworkClient');
 
 Api.glipNetworkClient = new NetworkClient();
-Api.glip2NetworkClient = new NetworkClient();
 Api.glipDesktopNetworkClient = new NetworkClient();
 Api.rcNetworkClient = new NetworkClient();
 Api.uploadNetworkClient = new NetworkClient();

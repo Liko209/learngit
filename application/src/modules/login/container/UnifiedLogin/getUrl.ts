@@ -25,8 +25,8 @@ const defaultOptions = {
 };
 
 const getUrl = (location: History.LocationState) => {
-  const { glip2, glip } = config.get('api');
-  const url = `${glip2.server}${glip2.pathPrefix || ''}/oauth/authorize`;
+  const { rc, glip } = config.get('api');
+  const url = `${rc.server}${rc.pathPrefix || ''}/oauth/authorize`;
   const { from } = location.state || { from: {} };
   const { pathname = '/', search = '', hash = '' } = from;
   const parsedSearch = parse(search, { ignoreQueryPrefix: true });
@@ -41,7 +41,7 @@ const getUrl = (location: History.LocationState) => {
     state,
     glipApiBaseURL,
     glipAppRedirectURL,
-    client_id: glip2.clientId,
+    client_id: rc.clientId,
     ui_locales: getLanguage(), // default en_US
   };
   const params = { ...defaultOptions, ...options };
