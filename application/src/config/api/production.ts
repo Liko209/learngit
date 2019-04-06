@@ -1,5 +1,5 @@
-import { PartialApiConfig } from 'sdk/types';
-const config: PartialApiConfig = {
+import { ApiConfig, DeepPartial } from 'sdk/types';
+const config: DeepPartial<ApiConfig> = {
   rc: {
     server: 'https://platform.ringcentral.com',
     clientId: 'YCWFuqW8T7-GtSTb6KBS6g',

@@ -1,5 +1,5 @@
-import { PartialApiConfig } from 'sdk/types';
-const config: PartialApiConfig = {
+import { ApiConfig, DeepPartial } from 'sdk/types';
+const config: DeepPartial<ApiConfig> = {
   rc: {
     server: 'https://api-glpbocams.lab.nordigy.ru',
     clientId: 'MkCdlSVqQ06H6i7KYcv9bg',
