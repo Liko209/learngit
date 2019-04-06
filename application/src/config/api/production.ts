@@ -23,10 +23,5 @@ const config: DeepPartial<ApiConfig> = {
   splitio: {
     clientSecret: 'fo81g08vhro235qg0c6chlh45vo7ejang4bs',
   },
-  sumologic: {
-    server: 'https://endpoint1.collection.us2.sumologic.com/receiver/v1/http/',
-    uniqueHttpCollectorCode:
-      'ZaVnC4dhaV28t7AbUj9Cd_JP7Cb44le-OLPq1-sjIkhGgL155gqi8P3etfNtjzOLtijRtTufVhjoqOMZFNCSDEnTAcEAN36bfF41Jmf7_nssAS-z8jTnjg==',
-  },
 };
 export default config;

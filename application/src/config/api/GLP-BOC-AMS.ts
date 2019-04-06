@@ -17,16 +17,5 @@ const config: DeepPartial<ApiConfig> = {
   upload: {
     server: 'https://api.glipdemo.com',
   },
-  launchdarkly: {
-    clientId: '5c6a4261eb049c2df965e0a7',
-  },
-  splitio: {
-    clientSecret: '2rvs5gfmofo7giss2t6u1ebvi0dirt5ooqmt',
-  },
-  sumologic: {
-    server: 'https://endpoint1.collection.us2.sumologic.com/receiver/v1/http/',
-    uniqueHttpCollectorCode:
-      'ZaVnC4dhaV28t7AbUj9Cd_JP7Cb44le-OLPq1-sjIkhGgL155gqi8P3etfNtjzOLtijRtTufVhjoqOMZFNCSDEnTAcEAN36bfF41Jmf7_nssAS-z8jTnjg==',
-  },
 };
 export default config;

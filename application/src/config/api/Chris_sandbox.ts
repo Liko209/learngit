@@ -14,19 +14,8 @@ const config: DeepPartial<ApiConfig> = {
     server: 'https://aws13-g04-uds02.asialab.glip.net:11904',
     pathPrefix: '/v1.0/desktop',
   },
-  splitio: {
-    clientSecret: '2rvs5gfmofo7giss2t6u1ebvi0dirt5ooqmt',
-  },
-  launchdarkly: {
-    clientId: '5c6a4261eb049c2df965e0a7',
-  },
   upload: {
     server: 'https://aws13-g04-uds02.asialab.glip.net:11906',
-  },
-  sumologic: {
-    server: 'https://endpoint1.collection.us2.sumologic.com/receiver/v1/http/',
-    uniqueHttpCollectorCode:
-      'ZaVnC4dhaV28t7AbUj9Cd_JP7Cb44le-OLPq1-sjIkhGgL155gqi8P3etfNtjzOLtijRtTufVhjoqOMZFNCSDEnTAcEAN36bfF41Jmf7_nssAS-z8jTnjg==',
   },
 };
 
