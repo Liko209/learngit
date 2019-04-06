@@ -8,12 +8,12 @@ import { DBConfig, ApiConfig, DeepPartial } from 'sdk/types';
 
 // use directory to declare config
 // if want to add another new config, should add to this type
-type DirectoryConfigMap = {
+type ConfigMap = {
   api: ApiConfig;
   db: DBConfig;
 };
 
-type Directories = keyof DirectoryConfigMap;
+type Directories = keyof ConfigMap;
 
 type EnvConfig<T> = {
   // default should be complete T
@@ -23,6 +23,6 @@ type EnvConfig<T> = {
   [env: string]: DeepPartial<T>;
 };
 
-type RawConfig = { [key in Directories]: EnvConfig<DirectoryConfigMap[key]> };
+type DirectoryConfig = { [key in Directories]: EnvConfig<ConfigMap[key]> };
 
-export { DirectoryConfigMap, Directories, EnvConfig, RawConfig };
+export { ConfigMap, Directories, EnvConfig, DirectoryConfig };

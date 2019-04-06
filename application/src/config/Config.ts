@@ -7,7 +7,7 @@
 // Replace ${deployHost} with real deployHost
 import _ from 'lodash';
 import { AppEnvSetting } from 'sdk/module/env';
-import { DirectoryConfigMap } from './types';
+import { ConfigMap } from './types';
 import { loadFileConfigs, getEnvArray, get, set } from './utils';
 
 const { protocol, hostname, port } = window.location;
@@ -26,7 +26,7 @@ function buildConfig(conf: any, variables: any) {
 }
 
 class Config {
-  private _config: DirectoryConfigMap;
+  private _config: ConfigMap;
   private _env = '';
 
   constructor() {
@@ -62,15 +62,15 @@ class Config {
     });
   }
 
-  get<T1 extends DirectoryConfigMap, K1 extends keyof T1>(k1: K1): T1[K1];
+  get<T1 extends ConfigMap, K1 extends keyof T1>(k1: K1): T1[K1];
   get<
-    T1 extends DirectoryConfigMap,
+    T1 extends ConfigMap,
     K1 extends keyof T1,
     T2 extends T1[K1],
     K2 extends keyof T2
   >(k1: K1, k2: K2): T2[K2];
   get<
-    T1 extends DirectoryConfigMap,
+    T1 extends ConfigMap,
     K1 extends keyof T1,
     T2 extends T1[K1],
     K2 extends keyof T2,

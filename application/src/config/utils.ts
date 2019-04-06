@@ -6,10 +6,10 @@
 
 import _ from 'lodash';
 import { EnvConfig } from './types';
-import { parseConfigMap } from './requireUtil';
+import { parseDirectoryConfig } from './requireUtil';
 
 function getEnvArray() {
-  const configMap = parseConfigMap();
+  const configMap = parseDirectoryConfig();
   return Object.keys(configMap)
     .map(key => configMap[key])
     .map((envConfig: EnvConfig<any>) =>
@@ -21,7 +21,7 @@ function getEnvArray() {
 }
 
 function loadFileConfigs(env: string) {
-  const configMap = parseConfigMap();
+  const configMap = parseDirectoryConfig();
   return Object.keys(configMap)
     .map(key => ({
       key,
@@ -60,4 +60,4 @@ function set(object: object, property: string | string[], value: any) {
   set(obj, elems.slice(1), value);
 }
 
-export { parseConfigMap, loadFileConfigs, getEnvArray, get, set };
+export { parseDirectoryConfig, loadFileConfigs, getEnvArray, get, set };
