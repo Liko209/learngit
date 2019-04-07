@@ -5,12 +5,7 @@
  */
 import merge from 'lodash/merge';
 import NetworkClient, { INetworkRequests } from './NetworkClient';
-import {
-  ApiConfig,
-  HttpConfigType,
-  BaseConfig,
-  PartialApiConfig,
-} from '../types';
+import { ApiConfig, HttpConfigType, BaseConfig } from '../types';
 import { defaultConfig } from './defaultConfig';
 import { Raw } from '../framework/model';
 
@@ -34,7 +29,7 @@ class Api {
 
   static _networkManager: NetworkManager;
 
-  static init(config: PartialApiConfig, networkManager: NetworkManager): void {
+  static init(config: ApiConfig, networkManager: NetworkManager): void {
     this._httpConfig = merge({}, defaultConfig, config);
     Api.setupHandlers(networkManager);
   }
