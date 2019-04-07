@@ -11,7 +11,6 @@ import { AuthUserConfig } from '../../../../../account/config';
 
 jest.mock('../../../../../config');
 jest.mock('../../../../../account/config');
-GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../../../dao');
 jest.mock(

@@ -6,14 +6,14 @@
 
 import { getSingleEntity } from '../../../../../store/utils';
 import { BookmarkViewModel } from '../Bookmark.ViewModel';
-
 import { PostService } from 'sdk/module/post';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/post');
 jest.mock('../../../../../store/utils');
 
 const postService = new PostService();
-PostService.getInstance = jest.fn().mockReturnValue(postService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
 
 let bookmarkViewModel: BookmarkViewModel;
 

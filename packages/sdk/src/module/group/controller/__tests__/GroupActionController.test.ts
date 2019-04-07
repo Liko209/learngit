@@ -30,6 +30,7 @@ import { TeamPermissionController } from '../TeamPermissionController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
 import { PERMISSION_ENUM } from '../../../../service';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../GroupHandleDataController');
 jest.mock('../../../../dao');
@@ -83,8 +84,17 @@ describe('GroupFetchDataController', () => {
   const mockUserId = 1;
 
   function setUp() {
-    PersonService.getInstance = jest.fn().mockReturnValue(personService);
-    ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
+
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+      });
 
     buildRequestController.mockImplementation((params: any) => {
       if (params.basePath === '/group') {

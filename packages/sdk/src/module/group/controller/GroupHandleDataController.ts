@@ -28,6 +28,7 @@ import { IGroupService } from '../service/IGroupService';
 import { AccountUserConfig } from '../../../module/account/config';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class GroupHandleDataController {
   constructor(
@@ -232,7 +233,9 @@ class GroupHandleDataController {
 
     const replaceGroups = new Map<number, Group>();
     if (filteredFavIds.length) {
-      const profileService: ProfileService = ProfileService.getInstance();
+      const profileService = ServiceLoader.getInstance<ProfileService>(
+        ServiceConfig.PROFILE_SERVICE,
+      );
       const profile = await profileService.getProfile();
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const validFavIds = _.difference(filteredFavIds, hiddenIds);
@@ -398,7 +401,9 @@ class GroupHandleDataController {
 
   getUnreadGroupIds = async (groups: Group[]) => {
     const ids = _.map(groups, 'id');
-    const stateService: StateService = StateService.getInstance();
+    const stateService = ServiceLoader.getInstance<StateService>(
+      ServiceConfig.STATE_SERVICE,
+    );
     const states = (await stateService.getAllGroupStatesFromLocal(ids)) || [];
     return states.filter(this.hasUnread).map(state => state.id);
   }

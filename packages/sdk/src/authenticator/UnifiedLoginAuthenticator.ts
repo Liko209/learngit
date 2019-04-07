@@ -12,6 +12,7 @@ import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
 import { RCInfoService } from '../module/rcInfo';
 import { setRCToken, setRCAccountType } from './utils';
 import { AccountGlobalConfig } from '../module/account/config';
+import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
 
 interface IUnifiedLoginAuthenticateParams extends IAuthParams {
   code?: string;
@@ -105,7 +106,9 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
 
   private async _requestRCAccountRelativeInfo() {
     await RCInfoApi.requestRCAPIVersion();
-    const rcInfoService: RCInfoService = RCInfoService.getInstance();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
     await rcInfoService.requestRCAccountRelativeInfo();
     AccountGlobalConfig.setUserDictionary(
       (await rcInfoService.getRCExtensionInfo())!.id.toString(),

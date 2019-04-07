@@ -23,10 +23,10 @@ import { ExtendedBaseModel } from '../../../../models';
 import { PROGRESS_STATUS } from '../../../../progress';
 import { GlobalConfigService } from '../../../../../module/config';
 import { AccountUserConfig } from '../../../../../module/account/config';
+import { ServiceLoader } from '../../../../serviceLoader';
 
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../module/account/config/AccountUserConfig');
-GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../PostActionController');
 jest.mock('../../../../groupConfig');
@@ -67,9 +67,7 @@ describe('SendPostController', () => {
   beforeEach(() => {
     const actionController = new PostActionController(null, null);
     const preInsertController = new MockPreInsertController<Post>();
-    GroupConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(groupConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupConfigService);
     sendPostController = new SendPostController(
       actionController,
       preInsertController,

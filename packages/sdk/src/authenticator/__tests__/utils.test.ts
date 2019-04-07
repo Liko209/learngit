@@ -10,11 +10,9 @@ import {
   setGlipToken,
   setGlipAccountType,
 } from '../utils';
-import { GlobalConfigService } from '../../module/config';
 
 jest.mock('../../module/account/config');
 jest.mock('../../module/config/service/GlobalConfigService');
-GlobalConfigService.getInstance = jest.fn();
 
 describe('utils method', () => {
   it('setRCToken method set success should be true', async () => {

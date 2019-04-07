@@ -9,6 +9,7 @@ import { PRESENCE } from '../../module/presence/constant/Presence';
 import { AccountUserConfig, AuthUserConfig } from '../../module/account/config';
 import { mainLogger } from 'foundation';
 import { SyncUserConfig } from '../../module/sync/config';
+import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
 
 const NEXT_RECONNECT_TIME = 500;
 const MAX_RECONNECT_INTERVAL_TIME = 60 * 1000;
@@ -142,7 +143,9 @@ class SocketCanConnectController {
     if (forceOnline) {
       return 'online';
     }
-    const service: PresenceService = PresenceService.getInstance();
+    const service = ServiceLoader.getInstance<PresenceService>(
+      ServiceConfig.PRESENCE_SERVICE,
+    );
     let presence;
     try {
       presence = await service.getCurrentUserPresence();

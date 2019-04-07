@@ -33,7 +33,7 @@ import { AccountService } from 'sdk/module/account';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
-
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 /**
  * The root module, we call it AppModule,
  * it would be the first module being bootstrapped
@@ -68,7 +68,9 @@ class AppModule extends AbstractModule {
       if (env && env.length) {
         const envChanged = await AppEnvSetting.switchEnv(
           env,
-          AccountService.getInstance(),
+          ServiceLoader.getInstance<AccountService>(
+            ServiceConfig.ACCOUNT_SERVICE,
+          ),
         );
         if (envChanged) {
           config.loadEnvConfig();
@@ -100,7 +102,9 @@ class AppModule extends AbstractModule {
     const globalStore = storeManager.getGlobalStore();
 
     const updateAccountInfoForGlobalStore = (isRCOnlyMode: boolean = false) => {
-      const accountService = AccountService.getInstance();
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
 
       if (accountService.isAccountReady()) {
         const accountUserConfig = new AccountUserConfig();
@@ -207,7 +211,9 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {
       // force logout
-      const accountService = AccountService.getInstance();
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
       await accountService.logout();
       window.location.href = '/';
     });

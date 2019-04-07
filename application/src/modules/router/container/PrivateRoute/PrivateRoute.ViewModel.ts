@@ -7,10 +7,13 @@ import { computed } from 'mobx';
 import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
 import { PrivateRouteProps, PrivateRouteViewProps } from './types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class PrivateRouteViewModel extends StoreViewModel<PrivateRouteProps>
   implements PrivateRouteViewProps {
-  private _accountService = AccountService.getInstance();
+  private _accountService = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  );
   component: PrivateRouteProps['component'];
 
   constructor(props: PrivateRouteProps) {

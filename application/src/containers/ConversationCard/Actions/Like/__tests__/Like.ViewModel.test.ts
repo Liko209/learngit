@@ -7,13 +7,13 @@
 import { getEntity, getGlobalValue } from '../../../../../store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { LikeViewModel } from '../Like.ViewModel';
-import { PostService } from 'sdk/module/post';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const mockPostService = {
   likePost: jest.fn(),
 };
 
-PostService.getInstance = jest.fn().mockReturnValue(mockPostService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(mockPostService);
 
 jest.mock('../../../../../store/utils');
 

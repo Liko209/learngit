@@ -9,20 +9,15 @@ import Sdk from '../Sdk';
 import { Api, HandleByRingCentral } from '../api';
 import { daoManager } from '../dao';
 import { AccountManager, ServiceManager } from '../framework';
-import {
-  GlobalConfigService,
-  UserConfigService,
-  DataMigration,
-} from '../module/config';
+import { DataMigration } from '../module/config';
 import notificationCenter from '../service/notificationCenter';
 import { SERVICE } from '../service';
-import { AccountService } from '../module/account';
 import { SyncService } from '../module/sync';
 import { AccountGlobalConfig } from '../module/account/config';
+import { ServiceLoader } from '../module/serviceLoader';
 
 jest.mock('../module/config');
 jest.mock('../module/account/config');
-GlobalConfigService.getInstance = jest.fn();
 
 // Using manual mock to improve mock priority.
 jest.mock('foundation', () => jest.genMockFromModule<any>('foundation'));
@@ -64,7 +59,7 @@ describe('Sdk', () => {
         isRCOnlyMode: false,
         success: true,
       });
-      AccountService.getInstance = jest.fn().mockReturnValue('accountService');
+      ServiceLoader.getInstance = jest.fn().mockReturnValue('accountService');
 
       await sdk.init({ api: {}, db: {} });
       expect(Foundation.init).toBeCalled();
@@ -89,9 +84,7 @@ describe('Sdk', () => {
         reLoginGlip: mockReLogin,
       };
 
-      AccountService.getInstance = jest
-        .fn()
-        .mockReturnValue(mockAccountService);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(mockAccountService);
 
       await sdk.init({ api: {}, db: {} });
       expect(Foundation.init).toBeCalled();
@@ -130,7 +123,7 @@ describe('Sdk', () => {
 
   describe('onLogout()', () => {
     beforeEach(async () => {
-      UserConfigService.getInstance = jest
+      ServiceLoader.getInstance = jest
         .fn()
         .mockReturnValue({ clear: jest.fn() });
       await sdk.onLogout();

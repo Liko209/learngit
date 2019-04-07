@@ -37,6 +37,7 @@ import {
 import { IPartialModifyController } from '../../../../../../framework/controller/interface/IPartialModifyController';
 import { GroupConfigService } from '../../../../../groupConfig';
 import { ItemNotification } from '../../../../utils/ItemNotification';
+import { ServiceLoader } from '../../../../../serviceLoader';
 
 jest.mock('../../../../../groupConfig');
 jest.mock('../../../../service/ItemService');
@@ -84,9 +85,7 @@ describe('fileUploadController', () => {
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(userId);
 
     notificationCenter.emitEntityReplace.mockImplementation(() => {});
-    GroupConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(groupConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupConfigService);
 
     notificationCenter.emit.mockImplementation(() => {});
     notificationCenter.removeListener.mockImplementation(() => {});

@@ -29,6 +29,7 @@ import {
 } from '../../../../../module/account/service/clientConfig';
 import { GroupConfigService } from '../../../../groupConfig';
 import { ItemNotification } from '../../../utils/ItemNotification';
+import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -308,7 +309,9 @@ class FileUploadController {
   }
 
   async initialUploadItemsFromDraft(groupId: number) {
-    const groupConfigService = GroupConfigService.getInstance() as GroupConfigService;
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     const itemIds = await groupConfigService.getDraftAttachmentItemIds(groupId);
     const fileIds = itemIds.filter(
       (id: number) =>

@@ -7,6 +7,7 @@
 import { SyncUserConfig } from '../SyncUserConfig';
 import { UserConfigService } from '../../../config/service/UserConfigService';
 import { SYNC_CONFIG_KEYS } from '../configKeys';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../../module/config/service/UserConfigService');
 jest.mock('../../../../module/account/config');
@@ -23,9 +24,7 @@ describe('SyncUserConfig', () => {
   function setUp() {
     userConfigService = new UserConfigService();
     userConfigService.setUserId = jest.fn();
-    UserConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(userConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(userConfigService);
 
     syncUserConfig = new SyncUserConfig();
   }

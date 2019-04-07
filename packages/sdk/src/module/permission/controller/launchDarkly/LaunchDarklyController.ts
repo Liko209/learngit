@@ -13,6 +13,7 @@ import { LDFlagSet } from 'ldclient-js';
 import { mainLogger } from 'foundation';
 import { Api } from '../../../../api';
 import { PersonService } from '../../../person';
+import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
 
 class LaunchDarklyController {
   private isClientReady = false;
@@ -64,7 +65,9 @@ class LaunchDarklyController {
     }
     this.isIniting = true;
 
-    const personService: PersonService = PersonService.getInstance();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     const person = await personService.getById(userId);
 
     const params = {

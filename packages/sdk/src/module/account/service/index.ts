@@ -4,6 +4,6 @@
  * Copyright © RingCentral. All rights reserved
  */
 
-export { AccountService } from './NewAccountService';
+export { AccountService } from './AccountService';
 export { EBETA_FLAG, isInBeta } from './clientConfig';
 export { accountHandleData } from './handleData';

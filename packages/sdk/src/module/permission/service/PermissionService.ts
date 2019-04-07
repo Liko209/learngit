@@ -17,7 +17,6 @@ type UserPermission = {
 
 class PermissionService extends EntityBaseService<UserPermission>
   implements IPermissionService {
-  static serviceName = 'PermissionService';
   private permissionController: PermissionController;
 
   constructor() {

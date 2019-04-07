@@ -25,7 +25,7 @@ import {
   ILogin,
 } from '../controller/AuthController';
 import { AbstractService, AccountManager } from '../../../framework';
-import { container } from '../../../container';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 class AccountService extends AbstractService
@@ -37,10 +37,6 @@ class AccountService extends AbstractService
 
   constructor(private _accountManager: AccountManager) {
     super();
-  }
-
-  static getInstance(): AccountService {
-    return container.get(this.name);
   }
 
   protected onStarted() {}
@@ -106,7 +102,9 @@ class AccountService extends AbstractService
   }
 
   async onBoardingPreparation() {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     await profileService.markMeConversationAsFav().catch((error: Error) => {
       mainLogger
         .tags('AccountService')

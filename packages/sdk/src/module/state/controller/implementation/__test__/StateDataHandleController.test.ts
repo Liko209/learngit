@@ -14,17 +14,15 @@ import { IEntityPersistentController } from '../../../../../framework/controller
 import { TASK_DATA_TYPE } from '../../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { TotalUnreadController } from '../TotalUnreadController';
-import { GlobalConfigService } from '../../../../../module/config/service/GlobalConfigService';
 import { UserConfigService } from '../../../../../module/config/service/UserConfigService';
 import { SYNC_SOURCE } from '../../../../../module/sync';
+import { ServiceLoader } from '../../../../../module/serviceLoader';
 
 jest.mock('../../../../../service/notificationCenter');
 jest.mock('../../../../../module/config/service/GlobalConfigService');
 jest.mock('../../../../../module/config/service/UserConfigService');
 jest.mock('../../../../../module/account/config/AccountGlobalConfig');
-GlobalConfigService.getInstance = jest
-  .fn()
-  .mockReturnValue(new GlobalConfigService());
+
 jest.mock('../StateFetchDataController');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
 
@@ -217,7 +215,7 @@ describe('StateDataHandleController', () => {
           post_drp_cursor: 321,
         },
       ];
-      UserConfigService.getInstance = jest.fn().mockReturnValue({
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
         get: jest.fn().mockReturnValue(5683),
       });
 

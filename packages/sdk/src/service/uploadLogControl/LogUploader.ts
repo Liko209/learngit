@@ -11,6 +11,7 @@ import { AccountUserConfig } from '../../module/account/config';
 import { Api } from '../../api';
 import { Pal } from '../../pal';
 import { ILogUploader } from './consumer';
+import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {
@@ -59,7 +60,10 @@ export class LogUploader implements ILogUploader {
   }
 
   private async _getUserInfo() {
-    const accountService: AccountService = AccountService.getInstance();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+
     let id;
     let email = DEFAULT_EMAIL;
     try {

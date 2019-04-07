@@ -25,6 +25,7 @@ import { EVENT_TYPES } from '../../../../service/constants';
 import { SERVICE } from '../../../../service/eventKey';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 type DataHandleTask =
   | GroupStateHandleTask
@@ -249,7 +250,9 @@ class TotalUnreadController {
   private async _initializeTotalUnread(): Promise<void> {
     this.reset();
 
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const groups = await this._groupService.getEntities();
     this._favoriteGroupIds = (await profileService.getFavoriteGroupIds()) || [];
     const userConfig = new AccountUserConfig();

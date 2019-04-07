@@ -12,6 +12,7 @@ import { notificationCenter, SERVICE } from '../../../../service';
 import { mainLogger } from 'foundation';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { PersonService } from '../../../person';
+import { ServiceConfig, ServiceLoader } from '../../../../module/serviceLoader';
 class SplitIOController {
   private splitIOClient: SplitIOClient;
   private isClientReady: boolean = false;
@@ -64,7 +65,9 @@ class SplitIOController {
     }
     this.isIniting = true;
 
-    const personService: PersonService = PersonService.getInstance();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     const person = await personService.getById(userId);
     const params = {
       userId: userId.toString(),

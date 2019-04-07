@@ -22,10 +22,10 @@ import { GlobalConfigService } from '../../../../module/config';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { SYNC_SOURCE } from '../../../../module/sync';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../module/account/config');
-GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../api');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
@@ -48,16 +48,6 @@ jest.mock('../../../../dao', () => {
       getDao: () => dao,
       getKVDao: () => dao,
     },
-  };
-});
-
-jest.mock('../../../../service/serviceManager', () => {
-  const instance = {
-    getProfile: jest.fn().mockResolvedValue({ favorite_group_ids: [1, 2] }),
-    getPersonsByIds: jest.fn().mockResolvedValue({}),
-  };
-  return {
-    getInstance: () => instance,
   };
 });
 
@@ -125,9 +115,22 @@ const groupService = {
 beforeEach(() => {
   jest.clearAllMocks();
   GroupAPI.requestGroupById.mockResolvedValue(requestGroupByIdResult);
-  StateService.getInstance = jest.fn().mockReturnValue(stateService);
-  PersonService.getInstance = jest.fn().mockReturnValue(personService);
-  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+
+  ServiceLoader.getInstance = jest
+    .fn()
+    .mockImplementation((serviceName: string) => {
+      if (serviceName === ServiceConfig.STATE_SERVICE) {
+        return stateService;
+      }
+      if (serviceName === ServiceConfig.PERSON_SERVICE) {
+        return personService;
+      }
+
+      if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+        return profileService;
+      }
+      return null;
+    });
 });
 
 describe('GroupHandleDataController', () => {

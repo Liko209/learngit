@@ -10,9 +10,9 @@ import { getEntity } from '@/store/utils';
 import { getMaxThumbnailURLInfo } from '@/common/getThumbnailURL';
 import { ImageViewerProps } from '../types';
 import { VIEWER_ITEM_TYPE } from '../../../constants';
-import { ItemService } from 'sdk/module/item/service';
 import { Pal } from 'sdk/pal';
 import FileItemModel from '@/store/models/FileItem';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const palInstance = {
   getImageDownloader: () => {
@@ -36,7 +36,7 @@ jest.mock('@/store/utils', () => {
   };
 });
 jest.mock('sdk/module/item/service');
-ItemService.getInstance = () => itemService;
+ServiceLoader.getInstance = () => itemService;
 Pal.getInstance = () => palInstance;
 jest.mock('@/common/getThumbnailURL', () => {
   return {

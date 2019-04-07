@@ -8,6 +8,7 @@ import { GlobalConfigService } from '../../../config';
 import { AppEnvSetting } from '../AppEnvSetting';
 import { CONFIG_KEYS } from '../../config';
 import { AccountService } from '../../../../module/account';
+import { ServiceLoader } from '../../../serviceLoader';
 
 const accountService = {
   logout: jest.fn(),
@@ -27,9 +28,7 @@ describe('AppEnvSetting', () => {
       put: jest.fn(),
       remove: jest.fn(),
     };
-    GlobalConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(mockConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockConfigService);
   });
   beforeEach(() => {
     jest.clearAllMocks();

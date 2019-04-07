@@ -31,6 +31,7 @@ import { GroupService } from '../../index';
 import { GroupFetchDataController } from '../GroupFetchDataController';
 import { GroupHandleDataController } from '../GroupHandleDataController';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../dao');
 jest.mock('../../../groupConfig/dao');
@@ -50,8 +51,17 @@ const personService = new PersonService();
 beforeEach(() => {
   jest.clearAllMocks();
 
-  PersonService.getInstance = jest.fn().mockReturnValue(personService);
-  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+  ServiceLoader.getInstance = jest
+    .fn()
+    .mockImplementation((serviceName: string) => {
+      if (serviceName === ServiceConfig.PERSON_SERVICE) {
+        return personService;
+      }
+
+      if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+        return profileService;
+      }
+    });
 });
 
 describe('GroupFetchDataController', () => {
@@ -73,8 +83,21 @@ describe('GroupFetchDataController', () => {
     AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
 
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+
+        if (serviceName === ServiceConfig.POST_SERVICE) {
+          return postService;
+        }
+      });
     testEntitySourceController = new TestEntitySourceController<Group>(
       groupFactory,
     );

@@ -11,6 +11,7 @@ import { SearchService } from 'sdk/module/search';
 import { Person } from 'sdk/module/person/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { debounce } from 'lodash';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const DELAY_DEBOUNCE = 300;
 
@@ -70,7 +71,10 @@ class MembersViewModel extends ProfileDialogGroupViewModel
 
   @action
   handleSearch = async () => {
-    const result = await SearchService.getInstance().doFuzzySearchPersons({
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+    const result = await searchService.doFuzzySearchPersons({
       searchKey: this.keywords,
       excludeSelf: false,
       arrangeIds: this.sortedAllMemberIds,

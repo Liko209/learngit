@@ -15,7 +15,6 @@ import { Profile } from '../../../../profile/entity';
 import { UMI_SECTION_TYPE, TASK_DATA_TYPE } from '../../../constants';
 import { GroupState } from '../../../entity';
 import { GroupService } from '../../../../group';
-import { ProfileService } from '../../../../profile';
 import { TotalUnreadController } from '../TotalUnreadController';
 import { DeactivatedDao } from '../../../../../dao';
 import { NotificationEntityPayload } from '../../../../../service/notificationCenter';
@@ -26,13 +25,12 @@ import {
 } from '../../../../../service';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { IEntityPersistentController } from '../../../../../framework/controller/interface/IEntityPersistentController';
-import { GlobalConfigService } from '../../../../../module/config';
 import { AccountUserConfig } from '../../../../../module/account/config';
+import { ServiceLoader } from '../../../../../module/serviceLoader';
 
 jest.mock('../../../../../module/config');
 jest.mock('../../../../group');
 jest.mock('../../../../../module/account/config');
-GlobalConfigService.getInstance = jest.fn();
 
 type DataHandleTask =
   | GroupStateHandleTask
@@ -642,14 +640,16 @@ describe('TotalUnreadController', () => {
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(false);
-      ProfileService.getInstance = jest.fn().mockReturnValue({
+
+      const profileService = {
         getFavoriteGroupIds: jest.fn().mockReturnValue(undefined),
-      });
+      };
+
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(profileService);
+
       await totalUnreadController['_initializeTotalUnread']();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(
-        ProfileService.getInstance<ProfileService>().getFavoriteGroupIds,
-      ).toBeCalledTimes(1);
+      expect(profileService.getFavoriteGroupIds).toBeCalledTimes(1);
       expect(mockGroupService.getEntities).toBeCalledTimes(1);
       expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
@@ -680,14 +680,14 @@ describe('TotalUnreadController', () => {
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(true)
         .mockReturnValueOnce(false);
-      ProfileService.getInstance = jest.fn().mockReturnValue({
+      const profileService = {
         getFavoriteGroupIds: jest.fn().mockReturnValue([123, 456]),
-      });
+      };
+
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(profileService);
       await totalUnreadController['_initializeTotalUnread']();
       expect(totalUnreadController.reset).toBeCalledTimes(1);
-      expect(
-        ProfileService.getInstance<ProfileService>().getFavoriteGroupIds,
-      ).toBeCalledTimes(1);
+      expect(profileService.getFavoriteGroupIds).toBeCalledTimes(1);
       expect(mockGroupService.getEntities).toBeCalledTimes(1);
       expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);

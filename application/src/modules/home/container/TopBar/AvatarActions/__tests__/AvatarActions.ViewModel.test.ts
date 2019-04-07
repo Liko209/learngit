@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AvatarActionsViewModel } from '../AvatarActions.ViewModel';
-import { AccountService } from 'sdk/module/account';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 let ViewModel: AvatarActionsViewModel;
 
@@ -29,7 +29,7 @@ describe('AvatarActionsVM', () => {
       const accountService = {
         logout: jest.fn(),
       };
-      jest.spyOn(AccountService, 'getInstance').mockReturnValue(accountService);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
 
       await ViewModel.handleSignOut();
       expect(accountService.logout).toHaveBeenCalled();

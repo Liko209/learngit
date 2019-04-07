@@ -35,8 +35,6 @@ jest.mock('../../../../module/group');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao/DaoManager');
 
-GlobalConfigService.getInstance = jest.fn();
-
 describe('PersonService', () => {
   let personController: PersonController;
   let personDao: PersonDao;

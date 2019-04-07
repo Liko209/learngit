@@ -8,7 +8,6 @@ import { Group } from 'sdk/models';
 import { PERMISSION_ENUM } from 'sdk/service';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
-import { GlobalConfigService } from 'sdk/module/config';
 import { AccountUserConfig } from 'sdk/module/account/config';
 import i18next from 'i18next';
 
@@ -16,7 +15,6 @@ jest.mock('sdk/api');
 jest.mock('sdk/module/account/config');
 jest.mock('@/store/utils/entities');
 jest.mock('sdk/module/config');
-GlobalConfigService.getInstance = jest.fn();
 
 describe('GroupModel', () => {
   const mockUserId = 1;

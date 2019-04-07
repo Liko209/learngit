@@ -35,6 +35,7 @@ import { GroupService } from './module/group';
 import { SearchService } from './module/search';
 import { RCInfoService } from './module/rcInfo';
 import { GlobalConfigService, UserConfigService } from './module/config';
+import { ServiceConfig } from './module/serviceLoader';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
@@ -53,27 +54,35 @@ const registerConfigs = {
     { name: GlipAccount.name, value: GlipAccount },
 
     // Services
-    { name: 'GroupService', value: GroupService },
-    { name: 'CompanyService', value: CompanyService },
-    { name: 'ItemService', value: ItemService },
-    { name: 'PersonService', value: PersonService },
-    { name: 'PresenceService', value: PresenceService },
-    { name: 'ProfileService', value: ProfileService },
-    { name: 'StateService', value: StateService, injects: ['GroupService'] },
-    { name: 'ProgressService', value: ProgressService },
-    { name: 'PostService', value: PostService, injects: ['GroupService'] },
-    { name: 'PermissionService', value: PermissionService },
-    { name: 'GroupService', value: GroupService },
-    { name: 'RCInfoService', value: RCInfoService },
+    { name: ServiceConfig.GROUP_SERVICE, value: GroupService },
+    { name: ServiceConfig.COMPANY_SERVICE, value: CompanyService },
+    { name: ServiceConfig.ITEM_SERVICE, value: ItemService },
+    { name: ServiceConfig.PERSON_SERVICE, value: PersonService },
+    { name: ServiceConfig.PRESENCE_SERVICE, value: PresenceService },
+    { name: ServiceConfig.PROFILE_SERVICE, value: ProfileService },
     {
-      name: 'AccountService',
+      name: ServiceConfig.STATE_SERVICE,
+      value: StateService,
+      injects: [ServiceConfig.GROUP_SERVICE],
+    },
+    { name: ServiceConfig.PROGRESS_SERVICE, value: ProgressService },
+    {
+      name: ServiceConfig.POST_SERVICE,
+      value: PostService,
+      injects: [ServiceConfig.GROUP_SERVICE],
+    },
+    { name: ServiceConfig.PERMISSION_SERVICE, value: PermissionService },
+    { name: ServiceConfig.GROUP_SERVICE, value: GroupService },
+    { name: ServiceConfig.RC_INFO_SERVICE, value: RCInfoService },
+    {
+      name: ServiceConfig.ACCOUNT_SERVICE,
       value: AccountService,
       injects: [AccountManager.name],
     },
-    { name: 'SyncService', value: SyncService },
-    { name: 'TelephonyService', value: TelephonyService },
-    { name: 'GroupConfigService', value: GroupConfigService },
-    { name: 'SearchService', value: SearchService },
+    { name: ServiceConfig.SYNC_SERVICE, value: SyncService },
+    { name: ServiceConfig.TELEPHONY_SERVICE, value: TelephonyService },
+    { name: ServiceConfig.GROUP_CONFIG_SERVICE, value: GroupConfigService },
+    { name: ServiceConfig.SEARCH_SERVICE, value: SearchService },
 
     // Manager
     {
@@ -96,7 +105,7 @@ const registerConfigs = {
         AccountManager.name,
         ServiceManager.name,
         NetworkManager.name,
-        'SyncService',
+        ServiceConfig.SYNC_SERVICE,
       ],
     },
   ],

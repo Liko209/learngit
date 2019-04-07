@@ -19,6 +19,7 @@ import { IPreInsertController } from '../../../common/controller/interface/IPreI
 import { ItemService } from '../../../../module/item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 class PostActionController implements IPostActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Post>,
@@ -117,7 +118,9 @@ class PostActionController implements IPostActionController {
     this.preInsertController.delete(post);
 
     // 4
-    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     groupConfigService.deletePostId(post.group_id, id); // does not need to wait
     return true;
   }
@@ -165,7 +168,9 @@ class PostActionController implements IPostActionController {
       );
     }
 
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     await itemService.deleteItem(itemId);
   }
 

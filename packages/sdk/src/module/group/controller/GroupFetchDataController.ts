@@ -39,6 +39,7 @@ import { GroupDao } from '../dao';
 import { Group, TeamPermission } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { GroupHandleDataController } from './GroupHandleDataController';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 function buildNewGroupInfo(members: number[]) {
   const userConfig = new AccountUserConfig();
@@ -65,7 +66,9 @@ export class GroupFetchDataController {
     offset = 0,
     _limit?: number,
   ): Promise<Group[]> {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const limit = _limit || (await profileService.getMaxLeftRailGroup());
     mainLogger.debug(`offset:${offset} limit:${limit} groupType:${groupType}`);
     let result: Group[] = [];
@@ -388,7 +391,9 @@ export class GroupFetchDataController {
     const names: string[] = [];
     const emails: string[] = [];
     const allPersons: Person[] = [];
-    const personService: PersonService = PersonService.getInstance();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     const diffMembers = _.difference(members, [currentUserId]);
     diffMembers.forEach((id: number) => {
       const person = personService.getSynchronously(id);
@@ -449,7 +454,9 @@ export class GroupFetchDataController {
   }
 
   async isGroupCanBeShown(groupId: number): Promise<boolean> {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const isHidden = await profileService.isConversationHidden(groupId);
     let isIncludeSelf = false;
     let isValid = false;
@@ -464,7 +471,9 @@ export class GroupFetchDataController {
   }
 
   private async _isGroupFavored(groupId: number): Promise<boolean> {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const profile = await profileService.getProfile();
     const favoriteGroupIds =
       profile && profile.favorite_group_ids ? profile.favorite_group_ids : [];
@@ -534,7 +543,9 @@ export class GroupFetchDataController {
   }
 
   private async _getFavoriteGroups(): Promise<Group[]> {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const profile = await profileService.getProfile();
     if (
       profile &&

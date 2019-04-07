@@ -17,6 +17,7 @@ import { AccountService } from 'sdk/module/account';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import config from '@/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const Form = styled.form`
   width: 300px;
@@ -76,7 +77,9 @@ class UnifiedLogin extends React.Component<Props, IStates> {
   };
 
   private _checkIfLogin() {
-    const accountService = AccountService.getInstance();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     if (accountService.isLoggedIn()) {
       const { history } = this.props;
       history.replace('/messages');

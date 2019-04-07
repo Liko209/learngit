@@ -3,9 +3,9 @@
  * @Date: 2019-02-28 20:27:29
  * Copyright © RingCentral. All rights reserved.
  */
-import { GlobalConfigService } from '../../../config/service/GlobalConfigService';
 import { AccountGlobalConfig } from '../AccountGlobalConfig';
 import { ACCOUNT_KEYS } from '../configKeys';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../config/service/GlobalConfigService');
 
@@ -18,7 +18,7 @@ describe('AccountGlobalConfig', () => {
       put: jest.fn(),
       remove: jest.fn(),
     };
-    GlobalConfigService.getInstance = jest
+    ServiceLoader.getInstance = jest
       .fn()
       .mockReturnValue(mockGlobalConfigService);
   });

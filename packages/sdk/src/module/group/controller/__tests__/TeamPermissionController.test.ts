@@ -19,8 +19,6 @@ jest.mock('../../../../module/account/config');
 const mockCurrentUserId = 5683;
 const mockCurrentUserCompanyId = 55668833;
 
-GlobalConfigService.getInstance = jest.fn();
-
 describe('TeamPermissionController', () => {
   let teamPermissionController: TeamPermissionController;
   beforeEach(() => {

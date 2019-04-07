@@ -24,6 +24,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ProfileMiniCardGroupViewModel
   extends AbstractViewModel<ProfileMiniCardGroupProps>
@@ -52,7 +53,9 @@ class ProfileMiniCardGroupViewModel
       ENTITY_NAME.GROUP,
     ) as MultiEntityMapStore<Group, GroupModel>;
     if (!groupStore.hasValid(this.id)) {
-      const groupService: GroupService = GroupService.getInstance();
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
       groupService
         .getById(this.id)
         .then((group: Group | null) => {

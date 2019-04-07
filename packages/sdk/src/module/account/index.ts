@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { AccountService } from './service/NewAccountService';
+export { AccountService } from './service/AccountService';

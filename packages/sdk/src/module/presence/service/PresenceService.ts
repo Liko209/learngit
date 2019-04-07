@@ -14,7 +14,6 @@ import { PRESENCE } from '../constant/Presence';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class PresenceService extends EntityBaseService {
-  static key = 'PresenceService';
   private _presenceController: PresenceController;
 
   constructor(threshold: number = 29, interval: number = 200) {

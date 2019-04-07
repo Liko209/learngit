@@ -20,12 +20,15 @@ import { dao, mainLogger } from 'sdk';
 import { AccountService } from 'sdk/module/account';
 import { ModalPortal } from '@/containers/Dialog';
 import { Dialer } from '@/modules/telephony';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 @observer
 class HomeView extends Component<HomeViewProps> {
   componentDidMount() {
     window.addEventListener('storage', this._storageEventHandler);
-    const accountService = AccountService.getInstance();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     accountService.makeSureUserInWhitelist();
 
     analytics.identify();

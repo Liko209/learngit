@@ -8,6 +8,7 @@ import { AccountUserConfig } from 'sdk/module/account/config';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import pkg from '../../../package.json';
 import { UserContextInfo } from './types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 export async function getAppContextInfo(): Promise<UserContextInfo> {
   const config = require('@/config').default;
@@ -15,7 +16,9 @@ export async function getAppContextInfo(): Promise<UserContextInfo> {
   const currentUserId = accountUserConfig.getGlipUserId();
   const currentCompanyId = accountUserConfig.getCurrentCompanyId();
   return Promise.all([
-    AccountService.getInstance().getCurrentUserInfo(),
+    ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).getCurrentUserInfo(),
     fetchVersionInfo(),
   ]).then(([userInfo, { deployedVersion }]) => {
     return {

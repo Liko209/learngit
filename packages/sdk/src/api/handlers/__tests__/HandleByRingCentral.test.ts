@@ -7,12 +7,13 @@ import { stringify } from 'qs';
 import HandleByRingCentral from '../HandleByRingCentral';
 import { AccountService } from '../../../module/account';
 import { AccountManager } from '../../../framework';
+import { ServiceLoader } from '../../../module/serviceLoader';
 const handler = new OAuthTokenHandler(HandleByRingCentral, null);
 
 jest.mock('../../api');
 const accountManager: AccountManager = new AccountManager(null);
 const accountService: AccountService = new AccountService(accountManager);
-AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
 const postRequest = () => {
   return new NetworkRequestBuilder()
     .setPath('/')

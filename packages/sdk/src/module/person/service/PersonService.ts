@@ -27,7 +27,6 @@ import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
-  static serviceName = 'PersonService';
   private _personController: PersonController;
   constructor() {
     super(true, daoManager.getDao(PersonDao), {

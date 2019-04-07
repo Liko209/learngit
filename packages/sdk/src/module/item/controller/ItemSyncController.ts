@@ -11,6 +11,7 @@ import { GroupConfigService } from '../../groupConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { GroupConfig } from '../../groupConfig/entity';
+import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 
 const AvailableSocketStatus = ['connected', 'connecting'];
 const GroupItemKeyMap = {
@@ -41,7 +42,9 @@ class ItemSyncController {
     }
     this._syncedGroupIds.add(groupId);
 
-    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     const groupConfig = await groupConfigService.getById(groupId);
     const typeIdKeys = Object.keys(GroupItemKeyMap);
     typeIdKeys.forEach((typeIdKey: string) => {
@@ -77,7 +80,9 @@ class ItemSyncController {
   }
 
   private async _updateGroupItemNewerThan(groupId: number, typeId: number) {
-    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     const partialData = {
       id: groupId,
       [GroupItemKeyMap[typeId]]: Date.now(),

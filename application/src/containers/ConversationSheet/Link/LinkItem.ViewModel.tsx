@@ -10,9 +10,12 @@ import { Item } from 'sdk/module/item/entity';
 import { ENTITY_NAME } from '@/store';
 import { ItemService } from 'sdk/module/item';
 import LinkItemModel from '@/store/models/LinkItem';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
-  private _itemService: ItemService = ItemService.getInstance();
+  private _itemService = ServiceLoader.getInstance<ItemService>(
+    ServiceConfig.ITEM_SERVICE,
+  );
   // @observable private _ids: number[] = [];
   @computed
   private get _ids() {

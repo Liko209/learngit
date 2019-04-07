@@ -9,6 +9,7 @@ import { AccountService } from 'sdk/module/account';
 import { AppEnvSetting } from 'sdk/module/env';
 
 import Config from '@/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 console.log('Config: ', Config);
 
 type Props = {};
@@ -42,7 +43,10 @@ class EnvSelect extends React.Component<Props, States> {
 
   changeHandler(event: React.ChangeEvent<HTMLSelectElement>) {
     const value = event.target.value;
-    AppEnvSetting.switchEnv(value, AccountService.getInstance());
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    AppEnvSetting.switchEnv(value, accountService);
     this.setState({ value });
     location.reload();
   }

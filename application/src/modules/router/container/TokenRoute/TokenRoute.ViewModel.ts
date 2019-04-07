@@ -14,6 +14,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { StoreViewModel } from '@/store/ViewModel';
 import history from '@/history';
 import { ProfileService } from 'sdk/module/profile';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 const { SERVICE } = service;
 
@@ -44,7 +45,9 @@ class TokenRouteViewModel extends StoreViewModel {
     if (this._LoggedInHandled) {
       return;
     }
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
 
@@ -63,7 +66,9 @@ class TokenRouteViewModel extends StoreViewModel {
       const { code, id_token, t } = this._getUrlParams(location);
       const token = t || id_token;
       if (code || token) {
-        const accountService = AccountService.getInstance();
+        const accountService = ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        );
         await accountService.unifiedLogin({ code, token });
       }
     } catch (e) {
@@ -72,7 +77,9 @@ class TokenRouteViewModel extends StoreViewModel {
   }
 
   redirectToIndex = async () => {
-    const accountService = AccountService.getInstance();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     await accountService.logout();
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
