@@ -10,8 +10,8 @@ jest.mock('../OAuthTokenHandler');
 describe('NetworkSetup', () => {
   describe('setup', () => {
     it('should call OAuthTokenHandler', () => {
-      const spy = jest.spyOn(networkManager, 'initNetworkRequestBaseHandler');
-      NetworkSetup.setup([fakeHandleType], networkManager);
+      const spy = jest.spyOn(networkManager, 'buildNetworkRequestBaseHandler');
+      NetworkSetup.setup(fakeHandleType, networkManager);
       expect(spy).toBeCalled();
       expect(OAuthTokenHandler).toBeCalled();
     });

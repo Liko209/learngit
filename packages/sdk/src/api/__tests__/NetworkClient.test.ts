@@ -51,10 +51,9 @@ const setup = () => {
     {
       host: 'https://platform.ringcentral.com',
       handlerType: HandleByRingCentral,
+      pathPrefix: '/restapi',
     },
-    '/restapi',
     NETWORK_VIA.HTTP,
-    '',
     networkManager,
   );
 
