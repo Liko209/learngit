@@ -57,8 +57,7 @@ class ContentSearchResultViewModel
 
   @computed
   private get _searchKey(): string {
-    // return this._globalSearchStore.searchKey;
-    return '123';
+    return this._globalSearchStore.searchKey;
   }
 
   @computed
