@@ -1,4 +1,7 @@
 import { AssertionError } from "assert";
+import * as assert from "assert";
+import { ITestMeta } from "../v2/models";
+import * as _ from "lodash";
 
 /*
  * @Author: Potar He(Potar.He@ringcentral.com)
@@ -6,7 +9,7 @@ import { AssertionError } from "assert";
  * Copyright © RingCentral. All rights reserved.
  */
 
-type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string) => boolean;
+type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any) => boolean;
 
 export interface INameTags {
   name: string;
@@ -53,20 +56,38 @@ export function parseFormalName(formalName: string): INameTags {
   return { tags, name: rest.trim() };
 }
 
-export function filterByTags(
-  includeTags?: string[],
-  excludeTags?: string[]): CaseFilter {
-  return (caseName: string, fixtureName: string, fixturePath: string): boolean => {
+export function filterByTags(includeTags?: string[], excludeTags?: string[]): CaseFilter {
+  return (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any): boolean => {
     let flag: boolean = true;
     const nameTags = parseFormalName(caseName);
+    const testMetaTags = getTagsFromMeta(testMeta);
     if (includeTags && includeTags.length > 0) {
-      flag = flag && nameTags.tags.some(tag => includeTags.some(includeTag => tag === includeTag));
+      flag = flag && hasAtLeastOneTagInTargetLists(includeTags, nameTags.tags, testMetaTags);
     }
     if (excludeTags && excludeTags.length > 0) {
-      flag = flag && !nameTags.tags.some(tag => excludeTags.some(excludeTag => tag === excludeTag));
+      flag = flag && !hasAtLeastOneTagInTargetLists(excludeTags, nameTags.tags, testMetaTags);
     }
     return flag;
-  };
+  }
+}
+
+function getTagsFromMeta(meta: ITestMeta) {
+  let tags = [];
+  for (const key in meta) {
+    tags = _.union(tags, meta[key]);
+  }
+  return tags;
+}
+
+function hasAtLeastOneTagInTargetLists(tags: string[], ...targetLists) {
+  let flag: boolean;
+  assert.ok(targetLists.length > 0, 'required target tags')
+  for (const targetList of targetLists) {
+    if (targetList) {
+      flag = flag || tags.some(tag => targetList.some(item => tag.toLowerCase() == item.toLowerCase()));
+    }
+  }
+  return flag;
 }
 
 export function getTmtIds(tags: string[], prefix: string) {

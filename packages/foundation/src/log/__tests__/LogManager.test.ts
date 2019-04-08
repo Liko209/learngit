@@ -1,4 +1,4 @@
-import LogManager from '../LogManager';
+import { LogManager } from '../LogManager';
 import { configManager } from '../config';
 import { logConfigFactory } from './factory';
 

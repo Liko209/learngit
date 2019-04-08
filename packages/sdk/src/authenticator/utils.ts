@@ -9,16 +9,16 @@ const setAccountType = async (type: any) => {
   return true;
 };
 
-const setRcToken = async (token: ITokenModel) => {
+const setRCToken = async (token: ITokenModel) => {
   if (!token.timestamp) {
     token.timestamp = Date.now();
   }
   const authConfig = new AuthUserConfig();
-  await authConfig.setRcToken(token);
+  await authConfig.setRCToken(token);
   return true;
 };
 
-const setRcAccountType = async () => {
+const setRCAccountType = async () => {
   return await setAccountType(ACCOUNT_TYPE_ENUM.RC);
 };
 
@@ -32,4 +32,4 @@ const setGlipAccountType = async () => {
   return await setAccountType(ACCOUNT_TYPE_ENUM.GLIP);
 };
 
-export { setRcToken, setRcAccountType, setGlipToken, setGlipAccountType };
+export { setRCToken, setRCAccountType, setGlipToken, setGlipAccountType };

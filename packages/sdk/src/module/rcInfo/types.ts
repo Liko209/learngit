@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-enum ERcServiceFeaturePermission {
+enum ERCServiceFeaturePermission {
   VOIP_CALLING,
   VOIP_CALLING_WITHOUT_TELEPHONY_BETA,
   INTERNATIONAL_CALLING,
@@ -62,4 +62,4 @@ enum RCServiceFeatureName {
   FAX = 'Fax',
 }
 
-export { RCServiceFeatureName, PermissionId, ERcServiceFeaturePermission };
+export { RCServiceFeatureName, PermissionId, ERCServiceFeaturePermission };

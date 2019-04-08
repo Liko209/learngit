@@ -114,7 +114,7 @@ describe('RecentSearchRecordController', () => {
       );
     });
 
-    it('new record should be replace old records and put at first place', () => {
+    it('new record should replace old records and put at first place', () => {
       searchUserConfig.getRecentSearchRecords = jest
         .fn()
         .mockReturnValue(threeRecords);
@@ -125,6 +125,34 @@ describe('RecentSearchRecordController', () => {
         newRecord.query_params,
       );
       const expectedRes = [buildRecord(2), buildRecord(1), buildRecord(3)];
+      expect(searchUserConfig.setRecentSearchRecords).toBeCalledWith(
+        expectedRes.map((x: any) => {
+          return {
+            id: expect.anything(),
+            type: x.type,
+            value: x.value,
+            query_params: x.query_params,
+            time_stamp: expect.anything(),
+          };
+        }),
+      );
+    });
+
+    it('new record should not replace old records when params is no same', () => {
+      searchUserConfig.getRecentSearchRecords = jest
+        .fn()
+        .mockReturnValue(threeRecords);
+      const newRecord: any = buildRecord(2);
+      newRecord.query_params = { groupId: 11 };
+      controller.addRecentSearchRecord(newRecord.type, newRecord.value, {
+        groupId: 11,
+      });
+      const expectedRes = [
+        newRecord,
+        buildRecord(1),
+        buildRecord(2),
+        buildRecord(3),
+      ];
       expect(searchUserConfig.setRecentSearchRecords).toBeCalledWith(
         expectedRes.map((x: any) => {
           return {

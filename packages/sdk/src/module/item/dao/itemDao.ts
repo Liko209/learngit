@@ -91,12 +91,22 @@ class ItemDao extends BaseDao<Item> {
     await this.getDb().getTransaction(
       'rw',
       [
-        this.getDb().getCollection<ItemDao>(ItemDao.COLLECTION_NAME),
-        this.getDb().getCollection<FileItemDao>(FileItemDao.COLLECTION_NAME),
-        this.getDb().getCollection<TaskItemDao>(TaskItemDao.COLLECTION_NAME),
-        this.getDb().getCollection<NoteItemDao>(NoteItemDao.COLLECTION_NAME),
-        this.getDb().getCollection<LinkItemDao>(LinkItemDao.COLLECTION_NAME),
-        this.getDb().getCollection<EventItemDao>(EventItemDao.COLLECTION_NAME),
+        this.getDb().getCollection<ItemDao, number>(ItemDao.COLLECTION_NAME),
+        this.getDb().getCollection<FileItemDao, number>(
+          FileItemDao.COLLECTION_NAME,
+        ),
+        this.getDb().getCollection<TaskItemDao, number>(
+          TaskItemDao.COLLECTION_NAME,
+        ),
+        this.getDb().getCollection<NoteItemDao, number>(
+          NoteItemDao.COLLECTION_NAME,
+        ),
+        this.getDb().getCollection<LinkItemDao, number>(
+          LinkItemDao.COLLECTION_NAME,
+        ),
+        this.getDb().getCollection<EventItemDao, number>(
+          EventItemDao.COLLECTION_NAME,
+        ),
       ],
       async () => {
         await func();

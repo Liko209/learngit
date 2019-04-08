@@ -38,7 +38,6 @@ const groupService = {
 function setup() {
   ItemService.getInstance = jest.fn().mockReturnValue(itemService);
   itemService.handleIncomingData = jest.fn();
-  GroupService.getInstance = jest.fn().mockReturnValue(groupService);
   daoManager.getDao.mockImplementation(arg => {
     if (arg === PostDao) {
       return postDao;
@@ -51,11 +50,13 @@ function setup() {
 
 describe('PostFetchController()', () => {
   const postDataController = new PostDataController(
+    groupService,
     null,
     entitySourceController,
   );
   // const groupService = new GroupService();
   const postFetchController = new PostFetchController(
+    groupService,
     postDataController,
     entitySourceController,
   );

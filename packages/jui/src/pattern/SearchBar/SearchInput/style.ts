@@ -91,7 +91,7 @@ const SearchInput = styled(JuiTextField)`
         color: ${palette('common', 'white')};
       }
       &:focus {
-        color: ${palette('common', 'black')};
+        color: ${palette('grey', '900')};
         ::placeholder {
           color: ${palette('grey', '500')};
         }

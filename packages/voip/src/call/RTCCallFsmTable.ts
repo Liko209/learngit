@@ -25,6 +25,7 @@ const CallFsmEvent = {
   ACCOUNT_NOT_READY: 'accountNotReady',
   ANSWER: 'answer',
   REJECT: 'reject',
+  IGNORE: 'ignore',
   SEND_TO_VOICEMAIL: 'sendToVoicemail',
   HANGUP: 'hangup',
   FLIP: 'flip',
@@ -101,6 +102,11 @@ class RTCCallFsmTable extends StateMachine {
             dependency.onRejectAction();
             return CallFsmState.DISCONNECTED;
           },
+        },
+        {
+          name: CallFsmEvent.IGNORE,
+          from: CallFsmState.IDLE,
+          to: CallFsmState.DISCONNECTED,
         },
         {
           name: CallFsmEvent.SEND_TO_VOICEMAIL,

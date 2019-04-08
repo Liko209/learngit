@@ -9,6 +9,7 @@ export {
   InitialSearchResponse,
   ScrollSearchParams,
   ScrollSearchResponse,
+  ESearchContentTypes,
 } from './types';
 
 export { SearchAPI } from './search';

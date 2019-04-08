@@ -94,9 +94,7 @@
     "favoriteGroups": "favorites",
     "directGroups": "direct messages",
     "teamGroups": "teams",
-
     "messageTypeNameSMS": "text",
-
     "initialPost": {
       "directMessageDescription": "This is the beginning of your direct message history with {{displayName}}",
       "createATeam": "created a team",
@@ -107,7 +105,6 @@
       "createTask": "Create a task",
       "integrateApps": "Integrate apps"
     },
-
     "action": {
       "like": "Like",
       "unlike": "Unlike",
@@ -122,17 +119,14 @@
       "typeNewMessage": "Type new message",
       "sendNewMessage": "Send new message"
     },
-
     "stream": {
       "addedToTeam": "{{inviter}} added {{newUser}} to the team",
       "changeTeamName": "{{changer}} changed the team name from {{oldValue}} to {{value}}",
       "joinTheTeam": "{{newUser}} joined the team",
       "newMessages": "new messages"
     },
-
     "teamMembers": "team members",
     "suggestedPeople": "suggested people",
-
     "conversationDetails": "Conversation Details",
     "conversationDetailsShow": "Show details",
     "conversationDetailsHide": "Hide details",
@@ -144,19 +138,19 @@
       "SorryWeWereNotAbleToSendTheMessage": "Sorry, we weren't able to send the message. Try again.",
       "SorryWeWereNotAbleToLikeTheMessage": "Sorry, we weren't able to like this message. Try again.",
       "SorryWeWereNotAbleToUnlikeTheMessage": "Sorry, we weren't able to unlike this message. Try again.",
-      "SorryWeWereNotAbleToRemoveYourBookmark": "Sorry, we weren't able to remove your bookmark. Try again.",
-      "SorryWeWereNotAbleToBookmarkThisMessage": "Sorry, we weren't able to bookmark this message. Try again.",
+      "notAbleToRemoveYourBookmarkForNetworkIssue": "Sorry, we weren't able to remove your bookmark due to a poor network connection. Try again.",
+      "notAbleToRemoveYourBookmarkForServerIssue": "Sorry, something went wrong on our end and we weren't able to remove your bookmark. Try again later.",
+      "notAbleToBookmarkThisMessageForNetworkIssue": "We weren't able to bookmark this message due to a poor network connection. Check your connectivity, then try again.",
+      "notAbleToBookmarkThisMessageForServerIssue": "Sorry, something went wrong on our end and we weren't able to bookmark this message. Try again later.",
       "SorryWeWereNotAbleToPinTheMessage": "Sorry, we weren't able to pin this message. Try again.",
       "SorryWeWereNotAbleToUnpinTheMessage": "Sorry, we weren't able to unpin this message. Try again.",
       "SorryWeWereNotAbleToLoadOlderMessages": "Sorry, we weren't able to load older messages. Try again.",
       "SorryWeWereNotAbleToLoadNewerMessages": "Sorry, we weren't able to load newer messages. Try again.",
       "MessageLoadingErrorTip": "We weren't able to open this conversation.",
-
       "NewMessage": "New Message",
       "newMessageTip": "Conversations with one or more specific people are great for informal chat. For projects, departments, or even topic-based discussion, you should ",
       "newMessageTipLink": "create a Team instead.",
       "NewMessageError": "We are having trouble creating this new message. Please try again later.",
-
       "disabledText": "This team is read-only"
     },
     "Messages": "Messages",
@@ -175,7 +169,6 @@
       "video chat": "video chat",
       "audio conference": "audio conference",
       "snippet": "snippet",
-
       "replied": "replied",
       "shared": "shared",
       "started": "started",
@@ -189,7 +182,6 @@
       "reassigned": "reassigned",
       "assigned": "assigned",
       "incomplete": "incomplete",
-
       "verb-noun-adjectives": "$t({{verb}}) $t({{noun}}) $t({{adjectives}})",
       "verb-noun-adjectives-user": "$t({{verb}}) $t({{noun}}) $t({{adjectives}}) for {{user}}",
       "verb-noun-numerals": "$t({{verb}}) $t({{noun}}) {{count}}",
@@ -199,7 +191,6 @@
       "verb-numerals-noun": "$t({{verb}}) {{count}} $t({{noun}})",
       "verb-numerals-prepositions-noun": "$t({{verb}}) {{count}}% of $t({{noun}})"
     },
-
     "avatarNamesWithOthers": " and other {{count}} people",
     "attachments": "Attachments",
     "assignee": "Assignee",
@@ -209,7 +200,6 @@
     "hideEventHistory": "Hide",
     "showEventHistory": "Show old",
     "locationTitle": "Location",
-
     "repeatingEveryDay": "repeating every day",
     "repeatingEveryWeekday": "repeating every weekday",
     "repeatingEveryWeek": "repeating every week",
@@ -226,22 +216,18 @@
     "forYearlyTimes": "for {{count}} years",
     "forYearlyTimes_interval": "(1){for one year};",
     "until": "until",
-
     "updateFiles": "Update File(s)?",
     "theFollowingFilesAlreadyExist": "The following file(s) already exist.",
     "wouldYouLikeToUpdateTheExistingFileOrCreateANewOne": "Would you like to update the existing file(s) or create a new one?",
-
     "audioConferenceTitle": "Audio Conference",
     "dialInNumber": "Dial-in Number",
     "or": "or",
     "globalNumber": "Global Number",
     "hostCode": "Host Access",
     "participantCode": "Participant Access",
-
     "downloadToSeeTheRestLine": "Download to see the rest {{restLines}} line",
     "downloadToSeeTheRestLine_plural": "Download to see the rest {{restLines}} lines",
     "expandLines": "Expand ({{lineNumber}} lines)",
-
     "pinned": "Pinned",
     "files": "Files",
     "images": "Images",
@@ -282,7 +268,6 @@
     "networkErrorNotesPrompt": "Sorry, we weren't able to load more notes.",
     "networkErrorIntegrationsPrompt": "Sorry, we weren't able to load more active integrations.",
     "pinnedMore": "and {{num}} more",
-
     "prompt": {
       "uploadFailedMessageThereIsAlreadyAFileBeingUploaded": "Your upload failed. There is already a file being uploaded. Please wait till it has completed.",
       "fileNoLongerExists": "The file no longer exists.",
@@ -297,7 +282,6 @@
       "copyUrl": "Copy URL",
       "guest": "Guest",
       "admin": "Admin",
-
       "company": "Company",
       "location": "Location",
       "extensionNumber": "Ext",
@@ -315,7 +299,6 @@
     "team": {
       "Members": "Members",
       "SearchContactPlaceholder": "Members (enter names or email addresses)",
-
       "CreateTeam": "Create Team",
       "Create": "Create",
       "SetAsPublicTeam": "Public Team (visible to any co-worker)",
@@ -330,12 +313,12 @@
       "pinPosts": "Pin posts",
       "leaveTeam": "Leave team",
       "leaveTeamConfirmTitle": "Leave team",
-      "leaveTeamConfirmContent": "Once you leave {{teamName}}, you will no longer have access to the content.",
+      "leaveTeamConfirmContent": "Once you leave <0>{{teamName}}</0>, you will no longer have access to the content.",
       "leaveTeamConfirmOk": "leave",
       "deleteTeam": "Delete team",
       "deleteTeamToolTip": "Delete a team permanently.",
       "deleteTeamConfirmTitle": "Delete Team?",
-      "deleteTeamConfirmContent": "Are you sure you want to permanently delete",
+      "deleteTeamConfirmContent": "Are you sure you want to permanently delete <0>{{teamName}}</0> team?",
       "deleteTeamConfirmOk": "delete",
       "deleteTeamSuccessMsg": "Team deleted successfully.",
       "archiveTeam": "Archive team",
@@ -344,7 +327,6 @@
       "archiveTeamConfirmContent": "Archived teams are still available at the bottom of the teams page, but won't show up in your active conversations.",
       "archiveTeamConfirmOk": "archive",
       "archiveTeamSuccessMsg": "Team archived successfully.",
-
       "changeToPublic": "Change to public team",
       "changeToPrivate": "Change to private team",
       "publicTeam": "This is a public team",
@@ -354,7 +336,6 @@
       "searchMembers": "Search members",
       "makeTeamAdmin": "Make team admin",
       "revokeTeamAdmin": "Revoke team admin",
-
       "addTeamMemberSubmit": "Add",
       "AddTeamMembers": "Add team members",
       "AddTeamMembersTitle": "Add Team Members",
@@ -363,12 +344,10 @@
       "joinTeam": "Join team",
       "ariaJoinTeam": "Join the {{name}} team",
       "joinTeamTitle": "Join team?",
-      "joinTeamContent": "You are not currently a member of the {{teamName}} team. Would you like to join the team?",
+      "joinTeamContent": "You are not currently a member of the <0>{{teamName}}</0> team. Would you like to join the team?",
       "joinTeamSubmit": "Join",
-
       "ariaGoToTeam": "Go to the conversation with team {{name}}",
       "ariaGoToGroup": "Go to the conversation with group",
-
       "favorite": "Favorite",
       "addToFavorites": "Add to Favorites",
       "removeFromFavorites": "Remove from Favorites",
@@ -388,14 +367,12 @@
       "SorryWeWereNotAbleToCloseTheConversation": "Sorry, we weren't able to close the conversation. Try again.",
       "SorryWeWereNotAbleToOpenThisProfile": "Sorry, we weren't able to open this profile. Try again.",
       "JoinTeamNotAuthorizedError": "Sorry, we weren't able to let you join the team. This team is changed to a private team, please contact the team administrator.",
-
       "alreadyTaken": "The name is already taken, choose another one.",
       "CreateTeamError": "We are having trouble creating this team. Please try again later.",
       "SorryWeWereNotAbleToSaveTheUpdate": "Sorry, we weren't able to save the update.",
       "SorryWeWereNotAbleToSaveTheUpdateTryAgain": "Sorry, we weren't able to save the update. Try again.",
       "YouAreAnAdminToThisTeam": "You are an admin to this team.",
       "LearnAboutTeamAdministration": "Learn about team administration.",
-
       "WeWerentAbleToCreateTheTeamTryAgain": "We weren't able to create the team. Try again.",
       "teamNetError": "Sorry, we weren't able to update the team.",
       "markPrivateServerErrorForTeam": "Sorry, we weren't able to update the team. Try again.",
@@ -407,19 +384,15 @@
       "deleteTeamNetworkErrorContent": "Sorry, we weren't able to delete this team.",
       "archiveTeamServerErrorContent": "Sorry, we weren't able to archive this team. Try again.",
       "archiveTeamNetworkErrorContent": "Sorry, we weren't able to archive this team.",
-
       "AddTeamMembersNetworkError": "Sorry, we weren't able to add team members.",
       "AddTeamMembersBackendError": "Sorry, we weren't able to add team members. Try again.",
       "removeMemberNetworkError": "Sorry, we weren't able to remove this team member.",
       "removeMemberBackendError": "Sorry, we weren't able to remove this team member. Try again.",
-
       "makeTeamAdminNetworkError": "Sorry, we weren't able to make this member team admin.",
       "revokeTeamAdminNetworkError": "Sorry, we weren't able to revoke team admin for this member.",
       "makeTeamAdminBackendError": "Sorry, we weren't able to make this member team admin. Try again.",
       "revokeTeamAdminBackendError": "Sorry, we weren't able to revoke team admin for this member. Try again.",
-
       "InvalidEmail": "Invalid Email",
-
       "markAsRead": "Failed to mark this conversation as read. Try again later.",
       "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
       "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later."
@@ -459,9 +432,14 @@
   "integration": {},
   "setting": {
     "Settings": "Settings",
-    "teamSettings": "Settings"
+    "teamSettings": "Settings",
+    "general": "General",
+    "notificationAndSounds": "Notification and Sounds",
+    "messaging": "Messaging",
+    "phone": "Phone",
+    "meetings": "Meetings",
+    "calendar": "Calendar"
   },
-
   "viewer": {
     "ZoomIn": "Scale file up",
     "ZoomOut": "Scale file down",
@@ -473,5 +451,16 @@
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
+  },
+  "feedback": {
+    "name": "Feedback",
+    "uploading": "uploading",
+    "uploadRecentLogsDialogHeader": "Upload log?",
+    "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
+    "upload": "Upload",
+    "describeYourProblemHere": "Describe your problem here",
+    "uploadLogSuccess": "Upload log successfully, please send it via email.",
+    "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
+    "openEmailFailed": "Open email failed."
   }
 }

@@ -4,14 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { NewGlobalConfig } from '../../../../service/config/NewGlobalConfig';
 import { indexData, initialData, remainingData } from '../../../../api';
 import { SyncUserConfig } from '../../config/SyncUserConfig';
 import { GlobalConfigService } from '../../../config';
 import { SyncController } from '../SyncController';
 import {
   AccountGlobalConfig,
-  AccountUserConfig,
 } from '../../../../service/account/config';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../../error';
 import { GroupConfigService } from '../../../../module/groupConfig';
@@ -23,7 +21,7 @@ import { AccountService } from '../../../../service/account/accountService';
 import socketManager from '../../../../service/socket';
 
 jest.mock('../../config/SyncUserConfig');
-jest.mock('../../../../service/config/NewGlobalConfig');
+
 jest.mock('../../../../api');
 jest.mock('../../../config');
 jest.mock('../../../../module/groupConfig');
@@ -175,7 +173,7 @@ describe('SyncController ', () => {
   });
   describe('_handleIncomingData', () => {
     it('should call setLastIndexTimestamp and setSocketServerHost only once when first login', async () => {
-      NewGlobalConfig.getLastIndexTimestamp = jest
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
         .fn()
         .mockReturnValue(undefined);
       initialData.mockResolvedValueOnce({
@@ -278,6 +276,26 @@ describe('SyncController ', () => {
         expect(personService.clear).toHaveBeenCalledTimes(1);
         expect(syncController._firstLogin).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+  describe('updateCanUpdateIndexTimeStamp', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
+        .mockReturnValueOnce(1);
+      AccountGlobalConfig.getUserDictionary.mockReturnValueOnce(1);
+    });
+    it('should call updateCanUpdateIndexTimeStamp when stopping FSM', () => {
+      syncController.handleStoppingSocketEvent();
+      expect(
+        syncController.updateCanUpdateIndexTimeStamp,
+      ).toHaveBeenCalledTimes(1);
+    });
+    it('should call updateCanUpdateIndexTimeStamp when wake up from sleep mode', () => {
+      syncController.handleWakeUpFromSleep();
+      expect(
+        syncController.updateCanUpdateIndexTimeStamp,
+      ).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -7,11 +7,16 @@ import React from 'react';
 import i18nT from '@/utils/i18nT';
 import { SubModuleConfig } from '../types';
 import { JuiIconography } from 'jui/foundation/Iconography';
+import { lazyComponent } from '@/modules/common/util/lazyComponent';
 
 const config: SubModuleConfig = {
   route: {
     path: '/settings',
-    component: () => <div>Settings</div>,
+    component: lazyComponent({
+      loader: () =>
+        import(/*
+        webpackChunkName: "c.setting" */ './lazy/Setting'),
+    }),
   },
   nav: async () => ({
     url: '/settings',
