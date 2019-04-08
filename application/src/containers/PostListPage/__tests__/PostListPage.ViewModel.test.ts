@@ -6,6 +6,12 @@
 import * as utils from '@/store/utils';
 import { PostListPageViewModel } from '../PostListPage.ViewModel';
 import { POST_LIST_TYPE } from '../types';
+import storeManager from '@/store';
+import * as _ from 'lodash';
+import { PostService } from 'sdk/module/post';
+jest.mock('sdk/module/post');
+const postService = new PostService();
+
 describe('PostListPage.ViewModel', () => {
   describe('idsProviders', () => {
     it('should provide ids list in correct order for mentions, show these posts in the order of recency in mentions page [JPT-392]', () => {
@@ -24,4 +30,48 @@ describe('PostListPage.ViewModel', () => {
       expect(ids).toStrictEqual([6, 7, 2, 1, 3, 5, 4]);
     });
   });
-});
+//   describe('postFetcher()', () => {
+//     const sourceArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+//     jest.spyOn(utils, 'getSingleEntity').mockReturnValueOnce(sourceArr);
+//     const vm = new PostListPageViewModel({
+//       type: POST_LIST_TYPE.mentions,
+//     });
+//     const data: number[] = [];
+//     const mockedStore = {
+//       _data: data,
+//       subtractedBy(ids: number[]) {
+//         return [_.difference(ids, this._data), _.intersection(ids, this._data)];
+//       },
+//     };
+//     beforeEach(() => {
+//       jest.spyOn(postService, 'getPostsByIds').mockResolvedValue({
+//         posts: [],
+//       });
+
+//       // vm.ids = ;
+//       jest
+//         .spyOn(storeManager, 'getEntityMapStore')
+//         .mockImplementationOnce(() => mockedStore);
+//       jest.spyOn(utils, 'getEntity').mockReturnValue({});
+//       data.splice(0, data.length);
+//     });
+//     afterEach(() => jest.clearAllMocks());
+//     it('should get all the posts from service', async () => {
+//       await vm.postFetcher(null, 4);
+//       expect(postService.getPostsByIds).toBeCalledWith([1, 2, 3, 4]);
+//       expect(utils.getEntity).toBeCalledTimes(0);
+//     });
+//     it('should partially get the posts from service and store', async () => {
+//       data.push(1, 2, 3);
+//       await vm.postFetcher(null, 4);
+//       expect(postService.getPostsByIds).toBeCalledWith([4]);
+//       expect(utils.getEntity).toBeCalledTimes(3);
+//     });
+//     it('should get all the post from store', async () => {
+//       data.push(1, 2, 3, 4);
+//       await vm.postFetcher(null, 4);
+//       expect(postService.getPostsByIds).toBeCalledTimes(0);
+//       expect(utils.getEntity).toBeCalledTimes(4);
+//     });
+//   });
+// });

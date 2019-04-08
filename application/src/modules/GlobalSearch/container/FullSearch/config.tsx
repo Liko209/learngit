@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { ContentSearchResult } from '../ContentSearchResult';
 
 type TabConfig = {
   title: string;
@@ -17,7 +18,7 @@ type TabConfig = {
 const TAB_CONFIG = [
   {
     title: 'globalSearch.Messages',
-    container: () => <div>Messages</div>,
+    container: () => <ContentSearchResult />,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },

@@ -57,7 +57,8 @@ class ContentSearchResultViewModel
 
   @computed
   private get _searchKey(): string {
-    return this._globalSearchStore.searchKey;
+    // return this._globalSearchStore.searchKey;
+    return '123';
   }
 
   @computed
@@ -80,9 +81,10 @@ class ContentSearchResultViewModel
   setSearchOptions = async (options: ContentSearchOptions) => {
     this.searchOptions = { ...this.searchOptions, ...options };
 
-    this._setSearchState({ requestId: null });
-
-    await this.onPostsFetch();
+    if (this.searchState.requestId) {
+      await this.onSearchEnd();
+      this._setSearchState({ requestId: null });
+    }
   }
 
   onPostsFetch = async () => {
@@ -130,7 +132,10 @@ class ContentSearchResultViewModel
   private _onPostsInit = async () => {
     const {
       [TypeDictionary.TYPE_ID_POST]: postCount,
-    } = await this._postService.getSearchContentsCount(this._searchParams);
+    } = await this._postService.getSearchContentsCount({
+      ...this._searchParams,
+      count_types: 1,
+    });
 
     const result = await this._postService.searchPosts(this._searchParams);
 
