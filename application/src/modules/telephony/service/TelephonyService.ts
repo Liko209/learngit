@@ -104,23 +104,23 @@ class TelephonyService {
     );
     switch (callAction) {
       case RTC_CALL_ACTION.HOLD: {
-        this._telephonyStore.hold();
         this._telephonyStore.setPendingForHoldBtn(false);
+        this._telephonyStore.hold();
         break;
       }
       case RTC_CALL_ACTION.UNHOLD: {
-        this._telephonyStore.unhold();
         this._telephonyStore.setPendingForHoldBtn(false);
+        this._telephonyStore.unhold();
         break;
       }
       case RTC_CALL_ACTION.START_RECORD: {
-        this._telephonyStore.startRecording();
         this._telephonyStore.setPendingForRecordBtn(false);
+        this._telephonyStore.startRecording();
         break;
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
-        this._telephonyStore.stopRecording();
         this._telephonyStore.setPendingForRecordBtn(false);
+        this._telephonyStore.stopRecording();
         break;
       }
     }
@@ -134,28 +134,28 @@ class TelephonyService {
         break;
       }
       case RTC_CALL_ACTION.HOLD: {
+        this._telephonyStore.setPendingForHoldBtn(false);
         ToastCallError.toastFailedToHold();
         this._telephonyStore.unhold();
-        this._telephonyStore.setPendingForHoldBtn(false);
         break;
       }
       case RTC_CALL_ACTION.UNHOLD: {
+        this._telephonyStore.setPendingForHoldBtn(false);
         ToastCallError.toastFailedToResume();
         this._telephonyStore.hold();
-        this._telephonyStore.setPendingForHoldBtn(false);
         break;
       }
       case RTC_CALL_ACTION.START_RECORD: {
         // TODO: FIJI-4803 phase2 error handlings
+        this._telephonyStore.setPendingForRecordBtn(false);
         ToastCallError.toastFailedToRecord();
         this._telephonyStore.stopRecording();
-        this._telephonyStore.setPendingForRecordBtn(false);
         break;
       }
       case RTC_CALL_ACTION.STOP_RECORD: {
+        this._telephonyStore.setPendingForRecordBtn(false);
         ToastCallError.toastFailedToStopRecording();
         this._telephonyStore.startRecording();
-        this._telephonyStore.setPendingForRecordBtn(false);
         break;
       }
     }
@@ -320,8 +320,8 @@ class TelephonyService {
       return this._serverTelephonyService.stopRecord(this._callId as string);
     }
 
-    this._telephonyStore.startRecording(); // for swift UX
     this._telephonyStore.setPendingForRecordBtn(true);
+    this._telephonyStore.startRecording(); // for swift UX
     return this._serverTelephonyService.startRecord(this._callId as string);
   }
 }
