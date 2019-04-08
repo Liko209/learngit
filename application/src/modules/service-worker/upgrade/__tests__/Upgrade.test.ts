@@ -18,7 +18,19 @@ jest.mock('sdk/module/item/service', () => ({
   },
 }));
 
-describe('Upgrade', async () => {
+jest.mock('sdk/module/telephony', () => ({
+  TelephonyService: {
+    getInstance: () => {
+      return {
+        getAllCallCount: () => {
+          return 0;
+        },
+      };
+    },
+  },
+}));
+
+describe('Upgrade', () => {
   let upgradeHandler: Upgrade | undefined;
 
   afterEach(() => {
@@ -31,7 +43,7 @@ describe('Upgrade', async () => {
     const mockFn = jest.fn();
     jest.spyOn(upgradeHandler, '_reloadApp').mockImplementation(mockFn);
     upgradeHandler.onNewContentAvailable();
-    upgradeHandler.upgradeIfAvailable('Test');
+    upgradeHandler.reloadIfAvailable('Test');
     expect(mockFn).toBeCalled();
   });
 });

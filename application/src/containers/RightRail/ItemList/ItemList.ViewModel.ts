@@ -19,6 +19,7 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { TAB_CONFIG } from './config';
 import { Props } from './types';
+import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -52,8 +53,6 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
 class ItemListViewModel extends StoreViewModel<Props> {
   @observable private _sortableDataHandler: FetchSortableDataListHandler<Item>;
   @observable private _total: number = Infinity;
-  @observable private _loadingContent = false;
-  @observable private _loadingMoreDown = false;
 
   constructor(props: Props) {
     super(props);
@@ -136,6 +135,13 @@ class ItemListViewModel extends StoreViewModel<Props> {
     };
 
     const transformFunc = (model: Item) => {
+      if (
+        this._type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
+        this._type === RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES
+      ) {
+        model[sortKey] =
+          FileItemUtils.getVersionDate(model) || model.created_at;
+      }
       return {
         id: model.id,
         sortValue: model.id,
@@ -150,7 +156,7 @@ class ItemListViewModel extends StoreViewModel<Props> {
       return SortUtils.sortModelByKey(
         lhs.data as Item,
         rhs.data as Item,
-        sortKey,
+        [sortKey],
         desc,
       );
     };
@@ -242,42 +248,19 @@ class ItemListViewModel extends StoreViewModel<Props> {
     return this._sortableDataHandler.hasMore(QUERY_DIRECTION.NEWER);
   }
 
-  isLoadingContent = () => {
-    return this._loadingContent;
-  }
-
-  isLoadingMore = (direction: 'up' | 'down') => {
-    if ('down' === direction) {
-      return this._loadingMoreDown;
-    }
-    return false;
-  }
-
-  isLoading = () => {
-    return (
-      this.isLoadingContent() ||
-      this.isLoadingMore('up') ||
-      this.isLoadingMore('down')
-    );
-  }
-
   get = (index: number) => {
     return this.getIds[index];
   }
 
   @action
-  loadMore = async () => {
-    this._loadingMoreDown = true;
-    await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER, 20);
-    this._loadingMoreDown = false;
+  loadMore = async (direction: 'up' | 'down', count: number) => {
+    await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER, count);
   }
 
   @action
   loadInitialData = async () => {
-    this._loadingContent = true;
     await this._sortableDataHandler.fetchData(QUERY_DIRECTION.NEWER);
     this._sortableDataHandler.setHasMore(false, QUERY_DIRECTION.OLDER);
-    this._loadingContent = false;
   }
 
   dispose() {

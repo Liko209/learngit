@@ -165,9 +165,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @action
-  async loadPrevPosts() {
+  async loadPrevPosts(count: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER, count);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
@@ -176,23 +176,24 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @action
-  async loadNextPosts() {
+  async loadNextPosts(count: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER, count);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.NEWER);
       return;
     }
   }
+
   @action
-  loadMore = async (direction: 'up' | 'down') => {
+  loadMore = async (direction: 'up' | 'down', count: number) => {
     switch (direction) {
       case 'up':
-        await this.loadPrevPosts();
+        await this.loadPrevPosts(count);
         break;
       case 'down':
-        await this.loadNextPosts();
+        await this.loadNextPosts(count);
         break;
       default:
         mainLogger.warn('please nominate the direction');

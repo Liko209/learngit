@@ -43,7 +43,7 @@ class SubItemDao<T extends SanitizedItem> extends BaseDao<T> {
     }
 
     const sortFunc = (lhs: T, rhs: T): number => {
-      return SortUtils.sortModelByKey(lhs, rhs, sortKey, desc);
+      return SortUtils.sortModelByKey(lhs, rhs, [sortKey], desc);
     };
 
     sanitizedItems = sanitizedItems.sort(sortFunc);

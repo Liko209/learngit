@@ -19,6 +19,7 @@ const CallFsmEvent = {
   FORWARD: 'forwardEvent',
   ANSWER: 'answerEvent',
   REJECT: 'rejectEvent',
+  IGNORE: 'ignoreEvent',
   SEND_TO_VOICEMAIL: 'sendToVoicemailEvent',
   HOLD: 'holdEvent',
   UNHOLD: 'unholdEvent',
@@ -81,6 +82,12 @@ class RTCCallFsm extends EventEmitter2 implements IRTCCallFsmTableDependency {
   public reject() {
     this._eventQueue.push({ name: CallFsmEvent.REJECT }, () => {
       this._onReject();
+    });
+  }
+
+  public ignore() {
+    this._eventQueue.push({ name: CallFsmEvent.IGNORE }, () => {
+      this._callFsmTable.ignore();
     });
   }
 

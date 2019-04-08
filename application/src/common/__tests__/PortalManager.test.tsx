@@ -54,7 +54,7 @@ describe('portalManager', () => {
     expect(portalManager.on).toHaveBeenCalled();
   });
 });
-describe('portalManager wrapper()', async () => {
+describe('portalManager wrapper()', () => {
   beforeEach(() => {
     portalManager.portals = new Map();
     jest.restoreAllMocks();

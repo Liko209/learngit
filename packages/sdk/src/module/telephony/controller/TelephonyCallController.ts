@@ -73,6 +73,14 @@ class TelephonyCallController implements IRTCCallDelegate {
   dtmf(digits: string) {
     this._rtcCall.dtmf(digits);
   }
+
+  answer() {
+    this._rtcCall.answer();
+  }
+
+  sendToVoiceMail() {
+    this._rtcCall.sendToVoicemail();
+  }
 }
 
 export { TelephonyCallController };

@@ -10,9 +10,13 @@ import { Group } from '../../../group/entity';
 import { Profile } from '../../../profile/entity';
 import { NotificationEntityPayload } from '../../../../service/notificationCenter';
 import { SYNC_SOURCE } from '../../../../module/sync';
+import { GroupService } from '../../../group/service';
+
+jest.mock('../../../group/service');
 
 describe('StateService', () => {
-  const stateService = new StateService();
+  const mockGroupService = new GroupService();
+  const stateService = new StateService(mockGroupService);
   const mockUpdateReadStatus = jest.fn();
   const mockUpdateLastGroup = jest.fn();
   const mockGetAllGroupStatesFromLocal = jest.fn();

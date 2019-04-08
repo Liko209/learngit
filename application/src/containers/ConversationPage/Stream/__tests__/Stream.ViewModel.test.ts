@@ -27,6 +27,7 @@ import { StreamViewModel } from '../Stream.ViewModel';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
+jest.mock('sdk/module/group');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
@@ -90,6 +91,7 @@ describe('StreamViewModel', () => {
       expect(storeManager.dispatchUpdatedDataModels).toBeCalledWith(
         ENTITY_NAME.ITEM,
         [{ id: 1 }],
+        false,
       );
     });
   });

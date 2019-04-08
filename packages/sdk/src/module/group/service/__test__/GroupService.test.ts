@@ -29,6 +29,9 @@ describe('GroupService', () => {
   };
   const mockGroupFetchDataController = {
     getTeamUserPermissionFlags: jest.fn(),
+    doFuzzySearchAllGroups: jest.fn(),
+    doFuzzySearchGroups: jest.fn(),
+    doFuzzySearchTeams: jest.fn(),
   };
   const mockHandleDataController = {
     handleData: jest.fn(),
@@ -305,7 +308,7 @@ describe('GroupService', () => {
     });
   });
 
-  describe('pinPost', async () => {
+  describe('pinPost', () => {
     beforeEach(() => {
       clearMocks();
       setup();
@@ -340,6 +343,36 @@ describe('GroupService', () => {
         });
       await groupService.revokeAdmin(1, 2);
       expect(makeOrRevokeAdmin).toBeCalledWith(1, 2, false);
+    });
+  });
+
+  describe('GroupFetchDataController', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call getGroupFetchDataController when call doFuzzySearchALlGroups  ', async () => {
+      await groupService.doFuzzySearchALlGroups('123', true, false);
+      expect(
+        mockGroupFetchDataController.doFuzzySearchAllGroups,
+      ).toBeCalledWith('123', true, false);
+    });
+
+    it('should call getGroupFetchDataController when call doFuzzySearchGroups  ', async () => {
+      await groupService.doFuzzySearchGroups('123', true);
+      expect(mockGroupFetchDataController.doFuzzySearchGroups).toBeCalledWith(
+        '123',
+        true,
+      );
+    });
+
+    it('should call getGroupFetchDataController when call doFuzzySearchTeams  ', async () => {
+      await groupService.doFuzzySearchTeams('123', false);
+      expect(mockGroupFetchDataController.doFuzzySearchTeams).toBeCalledWith(
+        '123',
+        false,
+      );
     });
   });
 });

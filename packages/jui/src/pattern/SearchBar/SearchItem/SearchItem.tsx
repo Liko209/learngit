@@ -28,7 +28,7 @@ const SearchItemActions = styled.div`
 
 const SearchItemWrapper = styled(MenuItem)`
   && {
-    height: ${height(6)};
+    height: ${height(8)};
     padding: ${spacing(1, 4)};
     &:hover {
       background: none;

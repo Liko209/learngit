@@ -19,7 +19,6 @@ import Sdk from './Sdk';
 import AccountService from './service/account';
 import AuthService from './service/auth';
 import { CompanyService } from './module/company';
-import ConfigService from './service/config';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
 import { PresenceService } from './module/presence';
@@ -35,7 +34,7 @@ import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
 import { SearchService } from './module/search';
-import { RcInfoService } from './module/rcInfo';
+import { RCInfoService } from './module/rcInfo';
 import { GlobalConfigService, UserConfigService } from './module/config';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
@@ -61,17 +60,19 @@ const registerConfigs = {
     { name: PersonService.name, value: PersonService },
     { name: PresenceService.name, value: PresenceService },
     { name: ProfileService.name, value: ProfileService },
-    { name: StateService.name, value: StateService },
-    { name: ProgressService.name, value: ProgressService },
-    { name: PostService.name, value: PostService },
-    { name: PermissionService.name, value: PermissionService },
-    { name: GroupService.name, value: GroupService },
-    { name: RcInfoService.name, value: RcInfoService },
     {
-      name: ConfigService.name,
-      value: ConfigService,
-      injects: [AuthService.name],
+      name: StateService.name,
+      value: StateService,
+      injects: [GroupService.name],
     },
+    { name: ProgressService.name, value: ProgressService },
+    {
+      name: PostService.name,
+      value: PostService,
+      injects: [GroupService.name],
+    },
+    { name: PermissionService.name, value: PermissionService },
+    { name: RCInfoService.name, value: RCInfoService },
     {
       name: AuthService.name,
       value: AuthService,

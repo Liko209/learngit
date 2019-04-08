@@ -19,7 +19,7 @@ type ConversationCardProps = {
   children: (React.ReactChild | null)[];
   mode?: string;
   highlight?: boolean;
-  onClick?: (e: React.MouseEvent) => any;
+  jumpToPost?: (e: React.MouseEvent) => any;
 } & React.DOMAttributes<{}>;
 
 const StyledNavigationButton = styled<JuiButtonProps>(JuiButton)`
@@ -44,7 +44,6 @@ const StyledRightSection = styled('div')`
 const navigationStyles = ({ mode }: { mode?: string }) =>
   css`
     position: relative;
-    cursor: pointer;
     &:hover {
       ${StyledNavigationButton} {
         opacity: 1;
@@ -98,7 +97,7 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
   }
 
   render() {
-    const { children, Avatar, mode, ...rest } = this.props;
+    const { children, Avatar, mode, jumpToPost, ...rest } = this.props;
     const { highlight } = this.state;
     return (
       <StyledConversationCard
@@ -108,7 +107,11 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
         {...rest}
       >
         {mode === 'navigation' ? (
-          <StyledNavigationButton variant="round">
+          <StyledNavigationButton
+            variant="round"
+            onClick={jumpToPost}
+            data-test-automation-id={'jumpToConversation'}
+          >
             Jump to conversation
           </StyledNavigationButton>
         ) : null}
