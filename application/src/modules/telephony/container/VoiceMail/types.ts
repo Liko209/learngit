@@ -7,7 +7,7 @@
 type VoiceMailProps = {};
 
 type VoiceMailViewProps = {
-  ignore: () => void;
+  sendToVoiceMail: () => void;
 };
 
 export { VoiceMailProps, VoiceMailViewProps };

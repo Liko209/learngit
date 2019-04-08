@@ -9,7 +9,7 @@ import { IEntityDataProvider } from '../types';
 
 import PostModel from '../../../models/Post';
 import { Post } from 'sdk/module/post/entity';
-import { IdModel } from 'sdk/src/framework/model';
+import { IdModel } from 'sdk/framework/model';
 import { ENTITY } from 'sdk/service/eventKey';
 import { ENTITY_NAME } from '@/store/constants';
 import notificationCenter from 'sdk/service/notificationCenter';

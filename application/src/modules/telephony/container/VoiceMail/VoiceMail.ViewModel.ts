@@ -12,7 +12,7 @@ import { VoiceMailProps, VoiceMailViewProps } from './types';
 class VoiceMailViewModel extends StoreViewModel<VoiceMailProps>
   implements VoiceMailViewProps {
   private _telephonyService: TelephonyService = container.get(TelephonyService);
-  ignore = () => {
+  sendToVoiceMail = () => {
     this._telephonyService.sendToVoiceMail();
   }
 }
