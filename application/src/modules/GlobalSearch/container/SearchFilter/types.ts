@@ -40,7 +40,6 @@ type SearchFilterViewProps = SearchFilterProps & {
   timePeriodFilter: SearchContentTypeItem[];
   timeType: string;
 };
-
 export {
   SearchFilterProps,
   SearchFilterViewProps,
