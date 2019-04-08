@@ -20,11 +20,11 @@ class PersonItemView extends React.Component<ViewProps, {}> {
     await goToConversation(person.id);
   }
 
-  onClick = () => {
-    const { addRecentRecord, onClear } = this.props;
-    addRecentRecord();
-    onClear();
-  }
+  // onClick = () => {
+  //   const { addRecentRecord, onClear } = this.props;
+  //   addRecentRecord();
+  //   onClear();
+  // }
 
   handleGoToConversation = (evt: React.MouseEvent) => {
     const { addRecentRecord } = this.props;
@@ -78,7 +78,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
         onMouseLeave={onMouseLeave}
         hovered={hovered}
         key={id}
-        onClick={this.onClick}
+        onClick={this.handleGoToConversation}
         Avatar={<Avatar uid={id} size="small" />}
         value={userDisplayName}
         terms={terms}
