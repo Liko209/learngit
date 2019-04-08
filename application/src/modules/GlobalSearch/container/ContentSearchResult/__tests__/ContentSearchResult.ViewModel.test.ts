@@ -111,7 +111,7 @@ describe('ContentSearchResult [JPT-1562]', () => {
 
     const fixedOptions = {
       q: 'searchKey',
-      fetch_count: CONTENT_SEARCH_FETCH_COUNT,
+      scroll_size: CONTENT_SEARCH_FETCH_COUNT,
     };
     const inputOptions = { type: null, creator_id: 1 };
     const outputOptions = { ...fixedOptions, creator_id: 1 };

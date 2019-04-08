@@ -46,7 +46,7 @@ class ContentSearchResultViewModel
 
   @observable
   searchOptions: ContentSearchOptions = {
-    fetch_count: CONTENT_SEARCH_FETCH_COUNT,
+    scroll_size: CONTENT_SEARCH_FETCH_COUNT,
   };
 
   constructor(props: ContentSearchResultProps) {
@@ -98,11 +98,7 @@ class ContentSearchResultViewModel
     return { hasMore, data: posts };
   }
 
-  onSearchEnd = async () => {
-    const { requestId } = this.searchState;
-
-    requestId === null || (await this._postService.endPostSearch(requestId));
-  }
+  onSearchEnd = async () => await this._postService.endPostSearch();
 
   @action
   private _onSearchInit() {
