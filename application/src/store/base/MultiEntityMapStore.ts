@@ -106,7 +106,10 @@ export default class MultiEntityMapStore<
     const model = this._data[id];
     if (model) {
       Object.keys(partialEntity).forEach((key: string) => {
-        model[_.camelCase(key)] = partialEntity[key];
+        const camelCaseKey = _.camelCase(key);
+        if (model.hasOwnProperty(camelCaseKey)) {
+          model[camelCaseKey] = partialEntity[key];
+        }
       });
       model.isMocked = false;
     }
@@ -119,12 +122,12 @@ export default class MultiEntityMapStore<
   }
 
   @action
-  batchSet(entities: T[]) {
+  batchSet(entities: T[], refreshCache = true) {
     entities.forEach((entity: T) => {
       this._setOrUpdate(entity);
     });
 
-    this._refreshCache();
+    refreshCache && this._refreshCache();
   }
 
   private _set(data: T, refreshCache: boolean = false) {
@@ -325,7 +328,6 @@ export default class MultiEntityMapStore<
     };
   }
 
-  @action
   private _refreshCache() {
     if (this.getSize() < this._maxCacheCount || !this._getIsHidden()) {
       return;
@@ -335,7 +337,7 @@ export default class MultiEntityMapStore<
       const existKeys = Object.keys(this._data).map(Number);
       let allUsedIds = [...this._usedIds];
       this._usedCacheArr.forEach((cache: IUsedCache) => {
-        allUsedIds = _.union(allUsedIds, cache.getUsedId());
+        allUsedIds = _.union(allUsedIds, cache.getUsedIds());
       });
       const diffKeys = _.difference(existKeys, allUsedIds);
       diffKeys.forEach((id: number) => {

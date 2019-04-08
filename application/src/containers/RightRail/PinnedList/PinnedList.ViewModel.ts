@@ -74,11 +74,11 @@ class PinnedListViewModel extends StoreViewModel<PinnedListProps>
   }
 
   @action
-  loadMore = async () => {
+  loadMore = async (direction: 'up' | 'down', count: number) => {
     if (this.discontinuousPosListHandler) {
       await this.discontinuousPosListHandler.loadMorePosts(
         QUERY_DIRECTION.NEWER,
-        20,
+        count,
       );
     }
   }

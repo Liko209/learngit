@@ -423,7 +423,7 @@ export class GroupActionController {
       isValid = this.groupService.isValid(group);
       const userConfig = new AccountUserConfig();
       const currentUserId = userConfig.getGlipUserId();
-      isIncludeSelf = group.members.includes(currentUserId);
+      isIncludeSelf = group.members && group.members.includes(currentUserId);
     }
     return !isHidden && isValid && isIncludeSelf;
   }

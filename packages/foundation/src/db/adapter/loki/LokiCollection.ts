@@ -6,7 +6,12 @@
 import Loki from 'lokijs';
 import { execQuery } from './queryExecutor';
 import _ from 'lodash';
-import { IDatabaseCollection, IQuery, IQueryOption } from '../../db';
+import {
+  DatabaseKeyType,
+  IDatabaseCollection,
+  IQuery,
+  IQueryOption,
+} from '../../db';
 
 /**
  * return every item will has $loki like this
@@ -20,7 +25,8 @@ import { IDatabaseCollection, IQuery, IQueryOption } from '../../db';
 //   Reflect.deleteProperty(newO, '$loki');
 //   return newO;
 // }
-class LokiCollection<T extends object> implements IDatabaseCollection<T> {
+class LokiCollection<T extends object, Key extends DatabaseKeyType>
+  implements IDatabaseCollection<T, Key> {
   private collection: Loki.Collection<T>;
   constructor(db: Loki, collectionName: string) {
     this.collection = db.getCollection<T>(collectionName);
@@ -30,7 +36,7 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
     return this.collection;
   }
 
-  primaryKeys(query?: IQuery<T>): Promise<number[]> {
+  primaryKeys(query?: IQuery<T>): Promise<Key[]> {
     return this.getAll(query).then((result: T[]) => {
       return result.map(item => item[this.primaryKeyName()]);
     });
@@ -66,7 +72,7 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
     );
   }
 
-  async get(key: number): Promise<T | null> {
+  async get(key: Key): Promise<T | null> {
     const unique = this.primaryKeyName();
     const result: (T & LokiObj) | void = this.collection.find({
       [unique]: key,
@@ -79,20 +85,20 @@ class LokiCollection<T extends object> implements IDatabaseCollection<T> {
     return newO;
   }
 
-  async delete(key: number): Promise<void> {
+  async delete(key: Key): Promise<void> {
     const unique = this.primaryKeyName();
     this.collection.findAndRemove({
       [unique]: key,
     } as any);
   }
 
-  async bulkDelete(keyArr: number[]): Promise<void> {
-    keyArr.forEach((key: number) => {
+  async bulkDelete(keyArr: Key[]): Promise<void> {
+    keyArr.forEach((key: Key) => {
       this.delete(key);
     });
   }
 
-  async update(key: number, changes: Partial<T>): Promise<void> {
+  async update(key: Key, changes: Partial<T>): Promise<void> {
     const unique = this.primaryKeyName();
     this.collection.findAndUpdate(
       { [unique]: key } as any,

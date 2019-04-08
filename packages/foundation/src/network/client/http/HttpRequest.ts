@@ -5,28 +5,10 @@
  */
 import BaseRequest from '../../BaseRequest';
 import NetworkRequestBuilder from '../NetworkRequestBuilder';
-import { IRequest } from '../../network';
 
 class HttpRequest extends BaseRequest {
   constructor(builder: NetworkRequestBuilder) {
-    super(
-      builder.id,
-      builder.path,
-      builder.method,
-      builder.data,
-      builder.headers,
-      builder.params,
-    );
-    this.authFree = builder.authFree;
-    this.host = builder.host;
-    this.handlerType = builder.handlerType;
-    this.requestConfig = builder.requestConfig;
-    this.timeout = builder.timeout;
-    this.retryCount = builder.retryCount;
-    this.priority = builder.priority;
-    this.HAPriority = builder.HAPriority;
-    this.via = builder.via;
-    this.callback = (builder as IRequest).callback;
+    super(builder);
   }
   needAuth(): boolean {
     return !this.authFree;

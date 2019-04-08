@@ -9,7 +9,7 @@ import { daoManager } from '../../../../dao';
 import { StateDao } from '../../dao';
 import { GroupState, MyState } from '../../entity/State';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { MyStateUserConfig } from '../../../../service/config';
+import { MyStateConfig } from '../../../state/config';
 class StateFetchDataController {
   private _myStateId: number;
   constructor(
@@ -35,7 +35,7 @@ class StateFetchDataController {
 
   getMyStateId(): number {
     if (!this._myStateId || this._myStateId <= 0) {
-      const userConfig = new MyStateUserConfig();
+      const userConfig = new MyStateConfig();
       this._myStateId = userConfig.getMyStateId();
     }
     return this._myStateId;

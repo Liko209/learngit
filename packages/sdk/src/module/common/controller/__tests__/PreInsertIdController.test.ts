@@ -46,7 +46,7 @@ describe('PreInsertIdController()', () => {
     });
   });
 
-  describe('insert()', async () => {
+  describe('insert()', () => {
     it('should have data after insert ids', async () => {
       const controller = getController();
       await controller.insert(10);
@@ -55,7 +55,7 @@ describe('PreInsertIdController()', () => {
     });
   });
 
-  describe('delete()', async () => {
+  describe('delete()', () => {
     it('should remove id from the map when it is existed in map', async () => {
       const controller = getController();
       await controller.insert(10);

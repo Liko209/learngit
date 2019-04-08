@@ -31,6 +31,7 @@ import { AccountUserConfig } from '../../../../../service/account/config';
 
 jest.mock('../../../../../module/config');
 jest.mock('../../../../../service/account/config');
+jest.mock('../../../../group');
 GlobalConfigService.getInstance = jest.fn();
 
 type DataHandleTask =
@@ -41,6 +42,7 @@ type DataHandleTask =
 describe('TotalUnreadController', () => {
   let totalUnreadController: TotalUnreadController;
   let mockEntitySourceController: EntitySourceController;
+  const mockGroupService = new GroupService();
   beforeEach(() => {
     jest.clearAllMocks();
     mockEntitySourceController = new EntitySourceController<GroupState>(
@@ -48,6 +50,7 @@ describe('TotalUnreadController', () => {
       {} as DeactivatedDao,
     );
     totalUnreadController = new TotalUnreadController(
+      mockGroupService,
       mockEntitySourceController,
     );
   });
@@ -424,13 +427,13 @@ describe('TotalUnreadController', () => {
         unreadCount: 8,
         mentionCount: 2,
       });
-      GroupService.getInstance = jest.fn().mockReturnValue({
-        isValid: jest.fn().mockImplementation((group: Group) => {
+      mockGroupService.isValid = jest
+        .fn()
+        .mockImplementation((group: Group) => {
           return (
             group && !group.is_archived && !group.deactivated && !!group.members
           );
-        }),
-      });
+        });
       const entityMap = new Map<number, Group>();
       entityMap.set(1, {
         deactivated: true,
@@ -626,22 +629,18 @@ describe('TotalUnreadController', () => {
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
         .mockReturnValue(5683);
-      GroupService.getInstance = jest.fn().mockReturnValue({
-        getEntitySource: jest.fn().mockReturnValue({
-          getEntities: jest
-            .fn()
-            .mockReturnValue([
-              { members: [0] },
-              { members: [1, 5683] },
-              { members: [123, 5683] },
-            ]),
-        }),
-        isValid: jest
-          .fn()
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(false),
-      });
+      mockGroupService.getEntities = jest
+        .fn()
+        .mockReturnValue([
+          { members: [0] },
+          { members: [1, 5683] },
+          { members: [123, 5683] },
+        ]);
+      mockGroupService.isValid = jest
+        .fn()
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(false);
       ProfileService.getInstance = jest.fn().mockReturnValue({
         getFavoriteGroupIds: jest.fn().mockReturnValue(undefined),
       });
@@ -650,12 +649,8 @@ describe('TotalUnreadController', () => {
       expect(
         ProfileService.getInstance<ProfileService>().getFavoriteGroupIds,
       ).toBeCalledTimes(1);
-      expect(
-        GroupService.getInstance<GroupService>().getEntitySource().getEntities,
-      ).toBeCalledTimes(1);
-      expect(GroupService.getInstance<GroupService>().isValid).toBeCalledTimes(
-        3,
-      );
+      expect(mockGroupService.getEntities).toBeCalledTimes(1);
+      expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({
@@ -672,22 +667,18 @@ describe('TotalUnreadController', () => {
       AccountUserConfig.prototype.getGlipUserId = jest
         .fn()
         .mockReturnValue(5683);
-      GroupService.getInstance = jest.fn().mockReturnValue({
-        getEntitySource: jest.fn().mockReturnValue({
-          getEntities: jest
-            .fn()
-            .mockReturnValue([
-              { members: [0] },
-              { members: [1, 5683] },
-              { members: [123, 5683] },
-            ]),
-        }),
-        isValid: jest
-          .fn()
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(false),
-      });
+      mockGroupService.getEntities = jest
+        .fn()
+        .mockReturnValue([
+          { members: [0] },
+          { members: [1, 5683] },
+          { members: [123, 5683] },
+        ]);
+      mockGroupService.isValid = jest
+        .fn()
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(false);
       ProfileService.getInstance = jest.fn().mockReturnValue({
         getFavoriteGroupIds: jest.fn().mockReturnValue([123, 456]),
       });
@@ -696,12 +687,8 @@ describe('TotalUnreadController', () => {
       expect(
         ProfileService.getInstance<ProfileService>().getFavoriteGroupIds,
       ).toBeCalledTimes(1);
-      expect(
-        GroupService.getInstance<GroupService>().getEntitySource().getEntities,
-      ).toBeCalledTimes(1);
-      expect(GroupService.getInstance<GroupService>().isValid).toBeCalledTimes(
-        3,
-      );
+      expect(mockGroupService.getEntities).toBeCalledTimes(1);
+      expect(mockGroupService.isValid).toBeCalledTimes(3);
       expect(AccountUserConfig.prototype.getGlipUserId).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledTimes(1);
       expect(totalUnreadController['_addNewGroupUnread']).toBeCalledWith({

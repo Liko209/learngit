@@ -82,6 +82,7 @@
     "postprocessor",
     "precommit",
     "preinstall",
+    "prefetch",
     "prerelease",
     "rclogin",
     "React's",

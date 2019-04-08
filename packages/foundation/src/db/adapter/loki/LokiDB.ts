@@ -7,6 +7,7 @@ import Loki from 'lokijs';
 import LokiCollection from './LokiCollection';
 import { parseSchema } from '../utils';
 import {
+  DatabaseKeyType,
   IDatabase,
   IDatabaseCollection,
   ISchema,
@@ -43,13 +44,15 @@ class LokiDB implements IDatabase {
     await this.close();
   }
 
-  getCollection<T extends object>(name: string): LokiCollection<T> {
-    return new LokiCollection<T>(this.db, name);
+  getCollection<T extends object, Key extends DatabaseKeyType>(
+    name: string,
+  ): LokiCollection<T, Key> {
+    return new LokiCollection<T, Key>(this.db, name);
   }
 
   async getTransaction(
     mode: string | void,
-    collections: IDatabaseCollection<any>[] | void,
+    collections: IDatabaseCollection<any, DatabaseKeyType>[] | void,
     callback: () => {},
   ): Promise<void> {
     callback();
