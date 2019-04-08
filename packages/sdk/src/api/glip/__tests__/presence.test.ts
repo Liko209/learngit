@@ -11,13 +11,10 @@ jest.mock('../../api');
 describe('PresenceAPI tests', () => {
   it('Get presence by ids', async () => {
     PresenceAPI.requestPresenceByIds([1, 2, 3, 4]);
-    expect(PresenceAPI.uploadNetworkClient.get).toHaveBeenCalledWith(
-      '/glip-presence/v1/person/1,2,3,4/presence',
-      {},
-      NETWORK_VIA.SOCKET,
-      {},
-      {},
-      3,
-    );
+    expect(PresenceAPI.uploadNetworkClient.get).toHaveBeenCalledWith({
+      path: '/glip-presence/v1/person/1,2,3,4/presence',
+      via: NETWORK_VIA.SOCKET,
+      retryCount: 3,
+    });
   });
 });

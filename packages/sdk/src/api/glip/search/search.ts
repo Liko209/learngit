@@ -16,14 +16,17 @@ class SearchAPI extends Api {
   static basePath = '/search';
 
   static async search(params: ContentSearchParams) {
-    return this.glipNetworkClient.get<InitialSearchResponse>('/search', params);
+    return this.glipNetworkClient.get<InitialSearchResponse>({
+      params,
+      path: '/search',
+    });
   }
 
   static async scrollSearch(params: ScrollSearchParams) {
-    return this.glipNetworkClient.get<ScrollSearchResponse>(
-      '/search_scroll',
+    return this.glipNetworkClient.get<ScrollSearchResponse>({
       params,
-    );
+      path: '/search_scroll',
+    });
   }
 }
 
