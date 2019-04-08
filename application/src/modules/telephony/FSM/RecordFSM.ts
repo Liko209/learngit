@@ -33,12 +33,12 @@ const RecordFSM = StateMachine.factory({
     },
     {
       name: RECORD_TRANSITION_NAMES.START_RECORD,
-      from: RECORD_STATE.IDLE,
+      from: [RECORD_STATE.IDLE, RECORD_STATE.DISABLED],
       to: RECORD_STATE.RECORDING,
     },
     {
       name: RECORD_TRANSITION_NAMES.STOP_RECORD,
-      from: RECORD_STATE.RECORDING,
+      from: [RECORD_STATE.RECORDING, RECORD_STATE.DISABLED],
       to: RECORD_STATE.IDLE,
     },
     {

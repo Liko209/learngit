@@ -326,5 +326,24 @@ describe('TelephonyService', () => {
 
       await (telephonyService as TelephonyService).hangUp();
     });
+
+    it('Should restore recording state when unhold [JPT-1608]', async () => {
+      await (telephonyService as TelephonyService).makeCall(v4());
+      await sleep(testProcedureWaitingTime);
+
+      await (telephonyService as TelephonyService).startOrStopRecording();
+      await sleep(testProcedureWaitingTime);
+
+      expect((telephonyService as TelephonyService)._telephonyStore.isRecording).toBe(true);
+
+      await (telephonyService as TelephonyService).holdOrUnhold();
+      await sleep(testProcedureWaitingTime);
+      await (telephonyService as TelephonyService).holdOrUnhold();
+      await sleep(testProcedureWaitingTime);
+
+      expect((telephonyService as TelephonyService)._telephonyStore.isRecording).toBe(true);
+
+      await (telephonyService as TelephonyService).hangUp();
+    });
   });
 });
