@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-03-01 10:44:59
- * @Last Modified by: Nello Huang (nello.huang@ringcentral.com)
- * @Last Modified time: 2019-03-27 17:13:42
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-04-08 17:01:32
  */
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
@@ -13,11 +13,11 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup } from "../../v2/models";
 import { SITE_URL, BrandTire } from '../../config';
 
-fixture('Search/Profile')
+fixture('Search/conversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check can open profile dialog when click the item of search result', ['P1', 'JPT-1213', 'search', 'Potar.He']), async (t) => {
+test(formalName('Check can open conversation when clicking the item of search result', ['P1', 'JPT-1213', 'Search', 'Potar.He']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const me = users[5];
   const anotherUser = users[6];
