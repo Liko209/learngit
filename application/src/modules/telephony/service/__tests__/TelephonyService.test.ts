@@ -262,7 +262,7 @@ describe('TelephonyService', () => {
   });
 
   describe('The "record" button status tests', () => {
-    it('The "record" button should be disabled when an outbound call is not connected', async () => {
+    it('The "record" button should be disabled when an outbound call is not connected [JPT-1604]', async () => {
       await (telephonyService as TelephonyService).makeCall(v4());
       (telephonyService as TelephonyService).startOrStopRecording();
 
@@ -274,7 +274,7 @@ describe('TelephonyService', () => {
       expect((telephonyService as TelephonyService)._telephonyStore.recordDisabled).toBe(true);
     });
 
-    it('User should be able to record a call', async () => {
+    it('Start recording if the call is connected [JPT-1600]', async () => {
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
 
@@ -289,7 +289,7 @@ describe('TelephonyService', () => {
       expect((telephonyService as TelephonyService)._telephonyStore.recordDisabled).toBe(true);
     });
 
-    it('User should be able to stop recording a call', async () => {
+    it('Stop recording should work when call is under recording [JPT-1603]', async () => {
       await (telephonyService as TelephonyService).makeCall(v4());
       await sleep(testProcedureWaitingTime);
       (telephonyService as TelephonyService).startOrStopRecording();
@@ -307,6 +307,24 @@ describe('TelephonyService', () => {
 
       await (telephonyService as TelephonyService).hangUp();
       expect((telephonyService as TelephonyService)._telephonyStore.recordDisabled).toBe(true);
+    });
+
+    it('Record shouldn\'t work when a call being holded [JPT-1608]', async () => {
+      await (telephonyService as TelephonyService).makeCall(v4());
+      await sleep(testProcedureWaitingTime);
+
+      await (telephonyService as TelephonyService).holdOrUnhold();
+      expect((telephonyService as TelephonyService)._telephonyStore.recordDisabled).toBe(true);
+
+      await sleep(testProcedureWaitingTime);
+      expect((telephonyService as TelephonyService)._telephonyStore.recordDisabled).toBe(true);
+
+      await (telephonyService as TelephonyService).holdOrUnhold();
+      await sleep(testProcedureWaitingTime);
+
+      expect((telephonyService as TelephonyService)._telephonyStore.recordDisabled).toBe(false);
+
+      await (telephonyService as TelephonyService).hangUp();
     });
   });
 });

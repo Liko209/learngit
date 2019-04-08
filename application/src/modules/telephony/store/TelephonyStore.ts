@@ -61,7 +61,6 @@ class TelephonyStore {
     type toTypes = HOLD_STATE | RECORD_STATE | CALL_WINDOW_STATUS;
 
     [
-      ['_holdFSM', 'holdState'],
       ['_callWindowFSM', 'callWindowState'],
       ['_recordFSM', 'recordState'],
     ].forEach(
@@ -76,6 +75,19 @@ class TelephonyStore {
           );
       },
     );
+
+    this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
+      const { to } = lifecycle;
+      this.holdState = to as HOLD_STATE;
+      switch (this.holdState) {
+        case HOLD_STATE.HOLDED:
+          this.disableRecord();
+          break;
+        case HOLD_STATE.IDLE:
+          this.enableRecord();
+          break;
+      }
+    });
 
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
       const { to } = lifecycle;
