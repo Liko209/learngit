@@ -54,12 +54,13 @@ export class MessageNotificationManager extends NotificationManager {
 
     const conversation: GroupModel = getEntity(ENTITY_NAME.GROUP, post.groupId);
     const { type: conversationType } = conversation;
-
     if (
-      ![
-        CONVERSATION_TYPES.NORMAL_GROUP,
-        CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
-      ].includes(conversationType)
+      !(
+        [
+          CONVERSATION_TYPES.NORMAL_GROUP,
+          CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
+        ].includes(conversationType) || this.isMyselfAtMentioned(post)
+      )
     ) {
       return;
     }
