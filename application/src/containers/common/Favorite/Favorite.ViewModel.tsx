@@ -15,11 +15,13 @@ import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { GLOBAL_KEYS } from '@/store/constants';
-
 import { FavoriteProps } from './types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
-  private _groupService: GroupService = GroupService.getInstance();
+  private _groupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   @observable
   conversationId: number;
@@ -88,10 +90,9 @@ class FavoriteViewModel extends StoreViewModel<FavoriteProps> {
   }
 
   handlerFavorite = () => {
-    return (ProfileService.getInstance() as ProfileService).markGroupAsFavorite(
-      this.conversationId,
-      !this.isFavorite,
-    );
+    return ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    ).markGroupAsFavorite(this.conversationId, !this.isFavorite);
   }
 }
 

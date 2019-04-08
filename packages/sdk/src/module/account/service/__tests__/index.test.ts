@@ -3,19 +3,20 @@
  * @Date: 2018-03-01 14:02:24
  */
 /// <reference path="../../../__tests__/types.d.ts" />
-import AccountService from '..';
-import { daoManager } from '../../../dao';
-import { PersonDao } from '../../../module/person/dao';
-import { RCAuthApi } from '../../../api';
-import { AccountUserConfig } from '../../../service/account/config/AccountUserConfig';
-import { AccountGlobalConfig } from '../../../service/account/config/AccountGlobalConfig';
 
-jest.mock('../../../dao');
-jest.mock('../../../module/person/dao');
-jest.mock('../../../api');
-jest.mock('../../../service/auth/config');
-jest.mock('../../../service/account/config/AccountUserConfig');
-jest.mock('../../../service/account/config/AccountGlobalConfig');
+import { AccountService } from '..';
+import { daoManager } from '../../../../dao';
+import { PersonDao } from '../../../person/dao';
+import { RCAuthApi } from '../../../../api';
+import {
+  AccountUserConfig,
+  AccountGlobalConfig,
+} from '../../../account/config';
+
+jest.mock('../../../../dao');
+jest.mock('../../../person/dao');
+jest.mock('../../../../api');
+jest.mock('../../../account/config');
 
 describe('AccountService', () => {
   let accountService: AccountService;
@@ -24,7 +25,7 @@ describe('AccountService', () => {
   beforeAll(() => {
     personDao = new PersonDao(null);
     daoManager.getDao.mockReturnValue(personDao);
-    accountService = new AccountService();
+    accountService = new AccountService(null);
   });
 
   describe('getCurrentUserInfo()', () => {

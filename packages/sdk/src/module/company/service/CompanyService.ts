@@ -17,7 +17,6 @@ import { SYNC_SOURCE } from '../../../module/sync/types';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class CompanyService extends EntityBaseService<Company> {
-  static serviceName = 'CompanyService';
   private _companyController: CompanyController;
 
   constructor() {

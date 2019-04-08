@@ -11,6 +11,7 @@ import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import { SearchService } from 'sdk/module/search';
 import { Props, ISearchItemModel, RecentSearchTypes } from '../types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class PersonItemViewModel extends StoreViewModel<Props>
   implements ISearchItemModel {
@@ -23,9 +24,10 @@ class PersonItemViewModel extends StoreViewModel<Props>
       () => (person: PersonModel) => {
         this.props.didChange(sectionIndex, cellIndex);
         if (person.deactivated) {
-          SearchService.getInstance().removeRecentSearchRecords(
-            new Set([person.id]),
+          const searchService = ServiceLoader.getInstance<SearchService>(
+            ServiceConfig.SEARCH_SERVICE,
           );
+          searchService.removeRecentSearchRecords(new Set([person.id]));
         }
       },
     );
@@ -44,7 +46,10 @@ class PersonItemViewModel extends StoreViewModel<Props>
   }
 
   addRecentRecord = () => {
-    SearchService.getInstance().addRecentSearchRecord(
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+    searchService.addRecentSearchRecord(
       RecentSearchTypes.PEOPLE,
       this.props.id,
     );

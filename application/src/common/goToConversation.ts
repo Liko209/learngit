@@ -6,6 +6,7 @@
 import history from '@/history';
 import { GroupService } from 'sdk/module/group';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type BaseGoToConversationParams = {
   conversationId: number;
@@ -25,7 +26,9 @@ const goToConversationCallBackName = Symbol('goToConversationCallBackName');
 const DELAY_LOADING = 500;
 
 const getConversationId = async (id: number | number[]) => {
-  const groupService: GroupService = GroupService.getInstance();
+  const groupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
   const type = Array.isArray(id)
     ? TypeDictionary.TYPE_ID_PERSON
     : GlipTypeUtil.extractTypeId(id);

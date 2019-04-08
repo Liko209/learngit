@@ -13,6 +13,7 @@ import { errorHelper } from 'sdk/error';
 import { GroupService } from 'sdk/module/group';
 import { ToastType } from '@/containers/ToastWrapper/Toast/types';
 import { ToastMessageAlign } from '../../../../ToastWrapper/Toast/types';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
@@ -27,7 +28,7 @@ const mockData = {
   isTeam: true,
 };
 const groupService: GroupService = new GroupService();
-GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
 const props = {
   id: 1,
 };

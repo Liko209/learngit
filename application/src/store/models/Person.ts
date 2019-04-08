@@ -16,6 +16,7 @@ import {
   phoneNumberDefaultFormat,
 } from '../helper';
 import { PersonService } from 'sdk/module/person';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 export default class PersonModel extends Base<Person> {
   @observable
@@ -197,7 +198,9 @@ export default class PersonModel extends Base<Person> {
 
   @computed
   get phoneNumbers(): PhoneNumberInfo[] {
-    const personService: PersonService = PersonService.getInstance();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     return personService.getAvailablePhoneNumbers(
       this.companyId,
       this.rcPhoneNumbers,

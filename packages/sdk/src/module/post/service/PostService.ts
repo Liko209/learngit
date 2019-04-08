@@ -21,8 +21,8 @@ import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 class PostService extends EntityBaseService<Post> {
-  static serviceName = 'PostService';
   postController: PostController;
   constructor(private _groupService: IGroupService) {
     super(false, daoManager.getDao(PostDao), {
@@ -98,7 +98,9 @@ class PostService extends EntityBaseService<Post> {
 
   async bookmarkPost(postId: number, toBook: boolean) {
     // favorite_post_ids in profile
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     return await profileService.putFavoritePost(postId, toBook);
   }
 

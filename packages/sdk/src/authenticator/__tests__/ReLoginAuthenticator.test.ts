@@ -5,12 +5,12 @@
  */
 
 import { ReLoginAuthenticator } from '../ReLoginAuthenticator';
-import { AuthUserConfig } from '../../service/auth/config';
+import { AuthUserConfig } from '../../module/account/config';
 import { loginGlip } from '../../api';
 import notificationCenter from '../../service/notificationCenter';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../../service/constants';
 
-jest.mock('../../service/auth/config');
+jest.mock('../../module/account/config');
 jest.mock('../../api');
 jest.mock('../../service/notificationCenter');
 

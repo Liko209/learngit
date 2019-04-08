@@ -1,7 +1,6 @@
 import { ACCOUNT_TYPE_ENUM } from './constants';
 import { ITokenModel } from '../api';
-import { AuthUserConfig } from '../service/auth/config';
-import { AccountUserConfig } from '../service/account/config';
+import { AuthUserConfig, AccountUserConfig } from '../module/account/config';
 
 const setAccountType = async (type: any) => {
   const userConfig = new AccountUserConfig();

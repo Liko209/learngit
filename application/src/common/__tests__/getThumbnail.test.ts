@@ -4,16 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { ItemService } from 'sdk/module/item/service';
 import { generateModifiedImageURL, RULE } from '../generateModifiedImageURL';
-
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 const url = 'URL';
 const id = 1;
 
 const itemService = {
   getThumbsUrlWithSize: jest.fn().mockResolvedValue(url),
 };
-ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
 
 describe('generateModifiedImageURL', () => {
   describe('cut out to a square', () => {

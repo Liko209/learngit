@@ -3,11 +3,12 @@
  * @Date: 2019-04-02 15:59:05
  * Copyright © RingCentral. All rights reserved.
  */
-import { AccountService } from 'sdk/service';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import { AccountService } from 'sdk/module/account';
+import { AccountUserConfig } from 'sdk/module/account/config';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import pkg from '../../../package.json';
 import { UserContextInfo } from './types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 export async function getAppContextInfo(): Promise<UserContextInfo> {
   const config = require('@/config').default;
@@ -15,7 +16,9 @@ export async function getAppContextInfo(): Promise<UserContextInfo> {
   const currentUserId = accountUserConfig.getGlipUserId();
   const currentCompanyId = accountUserConfig.getCurrentCompanyId();
   return Promise.all([
-    AccountService.getInstance<AccountService>().getCurrentUserInfo(),
+    ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    ).getCurrentUserInfo(),
     fetchVersionInfo(),
   ]).then(([userInfo, { deployedVersion }]) => {
     return {

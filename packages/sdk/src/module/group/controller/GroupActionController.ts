@@ -27,7 +27,8 @@ import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
 import { PermissionFlags, TeamSetting } from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
+import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 
 export class GroupActionController {
   teamRequestController: IRequestController<Group>;
@@ -367,7 +368,9 @@ export class GroupActionController {
   }
 
   deleteAllTeamInformation = async (ids: number[]) => {
-    const postService: PostService = PostService.getInstance();
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     await postService.deletePostsByGroupIds(ids, true);
     await this.groupService.deleteGroupsConfig(ids);
     const groups = await this.entitySourceController.getEntitiesLocally(
@@ -406,7 +409,9 @@ export class GroupActionController {
   }
 
   async isGroupCanBeShown(groupId: number): Promise<boolean> {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const isHidden = await profileService.isConversationHidden(groupId);
     let isIncludeSelf = false;
     let isValid = false;

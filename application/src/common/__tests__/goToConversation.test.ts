@@ -13,6 +13,7 @@ import {
   DELAY_LOADING,
 } from '@/common/goToConversation';
 import { PostService } from 'sdk/module/post';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/post');
 jest.mock('@/history');
@@ -22,10 +23,20 @@ jest.mock('@/containers/Notification');
 const {} = service;
 
 const postService = new PostService();
-PostService.getInstance = jest.fn().mockReturnValue(postService);
-
 const groupService = new GroupService();
-GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+
+ServiceLoader.getInstance = jest
+  .fn()
+  .mockImplementation((serviceName: string) => {
+    if (serviceName === ServiceConfig.POST_SERVICE) {
+      return postService;
+    }
+    if (serviceName === ServiceConfig.GROUP_SERVICE) {
+      return groupService;
+    }
+    return null;
+  });
+
 beforeAll(() => {
   Object.defineProperty(window.history, 'state', {
     writable: true,

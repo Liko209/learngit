@@ -19,6 +19,7 @@ import { IRawPostResult, Post } from '../entity';
 import { IGroupService } from '../../group/service/IGroupService';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { SortUtils } from '../../../framework/utils';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 const TAG = 'PostDataController';
 
@@ -42,9 +43,9 @@ class PostDataController {
     const posts: Post[] =
       (await this.filterAndSavePosts(transformedData, shouldSaveToDb)) || [];
     const items =
-      (await ItemService.getInstance<ItemService>().handleIncomingData(
-        data.items,
-      )) || [];
+      (await ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      ).handleIncomingData(data.items)) || [];
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return {
       posts,

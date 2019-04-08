@@ -22,7 +22,6 @@ import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
-  static serviceName = 'StateService';
   private _stateController: StateController;
   constructor(private _groupService: IGroupService) {
     super(true, daoManager.getDao(GroupStateDao));

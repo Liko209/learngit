@@ -15,6 +15,7 @@ import GroupModel from '@/store/models/Group';
 import PostModel from '@/store/models/Post';
 import config from '../../Activity';
 import { TypeDictionary } from 'sdk/utils';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const CHECK_TYPE = [TypeDictionary.TYPE_ID_EVENT, TypeDictionary.TYPE_ID_TASK];
 
@@ -81,7 +82,9 @@ class PinViewModel extends StoreViewModel<PinProps> implements PinViewProps {
   @action
   pin = async (toPin: boolean): Promise<void> => {
     const { postId, groupId } = this.props;
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     await groupService.pinPost(postId, groupId, toPin);
   }
 }

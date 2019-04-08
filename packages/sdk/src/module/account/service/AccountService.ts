@@ -1,31 +1,52 @@
 /*
- * @Author: Thomas thomas.yang@ringcentral.com
- * @Date: 2018-11-15 10:47:06
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-04-03 14:01:19
  * Copyright © RingCentral. All rights reserved.
  */
+
 import { mainLogger } from 'foundation';
-import BaseService from '../../service/BaseService';
-import { daoManager } from '../../dao';
-import { PersonDao } from '../../module/person/dao';
-import { UserInfo } from '../../models';
-import { generateUUID } from '../../utils/mathUtils';
-import { IPlatformHandleDelegate, ITokenModel, RCAuthApi } from '../../api';
-import notificationCenter from '../notificationCenter';
-import { SERVICE } from '../eventKey';
-import { ProfileService } from '../../module/profile';
-import { setRCToken } from '../../authenticator/utils';
+import { daoManager } from '../../../dao';
+import { PersonDao } from '../../person/dao';
+import { UserInfo } from '../../../models';
+import { generateUUID } from '../../../utils/mathUtils';
+import { IPlatformHandleDelegate, ITokenModel, RCAuthApi } from '../../../api';
+import notificationCenter from '../../../service/notificationCenter';
+import { SERVICE } from '../../../service/eventKey';
+import { ProfileService } from '../../profile';
+import { setRCToken } from '../../../authenticator/utils';
 import {
   AccountUserConfig,
   AccountGlobalConfig,
-} from '../../service/account/config';
-import { AuthUserConfig } from '../../service/auth/config';
+  AuthUserConfig,
+} from '../config';
+import {
+  AuthController,
+  IUnifiedLogin,
+  ILogin,
+} from '../controller/AuthController';
+import { AbstractService, AccountManager } from '../../../framework';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
-class AccountService extends BaseService implements IPlatformHandleDelegate {
+class AccountService extends AbstractService
+  implements IPlatformHandleDelegate {
   static serviceName = 'AccountService';
+  static _instance: AccountService;
 
-  constructor() {
+  private _authController: AuthController;
+
+  constructor(private _accountManager: AccountManager) {
     super();
+  }
+
+  protected onStarted() {}
+  protected onStopped() {}
+
+  getAuthController() {
+    if (!this._authController) {
+      this._authController = new AuthController(this._accountManager);
+    }
+    return this._authController;
   }
 
   isAccountReady(): boolean {
@@ -81,7 +102,9 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
   }
 
   async onBoardingPreparation() {
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     await profileService.markMeConversationAsFav().catch((error: Error) => {
       mainLogger
         .tags('AccountService')
@@ -116,6 +139,42 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
     }
     const userConfig = new AccountUserConfig();
     return userConfig && userConfig.getGlipUserId() !== null;
+  }
+
+  async unifiedLogin({ code, token }: IUnifiedLogin) {
+    await this.getAuthController().unifiedLogin({ code, token });
+  }
+
+  async login(params: ILogin) {
+    await this.getAuthController().login(params);
+  }
+
+  async loginGlip(params: ILogin) {
+    await this.getAuthController().loginGlip(params);
+  }
+
+  async loginGlip2(params: ILogin) {
+    await this.getAuthController().loginGlip2(params);
+  }
+
+  async makeSureUserInWhitelist() {
+    await this.getAuthController().makeSureUserInWhitelist();
+  }
+
+  async logout() {
+    await this.getAuthController().logout();
+  }
+
+  isLoggedIn(): boolean {
+    return this.getAuthController().isLoggedIn();
+  }
+
+  scheduleReLoginGlipJob() {
+    this.getAuthController().scheduleReLoginGlipJob();
+  }
+
+  async reLoginGlip(): Promise<boolean> {
+    return await this.getAuthController().reLoginGlip();
   }
 }
 

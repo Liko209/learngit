@@ -13,6 +13,7 @@ import {
 import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import { ItemVersions } from 'sdk/src/module/item/entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum IMAGE_TYPE {
   THUMBNAIL_IMAGE,
@@ -105,7 +106,9 @@ async function getThumbnailURLWithType(
     }
 
     if (!url && FileItemUtils.isSupportPreview({ type })) {
-      const itemService = ItemService.getInstance() as ItemService;
+      const itemService = ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      );
       url = await itemService.getThumbsUrlWithSize(
         id,
         SQUARE_SIZE,
