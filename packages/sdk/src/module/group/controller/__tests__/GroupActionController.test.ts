@@ -16,7 +16,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { Raw } from '../../../../framework/model';
 import { buildRequestController } from '../../../../framework/controller';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ProfileService } from '../../../profile';
 import { PostService } from '../../../post';
@@ -30,6 +30,7 @@ import { TeamPermissionController } from '../TeamPermissionController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
 import { DEFAULT_ADMIN_PERMISSION_LEVEL } from '../../constants';
 import { PERMISSION_ENUM } from '../../../../service';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../GroupHandleDataController');
 jest.mock('../../../../dao');
@@ -38,7 +39,7 @@ jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../module/company');
 jest.mock('../../../post');
@@ -83,8 +84,17 @@ describe('GroupFetchDataController', () => {
   const mockUserId = 1;
 
   function setUp() {
-    PersonService.getInstance = jest.fn().mockReturnValue(personService);
-    ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
+
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+      });
 
     buildRequestController.mockImplementation((params: any) => {
       if (params.basePath === '/group') {

@@ -13,6 +13,7 @@ import {
   ERROR_CODES_NETWORK,
   ERROR_CODES_SERVER,
 } from 'sdk/error';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../store/utils');
 
@@ -38,7 +39,7 @@ describe('ConvertToTeamViewModel', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
     vm = new ConvertToTeamViewModel(props);
     vm.getDerivedProps(props);
   });

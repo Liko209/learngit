@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import { onBecomeObserved, onBecomeUnobserved, action, observable } from 'mobx';
 import { service } from 'sdk';
-import { BaseService } from 'sdk/service';
 import { IdModel, Raw } from 'sdk/framework/model';
 import BaseStore from './BaseStore';
 import ModelProvider from './ModelProvider';
@@ -10,6 +9,7 @@ import { Entity, EntitySetting } from '../store';
 import { ENTITY_NAME } from '../constants';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import IUsedCache from './IUsedCache';
+import { EntityBaseService } from 'sdk/framework/service';
 
 const modelProvider = new ModelProvider();
 const { EVENT_TYPES } = service;
@@ -24,7 +24,7 @@ export default class MultiEntityMapStore<
 
   private _getService: Function | [Function, string];
   private _maxCacheCount: number;
-  private _service: BaseService<T>;
+  private _service: EntityBaseService<T>;
 
   private _usedCacheArr: IUsedCache[] = [];
 

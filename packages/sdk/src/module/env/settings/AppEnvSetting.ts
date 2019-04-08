@@ -5,7 +5,7 @@
  */
 
 import { EnvConfig } from '../config';
-import AuthService from '../../../service/auth';
+import { AccountService } from '../../../module/account';
 
 class AppEnvSetting {
   static getEnv() {
@@ -18,7 +18,7 @@ class AppEnvSetting {
 
   static async switchEnv(
     env: string,
-    authService: AuthService,
+    accountService: AccountService,
   ): Promise<boolean> {
     const oldEnv = EnvConfig.getEnv();
 
@@ -26,8 +26,8 @@ class AppEnvSetting {
       return false;
     }
 
-    if (oldEnv && authService) {
-      await authService.logout();
+    if (oldEnv && accountService) {
+      await accountService.logout();
     }
 
     EnvConfig.setEnv(env);

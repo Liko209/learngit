@@ -7,6 +7,7 @@ import { ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { ItemListViewModel } from '../ItemList.ViewModel';
 import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 import { observable, reaction } from 'mobx';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/item');
 
@@ -19,7 +20,7 @@ describe('ItemListViewModel', () => {
     itemService = {
       getGroupItemsCount: jest.fn(),
     };
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
   });
 
   describe('loadInitialData()', () => {

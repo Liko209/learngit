@@ -7,7 +7,7 @@ import { SocketFSM } from './SocketFSM';
 import notificationCenter from '../../service/notificationCenter';
 import { CONFIG, SOCKET, SERVICE } from '../../service/eventKey';
 import { mainLogger } from 'foundation';
-import { AuthUserConfig } from '../../service/auth/config';
+import { AuthUserConfig } from '../../module/account/config';
 import { SocketCanConnectController } from './SocketCanConnectController';
 import { getCurrentTime } from '../../utils/jsUtils';
 import { SyncUserConfig } from '../../module/sync/config/SyncUserConfig';

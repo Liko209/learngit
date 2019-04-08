@@ -14,6 +14,7 @@ import FileItemModel from '@/store/models/FileItem';
 import { getMaxThumbnailURLInfo } from '@/common/getThumbnailURL';
 import { ItemService } from 'sdk/module/item/service';
 import { Pal } from 'sdk/pal';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
   @observable
@@ -56,7 +57,10 @@ class ImageViewerViewModel extends AbstractViewModel<ImageViewerProps> {
       }
       if (this._buildThumbnailStatus === 'idle') {
         this._buildThumbnailStatus = 'building';
-        ItemService.getInstance<ItemService>()
+        const itemService = ServiceLoader.getInstance<ItemService>(
+          ServiceConfig.ITEM_SERVICE,
+        );
+        itemService
           .getThumbsUrlWithSize(item.id, item.origWidth, item.origHeight)
           .then((url: string) => {
             Pal.instance.getImageDownloader().download(

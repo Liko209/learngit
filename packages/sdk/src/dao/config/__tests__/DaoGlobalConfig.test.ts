@@ -4,9 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GlobalConfigService } from '../../../module/config';
 import { DaoGlobalConfig } from '../DaoGlobalConfig';
 import { CONFIG_KEYS } from '../ConfigKeys';
+import { ServiceLoader } from '../../../module/serviceLoader';
 
 jest.mock('../../../module/config/service/GlobalConfigService');
 
@@ -19,9 +19,7 @@ describe('EnvConfig', () => {
       put: jest.fn(),
       remove: jest.fn(),
     };
-    GlobalConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(mockConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockConfigService);
   });
   beforeEach(() => {
     jest.clearAllMocks();

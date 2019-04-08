@@ -119,6 +119,10 @@ class TelephonyService extends EntityBaseService {
   sendToVoiceMail = (callId: string) => {
     this.telephonyController.getAccountController().sendToVoiceMail(callId);
   }
+
+  ignore = (callId: string) => {
+    this.telephonyController.getAccountController().ignore(callId);
+  }
 }
 
 export { TelephonyService };

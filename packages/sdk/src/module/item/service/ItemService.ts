@@ -29,8 +29,6 @@ import { mainLogger } from 'foundation';
 import { ItemNotification } from '../utils/ItemNotification';
 
 class ItemService extends EntityBaseService<Item> implements IItemService {
-  static serviceName = 'ItemService';
-
   private _itemServiceController: ItemServiceController;
 
   constructor() {

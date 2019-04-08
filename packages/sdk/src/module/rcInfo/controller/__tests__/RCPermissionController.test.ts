@@ -8,7 +8,7 @@ import { RCPermissionController } from '../RCPermissionController';
 import { ERCServiceFeaturePermission } from '../../types';
 import { RolePermissionController } from '../RolePermissionController';
 import { PermissionService } from '../../../permission';
-
+import { ServiceLoader } from '../../../serviceLoader';
 jest.mock('../../../permission');
 jest.mock('../../config');
 
@@ -38,7 +38,7 @@ describe('RCInfoFetchController', () => {
   describe('isRCFeaturePermissionEnabled', () => {
     beforeEach(() => {
       clearMocks();
-      PermissionService.getInstance = jest.fn().mockReturnValue({
+      ServiceLoader.getInstance = jest.fn().mockReturnValue({
         hasPermission: jest.fn().mockReturnValue(true),
       });
     });

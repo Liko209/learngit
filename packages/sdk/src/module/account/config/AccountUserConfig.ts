@@ -1,3 +1,9 @@
+/*
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-04-03 15:12:20
+ * Copyright © RingCentral. All rights reserved.
+ */
+
 import { ACCOUNT_KEYS } from './configKeys';
 import { UserConfig } from '../../../module/config';
 import { AccountGlobalConfig } from './AccountGlobalConfig';

@@ -19,11 +19,11 @@ import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
-import { AccountService, AuthService } from './service';
+import { AccountService } from './module/account';
 import { DataMigration, UserConfigService } from './module/config';
 import { setGlipToken } from './authenticator/utils';
-import { AuthUserConfig } from './service/auth/config';
-import { AccountGlobalConfig } from './service/account/config';
+import { AuthUserConfig, AccountGlobalConfig } from './module/account/config';
+import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
 
 const AM = AccountManager;
 
@@ -60,7 +60,9 @@ class Sdk {
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
 
-    const accountService: AccountService = AccountService.getInstance();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     HandleByRingCentral.platformHandleDelegate = accountService;
 
     notificationCenter.on(
@@ -83,8 +85,10 @@ class Sdk {
 
     if (loginResp.isRCOnlyMode) {
       this.accountManager.updateSupportedServices();
-      const authService: AuthService = AuthService.getInstance();
-      authService.reLoginGlip();
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
+      accountService.reLoginGlip();
     } else if (loginResp && loginResp.success) {
       // TODO replace all LOGIN listen on notificationCenter
       // with accountManager.on(EVENT_LOGIN)
@@ -106,8 +110,10 @@ class Sdk {
     if (isRCOnlyMode) {
       this.accountManager.updateSupportedServices();
       notificationCenter.emitKVChange(SERVICE.LOGIN, isRCOnlyMode);
-      const authService: AuthService = AuthService.getInstance();
-      authService.scheduleReLoginGlipJob();
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
+      accountService.scheduleReLoginGlipJob();
       return;
     }
 
@@ -120,7 +126,9 @@ class Sdk {
         this.accountManager.updateSupportedServices();
       },
       onInitialHandled: async () => {
-        const accountService: AccountService = AccountService.getInstance();
+        const accountService = ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        );
         accountService.onBoardingPreparation();
         if (this._glipToken) {
           await setGlipToken(this._glipToken);
@@ -139,7 +147,9 @@ class Sdk {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     await this.daoManager.deleteDatabase();
-    UserConfigService.getInstance().clear();
+    ServiceLoader.getInstance<UserConfigService>(
+      ServiceConfig.USER_CONFIG_SERVICE,
+    ).clear();
     AccountGlobalConfig.removeUserDictionary();
   }
 

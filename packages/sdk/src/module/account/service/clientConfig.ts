@@ -3,8 +3,8 @@
  * @Date: 2018-06-08 15:43:47
  */
 
-import { BETA_CONFIG_KEYS } from './constants';
-import { AccountUserConfig } from '../../service/account/config';
+import { BETA_CONFIG_KEYS } from '../constant';
+import { AccountUserConfig } from '../config';
 
 enum EBETA_FLAG {
   BETA_LOG,

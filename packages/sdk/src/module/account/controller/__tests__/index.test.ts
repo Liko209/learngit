@@ -1,26 +1,25 @@
 /*
- * @Author: Rito.Xiao (rito.xiao@ringcentral.com)
- * @Date: 2019-03-28 20:06:33
+ * @Author: Valor Lin (valor.lin@ringcentral.com)
+ * @Date: 2018-05-15 16:14:38
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AuthService } from '../authService';
+import { AuthController } from '../AuthController';
 import {
   UnifiedLoginAuthenticator,
   RCPasswordAuthenticator,
-} from '../../../authenticator';
-import notificationCenter from '../../notificationCenter';
-import { SERVICE } from '../../eventKey';
-import { RCAuthApi } from '../../../api';
-import { AuthUserConfig } from '../config';
+} from '../../../../authenticator';
+import notificationCenter from '../../../../service/notificationCenter';
+import { SERVICE } from '../../../../service/eventKey';
+import { AuthUserConfig } from '../../config';
 
 jest.mock('foundation');
-jest.mock('../../notificationCenter');
-jest.mock('../../auth/config');
-jest.mock('../../../api/ringcentral/RCAuthApi');
+jest.mock('../../../../service/notificationCenter');
+jest.mock('../../config');
+jest.mock('../../../../api/ringcentral/RCAuthApi');
 
 describe('AuthService', () => {
-  let authService: AuthService;
+  let authController: AuthController;
   const mockAccountManager = {
     login: jest.fn(),
     makeSureUserInWhitelist: jest.fn(),
@@ -29,12 +28,12 @@ describe('AuthService', () => {
   } as any;
 
   beforeEach(() => {
-    authService = new AuthService(mockAccountManager);
+    authController = new AuthController(mockAccountManager);
   });
 
   describe('unifiedLogin()', () => {
     it('should login by UnifiedLoginAuthenticator', async () => {
-      await authService.unifiedLogin({ code: 'xxxxx', token: undefined });
+      await authController.unifiedLogin({ code: 'xxxxx', token: undefined });
       expect(mockAccountManager.login).toBeCalledWith(
         UnifiedLoginAuthenticator.name,
         { code: 'xxxxx', token: undefined },
@@ -43,16 +42,16 @@ describe('AuthService', () => {
   });
 
   describe('login()', () => {
-    it('should login glip and notify login', async () => {
-      authService.onLogin = jest.fn();
-      authService.loginGlip = jest.fn();
-      await authService.login({
+    it('should login glip/glip2 and notify login', async () => {
+      authController.onLogin = jest.fn();
+      authController.loginGlip = jest.fn();
+      await authController.login({
         username: '123',
         extension: '123',
         password: 'abc',
       });
-      expect(authService.onLogin).toBeCalled();
-      expect(authService.loginGlip).toBeCalledWith({
+      expect(authController.onLogin).toBeCalled();
+      expect(authController.loginGlip).toBeCalledWith({
         username: '123',
         extension: '123',
         password: 'abc',
@@ -62,14 +61,14 @@ describe('AuthService', () => {
 
   describe('onLogin()', () => {
     it('should notify login', () => {
-      authService.onLogin();
+      authController.onLogin();
       expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.LOGIN);
     });
   });
 
   describe('loginGlip()', () => {
     it('should login with RCPasswordAuthenticator', async () => {
-      await authService.loginGlip({
+      await authController.loginGlip({
         username: '123',
         extension: '123',
         password: 'abc',
@@ -90,7 +89,7 @@ describe('AuthService', () => {
       AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
         owner_id: undefined,
       });
-      await authService.makeSureUserInWhitelist();
+      await authController.makeSureUserInWhitelist();
       expect(AuthUserConfig.prototype.getRCToken).toBeCalled();
       expect(mockAccountManager.makeSureUserInWhitelist).not.toBeCalled();
     });
@@ -99,7 +98,7 @@ describe('AuthService', () => {
       AuthUserConfig.prototype.getRCToken.mockReturnValueOnce({
         owner_id: 123,
       });
-      await authService.makeSureUserInWhitelist();
+      await authController.makeSureUserInWhitelist();
       expect(AuthUserConfig.prototype.getRCToken).toBeCalled();
       expect(mockAccountManager.makeSureUserInWhitelist).toBeCalledWith(123);
     });
@@ -107,7 +106,7 @@ describe('AuthService', () => {
 
   describe('logout()', () => {
     it('should do logout', async () => {
-      authService.logout();
+      authController.logout();
       expect(notificationCenter.emitKVChange).toBeCalledWith(SERVICE.LOGOUT);
       expect(mockAccountManager.logout).toBeCalled();
     });
@@ -116,9 +115,9 @@ describe('AuthService', () => {
   describe('isLoggedIn()', () => {
     it('should return correct value', async () => {
       mockAccountManager.isLoggedIn.mockReturnValueOnce(true);
-      expect(authService.isLoggedIn()).toBeTruthy();
+      expect(authController.isLoggedIn()).toBeTruthy();
       mockAccountManager.isLoggedIn.mockReturnValueOnce(false);
-      expect(authService.isLoggedIn()).toBeFalsy();
+      expect(authController.isLoggedIn()).toBeFalsy();
     });
   });
 });

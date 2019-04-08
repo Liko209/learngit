@@ -15,6 +15,7 @@ import { getMaxThumbnailURLInfo } from '@/common/getThumbnailURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
 import { mainLogger, ILogger } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class PreloadController implements IImageDownloadedListener {
   private _logger: ILogger;
@@ -119,7 +120,10 @@ class PreloadController implements IImageDownloadedListener {
         return true;
       }
 
-      ItemService.getInstance<ItemService>()
+      const itemService = ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      );
+      itemService
         .getThumbsUrlWithSize(item.id, item.origWidth, item.origHeight)
         .then((url: string) => {
           this._addToQueue(item.id, url);

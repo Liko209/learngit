@@ -15,6 +15,7 @@ import { Post } from 'sdk/module/post/entity';
 import StoreViewModel from '@/store/ViewModel';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import Keys from 'jui/pattern/MessageInput/keys';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -46,7 +47,9 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
 
   constructor(props: EditMessageInputProps) {
     super(props);
-    this._postService = PostService.getInstance();
+    this._postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     this._exitEditMode = this._exitEditMode.bind(this);
     this._editPost = this._editPost.bind(this);
     this.saveDraft = this.saveDraft.bind(this);

@@ -5,12 +5,12 @@
  */
 import { IAuthResponse, ISyncAuthenticator } from '../framework';
 import { ACCOUNT_TYPE_ENUM } from './constants';
-import { AuthUserConfig } from '../service/auth/config';
 import { RCAccount, GlipAccount } from '../account';
 import {
   AccountGlobalConfig,
   AccountUserConfig,
-} from '../service/account/config';
+  AuthUserConfig,
+} from '../module/account/config';
 
 class AutoAuthenticator implements ISyncAuthenticator {
   private _accountTypeHandleMap: Map<string, any>;
