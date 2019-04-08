@@ -18,7 +18,7 @@ enum SEARCH_VIEW {
 }
 
 enum SEARCH_SCOPE {
-  GLOBAL,
+  GLOBAL = 0,
   CONVERSATION,
 }
 

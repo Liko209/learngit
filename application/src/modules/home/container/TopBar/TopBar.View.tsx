@@ -19,6 +19,8 @@ type TopBarProps = WithTranslation & {
   brandName: string;
   currentUserId: number;
   openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
+  searchKey: string;
+  onClear: () => void;
 };
 
 @observer
@@ -51,7 +53,7 @@ class TopBar extends React.Component<TopBarProps> {
   }
 
   render() {
-    const { openGlobalSearch } = this.props;
+    const { openGlobalSearch, searchKey, onClear, t } = this.props;
 
     return (
       <React.Fragment>
@@ -63,6 +65,9 @@ class TopBar extends React.Component<TopBarProps> {
           Logo={this._Logo}
           BackNForward={BackNForward}
           openGlobalSearch={openGlobalSearch}
+          searchKey={searchKey}
+          searchPlaceholder={t('globalSearch.search')}
+          onClear={onClear}
         />
       </React.Fragment>
     );

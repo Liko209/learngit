@@ -55,6 +55,8 @@ class HomeView extends Component<HomeViewProps> {
   }
 
   render() {
+    const { showGlobalSearch } = this.props;
+
     return (
       <>
         <ToastWrapper />
@@ -66,7 +68,7 @@ class HomeView extends Component<HomeViewProps> {
           </Bottom>
           <ModalPortal />
           <Dialer />
-          <GlobalSearch />
+          {showGlobalSearch && <GlobalSearch />}
         </Wrapper>
       </>
     );

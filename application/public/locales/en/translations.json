@@ -74,12 +74,14 @@
   "globalSearch": {
     "search": "Search",
     "showMore": "Show more",
-    "ClearHistory": "Clear History",
+    "ClearHistory": "Clear history",
     "RecentSearches": "Recent searches",
+    "contentSearch": "Content search",
+    "inThisConversation": "in this conversation",
     "Messages": "Messages",
-    "people": "people",
-    "groups": "groups",
-    "team": "team",
+    "People": "People",
+    "Groups": "Groups",
+    "Teams": "Teams",
 
     "prompt": {
       "contentSearchNetworkError": "We weren't able to conduct the search. Check your network connection, then try again.",

@@ -101,8 +101,8 @@ const StyledIconRight = styled(StyledIcon)`
 
 type JuiOutlineTextFieldProps = {
   InputProps?: InputBaseProps;
-  inputBefore?: JSX.Element;
-  inputAfter?: JSX.Element;
+  inputBefore?: JSX.Element | React.ReactNode;
+  inputAfter?: JSX.Element | React.ReactNode;
   disabled?: boolean;
   radiusType?: InputRadiusKeys;
   IconLeftProps?: JuiIconographyProps & { [propName: string]: string };
@@ -111,6 +111,7 @@ type JuiOutlineTextFieldProps = {
   onClickIconRight?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
+  value?: string;
 } & (
   | {
     iconPosition?: Extract<IconPosition, 'both'>;
@@ -136,6 +137,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
     onClickIconLeft,
     onClickIconRight,
     onClick,
+    value,
     ...rest
   } = props;
   const { onFocus, onBlur, ...others } = InputProps;
@@ -175,6 +177,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
         disabled={disabled}
         startAdornment={inputBefore || null}
         endAdornment={inputAfter || null}
+        value={value}
         {...others}
       />
       {(iconPosition === 'right' || iconPosition === 'both') && (

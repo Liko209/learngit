@@ -134,6 +134,10 @@ storiesOf('Pattern/TopBar', module)
   .add('TopBar', () => (
     <div style={{ padding: '20px', background: 'silver' }}>
       <JuiTopBar
+        openGlobalSearch={() => {}}
+        searchKey={''}
+        searchPlaceholder={'search'}
+        onClear={() => {}}
         NewActions={NewActions}
         MainMenu={MainMenu}
         Logo={Logo}
