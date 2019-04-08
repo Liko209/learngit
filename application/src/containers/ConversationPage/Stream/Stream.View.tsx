@@ -260,7 +260,10 @@ class StreamViewComponent extends Component<Props> {
     const visiblePosts = _(visibleItems)
       .flatMap('value')
       .concat();
-    if (this.props.hasMore('down') || !visiblePosts.includes(mostRecentPostId)) {
+    if (
+      this.props.hasMore('down') ||
+      !visiblePosts.includes(mostRecentPostId)
+    ) {
       this.handleMostRecentHidden();
     } else {
       this.handleMostRecentViewed();
@@ -317,6 +320,22 @@ class StreamViewComponent extends Component<Props> {
       } as React.CSSProperties),
   );
 
+  @action
+  private _loadInitialPosts = async () => {
+    const { loadInitialPosts, markAsRead } = this.props;
+    await loadInitialPosts();
+    runInAction(() => {
+      this.props.updateHistoryHandler();
+      markAsRead();
+    });
+    requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+      }
+    });
+    this._watchUnreadCount();
+  }
+
   private _onInitialDataFailed = (
     <JuiStreamLoading
       showTip={true}
@@ -371,28 +390,12 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
-  @action
-  private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead } = this.props;
-    await loadInitialPosts();
-    runInAction(() => {
-      this.props.updateHistoryHandler();
-      markAsRead();
-    });
-    requestAnimationFrame(() => {
-      if (this._jumpToPostRef.current) {
-        this._jumpToPostRef.current.highlight();
-      }
-    });
-    this._watchUnreadCount();
-  }
-
   private _watchUnreadCount() {
     const disposer = reaction(
       () => {
         return this.props.mostRecentPostId;
       },
-      (mostRecentPostId) => {
+      (mostRecentPostId: number) => {
         if (this._listRef.current && !this.props.hasMore('down')) {
           const isLastPostVisible =
             this._listRef.current.getVisibleRange().stopIndex >=
