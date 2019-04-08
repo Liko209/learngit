@@ -9,16 +9,11 @@ import { daoManager } from '../../dao';
 import { PersonDao } from '../../module/person/dao';
 import { UserInfo } from '../../models';
 import { generateUUID } from '../../utils/mathUtils';
-import {
-  refreshToken,
-  IPlatformHandleDelegate,
-  ITokenModel,
-  requestServerStatus,
-} from '../../api';
+import { IPlatformHandleDelegate, ITokenModel, RCAuthApi } from '../../api';
 import notificationCenter from '../notificationCenter';
 import { SERVICE } from '../eventKey';
 import { ProfileService } from '../../module/profile';
-import { setRcToken } from '../../authenticator/utils';
+import { setRCToken } from '../../authenticator/utils';
 import {
   AccountUserConfig,
   AccountGlobalConfig,
@@ -77,9 +72,11 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
 
   async refreshRCToken(): Promise<ITokenModel | null> {
     const authConfig = new AuthUserConfig();
-    const oldRcToken = authConfig.getRcToken();
-    const newRcToken = (await refreshToken(oldRcToken)) as ITokenModel;
-    setRcToken(newRcToken);
+    const oldRcToken = authConfig.getRCToken();
+    const newRcToken = (await RCAuthApi.refreshToken(
+      oldRcToken,
+    )) as ITokenModel;
+    setRCToken(newRcToken);
     return newRcToken;
   }
 
@@ -103,7 +100,7 @@ class AccountService extends BaseService implements IPlatformHandleDelegate {
   }
 
   checkServerStatus(callback: (success: boolean, retryAfter: number) => void) {
-    requestServerStatus(callback);
+    RCAuthApi.requestServerStatus(callback);
   }
 
   onRefreshTokenFailure(forceLogout: boolean) {

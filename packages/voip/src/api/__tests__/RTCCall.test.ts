@@ -1839,6 +1839,30 @@ describe('RTC call', () => {
     });
   });
 
+  describe('Ignore incoming call', () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      session = new MockSession();
+      account = new VirturlAccountAndCallObserver();
+      call = new RTCCall(true, '', session, account, account);
+    }
+    it('should call state changed to Disconnected when call ignore API in idle state. [JPT-1468]', done => {
+      setup();
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
+        expect(call._fsm.state()).toBe('idle');
+        call.ignore();
+        setImmediate(() => {
+          expect(call.getCallState()).toBe(RTC_CALL_STATE.DISCONNECTED);
+          expect(call._fsm.state()).toBe('disconnected');
+          done();
+        });
+      });
+    });
+  });
+
   describe('DTMF', () => {
     let account: VirturlAccountAndCallObserver;
     let call: RTCCall;

@@ -4,4 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { RcInfoService } from './RcInfoService';
+export { RCInfoService } from './RCInfoService';

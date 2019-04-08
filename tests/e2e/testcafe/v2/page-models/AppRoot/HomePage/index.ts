@@ -12,6 +12,8 @@ import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSettingDialog';
 import { LeaveTeamDialog } from './LeaveTeamDialog';
+import { TelephonyPOC } from './TelephonyPOC'
+
 import { DeleteTeamDialog } from './DeleteTeamDialog';
 import { ArchiveTeamDialog } from './ArchiveTeamDialog';
 import { AlertDialog } from "./AlertDialog";
@@ -117,6 +119,9 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(LeaveTeamDialog);
   }
 
+  get telephonyPOCPage() {
+    return this.getComponent(TelephonyPOC);
+  }
   get deleteTeamDialog() {
     return this.getComponent(DeleteTeamDialog);
   }

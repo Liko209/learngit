@@ -44,7 +44,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     return buildEntityCacheSearchController<T>(this._entityCacheController);
   }
 
-  getEntityCacheController(): IEntityCacheController {
+  getEntityCacheController(): IEntityCacheController<T> {
     return this._entityCacheController;
   }
 
@@ -138,6 +138,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
       mainLogger.debug(
         'initial cache without permission or already initialized',
       );
+      this._entityCacheController.initialize([]);
     }
   }
 

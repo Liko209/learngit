@@ -17,7 +17,7 @@ export type SearchResult = {
   query?: string;
   results?: (Raw<Post> | Raw<Item>)[] | null;
   response_id?: number;
-  scroll_request_id?: number;
+  scroll_request_id?: string;
   client_request_id?: number;
   content_types?: SearchContentTypesCount;
 };
@@ -38,4 +38,5 @@ export type SearchRequestInfo = {
   scrollRequestId?: number;
   clientRequestId?: number;
   isSearchEnded?: boolean;
+  timeoutTimer?: NodeJS.Timeout;
 };

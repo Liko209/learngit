@@ -12,7 +12,10 @@ import {
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
 } from 'sdk/module/telephony';
-import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  TelephonyCallInfo,
+} from 'sdk/module/telephony/types';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { mainLogger } from 'sdk';
 import { TelephonyStore } from '../store';
@@ -40,6 +43,12 @@ class TelephonyService {
     );
     this._callId = callId;
     this._telephonyStore.directCall();
+  }
+
+  private _onReceiveIncomingCall = (callInfo: TelephonyCallInfo) => {
+    mainLogger.info(
+      `${TelephonyService.TAG}Call object created, call id=${callInfo.callId}`,
+    );
   }
 
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
@@ -79,18 +88,22 @@ class TelephonyService {
   }
 
   init = () => {
-    this._serverTelephonyService.createAccount({
-      onAccountStateChanged: this._onAccountStateChanged,
-      onMadeOutgoingCall: this._onMadeOutgoingCall,
-    });
+    this._serverTelephonyService.createAccount(
+      {
+        onAccountStateChanged: this._onAccountStateChanged,
+        onMadeOutgoingCall: this._onMadeOutgoingCall,
+        onReceiveIncomingCall: this._onReceiveIncomingCall,
+      },
+      {
+        onCallStateChange: this._onCallStateChange,
+        onCallActionSuccess: this._onCallActionSuccess,
+        onCallActionFailed: this._onCallActionFailed,
+      },
+    );
   }
 
   makeCall = async (toNumber: string) => {
-    const rv = await this._serverTelephonyService.makeCall(toNumber, {
-      onCallStateChange: this._onCallStateChange,
-      onCallActionSuccess: this._onCallActionSuccess,
-      onCallActionFailed: this._onCallActionFailed,
-    });
+    const rv = await this._serverTelephonyService.makeCall(toNumber);
 
     if (MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv) {
       ToastCallError.toastNoNetwork();

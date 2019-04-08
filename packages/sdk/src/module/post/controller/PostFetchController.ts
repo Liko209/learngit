@@ -15,7 +15,7 @@ import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
 import { DEFAULT_PAGE_SIZE } from '../constant';
 import _ from 'lodash';
-import { GroupService } from '../../../module/group';
+import { IGroupService } from '../../../module/group/service/IGroupService';
 import { IRemotePostRequest } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
@@ -23,6 +23,7 @@ const TAG = 'PostFetchController';
 
 class PostFetchController {
   constructor(
+    private _groupService: IGroupService,
     public postDataController: PostDataController,
     public entitySourceController: IEntitySourceController<Post>,
   ) {}
@@ -57,7 +58,7 @@ class PostFetchController {
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
       TAG,
-      `getPostsByGroupId() postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
+      `getPostsByGroupId() groupId: ${groupId} postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
     );
 
     if (shouldSaveToDb) {
@@ -70,8 +71,7 @@ class PostFetchController {
     }
 
     if (result.posts.length < limit) {
-      const groupService: GroupService = GroupService.getInstance();
-      const shouldFetch = await groupService.hasMorePostInRemote(
+      const shouldFetch = await this._groupService.hasMorePostInRemote(
         groupId,
         direction,
       );
@@ -152,6 +152,7 @@ class PostFetchController {
   }: IRemotePostRequest) {
     mainLogger.debug(
       TAG,
+      groupId,
       'getPostsByGroupId() db is not exceed limit, request from server',
     );
     const serverResult = await this.fetchPaginationPosts({
@@ -167,8 +168,11 @@ class PostFetchController {
         shouldSaveToDb,
       );
       if (shouldSaveToDb) {
-        const groupService: GroupService = GroupService.getInstance();
-        groupService.updateHasMore(groupId, direction, handledResult.hasMore);
+        this._groupService.updateHasMore(
+          groupId,
+          direction,
+          handledResult.hasMore,
+        );
       }
       return handledResult;
     }
@@ -204,11 +208,6 @@ class PostFetchController {
     direction,
     limit,
   }: IPostQuery): Promise<IPostResult> {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
-      logId,
-    );
     const result: IPostResult = {
       limit,
       posts: [],
@@ -218,6 +217,11 @@ class PostFetchController {
     if (!postId && direction === QUERY_DIRECTION.NEWER) {
       return result;
     }
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.CONVERSATION_FETCH_FROM_DB,
+      logId,
+    );
     const postDao = daoManager.getDao(PostDao);
     const posts: Post[] = await postDao.queryPostsByGroupId(
       groupId,

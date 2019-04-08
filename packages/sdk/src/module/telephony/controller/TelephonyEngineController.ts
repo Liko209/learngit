@@ -13,6 +13,7 @@ import { Api } from '../../../api';
 import { TelephonyAccountController } from './TelephonyAccountController';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
 import { TelephonyUserConfig } from '../config/TelephonyUserConfig';
+import { ITelephonyCallDelegate } from '../service';
 import { TelephonyLogController } from './TelephonyLogController';
 
 class VoIPNetworkClient implements ITelephonyNetworkDelegate {
@@ -68,11 +69,15 @@ class TelephonyEngineController {
     this.rtcEngine.setTelephonyDaoDelegate(this.voipDaoDelegate);
   }
 
-  createAccount(delegate: ITelephonyAccountDelegate) {
+  createAccount(
+    accountDelegate: ITelephonyAccountDelegate,
+    callDelegate: ITelephonyCallDelegate,
+  ) {
     // Engine can hold multiple accounts for multiple calls
     this._accountController = new TelephonyAccountController(
       this.rtcEngine,
-      delegate,
+      accountDelegate,
+      callDelegate,
     );
   }
 

@@ -27,16 +27,10 @@ const DownLoadLink = styled.a`
 const Download = () => (
   <Wrapper>
     Download:{' '}
-    <DownLoadLink
-      download={true}
-      href="https://download.fiji.gliprc.com/RingCentral.exe"
-    >
+    <DownLoadLink download={true} href="/downloads/RingCentral.exe">
       Windows
     </DownLoadLink>
-    <DownLoadLink
-      download={true}
-      href="https://download.fiji.gliprc.com/RingCentral.dmg"
-    >
+    <DownLoadLink download={true} href="/downloads/RingCentral.dmg">
       Mac
     </DownLoadLink>
   </Wrapper>

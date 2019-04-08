@@ -13,7 +13,6 @@ import { SyncUserConfig } from '../../../module/sync/config';
 
 jest.mock('../../../api/glip/user');
 jest.mock('../../../module/presence/service/PresenceService');
-jest.mock('../../../service/config');
 jest.mock('../../../service/account/config');
 jest.mock('../../../service/auth/config');
 jest.mock('../../../module/sync/config');

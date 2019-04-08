@@ -4,31 +4,35 @@ export interface IQuery<T> {
   parallel?: IQuery<T>[];
 }
 
+export type DatabaseKeyType = number | string;
+
 export interface IDatabase {
   ensureDBOpened: () => Promise<void>;
   open: () => Promise<void>;
   isOpen: () => boolean;
   close: () => void;
   delete: () => Promise<void>;
-  getCollection: <T extends object>(name: string) => IDatabaseCollection<T>;
+  getCollection: <T extends object, Key extends DatabaseKeyType>(
+    name: string,
+  ) => IDatabaseCollection<T, Key>;
   getTransaction: (
     mode: string | void,
-    collections: IDatabaseCollection<any>[] | void,
+    collections: IDatabaseCollection<any, DatabaseKeyType>[] | void,
     callback: () => {},
   ) => Promise<void>;
 }
 
-export interface IDatabaseCollection<T> {
+export interface IDatabaseCollection<T, Key extends DatabaseKeyType> {
   // private collection: any;
   // private table: any;
-  primaryKeys(query?: IQuery<T>): Promise<number[]>;
+  primaryKeys(query?: IQuery<T>): Promise<Key[]>;
   primaryKeyName: () => string;
   put: (item: T) => Promise<void>;
   bulkPut: (array: T[]) => Promise<void>;
-  get: (key: number) => Promise<T | null>;
-  delete: (key: number) => Promise<void>;
-  bulkDelete: (array: number[]) => Promise<void>;
-  update: (key: number, changes: Partial<T>) => Promise<void>;
+  get: (key: Key) => Promise<T | null>;
+  delete: (key: Key) => Promise<void>;
+  bulkDelete: (array: Key[]) => Promise<void>;
+  update: (key: Key, changes: Partial<T>) => Promise<void>;
   clear: () => Promise<void>;
   getAll: (query?: IQuery<T>, queryOption?: IQueryOption) => Promise<T[]>;
   count: (query?: IQuery<T>) => Promise<number>;
