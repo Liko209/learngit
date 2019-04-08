@@ -2,7 +2,7 @@
  * @Author: Potar.He
  * @Date: 2019-03-17 15:56:18
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-04 16:00:57
+ * @Last Modified time: 2019-04-08 20:04:25
  */
 
 import { formalName } from '../../libs/filter';
@@ -24,7 +24,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   const loginUser = h(t).rcData.mainCompany.users[4];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(loginUser).init();
-  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', anotherUser.rcId);
+  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('first_name', anotherUser.rcId); 
 
   let team = <IGroup>{
     type: "Team",

@@ -316,10 +316,19 @@ export class ConversationPage extends BaseConversationPage {
 
   async typeAtMentionUserNameAndPressEnter(userName: string) {
     await this.typeAtSymbol();
-    await this.t.wait(2e3)
-      .typeText(this.messageInputArea, userName)
-      .wait(2e3)
-      .pressKey('enter');
+    await this.t.typeText(this.messageInputArea, userName, { paste: true })
+    await this.mentionUser.ensureLoaded();
+    await this.t.pressKey('enter');
+  }
+
+  async addMentionUser(userName: string) {
+    await this.t.typeText(this.messageInputArea, `@${userName}`);
+    await this.mentionUser.ensureLoaded();
+    await this.mentionUser.selectMemberByName(userName);
+  }
+
+  get mentionUser() {
+    return this.getComponent(MentionUsers);
   }
 
   async pressEnterWhenFocusOnMessageInputArea() {
@@ -827,5 +836,24 @@ class AudioConference extends BaseWebComponent {
 
   get participantCode() {
     return this.getSelectorByAutomationId('conferenceParticipantCode', this.self);
+  }
+}
+
+class MentionUsers extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="rowgroup"]');
+  }
+
+  get members() {
+    this.warnFlakySelector();
+    return this.self.find('div').withAttribute('uid');
+  }
+
+  async selectMemberByNth(n: number) {
+    await this.t.click(this.members.nth(n));
+  }
+
+  async selectMemberByName(name: string) {
+    await this.t.click(this.members.withExactText(name));
   }
 }
