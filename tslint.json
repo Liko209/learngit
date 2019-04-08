@@ -28,7 +28,8 @@
     ],
     "interface-name": [true, "always-prefix"],
     "arrow-parens": false,
-    "ter-arrow-parens": false
+    "ter-arrow-parens": false,
+    "ter-indent": false
   },
   "jsRules": {
     "no-empty": true
