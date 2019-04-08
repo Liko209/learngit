@@ -250,7 +250,7 @@ describe('InstantSearchViewModel', () => {
     });
   });
 
-  describe('hasMore()', () => {
+  describe('hasMore() [JPT-1568]', () => {
     it('If sortableModels.length > needSliceNum should be true', () => {
       const hasMore = instantSearchViewModel.hasMore(
         {
@@ -306,7 +306,7 @@ describe('InstantSearchViewModel', () => {
         hasMore: true,
       });
     });
-    it('If search result section item > 3 should be has more', () => {
+    it('If search result section item > 3 should be has more [JPT-1568]', () => {
       const section1 = instantSearchViewModel.getSection(
         {
           sortableModels: [
@@ -325,7 +325,7 @@ describe('InstantSearchViewModel', () => {
         hasMore: true,
       });
     });
-    it('If search result section item < 3 not has more', () => {
+    it('If search result section item < 3 not has more [JPT-1568]', () => {
       const section2 = instantSearchViewModel.getSection(
         {
           sortableModels: [{ id: 1 }, { id: 2 }],
