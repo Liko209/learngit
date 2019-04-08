@@ -100,6 +100,7 @@ class JuiDownshift extends React.PureComponent<
       InputItem,
       minRowHeight,
       autoSwitchEmail,
+      multiple,
     } = this.props;
     const { inputValue, selectedItems } = this.state;
 
@@ -129,6 +130,7 @@ class JuiDownshift extends React.PureComponent<
               onSelectChange={this.handleSelectChange}
               InputItem={InputItem}
               autoSwitchEmail={autoSwitchEmail}
+              multiple={multiple}
             />
             {isOpen && suggestionItems.length ? (
               <JuiAutoSizer>

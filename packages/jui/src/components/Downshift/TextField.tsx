@@ -22,6 +22,7 @@ type JuiDownshiftTextFieldStates = {
 };
 
 type JuiDownshiftTextFieldProps = {
+  multiple?: boolean;
   inputValue: string;
   selectedItems: SelectedItem[];
   label: string;
@@ -77,6 +78,7 @@ class JuiDownshiftTextField extends React.PureComponent<
       onSelectChange,
       onInputChange,
       selectedItems,
+      multiple,
     } = this.props;
     const { value } = event.target;
 
@@ -87,13 +89,23 @@ class JuiDownshiftTextField extends React.PureComponent<
       selectedItems.findIndex((item: SelectedItem) => item.email === value) ===
         -1
     ) {
-      onSelectChange([
-        ...selectedItems,
-        {
-          label: value,
-          email: value,
-        },
-      ]);
+      if (multiple) {
+        onSelectChange([
+          ...selectedItems,
+          {
+            label: value,
+            email: value,
+          },
+        ]);
+      } else {
+        onSelectChange([
+          {
+            label: value,
+            email: value,
+          },
+        ]);
+      }
+
       onInputChange('');
     }
   }
