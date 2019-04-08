@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-04-08 14:34:14 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-08 16:19:38
+ * @Last Modified time: 2019-04-08 19:13:30
  */
 
 import * as _ from 'lodash';
@@ -38,11 +38,12 @@ test.meta(<ITestMeta>{
     settingTab.notificationAndSoundsEntry,
     settingTab.messagingEntry,
     settingTab.phoneEntry,
+    settingTab.meetingsEntry,
     settingTab.calendarEntry
   ];
 
   const entryNames = [
-    'General', 'Notification and Sounds', 'Messaging', 'Phone', 'Calendar'
+    'General', 'Notification and Sounds', 'Messaging', 'Phone', 'Meetings', 'Calendar'
   ];
 
   const urlPaths = [
@@ -50,6 +51,7 @@ test.meta(<ITestMeta>{
     'settings/notification_and_sounds',
     'settings/messaging',
     'settings/phone',
+    'settings/meetings',
     'settings/calendar'
   ];
 
@@ -96,6 +98,7 @@ test.meta(<ITestMeta>{
     settingTab.notificationAndSoundsEntry,
     settingTab.messagingEntry,
     settingTab.phoneEntry,
+    settingTab.meetingsEntry,
     settingTab.calendarEntry
   ];
 
@@ -160,11 +163,12 @@ test.meta(<ITestMeta>{
     settingTab.notificationAndSoundsEntry,
     settingTab.messagingEntry,
     settingTab.phoneEntry,
+    settingTab.meetingsEntry,
     settingTab.calendarEntry
   ];
 
   const entryNames = [
-    'General', 'Notification and Sounds', 'Messaging', 'Phone', 'Calendar'
+    'General', 'Notification and Sounds', 'Messaging', 'Phone', 'Meetings', 'Calendar'
   ];
 
   const urlPaths = [
@@ -172,6 +176,7 @@ test.meta(<ITestMeta>{
     'settings/notification_and_sounds',
     'settings/messaging',
     'settings/phone',
+    'settings/meetings',
     'settings/calendar'
   ];
 
@@ -208,7 +213,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When I click the forward button`, async () => {
-    await backButton.clickSelf();
+    await forwardButton.clickSelf();
   }, true);
 
   currentIndex = currentIndex + 1;

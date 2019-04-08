@@ -48,6 +48,10 @@ export class SettingTab extends BaseWebComponent {
     return this.getSubEntry('entry-phone');
   }
 
+  get meetingsEntry() {
+    return this.getSubEntry('entry-meetings');
+  }
+
   get calendarEntry() {
     return this.getSubEntry('entry-calendar');
   }
