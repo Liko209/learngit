@@ -6,10 +6,8 @@
 import { ContentSearchParams } from 'sdk/api/glip/search';
 import { Post } from 'sdk/module/post/entity';
 
-type ContentSearchId = number | null;
-
 type ContentSearchState = {
-  requestId: ContentSearchId;
+  requestId: number | null;
   postIds: number[];
   postCount: number;
 };
@@ -33,10 +31,12 @@ type ContentSearchResultViewProps = {
   onSearchEnd(): Promise<void>;
 };
 
+const CONTENT_SEARCH_FETCH_COUNT: number = 20;
+
 export {
   ContentSearchResultProps,
   ContentSearchResultViewProps,
-  ContentSearchId,
   ContentSearchState,
   ContentSearchOptions,
+  CONTENT_SEARCH_FETCH_COUNT,
 };
