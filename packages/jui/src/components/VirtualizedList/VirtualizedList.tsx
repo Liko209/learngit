@@ -38,6 +38,7 @@ type JuiVirtualizedListHandles = {
   isAtBottom: () => boolean;
   scrollToIndex: (index: number) => void;
   getVisibleRange: () => IndexRange;
+  getPrevVisibleRange: () => IndexRange;
 };
 
 const JuiVirtualizedList: RefForwardingComponent<
@@ -271,6 +272,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       jumpToPosition({ index });
     },
     getVisibleRange: computeVisibleRange,
+    getPrevVisibleRange: () => prevVisibleRange,
   }));
 
   //
