@@ -109,6 +109,9 @@ const name2icon = {
   leftNavFile_border: 'file_border',
   reset_zoom: 'reset-zoom',
   mic_off: 'mic-off',
+  bell: 'bell',
+  bubble_lines: 'bubble_lines',
+  event_new: 'event-new',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

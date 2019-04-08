@@ -23,7 +23,11 @@ import { config as appConfig } from './app.config';
 import { HomeService } from '@/modules/home';
 
 import './index.css';
-import { generalErrorHandler } from '@/utils/error';
+import {
+  generalErrorHandler,
+  errorReporter,
+  getAppContextInfo,
+} from '@/utils/error';
 import { AccountUserConfig } from 'sdk/service/account/config';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
@@ -47,6 +51,7 @@ class AppModule extends AbstractModule {
       ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
     } catch (error) {
       generalErrorHandler(error);
+      errorReporter.report(error);
     }
   }
 
@@ -54,7 +59,6 @@ class AppModule extends AbstractModule {
     LogControlManager.instance().setDebugMode(
       process.env.NODE_ENV === 'development',
     );
-
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
     if (state && state.length) {
@@ -104,6 +108,12 @@ class AppModule extends AbstractModule {
         const currentCompanyId = accountUserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+        getAppContextInfo().then(contextInfo => {
+          window.jupiterElectron &&
+            window.jupiterElectron.setContextInfo &&
+            window.jupiterElectron.setContextInfo(contextInfo);
+          errorReporter.setUserContextInfo(contextInfo);
+        });
 
         if (!this._subModuleRegistered) {
           // load phone parser module

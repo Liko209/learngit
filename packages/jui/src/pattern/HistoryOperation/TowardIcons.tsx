@@ -37,6 +37,7 @@ class TowardIcons extends PureComponent<IconsProps> {
     this._pressTimer = setTimeout(() => {
       this._isLongPress = true;
       onLongPress(target);
+      this._isLongPress = false;
     },                            300);
   }
 

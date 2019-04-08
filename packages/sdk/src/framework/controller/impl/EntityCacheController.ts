@@ -20,6 +20,8 @@ class EntityCacheController<T extends IdModel = IdModel>
 
   private _initialStatus: CACHE_INITIAL_STATUS;
 
+  private _filterFunc: (entity: T) => boolean;
+
   constructor() {
     this._initialStatus = CACHE_INITIAL_STATUS.NONE;
   }
@@ -163,6 +165,10 @@ class EntityCacheController<T extends IdModel = IdModel>
     }
   }
 
+  setFilter(filterFunc: (entity: T) => boolean) {
+    this._filterFunc = filterFunc;
+  }
+
   private _update(entity: T, id: number) {
     const oldEntity = this._entities.get(id);
     if (oldEntity) {
@@ -196,6 +202,9 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   protected putInternal(item: T) {
+    if (this._filterFunc && !this._filterFunc(item)) {
+      return;
+    }
     this._entities.set(item.id, item);
   }
 

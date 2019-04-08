@@ -8,6 +8,8 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiHistoryOperation, OPERATION } from 'jui/pattern/HistoryOperation';
+import history from '@/history';
+import HistoryStack from '@/common/HistoryStack';
 
 type Props = WithTranslation & {
   backRecord: { title: string; pathname: string }[];
@@ -35,6 +37,10 @@ type Props = WithTranslation & {
 
 @observer
 class BackNForward extends Component<Props> {
+  componentDidMount() {
+    HistoryStack.push(history.location.pathname);
+  }
+
   render() {
     const {
       backRecord,

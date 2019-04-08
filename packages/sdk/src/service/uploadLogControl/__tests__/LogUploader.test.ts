@@ -14,8 +14,8 @@ function createError(status: number): AxiosError {
   return (status
     ? {
       response: {
-          status,
-        },
+        status,
+      },
     }
     : {}) as AxiosError;
 }
@@ -99,9 +99,9 @@ describe('LogUploader', () => {
       expect(logUploader.errorHandler(createError(503))).toEqual('retry');
       expect(logUploader.errorHandler(createError(504))).toEqual('retry');
     });
-    it('should ignore other error', () => {
+    it('should retry other error', () => {
       const logUploader = new LogUploader();
-      expect(logUploader.errorHandler(createError(500))).toEqual('ignore');
+      expect(logUploader.errorHandler(createError(500))).toEqual('retry');
     });
   });
 });
