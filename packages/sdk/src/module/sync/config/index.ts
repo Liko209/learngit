@@ -4,3 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export { SyncUserConfig } from './SyncUserConfig';
+export { SyncGlobalConfig } from './SyncGlobalConfig';

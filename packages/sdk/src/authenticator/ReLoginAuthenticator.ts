@@ -17,7 +17,7 @@ class ReLoginAuthenticator implements IAuthenticator {
     // login glip
     try {
       const authConfig = new AuthUserConfig();
-      const rcToken: ITokenModel = authConfig.getRcToken();
+      const rcToken: ITokenModel = authConfig.getRCToken();
       if (!rcToken) {
         return { success: false };
       }

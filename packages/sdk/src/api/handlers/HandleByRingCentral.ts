@@ -10,7 +10,7 @@ import {
   NETWORK_HANDLE_TYPE,
 } from 'foundation';
 import Api from '../api';
-import { IPlatformHandleDelegate } from '../ringcentral/IPlatformHandleDelegate';
+import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 
 const HandleByRingCentral = new class extends AbstractHandleType {
   name = NETWORK_HANDLE_TYPE.RINGCENTRAL;

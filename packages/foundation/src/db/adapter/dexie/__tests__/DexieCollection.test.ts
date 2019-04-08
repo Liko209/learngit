@@ -11,6 +11,7 @@ import {
   extractFirstNames,
 } from '../../__tests__/utils';
 import DexieDB from '../DexieDB';
+import { DatabaseKeyType } from '../../../db';
 
 type Item = {};
 
@@ -21,17 +22,17 @@ describe('before set up', () => {
       schema: {
         1: {
           person: {
-            unique: '',
+            unique: 'id',
           },
         },
       },
     });
-    expect(dexie.getCollection('person').primaryKeyName()).toBe('');
+    expect(dexie.getCollection('person').primaryKeyName()).toBe('id');
   });
 });
 
 describe('DexieCollection', () => {
-  let dexieCollection: DexieCollection<Item>;
+  let dexieCollection: DexieCollection<Item, DatabaseKeyType>;
 
   beforeEach(async () => {
     ({ dexieCollection } = await setupDexie());
@@ -54,12 +55,26 @@ describe('DexieCollection', () => {
       await dexieCollection.put({ id: 4 });
       expect(await dexieCollection.get(4)).toHaveProperty('id', 4);
     });
+
+    it('should put data into db', async () => {
+      await dexieCollection.put({ id: 'id', firstName: 'test' });
+      expect(await dexieCollection.get('id')).toHaveProperty(
+        'firstName',
+        'test',
+      );
+    });
   });
 
   describe('delete()', () => {
     it('should delete data', async () => {
       await dexieCollection.delete(4);
       expect(await dexieCollection.get(4)).toBeNull();
+    });
+
+    it('should delete data', async () => {
+      await dexieCollection.put({ id: 'id', firstName: 'test' });
+      await dexieCollection.delete('id');
+      expect(await dexieCollection.get('id')).toBeNull();
     });
   });
 
@@ -99,7 +114,9 @@ describe('DexieCollection', () => {
 
     it('should return data between the bounds', async () => {
       const result = await dexieCollection.getAll({
-        criteria: [{ key: 'id', name: 'between', lowerBound: 1, upperBound: 3 }],
+        criteria: [
+          { key: 'id', name: 'between', lowerBound: 1, upperBound: 3 },
+        ],
       });
       expect(extractIds(result)).toEqual([2]);
     });

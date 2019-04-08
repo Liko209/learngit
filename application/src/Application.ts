@@ -9,11 +9,14 @@ import * as leaveBlocker from '@/modules/leave-blocker/module.config';
 import * as router from '@/modules/router/module.config';
 import * as home from '@/modules/home/module.config';
 import * as app from '@/modules/app/module.config';
-import * as FeaturesFlag from '@/modules/featuresFlags/module.config';
 import * as GlobalSearch from '@/modules/GlobalSearch/module.config';
+import * as featuresFlag from '@/modules/featuresFlags/module.config';
+import * as notification from '@/modules/notification/module.config';
 
+import * as feedback from '@/modules/feedback/module.config';
 import { Pal } from 'sdk/pal';
 import { ImageDownloader } from '@/common/ImageDownloader';
+import { errorReporter } from '@/utils/error';
 
 @injectable()
 class Application {
@@ -21,15 +24,18 @@ class Application {
 
   run() {
     Pal.instance.setImageDownloader(new ImageDownloader());
+    Pal.instance.setErrorReporter(errorReporter);
     const jupiter = this._jupiter;
     // TODO auto load modules
     jupiter.registerModule(sw.config);
     jupiter.registerModule(leaveBlocker.config);
-    jupiter.registerModule(FeaturesFlag.config);
+    jupiter.registerModule(featuresFlag.config);
     jupiter.registerModule(router.config);
     jupiter.registerModule(home.config);
     jupiter.registerModule(app.config);
     jupiter.registerModule(GlobalSearch.config);
+    jupiter.registerModule(notification.config);
+    jupiter.registerModule(feedback.config);
 
     if (window.jupiterElectron) {
       jupiter.registerModuleAsync(() =>

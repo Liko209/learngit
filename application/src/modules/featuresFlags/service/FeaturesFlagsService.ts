@@ -5,19 +5,19 @@
  */
 
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
-import { RcInfoService } from 'sdk/module/rcInfo';
+import { RCInfoService } from 'sdk/module/rcInfo';
 
 class FeaturesFlagsService {
   // prettier-ignore
   private _permissionService = PermissionService.getInstance<PermissionService>();
-  private _rcInfoService = RcInfoService.getInstance<RcInfoService>();
+  private _rcInfoService = RCInfoService.getInstance<RCInfoService>();
 
-  canUseTelephony = () => {
+  canUseTelephony = async () => {
     return (
-      this._rcInfoService.isVoipCallingAvailable() &&
-      this._permissionService.hasPermission(
+      (await this._rcInfoService.isVoipCallingAvailable()) &&
+      (await this._permissionService.hasPermission(
         UserPermissionType.JUPITER_CAN_USE_TELEPHONY,
-      )
+      ))
     );
   }
 }

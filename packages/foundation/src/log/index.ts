@@ -1,4 +1,4 @@
-import LogManager from './LogManager';
+import { LogManager } from './LogManager';
 import { ILogger } from './types';
 const logManager = LogManager.getInstance();
 const mainLogger: ILogger = logManager.getMainLogger();
@@ -10,4 +10,3 @@ const telephonyLogger: ILogger = logManager.getTelephonyLogger();
 export { LOG_LEVEL } from './constants';
 export { logManager, mainLogger, networkLogger, telephonyLogger };
 export * from './types';
-export * from './consumer';
