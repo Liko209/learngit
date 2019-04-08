@@ -12,10 +12,13 @@ import storeManager from '@/store/base/StoreManager';
 import history from '@/history';
 import { Action } from 'history';
 import { mainLogger } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
-    const _groupService: GroupService = GroupService.getInstance();
+    const _groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     _groupService
       .updateGroupLastAccessedTime({
         id,
@@ -27,7 +30,9 @@ class GroupHandler {
   }
 
   static async isGroupHidden(id: number) {
-    const _profileService: ProfileService = ProfileService.getInstance();
+    const _profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     return _profileService.isConversationHidden(id);
   }
 
@@ -36,7 +41,9 @@ class GroupHandler {
     if (!isHidden) {
       return;
     }
-    const _profileService: ProfileService = ProfileService.getInstance();
+    const _profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     try {
       await _profileService.reopenConversation(id);
     } catch {
@@ -52,7 +59,9 @@ export class MessageRouterChangeHelper {
   static defaultPageId = '';
   static isIndexDone = false;
   static async getLastGroupId() {
-    const stateService: StateService = StateService.getInstance();
+    const stateService = ServiceLoader.getInstance<StateService>(
+      ServiceConfig.STATE_SERVICE,
+    );
     const state = await stateService.getMyState();
     if (state && state.last_group_id) {
       return this.verifyGroup(state.last_group_id);
@@ -103,7 +112,9 @@ export class MessageRouterChangeHelper {
   }
 
   static async verifyGroup(id: number) {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     const isGroupCanBeShown = await groupService.isGroupCanBeShown(id);
     return isGroupCanBeShown ? String(id) : '';
   }

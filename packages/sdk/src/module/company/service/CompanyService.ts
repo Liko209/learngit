@@ -14,9 +14,9 @@ import Api from '../../../api/api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw } from '../../../framework/model';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class CompanyService extends EntityBaseService<Company> {
-  static serviceName = 'CompanyService';
   private _companyController: CompanyController;
 
   constructor() {
@@ -37,7 +37,13 @@ class CompanyService extends EntityBaseService<Company> {
   }
 
   async handleIncomingData(companies: Raw<Company>[], source: SYNC_SOURCE) {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_COMPANY,
+      logId,
+    );
     await this.getCompanyController().handleCompanyData(companies, source);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   protected getCompanyController() {

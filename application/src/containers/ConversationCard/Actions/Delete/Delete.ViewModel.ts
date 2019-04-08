@@ -12,13 +12,15 @@ import { PostService } from 'sdk/module/post';
 import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { Props, ViewProps } from './types';
-
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 class DeleteViewModel extends StoreViewModel<Props> implements ViewProps {
   private _postService: PostService;
 
   constructor(props: Props) {
     super(props);
-    this._postService = PostService.getInstance();
+    this._postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
   }
 
   @computed

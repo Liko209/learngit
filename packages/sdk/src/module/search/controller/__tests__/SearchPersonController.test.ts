@@ -16,11 +16,12 @@ import {
 import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { SortableModel } from '../../../../framework/model';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { GroupService } from '../../../group';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 jest.mock('../../../../api');
 jest.mock('../../../../dao/DaoManager');
 jest.mock('../../../group');
@@ -41,7 +42,7 @@ describe('SearchPersonController', () => {
   let groupService: GroupService;
   function setUp() {
     groupService = new GroupService();
-    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
 
     entityCacheController = buildEntityCacheController<Person>();
@@ -50,7 +51,6 @@ describe('SearchPersonController', () => {
     );
 
     personService = new PersonService();
-    jest.spyOn(PersonService, 'getInstance').mockReturnValue(personService);
     jest
       .spyOn(personService, 'getEntityCacheSearchController')
       .mockReturnValue(cacheSearchController);
@@ -60,6 +60,39 @@ describe('SearchPersonController', () => {
     }) as any;
     searchService.getRecentSearchRecordsByType = jest.fn();
     searchPersonController = new SearchPersonController(searchService);
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        let result: any = null;
+        switch (serviceName) {
+          case ServiceConfig.PERSON_SERVICE:
+            result = personService;
+            break;
+          case ServiceConfig.GROUP_SERVICE:
+            result = groupService;
+            break;
+          case ServiceConfig.ITEM_SERVICE:
+            result = itemService;
+            break;
+          case ServiceConfig.ACCOUNT_SERVICE:
+            result = accountService;
+            break;
+          case ServiceConfig.GLOBAL_CONFIG_SERVICE:
+            result = {
+              get: jest.fn(),
+              put: jest.fn(),
+              clear: jest.fn(),
+            };
+            break;
+          case ServiceConfig.GROUP_CONFIG_SERVICE:
+            result = groupConfigService;
+            break;
+          default:
+            break;
+        }
+        return result;
+      });
   }
 
   beforeEach(() => {

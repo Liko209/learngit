@@ -1,3 +1,4 @@
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { CONVERSATION_TYPES } from '@/constants';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Markdown } from 'glipdown';
@@ -132,10 +133,13 @@ export class MessageNotificationManager extends NotificationManager {
   ) {
     if (isGroup) {
       return defaultGroupAvatar;
-    }  {
+    }
+    {
       let headshotUrl;
       if (hasHeadShot) {
-        const personService: PersonService = PersonService.getInstance();
+        const personService = ServiceLoader.getInstance<PersonService>(
+          ServiceConfig.PERSON_SERVICE,
+        );
         headshotUrl = personService.getHeadShotWithSize(
           id,
           headshotVersion,

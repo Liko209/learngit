@@ -414,3 +414,64 @@ test(formalName('JPT-733 Can\'t show all received posts when open mentions page'
   }, true);
 
 });
+
+
+test(formalName('Can like/unlike message in AtMentions list', ['P2', 'JPT-1146', 'Foden.lin', 'AtMentions']),
+async (t: TestController) => {
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[7];
+  const otherUser = users[5];
+
+  let chat = <IGroup>{
+    type: "DirectMessage",
+    owner: loginUser,
+    members: [loginUser, otherUser]
+  }
+
+  let atMentionPostId: string;
+  await h(t).withLog('Given I have an extension with 1 at-mention posts', async () => {
+    await h(t).scenarioHelper.createOrOpenChat(chat);
+    atMentionPostId = await h(t).scenarioHelper.sentAndGetTextPostId(`Hi, ![:Person](${loginUser.rcId})`, chat, otherUser);
+  });
+
+  const app = new AppRoot(t);
+
+  const mentionsEntry = app.homePage.messageTab.mentionsEntry;
+  const mentionPage = app.homePage.messageTab.mentionPage;
+
+  await h(t).withLog(`When I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  await h(t).withLog('Then I can find 1 posts in the mentions page', async () => {
+    await mentionsEntry.enter();
+    await t.expect(mentionPage.postItemById(atMentionPostId).exists).ok();
+  }, true);
+
+  await h(t).withLog(`When I click "unlike" button`, async () => {
+    await mentionPage.postItemById(atMentionPostId).clickLikeOnActionBar();
+  });
+
+  const atMentionPostCard = mentionPage.postItemById(atMentionPostId);
+
+  await h(t).withLog(`Then bookmarkPost action bar 'unlike' icon change to 'like', and bookmarkPost card footer appear "like" icon with number 1`, async () => {
+    await t.hover(atMentionPostCard.self);
+    await t.expect(atMentionPostCard.unlikeIconOnActionBar.exists).ok();
+    await t.expect(atMentionPostCard.unlikeIconOnFooter.exists).ok();
+    await atMentionPostCard.likeShouldBe(1);
+  });
+
+
+  await h(t).withLog(`When I click solid 'like' icon on action bar`, async () => {
+    await atMentionPostCard.clickLikeOnActionBar();
+    });
+
+  await h(t).withLog(`Then Action bar solid "like" icon change to hollow "unlike" icon and like number should be 0 on message card `, async () => {
+    await t.hover(atMentionPostCard.self);
+    await t.expect(atMentionPostCard.likeIconOnActionBar.exists).ok();
+    await t.expect(atMentionPostCard.likeButtonOnFooter.exists).notOk();
+    await atMentionPostCard.likeShouldBe(0);
+  });
+});
+

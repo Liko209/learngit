@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { service } from 'sdk';
 import {
   EditMessageInputViewModel,
   ERROR_TYPES,
@@ -15,7 +14,7 @@ import _ from 'lodash';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
 import storeManager from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { PostService } from 'sdk/module/post';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const mockPostEntityData = {
   id: 1,
@@ -46,7 +45,7 @@ jest.mock('@/store/utils', () => ({
 const postService = {
   editPost: jest.fn(),
 };
-PostService.getInstance = jest.fn().mockReturnValue(postService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
 
 let editMessageInputViewModel: EditMessageInputViewModel;
 let enterHandler: () => void;

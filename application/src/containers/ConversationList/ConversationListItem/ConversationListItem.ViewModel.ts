@@ -14,13 +14,16 @@ import GroupModel from '@/store/models/Group';
 import StoreViewModel from '@/store/ViewModel';
 import history from '@/history';
 import { CONVERSATION_TYPES } from '@/constants';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ConversationListItemViewModel extends StoreViewModel<
   ConversationListItemViewProps
 > {
   firstUnreadCount: number;
   important?: boolean | undefined;
-  groupService: GroupService = GroupService.getInstance();
+  groupService: GroupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
   hasShowedUmi: boolean = false;
 
   @computed

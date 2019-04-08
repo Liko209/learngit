@@ -5,7 +5,7 @@
  */
 import { UserConfig } from '../../config/UserConfig';
 import { SYNC_CONFIG_KEYS } from './configKeys';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountGlobalConfig } from '../../../module/account/config';
 
 class SyncUserConfig extends UserConfig {
   constructor() {

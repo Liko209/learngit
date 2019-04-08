@@ -3,11 +3,10 @@
  * @Date: 2019-01-15 15:03:48
  * Copyright © RingCentral. All rights reserved.
  */
-
-import { getGlobalValue } from '../../../../../../../store/utils';
 import storeManager from '../../../../../../../store/index';
 import { AddMembersViewModel } from '../AddMembers.ViewModel';
 import { GroupService } from 'sdk/module/group';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../../../../Notification');
 jest.mock('../../../../../../../store/utils');
@@ -22,7 +21,7 @@ const groupService: GroupService = new GroupService();
 const AddMembersVM = new AddMembersViewModel();
 describe('AddMembersViewModel', () => {
   beforeEach(() => {
-    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
   });
   beforeAll(() => {
     jest.resetAllMocks();

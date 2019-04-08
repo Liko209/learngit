@@ -5,5 +5,5 @@
  */
 
 export default interface IUsedCache {
-  getUsedId(): number[];
+  getUsedIds(): number[];
 }

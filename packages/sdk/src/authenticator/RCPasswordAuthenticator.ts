@@ -3,13 +3,12 @@
  * @Date: 2018-07-08 07:52:23
  * Copyright © RingCentral. All rights reserved.
  */
-import { loginGlip, loginRCByPassword } from '../api';
+import { loginGlip, RCAuthApi } from '../api';
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
 import { ACCOUNT_TYPE_ENUM } from './constants';
-import { setRcToken } from './utils';
-import { AuthUserConfig } from '../service/auth/config';
+import { setRCToken } from './utils';
+import { AuthUserConfig, AccountUserConfig } from '../module/account/config';
 import { RCAccount, GlipAccount } from '../account';
-import { AccountUserConfig } from '../service/account/config';
 
 interface IRCPasswordAuthenticateParams extends IAuthParams {
   username: string;
@@ -23,10 +22,10 @@ class RCPasswordAuthenticator implements IAuthenticator {
   ): Promise<IAuthResponse> {
     params.username = this.parsePhoneNumber(params.username);
 
-    const rcAuthData = await loginRCByPassword(params);
+    const rcAuthData = await RCAuthApi.loginRCByPassword(params);
     const glipAuthResponse = await loginGlip(rcAuthData);
 
-    setRcToken(rcAuthData);
+    setRCToken(rcAuthData);
 
     const authConfig = new AuthUserConfig();
     authConfig.setGlipToken(glipAuthResponse.headers['x-authorization']);

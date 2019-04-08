@@ -10,13 +10,12 @@ jest.mock('@/history');
 jest.mock('@/store/handler/SectionGroupHandler');
 
 import { ProfileService } from 'sdk/module/profile';
-import { GroupService } from 'sdk/module/group';
-import { StateService } from 'sdk/module/state';
 import history from '@/history';
 import storeManager from '@/store';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
 import { MessageRouterChangeHelper } from '../helper';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 let mockedStateService: any;
 let mockedProfileService: any;
 let mockedGroupService: any;
@@ -60,15 +59,25 @@ function mockDependencies() {
   SectionGroupHandler.getInstance = jest
     .fn()
     .mockImplementation(() => mockedSectionHandler);
-  StateService.getInstance = jest
+
+  ServiceLoader.getInstance = jest
     .fn()
-    .mockImplementation(() => mockedStateService);
-  GroupService.getInstance = jest
-    .fn()
-    .mockImplementation(() => mockedGroupService);
-  ProfileService.getInstance = jest
-    .fn()
-    .mockImplementation(() => mockedProfileService);
+    .mockImplementation((serviceName: string) => {
+      if (ServiceConfig.STATE_SERVICE === serviceName) {
+        return mockedStateService;
+      }
+
+      if (ServiceConfig.GROUP_SERVICE === serviceName) {
+        return mockedGroupService;
+      }
+
+      if (ServiceConfig.PROFILE_SERVICE === serviceName) {
+        return mockedProfileService;
+      }
+
+      return null;
+    });
+
   storeManager.getGlobalStore = jest
     .fn()
     .mockImplementation(() => mockedGlobalStore);
@@ -127,15 +136,12 @@ describe('MessageRouterChangeHelper', () => {
 
 describe('ensureGroupOpened', () => {
   beforeEach(() => {
-    mockDependencies();
-    resetMockedServices();
     mockedProfileService = {
       isConversationHidden: jest.fn(),
       reopenConversation: jest.fn(),
     };
-    ProfileService.getInstance = jest
-      .fn()
-      .mockImplementation(() => mockedProfileService);
+    mockDependencies();
+    resetMockedServices();
   });
   it('should call service to reopen', (done: any) => {
     mockedProfileService.isConversationHidden = jest

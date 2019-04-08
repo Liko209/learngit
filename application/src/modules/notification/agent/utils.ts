@@ -11,6 +11,8 @@ export const buildAction = ({
     action,
     title,
     icon,
-    handler,
+    handler: () => {
+      handler();
+    },
   } as NotificationAction;
 };

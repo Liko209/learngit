@@ -9,10 +9,14 @@ import {
   LEAVE_BLOCKER_SERVICE,
 } from '../leave-blocker/interface';
 import { ItemService } from 'sdk/module/item/service';
+
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { MessageNotificationManager } from './MessageNotificationManager';
 import { MESSAGE_NOTIFICATION_MANAGER } from './interface/constant';
 
-const itemService = ItemService.getInstance() as ItemService;
+const itemService = ServiceLoader.getInstance<ItemService>(
+  ServiceConfig.ITEM_SERVICE,
+);
 
 class MessageModule extends AbstractModule {
   @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;

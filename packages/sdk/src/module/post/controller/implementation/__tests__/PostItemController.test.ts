@@ -13,6 +13,7 @@ import { EditPostType } from '../../../types';
 import { IPostActionController } from '../../interface/IPostActionController';
 import { PostItemController } from '../PostItemController';
 import { localPostJson4UnitTest } from './PostData';
+import { ServiceLoader } from '../../../../serviceLoader';
 
 jest.mock('../../../../../module/item');
 
@@ -42,7 +43,7 @@ let postItemController: PostItemControllers;
 describe('PostItemController', () => {
   const itemService = new ItemService();
   beforeEach(() => {
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
     const fakeActionController = new FakeActionController();
     postItemController = new PostItemController(fakeActionController);
   });

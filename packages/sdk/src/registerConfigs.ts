@@ -16,8 +16,7 @@ import DaoManager from './dao/DaoManager';
 import { AccountManager, ServiceManager } from './framework';
 import Sdk from './Sdk';
 // Service
-import AccountService from './service/account';
-import AuthService from './service/auth';
+import { AccountService } from './module/account';
 import { CompanyService } from './module/company';
 import { ItemService } from './module/item';
 import { PersonService } from './module/person';
@@ -34,15 +33,16 @@ import { PostService } from './module/post';
 import { PermissionService } from './module/permission';
 import { GroupService } from './module/group';
 import { SearchService } from './module/search';
-import { RcInfoService } from './module/rcInfo';
+import { RCInfoService } from './module/rcInfo';
 import { GlobalConfigService, UserConfigService } from './module/config';
+import { ServiceConfig } from './module/serviceLoader';
 
 const networkManager = new NetworkManager(new OAuthTokenManager());
 
 const registerConfigs = {
   classes: [
-    { name: GlobalConfigService.name, value: GlobalConfigService },
-    { name: UserConfigService.name, value: UserConfigService },
+    { name: 'GlobalConfigService', value: GlobalConfigService },
+    { name: 'UserConfigService', value: UserConfigService },
     // Authenticator
     { name: RCPasswordAuthenticator.name, value: RCPasswordAuthenticator },
     { name: AutoAuthenticator.name, value: AutoAuthenticator },
@@ -54,28 +54,35 @@ const registerConfigs = {
     { name: GlipAccount.name, value: GlipAccount },
 
     // Services
-    { name: GroupService.name, value: GroupService },
-    { name: CompanyService.name, value: CompanyService },
-    { name: ItemService.name, value: ItemService },
-    { name: PersonService.name, value: PersonService },
-    { name: PresenceService.name, value: PresenceService },
-    { name: ProfileService.name, value: ProfileService },
-    { name: StateService.name, value: StateService },
-    { name: ProgressService.name, value: ProgressService },
-    { name: PostService.name, value: PostService },
-    { name: PermissionService.name, value: PermissionService },
-    { name: GroupService.name, value: GroupService },
-    { name: RcInfoService.name, value: RcInfoService },
+    { name: ServiceConfig.GROUP_SERVICE, value: GroupService },
+    { name: ServiceConfig.COMPANY_SERVICE, value: CompanyService },
+    { name: ServiceConfig.ITEM_SERVICE, value: ItemService },
+    { name: ServiceConfig.PERSON_SERVICE, value: PersonService },
+    { name: ServiceConfig.PRESENCE_SERVICE, value: PresenceService },
+    { name: ServiceConfig.PROFILE_SERVICE, value: ProfileService },
     {
-      name: AuthService.name,
-      value: AuthService,
+      name: ServiceConfig.STATE_SERVICE,
+      value: StateService,
+      injects: [ServiceConfig.GROUP_SERVICE],
+    },
+    { name: ServiceConfig.PROGRESS_SERVICE, value: ProgressService },
+    {
+      name: ServiceConfig.POST_SERVICE,
+      value: PostService,
+      injects: [ServiceConfig.GROUP_SERVICE],
+    },
+    { name: ServiceConfig.PERMISSION_SERVICE, value: PermissionService },
+    { name: ServiceConfig.GROUP_SERVICE, value: GroupService },
+    { name: ServiceConfig.RC_INFO_SERVICE, value: RCInfoService },
+    {
+      name: ServiceConfig.ACCOUNT_SERVICE,
+      value: AccountService,
       injects: [AccountManager.name],
     },
-    { name: AccountService.name, value: AccountService },
-    { name: SyncService.name, value: SyncService },
-    { name: TelephonyService.name, value: TelephonyService },
-    { name: GroupConfigService.name, value: GroupConfigService },
-    { name: SearchService.name, value: SearchService },
+    { name: ServiceConfig.SYNC_SERVICE, value: SyncService },
+    { name: ServiceConfig.TELEPHONY_SERVICE, value: TelephonyService },
+    { name: ServiceConfig.GROUP_CONFIG_SERVICE, value: GroupConfigService },
+    { name: ServiceConfig.SEARCH_SERVICE, value: SearchService },
 
     // Manager
     {
@@ -98,7 +105,7 @@ const registerConfigs = {
         AccountManager.name,
         ServiceManager.name,
         NetworkManager.name,
-        SyncService.name,
+        ServiceConfig.SYNC_SERVICE,
       ],
     },
   ],

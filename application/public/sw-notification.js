@@ -12,24 +12,27 @@ self.onnotificationclose = async (event) => {
 };
 
 self.onnotificationclick = async (event) => {
-  event.preventDefault();
-  const targetClient = await getTargetedClient();
-  if (targetClient) {
-    targetClient.focus();
-    targetClient.postMessage(
-      JSON.stringify({
-        id: event.notification.data.id,
-        scope: event.notification.data.scope,
-        action: event.action,
-      }),
-    );
-  }
   event.notification.close();
+  event.waitUntil(
+    getTargetedClient().then((targetClient) => {
+      if (targetClient) {
+        targetClient.focus();
+        targetClient.postMessage(
+          JSON.stringify({
+            id: event.notification.data.id,
+            scope: event.notification.data.scope,
+            action: event.action,
+          }),
+        );
+      }
+    }),
+  );
 };
 
 const getTargetedClient = async () => {
   const clients = await self.clients.matchAll({
     type: 'window',
+    includeUncontrolled: true,
   });
   return clients[0];
 };

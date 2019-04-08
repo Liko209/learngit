@@ -6,16 +6,17 @@
 
 import { SocketCanConnectController } from '../SocketCanConnectController';
 import { canConnect } from '../../../api/glip/user';
-import { AccountUserConfig } from '../../account/config';
 import { PresenceService } from '../../../module/presence/service/PresenceService';
-import { AuthUserConfig } from '../../../service/auth/config';
+import {
+  AuthUserConfig,
+  AccountUserConfig,
+} from '../../../module/account/config';
 import { SyncUserConfig } from '../../../module/sync/config';
+import { ServiceLoader } from '../../../module/serviceLoader';
 
 jest.mock('../../../api/glip/user');
 jest.mock('../../../module/presence/service/PresenceService');
-jest.mock('../../../service/config');
-jest.mock('../../../service/account/config');
-jest.mock('../../../service/auth/config');
+jest.mock('../../../module/account/config');
 jest.mock('../../../module/sync/config');
 
 let presenceService;
@@ -25,7 +26,7 @@ describe('SocketCanConnectController', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     presenceService = new PresenceService();
-    PresenceService.getInstance = jest.fn().mockReturnValue(presenceService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(presenceService);
   }
 
   function getController() {
