@@ -1,9 +1,27 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
+import { ClientFunction } from "testcafe";
+import * as assert from 'assert';
+import { H } from "../../../helpers";
 
 
 export class FileAndImagePreviewer extends BaseWebComponent {
   get self() {
     return this.getSelector('[role="document"]');
+  }
+
+  async shouldBeFullScreen() {
+    await H.retryUntilPass(async () => {
+      const width = await this.self.getBoundingClientRectProperty('width');
+      const height = await this.self.getBoundingClientRectProperty('height');
+      const windowSize = await ClientFunction(() => {
+        return {
+          width: window.innerWidth || document.body.clientWidth,
+          height: window.innerHeight || document.body.clientHeight
+        }
+      })();
+      assert.strictEqual(width, windowSize.width, 'the viewer width is not full screen');
+      assert.strictEqual(height, windowSize.height, 'the viewer height is not full screen');
+    });
   }
 
   get avatar() {
