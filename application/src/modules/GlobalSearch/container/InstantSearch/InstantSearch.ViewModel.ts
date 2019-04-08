@@ -194,7 +194,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
 
   get contentSearchIds() {
     const { searchKey } = this._globalSearchStore;
-    const defaultTip = i18nT('inThisConversation');
+    const defaultTip = i18nT('globalSearch.inThisConversation');
 
     return this._isConversation
       ? [searchKey].concat(`${searchKey} ${defaultTip}`)
