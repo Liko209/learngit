@@ -6,19 +6,14 @@
 
 import React, { PureComponent } from 'react';
 import { SelectProps } from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import { StyledSelect, CLASSES_SELECT } from './StyledSelect';
 import { StyledInput, CLASSES_INPUT_BASE } from './StyledInput';
 import { HeightSize } from './types';
 
-type Menu = {
-  id: number | string;
-  value: string;
-};
-
 type Props = SelectProps & {
+  children: JSX.Element[];
   heightSize?: HeightSize;
-  menu: Menu[];
+  handleChange: (value: string) => void;
 };
 
 // Selected Select doesn't open on enter
@@ -28,19 +23,20 @@ class JuiBoxSelect extends PureComponent<Props> {
     const { heightSize = 'default' } = this.props;
     return <StyledInput classes={CLASSES_INPUT_BASE} heightSize={heightSize} />;
   }
+  private _handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const { value } = event.target;
+    this.props.handleChange(value);
+  }
   render() {
-    const { menu, ...rest } = this.props;
+    const { children, ...rest } = this.props;
     return (
       <StyledSelect
         classes={CLASSES_SELECT}
         input={this._renderInput()}
+        onChange={this._handleChange}
         {...rest}
       >
-        {menu.map((item: Menu) => (
-          <MenuItem value={item.id} key={item.id}>
-            {item.value}
-          </MenuItem>
-        ))}
+        {children}
       </StyledSelect>
     );
   }
