@@ -8,20 +8,20 @@ import { PersonItem, GroupItem, ContentItem } from './SearchItem';
 
 const SearchSectionsConfig = {
   [RecentSearchTypes.SEARCH]: {
-    title: 'Content search',
-    SearchItem: ContentItem,
+    title: 'globalSearch.contentSearch',
+    Item: ContentItem,
   },
   [RecentSearchTypes.PEOPLE]: {
     title: 'globalSearch.People',
-    SearchItem: PersonItem,
+    Item: PersonItem,
   },
   [RecentSearchTypes.GROUP]: {
     title: 'globalSearch.Groups',
-    SearchItem: GroupItem,
+    Item: GroupItem,
   },
   [RecentSearchTypes.TEAM]: {
     title: 'globalSearch.Teams',
-    SearchItem: GroupItem,
+    Item: GroupItem,
   },
 };
 

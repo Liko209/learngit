@@ -57,11 +57,11 @@ class InstantSearchViewComponent extends Component<Props> {
     const { terms, selectIndex, resetSelectIndex, getSearchScope } = this.props;
     const { value, type, sectionIndex, cellIndex } = config;
 
-    const { SearchItem, title } = SearchSectionsConfig[type];
+    const { Item, title } = SearchSectionsConfig[type];
     const hovered =
       sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
     return (
-      <SearchItem
+      <Item
         searchScope={getSearchScope(cellIndex)}
         displayName={typeof value === 'string' ? value : null}
         hovered={hovered}
