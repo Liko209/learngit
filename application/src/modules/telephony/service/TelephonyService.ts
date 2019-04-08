@@ -18,7 +18,7 @@ import {
 } from 'sdk/module/telephony/types';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { mainLogger } from 'sdk';
-import { TelephonyStore } from '../store';
+import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 
 class TelephonyService {
@@ -42,12 +42,20 @@ class TelephonyService {
       `${TelephonyService.TAG}Call object created, call id=${callId}`,
     );
     this._callId = callId;
+    this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
   }
 
   private _onReceiveIncomingCall = (callInfo: TelephonyCallInfo) => {
+    const { fromName, fromNum, callId } = callInfo;
+    this._callId = callId;
+    this._telephonyStore.callType = CALL_TYPE.INBOUND;
+    this._telephonyStore.phoneNumber = fromNum;
+    this._telephonyStore.incomingCall();
     mainLogger.info(
-      `${TelephonyService.TAG}Call object created, call id=${callInfo.callId}`,
+      `${TelephonyService.TAG}Call object created, call id=${
+        callInfo.callId
+      }, from name=${fromName}, from num=${fromNum}`,
     );
   }
 
@@ -105,18 +113,23 @@ class TelephonyService {
   makeCall = async (toNumber: string) => {
     const rv = await this._serverTelephonyService.makeCall(toNumber);
 
-    if (MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv) {
-      ToastCallError.toastNoNetwork();
-      mainLogger.error(
-        `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
-      );
-    } else if (MAKE_CALL_ERROR_CODE.NO_ERROR !== rv) {
-      ToastCallError.toastCallFailed();
-      mainLogger.error(
-        `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
-      );
-      return; // For other errors, need not show call UI
+    switch (true) {
+      case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {
+        ToastCallError.toastNoNetwork();
+        mainLogger.error(
+          `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
+        );
+        break;
+      }
+      case MAKE_CALL_ERROR_CODE.NO_ERROR !== rv: {
+        ToastCallError.toastCallFailed();
+        mainLogger.error(
+          `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
+        );
+        return; // For other errors, need not show call UI
+      }
     }
+
     this._telephonyStore.phoneNumber = toNumber;
   }
 
@@ -138,6 +151,25 @@ class TelephonyService {
       this._serverTelephonyService.hangUp(this._callId);
     }
   }
+
+  answer = () => {
+    if (this._callId) {
+      mainLogger.info(`${TelephonyService.TAG}answer call id=${this._callId}`);
+      this._telephonyStore.answer();
+      this._serverTelephonyService.answer(this._callId);
+    }
+  }
+
+  sendToVoiceMail = () => {
+    if (this._callId) {
+      mainLogger.info(
+        `${TelephonyService.TAG}send to voicemail call id=${this._callId}`,
+      );
+      this._serverTelephonyService.sendToVoiceMail(this._callId);
+    }
+  }
+
+  ignore = () => {};
 
   minimize = () => {
     this._telephonyStore.closeDialer();

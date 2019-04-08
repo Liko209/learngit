@@ -92,6 +92,7 @@ const WrappedMuiFab = (props: StyledFabButtonProps) => {
     loading,
     colorName,
     colorScope,
+    size,
     ...restProps
   } = props;
   return (

@@ -114,6 +114,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       this._callDelegate,
     );
     this._telephonyCallDelegate.setRtcCall(call);
+    call.setCallDelegate(this._telephonyCallDelegate);
     const callInfo = await this._buildCallInfo(call.getCallInfo());
     this._telephonyAccountDelegate.onReceiveIncomingCall(callInfo);
   }

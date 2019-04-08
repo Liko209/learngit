@@ -15,7 +15,7 @@ import {
 type Props = {
   Ignore: React.ComponentType;
   Avatar: React.ComponentType;
-  Actions: React.ComponentType[];
+  Actions: React.ComponentType<any>[];
   name: string;
   phone?: string;
 };
