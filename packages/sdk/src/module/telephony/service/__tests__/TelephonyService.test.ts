@@ -176,4 +176,11 @@ describe('TelephonyService', () => {
       expect(accountController.sendToVoiceMail).toHaveBeenCalledWith(callId);
     });
   });
+
+  describe('ignore', () => {
+    it('should call account controller to ignore', () => {
+      telephonyService.ignore(callId);
+      expect(accountController.ignore).toHaveBeenCalledWith(callId);
+    });
+  });
 });
