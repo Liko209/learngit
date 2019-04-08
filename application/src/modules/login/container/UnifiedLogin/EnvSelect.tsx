@@ -5,6 +5,9 @@
  */
 import * as React from 'react';
 import { service } from 'sdk';
+
+import { AppEnvSetting } from 'sdk/module/env';
+
 import Config from '@/config';
 console.log('Config: ', Config);
 
@@ -13,8 +16,6 @@ type States = {
   value: string;
   environments: string[];
 };
-
-const { ConfigService } = service;
 
 class EnvSelect extends React.Component<Props, States> {
   constructor(props: Props) {
@@ -41,8 +42,7 @@ class EnvSelect extends React.Component<Props, States> {
 
   changeHandler(event: React.ChangeEvent<HTMLSelectElement>) {
     const value = event.target.value;
-    const configService: service.ConfigService = ConfigService.getInstance();
-    configService.switchEnv(value);
+    AppEnvSetting.switchEnv(value, service.AuthService.getInstance());
     this.setState({ value });
     location.reload();
   }

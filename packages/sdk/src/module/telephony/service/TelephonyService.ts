@@ -43,23 +43,26 @@ class TelephonyService extends EntityBaseService {
     this._makeCallController = new MakeCallController();
   }
 
-  createAccount(delegate: ITelephonyAccountDelegate) {
-    this.telephonyController.createAccount(delegate);
+  createAccount = (
+    accountDelegate: ITelephonyAccountDelegate,
+    callDelegate: ITelephonyCallDelegate,
+  ) => {
+    this.telephonyController.createAccount(accountDelegate, callDelegate);
   }
 
-  getAllCallCount() {
+  getAllCallCount = () => {
     return this.telephonyController.getAccountController().getCallCount();
   }
 
-  async makeCall(toNumber: string, callDelegate: ITelephonyCallDelegate) {
-    const e164ToNumber = this._makeCallController.getE164PhoneNumber(toNumber);
+  makeCall = async (toNumber: string) => {
+    const e164ToNumber = await this._makeCallController.getE164PhoneNumber(toNumber);
     let result = await this._makeCallController.tryMakeCall(e164ToNumber);
     if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
       return result;
     }
     const makeCallResult = this.telephonyController
       .getAccountController()
-      .makeCall(toNumber, callDelegate);
+      .makeCall(toNumber);
     switch (makeCallResult) {
       case RTC_STATUS_CODE.NUMBER_INVALID: {
         result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
@@ -77,16 +80,44 @@ class TelephonyService extends EntityBaseService {
     return result;
   }
 
-  hangUp(callId: string) {
+  hangUp = (callId: string) => {
     this.telephonyController.getAccountController().hangUp(callId);
   }
 
-  mute(callId: string) {
+  mute = (callId: string) => {
     this.telephonyController.getAccountController().mute(callId);
   }
 
-  unmute(callId: string) {
+  unmute = (callId: string) => {
     this.telephonyController.getAccountController().unmute(callId);
+  }
+
+  hold = (callId: string) => {
+    this.telephonyController.getAccountController().hold(callId);
+  }
+
+  unhold = (callId: string) => {
+    this.telephonyController.getAccountController().unhold(callId);
+  }
+
+  startRecord = (callId: string) => {
+    this.telephonyController.getAccountController().startRecord(callId);
+  }
+
+  stopRecord = (callId: string) => {
+    this.telephonyController.getAccountController().stopRecord(callId);
+  }
+
+  dtmf = (callId: string, digits: string) => {
+    this.telephonyController.getAccountController().dtmf(callId, digits);
+  }
+
+  answer = (callId: string) => {
+    this.telephonyController.getAccountController().answer(callId);
+  }
+
+  sendToVoiceMail = (callId: string) => {
+    this.telephonyController.getAccountController().sendToVoiceMail(callId);
   }
 }
 

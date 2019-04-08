@@ -7,7 +7,7 @@ import { getLogger } from 'log4js';
 
 import { filterByTags } from './libs/filter';
 import { RUNNER_OPTS } from './config';
-import { accountPoolClient } from './init';
+import { accountPoolClient, finishRun } from './init';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -37,6 +37,7 @@ async function runTests(runnerOpts) {
       assertionTimeout: runnerOpts.ASSERTION_TIMEOUT,
     });
   } finally {
+    await finishRun().catch(error => logger.error(error));
     await testCafe.close();
   }
   return failed;

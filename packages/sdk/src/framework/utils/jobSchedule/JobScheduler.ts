@@ -62,7 +62,6 @@ class JobScheduler {
       needNetwork,
       intervalSeconds: DailyJobIntervalSeconds,
       periodic: true,
-      retryTime: 0,
     };
     if (ignoreFirstTime) {
       this.scheduleAndIgnoreFirstTime(info);
@@ -221,8 +220,11 @@ class JobScheduler {
         if (info.periodic) {
           info.jobId = this._setTimer(info, info.intervalSeconds * 1000);
         } else {
-          if (info.retryTime > 0) {
-            info.retryTime = info.retryTime - 1;
+          const haveRetryTime = info.retryTime && info.retryTime > 0;
+          if (info.retryForever || haveRetryTime) {
+            if (haveRetryTime) {
+              info.retryTime = info.retryTime! - 1;
+            }
             info.jobId = this._setTimer(info, info.intervalSeconds * 1000);
           } else {
             this.cancelJob(info.key, true);

@@ -11,16 +11,9 @@ import { StateService } from 'sdk/module/state';
 import { GroupService } from 'sdk/module/group';
 import { notificationCenter, ENTITY } from 'sdk/service';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import preFetchConversationDataHandler from '../PreFetchConversationDataHandler';
 
-jest.mock('sdk/framework/processor/SequenceProcessorHandler', () => {
-  const SequenceProcessorHandler = () => ({
-    addProcessor: jest.fn(),
-    execute: jest.fn(),
-  });
-  return {
-    SequenceProcessorHandler,
-  };
-});
+jest.mock('../PreFetchConversationDataHandler');
 jest.mock('sdk/api');
 jest.mock('sdk/module/profile');
 jest.mock('sdk/module/state');
@@ -353,7 +346,7 @@ describe('SectionGroupHandler', () => {
       ).toEqual([]);
     });
   });
-  describe('getRemovedIds', async () => {
+  describe('getRemovedIds', () => {
     it('should return [] because its length less or equal than limit', () => {
       const result = SectionGroupHandler.getInstance().getRemovedIds(
         [],
@@ -514,7 +507,7 @@ describe('SectionGroupHandler', () => {
       expect(directMessageHandler.removeByIds).not.toHaveBeenCalled();
     });
   });
-  describe('handleIncomesGroupState', async () => {
+  describe('handleIncomesGroupState', () => {
     function setup(ids: number[]) {
       const handler = SectionGroupHandler.getInstance();
       jest
@@ -634,7 +627,7 @@ describe('SectionGroupHandler', () => {
       });
     });
   });
-  describe('checkIfGroupOpenedFromHidden', async () => {
+  describe('checkIfGroupOpenedFromHidden', () => {
     it('should not change because of more hidden group ids', async () => {
       const handler = SectionGroupHandler.getInstance();
       await handler.checkIfGroupOpenedFromHidden([], [1]);
@@ -655,7 +648,7 @@ describe('SectionGroupHandler', () => {
     });
   });
 
-  describe('fetchGroups()', () => {
+  describe('preFetch group data()', () => {
     it('should call addProcessor twice when sectionType is favorites', async () => {
       const sectionGroupHandler = SectionGroupHandler.getInstance();
       const direction = QUERY_DIRECTION.OLDER;
@@ -665,9 +658,10 @@ describe('SectionGroupHandler', () => {
         .mockResolvedValueOnce([{ id: 1 }, { id: 2 }]);
       await sectionGroupHandler.fetchGroups(sectionType, direction);
       expect(
-        sectionGroupHandler._prefetchHandler.addProcessor,
+        preFetchConversationDataHandler.addProcessor,
       ).toHaveBeenCalledTimes(2);
     });
+
     it('should call addProcessor twice when sectionType is direct_messages and state.unread_count is 2', async (done: any) => {
       const sectionGroupHandler = SectionGroupHandler.getInstance();
       const direction = QUERY_DIRECTION.OLDER;
@@ -681,7 +675,7 @@ describe('SectionGroupHandler', () => {
       await sectionGroupHandler.fetchGroups(sectionType, direction);
       setTimeout(() => {
         expect(
-          sectionGroupHandler._prefetchHandler.addProcessor,
+          preFetchConversationDataHandler.addProcessor,
         ).toHaveBeenCalledTimes(2);
         done();
       });
@@ -700,7 +694,7 @@ describe('SectionGroupHandler', () => {
       await sectionGroupHandler.fetchGroups(sectionType, direction);
       setTimeout(() => {
         expect(
-          sectionGroupHandler._prefetchHandler.addProcessor,
+          preFetchConversationDataHandler.addProcessor,
         ).toHaveBeenCalledTimes(2);
         done();
       });

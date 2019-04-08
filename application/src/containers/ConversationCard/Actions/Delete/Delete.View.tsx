@@ -4,41 +4,46 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import i18next from 'i18next';
+import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiMenuItem } from 'jui/components';
 import { Dialog } from '@/containers/Dialog';
 import { ViewProps } from './types';
+import { mainLogger } from 'sdk';
+
+type Props = ViewProps & WithTranslation;
 
 @observer
-class DeleteView extends React.Component<ViewProps> {
+class DeleteViewComponent extends React.Component<Props> {
   private _handleDelete = () => {
-    const { deletePost } = this.props;
+    const { deletePost, t } = this.props;
     Dialog.confirm({
-      title: i18next.t('message.prompt.deletePostTitle'),
-      content: i18next.t('message.prompt.deletePostContent'),
-      okText: i18next.t('common.dialog.delete'),
+      title: t('message.prompt.deletePostTitle'),
+      content: t('message.prompt.deletePostContent'),
+      okText: t('common.dialog.delete'),
       okType: 'negative',
-      cancelText: i18next.t('common.dialog.cancel'),
+      cancelText: t('common.dialog.cancel'),
       onOK() {
         deletePost().catch((e: any) => {
-          console.log(e);
+          mainLogger.error(e);
         });
       },
     });
   }
   render() {
-    const { disabled } = this.props;
+    const { disabled, t } = this.props;
     return (
       <JuiMenuItem
         onClick={this._handleDelete}
         disabled={disabled}
         icon="delete"
       >
-        {i18next.t('message.action.deletePost')}
+        {t('message.action.deletePost')}
       </JuiMenuItem>
     );
   }
 }
+
+const DeleteView = withTranslation()(DeleteViewComponent);
 
 export { DeleteView };

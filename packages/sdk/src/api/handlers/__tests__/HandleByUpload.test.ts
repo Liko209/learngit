@@ -1,4 +1,8 @@
-import { OAuthTokenHandler, NETWORK_METHOD, NetworkRequestBuilder } from 'foundation';
+import {
+  OAuthTokenHandler,
+  NETWORK_METHOD,
+  NetworkRequestBuilder,
+} from 'foundation';
 import HandleByUpload from '../HandleByUpload';
 const handler = new OAuthTokenHandler(HandleByUpload, null);
 
@@ -31,7 +35,9 @@ describe('HandleByUpload', () => {
     const request = postRequest();
     request.needAuth = jest.fn().mockImplementation(() => false);
     const decoratedRequest = decoration(request);
-    expect(decoratedRequest.params.tk).toBeUndefined();
+    expect(
+      decoratedRequest.params && decoratedRequest.params.tk,
+    ).toBeUndefined();
     expect(decoratedRequest.headers.Authorization).toBeUndefined();
     expect(decoratedRequest).toEqual(request);
   });
@@ -42,7 +48,9 @@ describe('HandleByUpload', () => {
     const request = postRequest();
     request.needAuth = jest.fn().mockImplementation(() => true);
     const decoratedRequest = decoration(request);
-    expect(decoratedRequest.params.tk).toBeUndefined();
+    expect(
+      decoratedRequest.params && decoratedRequest.params.tk,
+    ).toBeUndefined();
     expect(decoratedRequest.headers.Authorization).not.toBeUndefined();
   });
   it('should not add tk to headers if isOAuthTokenAvailable is false ', () => {
@@ -52,7 +60,7 @@ describe('HandleByUpload', () => {
     const request = postRequest();
     request.needAuth = jest.fn().mockImplementation(() => true);
     const decoratedRequest = decoration(request);
-    expect(request.params.tk).toBeUndefined();
+    expect(request.params && request.params.tk).toBeUndefined();
     expect(request.headers.Authorization).toBeUndefined();
     expect(decoratedRequest).toEqual(request);
   });

@@ -5,7 +5,7 @@ import { parse as parseUserAgent } from 'useragent';
 import { identity } from 'lodash';
 
 import { getLogger } from 'log4js';
-import { IStep, Status, IConsoleLog } from "../models";
+import { IStep, Status, IConsoleLog, Process } from '../models';
 import { MiscUtils } from '../utils';
 import { getTmtIds, parseFormalName } from '../../libs/filter';
 import { BrandTire } from '../../config';
@@ -18,7 +18,12 @@ logger.level = 'info';
 const StatusMap = {
   [Status.PASSED]: 5,
   [Status.FAILED]: 8,
-}
+};
+
+const ProccessMap = {
+  [Process.RUN]: 0,
+  [Process.FINISH]: 1,
+};
 
 export class DashboardHelper {
 
@@ -53,7 +58,7 @@ export class DashboardHelper {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
-    const tags = parseFormalName(testRun.test.name).tags;
+    const tags = _.union(parseFormalName(testRun.test.name).tags, testRun.test.meta.caseIds);
     const userAgent = parseUserAgent(await H.getUserAgent());
 
     const beatsTest = new Test();
@@ -63,6 +68,7 @@ export class DashboardHelper {
     beatsTest.manualIds = getTmtIds(tags, 'JPT');
     beatsTest.startTime = testRun.startTime;
     beatsTest.endTime = new Date();
+    beatsTest.process = ProccessMap[Process.FINISH];
 
     beatsTest.metadata = {
       browser: userAgent.family,
@@ -71,7 +77,7 @@ export class DashboardHelper {
       osVer: userAgent.os.toVersion(),
       user_agent: testRun.browserConnection.browserInfo.userAgent,
       mockRequestId: h(this.t).mockRequestId,
-    }
+    };
     const res = await this.beatsClient.createTest(beatsTest);
 
     for (const step of this.t.ctx.logs) {

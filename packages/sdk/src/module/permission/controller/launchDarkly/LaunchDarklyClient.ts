@@ -9,7 +9,7 @@ type Options = {
   readyCallback: () => void;
   updateCallback: (settings: LDFlagSet) => void;
 };
-import LDClient, { LDUser, LDFlagSet } from 'ldclient-js';
+import { initialize, LDUser, LDFlagSet } from 'ldclient-js';
 import UserPermissionType from '../../types';
 import { mainLogger } from 'foundation';
 class LaunchDarklyClient {
@@ -30,7 +30,9 @@ class LaunchDarklyClient {
   }
 
   private _initLDClient(options: Options) {
-    this._ldclient = LDClient.initialize(options.clientId, options.user);
+    this._ldclient = initialize(options.clientId, options.user, {
+      streaming: true,
+    });
     this._ldclient.on('change', (settings: LDFlagSet) => {
       this._flags = this._ldclient.allFlags();
       mainLogger.log('launchDarkly change event flags', this._flags);

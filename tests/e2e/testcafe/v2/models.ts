@@ -60,10 +60,22 @@ export enum Status {
   BROKEN = 'broken',
 }
 
+export enum Process {
+  RUN = 'run',
+  FINISH = 'finish',
+}
+
 export interface IConsoleLog {
   consoleLogPath: string;
   warnConsoleLogPath: string;
   errorConsoleLogPath: string;
   warnConsoleLogNumber?: number;
   errorConsoleLogNumber?: number;
+}
+
+export interface ITestMeta {
+  priority: string[];
+  caseIds: string[];
+  maintainers: string[];
+  keywords: string[];
 }

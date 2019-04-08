@@ -5,11 +5,11 @@
  */
 
 import { mainLogger } from 'foundation';
-
-import { loginGlip2ByPassword } from '../../api';
+import { glipStatus, RCAuthApi } from '../../api';
 import {
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
+  ReLoginAuthenticator,
 } from '../../authenticator';
 import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
 import { AccountManager } from '../../framework';
@@ -18,6 +18,7 @@ import BaseService from '../BaseService';
 import { SERVICE } from '../eventKey';
 import notificationCenter from '../notificationCenter';
 import { ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
+import { jobScheduler, JOB_KEY } from '../../framework/utils/jobSchedule';
 import { AuthUserConfig } from './config';
 
 interface ILogin {
@@ -76,7 +77,7 @@ class AuthService extends BaseService {
   async loginGlip2(params: ILogin) {
     const authConfig = new AuthUserConfig();
     try {
-      const authToken = await loginGlip2ByPassword(params);
+      const authToken = await RCAuthApi.loginGlip2ByPassword(params);
       authConfig.setGlip2Token(authToken);
       notificationCenter.emitKVChange(AUTH_GLIP2_TOKEN, authToken);
     } catch (err) {
@@ -87,7 +88,7 @@ class AuthService extends BaseService {
 
   async makeSureUserInWhitelist() {
     const authConfig = new AuthUserConfig();
-    const rc_token_info = authConfig.getRcToken();
+    const rc_token_info = authConfig.getRCToken();
     if (rc_token_info && rc_token_info.owner_id) {
       await this._accountManager.makeSureUserInWhitelist(
         rc_token_info.owner_id,
@@ -104,6 +105,36 @@ class AuthService extends BaseService {
 
   isLoggedIn(): boolean {
     return this._accountManager.isLoggedIn();
+  }
+
+  scheduleReLoginGlipJob() {
+    jobScheduler.scheduleAndIgnoreFirstTime({
+      key: JOB_KEY.RE_LOGIN_GLIP,
+      intervalSeconds: 3600,
+      periodic: false,
+      needNetwork: true,
+      retryForever: true,
+      executeFunc: async (callback: (successful: boolean) => void) => {
+        if (await this.reLoginGlip()) {
+          callback(true);
+        } else {
+          callback(false);
+        }
+      },
+    });
+  }
+
+  async reLoginGlip(): Promise<boolean> {
+    try {
+      const status = await glipStatus();
+      if (status !== 'OK') {
+        return false;
+      }
+      return await this._accountManager.reLogin(ReLoginAuthenticator.name);
+    } catch (err) {
+      mainLogger.tags('ReLoginGlip').error(err);
+      return false;
+    }
   }
 }
 

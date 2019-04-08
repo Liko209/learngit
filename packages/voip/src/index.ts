@@ -6,3 +6,4 @@ export * from './api/IRTCAccountDelegate';
 export * from './api/IRTCCallDelegate';
 export * from './api/IRTCMediaDeviceDelegate';
 export * from './api/types';
+export * from './utils/IRTCLogger';

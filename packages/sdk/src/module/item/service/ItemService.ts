@@ -53,8 +53,13 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     if (items.length === 0) {
       return;
     }
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_ITEM,
+      logId,
+    );
     const transformedData = items.map(item => transform<Item>(item));
-    return await baseHandleData(
+    const result = await baseHandleData(
       {
         data: transformedData,
         dao: daoManager.getDao(ItemDao),
@@ -62,6 +67,8 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       },
       ItemNotification.getItemsNotifications,
     );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    return result;
   }
 
   protected get itemServiceController() {

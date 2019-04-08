@@ -9,12 +9,17 @@ import { h } from '../v2/helpers'
 import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire, SITE_ENV } from '../config';
+import { ITestMeta } from "../v2/models";
 
 fixture('Unified Login')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Unified Login', ['JPT-67', 'P0', 'Login']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P0'],
+  caseIds: ['JPT-67'],
+  keywords: ['login']
+})('Unified Login', async (t) => {
   const loginUser = h(t).rcData.mainCompany.users[0];
   const app = new AppRoot(t);
 

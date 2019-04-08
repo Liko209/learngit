@@ -53,6 +53,34 @@ class TelephonyCallController implements IRTCCallDelegate {
   unmute() {
     this._rtcCall.unmute();
   }
+
+  hold() {
+    this._rtcCall.hold();
+  }
+
+  unhold() {
+    this._rtcCall.unhold();
+  }
+
+  startRecord() {
+    this._rtcCall.startRecord();
+  }
+
+  stopRecord() {
+    this._rtcCall.stopRecord();
+  }
+
+  dtmf(digits: string) {
+    this._rtcCall.dtmf(digits);
+  }
+
+  answer() {
+    this._rtcCall.answer();
+  }
+
+  sendToVoiceMail() {
+    this._rtcCall.sendToVoicemail();
+  }
 }
 
 export { TelephonyCallController };

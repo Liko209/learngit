@@ -28,7 +28,7 @@ export default class GroupModel extends Base<Group> {
   @observable
   description?: string;
   @observable
-  pinnedPostIds?: number[];
+  pinnedPostIds: number[];
   @observable
   privacy?: string;
   @observable
@@ -76,7 +76,7 @@ export default class GroupModel extends Base<Group> {
     this.members = members;
     this.description = description;
     this.isTeam = is_team;
-    this.pinnedPostIds = pinned_post_ids;
+    this.pinnedPostIds = pinned_post_ids || [];
     this.privacy = privacy;
     this.latestTime = most_recent_post_created_at
       ? most_recent_post_created_at

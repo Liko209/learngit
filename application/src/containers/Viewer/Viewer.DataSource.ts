@@ -101,7 +101,7 @@ class ItemListDataSource {
       lhs: ISortableModel<Item>,
       rhs: ISortableModel<Item>,
     ): number => {
-      return SortUtils.sortModelByKey(lhs, rhs, 'sortValue', desc);
+      return SortUtils.sortModelByKey(lhs, rhs, ['sortValue'], desc);
     };
 
     const dataProvider = new GroupItemDataProvider(

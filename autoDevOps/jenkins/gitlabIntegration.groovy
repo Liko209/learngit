@@ -165,6 +165,8 @@ def formatGlipReport(report) {
         lines.push("**Coverage Report**: ${report.coverage}")
     if (null != report.coverageDiff)
         lines.push("**Coverage Changes**: ${report.coverageDiff}")
+    if (null != report.coverageDiffDetail)
+        lines.push("**Coverage Changes Detail**: ${report.coverageDiffDetail}")
     if (null != report.appUrl)
         lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.juiUrl)
@@ -295,6 +297,7 @@ node(buildNode) {
     env.PATH="${env.NODEJS_HOME}/bin:${env.PATH}"
     env.TZ='UTC-8'
     env.NODE_ENV='development'
+    env.SENTRYCLI_CDNURL='https://cdn.npm.taobao.org/dist/sentry-cli'
 
     try {
         // start to build
@@ -385,6 +388,8 @@ node(buildNode) {
             // SA and UT must have already passed, we can just skip them to save more resources
             skipSaAndUt = skipBuildApp && skipBuildJui
 
+            skipBuildApp = skipBuildApp && !buildRelease
+
             // we can even skip install dependencies
             skipInstallDependencies = skipSaAndUt
 
@@ -393,18 +398,21 @@ node(buildNode) {
         }
 
         condStage(name: 'Install Dependencies', enable: !skipInstallDependencies) {
+            try {
+                sh 'npm run fixed:version pre'
+            } catch (e) { }
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sshagent (credentials: [scmCredentialId]) {
                 sh 'npm install @babel/parser@7.3.3'
-                sh 'npm install'
                 sh 'npm install --only=dev --ignore-scripts'
                 sh 'npm install --ignore-scripts'
+                sh 'npm install'
                 sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
 
             }
             try {
-                sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version check'
-                sh 'VERSION_CACHE_PATH=/tmp npm run fixed:version cache'
+                sh 'npm run fixed:version check'
+                sh 'npm run fixed:version cache'
             } catch (e) { }
         }
 
@@ -438,8 +446,10 @@ node(buildNode) {
                         reportTitles: 'Coverage'
                     ])
                     report.coverage = "${buildUrl}Coverage"
-                    // do this for file name compatability
-                    sh 'cp coverage/coverage-final.json coverage/coverage-summary.json || true'
+                    // this is a work around
+                    if (!fileExists('coverage/coverage-summary.json')) {
+                        sh 'echo "{}" > coverage/coverage-summary.json'
+                    }
                     if (!isMerge && integrationBranch == gitlabTargetBranch) {
                         // attach coverage report as git note when new commits are pushed to integration branch
                         // push git notes to remote
@@ -462,7 +472,15 @@ node(buildNode) {
                         String latestCommitWithNote = sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
                         // step 3: compare with baseline
                         if (latestCommitWithNote) {
+                            // read baseline
                             sh "git notes show ${latestCommitWithNote} > baseline-coverage-summary.json"
+                            // archive detail
+                            try {
+                                sh "npx ts-node scripts/report-diff.ts baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff.csv"
+                                archiveArtifacts artifacts: 'coverage-diff.csv', fingerprint: true
+                                report.coverageDiffDetail = "${buildUrl}artifact/coverage-diff.csv"
+                            } catch (e) {}
+                            // ensure increasing
                             int exitCode = sh(
                                 returnStatus: true,
                                 script: "node scripts/coverage-diff.js baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff",
@@ -501,6 +519,12 @@ node(buildNode) {
                     // FIXME: move this part to build script
                     sh 'npx ts-node application/src/containers/VersionInfo/GitRepo.ts'
                     sh 'mv commitInfo.ts application/src/containers/VersionInfo/'
+                    try {
+                        // fix FIJI-4534
+                        long timestamp = System.currentTimeMillis();
+                        sh "sed 's/{{buildCommit}}/${headSha.substring(0, 9)}/;s/{{buildTime}}/${timestamp}/' application/src/containers/VersionInfo/versionInfo.json > versionInfo.json"
+                        sh 'mv versionInfo.json application/src/containers/VersionInfo/versionInfo.json'
+                    } catch (e) {}
                     if (buildRelease) {
                         sh 'npm run build:release'
                     } else {
@@ -523,11 +547,6 @@ node(buildNode) {
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
                             updateRemoteCopy(deployUri, appHeadShaDir, appStageLinkDir)
-                        // for release build, we should also create a tar.gz package for deployment
-                        if (buildRelease) {
-                            createRemoteTarbar(deployUri, appHeadShaDir, publishDir, publishPackageName)
-                            report.publishUrl = publishUrl
-                        }
                     }
                 }
                 report.appUrl = appUrl
@@ -538,7 +557,7 @@ node(buildNode) {
             try {
                 if (!isMerge && 'POC/FIJI-1302' == gitlabSourceBranch) {
                     build(job: 'Jupiter-telephony-automation', parameters: [
-                        [$class: 'StringParameterValue', name: 'BRANCH', value: 'POC/FIJI-2808'],
+                        [$class: 'StringParameterValue', name: 'BRANCH', value: 'POC/FIJI-1302'],
                         [$class: 'StringParameterValue', name: 'JUPITER_URL', value: appUrl],
                     ])
                 }
@@ -579,7 +598,7 @@ node(buildNode) {
 
                 // following configuration file is use for tuning chrome, in order to use use-data-dir and disk-cache-dir
                 // you need to ensure target dirs exist in selenium-node, and use ramdisk for better performance
-                sh '''echo '{"chromeOptions":{"args":["headless","user-data-dir=/user-data","disk-cache-dir=/user-cache"]}}' > chrome-opts.json'''
+                sh '''echo '{"chromeOptions":{"args":["headless"]}}' > chrome-opts.json'''
 
                 sh "mkdir -p screenshots tmp"
                 sh "echo 'registry=${npmRegistry}' > .npmrc"

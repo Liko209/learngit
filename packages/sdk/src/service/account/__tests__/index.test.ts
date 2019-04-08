@@ -6,9 +6,8 @@
 import AccountService from '..';
 import { daoManager } from '../../../dao';
 import { PersonDao } from '../../../module/person/dao';
-import { refreshToken } from '../../../api';
+import { RCAuthApi } from '../../../api';
 import { AccountUserConfig } from '../../../service/account/config/AccountUserConfig';
-import { AuthUserConfig } from '../../../service/auth/config';
 import { AccountGlobalConfig } from '../../../service/account/config/AccountGlobalConfig';
 
 jest.mock('../../../dao');
@@ -74,7 +73,7 @@ describe('AccountService', () => {
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
       };
-      refreshToken.mockResolvedValue(result);
+      RCAuthApi.refreshToken.mockResolvedValue(result);
       expect.assertions(1);
       const token = accountService.refreshRCToken();
       return expect(token).resolves.toEqual({
@@ -94,7 +93,7 @@ describe('AccountService', () => {
         accessToken: 'accessToken',
         refreshToken: 'refreshToken',
       };
-      refreshToken.mockResolvedValueOnce(result);
+      RCAuthApi.refreshToken.mockResolvedValueOnce(result);
       expect.assertions(1);
       const token = accountService.refreshRCToken();
       return expect(token).resolves.toEqual({
@@ -107,7 +106,7 @@ describe('AccountService', () => {
     });
 
     it('should not refresh rc token if api return error', async () => {
-      refreshToken.mockRejectedValueOnce('error');
+      RCAuthApi.refreshToken.mockRejectedValueOnce('error');
       expect.assertions(1);
       try {
         await accountService.refreshRCToken();

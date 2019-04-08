@@ -90,7 +90,6 @@ describe('JobScheduler', () => {
         needNetwork: false,
         intervalSeconds: DailyJobIntervalSeconds,
         periodic: true,
-        retryTime: 0,
       });
     });
 
@@ -111,7 +110,26 @@ describe('JobScheduler', () => {
         needNetwork: false,
         intervalSeconds: DailyJobIntervalSeconds,
         periodic: true,
-        retryTime: 0,
+      });
+    });
+
+    it('should schedule daily job and ignore first time', () => {
+      jobScheduler.scheduleJob = jest.fn();
+      jobScheduler.scheduleAndIgnoreFirstTime = jest.fn();
+      const mockFunc = () => {};
+      jobScheduler.scheduleDailyPeriodicJob(
+        JOB_KEY.FETCH_PHONE_DATA,
+        mockFunc,
+        false,
+        true,
+      );
+      expect(jobScheduler.scheduleJob).not.toBeCalled();
+      expect(jobScheduler.scheduleAndIgnoreFirstTime).toBeCalledWith({
+        key: JOB_KEY.FETCH_PHONE_DATA,
+        executeFunc: mockFunc,
+        needNetwork: false,
+        intervalSeconds: DailyJobIntervalSeconds,
+        periodic: true,
       });
     });
   });
