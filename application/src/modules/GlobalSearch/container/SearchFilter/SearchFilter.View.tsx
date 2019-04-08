@@ -16,7 +16,6 @@ import {
   JuiBoxSelectProps,
 } from 'jui/components/Selects/BoxSelect';
 import { JuiMenuItem } from 'jui/components';
-
 type ViewProps = SearchFilterViewProps & WithTranslation;
 
 @observer
