@@ -49,33 +49,35 @@ class InstantSearchViewComponent extends Component<Props> {
   }
 
   createSearchItem = (config: {
-    id: number | string;
+    value: number | string;
     cellIndex: number;
     sectionIndex: number;
     type: string;
   }) => {
-    const { terms, selectIndex, resetSelectIndex } = this.props;
-    const { id, type, sectionIndex, cellIndex } = config;
+    const { terms, selectIndex, resetSelectIndex, getSearchScope } = this.props;
+    const { value, type, sectionIndex, cellIndex } = config;
 
-    const { SearchItem, title } = SearchSectionsConfig[type];
+    const { Item, title } = SearchSectionsConfig[type];
     const hovered =
       sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
     return (
-      <SearchItem
+      <Item
+        searchScope={getSearchScope(cellIndex)}
+        displayName={typeof value === 'string' ? value : null}
         hovered={hovered}
         onMouseEnter={this.hoverHighlight(sectionIndex, cellIndex)}
         onMouseLeave={resetSelectIndex}
         title={title}
         didChange={this.selectIndexChange(sectionIndex, cellIndex)}
         terms={terms}
-        id={id}
-        key={id}
+        id={typeof value === 'string' ? null : value}
+        key={value}
       />
     );
   }
 
   get searchResultList() {
-    const { searchResult, t } = this.props;
+    const { searchResult, onShowMore, t } = this.props;
     return searchResult.map(
       ({ ids, type, hasMore }: SearchItems, sectionIndex: number) => {
         if (ids.length === 0) return null;
@@ -84,17 +86,18 @@ class InstantSearchViewComponent extends Component<Props> {
         return (
           <React.Fragment key={type}>
             <JuiSearchTitle
+              onButtonClick={onShowMore(type)}
               showButton={hasMore}
               buttonText={t('globalSearch.showMore')}
               title={t(title)}
               data-test-automation-id={`search-${title}`}
             />
-            {ids.map((id: number, cellIndex: number) => {
+            {ids.map((id: number | string, cellIndex: number) => {
               return this.createSearchItem({
-                id,
                 type,
                 sectionIndex,
                 cellIndex,
+                value: id,
               });
             })}
           </React.Fragment>

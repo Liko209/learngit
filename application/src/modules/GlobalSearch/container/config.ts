@@ -4,20 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { RecentSearchTypes } from 'sdk/module/search/entity';
-import { PersonItem, GroupItem } from './SearchItem';
+import { PersonItem, GroupItem, ContentItem } from './SearchItem';
 
 const SearchSectionsConfig = {
+  [RecentSearchTypes.SEARCH]: {
+    title: 'globalSearch.contentSearch',
+    Item: ContentItem,
+  },
   [RecentSearchTypes.PEOPLE]: {
     title: 'globalSearch.People',
-    SearchItem: PersonItem,
+    Item: PersonItem,
   },
   [RecentSearchTypes.GROUP]: {
     title: 'globalSearch.Groups',
-    SearchItem: GroupItem,
+    Item: GroupItem,
   },
   [RecentSearchTypes.TEAM]: {
     title: 'globalSearch.Teams',
-    SearchItem: GroupItem,
+    Item: GroupItem,
   },
 };
 

@@ -13,6 +13,8 @@ import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { OpenProfile } from '@/common/OpenProfile';
+import history from '@/history';
+import i18nT from '@/utils/i18nT';
 
 import { GlobalSearchService } from '../../service';
 import { GlobalSearchStore } from '../../store';
@@ -24,6 +26,9 @@ import {
   Person,
   Group,
   SearchItems,
+  SEARCH_SCOPE,
+  TAB_TYPE,
+  SEARCH_VIEW,
 } from './types';
 import { SearchViewModel } from '../common/Search.ViewModel';
 
@@ -161,9 +166,14 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     if (!ret) {
       return;
     }
-
     const { terms, people, groups, teams } = ret;
+
     const data: SearchItems[] = [
+      {
+        ids: this.contentSearchIds,
+        hasMore: true,
+        type: RecentSearchTypes.SEARCH,
+      },
       {
         ...people,
         type: RecentSearchTypes.PEOPLE,
@@ -180,6 +190,29 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     this.searchResult = data;
     this.terms = terms;
     this.resetSelectIndex();
+  }
+
+  get contentSearchIds() {
+    const { searchKey } = this._globalSearchStore;
+    const defaultTip = i18nT('globalSearch.inThisConversation');
+
+    return this._isConversation
+      ? [searchKey].concat(`${searchKey} ${defaultTip}`)
+      : [searchKey];
+  }
+
+  private get _isConversation() {
+    const { location } = history;
+    const conversationPath = /messages\/\d+$/;
+    return conversationPath.test(location.pathname);
+  }
+
+  getSearchScope = (index: number) => {
+    const scope = {
+      [SEARCH_SCOPE.GLOBAL]: SEARCH_SCOPE.GLOBAL,
+      [SEARCH_SCOPE.CONVERSATION]: SEARCH_SCOPE.CONVERSATION,
+    };
+    return scope[index];
   }
 
   @action
@@ -286,17 +319,29 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     if (!currentItemId) {
       return;
     }
-    this.addRecentRecord(currentItemId);
-    if (currentItemType !== 'people') {
-      const { canJoin, group } = this.canJoinTeam(currentItemId);
-      if (canJoin) {
-        e.preventDefault();
-        this.handleJoinTeam(group);
-      } else {
-        this.goToConversation(currentItemId);
-      }
-    } else {
-      OpenProfile.show(currentItemId, null, this.onClose);
+    // TODO record string
+    if (typeof currentItemId === 'number') {
+      this.addRecentRecord(currentItemId);
+    }
+
+    switch (currentItemType) {
+      case RecentSearchTypes.PEOPLE:
+        OpenProfile.show(currentItemId as number, null, this.onClose);
+        break;
+      case RecentSearchTypes.SEARCH:
+        const cellIndex = this.selectIndex[1];
+        const scope = this.getSearchScope(cellIndex);
+        this._globalSearchStore.setSearchScope(scope);
+        this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
+        break;
+      default:
+        const { canJoin, group } = this.canJoinTeam(currentItemId as number);
+        if (canJoin) {
+          e.preventDefault();
+          this.handleJoinTeam(group);
+        } else {
+          this.goToConversation(currentItemId as number);
+        }
     }
   }
 
@@ -341,6 +386,19 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       ENTITY_NAME.GROUP,
       teamModels.map((model: SortableModel<Group>) => model.entity),
     );
+  }
+
+  @action
+  onShowMore = (type: RecentSearchTypes) => () => {
+    const typeMap = {
+      [RecentSearchTypes.GROUP]: TAB_TYPE.GROUPS,
+      [RecentSearchTypes.PEOPLE]: TAB_TYPE.PEOPLE,
+      [RecentSearchTypes.SEARCH]: TAB_TYPE.CONTENT,
+      [RecentSearchTypes.TEAM]: TAB_TYPE.TEAM,
+    };
+
+    this._globalSearchStore.setCurrentTab(typeMap[type]);
+    this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
   }
 }
 
