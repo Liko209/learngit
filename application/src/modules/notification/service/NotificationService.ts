@@ -7,11 +7,7 @@
 import { DeskTopNotification } from '../agent/DesktopNotification';
 import _ from 'lodash';
 import { Permission } from '../Permission';
-import {
-  INotificationService,
-  Global,
-  SWNotificationOptions,
-} from '../interface';
+import { INotificationService, Global, NotificationOpts } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
 
@@ -37,7 +33,7 @@ class NotificationService implements INotificationService {
     }
   }
 
-  async show(title: string, opts: SWNotificationOptions) {
+  async show(title: string, opts: NotificationOpts) {
     if (document.hasFocus()) {
       return;
     }
