@@ -1,5 +1,4 @@
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { CONVERSATION_TYPES } from '@/constants';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Markdown } from 'glipdown';
 import PersonModel from '@/store/models/Person';
@@ -24,6 +23,7 @@ import { PersonService } from 'sdk/src/module/person';
 import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/utils/handleAtMentionName';
 import history from '@/history';
 import GroupModel from '@/store/models/Group';
+import GroupService from 'sdk/src/module/group';
 
 export class MessageNotificationManager extends NotificationManager {
   constructor() {
@@ -52,16 +52,16 @@ export class MessageNotificationManager extends NotificationManager {
       return;
     }
 
-    const conversation: GroupModel = getEntity(ENTITY_NAME.GROUP, post.groupId);
-    const { type: conversationType } = conversation;
-    if (
-      !(
-        [
-          CONVERSATION_TYPES.NORMAL_GROUP,
-          CONVERSATION_TYPES.NORMAL_ONE_TO_ONE,
-        ].includes(conversationType) || this.isMyselfAtMentioned(post)
-      )
-    ) {
+    const conversation = await ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    ).getById(post.groupId);
+
+    if (!conversation) {
+      return;
+    }
+    const conversationModel = new GroupModel(conversation);
+    const { members, is_team } = conversation;
+    if (is_team && !this.isMyselfAtMentioned(post)) {
       return;
     }
 
@@ -73,20 +73,16 @@ export class MessageNotificationManager extends NotificationManager {
     const { title, body } = await this.buildNotificationBodyAndTitle(
       post,
       person,
-      conversation,
+      conversationModel,
     );
 
     const opts: NotificationOpts = {
       body,
       renotify: false,
-      icon: this.getIcon(
-        person,
-        conversationType === CONVERSATION_TYPES.NORMAL_GROUP,
-      ),
+      icon: this.getIcon(person, members.length >= 2),
       data: { id: postId, scope: this._scope },
       onClick: this.onClickHandlerBuilder(post.groupId),
     };
-
     this.show(title, opts);
   }
 
