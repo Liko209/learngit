@@ -3,10 +3,8 @@
  * @Date: 2018-05-02 16:47:08
  * Copyright © RingCentral. All rights reserved.
  */
-import merge from 'lodash/merge';
 import NetworkClient, { INetworkRequests } from './NetworkClient';
 import { ApiConfig, HttpConfigType, BaseConfig } from '../types';
-import { defaultConfig } from './defaultConfig';
 import { Raw } from '../framework/model';
 
 import { IHandleType, NetworkSetup, NetworkManager } from 'foundation';
@@ -16,6 +14,7 @@ import {
   HandleByUpload,
   HandleByCustom,
 } from './handlers';
+import { ApiConfiguration } from './config';
 const types = [
   HandleByGlip,
   HandleByRingCentral,
@@ -25,12 +24,11 @@ const types = [
 class Api {
   static basePath = '';
   static httpSet: Map<string, NetworkClient> = new Map();
-  static _httpConfig: ApiConfig = defaultConfig;
 
   static _networkManager: NetworkManager;
 
   static init(config: ApiConfig, networkManager: NetworkManager): void {
-    this._httpConfig = merge({}, defaultConfig, config);
+    ApiConfiguration.setApiConfig(config);
     Api.setupHandlers(networkManager);
   }
 
@@ -51,7 +49,7 @@ class Api {
     // directly accessed by the ui layer. That should be refactor.
     // Move logics that access httpConfig into Api in the future.
     // tslint:disable-next-line:max-line-length
-    return this._httpConfig;
+    return ApiConfiguration.apiConfig;
   }
 
   static get networkManager() {
@@ -64,7 +62,7 @@ class Api {
   ): NetworkClient {
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {
-      const config: BaseConfig = this._httpConfig[name];
+      const config: BaseConfig = ApiConfiguration.apiConfig[name];
       const networkRequests: INetworkRequests = {
         host: config.server,
         pathPrefix: config.pathPrefix,
