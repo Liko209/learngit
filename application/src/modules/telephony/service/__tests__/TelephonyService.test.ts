@@ -17,6 +17,7 @@ import { PersonService } from 'sdk/module/person';
 import { TelephonyStore } from '../../store/TelephonyStore';
 import { ToastCallError } from '../ToastCallError';
 import { container, injectable, decorate } from 'framework';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 const testProcedureWaitingTime = 20;
 const mockedDelay = 10;
@@ -28,6 +29,7 @@ let telephonyService: TelephonyService | null;
 decorate(injectable(), TelephonyStore);
 decorate(injectable(), TelephonyService);
 jest.mock('../ToastCallError');
+jest.mock('sdk/module/serviceLoader');
 
 const sleep = (time: number): Promise<void> => {
   return new Promise<void>((res, rej) => {
@@ -91,13 +93,25 @@ describe('TelephonyService', () => {
         cachedOnCallActionFailed = onCallActionFailed;
       },
     };
-    jest.spyOn(ServerTelephonyService, 'getInstance').mockReturnValue(mockedServerTelephonyService);
-    jest.spyOn(PersonService, 'getInstance').mockReturnValue({});
+
+    jest.spyOn(ServiceLoader, 'getInstance')
+      .mockImplementation(
+        (conf) => {
+          switch (conf) {
+            case ServiceConfig.TELEPHONY_SERVICE:
+              telephonyService = mockedServerTelephonyService;
+              return mockedServerTelephonyService as ServerTelephonyService;
+            case ServiceConfig.PERSON_SERVICE:
+            default:
+              return {} as PersonService;
+          }
+        },
+      );
     container.bind(TelephonyStore).to(TelephonyStore);
     container.bind(TelephonyService).to(TelephonyService);
 
     telephonyService = container.get(TelephonyService);
-    telephonyService.init();
+    (telephonyService as TelephonyService).init();
   });
 
   afterEach(() => {
