@@ -170,7 +170,12 @@ class TelephonyService {
     }
   }
 
-  ignore = () => {};
+  ignore = () => {
+    if (this._callId) {
+      mainLogger.info(`${TelephonyService.TAG}ignore call id=${this._callId}`);
+      this._serverTelephonyService.ignore(this._callId);
+    }
+  }
 
   minimize = () => {
     this._telephonyStore.closeDialer();

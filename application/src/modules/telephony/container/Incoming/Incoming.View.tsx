@@ -36,11 +36,11 @@ class IncomingViewComponent extends Component<Props> {
   }
 
   render() {
-    const { name, phone, t } = this.props;
+    const { name, phone, t, isExt } = this.props;
     return (
       <JuiIncomingCall
         name={name ? name : t('telephony.unknownCaller')}
-        phone={phone}
+        phone={phone && isExt ? `${t('telephony.Ext')} ${phone}` : phone}
         Actions={Actions}
         Ignore={Ignore}
         Avatar={this._Avatar}

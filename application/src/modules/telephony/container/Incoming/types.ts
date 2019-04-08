@@ -10,6 +10,7 @@ type IncomingViewProps = {
   uid?: number;
   name?: string;
   phone?: string;
+  isExt: boolean;
 };
 
 export { IncomingProps, IncomingViewProps };

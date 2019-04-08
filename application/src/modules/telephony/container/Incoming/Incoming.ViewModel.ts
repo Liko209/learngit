@@ -11,8 +11,12 @@ import { TelephonyStore } from '../../store';
 import { StoreViewModel } from '@/store/ViewModel';
 import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
-import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
+import {
+  Person,
+  PhoneNumberInfo,
+  PHONE_NUMBER_TYPE,
+} from 'sdk/module/person/entity';
 import { IncomingProps, IncomingViewProps } from './types';
 
 class IncomingViewModel extends StoreViewModel<IncomingProps>
@@ -31,6 +35,23 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
       return this._person.userDisplayName;
     }
     return '';
+  }
+
+  @computed
+  get isExt() {
+    if (this._person) {
+      return this._person.phoneNumbers.some((info: PhoneNumberInfo) => {
+        if (
+          info.type === PHONE_NUMBER_TYPE.EXTENSION_NUMBER &&
+          info.phoneNumber === this._telephonyStore.phoneNumber
+        ) {
+          return true;
+        }
+        return false;
+      });
+    }
+
+    return true;
   }
 
   @observable
