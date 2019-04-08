@@ -5,9 +5,9 @@
  */
 
 // unit: seconds
-export const kRTCProvRequestErrorRertyTimerMin = 8;
-export const kRTCProvRequestErrorRertyTimerMax = 3600;
-export const kRTCProvParamsErrorRertyTimer = 7200;
+export const kRTCProvRequestErrorRetryTimerMin = 8;
+export const kRTCProvRequestErrorRetryTimerMax = 3600;
+export const kRTCProvParamsErrorRetryTimer = 7200;
 export const kRTCProvFreshTimer = 24 * 3600;
 export const kRTCProvRefreshByRegFailedInterval = 3600;
 export const kRTCMaxCallCount = 1;
@@ -16,7 +16,6 @@ export const kRTCHangupInvalidCallInterval = 10;
 export const kRTCGetStatsInterval = 2;
 export const kRTCProvisioningOptions = {
   appName: 'RingCentral Jupiter',
-  appVersion: '0.1.0',
   builtinEnabled: false,
   audioHelper: {
     enabled: true,

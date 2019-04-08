@@ -68,9 +68,15 @@ enum RTC_STATUS_CODE {
   INVALID_STATE = 1002,
 }
 
+type RTCUserAgentInfo = {
+  endpointId: string;
+  userAgent: string;
+};
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
+  RTCUserAgentInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTC_STATUS_CODE,

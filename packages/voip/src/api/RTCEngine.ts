@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { RTCUserAgentInfo } from './types';
 import { RTCAccount } from './RTCAccount';
 import { IRTCAccountDelegate } from './IRTCAccountDelegate';
 import { IRTCLogger } from '../utils/IRTCLogger';
@@ -16,27 +17,31 @@ import { RTCMediaManager } from '../utils/RTCMediaManager';
 import { IRTCMediaDeviceDelegate } from './IRTCMediaDeviceDelegate';
 
 class RTCEngine {
-  private static instance: RTCEngine | null;
+  private static _instance: RTCEngine | null;
+  private _userAgentInfo: RTCUserAgentInfo;
 
-  public static getInstance() {
-    if (!RTCEngine.instance) {
-      RTCEngine.instance = new RTCEngine();
+  public static getInstance(info?: RTCUserAgentInfo) {
+    if (!RTCEngine._instance) {
+      RTCEngine._instance = new RTCEngine(info);
     }
-    return RTCEngine.instance;
+    return RTCEngine._instance;
   }
 
-  protected constructor() {
+  protected constructor(info?: RTCUserAgentInfo) {
+    if (info) {
+      this._userAgentInfo = info;
+    }
     RTCMediaDeviceManager.instance().updateMediaDevices();
     RTCMediaDeviceManager.instance().subscribeDeviceChange();
   }
 
   public destroy() {
     RTCMediaDeviceManager.instance().destroy();
-    RTCEngine.instance = null;
+    RTCEngine._instance = null;
   }
 
   public createAccount(delegate: IRTCAccountDelegate): RTCAccount {
-    return new RTCAccount(delegate);
+    return new RTCAccount(delegate, this._userAgentInfo);
   }
 
   public static setLogger(logger: IRTCLogger): void {

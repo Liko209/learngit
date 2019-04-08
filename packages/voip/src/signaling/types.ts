@@ -48,6 +48,7 @@ enum WEBPHONE_LOG_LEVEL {
 }
 
 type ProvisionDataOptions = {
+  uuid?: string;
   appName?: string;
   appVersion?: string;
   logLevel?: string;
