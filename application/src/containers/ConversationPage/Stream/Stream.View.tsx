@@ -8,6 +8,7 @@ import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction, reaction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
+import { mainLogger } from 'sdk';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -218,6 +219,21 @@ class StreamViewComponent extends Component<Props> {
     ) : null;
   }
 
+  private _findNewMessageSeparatorIndex() {
+    return this.props.items.findIndex(
+      (item: StreamItemPost) => item.type === StreamItemType.NEW_MSG_SEPARATOR,
+    );
+  }
+
+  private _findPostIndex(postId?: number) {
+    return postId
+      ? this.props.items.findIndex(
+          (item: StreamItemPost) =>
+            item.type === StreamItemType.POST && item.value.includes(postId),
+        )
+      : -1;
+  }
+
   private _jumpToFirstUnread = async () => {
     if (this._jumpToFirstUnreadLoading || this._timeout) return;
     // Delay 500ms then show loading
@@ -227,21 +243,25 @@ class StreamViewComponent extends Component<Props> {
 
     try {
       const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
-      const index = firstUnreadPostId
-        ? this.props.items.findIndex(
-            (item: StreamItemPost) =>
-              item.type === StreamItemType.POST &&
-              item.value.includes(firstUnreadPostId),
-          )
-        : 0;
 
-      if (index === -1) {
-        console.warn(
-          `scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} scrollToPostId:${index}`,
+      let jumpToIndex = this._findNewMessageSeparatorIndex();
+      if (jumpToIndex === -1) {
+        jumpToIndex = this._findPostIndex(firstUnreadPostId);
+      }
+      if (jumpToIndex === -1) {
+        mainLogger.warn(
+          `Failed to jump to the first unread post. scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} jumpToIndex:${jumpToIndex}`,
         );
         return;
       }
-      this._listRef.current && this._listRef.current.scrollToIndex(index);
+      if (!this._listRef.current) {
+        mainLogger.warn(
+          'Failed to jump to the first unread post. _listRef no found.',
+        );
+        return;
+      }
+
+      this._listRef.current.scrollToIndex(jumpToIndex);
       this.handleFirstUnreadViewed();
     } finally {
       clearTimeout(this._timeout);
@@ -311,8 +331,8 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _findStreamItemIndexByPostId = (id: number) => {
-    return this.props.items.findIndex((i: StreamItemPost) => {
-      return i.type === StreamItemType.POST && i.value.includes(id);
+    return this.props.items.findIndex((item: StreamItemPost) => {
+      return item.type === StreamItemType.POST && item.value.includes(id);
     });
   }
 
