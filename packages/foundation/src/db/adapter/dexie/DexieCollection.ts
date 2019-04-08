@@ -6,10 +6,16 @@
 import { execQuery } from './queryExecutor';
 import Dexie from 'dexie';
 import _ from 'lodash';
-import { IDatabaseCollection, IQuery, IQueryOption } from '../../db';
-class DexieCollection<T> implements IDatabaseCollection<T> {
-  private collection: Dexie.Collection<T, number>;
-  private table: Dexie.Table<T, number>;
+import {
+  DatabaseKeyType,
+  IDatabaseCollection,
+  IQuery,
+  IQueryOption,
+} from '../../db';
+class DexieCollection<T, Key extends DatabaseKeyType>
+  implements IDatabaseCollection<T, Key> {
+  private collection: Dexie.Collection<T, Key>;
+  private table: Dexie.Table<T, Key>;
   constructor(dexie: Dexie, name: string) {
     this.table = dexie.table(name);
     this.collection = this.table.toCollection();
@@ -27,8 +33,8 @@ class DexieCollection<T> implements IDatabaseCollection<T> {
     return (this.table.schema.primKey.keyPath as string) || '';
   }
 
-  primaryKeys(query?: IQuery<T>): Promise<number[]> {
-    const cols: Dexie.Collection<T, number>[] = execQuery(this.table, query);
+  primaryKeys(query?: IQuery<T>): Promise<Key[]> {
+    const cols: Dexie.Collection<T, Key>[] = execQuery(this.table, query);
     if (cols.length === 1) {
       return cols[0].primaryKeys();
     }
@@ -43,7 +49,7 @@ class DexieCollection<T> implements IDatabaseCollection<T> {
     await this.table.bulkPut(array);
   }
 
-  async get(key: number): Promise<T | null> {
+  async get(key: Key): Promise<T | null> {
     const result = await this.table.get(key);
     if (result) {
       return result;
@@ -51,15 +57,15 @@ class DexieCollection<T> implements IDatabaseCollection<T> {
     return null;
   }
 
-  async delete(key: number): Promise<void> {
+  async delete(key: Key): Promise<void> {
     await this.table.delete(key);
   }
 
-  async bulkDelete(array: number[]): Promise<void> {
+  async bulkDelete(array: Key[]): Promise<void> {
     await this.table.bulkDelete(array);
   }
 
-  async update(key: number, changes: Partial<T>): Promise<void> {
+  async update(key: Key, changes: Partial<T>): Promise<void> {
     await this.table.update(key, changes);
   }
 

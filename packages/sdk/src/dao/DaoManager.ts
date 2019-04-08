@@ -3,15 +3,16 @@
  * @Date: 2018-02-28 00:00:57
  */
 import { DBManager, KVStorageManager, DexieDB, DatabaseType } from 'foundation';
-import { BaseDao, BaseKVDao } from '../framework/dao';
+import { BaseDao, BaseKVDao, DBKVDao } from '../framework/dao';
 import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
 import { SyncUserConfig } from '../module/sync/config';
 import { AccountGlobalConfig } from '../service/account/config';
+import { JobSchedulerConfig } from '../framework/utils/jobSchedule/JobSchedulerConfig';
 import { DaoGlobalConfig } from './config';
 
-class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
+class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {
   private kvStorageManager: KVStorageManager;
   private dbManager: DBManager;
 
@@ -40,6 +41,8 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
         synConfig.removeLastIndexTimestamp();
         synConfig.removeCanUpdateIndexTimeStamp();
         synConfig.removeFetchRemaining();
+        const jobConfig = new JobSchedulerConfig();
+        jobConfig.clearFetchDataConfigs();
       }
     }
 
@@ -92,6 +95,11 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao> {
   getKVDao<T extends BaseKVDao>(KVDaoClass: INewable<T>): T {
     const storage = this.kvStorageManager.getStorage();
     return this.get(KVDaoClass, storage);
+  }
+
+  getDBKVDao(): DBKVDao {
+    const database = this.dbManager.getDatabase();
+    return this.get(DBKVDao, database);
   }
 
   async getStorageQuotaOccupation(): Promise<number> {

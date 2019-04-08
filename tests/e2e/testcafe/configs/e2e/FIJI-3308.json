@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Bookmarks/Bookmarks.ts", "./fixtures/AtMention/AtMention.ts"
+    ],
+    "include_tags": [
+      "JPT-1146", "JPT-1147"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}

@@ -47,6 +47,7 @@ describe('StateDataHandleController', () => {
       mockEntitySourceController,
     );
     mockTotalUnreadController = new TotalUnreadController(
+      {} as any,
       mockEntitySourceController,
     );
     stateDataHandleController = new StateDataHandleController(

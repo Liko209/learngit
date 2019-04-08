@@ -28,8 +28,6 @@ jest.mock('../../../../service/account/config');
 GlobalConfigService.getInstance = jest.fn();
 
 jest.mock('../../../../api');
-jest.mock('../../../../framework/controller');
-
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 
 jest.mock('../../../profile');
@@ -38,6 +36,7 @@ jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../state');
 jest.mock('../../../../dao', () => {
   const dao = {
+    getEntityName: jest.fn().mockReturnValue('test'),
     get: jest.fn().mockReturnValue(1),
     bulkDelete: jest.fn(),
     bulkPut: jest.fn(),

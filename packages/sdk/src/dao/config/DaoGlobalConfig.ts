@@ -5,7 +5,7 @@
  */
 
 import { CONFIG_KEYS } from './ConfigKeys';
-import { CommonGlobalConfig } from '../../module/config';
+import { CommonGlobalConfig } from '../../module/common/config';
 
 class DaoGlobalConfig extends CommonGlobalConfig {
   static setDBSchemaVersion(version: number) {

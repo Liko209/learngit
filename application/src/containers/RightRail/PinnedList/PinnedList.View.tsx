@@ -10,7 +10,10 @@ import i18next from 'i18next';
 import { PinnedListViewProps, PinnedListProps } from './types';
 import { JuiListSubheader } from 'jui/components/Lists';
 
-import { JuiInfiniteList } from 'jui/components/VirtualizedList';
+import {
+  JuiInfiniteList,
+  ThresholdStrategy,
+} from 'jui/components/VirtualizedList';
 
 import {
   JuiRightShelfContent,
@@ -20,12 +23,17 @@ import {
 import { PinnedCell } from './PinnedCell';
 import { emptyView } from '../ItemList/Empty';
 import { RIGHT_RAIL_ITEM_TYPE } from '../ItemList';
+import {
+  LOAD_MORE_STRATEGY_CONFIG,
+  HEADER_HEIGHT,
+  PINED_ITEM_HEIGHT,
+} from '../constants';
 
-const HEADER_HEIGHT = 36;
 @observer
 class PinnedListView extends React.Component<
   PinnedListViewProps & PinnedListProps
 > {
+  private _loadMoreStrategy = new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG);
   private _renderItems = () => {
     return this.props.ids.map((itemId: number) => (
       <PinnedCell id={itemId} key={itemId} />
@@ -65,7 +73,8 @@ class PinnedListView extends React.Component<
         {totalCount > 0 && (
           <JuiInfiniteList
             height={height - HEADER_HEIGHT}
-            minRowHeight={56} // extract to const
+            minRowHeight={PINED_ITEM_HEIGHT}
+            loadMoreStrategy={this._loadMoreStrategy}
             loadInitialData={this.props.loadInitialData}
             loadMore={this.props.loadMore}
             loadingRenderer={this.defaultLoading()}

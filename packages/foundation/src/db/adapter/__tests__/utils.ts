@@ -2,7 +2,7 @@ import Dexie from 'dexie';
 import DexieCollection from '../dexie/DexieCollection';
 import { isDexieCollection } from '../dexie/utils';
 import LokiDB from '../loki/LokiDB';
-import { ISchema } from '../../db';
+import { ISchema, DatabaseKeyType } from '../../db';
 
 interface IPerson {
   id: number;
@@ -56,10 +56,10 @@ const setupDexie = async () => {
   dexie.version(1).stores(dexiePersonGroupSchema);
   const table: Dexie.Table = dexie.table('person');
   const collection = table.toCollection();
-  const dexieCollection: DexieCollection<IPerson> = new DexieCollection(
-    dexie,
-    'person',
-  );
+  const dexieCollection: DexieCollection<
+    IPerson,
+    DatabaseKeyType
+  > = new DexieCollection(dexie, 'person');
   await dexieCollection.clear();
   await dexieCollection.bulkPut(persons);
 
@@ -113,7 +113,9 @@ const extractCollectionsToFirstNames = async (col: any) => {
 //
 const setupLoki = async () => {
   const lokiDB = new LokiDB(schema);
-  const lokiCollection = lokiDB.getCollection<IPerson>('person');
+  const lokiCollection = lokiDB.getCollection<IPerson, DatabaseKeyType>(
+    'person',
+  );
   const collection = lokiCollection.getCollection();
   await lokiCollection.clear();
   await lokiCollection.bulkPut(persons);

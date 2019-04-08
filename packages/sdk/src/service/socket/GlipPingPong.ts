@@ -13,6 +13,8 @@ const CHECK_CONNECTED_MAX_TIMEOUT = 5000; // 5s
 import { mainLogger } from 'foundation';
 import { getCurrentTime } from '../../utils/jsUtils';
 import { HeartBeatCheck } from './HeartBeatCheck';
+import notificationCenter from '../notificationCenter';
+import { SERVICE } from '../eventKey';
 
 type GlipPingPongType = {
   socket: SocketIOClient.Socket;
@@ -43,9 +45,10 @@ class GlipPingPong {
       callback && this._pingCallbacks.push(callback);
       if (!this._pingTimeOutId) {
         const pingId = getCurrentTime();
-        this._pingTimeOutId = setTimeout(() => {
-          this._onPingFailure.bind(this);
-        },                               this._pingTimeOutTime);
+        this._pingTimeOutId = setTimeout(
+          this._onPingFailure.bind(this),
+          this._pingTimeOutTime,
+        );
         mainLogger.log(this._logPrefix, ' ping id: ', pingId);
         this._socket.emit(GLIP_PING, pingId);
       }
@@ -80,9 +83,14 @@ class GlipPingPong {
       this._heartBeatCheck = new HeartBeatCheck(
         CHECK_CONNECTED_INTERVAL,
         CHECK_CONNECTED_MAX_TIMEOUT,
-        this._checkConnected.bind(this),
+        this._wakeUpFromSleepMode.bind(this),
       );
     }
+  }
+
+  private _wakeUpFromSleepMode(slice: number) {
+    notificationCenter.emitKVChange(SERVICE.WAKE_UP_FROM_SLEEP);
+    this._checkConnected(slice);
   }
 
   private _checkConnected(slice: number) {

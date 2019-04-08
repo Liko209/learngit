@@ -7,14 +7,14 @@ import { UserConfigService } from './service/UserConfigService';
 import { GlobalConfigService } from './service/GlobalConfigService';
 import { GlobalConfig } from './GlobalConfig';
 import { UserConfig } from './UserConfig';
+import { UserDBConfig } from './UserDBConfig';
 import { DataMigration } from './DataMigration';
-import { CommonGlobalConfig } from './CommonGlobalConfig';
 
 export {
   GlobalConfig,
   UserConfig,
   UserConfigService,
+  UserDBConfig,
   GlobalConfigService,
   DataMigration,
-  CommonGlobalConfig,
 };

@@ -51,6 +51,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     children,
     initialScrollToIndex = 0,
     onScroll = noop,
+    onWheel = noop,
     onVisibleRangeChange = noop,
     onRenderedRangeChange = noop,
     before = null,
@@ -61,6 +62,8 @@ const JuiVirtualizedList: RefForwardingComponent<
   }: JuiVirtualizedListProps,
   forwardRef,
 ) => {
+  // TODO use useCallback to optimize performance
+
   const computeVisibleRange = () => {
     let result: IndexRange;
     if (ref.current) {
@@ -354,14 +357,16 @@ const JuiVirtualizedList: RefForwardingComponent<
     };
 
     const observeDynamicRow = (el: HTMLElement, i: number) => {
-      const observer = new ResizeObserver(() => {
-        const { diff } = handleRowSizeChange(el, i);
+      const observer = new ResizeObserver((entries: ResizeObserverEntry[]) => {
+        for (const entry of entries) {
+          const { diff } = handleRowSizeChange(entry.target as HTMLElement, i);
 
-        // Fix blank area:
-        // When row shrinks, the list didn't recompute rendered range
-        // automatically, which may leave a blank area in the list.
-        if (diff < 0) {
-          ensureNoBlankArea();
+          // Fix blank area:
+          // When row shrinks, the list didn't recompute rendered range
+          // automatically, which may leave a blank area in the list.
+          if (diff < 0) {
+            ensureNoBlankArea();
+          }
         }
       });
       observer.observe(el);
@@ -414,7 +419,7 @@ const JuiVirtualizedList: RefForwardingComponent<
   //
   // Scrolling
   //
-  const handleScroll = (event: React.UIEvent) => {
+  const handleScroll = (event: React.UIEvent<HTMLElement>) => {
     if (ref.current) {
       updateRange();
       onScroll(event);
@@ -435,6 +440,7 @@ const JuiVirtualizedList: RefForwardingComponent<
     <div
       ref={ref}
       onScroll={handleScroll}
+      onWheel={onWheel}
       style={virtualizedListStyle}
       data-test-automation-id="virtualized-list"
     >
@@ -455,7 +461,8 @@ const MemoList = memo(
   React.ForwardRefExoticComponent<
     {
       initialScrollToIndex?: number;
-      onScroll?: (event: React.UIEvent) => void;
+      onScroll?: (event: React.UIEvent<HTMLElement>) => void;
+      onWheel?: (event: React.WheelEvent<HTMLElement>) => void;
       onVisibleRangeChange?: (range: IndexRange) => void;
       onRenderedRangeChange?: (range: IndexRange) => void;
       before?: React.ReactNode;

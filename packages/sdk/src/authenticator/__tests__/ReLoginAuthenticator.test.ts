@@ -21,14 +21,14 @@ describe('ReLoginAuthenticator', () => {
   });
   describe('authenticate()', () => {
     it('should return false when rc token is invalid', async () => {
-      AuthUserConfig.prototype.getRcToken.mockReturnValueOnce(undefined);
+      AuthUserConfig.prototype.getRCToken.mockReturnValueOnce(undefined);
       expect(await reLoginAuthenticator.authenticate({})).toEqual({
         success: false,
       });
     });
 
-    it('should return false when login glip crashed', async () => {
-      AuthUserConfig.prototype.getRcToken.mockReturnValueOnce('rcToken');
+    it('should return false when login glip failed', async () => {
+      AuthUserConfig.prototype.getRCToken.mockReturnValueOnce('rcToken');
       loginGlip.mockImplementationOnce(() => {
         throw Error('error');
       });
@@ -38,7 +38,7 @@ describe('ReLoginAuthenticator', () => {
     });
 
     it('should return true when login glip success', async () => {
-      AuthUserConfig.prototype.getRcToken.mockReturnValueOnce('rcToken');
+      AuthUserConfig.prototype.getRCToken.mockReturnValueOnce('rcToken');
       loginGlip.mockReturnValueOnce({
         headers: {
           'x-authorization': 'glipToken',
@@ -62,7 +62,7 @@ describe('ReLoginAuthenticator', () => {
     });
 
     it('should return false when login glip failed', async () => {
-      AuthUserConfig.prototype.getRcToken.mockReturnValueOnce('rcToken');
+      AuthUserConfig.prototype.getRCToken.mockReturnValueOnce('rcToken');
       loginGlip.mockReturnValueOnce({
         status: 300,
         headers: {
