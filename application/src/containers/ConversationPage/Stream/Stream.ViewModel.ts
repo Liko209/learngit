@@ -34,11 +34,18 @@ import { StreamController } from './StreamController';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
-  private _stateService: StateService = StateService.getInstance();
-  private _postService: PostService = PostService.getInstance();
-  private _itemService: ItemService = ItemService.getInstance();
+  private _stateService = ServiceLoader.getInstance<StateService>(
+    ServiceConfig.STATE_SERVICE,
+  );
+  private _postService = ServiceLoader.getInstance<PostService>(
+    ServiceConfig.POST_SERVICE,
+  );
+  private _itemService = ServiceLoader.getInstance<ItemService>(
+    ServiceConfig.ITEM_SERVICE,
+  );
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
 

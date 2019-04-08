@@ -5,8 +5,11 @@
  */
 import { Person } from 'sdk/module/person/entity';
 import { PersonService } from 'sdk/module/person';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 export const getName = (item: Person) => {
-  const personService = PersonService.getInstance() as PersonService;
+  const personService = ServiceLoader.getInstance<PersonService>(
+    ServiceConfig.PERSON_SERVICE,
+  );
   return personService.getFullName(item);
 };

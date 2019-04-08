@@ -14,6 +14,7 @@ import _ from 'lodash';
 import { daoManager, DeactivatedDao } from '../../../dao';
 import { PostDao } from '../dao';
 import { mainLogger } from 'foundation/src';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class DiscontinuousPostController {
   constructor(public entitySourceController: IEntitySourceController<Post>) {}
@@ -28,7 +29,9 @@ class DiscontinuousPostController {
   async getPostsByIds(
     ids: number[],
   ): Promise<{ posts: Post[]; items: Item[] }> {
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     const localPosts = await this._getPostFromLocal(ids);
     const result = {
       posts: localPosts.filter((post: Post) => !post.deactivated),
@@ -52,7 +55,9 @@ class DiscontinuousPostController {
 
       remotePosts = await this._savePosts(remotePosts);
 
-      const itemService = ItemService.getInstance() as ItemService;
+      const itemService = ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      );
       const items =
         (await itemService.handleIncomingData(remoteData.items)) || [];
       result.posts.push(...remotePosts);

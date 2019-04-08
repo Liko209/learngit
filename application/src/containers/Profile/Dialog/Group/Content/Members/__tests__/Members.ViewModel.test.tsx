@@ -7,7 +7,7 @@
 import { getEntity } from '../../../../../../../store/utils';
 import { MembersViewModel } from '../Members.ViewModel';
 import SortableGroupMemberHandler from '@/store/handler/SortableGroupMemberHandler';
-import { SearchService } from 'sdk/module/search';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 import debounce from 'lodash/debounce';
 
 jest.mock('../../../../../../../store/utils');
@@ -29,7 +29,7 @@ const mockGroup = {
 const searchService = {
   doFuzzySearchPersons: jest.fn().mockResolvedValue(mockResult),
 };
-SearchService.getInstance = jest.fn().mockReturnValue(searchService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(searchService);
 
 SortableGroupMemberHandler.createSortableGroupMemberHandler = jest
   .fn()

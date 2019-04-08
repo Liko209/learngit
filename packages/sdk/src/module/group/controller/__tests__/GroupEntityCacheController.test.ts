@@ -5,11 +5,11 @@
  */
 
 import { GroupEntityCacheController } from '../GroupEntityCacheController';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { Group } from '../../entity';
 import { GroupService } from '../../service/GroupService';
 
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 jest.mock('../../../../api');
 
 function clearMocks() {

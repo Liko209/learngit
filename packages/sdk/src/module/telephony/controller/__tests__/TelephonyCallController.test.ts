@@ -65,6 +65,14 @@ describe('TelephonyCallController', () => {
     });
   });
 
+  describe('ignore', () => {
+    it('should call rtc to ignore call', () => {
+      jest.spyOn(rtcCall, 'ignore');
+      callController.ignore();
+      expect(rtcCall.ignore).toBeCalled();
+    });
+  });
+
   describe('onCallStateChange', () => {
     beforeAll(() => {
       jest.spyOn(rtcCall, 'getCallInfo').mockReturnValue({

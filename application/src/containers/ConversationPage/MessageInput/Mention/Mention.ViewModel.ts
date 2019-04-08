@@ -16,6 +16,7 @@ import { Quill } from 'react-quill';
 import 'jui/pattern/MessageInput/Mention';
 import { INIT_CURRENT_INDEX } from './constants';
 import { CONVERSATION_TYPES } from '@/constants';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type searchMember = {
   displayName: string;
@@ -140,7 +141,9 @@ class MentionViewModel extends StoreViewModel<MentionProps>
     memberIds: number[];
   }) => {
     const term = searchTerm ? searchTerm.trim() : '';
-    const searchService = SearchService.getInstance();
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
     const res = await searchService.doFuzzySearchPersons({
       searchKey: term,
       excludeSelf: true,

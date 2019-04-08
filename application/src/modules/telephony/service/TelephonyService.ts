@@ -20,13 +20,14 @@ import { PersonService, ContactType } from 'sdk/module/person';
 import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   static TAG: string = '[UI TelephonyService] ';
 
-  private _serverTelephonyService: ServerTelephonyService = ServerTelephonyService.getInstance();
-  private _personService: PersonService = PersonService.getInstance();
+  // prettier-ignore
+  private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _callId?: string;
 
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
@@ -197,7 +198,11 @@ class TelephonyService {
   }
 
   matchContactByPhoneNumber = async (phone: string) => {
-    return await this._personService.matchContactByPhoneNumber(
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+
+    return await personService.matchContactByPhoneNumber(
       phone,
       ContactType.GLIP_CONTACT,
     );

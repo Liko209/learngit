@@ -3,10 +3,10 @@
  * @Date: 2018-11-26 20:32:51
  * Copyright © RingCentral. All rights reserved.
  */
-import { GroupService } from 'sdk/module/group';
 import { SearchService } from 'sdk/module/search';
 import { SearchBarViewModel } from '../SearchBar.ViewModel';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../../../../store/utils');
 jest.mock('@/containers/Notification');
@@ -14,19 +14,8 @@ jest.mock('sdk/api');
 jest.mock('sdk/dao');
 jest.mock('sdk/module/search');
 
-GroupService.getInstance = jest.fn();
-
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
-
-const groupService = {
-  doFuzzySearchGroups() {
-    return { terms: [], sortableModels: [{ id: 2 }] };
-  },
-  doFuzzySearchTeams() {
-    return { terms: [], sortableModels: [{ id: 3 }] };
-  },
-};
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -35,7 +24,8 @@ function clearMocks() {
 }
 
 describe('SearchBarViewModel', () => {
-  let searchService: SearchService;
+  let searchService: any;
+  let groupService: any;
   let searchBarViewModel: SearchBarViewModel;
 
   function setUp() {
@@ -44,8 +34,33 @@ describe('SearchBarViewModel', () => {
     searchService.doFuzzySearchPersons = jest.fn().mockImplementation(() => {
       return { terms: [], sortableModels: [{ id: 1 }] };
     });
-    SearchService.getInstance = jest.fn().mockReturnValue(searchService);
-    GroupService.getInstance.mockReturnValue(groupService);
+
+    groupService = {
+      doFuzzySearchGroups() {
+        return { terms: [], sortableModels: [{ id: 2 }] };
+      },
+      doFuzzySearchTeams() {
+        return { terms: [], sortableModels: [{ id: 3 }] };
+      },
+    };
+
+    mockData();
+  }
+
+  function mockData() {
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (ServiceConfig.SEARCH_SERVICE === serviceName) {
+          return searchService;
+        }
+
+        if (ServiceConfig.GROUP_SERVICE === serviceName) {
+          return groupService;
+        }
+
+        return null;
+      });
   }
 
   beforeEach(() => {
@@ -426,7 +441,7 @@ describe('SearchBarViewModel', () => {
   });
 
   it('getRecent()', () => {
-    const s = {
+    searchService = {
       getRecentSearchRecords: jest.fn().mockReturnValue([
         {
           value: 1,
@@ -438,7 +453,8 @@ describe('SearchBarViewModel', () => {
         },
       ]),
     };
-    jest.spyOn(SearchService, 'getInstance').mockImplementation(() => s);
+
+    mockData();
 
     searchBarViewModel.getRecent();
     expect(searchBarViewModel.recentRecord).toEqual([
@@ -450,23 +466,22 @@ describe('SearchBarViewModel', () => {
   });
 
   it('addRecentRecord()', () => {
-    const s = {
+    searchService = {
       addRecentSearchRecord: jest.fn(),
     };
-    jest.spyOn(SearchService, 'getInstance').mockImplementation(() => s);
+
     jest
       .spyOn(searchBarViewModel, 'getCurrentItemType')
       .mockReturnValue('type');
     searchBarViewModel.addRecentRecord(1);
-    expect(s.addRecentSearchRecord).toHaveBeenCalledWith('type', 1);
+    expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith('type', 1);
   });
 
   it('should be clear recent search records', () => {
-    const s = {
+    searchService = {
       clearRecentSearchRecords: jest.fn(),
     };
-    jest.spyOn(SearchService, 'getInstance').mockImplementation(() => s);
     searchBarViewModel.clearRecent();
-    expect(s.clearRecentSearchRecords).toHaveBeenCalled();
+    expect(searchService.clearRecentSearchRecords).toHaveBeenCalled();
   });
 });

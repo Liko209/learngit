@@ -4,11 +4,11 @@
  */
 
 import { EBETA_FLAG, isInBeta } from '../clientConfig';
-import { GlobalConfigService } from '../../../module/config';
-import { AccountUserConfig } from '../../../service/account/config';
+import { GlobalConfigService } from '../../../config';
+import { AccountUserConfig } from '../../config';
 
-jest.mock('../../../module/config');
-jest.mock('../../../service/account/config');
+jest.mock('../../../config');
+jest.mock('../../config');
 
 GlobalConfigService.getInstance = jest.fn();
 

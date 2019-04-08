@@ -5,30 +5,29 @@
  */
 
 import { Upgrade } from '../Upgrade';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-jest.mock('sdk/module/item/service', () => ({
-  ItemService: {
-    getInstance: () => {
+ServiceLoader.getInstance = jest
+  .fn()
+  .mockImplementation((serviceName: string) => {
+    if (ServiceConfig.ITEM_SERVICE === serviceName) {
       return {
         hasUploadingFiles: () => {
           return false;
         },
       };
-    },
-  },
-}));
+    }
 
-jest.mock('sdk/module/telephony', () => ({
-  TelephonyService: {
-    getInstance: () => {
+    if (ServiceConfig.TELEPHONY_SERVICE === serviceName) {
       return {
         getAllCallCount: () => {
           return 0;
         },
       };
-    },
-  },
-}));
+    }
+
+    return null;
+  });
 
 describe('Upgrade', () => {
   let upgradeHandler: Upgrade | undefined;

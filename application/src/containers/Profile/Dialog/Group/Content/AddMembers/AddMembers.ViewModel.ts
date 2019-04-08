@@ -7,6 +7,7 @@ import { action, observable } from 'mobx';
 import { GroupService } from 'sdk/module/group';
 import { AbstractViewModel } from '@/base';
 import { ViewModuleProps } from './types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type SelectedMember = {
   id: number;
@@ -35,7 +36,9 @@ class AddMembersViewModel extends AbstractViewModel<ViewModuleProps> {
   @action
   addTeamMembers = async () => {
     const { group } = this.props;
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     await groupService.addTeamMembers(this.members, group.id);
   }
 }

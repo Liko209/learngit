@@ -122,7 +122,8 @@ export default class NetworkClient {
       const request = this.getRequestByVia<T>(query, query.via);
       if (this._needCheckDuplicated(method)) {
         const apiMapKey = this._buildApiKey(query);
-        isDuplicated = this.apiMap.has(apiMapKey);
+        isDuplicated =
+          !apiMapKey.includes('index') && this.apiMap.has(apiMapKey);
         this._saveApiCallback(apiMapKey, resolve, reject);
 
         if (!isDuplicated) {

@@ -13,6 +13,7 @@ import { getGlobalValue, getEntity } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class LikeViewModel extends StoreViewModel<LikeProps> implements LikeViewProps {
   private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
@@ -35,7 +36,9 @@ class LikeViewModel extends StoreViewModel<LikeProps> implements LikeViewProps {
 
   @action
   like = async (toLike: boolean): Promise<void> => {
-    const postService: PostService = PostService.getInstance();
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     await postService.likePost(this._id, this._currentUserId, toLike);
   }
 }

@@ -5,7 +5,7 @@
  */
 import { AUTH_KEYS } from './configKeys';
 import { UserConfig } from '../../../module/config';
-import { AccountGlobalConfig } from '../../account/config';
+import { AccountGlobalConfig } from './AccountGlobalConfig';
 
 class AuthUserConfig extends UserConfig {
   constructor() {

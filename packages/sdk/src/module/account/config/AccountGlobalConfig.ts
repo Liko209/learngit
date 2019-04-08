@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GlobalConfig } from '../../../module/config';
-import { ACCOUNT_KEYS } from '../../../service/account/config/configKeys';
+import { GlobalConfig } from '../../config';
+import { ACCOUNT_KEYS } from '../config/configKeys';
 
 class AccountGlobalConfig extends GlobalConfig {
   static moduleName = 'account';

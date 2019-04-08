@@ -6,7 +6,6 @@
 
 import { AbstractService } from './AbstractService';
 import { IdModel } from '../model';
-import { container } from '../../container';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
 import { BaseDao } from '../../framework/dao';
@@ -140,10 +139,6 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
       );
       this._entityCacheController.initialize([]);
     }
-  }
-
-  static getInstance<T extends EntityBaseService<any>>(): T {
-    return container.get(this.name);
   }
 }
 

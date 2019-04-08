@@ -15,10 +15,13 @@ import { ENTITY_NAME } from '@/store';
 
 import { GroupService } from 'sdk/module/group';
 import { IconButtonSize } from 'jui/components/Buttons';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class PrivacyViewModel extends AbstractViewModel<PrivacyProps>
   implements PrivacyViewProps {
-  private _groupService: GroupService = GroupService.getInstance();
+  private _groupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
 
   @computed
   get size(): IconButtonSize {
