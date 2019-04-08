@@ -7,6 +7,7 @@
 import _ from 'lodash';
 import { SearchUserConfig } from '../config';
 import { RecentSearchModel, RecentSearchTypes } from '../entity';
+import { serializeUrlParams } from '../../../utils';
 
 const MAX_RECENT_LIMIT = 10;
 class RecentSearchRecordController {
@@ -23,7 +24,11 @@ class RecentSearchRecordController {
     }
 
     recentRecords = recentRecords.filter((x: RecentSearchModel) => {
-      return x.type !== type || x.value !== value;
+      return (
+        x.type !== type ||
+        x.value !== value ||
+        serializeUrlParams(x.query_params) !== serializeUrlParams(params)
+      );
     });
 
     const time = Date.now();
