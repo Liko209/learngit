@@ -8,9 +8,12 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { SearchFilterViewProps } from './types';
+<<<<<<< HEAD
 import { JuiSearchFilter } from 'jui/pattern/SearchFilter';
 import { ContactSearch } from '@/containers/ContactSearch';
 import { ContactSearchType } from '@/containers/ContactSearch/types';
+=======
+>>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] searchFilter constructor
 
 type ViewProps = SearchFilterViewProps & WithTranslation;
 
