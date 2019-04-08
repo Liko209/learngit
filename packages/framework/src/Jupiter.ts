@@ -49,6 +49,25 @@ class Jupiter {
     return promise;
   }
 
+  unRegisterModule(name: string, afterDispose?: () => void): void {
+    this._moduleEntries.forEach(
+      (module: interfaces.Newable<AbstractModule>) => {
+        if (module.name === name) {
+          this.disposeModule(module, afterDispose);
+        }
+      },
+    );
+  }
+
+  async disposeModule<T extends AbstractModule>(
+    moduleEntry: interfaces.ServiceIdentifier<T>,
+    afterDispose?: () => void | Promise<void>,
+  ) {
+    const m = this._container.get<AbstractModule>(moduleEntry);
+    m.dispose && (await m.dispose());
+    afterDispose && (await afterDispose());
+  }
+
   addEntry(m: interfaces.Newable<AbstractModule>) {
     this._moduleEntries.push(m);
   }
