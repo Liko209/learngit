@@ -34,17 +34,17 @@ describe('UserAPI', () => {
       const requestConfig = {};
       const header = {};
       await indexData(mock);
-      expect(Api.glipNetworkClient.get).toHaveBeenCalledWith(
-        '/index',
-        mock,
-        NETWORK_VIA.HTTP,
+      expect(Api.glipNetworkClient.get).toHaveBeenCalledWith({
         requestConfig,
-        header,
-        3,
-        REQUEST_PRIORITY.HIGH,
-        HA_PRIORITY.BASIC,
-        TEN_MINUTE_TIMEOUT,
-      );
+        headers: header,
+        path: '/index',
+        params: mock,
+        via: NETWORK_VIA.HTTP,
+        retryCount: 3,
+        priority: REQUEST_PRIORITY.HIGH,
+        HAPriority: HA_PRIORITY.BASIC,
+        timeout: TEN_MINUTE_TIMEOUT,
+      });
     });
   });
 });

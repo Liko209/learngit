@@ -244,15 +244,12 @@ describe('NetworkClient', () => {
       const { rcNetworkClient } = setup();
 
       jest.spyOn(rcNetworkClient, 'http');
-      rcNetworkClient.get('/', {}, NETWORK_VIA.HTTP, {});
+      rcNetworkClient.get({ path: '/', via: NETWORK_VIA.HTTP });
 
       expect(rcNetworkClient.http).toHaveBeenCalledWith({
         path: '/',
-        method: 'get',
-        params: {},
         via: NETWORK_VIA.HTTP,
-        requestConfig: {},
-        headers: {},
+        method: NETWORK_METHOD.GET,
       });
     });
   });
@@ -261,11 +258,12 @@ describe('NetworkClient', () => {
       const { rcNetworkClient } = setup();
 
       jest.spyOn(rcNetworkClient, 'request');
-      rcNetworkClient.post('/');
+      rcNetworkClient.post({ path: '/' });
 
       expect(rcNetworkClient.request).toHaveBeenCalledWith({
-        data: {},
         headers: {},
+        timeout: undefined,
+        data: {},
         method: 'post',
         path: '/',
       });
@@ -275,10 +273,13 @@ describe('NetworkClient', () => {
       const { rcNetworkClient } = setup();
 
       jest.spyOn(rcNetworkClient, 'request');
-      rcNetworkClient.post('/', {
-        _id: 123,
-        __draft: '123',
-        a: true,
+      rcNetworkClient.post({
+        path: '/',
+        data: {
+          _id: 123,
+          __draft: '123',
+          a: true,
+        },
       });
 
       expect(rcNetworkClient.request).toHaveBeenCalledWith({
@@ -286,9 +287,10 @@ describe('NetworkClient', () => {
           _id: 123,
           a: true,
         },
-        headers: {},
         method: 'post',
         path: '/',
+        headers: {},
+        timeout: undefined,
       });
     });
   });
@@ -297,10 +299,13 @@ describe('NetworkClient', () => {
       const { rcNetworkClient } = setup();
 
       jest.spyOn(rcNetworkClient, 'http');
-      rcNetworkClient.put('/', {
-        _id: 123,
-        __draft: '123',
-        a: true,
+      rcNetworkClient.put({
+        path: '/',
+        data: {
+          _id: 123,
+          __draft: '123',
+          a: true,
+        },
       });
 
       expect(rcNetworkClient.http).toHaveBeenCalledWith({
@@ -318,7 +323,7 @@ describe('NetworkClient', () => {
       const { rcNetworkClient } = setup();
 
       jest.spyOn(rcNetworkClient, 'http');
-      rcNetworkClient.put('/');
+      rcNetworkClient.put({ path: '/' });
 
       expect(rcNetworkClient.http).toHaveBeenCalledWith({
         data: {},
@@ -334,11 +339,9 @@ describe('NetworkClient', () => {
       const { rcNetworkClient } = setup();
 
       jest.spyOn(rcNetworkClient, 'http');
-      rcNetworkClient.delete('/');
+      rcNetworkClient.delete({ path: '/' });
 
       expect(rcNetworkClient.http).toHaveBeenCalledWith({
-        params: {},
-        headers: {},
         method: 'delete',
         path: '/',
       });

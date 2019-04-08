@@ -15,19 +15,13 @@ class PresenceAPI extends Api {
    */
   static requestPresenceByIds(idArr: number[]) {
     const ids = idArr.join(',');
-    return this.glipNetworkClient.get<RawPresence[]>(
-      `/glip-presence/v1/person/${ids}/presence`,
-      {},
-      NETWORK_VIA.SOCKET,
-      {},
-      {},
-      3,
-      undefined,
-      undefined,
-      undefined,
-      Api.httpConfig.glip.presenceServer,
-      '',
-    );
+    return this.glipNetworkClient.get<RawPresence[]>({
+      path: `/glip-presence/v1/person/${ids}/presence`,
+      via: NETWORK_VIA.SOCKET,
+      retryCount: 3,
+      host: Api.httpConfig.glip.presenceServer,
+      pathPrefix: '',
+    });
   }
 }
 

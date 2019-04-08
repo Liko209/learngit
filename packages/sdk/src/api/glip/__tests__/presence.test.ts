@@ -11,18 +11,12 @@ describe('PresenceAPI tests', () => {
   it('Get presence by ids', async () => {
     const spy = jest.spyOn(Api.glipNetworkClient, 'get');
     PresenceAPI.requestPresenceByIds([1, 2, 3, 4]);
-    expect(spy).toHaveBeenCalledWith(
-      '/glip-presence/v1/person/1,2,3,4/presence',
-      {},
-      NETWORK_VIA.SOCKET,
-      {},
-      {},
-      3,
-      undefined,
-      undefined,
-      undefined,
-      Api.httpConfig.glip.presenceServer,
-      '',
-    );
+    expect(spy).toHaveBeenCalledWith({
+      path: '/glip-presence/v1/person/1,2,3,4/presence',
+      via: NETWORK_VIA.SOCKET,
+      retryCount: 3,
+      host: Api.httpConfig.glip.presenceServer,
+      pathPrefix: '',
+    });
   });
 });

@@ -43,7 +43,9 @@ class Upgrade {
   }
 
   public onNewContentAvailable() {
-    mainLogger.info(`${logTag}New content available`);
+    mainLogger.info(
+      `${logTag}New content available. hasFocus: ${document.hasFocus()}`,
+    );
     this._hasNewVersion = true;
 
     if (document.hasFocus()) {

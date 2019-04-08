@@ -116,15 +116,23 @@ class Api {
   }
 
   static getDataById<T>(id: number) {
-    return this.glipNetworkClient.get<Raw<T>>(`${this.basePath}/${id}`);
+    return this.glipNetworkClient.get<Raw<T>>({
+      path: `${this.basePath}/${id}`,
+    });
   }
 
   static postData<T>(data: Partial<T>) {
-    return this.glipNetworkClient.post<Raw<T>>(`${this.basePath}`, data);
+    return this.glipNetworkClient.post<Raw<T>>({
+      data,
+      path: `${this.basePath}`,
+    });
   }
 
   static putDataById<T>(id: number, data: Partial<T>) {
-    return this.glipNetworkClient.put<Raw<T>>(`${this.basePath}/${id}`, data);
+    return this.glipNetworkClient.put<Raw<T>>({
+      data,
+      path: `${this.basePath}/${id}`,
+    });
   }
 }
 
