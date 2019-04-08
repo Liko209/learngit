@@ -26,7 +26,7 @@ describe('ListSearchResult', () => {
   });
 
   // TODO: wait for emtpy page component
-  it.skip('component should display empty page when there are no records found matching', () => {});
+  it.skip('component should display empty page when there are no records found matching and title should be "Results (0)"', () => {});
 
   it('component\'s title should be "Results" with the count of the matching records displayed', () => {
     const props = {
