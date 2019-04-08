@@ -310,6 +310,18 @@ export class ConversationPage extends BaseConversationPage {
       .pressKey('enter');
   }
 
+  async typeAtSymbol() {
+    await this.t.click(this.messageInputArea).typeText(this.messageInputArea, '@');
+  }
+
+  async typeAtMentionUserNameAndPressEnter(userName: string) {
+    await this.typeAtSymbol();
+    await this.t.wait(2e3)
+      .typeText(this.messageInputArea, userName)
+      .wait(2e3)
+      .pressKey('enter');
+  }
+
   async pressEnterWhenFocusOnMessageInputArea() {
     await this.shouldFocusOnMessageInputArea();
     await this.t.pressKey('enter');
@@ -464,6 +476,10 @@ export class MentionPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
 
+  get scrollDiv() {
+    return this.stream.parent('div');
+  }
+
   async waitUntilPostsBeLoaded(timeout = 20e3) {
     await this.t.wait(1e3); // loading circle is invisible in first 1 second.
     await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
@@ -473,6 +489,10 @@ export class MentionPage extends BaseConversationPage {
 export class BookmarkPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
+  }
+
+  get scrollDiv() {
+    return this.stream.parent('div');
   }
 
   async waitUntilPostsBeLoaded(timeout = 20e3) {
