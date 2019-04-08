@@ -5,13 +5,14 @@
  */
 
 import { observable, action } from 'mobx';
-import { TAB_TYPE, SEARCH_VIEW } from '../types';
+import { TAB_TYPE, SEARCH_VIEW, SEARCH_SCOPE } from '../types';
 
 class GlobalSearchStore {
   @observable open: boolean = false;
   @observable searchKey: string = '';
   @observable currentTab: TAB_TYPE;
-  @observable currentView: SEARCH_VIEW = SEARCH_VIEW.RECENT_SEARCH;
+  @observable currentView: SEARCH_VIEW = SEARCH_VIEW.FULL_SEARCH;
+  @observable searchScope: SEARCH_SCOPE;
 
   @action
   setOpen(open: boolean) {
