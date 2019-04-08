@@ -80,10 +80,7 @@ class ContentSearchResultViewModel
   setSearchOptions = async (options: ContentSearchOptions) => {
     this.searchOptions = { ...this.searchOptions, ...options };
 
-    if (this.searchState.requestId) {
-      await this.onSearchEnd();
-      this._setSearchState({ requestId: null });
-    }
+    this._setSearchState({ requestId: null });
   }
 
   onPostsFetch = async () => {
