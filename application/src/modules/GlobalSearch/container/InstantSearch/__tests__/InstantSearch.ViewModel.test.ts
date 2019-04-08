@@ -9,6 +9,7 @@ import { GlobalSearchStore } from '../../../store';
 import { GroupService } from 'sdk/module/group';
 import { SearchService } from 'sdk/module/search';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
+import history from '../../../../../history';
 
 jest.mock('@/containers/Notification');
 jest.mock('sdk/api');
@@ -16,11 +17,7 @@ jest.mock('sdk/dao');
 jest.mock('sdk/module/search');
 
 jest.mock('../../../../../utils/i18nT');
-jest.mock('../../../../../history', () => ({
-  location: {
-    pathname: '/messages/123',
-  },
-}));
+
 import i18nT from '../../../../../utils/i18nT';
 // import history from '../../../../../history';
 
@@ -56,6 +53,7 @@ describe('InstantSearchViewModel', () => {
   let globalSearchStore: GlobalSearchStore;
 
   function setUp() {
+    history.replace('/');
     searchService = new SearchService();
     searchService.doFuzzySearchPersons = jest.fn().mockImplementation(() => {
       return { terms: [], sortableModels: [{ id: 1 }] };
@@ -365,9 +363,10 @@ describe('InstantSearchViewModel', () => {
     });
   });
 
-  describe('get contentSearchIds', () => {
+  describe('get contentSearchIds [JPT-1552]', () => {
     it('If is in conversation should be return [searchKey, searchKey in this conversation]', () => {
       const searchKey = 'abc';
+      history.replace('/messages/123');
       globalSearchStore.setSearchKey(searchKey);
       (i18nT as jest.Mock).mockReturnValue('in this conversation');
       expect(instantSearchViewModel.contentSearchIds).toEqual([
@@ -375,9 +374,16 @@ describe('InstantSearchViewModel', () => {
         `${searchKey} in this conversation`,
       ]);
     });
+    it('If not in conversation should be return [searchKey]', () => {
+      const searchKey = 'abc';
+      history.replace('/bookmarks');
+      globalSearchStore.setSearchKey(searchKey);
+      (i18nT as jest.Mock).mockReturnValue('in this conversation');
+      expect(instantSearchViewModel.contentSearchIds).toEqual([searchKey]);
+    });
   });
 
-  describe('getSearchScope()', () => {
+  describe('getSearchScope() [JPT-1557]', () => {
     it('If index = 0 should be return global scope', () => {
       instantSearchViewModel = new InstantSearchViewModel();
       const scope = instantSearchViewModel.getSearchScope(0);

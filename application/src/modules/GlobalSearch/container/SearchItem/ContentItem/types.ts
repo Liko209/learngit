@@ -5,7 +5,7 @@
  */
 import GroupModel from '@/store/models/Group';
 import { ISearchItemModel } from '../types';
-import { SEARCH_SCOPE, SEARCH_VIEW } from '../../../types';
+import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../../../types';
 
 type ContentProps = {
   displayName: string;
@@ -30,4 +30,5 @@ export {
   ISearchItemModel,
   SEARCH_SCOPE,
   SEARCH_VIEW,
+  TAB_TYPE,
 };

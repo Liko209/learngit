@@ -16,6 +16,7 @@ import {
   ISearchItemModel,
   SEARCH_VIEW,
   SEARCH_SCOPE,
+  TAB_TYPE,
 } from './types';
 import { SearchViewModel } from '../../common/Search.ViewModel';
 
@@ -30,6 +31,7 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
     const { searchScope } = this.props;
 
     this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
+    this._globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
     this._globalSearchStore.setSearchScope(searchScope);
     // TODO will add record in JIRA: FIJI-4696
     // this.addRecentRecord();

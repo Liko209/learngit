@@ -9,7 +9,7 @@ import { container, Jupiter } from 'framework';
 import { config } from '../../../../module.config';
 import { GlobalSearchStore } from '../../../../store';
 
-import { SEARCH_SCOPE, SEARCH_VIEW } from '../types';
+import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../types';
 import { ContentItemViewModel } from '../ContentItem.ViewModel';
 
 const jupiter = container.get(Jupiter);
@@ -26,7 +26,7 @@ describe('GroupItemViewModel', () => {
   afterEach(() => {
     container.restore();
   });
-  describe('onClick()', () => {
+  describe('onClick() [JPT-1557]', () => {
     it('should be switch full search and set search scope', () => {
       const scope = SEARCH_SCOPE.GLOBAL;
       contentItemViewModel = new ContentItemViewModel({
@@ -35,6 +35,7 @@ describe('GroupItemViewModel', () => {
       });
       contentItemViewModel.onClick();
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
+      expect(globalSearchStore.currentTab).toBe(TAB_TYPE.CONTENT);
       expect(globalSearchStore.searchScope).toBe(scope);
     });
   });
