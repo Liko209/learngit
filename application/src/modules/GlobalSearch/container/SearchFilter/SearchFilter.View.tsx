@@ -8,7 +8,6 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { SearchFilterViewProps } from './types';
-import { JuiBoxSelect } from 'jui/src/components/Selects/BoxSelect';
 
 type Props = SearchFilterViewProps & WithTranslation;
 
