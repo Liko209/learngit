@@ -30,6 +30,7 @@ describe('PostListPage.ViewModel', () => {
       expect(ids).toStrictEqual([6, 7, 2, 1, 3, 5, 4]);
     });
   });
+});
 //   describe('postFetcher()', () => {
 //     const sourceArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
 //     jest.spyOn(utils, 'getSingleEntity').mockReturnValueOnce(sourceArr);
