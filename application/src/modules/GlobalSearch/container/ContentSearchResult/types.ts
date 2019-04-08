@@ -10,6 +10,7 @@ type ContentSearchState = {
   requestId: number | null;
   postIds: number[];
   postCount: number;
+  contentsCount: object;
 };
 
 type ContentSearchResult = {

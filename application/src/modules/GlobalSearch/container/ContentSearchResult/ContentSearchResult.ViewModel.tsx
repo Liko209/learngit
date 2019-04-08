@@ -41,6 +41,7 @@ class ContentSearchResultViewModel
   searchState: ContentSearchState = {
     requestId: null,
     postIds: [],
+    contentsCount: {},
     postCount: 0,
   };
 
@@ -128,13 +129,21 @@ class ContentSearchResultViewModel
   }
 
   private _onPostsInit = async () => {
-    const {
-      [TypeDictionary.TYPE_ID_POST]: postCount,
-    } = await this._postService.getSearchContentsCount(this._searchParams);
+    await this.onSearchEnd();
+
+    const contentsCount = await this._postService.getSearchContentsCount(
+      this._searchParams,
+    );
+
+    const { [TypeDictionary.TYPE_ID_POST]: postCount } = contentsCount;
 
     const result = await this._postService.searchPosts(this._searchParams);
 
-    this._setSearchState({ postCount, requestId: result.requestId });
+    this._setSearchState({
+      postCount,
+      contentsCount,
+      requestId: result.requestId,
+    });
 
     return result;
   }

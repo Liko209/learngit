@@ -88,7 +88,8 @@ describe('ContentSearchResult [JPT-1562]', () => {
 
   it('Should fetch posts be scroll posts after posts initialized.', async () => {
     PostService.getInstance = jest.fn().mockReturnValue({
-      getSearchContentsCount: jest.fn().mockResolvedValue(10),
+      endPostSearch: jest.fn().mockResolvedValue(null),
+      getSearchContentsCount: jest.fn().mockResolvedValue({}),
       searchPosts: jest
         .fn()
         .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
