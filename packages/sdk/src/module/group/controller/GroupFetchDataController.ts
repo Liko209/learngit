@@ -432,7 +432,9 @@ export class GroupFetchDataController {
     const group = await this.entitySourceController.get(groupId);
     let email = '';
     if (group) {
-      const companyService: CompanyService = CompanyService.getInstance();
+      const companyService = ServiceLoader.getInstance<CompanyService>(
+        ServiceConfig.COMPANY_SERVICE,
+      );
       const companyReplyDomain = await companyService.getCompanyEmailDomain(
         group.company_id,
       );
