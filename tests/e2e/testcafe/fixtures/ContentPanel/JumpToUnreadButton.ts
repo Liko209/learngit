@@ -144,7 +144,8 @@ test.skip(formalName('Click the unread button (up) then jump to first unread pos
 
 });
 
-test(formalName('The count of the unread button (up) should display correct', ['JPT-212', 'P1', 'Wayne.Zhou', 'JumpToUnreadButton']), async (t) => {
+// TODO fixme at https://jira.ringcentral.com/browse/FIJI-4643
+test.skip(formalName('The count of the unread button (up) should display correct', ['JPT-212', 'P1', 'Wayne.Zhou', 'JumpToUnreadButton']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[6];
   const otherUser = users[5];
