@@ -12,6 +12,7 @@ describe('PresenceAPI tests', () => {
     const spy = jest.spyOn(Api.glipNetworkClient, 'get');
     PresenceAPI.requestPresenceByIds([1, 2, 3, 4]);
     expect(spy).toHaveBeenCalledWith({
+      method: 'get',
       path: '/glip-presence/v1/person/1,2,3,4/presence',
       via: NETWORK_VIA.SOCKET,
       retryCount: 3,
