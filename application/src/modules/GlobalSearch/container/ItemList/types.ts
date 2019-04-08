@@ -14,9 +14,8 @@ type ItemListProps = {
 };
 
 type ItemListViewProps = {
-  _listRef: any;
-  startIndex: number,
-  stopIndex: number,
+  startIndex: number;
+  stopIndex: number;
   onKeyUp: () => void;
   setRangeIndex: (range: IndexRange) => void;
   onKeyDown: (list: number[]) => void;

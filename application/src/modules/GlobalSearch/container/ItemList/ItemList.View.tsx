@@ -12,6 +12,7 @@ import { observer } from 'mobx-react';
 
 import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
+import { cacheEventFn } from '../constants';
 
 const MAX_COUNT = 12;
 const ITEM_HEIGHT = 40;
@@ -20,11 +21,11 @@ type Props = ItemListProps & ItemListViewProps & WithTranslation & { terms: stri
 
 @observer
 class ItemListViewComponent extends Component<Props> {
-  private _hoverHighlightMap: Map<string, Function> = new Map();
-  private _selectChangeMap: Map<string, Function> = new Map();
+  private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
+  private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
   private _listRef: React.RefObject<JuiVirtualizedListHandles> = React.createRef();
 
-  private _cacheIndexPathFn = (type: '_hoverHighlightMap' | '_selectChangeMap', index: number) => {
+  private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
     const fnMap = this[type];
     if (!fnMap.get(fnKey)) {
@@ -41,12 +42,12 @@ class ItemListViewComponent extends Component<Props> {
   }
 
   hoverHighlight = (index: number) => {
-    return this._cacheIndexPathFn('_hoverHighlightMap', index);
+    return this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
   }
 
   // if search item removed need update selectIndex
   selectIndexChange = (index: number) => {
-    return this._cacheIndexPathFn('_selectChangeMap', index);
+    return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
   }
 
   scrollToView = () => {

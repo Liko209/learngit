@@ -31,6 +31,7 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
     return this._globalSearchStore.currentTab;
   }
 
+  @action
   updateStore(models: SortableModel<Person | Group>[], tab: TAB_TYPE) {
     if (tab === TAB_TYPE.PEOPLE) {
       storeManager.dispatchUpdatedDataModels(
