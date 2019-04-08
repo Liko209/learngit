@@ -31,8 +31,10 @@ const suggestions = [
 
 const getKnobs = () => {
   const multiple = boolean('multiple', false);
+  const autoSwitchEmail = boolean('autoSwitchEmail', false);
   return {
     multiple,
+    autoSwitchEmail,
   };
 };
 
@@ -99,7 +101,6 @@ const MultipleDownshift = () => {
       onInputChange={handleInputChange}
       onSelectChange={handleSelectChange}
       minRowHeight={50}
-      autoSwitchEmail={true}
     />
   );
 };
