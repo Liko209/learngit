@@ -25,9 +25,14 @@ import { transform } from '../../../service/utils';
 import { GroupDao } from '../dao';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
-import { PermissionFlags, TeamSetting } from '../types';
+import {
+  PermissionFlags,
+  TeamSetting,
+  GroupCanBeShownResponse,
+} from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
 import { AccountUserConfig } from '../../../service/account/config';
+import { GROUP_CAN_NOT_SHOWN_REASON } from '../constants';
 
 export class GroupActionController {
   teamRequestController: IRequestController<Group>;
@@ -405,7 +410,7 @@ export class GroupActionController {
     groupConfigDao.bulkUpdate(data);
   }
 
-  async isGroupCanBeShown(groupId: number): Promise<boolean> {
+  async isGroupCanBeShown(groupId: number): Promise<GroupCanBeShownResponse> {
     const profileService: ProfileService = ProfileService.getInstance();
     const isHidden = await profileService.isConversationHidden(groupId);
     let isIncludeSelf = false;
@@ -419,13 +424,34 @@ export class GroupActionController {
         .tags('GroupActionController')
         .info(`get group ${groupId} fail`, err);
     }
-    if (group) {
-      isValid = this.groupService.isValid(group);
-      const userConfig = new AccountUserConfig();
-      const currentUserId = userConfig.getGlipUserId();
-      isIncludeSelf = group.members.includes(currentUserId);
+
+    const result: GroupCanBeShownResponse = { canBeShown: false };
+    if (!group) {
+      result.reason = GROUP_CAN_NOT_SHOWN_REASON.UNKNOWN;
+      return result;
     }
-    return !isHidden && isValid && isIncludeSelf;
+
+    isValid = this.groupService.isValid(group);
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
+    isIncludeSelf = group.members.includes(currentUserId);
+
+    if (!isValid) {
+      if (group.deactivated) {
+        result.reason = GROUP_CAN_NOT_SHOWN_REASON.DEACTIVATED;
+      } else if (group.is_archived) {
+        result.reason = GROUP_CAN_NOT_SHOWN_REASON.ARCHIVED;
+      } else {
+        result.reason = GROUP_CAN_NOT_SHOWN_REASON.UNKNOWN;
+      }
+    } else if (!isIncludeSelf) {
+      result.reason = GROUP_CAN_NOT_SHOWN_REASON.NOT_INCLUDE_SELF;
+    } else if (isHidden) {
+      result.reason = GROUP_CAN_NOT_SHOWN_REASON.HIDDEN;
+    } else {
+      result.canBeShown = true;
+    }
+    return result;
   }
 
   private _generateTeamParameters(

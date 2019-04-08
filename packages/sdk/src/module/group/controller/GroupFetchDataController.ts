@@ -448,21 +448,6 @@ export class GroupFetchDataController {
     return email;
   }
 
-  async isGroupCanBeShown(groupId: number): Promise<boolean> {
-    const profileService: ProfileService = ProfileService.getInstance();
-    const isHidden = await profileService.isConversationHidden(groupId);
-    let isIncludeSelf = false;
-    let isValid = false;
-    const group = await this.entitySourceController.get(groupId);
-    if (group) {
-      isValid = this.groupService.isValid(group);
-      const userConfig = new AccountUserConfig();
-      const currentUserId = userConfig.getGlipUserId();
-      isIncludeSelf = group.members.includes(currentUserId);
-    }
-    return !isHidden && isValid && isIncludeSelf;
-  }
-
   private async _isGroupFavored(groupId: number): Promise<boolean> {
     const profileService: ProfileService = ProfileService.getInstance();
     const profile = await profileService.getProfile();
