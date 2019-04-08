@@ -12,7 +12,7 @@ describe('StateAPI', () => {
     it('glipNetworkClient put() should be called with specific path', () => {
       StateAPI.saveStatePartial(7, { id: 7 });
       expect(StateAPI.glipNetworkClient.put)
-        .toHaveBeenCalledWith('/save_state_partial/7', { id: 7 });
+        .toHaveBeenCalledWith({path: '/save_state_partial/7', data:{ id: 7 }});
     });
   });
 });
