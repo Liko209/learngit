@@ -20,7 +20,7 @@ import {
 } from 'jui/pattern/Profile/Dialog';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import { Members } from './Members';
-import { joinTeam } from '@/common/joinPublicTeam';
+import { joinPublicTeam } from '@/common/joinPublicTeam';
 import portalManager from '@/common/PortalManager';
 import { renderButton } from './common/button';
 
@@ -29,9 +29,8 @@ class ProfileDialogGroupContentViewComponent extends Component<
   WithTranslation & ProfileDialogGroupContentViewProps
 > {
   joinTeamAfterClick = () => {
-    const handerJoinTeam = joinTeam(this.props.group);
     portalManager.dismissLast();
-    handerJoinTeam();
+    joinPublicTeam(this.props.group);
   }
 
   messageAfterClick = async () => {

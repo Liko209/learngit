@@ -16,9 +16,9 @@ type Props = FullSearchViewProps & WithTranslation;
 @observer
 class FullSearchViewComponent extends Component<Props> {
   render() {
-    const { t } = this.props;
+    const { t, currentTab } = this.props;
     return (
-      <JuiTabs defaultActiveIndex={0}>
+      <JuiTabs defaultActiveIndex={currentTab}>
         {TAB_CONFIG.map(
           ({ title, container, automationID }: TabConfig, index: number) => {
             const Component = container;

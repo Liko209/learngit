@@ -12,12 +12,16 @@ import storeManager from '@/store';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { GlobalSearchService } from '@/modules/GlobalSearch/service';
+import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
 
 const globalStore = storeManager.getGlobalStore();
 
 class TopBarViewModel extends AbstractViewModel {
   private _globalSearchService: GlobalSearchService = container.get(
     GlobalSearchService,
+  );
+  private _globalSearchStore: GlobalSearchStore = container.get(
+    GlobalSearchStore,
   );
 
   brandName: string = 'RingCentral';
@@ -43,6 +47,16 @@ class TopBarViewModel extends AbstractViewModel {
   @action
   openGlobalSearch = () => {
     this._globalSearchService.openGlobalSearch();
+  }
+
+  @computed
+  get searchKey() {
+    return this._globalSearchStore.searchKey;
+  }
+
+  @action
+  onClear = () => {
+    this._globalSearchStore.clearSearchKey();
   }
 }
 

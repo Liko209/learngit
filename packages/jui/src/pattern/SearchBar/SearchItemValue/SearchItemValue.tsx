@@ -19,19 +19,23 @@ const SearchItemValueWrapper = styled.div`
 `;
 
 type JuiSearchItemValueProps = {
-  terms: string[];
+  terms?: string[];
   value: string;
 };
 
-function highlight(value: string, terms: string[]) {
-  let v = value;
-  if (terms.length > 0) {
-    let reg = terms.join('|');
-    reg = reg.replace(/([.?*+^$[\]\\(){}-])/g, '\\$1'); // replace invalid characters
-    v = v.replace(new RegExp(reg, 'gi'), (term: string) => {
-      return `<span>${term}</span>`;
-    });
+function highlight(value: string, terms?: string[]) {
+  if (!terms || terms.length === 0) {
+    return {
+      __html: value,
+    };
   }
+
+  let v = value;
+  let reg = terms.join('|');
+  reg = reg.replace(/([.?*+^$[\]\\(){}-])/g, '\\$1'); // replace invalid characters
+  v = v.replace(new RegExp(reg, 'gi'), (term: string) => {
+    return `<span>${term}</span>`;
+  });
 
   return {
     __html: v,
