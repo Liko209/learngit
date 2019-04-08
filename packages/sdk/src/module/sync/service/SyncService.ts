@@ -21,6 +21,7 @@ class SyncService extends EntityBaseService {
         ),
         [SOCKET.TIMESTAMP]: this.updateIndexTimestamp.bind(this),
         [SERVICE.STOPPING_SOCKET]: this._handleStoppingSocketEvent.bind(this),
+        [SERVICE.WAKE_UP_FROM_SLEEP]: this._handleWakeUpFromSleep.bind(this),
         [WINDOW.FOCUS]: this._handleWindowFocused.bind(this),
       }),
     );
@@ -51,6 +52,10 @@ class SyncService extends EntityBaseService {
 
   private _handleStoppingSocketEvent() {
     this.getSyncController().handleStoppingSocketEvent();
+  }
+
+  private _handleWakeUpFromSleep() {
+    this.getSyncController().handleWakeUpFromSleep();
   }
 
   private _handleWindowFocused() {

@@ -60,7 +60,7 @@ class GitRepo {
       }
       const gitCommitLine = `cd ${
         this.srcDir
-        } && git log -n ${n} --pretty=format:"%t|%an|%ad|%s|%h"`;
+      } && git log -n ${n} --pretty=format:"%t|%an|%ad|%s|%h"`;
       return exec(gitCommitLine, (error: any, stdout: any, stderr: any) => {
         if (error) {
           console.log(`run ${gitCommitLine} ${error}`);

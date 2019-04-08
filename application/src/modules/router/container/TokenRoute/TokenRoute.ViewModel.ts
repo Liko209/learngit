@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { AuthService } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
 import { computed, observable, action } from 'mobx';
 import * as H from 'history';
 import { parse } from 'qs';
@@ -14,11 +14,11 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { StoreViewModel } from '@/store/ViewModel';
 import history from '@/history';
 import { ProfileService } from 'sdk/module/profile';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 const { SERVICE } = service;
 
 class TokenRouteViewModel extends StoreViewModel {
-  private _authService: AuthService = AuthService.getInstance();
   private _LoggedInHandled: boolean = false;
   @observable isError: boolean = false;
 
@@ -45,7 +45,9 @@ class TokenRouteViewModel extends StoreViewModel {
     if (this._LoggedInHandled) {
       return;
     }
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
 
@@ -64,7 +66,10 @@ class TokenRouteViewModel extends StoreViewModel {
       const { code, id_token, t } = this._getUrlParams(location);
       const token = t || id_token;
       if (code || token) {
-        await this._authService.unifiedLogin({ code, token });
+        const accountService = ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        );
+        await accountService.unifiedLogin({ code, token });
       }
     } catch (e) {
       this._setIsError(true);
@@ -72,8 +77,10 @@ class TokenRouteViewModel extends StoreViewModel {
   }
 
   redirectToIndex = async () => {
-    const authService = AuthService.getInstance() as AuthService;
-    await authService.logout();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    await accountService.logout();
     const { location } = history;
     const { state = '/' } = this._getUrlParams(location);
     this._redirect(state);

@@ -17,7 +17,7 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { StateFetchDataController } from './StateFetchDataController';
 import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { MyStateConfig } from '../../../state/config';
 import { SYNC_SOURCE } from '../../../../module/sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';

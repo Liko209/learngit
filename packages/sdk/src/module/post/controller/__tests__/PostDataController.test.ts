@@ -18,6 +18,7 @@ import { IEntityPersistentController } from '../../../../framework/controller/in
 import _ from 'lodash';
 import { notificationCenter, ENTITY } from '../../../../service';
 import GroupService from '../../../../module/group';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
 jest.mock('../../../item');
@@ -72,7 +73,7 @@ describe('PostDataController', () => {
   }
 
   function setup() {
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
     itemService.handleIncomingData = jest.fn();
     groupService.updateHasMore = jest.fn();
     daoManager.getDao.mockImplementation(arg => {
@@ -141,7 +142,7 @@ describe('PostDataController', () => {
           deleteIds.push(i);
         }
       }
-      for (let i = 61; i < 100; i += 1) {
+      for (let i = 61; i < 110; i += 1) {
         posts.push({ id: i, group_id: 2 });
       }
       postDao.queryPostIdsByGroupId.mockResolvedValue(deleteIds);

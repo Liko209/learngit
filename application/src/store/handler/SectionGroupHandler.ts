@@ -31,10 +31,10 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
 import { StateService } from 'sdk/module/state';
 import { ProfileService } from 'sdk/module/profile';
-import { SequenceProcessorHandler } from 'sdk/framework/processor/SequenceProcessorHandler';
-import PrefetchPostProcessor from './PrefetchPostProcessor';
 import { TDelta } from '../base/fetch/types';
-import postCacheController from '@/containers/ConversationPage/Stream/cache/PostCacheController';
+import { mainLogger } from 'sdk';
+import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 function groupTransformFunc(data: Group): ISortableModel<Group> {
   const {
@@ -65,19 +65,21 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
     pageSize: number,
     anchor: ISortableModel<Group>,
   ): Promise<{ data: Group[]; hasMore: boolean }> {
-    const groupService = GroupService.getInstance<GroupService>();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     const result = await groupService.getGroupsByType(this._queryType);
+    mainLogger.info(
+      `fetch left rail group: ${result && result.length} type: ${
+        this._queryType
+      }`,
+    );
     return { data: result, hasMore: false };
   }
 }
 
+const LOG_TAG = 'SectionGroupHandler';
 class SectionGroupHandler extends BaseNotificationSubscribable {
-  private _stateService: StateService = StateService.getInstance();
-
-  private _prefetchHandler: SequenceProcessorHandler = new SequenceProcessorHandler(
-    'SequenceProcessorHandler',
-  );
-
   private _handlersMap: {} = {};
   private _oldFavGroupIds: number[] = [];
   private static _instance: SectionGroupHandler | undefined = undefined;
@@ -165,7 +167,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       }
     }
     if (shouldAdd) {
-      const groupService = GroupService.getInstance<GroupService>();
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
       const groups: Group[] = (await groupService.getGroupsByIds(ids)) || [];
       const validGroups = groups.filter((group: Group) =>
         groupService.isValid(group),
@@ -196,7 +200,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const less = _.difference(newFavIds, this._oldFavGroupIds); // less group more fav
       this._oldFavGroupIds = newFavIds;
       // handle favorite section change
-      const groupService = GroupService.getInstance<GroupService>();
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
       const groups = await groupService.getGroupsByType(
         GROUP_QUERY_TYPE.FAVORITE,
       );
@@ -260,9 +266,12 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   private async _remove(ids: number[], checkLimit: boolean = false) {
     let limit = 0;
     if (checkLimit) {
-      const profileService: ProfileService = ProfileService.getInstance();
+      const profileService = ServiceLoader.getInstance<ProfileService>(
+        ServiceConfig.PROFILE_SERVICE,
+      );
       limit = await profileService.getMaxLeftRailGroup();
     }
+    mainLogger.info(LOG_TAG, `_remove limit: ${limit}`);
     const directIdsShouldBeRemoved: number[] = [];
     const teamIdsShouldBeRemoved: number[] = [];
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
@@ -335,13 +344,13 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (deleted.length) {
       const trulyDeleted = _.differenceBy(deleted, addedIds);
       trulyDeleted.forEach((groupId: number) => {
-        postCacheController.remove(groupId);
+        preFetchConversationDataHandler.removeCache(groupId);
       });
     }
 
     if (updated.length) {
       updated.forEach((group: ISortableModel) => {
-        if (!postCacheController.has(group.id)) {
+        if (!preFetchConversationDataHandler.isGroupCachedBefore(group.id)) {
           this._addToFetchProcessor(group.id);
         }
       });
@@ -350,7 +359,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (added.length) {
       const trulyAdded = _.differenceBy(addedIds, deleted);
       trulyAdded.forEach((groupId: number) => {
-        if (!postCacheController.has(groupId)) {
+        if (!preFetchConversationDataHandler.isGroupCachedBefore(groupId)) {
           this._addToFetchProcessor(groupId);
         }
       });
@@ -386,7 +395,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
           : false;
       const includesMe =
         currentUserId && _.includes(model.members, currentUserId);
-      const groupService = GroupService.getInstance<GroupService>();
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
       return (
         this._oldFavGroupIds.indexOf(model.id) !== -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
@@ -423,7 +434,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         model.most_recent_post_created_at !== undefined ||
         model.creator_id === currentUserId;
 
-      const groupService = GroupService.getInstance<GroupService>();
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
       return (
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
@@ -456,7 +469,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       const isTeamInTeamSection = model.is_team as boolean;
       const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
       const includesMe = userId && _.includes(model.members, userId);
-      const groupService = GroupService.getInstance<GroupService>();
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
       return (
         this._oldFavGroupIds.indexOf(model.id) === -1 &&
         (this._hiddenGroupIds.indexOf(model.id) === -1 || hasUnread) &&
@@ -489,7 +504,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         });
       } else if (sectionType === SECTION_TYPE.DIRECT_MESSAGE) {
         groups.forEach(async (group: Group) => {
-          const stateService: StateService = StateService.getInstance();
+          const stateService = ServiceLoader.getInstance<StateService>(
+            ServiceConfig.STATE_SERVICE,
+          );
           const state = await stateService.getById(group.id);
           if (state && state.unread_count) {
             this._addToFetchProcessor(group.id);
@@ -497,7 +514,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
         });
       } else {
         groups.forEach(async (group: Group) => {
-          const stateService: StateService = StateService.getInstance();
+          const stateService = ServiceLoader.getInstance<StateService>(
+            ServiceConfig.STATE_SERVICE,
+          );
           const state = await stateService.getById(group.id);
           if (state && state.unread_mentions_count) {
             this._addToFetchProcessor(group.id);
@@ -509,8 +528,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private async _addToFetchProcessor(groupId: number) {
-    const processor = new PrefetchPostProcessor(groupId, postCacheController);
-    this._prefetchHandler.addProcessor(processor);
+    preFetchConversationDataHandler.addProcessor(groupId);
   }
 
   private _getPerformanceKey(sectionType: SECTION_TYPE): string {
@@ -568,7 +586,10 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private async _getStates(groupIds: number[]): Promise<GroupState[]> {
-    const states = await this._stateService.getGroupStatesFromLocalWithUnread(
+    const stateService = ServiceLoader.getInstance<StateService>(
+      ServiceConfig.STATE_SERVICE,
+    );
+    const states = await stateService.getGroupStatesFromLocalWithUnread(
       groupIds,
     );
     return states || [];
@@ -580,9 +601,15 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   async removeOverLimitGroupByChangingCurrentGroupId() {
     const currentId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
-    const profileService = ProfileService.getInstance<ProfileService>();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const lastGroupId = this._lastGroupId;
     const limit = await profileService.getMaxLeftRailGroup();
+    mainLogger.info(
+      LOG_TAG,
+      `removeOverLimitGroupByChangingCurrentGroupId limit: ${limit}`,
+    );
     if (currentId !== lastGroupId) {
       await this._removeOverLimitGroupByChangingCurrentGroupId(
         SECTION_TYPE.DIRECT_MESSAGE,
@@ -603,7 +630,9 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     originalIds: number[],
     limit: number,
   ) {
-    const stateService = StateService.getInstance<StateService>();
+    const stateService = ServiceLoader.getInstance<StateService>(
+      ServiceConfig.STATE_SERVICE,
+    );
     const states =
       (await stateService.getGroupStatesFromLocalWithUnread(originalIds)) || [];
     const ids = this.getRemovedIds(
@@ -625,10 +654,16 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
     if (this._lastGroupId === 0) {
       return;
     }
-    const profileService = ProfileService.getInstance<ProfileService>();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const directIds = this.getGroupIdsByType(SECTION_TYPE.DIRECT_MESSAGE);
     const teamIds = this.getGroupIdsByType(SECTION_TYPE.TEAM);
     const limit = await profileService.getMaxLeftRailGroup();
+    mainLogger.info(
+      LOG_TAG,
+      `removeOverLimitGroupByChangingIds limit: ${limit}`,
+    );
     await this._removeOverLimitGroupByChangingIds(
       SECTION_TYPE.DIRECT_MESSAGE,
       directIds,

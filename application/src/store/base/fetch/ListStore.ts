@@ -6,6 +6,7 @@
 import { observable, action, IObservableArray } from 'mobx';
 import _ from 'lodash';
 import BaseNotificationSubscribe from '@/store/base/BaseNotificationSubscribable';
+import { mainLogger } from 'sdk';
 
 export class ListStore<T> extends BaseNotificationSubscribe {
   _items: IObservableArray<T> = observable([], { deep: false });
@@ -73,7 +74,7 @@ export class ListStore<T> extends BaseNotificationSubscribe {
   }
 
   dump(...args: any[]) {
-    console.log(`===> dump: ${JSON.stringify(this._items)}`, args);
+    mainLogger.info(`===> dump: ${JSON.stringify(this._items)}`, args);
   }
 
   @action

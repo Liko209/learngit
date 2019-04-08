@@ -6,8 +6,9 @@
 
 import { IPreInsertIdController } from '../interface/IPreInsertIdController';
 import { mainLogger } from 'foundation';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountGlobalConfig } from '../../../../module/account/config';
 import { UserConfigService } from '../../../../module/config';
+import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
 
 const PREINSERT_KEY_ID = 'PREINSERT_KEY_ID';
 
@@ -21,13 +22,17 @@ class PreInsertIdController implements IPreInsertIdController {
   }
 
   private _initVersions() {
-    const configService: UserConfigService = UserConfigService.getInstance();
+    const configService = ServiceLoader.getInstance<UserConfigService>(
+      ServiceConfig.USER_CONFIG_SERVICE,
+    );
     configService.setUserId(AccountGlobalConfig.getUserDictionary());
     this._versions = configService.get(this._modelName, PREINSERT_KEY_ID) || [];
   }
 
   private _syncDataDB() {
-    const configService: UserConfigService = UserConfigService.getInstance();
+    const configService = ServiceLoader.getInstance<UserConfigService>(
+      ServiceConfig.USER_CONFIG_SERVICE,
+    );
     configService.setUserId(AccountGlobalConfig.getUserDictionary());
     configService.put(this._modelName, PREINSERT_KEY_ID, this._versions);
   }

@@ -2,7 +2,7 @@ import ConfigChangeNotifier from '../configChangeNotifier';
 import FeatureFlag from '../FeatureFlag';
 import FlagCalculator from '../FlagCalculator';
 import { BETA_FEATURE, IFlag } from '../interface';
-import { RCInfoService } from '../../../module/rcInfo';
+import { ServiceLoader } from '../../../module/serviceLoader';
 import { RCInfoApi } from '../../../api/ringcentral';
 
 jest.mock('../FlagCalculator');
@@ -24,7 +24,7 @@ describe('FeatureFlag', () => {
     mockedNotifier = new ConfigChangeNotifier();
     mockedCalc = new FlagCalculator(oldFlags);
     featureFlag = new FeatureFlag(mockedNotifier, mockedCalc);
-    RCInfoService.getInstance = jest.fn().mockReturnValue(mockRCInfoService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockRCInfoService);
   });
 
   it('isFeatureEnabled called once', () => {

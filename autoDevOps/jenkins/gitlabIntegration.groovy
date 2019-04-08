@@ -165,6 +165,8 @@ def formatGlipReport(report) {
         lines.push("**Coverage Report**: ${report.coverage}")
     if (null != report.coverageDiff)
         lines.push("**Coverage Changes**: ${report.coverageDiff}")
+    if (null != report.coverageDiffDetail)
+        lines.push("**Coverage Changes Detail**: ${report.coverageDiffDetail}")
     if (null != report.appUrl)
         lines.push("**Application URL**: ${report.appUrl}")
     if (null != report.juiUrl)
@@ -470,7 +472,15 @@ node(buildNode) {
                         String latestCommitWithNote = sh(returnStdout: true, script: "grep -Fx -f note-sha.txt commit-sha.txt | head -1").trim()
                         // step 3: compare with baseline
                         if (latestCommitWithNote) {
+                            // read baseline
                             sh "git notes show ${latestCommitWithNote} > baseline-coverage-summary.json"
+                            // archive detail
+                            try {
+                                sh "npx ts-node scripts/report-diff.ts baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff.csv"
+                                archiveArtifacts artifacts: 'coverage-diff.csv', fingerprint: true
+                                report.coverageDiffDetail = "${buildUrl}artifact/coverage-diff.csv"
+                            } catch (e) {}
+                            // ensure increasing
                             int exitCode = sh(
                                 returnStatus: true,
                                 script: "node scripts/coverage-diff.js baseline-coverage-summary.json coverage/coverage-summary.json > coverage-diff",
@@ -537,11 +547,6 @@ node(buildNode) {
                         // for stage build, also create link to stage folder
                         if (!isMerge && gitlabSourceBranch.startsWith('stage'))
                             updateRemoteCopy(deployUri, appHeadShaDir, appStageLinkDir)
-                        // for release build, we should also create a tar.gz package for deployment
-                        if (buildRelease) {
-                            createRemoteTarbar(deployUri, appHeadShaDir, publishDir, publishPackageName)
-                            report.publishUrl = publishUrl
-                        }
                     }
                 }
                 report.appUrl = appUrl

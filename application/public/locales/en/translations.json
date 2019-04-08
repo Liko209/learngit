@@ -128,8 +128,10 @@
       "SorryWeWereNotAbleToSendTheMessage": "Sorry, we weren't able to send the message. Try again.",
       "SorryWeWereNotAbleToLikeTheMessage": "Sorry, we weren't able to like this message. Try again.",
       "SorryWeWereNotAbleToUnlikeTheMessage": "Sorry, we weren't able to unlike this message. Try again.",
-      "SorryWeWereNotAbleToRemoveYourBookmark": "Sorry, we weren't able to remove your bookmark. Try again.",
-      "SorryWeWereNotAbleToBookmarkThisMessage": "Sorry, we weren't able to bookmark this message. Try again.",
+      "notAbleToRemoveYourBookmarkForNetworkIssue": "Sorry, we weren't able to remove your bookmark due to a poor network connection. Try again.",
+      "notAbleToRemoveYourBookmarkForServerIssue": "Sorry, something went wrong on our end and we weren't able to remove your bookmark. Try again later.",
+      "notAbleToBookmarkThisMessageForNetworkIssue": "We weren't able to bookmark this message due to a poor network connection. Check your connectivity, then try again.",
+      "notAbleToBookmarkThisMessageForServerIssue": "Sorry, something went wrong on our end and we weren't able to bookmark this message. Try again later.",
       "SorryWeWereNotAbleToPinTheMessage": "Sorry, we weren't able to pin this message. Try again.",
       "SorryWeWereNotAbleToUnpinTheMessage": "Sorry, we weren't able to unpin this message. Try again.",
       "SorryWeWereNotAbleToLoadOlderMessages": "Sorry, we weren't able to load older messages. Try again.",
@@ -420,7 +422,13 @@
   "integration": {},
   "setting": {
     "Settings": "Settings",
-    "teamSettings": "Settings"
+    "teamSettings": "Settings",
+    "general": "General",
+    "notificationAndSounds": "Notification and Sounds",
+    "messaging": "Messaging",
+    "phone": "Phone",
+    "meetings": "Meetings",
+    "calendar": "Calendar"
   },
   "viewer": {
     "ZoomIn": "Scale file up",
@@ -433,5 +441,16 @@
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
+  },
+  "feedback": {
+    "name": "Feedback",
+    "uploading": "uploading",
+    "uploadRecentLogsDialogHeader": "Upload log?",
+    "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
+    "upload": "Upload",
+    "describeYourProblemHere": "Describe your problem here",
+    "uploadLogSuccess": "Upload log successfully, please send it via email.",
+    "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
+    "openEmailFailed": "Open email failed."
   }
 }

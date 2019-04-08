@@ -10,6 +10,7 @@ import notificationCenter from '../../../../service/notificationCenter';
 // import { GlobalConfigService } from '../../../../module/config';
 import { UserConfigService } from '../../../../module/config/service/UserConfigService';
 import { GlobalConfigService } from '../../../../module/config/service/GlobalConfigService';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../progress');
 jest.mock('../../../../service/notificationCenter');
@@ -31,8 +32,6 @@ describe('PreInsertController', () => {
     let preInsertController: PreInsertController;
 
     progressService = new ProgressService();
-
-    ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
     const dao = new PostDao(null);
     preInsertController = new PreInsertController(dao, progressService);
     jest
@@ -43,13 +42,21 @@ describe('PreInsertController', () => {
 
   describe('insert()', () => {
     it('should call addProgress & notificationCenter.emitEntityUpdate', async () => {
-      GlobalConfigService.getInstance = jest.fn().mockReturnValue({
-        get: jest.fn(),
-      });
       const userConfigService: UserConfigService = new UserConfigService();
-      UserConfigService.getInstance = jest
+
+      ServiceLoader.getInstance = jest
         .fn()
-        .mockReturnValue(userConfigService);
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.GLOBAL_CONFIG_SERVICE) {
+            return {
+              get: jest.fn(),
+            };
+          }
+          if (serviceName === ServiceConfig.USER_CONFIG_SERVICE) {
+            return userConfigService;
+          }
+          return null;
+        });
       userConfigService.setUserId.mockImplementation(() => {});
       const preInsertController = setup();
       await preInsertController.insert({ id: -2, version: -2 });

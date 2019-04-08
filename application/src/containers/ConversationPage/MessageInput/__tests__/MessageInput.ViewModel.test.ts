@@ -12,26 +12,41 @@ import {
 } from '../MessageInput.ViewModel';
 import _ from 'lodash';
 import * as md from 'jui/pattern/MessageInput/markdown';
-import { GroupConfigService } from 'sdk/module/groupConfig';
-import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/groupConfig');
 jest.mock('sdk/api');
 
 const postService = new PostService();
-PostService.getInstance = jest.fn().mockReturnValue(postService);
 
 const groupConfigService = {
   updateDraft: jest.fn(),
   getDraft: jest.fn(),
 };
-GroupConfigService.getInstance = () => groupConfigService;
 
 const itemService = {
   getUploadItems: jest.fn(),
 };
+
+ServiceLoader.getInstance = jest
+  .fn()
+  .mockImplementation((serviceName: string) => {
+    if (serviceName === ServiceConfig.POST_SERVICE) {
+      return postService;
+    }
+
+    if (serviceName === ServiceConfig.ITEM_SERVICE) {
+      return itemService;
+    }
+
+    if (serviceName === ServiceConfig.GROUP_CONFIG_SERVICE) {
+      return groupConfigService;
+    }
+
+    return null;
+  });
 
 const mockGroupEntityData = {
   draft: 'draft',
@@ -40,10 +55,6 @@ const mockGroupEntityData = {
 let messageInputViewModel;
 describe('MessageInputViewModel', () => {
   beforeEach(() => {
-    jest
-      .spyOn(GroupConfigService, 'getInstance')
-      .mockReturnValue(groupConfigService);
-    jest.spyOn(ItemService, 'getInstance').mockReturnValue(itemService);
     jest.mock('@/store/utils', () => ({
       getEntity: jest.fn(() => mockGroupEntityData),
     }));

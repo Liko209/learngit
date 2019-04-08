@@ -11,28 +11,40 @@ import { PersonService } from 'sdk/module/person';
 import { TeamPermission, GroupService } from 'sdk/module/group';
 import SortableGroupMemberHandler from '../SortableGroupMemberHandler';
 import { Person } from 'sdk/module/person/entity';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/group');
 jest.mock('sdk/module/person');
 
 describe('SortableGroupMemberHandler', () => {
-  const groupService = new GroupService();
-  const personService = new PersonService();
+  let groupService: GroupService;
+  let personService: PersonService;
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
     jest.resetModules();
 
+    groupService = new GroupService();
+    personService = new PersonService();
     PersonService.getInstance = jest.fn().mockReturnValue(personService);
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (ServiceConfig.PERSON_SERVICE === serviceName) {
+          return personService;
+        }
+
+        if (ServiceConfig.GROUP_SERVICE === serviceName) {
+          return groupService;
+        }
+
+        return null;
+      });
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
-    jest.restoreAllMocks();
-  });
-
-  it('should return SortableGroupMemberHandler', async () => {
+  it('should return SortableGroupMemberHandler', async (done: any) => {
     const groupId = 3;
     const group = { id: groupId, members: [1, 2, 3] };
     const persons = [
@@ -40,9 +52,9 @@ describe('SortableGroupMemberHandler', () => {
       { id: 2, email: 'b@c.com' },
       { id: 3, email: 'a@a.com' },
     ];
-    groupService.getById.mockResolvedValueOnce(group);
-    personService.getPersonsByIds.mockResolvedValueOnce(persons);
-    const handler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
+    groupService.getById = jest.fn().mockResolvedValue(group);
+    personService.getPersonsByIds = jest.fn().mockResolvedValue(persons);
+    const handler: any = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
       groupId,
     );
     setTimeout(() => {
@@ -53,11 +65,12 @@ describe('SortableGroupMemberHandler', () => {
         persons[1].id,
         persons[2].id,
       ]);
-      expect(personService.getPersonsByIds).resolves.toBeCalledWith([1, 2, 3]);
+      expect(personService.getPersonsByIds).toBeCalledWith([1, 2, 3]);
+      done();
     });
   });
 
-  it('should return sorted member list, admin first, then members', async () => {
+  it('should return sorted member list, admin first, then members', async (done: any) => {
     const groupId = 3;
     const group = {
       id: groupId,
@@ -76,25 +89,27 @@ describe('SortableGroupMemberHandler', () => {
 
     const expectRes = [3, 2, 1, 7, 6, 5, 4];
 
-    groupService.getById.mockResolvedValueOnce(group);
-    personService.getPersonsByIds.mockResolvedValueOnce(persons);
+    groupService.getById = jest.fn().mockResolvedValue(group);
+    personService.getPersonsByIds = jest.fn().mockResolvedValue(persons);
 
-    groupService.isTeamAdmin.mockImplementation(
-      (personId: number, permission?: TeamPermission) => {
+    groupService.isTeamAdmin = jest
+      .fn()
+      .mockImplementation((personId: number, permission?: TeamPermission) => {
         return personId < 4;
-      },
-    ); // first 3 is admin;
+      }); // first 3 is admin;
 
-    personService.getFullName.mockImplementation((person: Person) => {
-      return person.email;
-    });
+    personService.getFullName = jest
+      .fn()
+      .mockImplementation((person: Person) => {
+        return person.email;
+      });
 
-    const handler = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
+    const handler: any = await SortableGroupMemberHandler.createSortableGroupMemberHandler(
       groupId,
     );
     setTimeout(() => {
       expect(handler.getSortedGroupMembersIds()).toEqual(expectRes);
-      expect(personService.getPersonsByIds).resolves.toBeCalledWith([
+      expect(personService.getPersonsByIds).toBeCalledWith([
         1,
         2,
         3,
@@ -103,6 +118,7 @@ describe('SortableGroupMemberHandler', () => {
         6,
         7,
       ]);
+      done();
     });
   });
 
@@ -114,8 +130,8 @@ describe('SortableGroupMemberHandler', () => {
     };
     const persons = [{ id: 2, email: 'b@a.com' }, { id: 3, email: 'a@a.com' }];
 
-    groupService.getById.mockResolvedValueOnce(group);
-    personService.getPersonsByIds.mockResolvedValueOnce(persons);
+    groupService.getById = jest.fn().mockResolvedValue(group);
+    personService.getPersonsByIds = jest.fn().mockResolvedValue(persons);
 
     const groupUpdates = [
       { id: groupId, members: [1] },

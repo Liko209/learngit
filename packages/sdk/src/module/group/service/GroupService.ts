@@ -23,9 +23,9 @@ import { NotificationEntityUpdatePayload } from '../../../service/notificationCe
 import { Post } from '../../post/entity';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
-  static serviceName = 'GroupService';
   partialModifyController: PartialModifyController<Group>;
   groupController: GroupController;
   groupConfigController: GroupConfigController;
@@ -82,9 +82,15 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     groups: Raw<Group>[],
     source: SYNC_SOURCE,
   ): Promise<void> => {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_GROUP,
+      logId,
+    );
     await this.getGroupController()
       .getHandleDataController()
       .handleData(groups, source);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleGroupMostRecentPostChanged = async (

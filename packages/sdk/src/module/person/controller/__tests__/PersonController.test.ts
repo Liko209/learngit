@@ -24,18 +24,16 @@ import { IEntityCacheController } from '../../../../framework/controller/interfa
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../../group/entity';
 import { GlobalConfigService } from '../../../../module/config';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { ContactType } from '../../types';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
 
 jest.mock('../../../../module/config');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 
 jest.mock('../../../../module/group');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../dao/DaoManager');
-
-GlobalConfigService.getInstance = jest.fn();
 
 describe('PersonService', () => {
   let personController: PersonController;
@@ -294,6 +292,7 @@ describe('PersonService', () => {
     const thumbsSize150 = 'https://glip.com/thumbs150.jpg';
     const thumbsSizeX = 'https://glip.com/thumbsx.jpg';
     const serverUrl = 'https://glip.com/headurl.jpg';
+    const gifUrl = 'https://glip.com/test.gif?test=1';
 
     beforeEach(() => {
       jest.spyOn(PersonAPI, 'getHeadShotUrl').mockReturnValueOnce(serverUrl);
@@ -311,7 +310,7 @@ describe('PersonService', () => {
 
       const headshot = {
         thumbs: thumbsString,
-        url: URL,
+        url: originalURL,
       };
       const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
       expect(url).toBe(thumbsSize150);
@@ -420,6 +419,21 @@ describe('PersonService', () => {
       const headshot = originalURL;
       const url = personController.getHeadShotWithSize(1, '', headshot, 150);
       expect(url).toBe(originalURL);
+    });
+
+    it('should return original url when the original headshot is gif', () => {
+      const headshot = {
+        url: gifUrl,
+        stored_file_id: '123',
+      };
+      const url = personController.getHeadShotWithSize(1, '', headshot, 150);
+      expect(url).toBe(gifUrl);
+    });
+
+    it('should return original url when the headshot is string and the original url is gif', () => {
+      const headshot = gifUrl;
+      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      expect(url).toBe(gifUrl);
     });
   });
 
