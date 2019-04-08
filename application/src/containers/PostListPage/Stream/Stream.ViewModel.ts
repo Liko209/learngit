@@ -69,7 +69,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         pageSize: number,
         anchor?: ISortableModel<Post>,
       ) => {
-        console.log('hihihi', this.props);
         const { data, hasMore } = await this.props.postFetcher(
           direction,
           pageSize,
@@ -97,6 +96,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       (selfProvide && this._initial) ||
       (!selfProvide && !this._postIds.length && postIds.length);
     if (shouldRunInitial) {
+      this._initial = false;
       this._postIds = postIds;
       await this.fetchInitialPosts();
       return;
@@ -135,7 +135,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @loading
   fetchInitialPosts() {
-    this._initial = false;
     this._sortableListHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
     return this._batchFetchPosts();
   }
