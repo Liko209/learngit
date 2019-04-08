@@ -20,9 +20,13 @@ import { PersonService, ContactType } from 'sdk/module/person';
 import { mainLogger } from 'sdk';
 import { TelephonyStore } from '../store';
 import { ToastCallError } from './ToastCallError';
+import { TelephonyNotificationManager } from '../TelephonyNotificationManager';
+import i18nT from '@/utils/i18nT';
 
 class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
+  @inject(TelephonyNotificationManager)
+  private _telephonyNotificationManager: TelephonyNotificationManager;
   static TAG: string = '[UI TelephonyService] ';
 
   private _serverTelephonyService: ServerTelephonyService = ServerTelephonyService.getInstance();
@@ -45,10 +49,26 @@ class TelephonyService {
     this._telephonyStore.directCall();
   }
 
-  private _onReceiveIncomingCall = (callInfo: TelephonyCallInfo) => {
+  private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${callInfo.callId}`,
     );
+
+    const { fromName, fromNum, callId } = callInfo;
+    let unknownCaller = 'Unknown Caller';
+    if (!fromName) {
+      // Todo If the call is from an unrecognized caller or anonymous, display 'Unknown Caller'
+      unknownCaller = await i18nT('telephony.notification.unknownCaller');
+    }
+    this._telephonyNotificationManager.dispatch({
+      type: 'INCOMING',
+      options: {
+        id: callId,
+        callNumber: fromNum,
+        callerName: fromName || unknownCaller,
+        answerHandler: () => {},
+      },
+    });
   }
 
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
@@ -63,6 +83,12 @@ class TelephonyService {
       }
       case RTC_CALL_STATE.DISCONNECTED: {
         this._telephonyStore.end();
+        this._telephonyNotificationManager.dispatch({
+          type: 'HANGUP',
+          options: {
+            id: callId,
+          },
+        });
         break;
       }
     }

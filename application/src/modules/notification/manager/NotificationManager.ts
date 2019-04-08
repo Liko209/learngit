@@ -19,7 +19,7 @@ export abstract class NotificationManager {
     this._notificationService.show(title, opts);
   }
 
-  close(id: number) {
+  close(id: number | string) {
     this._notificationService.close(this._scope, id);
   }
 

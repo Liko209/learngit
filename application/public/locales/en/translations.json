@@ -417,7 +417,8 @@
     },
     "notification": {
       "incomingCall": "Incoming call",
-      "answer": "Answer"
+      "answer": "Answer",
+      "unknownCaller": "Unknown Caller"
     }
   },
   "meeting": {

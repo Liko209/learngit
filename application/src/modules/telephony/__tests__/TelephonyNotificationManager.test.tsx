@@ -8,60 +8,63 @@ import { TelephonyNotificationManager } from '../TelephonyNotificationManager';
 import * as i18nT from '@/utils/i18nT';
 
 describe('TelephonyNotificationManager', () => {
-  let n: TelephonyNotificationManager;
-  beforeEach(() => {
-    jest.clearAllMocks();
-    jest.spyOn(i18nT, 'default').mockImplementation(async i => i);
-    n = new TelephonyNotificationManager();
-  });
-  it('When dispatch action is INCOMING, show function should be called', async () => {
-    jest.spyOn(n, 'show').mockImplementation();
-    const noop = () => {};
-    await n.dispatch({
-      type: 'INCOMING',
-      options: {
-        id: 1,
-        callNumber: '123',
-        callerName: 'alex',
-        answerHandler: noop,
-      },
+  describe('dispatch()', () => {
+    let telephonyNotificationManager: TelephonyNotificationManager;
+    beforeEach(() => {
+      jest.clearAllMocks();
+      jest.spyOn(i18nT, 'default').mockImplementation(async i => i);
+      telephonyNotificationManager = new TelephonyNotificationManager();
     });
 
-    const title = await i18nT.default('telephony.notification.incomingCall');
-    const answerAction = {
-      title: await i18nT.default('telephony.notification.answer'),
-      icon: '',
-      action: 'answer',
-      handler: noop,
-    };
-    expect(n.show).toHaveBeenCalledWith(title, {
-      actions: [answerAction],
-      tag: '1',
-      data: {
-        id: 1,
-        scope: 'telephony',
-      },
-      body: 'alex 123',
-      icon: 'incoming-call.png',
-    });
-  });
+    it('should call show() when dispatch action is INCOMING', async () => {
+      jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
+      const noop = () => {};
+      await telephonyNotificationManager.dispatch({
+        type: 'INCOMING',
+        options: {
+          id: '1',
+          callNumber: '123',
+          callerName: 'alex',
+          answerHandler: noop,
+        },
+      });
 
-  it('When dispatch action is HANGUP, close function should be called', async () => {
-    jest.spyOn(n, 'close').mockImplementation();
-    await n.dispatch({
-      type: 'HANGUP',
-      options: {
-        id: 1,
-      },
+      const title = await i18nT.default('telephony.notification.incomingCall');
+      const answerAction = {
+        title: await i18nT.default('telephony.notification.answer'),
+        icon: '',
+        action: 'answer',
+        handler: noop,
+      };
+      expect(telephonyNotificationManager.show).toHaveBeenCalledWith(title, {
+        actions: [answerAction],
+        tag: '1',
+        data: {
+          id: '1',
+          scope: 'telephony',
+        },
+        body: 'alex 123',
+        icon: 'incoming-call.png',
+      });
     });
-    expect(n.close).toHaveBeenCalledWith(1);
-  });
 
-  it('When dispatch action is DESTROY, clear function should be called', () => {
-    jest.spyOn(n, 'clear').mockImplementation();
-    n.dispatch({
-      type: 'DESTROY',
+    it('should call close() when dispatch action is HANGUP', () => {
+      jest.spyOn(telephonyNotificationManager, 'close').mockImplementation();
+      telephonyNotificationManager.dispatch({
+        type: 'HANGUP',
+        options: {
+          id: '1',
+        },
+      });
+      expect(telephonyNotificationManager.close).toHaveBeenCalledWith('1');
     });
-    expect(n.clear).toHaveBeenCalled();
+
+    it('should call clear() when dispatch action is DESTROY', () => {
+      jest.spyOn(telephonyNotificationManager, 'clear').mockImplementation();
+      telephonyNotificationManager.dispatch({
+        type: 'DESTROY',
+      });
+      expect(telephonyNotificationManager.clear).toHaveBeenCalled();
+    });
   });
 });

@@ -12,7 +12,7 @@ type Action =
   | {
       type: 'INCOMING';
       options: {
-        id: number;
+        id: string;
         callNumber: string;
         callerName: string;
         answerHandler?: () => void;
@@ -21,7 +21,7 @@ type Action =
   | {
       type: 'HANGUP';
       options: {
-        id: number;
+        id: string;
       };
     }
   | {
@@ -39,17 +39,17 @@ class TelephonyNotificationManager extends NotificationManager {
       case 'INCOMING':
         const { id, callNumber, callerName, answerHandler } = action.options;
         const title = await i18nT('telephony.notification.incomingCall');
-        const answerAction = answerHandler
-          ? {
-              title: await i18nT('telephony.notification.answer'),
-              icon: '',
-              action: 'answer',
-              handler: answerHandler,
-            }
-          : null;
-
+        const actions = [];
+        if (answerHandler) {
+          actions.push({
+            title: await i18nT('telephony.notification.answer'),
+            icon: '',
+            action: 'answer',
+            handler: answerHandler,
+          });
+        }
         this.show(title, {
-          actions: answerAction ? [answerAction] : [],
+          actions,
           tag: `${id}`,
           data: {
             id,

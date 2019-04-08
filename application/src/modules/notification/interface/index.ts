@@ -7,7 +7,7 @@ import { Omit } from 'jui/foundation/utils/typeHelper';
 export interface INotificationService {
   init: Function;
   show: (title: string, options?: SWNotificationOptions) => void;
-  close: (scope: string, id: number) => void;
+  close: (scope: string, id: number | string) => void;
   clear: (scope?: string) => void;
 }
 
@@ -20,7 +20,7 @@ export type notificationAction = {
 };
 
 export type SWNotificationOptions = Omit<NotificationOptions, 'actions'> & {
-  data: { id: number; scope: string };
+  data: { id: number | string; scope: string };
   actions?: notificationAction[];
 };
 
