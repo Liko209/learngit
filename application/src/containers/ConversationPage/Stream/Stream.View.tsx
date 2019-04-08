@@ -219,21 +219,6 @@ class StreamViewComponent extends Component<Props> {
     ) : null;
   }
 
-  private _findNewMessageSeparatorIndex() {
-    return this.props.items.findIndex(
-      (item: StreamItemPost) => item.type === StreamItemType.NEW_MSG_SEPARATOR,
-    );
-  }
-
-  private _findPostIndex(postId?: number) {
-    return postId
-      ? this.props.items.findIndex(
-          (item: StreamItemPost) =>
-            item.type === StreamItemType.POST && item.value.includes(postId),
-        )
-      : -1;
-  }
-
   private _jumpToFirstUnread = async () => {
     if (this._jumpToFirstUnreadLoading || this._timeout) return;
     // Delay 500ms then show loading
@@ -242,21 +227,28 @@ class StreamViewComponent extends Component<Props> {
     },                         LOADING_DELAY);
 
     try {
-      const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
+      const {
+        hasNewMessageSeparator,
+        findNewMessageSeparatorIndex,
+        loadPostUntilFirstUnread,
+        findPostIndex,
+      } = this.props;
+      const firstUnreadPostId = await loadPostUntilFirstUnread();
 
-      let jumpToIndex = this._findNewMessageSeparatorIndex();
-      if (jumpToIndex === -1) {
-        jumpToIndex = this._findPostIndex(firstUnreadPostId);
-      }
-      if (jumpToIndex === -1) {
-        mainLogger.warn(
-          `Failed to jump to the first unread post. scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} jumpToIndex:${jumpToIndex}`,
-        );
-        return;
-      }
+      const jumpToIndex = hasNewMessageSeparator()
+        ? findNewMessageSeparatorIndex()
+        : findPostIndex(firstUnreadPostId);
+
       if (!this._listRef.current) {
         mainLogger.warn(
           'Failed to jump to the first unread post. _listRef no found.',
+        );
+        return;
+      }
+
+      if (jumpToIndex === -1) {
+        mainLogger.warn(
+          `Failed to jump to the first unread post. scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} jumpToIndex:${jumpToIndex}`,
         );
         return;
       }
