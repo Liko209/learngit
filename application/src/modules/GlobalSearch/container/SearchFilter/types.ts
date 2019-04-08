@@ -15,5 +15,4 @@ type SearchFilterViewProps = SearchFilterProps & {
   handleSearchPersonChange: (items: SelectedItem) => void;
   handleSearchGroupChange: (items: SelectedItem) => void;
 };
-
 export { SearchFilterProps, SearchFilterViewProps };
