@@ -9,12 +9,14 @@ import {
   JuiOutlineTextFieldProps,
 } from '../../../components/Forms/TextField/OutlineTextField';
 import styled from '../../../foundation/styled-components';
-import { spacing, grey, typography } from '../../../foundation/utils';
+import { spacing, grey, typography, radius } from '../../../foundation/utils';
 
 const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
   border-top: 0;
   border-right: 0;
   border-left: 0;
+  border-top-left-radius: ${radius('xl')};
+  border-top-right-radius: ${radius('xl')};
 `;
 
 const ClearButton = styled.span`

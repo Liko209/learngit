@@ -22,6 +22,9 @@ const TobBarSearch = styled(JuiOutlineTextField)`
     background-color: ${({ theme }: { theme: Theme }) =>
       fade(palette('common', 'white')({ theme }), opacity('p30')({ theme }))};
   }
+  .topBar-input-root {
+    pointer-events: none;
+  }
   input {
     cursor: pointer;
     color: ${palette('common', 'white')};
@@ -57,6 +60,9 @@ const StyledJuiSearchBar = memo((props: StyledJuiSearchBarProps) => {
       onClickIconRight={onClear}
       InputProps={{
         placeholder,
+        classes: {
+          root: 'topBar-input-root',
+        },
         inputProps: {
           maxLength: 200,
         },
