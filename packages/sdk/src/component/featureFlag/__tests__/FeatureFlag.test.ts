@@ -2,18 +2,20 @@ import ConfigChangeNotifier from '../configChangeNotifier';
 import FeatureFlag from '../FeatureFlag';
 import FlagCalculator from '../FlagCalculator';
 import { BETA_FEATURE, IFlag } from '../interface';
-import { RcInfoUserConfig } from '../../../module/rcInfo/config';
-import { RcInfoApi } from '../../../api/ringcentral/RcInfoApi';
+import { RCInfoService } from '../../../module/rcInfo';
+import { RCInfoApi } from '../../../api/ringcentral';
 
 jest.mock('../FlagCalculator');
 jest.mock('../configChangeNotifier');
-jest.mock('../../../module/rcInfo/config');
 
 describe('FeatureFlag', () => {
   let featureFlag: FeatureFlag;
   let mockedNotifier: ConfigChangeNotifier;
   let mockedCalc: FlagCalculator;
   let oldFlags: IFlag;
+  const mockRCInfoService = {
+    getRCExtensionInfo: jest.fn(),
+  };
   beforeEach(() => {
     oldFlags = { log: 'false', phone: '2,3,4' };
     jest
@@ -22,6 +24,7 @@ describe('FeatureFlag', () => {
     mockedNotifier = new ConfigChangeNotifier();
     mockedCalc = new FlagCalculator(oldFlags);
     featureFlag = new FeatureFlag(mockedNotifier, mockedCalc);
+    RCInfoService.getInstance = jest.fn().mockReturnValue(mockRCInfoService);
   });
 
   it('isFeatureEnabled called once', () => {
@@ -63,16 +66,16 @@ describe('FeatureFlag', () => {
 
   describe('getServicePermission()', () => {
     it('should get correct permission when dao has extension info', async () => {
-      RcInfoUserConfig.prototype.getExtensionInfo.mockReturnValue({
+      mockRCInfoService.getRCExtensionInfo.mockReturnValue({
         serviceFeatures: [
           { featureName: 'log', enabled: true },
           { featureName: 'call', enabled: false },
         ],
       });
-      RcInfoApi.requestRcExtensionInfo = jest.fn();
+      RCInfoApi.requestRCExtensionInfo = jest.fn();
       featureFlag.handleData = jest.fn();
       await featureFlag.getServicePermission();
-      expect(RcInfoApi.requestRcExtensionInfo).toBeCalledTimes(0);
+      expect(RCInfoApi.requestRCExtensionInfo).toBeCalledTimes(0);
       expect(featureFlag.handleData).toBeCalledWith(
         { log: true, call: false },
         'RC_PERMISSION',
@@ -80,13 +83,13 @@ describe('FeatureFlag', () => {
     });
 
     it('should get correct permission when dao does not have extension info', async () => {
-      RcInfoUserConfig.prototype.getExtensionInfo.mockReturnValue(undefined);
-      RcInfoApi.requestRcExtensionInfo = jest.fn().mockReturnValue({
+      mockRCInfoService.getRCExtensionInfo.mockReturnValue(undefined);
+      RCInfoApi.requestRCExtensionInfo = jest.fn().mockReturnValue({
         serviceFeatures: [],
       });
       featureFlag.handleData = jest.fn();
       await featureFlag.getServicePermission();
-      expect(RcInfoApi.requestRcExtensionInfo).toBeCalledTimes(1);
+      expect(RCInfoApi.requestRCExtensionInfo).toBeCalledTimes(1);
       expect(featureFlag.handleData).toBeCalledWith({}, 'RC_PERMISSION');
     });
   });

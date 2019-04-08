@@ -26,6 +26,7 @@ jest.mock('../../../../dao');
 jest.mock('../../dao');
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../service/notificationCenter');
+jest.mock('../../../group');
 
 class MockPreInsertController<T extends ExtendedBaseModel>
   implements IPreInsertController {
@@ -57,7 +58,9 @@ describe('PostDataController', () => {
     {} as IEntityPersistentController,
     {} as DeactivatedDao,
   );
+  const groupService = new GroupService();
   const postDataController = new PostDataController(
+    groupService,
     preInsertController,
     mockEntitySourceController,
   );
@@ -71,7 +74,6 @@ describe('PostDataController', () => {
   function setup() {
     ItemService.getInstance = jest.fn().mockReturnValue(itemService);
     itemService.handleIncomingData = jest.fn();
-    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
     groupService.updateHasMore = jest.fn();
     daoManager.getDao.mockImplementation(arg => {
       if (arg === PostDao) {
@@ -139,7 +141,7 @@ describe('PostDataController', () => {
           deleteIds.push(i);
         }
       }
-      for (let i = 61; i < 100; i += 1) {
+      for (let i = 61; i < 110; i += 1) {
         posts.push({ id: i, group_id: 2 });
       }
       postDao.queryPostIdsByGroupId.mockResolvedValue(deleteIds);

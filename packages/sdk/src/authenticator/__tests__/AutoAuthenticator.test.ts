@@ -14,7 +14,6 @@ import {
 } from '../../service/account/config';
 
 jest.mock('../../module/config');
-jest.mock('../../module/rcInfo/config/RcInfoCommonGlobalConfig');
 jest.mock('../../service/auth/config');
 jest.mock('../../service/account/config');
 
@@ -64,7 +63,7 @@ describe('AutoAuthenticator', () => {
       AuthUserConfig.prototype.getGlipToken = jest
         .fn()
         .mockReturnValue('glip_token');
-      AuthUserConfig.prototype.getRcToken = jest
+      AuthUserConfig.prototype.getRCToken = jest
         .fn()
         .mockReturnValue('rc_token');
       const resp = autoAuthenticator.authenticate();
@@ -75,7 +74,7 @@ describe('AutoAuthenticator', () => {
       AuthUserConfig.prototype.getGlipToken = jest
         .fn()
         .mockReturnValue(undefined);
-      AuthUserConfig.prototype.getRcToken = jest
+      AuthUserConfig.prototype.getRCToken = jest
         .fn()
         .mockReturnValue('rc_token');
       const resp = autoAuthenticator.authenticate();

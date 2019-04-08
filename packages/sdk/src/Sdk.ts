@@ -112,7 +112,7 @@ class Sdk {
     if (AccountGlobalConfig.getUserDictionary()) {
       const authConfig = new AuthUserConfig();
       this.updateNetworkToken({
-        rcToken: authConfig.getRcToken(),
+        rcToken: authConfig.getRCToken(),
         glipToken: authConfig.getGlipToken(),
       });
     }

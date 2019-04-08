@@ -10,7 +10,6 @@ import { GlobalConfigService } from '../../../config';
 import { SyncController } from '../SyncController';
 import {
   AccountGlobalConfig,
-  AccountUserConfig,
 } from '../../../../service/account/config';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../../error';
 import { GroupConfigService } from '../../../../module/groupConfig';
@@ -23,7 +22,6 @@ import socketManager from '../../../../service/socket';
 
 jest.mock('../../config/SyncUserConfig');
 
-jest.mock('../../../rcInfo/config/RcInfoCommonGlobalConfig');
 jest.mock('../../../../api');
 jest.mock('../../../config');
 jest.mock('../../../../module/groupConfig');
@@ -278,6 +276,26 @@ describe('SyncController ', () => {
         expect(personService.clear).toHaveBeenCalledTimes(1);
         expect(syncController._firstLogin).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+  describe('updateCanUpdateIndexTimeStamp', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
+        .mockReturnValueOnce(1);
+      AccountGlobalConfig.getUserDictionary.mockReturnValueOnce(1);
+    });
+    it('should call updateCanUpdateIndexTimeStamp when stopping FSM', () => {
+      syncController.handleStoppingSocketEvent();
+      expect(
+        syncController.updateCanUpdateIndexTimeStamp,
+      ).toHaveBeenCalledTimes(1);
+    });
+    it('should call updateCanUpdateIndexTimeStamp when wake up from sleep mode', () => {
+      syncController.handleWakeUpFromSleep();
+      expect(
+        syncController.updateCanUpdateIndexTimeStamp,
+      ).toHaveBeenCalledTimes(1);
     });
   });
 });

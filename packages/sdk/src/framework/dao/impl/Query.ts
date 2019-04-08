@@ -18,7 +18,10 @@ class Query<T> implements IQueryOpt<T> {
   criteria: IQueryCriteria<T>[] = [];
   parallel?: IQuery<T>[];
 
-  constructor(public collection: IDatabaseCollection<T>, public db: IDatabase) {
+  constructor(
+    public collection: IDatabaseCollection<T, number>,
+    public db: IDatabase,
+  ) {
     this.reset();
   }
 

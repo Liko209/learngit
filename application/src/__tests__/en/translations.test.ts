@@ -291,11 +291,17 @@ describe.skip('i18next-en', () => {
     expect(i18next.t('SorryWeWereNotAbleToCloseTheConversation')).toEqual(
       "Sorry, we weren't able to close the conversation. Try again.",
     );
-    expect(i18next.t('SorryWeWereNotAbleToRemoveYourBookmark')).toEqual(
-      "Sorry, we weren't able to remove your bookmark. Try again.",
+    expect(i18next.t('notAbleToRemoveYourBookmarkForNetworkIssue')).toEqual(
+      "Sorry, we weren't able to remove your bookmark due to a poor network connection. Try again.",
     );
-    expect(i18next.t('SorryWeWereNotAbleToBookmarkThisMessage')).toEqual(
-      "Sorry, we weren't able to bookmark this message. Try again.",
+    expect(i18next.t('notAbleToRemoveYourBookmarkForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to remove your bookmark. Try again later.",
+    );
+    expect(i18next.t('notAbleToBookmarkThisMessageForNetworkIssue')).toEqual(
+      "We weren't able to bookmark this message due to a poor network connection. Check your connectivity, then try again.",
+    );
+    expect(i18next.t('notAbleToBookmarkThisMessageForServerIssue')).toEqual(
+      "Sorry, something went wrong on our end and we weren't able to bookmark this message. Try again later.",
     );
     expect(i18next.t('SorryWeWereNotAbleToLoadOlderMessages')).toEqual(
       "Sorry, we weren't able to load older messages. Try again.",

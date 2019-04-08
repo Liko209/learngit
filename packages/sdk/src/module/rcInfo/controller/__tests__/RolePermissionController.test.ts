@@ -6,35 +6,20 @@
 
 import { RolePermissionController } from '../RolePermissionController';
 
-jest.mock('../../config');
-
 describe('RolePermissionController', () => {
   let rolePermissionController: RolePermissionController;
-
+  const mockFetchController = {
+    getRCRolePermissions: jest.fn(),
+  } as any;
   beforeEach(() => {
-    rolePermissionController = new RolePermissionController();
-  });
-
-  describe('setRolePermissions()', () => {
-    it('should set correct value', () => {
-      rolePermissionController.setRolePermissions('permission' as any);
-      expect(rolePermissionController['_rolePermissions']).toEqual(
-        'permission',
-      );
-    });
-  });
-
-  describe('getRolePermissions()', () => {
-    it('should get from config when value is invalid', () => {
-      rolePermissionController[ 'rcInfoUserConfig'
-].getRolePermissions = jest.fn().mockReturnValue('role');
-      expect(rolePermissionController.getRolePermissions()).toEqual('role');
-    });
+    rolePermissionController = new RolePermissionController(
+      mockFetchController,
+    );
   });
 
   describe('hasPermission()', () => {
-    it('should return true when has permission', () => {
-      rolePermissionController['_rolePermissions'] = {
+    it('should return true when has permission', async () => {
+      mockFetchController.getRCRolePermissions.mockReturnValueOnce({
         permissions: [
           {
             permission: {
@@ -42,8 +27,10 @@ describe('RolePermissionController', () => {
             },
           },
         ],
-      } as any;
-      expect(rolePermissionController.hasPermission(123 as any)).toBeTruthy();
+      });
+      expect(
+        await rolePermissionController.hasPermission(123 as any),
+      ).toBeTruthy();
     });
   });
 });

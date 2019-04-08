@@ -8,6 +8,7 @@ import DexieCollection from './DexieCollection';
 import {
   ITableSchemaDefinition,
   ISchemaDefinition,
+  DatabaseKeyType,
   IDatabase,
   IDatabaseCollection,
   ISchema,
@@ -46,18 +47,21 @@ class DexieDB implements IDatabase {
     await this.db.delete();
   }
 
-  getCollection<T>(name: string): DexieCollection<T> {
-    return new DexieCollection(this.db, name);
+  getCollection<T, Key extends DatabaseKeyType>(
+    name: string,
+  ): DexieCollection<T, Key> {
+    return new DexieCollection<T, Key>(this.db, name);
   }
 
   async getTransaction(
     mode: string | void,
-    collections: IDatabaseCollection<any>[] | void,
+    collections: IDatabaseCollection<any, DatabaseKeyType>[] | void,
     callback: () => {},
   ): Promise<void> {
     if (mode && collections && Array.isArray(collections)) {
-      const tables = collections.map((c: IDatabaseCollection<any>) =>
-        (c as DexieCollection<any>).getTable(),
+      const tables = collections.map(
+        (c: IDatabaseCollection<any, DatabaseKeyType>) =>
+          (c as DexieCollection<any, DatabaseKeyType>).getTable(),
       );
       await this.db.transaction(mode as TransactionMode, tables, callback);
     } else {
