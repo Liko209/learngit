@@ -10,6 +10,7 @@ const defaultConfig: ApiConfig = {
   glip: {
     server: '',
     apiServer: '',
+    presenceServer: '',
   },
   glip_desktop: {},
   upload: {

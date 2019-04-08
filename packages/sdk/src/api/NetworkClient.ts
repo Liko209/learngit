@@ -21,6 +21,7 @@ import { responseParser } from './parser';
 
 export interface IQuery {
   via?: NETWORK_VIA;
+  host?: string;
   path: string;
   method: NETWORK_METHOD;
   data?: object;
@@ -32,6 +33,7 @@ export interface IQuery {
   priority?: REQUEST_PRIORITY;
   HAPriority?: HA_PRIORITY;
   timeout?: number;
+  pathPrefix?: string;
 }
 
 export interface IResponse<T> {
@@ -168,12 +170,16 @@ export default class NetworkClient {
       priority,
       HAPriority,
       timeout,
+      pathPrefix,
     } = query;
 
-    const { pathPrefix = '' } = this.networkRequests;
-    const finalPath = `${pathPrefix}${path}`;
+    const finalPathPrefix =
+      (pathPrefix !== undefined
+        ? pathPrefix
+        : this.networkRequests.pathPrefix) || '';
+    const finalPath = `${finalPathPrefix}${path}`;
     return new NetworkRequestBuilder()
-      .setHost(this.networkRequests.host || '')
+      .setHost(query.host || this.networkRequests.host || '')
       .setHandlerType(this.networkRequests.handlerType)
       .setPath(finalPath)
       .setMethod(method)
@@ -211,8 +217,11 @@ export default class NetworkClient {
     priority?: REQUEST_PRIORITY,
     HAPriority?: HA_PRIORITY,
     timeout?: number,
+    host?: string,
+    pathPrefix?: string,
   ) {
     return this.http<T>({
+      host,
       path,
       params,
       headers,
@@ -222,6 +231,7 @@ export default class NetworkClient {
       priority,
       HAPriority,
       timeout,
+      pathPrefix,
       method: NETWORK_METHOD.GET,
     });
   }

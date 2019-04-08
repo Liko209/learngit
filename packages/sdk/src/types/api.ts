@@ -18,6 +18,7 @@ type RcConfig = BaseConfig & {
 
 type GlipConfig = BaseConfig & {
   apiServer: string;
+  presenceServer: string;
 };
 
 type DeskTopConfig = BaseConfig & {};

@@ -12,6 +12,7 @@ const config: ApiConfig = {
     apiServer: 'https://app.glip.com',
     pathPrefix: '/api',
     cacheServer: 'https://cache.glip.com',
+    presenceServer: 'https://api.glip.com',
   },
   glip_desktop: {
     server: 'https://app.glip.com',

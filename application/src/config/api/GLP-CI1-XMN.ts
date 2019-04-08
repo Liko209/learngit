@@ -9,6 +9,7 @@ const config: DeepPartial<ApiConfig> = {
     server: 'https://glpci1xmn.asialab.glip.net',
     apiServer: 'https://glpci1xmn.asialab.glip.net:8443',
     cacheServer: 'https://glpci1xmn.asialab.glip.net:31337',
+    presenceServer: 'https://glpci1xmn.asialab.glip.net:8443',
   },
   glip_desktop: {
     server: 'https://glpci1xmn.asialab.glip.net',
