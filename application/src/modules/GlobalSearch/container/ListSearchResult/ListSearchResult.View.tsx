@@ -17,7 +17,7 @@ import {
 } from './types';
 import { ItemList } from '../ItemList';
 
-const RecentSearchType = {
+export const RecentSearchType = {
   [TAB_TYPE.PEOPLE]: RecentSearchTypes.PEOPLE,
   [TAB_TYPE.GROUPS]: RecentSearchTypes.GROUP,
   [TAB_TYPE.TEAM]: RecentSearchTypes.TEAM,
@@ -45,7 +45,7 @@ class ListSearchResultViewComponent extends Component<Props> {
     const { t, currentTab, type } = this.props;
     const { searchResult } = this.state;
 
-    if (type !== currentTab) {
+    if (type !== currentTab || !searchResult) {
       return null;
     }
 
