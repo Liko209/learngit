@@ -25,7 +25,7 @@ async function extractHiddenGroupIdsWithoutUnread(
   profile: Profile,
 ): Promise<number[]> {
   const stateService = ServiceLoader.getInstance<StateService>(
-    ServiceConfig.PERSON_SERVICE,
+    ServiceConfig.STATE_SERVICE,
   );
 
   const result: number[] = [];
