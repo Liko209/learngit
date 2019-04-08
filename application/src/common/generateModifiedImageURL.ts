@@ -11,6 +11,7 @@ import {
 } from 'jui/foundation/utils/calculateImageSize';
 import { ItemService } from 'sdk/module/item/service';
 import { Omit } from 'jui/foundation/utils/typeHelper';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum RULE {
   SQUARE_IMAGE,
@@ -79,7 +80,9 @@ const generateModifiedImageURL = async ({
   // fetch crop image url
   const { imageWidth, imageHeight } = result;
   if (imageWidth > 0 && imageHeight > 0) {
-    const itemService = ItemService.getInstance() as ItemService;
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     result.url = await itemService.getThumbsUrlWithSize(
       id,
       imageWidth,

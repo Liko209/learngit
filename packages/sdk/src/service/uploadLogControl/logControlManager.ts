@@ -15,6 +15,7 @@ import {
 } from './consumer';
 import { LogUploader } from './LogUploader';
 import _ from 'lodash';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -110,7 +111,9 @@ export class LogControlManager implements IAccessor {
   }
 
   async configByPermission() {
-    const permissionService: PermissionService = PermissionService.getInstance();
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
     try {
       const logEnabled = await permissionService.hasPermission(
         UserPermissionType.JUPITER_CAN_SAVE_LOG, // flag for console log

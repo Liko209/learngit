@@ -12,6 +12,7 @@ import { Profile } from 'sdk/module/profile/entity';
 import { getSingleEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import ProfileModel from '@/store/models/Profile';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class BookmarkViewModel extends StoreViewModel<BookmarkProps>
   implements BookmarkViewProps {
@@ -35,7 +36,9 @@ class BookmarkViewModel extends StoreViewModel<BookmarkProps>
 
   @action
   bookmark = async (toBookmark: boolean): Promise<void> => {
-    const postService: PostService = PostService.getInstance();
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     await postService.bookmarkPost(this._id, toBookmark);
   }
 }

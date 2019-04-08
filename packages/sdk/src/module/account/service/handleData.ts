@@ -8,11 +8,11 @@ import {
   ACCOUNT_PROFILE_ID,
   ACCOUNT_COMPANY_ID,
   ACCOUNT_CLIENT_CONFIG,
-} from '../../dao/account/constants';
-import notificationCenter from '../../service/notificationCenter';
-import { AccountGlobalConfig, AccountUserConfig } from './config';
-import { ACCOUNT_TYPE_ENUM } from '../../authenticator/constants';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../utils';
+} from '../../../dao/account/constants';
+import notificationCenter from '../../../service/notificationCenter';
+import { AccountGlobalConfig, AccountUserConfig } from '../config';
+import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 export interface IHandleData {
   userId?: number;
@@ -59,4 +59,4 @@ const accountHandleData = ({
   PerformanceTracerHolder.getPerformanceTracer().end(logId);
 };
 
-export default accountHandleData;
+export { accountHandleData };

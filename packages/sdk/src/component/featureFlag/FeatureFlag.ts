@@ -6,6 +6,7 @@ import dataDispatcher from '../DataDispatcher';
 import { SOCKET } from '../../service';
 import { RCInfoService } from '../../module/rcInfo';
 import { RCInfoApi, RCServiceFeature } from '../../api/ringcentral';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 const I_BETA_FLAG_SOURCE = {
   CLIENT_CONFIG: 'Client_Config',
@@ -40,7 +41,9 @@ class FeatureFlag {
   }
 
   async getServicePermission() {
-    const rcInfoService: RCInfoService = RCInfoService.getInstance();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
     let rcExtensionInfo = await rcInfoService.getRCExtensionInfo();
     if (!rcExtensionInfo || !rcExtensionInfo.serviceFeatures) {
       rcExtensionInfo = await RCInfoApi.requestRCExtensionInfo();

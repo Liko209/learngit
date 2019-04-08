@@ -1,25 +1,25 @@
 /*
- * @Author: Thomas thomas.yang@ringcentral.com
- * @Date: 2018-11-15 11:22:31
+ * @Author: Jerry Cai (jerry.cai@ringcentral.com)
+ * @Date: 2019-04-03 15:28:24
  * Copyright © RingCentral. All rights reserved.
  */
 
 import { mainLogger } from 'foundation';
-import { glipStatus, RCAuthApi } from '../../api';
+import { glipStatus, RCAuthApi } from '../../../api';
 import {
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
   ReLoginAuthenticator,
-} from '../../authenticator';
-import { AUTH_GLIP2_TOKEN } from '../../dao/auth/constants';
-import { AccountManager } from '../../framework';
-import { Aware } from '../../utils/error';
-import BaseService from '../BaseService';
-import { SERVICE } from '../eventKey';
-import notificationCenter from '../notificationCenter';
-import { ERROR_CODES_SDK, ErrorParserHolder } from '../../error';
-import { jobScheduler, JOB_KEY } from '../../framework/utils/jobSchedule';
-import { AuthUserConfig } from './config';
+} from '../../../authenticator';
+import { AUTH_GLIP2_TOKEN } from '../../../dao/auth/constants';
+import { AccountManager } from '../../../framework';
+import { Aware } from '../../../utils/error';
+
+import { SERVICE } from '../../../service/eventKey';
+import notificationCenter from '../../../service/notificationCenter';
+import { ERROR_CODES_SDK, ErrorParserHolder } from '../../../error';
+import { jobScheduler, JOB_KEY } from '../../../framework/utils/jobSchedule';
+import { AuthUserConfig } from '../config';
 
 interface ILogin {
   username: string;
@@ -32,12 +32,10 @@ interface IUnifiedLogin {
   token?: string;
 }
 
-class AuthService extends BaseService {
-  static serviceName = 'AuthService';
+class AuthController {
   private _accountManager: AccountManager;
 
   constructor(accountManager: AccountManager) {
-    super();
     this._accountManager = accountManager;
   }
 
@@ -57,12 +55,6 @@ class AuthService extends BaseService {
   async login(params: ILogin) {
     await Promise.all([this.loginGlip(params), this.loginGlip2(params)]);
     this.onLogin();
-  }
-
-  onLogin() {
-    // TODO replace all LOGIN listen on notificationCenter
-    // with accountManager.on(EVENT_LOGIN)
-    notificationCenter.emitKVChange(SERVICE.LOGIN);
   }
 
   async loginGlip(params: ILogin) {
@@ -136,6 +128,12 @@ class AuthService extends BaseService {
       return false;
     }
   }
+
+  onLogin() {
+    // TODO replace all LOGIN listen on notificationCenter
+    // with accountManager.on(EVENT_LOGIN)
+    notificationCenter.emitKVChange(SERVICE.LOGIN);
+  }
 }
 
-export { IUnifiedLogin, ILogin, AuthService };
+export { IUnifiedLogin, ILogin, AuthController };

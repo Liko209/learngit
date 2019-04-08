@@ -16,12 +16,13 @@ import {
   RTCCallActionSuccessOptions,
 } from 'voip';
 import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
 jest.mock('../../controller/MakeCallController');
 jest.mock('../../../config');
-GlobalConfigService.getInstance = jest.fn();
+ServiceLoader.getInstance = jest.fn();
 
 describe('TelephonyService', () => {
   let telephonyService: TelephonyService;

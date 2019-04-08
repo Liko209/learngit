@@ -11,6 +11,7 @@ import { EntitySourceController } from '../../../../framework/controller/impl/En
 import PostAPI from '../../../../api/glip/post';
 import { DiscontinuousPostController } from '../DiscontinuousPostController';
 import _ from 'lodash';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
@@ -28,7 +29,7 @@ const entitySourceController = new EntitySourceController<Post>(null, null);
 const itemService = new ItemService();
 
 function setup() {
-  ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+  ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
   itemService.handleIncomingData = jest.fn();
   daoManager.getDao.mockImplementation(arg => {
     if (arg === PostDao) {

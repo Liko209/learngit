@@ -11,6 +11,7 @@ import * as _ from 'lodash';
 import * as utils from '@/store/utils';
 import { PostService } from 'sdk/module/post';
 import { notificationCenter, ENTITY } from 'sdk/service';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/post');
 
@@ -31,7 +32,7 @@ describe('StreamViewModel', () => {
   let vm: any;
   let newProps: any;
   beforeEach(() => {
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
     mockedSortableListHandler = {
       sortableListStore: {
         getIds: jest.fn().mockReturnValue([1, 2, 3]),
@@ -161,7 +162,7 @@ describe('Posts order', () => {
     jest
       .spyOn(storeManager, 'getEntityMapStore')
       .mockImplementation(() => mockedStore);
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
     const vm = new StreamViewModel();
     vm._sortableListHandler._pageSize = 5;
     const sourceArray = [1, 2, 3, 5, 4, 9, 6, 10, 323, 11, 32];

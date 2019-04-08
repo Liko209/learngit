@@ -8,17 +8,16 @@ import { indexData, initialData, remainingData } from '../../../../api';
 import { SyncUserConfig } from '../../config/SyncUserConfig';
 import { GlobalConfigService } from '../../../config';
 import { SyncController } from '../SyncController';
-import {
-  AccountGlobalConfig,
-} from '../../../../service/account/config';
+import { AccountGlobalConfig } from '../../../../module/account/config';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../../error';
 import { GroupConfigService } from '../../../../module/groupConfig';
 import { PersonService } from '../../../person';
 import { GroupService } from '../../../group';
 import { PostService } from '../../../post';
 import { ItemService } from '../../../item/service';
-import { AccountService } from '../../../../service/account/accountService';
+import { AccountService } from '../../../../module/account';
 import socketManager from '../../../../service/socket';
+import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
 
 jest.mock('../../config/SyncUserConfig');
 
@@ -29,8 +28,8 @@ jest.mock('../../../person');
 jest.mock('../../../group');
 jest.mock('../../../post');
 jest.mock('../../../item/service');
-jest.mock('../../../../service/account/config');
-jest.mock('../../../../service/account/accountService');
+jest.mock('../../../../module/account/config');
+jest.mock('../../../../module/account');
 jest.mock('../../../../service/socket');
 
 let groupConfigService: GroupConfigService;
@@ -47,29 +46,56 @@ describe('SyncController ', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     syncController = new SyncController();
-    GlobalConfigService.getInstance = jest.fn().mockReturnValue({
-      get: jest.fn(),
-      put: jest.fn(),
-    });
+
     groupConfigService = new GroupConfigService();
-    GroupConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(groupConfigService);
 
     personService = new PersonService();
-    PersonService.getInstance = jest.fn().mockReturnValue(personService);
 
     groupService = new GroupService();
-    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
     postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
 
     itemService = new ItemService();
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
 
-    accountService = new AccountService();
-    AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+    accountService = new AccountService(null);
+
+    groupConfigService = new GroupConfigService();
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        let result: any = null;
+        switch (serviceName) {
+          case ServiceConfig.PERSON_SERVICE:
+            result = personService;
+            break;
+          case ServiceConfig.GROUP_SERVICE:
+            result = groupService;
+            break;
+          case ServiceConfig.POST_SERVICE:
+            result = postService;
+            break;
+          case ServiceConfig.ITEM_SERVICE:
+            result = itemService;
+            break;
+          case ServiceConfig.ACCOUNT_SERVICE:
+            result = accountService;
+            break;
+          case ServiceConfig.GLOBAL_CONFIG_SERVICE:
+            result = {
+              get: jest.fn(),
+              put: jest.fn(),
+              clear: jest.fn(),
+            };
+            break;
+          case ServiceConfig.GROUP_CONFIG_SERVICE:
+            result = groupConfigService;
+            break;
+          default:
+            break;
+        }
+        return result;
+      });
   });
 
   describe('getIndexTimestamp', () => {

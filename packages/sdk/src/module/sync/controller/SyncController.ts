@@ -7,7 +7,7 @@
 import { IndexDataModel } from '../../../api/glip/user';
 
 import { indexData, initialData, remainingData } from '../../../api';
-import accountHandleData from '../../../service/account/handleData';
+import { accountHandleData } from '../../../module/account/service';
 
 import { SERVICE, CONFIG } from '../../../service/eventKey';
 import { progressBar } from '../../../utils/progress';
@@ -30,11 +30,12 @@ import { SyncUserConfig } from '../config/SyncUserConfig';
 import { IndexRequestProcessor } from './IndexRequestProcessor';
 import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountGlobalConfig } from '../../../module/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
 import { SyncGlobalConfig } from '../config';
-import { AccountService } from '../../../service/account/accountService';
+import { AccountService } from '../../../module/account';
 import socketManager from '../../../service/socket';
+import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -232,11 +233,21 @@ class SyncController {
     syncConfig.setLastIndexTimestamp('');
 
     await Promise.all([
-      ItemService.getInstance<ItemService>().clear(),
-      PostService.getInstance<PostService>().clear(),
-      GroupConfigService.getInstance<GroupConfigService>().clear(),
-      GroupService.getInstance<GroupService>().clear(),
-      PersonService.getInstance<PersonService>().clear(),
+      ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<GroupConfigService>(
+        ServiceConfig.GROUP_CONFIG_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      ).clear(),
     ]);
 
     await this._firstLogin();
@@ -308,42 +319,38 @@ class SyncController {
         clientConfig,
         profileId: profile ? profile._id : undefined,
       }),
-      CompanyService.getInstance<CompanyService>().handleIncomingData(
-        companies,
-        source,
-      ),
-      (ItemService.getInstance() as ItemService).handleIncomingData(items),
-      PresenceService.getInstance<PresenceService>().presenceHandleData(
-        presences,
-      ),
-      (StateService.getInstance() as StateService).handleState(
-        arrState,
-        source,
-      ),
+      ServiceLoader.getInstance<CompanyService>(
+        ServiceConfig.COMPANY_SERVICE,
+      ).handleIncomingData(companies, source),
+      ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      ).handleIncomingData(items),
+      ServiceLoader.getInstance<PresenceService>(
+        ServiceConfig.PRESENCE_SERVICE,
+      ).presenceHandleData(presences),
+      ServiceLoader.getInstance<StateService>(
+        ServiceConfig.STATE_SERVICE,
+      ).handleState(arrState, source),
     ])
       .then(() =>
-        ProfileService.getInstance<ProfileService>().handleIncomingData(
-          transProfile,
-          source,
-        ),
+        ServiceLoader.getInstance<ProfileService>(
+          ServiceConfig.PROFILE_SERVICE,
+        ).handleIncomingData(transProfile, source),
       )
       .then(() =>
-        PersonService.getInstance<PersonService>().handleIncomingData(
-          people,
-          source,
-        ),
+        ServiceLoader.getInstance<PersonService>(
+          ServiceConfig.PERSON_SERVICE,
+        ).handleIncomingData(people, source),
       )
       .then(() =>
-        GroupService.getInstance<GroupService>().handleData(
-          MergedGroups,
-          source,
-        ),
+        ServiceLoader.getInstance<GroupService>(
+          ServiceConfig.GROUP_SERVICE,
+        ).handleData(MergedGroups, source),
       )
       .then(() =>
-        PostService.getInstance<PostService>().handleIndexData(
-          posts,
-          maxPostsExceeded,
-        ),
+        ServiceLoader.getInstance<PostService>(
+          ServiceConfig.POST_SERVICE,
+        ).handleIndexData(posts, maxPostsExceeded),
       );
   }
 
@@ -396,7 +403,9 @@ class SyncController {
   }
 
   private async _checkIndex() {
-    const accountService: AccountService = AccountService.getInstance();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     if (accountService.isGlipLogin()) {
       const socketUserConfig = new SyncUserConfig();
       const succeed = socketUserConfig.getIndexSucceed();

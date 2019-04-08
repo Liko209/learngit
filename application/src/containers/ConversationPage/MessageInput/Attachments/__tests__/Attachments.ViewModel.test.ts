@@ -5,16 +5,13 @@
  */
 
 import { Notification } from '@/containers/Notification';
-import { GroupService } from 'sdk/module/group';
-import { ItemService } from 'sdk/module/item';
-import { GroupConfigService } from 'sdk/module/groupConfig';
 import { ItemFile } from 'sdk/module/item/entity';
 import { AttachmentsViewModel } from '../Attachments.ViewModel';
 import { MessageInputViewModel } from '../../MessageInput.ViewModel';
 import { SelectFile } from '../types';
 import { ItemInfo } from 'jui/pattern/MessageInput/AttachmentList';
 import { markdownFromDelta } from 'jui/pattern/MessageInput/markdown';
-import { PostService } from 'sdk/module/post';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('@/containers/Notification');
 const mockGroupEntityData = {
@@ -101,10 +98,27 @@ const itemService = {
   canUploadFiles: jest.fn().mockImplementation(() => true),
 };
 
-PostService.getInstance = jest.fn().mockReturnValue(postService);
-GroupService.getInstance = jest.fn().mockReturnValue(groupService);
-ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-GroupConfigService.getInstance = jest.fn().mockReturnValue(groupConfigService);
+ServiceLoader.getInstance = jest
+  .fn()
+  .mockImplementation((serviceName: string) => {
+    if (serviceName === ServiceConfig.POST_SERVICE) {
+      return postService;
+    }
+
+    if (serviceName === ServiceConfig.GROUP_SERVICE) {
+      return groupService;
+    }
+
+    if (serviceName === ServiceConfig.ITEM_SERVICE) {
+      return itemService;
+    }
+
+    if (serviceName === ServiceConfig.GROUP_CONFIG_SERVICE) {
+      return groupConfigService;
+    }
+
+    return null;
+  });
 
 beforeEach(() => {
   jest.clearAllMocks();

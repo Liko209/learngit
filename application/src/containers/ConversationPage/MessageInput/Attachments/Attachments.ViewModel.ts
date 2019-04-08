@@ -26,6 +26,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
@@ -105,7 +106,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   reloadFiles = async () => {
     this.cleanFiles();
-    const itemService = ItemService.getInstance() as ItemService;
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     const uploadItems = await itemService.initialUploadItemsFromDraft(
       this.props.id,
     );
@@ -161,7 +164,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   canUploadFiles = async (files: File[]) => {
-    const itemService = ItemService.getInstance() as ItemService;
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     if (files.length === 0) {
       return true;
     }
@@ -175,7 +180,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   uploadFile = async (info: SelectFile, isUpdate: boolean) => {
     try {
       const { data } = info;
-      const itemService = ItemService.getInstance() as ItemService;
+      const itemService = ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      );
       const item = await itemService.sendItemFile(
         this.props.id,
         data,
@@ -209,14 +216,18 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   isFileExists = async (file: File) => {
-    const itemService = ItemService.getInstance() as ItemService;
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     return await itemService.isFileExists(this.props.id, file.name);
   }
 
   cancelUploadFile = async (info: ItemInfo) => {
     const { id } = info;
     const record = this.items.get(id);
-    const itemService = ItemService.getInstance() as ItemService;
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     if (record) {
       await itemService.cancelUpload(id);
       this.items.delete(id);
@@ -256,7 +267,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
   }
 
   sendFilesOnlyPost = async () => {
-    const postService = PostService.getInstance() as PostService;
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     try {
       const ids: number[] = [];
       this.items.forEach((value: AttachmentItem) => {
@@ -273,7 +286,9 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
 
   forceSaveDraftItems = () => {
     const draftItemsIds: number[] = [];
-    const groupConfigService = GroupConfigService.getInstance() as GroupConfigService;
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     this.files.forEach((file: ItemFile) => {
       draftItemsIds.push(file.id);
     });

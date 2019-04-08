@@ -14,9 +14,12 @@ import { PostService } from 'sdk/module/post';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager, { ENTITY_NAME } from '@/store';
 import { ENTITY } from 'sdk/service';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 class PostDataProvider implements IFetchSortableDataProvider<Post> {
-  private _postService: PostService = PostService.getInstance();
+  private _postService = ServiceLoader.getInstance<PostService>(
+    ServiceConfig.POST_SERVICE,
+  );
 
   constructor(private _groupId: number) {}
   async fetchData(

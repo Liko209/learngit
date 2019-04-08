@@ -26,7 +26,6 @@ import { GroupEntityCacheController } from '../controller/GroupEntityCacheContro
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
-  static serviceName = 'GroupService';
   partialModifyController: PartialModifyController<Group>;
   groupController: GroupController;
   groupConfigController: GroupConfigController;

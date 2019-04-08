@@ -6,6 +6,7 @@
 
 import { GlobalConfigService } from '../service/GlobalConfigService';
 import { GlobalConfig } from '../GlobalConfig';
+import { ServiceLoader } from '../../serviceLoader';
 
 jest.mock('../service/GlobalConfigService');
 
@@ -18,9 +19,7 @@ describe('GlobalConfig', () => {
       put: jest.fn(),
       remove: jest.fn(),
     };
-    GlobalConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(mockConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockConfigService);
   });
   it('should call get when try to get config', () => {
     GlobalConfig.get(TEST);

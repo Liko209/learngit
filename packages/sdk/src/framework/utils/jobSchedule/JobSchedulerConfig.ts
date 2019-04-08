@@ -5,7 +5,7 @@
  */
 
 import { UserConfig } from '../../../module/config';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountGlobalConfig } from '../../../module/account/config';
 import { JOB_KEY } from './constants';
 
 class JobSchedulerConfig extends UserConfig {

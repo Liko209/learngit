@@ -19,6 +19,7 @@ import { accentColor } from '@/common/AccentColor';
 import { Post } from 'sdk/module/post/entity';
 import PostModel from '@/store/models/Post';
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
@@ -47,7 +48,9 @@ class TaskViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   getShowDialogPermission = async () => {
-    const permissionService: PermissionService = PermissionService.getInstance();
+    const permissionService = ServiceLoader.getInstance<PermissionService>(
+      ServiceConfig.PERMISSION_SERVICE,
+    );
     return await permissionService.hasPermission(
       UserPermissionType.JUPITER_CAN_SHOW_IMAGE_DIALOG,
     );

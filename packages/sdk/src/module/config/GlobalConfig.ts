@@ -5,20 +5,27 @@
  */
 
 import { GlobalConfigService } from './service/GlobalConfigService';
+import { ServiceLoader, ServiceConfig } from '../serviceLoader';
 
 class GlobalConfig {
   static moduleName: string;
 
   static get(key: string) {
-    return GlobalConfigService.getInstance().get(this.moduleName, key);
+    return ServiceLoader.getInstance<GlobalConfigService>(
+      ServiceConfig.GLOBAL_CONFIG_SERVICE,
+    ).get(this.moduleName, key);
   }
 
   static put(key: string, value: any) {
-    GlobalConfigService.getInstance().put(this.moduleName, key, value);
+    ServiceLoader.getInstance<GlobalConfigService>(
+      ServiceConfig.GLOBAL_CONFIG_SERVICE,
+    ).put(this.moduleName, key, value);
   }
 
   static remove(key: string) {
-    GlobalConfigService.getInstance().remove(this.moduleName, key);
+    ServiceLoader.getInstance<GlobalConfigService>(
+      ServiceConfig.GLOBAL_CONFIG_SERVICE,
+    ).remove(this.moduleName, key);
   }
 }
 
