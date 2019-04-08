@@ -66,7 +66,7 @@ class TestBoxSelect extends React.Component<{
       { id: 3, value: 'Three' },
     ],
   };
-  handleChange = (value: string) => {
+  handleChange = (value: string | number) => {
     this.setState({ value });
   }
 
@@ -82,7 +82,6 @@ class TestBoxSelect extends React.Component<{
     };
 
     return (
-      <>
         <JuiBoxSelect
           {...this.state}
           MenuProps={this.props.menuItemStyle === 'fixed' ? MenuProps : {}}
@@ -96,7 +95,6 @@ class TestBoxSelect extends React.Component<{
             </StyledMenuItem>
           ))}
         </JuiBoxSelect>
-      </>
     );
   }
 }
