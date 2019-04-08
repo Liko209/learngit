@@ -48,21 +48,9 @@ jest.mock('sdk/api/glip/group');
 
 const profileService = new ProfileService();
 const personService = new PersonService();
-beforeEach(() => {
-  jest.clearAllMocks();
-
-  ServiceLoader.getInstance = jest
-    .fn()
-    .mockImplementation((serviceName: string) => {
-      if (serviceName === ServiceConfig.PERSON_SERVICE) {
-        return personService;
-      }
-
-      if (serviceName === ServiceConfig.PROFILE_SERVICE) {
-        return profileService;
-      }
-    });
-});
+const companyService = {
+  getCompanyEmailDomain: jest.fn().mockResolvedValue('companyDomain'),
+};
 
 describe('GroupFetchDataController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
@@ -96,6 +84,10 @@ describe('GroupFetchDataController', () => {
 
         if (serviceName === ServiceConfig.POST_SERVICE) {
           return postService;
+        }
+
+        if (serviceName === ServiceConfig.COMPANY_SERVICE) {
+          return companyService;
         }
       });
     testEntitySourceController = new TestEntitySourceController<Group>(

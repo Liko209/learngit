@@ -14,7 +14,6 @@ import { IEntityPersistentController } from '../../../../../framework/controller
 import { TASK_DATA_TYPE } from '../../../constants';
 import { StateHandleTask, GroupCursorHandleTask } from '../../../types';
 import { TotalUnreadController } from '../TotalUnreadController';
-import { UserConfigService } from '../../../../../module/config/service/UserConfigService';
 import { SYNC_SOURCE } from '../../../../../module/sync';
 import { ServiceLoader } from '../../../../../module/serviceLoader';
 

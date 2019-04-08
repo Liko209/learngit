@@ -18,7 +18,6 @@ import { StateService } from '../../../state';
 import { GroupDao } from '../../dao';
 import { Group } from '../../entity';
 import { GroupHandleDataController } from '../GroupHandleDataController';
-import { GlobalConfigService } from '../../../../module/config';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { SYNC_SOURCE } from '../../../../module/sync';

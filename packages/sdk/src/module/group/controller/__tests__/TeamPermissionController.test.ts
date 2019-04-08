@@ -3,7 +3,6 @@
  * @Date: 2019-01-14 14:30:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { GlobalConfigService } from '../../../../module/config';
 
 import {
   DEFAULT_USER_PERMISSION_LEVEL,
