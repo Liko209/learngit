@@ -20,7 +20,7 @@ type ContentSearchParams = {
   type?: ESearchContentTypes;
   creator_id?: number;
   group_id?: number;
-  fetch_count?: number;
+  scroll_size?: number;
   begin_time?: number;
   end_time?: number;
   for_at_mention?: boolean;

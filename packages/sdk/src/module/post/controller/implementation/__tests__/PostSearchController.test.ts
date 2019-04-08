@@ -153,14 +153,19 @@ describe('PostSearchController', () => {
     });
 
     it('should clear local search info and send request to clear request', async () => {
-      expect.assertions(3);
+      expect.assertions(5);
       const requestId = Date.now();
       queryInfos.set(requestId, { q: 'q' });
+      queryInfos.set(requestId + 1, { q: 'k' });
       SearchAPI.search = jest.fn().mockResolvedValue({});
-      await postSearchController.endPostSearch(requestId);
+      await postSearchController.endPostSearch();
       expect(queryInfos.has(requestId)).toBeFalsy();
-      expect(SearchAPI.search).toBeCalledWith({
+      expect(queryInfos.has(requestId + 1)).toBeFalsy();
+      expect(SearchAPI.search).nthCalledWith(1, {
         previous_server_request_id: requestId,
+      });
+      expect(SearchAPI.search).nthCalledWith(2, {
+        previous_server_request_id: requestId + 1,
       });
       expect(subscribeController.unsubscribe).toBeCalled();
     });
@@ -222,7 +227,7 @@ describe('PostSearchController', () => {
         results: null,
         just_ids: false,
         response_id: 1,
-        scroll_request_id: 1,
+        scroll_request_id: '1',
       };
 
       setTimeout(() => {
@@ -259,7 +264,7 @@ describe('PostSearchController', () => {
         ],
         just_ids: false,
         response_id: 1,
-        scroll_request_id: 1,
+        scroll_request_id: '1',
       };
 
       setTimeout(() => {

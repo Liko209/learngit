@@ -162,10 +162,10 @@ class PostService extends EntityBaseService<Post> {
       .scrollSearchPosts(requestId);
   }
 
-  async endPostSearch(requestId: number) {
+  async endPostSearch() {
     return await this.getPostController()
       .getPostSearchController()
-      .endPostSearch(requestId);
+      .endPostSearch();
   }
 
   async getSearchContentsCount(params: ContentSearchParams) {

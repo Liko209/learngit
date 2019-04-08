@@ -23,7 +23,8 @@ import { JSdkError, ERROR_CODES_SDK } from '../../../../error/sdk';
 import { mainLogger } from 'foundation';
 
 const LOG_TAG = 'PostSearchController';
-
+const SEARCH_TIMEOUT_ERR = 'Search Time Out';
+const SEARCH_TIMEOUT = 6 * 1000;
 class PostSearchController {
   private _queryInfos: Map<number, SearchRequestInfo> = new Map();
   private _hasSubscribed = false;
@@ -36,21 +37,29 @@ class PostSearchController {
     );
   }
 
-  searchPosts(options: ContentSearchParams): Promise<SearchedResultData> {
+  async searchPosts(options: ContentSearchParams): Promise<SearchedResultData> {
     if (options.previous_server_request_id) {
       this._clearSearchData(options.previous_server_request_id);
     }
 
+    const result = await SearchAPI.search(options);
     this._startListenSocketSearchChange();
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
       mainLogger.log(LOG_TAG, 'searchPosts', options);
-      const result = await SearchAPI.search(options);
+      const timerId = this._setSearchTimeoutTimer(reject);
       this._saveSearchInfo(result.request_id, {
         resolve,
         reject,
         q: options.q as string,
+        timeoutTimer: timerId,
       });
     });
+  }
+
+  private _setSearchTimeoutTimer(reject: any) {
+    return setTimeout(() => {
+      reject(SEARCH_TIMEOUT_ERR);
+    },                SEARCH_TIMEOUT);
   }
 
   scrollSearchPosts(requestId: number): Promise<SearchedResultData> {
@@ -66,14 +75,12 @@ class PostSearchController {
     return new Promise(async (resolve, reject) => {
       const info = this._queryInfos.get(requestId);
       if (info) {
-        await SearchAPI.scrollSearch({
-          search_request_id: requestId,
-          scroll_request_id: info.scrollRequestId || 1,
-        });
+        const timerId = this._setSearchTimeoutTimer(reject);
         this._updateSearchInfo(requestId, {
           resolve,
           reject,
           q: info.q,
+          timeoutTimer: timerId,
         });
       } else {
         reject(new JSdkError(ERROR_CODES_SDK.GENERAL, 'failed to search more'));
@@ -81,11 +88,15 @@ class PostSearchController {
     });
   }
 
-  async endPostSearch(requestId: number) {
+  async endPostSearch() {
     this._endListenSocketSearchChange();
-    this._clearSearchData(requestId);
     try {
-      await SearchAPI.search({ previous_server_request_id: requestId });
+      const requestIds = Array.from(this._queryInfos.keys());
+      this._queryInfos.clear();
+      const promises = requestIds.map((requestId: number) => {
+        return SearchAPI.search({ previous_server_request_id: requestId });
+      });
+      await Promise.all(promises);
     } catch (error) {
       // no error handling here.
       mainLogger.log(LOG_TAG, 'PostSearchController -> catch -> error', error);
@@ -117,9 +128,10 @@ class PostSearchController {
       results = [],
       response_id: responseId = 1,
       content_types: contentTypes = false,
-      scroll_request_id: scrollRequestId = 0,
     } = searchResult;
-
+    const scrollRequestId = searchResult.scroll_request_id
+      ? Number(searchResult.scroll_request_id)
+      : 0;
     const info = this._queryInfos.get(requestId);
     if (!info) {
       mainLogger.log(LOG_TAG, 'unrecorded search response', searchResult);
@@ -158,7 +170,7 @@ class PostSearchController {
       resultData.hasMore =
         resultData.posts.length !== 0 || resultData.items.length !== 0;
 
-      this._notifySearchResultComes(resultData);
+      !contentTypes && this._notifySearchResultComes(resultData);
       contentTypes && this._notifyContentsCountComes(requestId, contentTypes);
     }
   }
@@ -195,6 +207,7 @@ class PostSearchController {
     const info = this._queryInfos.get(searchedContents.requestId);
     if (info && info.resolve) {
       info.resolve(searchedContents);
+      info.timeoutTimer && clearTimeout(info.timeoutTimer);
     }
   }
 
