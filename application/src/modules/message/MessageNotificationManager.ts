@@ -130,19 +130,21 @@ export class MessageNotificationManager extends NotificationManager {
     { id, headshotVersion = '', headshot = '', hasHeadShot }: PersonModel,
     isGroup: boolean,
   ) {
-    let headshotUrl;
-
-    if (hasHeadShot) {
-      const personService: PersonService = PersonService.getInstance();
-      headshotUrl = personService.getHeadShotWithSize(
-        id,
-        headshotVersion,
-        headshot,
-        150,
-      );
+    if (isGroup) {
+      return defaultGroupAvatar;
+    }  {
+      let headshotUrl;
+      if (hasHeadShot) {
+        const personService: PersonService = PersonService.getInstance();
+        headshotUrl = personService.getHeadShotWithSize(
+          id,
+          headshotVersion,
+          headshot,
+          150,
+        );
+      }
+      return headshotUrl || defaultPersonAvatar;
     }
-
-    return headshotUrl || (isGroup ? defaultGroupAvatar : defaultPersonAvatar);
   }
 
   dispose() {
