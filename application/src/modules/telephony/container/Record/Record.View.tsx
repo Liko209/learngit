@@ -31,7 +31,7 @@ class RecordViewComponent extends Component<Props> {
     return (
       <JuiKeypadAction>
         <JuiIconButton
-          color={recording ? 'semanctic.negative' : 'grey.900'}
+          color={recording ? 'semantic.negative' : 'grey.900'}
           disableToolTip={true}
           onClick={this._handleRecord}
           size="xxlarge"

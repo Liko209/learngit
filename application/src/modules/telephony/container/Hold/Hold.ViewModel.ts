@@ -9,7 +9,6 @@ import { HoldProps, HoldViewProps } from './types';
 import { TelephonyService } from '../../service';
 import { TelephonyStore } from '../../store';
 import { computed } from 'mobx';
-import { mainLogger } from 'sdk';
 import {
   HOLD_STATE,
 } from '../../FSM';

@@ -146,7 +146,8 @@ class TelephonyService {
         break;
       }
       case RTC_CALL_ACTION.START_RECORD: {
-        // TODO: error handling
+        // TODO: FIJI-4803 phase2 error handlings
+        ToastCallError.toastFailedToRecord();
         this._telephonyStore.stopRecording();
         this._telephonyStore.setPendingForRecordBtn(false);
         break;
@@ -287,7 +288,7 @@ class TelephonyService {
         `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_PENDING_STATE]: ${this._telephonyStore.pendingForHold}`,
       );
       mainLogger.debug(
-        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${this.disabled}`,
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${this._telephonyStore.holdDisabled}`,
       );
       return;
     }
