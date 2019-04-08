@@ -146,6 +146,14 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
         imageStyle.left = left;
       }
 
+      if (forceSize) {
+        if (justifyHeight) {
+          imageProps.width = width;
+        } else if (justifyWidth) {
+          imageProps.height = height;
+        }
+      }
+
       imageStyle.display = 'block';
     }
 
