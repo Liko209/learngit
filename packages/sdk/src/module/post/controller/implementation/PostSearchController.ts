@@ -19,8 +19,13 @@ import {
 import { SearchAPI, ContentSearchParams } from '../../../../api/glip/search';
 import { transformAll } from '../../../../service/utils';
 import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
-import { JSdkError, ERROR_CODES_SDK } from '../../../../error/sdk';
 import { mainLogger } from 'foundation';
+import {
+  ERROR_TYPES,
+  ErrorParserHolder,
+  JSdkError,
+  ERROR_CODES_SDK,
+} from '../../../../error';
 
 const LOG_TAG = 'PostSearchController';
 const SEARCH_TIMEOUT_ERR = 'Search Time Out';
@@ -70,10 +75,23 @@ class PostSearchController {
 
     const info = this._queryInfos.get(requestId);
     if (info) {
-      await SearchAPI.scrollSearch({
-        search_request_id: requestId,
-        scroll_request_id: info.scrollRequestId || 1,
-      });
+      try {
+        await SearchAPI.scrollSearch({
+          search_request_id: requestId,
+          scroll_request_id: info.scrollRequestId || 1,
+        });
+      } catch (error) {
+        const e = ErrorParserHolder.getErrorParser().parse(error);
+        if (e.isMatch({ type: ERROR_TYPES.SERVER, codes: ['DELETED'] })) {
+          return Promise.resolve({
+            requestId,
+            posts: [],
+            items: [],
+            hasMore: false,
+          });
+        }
+        return Promise.reject(error);
+      }
 
       return new Promise((resolve, reject) => {
         const timerId = this._setSearchTimeoutTimer(reject);
