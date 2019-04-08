@@ -1,7 +1,7 @@
 import 'testcafe';
 import { v4 as uuid } from 'uuid';
 import * as path from 'path';
-import { IStep, Status } from '../models';
+import { IStep, Step, Status, LogOptions } from '../models';
 import { getLogger } from 'log4js';
 import { H } from './utils';
 import { MiscUtils } from '../utils';
@@ -34,9 +34,21 @@ export class LogHelper {
     this.t.ctx.logs.push(step);
   }
 
-  async log(step: IStep | string, takeScreenShot: boolean = false) {
-    if (typeof step == 'string') {
-      step = <IStep>{ message: step }
+  async log(
+    step: IStep | string,
+    options?: boolean | LogOptions
+  ) {
+    if (!options) {
+      options = <LogOptions>{ takeScreenShot: false };
+    }
+    if (typeof options === 'boolean') {
+      options = <LogOptions>{ takeScreenShot: options };
+    }
+
+    if (typeof step === 'string') {
+      step = new Step(step, this);
+    } else {
+      step = new Step(step.message, this);
     }
     if (step.status === undefined)
       step.status = Status.PASSED;
@@ -44,14 +56,26 @@ export class LogHelper {
       step.startTime = Date.now();
     if (step.endTime === undefined)
       step.endTime = step.startTime;
-    if (takeScreenShot)
+    if (options.takeScreenShot)
       step.screenshotPath = await this.takeScreenShot();
     this.writeStep(step);
   }
 
-  async withLog(step: IStep | string, cb: (step?: IStep) => Promise<any>, takeScreenShot: boolean = false) {
+  async withLog(step: IStep | string,
+    cb: (step?: IStep) => Promise<any>,
+    options?: boolean | LogOptions
+  ) {
+    if (!options) {
+      options = <LogOptions>{ takeScreenShot: false };
+    }
+    if (typeof options === 'boolean') {
+      options = <LogOptions>{ takeScreenShot: options };
+    }
+
     if (typeof step == 'string') {
-      step = <IStep>{ message: step }
+      step = new Step(step, this);
+    } else {
+      step = new Step(step.message, this);
     }
     step.startTime = Date.now();
     try {
@@ -60,11 +84,11 @@ export class LogHelper {
       return ret;
     } catch (error) {
       step.status = Status.FAILED;
-      takeScreenShot = false;
+      options.takeScreenShot = false;
       throw error;
     } finally {
       step.endTime = Date.now();
-      if (takeScreenShot)
+      if (options.takeScreenShot)
         step.screenshotPath = await this.takeScreenShot();
       this.writeStep(step);
     }
