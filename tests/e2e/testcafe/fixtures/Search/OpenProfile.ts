@@ -53,7 +53,6 @@ test(formalName('Check can open profile dialog when click the item of search res
   const searchBar = app.homePage.header.search;
 
   // people
-  const profileDialog = app.homePage.profileDialog;
   await h(t).withLog(`When I search keyword ${anotherUserName} and click the first people result`, async () => {
     await searchBar.clearInputAreaText();
     await searchBar.typeSearchKeyword(anotherUserName);
@@ -61,15 +60,11 @@ test(formalName('Check can open profile dialog when click the item of search res
     await searchBar.nthPeople(0).enter();
   });
 
-  await h(t).withLog(`Then Profile dialog should be popup and search result should be closed`, async () => {
-    await profileDialog.shouldBePopUp();
-    await t.expect(searchBar.searchResultsContainer.exists).notOk();
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`Then the conversation should be opened`, async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.titleShouldBe(anotherUserName);
   });
-
-  await h(t).withLog(`When I close the profile dialog`, async () => {
-    await profileDialog.clickCloseButton();
-  });
-
 
   await h(t).withLog(`And No text in the search box`, async () => {
     await t.expect(searchBar.inputArea.value).eql("")
@@ -85,9 +80,9 @@ test(formalName('Check can open profile dialog when click the item of search res
     await searchBar.nthGroup(0).enter();
   });
 
-  const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`Then the conversation should be opened`, async () => {
     await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.titleShouldBe(groupName);
   });
 
   await h(t).withLog(`And No text in the search box`, async () => {
@@ -146,13 +141,13 @@ test(formalName('Check can open profile dialog when click the item of search res
     await searchBar.getSearchItemByName(anotherUserName).enter();
   });
 
-  await h(t).withLog(`Then Profile dialog should be popup and recently search result should be closed`, async () => {
-    await profileDialog.shouldBePopUp();
-    await t.expect(searchBar.historyContainer.exists).notOk();
-  }, true);
+  await h(t).withLog(`Then the conversation should be opened`, async () => {
+    await conversationPage.waitUntilPostsBeLoaded();
+    await conversationPage.titleShouldBe(anotherUserName);
+  });
 
-  await h(t).withLog(`And I close the profile dialog`, async () => {
-    await profileDialog.clickCloseButton();
+  await h(t).withLog(`And No text in the search box`, async () => {
+    await t.expect(searchBar.inputArea.value).eql("");
   });
 
   // group
