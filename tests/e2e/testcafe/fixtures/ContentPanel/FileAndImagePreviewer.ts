@@ -2,7 +2,7 @@
  * @Author: Potar.He
  * @Date: 2019-03-17 15:56:18
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-08 20:04:25
+ * @Last Modified time: 2019-04-08 20:08:30
  */
 
 import { formalName } from '../../libs/filter';
@@ -24,7 +24,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   const loginUser = h(t).rcData.mainCompany.users[4];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(loginUser).init();
-  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('first_name', anotherUser.rcId); 
+  const otherUserName = await h(t).glip(loginUser).getPersonPartialData('first_name', anotherUser.rcId);
 
   let team = <IGroup>{
     type: "Team",
@@ -159,6 +159,8 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   await h(t).withLog('And  Return to the conversation and stay where it was', async () => {
     await bookmarkPage.expectStreamScrollToY(scrollTop);
   });
+  
+  // TODO: search content
 
   // at mention enter point
   const atMentionPage = app.homePage.messageTab.mentionPage;
@@ -209,7 +211,6 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   await h(t).withLog('And  Return to the conversation and stay where it was', async () => {
     await atMentionPage.expectStreamScrollToY(scrollTop);
   });
-
 });
 
 test(formalName('Should scroll to the bottom automatically when reveived new messages then close the dialog', ['JPT-1348', 'P2', 'Potar.He', 'FileAndImagePreviewer']), async (t) => {
