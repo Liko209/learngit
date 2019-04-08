@@ -24,31 +24,34 @@ class GroupAPI extends Api {
   }
 
   static pinPost(path: string, options: object) {
-    return this.glipNetworkClient.put<Raw<Group>>(path, options);
+    return this.glipNetworkClient.put<Raw<Group>>({ path, data: options });
   }
 
   static addTeamMembers(groupId: number, memberIds: number[]) {
-    return this.glipNetworkClient.put<Raw<Group>>(
-      `/add_team_members/${groupId}`,
-      {
+    return this.glipNetworkClient.put<Raw<Group>>({
+      path: `/add_team_members/${groupId}`,
+      data: {
         members: memberIds,
       },
-    );
+    });
   }
 
   static createTeam(data: Partial<GroupApiType>) {
-    return this.glipNetworkClient.post<Raw<Group>>('/team', data);
+    return this.glipNetworkClient.post<Raw<Group>>({ data, path: '/team' });
   }
 
   static convertToTeam(data: Partial<GroupApiType>) {
-    return this.glipNetworkClient.post<Raw<Group>>('/convert_to_team', data);
+    return this.glipNetworkClient.post<Raw<Group>>({
+      data,
+      path: '/convert_to_team',
+    });
   }
 
   static putTeamById(id: number, group: Partial<GroupApiType>) {
     group._id = group.id;
     delete group.id;
     const path = group.is_team ? `/team/${id}` : `/group/${id}`;
-    return this.glipNetworkClient.put<Raw<Group>>(path, group);
+    return this.glipNetworkClient.put<Raw<Group>>({ path, data: group });
   }
 }
 
