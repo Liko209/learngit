@@ -9,6 +9,14 @@ class Entry extends BaseWebComponent {
   async shouldBeOpened() {
     await this.t.expect(this.self.hasClass('selected')).ok();
   }
+
+  get name() {
+    return this.self.find('p');
+  }
+
+  async shouldBeNamed(name: string) {
+    await this.t.expect(this.name.withExactText(name).exists).ok();
+  }
 }
 
 export class SettingTab extends BaseWebComponent {
@@ -20,28 +28,28 @@ export class SettingTab extends BaseWebComponent {
     return this.getComponent(LeftRail);
   }
 
-  entryByAutomationId(automationId: string) {
+  getSubEntry(automationId: string) {
     return this.getComponent(Entry, this.getSelectorByAutomationId(automationId));
   }
 
   get generalEntry() {
-    return this.entryByAutomationId('entry-general');
+    return this.getSubEntry('entry-general');
   }
 
   get notificationAndSoundsEntry() {
-    return this.entryByAutomationId('entry-notificationAndSounds');
+    return this.getSubEntry('entry-notificationAndSounds');
   }
 
   get messagingEntry() {
-    return this.entryByAutomationId('entry-messaging');
+    return this.getSubEntry('entry-messaging');
   }
 
   get phoneEntry() {
-    return this.entryByAutomationId('entry-phone');
+    return this.getSubEntry('entry-phone');
   }
 
   get calendarEntry() {
-    return this.entryByAutomationId('entry-calendar');
+    return this.getSubEntry('entry-calendar');
   }
-  
+
 }
