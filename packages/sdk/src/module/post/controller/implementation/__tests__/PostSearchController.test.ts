@@ -240,6 +240,10 @@ describe('PostSearchController', () => {
         items: [],
         posts: [],
       });
+      expect(SearchAPI.scrollSearch).toBeCalledWith({
+        scroll_request_id: 1,
+        search_request_id: requestId,
+      });
     });
 
     it('should return next page data when scroll succeed', async () => {
