@@ -53,7 +53,7 @@ const StyledKeypadActions = styled.div<{ removeMargin: boolean }>`
     flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: ${({ removeMargin, theme }) =>
-      removeMargin ? spacing(5)({ theme }) : 0};
+      removeMargin ? spacing(-5)({ theme }) : 0};
   }
 `;
 
