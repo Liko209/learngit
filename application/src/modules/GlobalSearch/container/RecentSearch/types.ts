@@ -11,7 +11,9 @@ import { SearchItemTypes } from '../../types';
 type RecentRecord = {
   id: RecentSearchModel['id'];
   value: RecentSearchModel['value'];
-  queryParams: RecentSearchModel['query_params'];
+  queryParams?: {
+    groupId: number;
+  };
   type: SearchItemTypes;
 };
 

@@ -63,6 +63,7 @@ class InstantSearchViewComponent extends Component<Props> {
     const { Item, automationId } = SearchSectionsConfig[type];
     const hovered =
       sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
+
     return (
       <Item
         searchScope={getSearchScope(cellIndex)}
@@ -74,7 +75,7 @@ class InstantSearchViewComponent extends Component<Props> {
         didChange={this.selectIndexChange(sectionIndex, cellIndex)}
         terms={terms}
         id={typeof value === 'string' ? null : value}
-        key={value}
+        key={typeof value === 'string' ? `${value}${cellIndex}` : value}
       />
     );
   }

@@ -22,8 +22,8 @@ class MessageItemComponent extends React.Component<
       onMouseEnter,
       onMouseLeave,
       hovered,
-      displayName,
       onClick,
+      groupName,
     } = this.props;
 
     return (
@@ -36,7 +36,7 @@ class MessageItemComponent extends React.Component<
           <JuiIconography iconSize="medium" iconColor={['grey', '500']}>
             history
           </JuiIconography>}
-        value={displayName}
+        value={groupName}
         terms={terms}
         data-test-automation-id={`search-${title}-item`}
       />

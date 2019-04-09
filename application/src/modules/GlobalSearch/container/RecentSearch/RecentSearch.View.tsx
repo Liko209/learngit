@@ -47,9 +47,12 @@ class RecentSearchViewComponent extends Component<Props> {
     value: number | string;
     index: number;
     type: string;
+    queryParams?: {
+      groupId: number;
+    };
   }) => {
     const { selectIndex, resetSelectIndex } = this.props;
-    const { value, type, index } = config;
+    const { value, type, index, queryParams } = config;
 
     const { Item, title } = SearchSectionsConfig[type];
     const hovered = index === selectIndex;
@@ -63,7 +66,8 @@ class RecentSearchViewComponent extends Component<Props> {
         title={title}
         didChange={this.selectIndexChange(index)}
         id={typeof value === 'string' ? null : value}
-        key={value}
+        key={typeof value === 'string' ? `${value}${index}` : value}
+        params={queryParams}
       />
     );
   }
@@ -85,11 +89,12 @@ class RecentSearchViewComponent extends Component<Props> {
           data-test-automation-id={'search-clear'}
         />
         {recentRecord.map((recentSearchModel: RecentRecord, index: number) => {
-          const { value, type } = recentSearchModel;
+          const { value, type, queryParams } = recentSearchModel;
           return this.createSearchItem({
             index,
             type,
             value,
+            queryParams,
           });
         })}
       </>

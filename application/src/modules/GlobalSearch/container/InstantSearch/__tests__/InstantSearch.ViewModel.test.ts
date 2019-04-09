@@ -3,7 +3,7 @@
  * @Date: 2019-04-04 12:21:25
  * Copyright © RingCentral. All rights reserved.
  */
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import { container, Jupiter } from 'framework';
 import { config } from '../../../module.config';
 import { GlobalSearchStore } from '../../../store';
@@ -22,7 +22,7 @@ jest.mock('../../../../../utils/i18nT');
 import i18nT from '../../../../../utils/i18nT';
 // import history from '../../../../../history';
 
-import { SEARCH_SCOPE, SEARCH_VIEW } from '../types';
+import { SEARCH_SCOPE, SEARCH_VIEW, SearchItemTypes } from '../types';
 import { InstantSearchViewModel } from '../InstantSearch.ViewModel';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
@@ -58,6 +58,7 @@ describe('InstantSearchViewModel', () => {
     searchService.doFuzzySearchPersons = jest.fn().mockImplementation(() => {
       return { terms: [], sortableModels: [{ id: 1 }] };
     });
+    searchService.addRecentSearchRecord = jest.fn();
     ServiceLoader.getInstance = jest.fn((type: string) => {
       if (type === ServiceConfig.GROUP_SERVICE) {
         return groupService;
@@ -86,13 +87,53 @@ describe('InstantSearchViewModel', () => {
     expect(instantSearchViewModel.selectIndex).toEqual([1, 1]);
   });
 
+  describe('addRecentRecord()', () => {
+    it('if value is number should be add record', () => {
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(SearchItemTypes.PEOPLE);
+      instantSearchViewModel.addRecentRecord(1);
+      expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(
+        RecentSearchTypes.PEOPLE,
+        1,
+      );
+    });
+
+    it('if value is string and scope is global should be call add record not with group id', () => {
+      instantSearchViewModel.setSelectIndex(0, 0);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(SearchItemTypes.CONTENT);
+      instantSearchViewModel.addRecentRecord('abc');
+      expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(
+        RecentSearchTypes.SEARCH,
+        'abc',
+        {},
+      );
+    });
+    it('if value is string and scope is conversation should be call add record with group id', () => {
+      const conversationId = 1;
+      (getGlobalValue as jest.Mock).mockReturnValue(conversationId);
+      instantSearchViewModel.setSelectIndex(0, 1);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(SearchItemTypes.CONTENT);
+      instantSearchViewModel.addRecentRecord('abc');
+      expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(
+        RecentSearchTypes.SEARCH,
+        'abc',
+        { groupId: conversationId },
+      );
+    });
+  });
+
   describe('get currentItemType', () => {
     it('should return section type', async () => {
       instantSearchViewModel.setSelectIndex(0, 0);
       const resultData = [
         {
           ids: [1, 2],
-          type: RecentSearchTypes.GROUP,
+          type: SearchItemTypes.GROUP,
           hasMore: true,
         },
       ];
@@ -100,7 +141,7 @@ describe('InstantSearchViewModel', () => {
         .spyOn(instantSearchViewModel, 'searchResult', 'get')
         .mockReturnValue(resultData);
       expect(instantSearchViewModel.currentItemType).toBe(
-        RecentSearchTypes.GROUP,
+        SearchItemTypes.GROUP,
       );
     });
   });
@@ -111,7 +152,7 @@ describe('InstantSearchViewModel', () => {
       const resultData = [
         {
           ids: [1, 2],
-          type: RecentSearchTypes.GROUP,
+          type: SearchItemTypes.GROUP,
           hasMore: true,
         },
       ];
@@ -125,7 +166,7 @@ describe('InstantSearchViewModel', () => {
       const resultData = [
         {
           ids: [1, 2],
-          type: RecentSearchTypes.GROUP,
+          type: SearchItemTypes.GROUP,
           hasMore: true,
         },
       ];
@@ -145,7 +186,7 @@ describe('InstantSearchViewModel', () => {
         .mockReturnValue(id);
       jest
         .spyOn(instantSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(RecentSearchTypes.PEOPLE);
+        .mockReturnValue(SearchItemTypes.PEOPLE);
       const keyBoardEvent = {
         preventDefault: jest.fn(),
       } as any;
@@ -160,7 +201,7 @@ describe('InstantSearchViewModel', () => {
         .mockReturnValue(id);
       jest
         .spyOn(instantSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(RecentSearchTypes.SEARCH);
+        .mockReturnValue(SearchItemTypes.CONTENT);
       jest
         .spyOn(instantSearchViewModel, 'getSearchScope')
         .mockReturnValue(SEARCH_SCOPE.GLOBAL);
@@ -171,7 +212,7 @@ describe('InstantSearchViewModel', () => {
       expect(globalSearchStore.searchScope).toBe(SEARCH_SCOPE.GLOBAL);
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
     });
-    it('If select item type is search and select second should be global scope and go to full search', () => {
+    it('If select item type is content and select second should be global scope and go to full search', () => {
       const id = 1;
       instantSearchViewModel.setSelectIndex(0, 1);
       jest
@@ -179,7 +220,7 @@ describe('InstantSearchViewModel', () => {
         .mockReturnValue(id);
       jest
         .spyOn(instantSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(RecentSearchTypes.SEARCH);
+        .mockReturnValue(SearchItemTypes.CONTENT);
       jest
         .spyOn(instantSearchViewModel, 'getSearchScope')
         .mockReturnValue(SEARCH_SCOPE.CONVERSATION);
@@ -205,7 +246,7 @@ describe('InstantSearchViewModel', () => {
         .mockReturnValue(id);
       jest
         .spyOn(instantSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(RecentSearchTypes.GROUP);
+        .mockReturnValue(SearchItemTypes.GROUP);
       const keyBoardEvent = {
         preventDefault: jest.fn(),
       } as any;
@@ -227,7 +268,7 @@ describe('InstantSearchViewModel', () => {
         .mockReturnValue(id);
       jest
         .spyOn(instantSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(RecentSearchTypes.TEAM);
+        .mockReturnValue(SearchItemTypes.TEAM);
       const keyBoardEvent = {
         preventDefault: jest.fn(),
       } as any;
@@ -268,7 +309,7 @@ describe('InstantSearchViewModel', () => {
           ids: [1, 2],
           hasMore: true,
         },
-      };
+      } as any;
       jest
         .spyOn(instantSearchViewModel, 'contentSearchIds', 'get')
         .mockReturnValue([]);
@@ -279,22 +320,22 @@ describe('InstantSearchViewModel', () => {
         {
           ids: [],
           hasMore: true,
-          type: RecentSearchTypes.SEARCH,
+          type: SearchItemTypes.CONTENT,
         },
         {
           ids: [1, 2],
           hasMore: true,
-          type: RecentSearchTypes.PEOPLE,
+          type: SearchItemTypes.PEOPLE,
         },
         {
           ids: [1, 2],
           hasMore: true,
-          type: RecentSearchTypes.GROUP,
+          type: SearchItemTypes.GROUP,
         },
         {
           ids: [1, 2],
           hasMore: true,
-          type: RecentSearchTypes.TEAM,
+          type: SearchItemTypes.TEAM,
         },
       ]);
       expect(instantSearchViewModel.terms).toEqual(['a']);
@@ -530,7 +571,7 @@ describe('InstantSearchViewModel', () => {
       (i18nT as jest.Mock).mockReturnValue('in this conversation');
       expect(instantSearchViewModel.contentSearchIds).toEqual([
         searchKey,
-        `${searchKey} in this conversation`,
+        searchKey,
       ]);
     });
     it('If not in conversation should be return [searchKey]', () => {
@@ -538,6 +579,24 @@ describe('InstantSearchViewModel', () => {
       history.replace('/bookmarks');
       globalSearchStore.setSearchKey(searchKey);
       (i18nT as jest.Mock).mockReturnValue('in this conversation');
+      expect(instantSearchViewModel.contentSearchIds).toEqual([searchKey]);
+    });
+  });
+
+  describe('get contentSearchIds [JPT-1552]', () => {
+    it('If is in conversation should be return [searchKey, searchKey in this conversation]', () => {
+      const searchKey = 'abc';
+      history.replace('/messages/123');
+      globalSearchStore.setSearchKey(searchKey);
+      expect(instantSearchViewModel.contentSearchIds).toEqual([
+        searchKey,
+        searchKey,
+      ]);
+    });
+    it('If not in conversation should be return [searchKey]', () => {
+      const searchKey = 'abc';
+      history.replace('/bookmarks');
+      globalSearchStore.setSearchKey(searchKey);
       expect(instantSearchViewModel.contentSearchIds).toEqual([searchKey]);
     });
   });
@@ -644,7 +703,7 @@ describe('InstantSearchViewModel', () => {
       const resultData = [
         {
           ids: [1, 2],
-          type: RecentSearchTypes.GROUP,
+          type: SearchItemTypes.GROUP,
           hasMore: true,
         },
       ];
@@ -660,7 +719,7 @@ describe('InstantSearchViewModel', () => {
       const resultData = [
         {
           ids: [1, 2],
-          type: RecentSearchTypes.PEOPLE,
+          type: SearchItemTypes.PEOPLE,
           hasMore: true,
         },
       ];
@@ -676,7 +735,7 @@ describe('InstantSearchViewModel', () => {
       const resultData = [
         {
           ids: [1, 2],
-          type: RecentSearchTypes.PEOPLE,
+          type: SearchItemTypes.PEOPLE,
           hasMore: true,
         },
       ];
@@ -692,12 +751,12 @@ describe('InstantSearchViewModel', () => {
       const resultData = [
         {
           ids: [1, 2, 3],
-          type: RecentSearchTypes.PEOPLE,
+          type: SearchItemTypes.PEOPLE,
           hasMore: true,
         },
         {
           ids: [1, 2, 3],
-          type: RecentSearchTypes.GROUP,
+          type: SearchItemTypes.GROUP,
           hasMore: true,
         },
       ];
@@ -716,12 +775,12 @@ describe('InstantSearchViewModel', () => {
       const resultData = [
         {
           ids: [1, 2, 3],
-          type: RecentSearchTypes.PEOPLE,
+          type: SearchItemTypes.PEOPLE,
           hasMore: true,
         },
         {
           ids: [1, 2, 3],
-          type: RecentSearchTypes.GROUP,
+          type: SearchItemTypes.GROUP,
           hasMore: true,
         },
       ];

@@ -8,12 +8,11 @@ import { container } from 'framework';
 import storeManager from '@/store/base/StoreManager';
 import { SearchService } from 'sdk/module/search';
 import { GroupService } from 'sdk/module/group';
-import { ENTITY_NAME } from '@/store/constants';
+import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
-import { getEntity } from '@/store/utils';
+import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import history from '@/history';
-import i18nT from '@/utils/i18nT';
 import { changeToRecordTypes } from '../common/changeTypes';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
@@ -175,7 +174,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       return;
     }
     const { terms, people, groups, teams } = ret;
-
+    console.log(this.contentSearchIds, '--nello');
     const data: SearchItems[] = [
       {
         ids: this.contentSearchIds,
@@ -202,12 +201,17 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
 
   get contentSearchIds() {
     const { searchKey } = this._globalSearchStore;
-    const defaultTip = i18nT('globalSearch.inThisConversation');
-
-    return this._isConversation
-      ? [searchKey].concat(`${searchKey} ${defaultTip}`)
-      : [searchKey];
+    return this._isConversation ? [searchKey, searchKey] : [searchKey];
   }
+
+  // contentText = (value: string, cellIndex: number) => {
+  //   const scope = this.getSearchScope(cellIndex);
+  //   if (scope === SEARCH_SCOPE.CONVERSATION) {
+  //     const defaultTip = i18nT('globalSearch.inThisConversation');
+  //     return `${value} ${defaultTip}`;
+  //   }
+  //   return value;
+  // }
 
   private get _isConversation() {
     const { location } = history;
@@ -266,12 +270,25 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     return (list as SearchItems[])[section].type;
   }
 
-  addRecentRecord = (id: number) => {
+  addRecentRecord = (value: number | string) => {
     const type = changeToRecordTypes(this.currentItemType);
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    searchService.addRecentSearchRecord(type, id);
+
+    if (typeof value === 'number') {
+      searchService.addRecentSearchRecord(type, value);
+      return;
+    }
+
+    const cellIndex = this.selectIndex[1];
+    const scope = this.getSearchScope(cellIndex);
+    const conversationId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    searchService.addRecentSearchRecord(
+      type,
+      value,
+      scope === SEARCH_SCOPE.CONVERSATION ? { groupId: conversationId } : {},
+    );
   }
 
   @action
@@ -331,22 +348,19 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     if (!currentItemValue) {
       return;
     }
-    // TODO record string
-    if (typeof currentItemValue === 'number') {
-      this.addRecentRecord(currentItemValue);
-    }
 
     switch (currentItemType) {
       case SearchItemTypes.PEOPLE:
         this.goToConversation(currentItemValue as number);
         break;
-      case SearchItemTypes.SEARCH:
+      case SearchItemTypes.CONTENT:
         const cellIndex = this.selectIndex[1];
         const scope = this.getSearchScope(cellIndex);
         this._globalSearchStore.setSearchScope(scope);
         this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
         break;
-      default:
+      case SearchItemTypes.TEAM:
+      case SearchItemTypes.GROUP:
         const { canJoin, group } = this.canJoinTeam(currentItemValue as number);
         if (canJoin) {
           e.preventDefault();
@@ -354,7 +368,11 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
         } else {
           this.goToConversation(currentItemValue as number);
         }
+        break;
+      default:
+        break;
     }
+    this.addRecentRecord(currentItemValue);
   }
 
   // if search item removed need update selectIndex

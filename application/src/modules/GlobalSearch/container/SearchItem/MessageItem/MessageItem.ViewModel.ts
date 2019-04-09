@@ -3,12 +3,15 @@
  * @Date: 2019-01-30 14:38:45
  * Copyright © RingCentral. All rights reserved.
  */
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 import { SearchService } from 'sdk/module/search';
 import { container } from 'framework';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { getGlobalValue } from '@/store/utils';
+import { getGlobalValue, getEntity } from '@/store/utils';
+import { Group } from 'sdk/module/group/entity';
+import GroupModel from '@/store/models/Group';
+import { ENTITY_NAME } from '@/store';
 
 import { GlobalSearchStore } from '../../../store';
 import {
@@ -25,6 +28,30 @@ class MessageItemViewModel extends SearchViewModel<ContentProps>
   private _globalSearchStore: GlobalSearchStore = container.get(
     GlobalSearchStore,
   );
+
+  @computed
+  get group() {
+    const { params } = this.props;
+    const id = params && params.groupId;
+    if (!id) {
+      return null;
+    }
+    return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
+  }
+
+  @computed
+  get groupName() {
+    const group = this.group;
+    const { displayName } = this.props;
+    if (!group) {
+      return displayName;
+    }
+    const conversationId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    if (group.id === conversationId) {
+      return `${displayName} in this conversation`;
+    }
+    return `${displayName} in ${group.displayName}`;
+  }
 
   @action
   onClick = () => {
