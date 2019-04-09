@@ -53,10 +53,7 @@ class CompanyService extends EntityBaseService<Company> {
 
   protected getCompanyController() {
     if (!this._companyController) {
-      this._companyController = new CompanyController(
-        this.getEntitySource(),
-        this.getEntityCacheController(),
-      );
+      this._companyController = new CompanyController(this.getEntitySource());
     }
     return this._companyController;
   }

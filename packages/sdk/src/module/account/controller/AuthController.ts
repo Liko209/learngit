@@ -5,7 +5,7 @@
  */
 
 import { mainLogger } from 'foundation';
-import { glipStatus, RCAuthApi } from '../../../api';
+import { glipStatus } from '../../../api';
 import {
   RCPasswordAuthenticator,
   UnifiedLoginAuthenticator,
