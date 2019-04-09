@@ -9,7 +9,6 @@ import { ContentSearchParams } from 'sdk/api/glip/search';
 import { PostService } from 'sdk/module/post';
 import { SearchedResultData } from 'sdk/module/post/controller/implementation/types';
 import { Post } from 'sdk/module/post/entity';
-import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
 import { errorHelper } from 'sdk/error';
 import {
   ToastType,
@@ -41,7 +40,7 @@ class ContentSearchResultViewModel
   searchState: ContentSearchState = {
     requestId: null,
     postIds: [],
-    postCount: 0,
+    contentsCount: {},
   };
 
   @observable
@@ -79,6 +78,8 @@ class ContentSearchResultViewModel
   @action
   setSearchOptions = async (options: ContentSearchOptions) => {
     this.searchOptions = { ...this.searchOptions, ...options };
+
+    await this.onSearchEnd();
 
     this._setSearchState({ requestId: null });
 
@@ -128,13 +129,13 @@ class ContentSearchResultViewModel
   }
 
   private _onPostsInit = async () => {
-    const {
-      [TypeDictionary.TYPE_ID_POST]: postCount,
-    } = await this._postService.getSearchContentsCount(this._searchParams);
+    const contentsCount = await this._postService.getSearchContentsCount(
+      this._searchParams,
+    );
 
     const result = await this._postService.searchPosts(this._searchParams);
 
-    this._setSearchState({ postCount, requestId: result.requestId });
+    this._setSearchState({ contentsCount, requestId: result.requestId });
 
     return result;
   }
