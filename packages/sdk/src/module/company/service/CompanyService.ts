@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { CompanyEntityCacheController } from '../controller/CompanyEntityCacheController';
 import { CompanyController } from '../controller/CompanyController';
 import { CompanyDao } from '../dao/CompanyDao';
 import { Company } from '../entity';
@@ -32,6 +33,10 @@ class CompanyService extends EntityBaseService<Company> {
     );
   }
 
+  protected buildEntityCacheController() {
+    return new CompanyEntityCacheController();
+  }
+
   async getCompanyEmailDomain(id: number): Promise<string | null> {
     return await this.getCompanyController().getCompanyEmailDomain(id);
   }
@@ -48,9 +53,20 @@ class CompanyService extends EntityBaseService<Company> {
 
   protected getCompanyController() {
     if (!this._companyController) {
-      this._companyController = new CompanyController(this.getEntitySource());
+      this._companyController = new CompanyController(
+        this.getEntitySource(),
+        this.getEntityCacheController(),
+      );
     }
     return this._companyController;
+  }
+
+  async getUserAccountTypeFromSP430() {
+    return await this.getCompanyController().getUserAccountTypeFromSP430();
+  }
+
+  async isUserCompanyTelephonyOn() {
+    return await this.getCompanyController().isUserCompanyTelephonyOn();
   }
 }
 
