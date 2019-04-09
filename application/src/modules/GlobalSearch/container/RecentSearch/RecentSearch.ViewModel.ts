@@ -9,7 +9,6 @@ import { SearchService } from 'sdk/module/search';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store/constants';
-import { OpenProfile } from '@/common/OpenProfile';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 
 import { GlobalSearchStore } from '../../store';
@@ -94,15 +93,15 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
     }
   }
 
-  private get _currentItemValue() {
+  get currentItemValue() {
     return this.recentRecord[this.selectIndex].value;
   }
 
-  private get _currentItemType() {
+  get currentItemType() {
     return this.recentRecord[this.selectIndex].type;
   }
 
-  joinTeam = (id: number) => {
+  canJoinTeam = (id: number) => {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
     const { isMember, isTeam, privacy } = group;
     return {
@@ -113,8 +112,8 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
 
   @action
   onEnter = (e: KeyboardEvent) => {
-    const currentItemValue = this._currentItemValue;
-    const currentItemType = this._currentItemType;
+    const currentItemValue = this.currentItemValue;
+    const currentItemType = this.currentItemType;
     if (!currentItemValue) {
       return;
     }
@@ -125,11 +124,11 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
       return;
     }
     if (currentItemType === RecentSearchTypes.PEOPLE) {
-      OpenProfile.show(currentItemValue, null, this.onClose);
+      this.goToConversation(currentItemValue as number);
       return;
     }
 
-    const { canJoin, group } = this.joinTeam(currentItemValue);
+    const { canJoin, group } = this.canJoinTeam(currentItemValue);
     if (canJoin) {
       e.preventDefault();
       this.handleJoinTeam(group);
@@ -140,7 +139,7 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
 
   addRecentRecord = (value: number | string) => {
     SearchService.getInstance().addRecentSearchRecord(
-      this._currentItemType,
+      this.currentItemType,
       value,
     );
   }
