@@ -33,11 +33,11 @@ describe('get doc title', () => {
 
     it('should return current page section title title when get diff page section', async () => {
       let title = await getDocTitle('/settings/messaging');
-      expect(title).toEqual('setting.Settings_setting.messaging');
+      expect(title).toEqual('setting.Settings - setting.messaging');
       title = await getDocTitle('/settings/general');
-      expect(title).toEqual('setting.Settings_setting.general');
+      expect(title).toEqual('setting.Settings - setting.general');
       title = await getDocTitle('/settings/notification_and_sounds');
-      expect(title).toEqual('setting.Settings_setting.notificationAndSounds');
+      expect(title).toEqual('setting.Settings - setting.notificationAndSounds');
     });
   });
 });

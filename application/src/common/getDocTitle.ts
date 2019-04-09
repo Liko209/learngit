@@ -32,13 +32,13 @@ function getSettingsTitle(settingPath: string) {
     )
   ) {
     const pathI18NKey = `setting.${getI18NKeyByRoutePath(settingPath)}`;
-    return `${settingI18N}_${i18nT(pathI18NKey)}`;
+    return `${settingI18N} - ${i18nT(pathI18NKey)}`;
   }
   return settingI18N;
 }
 
 function getI18NKeyByRoutePath(path: string) {
-  return path.replace(/\_(.)/ig, (str, v) => {
+  return path.replace(/\_(.)/gi, (str, v) => {
     return v.toUpperCase();
   });
 }
