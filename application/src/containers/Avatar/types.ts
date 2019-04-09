@@ -6,7 +6,8 @@
 import { JuiAvatarProps } from 'jui/components/Avatar';
 
 type AvatarProps = JuiAvatarProps & {
-  uid: number;
+  uid?: number;
+  showDefaultAvatar?: boolean;
   automationId?: string;
 };
 
@@ -16,5 +17,6 @@ type AvatarViewProps = JuiAvatarProps & {
   bgColor?: string;
   shouldShowShortName?: boolean;
   automationId?: string;
+  showDefaultAvatar?: boolean;
 };
 export { AvatarProps, AvatarViewProps };
