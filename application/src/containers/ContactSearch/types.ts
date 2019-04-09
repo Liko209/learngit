@@ -11,7 +11,10 @@ type SelectedMember = {
   email: string;
 };
 
-type ContactSearchType = 'group' | 'person';
+enum ContactSearchType {
+  GROUP,
+  PERSON,
+}
 
 type ContactSearchProps = {
   groupId?: number;

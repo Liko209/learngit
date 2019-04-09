@@ -29,6 +29,7 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { TeamSetting } from './CreateTeam.ViewModel';
 import history from '@/history';
+import { ContactSearchType } from '@/containers/ContactSearch/types';
 
 type State = {
   items: JuiListToggleItemProps[];
@@ -242,6 +243,7 @@ class CreateTeamView extends React.Component<ViewProps, State> {
             onChange={handleNameChange}
           />
           <ContactSearch
+            type={ContactSearchType.PERSON}
             onSelectChange={handleSearchContactChange}
             label={i18next.t('people.team.Members')}
             placeholder={i18next.t('people.team.SearchContactPlaceholder')}

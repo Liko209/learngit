@@ -21,6 +21,7 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ContactSearchType } from '@/containers/ContactSearch/types';
 
 type State = {
   message: string;
@@ -128,6 +129,7 @@ class NewMessageView extends React.Component<ViewProps, State> {
         cancelText={i18next.t('common.dialog.cancel')}
       >
         <ContactSearch
+          type={ContactSearchType.PERSON}
           onSelectChange={handleSearchContactChange}
           label={i18next.t('people.team.Members')}
           placeholder={i18next.t('people.team.SearchContactPlaceholder')}

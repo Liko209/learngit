@@ -12,7 +12,7 @@ import { Chip } from '@/containers/Chip';
 import { ContactSearchItem } from './ContactSearchItem';
 import { GroupSearchItem } from './GroupSearchItem';
 
-import { ViewProps } from './types';
+import { ViewProps, ContactSearchType } from './types';
 
 type Props = WithTranslation & ViewProps;
 
@@ -38,7 +38,7 @@ class ContactSearch extends React.Component<Props> {
       autoSwitchEmail,
     } = this.props;
 
-    return type === 'person' ? (
+    return type === ContactSearchType.PERSON ? (
       <JuiDownshift
         onInputChange={searchMembers}
         suggestionItems={suggestions}

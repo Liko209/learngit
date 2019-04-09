@@ -14,6 +14,7 @@ import portalManager from '@/common/PortalManager';
 import { errorHelper } from 'sdk/error';
 import { generalErrorHandler } from '@/utils/error';
 
+import { ContactSearchType } from '@/containers/ContactSearch/types';
 import { ViewProps } from './types';
 
 @observer
@@ -70,6 +71,7 @@ class AddMembers extends React.Component<ViewProps> {
         }}
       >
         <ContactSearch
+          type={ContactSearchType.PERSON}
           onSelectChange={handleSearchContactChange}
           label={t('people.team.Members')}
           error={false}
