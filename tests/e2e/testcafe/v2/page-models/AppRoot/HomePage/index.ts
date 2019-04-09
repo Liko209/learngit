@@ -7,7 +7,7 @@ import { AddActionMenu } from './AddActionMenu';
 import { SettingMenu } from './SettingMenu';
 import { LeftPanel } from './LeftPanel';
 import { MessageTab } from './MessageTab';
-import { Header } from './header';
+import { Header } from './Header';
 import { MiniProfile, ProfileDialog } from './ViewProfile';
 import { AddTeamMembers } from './AddTeamMembers';
 import { TeamSettingDialog } from './TeamSettingDialog';
