@@ -30,11 +30,11 @@ class ItemListView extends React.Component<ViewProps & Props> {
   private _loadMoreStrategy = new ThresholdStrategy(LOAD_MORE_STRATEGY_CONFIG);
 
   private _renderItems = () => {
-    const { type } = this.props;
+    const { type, groupId } = this.props;
     const tabConfig = getTabConfig(type);
     const Component: any = tabConfig.item;
     return this.props.getIds.map((itemId: number) => (
-      <Component id={itemId} key={itemId} />
+      <Component id={itemId} key={itemId} groupId={groupId} />
     ));
   }
 

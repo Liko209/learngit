@@ -12,7 +12,7 @@ import {
 } from '@/common/generateModifiedImageURL';
 import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
-import { ItemVersions } from 'sdk/src/module/item/entity';
+import { ItemVersions } from 'sdk/module/item/entity';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum IMAGE_TYPE {

@@ -14,6 +14,7 @@ import {
   typography,
   palette,
   grey,
+  spacing,
 } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
@@ -24,6 +25,7 @@ type JuiAvatarProps = {
   size?: Size;
   color?: string;
   presence?: JSX.Element;
+  cover?: boolean;
 } & Omit<MuiAvatarProps, 'innerRef'>;
 
 const sizes: { [key in Size]: number } = {
@@ -63,6 +65,31 @@ const StyledAvatar = styled<JuiAvatarProps>(MuiAvatar)`
   }
 `;
 
+const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
+  && {
+    width: ${width(70)};
+    height: ${height(70)};
+    border-radius: unset;
+    position: static;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: ${spacing(12)};
+    color: ${({ color }) => (color ? palette('avatar', color) : grey('100'))};
+    background-color: ${({ color }) =>
+      color ? palette('avatar', color) : grey('100')};
+  }
+  & span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: ${height(33)};
+    width: ${width(33)};
+    border-radius: 50%;
+    background-color: ${palette('common', 'white')};
+  }
+`;
+
 const StyledPresenceWrapper = styled.div`
   position: absolute;
   bottom: 0;
@@ -70,7 +97,11 @@ const StyledPresenceWrapper = styled.div`
 `;
 
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
-  const { presence, style, size } = props;
+  const { presence, style, size, cover } = props;
+
+  if (cover) {
+    return <StyledCoverAvatar {...props} />;
+  }
 
   return presence ? (
     <StyledWrapper size={size} style={style}>
@@ -84,6 +115,7 @@ const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
 
 JuiAvatar.defaultProps = {
   size: 'medium',
+  cover: false,
 };
 JuiAvatar.displayName = 'JuiAvatar';
 
