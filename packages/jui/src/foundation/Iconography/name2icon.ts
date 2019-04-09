@@ -113,6 +113,7 @@ const name2icon = {
   bubble_lines: 'bubble_lines',
   event_new: 'event-new',
   history: 'history',
+  videocam: 'videocam',
 };
 
 export type ICON_NAME = keyof typeof name2icon;

@@ -7,7 +7,6 @@ import { getEntity } from '@/store/utils';
 import { container, Jupiter } from 'framework';
 import { config } from '../../../module.config';
 import { GlobalSearchStore } from '../../../store';
-import { GroupService } from 'sdk/module/group';
 import { SearchService } from 'sdk/module/search';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import history from '../../../../../history';
@@ -25,8 +24,7 @@ import i18nT from '../../../../../utils/i18nT';
 
 import { SEARCH_SCOPE, SEARCH_VIEW } from '../types';
 import { InstantSearchViewModel } from '../InstantSearch.ViewModel';
-
-GroupService.getInstance = jest.fn();
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -60,8 +58,15 @@ describe('InstantSearchViewModel', () => {
     searchService.doFuzzySearchPersons = jest.fn().mockImplementation(() => {
       return { terms: [], sortableModels: [{ id: 1 }] };
     });
-    SearchService.getInstance = jest.fn().mockReturnValue(searchService);
-    GroupService.getInstance.mockReturnValue(groupService);
+    ServiceLoader.getInstance = jest.fn((type: string) => {
+      if (type === ServiceConfig.GROUP_SERVICE) {
+        return groupService;
+      }
+      if (type === ServiceConfig.SEARCH_SERVICE) {
+        return searchService;
+      }
+      return null;
+    });
   }
 
   beforeEach(() => {

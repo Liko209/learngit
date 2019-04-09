@@ -9,7 +9,7 @@ import { Item } from '../../../entity';
 import { FileItemUtils } from '../utils';
 import { Api } from '../../../../../api';
 import { FileItem } from '../entity';
-import { AuthUserConfig } from '../../../../../service/auth/config';
+import { AuthUserConfig } from '../../../../account/config';
 
 class FileActionController {
   constructor(private _sourceController: IEntitySourceController<Item>) {}

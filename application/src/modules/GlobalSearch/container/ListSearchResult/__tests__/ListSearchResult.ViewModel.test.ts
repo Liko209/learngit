@@ -7,7 +7,6 @@ import { container, Jupiter } from 'framework';
 import { config } from '../../../module.config';
 import storeManager from '@/store/base/StoreManager';
 import { GlobalSearchStore } from '../../../store';
-import { GroupService } from 'sdk/module/group';
 import { SearchService } from 'sdk/module/search';
 import { ENTITY_NAME } from '@/store/constants';
 import { TAB_TYPE } from '../types';
@@ -17,8 +16,7 @@ jest.mock('sdk/dao');
 jest.mock('sdk/module/search');
 
 import { ListSearchResultViewModel } from '../ListSearchResult.ViewModel';
-
-GroupService.getInstance = jest.fn();
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const mockGroupEntity = {
   displayName: 'Socket001',
@@ -72,8 +70,15 @@ describe('ListSearchResultViewModel', () => {
     searchService.doFuzzySearchPersons = jest.fn().mockImplementation(() => {
       return { terms: [], sortableModels: [mockPeopleEntity] };
     });
-    SearchService.getInstance = jest.fn().mockReturnValue(searchService);
-    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+    ServiceLoader.getInstance = jest.fn((type: string) => {
+      if (type === ServiceConfig.GROUP_SERVICE) {
+        return groupService;
+      }
+      if (type === ServiceConfig.SEARCH_SERVICE) {
+        return searchService;
+      }
+      return null;
+    });
   }
 
   beforeEach(() => {
@@ -96,7 +101,9 @@ describe('ListSearchResultViewModel', () => {
   describe('search', () => {
     it('If fetch return is null, search should empty array', async (done: jest.DoneCallback) => {
       listSearchResultViewModel.fetch = jest.fn().mockReturnValue(null);
-      expect(await listSearchResultViewModel.search(TAB_TYPE.GROUPS)).toEqual([]);
+      expect(await listSearchResultViewModel.search(TAB_TYPE.GROUPS)).toEqual(
+        [],
+      );
       done();
     });
 
@@ -105,7 +112,10 @@ describe('ListSearchResultViewModel', () => {
       jest.spyOn(store, 'batchSet');
       const result = await listSearchResultViewModel.search(TAB_TYPE.GROUPS);
       expect(result).toContain(mockGroupEntity.id);
-      expect(store.batchSet).toHaveBeenCalledWith([mockGroupEntity.entity], true);
+      expect(store.batchSet).toHaveBeenCalledWith(
+        [mockGroupEntity.entity],
+        true,
+      );
       done();
     });
 
@@ -114,7 +124,10 @@ describe('ListSearchResultViewModel', () => {
       jest.spyOn(store, 'batchSet');
       const result = await listSearchResultViewModel.search(TAB_TYPE.TEAM);
       expect(result).toContain(mockTeamsEntity.id);
-      expect(store.batchSet).toHaveBeenCalledWith([mockTeamsEntity.entity], true);
+      expect(store.batchSet).toHaveBeenCalledWith(
+        [mockTeamsEntity.entity],
+        true,
+      );
       done();
     });
 
@@ -123,7 +136,10 @@ describe('ListSearchResultViewModel', () => {
       jest.spyOn(store, 'batchSet');
       const result = await listSearchResultViewModel.search(TAB_TYPE.PEOPLE);
       expect(result).toContain(mockPeopleEntity.id);
-      expect(store.batchSet).toHaveBeenCalledWith([mockPeopleEntity.entity], true);
+      expect(store.batchSet).toHaveBeenCalledWith(
+        [mockPeopleEntity.entity],
+        true,
+      );
       done();
     });
   });

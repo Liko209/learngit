@@ -24,6 +24,7 @@ import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { StreamProps, StreamItemType } from '../types';
 import { StreamViewModel } from '../Stream.ViewModel';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
@@ -44,6 +45,7 @@ function setup(obj?: any) {
 describe('StreamViewModel', () => {
   let itemService: ItemService;
   let postService: PostService;
+  let stateService: StateService;
 
   const streamController = {
     dispose: jest.fn(),
@@ -57,8 +59,25 @@ describe('StreamViewModel', () => {
     jest.resetAllMocks();
     itemService = new ItemService();
     postService = new PostService();
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    stateService = new StateService();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.ITEM_SERVICE) {
+          return itemService;
+        }
+
+        if (serviceName === ServiceConfig.POST_SERVICE) {
+          return postService;
+        }
+
+        if (serviceName === ServiceConfig.STATE_SERVICE) {
+          return stateService;
+        }
+
+        return null;
+      });
+
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
@@ -195,7 +214,7 @@ describe('StreamViewModel', () => {
         _historyHandler: { update: mockUpdate },
         _streamController: {
           postIds,
-          items: postIds.map((i) => ({
+          items: postIds.map(i => ({
             id: i,
             value: i,
             type: StreamItemType.POST,
@@ -211,9 +230,7 @@ describe('StreamViewModel', () => {
 
   describe('markAsRead()', () => {
     it('should call storeManager.getGlobalStore().set with arguments', () => {
-      const stateService = new StateService();
       const spy = jest.spyOn(stateService, 'updateReadStatus');
-      StateService.getInstance = jest.fn().mockReturnValue(stateService);
       const groupId = 123123;
       const vm = setup({ groupId });
       vm.markAsRead();

@@ -7,7 +7,7 @@ import { MenuViewModel } from '../Menu.ViewModel';
 import * as utils from '@/store/utils';
 import storeManager from '@/store/base/StoreManager';
 import { GLOBAL_KEYS } from '@/store/constants';
-import { StateService } from 'sdk/module/state';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/service');
 jest.mock('sdk/api');
@@ -15,7 +15,7 @@ jest.mock('sdk/api');
 const stateService = {
   updateReadStatus: jest.fn(),
 };
-StateService.getInstance = jest.fn().mockReturnValue(stateService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(stateService);
 
 describe('MenuViewModel', () => {
   describe('shouldSkipCloseConfirmation()', () => {

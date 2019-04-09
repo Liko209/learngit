@@ -55,6 +55,12 @@ class SettingLeftRailViewModel extends StoreViewModel {
         testId: 'entry-phone',
       },
       {
+        title: 'setting.meetings',
+        icon: 'videocam',
+        type: SETTING_LIST_TYPE.MEETINGS,
+        testId: 'entry-meetings',
+      },
+      {
         title: 'setting.calendar',
         icon: 'event_new',
         type: SETTING_LIST_TYPE.CALENDAR,

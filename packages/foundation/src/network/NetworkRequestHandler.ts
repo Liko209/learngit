@@ -5,7 +5,7 @@
  */
 import RequestTask from './RequestTask';
 import NetworkTokenManager from './OAuthTokenManager';
-import NetworkRequestConsumer from './NetworkRequestConsumer';
+import { AbstractConsumer } from './consumer';
 import NetworkRequestSurvivalMode from './NetworkRequestSurvivalMode';
 import { HttpResponseBuilder } from './client/http';
 import {
@@ -149,7 +149,7 @@ class NetworkRequestHandler
     return !this.isPause || priority === REQUEST_PRIORITY.SPECIFIC;
   }
 
-  addRequestConsumer(via: NETWORK_VIA, consumer: NetworkRequestConsumer) {
+  addRequestConsumer(via: NETWORK_VIA, consumer: AbstractConsumer) {
     this.consumers.set(via, consumer);
   }
 

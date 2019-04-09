@@ -1,4 +1,4 @@
-import { JuiConversationCard } from 'jui/src/pattern/ConversationCard';
+import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { RefObject } from 'react';
 
 /*

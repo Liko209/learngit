@@ -11,7 +11,6 @@ import { GroupConfigDao } from '../dao/GroupConfigDao';
 import { GroupConfigController } from '../controller/GroupConfigController';
 
 class GroupConfigService extends EntityBaseService<GroupConfig> {
-  static serviceName = 'GroupConfigService';
   private _groupConfigController: GroupConfigController;
   constructor() {
     super(false, daoManager.getDao(GroupConfigDao));

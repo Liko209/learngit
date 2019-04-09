@@ -19,8 +19,6 @@ import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
-  static serviceName = 'ProfileService';
-
   private profileController: ProfileController;
 
   constructor() {

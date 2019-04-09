@@ -11,18 +11,22 @@ const SearchSectionsConfig = {
   [SearchItemTypes.CONTENT]: {
     title: 'globalSearch.contentSearch',
     Item: ContentItem,
+    automationId: 'content',
   },
   [SearchItemTypes.PEOPLE]: {
     title: 'globalSearch.People',
     Item: PersonItem,
+    automationId: 'people',
   },
   [SearchItemTypes.GROUP]: {
     title: 'globalSearch.Groups',
     Item: GroupItem,
+    automationId: 'groups',
   },
   [SearchItemTypes.TEAM]: {
     title: 'globalSearch.Teams',
     Item: GroupItem,
+    automationId: 'teams',
   },
   [SearchItemTypes.SEARCH]: {
     title: 'globalSearch.Teams',

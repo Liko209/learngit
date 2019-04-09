@@ -28,8 +28,52 @@ interface IDiff {
   };
 }
 
+function findMaxPrefix(str1: string, str2: string): string {
+  if (!str1 || !str2) {
+    return '';
+  }
+
+  let prefix = [];
+  let length = Math.min(str1.length, str2.length);
+  for (let i = 0; i < length; i++) {
+    if (str1[i] !== str2[i]) {
+      break;
+    }
+    prefix.push(str1[i]);
+  }
+  return prefix.join('');
+}
+
+function findMaxPrefixFromArray(arr: Array<string>): string {
+  if (!arr || arr.length === 0) {
+    return '';
+  }
+
+  let prefix = arr[0];
+  for (let i = 1; i < arr.length; i++) {
+    prefix = findMaxPrefix(prefix, arr[i]);
+  }
+  return prefix;
+}
+
+function cleanAbsolutePath(data: any) {
+  if (!data) {
+    return data;
+  }
+
+  const total = data['total'];
+  delete data['total'];
+  const keys = Object.keys(data);
+  const prefix = findMaxPrefixFromArray(keys);
+  const result = { total };
+  for (let key of keys) {
+    result[key.substr(prefix.length)] = data[key];
+  }
+  return result
+}
+
 function loadData(path: string) {
-  return JSON.parse(fs.readFileSync(path, { encoding: 'utf-8' }));
+  return cleanAbsolutePath(JSON.parse(fs.readFileSync(path, { encoding: 'utf-8' })));
 }
 
 function diff(oldData: IReport, newData: IReport) {

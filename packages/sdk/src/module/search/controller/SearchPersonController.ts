@@ -14,7 +14,7 @@ import {
   PerformanceTracerHolder,
   PERFORMANCE_KEYS,
 } from '../../../utils/performance';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import {
   RecentSearchTypes,
   FuzzySearchPersonOptions,
@@ -22,6 +22,7 @@ import {
 } from '../entity';
 import { SearchUtils } from '../../../framework/utils/SearchUtils';
 import { Terms } from '../../../framework/controller/interface/IEntityCacheSearchController';
+import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 class SearchPersonController {
   constructor(private _searchService: ISearchService) {}
 
@@ -53,7 +54,9 @@ class SearchPersonController {
       fetchAllIfSearchKeyEmpty,
       recentFirst,
     );
-    const personService = PersonService.getInstance() as PersonService;
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     const cacheSearchController = personService.getEntityCacheSearchController();
     const result = await cacheSearchController.searchEntities(
       toSortableModelFunc,
@@ -105,10 +108,14 @@ class SearchPersonController {
       : undefined;
 
     const individualGroups = recentFirst
-      ? GroupService.getInstance<GroupService>().getIndividualGroups()
+      ? ServiceLoader.getInstance<GroupService>(
+          ServiceConfig.GROUP_SERVICE,
+        ).getIndividualGroups()
       : undefined;
 
-    const personService = PersonService.getInstance() as PersonService;
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
 
     return (person: Person, terms: Terms) => {
       do {

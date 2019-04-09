@@ -21,7 +21,6 @@ class OAuthTokenHandler implements ITokenHandler {
 
   constructor(
     type: IHandleType,
-    cumstomizedHandler: ITokenHandler,
     token?: Token,
     basic?: string,
     listener?: ITokenRefreshListener,

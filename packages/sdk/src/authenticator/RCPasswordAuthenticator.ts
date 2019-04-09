@@ -7,9 +7,8 @@ import { loginGlip, RCAuthApi } from '../api';
 import { IAuthenticator, IAuthParams, IAuthResponse } from '../framework';
 import { ACCOUNT_TYPE_ENUM } from './constants';
 import { setRCToken } from './utils';
-import { AuthUserConfig } from '../service/auth/config';
+import { AuthUserConfig, AccountUserConfig } from '../module/account/config';
 import { RCAccount, GlipAccount } from '../account';
-import { AccountUserConfig } from '../service/account/config';
 
 interface IRCPasswordAuthenticateParams extends IAuthParams {
   username: string;

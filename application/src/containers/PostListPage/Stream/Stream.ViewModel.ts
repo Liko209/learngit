@@ -18,6 +18,7 @@ import { PostService } from 'sdk/module/post';
 import { transform2Map } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import PostModel from '@/store/models/Post';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type OrderedPost = Post & {
   _index: number;
@@ -109,7 +110,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       const deleted = _(this._postIds)
         .difference(postIds)
         .value();
-      const postService: PostService = PostService.getInstance();
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
       this._postIds = postIds;
       if (added.length) {
         const { posts } = await postService.getPostsByIds(added);

@@ -12,6 +12,7 @@ import { ENTITY, SERVICE, WINDOW } from '../../../service/eventKey';
 import { LogControlManager } from '../logControlManager';
 import { configManager } from '../consumer/config';
 import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
+import { ServiceLoader } from '../../../module/serviceLoader';
 
 jest.mock('axios');
 jest.mock('sdk/module/permission/service/PermissionService');
@@ -66,7 +67,7 @@ describe('LogControlManager', () => {
       const mockPermissionService = {
         hasPermission: jest.fn(),
       };
-      PermissionService.getInstance = jest
+      ServiceLoader.getInstance = jest
         .fn()
         .mockReturnValue(mockPermissionService);
       mockPermissionService.hasPermission.mockClear();
@@ -99,7 +100,7 @@ describe('LogControlManager', () => {
       const mockPermissionService = {
         hasPermission: jest.fn(),
       };
-      PermissionService.getInstance = jest
+      ServiceLoader.getInstance = jest
         .fn()
         .mockReturnValue(mockPermissionService);
       mockPermissionService.hasPermission.mockClear();

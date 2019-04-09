@@ -3,7 +3,6 @@
  * @Date: 2019-04-03 10:45:35,
  * Copyright © RingCentral. All rights reserved.
  */
-import { PostService } from 'sdk/module/post';
 import { errorHelper } from 'sdk/error';
 import { container } from 'framework';
 import { getGlobalValue } from '@/store/utils';
@@ -15,6 +14,7 @@ import { Notification } from '@/containers/Notification';
 import { ContentSearchResultViewModel } from '../ContentSearchResult.ViewModel';
 import { CONTENT_SEARCH_FETCH_COUNT } from '../types';
 import { SEARCH_SCOPE } from '../../../types';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('@/store/utils');
 
@@ -31,12 +31,13 @@ beforeEach(() => {
 describe('ContentSearchResult [JPT-1558]', () => {
   beforeEach(() => {
     Notification.flashToast = jest.fn();
-
-    PostService.getInstance = jest.fn().mockReturnValue({
+    const postService = {
       searchPosts: jest.fn().mockRejectedValue(new Error('Init Error')),
       scrollSearchPosts: jest.fn().mockRejectedValue(new Error('Scroll Error')),
       getSearchContentsCount: jest.fn().mockResolvedValue({}),
-    });
+    };
+
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
   });
 
   it('Should network error message be toasted when network error.', async () => {
@@ -76,13 +77,15 @@ describe('ContentSearchResult [JPT-1558]', () => {
 
 describe('ContentSearchResult [JPT-1562]', () => {
   beforeEach(() => {
-    PostService.getInstance = jest.fn().mockReturnValue({
+    const postService = {
       endPostSearch: jest.fn().mockResolvedValue(null),
       getSearchContentsCount: jest.fn().mockResolvedValue({}),
       searchPosts: jest
         .fn()
         .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
-    });
+    };
+
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
   });
 
   it('Should posts be initialized after search options reset.', async () => {
