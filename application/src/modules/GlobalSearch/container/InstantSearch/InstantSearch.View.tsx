@@ -15,13 +15,18 @@ import { SearchSectionsConfig } from '../config';
 
 type Props = InstantSearchViewProps & WithTranslation;
 
+enum cacheEventFn {
+  _hoverHighlightMap = '_hoverHighlightMap',
+  _selectChangeMap = '_selectChangeMap',
+}
+
 @observer
 class InstantSearchViewComponent extends Component<Props> {
-  private _hoverHighlightMap: Map<string, Function> = new Map();
-  private _selectChangeMap: Map<string, Function> = new Map();
+  private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
+  private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
 
   private _cacheIndexPathFn = (
-    type: '_hoverHighlightMap' | '_selectChangeMap',
+    type: cacheEventFn,
     sectionIndex: number,
     cellIndex: number,
   ) => {
@@ -37,7 +42,7 @@ class InstantSearchViewComponent extends Component<Props> {
 
   hoverHighlight = (sectionIndex: number, cellIndex: number) => {
     return this._cacheIndexPathFn(
-      '_hoverHighlightMap',
+      cacheEventFn._hoverHighlightMap,
       sectionIndex,
       cellIndex,
     );
@@ -45,7 +50,11 @@ class InstantSearchViewComponent extends Component<Props> {
 
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
-    return this._cacheIndexPathFn('_selectChangeMap', sectionIndex, cellIndex);
+    return this._cacheIndexPathFn(
+      cacheEventFn._selectChangeMap,
+      sectionIndex,
+      cellIndex,
+    );
   }
 
   createSearchItem = (config: {
