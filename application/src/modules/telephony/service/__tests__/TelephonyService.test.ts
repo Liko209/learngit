@@ -74,9 +74,9 @@ describe('TelephonyService', () => {
         setTimeout(() => cachedOnCallStateChange(callId, RTC_CALL_STATE.CONNECTED), mockedDelay);
         return MAKE_CALL_ERROR_CODE.NO_ERROR;
       }),
-      hangUp() {
+      hangUp: jest.fn().mockImplementation(() => {
         cachedOnCallStateChange(callId, RTC_CALL_STATE.DISCONNECTED);
-      },
+      }),
       createAccount: (
         accountDelegate: { onMadeOutgoingCall: () => void },
         callDelegate: {
@@ -92,6 +92,12 @@ describe('TelephonyService', () => {
         cachedOnCallStateChange = onCallStateChange;
         cachedOnCallActionFailed = onCallActionFailed;
       },
+      answer: jest.fn(),
+      sendToVoiceMail: jest.fn(),
+      ignore: jest.fn(),
+      getAllCallCount: jest.fn(),
+      mute: jest.fn(),
+      unmute: jest.fn(),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance')
@@ -206,75 +212,6 @@ describe('TelephonyService', () => {
     });
   });
 
-  describe('TelephonyService', () => {
-    it('should call answer', () => {
-      const callId = 'id_0';
-      telephonyService.answer();
-      expect(mockServerTelephonyService.answer).not.toBeCalled();
-      telephonyService._callId = callId;
-      telephonyService.answer();
-      expect(mockServerTelephonyService.answer).toBeCalledWith(callId);
-      telephonyService._callId = undefined;
-    });
-
-    it('should call ignore', () => {
-      const callId = 'id_1';
-      telephonyService.ignore();
-      expect(mockServerTelephonyService.ignore).not.toBeCalled();
-      telephonyService._callId = callId;
-      telephonyService.ignore();
-      expect(mockServerTelephonyService.ignore).toBeCalledWith(callId);
-      telephonyService._callId = undefined;
-    });
-
-    it('should call sendToVoiceMail', () => {
-      const callId = 'id_2';
-      telephonyService.sendToVoiceMail();
-      expect(mockServerTelephonyService.sendToVoiceMail).not.toBeCalled();
-      telephonyService._callId = callId;
-      telephonyService.sendToVoiceMail();
-      expect(mockServerTelephonyService.sendToVoiceMail).toBeCalledWith(callId);
-      telephonyService._callId = undefined;
-    });
-
-    it('should call hangUp', () => {
-      const callId = 'id_3';
-      telephonyService.hangUp();
-      expect(mockServerTelephonyService.hangUp).not.toBeCalled();
-      telephonyService._callId = callId;
-      telephonyService.hangUp();
-      expect(mockServerTelephonyService.hangUp).toBeCalledWith(callId);
-      telephonyService._callId = undefined;
-    });
-
-    it('should call directCall', () => {
-      const toNumber = '000';
-      telephonyService.makeCall = jest.fn();
-      mockServerTelephonyService.getAllCallCount.mockReturnValue(1);
-      telephonyService.directCall(toNumber);
-      expect(telephonyService.makeCall).not.toBeCalled();
-      mockServerTelephonyService.getAllCallCount.mockReturnValue(0);
-      telephonyService.directCall(toNumber);
-      expect(telephonyService.makeCall).toBeCalledWith(toNumber);
-    });
-
-    it('should call muteOrUnmute', () => {
-      const callId = 'id_4';
-      telephonyService.muteOrUnmute(false);
-      expect(mockServerTelephonyService.mute).not.toBeCalled();
-      expect(mockServerTelephonyService.unmute).not.toBeCalled();
-      telephonyService._callId = callId;
-      telephonyService.muteOrUnmute(false);
-      expect(mockServerTelephonyService.mute).not.toBeCalled();
-      expect(mockServerTelephonyService.unmute).toBeCalled();
-      jest.resetAllMocks();
-      telephonyService.muteOrUnmute(true);
-      expect(mockServerTelephonyService.mute).toBeCalled();
-      expect(mockServerTelephonyService.unmute).not.toBeCalled();
-      telephonyService._callId = undefined;
-    });
-  });
-
   describe('The "record" button status tests', () => {
     it('The "record" button should be disabled when an outbound call is not connected [JPT-1604]', async () => {
       await (telephonyService as TelephonyService).makeCall(v4());
@@ -358,6 +295,75 @@ describe('TelephonyService', () => {
       expect((telephonyService as TelephonyService)._telephonyStore.isRecording).toBe(true);
 
       await (telephonyService as TelephonyService).hangUp();
+    });
+  });
+
+  describe('TelephonyService', () => {
+    it('should call answer', () => {
+      const callId = 'id_0';
+      telephonyService.answer();
+      expect(mockedServerTelephonyService.answer).not.toBeCalled();
+      telephonyService._callId = callId;
+      telephonyService.answer();
+      expect(mockedServerTelephonyService.answer).toBeCalledWith(callId);
+      telephonyService._callId = undefined;
+    });
+
+    it('should call ignore', () => {
+      const callId = 'id_1';
+      telephonyService.ignore();
+      expect(mockedServerTelephonyService.ignore).not.toBeCalled();
+      telephonyService._callId = callId;
+      telephonyService.ignore();
+      expect(mockedServerTelephonyService.ignore).toBeCalledWith(callId);
+      telephonyService._callId = undefined;
+    });
+
+    it('should call sendToVoiceMail', () => {
+      const callId = 'id_2';
+      telephonyService.sendToVoiceMail();
+      expect(mockedServerTelephonyService.sendToVoiceMail).not.toBeCalled();
+      telephonyService._callId = callId;
+      telephonyService.sendToVoiceMail();
+      expect(mockedServerTelephonyService.sendToVoiceMail).toBeCalledWith(callId);
+      telephonyService._callId = undefined;
+    });
+
+    it('should call hangUp', () => {
+      const callId = 'id_3';
+      telephonyService.hangUp();
+      expect(mockedServerTelephonyService.hangUp).not.toBeCalled();
+      telephonyService._callId = callId;
+      telephonyService.hangUp();
+      expect(mockedServerTelephonyService.hangUp).toBeCalledWith(callId);
+      telephonyService._callId = undefined;
+    });
+
+    it('should call directCall', () => {
+      const toNumber = '000';
+      telephonyService.makeCall = jest.fn();
+      mockedServerTelephonyService.getAllCallCount.mockReturnValue(1);
+      telephonyService.directCall(toNumber);
+      expect(telephonyService.makeCall).not.toBeCalled();
+      mockedServerTelephonyService.getAllCallCount.mockReturnValue(0);
+      telephonyService.directCall(toNumber);
+      expect(telephonyService.makeCall).toBeCalledWith(toNumber);
+    });
+
+    it('should call muteOrUnmute', () => {
+      const callId = 'id_4';
+      telephonyService.muteOrUnmute(false);
+      expect(mockedServerTelephonyService.mute).not.toBeCalled();
+      expect(mockedServerTelephonyService.unmute).not.toBeCalled();
+      telephonyService._callId = callId;
+      telephonyService.muteOrUnmute(false);
+      expect(mockedServerTelephonyService.mute).not.toBeCalled();
+      expect(mockedServerTelephonyService.unmute).toBeCalled();
+      jest.resetAllMocks();
+      telephonyService.muteOrUnmute(true);
+      expect(mockedServerTelephonyService.mute).toBeCalled();
+      expect(mockedServerTelephonyService.unmute).not.toBeCalled();
+      telephonyService._callId = undefined;
     });
   });
 });

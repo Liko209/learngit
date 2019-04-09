@@ -21,7 +21,6 @@ import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { CALL_DIRECTION } from '../constants';
 
 const ANONYMOUS = 'anonymous';
 class TelephonyService {
@@ -45,7 +44,6 @@ class TelephonyService {
     );
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
-    this._callDirection = CALL_DIRECTION.OUTBOUNT;
     this._telephonyStore.directCall();
   }
 
@@ -57,7 +55,7 @@ class TelephonyService {
     this._telephonyStore.incomingCall();
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${
-        callInfo.callId
+      callInfo.callId
       }, from name=${fromName}, from num=${fromNum}`,
     );
   }
