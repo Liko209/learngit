@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { UserConfig } from '../../config';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountGlobalConfig } from '../../../module/account/config';
 
 class TelephonyUserConfig extends UserConfig {
   constructor() {

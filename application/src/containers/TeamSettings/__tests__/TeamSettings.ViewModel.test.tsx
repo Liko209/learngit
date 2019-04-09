@@ -12,6 +12,7 @@ import {
   ToastMessageAlign,
   ToastType,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/group', () => ({
   GroupService: jest.fn(),
@@ -21,7 +22,7 @@ const groupService = new GroupService();
 describe('TeamSettingsViewModel', () => {
   describe('save()', () => {
     beforeEach(() => {
-      GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
     });
     afterEach(() => {
       jest.resetAllMocks();
@@ -111,7 +112,7 @@ describe('TeamSettingsViewModel', () => {
 describe('TeamSettingsViewModel', () => {
   const groupService = new GroupService();
   beforeEach(() => {
-    jest.spyOn(GroupService, 'getInstance').mockReturnValue(groupService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
   });
   afterEach(() => {
     jest.resetAllMocks();

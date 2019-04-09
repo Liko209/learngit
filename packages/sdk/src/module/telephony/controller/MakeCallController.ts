@@ -13,6 +13,7 @@ import { PhoneParserUtility } from '../../../utils/phoneParser';
 import { PersonService } from '../../person';
 import { ContactType } from '../../person/types';
 import { RCInfoService } from '../../rcInfo';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 enum RCN11Reason {
   N11_101 = 'N11-101',
@@ -30,7 +31,9 @@ class MakeCallController {
   }
 
   private async _isRCFeaturePermissionEnabled(permission: FEATURE_PERMISSIONS) {
-    const rcInfoService: RCInfoService = RCInfoService.getInstance();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
     const extInfo = await rcInfoService.getRCExtensionInfo();
     if (extInfo) {
       for (const index in extInfo.serviceFeatures) {
@@ -63,7 +66,9 @@ class MakeCallController {
 
   private async _checkVoipN11Number(phoneNumber: string) {
     let result = MAKE_CALL_ERROR_CODE.NO_ERROR;
-    const rcInfoService: RCInfoService = RCInfoService.getInstance();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
     const specialNumber = await rcInfoService.getSpecialNumberRule();
     if (specialNumber) {
       for (const index in specialNumber.records) {
@@ -102,7 +107,9 @@ class MakeCallController {
     );
     if (phoneParserUtility && phoneParserUtility.isShortNumber()) {
       do {
-        const personService: PersonService = PersonService.getInstance();
+        const personService = ServiceLoader.getInstance<PersonService>(
+          ServiceConfig.PERSON_SERVICE,
+        );
         const result = await personService.matchContactByPhoneNumber(
           phoneNumber,
           ContactType.GLIP_CONTACT,

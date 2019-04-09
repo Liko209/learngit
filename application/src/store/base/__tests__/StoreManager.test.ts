@@ -15,8 +15,14 @@ enum STORE_TYPE {
   GLOBAL,
 }
 
-const multiEntityMapStore = new MultiEntityMapStore(ENTITY_NAME.POST, ENTITY_SETTING[ENTITY_NAME.POST]);
-const singleEntityMapStore = new SingleEntityMapStore(ENTITY_NAME.MY_STATE, ENTITY_SETTING[ENTITY_NAME.MY_STATE]);
+const multiEntityMapStore = new MultiEntityMapStore(
+  ENTITY_NAME.POST,
+  ENTITY_SETTING[ENTITY_NAME.POST],
+);
+const singleEntityMapStore = new SingleEntityMapStore(
+  ENTITY_NAME.MY_STATE,
+  ENTITY_SETTING[ENTITY_NAME.MY_STATE],
+);
 
 describe('StoreManager', () => {
   describe('injectStores()', () => {
@@ -50,11 +56,15 @@ describe('StoreManager', () => {
       expect(storeManager.removeStore).toHaveBeenCalledTimes(2);
     });
     it('singleEntityMapStore should be delete', () => {
-      expect(storeManager.getStore(STORE_TYPE.ENTITY, ENTITY_NAME.MY_STATE)).toBeFalsy();
+      expect(
+        storeManager.getStore(STORE_TYPE.ENTITY, ENTITY_NAME.MY_STATE),
+      ).toBeFalsy();
     });
 
     it('multiEntityMapStore should be create new entityMapStore', () => {
-      expect(storeManager.getStore(STORE_TYPE.ENTITY, ENTITY_NAME.POST)).toBeFalsy();
+      expect(
+        storeManager.getStore(STORE_TYPE.ENTITY, ENTITY_NAME.POST),
+      ).toBeFalsy();
     });
   });
 
@@ -80,8 +90,21 @@ describe('StoreManager', () => {
     it('store batchSet should be call', () => {
       const store = storeManager.getEntityMapStore(ENTITY_NAME.PRESENCE);
       jest.spyOn(store, 'batchSet');
-      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.PRESENCE, [{ id: 111 }]);
-      expect(store.batchSet).toHaveBeenCalledWith([{ id: 111 }]);
+      storeManager.dispatchUpdatedDataModels(ENTITY_NAME.PRESENCE, [
+        { id: 111 },
+      ]);
+      expect(store.batchSet).toHaveBeenCalledWith([{ id: 111 }], true);
+    });
+
+    it('it should pass refreshCache parameter to store', () => {
+      const store = storeManager.getEntityMapStore(ENTITY_NAME.PRESENCE);
+      jest.spyOn(store, 'batchSet');
+      storeManager.dispatchUpdatedDataModels(
+        ENTITY_NAME.PRESENCE,
+        [{ id: 111 }],
+        false,
+      );
+      expect(store.batchSet).toHaveBeenCalledWith([{ id: 111 }], false);
     });
   });
 });

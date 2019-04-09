@@ -6,10 +6,10 @@
 import { canConnect, CanConnectModel } from '../../api/glip/user';
 import { PresenceService } from '../../module/presence/service/PresenceService';
 import { PRESENCE } from '../../module/presence/constant/Presence';
-import { AccountUserConfig } from '../account/config';
-import { AuthUserConfig } from '../../service/auth/config';
+import { AccountUserConfig, AuthUserConfig } from '../../module/account/config';
 import { mainLogger } from 'foundation';
 import { SyncUserConfig } from '../../module/sync/config';
+import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
 
 const NEXT_RECONNECT_TIME = 500;
 const MAX_RECONNECT_INTERVAL_TIME = 60 * 1000;
@@ -100,7 +100,7 @@ class SocketCanConnectController {
   ) {
     if (!this._canConnectTimeOutId) {
       this._canConnectTimeOutId = setTimeout(() => {
-        this._handleReTry.bind(this)(callback, forceOnline);
+        this._handleReTry(callback, forceOnline);
       },                                     time);
     } else {
       mainLogger.warn(TAG, ' has already exits time out id');
@@ -143,7 +143,9 @@ class SocketCanConnectController {
     if (forceOnline) {
       return 'online';
     }
-    const service: PresenceService = PresenceService.getInstance();
+    const service = ServiceLoader.getInstance<PresenceService>(
+      ServiceConfig.PRESENCE_SERVICE,
+    );
     let presence;
     try {
       presence = await service.getCurrentUserPresence();

@@ -15,6 +15,7 @@ import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { AppStore } from '@/modules/app/store';
 import { StateService } from 'sdk/module/state';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
   private _appStore = container.get(AppStore);
@@ -93,7 +94,10 @@ class UmiViewModel extends StoreViewModel<UmiProps> implements UmiViewProps {
         const currentConversationId = getGlobalValue(
           GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
         );
-        const currentUnreadInfo = (StateService.getInstance() as StateService).getSingleUnreadInfo(
+        const stateService = ServiceLoader.getInstance<StateService>(
+          ServiceConfig.STATE_SERVICE,
+        );
+        const currentUnreadInfo = stateService.getSingleUnreadInfo(
           currentConversationId,
         );
         if (

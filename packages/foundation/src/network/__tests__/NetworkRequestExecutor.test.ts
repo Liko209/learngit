@@ -115,6 +115,12 @@ describe('NetworkRequestExecutor', () => {
     });
   });
 
+  describe('getRequest', () => {
+    it('should return the request', () => {
+      expect(networkExecutor.getRequest()).toEqual(getFakeRequest());
+    });
+  });
+
   describe('execute', () => {
     it('should perform request', () => {
       const spy = jest.spyOn(networkExecutor, '_performNetworkRequest');
@@ -153,12 +159,137 @@ describe('NetworkRequestExecutor', () => {
   describe('isPause', () => {
     it('should true when status equal pause', () => {
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
-      expect(networkExecutor.isPause()).toEqual(true);
+      expect(networkExecutor.isPause()).toBeTruthy();
     });
 
-    it('should true when status not equal pause', () => {
+    it('should false when status not equal pause', () => {
       networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
-      expect(networkExecutor.isPause()).not.toEqual(true);
+      expect(networkExecutor.isPause()).toBeFalsy();
+    });
+  });
+
+  describe('_isCompletion', () => {
+    it('should true when status is completion', () => {
+      networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.COMPLETION;
+      expect(networkExecutor['_isCompletion']()).toBeTruthy();
+    });
+
+    it('should false when status is not completion', () => {
+      networkExecutor.status = NETWORK_REQUEST_EXECUTOR_STATUS.PAUSE;
+      expect(networkExecutor['_isCompletion']()).toBeFalsy();
+    });
+  });
+
+  describe('_performNetworkRequest', () => {
+    it('should call client.request', () => {
+      networkExecutor.client.request = jest.fn();
+      networkExecutor['_performNetworkRequest']();
+      expect(networkExecutor.client.request).toBeCalledWith(
+        getFakeRequest(),
+        networkExecutor,
+      );
+    });
+
+    it('should decorate request when_requestDecoration is valid', () => {
+      networkExecutor.client.request = jest.fn();
+      networkExecutor['_requestDecoration'] = {
+        decorate: jest.fn(),
+      };
+      networkExecutor['_performNetworkRequest']();
+      expect(networkExecutor.client.request).toBeCalledWith(
+        getFakeRequest(),
+        networkExecutor,
+      );
+      expect(networkExecutor['_requestDecoration'].decorate).toBeCalledWith(
+        getFakeRequest(),
+      );
+    });
+  });
+
+  describe('_notifyCompletion', () => {
+    it('should call listener', () => {
+      networkExecutor.listener = {
+        onConsumeFinished: jest.fn(),
+      } as any;
+      networkExecutor['_notifyCompletion']();
+      expect(networkExecutor.listener!.onConsumeFinished).toBeCalledWith(
+        networkExecutor,
+      );
+    });
+  });
+
+  describe('_retry', () => {
+    it('should retry when retryCount > 0', () => {
+      networkExecutor.retryCount = 1;
+      networkExecutor.execute = jest.fn();
+      networkExecutor['_retry']();
+      expect(networkExecutor.execute).toBeCalled();
+      expect(networkExecutor.retryCount).toEqual(0);
+    });
+
+    it('should not retry when retryCount <= 0', () => {
+      networkExecutor.retryCount = 0;
+      networkExecutor['_cancelClientRequest'] = jest.fn();
+      networkExecutor['_callXApiResponse'] = jest.fn();
+      networkExecutor['_retry']();
+      expect(networkExecutor['_cancelClientRequest']).toBeCalled();
+      expect(networkExecutor['_callXApiResponse']).toBeCalledWith(
+        0,
+        NETWORK_FAIL_TYPE.TIME_OUT,
+      );
+    });
+  });
+
+  describe('_cancelClientRequest', () => {
+    it('should call client.cancelRequest', () => {
+      networkExecutor.client.cancelRequest = jest.fn();
+      networkExecutor['_cancelClientRequest']();
+      expect(networkExecutor.client.cancelRequest).toBeCalledWith(
+        getFakeRequest(),
+      );
+    });
+  });
+
+  describe('_callXApiResponseCallback', () => {
+    it('should call _handle401XApiCompletionCallback when status is UNAUTHORIZED', () => {
+      networkExecutor['_handle401XApiCompletionCallback'] = jest.fn();
+      const mockResponse = {
+        status: HTTP_STATUS_CODE.UNAUTHORIZED,
+      } as any;
+      networkExecutor['_callXApiResponseCallback'](mockResponse);
+      expect(
+        networkExecutor['_handle401XApiCompletionCallback'],
+      ).toBeCalledWith(mockResponse);
+    });
+
+    it('should call _handle502XApiCompletionCallback when status is BAD_GATEWAY', () => {
+      networkExecutor['_handle502XApiCompletionCallback'] = jest.fn();
+      networkExecutor['_callXApiCompletionCallback'] = jest.fn();
+      const mockResponse = {
+        status: HTTP_STATUS_CODE.BAD_GATEWAY,
+      } as any;
+      networkExecutor['_callXApiResponseCallback'](mockResponse);
+      expect(
+        networkExecutor['_handle502XApiCompletionCallback'],
+      ).toBeCalledWith(mockResponse);
+      expect(networkExecutor['_callXApiCompletionCallback']).toBeCalledWith(
+        mockResponse,
+      );
+    });
+
+    it('should call _handle503XApiCompletionCallback when status is SERVICE_UNAVAILABLE', () => {
+      networkExecutor['_handle503XApiCompletionCallback'] = jest.fn();
+      networkExecutor['_callXApiCompletionCallback'] = jest.fn();
+      const mockResponse = {
+        status: HTTP_STATUS_CODE.SERVICE_UNAVAILABLE,
+      } as any;
+      networkExecutor['_callXApiResponseCallback'](mockResponse);
+      expect(
+        networkExecutor['_handle503XApiCompletionCallback'],
+      ).toBeCalledWith(mockResponse);
+      expect(networkExecutor['_callXApiCompletionCallback']).toBeCalledWith(
+        mockResponse,
+      );
     });
   });
 

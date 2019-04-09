@@ -20,6 +20,7 @@ import { QUERY_DIRECTION } from 'sdk/dao';
 import storeManager from '@/store/base/StoreManager';
 import MultiEntityMapStore from '../../../store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type OrderedPost = Post & {
   _index: number;
@@ -74,7 +75,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     pageSize: number,
     anchor?: ISortableModel<Post>,
   ) => {
-    const postService: PostService = PostService.getInstance();
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     let ids;
     let hasMore;
     if (anchor) {
@@ -140,7 +143,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       const deleted = _(this._postIds)
         .difference(postIds)
         .value();
-      const postService: PostService = PostService.getInstance();
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
       this._postIds = postIds;
       if (added.length) {
         const { posts } = await postService.getPostsByIds(added);

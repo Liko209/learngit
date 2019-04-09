@@ -3,12 +3,12 @@
  * @Date: 2019-01-21 13:31:38
  * Copyright © RingCentral. All rights reserved.
  */
-import { ItemService } from 'sdk/module/item/service';
 import { FileItemUtils } from 'sdk/module/item/utils';
 // import { FileType } from '@/store/models/FileItem';
 import { getEntity } from '../../../store/utils';
 // import { getFileType } from '../../../common/getFileType';
 import { ThumbnailViewModel } from '../Thumbnail.ViewModel';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../store/utils');
 jest.mock('../../../common/getFileType');
@@ -20,14 +20,13 @@ const previewUrl = 'http://www.google.com';
 const itemService = {
   getThumbsUrlWithSize: jest.fn(),
 };
-ItemService.getInstance = jest.fn();
 
 describe('ThumbnailViewModel', () => {
   beforeAll(() => {
     jest.resetAllMocks();
   });
   beforeEach(() => {
-    ItemService.getInstance.mockReturnValue(itemService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
   });
   describe('_getThumbsUrlWithSize()', () => {
     it('should get image url', () => {

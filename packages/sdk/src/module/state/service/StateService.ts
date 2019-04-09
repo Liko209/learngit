@@ -18,10 +18,10 @@ import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
 import { SYNC_SOURCE } from '../../sync/types';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
-  static serviceName = 'StateService';
   private _stateController: StateController;
   constructor(private _groupService: IGroupService) {
     super(true, daoManager.getDao(GroupStateDao));
@@ -93,9 +93,15 @@ class StateService extends EntityBaseService<GroupState>
     states: Partial<State>[],
     source: SYNC_SOURCE,
   ): Promise<void> => {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_STATE,
+      logId,
+    );
     await this.getStateController()
       .getStateDataHandleController()
       .handleState(states, source);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleGroupCursor = async (groups: Partial<Group>[]): Promise<void> => {

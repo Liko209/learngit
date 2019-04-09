@@ -17,7 +17,7 @@ import { GroupState } from '../../entity';
 import { IGroupService } from '../../../group/service/IGroupService';
 import { ProfileService } from '../../../profile/service/ProfileService';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import notificationCenter, {
   NotificationEntityPayload,
 } from '../../../../service/notificationCenter';
@@ -25,6 +25,7 @@ import { EVENT_TYPES } from '../../../../service/constants';
 import { SERVICE } from '../../../../service/eventKey';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 type DataHandleTask =
   | GroupStateHandleTask
@@ -249,7 +250,9 @@ class TotalUnreadController {
   private async _initializeTotalUnread(): Promise<void> {
     this.reset();
 
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     const groups = await this._groupService.getEntities();
     this._favoriteGroupIds = (await profileService.getFavoriteGroupIds()) || [];
     const userConfig = new AccountUserConfig();

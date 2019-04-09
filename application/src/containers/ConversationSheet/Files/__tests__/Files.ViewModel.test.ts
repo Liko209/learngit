@@ -9,25 +9,16 @@ import { FilesViewModel } from '../Files.ViewModel';
 import { FileType, FilesViewProps } from '../types';
 import { Notification } from '@/containers/Notification';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
-import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import FileItemModel from '@/store/models/FileItem';
 import { getThumbnailURLWithType } from '@/common/getThumbnailURL';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/post');
 jest.mock('../../../../store/utils');
 jest.mock('@/containers/Notification');
 jest.mock('@/common/getThumbnailURL');
 
-const itemService = {
-  cancelUpload: jest.fn(),
-};
-ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-
-const postService = new PostService();
-PostService.getInstance = jest.fn().mockReturnValue(postService);
-
-ItemService.getInstance = jest.fn().mockReturnValue({});
 Notification.flashToast = jest.fn().mockImplementationOnce(() => {});
 
 const mockItemValue = {
@@ -40,6 +31,24 @@ const mockItemValue = {
     },
   ],
 };
+
+const itemService = {
+  cancelUpload: jest.fn(),
+};
+
+const postService = new PostService();
+
+ServiceLoader.getInstance = jest
+  .fn()
+  .mockImplementation((serviceName: string) => {
+    if (serviceName === ServiceConfig.ITEM_SERVICE) {
+      return itemService;
+    }
+
+    if (serviceName === ServiceConfig.POST_SERVICE) {
+      return postService;
+    }
+  });
 
 (getEntity as jest.Mock).mockReturnValue({
   ...mockItemValue,
@@ -122,7 +131,7 @@ describe('filesItemVM', () => {
         ...mockItemValue,
         progressStatus: PROGRESS_STATUS.INPROGRESS,
       });
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
       const vm = new FilesViewModel({ ids: [123, 2, 3] } as FilesViewProps);
       const _deleteIds = new Set<number>();
       Object.assign(vm, { _deleteIds });

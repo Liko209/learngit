@@ -77,6 +77,10 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
     });
   }
 
+  fetchSortableDataHandler() {
+    return this._foc;
+  }
+
   protected defaultIsMatchFunc = (model: T) => {
     return this._sourceIds.includes(model.id);
   }

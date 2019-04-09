@@ -13,8 +13,14 @@ import {
   HA_PRIORITY,
   IResponse,
 } from './network';
-
+import NetworkRequestBuilder from './client/NetworkRequestBuilder';
 abstract class BaseRequest implements IRequest {
+  id: string;
+  path: string;
+  method: NETWORK_METHOD;
+  data: string | object;
+  headers: Header;
+  params: object;
   handlerType: IHandleType;
   priority: REQUEST_PRIORITY;
   via: NETWORK_VIA;
@@ -29,20 +35,23 @@ abstract class BaseRequest implements IRequest {
   needAuth(): boolean {
     throw new Error('Method not implemented.');
   }
-  constructor(
-    readonly id: string,
-    readonly path: string,
-    readonly method: NETWORK_METHOD,
-    public data: object | string,
-    public headers: Header,
-    public params: object,
-  ) {
-    this.id = id;
-    this.path = path;
-    this.method = method;
-    this.data = data;
-    this.headers = headers;
-    this.params = params;
+  constructor(builder: NetworkRequestBuilder) {
+    this.id = builder.id;
+    this.path = builder.path;
+    this.method = builder.method;
+    this.data = builder.data;
+    this.headers = builder.headers;
+    this.params = builder.params;
+    this.authFree = builder.authFree;
+    this.host = builder.host;
+    this.handlerType = builder.handlerType;
+    this.requestConfig = builder.requestConfig;
+    this.timeout = builder.timeout;
+    this.retryCount = builder.retryCount;
+    this.priority = builder.priority;
+    this.HAPriority = builder.HAPriority;
+    this.via = builder.via;
+    this.callback = (builder as IRequest).callback;
   }
 }
 export default BaseRequest;

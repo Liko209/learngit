@@ -32,6 +32,7 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import StoreViewModel from '@/store/ViewModel';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const PAGE_SIZE = 20;
 
@@ -251,21 +252,21 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   private _fetchIndexInfo = async () => {
     const itemId = this.currentItemId;
-    const info = await (ItemService.getInstance() as ItemService).getItemIndexInfo(
-      itemId,
-      {
-        typeId: ViewerItemTypeIdMap[this.props.type],
-        groupId: this.props.groupId,
-        sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
-        desc: false,
-        limit: Infinity,
-        offsetItemId: undefined,
-        filterFunc: this._itemListDataSource.getFilterFunc(
-          this.props.groupId,
-          this.props.type,
-        ),
-      },
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
     );
+    const info = await itemService.getItemIndexInfo(itemId, {
+      typeId: ViewerItemTypeIdMap[this.props.type],
+      groupId: this.props.groupId,
+      sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      desc: false,
+      limit: Infinity,
+      offsetItemId: undefined,
+      filterFunc: this._itemListDataSource.getFilterFunc(
+        this.props.groupId,
+        this.props.type,
+      ),
+    });
     transaction(() => {
       this.total = info.totalCount;
       if (this.currentItemId === itemId) {

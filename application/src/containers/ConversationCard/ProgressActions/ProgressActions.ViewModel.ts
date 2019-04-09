@@ -20,11 +20,16 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ProgressActionsViewModel extends AbstractViewModel<ProgressActionsProps>
   implements ProgressActionsViewProps {
-  private _postService: PostService = PostService.getInstance();
-  private _itemService: ItemService = ItemService.getInstance();
+  private _postService = ServiceLoader.getInstance<PostService>(
+    ServiceConfig.POST_SERVICE,
+  );
+  private _itemService = ServiceLoader.getInstance<ItemService>(
+    ServiceConfig.ITEM_SERVICE,
+  );
   private _timer: NodeJS.Timer;
   @observable
   postStatus?: PROGRESS_STATUS;
