@@ -5,3 +5,4 @@
  */
 
 export * from './EmptyScreen';
+export * from './TabPageEmptyScreen';

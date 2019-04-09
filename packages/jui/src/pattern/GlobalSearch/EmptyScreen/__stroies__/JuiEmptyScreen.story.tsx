@@ -8,9 +8,9 @@ import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { JuiEmptyScreen } from '..';
 
-storiesOf('Pattern', module).add('GlobalSearchEmptyScreen', () => {
+storiesOf('Pattern/GlobalSearch/EmptyScreen', module).add('EmptyScreen', () => {
   return (
-    <div style={{ border: '1px solid #616161' }}>
+    <div>
       <JuiEmptyScreen text="asdf asdf" />
     </div>
   );
