@@ -62,7 +62,10 @@ class ContentSearchResultViewComponent extends Component<Props> {
             />
           ) : null}
         </JuiFullSearchResultWrapper>
-        <SearchFilter setSearchOptions={setSearchOptions} />
+        <SearchFilter
+          setSearchOptions={setSearchOptions}
+          contentsCount={searchState.contentsCount}
+        />
       </JuiFullSearchWrapper>
     );
   }
