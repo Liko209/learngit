@@ -15,7 +15,7 @@ import PostAPI from '../../../../api/glip/post';
 import { JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
 import { Post } from '../../entity/Post';
 import { PostDataController } from '../PostDataController';
-import { GroupService } from '../../../../module/group/service';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
@@ -36,7 +36,7 @@ const groupService = {
 };
 
 function setup() {
-  ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+  ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
   itemService.handleIncomingData = jest.fn();
   daoManager.getDao.mockImplementation(arg => {
     if (arg === PostDao) {

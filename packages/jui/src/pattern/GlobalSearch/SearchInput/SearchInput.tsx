@@ -41,7 +41,15 @@ const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
       onClickIconRight={onClose}
       iconPosition="both"
       inputAfter={
-        showClear && <ClearButton onClick={onClear}>Clear</ClearButton>}
+        showClear && (
+          <ClearButton
+            data-test-automation-id="global-search-clear"
+            onClick={onClear}
+          >
+            Clear
+          </ClearButton>
+        )
+      }
       {...rest}
     />
   );

@@ -26,6 +26,7 @@ import { PostDataController } from './PostDataController';
 import { ENTITY } from '../../../service/eventKey';
 import { PostSearchController } from './implementation/PostSearchController';
 import { IGroupService } from '../../../module/group/service/IGroupService';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class PostController {
   private _actionController: PostActionController;
@@ -138,7 +139,9 @@ class PostController {
 
   private _getPreInsertController() {
     if (!this._preInsertController) {
-      const progressService: ProgressService = ProgressService.getInstance();
+      const progressService = ServiceLoader.getInstance<ProgressService>(
+        ServiceConfig.PROGRESS_SERVICE,
+      );
       this._preInsertController = new PreInsertController<Post>(
         daoManager.getDao(PostDao),
         progressService,

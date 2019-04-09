@@ -11,19 +11,19 @@ import { JuiIconography } from 'jui/foundation/Iconography';
 
 import { ViewProps } from './types';
 
+type ContentItemProps = ViewProps & WithTranslation & { automationId?: string };
+
 @observer
-class ContentItemComponent extends React.Component<
-  ViewProps & WithTranslation
-> {
+class ContentItemComponent extends React.Component<ContentItemProps> {
   render() {
     const {
-      title,
       terms,
       onMouseEnter,
       onMouseLeave,
       hovered,
       displayName,
       onClick,
+      automationId,
     } = this.props;
 
     return (
@@ -38,7 +38,7 @@ class ContentItemComponent extends React.Component<
           </JuiIconography>}
         value={displayName}
         terms={terms}
-        data-test-automation-id={`search-${title}-item`}
+        data-test-automation-id={automationId}
       />
     );
   }

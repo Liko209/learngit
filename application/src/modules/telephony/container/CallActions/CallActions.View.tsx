@@ -15,13 +15,15 @@ type Props = CallActionsViewProps & WithTranslation;
 
 @observer
 class CallActionsViewComponent extends Component<Props> {
+  static defaultProps = { showLabel: true };
+
   private _handleCallActions = async () => {
     const { callActions } = this.props;
     callActions();
   }
 
   render() {
-    const { t } = this.props;
+    const { t, showLabel } = this.props;
     return (
       <JuiKeypadAction>
         <JuiIconButton
@@ -33,7 +35,9 @@ class CallActionsViewComponent extends Component<Props> {
         >
           call_more
         </JuiIconButton>
-        <span className="disabled">{t('telephony.action.callActions')}</span>
+        {showLabel && (
+          <span className="disabled">{t('telephony.action.callActions')}</span>
+        )}
       </JuiKeypadAction>
     );
   }

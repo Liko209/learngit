@@ -9,12 +9,11 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Presence, RawPresence } from '../entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PresenceController } from '../controller/PresenceController';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { PRESENCE } from '../constant/Presence';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class PresenceService extends EntityBaseService {
-  static key = 'PresenceService';
   private _presenceController: PresenceController;
 
   constructor(threshold: number = 29, interval: number = 200) {

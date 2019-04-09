@@ -12,6 +12,7 @@ import { Entity } from '@/store';
 import { BaseModel } from 'sdk/models';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { PostService } from 'sdk/module/post';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const { EVENT_TYPES } = service;
 jest.mock('../visibilityChangeEvent');
@@ -46,7 +47,7 @@ describe('MultiEntityMapStore', () => {
   let postService: PostService;
   function setUp() {
     postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
 
     instance = new MultiEntityMapStore(
       ENTITY_NAME.POST,

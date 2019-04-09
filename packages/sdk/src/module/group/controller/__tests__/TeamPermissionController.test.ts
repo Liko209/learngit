@@ -3,7 +3,6 @@
  * @Date: 2019-01-14 14:30:55
  * Copyright © RingCentral. All rights reserved.
  */
-import { GlobalConfigService } from '../../../../module/config';
 
 import {
   DEFAULT_USER_PERMISSION_LEVEL,
@@ -11,16 +10,13 @@ import {
 } from '../../constants';
 import { TeamPermission, TeamPermissionParams } from '../../entity';
 import { TeamPermissionController } from '../TeamPermissionController';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 
 jest.mock('../../../../module/config/service/GlobalConfigService');
-jest.mock('../../../../service/account/config');
-jest.mock('../../../../service/account/config/AccountUserConfig');
+jest.mock('../../../../module/account/config');
 
 const mockCurrentUserId = 5683;
 const mockCurrentUserCompanyId = 55668833;
-
-GlobalConfigService.getInstance = jest.fn();
 
 describe('TeamPermissionController', () => {
   let teamPermissionController: TeamPermissionController;
@@ -298,7 +294,9 @@ describe('TeamPermissionController', () => {
         members: [mockCurrentUserId],
       };
       expect(
-        teamPermissionController.getCurrentUserPermissions(teamPermissionParams),
+        teamPermissionController.getCurrentUserPermissions(
+          teamPermissionParams,
+        ),
       ).toEqual([
         PERMISSION_ENUM.TEAM_POST,
         PERMISSION_ENUM.TEAM_ADD_INTEGRATIONS,
@@ -310,7 +308,9 @@ describe('TeamPermissionController', () => {
         members: [mockCurrentUserId],
       };
       expect(
-        teamPermissionController.getCurrentUserPermissions(teamPermissionParams),
+        teamPermissionController.getCurrentUserPermissions(
+          teamPermissionParams,
+        ),
       ).toEqual([
         PERMISSION_ENUM.TEAM_POST,
         PERMISSION_ENUM.TEAM_ADD_MEMBER,

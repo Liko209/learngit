@@ -5,12 +5,12 @@
  */
 import { getEntity } from '../../../../store/utils';
 import { LinkItemViewModel } from '../LinkItem.ViewModel';
-import { ItemService } from 'sdk/module/item';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const itemService = {
   deleteItem: jest.fn(),
 };
-ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
 
 jest.mock('../../../../store/utils');
 

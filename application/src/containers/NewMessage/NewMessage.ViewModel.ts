@@ -10,6 +10,7 @@ import { getGlobalValue } from '@/store/utils';
 import { PostService } from 'sdk/module/post';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { goToConversationWithLoading } from '@/common/goToConversation';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable
@@ -52,7 +53,9 @@ class NewMessageViewModel extends StoreViewModel {
       id: Array.from(this.members) as number[],
       async beforeJump(conversationId: number) {
         if (message && conversationId) {
-          const postService: PostService = PostService.getInstance();
+          const postService = ServiceLoader.getInstance<PostService>(
+            ServiceConfig.POST_SERVICE,
+          );
           await postService.sendPost({
             groupId: conversationId,
             text: message,

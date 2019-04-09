@@ -28,6 +28,7 @@ import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
 import { container } from 'framework';
 import { saveBlob } from '@/common/blobUtils';
 import _ from 'lodash';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
@@ -82,10 +83,16 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   constructor(props: MessageInputProps) {
     super(props);
-    this._postService = PostService.getInstance();
+    this._postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
 
-    this._itemService = ItemService.getInstance();
-    this._groupConfigService = GroupConfigService.getInstance();
+    this._itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    this._groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     this._sendPost = this._sendPost.bind(this);
     this._oldId = props.id;
     this.reaction(

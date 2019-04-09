@@ -6,11 +6,14 @@
 
 import { PermissionService, UserPermissionType } from 'sdk/module/permission';
 import { RCInfoService } from 'sdk/module/rcInfo';
-
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 class FeaturesFlagsService {
-  // prettier-ignore
-  private _permissionService = PermissionService.getInstance<PermissionService>();
-  private _rcInfoService = RCInfoService.getInstance<RCInfoService>();
+  private _permissionService = ServiceLoader.getInstance<PermissionService>(
+    ServiceConfig.PERMISSION_SERVICE,
+  );
+  private _rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+    ServiceConfig.RC_INFO_SERVICE,
+  );
 
   canUseTelephony = async () => {
     return (

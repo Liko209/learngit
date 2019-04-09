@@ -8,7 +8,7 @@ import { IPermissionService } from './IPermissionService';
 import { EntityBaseService } from '../../../framework';
 import { PermissionController } from '../controller/PermissionController';
 import UserPermissionType from '../types';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 
 type UserPermission = {
   id: number;
@@ -17,7 +17,6 @@ type UserPermission = {
 
 class PermissionService extends EntityBaseService<UserPermission>
   implements IPermissionService {
-  static serviceName = 'PermissionService';
   private permissionController: PermissionController;
 
   constructor() {

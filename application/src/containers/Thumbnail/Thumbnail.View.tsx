@@ -13,7 +13,7 @@ import { ViewProps, Props } from './types';
 @observer
 class ThumbnailView extends React.Component<ViewProps & Props> {
   render() {
-    const { icon, thumbsUrlWithSize, type } = this.props;
+    const { icon, thumbsUrlWithSize, type, onClick } = this.props;
     return (
       <>
         {type === 'image' ? (
@@ -25,7 +25,7 @@ class ThumbnailView extends React.Component<ViewProps & Props> {
               </JuiIconography>
             }
           >
-            <JuiThumbnail url={thumbsUrlWithSize} />
+            <JuiThumbnail url={thumbsUrlWithSize} onClick={onClick} />
           </PreloadImg>
         ) : (
           <JuiThumbnail iconType={icon} />

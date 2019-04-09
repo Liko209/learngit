@@ -8,7 +8,7 @@ import { UserConfig } from '../../config';
 import { SEARCH_CONFIG_KEYS } from './configKeys';
 import { RecentSearchModel } from '../entity';
 
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountGlobalConfig } from '../../../module/account/config';
 
 class SearchUserConfig extends UserConfig {
   static moduleName = 'search';

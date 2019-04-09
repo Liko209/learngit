@@ -8,10 +8,13 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { computed, observable, action } from 'mobx';
 import { MoreProps } from './types';
 import { GroupService } from 'sdk/module/group';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 // import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 class MoreViewModel extends StoreViewModel<MoreProps> {
-  private _groupService: GroupService = GroupService.getInstance();
+  private _groupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
 
   @observable
   private _email = '';

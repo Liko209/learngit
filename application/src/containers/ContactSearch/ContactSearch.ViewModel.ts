@@ -16,7 +16,7 @@ import GroupModel from '@/store/models/Group';
 import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, SelectedMember } from './types';
-
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
   @observable existItems: number[] = [];
   @observable suggestions: SelectedMember[] = [];
@@ -60,7 +60,9 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   @action
   fetchPersons = async (query: string) => {
-    const searchService: SearchService = SearchService.getInstance();
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
     const result = await searchService.doFuzzySearchPersons({
       searchKey: query,
       excludeSelf: this._isExcludeMe,
@@ -85,7 +87,9 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   @action
   fetchGroups = async (query: string) => {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     const result = await groupService.doFuzzySearchALlGroups(
       query,
       false,

@@ -14,6 +14,7 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import history from '@/history';
 import i18nT from '@/utils/i18nT';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { GlobalSearchService } from '../../service';
 import { GlobalSearchStore } from '../../store';
@@ -124,10 +125,16 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   search = async (key: string) => {
     if (!key) return;
 
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
 
     const [persons, groups, teams] = await Promise.all([
-      SearchService.getInstance().doFuzzySearchPersons({
+      searchService.doFuzzySearchPersons({
         searchKey: key,
         excludeSelf: false,
         recentFirst: true,
@@ -258,7 +265,10 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   }
 
   addRecentRecord = (id: number) => {
-    SearchService.getInstance().addRecentSearchRecord(this.currentItemType, id);
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+    searchService.addRecentSearchRecord(this.currentItemType, id);
   }
 
   @action

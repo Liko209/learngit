@@ -3,31 +3,20 @@ import { ApiConfig } from '../types';
 const defaultConfig: ApiConfig = {
   rc: {
     server: '',
-    apiPlatform: '',
-    apiPlatformVersion: '',
     clientId: '',
     clientSecret: '',
     redirectUri: '',
   },
   glip: {
     server: '',
-    apiPlatform: '',
+    apiServer: '',
+    presenceServer: '',
   },
-  glip2: {
-    server: '',
-    apiPlatform: '',
-    apiPlatformVersion: '',
-    clientId: '',
-    clientSecret: '',
-    redirectUri: '',
-    brandId: 0,
-  },
+  glip_desktop: {},
   upload: {
     server: '',
-    apiPlatform: '',
   },
   splitio: {
-    apiPlatform: '',
     clientSecret: '',
   },
   launchdarkly: {

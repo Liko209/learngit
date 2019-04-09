@@ -8,6 +8,7 @@ import history from '@/history';
 import { mainLogger } from 'sdk';
 import { ItemService } from 'sdk/module/item/service';
 import { TelephonyService } from 'sdk/module/telephony';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const logTag = '[Upgrade]';
 const DEFAULT_UPDATE_INTERVAL = 60 * 60 * 1000;
@@ -42,7 +43,9 @@ class Upgrade {
   }
 
   public onNewContentAvailable() {
-    mainLogger.info(`${logTag}New content available`);
+    mainLogger.info(
+      `${logTag}New content available. hasFocus: ${document.hasFocus()}`,
+    );
     this._hasNewVersion = true;
 
     if (document.hasFocus()) {
@@ -149,7 +152,9 @@ class Upgrade {
       return false;
     }
 
-    const itemService = ItemService.getInstance() as ItemService;
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     if (itemService.hasUploadingFiles()) {
       mainLogger.info(`${logTag}Forbidden to reload due to uploading file`);
       return false;
@@ -198,7 +203,9 @@ class Upgrade {
   }
 
   private _hasInProgressCall() {
-    const telephony: TelephonyService = TelephonyService.getInstance();
+    const telephony = ServiceLoader.getInstance<TelephonyService>(
+      ServiceConfig.TELEPHONY_SERVICE,
+    );
     return telephony.getAllCallCount() > 0;
   }
 

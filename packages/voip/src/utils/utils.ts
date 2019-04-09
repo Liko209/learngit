@@ -10,6 +10,11 @@ function isNotEmptyString(data: any): boolean {
   return typeof data === 'string' && data.length > 0;
 }
 
+function isFireFox() {
+  const userAgent = navigator.userAgent;
+  return userAgent && userAgent.indexOf('Firefox') > -1;
+}
+
 function opusPTInRtpmap(sdp: any): string {
   const opusLine = sdp.find((opusCodecLine: string) => {
     const opusDefRegexp = /a=rtpmap.*opus.*/gi;
@@ -75,4 +80,10 @@ function opusModifier(RTCSessionDescription: any): any {
   return Promise.resolve(RTCSessionDescription);
 }
 
-export { isNotEmptyString, opusModifier, customizedOpusFmtp, opusPTInRtpmap };
+export {
+  isNotEmptyString,
+  opusModifier,
+  customizedOpusFmtp,
+  opusPTInRtpmap,
+  isFireFox,
+};

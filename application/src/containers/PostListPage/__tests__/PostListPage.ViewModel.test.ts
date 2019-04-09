@@ -9,6 +9,7 @@ import { POST_LIST_TYPE } from '../types';
 import storeManager from '@/store';
 import * as _ from 'lodash';
 import { PostService } from 'sdk/module/post';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 jest.mock('sdk/module/post');
 const postService = new PostService();
 
@@ -46,7 +47,7 @@ describe('PostListPage.ViewModel', () => {
       },
     };
     beforeEach(() => {
-      PostService.getInstance = jest.fn().mockReturnValue(postService);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
       jest.spyOn(postService, 'getPostsByIds').mockResolvedValue({
         posts: [],
       });

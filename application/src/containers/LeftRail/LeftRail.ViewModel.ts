@@ -13,16 +13,18 @@ import {
   LeftRailEntry,
 } from './types';
 import StoreViewModel from '@/store/ViewModel';
-import AccountService from 'sdk/service/account';
+import { AccountService } from 'sdk/module/account';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
 import GlobalStore from '@/store/base/GlobalStore';
 import { POST_LIST_TYPE } from '../PostListPage/types';
 import { getGlobalValue } from '@/store/utils';
-
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 class LeftRailViewModel extends StoreViewModel<LeftRailProps>
   implements LeftRailViewProps {
-  private _accountService: AccountService = AccountService.getInstance();
+  private _accountService = ServiceLoader.getInstance<AccountService>(
+    ServiceConfig.ACCOUNT_SERVICE,
+  );
   private _globalStore: GlobalStore = storeManager.getGlobalStore();
 
   @computed

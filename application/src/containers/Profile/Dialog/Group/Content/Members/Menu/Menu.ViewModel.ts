@@ -8,10 +8,13 @@ import { computed, action } from 'mobx';
 import { GroupService } from 'sdk/module/group';
 import { MenuViewModelProps, MenuProps } from './types';
 import StoreViewModel from '@/store/ViewModel';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class MenuViewModel extends StoreViewModel<MenuProps>
   implements MenuViewModelProps {
-  private _GroupService: GroupService = GroupService.getInstance();
+  private _groupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
   @computed
   get personId() {
     return this.props.personId;
@@ -24,15 +27,15 @@ class MenuViewModel extends StoreViewModel<MenuProps>
 
   @action
   removeFromTeam = async () => {
-    await this._GroupService.removeTeamMembers([this.personId], this.groupId);
+    await this._groupService.removeTeamMembers([this.personId], this.groupId);
   }
   @action
   toggleTeamAdmin = async () => {
     const { isThePersonAdmin } = this.props;
     if (isThePersonAdmin) {
-      await this._GroupService.revokeAdmin(this.groupId, this.personId);
+      await this._groupService.revokeAdmin(this.groupId, this.personId);
     } else {
-      await this._GroupService.makeAdmin(this.groupId, this.personId);
+      await this._groupService.makeAdmin(this.groupId, this.personId);
     }
   }
 }

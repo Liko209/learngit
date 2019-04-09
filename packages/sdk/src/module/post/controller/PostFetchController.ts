@@ -18,6 +18,7 @@ import _ from 'lodash';
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import { IRemotePostRequest } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 const TAG = 'PostFetchController';
 
@@ -230,7 +231,9 @@ class PostFetchController {
       limit,
     );
 
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     result.limit = limit;
     result.posts = posts;
     result.items =

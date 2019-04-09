@@ -16,6 +16,7 @@ const sizes = {
   small: 4,
   medium: 5,
   large: 6,
+  moreLarge: 8,
   extraLarge: 9,
 };
 
@@ -25,6 +26,7 @@ export type IconSize =
   | 'medium'
   | 'large'
   | 'inherit'
+  | 'moreLarge'
   | 'extraLarge';
 
 type JuiIconographyProps = {

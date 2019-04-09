@@ -24,8 +24,6 @@ jest.mock('../../api/glip/user', () => ({
   loginGlip: jest.fn(),
 }));
 
-GlobalConfigService.getInstance = jest.fn();
-
 function createResponse(obj: any) {
   const builder = new HttpResponseBuilder();
   Object.assign(builder, obj);

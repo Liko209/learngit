@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { ContactSearchViewModel } from '../ContactSearch.ViewModel';
-import { SearchService } from 'sdk/module/search';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const searchService = {
   doFuzzySearchPersons() {
@@ -19,7 +19,7 @@ describe('ContactSearchVM', () => {
   it('fetchSearch', async () => {
     const contactSearchViewModel = new ContactSearchViewModel();
     const value = 'aaa';
-    jest.spyOn(SearchService, 'getInstance').mockReturnValue(searchService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(searchService);
     contactSearchViewModel.existMembers = [1];
     await expect(contactSearchViewModel.fetchPersons(value)).resolves.toEqual([
       { id: 2 },

@@ -4,12 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { PostService } from 'sdk/module/post';
 import { ProgressActionsViewModel } from '../ProgressActions.ViewModel';
 import { getEntity } from '../../../../store/utils';
 import { Notification } from '@/containers/Notification';
 import { PROGRESS_STATUS } from 'sdk/module/progress';
-import { ItemService } from 'sdk/module/item';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../../store/utils');
 jest.mock('sdk/module/post');
@@ -26,8 +25,17 @@ const itemService = {
   canResendFailedItems: jest.fn().mockReturnValue(true),
 };
 
-PostService.getInstance = jest.fn().mockReturnValue(postService);
-ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+ServiceLoader.getInstance = jest
+  .fn()
+  .mockImplementation((serviceName: string) => {
+    if (serviceName === ServiceConfig.POST_SERVICE) {
+      return postService;
+    }
+    if (serviceName === ServiceConfig.ITEM_SERVICE) {
+      return itemService;
+    }
+    return null;
+  });
 
 const mockPostData = {
   id: -123,

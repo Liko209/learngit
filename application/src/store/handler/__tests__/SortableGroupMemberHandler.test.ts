@@ -11,6 +11,7 @@ import { PersonService } from 'sdk/module/person';
 import { TeamPermission, GroupService } from 'sdk/module/group';
 import SortableGroupMemberHandler from '../SortableGroupMemberHandler';
 import { Person } from 'sdk/module/person/entity';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/group');
 jest.mock('sdk/module/person');
@@ -27,6 +28,20 @@ describe('SortableGroupMemberHandler', () => {
     personService = new PersonService();
     PersonService.getInstance = jest.fn().mockReturnValue(personService);
     GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (ServiceConfig.PERSON_SERVICE === serviceName) {
+          return personService;
+        }
+
+        if (ServiceConfig.GROUP_SERVICE === serviceName) {
+          return groupService;
+        }
+
+        return null;
+      });
   });
 
   it('should return SortableGroupMemberHandler', async (done: any) => {

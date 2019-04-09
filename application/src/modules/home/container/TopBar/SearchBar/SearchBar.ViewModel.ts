@@ -21,6 +21,7 @@ import {
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import storeManager from '@/store/base/StoreManager';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -43,7 +44,9 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
 
   constructor() {
     super();
-    this.groupService = GroupService.getInstance();
+    this.groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
   }
 
   updateFocus = (focus: boolean) => {
@@ -103,7 +106,9 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
     if (!key) return;
 
     const [persons, groups, teams] = await Promise.all([
-      SearchService.getInstance().doFuzzySearchPersons({
+      ServiceLoader.getInstance<SearchService>(
+        ServiceConfig.SEARCH_SERVICE,
+      ).doFuzzySearchPersons({
         searchKey: key,
         excludeSelf: false,
         recentFirst: true,
@@ -289,7 +294,11 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   getRecent = () => {
-    const result = SearchService.getInstance().getRecentSearchRecords();
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+
+    const result = searchService.getRecentSearchRecords();
     this.recentRecord = [
       {
         ids: result.map((item: RecentSearchModel) => item.value),
@@ -299,14 +308,17 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
   }
 
   addRecentRecord = (id: number) => {
-    SearchService.getInstance().addRecentSearchRecord(
-      this.getCurrentItemType(),
-      id,
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
     );
+    searchService.addRecentSearchRecord(this.getCurrentItemType(), id);
   }
 
   clearRecent = () => {
-    SearchService.getInstance().clearRecentSearchRecords();
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+    searchService.clearRecentSearchRecords();
   }
 
   updateStore(
