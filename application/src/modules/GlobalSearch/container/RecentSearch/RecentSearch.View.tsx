@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiRecentSearch, JuiSearchTitle } from 'jui/pattern/GlobalSearch';
+import { JuiRecentSearch, JuiSearchTitle, JuiRecentSearcnEmptyScreen } from 'jui/pattern/GlobalSearch';
 import { HotKeys } from 'jui/hoc/HotKeys';
 
 import { RecentSearchViewProps, RecentSearchModel } from './types';
@@ -68,7 +68,7 @@ class RecentSearchViewComponent extends Component<Props> {
     const { recentRecord, clearRecent, t } = this.props;
 
     if (recentRecord.length === 0) {
-      return null;
+      return <JuiRecentSearcnEmptyScreen text={t('globalSearch.SearchForContactsAndKeywords')} />;
     }
 
     return (
