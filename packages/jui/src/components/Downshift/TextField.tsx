@@ -32,7 +32,7 @@ type JuiDownshiftTextFieldProps = {
   InputItem?: React.ComponentType<any>;
   nameError?: boolean;
   emailError?: string;
-  ref?: React.RefObject<HTMLInputElement>;
+  messageRef?: React.RefObject<HTMLInputElement>;
   autoSwitchEmail?: boolean;
   onSelectChange: (selectedItems: SelectedItem[]) => void;
   onInputChange: (value: string) => void;
@@ -131,7 +131,7 @@ class JuiDownshiftTextField extends React.PureComponent<
 
   render() {
     const {
-      ref,
+      messageRef,
       label,
       placeholder,
       InputItem,
@@ -164,7 +164,7 @@ class JuiDownshiftTextField extends React.PureComponent<
                 />
               ) : null;
             }),
-            inputRef: ref,
+            inputRef: messageRef,
             onFocus: this.handleFocus,
             onBlur: this.handleBlur,
             onChange: this.handleInputChange,

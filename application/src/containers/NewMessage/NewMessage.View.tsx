@@ -135,6 +135,8 @@ class NewMessageView extends React.Component<ViewProps, State> {
           helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
           messageRef={this.messageRef}
+          multiple={true}
+          autoSwitchEmail={true}
         />
         <JuiTextarea
           id={i18next.t('message.action.typeNewMessage')}

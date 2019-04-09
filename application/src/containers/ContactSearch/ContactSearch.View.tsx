@@ -6,10 +6,11 @@
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import { JuiContactSearch } from 'jui/pattern/ContactSearch';
+import { JuiDownshift } from 'jui/components/Downshift';
 
 import { Chip } from '@/containers/Chip';
 import { ContactSearchItem } from './ContactSearchItem';
+import { GroupSearchItem } from './GroupSearchItem';
 
 import { ViewProps } from './types';
 
@@ -22,31 +23,55 @@ class ContactSearch extends React.Component<Props> {
   }
   render() {
     const {
+      type,
       onContactSelectChange,
       label,
       placeholder,
       error,
       helperText,
       searchMembers,
+      searchGroups,
       suggestions,
       errorEmail,
       messageRef,
+      multiple,
+      autoSwitchEmail,
     } = this.props;
 
-    return (
-      <JuiContactSearch
-        inputChange={searchMembers}
-        suggestions={suggestions}
+    return type === 'person' ? (
+      <JuiDownshift
+        onInputChange={searchMembers}
+        suggestionItems={suggestions}
         onSelectChange={onContactSelectChange}
-        label={label}
-        placeholder={placeholder}
-        Chip={Chip}
-        ContactSearchItem={ContactSearchItem}
-        error={error}
-        errorEmail={errorEmail}
+        inputLabel={label}
+        inputPlaceholder={placeholder}
+        InputItem={Chip}
+        MenuItem={ContactSearchItem}
+        nameError={error}
+        emailError={errorEmail}
         helperText={helperText}
         automationId="contactSearchSuggestionsList"
         messageRef={messageRef}
+        minRowHeight={44}
+        multiple={multiple}
+        autoSwitchEmail={autoSwitchEmail}
+      />
+    ) : (
+      <JuiDownshift
+        onInputChange={searchGroups}
+        suggestionItems={suggestions}
+        onSelectChange={onContactSelectChange}
+        inputLabel={label}
+        inputPlaceholder={placeholder}
+        MenuItem={GroupSearchItem}
+        nameError={error}
+        emailError={errorEmail}
+        helperText={helperText}
+        automationId="contactSearchSuggestionsList"
+        messageRef={messageRef}
+        minRowHeight={44}
+        multiple={multiple}
+        autoSwitchEmail={autoSwitchEmail}
       />
     );
   }

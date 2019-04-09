@@ -249,6 +249,8 @@ class CreateTeamView extends React.Component<ViewProps, State> {
             helperText={emailError ? i18next.t(emailErrorMsg) : ''}
             errorEmail={errorEmail}
             isExcludeMe={true}
+            multiple={true}
+            autoSwitchEmail={true}
           />
           <JuiTextarea
             id={i18next.t('people.team.teamDescription')}

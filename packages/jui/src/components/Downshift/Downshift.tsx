@@ -9,10 +9,10 @@ import styled from '../../foundation/styled-components';
 import { JuiPaper } from '../Paper';
 import { JuiDownshiftTextField, SelectedItem } from './TextField';
 import { spacing, height } from '../../foundation/utils/styles';
-import { MenuItemProps } from '@material-ui/core/MenuItem';
+// import { MenuItemProps } from '@material-ui/core/MenuItem';
 import { ChipProps } from '@material-ui/core/Chip';
 import { JuiVirtualizedList } from '../../components/VirtualizedList';
-import { JuiAutoSizer } from '../../components/AutoSizer';
+import { JuiAutoSizer, Size } from '../../components/AutoSizer';
 
 type JuiDownshiftStates = {
   selectedItems: SelectedItem[];
@@ -23,7 +23,7 @@ type JuiDownshiftProps = {
   automationId?: string;
   multiple?: boolean;
   suggestionItems: SelectedItem[];
-  MenuItem: React.ComponentType<MenuItemProps & { id: number }>;
+  MenuItem: React.ComponentType<any>;
   inputLabel: string;
   inputPlaceholder: string;
   InputItem?: React.ComponentType<ChipProps & { id: number }>;
@@ -31,6 +31,10 @@ type JuiDownshiftProps = {
   onSelectChange: (selectedItems: SelectedItem[]) => void;
   minRowHeight: number;
   autoSwitchEmail?: boolean;
+  nameError?: boolean;
+  emailError?: string;
+  helperText?: string;
+  messageRef?: React.RefObject<HTMLInputElement>;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -101,6 +105,7 @@ class JuiDownshift extends React.PureComponent<
       minRowHeight,
       autoSwitchEmail,
       multiple,
+      messageRef,
     } = this.props;
     const { inputValue, selectedItems } = this.state;
 
@@ -131,16 +136,18 @@ class JuiDownshift extends React.PureComponent<
               InputItem={InputItem}
               autoSwitchEmail={autoSwitchEmail}
               multiple={multiple}
+              messageRef={messageRef}
             />
             {isOpen && suggestionItems.length ? (
-              <JuiAutoSizer>
-                {({ height }: any) => (
+              <JuiAutoSizer handleHeight={true}>
+                {({ height }: Partial<Size>) => (
                   <StyledPaper
                     square={true}
                     data-test-automation-id={automationId}
                   >
+                    {/* {height ? ( */}
                     <JuiVirtualizedList
-                      height={height}
+                      height={height as any} // need supported by new virtualized list update
                       minRowHeight={minRowHeight}
                     >
                       {suggestionItems.map(
@@ -157,6 +164,7 @@ class JuiDownshift extends React.PureComponent<
                         },
                       )}
                     </JuiVirtualizedList>
+                    {/* ) : null} */}
                   </StyledPaper>
                 )}
               </JuiAutoSizer>

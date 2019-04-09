@@ -11,20 +11,27 @@ type SelectedMember = {
   email: string;
 };
 
+type ContactSearchType = 'group' | 'person';
+
 type ContactSearchProps = {
+  groupId?: number;
+  type: ContactSearchType;
   onSelectChange: (item: any) => void;
   label: string;
   placeholder: string;
-  error: boolean;
-  helperText: string;
+  error?: boolean;
+  helperText?: string;
   errorEmail?: string;
   isExcludeMe?: boolean;
   hasMembers?: number[];
   messageRef?: React.RefObject<HTMLInputElement>;
+  multiple?: boolean;
+  autoSwitchEmail?: boolean;
 };
 
 type ViewProps = ContactSearchProps & {
   searchMembers: (value: string) => void;
+  searchGroups: (value: string) => void;
   suggestions: SelectedMember[];
   onContactSelectChange: (item: any) => void;
   label: string;
@@ -35,4 +42,4 @@ type ViewProps = ContactSearchProps & {
   messageRef?: React.RefObject<HTMLInputElement>;
 };
 
-export { ViewProps, ContactSearchProps, SelectedMember };
+export { ViewProps, ContactSearchProps, SelectedMember, ContactSearchType };

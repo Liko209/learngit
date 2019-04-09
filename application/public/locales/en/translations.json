@@ -80,6 +80,10 @@
     "people": "people",
     "groups": "groups",
     "team": "team",
+    "postedBy": "Posted by",
+    "postedIn": "Posted in",
+    "postedByPlaceholder": "Enter name or email",
+    "postedInPlaceholder": "Choose a team or conversation",
 
     "prompt": {
       "contentSearchNetworkError": "We weren't able to conduct the search. Check your network connection, then try again.",

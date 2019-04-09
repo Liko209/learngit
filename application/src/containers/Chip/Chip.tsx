@@ -8,7 +8,7 @@ import { JuiChip } from 'jui/components/Chip';
 import { Avatar } from '@/containers/Avatar';
 
 const Chip = (props: any) => {
-  return props.uid ? (
+  return props.id ? (
     <JuiChip ChipAvatar={Avatar} isError={props.isError} {...props} />
   ) : (
     <JuiChip {...props} />

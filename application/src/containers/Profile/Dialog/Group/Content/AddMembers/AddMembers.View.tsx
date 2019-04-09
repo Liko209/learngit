@@ -77,6 +77,8 @@ class AddMembers extends React.Component<ViewProps> {
           hasMembers={members}
           placeholder={t('people.team.SearchContactPlaceholder')}
           isExcludeMe={true}
+          multiple={true}
+          autoSwitchEmail={true}
         />
       </JuiModal>
     );

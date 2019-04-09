@@ -1,17 +1,17 @@
 /*
  * @Author: Shining (shining.miao@ringcentral.com)
- * @Date: 2019-04-01 10:42:57
+ * @Date: 2019-04-08 20:14:01
  * Copyright © RingCentral. All rights reserved.
  */
 
 import React, { useState } from 'react';
 import { storiesOf } from '@storybook/react';
-import { boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import { JuiSearchFilter } from '..';
 import { differenceBy } from 'lodash';
-import { JuiDownshift } from '..';
+import { JuiDownshift } from '../../../components/Downshift';
 import { JuiSearchItem } from '../../../pattern/ContactSearch';
-import { JuiChip } from '../../Chip';
+import { JuiChip } from '../../../components/Chip';
 
 const suggestions = [
   { id: 1, label: 'Afghanistan' },
@@ -28,15 +28,6 @@ const suggestions = [
   { id: 3, label: 'Bahamas' },
   { id: 4, label: 'Bahrain' },
 ];
-
-const getKnobs = () => {
-  const multiple = boolean('multiple', false);
-  const autoSwitchEmail = boolean('autoSwitchEmail', false);
-  return {
-    multiple,
-    autoSwitchEmail,
-  };
-};
 
 type Item = {
   label: string;
@@ -92,7 +83,6 @@ const MultipleDownshift = () => {
   };
   return (
     <JuiDownshift
-      {...getKnobs()}
       suggestionItems={suggestionItems}
       MenuItem={SearchItem}
       InputItem={Chip}
@@ -105,8 +95,13 @@ const MultipleDownshift = () => {
   );
 };
 
-storiesOf('Components/Downshift', module)
-  .addDecorator(withInfoDecorator(JuiDownshift, { inline: true }))
-  .add('Downshift', () => {
-    return <MultipleDownshift />;
+storiesOf('Pattern/SearchFilter', module)
+  .addDecorator(withInfoDecorator(JuiSearchFilter, { inline: true }))
+  .add('SearchFilter', () => {
+    return (
+      <JuiSearchFilter title="Filter">
+        <MultipleDownshift />
+        <MultipleDownshift />
+      </JuiSearchFilter>
+    );
   });
