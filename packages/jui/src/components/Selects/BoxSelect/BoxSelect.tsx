@@ -40,6 +40,7 @@ class JuiBoxSelect extends PureComponent<
   }
   private _handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
+    this.setState({ value });
     this.props.handleChange(value);
   }
 
