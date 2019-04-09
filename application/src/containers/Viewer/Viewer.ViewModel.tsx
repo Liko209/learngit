@@ -6,7 +6,7 @@
 import { computed, observable, action, transaction } from 'mobx';
 import { PreloadController } from '@/containers/Viewer/Preload';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import { ITEM_SORT_KEYS, ItemService, ItemNotification } from 'sdk/module/item';
+import { ItemNotification } from 'sdk/module/item';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { EVENT_TYPES, notificationCenter } from 'sdk/service';
 import {
@@ -18,6 +18,8 @@ import {
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { ViewerViewProps } from './types';
 import { ItemListDataSource } from './Viewer.DataSource';
+
+import { ItemListDataSourceByPost } from './Viewer.DataSourceByPost';
 import { mainLogger } from 'sdk';
 import { Group } from 'sdk/module/group';
 import { Profile } from 'sdk/module/profile/entity';
@@ -32,7 +34,7 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity, getSingleEntity } from '@/store/utils';
 import ProfileModel from '@/store/models/Profile';
 import StoreViewModel from '@/store/ViewModel';
-import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { isExpectedItemOfThisGroup } from './Utils';
 
 const PAGE_SIZE = 20;
 
@@ -43,7 +45,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
   currentIndex: number = -1;
   @observable
   currentItemId: number;
-  private _itemListDataSource: ItemListDataSource;
+  private _itemListDataSource: ItemListDataSource | ItemListDataSourceByPost;
   private _onCurrentItemDeletedCb: () => void;
   private _onItemSwitchCb: (
     itemId: number,
@@ -58,9 +60,14 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   constructor(props: ViewerViewProps) {
     super(props);
-    const { groupId, type, itemId } = props;
+    const { groupId, type, itemId, postId, isNavigation } = props;
     this.currentItemId = itemId;
-    this._itemListDataSource = new ItemListDataSource({ groupId, type });
+    this._itemListDataSource = isNavigation
+      ? new ItemListDataSourceByPost({ groupId, type, postId })
+      : new ItemListDataSource({
+        groupId,
+        type,
+      });
     this._preloadController = new PreloadController();
 
     const itemNotificationKey = ItemNotification.getItemNotificationKey(
@@ -117,8 +124,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   @action
   init = () => {
-    const { mode, itemId } = this.props;
-    if (mode === 'navigation') return;
+    const { itemId } = this.props;
     this._itemListDataSource.loadInitialData(itemId, PAGE_SIZE);
     this._fetchIndexInfo();
   }
@@ -252,21 +258,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
 
   private _fetchIndexInfo = async () => {
     const itemId = this.currentItemId;
-    const itemService = ServiceLoader.getInstance<ItemService>(
-      ServiceConfig.ITEM_SERVICE,
-    );
-    const info = await itemService.getItemIndexInfo(itemId, {
-      typeId: ViewerItemTypeIdMap[this.props.type],
-      groupId: this.props.groupId,
-      sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
-      desc: false,
-      limit: Infinity,
-      offsetItemId: undefined,
-      filterFunc: this._itemListDataSource.getFilterFunc(
-        this.props.groupId,
-        this.props.type,
-      ),
-    });
+    const info = await this._itemListDataSource.fetchIndexInfo(itemId);
     transaction(() => {
       this.total = info.totalCount;
       if (this.currentItemId === itemId) {
@@ -312,7 +304,7 @@ class ViewerViewModel extends StoreViewModel<ViewerViewProps> {
       >;
       detailPayload.body.entities.forEach((entity, key) => {
         if (
-          this._itemListDataSource.isExpectedItemOfThisGroup(
+          isExpectedItemOfThisGroup(
             groupId,
             VIEWER_ITEM_TYPE.IMAGE_FILES,
             entity,

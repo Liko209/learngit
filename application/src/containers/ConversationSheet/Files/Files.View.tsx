@@ -83,6 +83,7 @@ class FilesView extends React.Component<FilesViewProps> {
         originElement: target,
       },
       mode,
+      postId,
     );
   }
 

@@ -24,7 +24,7 @@ export const showImageViewer = (
       itemId={imageId}
       groupId={groupId}
       type={VIEWER_ITEM_TYPE.IMAGE_FILES}
-      mode={mode}
+      isNavigation={mode === 'navigation'}
       postId={postId}
       contentLeftRender={(props: ViewerViewModelProps) => {
         return <ImageViewer {...props} initialOptions={initialOptions} />;
