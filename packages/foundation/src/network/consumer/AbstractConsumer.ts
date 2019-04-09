@@ -1,11 +1,12 @@
 /*
- * @Author: dennis.jiang (dennis.jiang@ringcentral.com)
- * @Date: 2018-06-04 15:42:03
+ * @Author: Rito.Xiao (rito.xiao@ringcentral.com)
+ * @Date: 2019-04-03 15:15:27
  * Copyright © RingCentral. All rights reserved.
  */
-import BaseClient from './client/BaseClient';
-import { NetworkRequestExecutor } from './NetworkRequestExecutor';
-import NetworkRequestDecorator from './NetworkRequestDecorator';
+
+import BaseClient from '../client/BaseClient';
+import { NetworkRequestExecutor } from '../NetworkRequestExecutor';
+import NetworkRequestDecorator from '../NetworkRequestDecorator';
 import {
   INetworkRequestConsumerListener,
   INetworkRequestProducer,
@@ -13,33 +14,31 @@ import {
   INetworkRequestExecutor,
   IResponseListener,
   IRequest,
-} from './network';
-import { networkLogger } from '../log';
+} from '../network';
+import { networkLogger } from '../../log';
 
-const LOG_TAG = 'NetworkRequestConsumer';
-class NetworkRequestConsumer implements INetworkRequestConsumerListener {
+abstract class AbstractConsumer implements INetworkRequestConsumerListener {
   private _producer: INetworkRequestProducer;
-  private _client: BaseClient;
-  private _maxQueueCount: number;
   private _via: NETWORK_VIA;
   private _executorQueue: Map<string, INetworkRequestExecutor> = new Map();
   private _responseListener: IResponseListener;
   private _networkRequestDecorator: NetworkRequestDecorator;
+  protected client: BaseClient;
+  protected maxQueueCount: number;
+  protected consumerName: string;
 
   constructor(
     producer: INetworkRequestProducer,
-    client: BaseClient,
-    maxQueueCount: number,
-    via: NETWORK_VIA,
     responseListener: IResponseListener,
+    client: BaseClient,
     networkRequestDecorator: NetworkRequestDecorator,
+    via: NETWORK_VIA,
   ) {
     this._producer = producer;
-    this._client = client;
-    this._maxQueueCount = maxQueueCount;
-    this._via = via;
     this._responseListener = responseListener;
+    this.client = client;
     this._networkRequestDecorator = networkRequestDecorator;
+    this._via = via;
   }
 
   onConsumeArrived() {
@@ -73,7 +72,7 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   }
 
   private _consume() {
-    if (!this._canHandleRequest()) {
+    if (!this.canHandleRequest()) {
       return;
     }
 
@@ -84,26 +83,13 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
     }
     const executor = new NetworkRequestExecutor(
       request,
-      this._client,
+      this.client,
       this._networkRequestDecorator.decoration,
     );
     executor.responseListener = this._responseListener;
     executor.listener = this;
     this._addExecutor(executor);
     executor.execute();
-  }
-
-  private _canHandleRequest() {
-    networkLogger.info(
-      LOG_TAG,
-      `_canHandleRequest queue size: ${this._executorQueue.size}, via: ${
-        this._via
-      }`,
-    );
-    const isNotExceed = this._executorQueue.size < this._maxQueueCount;
-    return this._via === NETWORK_VIA.SOCKET
-      ? this._client.isNetworkReachable() && isNotExceed
-      : isNotExceed;
   }
 
   private _addExecutor(executor: INetworkRequestExecutor) {
@@ -118,6 +104,16 @@ class NetworkRequestConsumer implements INetworkRequestConsumerListener {
   private _getExecutor(requestId: string) {
     return this._executorQueue.get(requestId);
   }
+
+  protected isRequestExceeded() {
+    networkLogger.info(
+      this.consumerName,
+      `executor queue size: ${this._executorQueue.size}`,
+    );
+    return this._executorQueue.size >= this.maxQueueCount;
+  }
+
+  protected abstract canHandleRequest(): boolean;
 }
 
-export default NetworkRequestConsumer;
+export { AbstractConsumer };
