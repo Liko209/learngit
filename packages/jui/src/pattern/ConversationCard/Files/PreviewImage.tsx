@@ -108,15 +108,10 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   private _getImageStyle = (squareWidth: number, squareHeight: number) => {
     if (!this._loaded) return { display: 'none' };
 
-    const { justifyHeight, justifyWidth, top, left } = this._imageInfo;
+    const { justifyHeight, justifyWidth } = this._imageInfo;
 
-    const isJustifyInverse = Boolean(top || left);
-
-    const isJustifyHeight = isJustifyInverse ? justifyWidth : justifyHeight;
-    const isJustifyWidth = isJustifyInverse ? justifyHeight : justifyWidth;
-
-    const styleWidth = isJustifyWidth ? { width: squareWidth } : {};
-    const styleHeight = isJustifyHeight ? { height: squareHeight } : {};
+    const styleWidth = justifyWidth ? { width: squareWidth } : {};
+    const styleHeight = justifyHeight ? { height: squareHeight } : {};
 
     return { ...styleWidth, ...styleHeight, display: 'block' };
   }
