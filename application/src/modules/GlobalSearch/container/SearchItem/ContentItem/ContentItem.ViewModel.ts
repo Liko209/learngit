@@ -34,7 +34,7 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
     this._globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
     this._globalSearchStore.setSearchScope(searchScope);
 
-    // this.addRecentRecord();
+    this.addRecentRecord();
   }
 
   addRecentRecord = () => {

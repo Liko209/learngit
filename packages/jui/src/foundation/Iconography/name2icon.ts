@@ -112,6 +112,7 @@ const name2icon = {
   bell: 'bell',
   bubble_lines: 'bubble_lines',
   event_new: 'event-new',
+  history: 'history',
 };
 
 export type ICON_NAME = keyof typeof name2icon;
