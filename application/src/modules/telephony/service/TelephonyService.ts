@@ -22,7 +22,6 @@ import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 import { TelephonyNotificationManager } from '../TelephonyNotificationManager';
-import i18nT from '@/utils/i18nT';
 
 class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
@@ -63,18 +62,15 @@ class TelephonyService {
       }, from name=${fromName}, from num=${fromNum}`,
     );
 
-    let unknownCaller = 'Unknown Caller';
-    if (!fromName) {
-      // Todo If the call is from an unrecognized caller or anonymous, display 'Unknown Caller'
-      unknownCaller = await i18nT('telephony.notification.unknownCaller');
-    }
     this._telephonyNotificationManager.dispatch({
-      type: 'INCOMING',
+      type: 'SHOW',
       options: {
         id: callId,
         callNumber: fromNum,
-        callerName: fromName || unknownCaller,
-        answerHandler: () => {},
+        callerName: fromName || '',
+        answerHandler: () => {
+          this.answer();
+        },
       },
     });
   }
@@ -91,14 +87,19 @@ class TelephonyService {
       }
       case RTC_CALL_STATE.DISCONNECTED: {
         this._telephonyStore.end();
-        this._telephonyNotificationManager.dispatch({
-          type: 'HANGUP',
-          options: {
-            id: callId,
-          },
-        });
         break;
       }
+    }
+
+    if (
+      [RTC_CALL_STATE.CONNECTED, RTC_CALL_STATE.DISCONNECTED].includes(state)
+    ) {
+      this._telephonyNotificationManager.dispatch({
+        type: 'CLOSE',
+        options: {
+          id: callId,
+        },
+      });
     }
   }
 

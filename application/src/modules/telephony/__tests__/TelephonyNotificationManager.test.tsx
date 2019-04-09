@@ -10,17 +10,31 @@ import * as i18nT from '@/utils/i18nT';
 describe('TelephonyNotificationManager', () => {
   describe('dispatch()', () => {
     let telephonyNotificationManager: TelephonyNotificationManager;
+    const title = 'Incoming Call';
+    const noop = () => {};
+    const answerAction = {
+      title: 'Answer',
+      icon: '',
+      action: 'answer',
+      handler: noop,
+    };
     beforeEach(() => {
       jest.clearAllMocks();
-      jest.spyOn(i18nT, 'default').mockImplementation(async i => i);
+      jest.spyOn(i18nT, 'default').mockImplementation(async i => {
+        const translation = {
+          'telephony.notification.incomingCall': 'Incoming Call',
+          'telephony.notification.answer': 'Answer',
+          'telephony.notification.unknownCaller': 'Unknown Caller',
+        };
+        return translation[i] || i;
+      });
       telephonyNotificationManager = new TelephonyNotificationManager();
     });
 
-    it('should call show() when dispatch action is INCOMING', async () => {
+    it('should call show() when dispatch action is SHOW', async () => {
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
-      const noop = () => {};
       await telephonyNotificationManager.dispatch({
-        type: 'INCOMING',
+        type: 'SHOW',
         options: {
           id: '1',
           callNumber: '123',
@@ -29,13 +43,6 @@ describe('TelephonyNotificationManager', () => {
         },
       });
 
-      const title = await i18nT.default('telephony.notification.incomingCall');
-      const answerAction = {
-        title: await i18nT.default('telephony.notification.answer'),
-        icon: '',
-        action: 'answer',
-        handler: noop,
-      };
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(title, {
         actions: [answerAction],
         tag: '1',
@@ -48,10 +55,57 @@ describe('TelephonyNotificationManager', () => {
       });
     });
 
-    it('should call close() when dispatch action is HANGUP', () => {
+    it('should call show() with body contains "Unknown Caller" when the call is from an unrecognized caller [JPT-1489]', async () => {
+      jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
+      await telephonyNotificationManager.dispatch({
+        type: 'SHOW',
+        options: {
+          id: '1',
+          callNumber: '123',
+          callerName: '',
+          answerHandler: noop,
+        },
+      });
+
+      expect(telephonyNotificationManager.show).toHaveBeenCalledWith(title, {
+        actions: [answerAction],
+        tag: '1',
+        data: {
+          id: '1',
+          scope: 'telephony',
+        },
+        body: 'Unknown Caller 123',
+        icon: '/icon/incomingCall.png',
+      });
+    });
+
+    it('should call show() with body contains "Unknown Caller" when the caller is anonymous [JPT-1489]', async () => {
+      jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
+      await telephonyNotificationManager.dispatch({
+        type: 'SHOW',
+        options: {
+          id: '1',
+          callNumber: 'anonymous',
+          callerName: 'abc',
+          answerHandler: noop,
+        },
+      });
+
+      expect(telephonyNotificationManager.show).toHaveBeenCalledWith(title, {
+        actions: [answerAction],
+        tag: '1',
+        data: {
+          id: '1',
+          scope: 'telephony',
+        },
+        body: 'Unknown Caller ',
+        icon: '/icon/incomingCall.png',
+      });
+    });
+    it('should call close() when dispatch action is CLOSE', () => {
       jest.spyOn(telephonyNotificationManager, 'close').mockImplementation();
       telephonyNotificationManager.dispatch({
-        type: 'HANGUP',
+        type: 'CLOSE',
         options: {
           id: '1',
         },
@@ -59,10 +113,10 @@ describe('TelephonyNotificationManager', () => {
       expect(telephonyNotificationManager.close).toHaveBeenCalledWith('1');
     });
 
-    it('should call clear() when dispatch action is DESTROY', () => {
+    it('should call clear() when dispatch action is DISPOSE', () => {
       jest.spyOn(telephonyNotificationManager, 'clear').mockImplementation();
       telephonyNotificationManager.dispatch({
-        type: 'DESTROY',
+        type: 'DISPOSE',
       });
       expect(telephonyNotificationManager.clear).toHaveBeenCalled();
     });

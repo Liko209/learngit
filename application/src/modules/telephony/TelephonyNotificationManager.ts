@@ -9,7 +9,7 @@ import i18nT from '@/utils/i18nT';
 
 type Action =
   | {
-      type: 'INCOMING';
+      type: 'SHOW';
       options: {
         id: string;
         callNumber: string;
@@ -18,13 +18,13 @@ type Action =
       };
     }
   | {
-      type: 'HANGUP';
+      type: 'CLOSE';
       options: {
         id: string;
       };
     }
   | {
-      type: 'DESTROY';
+      type: 'DISPOSE';
       options?: {};
     };
 
@@ -35,8 +35,20 @@ class TelephonyNotificationManager extends NotificationManager {
 
   async dispatch(action: Action) {
     switch (action.type) {
-      case 'INCOMING':
-        const { id, callNumber, callerName, answerHandler } = action.options;
+      case 'SHOW':
+        const { id, answerHandler } = action.options;
+        let { callNumber, callerName } = action.options;
+        if (
+          !callerName ||
+          callerName === callNumber ||
+          callNumber === 'anonymous'
+        ) {
+          callerName =
+            (await i18nT('telephony.notification.unknownCaller')) ||
+            'Unknown Caller';
+        }
+        callNumber =
+          !callNumber || callNumber === 'anonymous' ? '' : callNumber;
         const title = await i18nT('telephony.notification.incomingCall');
         const actions = [];
         if (answerHandler) {
@@ -59,11 +71,11 @@ class TelephonyNotificationManager extends NotificationManager {
         });
         break;
 
-      case 'HANGUP':
+      case 'CLOSE':
         this.close(action.options.id);
         break;
 
-      case 'DESTROY':
+      case 'DISPOSE':
         this.clear();
         break;
 

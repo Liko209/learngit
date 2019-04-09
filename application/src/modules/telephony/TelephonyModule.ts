@@ -32,7 +32,7 @@ class TelephonyModule extends AbstractModule {
   }
 
   dispose() {
-    this._telephonyNotificationManager.dispatch({ type: 'DESTROY' });
+    this._telephonyNotificationManager.dispatch({ type: 'DISPOSE' });
     this._leaveBlockerService.offLeave(this.handleLeave);
   }
 
