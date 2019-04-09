@@ -7,6 +7,7 @@
 import { HomeStore, SubModuleConfig } from '../HomeStore';
 
 describe('Home Store', () => {
+  const moduleName = ['dashboard', 'messages', 'phone', 'meeting'];
   const mockSubModules: SubModuleConfig[] = [
     {
       route: {
@@ -33,7 +34,9 @@ describe('Home Store', () => {
 
   beforeEach(() => {
     homeStore = new HomeStore();
-    homeStore.addSubModules(mockSubModules);
+    mockSubModules.forEach((m, i) => {
+      homeStore.addSubModule(moduleName[i], m);
+    });
   });
   afterEach(() => {
     homeStore = undefined;
