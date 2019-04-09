@@ -9,7 +9,12 @@ import { SearchRequestInfo } from '../types';
 import { SearchAPI } from '../../../../../api/glip/search';
 import { SubscribeController } from '../../../../base/controller/SubscribeController';
 import { SOCKET } from '../../../../../service/eventKey';
-import { JServerError, ERROR_CODES_SERVER } from '../../../../../error';
+import {
+  JServerError,
+  ERROR_CODES_SERVER,
+  JError,
+  ERROR_TYPES,
+} from '../../../../../error';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -216,6 +221,45 @@ describe('PostSearchController', () => {
       expect(promise).rejects.toThrow();
     });
 
+    it('should throw an error when request encounter an unexpected error', async () => {
+      const requestId = Date.now();
+      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      SearchAPI.scrollSearch = jest
+        .fn()
+        .mockRejectedValue(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.GENERAL,
+            'Backend error',
+          ),
+        );
+      expect(
+        postSearchController.scrollSearchPosts(requestId),
+      ).rejects.toThrow();
+    });
+
+    it('should throw not an error when request has beed deleted by server', async () => {
+      const requestId = Date.now();
+      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      SearchAPI.scrollSearch = jest
+        .fn()
+        .mockRejectedValue(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.DELETED,
+            'search scroll has been deleted',
+          ),
+        );
+      expect(
+        postSearchController.scrollSearchPosts(requestId),
+      ).resolves.toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        requestId,
+      });
+    });
+
     it('should set has more info to false when has no more result', async () => {
       const requestId = Date.now();
       queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
@@ -239,6 +283,10 @@ describe('PostSearchController', () => {
         hasMore: false,
         items: [],
         posts: [],
+      });
+      expect(SearchAPI.scrollSearch).toBeCalledWith({
+        scroll_request_id: 1,
+        search_request_id: requestId,
       });
     });
 
