@@ -24,7 +24,7 @@ export class SearchDialog extends BaseWebComponent {
     await this.t.click(this.inputArea).selectText(this.inputArea).pressKey('delete');
   }
 
-  async typeSearchKeyword(text: string, options?: TypeActionOptions) {
+  async typeSearchKeyword(text: string, options: TypeActionOptions = { speed: 0.5 }) {
     await this.t.typeText(this.inputArea, text, options);
   }
 
@@ -93,6 +93,10 @@ export class SearchDialog extends BaseWebComponent {
   async dropDownListShouldContainTeam(team: IGroup, timeout: number = 20e3) {
     await this.t.expect(this.teams.withText(team.name).exists).ok({ timeout });
   }
+  /*  instant search */
+  get instantContainer() {
+    return this.getSelectorByAutomationId('search-results');
+  }
 
   get peopleHeader() {
     return this.getSelectorByAutomationId('search-globalSearch.People');
@@ -156,14 +160,9 @@ export class SearchDialog extends BaseWebComponent {
   }
 
   /* recently searches */
-
   get historyContainer() {
     return this.getSelectorByAutomationId('search-records');
   };
-
-  async shouldShowRecentlyHistory() {
-    await this.t.expect(this.historyContainer.exists).ok();
-  }
 
   get historyHeader() {
     return this.getSelectorByAutomationId('search-clear');
@@ -194,6 +193,14 @@ export class SearchDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('globalSearch-team');
   }
 
+  /* page assert */
+  async shouldShowInstantList() {
+    await this.t.expect(this.instantContainer.exists).ok();
+  }
+
+  async shouldShowRecentlyHistory() {
+    await this.t.expect(this.historyContainer.exists).ok();
+  }
 
 }
 

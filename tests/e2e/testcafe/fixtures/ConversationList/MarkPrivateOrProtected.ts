@@ -69,14 +69,15 @@ test(formalName('Team admin can change team from public to private.', ['JPT-517'
     await app.homePage.logoutThenLoginWithUser(SITE_URL, nonMember);
   });
 
-  const search = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I type people keyword ${team.name} in search input area`, async () => {
-    await search.typeSearchKeyword(team.name);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
   }, true);
 
   await h(t).withLog(`Then I should not find ${team.name} team.`, async () => {
     await t.wait(3e3); // wait back-end response
-    await t.expect(search.teams.withText(team.name).exists).notOk({ timeout: 10e3 });
+    await t.expect(searchDialog.teams.withText(team.name).exists).notOk({ timeout: 10e3 });
   });
 
 });
@@ -135,17 +136,18 @@ test(formalName('Team admin can change team from private to public.', ['JPT-518'
     await app.homePage.logoutThenLoginWithUser(SITE_URL, nonMember);
   });
 
-  const search = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I type people keyword ${team.name} in search input area`, async () => {
-    await search.typeSearchKeyword(team.name);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
   });
 
   await h(t).withLog('Then I should find at least team result', async () => {
-    await t.expect(search.teams.count).gte(1);
+    await t.expect(searchDialog.teams.count).gte(1);
   }, true);
 
   await h(t).withLog('Then I should find this team', async () => {
-    await search.dropDownListShouldContainTeam(team);
+    await searchDialog.dropDownListShouldContainTeam(team);
   }, true);
 });
 

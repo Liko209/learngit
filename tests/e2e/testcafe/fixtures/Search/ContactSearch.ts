@@ -182,7 +182,7 @@ test(formalName('Search result should be updated in real time when team membersh
   const searchDialog = app.homePage.searchDialog;
   const searchBar = app.homePage.header.searchBar;
   await h(t).withLog(`And search with keyword "${searchKeyword}"`, async () => {
-    await searchBar.clickInputArea();
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(searchKeyword, { speed: 0.5 });
   });
 

@@ -55,7 +55,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   const mentionPage = app.homePage.messageTab.mentionPage;
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const search = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
 
   // Login -> Last open DM conversation B
   await h(t).withLog(`And I set last open conversation B:${otherUserName}`, async () => {
@@ -97,9 +97,10 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
 
   // open via search other user name
   await h(t).withLog(`When I search the showed privateChat ${otherUserName} and click it`, async () => {
-    await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(otherUserName);
     await t.wait(3e3);
-    await search.nthPeople(0).enter();
+    await searchDialog.nthPeople(0).enter();
   });
 
   await stepsToCheckPositionFixed(nonTopChat.glipId, otherUserName);
@@ -178,7 +179,7 @@ test.skip(formalName('Should display in the top of conversation list when openin
   const mentionPage = app.homePage.messageTab.mentionPage;
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const search = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
 
   // Login -> Last open DM conversation B: "${beCheckName}"
   await h(t).withLog(`And I set lost open conversation is conversation B: "${topTeam.name}"  before login`, async () => {
@@ -251,9 +252,10 @@ test.skip(formalName('Should display in the top of conversation list when openin
   });;
 
   await h(t).withLog(`When I search "${topTeam.name}" and click it`, async () => {
-    await search.typeSearchKeyword(topTeam.name, { replace: true, paste: true });
-    await t.expect(search.allResultItems.count).gte(1);
-    await search.nthTeam(0).enter();
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(topTeam.name, { replace: true, paste: true });
+    await t.expect(searchDialog.allResultItems.count).gte(1);
+    await searchDialog.nthTeam(0).enter();
   });
 
   await stepsToCheckPositionOnTop(topTeam.glipId, topTeam.name);
@@ -367,8 +369,7 @@ test.skip(formalName('Should display in the top when open a closed conversation 
   const mentionPage = app.homePage.messageTab.mentionPage;
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const search = app.homePage.header.searchBar;
-  const createTeamModal = app.homePage.createTeamModal;
+  const searchDialog = app.homePage.searchDialog;
   const moreMenu = app.homePage.messageTab.moreMenu;
 
   // open via mentions
@@ -407,9 +408,10 @@ test.skip(formalName('Should display in the top when open a closed conversation 
   });
 
   await h(t).withLog(`When I search the hide privateChat ${otherUserName} and enter it`, async () => {
-    await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
-    await t.expect(search.peoples.count).gte(1, { timeout: 10e3 });
-    await search.nthPeople(0).enter();
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(otherUserName, { replace: true, paste: true });
+    await t.expect(searchDialog.peoples.count).gte(1, { timeout: 10e3 });
+    await searchDialog.nthPeople(0).enter();
     await app.homePage.profileDialog.ensureLoaded();
     await app.homePage.profileDialog.goToMessages();
   });
@@ -426,7 +428,7 @@ test.skip(formalName('Should display in the top when open a closed conversation 
   await h(t).withLog('When I click "Send New Message" on AddActionMenu', async () => {
     await app.homePage.openAddActionMenu();
     await app.homePage.addActionMenu.sendNewMessageEntry.enter();
-    await sendNewMessageModal.ensureLoaded(); 
+    await sendNewMessageModal.ensureLoaded();
     await sendNewMessageModal.typeMember(otherUserName, { paste: true });
     await t.wait(3e3);
     await sendNewMessageModal.selectMemberByNth(0);

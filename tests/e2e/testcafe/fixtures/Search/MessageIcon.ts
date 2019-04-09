@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-03-01 10:44:59
- * @Last Modified by: isaac.liu
- * @Last Modified time: 2019-03-22 16:06:54
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-04-09 15:48:21
  */
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
@@ -55,20 +55,20 @@ test(formalName('Check can open conversation when click message icon in the sear
     await app.homePage.ensureLoaded();
   });
 
-  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
 
 
   const iconResults = [{
     keyword: anotherUserName,
-    item: searchBar.nthPeople(0),
+    item: searchDialog.nthPeople(0),
     position: "the first people result"
   }, {
     keyword: anotherUserName,
-    item: searchBar.nthGroup(0),
+    item: searchDialog.nthGroup(0),
     position: "the first groups result"
   }, {
     keyword: teamWithMe.name,
-    item: searchBar.getSearchItemByName(teamWithMe.name),
+    item: searchDialog.getSearchItemByName(teamWithMe.name),
     position: "the team which I joined"
   }];
 
@@ -78,8 +78,8 @@ test(formalName('Check can open conversation when click message icon in the sear
   for (const result of iconResults) {
     let title;
     await h(t).withLog(`When I search keyword ${result.keyword} and hover ${result.position}`, async () => {
-      await searchBar.clickInputArea();
-      await searchBar.typeSearchKeyword(result.keyword);
+      await app.homePage.header.searchBar.self();
+      await searchDialog.typeSearchKeyword(result.keyword, {});
       await t.expect(result.item.exists).ok();
       title = await result.item.getName();
       namesHaveMessageIcon.push(title);
@@ -99,32 +99,28 @@ test(formalName('Check can open conversation when click message icon in the sear
     });
 
     await h(t).withLog(`And the search text should be clear`, async () => {
-      await t.expect(searchBar.inputArea.value).eql('');
+      await t.expect(searchDialog.inputArea.value).eql('');
     });
   }
 
   // join button via search
   await h(t).withLog(`When I search keyword ${publicTeamWithOutMe.name} and hover the team which I did not join`, async () => {
-    await searchBar.clickInputArea();
-    await searchBar.typeSearchKeyword(publicTeamWithOutMe.name);
-    await t.expect(searchBar.getSearchItemByName(publicTeamWithOutMe.name).exists).ok();
-    await t.hover(searchBar.getSearchItemByName(publicTeamWithOutMe.name).self);
+    await searchDialog.clickInputArea();
+    await searchDialog.typeSearchKeyword(publicTeamWithOutMe.name);
+    await t.expect(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).exists).ok();
+    await t.hover(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).self);
   });
 
   await h(t).withLog(`Then display the the join button in the result`, async () => {
-    await searchBar.getSearchItemByName(publicTeamWithOutMe.name).shouldHaveJoinButton();
+    await searchDialog.getSearchItemByName(publicTeamWithOutMe.name).shouldHaveJoinButton();
   });
 
   await h(t).withLog(`When I click the result ${publicTeamWithOutMe.name}`, async () => {
-    await searchBar.getSearchItemByName(publicTeamWithOutMe.name).enter();
+    await searchDialog.getSearchItemByName(publicTeamWithOutMe.name).enter();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
   await h(t).withLog(`Then the team join dialog should be popup`, async () => {
-    // FIJI-4360 temp solution
-    // await app.homePage.profileDialog.shouldBePopUp();
-    // await app.homePage.profileDialog.clickCloseButton();
-    // await searchBar.clearInputAreaText();
     await joinTeamDialog.ensureLoaded();
     await joinTeamDialog.cancel();
   });
@@ -132,24 +128,24 @@ test(formalName('Check can open conversation when click message icon in the sear
   // message icon on recently history
   for (const title of namesHaveMessageIcon) {
     await h(t).withLog(`When I click search box`, async () => {
-      await searchBar.clickInputArea();
+      await searchDialog.clickInputArea();
     });
 
     await h(t).withLog(`Then display recently search result`, async () => {
-      await searchBar.shouldShowRecentlyHistory();
-      await t.expect(searchBar.getSearchItemByName(title).exists).ok();
+      await searchDialog.shouldShowRecentlyHistory();
+      await t.expect(searchDialog.getSearchItemByName(title).exists).ok();
     });
 
     await h(t).withLog(`When I hove the result named: ${title}`, async () => {
-      await t.hover(searchBar.getSearchItemByName(title).self);
+      await t.hover(searchDialog.getSearchItemByName(title).self);
     });
 
     await h(t).withLog(`Then message icon should be showed`, async () => {
-      await t.expect(searchBar.getSearchItemByName(title).messageButton.exists).ok();
+      await t.expect(searchDialog.getSearchItemByName(title).messageButton.exists).ok();
     });
 
     await h(t).withLog(`When I click the message icon`, async () => {
-      await searchBar.getSearchItemByName(title).clickMessageButton();
+      await searchDialog.getSearchItemByName(title).clickMessageButton();
     });
 
     await h(t).withLog(`Then the conversation of the result should be opened`, async () => {
@@ -157,35 +153,35 @@ test(formalName('Check can open conversation when click message icon in the sear
     });
 
     await h(t).withLog(`And the search text should be clear`, async () => {
-      await t.expect(searchBar.inputArea.value).eql('');
+      await t.expect(searchDialog.inputArea.value).eql('');
     });
   }
 
   // join button via recently history
   await h(t).withLog(`When I clear search box and  click search box`, async () => {
-    await searchBar.clearInputAreaText();
-    await searchBar.clickInputArea();
-    await searchBar.shouldShowRecentlyHistory();
-    await t.expect(searchBar.getSearchItemByName(publicTeamWithOutMe.name).exists).ok();
-    await t.hover(searchBar.getSearchItemByName(publicTeamWithOutMe.name).self);
+    await searchDialog.clearInputAreaTextByKey();
+    await searchDialog.clickInputArea();
+    await searchDialog.shouldShowRecentlyHistory();
+    await t.expect(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).exists).ok();
+    await t.hover(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).self);
   });
 
   await h(t).withLog(`Then the recently history should has ${publicTeamWithOutMe.name}`, async () => {
-    await searchBar.shouldShowRecentlyHistory();
-    await t.expect(searchBar.getSearchItemByName(publicTeamWithOutMe.name).exists).ok();
-    await t.hover(searchBar.getSearchItemByName(publicTeamWithOutMe.name).self);
+    await searchDialog.shouldShowRecentlyHistory();
+    await t.expect(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).exists).ok();
+    await t.hover(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).self);
   });
 
   await h(t).withLog(`When I hover the team  ${publicTeamWithOutMe.name} which I did not join`, async () => {
-    await t.hover(searchBar.getSearchItemByName(publicTeamWithOutMe.name).self);
+    await t.hover(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).self);
   });
 
   await h(t).withLog(`Then display the the join button in the result`, async () => {
-    await searchBar.getSearchItemByName(publicTeamWithOutMe.name).shouldHaveJoinButton();
+    await searchDialog.getSearchItemByName(publicTeamWithOutMe.name).shouldHaveJoinButton();
   });
 
   await h(t).withLog(`And the search text should be clear`, async () => {
-    await t.expect(searchBar.inputArea.value).eql('');
+    await t.expect(searchDialog.inputArea.value).eql('');
   });
 
 });
