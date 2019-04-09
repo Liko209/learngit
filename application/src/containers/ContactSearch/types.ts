@@ -30,6 +30,7 @@ type ContactSearchProps = {
   messageRef?: React.RefObject<HTMLInputElement>;
   multiple?: boolean;
   autoSwitchEmail?: boolean;
+  maxLength?: number;
 };
 
 type ViewProps = ContactSearchProps & {

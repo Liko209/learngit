@@ -36,6 +36,7 @@ class ContactSearch extends React.Component<Props> {
       messageRef,
       multiple,
       autoSwitchEmail,
+      maxLength,
     } = this.props;
 
     return type === ContactSearchType.PERSON ? (
@@ -55,6 +56,7 @@ class ContactSearch extends React.Component<Props> {
         minRowHeight={44}
         multiple={multiple}
         autoSwitchEmail={autoSwitchEmail}
+        maxLength={maxLength}
       />
     ) : (
       <JuiDownshift
@@ -63,11 +65,13 @@ class ContactSearch extends React.Component<Props> {
         onSelectChange={onContactSelectChange}
         inputLabel={label}
         inputPlaceholder={placeholder}
+        InputItem={Chip}
         MenuItem={GroupSearchItem}
         automationId="contactSearchGroupSuggestionsList"
         messageRef={messageRef}
         minRowHeight={44}
         multiple={multiple}
+        maxLength={maxLength}
       />
     );
   }

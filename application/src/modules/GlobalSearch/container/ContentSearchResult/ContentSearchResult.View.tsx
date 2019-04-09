@@ -16,6 +16,7 @@ import { toTitleCase } from '@/utils/string';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
 import { TypeDictionary } from 'sdk/utils';
+import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 
 type Props = ContentSearchResultViewProps & WithTranslation;
 
@@ -45,7 +46,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
     this.props.onSearchEnd();
   }
   render() {
-    const { t, searchState, onPostsFetch } = this.props;
+    const { t, searchState, onPostsFetch, setSearchOptions } = this.props;
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper key={searchState.requestId || 0}>
@@ -61,7 +62,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
             />
           ) : null}
         </JuiFullSearchResultWrapper>
-        <div>filters</div>
+        <SearchFilter setSearchOptions={setSearchOptions} />
       </JuiFullSearchWrapper>
     );
   }

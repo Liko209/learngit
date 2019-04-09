@@ -35,6 +35,7 @@ type JuiDownshiftProps = {
   emailError?: string;
   helperText?: string;
   messageRef?: React.RefObject<HTMLInputElement>;
+  maxLength?: number;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -106,6 +107,7 @@ class JuiDownshift extends React.PureComponent<
       autoSwitchEmail,
       multiple,
       messageRef,
+      maxLength,
     } = this.props;
     const { inputValue, selectedItems } = this.state;
 
@@ -137,9 +139,10 @@ class JuiDownshift extends React.PureComponent<
               autoSwitchEmail={autoSwitchEmail}
               multiple={multiple}
               messageRef={messageRef}
+              maxLength={maxLength}
             />
             {isOpen && suggestionItems.length ? (
-              <JuiAutoSizer handleHeight={true}>
+              <JuiAutoSizer>
                 {({ height }: Partial<Size>) => (
                   <StyledPaper
                     square={true}

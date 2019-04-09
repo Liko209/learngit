@@ -14,7 +14,7 @@ import GroupModel from '@/store/models/Group';
 
 class GroupSearchItemViewModel extends StoreViewModel<Props> {
   @computed
-  get person() {
+  get group() {
     return getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this.props.id);
   }
 }

@@ -24,6 +24,7 @@ const StyledSearchFilter = styled.div`
   width: ${width(67)};
   color: ${grey('700')};
   ${typography('body1')};
+  border-left: 1px solid ${grey('300')};
 `;
 
 const StyledSearchFilterHeader = styled.div`

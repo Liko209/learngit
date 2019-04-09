@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { SearchFilterViewProps } from './types';
+import { JuiSearchFilter } from 'jui/pattern/SearchFilter';
 import { ContactSearch } from '@/containers/ContactSearch';
 import { ContactSearchType } from '@/containers/ContactSearch/types';
 
@@ -18,13 +19,14 @@ class SearchFilterViewComponent extends Component<ViewProps> {
   render() {
     const { t, handleSearchPersonChange, handleSearchGroupChange } = this.props;
     return (
-      <>
+      <JuiSearchFilter title={t('globalSearch.filters')}>
         <ContactSearch
           type={ContactSearchType.PERSON}
           onSelectChange={handleSearchPersonChange}
           label={t('globalSearch.postedBy')}
           placeholder={t('globalSearch.postedByPlaceholder')}
           isExcludeMe={true}
+          maxLength={60}
         />
         <ContactSearch
           type={ContactSearchType.GROUP}
@@ -32,8 +34,9 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           label={t('globalSearch.postedIn')}
           placeholder={t('globalSearch.postedInPlaceholder')}
           isExcludeMe={true}
+          maxLength={60}
         />
-      </>
+      </JuiSearchFilter>
     );
   }
 }

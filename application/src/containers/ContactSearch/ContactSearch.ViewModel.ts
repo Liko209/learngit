@@ -63,12 +63,15 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    const result = await searchService.doFuzzySearchPersons({
+    const params = {
       searchKey: query,
       excludeSelf: this._isExcludeMe,
       recentFirst: true,
-      arrangeIds: this._groupMembers,
-    });
+    };
+    if (this._groupMembers.length) {
+      Object.assign(params, { arrangeIds: this._groupMembers });
+    }
+    const result = await searchService.doFuzzySearchPersons(params);
     const { hasMembers } = this.props;
     const existMembers = hasMembers
       ? [...this.existItems, ...hasMembers]

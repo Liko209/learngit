@@ -11,12 +11,19 @@ import { SelectedItem } from 'jui/components/Downshift/TextField';
 
 class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   @action
-  handleSearchPersonChange = (items: SelectedItem) => {
-    this.props.setSearchOptions({ creator_id: items[0].id });
+  handleSearchPersonChange = (items: SelectedItem[]) => {
+    if (items.length) {
+      return this.props.setSearchOptions({ creator_id: items[0].id });
+    }
+    return this.props.setSearchOptions({ creator_id: null });
   }
   @action
-  handleSearchGroupChange = (items: SelectedItem) => {
-    this.props.setSearchOptions({ group_id: items[0].id });
+  handleSearchGroupChange = (items: SelectedItem[]) => {
+    console.log(items[0].id, 'shining');
+    if (items.length) {
+      return this.props.setSearchOptions({ group_id: items[0].id });
+    }
+    return this.props.setSearchOptions({ group_id: null });
   }
 }
 
