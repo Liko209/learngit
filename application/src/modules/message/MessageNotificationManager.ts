@@ -17,8 +17,6 @@ import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 import { NotificationOpts } from '../notification/interface';
 import i18nT from '@/utils/i18nT';
-import defaultPersonAvatar from '@/containers/Avatar/defaultAvatar.png';
-import defaultGroupAvatar from '@/containers/Avatar/GroupAvatar/defaultGroupAvatar.png';
 import { PersonService } from 'sdk/src/module/person';
 import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/utils/handleAtMentionName';
 import history from '@/history';
@@ -79,7 +77,7 @@ export class MessageNotificationManager extends NotificationManager {
     const opts: NotificationOpts = {
       body,
       renotify: false,
-      icon: this.getIcon(person, members.length >= 2),
+      icon: this.getIcon(person, members.length, is_team),
       data: { id: postId, scope: this._scope },
       onClick: this.onClickHandlerBuilder(post.groupId),
     };
@@ -126,26 +124,29 @@ export class MessageNotificationManager extends NotificationManager {
 
   getIcon(
     { id, headshotVersion = '', headshot = '', hasHeadShot }: PersonModel,
-    isGroup: boolean,
+    memberCount: number,
+    isTeam?: boolean,
   ) {
-    if (isGroup) {
-      return defaultGroupAvatar;
+    if (isTeam) {
+      return '/icon/defaultTeamAvatar.png';
     }
-    {
-      let headshotUrl;
-      if (hasHeadShot) {
-        const personService = ServiceLoader.getInstance<PersonService>(
-          ServiceConfig.PERSON_SERVICE,
-        );
-        headshotUrl = personService.getHeadShotWithSize(
-          id,
-          headshotVersion,
-          headshot,
-          150,
-        );
-      }
-      return headshotUrl || defaultPersonAvatar;
+    if (memberCount > 2) {
+      return '/icon/defaultGroupAvatar.png';
     }
+
+    let headshotUrl;
+    if (hasHeadShot) {
+      const personService = ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      );
+      headshotUrl = personService.getHeadShotWithSize(
+        id,
+        headshotVersion,
+        headshot,
+        150,
+      );
+    }
+    return headshotUrl || '/icon/defaultAvatar.png';
   }
 
   dispose() {
