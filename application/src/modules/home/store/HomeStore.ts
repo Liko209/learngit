@@ -8,20 +8,22 @@ import { RouteProps } from 'react-router-dom';
 import { SubModuleConfig, NavConfig } from '../types';
 
 class HomeStore {
-  @observable private _subModuleConfigs: SubModuleConfig[] = [];
+  @observable private _subModuleConfigs = new Map<string, SubModuleConfig>();
   @observable private _defaultRouterPaths: string[];
 
   @computed
   get defaultRouterPath() {
     let path = '';
     this._defaultRouterPaths.some((value: string) => {
-      return this._subModuleConfigs.some((subModule: SubModuleConfig) => {
-        return !!(
-          subModule.route &&
-          subModule.route.path &&
-          subModule.route.path === value
-        );
-      })
+      return Array.from(this._subModuleConfigs.values()).some(
+        (subModule: SubModuleConfig) => {
+          return !!(
+            subModule.route &&
+            subModule.route.path &&
+            subModule.route.path === value
+          );
+        },
+      )
         ? ((path = value), true)
         : false;
     });
@@ -36,7 +38,7 @@ class HomeStore {
 
   @computed
   get subRoutes() {
-    return this._subModuleConfigs
+    return Array.from(this._subModuleConfigs.values())
       .filter(subModule => subModule.route)
       .map(subModule => subModule.route) as RouteProps[];
   }
@@ -47,19 +49,18 @@ class HomeStore {
       return !!config.nav;
     };
 
-    return this._subModuleConfigs
+    return Array.from(this._subModuleConfigs.values())
       .filter(hasNav)
       .map(config => config.nav!()) as Promise<NavConfig>[];
   }
 
-  @action
-  addSubModule(config: SubModuleConfig) {
-    this._subModuleConfigs.push(config);
+  getSubModule(name: string) {
+    return this._subModuleConfigs.get(name);
   }
 
   @action
-  addSubModules(configs: SubModuleConfig[]) {
-    configs.forEach(config => this.addSubModule(config));
+  addSubModule(name: string, config: SubModuleConfig) {
+    this._subModuleConfigs.set(name, config);
   }
 }
 
