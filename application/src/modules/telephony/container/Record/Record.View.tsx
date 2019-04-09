@@ -41,7 +41,7 @@ class RecordViewComponent extends Component<Props> {
           data-test-automation-id="recordBtn"
           aria-label={recording ? t('telephony.accessibility.stopRecord') : t('telephony.accessibility.record')}
         >
-          {recording ? 'hold' : 'record'}
+          {recording ? 'stopRecord' : 'record'}
         </JuiIconButton>
         <span className={disabled ? 'disabled' : undefined}>{recording ? t('telephony.action.stopRecord') : t('telephony.action.record')}</span>
 
