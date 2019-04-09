@@ -20,7 +20,7 @@ import {
 } from './types';
 import { SearchViewModel } from '../../common/Search.ViewModel';
 
-class ContentItemViewModel extends SearchViewModel<ContentProps>
+class MessageItemViewModel extends SearchViewModel<ContentProps>
   implements ISearchItemModel {
   private _globalSearchStore: GlobalSearchStore = container.get(
     GlobalSearchStore,
@@ -33,7 +33,7 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
     this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
     this._globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
     this._globalSearchStore.setSearchScope(searchScope);
-
+    // TODO will add record in JIRA: FIJI-4696
     // this.addRecentRecord();
   }
 
@@ -51,4 +51,4 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
   }
 }
 
-export { ContentItemViewModel };
+export { MessageItemViewModel };
