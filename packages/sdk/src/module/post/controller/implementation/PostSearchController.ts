@@ -19,12 +19,17 @@ import {
 import { SearchAPI, ContentSearchParams } from '../../../../api/glip/search';
 import { transformAll } from '../../../../service/utils';
 import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
-import { JSdkError, ERROR_CODES_SDK } from '../../../../error/sdk';
 import { mainLogger } from 'foundation';
+import {
+  ERROR_TYPES,
+  ErrorParserHolder,
+  JSdkError,
+  ERROR_CODES_SDK,
+} from '../../../../error';
 
 const LOG_TAG = 'PostSearchController';
 const SEARCH_TIMEOUT_ERR = 'Search Time Out';
-const SEARCH_TIMEOUT = 6 * 1000;
+const SEARCH_TIMEOUT = 60 * 1000;
 class PostSearchController {
   private _queryInfos: Map<number, SearchRequestInfo> = new Map();
   private _hasSubscribed = false;
@@ -38,12 +43,8 @@ class PostSearchController {
   }
 
   async searchPosts(options: ContentSearchParams): Promise<SearchedResultData> {
-    if (options.previous_server_request_id) {
-      this._clearSearchData(options.previous_server_request_id);
-    }
-
-    const result = await SearchAPI.search(options);
     this._startListenSocketSearchChange();
+    const result = await SearchAPI.search(options);
     return new Promise((resolve, reject) => {
       mainLogger.log(LOG_TAG, 'searchPosts', options);
       const timerId = this._setSearchTimeoutTimer(reject);
@@ -62,7 +63,7 @@ class PostSearchController {
     },                SEARCH_TIMEOUT);
   }
 
-  scrollSearchPosts(requestId: number): Promise<SearchedResultData> {
+  async scrollSearchPosts(requestId: number): Promise<SearchedResultData> {
     if (this._isSearchEnded(requestId)) {
       return Promise.resolve({
         requestId,
@@ -72,9 +73,27 @@ class PostSearchController {
       });
     }
 
-    return new Promise(async (resolve, reject) => {
-      const info = this._queryInfos.get(requestId);
-      if (info) {
+    const info = this._queryInfos.get(requestId);
+    if (info) {
+      try {
+        await SearchAPI.scrollSearch({
+          search_request_id: requestId,
+          scroll_request_id: info.scrollRequestId || 1,
+        });
+      } catch (error) {
+        const e = ErrorParserHolder.getErrorParser().parse(error);
+        if (e.isMatch({ type: ERROR_TYPES.SERVER, codes: ['DELETED'] })) {
+          return Promise.resolve({
+            requestId,
+            posts: [],
+            items: [],
+            hasMore: false,
+          });
+        }
+        return Promise.reject(error);
+      }
+
+      return new Promise((resolve, reject) => {
         const timerId = this._setSearchTimeoutTimer(reject);
         this._updateSearchInfo(requestId, {
           resolve,
@@ -82,15 +101,31 @@ class PostSearchController {
           q: info.q,
           timeoutTimer: timerId,
         });
-      } else {
-        reject(new JSdkError(ERROR_CODES_SDK.GENERAL, 'failed to search more'));
-      }
-    });
+      });
+    }
+
+    mainLogger.warn(
+      LOG_TAG,
+      `scrollSearchPosts, failed to find request id, ${requestId}`,
+    );
+
+    return Promise.reject(
+      new JSdkError(ERROR_CODES_SDK.GENERAL, 'failed to search more'),
+    );
   }
 
   async endPostSearch() {
     this._endListenSocketSearchChange();
+    await this._clearSearchData();
+  }
+
+  private async _clearSearchData() {
     try {
+      const infos = Array.from(this._queryInfos.values());
+      infos.forEach((value: SearchRequestInfo) => {
+        value.timeoutTimer && clearTimeout(value.timeoutTimer);
+      });
+
       const requestIds = Array.from(this._queryInfos.keys());
       this._queryInfos.clear();
       const promises = requestIds.map((requestId: number) => {
@@ -103,12 +138,13 @@ class PostSearchController {
     }
   }
 
-  getContentsCount(
+  async getContentsCount(
     options: ContentSearchParams,
   ): Promise<SearchContentTypesCount> {
-    return new Promise(async (resolve, reject) => {
-      options.count_types = 1;
-      const result = await SearchAPI.search(options);
+    this._startListenSocketSearchChange();
+    options.count_types = 1;
+    const result = await SearchAPI.search(options);
+    return new Promise((resolve, reject) => {
       this._saveSearchInfo(result.request_id, {
         q: options.q as string,
         contentCountResolve: resolve,
@@ -197,10 +233,6 @@ class PostSearchController {
     if (info) {
       this._queryInfos.set(requestId, _.merge(info, partialInfo));
     }
-  }
-
-  private _clearSearchData(requestId: number) {
-    this._queryInfos.delete(requestId);
   }
 
   private _notifySearchResultComes(searchedContents: SearchedResultData) {

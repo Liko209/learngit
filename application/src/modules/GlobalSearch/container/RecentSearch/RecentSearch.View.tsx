@@ -10,18 +10,13 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiRecentSearch, JuiSearchTitle } from 'jui/pattern/GlobalSearch';
 import { HotKeys } from 'jui/hoc/HotKeys';
 
-import { RecentSearchViewProps, RecentRecord } from './types';
+import { RecentSearchViewProps, RecentRecord, cacheEventFn } from './types';
 import { SearchSectionsConfig } from '../config';
 
 type Props = RecentSearchViewProps &
   WithTranslation & {
     terms: string[];
   };
-
-enum cacheEventFn {
-  _hoverHighlightMap = '_hoverHighlightMap',
-  _selectChangeMap = '_selectChangeMap',
-}
 
 @observer
 class RecentSearchViewComponent extends Component<Props> {

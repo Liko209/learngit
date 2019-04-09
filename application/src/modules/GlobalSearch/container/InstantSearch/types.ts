@@ -7,7 +7,7 @@ import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 // import { RecentSearchTypes } from 'sdk/module/search/entity';
-
+import { cacheEventFn } from '../types';
 import {
   SEARCH_SCOPE,
   TAB_TYPE,
@@ -70,7 +70,8 @@ export {
   SectionType,
   SortableModel,
   SEARCH_SCOPE,
-  TAB_TYPE,
   SEARCH_VIEW,
   SearchItemTypes,
+  TAB_TYPE,
+  cacheEventFn,
 };

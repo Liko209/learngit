@@ -5,6 +5,7 @@
  */
 import { RecentSearchModel } from 'sdk/module/search/entity';
 import { Group } from 'sdk/module/group/entity';
+import { cacheEventFn } from '../types';
 import { SearchItemTypes } from '../../types';
 
 type RecentRecord = {
@@ -35,4 +36,5 @@ export {
   Group,
   RecentSearchModel,
   SearchItemTypes,
+  cacheEventFn,
 };
