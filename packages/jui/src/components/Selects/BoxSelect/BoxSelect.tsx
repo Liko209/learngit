@@ -11,7 +11,6 @@ import { StyledInput, CLASSES_INPUT_BASE } from './StyledInput';
 import { HeightSize } from './types';
 import { spacing, grey, typography } from '../../../foundation/utils';
 import styled from '../../../foundation/styled-components';
-import { boolean } from '@storybook/addon-knobs';
 
 type JuiBoxSelectProps = SelectProps & {
   children: JSX.Element[];
