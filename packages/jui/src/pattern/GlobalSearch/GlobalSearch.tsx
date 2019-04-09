@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import { JuiDialog } from '../../components/Dialog/Dialog';
-import { spacing, radius, width } from '../../foundation/utils/styles';
+import { spacing, radius, width, height } from '../../foundation/utils/styles';
 import styled from '../../foundation/styled-components';
 
 const StyledGlobalSearch = styled(JuiDialog)`
@@ -14,6 +14,9 @@ const StyledGlobalSearch = styled(JuiDialog)`
       margin: 0;
       border-radius: ${radius('xl')};
       max-width: ${width(200)};
+      max-height: calc(100% - ${height(14)});
+      min-height: ${height(100)};
+      overflow: hidden;
     }
   }
   .container {

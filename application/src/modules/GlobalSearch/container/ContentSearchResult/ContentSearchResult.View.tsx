@@ -15,6 +15,7 @@ import {
 import { toTitleCase } from '@/utils/string';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
+import { TypeDictionary } from 'sdk/utils';
 
 type Props = ContentSearchResultViewProps & WithTranslation;
 
@@ -49,7 +50,8 @@ class ContentSearchResultViewComponent extends Component<Props> {
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper key={searchState.requestId || 0}>
           <JuiListSubheader>
-            {toTitleCase(t('result'))} ({searchState.postCount})
+            {toTitleCase(t('result'))} (
+            {searchState.contentsCount[TypeDictionary.TYPE_ID_POST]})
           </JuiListSubheader>
           {this.state.renderList ? (
             <PostListStream

@@ -5,7 +5,7 @@
  */
 // import * as React from 'react';
 import styled from '../../foundation/styled-components';
-import { height, width } from '../../foundation/utils';
+import { width } from '../../foundation/utils';
 
 const JuiFullSearchWrapper = styled.div`
   display: flex;
@@ -13,10 +13,10 @@ const JuiFullSearchWrapper = styled.div`
 `;
 
 const JuiFullSearchResultWrapper = styled.div`
-  min-height: ${height(50)};
-  max-height: ${height(165)};
   width: ${width(132.5)};
   position: relative;
+  display: flex;
+  flex-direction: column;
 `;
 
 export { JuiFullSearchWrapper, JuiFullSearchResultWrapper };
