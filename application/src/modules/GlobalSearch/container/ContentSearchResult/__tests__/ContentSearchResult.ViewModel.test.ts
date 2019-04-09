@@ -35,7 +35,7 @@ describe('ContentSearchResult [JPT-1558]', () => {
     PostService.getInstance = jest.fn().mockReturnValue({
       searchPosts: jest.fn().mockRejectedValue(new Error('Init Error')),
       scrollSearchPosts: jest.fn().mockRejectedValue(new Error('Scroll Error')),
-      getSearchContentsCount: jest.fn().mockResolvedValue(10),
+      getSearchContentsCount: jest.fn().mockResolvedValue({}),
     });
   });
 
@@ -75,18 +75,7 @@ describe('ContentSearchResult [JPT-1558]', () => {
 });
 
 describe('ContentSearchResult [JPT-1562]', () => {
-  it('Should posts be initialized after search options reset.', async () => {
-    const vm = new ContentSearchResultViewModel({});
-
-    const result = { requestId: 1, posts: [], hasMore: true };
-    vm._onPostsInit = jest.fn().mockResolvedValueOnce(result);
-
-    await vm.setSearchOptions({ creator_id: 1 });
-
-    expect(vm._onPostsInit).toHaveBeenCalled();
-  });
-
-  it('Should fetch posts be scroll posts after posts initialized.', async () => {
+  beforeEach(() => {
     PostService.getInstance = jest.fn().mockReturnValue({
       endPostSearch: jest.fn().mockResolvedValue(null),
       getSearchContentsCount: jest.fn().mockResolvedValue({}),
@@ -94,7 +83,20 @@ describe('ContentSearchResult [JPT-1562]', () => {
         .fn()
         .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
     });
+  });
 
+  it('Should posts be initialized after search options reset.', async () => {
+    const vm = new ContentSearchResultViewModel({});
+
+    const result = { requestId: 1, posts: [], hasMore: true };
+    vm._onPostsInit = jest.fn().mockResolvedValue(result);
+
+    await vm.setSearchOptions({ creator_id: 1 });
+
+    expect(vm._onPostsInit).toHaveBeenCalled();
+  });
+
+  it('Should fetch posts be scroll posts after posts initialized.', async () => {
     const vm = new ContentSearchResultViewModel({});
 
     const result = { requestId: 1, posts: [], hasMore: true };

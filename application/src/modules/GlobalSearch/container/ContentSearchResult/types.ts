@@ -9,7 +9,6 @@ import { Post } from 'sdk/module/post/entity';
 type ContentSearchState = {
   requestId: number | null;
   postIds: number[];
-  postCount: number;
   contentsCount: object;
 };
 
