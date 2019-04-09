@@ -2,7 +2,7 @@
  * @Author: Potar.He
  * @Date: 2019-02-28 14:12:13
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-09 16:42:37
+ * @Last Modified time: 2019-04-09 17:30:38
  */
 
 import { formalName } from '../../libs/filter';
@@ -53,7 +53,39 @@ test(formalName('Open and close the recently search/instant search/search dialog
     await searchDialog.ensureDismiss();
   });
 
-  // todo other steps
+  await h(t).withLog(`When mouse in the global search box`, async () => {
+    await searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the recently searched dropdown list displayed`, async () => {
+    await searchDialog.shouldShowRecentlyHistory();
+    await t.expect(searchDialog.allResultItems.count).eql(1);
+  });
+
+  await h(t).withLog(`Whe I click outside the global search box`, async () => {
+    await t.click(searchDialog.self, { offsetX: 1, offsetY: 1 });
+  });
+
+  await h(t).withLog(`Then the search dialog dismiss`, async () => {
+    await searchDialog.ensureDismiss();
+  });
+
+  await h(t).withLog(`When mouse in the global search box`, async () => {
+    await searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the recently searched dropdown list displayed`, async () => {
+    await searchDialog.shouldShowRecentlyHistory();
+    await t.expect(searchDialog.allResultItems.count).eql(1);
+  });
+
+  await h(t).withLog(`Whe I click Close icon`, async () => {
+    await searchDialog.clickCloseButton();
+  });
+
+  await h(t).withLog(`Then the search dialog dismiss`, async () => {
+    await searchDialog.ensureDismiss();
+  });
 });
 
 
@@ -78,7 +110,7 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
   });
 
   await h(t).withLog(`Then there is no recently searched dropdown list displayed`, async () => {
-    await t.expect(searchDialog.historyContainer.exists).notOk();
+    await t.expect(searchDialog.allResultItems.exists).notOk();
   });
 
   await h(t).withLog(`When make some recently search history with ${beSearchedName}`, async () => {
@@ -104,7 +136,7 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
     await t.expect(searchDialog.allResultItems.exists).notOk();
   });
 
-  await h(t).withLog(`Then the global search inbox should remain focused`, async () => {
-    await t.expect(searchBar.inputArea.focused).ok();
+  await h(t).withLog(`Then the search dialog input box should remain focused`, async () => {
+    await t.expect(searchDialog.inputArea.focused).ok();
   });
 });
