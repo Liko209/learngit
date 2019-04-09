@@ -13,9 +13,9 @@ import { getEntity } from '@/store/utils';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { dateFormatter } from '@/utils/date';
-import { FileProps, FileViewProps } from './File.types';
+import { FileViewModelProps, FileViewProps } from './File.types';
 
-class FileViewModel extends AbstractViewModel<FileProps>
+class FileViewModel extends AbstractViewModel<FileViewModelProps>
   implements FileViewProps {
   @computed
   get id() {

@@ -3,7 +3,6 @@ import { ClientFunction } from "testcafe";
 import * as assert from 'assert';
 import { H } from "../../../helpers";
 
-
 export class FileAndImagePreviewer extends BaseWebComponent {
   get self() {
     return this.getSelector('[role="document"]');
