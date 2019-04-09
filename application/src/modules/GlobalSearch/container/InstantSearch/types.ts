@@ -7,8 +7,7 @@ import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
-
-import { SEARCH_SCOPE, TAB_TYPE, SEARCH_VIEW } from '../../types';
+import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../../types';
 
 type SearchItems = {
   ids: (number | string)[];
@@ -65,6 +64,6 @@ export {
   SectionType,
   SortableModel,
   SEARCH_SCOPE,
-  TAB_TYPE,
   SEARCH_VIEW,
+  TAB_TYPE,
 };

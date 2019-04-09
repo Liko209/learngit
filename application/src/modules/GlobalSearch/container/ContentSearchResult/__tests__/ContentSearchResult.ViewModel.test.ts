@@ -91,7 +91,7 @@ describe('ContentSearchResult [JPT-1562]', () => {
     const result = { requestId: 1, posts: [], hasMore: true };
     vm._onPostsInit = jest.fn().mockResolvedValue(result);
 
-    await vm.setSearchOptions({ creator_id: 1 });
+    await vm.onPostsFetch();
 
     expect(vm._onPostsInit).toHaveBeenCalled();
   });
@@ -102,7 +102,7 @@ describe('ContentSearchResult [JPT-1562]', () => {
     const result = { requestId: 1, posts: [], hasMore: true };
     vm._onPostsScroll = jest.fn().mockResolvedValue(result);
 
-    await vm.setSearchOptions({ creator_id: 1 });
+    await vm.onPostsFetch();
 
     await vm.onPostsFetch();
 
