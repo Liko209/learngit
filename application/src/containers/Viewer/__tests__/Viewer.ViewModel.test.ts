@@ -143,11 +143,7 @@ describe('Viewer.ViewModel', () => {
   describe('init()', () => {
     it('should loadInitialData and refresh itemIndexInfo', async (done: jest.DoneCallback) => {
       const dataSource = createDataSource();
-<<<<<<< Updated upstream
-      itemService.getItemIndexInfo.mockResolvedValue({
-=======
       dataSource.fetchIndexInfo.mockResolvedValue({
->>>>>>> Stashed changes
         index: 11,
         totalCount: 22,
       });
