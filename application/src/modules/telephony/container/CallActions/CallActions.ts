@@ -14,4 +14,4 @@ const CallActions = buildContainer<CallActionsProps>({
   ViewModel: CallActionsViewModel,
 });
 
-export { CallActions };
+export { CallActions, CallActionsProps };

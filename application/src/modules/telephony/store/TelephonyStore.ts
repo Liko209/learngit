@@ -17,11 +17,19 @@ import {
 
 const LOCAL_CALL_WINDOW_STATUS_KEY = 'localCallWindowStatusKey';
 
+enum CALL_TYPE {
+  NULL,
+  INBOUND,
+  OUTBOUND,
+}
+
 class TelephonyStore {
   @observable
   callWindowState: CALL_WINDOW_STATUS = CALL_WINDOW_STATUS.MINIMIZED;
   @observable
   callState: CALL_STATE = CALL_STATE.IDLE;
+  @observable
+  callType: CALL_TYPE = CALL_TYPE.NULL;
   @observable
   phoneNumber?: string;
   @observable
@@ -37,6 +45,9 @@ class TelephonyStore {
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
           this.activeCallTime = Date.now();
+          break;
+        case CALL_STATE.CONNECTING:
+          this.activeCallTime = undefined;
           break;
         default:
           setTimeout(() => {
@@ -135,13 +146,13 @@ class TelephonyStore {
   }
 
   directCall = () => {
-    this._openCallWindow();
     this._callFSM[CALL_TRANSITION_NAMES.START_DIRECT_CALL]();
+    this._openCallWindow();
   }
 
   incomingCall = () => {
-    this._openCallWindow();
     this._callFSM[CALL_TRANSITION_NAMES.START_INCOMING_CALL]();
+    this._openCallWindow();
   }
 
   answer = () => {
@@ -161,4 +172,4 @@ class TelephonyStore {
   }
 }
 
-export { TelephonyStore };
+export { TelephonyStore, CALL_TYPE };
