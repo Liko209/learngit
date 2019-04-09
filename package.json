@@ -46,8 +46,6 @@
   },
   "devDependencies": {
     "@jest-runner/electron": "1.1.1",
-    "@sentry/cli": "1.40.0",
-    "@sentry/webpack-plugin": "1.6.2",
     "@types/enzyme": "3.1.14",
     "@types/glob": "7.1.1",
     "@types/jest": "23.3.8",
