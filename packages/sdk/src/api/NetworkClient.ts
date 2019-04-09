@@ -22,6 +22,7 @@ import _ from 'lodash';
 
 export type IBaseQuery = {
   via?: NETWORK_VIA;
+  host?: string;
   path: string;
   data?: object;
   headers?: object;
@@ -32,6 +33,7 @@ export type IBaseQuery = {
   priority?: REQUEST_PRIORITY;
   HAPriority?: HA_PRIORITY;
   timeout?: number;
+  pathPrefix?: string;
 };
 
 export type IQuery = IBaseQuery & {
@@ -46,6 +48,7 @@ export interface IResponse<T> {
 
 export interface INetworkRequests {
   readonly host?: string;
+  readonly pathPrefix?: string;
   readonly handlerType: IHandleType;
 }
 
@@ -68,8 +71,7 @@ export interface IResponseError {
 
 export default class NetworkClient {
   networkRequests: INetworkRequests;
-  apiPlatform: string;
-  apiPlatformVersion: string;
+  pathPrefix?: string;
   apiMap: Map<
     string,
     { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
@@ -80,14 +82,10 @@ export default class NetworkClient {
   // todo refactor config
   constructor(
     networkRequests: INetworkRequests,
-    apiPlatform: string,
     defaultVia: NETWORK_VIA,
-    apiPlatformVersion: string = '',
     networkManager: NetworkManager,
   ) {
-    this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
-    this.apiPlatformVersion = apiPlatformVersion;
     this.apiMap = new Map();
     this.defaultVia = defaultVia;
     this.networkManager = networkManager;
@@ -177,14 +175,16 @@ export default class NetworkClient {
       priority,
       HAPriority,
       timeout,
+      pathPrefix,
     } = query;
 
-    const versionPath = this.apiPlatformVersion
-      ? `/${this.apiPlatformVersion}`
-      : '';
-    const finalPath = `${versionPath}${this.apiPlatform}${path}`;
+    const finalPathPrefix =
+      (pathPrefix !== undefined
+        ? pathPrefix
+        : this.networkRequests.pathPrefix) || '';
+    const finalPath = `${finalPathPrefix}${path}`;
     return new NetworkRequestBuilder()
-      .setHost(this.networkRequests.host || '')
+      .setHost(query.host || this.networkRequests.host || '')
       .setHandlerType(this.networkRequests.handlerType)
       .setPath(finalPath)
       .setMethod(method)

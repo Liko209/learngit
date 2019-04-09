@@ -220,7 +220,6 @@ class AppModule extends AbstractModule {
 
     const api = config.get('api');
     const db = config.get('db');
-
     await Sdk.init({
       api,
       db,

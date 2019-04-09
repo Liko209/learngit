@@ -91,7 +91,7 @@ class NetworkManager {
   ) {
     handler.addRequestConsumer(via, consumer);
   }
-  initNetworkRequestBaseHandler(
+  buildNetworkRequestBaseHandler(
     handlerType: IHandleType,
     hasSurvivalMode = false,
     decorator: IRequestDecoration,

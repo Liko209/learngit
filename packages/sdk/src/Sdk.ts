@@ -9,13 +9,7 @@ import { Foundation, NetworkManager, Token } from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
-import {
-  Api,
-  HandleByGlip,
-  HandleByGlip2,
-  HandleByRingCentral,
-  HandleByUpload,
-} from './api';
+import { Api, HandleByGlip, HandleByRingCentral, HandleByUpload } from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
 import DaoManager from './dao/DaoManager';
@@ -54,14 +48,6 @@ class Sdk {
     const dbConfig: DBConfig = merge({}, defaultDBConfig, config.db);
     // Initialize foundation
     Foundation.init({
-      // TODO refactor foundation, extract biz logic from `foundation` to `sdk`.
-      rcConfig: {
-        rc: apiConfig.rc,
-        glip2: apiConfig.glip2,
-        server: apiConfig.rc.server,
-        apiPlatform: apiConfig.rc.apiPlatform,
-        apiPlatformVersion: apiConfig.rc.apiPlatformVersion,
-      },
       dbAdapter: dbConfig.adapter,
     });
 
@@ -167,11 +153,7 @@ class Sdk {
     AccountGlobalConfig.removeUserDictionary();
   }
 
-  updateNetworkToken(tokens: {
-    rcToken?: Token;
-    glipToken?: string;
-    glip2Token?: Token;
-  }) {
+  updateNetworkToken(tokens: { rcToken?: Token; glipToken?: string }) {
     if (tokens.glipToken) {
       this._glipToken = tokens.glipToken;
       this.networkManager.setOAuthToken(
@@ -185,11 +167,6 @@ class Sdk {
     }
     if (tokens.rcToken) {
       this.networkManager.setOAuthToken(tokens.rcToken, HandleByRingCentral);
-      this.networkManager.setOAuthToken(tokens.rcToken, HandleByGlip2);
-    }
-
-    if (tokens.glip2Token) {
-      this.networkManager.setOAuthToken(tokens.glip2Token, HandleByGlip2);
     }
   }
 
