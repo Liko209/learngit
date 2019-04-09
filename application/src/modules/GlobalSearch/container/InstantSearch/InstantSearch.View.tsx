@@ -61,8 +61,9 @@ class InstantSearchViewComponent extends Component<Props> {
     const { terms, selectIndex, resetSelectIndex, getSearchScope } = this.props;
     const { value, type, sectionIndex, cellIndex } = config;
 
-    const { Item, title } = SearchSectionsConfig[type];
-    const hovered = sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
+    const { Item, automationId } = SearchSectionsConfig[type];
+    const hovered =
+      sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
     return (
       <Item
         searchScope={getSearchScope(cellIndex)}
@@ -70,7 +71,7 @@ class InstantSearchViewComponent extends Component<Props> {
         hovered={hovered}
         onMouseEnter={this.hoverHighlight(sectionIndex, cellIndex)}
         onMouseLeave={resetSelectIndex}
-        title={title}
+        automationId={`search-${automationId}-item`}
         didChange={this.selectIndexChange(sectionIndex, cellIndex)}
         terms={terms}
         id={typeof value === 'string' ? null : value}
@@ -81,30 +82,32 @@ class InstantSearchViewComponent extends Component<Props> {
 
   get searchResultList() {
     const { searchResult, onShowMore, t } = this.props;
-    return searchResult.map(({ ids, type, hasMore }: SearchItems, sectionIndex: number) => {
-      if (ids.length === 0) return null;
+    return searchResult.map(
+      ({ ids, type, hasMore }: SearchItems, sectionIndex: number) => {
+        if (ids.length === 0) return null;
 
-      const { title } = SearchSectionsConfig[type];
-      return (
-        <React.Fragment key={type}>
-          <JuiSearchTitle
-            onButtonClick={onShowMore(type)}
-            showButton={hasMore}
-            buttonText={t('globalSearch.showMore')}
-            title={t(title)}
-            data-test-automation-id={`search-${title}`}
-          />
-          {ids.map((id: number | string, cellIndex: number) => {
-            return this.createSearchItem({
-              type,
-              sectionIndex,
-              cellIndex,
-              value: id,
-            });
-          })}
-        </React.Fragment>
-      );
-    });
+        const { title, automationId } = SearchSectionsConfig[type];
+        return (
+          <React.Fragment key={type}>
+            <JuiSearchTitle
+              onButtonClick={onShowMore(type)}
+              showButton={hasMore}
+              buttonText={t('globalSearch.showMore')}
+              title={t(title)}
+              automationId={automationId}
+            />
+            {ids.map((id: number | string, cellIndex: number) => {
+              return this.createSearchItem({
+                type,
+                sectionIndex,
+                cellIndex,
+                value: id,
+              });
+            })}
+          </React.Fragment>
+        );
+      },
+    );
   }
 
   render() {
@@ -126,6 +129,8 @@ class InstantSearchViewComponent extends Component<Props> {
   }
 }
 
-const InstantSearchView = withTranslation('translations')(InstantSearchViewComponent);
+const InstantSearchView = withTranslation('translations')(
+  InstantSearchViewComponent,
+);
 
 export { InstantSearchView };
