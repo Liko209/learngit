@@ -74,8 +74,10 @@
   "globalSearch": {
     "search": "Search",
     "showMore": "Show more",
-    "ClearHistory": "Clear History",
+    "ClearHistory": "Clear history",
     "RecentSearches": "Recent searches",
+    "contentSearch": "Content search",
+    "inThisConversation": "in this conversation",
     "Messages": "Messages",
     "people": "people",
     "groups": "groups",
@@ -84,6 +86,9 @@
     "postedIn": "Posted in",
     "postedByPlaceholder": "Enter name or email",
     "postedInPlaceholder": "Choose a team or conversation",
+    "People": "People",
+    "Groups": "Groups",
+    "Teams": "Teams",
 
     "prompt": {
       "contentSearchNetworkError": "We weren't able to conduct the search. Check your network connection, then try again.",

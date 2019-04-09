@@ -207,6 +207,12 @@ function radius(type: keyof Theme['radius']) {
   };
 }
 
+function opacity(type: keyof Theme['opacity']) {
+  return ({ theme }: { theme: Theme }): number => {
+    return theme.opacity[type];
+  };
+}
+
 export {
   spacing,
   shape,
@@ -225,4 +231,5 @@ export {
   lineClamp,
   rippleEnter,
   radius,
+  opacity,
 };

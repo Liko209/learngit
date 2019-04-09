@@ -28,7 +28,7 @@ const SearchItemActions = styled.div`
 
 const SearchItemWrapper = styled(MenuItem)`
   && {
-    height: ${height(6)};
+    height: ${height(8)};
     padding: ${spacing(1, 4)};
     &:hover {
       background: none;
@@ -55,6 +55,7 @@ const PrivateIcon = styled(MuiLock)`
 `;
 
 const SearchItemAvatar = styled.div`
+  display: flex;
   margin-right: ${spacing(2)};
 `;
 
@@ -78,7 +79,7 @@ const Joined = styled.span`
 type JuiSearchItemProps = {
   Avatar: JSX.Element;
   value: string;
-  terms: string[];
+  terms?: string[];
   Actions?: ReactNode;
   isJoined?: boolean;
   isPrivate?: boolean;
