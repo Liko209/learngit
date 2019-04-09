@@ -17,4 +17,7 @@ export type UserContextInfo = {
 
   env: string;
   version: string;
+
+  browser: string;
+  os: string;
 };
