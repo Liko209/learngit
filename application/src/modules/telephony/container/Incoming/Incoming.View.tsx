@@ -29,10 +29,14 @@ type Props = IncomingViewProps & WithTranslation;
 class IncomingViewComponent extends Component<Props> {
   private _Avatar = () => {
     const { uid } = this.props;
-    if (uid) {
-      return <Avatar uid={uid} cover={true} imgProps={{ draggable: false }} />;
-    }
-    return null;
+    return (
+      <Avatar
+        uid={uid}
+        showDefaultAvatar={!uid}
+        cover={true}
+        imgProps={{ draggable: false }}
+      />
+    );
   }
 
   render() {

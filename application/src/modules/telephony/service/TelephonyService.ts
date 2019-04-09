@@ -51,7 +51,7 @@ class TelephonyService {
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
-    this._telephonyStore.phoneNumber = fromNum;
+    this._telephonyStore.phoneNumber = fromNum !== 'anonymous' ? fromNum : '';
     this._telephonyStore.incomingCall();
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${
