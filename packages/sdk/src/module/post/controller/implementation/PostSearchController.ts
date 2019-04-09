@@ -142,9 +142,9 @@ class PostSearchController {
     options: ContentSearchParams,
   ): Promise<SearchContentTypesCount> {
     this._startListenSocketSearchChange();
+    options.count_types = 1;
     const result = await SearchAPI.search(options);
     return new Promise((resolve, reject) => {
-      options.count_types = 1;
       this._saveSearchInfo(result.request_id, {
         q: options.q as string,
         contentCountResolve: resolve,
