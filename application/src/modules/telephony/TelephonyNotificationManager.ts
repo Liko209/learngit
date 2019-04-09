@@ -6,7 +6,6 @@
 
 import { NotificationManager } from '@/modules/notification/manager';
 import i18nT from '@/utils/i18nT';
-import incomingCallIcon from './images/incoming-call.png';
 
 type Action =
   | {
@@ -56,7 +55,7 @@ class TelephonyNotificationManager extends NotificationManager {
             scope: this._scope,
           },
           body: `${callerName} ${callNumber}`,
-          icon: incomingCallIcon,
+          icon: '/icon/incomingCall.png',
         });
         break;
 

@@ -44,7 +44,7 @@ describe('TelephonyNotificationManager', () => {
           scope: 'telephony',
         },
         body: 'alex 123',
-        icon: 'incoming-call.png',
+        icon: '/icon/incomingCall.png',
       });
     });
 

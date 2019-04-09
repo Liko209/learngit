@@ -416,7 +416,7 @@
       "CallTimeout": "Sorry, we weren't able to place the call. Try again later."
     },
     "notification": {
-      "incomingCall": "Incoming call",
+      "incomingCall": "Incoming Call",
       "answer": "Answer",
       "unknownCaller": "Unknown Caller"
     }
