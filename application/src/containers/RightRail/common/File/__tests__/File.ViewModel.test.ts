@@ -71,7 +71,7 @@ describe('FileViewModel', () => {
     });
   });
 
-  describe('createdTime', () => {
+  describe('modifiedTime', () => {
     it('should be a date string of update time when incoming timestamp [JPT-965]', () => {
       expect(vm.modifiedTime).toEqual(
         dateFormatter.date(mockFile.versions[0].date),
