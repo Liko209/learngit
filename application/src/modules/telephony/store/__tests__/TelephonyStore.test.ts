@@ -5,7 +5,7 @@
  */
 
 import { TelephonyStore } from '../TelephonyStore';
-import { CALL_STATE, CALL_WINDOW_STATUS, HOLD_STATE } from '../../FSM';
+import { CALL_STATE, CALL_WINDOW_STATUS, HOLD_STATE, RECORD_DISABLED_STATE } from '../../FSM';
 
 function createStore() {
   return new TelephonyStore();
@@ -129,5 +129,18 @@ describe('Telephony store', () => {
     store.directCall();
     store.connected();
     expect(store.holdState).toBe(HOLD_STATE.IDLE);
+  });
+
+  it('recordDisabled should to be RECORD_DISABLED_STATE.DISABLED when instantiated TelephonyStore', () => {
+    const store = createStore();
+    store.directCall();
+    expect(store.recordDisabled).toBe(true);
+  });
+
+  it('holdState should change to HOLD_STATE.IDLE when connected', () => {
+    const store = createStore();
+    store.directCall();
+    store.connected();
+    expect(store.recordDisabled).toBe(false);
   });
 });

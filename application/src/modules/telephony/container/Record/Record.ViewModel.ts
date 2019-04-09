@@ -20,7 +20,7 @@ class RecordViewModel extends StoreViewModel<RecordProps>
 
   @computed
   get disabled() {
-    return this._telephonyStore.recordState === RECORD_STATE.DISABLED;
+    return this._telephonyStore.recordDisabled;
   }
 
   @computed

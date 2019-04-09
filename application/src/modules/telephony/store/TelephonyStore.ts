@@ -11,11 +11,14 @@ import {
   HOLD_TRANSITION_NAMES,
   CALL_STATE,
   CALL_WINDOW_STATUS,
-  RECORD_STATE,
+  RecordFSM,
   RECORD_TRANSITION_NAMES,
+  RECORD_STATE,
+  RecordDisableFSM,
+  RECORD_DISABLED_STATE,
+  RECORD_DISABLED_STATE_TRANSITION_NAMES,
   CallFSM,
   HoldFSM,
-  RecordFSM,
   CallWindowFSM,
   CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
@@ -34,7 +37,7 @@ class TelephonyStore {
   private _callWindowFSM = new CallWindowFSM();
   private _holdFSM = new HoldFSM();
   private _recordFSM = new RecordFSM();
-  private _lastRecordingState: RECORD_STATE;
+  private _recordDisableFSM = new RecordDisableFSM();
 
   @observable
   callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
@@ -44,35 +47,39 @@ class TelephonyStore {
   callType: CALL_TYPE = CALL_TYPE.NULL;
   @observable
   holdState: HOLD_STATE = this._holdFSM.state;
+
   @observable
   recordState: RECORD_STATE = this._recordFSM.state;
+  @observable
+  recordDisabledState: RECORD_DISABLED_STATE = this._recordDisableFSM.state;
 
   @observable
   phoneNumber?: string;
   @observable
   activeCallTime?: number;
+
   @observable
   pendingForHold: boolean = false;
   @observable
   pendingForRecord: boolean = false;
 
   constructor() {
-    this._callWindowFSM.observe(
-      'onAfterTransition',
-      (lifecycle: LifeCycle) => {
-        const { to } = lifecycle;
-        this.callWindowState = to as CALL_WINDOW_STATUS;
-      },
-    );
+    type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
+    type FSMProps = 'callWindowState' | 'recordState' | 'recordDisabledState';
 
-    this._recordFSM.observe(
-      'onAfterTransition',
-      (lifecycle: LifeCycle) => {
-        const { to, from } = lifecycle;
-        this._lastRecordingState = from as RECORD_STATE;
-        this.recordState = to as RECORD_STATE;
-      },
-    );
+    [
+      ['_callWindowFSM', 'callWindowState'],
+      ['_recordFSM', 'recordState'],
+      ['_recordDisableFSM', 'recordDisabledState'],
+    ].forEach(([fsm, observableProp]: [FSM, FSMProps]) => {
+      this[fsm].observe(
+        'onAfterTransition',
+        (lifecycle: LifeCycle) => {
+          const { to } = lifecycle;
+          this[observableProp] = to as CALL_WINDOW_STATUS | RECORD_STATE | RECORD_DISABLED_STATE;
+        },
+      );
+    });
 
     this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
       const { to } = lifecycle;
@@ -248,13 +255,7 @@ class TelephonyStore {
   }
 
   enableRecord = () => {
-    switch (this._lastRecordingState) {
-      case RECORD_STATE.RECORDING:
-        return this._recordFSM[RECORD_TRANSITION_NAMES.START_RECORD]();
-      case RECORD_STATE.IDLE:
-      default:
-        return this._recordFSM[RECORD_TRANSITION_NAMES.CONNECTED]();
-    }
+    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.ENABLE]();
   }
 
   disableHold = () => {
@@ -262,7 +263,7 @@ class TelephonyStore {
   }
 
   disableRecord = () => {
-    this._recordFSM[RECORD_TRANSITION_NAMES.DISCONNECT]();
+    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE]();
   }
 
   @computed
@@ -285,15 +286,12 @@ class TelephonyStore {
 
   @computed
   get isRecording() {
-    if (this.recordDisabled) {
-      return this._lastRecordingState === RECORD_STATE.RECORDING;
-    }
     return (this.recordState === RECORD_STATE.RECORDING);
   }
 
   @computed
   get recordDisabled() {
-    return this.recordState === RECORD_STATE.DISABLED;
+    return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
   }
 }
 
