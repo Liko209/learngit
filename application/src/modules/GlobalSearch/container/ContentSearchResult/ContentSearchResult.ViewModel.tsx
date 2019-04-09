@@ -82,8 +82,6 @@ class ContentSearchResultViewModel
     await this.onSearchEnd();
 
     this._setSearchState({ requestId: null });
-
-    await this.onPostsFetch();
   }
 
   onPostsFetch = async () => {

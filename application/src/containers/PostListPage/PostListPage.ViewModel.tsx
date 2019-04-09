@@ -7,13 +7,21 @@
 import { AbstractViewModel } from '@/base';
 import { POST_LIST_TYPE, PostListPageProps } from './types';
 import { computed, observable } from 'mobx';
-import { getSingleEntity } from '@/store/utils';
+import { getSingleEntity, getEntity } from '@/store/utils';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { MyState } from 'sdk/module/state/entity';
 import { Profile } from 'sdk/module/profile/entity';
 import MyStateModel from '../../store/models/MyState';
 import ProfileModel from '@/store/models/Profile';
 import storeManager from '@/store';
+
+import _ from 'lodash';
+import { PostService } from 'sdk/module/post';
+import { QUERY_DIRECTION } from 'sdk/dao';
+import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
+import { Post } from 'sdk/module/post/entity';
+import { ISortableModel } from '@/store/base/fetch/types';
+import PostModel from '@/store/models/Post';
 
 type DataMap = {
   [key: string]: {
@@ -94,6 +102,51 @@ class PostListPageViewModel extends AbstractViewModel {
   unsetCurrentPostListValue = () => {
     const globalStore = storeManager.getGlobalStore();
     globalStore.set(GLOBAL_KEYS.CURRENT_POST_LIST_TYPE, '');
+  }
+
+  postFetcher = async (
+    direction: QUERY_DIRECTION,
+    pageSize: number,
+    anchor?: ISortableModel<Post>,
+  ) => {
+    const postService: PostService = PostService.getInstance();
+    let ids;
+    let hasMore;
+    if (anchor) {
+      const index = _(this.ids).indexOf(anchor.id);
+      const start = index + 1;
+      const end = index + pageSize + 1;
+      ids = _(this.ids)
+        .slice(start, end)
+        .value();
+      hasMore = end < this.ids.length - 1;
+    } else {
+      ids = _(this.ids)
+        .slice(0, pageSize)
+        .value();
+      hasMore = this.ids.length > pageSize;
+    }
+    const postsStore = storeManager.getEntityMapStore(
+      ENTITY_NAME.POST,
+    ) as MultiEntityMapStore<Post, PostModel>;
+    const [idsOutOfStore, idsInStore] = postsStore.subtractedBy(ids);
+    let postsFromService: Post[] = [];
+
+    const postsFromStore = idsInStore
+      .map(id => getEntity<Post, PostModel>(ENTITY_NAME.POST, id))
+      .filter((post: PostModel) => !post.deactivated);
+    try {
+      if (idsOutOfStore.length) {
+        const results = await postService.getPostsByIds(idsOutOfStore);
+        postsFromService = results.posts.filter(
+          (post: Post) => !post.deactivated,
+        );
+      }
+      const data = [...postsFromService, ...postsFromStore];
+      return { hasMore, data };
+    } catch (err) {
+      return { hasMore: true, data: [] };
+    }
   }
 }
 
