@@ -9,7 +9,6 @@ import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { Avatar } from '@/containers/Avatar';
 import { Call } from '@/modules/telephony';
-import { OpenProfile } from '@/common/OpenProfile';
 
 import { ViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
@@ -22,18 +21,13 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
     await goToConversation(person.id);
   }
 
-  onClick = () => {
-    const { addRecentRecord, onClear, onClose, id } = this.props;
-    addRecentRecord();
-    onClear();
-    OpenProfile.show(id, null, onClose);
-  }
-
   handleGoToConversation = (evt: React.MouseEvent) => {
-    const { addRecentRecord } = this.props;
+    const { addRecentRecord, onClear, onClose } = this.props;
     evt.stopPropagation();
     addRecentRecord();
     this.goToConversation();
+    onClear();
+    onClose();
   }
 
   render() {
@@ -81,7 +75,7 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
         onMouseLeave={onMouseLeave}
         hovered={hovered}
         key={id}
-        onClick={this.onClick}
+        onClick={this.handleGoToConversation}
         Avatar={<Avatar uid={id} size="small" />}
         value={userDisplayName}
         terms={terms}

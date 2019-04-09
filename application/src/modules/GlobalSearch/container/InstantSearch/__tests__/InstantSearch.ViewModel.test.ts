@@ -3,6 +3,7 @@
  * @Date: 2019-04-04 12:21:25
  * Copyright © RingCentral. All rights reserved.
  */
+import { getEntity } from '@/store/utils';
 import { container, Jupiter } from 'framework';
 import { config } from '../../../module.config';
 import { GlobalSearchStore } from '../../../store';
@@ -15,13 +16,14 @@ jest.mock('@/containers/Notification');
 jest.mock('sdk/api');
 jest.mock('sdk/dao');
 jest.mock('sdk/module/search');
-
+jest.mock('@/common/joinPublicTeam');
+jest.mock('@/store/utils');
 jest.mock('../../../../../utils/i18nT');
 
 import i18nT from '../../../../../utils/i18nT';
 // import history from '../../../../../history';
 
-import { SEARCH_SCOPE } from '../types';
+import { SEARCH_SCOPE, SEARCH_VIEW } from '../types';
 import { InstantSearchViewModel } from '../InstantSearch.ViewModel';
 
 GroupService.getInstance = jest.fn();
@@ -77,6 +79,158 @@ describe('InstantSearchViewModel', () => {
   it('setSelectIndex()', () => {
     instantSearchViewModel.setSelectIndex(1, 1);
     expect(instantSearchViewModel.selectIndex).toEqual([1, 1]);
+  });
+
+  describe('get currentItemType', () => {
+    it('should return section type', async () => {
+      instantSearchViewModel.setSelectIndex(0, 0);
+      const resultData = [
+        {
+          ids: [1, 2],
+          type: RecentSearchTypes.GROUP,
+          hasMore: true,
+        },
+      ];
+      jest
+        .spyOn(instantSearchViewModel, 'searchResult', 'get')
+        .mockReturnValue(resultData);
+      expect(instantSearchViewModel.currentItemType).toBe(
+        RecentSearchTypes.GROUP,
+      );
+    });
+  });
+
+  describe('get currentItemId', () => {
+    it('If section index < 0 should be return null', async () => {
+      instantSearchViewModel.setSelectIndex(-1, -1);
+      const resultData = [
+        {
+          ids: [1, 2],
+          type: RecentSearchTypes.GROUP,
+          hasMore: true,
+        },
+      ];
+      jest
+        .spyOn(instantSearchViewModel, 'searchResult', 'get')
+        .mockReturnValue(resultData);
+      expect(instantSearchViewModel.currentItemId).toBe(null);
+    });
+    it('If section index > 0 should be return id', async () => {
+      instantSearchViewModel.setSelectIndex(0, 0);
+      const resultData = [
+        {
+          ids: [1, 2],
+          type: RecentSearchTypes.GROUP,
+          hasMore: true,
+        },
+      ];
+      jest
+        .spyOn(instantSearchViewModel, 'searchResult', 'get')
+        .mockReturnValue(resultData);
+      expect(instantSearchViewModel.currentItemId).toBe(1);
+    });
+  });
+
+  describe('onEnter()', () => {
+    it('If select item type is people should be go to conversation', () => {
+      const id = 1;
+      jest.spyOn(instantSearchViewModel, 'goToConversation');
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemId', 'get')
+        .mockReturnValue(id);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(RecentSearchTypes.PEOPLE);
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      instantSearchViewModel.onEnter(keyBoardEvent);
+      expect(instantSearchViewModel.goToConversation).toHaveBeenCalledWith(id);
+    });
+    it('If select item type is search and select first should be global scope and go to full search', () => {
+      const id = 1;
+      instantSearchViewModel.setSelectIndex(0, 0);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemId', 'get')
+        .mockReturnValue(id);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(RecentSearchTypes.SEARCH);
+      jest
+        .spyOn(instantSearchViewModel, 'getSearchScope')
+        .mockReturnValue(SEARCH_SCOPE.GLOBAL);
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      instantSearchViewModel.onEnter(keyBoardEvent);
+      expect(globalSearchStore.searchScope).toBe(SEARCH_SCOPE.GLOBAL);
+      expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
+    });
+    it('If select item type is search and select second should be global scope and go to full search', () => {
+      const id = 1;
+      instantSearchViewModel.setSelectIndex(0, 1);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemId', 'get')
+        .mockReturnValue(id);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(RecentSearchTypes.SEARCH);
+      jest
+        .spyOn(instantSearchViewModel, 'getSearchScope')
+        .mockReturnValue(SEARCH_SCOPE.CONVERSATION);
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      instantSearchViewModel.onEnter(keyBoardEvent);
+      expect(globalSearchStore.searchScope).toBe(SEARCH_SCOPE.CONVERSATION);
+      expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
+    });
+    it('If select item type is team/group and cannot join should be go to conversation', () => {
+      const id = 1;
+      const canJoin = {
+        canJoin: false,
+        group: {},
+      } as any;
+      jest.spyOn(instantSearchViewModel, 'goToConversation');
+      jest
+        .spyOn(instantSearchViewModel, 'canJoinTeam')
+        .mockReturnValue(canJoin);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemId', 'get')
+        .mockReturnValue(id);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(RecentSearchTypes.GROUP);
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      instantSearchViewModel.onEnter(keyBoardEvent);
+      expect(instantSearchViewModel.goToConversation).toHaveBeenCalledWith(id);
+    });
+    it('If select item type is team/group and can join should be call handleJoinTeam', () => {
+      const id = 1;
+      const canJoin = {
+        canJoin: true,
+        group: {},
+      } as any;
+      jest.spyOn(instantSearchViewModel, 'handleJoinTeam');
+      jest
+        .spyOn(instantSearchViewModel, 'canJoinTeam')
+        .mockReturnValue(canJoin);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemId', 'get')
+        .mockReturnValue(id);
+      jest
+        .spyOn(instantSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(RecentSearchTypes.TEAM);
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      instantSearchViewModel.onEnter(keyBoardEvent);
+      expect(instantSearchViewModel.handleJoinTeam).toHaveBeenCalledWith(
+        canJoin.group,
+      );
+    });
   });
 
   describe('resetData()', () => {
@@ -393,6 +547,187 @@ describe('InstantSearchViewModel', () => {
       instantSearchViewModel = new InstantSearchViewModel();
       const scope = instantSearchViewModel.getSearchScope(1);
       expect(scope).toBe(SEARCH_SCOPE.CONVERSATION);
+    });
+  });
+
+  describe('onClear()', () => {
+    it('global search store search key should be empty', () => {
+      instantSearchViewModel.onClear();
+      expect(globalSearchStore.searchKey).toBe('');
+    });
+  });
+  describe('onClose()', () => {
+    it('global search store open should be false', () => {
+      instantSearchViewModel.onClear();
+      expect(globalSearchStore.open).toBeFalsy();
+    });
+  });
+
+  describe('canJoinTeam()', () => {
+    it('If isTeam && privacy = protected & !isMember canJoinTeam should be true', () => {
+      const group = {
+        isTeam: true,
+        privacy: 'protected',
+        members: [1],
+        isMember: false,
+      };
+      (getEntity as jest.Mock).mockReturnValue(group);
+      expect(instantSearchViewModel.canJoinTeam(1).canJoin).toBeTruthy();
+      expect(instantSearchViewModel.canJoinTeam(1).group).toEqual(group);
+    });
+    it('If isTeam = false canJoinTeam should be false', () => {
+      const group = {
+        isTeam: false,
+      };
+      (getEntity as jest.Mock).mockReturnValue(group);
+      expect(instantSearchViewModel.canJoinTeam(1).canJoin).toBeFalsy();
+      expect(instantSearchViewModel.canJoinTeam(1).group).toEqual(group);
+    });
+    it('If isMember = true canJoinTeam should be false', () => {
+      const group = {
+        isMember: true,
+      };
+      (getEntity as jest.Mock).mockReturnValue(group);
+      expect(instantSearchViewModel.canJoinTeam(1).canJoin).toBeFalsy();
+      expect(instantSearchViewModel.canJoinTeam(1).group).toEqual(group);
+    });
+    it('If privacy != protected canJoinTeam should be false', () => {
+      const group = {
+        privacy: '',
+      };
+      (getEntity as jest.Mock).mockReturnValue(group);
+      expect(instantSearchViewModel.canJoinTeam(1).canJoin).toBeFalsy();
+      expect(instantSearchViewModel.canJoinTeam(1).group).toEqual(group);
+    });
+  });
+
+  describe('onKeyUp()', () => {
+    it('if cell index > 0 should be selectIndex of section and cell - 1', () => {
+      instantSearchViewModel.setSelectIndex(0, 1);
+      jest.spyOn(instantSearchViewModel, 'setSelectIndex');
+      instantSearchViewModel.onKeyUp();
+      expect(instantSearchViewModel.setSelectIndex).toHaveBeenCalledWith(0, 0);
+    });
+    it('if section <= 0 should be return undefined', () => {
+      instantSearchViewModel.setSelectIndex(0, 0);
+      jest.spyOn(instantSearchViewModel, 'setSelectIndex');
+      expect(instantSearchViewModel.onKeyUp()).toBeUndefined();
+    });
+    it('if section > 0 and cell index <= 0 and nextSection !== -1 should be call setSelectIndex', () => {
+      instantSearchViewModel.setSelectIndex(1, 0);
+      jest.spyOn(instantSearchViewModel, 'setSelectIndex');
+      jest
+        .spyOn(instantSearchViewModel, 'findNextValidSectionLength')
+        .mockReturnValue([0, 1]);
+      instantSearchViewModel.onKeyUp();
+      expect(instantSearchViewModel.setSelectIndex).toHaveBeenCalledWith(0, 0);
+    });
+    it('if section > 0 and cell index <= 0 and nextSection === -1 should not be call setSelectIndex', () => {
+      instantSearchViewModel.setSelectIndex(1, 0);
+      jest.spyOn(instantSearchViewModel, 'setSelectIndex');
+      jest
+        .spyOn(instantSearchViewModel, 'findNextValidSectionLength')
+        .mockReturnValue([-1, 1]);
+      instantSearchViewModel.onKeyUp();
+      expect(instantSearchViewModel.setSelectIndex).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onKeyDown()', () => {
+    it('if not search item should be return undefined', () => {
+      instantSearchViewModel.setSelectIndex(-1, -1);
+      const resultData = [
+        {
+          ids: [1, 2],
+          type: RecentSearchTypes.GROUP,
+          hasMore: true,
+        },
+      ];
+      jest
+        .spyOn(instantSearchViewModel, 'searchResult', 'get')
+        .mockReturnValue(resultData);
+
+      expect(instantSearchViewModel.onKeyDown()).toBeUndefined();
+    });
+    it('if cell index < current section len cell should be + 1', () => {
+      instantSearchViewModel.setSelectIndex(0, 0);
+      jest.spyOn(instantSearchViewModel, 'setSelectIndex');
+      const resultData = [
+        {
+          ids: [1, 2],
+          type: RecentSearchTypes.PEOPLE,
+          hasMore: true,
+        },
+      ];
+      jest
+        .spyOn(instantSearchViewModel, 'searchResult', 'get')
+        .mockReturnValue(resultData);
+      instantSearchViewModel.onKeyDown();
+      expect(instantSearchViewModel.setSelectIndex).toHaveBeenCalledWith(0, 1);
+    });
+    it('if currentSection >= search result length should be return undefined', () => {
+      instantSearchViewModel.setSelectIndex(0, 0);
+      jest.spyOn(instantSearchViewModel, 'setSelectIndex');
+      const resultData = [
+        {
+          ids: [1, 2],
+          type: RecentSearchTypes.PEOPLE,
+          hasMore: true,
+        },
+      ];
+      jest
+        .spyOn(instantSearchViewModel, 'searchResult', 'get')
+        .mockReturnValue(resultData);
+      expect(instantSearchViewModel.onKeyDown()).toBeUndefined();
+    });
+
+    it('if nextSection !== -1 should be to next section', () => {
+      instantSearchViewModel.setSelectIndex(0, 2);
+      jest.spyOn(instantSearchViewModel, 'setSelectIndex');
+      const resultData = [
+        {
+          ids: [1, 2, 3],
+          type: RecentSearchTypes.PEOPLE,
+          hasMore: true,
+        },
+        {
+          ids: [1, 2, 3],
+          type: RecentSearchTypes.GROUP,
+          hasMore: true,
+        },
+      ];
+      jest
+        .spyOn(instantSearchViewModel, 'searchResult', 'get')
+        .mockReturnValue(resultData);
+      jest
+        .spyOn(instantSearchViewModel, 'findNextValidSectionLength')
+        .mockReturnValue([1, 1]);
+      instantSearchViewModel.onKeyDown();
+      expect(instantSearchViewModel.setSelectIndex).toHaveBeenCalledWith(1, 0);
+    });
+    it('if nextSection === -1 should not be change select index', () => {
+      instantSearchViewModel.setSelectIndex(0, 2);
+      jest.spyOn(instantSearchViewModel, 'setSelectIndex');
+      const resultData = [
+        {
+          ids: [1, 2, 3],
+          type: RecentSearchTypes.PEOPLE,
+          hasMore: true,
+        },
+        {
+          ids: [1, 2, 3],
+          type: RecentSearchTypes.GROUP,
+          hasMore: true,
+        },
+      ];
+      jest
+        .spyOn(instantSearchViewModel, 'searchResult', 'get')
+        .mockReturnValue(resultData);
+      jest
+        .spyOn(instantSearchViewModel, 'findNextValidSectionLength')
+        .mockReturnValue([-1, 1]);
+      instantSearchViewModel.onKeyDown();
+      expect(instantSearchViewModel.setSelectIndex).not.toHaveBeenCalled();
     });
   });
 });
