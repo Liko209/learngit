@@ -55,7 +55,7 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
   const mentionPage = app.homePage.messageTab.mentionPage;
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const search = app.homePage.header.search;
+  const search = app.homePage.header.searchBar;
 
   // Login -> Last open DM conversation B
   await h(t).withLog(`And I set last open conversation B:${otherUserName}`, async () => {
@@ -178,7 +178,7 @@ test.skip(formalName('Should display in the top of conversation list when openin
   const mentionPage = app.homePage.messageTab.mentionPage;
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const search = app.homePage.header.search;
+  const search = app.homePage.header.searchBar;
 
   // Login -> Last open DM conversation B: "${beCheckName}"
   await h(t).withLog(`And I set lost open conversation is conversation B: "${topTeam.name}"  before login`, async () => {
@@ -367,7 +367,7 @@ test.skip(formalName('Should display in the top when open a closed conversation 
   const mentionPage = app.homePage.messageTab.mentionPage;
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
   const conversationPage = app.homePage.messageTab.conversationPage;
-  const search = app.homePage.header.search;
+  const search = app.homePage.header.searchBar;
   const createTeamModal = app.homePage.createTeamModal;
   const moreMenu = app.homePage.messageTab.moreMenu;
 

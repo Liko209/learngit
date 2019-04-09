@@ -63,7 +63,7 @@ test(formalName('Search result should be updated in real time when team privacy 
   });
 
   let searchResults: IGroup[];
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
   await h(t).withLog(`And search with keyword "${searchKeyword}"`, async () => {
     await searchBar.typeSearchKeyword(searchKeyword);
   });
@@ -177,7 +177,7 @@ test(formalName('Search result should be updated in real time when team membersh
   });
 
   let searchResults: IGroup[];
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
   await h(t).withLog(`And search with keyword "${searchKeyword}"`, async () => {
     await searchBar.typeSearchKeyword(searchKeyword);
   });

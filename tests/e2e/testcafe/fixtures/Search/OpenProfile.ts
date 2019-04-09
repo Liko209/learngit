@@ -50,7 +50,7 @@ test(formalName('Check can open profile dialog when click the item of search res
     await app.homePage.ensureLoaded();
   });
 
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
 
   // people
   const profileDialog = app.homePage.profileDialog;

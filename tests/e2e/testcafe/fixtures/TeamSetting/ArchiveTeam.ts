@@ -297,7 +297,7 @@ test(formalName(`The team can't be displayed on conversation list and search res
     await t.expect(teamEntry.exists).notOk();
   });
 
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
   await h(t).withLog(`When search with keyword "${team.name}"`, async () => {
     await searchBar.typeSearchKeyword(team.name);
   });

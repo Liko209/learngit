@@ -69,7 +69,7 @@ test(formalName('Team admin can change team from public to private.', ['JPT-517'
     await app.homePage.logoutThenLoginWithUser(SITE_URL, nonMember);
   });
 
-  const search = app.homePage.header.search;
+  const search = app.homePage.header.searchBar;
   await h(t).withLog(`When I type people keyword ${team.name} in search input area`, async () => {
     await search.typeSearchKeyword(team.name);
   }, true);
@@ -135,7 +135,7 @@ test(formalName('Team admin can change team from private to public.', ['JPT-518'
     await app.homePage.logoutThenLoginWithUser(SITE_URL, nonMember);
   });
 
-  const search = app.homePage.header.search;
+  const search = app.homePage.header.searchBar;
   await h(t).withLog(`When I type people keyword ${team.name} in search input area`, async () => {
     await search.typeSearchKeyword(team.name);
   });

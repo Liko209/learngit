@@ -130,7 +130,7 @@ test.skip(formalName('User should be able to see the 1:1 Call button in differen
   // });
 
   //  search people
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
   await h(t).withLog(`When I search ${anotherUserName}`, async () => {
     await searchBar.typeSearchKeyword(anotherUserName);
   });

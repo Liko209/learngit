@@ -28,7 +28,7 @@ test(formalName('Open and close the recently searched list', ['JPT-1216', 'P1', 
     await app.homePage.ensureLoaded();
   });
 
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
   await h(t).withLog(`And make some recently search history with ${beSearchedName}`, async () => {
     await searchBar.typeSearchKeyword(beSearchedName);
     await searchBar.nthPeople(0).enter();
@@ -72,7 +72,7 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
     await app.homePage.ensureLoaded();
   });
 
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
   await h(t).withLog(`When mouse in the global search box`, async () => {
     await searchBar.clickInputArea();
   });

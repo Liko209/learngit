@@ -59,7 +59,7 @@ test(formalName(`Display Join button for public team which login user doesn't jo
     await app.homePage.ensureLoaded();
   });
 
-  const search = app.homePage.header.search;
+  const search = app.homePage.header.searchBar;
   await h(t).withLog(`When I search keyword “${searchKeyWord}”`, async () => {
     await search.typeSearchKeyword(searchKeyWord, { replace: true, paste: true });
     await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
@@ -136,7 +136,7 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
     await app.homePage.ensureLoaded();
   });
 
-  const search = app.homePage.header.search;
+  const search = app.homePage.header.searchBar;
 
   await h(t).withLog(`When I search the public team ${searchKeyword}`, async () => {
     await search.typeSearchKeyword(searchKeyword, { replace: true, paste: true });
@@ -203,7 +203,7 @@ test(formalName(`Joined team successful after clicking join button in confirmati
     await app.homePage.ensureLoaded();
   });
 
-  const search = app.homePage.header.search;
+  const search = app.homePage.header.searchBar;
   await h(t).withLog(`When I search the public team A ${publicTeamWithoutMe.name}, and click Join button of team A`, async () => {
     await search.typeSearchKeyword(publicTeamWithoutMe.name, { replace: true, paste: true });
     await t.expect(search.teams.count).gte(1, { timeout: 10e3 });

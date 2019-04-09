@@ -55,7 +55,7 @@ test(formalName('Check can open conversation when click message icon in the sear
     await app.homePage.ensureLoaded();
   });
 
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
 
 
   const iconResults = [{
