@@ -64,14 +64,10 @@ class ContactSearch extends React.Component<Props> {
         inputLabel={label}
         inputPlaceholder={placeholder}
         MenuItem={GroupSearchItem}
-        nameError={error}
-        emailError={errorEmail}
-        helperText={helperText}
-        automationId="contactSearchSuggestionsList"
+        automationId="contactSearchGroupSuggestionsList"
         messageRef={messageRef}
         minRowHeight={44}
         multiple={multiple}
-        autoSwitchEmail={autoSwitchEmail}
       />
     );
   }

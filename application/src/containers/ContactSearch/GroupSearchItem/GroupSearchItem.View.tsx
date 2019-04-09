@@ -9,7 +9,9 @@ import { JuiListItemText } from 'jui/components/Lists';
 import { ViewProps } from './types';
 
 import { GroupAvatar } from '../../Avatar/GroupAvatar';
+import { observer } from 'mobx-react';
 
+@observer
 class GroupSearchItemView extends React.Component<ViewProps> {
   render() {
     const { group, isHighlighted, id, ...rest } = this.props;

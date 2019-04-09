@@ -60,7 +60,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   @action
   fetchPersons = async (query: string) => {
-    const searchService = SearchService.getInstance() as SearchService;
+    const searchService: SearchService = SearchService.getInstance();
     const result = await searchService.doFuzzySearchPersons({
       searchKey: query,
       excludeSelf: this._isExcludeMe,
@@ -85,7 +85,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   @action
   fetchGroups = async (query: string) => {
-    const groupService = GroupService.getInstance() as GroupService;
+    const groupService: GroupService = GroupService.getInstance();
     const result = await groupService.doFuzzySearchALlGroups(
       query,
       false,
@@ -124,10 +124,10 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
     }
     let groups: SelectedMember[] = [];
     this.fetchGroups(value).then((data: SortableModel<Group>[]) => {
-      groups = data.map(member => ({
-        id: member.id,
-        label: member.displayName,
-        email: member.displayName,
+      groups = data.map(group => ({
+        id: group.id,
+        label: group.displayName,
+        email: group.displayName,
       }));
       this.suggestions = differenceBy(
         groups.slice(0, 20),

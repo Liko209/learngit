@@ -9,7 +9,9 @@ import { JuiListItemText } from 'jui/components/Lists';
 import { ViewProps } from './types';
 
 import { Avatar } from '../../Avatar';
+import { observer } from 'mobx-react';
 
+@observer
 class ContactSearchItemView extends React.Component<ViewProps> {
   render() {
     const { person, isHighlighted, id, ...rest } = this.props;
