@@ -36,12 +36,7 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={fileName} />}
-          secondary={
-            <SecondaryText
-              personName={personName}
-              modifiedTime={modifiedTime}
-            />
-          }
+          secondary={<SecondaryText name={personName} time={modifiedTime} />}
         />
         {hover && (
           <JuiListItemSecondaryAction>

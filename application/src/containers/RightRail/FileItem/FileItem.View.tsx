@@ -32,12 +32,7 @@ class FileItemView extends Component<FileItemViewProps> {
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={name} />}
-          secondary={
-            <SecondaryText
-              personName={personName}
-              modifiedTime={modifiedTime}
-            />
-          }
+          secondary={<SecondaryText name={personName} time={modifiedTime} />}
         />
         {hover && (
           <JuiListItemSecondaryAction>
