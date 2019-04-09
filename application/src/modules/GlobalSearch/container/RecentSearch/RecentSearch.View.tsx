@@ -10,7 +10,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiRecentSearch, JuiSearchTitle } from 'jui/pattern/GlobalSearch';
 import { HotKeys } from 'jui/hoc/HotKeys';
 
-import { RecentSearchViewProps, RecentSearchModel } from './types';
+import { RecentSearchViewProps, RecentRecord } from './types';
 import { SearchSectionsConfig } from '../config';
 
 type Props = RecentSearchViewProps &
@@ -22,6 +22,7 @@ enum cacheEventFn {
   _hoverHighlightMap = '_hoverHighlightMap',
   _selectChangeMap = '_selectChangeMap',
 }
+
 @observer
 class RecentSearchViewComponent extends Component<Props> {
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
@@ -87,16 +88,14 @@ class RecentSearchViewComponent extends Component<Props> {
           title={t('globalSearch.RecentSearches')}
           data-test-automation-id={'search-clear'}
         />
-        {recentRecord.map(
-          (recentSearchModel: RecentSearchModel, index: number) => {
-            const { value, type } = recentSearchModel;
-            return this.createSearchItem({
-              index,
-              type,
-              id: value,
-            });
-          },
-        )}
+        {recentRecord.map((recentSearchModel: RecentRecord, index: number) => {
+          const { value, type } = recentSearchModel;
+          return this.createSearchItem({
+            index,
+            type,
+            id: value,
+          });
+        })}
       </>
     );
   }

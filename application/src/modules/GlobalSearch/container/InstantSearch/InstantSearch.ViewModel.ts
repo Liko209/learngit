@@ -14,6 +14,7 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import history from '@/history';
 import i18nT from '@/utils/i18nT';
+import { changeToRecordTypes } from '../common/changeTypes';
 
 import { GlobalSearchService } from '../../service';
 import { GlobalSearchStore } from '../../store';
@@ -28,6 +29,7 @@ import {
   SEARCH_SCOPE,
   TAB_TYPE,
   SEARCH_VIEW,
+  SearchItemTypes,
 } from './types';
 import { SearchViewModel } from '../common/Search.ViewModel';
 
@@ -171,19 +173,19 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       {
         ids: this.contentSearchIds,
         hasMore: true,
-        type: RecentSearchTypes.SEARCH,
+        type: SearchItemTypes.CONTENT,
       },
       {
         ...people,
-        type: RecentSearchTypes.PEOPLE,
+        type: SearchItemTypes.PEOPLE,
       },
       {
         ...groups,
-        type: RecentSearchTypes.GROUP,
+        type: SearchItemTypes.GROUP,
       },
       {
         ...teams,
-        type: RecentSearchTypes.TEAM,
+        type: SearchItemTypes.TEAM,
       },
     ];
     this.searchResult = data;
@@ -258,7 +260,8 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   }
 
   addRecentRecord = (id: number) => {
-    SearchService.getInstance().addRecentSearchRecord(this.currentItemType, id);
+    const type = changeToRecordTypes(this.currentItemType);
+    SearchService.getInstance().addRecentSearchRecord(type, id);
   }
 
   @action
@@ -324,10 +327,10 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     }
 
     switch (currentItemType) {
-      case RecentSearchTypes.PEOPLE:
+      case SearchItemTypes.PEOPLE:
         this.goToConversation(currentItemValue as number);
         break;
-      case RecentSearchTypes.SEARCH:
+      case SearchItemTypes.SEARCH:
         const cellIndex = this.selectIndex[1];
         const scope = this.getSearchScope(cellIndex);
         this._globalSearchStore.setSearchScope(scope);
@@ -388,7 +391,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   }
 
   @action
-  onShowMore = (type: RecentSearchTypes) => () => {
+  onShowMore = (type: SearchItemTypes) => () => {
     const typeMap = {
       [RecentSearchTypes.GROUP]: TAB_TYPE.GROUPS,
       [RecentSearchTypes.PEOPLE]: TAB_TYPE.PEOPLE,

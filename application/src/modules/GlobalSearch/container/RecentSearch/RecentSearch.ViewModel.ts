@@ -9,15 +9,17 @@ import { SearchService } from 'sdk/module/search';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store/constants';
-import { RecentSearchTypes } from 'sdk/module/search/entity';
 
+import { changeToSearchType, changeToRecordTypes } from '../common/changeTypes';
 import { GlobalSearchStore } from '../../store';
 import { GlobalSearchService } from '../../service';
 import {
   RecentSearchProps,
   RecentSearchViewProps,
+  RecentRecord,
   RecentSearchModel,
   Group,
+  SearchItemTypes,
 } from './types';
 import { SearchViewModel } from '../common/Search.ViewModel';
 
@@ -25,7 +27,7 @@ const InitIndex = -1;
 
 class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
   implements RecentSearchViewProps {
-  @observable recentRecord: RecentSearchModel[] = [];
+  @observable recentRecord: RecentRecord[] = [];
   @observable selectIndex: number = InitIndex;
   private _globalSearchStore: GlobalSearchStore = container.get(
     GlobalSearchStore,
@@ -123,7 +125,7 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
       // TODO search message && go to full search
       return;
     }
-    if (currentItemType === RecentSearchTypes.PEOPLE) {
+    if (currentItemType === SearchItemTypes.PEOPLE) {
       this.goToConversation(currentItemValue as number);
       return;
     }
@@ -138,10 +140,8 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
   }
 
   addRecentRecord = (value: number | string) => {
-    SearchService.getInstance().addRecentSearchRecord(
-      this.currentItemType,
-      value,
-    );
+    const type = changeToRecordTypes(this.currentItemType);
+    SearchService.getInstance().addRecentSearchRecord(type, value);
   }
 
   @action
@@ -152,7 +152,16 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
 
   @action
   fetchRecent = () => {
-    this.recentRecord = SearchService.getInstance().getRecentSearchRecords();
+    const records = SearchService.getInstance().getRecentSearchRecords();
+    this.recentRecord = records.map((record: RecentSearchModel) => {
+      const { id, value, query_params } = record;
+      return {
+        id,
+        value,
+        queryParams: query_params,
+        type: changeToSearchType(record.type),
+      };
+    });
   }
 }
 
