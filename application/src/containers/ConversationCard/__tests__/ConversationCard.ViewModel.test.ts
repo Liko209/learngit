@@ -3,8 +3,12 @@
  * @Date: 2018-10-23 15:33:02
  * Copyright © RingCentral. All rights reserved.
  */
+import { container, Jupiter } from 'framework';
 import { getEntity } from '../../../store/utils';
 import { ConversationCardViewModel } from '../ConversationCard.ViewModel';
+import { GlobalSearchService } from '@/modules/GlobalSearch/service';
+import { GlobalSearchStore } from '@/modules/GlobalSearch/store';
+import { config } from '@/modules/GlobalSearch/module.config';
 
 jest.mock('i18next', () => ({
   t: (text: string) => text.substring(text.lastIndexOf('.') + 1),
@@ -12,7 +16,12 @@ jest.mock('i18next', () => ({
 
 jest.mock('../../../store/utils');
 
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(config);
+
 const conversationCardVM = new ConversationCardViewModel();
+const globalSearchService = container.get(GlobalSearchService);
+const globalSearchStore = container.get(GlobalSearchStore);
 
 const DAY = 24 * 3600 * 1000;
 const DATE_2019_1_4 = 1546564919703;
@@ -23,6 +32,7 @@ const DATE_2018_12_30 = DATE_2019_1_4 - 5 * DAY;
 const DATE_2018_12_29 = DATE_2019_1_4 - 6 * DAY;
 const DATE_2018_12_28 = DATE_2019_1_4 - 7 * DAY;
 const DATE_2019_1_5 = DATE_2019_1_4 + DAY;
+
 describe('ConversationCardViewModel', () => {
   beforeAll(() => {
     jest.resetAllMocks();
@@ -123,5 +133,11 @@ describe('ConversationCardViewModel', () => {
       id: 1491222532,
     });
     expect(conversationCardVM.name).toBe(undefined);
+  });
+  it('should close global search dialog when jump to post', () => {
+    globalSearchService.closeGlobalSearch = jest.fn();
+    globalSearchStore.open = true;
+    conversationCardVM.beforeJump();
+    expect(globalSearchService.closeGlobalSearch).toHaveBeenCalled();
   });
 });
