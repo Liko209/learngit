@@ -28,11 +28,14 @@ import {
   ContentSearchResultViewProps,
   CONTENT_SEARCH_FETCH_COUNT,
 } from './types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ContentSearchResultViewModel
   extends StoreViewModel<ContentSearchResultProps>
   implements ContentSearchResultViewProps {
-  private _postService: PostService = PostService.getInstance();
+  private _postService = ServiceLoader.getInstance<PostService>(
+    ServiceConfig.POST_SERVICE,
+  );
 
   private _globalSearchStore = container.get(GlobalSearchStore);
 

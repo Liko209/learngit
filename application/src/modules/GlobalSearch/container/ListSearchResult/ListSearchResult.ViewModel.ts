@@ -11,6 +11,8 @@ import { container } from 'framework';
 import { StoreViewModel } from '@/store/ViewModel';
 import storeManager from '@/store/base/StoreManager';
 import { ENTITY_NAME } from '@/store/constants';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+
 import { GlobalSearchStore } from '../../store';
 import {
   ListSearchResultViewProps,
@@ -24,7 +26,9 @@ import {
 
 class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
   implements ListSearchResultViewProps {
-  private _globalSearchStore: GlobalSearchStore = container.get(GlobalSearchStore);
+  private _globalSearchStore: GlobalSearchStore = container.get(
+    GlobalSearchStore,
+  );
 
   @computed
   get currentTab() {
@@ -64,11 +68,17 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
   }
 
   fetch = async (tab: TAB_TYPE) => {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     const searchKey = this._globalSearchStore.searchKey;
 
     if (tab === TAB_TYPE.PEOPLE) {
-      const result = await SearchService.getInstance().doFuzzySearchPersons({
+      const searchService = ServiceLoader.getInstance<SearchService>(
+        ServiceConfig.SEARCH_SERVICE,
+      );
+
+      const result = await searchService.doFuzzySearchPersons({
         searchKey,
         excludeSelf: false,
         recentFirst: true,
