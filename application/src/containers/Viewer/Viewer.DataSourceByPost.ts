@@ -56,10 +56,8 @@ class ItemListDataSourceByPost {
 
     // sort by versions
     const sortResult = resultFilterData.sort((pre, next) => {
-      const preTimestamp =
-        getVersionDate({ versions: pre.versions }) || pre.created_at;
-      const nextTimestamp =
-        getVersionDate({ versions: next.versions }) || next.created_at;
+      const preTimestamp = getVersionDate(pre) || pre.created_at;
+      const nextTimestamp = getVersionDate(next) || next.created_at;
       return preTimestamp - nextTimestamp;
     });
 
