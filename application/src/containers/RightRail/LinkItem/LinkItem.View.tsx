@@ -45,7 +45,7 @@ class LinkItemView extends Component<LinkItemViewProps> {
         <JuiListItemText
           primary={textPrimary}
           secondary={
-            <SecondaryText personName={personName} createdTime={createdTime} />}
+            <SecondaryText personName={personName} modifiedTime={createdTime} />}
         />
       </JuiListItem>
     );

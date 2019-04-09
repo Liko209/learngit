@@ -23,7 +23,7 @@ const SQUARE_SIZE = 36;
 class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
   private _thumbnailRef: React.RefObject<any> = React.createRef();
   private _renderItem = (hover: boolean) => {
-    const { fileName, id, personName, createdTime, downloadUrl } = this.props;
+    const { fileName, id, personName, modifiedTime, downloadUrl } = this.props;
     return (
       <>
         <JuiListItemIcon>
@@ -37,7 +37,11 @@ class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
         <JuiListItemText
           primary={<FileName filename={fileName} />}
           secondary={
-            <SecondaryText personName={personName} createdTime={createdTime} />}
+            <SecondaryText
+              personName={personName}
+              modifiedTime={modifiedTime}
+            />
+          }
         />
         {hover && (
           <JuiListItemSecondaryAction>

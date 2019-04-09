@@ -15,6 +15,11 @@ const mockFile = {
   createdAt: 1547086968632,
   creatorId: 123,
   name: '',
+  versions: [
+    {
+      date: 1554796233126,
+    },
+  ],
 };
 
 const mockPerson = {
@@ -67,8 +72,15 @@ describe('FileViewModel', () => {
   });
 
   describe('createdTime', () => {
-    it('should be a date string when incoming timestamp [JPT-965]', () => {
-      expect(vm.createdTime).toEqual(dateFormatter.date(mockFile.createdAt));
+    it('should be a date string of update time when incoming timestamp [JPT-965]', () => {
+      expect(vm.modifiedTime).toEqual(
+        dateFormatter.date(mockFile.versions[0].date),
+      );
+    });
+
+    it('should be a date string of create time when versions is undefined', () => {
+      mockFile.versions = [];
+      expect(vm.modifiedTime).toEqual(dateFormatter.date(mockFile.createdAt));
     });
   });
 });

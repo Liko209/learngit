@@ -12,15 +12,15 @@ import {
 
 type Props = {
   personName: string;
-  createdTime: string;
+  modifiedTime: string;
 };
 
-const SecondaryText = React.memo(({ personName, createdTime }: Props) => {
+const SecondaryText = React.memo(({ personName, modifiedTime }: Props) => {
   return (
     <JuiListItemSecondaryText>
       <JuiListItemSecondarySpan text={personName} isEllipsis={true} />
       &nbsp;·&nbsp;
-      <JuiListItemSecondarySpan text={createdTime} />
+      <JuiListItemSecondarySpan text={modifiedTime} />
     </JuiListItemSecondaryText>
   );
 });

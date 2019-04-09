@@ -21,7 +21,7 @@ import { SecondaryText } from '../common/SecondaryText.View';
 @observer
 class FileItemView extends Component<FileItemViewProps> {
   private _renderItem = (hover: boolean) => {
-    const { file, personName, createdTime, downloadUrl, id } = this.props;
+    const { file, personName, modifiedTime, downloadUrl, id } = this.props;
     const fileInfo = file || {};
     const { name } = fileInfo;
 
@@ -33,7 +33,11 @@ class FileItemView extends Component<FileItemViewProps> {
         <JuiListItemText
           primary={<FileName filename={name} />}
           secondary={
-            <SecondaryText personName={personName} createdTime={createdTime} />}
+            <SecondaryText
+              personName={personName}
+              modifiedTime={modifiedTime}
+            />
+          }
         />
         {hover && (
           <JuiListItemSecondaryAction>
