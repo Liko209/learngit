@@ -10,7 +10,7 @@ import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils';
 
 const Wrapper = styled.div`
-  margin-top: ${spacing(4)};
+  margin: ${spacing(4, 0, 15)};
 `;
 
 const JuiTabPageEmptyScreen: StatelessComponent<JuiEmptyScreenProps> = (
