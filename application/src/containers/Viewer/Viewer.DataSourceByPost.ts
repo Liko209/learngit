@@ -28,9 +28,9 @@ class ItemListDataSourceByPost {
   @observable type: VIEWER_ITEM_TYPE;
 
   constructor(props: ItemListDataSourceByPostProps) {
-    const { groupId, type, postId } = props;
+    const { groupId, type, postId = 0 } = props;
     this.groupId = groupId;
-    this.postId = postId || 0;
+    this.postId = postId;
     this.type = type;
   }
 

@@ -55,29 +55,22 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
 type ItemListDataSourceProps = {
   groupId: number;
   type: VIEWER_ITEM_TYPE;
-  postId?: number;
-  mode?: string;
 };
 
 class ItemListDataSource {
   @observable groupId: number;
-  @observable postId: number;
-  @observable mode: string | undefined;
   @observable type: VIEWER_ITEM_TYPE;
   @observable private _sortableDataHandler: FetchSortableDataListHandler<Item>;
 
   constructor(props: ItemListDataSourceProps) {
-    const { groupId, type, postId, mode } = props;
+    const { groupId, type } = props;
     this.groupId = groupId;
-    this.postId = postId || 0;
     this.type = type;
-    this.mode = mode;
     this._buildSortableMemberListHandler(
       this.groupId,
       type,
       ITEM_SORT_KEYS.LATEST_VERSION_DATE,
       false,
-      this.postId,
     );
   }
 
@@ -94,7 +87,6 @@ class ItemListDataSource {
     type: number,
     sortKey: ITEM_SORT_KEYS,
     desc: boolean,
-    postId: number,
   ) {
     const typeId = getTypeId(type);
 
