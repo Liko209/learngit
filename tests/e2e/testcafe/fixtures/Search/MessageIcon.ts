@@ -5,7 +5,6 @@
  * @Last Modified time: 2019-04-09 15:48:21
  */
 import { v4 as uuid } from 'uuid';
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
@@ -21,7 +20,7 @@ test.meta(<ITestMeta>{
   priority: ['P1'],
   caseIds: ['JPT-1223'],
   maintainers: ['potar.he'],
-  keywords: ['search','Icon'],
+  keywords: ['search', 'Icon'],
 })('Check can open conversation when click message icon in the search list', async (t) => {
   const me = h(t).rcData.mainCompany.users[5];
   const anotherUser = h(t).rcData.mainCompany.users[6];
@@ -73,18 +72,19 @@ test.meta(<ITestMeta>{
     position: "the first groups result"
   }, {
     keyword: teamWithMe.name,
-    item: searchDialog.getSearchItemByName(teamWithMe.name),
+    item: searchDialog.getSearchItemByCid(teamWithMe.glipId),
     position: "the team which I joined"
   }];
 
   let namesHaveMessageIcon = [];
 
   // search result with message icon
+  const searchBar = app.homePage.header.searchBar;
   for (const result of iconResults) {
     let title;
     await h(t).withLog(`When I search keyword ${result.keyword} and hover ${result.position}`, async () => {
-      await app.homePage.header.searchBar.self();
-      await searchDialog.typeSearchKeyword(result.keyword, {});
+      await searchBar.clickSelf();
+      await searchDialog.typeSearchKeyword(result.keyword);
       await t.expect(result.item.exists).ok();
       title = await result.item.getName();
       namesHaveMessageIcon.push(title);
@@ -104,24 +104,24 @@ test.meta(<ITestMeta>{
     });
 
     await h(t).withLog(`And the search text should be clear`, async () => {
-      await t.expect(searchDialog.inputArea.value).eql('');
+      await t.expect(searchBar.inputArea.value).eql('');
     });
   }
 
   // join button via search
   await h(t).withLog(`When I search keyword ${publicTeamWithOutMe.name} and hover the team which I did not join`, async () => {
-    await searchDialog.clickInputArea();
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(publicTeamWithOutMe.name);
-    await t.expect(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).exists).ok();
-    await t.hover(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).self);
+    await t.expect(searchDialog.getSearchItemByCid(publicTeamWithOutMe.glipId).exists).ok();
+    await t.hover(searchDialog.getSearchItemByCid(publicTeamWithOutMe.glipId).self);
   });
 
   await h(t).withLog(`Then display the the join button in the result`, async () => {
-    await searchDialog.getSearchItemByName(publicTeamWithOutMe.name).shouldHaveJoinButton();
+    await searchDialog.getSearchItemByCid(publicTeamWithOutMe.glipId).shouldHaveJoinButton();
   });
 
   await h(t).withLog(`When I click the result ${publicTeamWithOutMe.name}`, async () => {
-    await searchDialog.getSearchItemByName(publicTeamWithOutMe.name).enter();
+    await searchDialog.getSearchItemByCid(publicTeamWithOutMe.glipId).enter();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
@@ -133,7 +133,7 @@ test.meta(<ITestMeta>{
   // message icon on recently history
   for (const title of namesHaveMessageIcon) {
     await h(t).withLog(`When I click search box`, async () => {
-      await searchDialog.clickInputArea();
+      await searchBar.clickInputArea();
     });
 
     await h(t).withLog(`Then display recently search result`, async () => {
@@ -158,17 +158,13 @@ test.meta(<ITestMeta>{
     });
 
     await h(t).withLog(`And the search text should be clear`, async () => {
-      await t.expect(searchDialog.inputArea.value).eql('');
+      await t.expect(searchBar.inputArea.value).eql('');
     });
   }
 
   // join button via recently history
-  await h(t).withLog(`When I clear search box and  click search box`, async () => {
-    await searchDialog.clearInputAreaTextByKey();
-    await searchDialog.clickInputArea();
-    await searchDialog.shouldShowRecentlyHistory();
-    await t.expect(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).exists).ok();
-    await t.hover(searchDialog.getSearchItemByName(publicTeamWithOutMe.name).self);
+  await h(t).withLog(`When I click search box`, async () => {
+    await searchBar.clickSelf();
   });
 
   await h(t).withLog(`Then the recently history should has ${publicTeamWithOutMe.name}`, async () => {
@@ -186,7 +182,6 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And the search text should be clear`, async () => {
-    await t.expect(searchDialog.inputArea.value).eql('');
+    await t.expect(searchBar.inputArea.value).eql('');
   });
-
 });

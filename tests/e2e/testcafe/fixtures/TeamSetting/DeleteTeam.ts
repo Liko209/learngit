@@ -195,9 +195,10 @@ test.meta(<ITestMeta>{
     await t.expect(teamEntry.exists).notOk();
   });
 
+  const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When search with keyword "${team.name}"`, async () => {
-    await app.homePage.header.searchBar.clickSelf();
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(team.name);
   });
 
@@ -215,6 +216,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When search with keyword "${team.name}"`, async () => {
+    await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(team.name);
   });
 

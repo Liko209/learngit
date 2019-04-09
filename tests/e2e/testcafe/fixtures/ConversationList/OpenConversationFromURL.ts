@@ -263,7 +263,7 @@ test.skip.meta(<ITestMeta>{
 
   await h(t).withLog(`When I search "${topTeam.name}" and click it`, async () => {
     await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(topTeam.name, { replace: true, paste: true });
+    await searchDialog.typeSearchKeyword(topTeam.name);
     await t.expect(searchDialog.allResultItems.count).gte(1);
     await searchDialog.nthTeam(0).enter();
   });
@@ -424,7 +424,7 @@ test.skip.meta(<ITestMeta>{
 
   await h(t).withLog(`When I search the hide privateChat ${otherUserName} and enter it`, async () => {
     await app.homePage.header.searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(otherUserName, { replace: true, paste: true });
+    await searchDialog.typeSearchKeyword(otherUserName);
     await t.expect(searchDialog.peoples.count).gte(1, { timeout: 10e3 });
     await searchDialog.nthPeople(0).enter();
     await app.homePage.profileDialog.ensureLoaded();

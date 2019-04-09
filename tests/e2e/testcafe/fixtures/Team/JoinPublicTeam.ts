@@ -90,7 +90,7 @@ test.meta(<ITestMeta>{
 
   let peopleCount, groupCount;
   await h(t).withLog(`When I search keyword "${otherUserName}”`, async () => {
-    await searchDialog.typeSearchKeyword(otherUserName, { replace: true, speed: 0.5 });
+    await searchDialog.typeSearchKeyword(otherUserName);
     await t.expect(searchDialog.allResultItems.count).gte(1, { timeout: 10e3 });
     peopleCount = await searchDialog.peoples.count;
     groupCount = await searchDialog.groups.count;
@@ -184,7 +184,6 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`When I click cancel button`, async () => {
     await joinTeamDialog.clickCancelButton();
-    await t.debug();
   });
 
   await h(t).withLog(`And The confirmation dismiss, loginUser did not join team A`, async () => {

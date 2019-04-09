@@ -62,7 +62,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I search keyword ${anotherUserName} and click the first people result`, async () => {
     await searchBar.clickSelf();
     await searchDialog.clearInputAreaTextByKey();
-    await searchDialog.typeSearchKeyword(anotherUserName, { speed: 0.5 });
+    await searchDialog.typeSearchKeyword(anotherUserName);
     await searchDialog.nthPeople(0).ensureLoaded();
     await searchDialog.nthPeople(0).enter();
   });
@@ -77,12 +77,18 @@ test.meta(<ITestMeta>{
     await t.expect(searchBar.inputArea.value).eql("")
   });
 
+  await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the people in recently search result`, async () => {
+    await searchDialog.getSearchItemByName(anotherUserName).ensureLoaded();
+  });
+
   // group
   let groupName;
   await h(t).withLog(`When I search keyword ${anotherUserName} and click the first group result`, async () => {
-    await searchBar.clickSelf();
-    await searchDialog.clearInputAreaTextByKey();
-    await searchDialog.typeSearchKeyword(anotherUserName, { speed: 0.5 });
+    await searchDialog.typeSearchKeyword(anotherUserName);
     await searchDialog.nthGroup(0).ensureLoaded();
     groupName = await searchDialog.nthGroup(0).name.textContent;
     await searchDialog.nthGroup(0).enter();
@@ -102,14 +108,12 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the group in recently search result`, async () => {
-    await searchDialog.nthGroup(0).ensureLoaded();
+    await searchDialog.getSearchItemByName(groupName).ensureLoaded();
   });
 
   // team
   await h(t).withLog(`When I search keyword ${team.name} and click the team result`, async () => {
-    await searchBar.clickSelf();
-    await searchDialog.clearInputAreaTextByKey();
-    await searchDialog.typeSearchKeyword(team.name, { speed: 0.5 });
+    await searchDialog.typeSearchKeyword(team.name);
     await searchDialog.getSearchItemByCid(team.glipId).ensureLoaded();
     await searchDialog.getSearchItemByCid(team.glipId).enter();
   });
@@ -128,12 +132,13 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the team in recently search result`, async () => {
-    await searchDialog.dropDownListShouldContainTeam(team);
+    await searchDialog.getSearchItemByName(team.name).ensureLoaded();
   });
 
   // recently search
   // people
   await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.quitByPressEsc();
     await searchBar.clickSelf();
   });
 
@@ -156,6 +161,7 @@ test.meta(<ITestMeta>{
 
   // group
   await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.quitByPressEsc();
     await searchBar.clickSelf();
   })
 
@@ -178,6 +184,7 @@ test.meta(<ITestMeta>{
 
   // team
   await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.quitByPressEsc();
     await searchBar.clickSelf();
   });
 

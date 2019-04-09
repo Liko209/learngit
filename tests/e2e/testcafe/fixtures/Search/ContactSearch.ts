@@ -72,7 +72,7 @@ test.meta(<ITestMeta>{
   const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`And search with keyword "${searchKeyword}"`, async () => {
     await searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(searchKeyword, { speed: 0.5 });
+    await searchDialog.typeSearchKeyword(searchKeyword);
   });
 
   // assertion
@@ -193,7 +193,7 @@ test.meta(<ITestMeta>{
   const searchBar = app.homePage.header.searchBar;
   await h(t).withLog(`And search with keyword "${searchKeyword}"`, async () => {
     await searchBar.clickSelf();
-    await searchDialog.typeSearchKeyword(searchKeyword, { speed: 0.5 });
+    await searchDialog.typeSearchKeyword(searchKeyword);
   });
 
   // assertion
