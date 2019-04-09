@@ -6,7 +6,6 @@
 const AUTH_KEYS = {
   GLIP_TOKEN: 'GLIP_TOKEN',
   RC_TOKEN: 'RC_TOKEN',
-  GLIP2_TOKEN: 'GLIP2_TOKEN',
 };
 
 export { AUTH_KEYS };

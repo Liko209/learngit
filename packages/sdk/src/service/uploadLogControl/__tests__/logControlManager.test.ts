@@ -5,38 +5,23 @@
  */
 
 import axios from 'axios';
-import { PermissionService } from '../../../module/permission';
-import LogControlManager from '../logControlManager';
-import { logManager, LOG_LEVEL, mainLogger, IAccessor } from 'foundation';
+import { logManager, mainLogger } from 'foundation/src/log/index';
 import { notificationCenter } from 'sdk/service';
-import { WINDOW, ENTITY, SERVICE } from '../../../service/eventKey';
+import { PermissionService } from '../../../module/permission';
+import { ENTITY, SERVICE, WINDOW } from '../../../service/eventKey';
+import { LogControlManager } from '../logControlManager';
+import { configManager } from '../consumer/config';
+import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
+import { ServiceLoader } from '../../../module/serviceLoader';
 
 jest.mock('axios');
 jest.mock('sdk/module/permission/service/PermissionService');
-jest.mock('foundation');
-const mockLogger = {
-  tags: jest.fn(),
-  error: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn(),
-  log: jest.fn(),
-  warn: jest.fn(),
-};
-mockLogger.tags.mockReturnValue(mockLogger);
-const mockLogManager = {
-  getMainLogger: jest.fn().mockReturnValue(mockLogger),
-  getNetworkLogger: jest.fn().mockReturnValue(mockLogger),
-  getConfig: jest.fn().mockReturnValue({}),
-  config: jest.fn(),
-  setAllLoggerLevel: jest.fn(),
-};
-logManager = mockLogManager;
-mainLogger = mockLogger;
 
 describe('LogControlManager', () => {
   const logControlManager = LogControlManager.instance();
   logControlManager.setDebugMode(true);
   beforeEach(() => {
+    jest.clearAllMocks();
     axios.mockResolvedValue({});
   });
 
@@ -82,22 +67,31 @@ describe('LogControlManager', () => {
       const mockPermissionService = {
         hasPermission: jest.fn(),
       };
-      PermissionService.getInstance = jest
+      ServiceLoader.getInstance = jest
         .fn()
         .mockReturnValue(mockPermissionService);
       mockPermissionService.hasPermission.mockClear();
       mockPermissionService.hasPermission.mockResolvedValue(false);
+      const spyLogManagerConfig = jest.spyOn(logManager, 'config');
+      const spyConfigManagerMergeConfig = jest.spyOn(
+        configManager,
+        'mergeConfig',
+      );
       await logControlManager.configByPermission();
-      expect(mockLogManager.config).toHaveBeenLastCalledWith({
+      expect(spyLogManagerConfig).toHaveBeenLastCalledWith({
         browser: { enabled: false },
-        consumer: { enabled: false },
+      });
+      expect(spyConfigManagerMergeConfig).toHaveBeenLastCalledWith({
+        uploadEnabled: false,
       });
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(2);
       mockPermissionService.hasPermission.mockResolvedValue(true);
       await logControlManager.configByPermission();
-      expect(mockLogManager.config).toHaveBeenLastCalledWith({
+      expect(spyLogManagerConfig).toHaveBeenLastCalledWith({
         browser: { enabled: true },
-        consumer: { enabled: true },
+      });
+      expect(spyConfigManagerMergeConfig).toHaveBeenLastCalledWith({
+        uploadEnabled: true,
       });
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(4);
     });
@@ -106,17 +100,73 @@ describe('LogControlManager', () => {
       const mockPermissionService = {
         hasPermission: jest.fn(),
       };
-      PermissionService.getInstance = jest
+      ServiceLoader.getInstance = jest
         .fn()
         .mockReturnValue(mockPermissionService);
       mockPermissionService.hasPermission.mockClear();
-      mockLogger.warn.mockClear();
-      mockLogManager.config.mockClear();
+      // main.warn.mockClear();
+      const spyMainLoggerWarn = jest.spyOn(mainLogger, 'warn');
+      const spyLogManagerConfig = jest.spyOn(logManager, 'config');
+      // mockLogManager.config.mockClear();
       mockPermissionService.hasPermission.mockRejectedValue({});
       await logControlManager.configByPermission();
-      expect(mockLogger.warn).toBeCalled();
-      expect(mockLogManager.config).not.toHaveBeenCalled();
+      expect(spyMainLoggerWarn).toBeCalled();
+      expect(spyLogManagerConfig).not.toHaveBeenCalled();
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(1);
+    });
+  });
+  describe('_filterBlackList()', () => {
+    it('should filter black list tag', () => {
+      LogControlManager.instance().addTag2BlackList('a');
+      expect(
+        LogControlManager.instance()['_blackListFilter'](
+          logEntityFactory.build({
+            tags: ['a', 'b'],
+          }),
+        ),
+      ).toBeTruthy();
+      expect(
+        LogControlManager.instance()['_blackListFilter'](
+          logEntityFactory.build({
+            tags: ['c', 'd'],
+          }),
+        ),
+      ).toBeFalsy();
+      LogControlManager.instance().removeFromBlackList('a');
+      expect(
+        LogControlManager.instance()['_blackListFilter'](
+          logEntityFactory.build({
+            tags: ['a', 'b'],
+          }),
+        ),
+      ).toBeFalsy();
+    });
+  });
+  describe('_filterWhiteList()', () => {
+    it('should filter white list tag', () => {
+      LogControlManager.instance().addTag2WhiteList('a');
+      expect(
+        LogControlManager.instance()['_whiteListFilter'](
+          logEntityFactory.build({
+            tags: ['a', 'b'],
+          }),
+        ),
+      ).toBeTruthy();
+      expect(
+        LogControlManager.instance()['_whiteListFilter'](
+          logEntityFactory.build({
+            tags: ['c', 'd'],
+          }),
+        ),
+      ).toBeFalsy();
+      LogControlManager.instance().removeFromWhiteList('a');
+      expect(
+        LogControlManager.instance()['_whiteListFilter'](
+          logEntityFactory.build({
+            tags: ['a', 'b'],
+          }),
+        ),
+      ).toBeFalsy();
     });
   });
 });

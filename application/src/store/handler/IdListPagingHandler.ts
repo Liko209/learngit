@@ -11,7 +11,7 @@ import {
   IEntityDataProvider,
 } from '../base/fetch';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
-import { IdModel } from 'sdk/src/framework/model';
+import { IdModel } from 'sdk/framework/model';
 import {
   IMatchFunc,
   ISortableModel,
@@ -75,6 +75,10 @@ class IdListPaginationHandler<T extends IdModel, K extends Entity> {
       entityName: options.entityName,
       eventName: options.eventName,
     });
+  }
+
+  fetchSortableDataHandler() {
+    return this._foc;
   }
 
   protected defaultIsMatchFunc = (model: T) => {

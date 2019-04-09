@@ -25,9 +25,10 @@ import { Profile } from '../../profile/entity';
 import { StateService } from '../../state';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class GroupHandleDataController {
   constructor(
@@ -212,9 +213,6 @@ class GroupHandleDataController {
     if (groups.length === 0) {
       return;
     }
-
-    const logLabel = `[Performance]grouphandleData ${Date.now()}`;
-    console.time(logLabel);
     const transformData = await this.getTransformData(groups);
     const data = transformData.filter(item => item);
 
@@ -225,7 +223,6 @@ class GroupHandleDataController {
     // if (shouldCheckIncompleteMembers) {
     //   await checkIncompleteGroupsMembers(normalGroups);
     // }
-    console.timeEnd(logLabel);
   }
 
   doFavoriteGroupsNotification = async (favIds: number[]) => {
@@ -236,7 +233,9 @@ class GroupHandleDataController {
 
     const replaceGroups = new Map<number, Group>();
     if (filteredFavIds.length) {
-      const profileService: ProfileService = ProfileService.getInstance();
+      const profileService = ServiceLoader.getInstance<ProfileService>(
+        ServiceConfig.PROFILE_SERVICE,
+      );
       const profile = await profileService.getProfile();
       const hiddenIds = profile ? extractHiddenGroupIds(profile) : [];
       const validFavIds = _.difference(filteredFavIds, hiddenIds);
@@ -402,7 +401,9 @@ class GroupHandleDataController {
 
   getUnreadGroupIds = async (groups: Group[]) => {
     const ids = _.map(groups, 'id');
-    const stateService: StateService = StateService.getInstance();
+    const stateService = ServiceLoader.getInstance<StateService>(
+      ServiceConfig.STATE_SERVICE,
+    );
     const states = (await stateService.getAllGroupStatesFromLocal(ids)) || [];
     return states.filter(this.hasUnread).map(state => state.id);
   }

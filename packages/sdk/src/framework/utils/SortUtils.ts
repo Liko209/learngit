@@ -5,31 +5,44 @@
  */
 
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
-
+import { IdModel } from '../model';
 class SortUtils {
-  static sortModelByKey<T extends {}>(
+  static sortModelByKey<T extends IdModel>(
     lhs: T,
     rhs: T,
-    sortKey: string,
+    sortKeys: string[],
     desc: boolean,
   ) {
-    const lhsValue = lhs[sortKey];
-    const rhsValue = rhs[sortKey];
+    let lhsValue: any = undefined;
+    let rhsValue: any = undefined;
+    for (const key of sortKeys) {
+      lhsValue = lhs[key];
+      rhsValue = rhs[key];
+      if (lhsValue !== rhsValue) {
+        break;
+      }
+    }
+
     const lhsType = typeof lhsValue;
     const rhsType = typeof rhsValue;
     if (lhsType === rhsType) {
-      switch (rhsType) {
-        case 'string':
-          return desc
-            ? natureCompare(rhsValue, lhsValue)
-            : natureCompare(lhsValue, rhsValue);
-        case 'number':
-          return desc ? rhsValue - lhsValue : lhsValue - rhsValue;
-        default:
-          return 0;
+      if (lhsValue !== rhsValue) {
+        switch (rhsType) {
+          case 'string':
+            return desc
+              ? natureCompare(rhsValue, lhsValue)
+              : natureCompare(lhsValue, rhsValue);
+          case 'number':
+            return desc ? rhsValue - lhsValue : lhsValue - rhsValue;
+        }
       }
+      return desc ? rhs.id - lhs.id : lhs.id - rhs.id;
     }
-    return desc ? (lhsValue ? -1 : 1) : lhsValue ? 1 : -1;
+    const hasUndefined = lhsValue === undefined || rhsValue === undefined;
+    if (hasUndefined) {
+      return desc ? (lhsValue ? -1 : 1) : lhsValue ? 1 : -1;
+    }
+    return desc ? rhs.id - lhs.id : lhs.id - rhs.id;
   }
 }
 

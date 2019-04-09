@@ -20,6 +20,7 @@ import {
 import { IPostItemController } from '../interface/IPostItemController';
 import { ItemService } from '../../../item';
 import { PostControllerUtils } from './PostControllerUtils';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 class PostItemController implements IPostItemController {
   constructor(public postActionController: IPostActionController) {}
@@ -62,7 +63,9 @@ class PostItemController implements IPostItemController {
     itemIds: number[],
   ): Promise<PostItemData | undefined> {
     if (itemIds && itemIds.length > 0) {
-      const itemService: ItemService = ItemService.getInstance();
+      const itemService = ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      );
       const uploadFiles = itemService.getUploadItems(groupId);
       const needCheckItemFiles = _.intersectionWith(
         uploadFiles,
@@ -113,7 +116,9 @@ class PostItemController implements IPostItemController {
       const itemStatuses = this.getPseudoItemStatusInPost(clonePost);
       if (result.shouldUpdatePost) {
         await postUpdateCallback(clonePost);
-        const itemService: ItemService = ItemService.getInstance();
+        const itemService = ServiceLoader.getInstance<ItemService>(
+          ServiceConfig.ITEM_SERVICE,
+        );
         itemService.deleteFileItemCache(preInsertId);
       }
 
@@ -153,7 +158,9 @@ class PostItemController implements IPostItemController {
 
     notificationCenter.on(SERVICE.ITEM_SERVICE.PSEUDO_ITEM_STATUS, listener);
 
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     itemService.sendItemData(post.group_id, post.item_ids);
   }
 
@@ -199,7 +206,9 @@ class PostItemController implements IPostItemController {
   }
 
   async resendFailedItems(pseudoItemIds: number[]) {
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     await itemService.resendFailedItems(pseudoItemIds);
   }
 
@@ -208,7 +217,9 @@ class PostItemController implements IPostItemController {
   }
 
   getPseudoItemStatusInPost(post: Post) {
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     return uniqueArray(itemService.getItemsSendingStatus(post.item_ids));
   }
   hasItemInTargetStatus(post: Post, status: PROGRESS_STATUS) {

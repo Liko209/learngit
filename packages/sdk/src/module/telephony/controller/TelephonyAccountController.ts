@@ -74,6 +74,18 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyCallDelegate.dtmf(digits);
   }
 
+  answer(callId: string) {
+    this._telephonyCallDelegate.answer();
+  }
+
+  sendToVoiceMail(callId: string) {
+    this._telephonyCallDelegate.sendToVoiceMail();
+  }
+
+  ignore(callId: string) {
+    this._telephonyCallDelegate.ignore();
+  }
+
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
     this._telephonyAccountDelegate.onAccountStateChanged(state);
   }
@@ -106,6 +118,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       this._callDelegate,
     );
     this._telephonyCallDelegate.setRtcCall(call);
+    call.setCallDelegate(this._telephonyCallDelegate);
     const callInfo = await this._buildCallInfo(call.getCallInfo());
     this._telephonyAccountDelegate.onReceiveIncomingCall(callInfo);
   }

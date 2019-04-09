@@ -6,7 +6,6 @@
 import { mainLogger } from 'foundation';
 import _ from 'lodash';
 import { daoManager, DeactivatedDao, QUERY_DIRECTION } from '../../../dao';
-import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
 import { ENTITY, SERVICE } from '../../../service/eventKey';
@@ -15,15 +14,18 @@ import { baseHandleData, transform } from '../../../service/utils';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ItemService } from '../../item';
 import { INDEX_POST_MAX_SIZE } from '../constant';
+import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IRawPostResult, Post } from '../entity';
-import { GroupService } from '../../group';
+import { IGroupService } from '../../group/service/IGroupService';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { SortUtils } from '../../../framework/utils';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 const TAG = 'PostDataController';
 
 class PostDataController {
   constructor(
+    private _groupService: IGroupService,
     public preInsertController: IPreInsertController,
     public entitySourceController: IEntitySourceController<Post>,
   ) {}
@@ -41,9 +43,9 @@ class PostDataController {
     const posts: Post[] =
       (await this.filterAndSavePosts(transformedData, shouldSaveToDb)) || [];
     const items =
-      (await ItemService.getInstance<ItemService>().handleIncomingData(
-        data.items,
-      )) || [];
+      (await ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      ).handleIncomingData(data.items)) || [];
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return {
       posts,
@@ -69,9 +71,8 @@ class PostDataController {
       posts = await this.handleIndexModifiedPosts(posts);
       posts = await this.filterAndSavePosts(posts, true);
       if (result && result.deleteMap.size > 0) {
-        const groupService: GroupService = GroupService.getInstance();
         result.deleteMap.forEach((value: number[], key: number) => {
-          groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
+          this._groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
           notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
         });
       }
@@ -152,6 +153,10 @@ class PostDataController {
           shouldRemoveGroupIds.push(Number(groupId));
         }
       });
+      mainLogger.info(
+        TAG,
+        `handelPostsOverThreshold shouldRemoveGroupIds: ${shouldRemoveGroupIds}`,
+      );
       if (shouldRemoveGroupIds.length) {
         let deletePostIds: number[] = [];
         const deleteMap: Map<number, number[]> = new Map();
@@ -166,8 +171,25 @@ class PostDataController {
             deleteMap.set(id, postIds);
           }),
         );
+        mainLogger.info(
+          TAG,
+          `handelPostsOverThreshold deletePostIds(start-end): ${
+            deletePostIds[0]
+          } - ${deletePostIds[deletePostIds.length - 1]}, length:${
+            deletePostIds.length
+          }`,
+        );
         if (deletePostIds.length > 0) {
-          await this.entitySourceController.bulkDelete(deletePostIds);
+          try {
+            await this.entitySourceController.bulkDelete(deletePostIds);
+          } catch (error) {
+            mainLogger.info(
+              TAG,
+              `handelPostsOverThreshold bulkDelete failed ${JSON.stringify(
+                error,
+              )}`,
+            );
+          }
         }
         return { deleteMap };
       }
@@ -257,7 +279,7 @@ class PostDataController {
   }
 
   postCreationTimeSortingFn = (lhs: Post, rhs: Post) => {
-    return SortUtils.sortModelByKey(lhs, rhs, 'created_at', false);
+    return SortUtils.sortModelByKey(lhs, rhs, ['created_at'], false);
   }
 
   /**
@@ -321,7 +343,7 @@ class PostDataController {
     mainLogger.info(
       TAG,
       'handleIndexModifiedPosts remove group ids:',
-      deleteGroupIdSet,
+      [deleteGroupIdSet].join(','),
     );
     if (deleteGroupIdSet.size > 0) {
       // mark group has more as true
@@ -350,9 +372,8 @@ class PostDataController {
   private async _ensureGroupExist(posts: Post[]): Promise<void> {
     if (posts.length) {
       posts.forEach(async (post: Post) => {
-        const groupService: GroupService = GroupService.getInstance();
         try {
-          await groupService.getById(post.group_id);
+          await this._groupService.getById(post.group_id);
         } catch (error) {
           mainLogger
             .tags('PostDataController')

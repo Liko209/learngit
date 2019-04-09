@@ -18,6 +18,7 @@ import { RequestController } from '../../../../framework/controller/impl/Request
 import { Api } from '../../../../api';
 import { ItemDao } from '../../dao';
 import { daoManager } from '../../../../dao';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
@@ -45,7 +46,7 @@ describe('ItemActionController', () => {
   const progressService = new ProgressService();
 
   function setUp() {
-    ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(progressService);
     buildRequestController.mockReturnValue(requestController);
     daoManager.getDao = jest.fn().mockReturnValue(itemDao);
     entitySourceController.delete = jest.fn();

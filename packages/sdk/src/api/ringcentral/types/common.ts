@@ -4,7 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type RcCountryInfo = {
+import { Token } from 'foundation';
+
+type RCCountryInfo = {
   uri?: string;
   id?: string;
   name?: string;
@@ -13,14 +15,14 @@ type RcCountryInfo = {
   emergencyCalling?: boolean;
 };
 
-type RcTimezoneInfo = {
+type RCTimezoneInfo = {
   uri?: string;
   id?: string;
   name?: string;
   description?: string;
 };
 
-type RcLanguageInfo = {
+type RCLanguageInfo = {
   uri?: string;
   id?: string;
   greeting?: boolean;
@@ -30,28 +32,28 @@ type RcLanguageInfo = {
   ui?: string;
 };
 
-type RcGreetingLanguageInfo = {
+type RCGreetingLanguageInfo = {
   id?: string;
   localeCode?: string;
   name?: string;
 };
 
-type RcFormattingLocalInfo = {
+type RCFormattingLocalInfo = {
   id?: string;
   localeCode?: string;
   name?: string;
 };
 
-type RcRegionalSetting = {
-  homeCountry?: RcCountryInfo;
-  timezone?: RcTimezoneInfo;
-  language?: RcLanguageInfo;
-  greetingLanguage?: RcGreetingLanguageInfo;
-  formattingLocale?: RcFormattingLocalInfo;
+type RCRegionalSetting = {
+  homeCountry?: RCCountryInfo;
+  timezone?: RCTimezoneInfo;
+  language?: RCLanguageInfo;
+  greetingLanguage?: RCGreetingLanguageInfo;
+  formattingLocale?: RCFormattingLocalInfo;
   timeFormat?: string;
 };
 
-type RcStatusInfo = {
+type RCStatusInfo = {
   comment?: string;
   reason?: string;
 };
@@ -95,7 +97,7 @@ type INavigationInfo = {
   lastPage: IUriInfo;
 };
 
-type ISpecialServiceNumberResponse = {
+type ISpecialServiceNumber = {
   uri: string;
   records: ISpecialServiceRecord[];
   paging: IPagingInfo;
@@ -121,7 +123,7 @@ type IDialingPlanRecord = {
   callingCode: string;
 };
 
-type IDialingPlanResponse = {
+type IDialingPlan = {
   uri: string;
   records: IDialingPlanRecord[];
   paging: IPagingInfo;
@@ -151,36 +153,48 @@ type IPhoneNumberRecord = {
   features: string[];
 };
 
-type IPhoneNumberResponse = {
+type IExtensionPhoneNumberList = {
   uri: string;
   records: IPhoneNumberRecord[];
   paging: IPagingInfo;
   navigation: INavigationInfo;
 };
 
-type RcVersionInfo = {
+type RCVersionInfo = {
   uri: string;
   versionString: string;
   releaseDate: string;
   uriString: string;
 };
 
-type RcAPIVersion = {
+type RCAPIVersion = {
   uri: string;
-  apiVersions: RcVersionInfo[];
+  apiVersions: RCVersionInfo[];
   serverVersion: string;
   serverRevision: string;
 };
 
+interface ITokenModel extends Token {
+  access_token: string;
+  endpoint_id: string;
+  expires_in: number;
+  owner_id: string;
+  refresh_token: string;
+  refresh_token_expires_in: number;
+  scope: string;
+  token_type: string;
+}
+
 export {
-  RcCountryInfo,
-  RcRegionalSetting,
-  RcStatusInfo,
+  RCCountryInfo,
+  RCRegionalSetting,
+  RCStatusInfo,
   ISpecialServiceRequest,
-  ISpecialServiceNumberResponse,
+  ISpecialServiceNumber,
   IDialingPlanRequest,
-  IDialingPlanResponse,
+  IDialingPlan,
   IPhoneNumberRequest,
-  IPhoneNumberResponse,
-  RcAPIVersion,
+  IExtensionPhoneNumberList,
+  RCAPIVersion,
+  ITokenModel,
 };

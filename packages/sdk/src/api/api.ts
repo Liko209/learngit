@@ -3,45 +3,39 @@
  * @Date: 2018-05-02 16:47:08
  * Copyright © RingCentral. All rights reserved.
  */
-import merge from 'lodash/merge';
 import NetworkClient, { INetworkRequests } from './NetworkClient';
-import { ApiConfig, HttpConfigType, PartialApiConfig } from '../types';
-import { Throw } from '../utils';
-import { defaultConfig } from './defaultConfig';
+import { ApiConfig, HttpConfigType, BaseConfig } from '../types';
 import { Raw } from '../framework/model';
 
 import { IHandleType, NetworkSetup, NetworkManager } from 'foundation';
 import {
   HandleByGlip,
   HandleByRingCentral,
-  HandleByGlip2,
   HandleByUpload,
   HandleByCustom,
 } from './handlers';
-import { ERROR_CODES_SDK } from '../error';
+import { ApiConfiguration } from './config';
 const types = [
   HandleByGlip,
   HandleByRingCentral,
-  HandleByGlip2,
   HandleByUpload,
   HandleByCustom,
 ];
 class Api {
   static basePath = '';
   static httpSet: Map<string, NetworkClient> = new Map();
-  static _httpConfig: ApiConfig;
 
   static _networkManager: NetworkManager;
 
-  static init(config: PartialApiConfig, networkManager: NetworkManager): void {
-    this._httpConfig = merge({}, defaultConfig, config);
+  static init(config: ApiConfig, networkManager: NetworkManager): void {
+    ApiConfiguration.setApiConfig(config);
     Api.setupHandlers(networkManager);
   }
 
   static setupHandlers(networkManager: NetworkManager) {
     this._networkManager = networkManager;
 
-    NetworkSetup.setup(types, networkManager);
+    types.forEach(type => NetworkSetup.setup(type, networkManager));
     // This explicit set rc handler accessToken as the RC token provider for glip handler
     const tokenManager = networkManager.getTokenManager();
     const rcTokenHandler =
@@ -55,7 +49,7 @@ class Api {
     // directly accessed by the ui layer. That should be refactor.
     // Move logics that access httpConfig into Api in the future.
     // tslint:disable-next-line:max-line-length
-    return this._httpConfig;
+    return ApiConfiguration.apiConfig;
   }
 
   static get networkManager() {
@@ -66,22 +60,17 @@ class Api {
     name: HttpConfigType,
     type: IHandleType,
   ): NetworkClient {
-    if (!this._httpConfig) {
-      Throw(ERROR_CODES_SDK.API_NOT_INITIALIZED, 'Api not initialized');
-    }
-
     let networkClient = this.httpSet.get(name);
     if (!networkClient) {
-      const currentConfig = this._httpConfig[name];
+      const config: BaseConfig = ApiConfiguration.apiConfig[name];
       const networkRequests: INetworkRequests = {
-        host: currentConfig.server,
+        host: config.server,
+        pathPrefix: config.pathPrefix,
         handlerType: type,
       };
       networkClient = new NetworkClient(
         networkRequests,
-        currentConfig.apiPlatform,
         type.defaultVia,
-        currentConfig.apiPlatformVersion,
         this.networkManager,
       );
       this.httpSet.set(name, networkClient);
@@ -98,9 +87,7 @@ class Api {
       };
       networkClient = new NetworkClient(
         networkRequests,
-        '',
         type.defaultVia,
-        '',
         this.networkManager,
       );
       this.httpSet.set(name, networkClient);
@@ -110,10 +97,6 @@ class Api {
 
   static get glipNetworkClient() {
     return this.getNetworkClient('glip', HandleByGlip);
-  }
-
-  static get glip2NetworkClient() {
-    return this.getNetworkClient('glip2', HandleByGlip2);
   }
 
   static get glipDesktopNetworkClient() {
@@ -133,15 +116,23 @@ class Api {
   }
 
   static getDataById<T>(id: number) {
-    return this.glipNetworkClient.get<Raw<T>>(`${this.basePath}/${id}`);
+    return this.glipNetworkClient.get<Raw<T>>({
+      path: `${this.basePath}/${id}`,
+    });
   }
 
   static postData<T>(data: Partial<T>) {
-    return this.glipNetworkClient.post<Raw<T>>(`${this.basePath}`, data);
+    return this.glipNetworkClient.post<Raw<T>>({
+      data,
+      path: `${this.basePath}`,
+    });
   }
 
   static putDataById<T>(id: number, data: Partial<T>) {
-    return this.glipNetworkClient.put<Raw<T>>(`${this.basePath}/${id}`, data);
+    return this.glipNetworkClient.put<Raw<T>>({
+      data,
+      path: `${this.basePath}/${id}`,
+    });
   }
 }
 

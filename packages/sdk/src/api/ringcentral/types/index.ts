@@ -4,8 +4,8 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export { RcAccountInfo } from './RcAccountInfo';
-export { RcClientInfo } from './RcClientInfo';
-export { RcExtensionInfo, RcServiceFeature } from './RcExtensionInfo';
-export { RcRolePermissions } from './RcRolePermissions';
-export { RcAPIVersion, ISpecialServiceNumberResponse } from './common';
+export { RCAccountInfo } from './RCAccountInfo';
+export { RCClientInfo } from './RCClientInfo';
+export { RCExtensionInfo, RCServiceFeature } from './RCExtensionInfo';
+export { RCRolePermissions, RCRolePermission } from './RCRolePermissions';
+export { RCAPIVersion, ISpecialServiceNumber, ITokenModel } from './common';

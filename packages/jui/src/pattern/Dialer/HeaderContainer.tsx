@@ -17,7 +17,7 @@ import { primary } from '../../foundation/utils/styles';
 
 const StyledHeaderContainer = styled('div')`
   && {
-    background-color: ${primary('light')};
+    background-color: ${primary('600')};
     /* background: linear-gradient(
       to right,
       ${primary('light')},

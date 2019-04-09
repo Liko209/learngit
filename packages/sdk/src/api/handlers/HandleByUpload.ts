@@ -21,18 +21,7 @@ const HandleByUpload = new class extends AbstractHandleType {
           throw new Error('token handler can not be null.');
         }
         if (handler.isOAuthTokenAvailable()) {
-          request.params = {
-            ...request.params,
-          };
-
-          if (request.path.indexOf('upload') > -1) {
-            request.path = `${request.path}?tk=${handler.accessToken()}`;
-          } else {
-            request.headers = {
-              ...request.headers,
-              Authorization: `Bearer ${handler.accessToken()}`,
-            };
-          }
+          request.path = `${request.path}?tk=${handler.accessToken()}`;
         }
       }
 

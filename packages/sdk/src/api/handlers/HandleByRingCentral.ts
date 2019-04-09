@@ -9,8 +9,8 @@ import {
   NETWORK_VIA,
   NETWORK_HANDLE_TYPE,
 } from 'foundation';
-import Api from '../api';
-import { IPlatformHandleDelegate } from '../ringcentral/IPlatformHandleDelegate';
+import { ApiConfiguration } from '../config';
+import { IPlatformHandleDelegate } from './IPlatformHandleDelegate';
 
 const HandleByRingCentral = new class extends AbstractHandleType {
   name = NETWORK_HANDLE_TYPE.RINGCENTRAL;
@@ -21,8 +21,8 @@ const HandleByRingCentral = new class extends AbstractHandleType {
   platformHandleDelegate: IPlatformHandleDelegate;
 
   basic() {
-    const str = `${Api.httpConfig.rc.clientId}:${
-      Api.httpConfig.rc.clientSecret
+    const str = `${ApiConfiguration.apiConfig.rc.clientId}:${
+      ApiConfiguration.apiConfig.rc.clientSecret
     }`;
 
     return this.btoa(str);

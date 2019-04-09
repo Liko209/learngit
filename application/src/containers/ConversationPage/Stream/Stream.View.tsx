@@ -29,12 +29,13 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiInfiniteList,
   IndexRange,
+  ThresholdStrategy,
   JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
-import JuiConversationCard from 'jui/src/pattern/ConversationCard';
+import JuiConversationCard from 'jui/pattern/ConversationCard';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
@@ -44,7 +45,11 @@ const LOADING_DELAY = 500;
 
 @observer
 class StreamViewComponent extends Component<Props> {
-  private currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  private _loadMoreStrategy = new ThresholdStrategy({
+    threshold: 60,
+    minBatchCount: 10,
+  });
   private _listRef: React.RefObject<
     JuiVirtualizedListHandles
   > = React.createRef();
@@ -96,7 +101,7 @@ class StreamViewComponent extends Component<Props> {
       const sentFromCurrentUser =
         !hasMore('down') &&
         lastPost &&
-        lastPost.creatorId === this.currentUserId;
+        lastPost.creatorId === this._currentUserId;
 
       if (sentFromCurrentUser && this._listRef.current) {
         this._listRef.current.scrollToBottom();
@@ -260,7 +265,10 @@ class StreamViewComponent extends Component<Props> {
     const visiblePosts = _(visibleItems)
       .flatMap('value')
       .concat();
-    if (this.props.hasMore('down') || !visiblePosts.includes(mostRecentPostId)) {
+    if (
+      this.props.hasMore('down') ||
+      !visiblePosts.includes(mostRecentPostId)
+    ) {
       this.handleMostRecentHidden();
     } else {
       this.handleMostRecentViewed();
@@ -317,6 +325,22 @@ class StreamViewComponent extends Component<Props> {
       } as React.CSSProperties),
   );
 
+  @action
+  private _loadInitialPosts = async () => {
+    const { loadInitialPosts, markAsRead } = this.props;
+    await loadInitialPosts();
+    runInAction(() => {
+      this.props.updateHistoryHandler();
+      markAsRead();
+    });
+    requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+      }
+    });
+    this._watchUnreadCount();
+  }
+
   private _onInitialDataFailed = (
     <JuiStreamLoading
       showTip={true}
@@ -351,6 +375,7 @@ class StreamViewComponent extends Component<Props> {
                   ref={this._listRef}
                   height={height}
                   stickToBottom={true}
+                  loadMoreStrategy={this._loadMoreStrategy}
                   initialScrollToIndex={initialPosition}
                   minRowHeight={50} // extract to const
                   loadInitialData={this._loadInitialPosts}
@@ -371,28 +396,12 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
-  @action
-  private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead } = this.props;
-    await loadInitialPosts();
-    runInAction(() => {
-      this.props.updateHistoryHandler();
-      markAsRead();
-    });
-    requestAnimationFrame(() => {
-      if (this._jumpToPostRef.current) {
-        this._jumpToPostRef.current.highlight();
-      }
-    });
-    this._watchUnreadCount();
-  }
-
   private _watchUnreadCount() {
     const disposer = reaction(
       () => {
         return this.props.mostRecentPostId;
       },
-      (mostRecentPostId) => {
+      () => {
         if (this._listRef.current && !this.props.hasMore('down')) {
           const isLastPostVisible =
             this._listRef.current.getVisibleRange().stopIndex >=

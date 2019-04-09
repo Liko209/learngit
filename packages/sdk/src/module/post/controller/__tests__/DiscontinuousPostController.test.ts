@@ -9,9 +9,9 @@ import { daoManager, DeactivatedDao } from '../../../../dao';
 import { PostDao } from '../../dao';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import PostAPI from '../../../../api/glip/post';
-import { GroupService } from '../../../../module/group/service';
 import { DiscontinuousPostController } from '../DiscontinuousPostController';
 import _ from 'lodash';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../../dao');
 jest.mock('../../dao');
@@ -27,15 +27,10 @@ const deactivatedDao = new DeactivatedDao(null);
 
 const entitySourceController = new EntitySourceController<Post>(null, null);
 const itemService = new ItemService();
-const groupService = {
-  hasMorePostInRemote: jest.fn(),
-  updateHasMore: jest.fn(),
-};
 
 function setup() {
-  ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+  ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
   itemService.handleIncomingData = jest.fn();
-  GroupService.getInstance = jest.fn().mockReturnValue(groupService);
   daoManager.getDao.mockImplementation(arg => {
     if (arg === PostDao) {
       return postDao;

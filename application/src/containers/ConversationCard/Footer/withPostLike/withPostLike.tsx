@@ -16,6 +16,7 @@ import { Person } from 'sdk/module/person/entity';
 import PersonModel from '@/store/models/Person';
 import { computed, action } from 'mobx';
 import { observer } from 'mobx-react';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 function withPostLike<P>(
   Component: ComponentType<P & WithPostLikeComponentProps>,
@@ -51,7 +52,9 @@ function withPostLike<P>(
 
     @action
     onToggleLike = async (): Promise<void> => {
-      const postService: PostService = PostService.getInstance();
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
 
       await postService.likePost(
         this.props.postId,

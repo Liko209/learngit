@@ -5,7 +5,7 @@
  */
 
 import { computed, observable, action } from 'mobx';
-import { AuthService } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
 import storeManager from '@/store';
 import { getGlobalValue } from '@/store/utils';
@@ -16,6 +16,7 @@ import { TelephonyService } from '@/modules/telephony/service';
 import { Dialog } from '@/containers/Dialog';
 import i18next from 'i18next';
 import { mainLogger } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const globalStore = storeManager.getGlobalStore();
 
@@ -70,8 +71,10 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
   }
 
   private _doLogout = async () => {
-    const authService: AuthService = AuthService.getInstance();
-    await authService.logout();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    await accountService.logout();
     window.location.href = '/';
   }
 

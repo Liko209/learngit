@@ -11,4 +11,4 @@ export * from './telephony';
 export * from './error';
 
 export { default as Foundation } from './Foundation';
-export { default as config } from './config';
+export { config } from './config';

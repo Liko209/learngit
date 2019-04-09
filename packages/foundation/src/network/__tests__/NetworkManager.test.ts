@@ -13,7 +13,7 @@ import OAuthTokenManager from '../OAuthTokenManager';
 
 let networkManager: NetworkManager;
 const initManagerWithHandlerType = () => {
-  networkManager.initNetworkRequestBaseHandler(
+  networkManager.buildNetworkRequestBaseHandler(
     fakeHandleType,
     true,
     new class implements IRequestDecoration {

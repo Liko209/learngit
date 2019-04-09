@@ -3,17 +3,17 @@
  * @Date: 2019-03-02 17:02:29
  * Copyright © RingCentral. All rights reserved.
  */
-import { RcExtensionInfo } from '../../../api/ringcentral/types/RcExtensionInfo';
+
 import {
   FEATURE_PERMISSIONS,
   MAKE_CALL_ERROR_CODE,
   E911_STATUS,
 } from '../types';
-import { ISpecialServiceNumberResponse } from '../../../api/ringcentral/types/common';
 import { PhoneParserUtility } from '../../../utils/phoneParser';
 import { PersonService } from '../../person';
 import { ContactType } from '../../person/types';
-import { RcInfoService } from '../../rcInfo/service';
+import { RCInfoService } from '../../rcInfo';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 enum RCN11Reason {
   N11_101 = 'N11-101',
@@ -30,9 +30,11 @@ class MakeCallController {
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
-  private _isRcFeaturePermissionEnabled(permission: FEATURE_PERMISSIONS) {
-    const rcInfoService: RcInfoService = RcInfoService.getInstance();
-    const extInfo: RcExtensionInfo = rcInfoService.getRcExtensionInfo();
+  private async _isRCFeaturePermissionEnabled(permission: FEATURE_PERMISSIONS) {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const extInfo = await rcInfoService.getRCExtensionInfo();
     if (extInfo) {
       for (const index in extInfo.serviceFeatures) {
         const feature = extInfo.serviceFeatures[index];
@@ -45,25 +47,29 @@ class MakeCallController {
     return false;
   }
 
-  private _getRcE911Status() {
+  private _getRCE911Status() {
     // It's not implemented, return accpted by default
     return E911_STATUS.ACCEPTED;
   }
 
-  private _checkE911Status() {
+  private async _checkE911Status() {
     if (
-      this._isRcFeaturePermissionEnabled(FEATURE_PERMISSIONS.VOIP_CALLING) &&
-      this._getRcE911Status() !== E911_STATUS.ACCEPTED
+      (await this._isRCFeaturePermissionEnabled(
+        FEATURE_PERMISSIONS.VOIP_CALLING,
+      )) &&
+      this._getRCE911Status() !== E911_STATUS.ACCEPTED
     ) {
       return MAKE_CALL_ERROR_CODE.E911_ACCEPT_REQUIRED;
     }
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
-  private _checkVoipN11Number(phoneNumber: string) {
+  private async _checkVoipN11Number(phoneNumber: string) {
     let result = MAKE_CALL_ERROR_CODE.NO_ERROR;
-    const rcInfoService: RcInfoService = RcInfoService.getInstance();
-    const specialNumber: ISpecialServiceNumberResponse = rcInfoService.getSpecialNumberRule();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const specialNumber = await rcInfoService.getSpecialNumberRule();
     if (specialNumber) {
       for (const index in specialNumber.records) {
         const record = specialNumber.records[index];
@@ -87,7 +93,7 @@ class MakeCallController {
     return result;
   }
 
-  private _isLoggedInRcOnlyMode() {
+  private _isLoggedInRCOnlyMode() {
     // It's not implemented right now
     // TODO FIJI-3967
     return false;
@@ -95,18 +101,20 @@ class MakeCallController {
 
   private async _checkShortPhoneNumber(phoneNumber: string) {
     let res = MAKE_CALL_ERROR_CODE.NO_ERROR;
-    const phoneParserUtility = PhoneParserUtility.getPhoneParser(
+    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
       phoneNumber,
       true,
     );
     if (phoneParserUtility && phoneParserUtility.isShortNumber()) {
       do {
-        const personService: PersonService = PersonService.getInstance();
+        const personService = ServiceLoader.getInstance<PersonService>(
+          ServiceConfig.PERSON_SERVICE,
+        );
         const result = await personService.matchContactByPhoneNumber(
           phoneNumber,
           ContactType.GLIP_CONTACT,
         );
-        if (result || this._isLoggedInRcOnlyMode()) {
+        if (result || this._isLoggedInRCOnlyMode()) {
           break;
         }
         res = MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER;
@@ -115,17 +123,20 @@ class MakeCallController {
     return res;
   }
 
-  private _checkInternationalCallsPermission(phoneNumber: string) {
-    const phoneParserUtility = PhoneParserUtility.getPhoneParser(
+  private async _checkInternationalCallsPermission(phoneNumber: string) {
+    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
       phoneNumber,
       true,
     );
 
-    if (phoneParserUtility && phoneParserUtility.isInternationalDialing()) {
+    if (
+      phoneParserUtility &&
+      (await phoneParserUtility.isInternationalDialing())
+    ) {
       if (
-        !this._isRcFeaturePermissionEnabled(
+        !(await this._isRCFeaturePermissionEnabled(
           FEATURE_PERMISSIONS.INTERNATIONAL_CALLING,
-        )
+        ))
       ) {
         return MAKE_CALL_ERROR_CODE.NO_INTERNATIONAL_CALLS_PERMISSION;
       }
@@ -140,8 +151,8 @@ class MakeCallController {
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
-  getE164PhoneNumber(phoneNumber: string) {
-    const phoneParserUtility = PhoneParserUtility.getPhoneParser(
+  async getE164PhoneNumber(phoneNumber: string) {
+    const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
       phoneNumber,
       true,
     );
@@ -158,7 +169,7 @@ class MakeCallController {
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      result = this._checkE911Status();
+      result = await this._checkE911Status();
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
@@ -166,7 +177,7 @@ class MakeCallController {
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      result = this._checkVoipN11Number(e164PhoneNumber);
+      result = await this._checkVoipN11Number(e164PhoneNumber);
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
@@ -174,7 +185,7 @@ class MakeCallController {
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
-      result = this._checkInternationalCallsPermission(e164PhoneNumber);
+      result = await this._checkInternationalCallsPermission(e164PhoneNumber);
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }

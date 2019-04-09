@@ -7,6 +7,7 @@
 import { EnvConfig } from '../EnvConfig';
 import { CONFIG_KEYS } from '../ConfigKeys';
 import { GlobalConfigService } from '../../../config';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../config/service/GlobalConfigService');
 
@@ -19,9 +20,7 @@ describe('EnvConfig', () => {
       put: jest.fn(),
       remove: jest.fn(),
     };
-    GlobalConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(mockConfigService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockConfigService);
   });
   beforeEach(() => {
     jest.clearAllMocks();

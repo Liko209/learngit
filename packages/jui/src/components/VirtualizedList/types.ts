@@ -4,10 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+type Direction = 'up' | 'down';
+
 type IndexRange = {
   startIndex: number;
   stopIndex: number;
 };
+
+type IndexConstraint = {
+  minIndex: number;
+  maxIndex: number;
+};
+
+type Delta = { x: number; y: number; z: number };
 
 type JuiVirtualizedListProps = {
   height: number;
@@ -15,7 +24,8 @@ type JuiVirtualizedListProps = {
   overscan: number;
   initialScrollToIndex: number;
   stickToBottom?: boolean;
-  onScroll: (event: React.UIEvent) => void;
+  onScroll: (event: React.UIEvent<HTMLElement>) => void;
+  onWheel: (event: React.WheelEvent<HTMLElement>) => void;
   onVisibleRangeChange: (range: IndexRange) => void;
   onRenderedRangeChange: (range: IndexRange) => void;
   before?: React.ReactNode;
@@ -25,4 +35,10 @@ type JuiVirtualizedListProps = {
   stickToLastPosition?: boolean;
 };
 
-export { JuiVirtualizedListProps, IndexRange };
+export {
+  JuiVirtualizedListProps,
+  IndexRange,
+  IndexConstraint,
+  Direction,
+  Delta,
+};

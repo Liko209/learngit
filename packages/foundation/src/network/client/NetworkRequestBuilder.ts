@@ -7,7 +7,7 @@ import { HttpRequest } from './http';
 import SocketRequest from './socket/SocketRequest';
 
 import { generateUUID, generateIncrementId } from '../util';
-import config from '../../config';
+import { config } from '../../config';
 import NetworkManager from '../NetworkManager';
 import BaseRequest from '../BaseRequest';
 import {

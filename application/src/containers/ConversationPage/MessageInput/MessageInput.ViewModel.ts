@@ -24,6 +24,28 @@ import { UI_NOTIFICATION_KEY } from '@/constants';
 import { mainLogger } from 'sdk';
 import { PostService } from 'sdk/module/post';
 import { FileItem } from 'sdk/module/item/module/file/entity';
+import { UploadRecentLogs, FeedbackService } from '@/modules/feedback';
+import { container } from 'framework';
+import { saveBlob } from '@/common/blobUtils';
+import _ from 'lodash';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+
+const DEBUG_COMMAND_MAP = {
+  '/debug': () => UploadRecentLogs.show(),
+  '/debug-save': () => {
+    container
+      .get(FeedbackService)
+      .zipRecentLogs()
+      .then(zipResult => {
+        if (!zipResult) {
+          mainLogger.debug('Zip log fail.');
+          return;
+        }
+        const [name, blob] = zipResult;
+        saveBlob(name, blob);
+      });
+  },
+};
 
 const CONTENT_LENGTH = 10000;
 const CONTENT_ILLEGAL = '<script';
@@ -61,10 +83,16 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   constructor(props: MessageInputProps) {
     super(props);
-    this._postService = PostService.getInstance();
+    this._postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
 
-    this._itemService = ItemService.getInstance();
-    this._groupConfigService = GroupConfigService.getInstance();
+    this._itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
+    this._groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     this._sendPost = this._sendPost.bind(this);
     this._oldId = props.id;
     this.reaction(
@@ -199,6 +227,11 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
   }
 
   private async _sendPost(content: string, ids: number[]) {
+    if (_.isEmpty(ids) && content && DEBUG_COMMAND_MAP[content.trim()]) {
+      DEBUG_COMMAND_MAP[content.trim()]();
+      this.contentChange('');
+      return;
+    }
     this.contentChange('');
     this.cleanDraft();
     const items = this.items;

@@ -16,6 +16,8 @@ import { Post } from 'sdk/module/post/entity';
 import { Person } from 'sdk/module/person/entity';
 import { UI_NOTIFICATION_KEY } from '@/constants';
 import PersonModel from '@/store/models/Person';
+import { mainLogger } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
   @computed
@@ -85,14 +87,17 @@ class QuoteViewModel extends StoreViewModel<Props> implements ViewProps {
       quote: draft,
       groupId: this._groupId,
     });
-    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
+
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     try {
       await groupConfigService.updateDraft({
         draft,
         id: this._groupId,
       });
     } catch (error) {
-      console.log(error);
+      mainLogger.error(error);
     }
   }
 }

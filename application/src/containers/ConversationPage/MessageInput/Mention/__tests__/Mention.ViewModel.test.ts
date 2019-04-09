@@ -6,18 +6,10 @@
 import { getEntity } from '../../../../../store/utils';
 import { CONVERSATION_TYPES } from '@/constants';
 import { MentionViewModel } from '../Mention.ViewModel';
-
-const mockSearchService = {
-  doFuzzySearchPersons: jest.fn(),
-};
-
-jest.mock('sdk/module/search', () => ({
-  SearchService: {
-    getInstance: () => mockSearchService,
-  },
-}));
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('../../../../../store/utils');
+jest.mock('sdk/module/search');
 
 let mentionViewModel: MentionViewModel;
 
@@ -29,13 +21,21 @@ const mockGroupEntityData: {
   members: [1, 2, 3],
 };
 
-beforeAll(() => {
-  (getEntity as jest.Mock).mockReturnValue(mockGroupEntityData);
-
-  mentionViewModel = new MentionViewModel({ id: 1 });
-});
-
 describe('mentionViewModel', () => {
+  let mockSearchService: any;
+
+  beforeEach(() => {
+    mockSearchService = {
+      doFuzzySearchPersons: jest.fn(),
+    };
+
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockSearchService);
+
+    (getEntity as jest.Mock).mockReturnValue(mockGroupEntityData);
+
+    mentionViewModel = new MentionViewModel({ id: 1 });
+  });
+
   it('lifecycle method', () => {
     expect(mentionViewModel._id).toBe(1);
     expect(mentionViewModel.currentIndex).toBe(0);
@@ -66,9 +66,13 @@ describe('mentionViewModel', () => {
   });
 
   it('_doFuzzySearchPersons()', async () => {
-    mockSearchService.doFuzzySearchPersons.mockResolvedValue({
-      sortableModels: [1, 2, 3],
-    });
+    mockSearchService = {
+      doFuzzySearchPersons: jest.fn().mockResolvedValue({
+        sortableModels: [1, 2, 3],
+      }),
+    };
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(mockSearchService);
+
     await mentionViewModel._doFuzzySearchPersons({
       searchTerm: '',
       memberIds: mockGroupEntityData.members,

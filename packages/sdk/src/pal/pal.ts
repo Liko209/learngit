@@ -5,10 +5,12 @@
  */
 
 import { IImageDownloader } from './downloader';
+import { IErrorReporter } from './errorReporter';
 
 class Pal {
   private static _sPalInstance: Pal;
   private _imageDownloader: IImageDownloader;
+  private _errorReporter: IErrorReporter;
 
   static get instance(): Pal {
     if (!this._sPalInstance) {
@@ -23,6 +25,14 @@ class Pal {
 
   getImageDownloader(): IImageDownloader {
     return this._imageDownloader;
+  }
+
+  setErrorReporter(errorReporter: IErrorReporter) {
+    this._errorReporter = errorReporter;
+  }
+
+  getErrorReporter(): IErrorReporter {
+    return this._errorReporter;
   }
 }
 

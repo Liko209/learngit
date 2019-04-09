@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { CommonGlobalConfig } from '../../config';
+import { CommonGlobalConfig } from '../../common/config';
 import { CONFIG_KEYS } from './ConfigKeys';
 
 class EnvConfig extends CommonGlobalConfig {

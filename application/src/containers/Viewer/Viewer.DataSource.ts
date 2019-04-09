@@ -23,6 +23,7 @@ import { Item } from 'sdk/module/item/entity';
 import { GlipTypeUtil } from 'sdk/utils';
 import { VIEWER_ITEM_TYPE, ViewerItemTypeIdMap } from './constants';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -38,7 +39,9 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
     pageSize: number,
     anchor?: ISortableModel<Item>,
   ): Promise<{ data: Item[]; hasMore: boolean }> {
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     const result = await itemService.getItems({
       direction,
       typeId: this._typeId,
@@ -101,7 +104,7 @@ class ItemListDataSource {
       lhs: ISortableModel<Item>,
       rhs: ISortableModel<Item>,
     ): number => {
-      return SortUtils.sortModelByKey(lhs, rhs, 'sortValue', desc);
+      return SortUtils.sortModelByKey(lhs, rhs, ['sortValue'], desc);
     };
 
     const dataProvider = new GroupItemDataProvider(

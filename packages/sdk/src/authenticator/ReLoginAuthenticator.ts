@@ -7,7 +7,7 @@
 import { IAuthenticator, IAuthResponse, IAuthParams } from '../framework';
 import { loginGlip, ITokenModel } from '../api';
 import { mainLogger } from 'foundation';
-import { AuthUserConfig } from '../service/auth/config';
+import { AuthUserConfig } from '../module/account/config';
 import { GlipAccount } from '../account';
 import notificationCenter from '../service/notificationCenter';
 import { SHOULD_UPDATE_NETWORK_TOKEN } from '../service/constants';
@@ -17,7 +17,7 @@ class ReLoginAuthenticator implements IAuthenticator {
     // login glip
     try {
       const authConfig = new AuthUserConfig();
-      const rcToken: ITokenModel = authConfig.getRcToken();
+      const rcToken: ITokenModel = authConfig.getRCToken();
       if (!rcToken) {
         return { success: false };
       }

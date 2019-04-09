@@ -1,6 +1,4 @@
 import { LOG_LEVEL } from './constants';
-import { ILogUploader } from './consumer';
-import { ILogPersistence } from './consumer/persistence';
 
 interface ILogger {
   tags(...tags: string[]): ILogger;
@@ -23,8 +21,7 @@ interface ILogEntityDecorator {
 }
 
 interface ILogConsumer {
-  onLog(logEntity: LogEntity): Promise<void>;
-  flush(): Promise<void>;
+  onLog(logEntity: LogEntity): void;
 }
 
 interface ILogEntityProcessor {
@@ -51,16 +48,9 @@ type LogConfig = {
   };
   consumer: {
     enabled: boolean;
-    memoryCountThreshold: number;
-    memorySizeThreshold: number;
-    uploadQueueLimit: number;
-    autoFlushTimeCycle: number;
-    combineSizeThreshold: number;
   };
-  logUploader: ILogUploader | null;
-  persistence: ILogPersistence | null;
-  uploadAccessor: IAccessor | null;
   decorators: ILogEntityDecorator[];
+  truncateThreshold: number;
 };
 
 class LogEntity {
