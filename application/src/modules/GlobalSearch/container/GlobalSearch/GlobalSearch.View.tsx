@@ -59,7 +59,7 @@ class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
           onClose={onClose}
           onChange={this.onChange}
           IconRightProps={{
-            'data-test-automation-id': 'global-search-clear',
+            'data-test-automation-id': 'global-search-close',
           }}
           InputProps={{
             autoFocus: true,
