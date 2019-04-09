@@ -93,7 +93,7 @@ class GroupItemComponent extends React.Component<GroupItemProps> {
         Avatar={<GroupAvatar cid={id} size="small" />}
         value={displayName}
         terms={terms}
-        data-test-automation-id={`search-${automationId}-item`}
+        data-test-automation-id={automationId}
         Actions={canJoinTeam ? joinTeamBtn : goToConversationIcon}
         isPrivate={isPrivate}
         isJoined={isJoined}

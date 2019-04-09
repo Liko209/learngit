@@ -85,7 +85,7 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
         Avatar={<Avatar uid={id} size="small" />}
         value={userDisplayName}
         terms={terms}
-        data-test-automation-id={`search-${automationId}-item`}
+        data-test-automation-id={automationId}
         Actions={[goToConversationIcon, callIcon]}
         isPrivate={false}
         isJoined={false}

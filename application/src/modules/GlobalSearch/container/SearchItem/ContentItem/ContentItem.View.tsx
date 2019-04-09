@@ -38,7 +38,7 @@ class ContentItemComponent extends React.Component<ContentItemProps> {
           </JuiIconography>}
         value={displayName}
         terms={terms}
-        data-test-automation-id={`search-${automationId}-item`}
+        data-test-automation-id={automationId}
       />
     );
   }

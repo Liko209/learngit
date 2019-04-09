@@ -44,7 +44,7 @@ type JuiSearchTitleProps = {
   onButtonClick?: (
     event: React.MouseEvent<HTMLSpanElement, MouseEvent>,
   ) => void;
-  buttonAutomationId?: string;
+  automationId?: string;
 };
 
 const JuiSearchTitle = (props: JuiSearchTitleProps) => {
@@ -53,16 +53,19 @@ const JuiSearchTitle = (props: JuiSearchTitleProps) => {
     showButton,
     buttonText,
     onButtonClick,
-    buttonAutomationId,
+    automationId,
     ...rest
   } = props;
 
   return (
-    <SearchTitleWrapper {...rest}>
+    <SearchTitleWrapper
+      data-test-automation-id={`search-${automationId}`}
+      {...rest}
+    >
       <SearchTitleText>{title}</SearchTitleText>
       {showButton && (
         <ShowMoreBtn
-          data-test-automation-id={buttonAutomationId}
+          data-test-automation-id={`search-${automationId}-button`}
           onClick={onButtonClick}
         >
           {buttonText}

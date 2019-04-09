@@ -67,7 +67,7 @@ class InstantSearchViewComponent extends Component<Props> {
         hovered={hovered}
         onMouseEnter={this.hoverHighlight(sectionIndex, cellIndex)}
         onMouseLeave={resetSelectIndex}
-        automationId={automationId}
+        automationId={`search-${automationId}-item`}
         didChange={this.selectIndexChange(sectionIndex, cellIndex)}
         terms={terms}
         id={typeof value === 'string' ? null : value}
@@ -90,8 +90,7 @@ class InstantSearchViewComponent extends Component<Props> {
               showButton={hasMore}
               buttonText={t('globalSearch.showMore')}
               title={t(title)}
-              data-test-automation-id={`search-${automationId}`}
-              buttonAutomationId={`search-${automationId}-button`}
+              automationId={automationId}
             />
             {ids.map((id: number | string, cellIndex: number) => {
               return this.createSearchItem({
