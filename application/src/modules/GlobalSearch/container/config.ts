@@ -23,7 +23,7 @@ const SearchSectionsConfig = {
     automationId: 'groups',
   },
   [RecentSearchTypes.TEAM]: {
-    title: 'globalSearch.teams',
+    title: 'globalSearch.Teams',
     Item: GroupItem,
     automationId: 'teams',
   },
