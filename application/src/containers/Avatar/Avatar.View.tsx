@@ -9,9 +9,14 @@ import { JuiAvatar } from 'jui/components/Avatar';
 import { AvatarViewProps } from './types';
 import { PreloadImg } from '../common/PreloadImg';
 import defaultAvatar from './defaultAvatar.svg';
+import defaultCoverAvatar from './defaultCoverAvatar.svg';
 
 @observer
 class AvatarView extends React.Component<AvatarViewProps> {
+  static defaultProps = {
+    shouldShowShortName: false,
+  };
+
   render() {
     const {
       bgColor,
@@ -20,6 +25,7 @@ class AvatarView extends React.Component<AvatarViewProps> {
       shortName,
       automationId,
       presence,
+      showDefaultAvatar,
       ...rest
     } = this.props;
 
@@ -36,12 +42,16 @@ class AvatarView extends React.Component<AvatarViewProps> {
 
     const DefaultAvatar = (
       <JuiAvatar
-        src={defaultAvatar}
+        src={rest.cover ? defaultCoverAvatar : defaultAvatar}
         data-test-automation-id={automationId}
         color=""
         {...rest}
       />
     );
+
+    if (showDefaultAvatar) {
+      return DefaultAvatar;
+    }
 
     return !shouldShowShortName ? (
       <PreloadImg

@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Company } from '../entity';
+import { Company, CompanyServiceParameter, E_ACCOUNT_TYPE } from '../entity';
 import { Raw } from '../../../framework/model';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
@@ -12,11 +12,42 @@ import { IEntitySourceController } from '../../../framework/controller/interface
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
 import { SYNC_SOURCE } from '../../sync/types';
-
+import { AccountUserConfig } from '../../account/config/AccountUserConfig';
 class CompanyController {
-  constructor(
-    public entitySourceController: IEntitySourceController<Company>,
-  ) {}
+  private _currentCompanyId: number;
+  constructor(public entitySourceController: IEntitySourceController<Company>) {
+    const config = new AccountUserConfig();
+    this._currentCompanyId = config.getCurrentCompanyId();
+  }
+
+  async getUserAccountTypeFromSP430(): Promise<E_ACCOUNT_TYPE | undefined> {
+    const company = await this.entitySourceController.get(
+      this._currentCompanyId,
+    );
+    if (company) {
+      const serviceParameters = company.rc_service_parameters;
+      if (serviceParameters) {
+        const infoIndex = serviceParameters.findIndex(
+          (value: CompanyServiceParameter) => {
+            return value.id === 430; // 430 means tier edition
+          },
+        );
+        if (infoIndex !== -1) {
+          return serviceParameters[infoIndex].value;
+        }
+      }
+    }
+
+    return undefined;
+  }
+
+  async isUserCompanyTelephonyOn() {
+    const company = await this.entitySourceController.get(
+      this._currentCompanyId,
+    );
+
+    return company ? !!company.allow_rc_feature_rcphone : false;
+  }
 
   async getCompanyEmailDomain(id: number): Promise<string | null> {
     const company = await this.entitySourceController.get(id);

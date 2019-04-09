@@ -8,14 +8,17 @@ import { CompanyService } from '../CompanyService';
 import { SYNC_SOURCE } from '../../../../module/sync';
 
 jest.mock('../../../../api/api');
+jest.mock('../../../../dao');
 
 const companyController = {
   getCompanyEmailDomain: jest.fn(),
   handleCompanyData: jest.fn(),
+  getUserAccountTypeFromSP430: jest.fn(),
+  isUserCompanyTelephonyOn: jest.fn(),
 };
 
 describe('CompanyController', () => {
-  let companyService: CompanyService = undefined;
+  let companyService: CompanyService;
   beforeEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
@@ -31,10 +34,26 @@ describe('CompanyController', () => {
     jest.resetAllMocks();
   });
 
-  describe('getCompanyEmailDomain()', () => {
+  describe('CompanyController', () => {
     it('should call getCompanyEmailDomain with correct parameter ', async () => {
       await companyService.getCompanyEmailDomain(123);
       expect(companyController.getCompanyEmailDomain).toBeCalledWith(123);
+    });
+
+    it('getUserAccountTypeFromSP430, should call companyController', async () => {
+      companyController.getUserAccountTypeFromSP430 = jest
+        .fn()
+        .mockReturnValue('value');
+      const res = await companyService.getUserAccountTypeFromSP430();
+      expect(res).toBe('value');
+    });
+
+    it('isUserCompanyTelephonyOn, should call companyController', async () => {
+      companyController.isUserCompanyTelephonyOn = jest
+        .fn()
+        .mockReturnValue(true);
+      const res = await companyService.isUserCompanyTelephonyOn();
+      expect(res).toBeTruthy();
     });
   });
 
