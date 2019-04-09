@@ -22,6 +22,7 @@ import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/uti
 import history from '@/history';
 import GroupModel from '@/store/models/Group';
 import GroupService from 'sdk/src/module/group';
+import { PostService } from 'sdk/src/module/post';
 
 export class MessageNotificationManager extends NotificationManager {
   constructor() {
@@ -45,31 +46,40 @@ export class MessageNotificationManager extends NotificationManager {
     }
 
     const postId = payload.ids[0];
-    const post = getEntity<Post, PostModel>(ENTITY_NAME.POST, postId);
-    if (post.creatorId === currentUserId || postId <= 0) {
+    if (postId <= 0) {
+      return;
+    }
+    const post = await ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    ).getById(postId);
+
+    if (!post || post.creator_id === currentUserId) {
       return;
     }
 
     const conversation = await ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
-    ).getById(post.groupId);
+    ).getById(post.group_id);
 
     if (!conversation) {
       return;
     }
+
+    const postModel = new PostModel(post);
     const conversationModel = new GroupModel(conversation);
     const { members, is_team } = conversation;
-    if (is_team && !this.isMyselfAtMentioned(post)) {
+
+    if (is_team && !this.isMyselfAtMentioned(postModel)) {
       return;
     }
 
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
-      post.creatorId,
+      post.creator_id,
     );
 
     const { title, body } = await this.buildNotificationBodyAndTitle(
-      post,
+      postModel,
       person,
       conversationModel,
     );
@@ -79,8 +89,9 @@ export class MessageNotificationManager extends NotificationManager {
       renotify: false,
       icon: this.getIcon(person, members.length, is_team),
       data: { id: postId, scope: this._scope },
-      onClick: this.onClickHandlerBuilder(post.groupId),
+      onClick: this.onClickHandlerBuilder(post.group_id),
     };
+
     this.show(title, opts);
   }
 
