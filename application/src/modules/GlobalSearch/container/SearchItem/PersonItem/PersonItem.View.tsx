@@ -14,8 +14,9 @@ import { OpenProfile } from '@/common/OpenProfile';
 import { ViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 
+type PersonItemProps = ViewProps & WithTranslation & { automationId?: string };
 @observer
-class PersonItemComponent extends React.Component<ViewProps & WithTranslation> {
+class PersonItemComponent extends React.Component<PersonItemProps> {
   goToConversation = async () => {
     const { goToConversation, person } = this.props;
     await goToConversation(person.id);
@@ -38,13 +39,14 @@ class PersonItemComponent extends React.Component<ViewProps & WithTranslation> {
   render() {
     const {
       t,
-      title,
+
       person,
       terms,
       onMouseEnter,
       onMouseLeave,
       hovered,
       onClose,
+      automationId,
     } = this.props;
     const { id, userDisplayName, deactivated } = person;
 
@@ -83,7 +85,7 @@ class PersonItemComponent extends React.Component<ViewProps & WithTranslation> {
         Avatar={<Avatar uid={id} size="small" />}
         value={userDisplayName}
         terms={terms}
-        data-test-automation-id={`search-${title}-item`}
+        data-test-automation-id={`search-${automationId}-item`}
         Actions={[goToConversationIcon, callIcon]}
         isPrivate={false}
         isJoined={false}

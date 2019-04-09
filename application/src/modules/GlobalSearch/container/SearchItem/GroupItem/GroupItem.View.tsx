@@ -13,8 +13,10 @@ import { JuiButton, JuiIconButton } from 'jui/components/Buttons';
 
 import { ViewProps } from './types';
 
+type GroupItemProps = ViewProps & WithTranslation & { automationId?: string };
+
 @observer
-class GroupItemComponent extends React.Component<ViewProps & WithTranslation> {
+class GroupItemComponent extends React.Component<GroupItemProps> {
   handleJoinTeam = async (e: React.MouseEvent | KeyboardEvent) => {
     e.preventDefault();
     const { handleJoinTeam, group, addRecentRecord } = this.props;
@@ -45,7 +47,6 @@ class GroupItemComponent extends React.Component<ViewProps & WithTranslation> {
   render() {
     const {
       t,
-      title,
       terms,
       group,
       onMouseEnter,
@@ -55,6 +56,7 @@ class GroupItemComponent extends React.Component<ViewProps & WithTranslation> {
       isJoined,
       hovered,
       shouldHidden,
+      automationId,
     } = this.props;
     const { id, displayName } = group;
 
@@ -91,7 +93,7 @@ class GroupItemComponent extends React.Component<ViewProps & WithTranslation> {
         Avatar={<GroupAvatar cid={id} size="small" />}
         value={displayName}
         terms={terms}
-        data-test-automation-id={`search-${title}-item`}
+        data-test-automation-id={`search-${automationId}-item`}
         Actions={canJoinTeam ? joinTeamBtn : goToConversationIcon}
         isPrivate={isPrivate}
         isJoined={isJoined}
