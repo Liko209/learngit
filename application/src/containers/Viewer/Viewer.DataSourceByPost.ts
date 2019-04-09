@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { observable, action } from 'mobx';
+import { observable, action, computed } from 'mobx';
 import { ENTITY_NAME } from '@/store/constants';
 import { getEntity } from '@/store/utils';
 import { Post } from 'sdk/module/post/entity';
@@ -34,6 +34,7 @@ class ItemListDataSourceByPost {
     this.type = type;
   }
 
+  @computed
   private get _post() {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, this.postId);
   }
