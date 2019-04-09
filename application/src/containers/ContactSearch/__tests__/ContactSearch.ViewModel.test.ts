@@ -21,7 +21,7 @@ describe('ContactSearchVM', () => {
     const value = 'aaa';
     jest.spyOn(SearchService, 'getInstance').mockReturnValue(searchService);
     contactSearchViewModel.existMembers = [1];
-    await expect(contactSearchViewModel.fetchSearch(value)).resolves.toEqual([
+    await expect(contactSearchViewModel.fetchPersons(value)).resolves.toEqual([
       { id: 2 },
     ]);
   });

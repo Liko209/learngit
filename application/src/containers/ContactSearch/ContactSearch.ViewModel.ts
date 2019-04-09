@@ -60,7 +60,7 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   @action
   fetchPersons = async (query: string) => {
-    const searchService = SearchService.getInstance();
+    const searchService = SearchService.getInstance() as SearchService;
     const result = await searchService.doFuzzySearchPersons({
       searchKey: query,
       excludeSelf: this._isExcludeMe,
