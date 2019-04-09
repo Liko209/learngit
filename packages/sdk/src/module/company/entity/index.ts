@@ -4,6 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Company } from './Company';
+import { Company, CompanyServiceParameter, E_ACCOUNT_TYPE } from './Company';
 
-export { Company };
+export { Company, CompanyServiceParameter, E_ACCOUNT_TYPE };
