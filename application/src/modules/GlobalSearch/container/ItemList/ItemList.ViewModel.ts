@@ -7,7 +7,6 @@ import { observable, action } from 'mobx';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store/constants';
-import { OpenProfile } from '@/common/OpenProfile';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { IndexRange } from 'jui/components/VirtualizedList/types';
 import {
@@ -73,11 +72,11 @@ class ItemListViewModel extends SearchViewModel<ItemListViewProps> {
     }
 
     if (currentItemType === RecentSearchTypes.PEOPLE) {
-      OpenProfile.show(currentItemValue, null, this.onClose);
+      this.goToConversation(currentItemValue as number);
       return;
     }
 
-    const { canJoin, group } = this.joinTeam(currentItemValue);
+    const { canJoin, group } = this.joinTeam(currentItemValue as number);
     if (canJoin) {
       e.preventDefault();
       this.handleJoinTeam(group);
