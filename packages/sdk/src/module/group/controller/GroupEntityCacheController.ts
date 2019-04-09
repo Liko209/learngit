@@ -7,7 +7,7 @@
 import _ from 'lodash';
 import { Group } from '../entity';
 import { EntityCacheController } from '../../../framework/controller/impl/EntityCacheController';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { IGroupService } from '../service/IGroupService';
 class GroupEntityCacheController extends EntityCacheController<Group> {
   private _individualGroups: Map<number, Group> = new Map();

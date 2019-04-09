@@ -9,6 +9,7 @@ import { SequenceProcessorHandler } from 'sdk/framework/processor';
 import { FileItem } from 'sdk/module/item/module/file/entity';
 import { ItemService } from 'sdk/module/item';
 import { mainLogger } from 'sdk';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 describe('ThumbnailPreloadProcessor', () => {
   let thumbnailPreloadProcessor: ThumbnailPreloadProcessor;
@@ -60,7 +61,7 @@ describe('ThumbnailPreloadProcessor', () => {
       const itemService = {
         getById: jest.fn(),
       };
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
       itemService.getById.mockResolvedValue(fileItem);
 
       const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
@@ -116,7 +117,7 @@ describe('ThumbnailPreloadProcessor', () => {
         const itemService = {
           getById: jest.fn(),
         };
-        ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+        ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
         itemService.getById.mockResolvedValue(fileItem);
 
         const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
@@ -159,7 +160,7 @@ describe('ThumbnailPreloadProcessor', () => {
         const itemService = {
           getById: jest.fn(),
         };
-        ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+        ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
         itemService.getById.mockResolvedValue(fileItem);
 
         const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
@@ -203,7 +204,7 @@ describe('ThumbnailPreloadProcessor', () => {
       const itemService = {
         getById: jest.fn(),
       };
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
       itemService.getById.mockResolvedValue(fileItem);
 
       const preloadSpy = jest.spyOn(thumbnailPreloadProcessor, 'preload');
@@ -241,7 +242,7 @@ describe('ThumbnailPreloadProcessor', () => {
       const itemService = {
         getById: jest.fn(),
       };
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+      ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
       itemService.getById.mockResolvedValue(fileItem);
 
       const spy = jest.spyOn(thumbnailPreloadProcessor, 'preload');

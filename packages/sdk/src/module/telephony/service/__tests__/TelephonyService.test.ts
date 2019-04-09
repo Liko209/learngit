@@ -16,12 +16,13 @@ import {
   RTCCallActionSuccessOptions,
 } from 'voip';
 import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
 jest.mock('../../controller/MakeCallController');
 jest.mock('../../../config');
-GlobalConfigService.getInstance = jest.fn();
+ServiceLoader.getInstance = jest.fn();
 
 describe('TelephonyService', () => {
   let telephonyService: TelephonyService;
@@ -173,6 +174,13 @@ describe('TelephonyService', () => {
     it('should call account controller to send call to voice mail', () => {
       telephonyService.sendToVoiceMail(callId);
       expect(accountController.sendToVoiceMail).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('ignore', () => {
+    it('should call account controller to ignore', () => {
+      telephonyService.ignore(callId);
+      expect(accountController.ignore).toHaveBeenCalledWith(callId);
     });
   });
 });

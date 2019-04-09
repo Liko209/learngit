@@ -22,6 +22,7 @@ import MultiEntityMapStore from '@/store/base/MultiEntityMapStore';
 import { Post } from 'sdk/module/post/entity';
 import { ISortableModel } from '@/store/base/fetch/types';
 import PostModel from '@/store/models/Post';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type DataMap = {
   [key: string]: {
@@ -109,7 +110,9 @@ class PostListPageViewModel extends AbstractViewModel {
     pageSize: number,
     anchor?: ISortableModel<Post>,
   ) => {
-    const postService: PostService = PostService.getInstance();
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     let ids;
     let hasMore;
     if (anchor) {

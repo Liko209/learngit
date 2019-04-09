@@ -9,12 +9,12 @@ import { rawPersonFactory } from '../../../../__tests__/factories';
 import { SYNC_SOURCE } from '../../../../module/sync';
 import { EntitySourceController } from '../../../../framework/controller/impl/EntitySourceController';
 import { Person } from '../../entity';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountGlobalConfig } from '../../../../module/account/config';
 import notificationCenter from '../../../../service/notificationCenter';
 
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../framework/controller/impl/EntitySourceController');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 
 jest.mock('../../../../dao', () => ({
   daoManager: {

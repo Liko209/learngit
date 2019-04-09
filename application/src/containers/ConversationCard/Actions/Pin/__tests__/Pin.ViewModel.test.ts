@@ -6,13 +6,13 @@
 
 import { getEntity } from '../../../../../store/utils';
 import { PinViewModel } from '../Pin.ViewModel';
-import { GroupService } from 'sdk/module/group';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const mockGroupService = {
   pinPost: jest.fn(),
 };
 
-GroupService.getInstance = jest.fn().mockReturnValue(mockGroupService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(mockGroupService);
 
 jest.mock('../../../../../store/utils');
 

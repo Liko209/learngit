@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { GroupService } from 'sdk/module/group';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { JSdkError, ERROR_CODES_SDK } from 'sdk/error';
 import { getEntity } from '../../../../store/utils';
 import { PrivacyViewModel } from '../Privacy.ViewModel';
@@ -20,7 +20,7 @@ const groupService = {
     .fn()
     .mockResolvedValue(new JSdkError(ERROR_CODES_SDK.INVALID_MODEL_ID, '')),
 };
-GroupService.getInstance = jest.fn().mockReturnValue(groupService);
+ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
 
 const mockEntity = {
   isTeam: true,

@@ -81,6 +81,10 @@ class TelephonyCallController implements IRTCCallDelegate {
   sendToVoiceMail() {
     this._rtcCall.sendToVoicemail();
   }
+
+  ignore() {
+    this._rtcCall.ignore();
+  }
 }
 
 export { TelephonyCallController };

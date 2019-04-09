@@ -1,10 +1,11 @@
-import i18next from 'i18next';
 import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { POST_LIST_TYPE } from '@/containers/PostListPage/types';
 import { toTitleCase } from '@/utils/string';
+import { SETTING_LIST_TYPE } from '@/modules/setting/container/SettingLeftRail/types';
+import i18nT from '@/utils/i18nT';
 
 function getMessagesTitle(messagePath?: string) {
   if (
@@ -19,20 +20,40 @@ function getMessagesTitle(messagePath?: string) {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, +messagePath);
     return group.displayName;
   }
-  return i18next.t('message.Messages');
+  return i18nT('message.Messages');
+}
+
+function getSettingsTitle(settingPath: string) {
+  const settingI18N = i18nT('setting.Settings');
+  if (
+    settingPath &&
+    new RegExp(`^(${Object.values(SETTING_LIST_TYPE).join('|')})$`).test(
+      settingPath,
+    )
+  ) {
+    const pathI18NKey = `setting.${getI18NKeyByRoutePath(settingPath)}`;
+    return `${settingI18N} - ${i18nT(pathI18NKey)}`;
+  }
+  return settingI18N;
+}
+
+function getI18NKeyByRoutePath(path: string) {
+  return path.replace(/\_(.)/gi, (str, v) => {
+    return v.toUpperCase();
+  });
 }
 
 const DOC_TITLE = {
   messages: getMessagesTitle,
-  dashboard: () => i18next.t('dashboard.Dashboard'),
-  phone: () => i18next.t('telephony.Phone'),
-  meetings: () => i18next.t('meeting.Meetings'),
-  contacts: () => i18next.t('contact.Contacts'),
-  calendar: () => i18next.t('calendar.Calendar'),
-  tasks: () => i18next.t('item.tasks'),
-  notes: () => i18next.t('item.notes'),
-  files: () => i18next.t('item.files'),
-  settings: () => i18next.t('setting.Settings'),
+  dashboard: () => i18nT('dashboard.Dashboard'),
+  phone: () => i18nT('telephony.Phone'),
+  meetings: () => i18nT('meeting.Meetings'),
+  contacts: () => i18nT('contact.Contacts'),
+  calendar: () => i18nT('calendar.Calendar'),
+  tasks: () => i18nT('item.tasks'),
+  notes: () => i18nT('item.notes'),
+  files: () => i18nT('item.files'),
+  settings: getSettingsTitle,
 };
 
 function getDocTitle(pathname: string) {

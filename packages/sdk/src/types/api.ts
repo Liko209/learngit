@@ -6,25 +6,22 @@
 
 type BaseConfig = {
   server?: string;
-  apiPlatform: string;
   cacheServer?: string;
-  apiPlatformVersion?: string;
+  pathPrefix?: string;
 };
 
 type RcConfig = BaseConfig & {
   clientId: string;
-  redirectUri: string;
   clientSecret: string;
+  redirectUri: string;
 };
 
-type Glip2Config = BaseConfig & {
-  clientId: string;
-  redirectUri: string;
-  clientSecret: string;
-  brandId: number;
+type GlipConfig = BaseConfig & {
+  apiServer: string;
+  presenceServer: string;
 };
 
-type GlipConfig = BaseConfig;
+type DeskTopConfig = BaseConfig & {};
 
 type UploadConfig = BaseConfig;
 
@@ -44,33 +41,21 @@ type SumologicConfig = {
 type ApiConfig = {
   rc: RcConfig;
   glip: GlipConfig;
-  glip2: Glip2Config;
+  glip_desktop: DeskTopConfig;
   upload: UploadConfig;
   splitio: SplitIOConfig;
   launchdarkly: LaunchDarklyConfig;
   sumologic: SumologicConfig;
 };
 
-type PartialApiConfig = {
-  rc?: Partial<RcConfig>;
-  glip?: Partial<GlipConfig>;
-  glip2?: Partial<Glip2Config>;
-  upload?: Partial<UploadConfig>;
-  splitio?: Partial<SplitIOConfig>;
-  launchdarkly: Partial<LaunchDarklyConfig>;
-  sumologic?: Partial<SumologicConfig>;
-};
-
-type HttpConfigType = 'glip' | 'glip2' | 'rc' | 'upload' | 'glip_desktop';
+type HttpConfigType = 'glip' | 'rc' | 'upload' | 'glip_desktop';
 
 export {
   BaseConfig,
   RcConfig,
-  Glip2Config,
   GlipConfig,
   SplitIOConfig,
   UploadConfig,
   ApiConfig,
-  PartialApiConfig,
   HttpConfigType,
 };

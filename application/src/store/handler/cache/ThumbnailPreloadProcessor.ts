@@ -13,6 +13,7 @@ import { mainLogger } from 'sdk';
 import { RULE } from '@/common/generateModifiedImageURL';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils/entities';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ImageDownloadedListener implements IImageDownloadedListener {
   constructor(private _waiter: any) {}
@@ -64,7 +65,9 @@ class ThumbnailPreloadProcessor implements IProcessor {
         return false;
       }
 
-      const itemService = ItemService.getInstance() as ItemService;
+      const itemService = ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      );
       const item = await itemService.getById(this._item.id);
       if (
         item &&

@@ -5,12 +5,13 @@
  */
 
 import { computed, observable, action } from 'mobx';
-import { AuthService } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
 import { StoreViewModel } from '@/store/ViewModel';
 import storeManager from '@/store';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Props, ViewProps } from './types';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const globalStore = storeManager.getGlobalStore();
 
@@ -26,8 +27,10 @@ class AvatarActionsViewModel extends StoreViewModel<Props>
 
   @action
   handleSignOut = async () => {
-    const authService: AuthService = AuthService.getInstance();
-    await authService.logout();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    await accountService.logout();
     window.location.href = '/';
   }
 

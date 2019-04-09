@@ -11,6 +11,7 @@ import { PostService } from 'sdk/module/post';
 import PostModel from '../models/Post';
 
 import { IdListPaginationHandler } from './IdListPagingHandler';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum DiscontinuousPostListType {
   BOOK_MARK_POSTS,
@@ -20,7 +21,9 @@ enum DiscontinuousPostListType {
 
 class PostProvider implements IEntityDataProvider<Post> {
   async getByIds(ids: number[]) {
-    const postService = PostService.getInstance() as PostService;
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     const { posts, items } = await postService.getPostsByIds(ids);
     // set items to store.
     storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items, false);

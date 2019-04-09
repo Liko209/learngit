@@ -5,17 +5,12 @@
  */
 import store from 'store2';
 import { AbstractService } from '../../../framework/service/AbstractService';
-import { container } from '../../../container';
 
 class BaseConfigService extends AbstractService {
   private _ns: string;
 
   protected onStarted() {}
   protected onStopped() {}
-
-  static getInstance<T extends BaseConfigService>(): T {
-    return container.get(this.name);
-  }
 
   protected setNameSpace(ns: string) {
     this._ns = ns;

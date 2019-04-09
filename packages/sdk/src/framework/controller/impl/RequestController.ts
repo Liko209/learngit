@@ -44,23 +44,23 @@ class RequestController<T extends IdModel = IdModel>
   }
 
   private async _get(id: number) {
-    return this.networkConfig.networkClient.get<Raw<T>>(
-      `${this.networkConfig.basePath}/${id}`,
-    );
+    return this.networkConfig.networkClient.get<Raw<T>>({
+      path: `${this.networkConfig.basePath}/${id}`,
+    });
   }
 
   private async _post<T>(data: Partial<T>) {
-    return this.networkConfig.networkClient.post<Raw<T>>(
-      `${this.networkConfig.basePath}`,
+    return this.networkConfig.networkClient.post<Raw<T>>({
       data,
-    );
+      path: `${this.networkConfig.basePath}`,
+    });
   }
 
   private async _put<T>(id: number, data: Partial<T>) {
-    return this.networkConfig.networkClient.put<Raw<T>>(
-      `${this.networkConfig.basePath}/${id}`,
+    return this.networkConfig.networkClient.put<Raw<T>>({
       data,
-    );
+      path: `${this.networkConfig.basePath}/${id}`,
+    });
   }
 
   private _validId(data: Partial<T>) {

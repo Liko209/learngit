@@ -17,6 +17,7 @@ import _ from 'lodash';
 import { ExtendedBaseModel } from '../../../../models';
 import { EntitySourceController } from '../../../../../framework/controller/impl/EntitySourceController';
 import { ItemService } from '../../../../../module/item/service';
+import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 
 jest.mock('../../../../../module/item/service');
 jest.mock('../../../../../framework/controller/impl/EntitySourceController');
@@ -112,11 +113,22 @@ describe('PostController', () => {
   });
   describe('deletePost', () => {
     beforeEach(() => {
-      ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
-      GroupConfigService.getInstance = jest
-        .fn()
-        .mockReturnValue(groupConfigService);
       daoManager.getDao.mockReturnValueOnce(postDao);
+
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.PROGRESS_SERVICE) {
+            return progressService;
+          }
+          if (serviceName === ServiceConfig.GROUP_CONFIG_SERVICE) {
+            return groupConfigService;
+          }
+          if (serviceName === ServiceConfig.ITEM_SERVICE) {
+            return itemService;
+          }
+          return null;
+        });
     });
     afterEach(() => {
       jest.clearAllMocks();
@@ -136,13 +148,24 @@ describe('PostController', () => {
 
   describe('removeItemFromPost', () => {
     beforeEach(() => {
-      ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
-      GroupConfigService.getInstance = jest
-        .fn()
-        .mockReturnValue(groupConfigService);
       daoManager.getDao.mockReturnValueOnce(postDao);
-      ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+
       testTestPreInsertController.delete = jest.fn();
+
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.PROGRESS_SERVICE) {
+            return progressService;
+          }
+          if (serviceName === ServiceConfig.GROUP_CONFIG_SERVICE) {
+            return groupConfigService;
+          }
+          if (serviceName === ServiceConfig.ITEM_SERVICE) {
+            return itemService;
+          }
+          return null;
+        });
     });
 
     afterEach(() => {

@@ -25,6 +25,7 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { Notification } from '@/containers/Notification';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type ActionErrorOptions = {
   backendErrorMessage: string;
@@ -39,7 +40,9 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   @computed
   get permissionFlags() {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     const permissionFlags = groupService.getTeamUserPermissionFlags(
       this._group.permissions || {},
     );
@@ -98,7 +101,9 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   leaveTeam = async () => {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     const userId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
 
     try {
@@ -113,7 +118,9 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   @action
   deleteTeam = async () => {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
 
     try {
       await groupService.deleteTeam(this.id);
@@ -130,7 +137,9 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
 
   @action
   archiveTeam = async () => {
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
 
     try {
       await groupService.archiveTeam(this.id);
@@ -189,7 +198,9 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     }
     const name = params.name.trim();
     const description = params.description.trim();
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     this.setNameError('');
     this.saving = true;
     try {

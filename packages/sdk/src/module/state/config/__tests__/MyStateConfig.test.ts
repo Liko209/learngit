@@ -7,6 +7,7 @@
 import { MyStateConfig } from '../MyStateConfig';
 import { CONFIG_KEYS } from '../ConfigKeys';
 import { UserConfigService, GlobalConfigService } from '../../../config';
+import { ServiceConfig, ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../config/service/GlobalConfigService');
 
@@ -17,18 +18,22 @@ describe('MyStateConfig', () => {
   function setUp() {
     userConfigService = new UserConfigService();
     userConfigService.setUserId = jest.fn();
-    UserConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(userConfigService);
 
     const mockConfigService = {
       get: jest.fn(),
       put: jest.fn(),
       remove: jest.fn(),
     };
-    GlobalConfigService.getInstance = jest
+
+    ServiceLoader.getInstance = jest
       .fn()
-      .mockReturnValue(mockConfigService);
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.USER_CONFIG_SERVICE) {
+          return userConfigService;
+        }
+        return mockConfigService;
+      });
+
     stateConfig = new MyStateConfig();
   }
 

@@ -20,6 +20,7 @@ import { RIGHT_RAIL_ITEM_TYPE, RightRailItemTypeIdMap } from './constants';
 import { TAB_CONFIG } from './config';
 import { Props } from './types';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   constructor(
@@ -35,7 +36,9 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
     pageSize: number,
     anchor?: ISortableModel<Item>,
   ): Promise<{ data: Item[]; hasMore: boolean }> {
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     const result = await itemService.getItems({
       typeId: this._typeId,
       groupId: this._groupId,
@@ -99,7 +102,9 @@ class ItemListViewModel extends StoreViewModel<Props> {
 
   @action
   private _loadTotalCount = async () => {
-    const itemService: ItemService = ItemService.getInstance();
+    const itemService = ServiceLoader.getInstance<ItemService>(
+      ServiceConfig.ITEM_SERVICE,
+    );
     this._total = await itemService.getGroupItemsCount(
       this.props.groupId,
       this._getTypeId(this._type),

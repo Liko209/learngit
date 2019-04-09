@@ -16,7 +16,6 @@ import { Person } from '../../person/entity';
 import { SortableModel } from '../../../framework/model';
 
 class SearchService extends AbstractService implements ISearchService {
-  static serviceName = 'SearchService';
   private _searchServiceController: SearchServiceController = new SearchServiceController(
     this,
   );

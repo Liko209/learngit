@@ -13,6 +13,7 @@ import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
 import GroupService, { TeamSetting, Group } from 'sdk/module/group';
 import { JError, ERROR_TYPES, ERROR_CODES_SERVER } from 'sdk/error';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   implements ConvertToTeamViewProps {
@@ -65,7 +66,9 @@ class ConvertToTeamViewModel extends AbstractViewModel<ConvertToTeamProps>
   save = async (teamSetting: TeamSetting): Promise<Group | null> => {
     try {
       const { id } = this.props;
-      const groupService: GroupService = GroupService.getInstance();
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
       this.saving = true;
       const result = await groupService.convertToTeam(
         id,

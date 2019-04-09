@@ -18,11 +18,12 @@ import {
 import { RequestHolder } from './requestHolder';
 import { omitLocalProperties, serializeUrlParams } from '../utils';
 import { responseParser } from './parser';
+import _ from 'lodash';
 
-export interface IQuery {
+export type IBaseQuery = {
   via?: NETWORK_VIA;
+  host?: string;
   path: string;
-  method: NETWORK_METHOD;
   data?: object;
   headers?: object;
   params?: object;
@@ -32,7 +33,12 @@ export interface IQuery {
   priority?: REQUEST_PRIORITY;
   HAPriority?: HA_PRIORITY;
   timeout?: number;
-}
+  pathPrefix?: string;
+};
+
+export type IQuery = IBaseQuery & {
+  method: NETWORK_METHOD;
+};
 
 export interface IResponse<T> {
   status: number;
@@ -42,6 +48,7 @@ export interface IResponse<T> {
 
 export interface INetworkRequests {
   readonly host?: string;
+  readonly pathPrefix?: string;
   readonly handlerType: IHandleType;
 }
 
@@ -64,8 +71,7 @@ export interface IResponseError {
 
 export default class NetworkClient {
   networkRequests: INetworkRequests;
-  apiPlatform: string;
-  apiPlatformVersion: string;
+  pathPrefix?: string;
   apiMap: Map<
     string,
     { resolve: IResultResolveFn<any>; reject: IResponseRejectFn }[]
@@ -76,14 +82,10 @@ export default class NetworkClient {
   // todo refactor config
   constructor(
     networkRequests: INetworkRequests,
-    apiPlatform: string,
     defaultVia: NETWORK_VIA,
-    apiPlatformVersion: string = '',
     networkManager: NetworkManager,
   ) {
-    this.apiPlatform = apiPlatform;
     this.networkRequests = networkRequests;
-    this.apiPlatformVersion = apiPlatformVersion;
     this.apiMap = new Map();
     this.defaultVia = defaultVia;
     this.networkManager = networkManager;
@@ -122,7 +124,8 @@ export default class NetworkClient {
       const request = this.getRequestByVia<T>(query, query.via);
       if (this._needCheckDuplicated(method)) {
         const apiMapKey = this._buildApiKey(query);
-        isDuplicated = this.apiMap.has(apiMapKey);
+        isDuplicated =
+          !apiMapKey.includes('index') && this.apiMap.has(apiMapKey);
         this._saveApiCallback(apiMapKey, resolve, reject);
 
         if (!isDuplicated) {
@@ -172,20 +175,22 @@ export default class NetworkClient {
       priority,
       HAPriority,
       timeout,
+      pathPrefix,
     } = query;
 
-    const versionPath = this.apiPlatformVersion
-      ? `/${this.apiPlatformVersion}`
-      : '';
-    const finalPath = `${versionPath}${this.apiPlatform}${path}`;
+    const finalPathPrefix =
+      (pathPrefix !== undefined
+        ? pathPrefix
+        : this.networkRequests.pathPrefix) || '';
+    const finalPath = `${finalPathPrefix}${path}`;
     return new NetworkRequestBuilder()
-      .setHost(this.networkRequests.host || '')
+      .setHost(query.host || this.networkRequests.host || '')
       .setHandlerType(this.networkRequests.handlerType)
       .setPath(finalPath)
       .setMethod(method)
-      .setData(data)
+      .setData(data || {})
       .setHeaders(headers || {})
-      .setParams(params)
+      .setParams(params || {})
       .setAuthfree(authFree || false)
       .setRequestConfig(requestConfig || {})
       .setRetryCount(retryCount || 0)
@@ -207,29 +212,9 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  get<T>(
-    path: string,
-    params = {},
-    via?: NETWORK_VIA,
-    requestConfig?: object,
-    headers = {},
-    retryCount?: number,
-    priority?: REQUEST_PRIORITY,
-    HAPriority?: HA_PRIORITY,
-    timeout?: number,
-  ) {
-    return this.http<T>({
-      path,
-      params,
-      headers,
-      via,
-      requestConfig,
-      retryCount,
-      priority,
-      HAPriority,
-      timeout,
-      method: NETWORK_METHOD.GET,
-    });
+  get<T>(baseQuery: IBaseQuery) {
+    const query = _.extend(baseQuery, { method: NETWORK_METHOD.GET });
+    return this.http<T>(query);
   }
 
   /**
@@ -239,12 +224,12 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  post<T>(path: string, data = {}, headers = {}, timeout?: number) {
+  post<T>(baseQuery: IBaseQuery) {
     return this.request<T>({
-      path,
-      headers,
-      timeout,
-      data: omitLocalProperties(data),
+      path: baseQuery.path,
+      headers: baseQuery.headers || {},
+      timeout: baseQuery.timeout,
+      data: omitLocalProperties(baseQuery.data || {}),
       method: NETWORK_METHOD.POST,
     });
   }
@@ -256,12 +241,12 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  put<T>(path: string, data = {}, headers = {}, timeout?: number) {
+  put<T>(baseQuery: IBaseQuery) {
     return this.http<T>({
-      path,
-      headers,
-      timeout,
-      data: omitLocalProperties(data),
+      path: baseQuery.path,
+      headers: baseQuery.headers || {},
+      timeout: baseQuery.timeout,
+      data: omitLocalProperties(baseQuery.data || {}),
       method: NETWORK_METHOD.PUT,
     });
   }
@@ -273,14 +258,9 @@ export default class NetworkClient {
    * @param {Object} [data={}] request headers
    * @returns Promise
    */
-  delete<T>(path: string, params = {}, headers = {}, timeout?: number) {
-    return this.http<T>({
-      path,
-      params,
-      headers,
-      timeout,
-      method: NETWORK_METHOD.DELETE,
-    });
+  delete<T>(baseQuery: IBaseQuery) {
+    const query = _.extend(baseQuery, { method: NETWORK_METHOD.DELETE });
+    return this.http<T>(query);
   }
 
   private _needCheckDuplicated(method: NETWORK_METHOD) {

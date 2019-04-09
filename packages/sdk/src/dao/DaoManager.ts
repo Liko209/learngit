@@ -8,8 +8,8 @@ import schema from './schema';
 import Manager from '../Manager';
 import { INewable } from '../types';
 import { SyncUserConfig } from '../module/sync/config';
-import { AccountGlobalConfig } from '../service/account/config';
 import { JobSchedulerConfig } from '../framework/utils/jobSchedule/JobSchedulerConfig';
+import { AccountGlobalConfig } from '../module/account/config/AccountGlobalConfig';
 import { DaoGlobalConfig } from './config';
 
 class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {

@@ -1,21 +1,22 @@
 import { LogUploader } from '../LogUploader';
 import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import AccountService from '../../account';
+import { AccountService } from '../../../module/account';
 import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';
-import { AccountUserConfig } from '../../account/config';
+import { AccountUserConfig } from '../../../module/account/config';
+import { ServiceLoader } from '../../../module/serviceLoader';
 
 jest.mock('sdk/api');
-jest.mock('../../account');
+jest.mock('../../../module/account');
 jest.mock('axios');
-jest.mock('../../account/config');
+jest.mock('../../../module/account/config');
 
 function createError(status: number): AxiosError {
   return (status
     ? {
       response: {
-        status,
-      },
+          status,
+        },
     }
     : {}) as AxiosError;
 }
@@ -29,7 +30,7 @@ describe('LogUploader', () => {
       },
     };
     (axios.post as jest.Mock).mockResolvedValue({});
-    AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
     (accountService.getUserEmail as jest.Mock).mockResolvedValue('abc@rc.com');
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(12345);
     (accountService.getClientId as jest.Mock).mockReturnValue('54321');
