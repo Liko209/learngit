@@ -37,6 +37,7 @@ class ContactSearch extends React.Component<Props> {
       multiple,
       autoSwitchEmail,
       maxLength,
+      initialSelectedItem,
     } = this.props;
 
     return type === ContactSearchType.PERSON ? (
@@ -72,6 +73,7 @@ class ContactSearch extends React.Component<Props> {
         minRowHeight={44}
         multiple={multiple}
         maxLength={maxLength}
+        initialSelectedItem={initialSelectedItem}
       />
     );
   }

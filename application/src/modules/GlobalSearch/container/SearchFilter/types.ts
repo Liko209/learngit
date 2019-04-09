@@ -8,6 +8,7 @@ import { SelectedItem } from 'jui/components/Downshift/TextField';
 
 type SearchFilterProps = {
   setSearchOptions(searchOptions: ContentSearchOptions): void;
+  searchOptions: ContentSearchOptions;
 };
 
 type SearchFilterViewProps = SearchFilterProps & {

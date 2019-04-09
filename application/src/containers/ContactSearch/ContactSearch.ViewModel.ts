@@ -20,6 +20,7 @@ import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
   @observable existItems: number[] = [];
   @observable suggestions: SelectedMember[] = [];
+  @observable initialSelectedItem: SelectedMember;
   selectedItems: SelectedMember[] = [];
 
   constructor(props: ContactSearchProps) {
@@ -27,11 +28,11 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
     const { groupId } = this.props;
     if (groupId) {
       const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
-      this.selectedItems.push({
+      this.initialSelectedItem = {
         id: groupId,
         label: group.displayName,
         email: group.displayName,
-      });
+      };
     }
     this.searchMembers = debounce(this.searchMembers.bind(this), 300);
     this.searchGroups = debounce(this.searchGroups.bind(this), 300);

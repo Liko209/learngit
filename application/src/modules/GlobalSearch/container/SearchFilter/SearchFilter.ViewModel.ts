@@ -19,7 +19,6 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   }
   @action
   handleSearchGroupChange = (items: SelectedItem[]) => {
-    console.log(items[0].id, 'shining');
     if (items.length) {
       return this.props.setSearchOptions({ group_id: items[0].id });
     }

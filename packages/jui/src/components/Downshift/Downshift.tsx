@@ -9,7 +9,6 @@ import styled from '../../foundation/styled-components';
 import { JuiPaper } from '../Paper';
 import { JuiDownshiftTextField, SelectedItem } from './TextField';
 import { spacing, height } from '../../foundation/utils/styles';
-// import { MenuItemProps } from '@material-ui/core/MenuItem';
 import { ChipProps } from '@material-ui/core/Chip';
 import { JuiVirtualizedList } from '../../components/VirtualizedList';
 import { JuiAutoSizer, Size } from '../../components/AutoSizer';
@@ -36,6 +35,7 @@ type JuiDownshiftProps = {
   helperText?: string;
   messageRef?: React.RefObject<HTMLInputElement>;
   maxLength?: number;
+  initialSelectedItem?: SelectedItem;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -108,6 +108,7 @@ class JuiDownshift extends React.PureComponent<
       multiple,
       messageRef,
       maxLength,
+      initialSelectedItem,
     } = this.props;
     const { inputValue, selectedItems } = this.state;
 
@@ -118,6 +119,7 @@ class JuiDownshift extends React.PureComponent<
         selectedItem={selectedItems}
         defaultHighlightedIndex={0}
         itemToString={this.handleItemToString}
+        initialSelectedItem={initialSelectedItem || null}
       >
         {({
           getInputProps,

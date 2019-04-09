@@ -37,6 +37,7 @@ type ViewProps = ContactSearchProps & {
   searchMembers: (value: string) => void;
   searchGroups: (value: string) => void;
   suggestions: SelectedMember[];
+  initialSelectedItem?: SelectedMember;
   onContactSelectChange: (item: any) => void;
   label: string;
   placeholder: string;

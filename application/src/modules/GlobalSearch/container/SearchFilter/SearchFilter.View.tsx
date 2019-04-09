@@ -17,7 +17,12 @@ type ViewProps = SearchFilterViewProps & WithTranslation;
 @observer
 class SearchFilterViewComponent extends Component<ViewProps> {
   render() {
-    const { t, handleSearchPersonChange, handleSearchGroupChange } = this.props;
+    const {
+      t,
+      handleSearchPersonChange,
+      handleSearchGroupChange,
+      searchOptions,
+    } = this.props;
     return (
       <JuiSearchFilter title={t('globalSearch.filters')}>
         <ContactSearch
@@ -26,6 +31,11 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           label={t('globalSearch.postedBy')}
           placeholder={t('globalSearch.postedByPlaceholder')}
           isExcludeMe={true}
+          groupId={
+            searchOptions && searchOptions.group_id
+              ? searchOptions.group_id
+              : undefined
+          }
           maxLength={60}
         />
         <ContactSearch
@@ -34,6 +44,11 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           label={t('globalSearch.postedIn')}
           placeholder={t('globalSearch.postedInPlaceholder')}
           isExcludeMe={true}
+          groupId={
+            searchOptions && searchOptions.group_id
+              ? searchOptions.group_id
+              : undefined
+          }
           maxLength={60}
         />
       </JuiSearchFilter>
