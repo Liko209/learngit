@@ -12,16 +12,13 @@ import { HotKeys } from 'jui/hoc/HotKeys';
 
 import { RecentSearchViewProps, RecentSearchModel } from './types';
 import { SearchSectionsConfig } from '../config';
+import { cacheEventFn } from '../constants';
 
 type Props = RecentSearchViewProps &
   WithTranslation & {
     terms: string[];
   };
 
-enum cacheEventFn {
-  _hoverHighlightMap = '_hoverHighlightMap',
-  _selectChangeMap = '_selectChangeMap',
-}
 @observer
 class RecentSearchViewComponent extends Component<Props> {
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
@@ -47,11 +44,7 @@ class RecentSearchViewComponent extends Component<Props> {
     return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
   }
 
-  createSearchItem = (config: {
-    id: number | string;
-    index: number;
-    type: string;
-  }) => {
+  createSearchItem = (config: { id: number | string; index: number; type: string }) => {
     const { selectIndex, resetSelectIndex } = this.props;
     const { id, type, index } = config;
 
@@ -87,16 +80,14 @@ class RecentSearchViewComponent extends Component<Props> {
           title={t('globalSearch.RecentSearches')}
           data-test-automation-id={'search-clear'}
         />
-        {recentRecord.map(
-          (recentSearchModel: RecentSearchModel, index: number) => {
-            const { value, type } = recentSearchModel;
-            return this.createSearchItem({
-              index,
-              type,
-              id: value,
-            });
-          },
-        )}
+        {recentRecord.map((recentSearchModel: RecentSearchModel, index: number) => {
+          const { value, type } = recentSearchModel;
+          return this.createSearchItem({
+            index,
+            type,
+            id: value,
+          });
+        })}
       </>
     );
   }
@@ -120,8 +111,6 @@ class RecentSearchViewComponent extends Component<Props> {
   }
 }
 
-const RecentSearchView = withTranslation('translations')(
-  RecentSearchViewComponent,
-);
+const RecentSearchView = withTranslation('translations')(RecentSearchViewComponent);
 
 export { RecentSearchView };

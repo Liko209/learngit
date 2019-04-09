@@ -9,3 +9,4 @@ export * from './SearchInput';
 export * from './InstantSearch';
 export * from './SearchTitle';
 export * from './RecentSearch';
+export * from './FullSearch';
