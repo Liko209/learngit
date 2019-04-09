@@ -18,7 +18,7 @@ import history from '@/history';
 import { Action } from 'history';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { GROUP_CAN_NOT_SHOWN_REASON } from 'sdk/src/module/group/constants';
+import { GROUP_CAN_NOT_SHOWN_REASON } from 'sdk/module/group/constants';
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();

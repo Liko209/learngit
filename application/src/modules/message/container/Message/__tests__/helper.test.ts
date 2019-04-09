@@ -9,7 +9,6 @@ jest.mock('sdk/module/group');
 jest.mock('@/history');
 jest.mock('@/store/handler/SectionGroupHandler');
 
-import { ProfileService } from 'sdk/module/profile';
 import history from '@/history';
 import storeManager from '@/store';
 import SectionGroupHandler from '@/store/handler/SectionGroupHandler';
@@ -43,7 +42,10 @@ function resetMockedServices() {
     },
     updateGroupLastAccessedTime: jest.fn().mockResolvedValue(''),
     async isGroupCanBeShown(id: number) {
-      return this.valid && !(await mockedProfileService.isConversationHidden());
+      return {
+        canBeShown:
+          this.valid && !(await mockedProfileService.isConversationHidden()),
+      };
     },
   };
   mockedGlobalStore = {
