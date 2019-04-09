@@ -26,8 +26,9 @@ jest.mock('@/modules/telephony');
 
 function setup(type?: TAB_TYPE | 'ALL') {
   return {
-    changeView: jest.fn(),
+    onShowMore: jest.fn(),
     onKeyUp: () => {},
+    getSearchScope: () => {},
     onKeyDown: () => {},
     onEnter: () => {},
     terms: [],
@@ -157,7 +158,7 @@ describe('InstantSearchView', () => {
         .at(0)
         .find('span')
         .simulate('click');
-      expect(props.changeView).toHaveBeenCalledWith(TAB_TYPE.PEOPLE);
+      expect(props.onShowMore).toHaveBeenCalledWith(RecentSearchTypes.PEOPLE);
     });
     it('GROUP', () => {
       const props = setup(TAB_TYPE.GROUPS);
@@ -167,7 +168,7 @@ describe('InstantSearchView', () => {
         .at(1)
         .find('span')
         .simulate('click');
-      expect(props.changeView).toHaveBeenCalledWith(TAB_TYPE.GROUPS);
+      expect(props.onShowMore).toHaveBeenCalledWith(RecentSearchTypes.GROUP);
     });
     it('TEAM', () => {
       const props = setup(TAB_TYPE.TEAM);
@@ -177,7 +178,7 @@ describe('InstantSearchView', () => {
         .at(2)
         .find('span')
         .simulate('click');
-      expect(props.changeView).toHaveBeenCalledWith(TAB_TYPE.TEAM);
+      expect(props.onShowMore).toHaveBeenCalledWith(RecentSearchTypes.TEAM);
     });
   });
 });

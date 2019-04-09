@@ -33,6 +33,7 @@ class ListSearchResultViewModel extends StoreViewModel<ListSearchResultProps>
 
   @action
   updateStore(models: SortableModel<Person | Group>[], tab: TAB_TYPE) {
+    console.info('update store');
     if (tab === TAB_TYPE.PEOPLE) {
       storeManager.dispatchUpdatedDataModels(
         ENTITY_NAME.PERSON,

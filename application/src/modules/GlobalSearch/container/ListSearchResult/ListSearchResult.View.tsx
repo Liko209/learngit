@@ -49,10 +49,6 @@ class ListSearchResultViewComponent extends Component<Props> {
       return null;
     }
 
-    if (searchResult.length === 0) {
-      return <div>empty</div>;
-    }
-
     return (
       <JuiFullSearch>
         <JuiListSubheader>
@@ -60,7 +56,11 @@ class ListSearchResultViewComponent extends Component<Props> {
             count: searchResult.length,
           })}
         </JuiListSubheader>
-        <ItemList list={searchResult} type={RecentSearchType[currentTab]} />
+        {searchResult.length === 0 ?
+          <div>empty</div>
+          :
+          <ItemList list={searchResult} type={RecentSearchType[currentTab]} />
+        }
       </JuiFullSearch>
     );
   }

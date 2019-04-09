@@ -83,11 +83,11 @@ class ItemListViewComponent extends Component<Props> {
     const { selectIndex, resetSelectIndex } = this.props;
     const { id, type, index } = config;
 
-    const { SearchItem, title } = SearchSectionsConfig[type];
+    const { Item, title } = SearchSectionsConfig[type];
     const hovered = index === selectIndex;
 
     return (
-      <SearchItem
+      <Item
         hovered={hovered}
         onMouseEnter={this.hoverHighlight(index)}
         onMouseLeave={resetSelectIndex}

@@ -108,12 +108,6 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     );
   }
 
-  @action
-  changeView = (targetTab: TAB_TYPE) => {
-    this._globalSearchStore.setCurrentTab(targetTab);
-    this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
-  }
-
   getSection<T>(section: SectionType<T>, sectionCount: number) {
     const models =
       section &&

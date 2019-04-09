@@ -8,7 +8,7 @@ import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { SectionType } from '../InstantSearch/types';
-import { RecentSearchTypes } from 'sdk/module/search/entity';
+import { RecentSearchTypes, RecentSearchModel } from 'sdk/module/search/entity';
 
 type SearchItems = {
   ids: number[];
@@ -35,4 +35,5 @@ export {
   SectionType,
   SearchItems,
   RecentSearchTypes,
+  RecentSearchModel,
 };
