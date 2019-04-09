@@ -232,8 +232,7 @@ class NotesTab extends BaseTab {
 
 class ImageAndFileItem extends BaseWebComponent {
   get thumbnail() {
-    this.warnFlakySelector();
-    return this.self.find('div').nth(0);
+    return this.getSelectorByAutomationId('thumbnail', this.self);
   }
 
   get name() {

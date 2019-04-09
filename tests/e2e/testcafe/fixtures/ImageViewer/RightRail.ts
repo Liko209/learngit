@@ -5,7 +5,7 @@
  */
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
+import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
@@ -55,21 +55,21 @@ test(formalName('Open the image thumbnail that support preview', ['Potar.He', 'P
     await imageTab.shouldHasTitle(filesName[0]);
   });
 
-  await h(t).withLog(`When I hover the image item ${filesName[0]}`, async () => {
+  await h(t).withLog(`When I hover the image ${filesName[0]} item`, async () => {
     await imageTab.nthItem(0).nameShouldBe(filesName[0]);
     await t.hover(imageTab.nthItem(0).self)
   });
 
   await h(t).withLog('Then the mouser cursor should be not changed', async () => {
     const style = await imageTab.nthItem(0).self.style
-    assert.strictEqual(style['cursor'], undefined, "the item has some style");
+    assert.notStrictEqual(style['cursor'], 'pointer', "the cursor style is little hand");
   });
 
   await h(t).withLog(`When I hover the image item ${filesName[0]} thumbnail`, async () => {
     await t.hover(imageTab.nthItem(0).thumbnail)
   });
 
-  await h(t).withLog('Then the mouser cursor should be not changed', async () => {
+  await h(t).withLog('Then the mouser cursor should be litter hand', async () => {
     const style = await imageTab.nthItem(0).thumbnail.style;
     assert.strictEqual(style['cursor'], 'pointer', "the cursor style is not little hand");
   });
@@ -99,27 +99,27 @@ test(formalName('Open the image thumbnail that support preview', ['Potar.He', 'P
     await imageTab.shouldHasTitle(filesName[1]);
   });
 
-  await h(t).withLog(`When I hover the image item ${filesName[0]}`, async () => {
-    await imageTab.nthItem(0).nameShouldBe(filesName[0]);
+  await h(t).withLog(`When I hover the image item ${filesName[1]}`, async () => {
+    await imageTab.nthItem(0).nameShouldBe(filesName[1]);
     await t.hover(imageTab.nthItem(0).self)
   });
 
   await h(t).withLog('Then the mouser cursor should be not changed', async () => {
     const style = await imageTab.nthItem(0).self.style;
-    assert.strictEqual(style['cursor'], undefined, "the item has some style");
+    assert.notStrictEqual(style['cursor'], 'pointer', "the cursor style is little hand");
   });
 
   await h(t).withLog(`When I hover the image item ${filesName[1]} thumbnail`, async () => {
-    await t.hover(imageTab.nthItem(0).thumbnail)
+    await t.hover(imageTab.nthItem(0).previewIcon)
   });
 
   await h(t).withLog('Then the mouser cursor should be not changed', async () => {
-    const style = await imageTab.nthItem(0).thumbnail.style
-    assert.strictEqual(style['cursor'], undefined, "the item has some style");
+    const style = await imageTab.nthItem(0).previewIcon.style
+    assert.notStrictEqual(style['cursor'], 'pointer', "the cursor style is little hand");
   });
 
-  await h(t).withLog(`When I click the image thumbnail of the image file ${filesName[0]}`, async () => {
-    await t.click(imageTab.nthItem(0).thumbnail)
+  await h(t).withLog(`When I click the image thumbnail of the image file ${filesName[1]}`, async () => {
+    await t.click(imageTab.nthItem(0).previewIcon)
   });
 
   await h(t).withLog('Then the image viewer dialog should not open', async () => {
