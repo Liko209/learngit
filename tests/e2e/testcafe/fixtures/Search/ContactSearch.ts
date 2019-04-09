@@ -64,25 +64,27 @@ test(formalName('Search result should be updated in real time when team privacy 
 
   let searchResults: IGroup[];
   const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`And search with keyword "${searchKeyword}"`, async () => {
-    await searchBar.typeSearchKeyword(searchKeyword);
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(searchKeyword, { speed: 0.5 });
   });
 
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchBar.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchBar.dropDownListShouldContainTeam(team);
+      await searchDialog.dropDownListShouldContainTeam(team);
     }
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+    await searchDialog.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
   // update configuration of teams
@@ -112,18 +114,18 @@ test(formalName('Search result should be updated in real time when team privacy 
   // assertion
   searchResults = [publicTeamWithMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchBar.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchBar.dropDownListShouldContainTeam(team);
+      await searchDialog.dropDownListShouldContainTeam(team);
     }
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+    await searchDialog.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
 });
@@ -177,26 +179,28 @@ test(formalName('Search result should be updated in real time when team membersh
   });
 
   let searchResults: IGroup[];
+  const searchDialog = app.homePage.searchDialog;
   const searchBar = app.homePage.header.searchBar;
   await h(t).withLog(`And search with keyword "${searchKeyword}"`, async () => {
-    await searchBar.typeSearchKeyword(searchKeyword);
+    await searchBar.clickInputArea();
+    await searchDialog.typeSearchKeyword(searchKeyword, { speed: 0.5 });
   });
 
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchBar.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchBar.dropDownListShouldContainTeam(team);
+      await searchDialog.dropDownListShouldContainTeam(team);
     }
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchBar.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+    await searchDialog.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
   // update configuration of teams
@@ -226,14 +230,14 @@ test(formalName('Search result should be updated in real time when team membersh
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchBar.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchBar.dropDownListShouldContainTeam(team);
+      await searchDialog.dropDownListShouldContainTeam(team);
     }
   }, true);
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchBar.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 });
 

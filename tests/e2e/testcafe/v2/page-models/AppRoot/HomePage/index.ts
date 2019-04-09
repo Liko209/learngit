@@ -147,7 +147,7 @@ export class HomePage extends BaseWebComponent {
     return this.getComponent(ViewerDialog);
   }
 
-  get seachDialog() {
+  get searchDialog() {
     return this.getComponent(SearchDialog);
   }
 

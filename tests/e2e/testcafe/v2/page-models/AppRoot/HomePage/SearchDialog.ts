@@ -4,7 +4,7 @@ import { IGroup } from '../../../models';
 
 export class SearchDialog extends BaseWebComponent {
   get self() {
-    return this.getSelector('role="document"');
+    return this.getSelector('[role="document"]');
   }
 
   get searchIcon() {
@@ -25,7 +25,7 @@ export class SearchDialog extends BaseWebComponent {
   }
 
   async typeSearchKeyword(text: string, options?: TypeActionOptions) {
-    await this.t.typeText(this.inputArea, text, options)
+    await this.t.typeText(this.inputArea, text, options);
   }
 
   get clearButton() {
