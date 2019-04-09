@@ -8,7 +8,7 @@ import _ from 'lodash';
 import ClientManager from './client/Manager';
 import NetworkRequestHandler from './NetworkRequestHandler';
 import OAuthTokenManager from './OAuthTokenManager';
-import NetworkRequestConsumer from './NetworkRequestConsumer';
+import { AbstractConsumer, HttpConsumer, SocketConsumer } from './consumer';
 import NetworkRequestSurvivalMode from './NetworkRequestSurvivalMode';
 import NetworkRequestDecorator from './NetworkRequestDecorator';
 import {
@@ -16,7 +16,6 @@ import {
   IRequest,
   IToken,
   NETWORK_VIA,
-  CONSUMER_MAX_QUEUE_COUNT,
   IRequestDecoration,
   NETWORK_HANDLE_TYPE,
 } from './network';
@@ -88,7 +87,7 @@ class NetworkManager {
   addRequestConsumer(
     handler: NetworkRequestHandler,
     via: NETWORK_VIA,
-    consumer: NetworkRequestConsumer,
+    consumer: AbstractConsumer,
   ) {
     handler.addRequestConsumer(via, consumer);
   }
@@ -104,23 +103,19 @@ class NetworkManager {
     const handler = new NetworkRequestHandler(this.tokenManager, handlerType);
 
     const socketVia = NETWORK_VIA.SOCKET;
-    const socketConsumer = new NetworkRequestConsumer(
+    const socketConsumer = new SocketConsumer(
+      handler,
       handler,
       this.clientManager.getApiClient(socketVia),
-      CONSUMER_MAX_QUEUE_COUNT.SOCKET,
-      socketVia,
-      handler,
       finalDecorator,
     );
     this.addRequestConsumer(handler, socketVia, socketConsumer);
 
     const httpVia = NETWORK_VIA.HTTP;
-    const httpConsumer = new NetworkRequestConsumer(
+    const httpConsumer = new HttpConsumer(
+      handler,
       handler,
       this.clientManager.getApiClient(httpVia),
-      CONSUMER_MAX_QUEUE_COUNT.HTTP,
-      httpVia,
-      handler,
       finalDecorator,
     );
     this.addRequestConsumer(handler, httpVia, httpConsumer);
