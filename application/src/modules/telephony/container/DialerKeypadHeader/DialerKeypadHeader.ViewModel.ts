@@ -1,27 +1,25 @@
 /*
  * @Author: Jeffrey Huang(jeffrey.huang@ringcentral.com)
- * @Date: 2019-03-06 16:31:49
+ * @Date: 2018-11-07 17:59:17
  * Copyright © RingCentral. All rights reserved.
  */
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { DialerContainerProps, DialerContainerViewProps } from './types';
 import { container } from 'framework';
 import { computed } from 'mobx';
+import { DialerKeypadHeaderProps, DialerKeypadHeaderViewProps } from './types';
 import { TelephonyStore } from '../../store';
-import { TelephonyService } from '../../service';
 
-class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
-  implements DialerContainerViewProps {
+class DialerKeypadHeaderViewModel extends StoreViewModel<DialerKeypadHeaderProps>
+  implements DialerKeypadHeaderViewProps {
   private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
-  private _telephonyService: TelephonyService = container.get(TelephonyService);
 
   @computed
   get keypadEntered() {
     return this._telephonyStore.keypadEntered;
   }
 
-  dtmf = (digit: string) => this._telephonyService.dtmf(digit);
+  quitKeypad = () => this._telephonyStore.quitKeypad();
 }
 
-export { DialerContainerViewModel };
+export { DialerKeypadHeaderViewModel };

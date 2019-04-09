@@ -119,4 +119,4 @@ class JuiHeader extends PureComponent<Props, State> {
   }
 }
 
-export { JuiHeader };
+export { JuiHeader, StyledHeader };

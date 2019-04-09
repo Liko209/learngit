@@ -18,6 +18,11 @@ class DialerViewModel extends StoreViewModel<DialerProps>
   get callState() {
     return this._telephonyStore.callState;
   }
+
+  @computed
+  get keypadEntered() {
+    return this._telephonyStore.keypadEntered;
+  }
 }
 
 export { DialerViewModel };

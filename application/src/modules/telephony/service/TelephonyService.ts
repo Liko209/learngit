@@ -327,6 +327,11 @@ class TelephonyService {
     this._telephonyStore.startRecording(); // for swift UX
     return this._serverTelephonyService.startRecord(this._callId as string);
   }
+
+  dtmf = (digits: string) => {
+    this._telephonyStore.inputKey(digits);
+    return this._serverTelephonyService.dtmf(this._callId as string, digits);
+  }
 }
 
 export { TelephonyService };

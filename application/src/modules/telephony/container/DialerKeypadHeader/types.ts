@@ -3,13 +3,12 @@
  * @Date: 2019-03-06 17:21:15
  * Copyright © RingCentral. All rights reserved.
  */
-import { CALL_STATE } from '../../FSM';
 
-type DialerProps = {};
+type DialerKeypadHeaderProps = {};
 
-type DialerViewProps = {
-  callState: CALL_STATE;
+type DialerKeypadHeaderViewProps = {
+  quitKeypad: () => void;
   keypadEntered: boolean;
 };
 
-export { DialerProps, DialerViewProps };
+export { DialerKeypadHeaderProps, DialerKeypadHeaderViewProps };

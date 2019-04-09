@@ -15,13 +15,43 @@ import { Add } from '../Add';
 import { Record } from '../Record';
 import { CallActions } from '../CallActions';
 import { End } from '../End';
+import { JuiIconButton } from 'jui/components/Buttons';
 
 const KeypadActions = [Mute, Keypad, Hold, Add, Record, CallActions];
+const Key2IconMap = {
+  one: '1',
+  two: '2',
+  three: '3',
+  four: '4',
+  five: '5',
+  six: '6',
+  seven: '7',
+  eight: '8',
+  nine: '9',
+  asterisk: '*',
+  zero: '0',
+  hash: '#',
+};
 
 @observer
 class DialerContainerView extends React.Component<DialerContainerViewProps> {
   render() {
-    return <JuiContainer End={End} KeypadActions={KeypadActions} />;
+    const DialerButtons = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'asterisk', 'zero', 'hash',
+    ].map(
+      str => () => (
+        <JuiIconButton
+          disableToolTip={true}
+          onClick={() => this.props.dtmf(Key2IconMap[str])}
+          size="xxlarge"
+          key={str}
+          color="grey.900"
+          variant="plain"
+        >
+          {str}
+        </JuiIconButton>
+      ));
+
+    return <JuiContainer End={End} KeypadActions={this.props.keypadEntered ? DialerButtons : KeypadActions} />;
   }
 }
 
