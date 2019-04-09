@@ -4,10 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { container, decorate, injectable } from 'framework';
-import { TelephonyStore } from '../../store';
+import { Jupiter, container } from 'framework';
 import { TelephonyService } from '../TelephonyService';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import * as telephony from '@/modules/telephony/module.config';
+import * as notification from '@/modules/notification/module.config';
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(telephony.config);
+jupiter.registerModule(notification.config);
 
 const mockServerTelephonyService = {
   answer: jest.fn(),
@@ -23,16 +28,10 @@ ServiceLoader.getInstance = jest
   .fn()
   .mockReturnValue(mockServerTelephonyService);
 
-decorate(injectable(), TelephonyStore);
-decorate(injectable(), TelephonyService);
-
-container.bind(TelephonyService).to(TelephonyService);
-container.bind(TelephonyStore).to(TelephonyStore);
-
 let telephonyService: TelephonyService;
 
 beforeAll(() => {
-  telephonyService = container.get<TelephonyService>(TelephonyService);
+  telephonyService = jupiter.get<TelephonyService>(TelephonyService);
   jest.resetAllMocks();
 });
 
