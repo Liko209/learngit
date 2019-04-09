@@ -9,7 +9,7 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { IGroup } from "../../v2/models";
+import { IGroup, ITestMeta } from "../../v2/models";
 import { SITE_URL, BrandTire } from '../../config';
 
 fixture('Search/Icon')
@@ -17,7 +17,12 @@ fixture('Search/Icon')
   .afterEach(teardownCase());
 
 
-test(formalName('Check can open conversation when click message icon in the search list', ['P1', 'JPT-1223', 'Icon', 'Search', 'Potar.He']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1223'],
+  maintainers: ['potar.he'],
+  keywords: ['search','Icon'],
+})('Check can open conversation when click message icon in the search list', async (t) => {
   const me = h(t).rcData.mainCompany.users[5];
   const anotherUser = h(t).rcData.mainCompany.users[6];
   await h(t).glip(me).init();
@@ -122,7 +127,7 @@ test(formalName('Check can open conversation when click message icon in the sear
   const joinTeamDialog = app.homePage.joinTeamDialog;
   await h(t).withLog(`Then the team join dialog should be popup`, async () => {
     await joinTeamDialog.ensureLoaded();
-    await joinTeamDialog.cancel();
+    await joinTeamDialog.clickCancelButton();
   });
 
   // message icon on recently history

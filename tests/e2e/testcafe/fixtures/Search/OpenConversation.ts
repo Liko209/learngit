@@ -10,14 +10,19 @@ import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { IGroup } from "../../v2/models";
+import { IGroup, ITestMeta } from "../../v2/models";
 import { SITE_URL, BrandTire } from '../../config';
 
 fixture('Search/conversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check can open conversation when clicking the item of search result', ['P1', 'JPT-1213', 'Search', 'Potar.He']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1213'],
+  maintainers: ['potar.he'],
+  keywords: ['search'],
+})('Check can open conversation when clicking the item of search result', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const me = users[5];
   const anotherUser = users[6];

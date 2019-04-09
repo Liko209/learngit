@@ -9,13 +9,18 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
+import { IGroup, ITestMeta } from '../../v2/models';
 
 fixture('ConversationList/MarkPrivateOrProtected')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Team admin can change team from public to private.', ['JPT-517', 'P1']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-517'],
+  maintainers: ['looper', 'potar.he'],
+  keywords: ['MarkPrivateOrProtected', 'search'],
+})('Team admin can change team from public to private.', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const admin = users[4];
   const nonMember = users[6];
@@ -82,7 +87,12 @@ test(formalName('Team admin can change team from public to private.', ['JPT-517'
 
 });
 
-test(formalName('Team admin can change team from private to public.', ['JPT-518', 'P1']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-518'],
+  maintainers: ['looper', 'potar.he'],
+  keywords: ['MarkPrivateOrProtected', 'search'],
+})('Team admin can change team from private to public.', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const admin = users[4];
   const nonMember = users[6];

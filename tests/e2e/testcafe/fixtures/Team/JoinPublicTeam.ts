@@ -12,13 +12,18 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
+import { IGroup, ITestMeta } from '../../v2/models';
 
 fixture('Team/PublicTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName(`Display Join button for public team which login user doesn't join in search result.`, ['P2', 'JPT-703', 'PublicTeam', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-703'],
+  maintainers: ['potar.he'],
+  keywords: ['search', 'PublicTeam'],
+})(`Display Join button for public team which login user doesn't join in search result.`, async t => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users
   const me = users[4];
@@ -59,38 +64,40 @@ test(formalName(`Display Join button for public team which login user doesn't jo
     await app.homePage.ensureLoaded();
   });
 
-  const search = app.homePage.header.searchBar;
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I search keyword “${searchKeyWord}”`, async () => {
-    await search.typeSearchKeyword(searchKeyWord, { replace: true, paste: true });
-    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(searchKeyWord);
+    await t.expect(searchDialog.teams.count).gte(1, { timeout: 10e3 });
   });
 
   await h(t).withLog(`And I hover search result “${publicTeamWithoutMe.name}”`, async () => {
-    await t.hover(search.getSearchItemByCid(publicTeamWithoutMe.glipId).self);
+    await t.hover(searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).self);
   });
 
   await h(t).withLog(`Then the join button should be showed `, async () => {
-    await search.getSearchItemByCid(publicTeamWithoutMe.glipId).shouldHaveJoinButton();
+    await searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).shouldHaveJoinButton();
   });
 
   await h(t).withLog(`When I hover search result “${publicTeamWithMe.name}”`, async () => {
-    await t.hover(search.getSearchItemByCid(publicTeamWithMe.glipId).self);
+    await t.hover(searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).self);
   });
 
   await h(t).withLog(`Then the join button should not be showed `, async () => {
-    await search.getSearchItemByCid(publicTeamWithMe.glipId).shouldNotHaveJoinButton();
+    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldNotHaveJoinButton();
   });
 
   let peopleCount, groupCount;
   await h(t).withLog(`When I search keyword "${otherUserName}”`, async () => {
-    await search.typeSearchKeyword(otherUserName, { replace: true, paste: true });
-    await t.expect(search.allResultItems.count).gte(1, { timeout: 10e3 });
-    peopleCount = await search.peoples.count;
-    groupCount = await search.groups.count;
+    await searchDialog.typeSearchKeyword(otherUserName, { replace: true, speed: 0.5 });
+    await t.expect(searchDialog.allResultItems.count).gte(1, { timeout: 10e3 });
+    peopleCount = await searchDialog.peoples.count;
+    groupCount = await searchDialog.groups.count;
   });
 
   for (let i of _.range(peopleCount)) {
-    const item = search.nthPeople(i);
+    const item = searchDialog.nthPeople(i);
     await h(t).withLog(`When I hover each one group result ${i + 1}/${peopleCount}`, async () => {
       await t.hover(item.self);
     });
@@ -101,7 +108,7 @@ test(formalName(`Display Join button for public team which login user doesn't jo
   }
 
   for (let i of _.range(groupCount)) {
-    const item = search.nthGroup(i);
+    const item = searchDialog.nthGroup(i);
     await h(t).withLog(`When I hover each one people result ${i + 1}/${groupCount}`, async () => {
       await t.hover(item.self);
     });
@@ -112,7 +119,12 @@ test(formalName(`Display Join button for public team which login user doesn't jo
   }
 });
 
-test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'JPT-704', 'PublicTeam', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-704'],
+  maintainers: ['potar.he'],
+  keywords: ['search', 'PublicTeam'],
+})(`Confirmation will dismiss when click cancel button.`, async t => {
   const app = new AppRoot(t);
   const me = h(t).rcData.mainCompany.users[4];
   const anotherUser = h(t).rcData.mainCompany.users[5];
@@ -136,24 +148,26 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
     await app.homePage.ensureLoaded();
   });
 
-  const search = app.homePage.header.searchBar;
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
 
   await h(t).withLog(`When I search the public team ${searchKeyword}`, async () => {
-    await search.typeSearchKeyword(searchKeyword, { replace: true, paste: true });
+    await searchBar.clickSelf()
+    await searchDialog.typeSearchKeyword(searchKeyword);
   });
 
   await h(t).withLog(`And I click join button of the public team A`, async () => {
-    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
-    await search.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
+    await t.expect(searchDialog.teams.count).gte(1, { timeout: 10e3 });
+    await searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
   });
 
   await h(t).withLog(`Then search result list dismiss`, async () => {
-    await t.expect(search.getSearchItemByCid(publicTeamWithoutMe.glipId).exists).notOk();
+    await t.expect(searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).exists).notOk();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
   await h(t).withLog(`And display a confirmation`, async () => {
-    await t.expect(joinTeamDialog.title.exists).ok();
+    await joinTeamDialog.ensureLoaded();
     await joinTeamDialog.shouldBeTeam(publicTeamWithoutMe.name);
     await t.expect(joinTeamDialog.joinButton.exists).ok();
     await t.expect(joinTeamDialog.cancelButton.exists).ok();
@@ -169,7 +183,8 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
   // });
 
   await h(t).withLog(`When I click cancel button`, async () => {
-    await joinTeamDialog.cancel();
+    await joinTeamDialog.clickCancelButton();
+    await t.debug();
   });
 
   await h(t).withLog(`And The confirmation dismiss, loginUser did not join team A`, async () => {
@@ -178,7 +193,12 @@ test(formalName(`Confirmation will dismiss when click cancel button.`, ['P2', 'J
   });
 });
 
-test(formalName(`Joined team successful after clicking join button in confirmation.`, ['P1', 'JPT-718', 'PublicTeam', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-718'],
+  maintainers: ['potar.he'],
+  keywords: ['search', 'PublicTeam'],
+})(`Joined team successful after clicking join button in confirmation.`, async t => {
   const app = new AppRoot(t);
   const me = h(t).rcData.mainCompany.users[4];
   const otherUser = h(t).rcData.mainCompany.users[5];
@@ -203,11 +223,13 @@ test(formalName(`Joined team successful after clicking join button in confirmati
     await app.homePage.ensureLoaded();
   });
 
-  const search = app.homePage.header.searchBar;
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I search the public team A ${publicTeamWithoutMe.name}, and click Join button of team A`, async () => {
-    await search.typeSearchKeyword(publicTeamWithoutMe.name, { replace: true, paste: true });
-    await t.expect(search.teams.count).gte(1, { timeout: 10e3 });
-    await search.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
+    await t.expect(searchDialog.teams.count).gte(1, { timeout: 10e3 });
+    await searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
   });
 
 
@@ -220,10 +242,14 @@ test(formalName(`Joined team successful after clicking join button in confirmati
   });
 
   await h(t).withLog(`When I click Join confirm button`, async () => {
-    await joinTeamDialog.join();
+    await joinTeamDialog.clickJoinButton();
   });
 
-  await h(t).withLog(`Then team A should be opened, and displayed on the top of conversation list`, async () => {
+  await h(t).withLog(`Then The confirmation dismiss`, async () => {
+    await t.expect(joinTeamDialog.exists).notOk();
+  });
+
+  await h(t).withLog(`And team A should be opened, and displayed on the top of conversation list`, async () => {
     await app.homePage.messageTab.conversationPage.groupIdShouldBe(publicTeamWithoutMe.glipId);
     await app.homePage.messageTab.teamsSection.nthConversationEntry(0).groupIdShouldBe(publicTeamWithoutMe.glipId);
   });
@@ -300,7 +326,7 @@ test(formalName(`The user should see go to conversation icon instead of the join
   });
 
   await h(t).withLog(`When adminUser add loginUser to the Public_team`, async () => {
-    await h(t).scenarioHelper.addMemberToTeam(publicTeamWithoutMe,[loginUser])
+    await h(t).scenarioHelper.addMemberToTeam(publicTeamWithoutMe, [loginUser]);
   });
 
   await h(t).withLog(`And loginUser checks the display of the button on profile dialog`, async () => {

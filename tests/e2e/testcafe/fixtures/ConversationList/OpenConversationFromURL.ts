@@ -9,13 +9,18 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
+import { IGroup, ITestMeta } from '../../v2/models';
 
 fixture('ConversationList/TeamSection')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Should keep its position in the conversation list and NOT be moved to the top of the list when the conversation exists in the left list', ['P2', 'JPT-872', 'Potar.He', 'ConversationList',]), async (t: TestController) => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-872'],
+  maintainers: ['potar.he'],
+  keywords: ['ConversationList', 'search'],
+})('Should keep its position in the conversation list and NOT be moved to the top of the list when the conversation exists in the left list', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users
   const loginUser = users[7];
   const otherUser = users[5];
@@ -125,7 +130,12 @@ test(formalName('Should keep its position in the conversation list and NOT be mo
 
 
 // skip due to bug: https://jira.ringcentral.com/browse/FIJI-3278
-test.skip(formalName('Should display in the top of conversation list when opening a conversation and it is out of the left list', ['P2', 'JPT-463', 'Potar.He', 'ConversationList',]), async (t: TestController) => {
+test.skip.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-463'],
+  maintainers: ['potar.he'],
+  keywords: ['ConversationList', 'search'],
+})('Should display in the top of conversation list when opening a conversation and it is out of the left list', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users
   const loginUser = users[7];
   const otherUser = users[5];
@@ -308,7 +318,12 @@ test.skip(formalName('Should display in the top of conversation list when openin
 
 
 // skip due to bug: https://jira.ringcentral.com/browse/FIJI-3278
-test.skip(formalName('Should display in the top when open a closed conversation from URL', ['P2', 'JPT-563', 'ConversationList', 'Yilia Hong']), async (t: TestController) => {
+test.skip.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-563'],
+  maintainers: ['potar.he'],
+  keywords: ['ConversationList', 'search'],
+})('Should display in the top when open a closed conversation from URL', async (t: TestController) => {
   const users = h(t).rcData.mainCompany.users
   const loginUser = users[7];
   const otherUser = users[5];

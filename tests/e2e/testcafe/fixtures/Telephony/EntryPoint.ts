@@ -130,21 +130,22 @@ test.skip(formalName('User should be able to see the 1:1 Call button in differen
   // });
 
   //  search people
-  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I search ${anotherUserName}`, async () => {
-    await searchBar.typeSearchKeyword(anotherUserName);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(anotherUserName);
   });
 
   await h(t).withLog('And hover the people first result', async () => {
-    await t.hover(searchBar.nthPeople(0).self);
+    await t.hover(searchDialog.nthPeople(0).self);
   })
 
   await h(t).withLog('Then the call button should display', async () => {
-    await t.expect(searchBar.nthPeople(0).telephonyButton).ok();
+    await t.expect(searchDialog.nthPeople(0).telephonyButton).ok();
   });
 
   await h(t).withLog('When I click the call button', async () => {
-    await searchBar.nthPeople(0).clickTelephonyButton();
+    await searchDialog.nthPeople(0).clickTelephonyButton();
   });
 
   await h(t).withLog('Then should start call and display call UI', async () => {

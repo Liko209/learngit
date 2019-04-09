@@ -10,12 +10,18 @@ import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
 import { SITE_URL, BrandTire } from '../../config';
+import { ITestMeta } from '../../v2/models';
 
 fixture('Recently Search')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Open and close the recently search/instant search/search dialog', ['JPT-1216', 'P1', 'Search', 'Potar.He']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1216'],
+  maintainers: ['potar.he'],
+  keywords: ['search'],
+})('Open and close the recently search/instant search/search dialog', async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];
@@ -89,7 +95,12 @@ test(formalName('Open and close the recently search/instant search/search dialog
 });
 
 
-test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Potar.He']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1217'],
+  maintainers: ['potar.he'],
+  keywords: ['search'],
+})('Clear recent search history', async (t) => {
   const app = new AppRoot(t);
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4];

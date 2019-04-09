@@ -8,14 +8,19 @@ import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { IGroup } from "../../v2/models";
+import { IGroup, ITestMeta } from "../../v2/models";
 import { SITE_URL, BrandTire } from '../../config';
 
 fixture('Contact Search')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Search result should be updated in real time when team privacy is changed', ['JPT-1067', 'P1', 'Search', 'henry.xu']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1067'],
+  maintainers: ['potar.he', 'henry.xu'],
+  keywords: ['search'],
+})('Search result should be updated in real time when team privacy is changed', async (t) => {
   const me = h(t).rcData.mainCompany.users[5];
   const anotherUser = h(t).rcData.mainCompany.users[6];
 
@@ -131,7 +136,12 @@ test(formalName('Search result should be updated in real time when team privacy 
 });
 
 
-test(formalName('Search result should be updated in real time when team membership is changed', ['JPT-1119', 'P1', 'Search', 'henry.xu']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1119'],
+  maintainers: ['potar.he', 'henry.xu'],
+  keywords: ['search'],
+})('Search result should be updated in real time when team membership is changed', async (t) => {
   const me = h(t).rcData.mainCompany.users[5];
   const anotherUser = h(t).rcData.mainCompany.users[6];
 

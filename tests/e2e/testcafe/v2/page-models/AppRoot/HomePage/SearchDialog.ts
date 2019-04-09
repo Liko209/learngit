@@ -23,7 +23,7 @@ export class SearchDialog extends BaseWebComponent {
     await this.t.click(this.inputArea).selectText(this.inputArea).pressKey('delete');
   }
 
-  async typeSearchKeyword(text: string, options: TypeActionOptions = { speed: 0.5 }) {
+  async typeSearchKeyword(text: string, options: TypeActionOptions = { replace: true, paste: true }) {
     await this.t.typeText(this.inputArea, text, options);
   }
 
@@ -348,18 +348,18 @@ export class JoinTeamDialog extends BaseWebComponent {
   }
 
   get joinButton() {
-    return this.self.find('button').withText('Join');
+    return this.button('Join');
   }
 
   get cancelButton() {
-    return this.self.find('button').withText('Cancel');
+    return this.button('Cancel');
   }
 
-  async join() {
+  async clickJoinButton() {
     await this.t.click(this.joinButton);
   }
 
-  async cancel() {
+  async clickCancelButton() {
     await this.t.click(this.cancelButton);
   }
 }
