@@ -146,17 +146,17 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, lastPostId);
   }
 
-  hasNewMessageSeparator() {
+  hasNewMessageSeparator = () => {
     return this.findNewMessageSeparatorIndex() > -1;
   }
 
-  findNewMessageSeparatorIndex() {
+  findNewMessageSeparatorIndex = () => {
     return this.items.findIndex(
       (item: StreamItem) => item.type === StreamItemType.NEW_MSG_SEPARATOR,
     );
   }
 
-  findPostIndex(postId?: number) {
+  findPostIndex = (postId?: number) => {
     return postId
       ? this.items.findIndex(
           (item: StreamItem) =>
