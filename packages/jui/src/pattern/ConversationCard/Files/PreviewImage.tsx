@@ -5,12 +5,7 @@
  */
 import * as Jui from './style';
 import { FileName } from './FileName';
-import React, {
-  PureComponent,
-  RefObject,
-  createRef,
-  CSSProperties,
-} from 'react';
+import React, { PureComponent, RefObject, createRef } from 'react';
 import {
   getThumbnailSize,
   ThumbnailInfo,
@@ -110,6 +105,22 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
     }
   }
 
+  private _getImageStyle = (squareWidth: number, squareHeight: number) => {
+    if (!this._loaded) return { display: 'none' };
+
+    const { justifyHeight, justifyWidth, top, left } = this._imageInfo;
+
+    const isJustifyInverse = Boolean(top || left);
+
+    const isJustifyHeight = isJustifyInverse ? justifyWidth : justifyHeight;
+    const isJustifyWidth = isJustifyInverse ? justifyHeight : justifyWidth;
+
+    const styleWidth = isJustifyWidth ? { width: squareWidth } : {};
+    const styleHeight = isJustifyHeight ? { height: squareHeight } : {};
+
+    return { ...styleWidth, ...styleHeight, display: 'block' };
+  }
+
   private _handleImageClick = (ev: React.MouseEvent) => {
     this.props.handleImageClick &&
       this.props.handleImageClick(ev, this._loaded);
@@ -123,39 +134,11 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   }
   render() {
     const { Actions, fileName, forceSize, url, placeholder } = this.props;
-    let { width, height } = this.props;
-    const imageProps = {} as SizeType;
-    const imageStyle: CSSProperties = forceSize
-      ? { display: 'none' }
-      : { position: 'absolute', display: 'none' };
 
-    if (this._loaded) {
-      const { justifyHeight, justifyWidth, top, left } = this._imageInfo;
+    const { width, height } =
+      this._loaded && !forceSize ? this._imageInfo : this.props;
 
-      if (!forceSize) {
-        height = this._imageInfo.height;
-        width = this._imageInfo.width;
-
-        if (justifyHeight) {
-          imageProps.height = this._imageInfo.height;
-        } else if (justifyWidth) {
-          imageProps.width = this._imageInfo.width;
-        }
-
-        imageStyle.top = top;
-        imageStyle.left = left;
-      }
-
-      if (forceSize) {
-        if (justifyHeight) {
-          imageProps.width = width;
-        } else if (justifyWidth) {
-          imageProps.height = height;
-        }
-      }
-
-      imageStyle.display = 'block';
-    }
+    const imageStyle = this._getImageStyle(width, height);
 
     return (
       <>
@@ -175,7 +158,6 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
               style={imageStyle}
               src={url}
               onClick={this._handleImageClick}
-              {...imageProps}
             />
             <Jui.ImageFileInfo width={width} height={height} component="div">
               <FileName filename={fileName} />
