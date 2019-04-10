@@ -7,12 +7,9 @@ import { observable, action } from 'mobx';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store/constants';
-import { RecentSearchTypes } from 'sdk/module/search/entity';
+
 import { IndexRange } from 'jui/components/VirtualizedList/types';
-import {
-  ItemListViewProps,
-  Group,
-} from './types';
+import { ItemListViewProps, Group, SearchItemTypes } from './types';
 import { SearchViewModel } from '../common/Search.ViewModel';
 
 const InitIndex = -1;
@@ -61,7 +58,11 @@ class ItemListViewModel extends SearchViewModel<ItemListViewProps> {
   }
 
   @action
-  onEnter = (e: KeyboardEvent, list: number[], currentItemType: RecentSearchTypes) => {
+  onEnter = (
+    e: KeyboardEvent,
+    list: number[],
+    currentItemType: SearchItemTypes,
+  ) => {
     const currentItemValue = list[this.selectIndex];
     if (!currentItemValue) {
       return;
@@ -71,7 +72,7 @@ class ItemListViewModel extends SearchViewModel<ItemListViewProps> {
       return;
     }
 
-    if (currentItemType === RecentSearchTypes.PEOPLE) {
+    if (currentItemType === SearchItemTypes.PEOPLE) {
       this.goToConversation(currentItemValue as number);
       return;
     }
