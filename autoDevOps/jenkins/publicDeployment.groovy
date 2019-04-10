@@ -126,19 +126,28 @@ def buildStage(Context context) {
 }
 
 def deployStage(Context context) {
-    context.deployTargets.each { deployTarget ->
+    // the reason we break it into two parts is copy package to remote machine may take a long time
+    // we hope that both machine updated at the same time
+    // so we first copy package,
+    // and then clean up the old version and unpack the new one
+
+    // step 1: copy package to remote target
+    parallel context.deployTargets.collectEntries { deployTarget -> [deployTarget.toString(), {
         // ensure dir exists
         sshCmd(deployTarget, context.deployCredentialId, "mkdir -p ${context.deployDirectory}".toString())
-        // clean old deployment
-        // TODO: maybe we should make a backup
-        sshCmd(deployTarget, context.deployCredentialId, "rm -rf ${context.deployDirectory}/*".toString())
         // copy package to target machine
         copyToRemote(deployTarget, context.deployCredentialId, context.buildPackageName, context.deployDirectory)
+    }]}
+
+    // step 2: clean old version and unpack new one
+    parallel context.deployTargets.collectEntries { deployTarget -> [deployTarget.toString(), {
+        // clean old deployment
+        sshCmd(deployTarget, context.deployCredentialId,
+            "find ${context.deployDirectory} -type f -not -name '*.tar.gz' | xargs rm".toString())
         // unpack package
         sshCmd(deployTarget, context.deployCredentialId,
-            "tar -xvf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString()
-        )
-    }
+            "tar -xvf ${context.deployDirectory}/${context.buildPackageName} -C ${context.deployDirectory}".toString())
+    }]}
 }
 
 node(context.buildNode) {
