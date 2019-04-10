@@ -34,32 +34,35 @@ const Key2IconMap = {
   hash: '#',
 };
 
+function keypadKeys(onclick: (str: string) => void) {
+  return [
+    'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'asterisk', 'zero', 'hash',
+  ].map(
+    str => {
+      const res = () => (
+        <JuiIconButton
+          disableToolTip={true}
+          onClick={_.throttle(
+            () => onclick(Key2IconMap[str]),
+            30,
+            { trailing: true, leading: false },
+          )}
+          size="xxlarge"
+          key={str}
+          color="grey.900"
+        >
+          {str}
+        </JuiIconButton>
+      );
+      res.displayName = str;
+      return res;
+    });
+}
+
 @observer
 class DialerContainerView extends React.Component<DialerContainerViewProps> {
   render() {
-    const DialerButtons = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'asterisk', 'zero', 'hash',
-    ].map(
-      str => {
-        const res = () => (
-          <JuiIconButton
-            disableToolTip={true}
-            onClick={_.throttle(
-              () => this.props.dtmf(Key2IconMap[str]),
-              30,
-              { trailing: true, leading: false },
-            )}
-            size="xxlarge"
-            key={str}
-            color="grey.900"
-          >
-            {str}
-          </JuiIconButton>
-        );
-        res.displayName = str;
-        return res;
-      });
-
-    return <JuiContainer End={End} KeypadActions={this.props.keypadEntered ? DialerButtons : KeypadActions} />;
+    return <JuiContainer End={End} KeypadActions={this.props.keypadEntered ? keypadKeys(this.props.dtmf) : KeypadActions} />;
   }
 }
 
