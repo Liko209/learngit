@@ -129,11 +129,47 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   }
   render() {
     const { Actions, fileName, forceSize, url, placeholder } = this.props;
+<<<<<<< HEAD
 
     const { width, height } =
       this._loaded && !forceSize ? this._imageInfo : this.props;
 
     const imageStyle = this._getImageStyle(width, height);
+=======
+    let { width, height } = this.props;
+    const imageProps = {} as SizeType;
+    const imageStyle: CSSProperties = forceSize
+      ? { display: 'none' }
+      : { position: 'absolute', display: 'none' };
+
+    if (this._loaded) {
+      const { justifyHeight, justifyWidth, top, left } = this._imageInfo;
+
+      if (!forceSize) {
+        height = this._imageInfo.height;
+        width = this._imageInfo.width;
+
+        if (justifyHeight) {
+          imageProps.height = this._imageInfo.height;
+        } else if (justifyWidth) {
+          imageProps.width = this._imageInfo.width;
+        }
+
+        imageStyle.top = top;
+        imageStyle.left = left;
+      }
+
+      if (forceSize) {
+        if (justifyHeight) {
+          imageProps.width = width;
+        } else if (justifyWidth) {
+          imageProps.height = height;
+        }
+      }
+
+      imageStyle.display = 'block';
+    }
+>>>>>>> hotfix/1.2.1
 
     return (
       <>

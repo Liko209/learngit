@@ -121,10 +121,6 @@ test(formalName('Check can open conversation when click message icon in the sear
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
   await h(t).withLog(`Then the team join dialog should be popup`, async () => {
-    // FIJI-4360 temp solution
-    // await app.homePage.profileDialog.shouldBePopUp();
-    // await app.homePage.profileDialog.clickCloseButton();
-    // await searchBar.clearInputAreaText();
     await joinTeamDialog.ensureLoaded();
     await joinTeamDialog.cancel();
   });

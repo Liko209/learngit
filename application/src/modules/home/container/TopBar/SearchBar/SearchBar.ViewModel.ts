@@ -19,9 +19,13 @@ import {
   RecentItems,
 } from './types';
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
-import { getGlobalValue } from '@/store/utils';
+import { getGlobalValue, getEntity } from '@/store/utils';
 import storeManager from '@/store/base/StoreManager';
+<<<<<<< HEAD
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+=======
+import GroupModel from '@/store/models/Group';
+>>>>>>> hotfix/1.2.1
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -281,6 +285,15 @@ class SearchBarViewModel extends StoreViewModel<Props> implements ViewProps {
       return (list as SearchItems[])[section].type;
     }
     return (list as RecentItems[])[section].types[cell];
+  }
+
+  canJoinTeam = (id: number) => {
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
+    const { isMember, isTeam, privacy } = group;
+    return {
+      group,
+      canJoin: !!(isTeam && privacy === 'protected' && !isMember),
+    };
   }
 
   currentResults() {
