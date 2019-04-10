@@ -4,7 +4,10 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { JuiVirtualizedList, JuiVirtualizedListHandles } from 'jui/components/VirtualizedList';
+import {
+  JuiVirtualizedList,
+  JuiVirtualizedListHandles,
+} from 'jui/components/VirtualizedList';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import React, { Component } from 'react';
@@ -12,18 +15,22 @@ import { observer } from 'mobx-react';
 
 import { ItemListProps, ItemListViewProps } from './types';
 import { SearchSectionsConfig } from '../config';
-import { cacheEventFn } from '../constants';
+import { cacheEventFn } from '../types';
 
 const MAX_COUNT = 12;
 const ITEM_HEIGHT = 40;
 
-type Props = ItemListProps & ItemListViewProps & WithTranslation & { terms: string[] };
+type Props = ItemListProps &
+  ItemListViewProps &
+  WithTranslation & { terms: string[] };
 
 @observer
 class ItemListViewComponent extends Component<Props> {
   private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
   private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
-  private _listRef: React.RefObject<JuiVirtualizedListHandles> = React.createRef();
+  private _listRef: React.RefObject<
+    JuiVirtualizedListHandles
+  > = React.createRef();
 
   private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
@@ -52,7 +59,10 @@ class ItemListViewComponent extends Component<Props> {
 
   scrollToView = () => {
     const { selectIndex, startIndex, stopIndex, setRangeIndex } = this.props;
-    if ((selectIndex < startIndex || selectIndex >= stopIndex) && this._listRef.current) {
+    if (
+      (selectIndex < startIndex || selectIndex >= stopIndex) &&
+      this._listRef.current
+    ) {
       this._listRef.current.scrollToIndex(selectIndex);
       setRangeIndex({
         startIndex: selectIndex,
@@ -79,7 +89,11 @@ class ItemListViewComponent extends Component<Props> {
     this.scrollToView();
   }
 
-  createSearchItem = (config: { id: number | string; index: number; type: string }) => {
+  createSearchItem = (config: {
+    id: number | string;
+    index: number;
+    type: string;
+  }) => {
     const { selectIndex, resetSelectIndex } = this.props;
     const { id, type, index } = config;
 

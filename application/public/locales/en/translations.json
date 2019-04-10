@@ -86,7 +86,8 @@
       "contentSearchNetworkError": "We weren't able to conduct the search. Check your network connection, then try again.",
       "contentSearchServiceError": "Sorry, something went wrong on our end and we weren't able to conduct the search. Try again later."
     },
-    "Results": "Results ({{count}})"
+    "Results": "Results ({{count}})",
+    "in": "in"
   },
   "dashboard": {
     "Dashboard": "Dashboard"

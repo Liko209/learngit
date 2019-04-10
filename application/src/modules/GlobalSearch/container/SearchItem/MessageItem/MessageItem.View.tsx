@@ -11,20 +11,19 @@ import { JuiIconography } from 'jui/foundation/Iconography';
 
 import { ViewProps } from './types';
 
-type ContentItemProps = ViewProps & WithTranslation & { automationId?: string };
-
 @observer
-class ContentItemComponent extends React.Component<ContentItemProps> {
+class MessageItemComponent extends React.Component<
+  ViewProps & WithTranslation
+> {
   render() {
     const {
+      title,
       terms,
       onMouseEnter,
       onMouseLeave,
       hovered,
-      // displayName,
       onClick,
-      automationId,
-      contentText,
+      groupName,
     } = this.props;
 
     return (
@@ -35,16 +34,16 @@ class ContentItemComponent extends React.Component<ContentItemProps> {
         onClick={onClick}
         Avatar={
           <JuiIconography iconSize="medium" iconColor={['grey', '500']}>
-            search
+            history
           </JuiIconography>}
-        value={contentText}
+        value={groupName}
         terms={terms}
-        data-test-automation-id={automationId}
+        data-test-automation-id={`search-${title}-item`}
       />
     );
   }
 }
 
-const ContentItemView = withTranslation('translations')(ContentItemComponent);
+const MessageItemView = withTranslation('translations')(MessageItemComponent);
 
-export { ContentItemView };
+export { MessageItemView };
