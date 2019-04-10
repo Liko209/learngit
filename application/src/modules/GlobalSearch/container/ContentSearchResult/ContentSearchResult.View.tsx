@@ -67,7 +67,6 @@ class ContentSearchResultViewComponent extends Component<Props> {
         </JuiFullSearch>
       );
     }
-
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper key={searchState.requestId || 0}>

@@ -35,11 +35,10 @@ class SearchFilterViewComponent extends Component<ViewProps> {
   render() {
     const {
       t,
+      searchOptions,
+      timePeriodFilter,
       handleSearchPersonChange,
       handleSearchGroupChange,
-      searchOptions,
-      typeFilter,
-      timePeriodFilter,
       handleSearchTypeChange,
       handleSearchPostDateChange,
       options,
