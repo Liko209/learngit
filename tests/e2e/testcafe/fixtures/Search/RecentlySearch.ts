@@ -32,7 +32,6 @@ test(formalName('Open and close the recently searched list', ['JPT-1216', 'P1', 
   await h(t).withLog(`And make some recently search history with ${beSearchedName}`, async () => {
     await searchBar.typeSearchKeyword(beSearchedName);
     await searchBar.nthPeople(0).enter();
-    await app.homePage.profileDialog.clickCloseButton();
     await searchBar.clearInputAreaText();
     await searchBar.quitByPressEsc();
   });
@@ -84,8 +83,6 @@ test(formalName('Clear recent search history', ['JPT-1217', 'P1', 'Search', 'Pot
   await h(t).withLog(`When make some recently search history with ${beSearchedName}`, async () => {
     await searchBar.typeSearchKeyword(beSearchedName);
     await searchBar.nthPeople(0).enter();
-    await app.homePage.profileDialog.clickCloseButton();
-
     await searchBar.clearInputAreaText();
     await searchBar.quitByPressEsc();
   });
