@@ -61,7 +61,12 @@ class ProfileMiniCardPersonFooter extends Component<
           >
             chat_bubble
           </JuiIconButton>
-          <Call color="primary" variant="plain" id={id} />
+          <Call
+            color="primary"
+            variant="plain"
+            id={id}
+            analysisSource="mini-profile"
+          />
         </JuiProfileMiniCardFooterRight>
       </>
     );

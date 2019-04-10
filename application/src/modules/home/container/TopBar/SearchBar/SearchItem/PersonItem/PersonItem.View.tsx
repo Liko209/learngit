@@ -44,9 +44,9 @@ class PersonItemView extends React.Component<ViewProps, {}> {
       sectionIndex,
       hovered,
       onClose,
+      analysisSource,
     } = this.props;
     const { id, userDisplayName, deactivated } = person;
-
     if (deactivated) {
       return null;
     }
@@ -69,6 +69,7 @@ class PersonItemView extends React.Component<ViewProps, {}> {
         id={id}
         onClick={onClose}
         size="small"
+        analysisSource={analysisSource}
       />
     );
 

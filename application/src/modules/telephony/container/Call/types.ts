@@ -13,11 +13,13 @@ type CallProps = {
   size?: 'small' | 'medium' | 'large';
   color?: string;
   onClick?: () => void;
+  analysisSource?: string;
 };
 
 type CallViewProps = {
   phoneNumber: string;
   directCall: () => void;
+  trackCall: (analysisSource?: string) => void;
   showIcon: PromisedComputedValue<boolean>;
 };
 

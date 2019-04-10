@@ -34,6 +34,7 @@ import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { analyticsCollector } from '@/AnalyticsCollector';
 /**
  * The root module, we call it AppModule,
  * it would be the first module being bootstrapped
@@ -159,6 +160,7 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
       updateAccountInfoForGlobalStore();
+      analyticsCollector.identify();
     });
 
     notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, (url: string) => {

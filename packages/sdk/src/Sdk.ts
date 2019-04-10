@@ -5,7 +5,7 @@
  */
 
 // import featureFlag from './component/featureFlag';
-import { Foundation, NetworkManager, Token } from 'foundation';
+import { Foundation, NetworkManager, Token, dataAnalysis } from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
@@ -95,6 +95,7 @@ class Sdk {
       this.accountManager.updateSupportedServices();
       notificationCenter.emitKVChange(SERVICE.LOGIN);
     }
+    this._initDataAnalysis();
   }
 
   async onAuthSuccess(isRCOnlyMode: boolean) {
@@ -151,6 +152,7 @@ class Sdk {
       ServiceConfig.USER_CONFIG_SERVICE,
     ).clear();
     AccountGlobalConfig.removeUserDictionary();
+    this._resetDataAnalysis();
   }
 
   updateNetworkToken(tokens: { rcToken?: Token; glipToken?: string }) {
@@ -176,6 +178,13 @@ class Sdk {
     } else {
       this.serviceManager.stopServices(services);
     }
+  }
+
+  private _initDataAnalysis() {
+    dataAnalysis.init();
+  }
+  private _resetDataAnalysis() {
+    dataAnalysis.reset();
   }
 }
 

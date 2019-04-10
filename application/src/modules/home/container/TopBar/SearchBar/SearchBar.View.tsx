@@ -128,10 +128,18 @@ class SearchBarView extends React.Component<ViewProps & Props> {
     cellIndex: number;
     sectionIndex: number;
     type: string;
+    analysisSource: string;
     hasMore?: boolean;
   }) => {
     const { terms, selectIndex, resetSelectIndex } = this.props;
-    const { id, type, hasMore, sectionIndex, cellIndex } = config;
+    const {
+      id,
+      type,
+      hasMore,
+      sectionIndex,
+      cellIndex,
+      analysisSource,
+    } = config;
 
     const { SearchItem, title } = SearchSectionsConfig[type];
     const Component = (
@@ -151,6 +159,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
         terms={terms}
         id={id}
         key={id}
+        analysisSource={analysisSource}
       />
     );
 
@@ -186,6 +195,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
                 hasMore,
                 sectionIndex,
                 cellIndex,
+                analysisSource: 'instant search result',
               });
             })}
           </React.Fragment>
@@ -225,6 +235,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
               type: types[cellIndex],
               hasMore: false,
               sectionIndex: 0,
+              analysisSource: 'recently searched contact',
             });
           });
         })}

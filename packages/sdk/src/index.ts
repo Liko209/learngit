@@ -30,4 +30,4 @@ registerConfigs.constants.forEach(config =>
 const sdk: Sdk = container.get(Sdk.name);
 export { sdk as Sdk };
 export { sdk, service, utils, dao, api, error };
-export { mainLogger, ILogger } from 'foundation';
+export { mainLogger, ILogger, dataAnalysis } from 'foundation';
