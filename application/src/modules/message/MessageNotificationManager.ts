@@ -51,10 +51,11 @@ export class MessageNotificationManager extends NotificationManager {
 
     const postId = payload.ids[0];
     const result = await this.shouldEmitNotification(postId);
+
     if (!result) {
       return;
     }
-    const { postModel, conversationModel } = result;
+    const { postModel, groupModel } = result;
 
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
@@ -64,9 +65,10 @@ export class MessageNotificationManager extends NotificationManager {
     const { title, body } = await this.buildNotificationBodyAndTitle(
       postModel,
       person,
-      conversationModel,
+      groupModel,
     );
-    const { members, isTeam } = conversationModel;
+
+    const { members, isTeam } = groupModel;
 
     const opts: NotificationOpts = {
       body,
@@ -91,29 +93,30 @@ export class MessageNotificationManager extends NotificationManager {
     if (!post || post.creator_id === currentUserId || post.deactivated) {
       return false;
     }
-    const activityData = (post.activity_data || {}) as { key?: string };
+    const activityData = post.activity_data || {};
     const isPostType =
       !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
     if (!isPostType) {
       return false;
     }
 
-    const conversation = await ServiceLoader.getInstance<GroupService>(
+    const group = await ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     ).getById(post.group_id);
 
-    if (!conversation) {
+    if (!group) {
       return false;
     }
 
     const postModel = new PostModel(post);
-    const conversationModel = new GroupModel(conversation);
+    const groupModel = new GroupModel(group);
 
-    if (conversationModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
+    if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
       return false;
     }
-    return { postModel, conversationModel };
+    return { postModel, groupModel };
   }
+
   onClickHandlerBuilder(groupId: number) {
     return () => {
       const currentURL = history.location.pathname;
