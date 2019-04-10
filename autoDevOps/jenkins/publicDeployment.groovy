@@ -93,6 +93,8 @@ def checkoutStage(Context context) {
 def installDependencyStage(Context context) {
     sh "echo 'registry=${context.npmRegistry}' > .npmrc"
     sshagent (credentials: [context.gitCredentialId]) {
+        sh 'npm install @sentry/cli@1.40.0 --unsafe-perm'
+        sh 'npm install @babel/parser@7.3.4 --ignore-scripts --unsafe-perm'
         sh 'npm install --only=dev --ignore-scripts --unsafe-perm'
         sh 'npm install --ignore-scripts --unsafe-perm'
         sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
@@ -140,6 +142,7 @@ def deployStage(Context context) {
 }
 
 node(context.buildNode) {
+    env.SENTRYCLI_CDNURL='https://cdn.npm.taobao.org/dist/sentry-cli'
     stage('prepare') {prepareStage(context)}
     stage('checkout') {checkoutStage(context)}
     stage('install dependencies') {installDependencyStage(context)}
