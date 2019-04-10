@@ -44,7 +44,11 @@ class RecentSearchViewComponent extends Component<Props> {
     return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
   }
 
-  createSearchItem = (config: { id: number | string; index: number; type: string }) => {
+  createSearchItem = (config: {
+    id: number | string;
+    index: number;
+    type: string;
+  }) => {
     const { selectIndex, resetSelectIndex } = this.props;
     const { id, type, index } = config;
 
@@ -78,16 +82,18 @@ class RecentSearchViewComponent extends Component<Props> {
           showButton={true}
           buttonText={t('globalSearch.ClearHistory')}
           title={t('globalSearch.RecentSearches')}
-          data-test-automation-id={'search-clear'}
+          automationId={'search-clear'}
         />
-        {recentRecord.map((recentSearchModel: RecentSearchModel, index: number) => {
-          const { value, type } = recentSearchModel;
-          return this.createSearchItem({
-            index,
-            type,
-            id: value,
-          });
-        })}
+        {recentRecord.map(
+          (recentSearchModel: RecentSearchModel, index: number) => {
+            const { value, type } = recentSearchModel;
+            return this.createSearchItem({
+              index,
+              type,
+              id: value,
+            });
+          },
+        )}
       </>
     );
   }
@@ -111,6 +117,8 @@ class RecentSearchViewComponent extends Component<Props> {
   }
 }
 
-const RecentSearchView = withTranslation('translations')(RecentSearchViewComponent);
+const RecentSearchView = withTranslation('translations')(
+  RecentSearchViewComponent,
+);
 
 export { RecentSearchView };

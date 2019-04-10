@@ -17,6 +17,7 @@ const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
   border-left: 0;
   border-top-left-radius: ${radius('xl')};
   border-top-right-radius: ${radius('xl')};
+  border-color: ${grey('300')};
 `;
 
 const ClearButton = styled.span`
