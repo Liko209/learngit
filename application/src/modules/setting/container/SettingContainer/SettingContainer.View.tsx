@@ -36,9 +36,7 @@ class SettingContainerViewComponent extends Component<
     const scrollEl = this._wrapRef.current;
     if (scrollEl) {
       this._scrollEl = scrollEl;
-      this._scrollEl.scrollTo({
-        top: scrollHeight,
-      });
+      this._scrollEl.scrollTop = scrollHeight;
     }
   }
 
