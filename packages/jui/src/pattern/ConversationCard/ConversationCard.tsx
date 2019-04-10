@@ -56,6 +56,7 @@ const StyledConversationCard = styled<
   'div'
 >('div')`
   position: relative;
+  background-color: ${palette('common', 'white')};
   display: flex;
   transition: background-color 0.2s ease-in;
   &:hover,

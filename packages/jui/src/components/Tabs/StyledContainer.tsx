@@ -16,7 +16,6 @@ const StyledContainer = styled('div')<{ offset: number }>`
     position: static;
     right: unset;
     opacity: 1;
-    min-height: 0;
   }
 `;
 
