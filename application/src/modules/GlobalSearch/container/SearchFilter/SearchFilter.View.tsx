@@ -14,19 +14,8 @@ import { SearchFilterViewProps, SearchContentTypeItem } from './types';
 import {
   JuiBoxSelect,
   JuiBoxSelectProps,
-<<<<<<< HEAD
-<<<<<<< HEAD
 } from 'jui/components/Selects/BoxSelect';
 import { JuiMenuItem } from 'jui/components';
-=======
-} from 'jui/src/components/Selects/BoxSelect';
-import { JuiMenuItem } from 'jui/src/components';
-=======
-} from 'jui/components/Selects/BoxSelect';
-import { JuiMenuItem } from 'jui/components';
->>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] change import path
-
->>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] refactor boxselector, add selector to container.
 type ViewProps = SearchFilterViewProps & WithTranslation;
 
 @observer
@@ -45,7 +34,6 @@ class SearchFilterViewComponent extends Component<ViewProps> {
   render() {
     const {
       t,
-<<<<<<< HEAD
       searchOptions,
       typeFilter,
       timePeriodFilter,
@@ -54,20 +42,6 @@ class SearchFilterViewComponent extends Component<ViewProps> {
       handleSearchTypeChange,
       handleSearchPostDateChange,
       options,
-=======
-<<<<<<< HEAD
-      handleSearchPersonChange,
-      handleSearchGroupChange,
-      searchOptions,
-=======
-      typeFilter,
-      timePeriodFilter,
-      handleSearchPersonChange,
-      handleSearchGroupChange,
-      handleSearchTypeChange,
-      handleSearchPostDateChange,
->>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] refactor boxselector, add selector to container.
->>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] refactor boxselector, add selector to container.
     } = this.props;
     return (
       <JuiSearchFilter title={t('globalSearch.filters')}>
@@ -102,7 +76,6 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           handleChange={handleSearchTypeChange}
           label={t('globalSearch.Type')}
           isFullWidth={true}
-<<<<<<< HEAD
           value={options.type as string}
         >
           {typeFilter.map((item: SearchContentTypeItem) => {
@@ -110,14 +83,6 @@ class SearchFilterViewComponent extends Component<ViewProps> {
               <JuiMenuItem value={item.value} key={item.id}>
                 {t(`globalSearch.${item.name}`)}
                 {item.count ? ` (${item.count})` : ''}
-=======
-        >
-          {typeFilter.map((item: SearchContentTypeItem) => {
-            return (
-              <JuiMenuItem value={item.id} key={item.id}>
-                {t(`globalSearch.${item.value}`)}{' '}
-                {item.count === undefined ? '' : `(${item.count})`}
->>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] refactor boxselector, add selector to container.
               </JuiMenuItem>
             );
           })}
@@ -128,10 +93,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           handleChange={handleSearchPostDateChange}
           label={t('globalSearch.TimePosted')}
           isFullWidth={true}
-<<<<<<< HEAD
           value={this.props.timeType}
-=======
->>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] refactor boxselector, add selector to container.
         >
           {timePeriodFilter.map((item: SearchContentTypeItem) => {
             return (
