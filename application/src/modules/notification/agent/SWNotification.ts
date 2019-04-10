@@ -19,8 +19,6 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
   constructor() {
     super();
     this.isSupported() && this._subscribeWorkerMessage();
-    // @ts-ignore
-    window.s = this;
   }
 
   isSupported() {
