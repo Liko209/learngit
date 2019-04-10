@@ -7,7 +7,7 @@ import React, { memo } from 'react';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 
 import styled from '../../foundation/styled-components';
-import { JuiOutlineTextField } from '../../components/Forms/TextField';
+import { JuiOutlineTextField } from '../../components/Forms/OutlineTextField';
 // import { JuiSearchBar } from '../SearchBar';
 import { width, palette, opacity } from '../../foundation/utils';
 import { Theme } from '../../foundation/theme/theme';

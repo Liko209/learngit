@@ -8,7 +8,8 @@ import { container, Jupiter } from 'framework';
 import { config } from '../../../module.config';
 import { GlobalSearchStore } from '../../../store';
 import { SearchService } from 'sdk/module/search';
-import { RecentSearchTypes } from 'sdk/module/search/entity';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+
 import history from '../../../../../history';
 
 jest.mock('@/containers/Notification');
@@ -20,8 +21,7 @@ jest.mock('@/store/utils');
 jest.mock('../../../../../utils/i18nT');
 
 // import i18nT from '../../../../../utils/i18nT';
-
-// import { SEARCH_SCOPE, SEARCH_VIEW } from '../types';
+import { SearchItemTypes } from '../types';
 import { RecentSearchViewModel } from '../RecentSearch.ViewModel';
 
 function clearMocks() {
@@ -45,7 +45,8 @@ describe('RecentSearchViewModel', () => {
       return { terms: [], sortableModels: [{ id: 1 }] };
     });
     searchService.clearRecentSearchRecords = jest.fn();
-    SearchService.getInstance = jest.fn().mockReturnValue(searchService);
+    searchService.getRecentSearchRecords = jest.fn().mockReturnValue([]);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(searchService);
   }
 
   beforeEach(() => {
@@ -145,6 +146,14 @@ describe('RecentSearchViewModel', () => {
   });
 
   describe('onEnter()', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(recentSearchViewModel, 'addRecentRecord')
+        .mockImplementation(() => {});
+      jest
+        .spyOn(recentSearchViewModel, 'fetchRecent')
+        .mockImplementation(() => {});
+    });
     it('If select item type is people should be go to conversation', () => {
       const id = 1;
       jest.spyOn(recentSearchViewModel, 'goToConversation');
@@ -153,12 +162,13 @@ describe('RecentSearchViewModel', () => {
         .mockReturnValue(id);
       jest
         .spyOn(recentSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(RecentSearchTypes.PEOPLE);
+        .mockReturnValue(SearchItemTypes.PEOPLE);
       const keyBoardEvent = {
         preventDefault: jest.fn(),
       } as any;
       recentSearchViewModel.onEnter(keyBoardEvent);
       expect(recentSearchViewModel.goToConversation).toHaveBeenCalledWith(id);
+      expect(recentSearchViewModel.addRecentRecord).toHaveBeenCalled();
     });
     it('If select item type is team/group and cannot join should be go to conversation', () => {
       const id = 1;
@@ -173,12 +183,13 @@ describe('RecentSearchViewModel', () => {
         .mockReturnValue(id);
       jest
         .spyOn(recentSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(RecentSearchTypes.GROUP);
+        .mockReturnValue(SearchItemTypes.GROUP);
       const keyBoardEvent = {
         preventDefault: jest.fn(),
       } as any;
       recentSearchViewModel.onEnter(keyBoardEvent);
       expect(recentSearchViewModel.goToConversation).toHaveBeenCalledWith(id);
+      expect(recentSearchViewModel.addRecentRecord).toHaveBeenCalled();
     });
     it('If select item type is team/group and can join should be call handleJoinTeam', () => {
       const id = 1;
@@ -193,7 +204,7 @@ describe('RecentSearchViewModel', () => {
         .mockReturnValue(id);
       jest
         .spyOn(recentSearchViewModel, 'currentItemType', 'get')
-        .mockReturnValue(RecentSearchTypes.TEAM);
+        .mockReturnValue(SearchItemTypes.TEAM);
       const keyBoardEvent = {
         preventDefault: jest.fn(),
       } as any;
@@ -201,6 +212,7 @@ describe('RecentSearchViewModel', () => {
       expect(recentSearchViewModel.handleJoinTeam).toHaveBeenCalledWith(
         canJoin.group,
       );
+      expect(recentSearchViewModel.addRecentRecord).toHaveBeenCalled();
     });
   });
 

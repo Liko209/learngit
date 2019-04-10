@@ -20,23 +20,29 @@ import {
   JuiIconographyProps,
 } from '../../../foundation/Iconography';
 import { Theme } from '../../../foundation/theme/theme';
+import {
+  IconPosition,
+  InputRadius,
+  InputRadiusKeys,
+  OutlineTextSize,
+} from './types';
 
-type IconPosition = 'left' | 'right' | 'both';
-
-const INPUT_HEIGHT = 10;
-
-type InputRadius = {
-  circle: string; // half of height
-  rounded: string; // 4px
-  rectangle: number; // 0px
+const OUTLINE_TEXT_HEIGHT = {
+  small: 8,
+  medium: 10,
+  large: 12,
 };
-type InputRadiusKeys = keyof InputRadius;
-const getRadius = (theme: Theme, radiusType: InputRadiusKeys) => {
-  const { radius, size } = theme;
+
+const getRadius = (
+  theme: Theme,
+  radiusType: InputRadiusKeys,
+  size: OutlineTextSize,
+) => {
+  const { radius, size: box } = theme;
   const type: InputRadius = {
     rectangle: radius.zero,
     rounded: radius.lg,
-    circle: `${size.height * INPUT_HEIGHT * radius.round}px`,
+    circle: `${box.height * OUTLINE_TEXT_HEIGHT[size] * radius.round}px`,
   };
   return type[radiusType];
 };
@@ -46,6 +52,7 @@ type CompositeWrapperProps = {
   focus: boolean;
   radius: InputRadiusKeys;
   disabled?: boolean;
+  size: OutlineTextSize;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
 };
 
@@ -54,6 +61,7 @@ const CompositeWrapper = ({
   radius,
   focus,
   disabled,
+  size,
   ...rest
 }: CompositeWrapperProps) => <div {...rest} />;
 
@@ -61,11 +69,12 @@ const StyledWrapper = styled<CompositeWrapperProps>(CompositeWrapper)`
   display: flex;
   align-items: center;
   position: relative;
-  height: ${height(INPUT_HEIGHT)};
+  height: ${({ size }) => height(OUTLINE_TEXT_HEIGHT[size])};
+  min-height: ${({ size }) => height(OUTLINE_TEXT_HEIGHT[size])};
   background-color: ${({ disabled }) =>
     disabled ? grey('100') : palette('common', 'white')};
   border: 1px solid ${({ focus }) => (focus ? grey('400') : grey('300'))};
-  border-radius: ${({ theme, radius }) => getRadius(theme, radius)};
+  border-radius: ${({ theme, radius, size }) => getRadius(theme, radius, size)};
   box-sizing: border-box;
   padding: 0 ${spacing(4)};
   &:hover {
@@ -114,6 +123,7 @@ type JuiOutlineTextFieldProps = {
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   value?: string;
+  size?: OutlineTextSize;
 } & (
   | {
     iconPosition?: Extract<IconPosition, 'both'>;
@@ -140,6 +150,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
     onClickIconRight,
     onClick,
     value,
+    size = 'medium',
     ...rest
   } = props;
   const { onFocus, onBlur, ...others } = InputProps;
@@ -161,6 +172,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
       radius={radiusType}
       disabled={disabled}
       onClick={onClick}
+      size={size}
       {...rest}
     >
       {(iconPosition === 'left' || iconPosition === 'both') && (

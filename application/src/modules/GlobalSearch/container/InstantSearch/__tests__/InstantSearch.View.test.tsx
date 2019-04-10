@@ -8,11 +8,12 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { ThemeProvider } from 'styled-components';
 import { JuiTypography } from 'jui/foundation/Typography';
-import { RecentSearchTypes } from 'sdk/module/search/entity';
+
 import { TAB_TYPE } from '@/modules/GlobalSearch/container/InstantSearch/types';
 import { InstantSearchView } from '@/modules/GlobalSearch/container/InstantSearch/InstantSearch.View';
 import { JuiSearchTitle } from 'jui/pattern/GlobalSearch';
 import { theme } from '../../../../../__tests__/utils';
+import { SearchItemTypes } from '../types';
 
 const mountWithTheme = (content: React.ReactNode) =>
   mount(<ThemeProvider theme={theme}>{content}</ThemeProvider>);
@@ -39,19 +40,28 @@ function setup(type?: TAB_TYPE | 'ALL') {
     selectIndex: [-1, -1],
     searchResult: [
       {
-        ids: type === TAB_TYPE.PEOPLE || type === 'ALL' ? [1, 2, 3, 4, 5] : [1, 2, 3],
+        ids:
+          type === TAB_TYPE.PEOPLE || type === 'ALL'
+            ? [1, 2, 3, 4, 5]
+            : [1, 2, 3],
         hasMore: type === TAB_TYPE.PEOPLE || type === 'ALL',
-        type: RecentSearchTypes.PEOPLE,
+        type: SearchItemTypes.PEOPLE,
       },
       {
-        ids: type === TAB_TYPE.GROUPS || type === 'ALL' ? [1, 2, 3, 4, 5] : [1, 2, 3],
+        ids:
+          type === TAB_TYPE.GROUPS || type === 'ALL'
+            ? [1, 2, 3, 4, 5]
+            : [1, 2, 3],
         hasMore: type === TAB_TYPE.GROUPS || type === 'ALL',
-        type: RecentSearchTypes.GROUP,
+        type: SearchItemTypes.GROUP,
       },
       {
-        ids: type === TAB_TYPE.TEAM || type === 'ALL' ? [1, 2, 3, 4, 5] : [1, 2, 3],
+        ids:
+          type === TAB_TYPE.TEAM || type === 'ALL'
+            ? [1, 2, 3, 4, 5]
+            : [1, 2, 3],
         hasMore: type === TAB_TYPE.TEAM || type === 'ALL',
-        type: RecentSearchTypes.TEAM,
+        type: SearchItemTypes.TEAM,
       },
     ],
   };
@@ -158,7 +168,7 @@ describe('InstantSearchView', () => {
         .at(0)
         .find('span')
         .simulate('click');
-      expect(props.onShowMore).toHaveBeenCalledWith(RecentSearchTypes.PEOPLE);
+      expect(props.onShowMore).toHaveBeenCalledWith(SearchItemTypes.PEOPLE);
     });
     it('GROUP', () => {
       const props = setup(TAB_TYPE.GROUPS);
@@ -168,7 +178,7 @@ describe('InstantSearchView', () => {
         .at(1)
         .find('span')
         .simulate('click');
-      expect(props.onShowMore).toHaveBeenCalledWith(RecentSearchTypes.GROUP);
+      expect(props.onShowMore).toHaveBeenCalledWith(SearchItemTypes.GROUP);
     });
     it('TEAM', () => {
       const props = setup(TAB_TYPE.TEAM);
@@ -178,7 +188,7 @@ describe('InstantSearchView', () => {
         .at(2)
         .find('span')
         .simulate('click');
-      expect(props.onShowMore).toHaveBeenCalledWith(RecentSearchTypes.TEAM);
+      expect(props.onShowMore).toHaveBeenCalledWith(SearchItemTypes.TEAM);
     });
   });
 });
