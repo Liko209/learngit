@@ -7,21 +7,15 @@
 import { computed, observable, action } from 'mobx';
 import { StoreViewModel } from '@/store/ViewModel';
 import { SelectedItem } from 'jui/components/Downshift/TextField';
-import { SearchFilterProps, SearchContentTypeItem } from './types';
+import {
+  SearchFilterProps,
+  SearchContentTypeItem,
+  DATE_DICTIONARY,
+  DATE_PERIOD,
+} from './types';
 import { ESearchContentTypes } from 'sdk/api/glip/search';
 import { TypeDictionary } from 'sdk/utils';
-
-enum DATE_DICTIONARY {
-  ANY_TIME = 1,
-  THIS_WEEK = 2,
-  THIS_MONTH = 3,
-  THIS_YEAR = 4,
-}
-enum DATE_PERIOD {
-  WEEK = 28,
-  MONTH = 300,
-  YEAR = 365,
-}
+import moment from 'moment';
 
 class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   @observable
@@ -56,9 +50,9 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
     if (!this.props.options.begin_time) {
       return DATE_DICTIONARY.ANY_TIME;
     }
-    const currentTime = new Date().getTime();
-    const days = Math.floor(
-      (currentTime - this.props.options.begin_time) / (60 * 60 * 1000 * 24),
+    const days = moment(new Date()).diff(
+      moment(this.props.options.begin_time),
+      'days',
     );
     if (days < DATE_PERIOD.WEEK) return DATE_DICTIONARY.THIS_WEEK;
     if (days < DATE_PERIOD.MONTH) return DATE_DICTIONARY.THIS_MONTH;
@@ -132,16 +126,21 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   }
 
   getTimeStamp(id: number | string | undefined) {
-    const d: Date = new Date();
     switch (id) {
       case DATE_DICTIONARY.ANY_TIME:
         return null;
       case DATE_DICTIONARY.THIS_WEEK:
-        return d.setDate(d.getDay() - 7);
+        return moment()
+          .subtract(7, 'days')
+          .valueOf();
       case DATE_DICTIONARY.THIS_MONTH:
-        return d.setMonth(d.getMonth() - 1);
+        return moment()
+          .subtract(1, 'months')
+          .valueOf();
       case DATE_DICTIONARY.THIS_YEAR:
-        return d.setFullYear(d.getFullYear() - 1);
+        return moment()
+          .subtract(1, 'years')
+          .valueOf();
     }
     return null;
   }
