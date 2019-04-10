@@ -255,7 +255,7 @@ test.meta(<ITestMeta>{
   caseIds: ['JPT-1487'],
   maintainers: ['potar.he'],
   keywords: ['search'],
-})('Search result should be updated in real time when team privacy is changed', async (t) => {
+})('Check can clear search text in the search dialog', async (t) => {
   const me = h(t).rcData.mainCompany.users[5];
   const anotherUser = h(t).rcData.mainCompany.users[6];
   await h(t).glip(me).init();

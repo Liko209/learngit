@@ -17,7 +17,7 @@ fixture('Recently Search')
   .afterEach(teardownCase());
 
 test.meta(<ITestMeta>{
-  priority: ['P1'],
+  priority: ['P2'],
   caseIds: ['JPT-1216'],
   maintainers: ['potar.he'],
   keywords: ['search'],
