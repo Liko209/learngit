@@ -2301,7 +2301,7 @@ describe('RTC call', () => {
       });
     });
 
-    it("should call webphone's reject api when call sendToVoicemail api in replying state. [JPT-1428]", done => {
+    it("should call webphone's reject api when call reject api in replying state. [JPT-1428]", done => {
       setup();
       expect(call._fsm.state()).toBe('idle');
       call.startReply();
