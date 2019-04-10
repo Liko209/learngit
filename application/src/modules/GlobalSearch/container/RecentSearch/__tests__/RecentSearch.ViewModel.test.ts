@@ -60,19 +60,6 @@ describe('RecentSearchViewModel', () => {
     container.restore();
   });
 
-  describe('onClear()', () => {
-    it('global search store search key should be empty', () => {
-      recentSearchViewModel.onClear();
-      expect(globalSearchStore.searchKey).toBe('');
-    });
-  });
-  describe('onClose()', () => {
-    it('global search store open should be false', () => {
-      recentSearchViewModel.onClear();
-      expect(globalSearchStore.open).toBeFalsy();
-    });
-  });
-
   describe('onKeyDown()', () => {
     it('if select index === recent record length should be return length - 1', () => {
       jest
@@ -176,6 +163,18 @@ describe('RecentSearchViewModel', () => {
   });
 
   describe('addRecentRecord()', () => {
+    it('if type is SEARCH and has group id should be add recent with SEARCH and group id', () => {
+      const params = { groupId: 1 };
+      jest
+        .spyOn(recentSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(SearchItemTypes.SEARCH);
+      recentSearchViewModel.addRecentRecord('abc', params);
+      expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(
+        RecentSearchTypes.SEARCH,
+        'abc',
+        params,
+      );
+    });
     it('if type is SEARCH should be add recent with SEARCH', () => {
       jest
         .spyOn(recentSearchViewModel, 'currentItemType', 'get')
@@ -184,6 +183,7 @@ describe('RecentSearchViewModel', () => {
       expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(
         RecentSearchTypes.SEARCH,
         'abc',
+        {},
       );
     });
     it('if type is GROUP should be add recent with GROUP', () => {
@@ -194,6 +194,7 @@ describe('RecentSearchViewModel', () => {
       expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(
         RecentSearchTypes.GROUP,
         1,
+        {},
       );
     });
     it('if type is TEAM should be add recent with TEAM', () => {
@@ -204,6 +205,7 @@ describe('RecentSearchViewModel', () => {
       expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(
         RecentSearchTypes.TEAM,
         1,
+        {},
       );
     });
     it('if type is PEOPLE should be add recent with PEOPLE', () => {
@@ -214,6 +216,7 @@ describe('RecentSearchViewModel', () => {
       expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(
         RecentSearchTypes.PEOPLE,
         1,
+        {},
       );
     });
   });

@@ -10,7 +10,7 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiRecentSearch,
   JuiSearchTitle,
-  JuiRecentSearcnEmptyScreen,
+  JuiRecentSearchEmptyScreen,
 } from 'jui/pattern/GlobalSearch';
 import { HotKeys } from 'jui/hoc/HotKeys';
 
@@ -81,7 +81,7 @@ class RecentSearchViewComponent extends Component<Props> {
 
     if (recentRecord.length === 0) {
       return (
-        <JuiRecentSearcnEmptyScreen
+        <JuiRecentSearchEmptyScreen
           text={t('globalSearch.SearchForContactsAndKeywords')}
         />
       );

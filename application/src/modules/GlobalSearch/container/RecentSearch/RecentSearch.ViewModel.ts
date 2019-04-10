@@ -90,15 +90,15 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     const params = groupId ? { groupId } : undefined;
 
     this.onSelectItem(e, currentItemValue, currentItemType, params);
-    this.addRecentRecord(currentItemValue);
+    this.addRecentRecord(currentItemValue, params);
   }
 
-  addRecentRecord = (value: number | string) => {
+  addRecentRecord = (value: number | string, params?: { groupId: number }) => {
     const type = changeToRecordTypes(this.currentItemType);
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    searchService.addRecentSearchRecord(type, value);
+    searchService.addRecentSearchRecord(type, value, params ? params : {});
   }
 
   @action

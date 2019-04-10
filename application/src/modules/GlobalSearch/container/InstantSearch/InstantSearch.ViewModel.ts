@@ -31,6 +31,7 @@ import {
   SearchItemTypes,
 } from './types';
 import { SearchViewModel } from '../common/Search.ViewModel';
+import { toSearchContent } from '../common/toSearchContent';
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -346,17 +347,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       case SearchItemTypes.CONTENT:
         const cellIndex = this.selectIndex[1];
         const scope = this.getSearchScope(cellIndex);
-        if (scope === SEARCH_SCOPE.CONVERSATION) {
-          const conversationId = getGlobalValue(
-            GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
-          );
-          this._globalSearchStore.setSearchScope(SEARCH_SCOPE.CONVERSATION);
-          this._globalSearchStore.setGroupId(conversationId);
-        } else {
-          this._globalSearchStore.setSearchScope(SEARCH_SCOPE.GLOBAL);
-        }
-        this._globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
-        this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
+        toSearchContent(scope === SEARCH_SCOPE.CONVERSATION);
         break;
       case SearchItemTypes.TEAM:
       case SearchItemTypes.GROUP:
