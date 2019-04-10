@@ -30,6 +30,7 @@ class LinkItemViewModel extends StoreViewModel<{ ids: number[] }> {
         items.push(item);
       }
     });
+    console.info(items, '---nello items');
     return items;
   }
   @action

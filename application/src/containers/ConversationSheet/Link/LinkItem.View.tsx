@@ -6,7 +6,10 @@
 
 import React from 'react';
 import { observer } from 'mobx-react';
-import { JuiConversationCardLinkItems } from 'jui/pattern/ConversationCardLinkItems';
+import {
+  JuiConversationCardLinkItems,
+  JuiConversationCardVideoLink,
+} from 'jui/pattern/ConversationCardLinkItems';
 import LinkItemModel from '@/store/models/LinkItem';
 
 type Props = {
@@ -19,6 +22,38 @@ class LinkItemView extends React.Component<Props> {
     const { onLinkItemClose } = this.props;
     onLinkItemClose(id);
   }
+
+  renderLink = (item: LinkItemModel) => {
+    const { url, title, image, summary, id, favicon, providerName } = item;
+    let itemUrlWithProtocol;
+    const imgStamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
+
+    if (url) {
+      itemUrlWithProtocol = url.match('http://|https://')
+        ? url
+        : `http://${url}`;
+    } else {
+      itemUrlWithProtocol = url;
+    }
+    const thumbnail = image ? `${image}${imgStamp}` : '';
+    return title || image || summary ? (
+      <JuiConversationCardLinkItems
+        key={id}
+        title={title}
+        summary={summary}
+        thumbnail={thumbnail}
+        url={itemUrlWithProtocol}
+        onLinkItemClose={this.onLinkItemClose(id)}
+        favicon={
+          favicon
+            ? `${favicon}${imgStamp}` // hard code in order to show the current image
+            : ''
+        }
+        faviconName={providerName}
+      />
+    ) : null;
+  }
+
   render() {
     const { postItems } = this.props;
     return (
@@ -26,36 +61,20 @@ class LinkItemView extends React.Component<Props> {
         {postItems.map((item: LinkItemModel) => {
           // In Glip must has this key
           // hard code in order to show the current image
-          let itemUrlWithProtocol;
-          const imgStamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
-          const itemUrl = item.url;
-          if (itemUrl) {
-            itemUrlWithProtocol =
-              itemUrl.match('http://|https://')
-                ? itemUrl
-                : `http://${itemUrl}`;
-          } else {
-            itemUrlWithProtocol = itemUrl;
+          console.info(item.isVideo, '---nello is video');
+          const { doNotRender, deactivated } = item;
+          if (doNotRender || deactivated) {
+            return null;
           }
-          const image = item.image ? `${item.image}${imgStamp}` : '';
-          return (item.title || item.image || item.summary) &&
-            !item.doNotRender &&
-            !item.deactivated ? (
-            <JuiConversationCardLinkItems
-              key={item.id}
-              title={item.title}
-              summary={item.summary}
-              thumbnail={image}
-              url={itemUrlWithProtocol}
-              onLinkItemClose={this.onLinkItemClose(item.id)}
-              favicon={
-                item.favicon
-                  ? `${item.favicon}${imgStamp}` // hard code in order to show the current image
-                  : ''
-              }
-              faviconName={item.providerName}
-            />
-          ) : null;
+
+          if (item.isVideo) {
+            const object = item.data.object;
+            return (
+              <JuiConversationCardVideoLink html={object ? object.html : ''} />
+            );
+          }
+
+          return this.renderLink(item);
         })}
       </>
     );
