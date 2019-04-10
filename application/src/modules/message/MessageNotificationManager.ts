@@ -1,3 +1,9 @@
+/*
+ * @Author: Andy Hu (andy.hu@ringcentral.com)
+ * @Date: 2019-01-17 15:16:45
+ * Copyright Â© RingCentral. All rights reserved.
+ */
+import { POST_TYPE } from './../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Markdown } from 'glipdown';
@@ -23,6 +29,7 @@ import history from '@/history';
 import GroupModel from '@/store/models/Group';
 import GroupService from 'sdk/src/module/group';
 import { PostService } from 'sdk/src/module/post';
+import { getPostType } from '@/common/getPostType';
 
 export class MessageNotificationManager extends NotificationManager {
   constructor() {
@@ -30,6 +37,7 @@ export class MessageNotificationManager extends NotificationManager {
   }
 
   init() {
+    /* this should be replaced once SDK finished socket push notification */
     notificationCenter.on(`${ENTITY.POST}.*`, this.handlePostEntityChanged);
   }
 
@@ -37,45 +45,20 @@ export class MessageNotificationManager extends NotificationManager {
     type,
     body: payload,
   }: NotificationEntityUpdatePayload<Post>) => {
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-
-    /* this should be replaced once SDK finished socket push notification */
-
     if (type !== EVENT_TYPES.UPDATE || payload.ids.length !== 1) {
       return;
     }
 
     const postId = payload.ids[0];
-    if (postId <= 0) {
+    const result = await this.shouldEmitNotification(postId);
+    if (!result) {
       return;
     }
-    const post = await ServiceLoader.getInstance<PostService>(
-      ServiceConfig.POST_SERVICE,
-    ).getById(postId);
-
-    if (!post || post.creator_id === currentUserId) {
-      return;
-    }
-
-    const conversation = await ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE,
-    ).getById(post.group_id);
-
-    if (!conversation) {
-      return;
-    }
-
-    const postModel = new PostModel(post);
-    const conversationModel = new GroupModel(conversation);
-    const { members, is_team } = conversation;
-
-    if (is_team && !this.isMyselfAtMentioned(postModel)) {
-      return;
-    }
+    const { postModel, conversationModel } = result;
 
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
-      post.creator_id,
+      postModel.creatorId,
     );
 
     const { title, body } = await this.buildNotificationBodyAndTitle(
@@ -83,18 +66,54 @@ export class MessageNotificationManager extends NotificationManager {
       person,
       conversationModel,
     );
+    const { members, isTeam } = conversationModel;
 
     const opts: NotificationOpts = {
       body,
       renotify: false,
-      icon: this.getIcon(person, members.length, is_team),
+      icon: this.getIcon(person, members.length, isTeam),
       data: { id: postId, scope: this._scope },
-      onClick: this.onClickHandlerBuilder(post.group_id),
+      onClick: this.onClickHandlerBuilder(postModel.groupId),
     };
 
     this.show(title, opts);
   }
 
+  async shouldEmitNotification(postId: number) {
+    if (postId <= 0) {
+      return false;
+    }
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const post = await ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    ).getById(postId);
+
+    if (!post || post.creator_id === currentUserId || post.deactivated) {
+      return false;
+    }
+    const activityData = (post.activity_data || {}) as { key?: string };
+    const isPostType =
+      !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
+    if (!isPostType) {
+      return false;
+    }
+
+    const conversation = await ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    ).getById(post.group_id);
+
+    if (!conversation) {
+      return false;
+    }
+
+    const postModel = new PostModel(post);
+    const conversationModel = new GroupModel(conversation);
+
+    if (conversationModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
+      return false;
+    }
+    return { postModel, conversationModel };
+  }
   onClickHandlerBuilder(groupId: number) {
     return () => {
       const currentURL = history.location.pathname;
