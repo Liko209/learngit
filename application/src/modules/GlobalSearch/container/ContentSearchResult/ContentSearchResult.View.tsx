@@ -8,10 +8,8 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ContentSearchResultViewProps } from './types';
-import {
-  JuiFullSearchWrapper,
-  JuiFullSearchResultWrapper,
-} from 'jui/pattern/FullSearchResult';
+import { JuiFullSearch, JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
+import { JuiFullSearchWrapper, JuiFullSearchResultWrapper } from 'jui/pattern/FullSearchResult';
 import { toTitleCase } from '@/utils/string';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
@@ -46,12 +44,23 @@ class ContentSearchResultViewComponent extends Component<Props> {
   }
   render() {
     const { t, searchState, onPostsFetch } = this.props;
+    const contentsCount = searchState.contentsCount[TypeDictionary.TYPE_ID_POST] || 0;
+    const isEmpty = contentsCount === 0;
+
+    if (isEmpty) {
+      return (
+        <JuiFullSearch>
+          <JuiListSubheader>{t('globalSearch.Results', { count: 0 })}</JuiListSubheader>
+          <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
+        </JuiFullSearch>
+      );
+    }
+
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper key={searchState.requestId || 0}>
           <JuiListSubheader>
-            {toTitleCase(t('result'))} (
-            {searchState.contentsCount[TypeDictionary.TYPE_ID_POST]})
+            {toTitleCase(t('result'))} ({contentsCount})
           </JuiListSubheader>
           {this.state.renderList ? (
             <PostListStream
@@ -67,8 +76,6 @@ class ContentSearchResultViewComponent extends Component<Props> {
   }
 }
 
-const ContentSearchResultView = withTranslation('translations')(
-  ContentSearchResultViewComponent,
-);
+const ContentSearchResultView = withTranslation('translations')(ContentSearchResultViewComponent);
 
 export { ContentSearchResultView };
