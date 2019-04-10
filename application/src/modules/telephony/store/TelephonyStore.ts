@@ -6,6 +6,7 @@
 
 import { LifeCycle } from 'ts-javascript-state-machine';
 import { observable, computed } from 'mobx';
+import { mainLogger } from 'sdk';
 import {
   HOLD_STATE,
   HOLD_TRANSITION_NAMES,
@@ -31,6 +32,8 @@ enum CALL_TYPE {
   INBOUND,
   OUTBOUND,
 }
+
+const logTag = '[TelephonyStore_View]';
 
 class TelephonyStore {
   private _callFSM = new CallFSM();
@@ -227,17 +230,29 @@ class TelephonyStore {
 
   hold = () => {
     if (this.held) {
+      mainLogger.debug(
+        `${logTag} Invalid transition: unable to hold from held`,
+      );
       return;
     }
     this._holdFSM[HOLD_TRANSITION_NAMES.HOLD]();
   }
 
   unhold = () => {
+    if (!this.held) {
+      mainLogger.debug(
+        `${logTag} Invalid transition: unable to unhold from idle`,
+      );
+      return;
+    }
     this._holdFSM[HOLD_TRANSITION_NAMES.UNHOLD]();
   }
 
   startRecording = () => {
     if (this.isRecording) {
+      mainLogger.debug(
+        `${logTag} Invalid transition: unable to record from recording`,
+      );
       return;
     }
     this._recordFSM[RECORD_TRANSITION_NAMES.START_RECORD]();
@@ -245,6 +260,9 @@ class TelephonyStore {
 
   stopRecording = () => {
     if (!this.isRecording) {
+      mainLogger.debug(
+        `${logTag} Invalid transition: unable to stop recording from idle`,
+      );
       return;
     }
     this._recordFSM[RECORD_TRANSITION_NAMES.STOP_RECORD]();
