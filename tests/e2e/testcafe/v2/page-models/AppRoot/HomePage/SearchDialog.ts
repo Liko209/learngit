@@ -185,20 +185,24 @@ export class SearchDialog extends BaseWebComponent {
   }
 
   /* tabs */
+  getTabEntry(automationId) {
+    return this.getComponent(TabEntry, this.getSelectorByAutomationId(automationId));
+  }
+
   get messagesTabEntry() {
-    return this.getSelectorByAutomationId('globalSearch-messages');
+    return this.getTabEntry('globalSearch-messages');
   }
 
   get peopleTabEntry() {
-    return this.getSelectorByAutomationId('globalSearch-people');
+    return this.getTabEntry('globalSearch-people');
   }
 
   get groupsTabEntry() {
-    return this.getSelectorByAutomationId('globalSearch-groups');
+    return this.getTabEntry('globalSearch-groups');
   }
 
   get teamsTabEntry() {
-    return this.getSelectorByAutomationId('globalSearch-team');
+    return this.getTabEntry('globalSearch-team');
   }
 
   /* page assert */
@@ -210,6 +214,21 @@ export class SearchDialog extends BaseWebComponent {
     await this.t.expect(this.historyContainer.exists).ok();
   }
 
+}
+
+// TODO: Duplicate removal (RightRail)
+class TabEntry extends BaseWebComponent {
+  async enter() {
+    return this.t.click(this.self);
+  }
+
+  get selected() {
+    return this.self.getAttribute('aria-selected');
+  }
+
+  async shouldBeOpened() {
+    await this.t.expect(this.selected).eql('true');
+  }
 }
 
 class SearchItem extends BaseWebComponent {
