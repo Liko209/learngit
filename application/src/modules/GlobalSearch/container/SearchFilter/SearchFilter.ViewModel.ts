@@ -13,8 +13,9 @@ import {
   DATE_DICTIONARY,
 } from './types';
 import { ESearchContentTypes } from 'sdk/api/glip/search';
-import { TypeDictionary } from 'sdk/utils';
+
 import moment from 'moment';
+import { TYPE_MAP } from './config';
 
 class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   @observable
@@ -69,40 +70,7 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   }
   @computed
   get typeFilter() {
-    const typeMap = [
-      { id: '', name: 'All', value: ESearchContentTypes.ALL },
-      {
-        id: TypeDictionary.TYPE_ID_POST,
-        name: 'Messages',
-        value: ESearchContentTypes.CHATS,
-      },
-      {
-        id: TypeDictionary.TYPE_ID_EVENT,
-        name: 'Events',
-        value: ESearchContentTypes.EVENTS,
-      },
-      {
-        id: TypeDictionary.TYPE_ID_FILE,
-        name: 'Files',
-        value: ESearchContentTypes.FILES,
-      },
-      {
-        id: TypeDictionary.TYPE_ID_LINK,
-        name: 'Links',
-        value: ESearchContentTypes.LINKS,
-      },
-      {
-        id: TypeDictionary.TYPE_ID_PAGE,
-        name: 'Notes',
-        value: ESearchContentTypes.NOTES,
-      },
-      {
-        id: TypeDictionary.TYPE_ID_TASK,
-        name: 'Tasks',
-        value: ESearchContentTypes.TASKS,
-      },
-    ];
-    const contentTypeItems: SearchContentTypeItem[] = typeMap.map(
+    const contentTypeItems: SearchContentTypeItem[] = TYPE_MAP.map(
       ({ id, value, name }) => {
         return {
           id,
