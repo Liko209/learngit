@@ -339,18 +339,23 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead } = this.props;
-    await loadInitialPosts();
-    runInAction(() => {
-      this.props.updateHistoryHandler();
-      markAsRead();
-    });
-    requestAnimationFrame(() => {
-      if (this._jumpToPostRef.current) {
-        this._jumpToPostRef.current.highlight();
-      }
-    });
-    this._watchUnreadCount();
+    const { loadInitialPosts, markAsRead, hookInitialPostsError } = this.props;
+    try {
+      await loadInitialPosts();
+      runInAction(() => {
+        this.props.updateHistoryHandler();
+        markAsRead();
+      });
+      requestAnimationFrame(() => {
+        if (this._jumpToPostRef.current) {
+          this._jumpToPostRef.current.highlight();
+        }
+      });
+      this._watchUnreadCount();
+    } catch (err) {
+      hookInitialPostsError();
+      throw err;
+    }
   }
 
   private _onInitialDataFailed = (
