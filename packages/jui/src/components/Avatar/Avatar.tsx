@@ -15,6 +15,7 @@ import {
   palette,
   grey,
   spacing,
+  primary,
 } from '../../foundation/utils/styles';
 import { Omit } from '../../foundation/utils/typeHelper';
 import { Theme } from '../../foundation/theme/theme';
@@ -75,9 +76,10 @@ const StyledCoverAvatar = styled<JuiAvatarProps>(MuiAvatar)`
     align-items: center;
     justify-content: center;
     font-size: ${spacing(12)};
-    color: ${({ color }) => (color ? palette('avatar', color) : grey('100'))};
+    color: ${({ color }) =>
+      color ? palette('avatar', color) : primary('600')};
     background-color: ${({ color }) =>
-      color ? palette('avatar', color) : grey('100')};
+      color ? palette('avatar', color) : primary('600')};
   }
   & span {
     display: flex;

@@ -22,6 +22,7 @@ import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
+const ANONYMOUS = 'anonymous';
 class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   static TAG: string = '[UI TelephonyService] ';
@@ -52,7 +53,7 @@ class TelephonyService {
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
     this._telephonyStore.callerName = fromName;
-    this._telephonyStore.phoneNumber = fromNum;
+    this._telephonyStore.phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
     this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(

@@ -74,7 +74,9 @@ class ProfileDialogPersonContentViewComponent extends Component<
     const { t, id } = this.props;
     return (
       <FormCopy>
-        {showCall && <Call phone={value} size="small" id={id} />}
+        {showCall && (
+          <Call phone={value} size="small" id={id} analysisSource="profile" />
+        )}
         <JuiIconButton
           size="small"
           onClick={this.onClickCopy.bind(this, value)}

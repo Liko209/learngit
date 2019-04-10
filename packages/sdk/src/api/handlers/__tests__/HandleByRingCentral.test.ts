@@ -8,9 +8,9 @@ import HandleByRingCentral from '../HandleByRingCentral';
 import { AccountService } from '../../../module/account';
 import { AccountManager } from '../../../framework';
 import { ServiceLoader } from '../../../module/serviceLoader';
+import { ApiConfiguration } from '../../config';
 const handler = new OAuthTokenHandler(HandleByRingCentral, null);
 
-jest.mock('../../api');
 const accountManager: AccountManager = new AccountManager(null);
 const accountService: AccountService = new AccountService(accountManager);
 ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
@@ -34,6 +34,9 @@ const postRequest = () => {
 
 describe('HandleByRingCentral', () => {
   it('tokenRefreshable is true and generate basic according to Api.httpConfig', () => {
+    ApiConfiguration.setApiConfig({
+      rc: { clientId: 'rc_id', clientSecret: 'rc_secret' },
+    });
     expect(HandleByRingCentral.tokenRefreshable).toBeTruthy();
     expect(HandleByRingCentral.tokenExpirable).toBeTruthy();
     expect(HandleByRingCentral.tokenRefreshable).toBeTruthy();

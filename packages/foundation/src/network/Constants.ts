@@ -3,7 +3,7 @@
  * @Date: 2018-05-03 11:25:17
  * Copyright © RingCentral. All rights reserved.
  */
-import config from '../config';
+import { config } from '../config';
 
 const DEFAULT_BEFORE_EXPIRED = config.beforeExpired;
 

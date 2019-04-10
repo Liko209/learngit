@@ -76,9 +76,9 @@ describe('TelephonyNotificationManager', () => {
       );
     });
 
-    it('should call show() with body contains "Unknown Caller" when the caller is anonymous [JPT-1489]', async () => {
+    it('should call show() with body contains "Unknown Caller" when the phone number is empty [JPT-1489]', async () => {
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
-      telephonyStore.phoneNumber = 'anonymous';
+      telephonyStore.phoneNumber = '';
       await telephonyNotificationManager.dispatch('SHOW');
 
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(

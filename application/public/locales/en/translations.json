@@ -418,7 +418,10 @@
     "prompt": {
       "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
       "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
-      "CallTimeout": "Sorry, we weren't able to place the call. Try again later."
+      "CallTimeout": "Sorry, we weren't able to place the call. Try again later.",
+      "LogoutTitle": "Log out?",
+      "LogoutContent": "Your call will be disconnected if you log out. Do you want to log out and end the call?",
+      "LogoutOk": "Log out"
     },
     "notification": {
       "incomingCall": "Incoming Call",

@@ -38,19 +38,13 @@ class TelephonyNotificationManager extends NotificationManager {
   async dispatch(action: Action) {
     switch (action) {
       case 'SHOW':
-        const { callId } = this._telephonyStore;
-        let { phoneNumber, callerName } = this._telephonyStore;
-        if (
-          !callerName ||
-          callerName === phoneNumber ||
-          phoneNumber === 'anonymous'
-        ) {
+        const { phoneNumber, callId } = this._telephonyStore;
+        let { callerName } = this._telephonyStore;
+        if (!callerName || callerName === phoneNumber || !phoneNumber) {
           callerName =
             (await i18nT('telephony.notification.unknownCaller')) ||
             'Unknown Caller';
         }
-        phoneNumber =
-          !phoneNumber || phoneNumber === 'anonymous' ? '' : phoneNumber;
         const title = await i18nT('telephony.notification.incomingCall');
         this.show(title, {
           actions: [

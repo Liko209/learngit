@@ -21,6 +21,7 @@ import { Menu } from './Menu';
 
 type HeaderProps = {
   title: string;
+  analysisSource: string;
 
   type: CONVERSATION_TYPES;
   actions: {
@@ -52,12 +53,19 @@ class Header extends Component<HeaderProps, { awake: boolean }> {
 
   @computed
   private get _ActionButtons() {
-    const { groupId } = this.props;
+    const { groupId, analysisSource } = this.props;
 
     const { conversationHeaderExtensions } = this._messageStore;
     const actionButtons = conversationHeaderExtensions.map(
-      (Comp: ComponentType<{ groupId: number }>, i: number) => (
-        <Comp key={`ACTION_${i}`} groupId={groupId} />
+      (
+        Comp: ComponentType<{ groupId: number; analysisSource: string }>,
+        i: number,
+      ) => (
+        <Comp
+          key={`ACTION_${i}`}
+          groupId={groupId}
+          analysisSource={analysisSource}
+        />
       ),
     );
 

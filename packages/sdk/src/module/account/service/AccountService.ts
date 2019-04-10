@@ -153,10 +153,6 @@ class AccountService extends AbstractService
     await this.getAuthController().loginGlip(params);
   }
 
-  async loginGlip2(params: ILogin) {
-    await this.getAuthController().loginGlip2(params);
-  }
-
   async makeSureUserInWhitelist() {
     await this.getAuthController().makeSureUserInWhitelist();
   }
