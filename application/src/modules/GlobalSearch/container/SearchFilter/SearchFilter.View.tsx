@@ -41,6 +41,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
       handleSearchGroupChange,
       handleSearchTypeChange,
       handleSearchPostDateChange,
+      options,
     } = this.props;
     return (
       <JuiSearchFilter title={t('globalSearch.filters')}>
@@ -65,12 +66,13 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           handleChange={handleSearchTypeChange}
           label={t('globalSearch.Type')}
           isFullWidth={true}
+          value={options.type as string}
         >
           {typeFilter.map((item: SearchContentTypeItem) => {
             return (
-              <JuiMenuItem value={item.id} key={item.id}>
-                {t(`globalSearch.${item.value}`)}{' '}
-                {item.count === undefined ? '' : `(${item.count})`}
+              <JuiMenuItem value={item.value} key={item.id}>
+                {t(`globalSearch.${item.name}`)}
+                {item.count ? ` (${item.count})` : ''}
               </JuiMenuItem>
             );
           })}
@@ -81,6 +83,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           handleChange={handleSearchPostDateChange}
           label={t('globalSearch.TimePosted')}
           isFullWidth={true}
+          value={this.props.timeType}
         >
           {timePeriodFilter.map((item: SearchContentTypeItem) => {
             return (

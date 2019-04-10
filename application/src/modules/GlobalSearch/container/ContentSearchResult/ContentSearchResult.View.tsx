@@ -46,7 +46,13 @@ class ContentSearchResultViewComponent extends Component<Props> {
     this.props.onSearchEnd();
   }
   render() {
-    const { t, searchState, onPostsFetch, setSearchOptions } = this.props;
+    const {
+      t,
+      searchState,
+      onPostsFetch,
+      setSearchOptions,
+      searchOptions,
+    } = this.props;
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper key={searchState.requestId || 0}>
@@ -64,6 +70,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
         </JuiFullSearchResultWrapper>
         <SearchFilter
           setSearchOptions={setSearchOptions}
+          options={searchOptions}
           contentsCount={searchState.contentsCount}
         />
       </JuiFullSearchWrapper>

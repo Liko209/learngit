@@ -7,6 +7,7 @@ import { ContentSearchOptions } from '../ContentSearchResult/types';
 import { SelectedItem } from 'jui/components/Downshift/TextField';
 
 type SearchContentTypeItem = {
+  name: string;
   id: number | string;
   value: string;
   [key: string]: any;
@@ -15,6 +16,7 @@ type SearchContentTypeItem = {
 type SearchFilterProps = {
   setSearchOptions(searchOptions: ContentSearchOptions): void;
   contentsCount: object;
+  options: ContentSearchOptions;
 };
 
 type SearchFilterViewProps = SearchFilterProps & {
@@ -24,6 +26,7 @@ type SearchFilterViewProps = SearchFilterProps & {
   handleSearchPostDateChange: (items: string) => void;
   typeFilter: SearchContentTypeItem[];
   timePeriodFilter: SearchContentTypeItem[];
+  timeType: string;
 };
 
 export { SearchFilterProps, SearchFilterViewProps, SearchContentTypeItem };
