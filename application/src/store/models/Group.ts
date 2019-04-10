@@ -188,6 +188,24 @@ export default class GroupModel extends Base<Group> {
   }
 
   @computed
+  get analysisType() {
+    const type = this.type;
+    let result = '';
+    switch (type) {
+      case CONVERSATION_TYPES.TEAM:
+        result = 'Team conversation';
+        break;
+      case CONVERSATION_TYPES.NORMAL_ONE_TO_ONE:
+        result = '1:1 conversation';
+        break;
+      case CONVERSATION_TYPES.NORMAL_GROUP:
+        result = 'Group conversation';
+        break;
+    }
+    return result;
+  }
+
+  @computed
   get membersExcludeMe() {
     const members = this.members || [];
     const userConfig = new AccountUserConfig();
