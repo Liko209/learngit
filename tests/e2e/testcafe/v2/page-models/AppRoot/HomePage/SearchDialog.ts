@@ -31,8 +31,8 @@ export class SearchDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('global-search-clear');
   }
 
-  get clickClearButton() {
-    return this.t.click(this.clearButton);
+  async clickClearButton() {
+    await this.t.click(this.clearButton);
   }
 
   get closeButton() {

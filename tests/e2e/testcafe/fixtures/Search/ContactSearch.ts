@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { formalName } from '../../libs/filter';
 import { h, H } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
@@ -249,6 +248,78 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
     await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
+});
+
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1487'],
+  maintainers: ['potar.he'],
+  keywords: ['search'],
+})('Search result should be updated in real time when team privacy is changed', async (t) => {
+  const me = h(t).rcData.mainCompany.users[5];
+  const anotherUser = h(t).rcData.mainCompany.users[6];
+  await h(t).glip(me).init();
+  const searchKeyword = await h(t).glip(me).getPersonPartialData('first_name', anotherUser.rcId);
+
+  const app = new AppRoot(t);
+
+  await h(t).withLog(`When I login Jupiter with the extension ${me.company.number}#${me.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, me);
+    await app.homePage.ensureLoaded();
+  });
+
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog(`And search with keyword "${searchKeyword}"`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(searchKeyword);
+  });
+
+  await h(t).withLog(`Then I should find some people in results`, async () => {
+    await t.expect(searchDialog.peoples.count).gte(1);
+  }, true);
+
+  await h(t).withLog(`When I click clear button in the search dialog`, async () => {
+    await searchDialog.clickClearButton();
+  });
+
+  await h(t).withLog(`Then No recently search result`, async () => {
+    await t.expect(searchDialog.allResultItems.exists).notOk();
+  }, true);
+
+  await h(t).withLog(`When I search with keyword "${searchKeyword}" again`, async () => {
+    await searchDialog.typeSearchKeyword(searchKeyword);
+  });
+
+  await h(t).withLog(`Then I should find some people in results`, async () => {
+    await t.expect(searchDialog.peoples.count).gte(1);
+  }, true);
+
+  await h(t).withLog(`When I click first people result`, async () => {
+    await searchDialog.nthPeople(0).enter();
+  });
+
+  await h(t).withLog(`And I click search bar on the header `, async () => {
+    await searchBar.clickSelf();
+  }, true);
+
+  await h(t).withLog(`Then I should find recently search results`, async () => {
+    await searchDialog.shouldShowRecentlyHistory();
+    await t.expect(searchDialog.allResultItems.count).gte(1);
+  }, true);
+
+  await h(t).withLog(`When I search with keyword "${searchKeyword}" again`, async () => {
+    await searchDialog.typeSearchKeyword(searchKeyword);
+  });
+
+  await h(t).withLog(`And click clear button in the search dialog`, async () => {
+    await searchDialog.clickClearButton();
+  });
+
+  await h(t).withLog(`Then Display recently search result`, async () => {
+    await searchDialog.shouldShowRecentlyHistory();
+    await t.expect(searchDialog.allResultItems.exists).ok();
+  }, true);
 });
 
 
