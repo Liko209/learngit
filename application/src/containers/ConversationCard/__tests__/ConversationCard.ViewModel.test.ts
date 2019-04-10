@@ -134,10 +134,12 @@ describe('ConversationCardViewModel', () => {
     });
     expect(conversationCardVM.name).toBe(undefined);
   });
-  it('should close global search dialog when jump to post', () => {
+  it('should close global search dialog and clear search text when jump to post', () => {
     globalSearchService.closeGlobalSearch = jest.fn();
+    globalSearchStore.clearSearchKey = jest.fn();
     globalSearchStore.open = true;
     conversationCardVM.beforeJump();
     expect(globalSearchService.closeGlobalSearch).toHaveBeenCalled();
+    expect(globalSearchStore.clearSearchKey).toHaveBeenCalled();
   });
 });

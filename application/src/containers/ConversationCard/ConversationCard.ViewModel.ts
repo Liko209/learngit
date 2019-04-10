@@ -108,8 +108,10 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
   }
 
   beforeJump = () => {
-    this._globalSearchStore.open &&
+    if (this._globalSearchStore.open) {
       this._globalSearchService.closeGlobalSearch();
+      this._globalSearchStore.clearSearchKey();
+    }
   }
 }
 
