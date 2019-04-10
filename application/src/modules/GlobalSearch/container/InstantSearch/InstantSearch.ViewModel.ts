@@ -9,7 +9,6 @@ import storeManager from '@/store/base/StoreManager';
 import { SearchService } from 'sdk/module/search';
 import { GroupService } from 'sdk/module/group';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import history from '@/history';
@@ -203,15 +202,6 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     const { searchKey } = this._globalSearchStore;
     return this._isConversation ? [searchKey, searchKey] : [searchKey];
   }
-
-  // contentText = (value: string, cellIndex: number) => {
-  //   const scope = this.getSearchScope(cellIndex);
-  //   if (scope === SEARCH_SCOPE.CONVERSATION) {
-  //     const defaultTip = i18nT('globalSearch.inThisConversation');
-  //     return `${value} ${defaultTip}`;
-  //   }
-  //   return value;
-  // }
 
   private get _isConversation() {
     const { location } = history;
@@ -421,12 +411,10 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   @action
   onShowMore = (type: SearchItemTypes) => () => {
     const typeMap = {
-      [RecentSearchTypes.GROUP]: TAB_TYPE.GROUPS,
-      [RecentSearchTypes.PEOPLE]: TAB_TYPE.PEOPLE,
-      [RecentSearchTypes.SEARCH]: TAB_TYPE.CONTENT,
-      [RecentSearchTypes.TEAM]: TAB_TYPE.TEAM,
+      [SearchItemTypes.GROUP]: TAB_TYPE.GROUPS,
+      [SearchItemTypes.PEOPLE]: TAB_TYPE.PEOPLE,
+      [SearchItemTypes.TEAM]: TAB_TYPE.TEAM,
     };
-
     this._globalSearchStore.setCurrentTab(typeMap[type]);
     this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
   }

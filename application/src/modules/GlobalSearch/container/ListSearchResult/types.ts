@@ -3,16 +3,16 @@
  * @Date: 2019-04-03 10:14:06
  * Copyright © RingCentral. All rights reserved.
  */
-import { TAB_TYPE } from '../../types';
+import { TAB_TYPE, SearchItemTypes } from '../../types';
 import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { SectionType } from '../InstantSearch/types';
-import { RecentSearchTypes, RecentSearchModel } from 'sdk/module/search/entity';
+import { RecentSearchModel } from 'sdk/module/search/entity';
 
 type SearchItems = {
   ids: number[];
-  type: RecentSearchTypes;
+  type: SearchItemTypes;
   hasMore: boolean;
 };
 
@@ -34,6 +34,6 @@ export {
   Group,
   SectionType,
   SearchItems,
-  RecentSearchTypes,
+  SearchItemTypes,
   RecentSearchModel,
 };
