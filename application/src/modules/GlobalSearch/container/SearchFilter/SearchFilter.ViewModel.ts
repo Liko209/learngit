@@ -12,33 +12,29 @@ import { ESearchContentTypes } from 'sdk/api/glip/search';
 import { TypeDictionary } from 'sdk/utils';
 
 enum DATE_DICTIONARY {
-  ANY_TIME = 99,
+  ANY_TIME = 1,
   THIS_WEEK = 2,
   THIS_MONTH = 3,
   THIS_YEAR = 4,
 }
-
-const TYPE_ID = {
-  ['']: ESearchContentTypes.ALL,
-  [TypeDictionary.TYPE_ID_EVENT]: ESearchContentTypes.CHATS,
-  [TypeDictionary.TYPE_ID_FILE]: ESearchContentTypes.FILES,
-  [TypeDictionary.TYPE_ID_LINK]: ESearchContentTypes.LINKS,
-  [TypeDictionary.TYPE_ID_PAGE]: ESearchContentTypes.NOTES,
-  [TypeDictionary.TYPE_ID_TASK]: ESearchContentTypes.TASKS,
-};
+enum DATE_PERIOD {
+  WEEK = 28,
+  MONTH = 300,
+  YEAR = 365,
+}
 
 class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   @observable
   contentTypeItemsMap = [];
 
   @action
-  handleSearchTypeChange = (items: string) => {
-    const TypeID = items === '99' ? null : TYPE_ID[items];
-    this.props.setSearchOptions({ type: TypeID });
+  handleSearchTypeChange = (type: ESearchContentTypes) => {
+    this.props.setSearchOptions({ type });
   }
   @action
-  handleSearchPostDateChange = (items: string) => {
-    const TimeStamp = items === '99' ? null : this.getTimeStamp(items);
+  handleSearchPostDateChange = (items: number) => {
+    const TimeStamp =
+      items === DATE_DICTIONARY.ANY_TIME ? null : this.getTimeStamp(items);
     this.props.setSearchOptions({ begin_time: TimeStamp });
   }
   @action
@@ -56,24 +52,60 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
     return this.props.setSearchOptions({ group_id: null });
   }
   @computed
+  get timeType() {
+    if (!this.props.options.begin_time) {
+      return DATE_DICTIONARY.ANY_TIME;
+    }
+    const currentTime = new Date().getTime();
+    const days = Math.floor(
+      (currentTime - this.props.options.begin_time) / (60 * 60 * 1000 * 24),
+    );
+    if (days < DATE_PERIOD.WEEK) return DATE_DICTIONARY.THIS_WEEK;
+    if (days < DATE_PERIOD.MONTH) return DATE_DICTIONARY.THIS_MONTH;
+    return DATE_DICTIONARY.THIS_YEAR;
+  }
+  @computed
   get typeFilter() {
-    const { contentsCount } = this.props;
     const typeMap = [
-      { id: '99', value: 'All' },
-      { id: TypeDictionary.TYPE_ID_POST, value: 'Messages' },
-      { id: TypeDictionary.TYPE_ID_EVENT, value: 'Events' },
-      { id: TypeDictionary.TYPE_ID_FILE, value: 'Files' },
-      { id: TypeDictionary.TYPE_ID_LINK, value: 'Links' },
-      { id: TypeDictionary.TYPE_ID_PAGE, value: 'Notes' },
-      { id: TypeDictionary.TYPE_ID_TASK, value: 'Tasks' },
+      { id: '', name: 'All', value: ESearchContentTypes.ALL },
+      {
+        id: TypeDictionary.TYPE_ID_POST,
+        name: 'Messages',
+        value: ESearchContentTypes.CHATS,
+      },
+      {
+        id: TypeDictionary.TYPE_ID_EVENT,
+        name: 'Events',
+        value: ESearchContentTypes.EVENTS,
+      },
+      {
+        id: TypeDictionary.TYPE_ID_FILE,
+        name: 'Files',
+        value: ESearchContentTypes.FILES,
+      },
+      {
+        id: TypeDictionary.TYPE_ID_LINK,
+        name: 'Links',
+        value: ESearchContentTypes.LINKS,
+      },
+      {
+        id: TypeDictionary.TYPE_ID_PAGE,
+        name: 'Notes',
+        value: ESearchContentTypes.NOTES,
+      },
+      {
+        id: TypeDictionary.TYPE_ID_TASK,
+        name: 'Tasks',
+        value: ESearchContentTypes.TASKS,
+      },
     ];
-    console.log('contentsCount', contentsCount);
     const contentTypeItems: SearchContentTypeItem[] = typeMap.map(
-      ({ id, value }) => {
+      ({ id, value, name }) => {
         return {
           id,
           value,
-          count: contentsCount[id],
+          name,
+          count: this.getContentsCount(id),
         };
       },
     );
@@ -83,12 +115,20 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   @computed
   get timePeriodFilter() {
     const timePostedItem = [
-      { id: 99, value: 'Anytime' },
-      { id: 2, value: 'ThisWeek' },
-      { id: 3, value: 'ThisMonth' },
-      { id: 4, value: 'ThisYear' },
+      { id: DATE_DICTIONARY.ANY_TIME, value: 'Anytime' },
+      { id: DATE_DICTIONARY.THIS_WEEK, value: 'ThisWeek' },
+      { id: DATE_DICTIONARY.THIS_MONTH, value: 'ThisMonth' },
+      { id: DATE_DICTIONARY.THIS_YEAR, value: 'ThisYear' },
     ];
     return timePostedItem;
+  }
+
+  getContentsCount(id: number | string) {
+    const { contentsCount } = this.props;
+    if (id === '') {
+      return null;
+    }
+    return contentsCount[id] ? contentsCount[id] : 0;
   }
 
   getTimeStamp(id: number | string | undefined) {

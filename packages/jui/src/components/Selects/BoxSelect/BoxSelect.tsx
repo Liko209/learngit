@@ -34,19 +34,16 @@ class JuiBoxSelect extends PureComponent<
   JuiBoxSelectProps,
   { value: string | null }
 > {
-  state = { value: '99' };
   private _renderInput = () => {
     const { heightSize = 'default' } = this.props;
     return <StyledInput classes={CLASSES_INPUT_BASE} heightSize={heightSize} />;
   }
   private _handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value } = event.target;
-    this.setState({ value });
     this.props.handleChange(value);
   }
 
   render() {
-    const { value } = this.state;
     const { children, label, isFullWidth, ...rest } = this.props;
     return (
       <StyledSelectBoxContainer>
@@ -56,7 +53,6 @@ class JuiBoxSelect extends PureComponent<
           style={isFullWidth ? { width: '100%' } : {}}
           input={this._renderInput()}
           onChange={this._handleChange}
-          value={value}
           defaultValue={this.props.defaultValue}
           {...rest}
         >

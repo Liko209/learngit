@@ -41,6 +41,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
       onPostsFetch,
       setSearchOptions,
       searchOptions,
+<<<<<<< HEAD
       isEmpty,
     } = this.props;
     const contentsCount =
@@ -57,6 +58,9 @@ class ContentSearchResultViewComponent extends Component<Props> {
       );
     }
 
+=======
+    } = this.props;
+>>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] refactor state usage
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper>
@@ -74,7 +78,11 @@ class ContentSearchResultViewComponent extends Component<Props> {
         </JuiFullSearchResultWrapper>
         <SearchFilter
           setSearchOptions={setSearchOptions}
+<<<<<<< HEAD
           searchOptions={searchOptions}
+=======
+          options={searchOptions}
+>>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] refactor state usage
           contentsCount={searchState.contentsCount}
         />
       </JuiFullSearchWrapper>
