@@ -103,8 +103,7 @@ class TelephonyStore {
           this.enableHold();
           break;
         case CALL_STATE.IDLE:
-          this.disableHold();
-          this.disableRecord();
+          this._restoreButtonStates();
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
@@ -149,6 +148,12 @@ class TelephonyStore {
       }
       this._callWindowFSM[OPEN_FLOATING_DIALER]();
     }
+  }
+
+  private _restoreButtonStates() {
+    this.disableHold();
+    this.disableRecord();
+    this.stopRecording();
   }
 
   openDialer = () => {
@@ -239,6 +244,9 @@ class TelephonyStore {
   }
 
   stopRecording = () => {
+    if (!this.isRecording) {
+      return;
+    }
     this._recordFSM[RECORD_TRANSITION_NAMES.STOP_RECORD]();
   }
 
