@@ -91,6 +91,7 @@ const StyledIcon = styled(JuiIconography)`
   width: ${width(5)};
   height: ${height(5)};
   align-items: center;
+  cursor: pointer;
 `;
 const StyledIconLeft = styled(StyledIcon)`
   margin: 0 ${spacing(2)} 0 0;
