@@ -126,6 +126,8 @@ class ContentSearchResultViewModel
 
     const postIds = isInitialize ? toPostIds : [...fromPostIds, ...toPostIds];
 
+    postIds.sort((former, latter) => latter - former);
+
     this._setSearchState({ postIds });
   }
 
@@ -172,7 +174,7 @@ class ContentSearchResultViewModel
     const isNetworkError = errorHelper.isNetworkConnectionError(error);
     const isResponseError = isServiceError || isNetworkError;
 
-    let message: string = 'common.globalSearch.prompt';
+    let message: string = 'globalSearch.prompt';
 
     isServiceError && (message = `${message}.contentSearchServiceError`);
 
