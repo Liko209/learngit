@@ -46,10 +46,11 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   }
   @computed
   get timeType() {
-    if (!this.props.options.begin_time) {
+    const beginTime = this.props.options.begin_time;
+    if (!beginTime) {
       return DATE_DICTIONARY.ANY_TIME;
     }
-    const firstDay = moment(this.props.options.begin_time).valueOf();
+    const firstDay = moment(beginTime).valueOf();
     if (
       moment()
         .startOf('week')
