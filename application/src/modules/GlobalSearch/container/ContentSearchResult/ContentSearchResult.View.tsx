@@ -8,14 +8,15 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ContentSearchResultViewProps } from './types';
+import { JuiFullSearch, JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
 import {
   JuiFullSearchWrapper,
   JuiFullSearchResultWrapper,
 } from 'jui/pattern/FullSearchResult';
-import { toTitleCase } from '@/utils/string';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
 import { TypeDictionary } from 'sdk/utils';
+import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 
 type Props = ContentSearchResultViewProps & WithTranslation;
 
@@ -50,13 +51,33 @@ class ContentSearchResultViewComponent extends Component<Props> {
     this.props.onSearchEnd();
   }
   render() {
-    const { t, searchState, onPostsFetch } = this.props;
+    const {
+      t,
+      searchState,
+      onPostsFetch,
+      setSearchOptions,
+      searchOptions,
+      isEmpty,
+    } = this.props;
+    const contentsCount =
+      searchState.contentsCount[TypeDictionary.TYPE_ID_POST] || 0;
+
+    if (isEmpty) {
+      return (
+        <JuiFullSearch>
+          <JuiListSubheader>
+            {t('globalSearch.Results', { count: 0 })}
+          </JuiListSubheader>
+          <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
+        </JuiFullSearch>
+      );
+    }
+
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper>
           <JuiListSubheader data-test-automation-id="searchResultsCount">
-            {toTitleCase(t('result'))} (
-            {searchState.contentsCount[TypeDictionary.TYPE_ID_POST]})
+            {t('globalSearch.Results', { count: contentsCount })}
           </JuiListSubheader>
           {this.state.renderList ? (
             <PostListStream
@@ -66,7 +87,10 @@ class ContentSearchResultViewComponent extends Component<Props> {
             />
           ) : null}
         </JuiFullSearchResultWrapper>
-        <div>filters</div>
+        <SearchFilter
+          setSearchOptions={setSearchOptions}
+          searchOptions={searchOptions}
+        />
       </JuiFullSearchWrapper>
     );
   }

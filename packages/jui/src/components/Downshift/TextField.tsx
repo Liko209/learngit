@@ -32,10 +32,11 @@ type JuiDownshiftTextFieldProps = {
   InputItem?: React.ComponentType<any>;
   nameError?: boolean;
   emailError?: string;
-  ref?: React.RefObject<HTMLInputElement>;
+  messageRef?: React.RefObject<HTMLInputElement>;
   autoSwitchEmail?: boolean;
   onSelectChange: (selectedItems: SelectedItem[]) => void;
   onInputChange: (value: string) => void;
+  maxLength?: number;
 };
 
 const StyledTextField = styled<TextFieldProps>(JuiTextField)`
@@ -131,7 +132,7 @@ class JuiDownshiftTextField extends React.PureComponent<
 
   render() {
     const {
-      ref,
+      messageRef,
       label,
       placeholder,
       InputItem,
@@ -140,6 +141,7 @@ class JuiDownshiftTextField extends React.PureComponent<
       helperText,
       getInputProps,
       selectedItems,
+      maxLength,
     } = this.props;
     const { showPlaceholder, shrink } = this.state;
     const placeholderText =
@@ -164,7 +166,7 @@ class JuiDownshiftTextField extends React.PureComponent<
                 />
               ) : null;
             }),
-            inputRef: ref,
+            inputRef: messageRef,
             onFocus: this.handleFocus,
             onBlur: this.handleBlur,
             onChange: this.handleInputChange,
@@ -175,6 +177,9 @@ class JuiDownshiftTextField extends React.PureComponent<
             },
             placeholder: placeholderText,
           } as any),
+        }}
+        inputProps={{
+          maxLength,
         }}
         InputLabelProps={{
           shrink,

@@ -39,7 +39,6 @@ const StyledMenuItem = styled(MuiMenuItem)`
     height: auto;
     min-height: ${height(8)};
     min-width: ${width(28)};
-    max-width: ${width(80)};
     padding: ${spacing(1, 4)};
     box-sizing: border-box;
 

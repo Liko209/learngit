@@ -178,7 +178,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     const data: SearchItems[] = [
       {
         ids: this.contentSearchIds,
-        hasMore: true,
+        hasMore: false,
         type: SearchItemTypes.CONTENT,
       },
       {
