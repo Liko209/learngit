@@ -15,11 +15,16 @@ import {
   JuiBoxSelect,
   JuiBoxSelectProps,
 <<<<<<< HEAD
+<<<<<<< HEAD
 } from 'jui/components/Selects/BoxSelect';
 import { JuiMenuItem } from 'jui/components';
 =======
 } from 'jui/src/components/Selects/BoxSelect';
 import { JuiMenuItem } from 'jui/src/components';
+=======
+} from 'jui/components/Selects/BoxSelect';
+import { JuiMenuItem } from 'jui/components';
+>>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] change import path
 
 >>>>>>> feat(FIJI-4224): [Search for messages_filter results by type] refactor boxselector, add selector to container.
 type ViewProps = SearchFilterViewProps & WithTranslation;
