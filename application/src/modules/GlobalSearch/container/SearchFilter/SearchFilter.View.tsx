@@ -14,8 +14,8 @@ import { SearchFilterViewProps, SearchContentTypeItem } from './types';
 import {
   JuiBoxSelect,
   JuiBoxSelectProps,
-} from 'jui/src/components/Selects/BoxSelect';
-import { JuiMenuItem } from 'jui/src/components';
+} from 'jui/components/Selects/BoxSelect';
+import { JuiMenuItem } from 'jui/components';
 
 type ViewProps = SearchFilterViewProps & WithTranslation;
 
