@@ -55,8 +55,9 @@ const baseProps = {
   loadInitialPosts: async () => {},
   updateHistoryHandler: () => {},
   mostRecentPostId: 0,
-  resetJumpToPostId: () => null,
+  resetJumpToPostId: () => {},
   resetAll: (id: number) => {},
+  refresh: () => {},
 };
 
 function mountStreamWithUnreadButton({
@@ -101,9 +102,10 @@ function mountStream(otherProps: Partial<StreamViewProps>) {
   };
 }
 
-describe.skip('StreamView', () => {
+describe('StreamView', () => {
   describe('render()', () => {
-    it('should render <ConversationPost>', () => {
+    // TODO This case should be moved to electron environment
+    it.skip('should render <ConversationPost>', () => {
       PostService.getInstance.mockReturnValue(new PostService());
       const props = {
         ...baseProps,
@@ -129,7 +131,8 @@ describe.skip('StreamView', () => {
       rootWrapper.unmount();
     });
 
-    it('should render <TimeNodeDivider>', () => {
+    // TODO This case should be moved to electron environment
+    it.skip('should render <TimeNodeDivider>', () => {
       const props = {
         ...baseProps,
         postIds: [1, 2],

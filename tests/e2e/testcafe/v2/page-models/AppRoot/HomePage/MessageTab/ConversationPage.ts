@@ -228,7 +228,8 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   get newMessageDeadLine() {
-    return this.stream.find('span').withText('New Messages');
+    this.warnFlakySelector();
+    return this.stream.find('span').withText('New Messages').parent(1); // todo: automation Id;
   }
 
   async isVisible(el: Selector) {
@@ -290,13 +291,22 @@ export class ConversationPage extends BaseConversationPage {
     return this.self.getAttribute('data-group-id');
   }
 
-  async postCardByIdShouldBeOnTheTop(postId: string) {
+  async elementShouldBeOnTheTop(sel: Selector) {
     await H.retryUntilPass(async () => {
       const containerTop = await this.self.getBoundingClientRectProperty('top');
       const headerHeight = await this.header.getBoundingClientRectProperty('height');
-      const targetTop = await this.postItemById(postId).self.getBoundingClientRectProperty('top');
+      const targetTop = await sel.getBoundingClientRectProperty('top');
       assert.strictEqual(containerTop + headerHeight, targetTop, 'this post card is not on the top of conversation page')
     });
+  }
+
+  async postCardByIdShouldBeOnTheTop(postId: string) {
+    const postCard = this.posts.filter(`[data-id="${postId}"]`);
+    await this.elementShouldBeOnTheTop(postCard);
+  }
+
+  async newMessageDeadLineShouldBeOnTheTop() {
+    await this.elementShouldBeOnTheTop(this.newMessageDeadLine);
   }
 
   async shouldFocusOnMessageInputArea() {

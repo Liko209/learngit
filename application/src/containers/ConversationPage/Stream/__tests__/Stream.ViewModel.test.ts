@@ -487,4 +487,120 @@ describe('StreamViewModel', () => {
       expect(Notification.flashToast).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('findNewMessageSeparatorIndex()', () => {
+    it('should return index of new message separator', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.NEW_MSG_SEPARATOR },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.findNewMessageSeparatorIndex()).toBe(2);
+    });
+
+    it('should return -1 if no new message separator ', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.findNewMessageSeparatorIndex()).toBe(-1);
+    });
+  });
+
+  describe('hasNewMessageSeparator()', () => {
+    it('should be true if there is a new message separator', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.NEW_MSG_SEPARATOR },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.hasNewMessageSeparator()).toBeTruthy();
+    });
+
+    it('should be false if no any new message separator', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.hasNewMessageSeparator()).toBeFalsy();
+    });
+  });
+
+  describe('findPostIndex()', () => {
+    it('should return index of the post', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST, value: [10] },
+            { type: StreamItemType.POST, value: [11] },
+            { type: StreamItemType.POST, value: [12] },
+            { type: StreamItemType.POST, value: [13] },
+          ],
+        },
+      });
+
+      expect(vm.findPostIndex(11)).toBe(1);
+    });
+
+    it('should return -1 if the post no existed', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST, value: [10] },
+            { type: StreamItemType.POST, value: [11] },
+            { type: StreamItemType.POST, value: [12] },
+            { type: StreamItemType.POST, value: [13] },
+          ],
+        },
+      });
+
+      expect(vm.findPostIndex(14)).toBe(-1);
+    });
+
+    it('should return -1 if the postId is undefined', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST, value: [10] },
+            { type: StreamItemType.POST, value: [11] },
+            { type: StreamItemType.POST, value: [12] },
+            { type: StreamItemType.POST, value: [13] },
+          ],
+        },
+      });
+
+      expect(vm.findPostIndex()).toBe(-1);
+    });
+  });
 });
