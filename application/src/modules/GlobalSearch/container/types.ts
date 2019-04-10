@@ -1,4 +1,6 @@
-export enum cacheEventFn {
+enum cacheEventFn {
   _hoverHighlightMap = '_hoverHighlightMap',
   _selectChangeMap = '_selectChangeMap',
 }
+
+export { cacheEventFn };

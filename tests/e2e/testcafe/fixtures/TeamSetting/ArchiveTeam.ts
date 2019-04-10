@@ -10,7 +10,7 @@ import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
+import { IGroup, ITestMeta } from '../../v2/models';
 
 fixture('TeamSetting/ArchiveTeam')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -250,20 +250,25 @@ test(formalName(`The Archive Team dialog display correctly after clicking 'Archi
 });
 
 
-test(formalName(`The team can't be displayed on conversation list and search results list after the team is archived.`, ['P2', 'JPT-1132', 'ArchiveTeam', 'Potar.He']), async t => {
+test.meta(<ITestMeta>{
+  priority: ['P2'],
+  caseIds: ['JPT-1132'],
+  maintainers: ['potar.he'],
+  keywords: ['search', 'ArchiveTeam'],
+})(`The team can't be displayed on conversation list and search results list after the team is archived.`, async t => {
   const app = new AppRoot(t);
   const adminUser = h(t).rcData.mainCompany.users[4];
   const memberUser = h(t).rcData.mainCompany.users[5];
 
-  let team = <IGroup> {
-      name: uuid(),
-      type: 'Team',
-      owner: adminUser,
-      members: [adminUser, memberUser],
+  let team = <IGroup>{
+    name: uuid(),
+    type: 'Team',
+    owner: adminUser,
+    members: [adminUser, memberUser],
   }
 
   await h(t).withLog(`Given I have one new team ${team.name}`, async () => {
-   await h(t).scenarioHelper.createTeam(team);
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   const teamEntry = app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId);
@@ -297,17 +302,19 @@ test(formalName(`The team can't be displayed on conversation list and search res
     await t.expect(teamEntry.exists).notOk();
   });
 
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When search with keyword "${team.name}"`, async () => {
-    await searchBar.typeSearchKeyword(team.name);
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
   });
 
   await h(t).withLog(`Then I can't find the team in search results list`, async () => {
-     await t.expect(searchBar.teams.withText(team.name).exists).notOk()
+    await t.expect(searchDialog.teams.withText(team.name).exists).notOk()
   }, true);
 
   await h(t).withLog(`When I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
-    await searchBar.quit();
+    await searchDialog.quitByPressEsc();
     await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
   });
 
@@ -316,11 +323,12 @@ test(formalName(`The team can't be displayed on conversation list and search res
   });
 
   await h(t).withLog(`When search with keyword "${team.name}"`, async () => {
-    await searchBar.typeSearchKeyword(team.name);
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
   });
 
   await h(t).withLog(`Then I can't find the team in search results list`, async () => {
-    await t.expect(searchBar.teams.withText(team.name).exists).notOk()
+    await t.expect(searchDialog.teams.withText(team.name).exists).notOk()
   }, true);
 });
 

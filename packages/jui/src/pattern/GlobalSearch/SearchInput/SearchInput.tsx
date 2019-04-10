@@ -7,7 +7,7 @@ import React, { memo } from 'react';
 import {
   JuiOutlineTextField,
   JuiOutlineTextFieldProps,
-} from '../../../components/Forms/TextField/OutlineTextField';
+} from '../../../components/Forms/OutlineTextField';
 import styled from '../../../foundation/styled-components';
 import { spacing, grey, typography, radius } from '../../../foundation/utils';
 
@@ -40,6 +40,7 @@ const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
       iconName={['search', 'close']}
       onClickIconRight={onClose}
       iconPosition="both"
+      size="large"
       inputAfter={
         showClear && (
           <ClearButton

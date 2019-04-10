@@ -88,7 +88,8 @@
     },
     "Results": "Results ({{count}})",
     "NoMatchesFound": "No matches found",
-    "SearchForContactsAndKeywords": "Search for contacts and keywords"
+    "SearchForContactsAndKeywords": "Search for contacts and keywords",
+    "in": "in"
   },
   "dashboard": {
     "Dashboard": "Dashboard"

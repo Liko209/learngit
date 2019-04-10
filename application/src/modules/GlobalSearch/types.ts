@@ -4,6 +4,14 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+enum SearchItemTypes {
+  CONTENT = 'CONTENT',
+  SEARCH = 'SEARCH',
+  PEOPLE = 'PEOPLE',
+  GROUP = 'GROUP',
+  TEAM = 'TEAM',
+}
+
 enum TAB_TYPE {
   CONTENT,
   PEOPLE,
@@ -22,4 +30,4 @@ enum SEARCH_SCOPE {
   CONVERSATION,
 }
 
-export { TAB_TYPE, SEARCH_VIEW, SEARCH_SCOPE };
+export { TAB_TYPE, SEARCH_VIEW, SEARCH_SCOPE, SearchItemTypes };
