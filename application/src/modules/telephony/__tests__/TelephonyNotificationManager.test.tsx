@@ -14,34 +14,35 @@ jupiter.registerModule(telephony.config);
 jupiter.registerModule(notification.config);
 
 describe('TelephonyNotificationManager', () => {
-  describe('dispatch()', () => {
-    const telephonyNotificationManager = jupiter.get(
-      TelephonyNotificationManager,
-    );
-    const telephonyStore = jupiter.get(TelephonyStore);
-    const title = 'Incoming Call';
-    jest.spyOn(i18nT, 'default').mockImplementation(async i => {
-      const translation = {
-        'telephony.notification.incomingCall': 'Incoming Call',
-        'telephony.notification.answer': 'Answer',
-        'telephony.notification.unknownCaller': 'Unknown Caller',
-      };
-      return translation[i] || i;
-    });
+  const telephonyNotificationManager = jupiter.get(
+    TelephonyNotificationManager,
+  );
+  telephonyNotificationManager._disposer = jest.fn();
+  const telephonyStore = jupiter.get(TelephonyStore);
+  const title = 'Incoming Call';
+  jest.spyOn(i18nT, 'default').mockImplementation(async i => {
+    const translation = {
+      'telephony.notification.incomingCall': 'Incoming Call',
+      'telephony.notification.answer': 'Answer',
+      'telephony.notification.unknownCaller': 'Unknown Caller',
+    };
+    return translation[i] || i;
+  });
 
-    beforeEach(() => {
-      jest.clearAllMocks();
-      Object.assign(telephonyStore, {
-        callState: 0,
-        callId: '1',
-        phoneNumber: '123',
-        callerName: 'alex',
-      });
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Object.assign(telephonyStore, {
+      callState: 0,
+      callId: '1',
+      phoneNumber: '123',
+      callerName: 'alex',
     });
+  });
 
-    it('should call show() when dispatch action is SHOW', async () => {
+  describe('_showNotification()', () => {
+    it('should call show() when call _showNotification', async () => {
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
-      await telephonyNotificationManager.dispatch('SHOW');
+      await telephonyNotificationManager._showNotification();
 
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
         title,
@@ -60,7 +61,7 @@ describe('TelephonyNotificationManager', () => {
     it('should call show() with body contains "Unknown Caller" when the call is from an unrecognized caller [JPT-1489]', async () => {
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
       telephonyStore.callerName = '';
-      await telephonyNotificationManager.dispatch('SHOW');
+      await telephonyNotificationManager._showNotification();
 
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
         title,
@@ -79,7 +80,7 @@ describe('TelephonyNotificationManager', () => {
     it('should call show() with body contains "Unknown Caller" when the phone number is empty [JPT-1489]', async () => {
       jest.spyOn(telephonyNotificationManager, 'show').mockImplementation();
       telephonyStore.phoneNumber = '';
-      await telephonyNotificationManager.dispatch('SHOW');
+      await telephonyNotificationManager._showNotification();
 
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
         title,
@@ -94,16 +95,22 @@ describe('TelephonyNotificationManager', () => {
         }),
       );
     });
-    it('should call close() when dispatch action is CLOSE', () => {
+  });
+
+  describe('_closeNotification()', () => {
+    it('should call close() when call _closeNotification', () => {
       jest.spyOn(telephonyNotificationManager, 'close').mockImplementation();
-      telephonyNotificationManager.dispatch('CLOSE');
+      telephonyNotificationManager._closeNotification();
       expect(telephonyNotificationManager.close).toHaveBeenCalledWith('1');
     });
+  });
 
-    it('should call clear() when dispatch action is DISPOSE', () => {
+  describe('dispose()', () => {
+    it('should call clear() when call dispose', () => {
       jest.spyOn(telephonyNotificationManager, 'clear').mockImplementation();
-      telephonyNotificationManager.dispatch('DISPOSE');
+      telephonyNotificationManager.dispose();
       expect(telephonyNotificationManager.clear).toHaveBeenCalled();
+      expect(telephonyNotificationManager._disposer).toHaveBeenCalledTimes(1);
     });
   });
 });

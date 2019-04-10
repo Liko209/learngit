@@ -6,78 +6,79 @@
 
 import { inject } from 'framework';
 import { reaction } from 'mobx';
+import { Disposer } from 'mobx-react';
 import { NotificationManager } from '@/modules/notification/manager';
 import i18nT from '@/utils/i18nT';
 import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
 import { CALL_STATE } from './FSM';
 
-type Action = 'SHOW' | 'CLOSE' | 'DISPOSE';
-
 class TelephonyNotificationManager extends NotificationManager {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   @inject(TelephonyService) private _telephonyService: TelephonyService;
-
+  private _disposer: Disposer;
   constructor() {
     super('telephony');
   }
 
   init() {
-    reaction(
+    this._disposer = reaction(
       () => this._telephonyStore.callState,
       (callState: CALL_STATE) => {
         if (callState === CALL_STATE.INCOMING) {
-          this.dispatch('SHOW');
+          this._showNotification();
         } else {
-          this.dispatch('CLOSE');
+          const shouldCloseNotification = [
+            CALL_STATE.IDLE,
+            CALL_STATE.DIALING,
+            CALL_STATE.CONNECTING,
+            CALL_STATE.CONNECTED,
+          ];
+          if (shouldCloseNotification.includes(callState)) {
+            this._closeNotification();
+          }
         }
       },
     );
   }
 
-  async dispatch(action: Action) {
-    switch (action) {
-      case 'SHOW':
-        const { phoneNumber, callId } = this._telephonyStore;
-        let { callerName } = this._telephonyStore;
-        if (!callerName || callerName === phoneNumber || !phoneNumber) {
-          callerName =
-            (await i18nT('telephony.notification.unknownCaller')) ||
-            'Unknown Caller';
-        }
-        const title = await i18nT('telephony.notification.incomingCall');
-        this.show(title, {
-          actions: [
-            {
-              title: await i18nT('telephony.notification.answer'),
-              icon: '',
-              action: 'answer',
-              handler: () => {
-                this._telephonyService.answer();
-              },
-            },
-          ],
-          tag: callId,
-          data: {
-            id: callId,
-            scope: this._scope,
-          },
-          body: `${callerName} ${phoneNumber}`,
-          icon: '/icon/incomingCall.png',
-        });
-        break;
-
-      case 'CLOSE':
-        this.close(this._telephonyStore.callId);
-        break;
-
-      case 'DISPOSE':
-        this.clear();
-        break;
-
-      default:
-        break;
+  private async _showNotification() {
+    const { phoneNumber, callId } = this._telephonyStore;
+    let { callerName } = this._telephonyStore;
+    if (!callerName || callerName === phoneNumber || !phoneNumber) {
+      callerName =
+        (await i18nT('telephony.notification.unknownCaller')) ||
+        'Unknown Caller';
     }
+    const title = await i18nT('telephony.notification.incomingCall');
+    this.show(title, {
+      actions: [
+        {
+          title: await i18nT('telephony.notification.answer'),
+          icon: '',
+          action: 'answer',
+          handler: () => {
+            this._telephonyService.answer();
+          },
+        },
+      ],
+      tag: callId,
+      data: {
+        id: callId,
+        scope: this._scope,
+      },
+      body: `${callerName} ${phoneNumber}`,
+      icon: '/icon/incomingCall.png',
+    });
+  }
+
+  private _closeNotification() {
+    this.close(this._telephonyStore.callId);
+  }
+
+  public dispose() {
+    this._disposer && this._disposer();
+    this.clear();
   }
 }
 
