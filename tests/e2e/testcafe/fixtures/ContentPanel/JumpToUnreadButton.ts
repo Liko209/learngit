@@ -139,7 +139,6 @@ test(formalName('Click the unread button (up) then jump to first unread post', [
   await h(t).withLog('And should see New Messages indicator on the top', async () => {
     await t.expect(conversationPage.newMessageDeadLine.exists).ok();
     await conversationPage.newMessageDeadLineExpectVisible(true);
-    await t.debug();
     await conversationPage.newMessageDeadLineShouldBeOnTheTop();
   });
 
