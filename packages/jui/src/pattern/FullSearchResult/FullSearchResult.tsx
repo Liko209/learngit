@@ -18,4 +18,14 @@ const JuiFullSearchResultWrapper = styled.div`
   flex-direction: column;
 `;
 
-export { JuiFullSearchWrapper, JuiFullSearchResultWrapper };
+const JuiFullSearchResultStreamWrapper = styled.div`
+  position: relative;
+  flex: 1;
+  min-height: 0;
+`;
+
+export {
+  JuiFullSearchWrapper,
+  JuiFullSearchResultWrapper,
+  JuiFullSearchResultStreamWrapper,
+};

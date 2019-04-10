@@ -8,7 +8,6 @@ import { shallow } from 'enzyme';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
 import { ContentSearchResultView } from '@/modules/GlobalSearch/container/ContentSearchResult/ContentSearchResult.View';
-import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
 import jsonFile from '../../../../../../public/locales/en/translations.json';
 
 const i18n = (key: string, { count }: { count?: number } = {}) => {
@@ -50,43 +49,6 @@ describe('ContentSearchResult', () => {
 });
 
 describe('ContentSearchResult.View', () => {
-  it('should render Stream after mount', () => {
-    const props = {
-      searchState: {
-        postIds: [],
-        requestId: null,
-        contentsCount: {},
-      },
-      searchOptions: {},
-      onPostsFetch: jest.fn(),
-      setSearchOptions: jest.fn(),
-      onSearchEnd: jest.fn(),
-    };
-    const result = shallow(<ContentSearchResultView {...props} />);
-    expect(result.state().renderList).toBe(true);
-    expect(result.find(PostListStream).exists()).toBe(true);
-  });
-
-  it('should remount Stream when requestId reset', () => {
-    jest.spyOn(ContentSearchResultView.prototype, 'remountStream');
-    const props = {
-      searchState: {
-        postIds: [],
-        requestId: 12,
-        contentsCount: {},
-      },
-      searchOptions: {},
-      onPostsFetch: jest.fn(),
-      setSearchOptions: jest.fn(),
-      onSearchEnd: jest.fn(),
-    };
-    const wrapper = shallow(<ContentSearchResultView {...props} />);
-    wrapper.setProps({
-      searchState: { requestId: null, contentsCount: {}, postIds: [] },
-    });
-    expect(ContentSearchResultView.prototype.remountStream).toHaveBeenCalled();
-  });
-
   it('should end search when unmount', () => {
     const props = {
       searchState: {
