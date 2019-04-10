@@ -22,7 +22,7 @@ type Props = ContentSearchResultViewProps & WithTranslation;
 @observer
 class ContentSearchResultViewComponent extends Component<Props> {
   state = {
-    renderList: true,
+    renderList: false,
   };
   remountStream() {
     this.setState(
@@ -36,6 +36,11 @@ class ContentSearchResultViewComponent extends Component<Props> {
       },
     );
   }
+  componentDidMount() {
+    this.setState({
+      renderList: true,
+    });
+  }
   componentDidUpdate(prevProps: Props) {
     if (prevProps.searchState.requestId && !this.props.searchState.requestId) {
       this.remountStream();
@@ -48,7 +53,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
     const { t, searchState, onPostsFetch } = this.props;
     return (
       <JuiFullSearchWrapper>
-        <JuiFullSearchResultWrapper key={searchState.requestId || 0}>
+        <JuiFullSearchResultWrapper>
           <JuiListSubheader>
             {toTitleCase(t('result'))} (
             {searchState.contentsCount[TypeDictionary.TYPE_ID_POST]})

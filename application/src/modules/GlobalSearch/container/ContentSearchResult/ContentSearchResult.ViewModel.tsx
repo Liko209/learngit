@@ -115,7 +115,9 @@ class ContentSearchResultViewModel
 
   @action
   private _setSearchState(state = {}) {
-    this.searchState = { ...this.searchState, ...state };
+    Object.keys(state).forEach(key => {
+      this.searchState[key] = state[key];
+    });
   }
 
   @action

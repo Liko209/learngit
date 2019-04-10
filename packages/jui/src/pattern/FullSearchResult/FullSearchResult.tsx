@@ -3,7 +3,6 @@
  * @Date: 2019-04-01 14:06:55
  * Copyright © RingCentral. All rights reserved.
  */
-// import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { width } from '../../foundation/utils';
 
