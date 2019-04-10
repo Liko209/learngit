@@ -31,10 +31,17 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
   @action
   onClick = () => {
     const { searchScope } = this.props;
-
+    if (searchScope === SEARCH_SCOPE.CONVERSATION) {
+      const conversationId = getGlobalValue(
+        GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+      );
+      this._globalSearchStore.setSearchScope(SEARCH_SCOPE.CONVERSATION);
+      this._globalSearchStore.setGroupId(conversationId);
+    } else {
+      this._globalSearchStore.setSearchScope(SEARCH_SCOPE.GLOBAL);
+    }
     this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
     this._globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
-    this._globalSearchStore.setSearchScope(searchScope);
 
     this.addRecentRecord();
   }

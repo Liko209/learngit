@@ -38,7 +38,7 @@ describe('ContentItemViewModel', () => {
     jest.resetAllMocks();
   });
   describe('onClick() [JPT-1557]', () => {
-    it('should be switch full search and set search scope', () => {
+    it('if scope is global should be switch full search and group id is undefined', () => {
       const scope = SEARCH_SCOPE.GLOBAL;
       contentItemViewModel = new ContentItemViewModel({
         searchScope: scope,
@@ -49,6 +49,27 @@ describe('ContentItemViewModel', () => {
         .mockImplementation(() => {});
 
       contentItemViewModel.onClick();
+      expect(globalSearchStore.groupId).toBeUndefined();
+      expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
+      expect(globalSearchStore.currentTab).toBe(TAB_TYPE.CONTENT);
+      expect(globalSearchStore.searchScope).toBe(scope);
+      expect(contentItemViewModel.addRecentRecord).toHaveBeenCalled();
+    });
+
+    it('if scope is conversation should be switch full search and has group id', () => {
+      const conversationId = 1;
+      const scope = SEARCH_SCOPE.CONVERSATION;
+      (getGlobalValue as jest.Mock).mockReturnValue(conversationId);
+      contentItemViewModel = new ContentItemViewModel({
+        searchScope: scope,
+        displayName: 'displayName',
+      });
+      jest
+        .spyOn(contentItemViewModel, 'addRecentRecord')
+        .mockImplementation(() => {});
+
+      contentItemViewModel.onClick();
+      expect(globalSearchStore.groupId).toBe(1);
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
       expect(globalSearchStore.currentTab).toBe(TAB_TYPE.CONTENT);
       expect(globalSearchStore.searchScope).toBe(scope);

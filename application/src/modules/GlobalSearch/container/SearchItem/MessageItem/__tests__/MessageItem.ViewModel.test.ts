@@ -38,20 +38,42 @@ describe('GroupItemViewModel', () => {
     container.restore();
   });
   describe('onClick() [JPT-1557]', () => {
-    it('should be switch full search and set search scope', () => {
-      const scope = SEARCH_SCOPE.GLOBAL;
+    it('if not group id should be switch full search and scope is GLOBAL', () => {
+      const searchKey = 'displayName';
       messageItemViewModel = new MessageItemViewModel({
-        searchScope: scope,
-        displayName: 'displayName',
+        displayName: searchKey,
       });
       jest
         .spyOn(messageItemViewModel, 'addRecentRecord')
         .mockImplementation(() => {});
 
       messageItemViewModel.onClick();
+      expect(globalSearchStore.groupId).toBeUndefined();
+      expect(globalSearchStore.searchKey).toBe(searchKey);
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
       expect(globalSearchStore.currentTab).toBe(TAB_TYPE.CONTENT);
-      expect(globalSearchStore.searchScope).toBe(scope);
+      expect(globalSearchStore.searchScope).toBe(SEARCH_SCOPE.GLOBAL);
+      expect(messageItemViewModel.addRecentRecord).toHaveBeenCalled();
+    });
+    it('if has group id should be switch full search and set scope is conversation', () => {
+      const id = 1;
+      const searchKey = 'displayName';
+      messageItemViewModel = new MessageItemViewModel({
+        displayName: searchKey,
+        params: {
+          groupId: id,
+        },
+      });
+      jest
+        .spyOn(messageItemViewModel, 'addRecentRecord')
+        .mockImplementation(() => {});
+
+      messageItemViewModel.onClick();
+      expect(globalSearchStore.groupId).toBe(id);
+      expect(globalSearchStore.searchKey).toBe(searchKey);
+      expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
+      expect(globalSearchStore.currentTab).toBe(TAB_TYPE.CONTENT);
+      expect(globalSearchStore.searchScope).toBe(SEARCH_SCOPE.CONVERSATION);
       expect(messageItemViewModel.addRecentRecord).toHaveBeenCalled();
     });
   });
@@ -62,7 +84,6 @@ describe('GroupItemViewModel', () => {
       const conversationId = 1;
       const displayName = 'aa';
       const params = { groupId: id };
-      const scope = SEARCH_SCOPE.CONVERSATION;
       (getEntity as jest.Mock).mockReturnValue({ id });
       (getGlobalValue as jest.Mock).mockReturnValue(conversationId);
       (i18nT as jest.Mock).mockReturnValue('in this conversation');
@@ -70,7 +91,6 @@ describe('GroupItemViewModel', () => {
       messageItemViewModel = new MessageItemViewModel({
         displayName,
         params,
-        searchScope: scope,
       });
 
       expect(messageItemViewModel.groupName).toBe(
@@ -83,7 +103,6 @@ describe('GroupItemViewModel', () => {
       const displayName = 'aa';
       const groupName = 'group name';
       const params = { groupId: id };
-      const scope = SEARCH_SCOPE.CONVERSATION;
       (getEntity as jest.Mock).mockReturnValue({ id, displayName: groupName });
       (getGlobalValue as jest.Mock).mockReturnValue(conversationId);
       (i18nT as jest.Mock).mockReturnValue('in');
@@ -91,7 +110,6 @@ describe('GroupItemViewModel', () => {
       messageItemViewModel = new MessageItemViewModel({
         displayName,
         params,
-        searchScope: scope,
       });
 
       expect(messageItemViewModel.groupName).toBe(
@@ -100,11 +118,9 @@ describe('GroupItemViewModel', () => {
     });
     it('if not group should be show display name', () => {
       const displayName = 'aa';
-      const scope = SEARCH_SCOPE.CONVERSATION;
 
       messageItemViewModel = new MessageItemViewModel({
         displayName,
-        searchScope: scope,
       });
 
       expect(messageItemViewModel.groupName).toBe(displayName);
@@ -116,12 +132,10 @@ describe('GroupItemViewModel', () => {
       const id = 1;
       const displayName = 'aa';
       const params = { groupId: id };
-      const scope = SEARCH_SCOPE.CONVERSATION;
       (getEntity as jest.Mock).mockReturnValue({ id });
       messageItemViewModel = new MessageItemViewModel({
         params,
         displayName,
-        searchScope: scope,
       });
       messageItemViewModel.addRecentRecord();
       expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(
@@ -133,11 +147,9 @@ describe('GroupItemViewModel', () => {
 
     it('if group id is undefined should be call add record with empty object', () => {
       const displayName = 'aa';
-      const scope = SEARCH_SCOPE.CONVERSATION;
       (getEntity as jest.Mock).mockReturnValue({});
       messageItemViewModel = new MessageItemViewModel({
         displayName,
-        searchScope: scope,
       });
       messageItemViewModel.addRecentRecord();
       expect(searchService.addRecentSearchRecord).toHaveBeenCalledWith(

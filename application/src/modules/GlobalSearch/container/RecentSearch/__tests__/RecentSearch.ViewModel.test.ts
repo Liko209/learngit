@@ -93,7 +93,48 @@ describe('RecentSearchViewModel', () => {
     });
   });
   describe('onEnter()', () => {
-    it('should be call onSelectItem and add recent', () => {
+    it('if has group id should be call onSelectItem with group id and add recent', () => {
+      jest
+        .spyOn(recentSearchViewModel, 'currentItemValue', 'get')
+        .mockReturnValue(null);
+
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      expect(recentSearchViewModel.onEnter(keyBoardEvent)).toBeUndefined();
+    });
+    it('if has group id should be call onSelectItem with group id and add recent', () => {
+      const id = 1;
+      const currentItemType = SearchItemTypes.PEOPLE;
+      const groupId = 2;
+      jest
+        .spyOn(recentSearchViewModel, 'addRecentRecord')
+        .mockImplementation(() => {});
+      jest
+        .spyOn(recentSearchViewModel, 'onSelectItem')
+        .mockImplementation(() => {});
+      jest
+        .spyOn(recentSearchViewModel, 'currentItemValue', 'get')
+        .mockReturnValue(id);
+      jest
+        .spyOn(recentSearchViewModel, 'currentItemType', 'get')
+        .mockReturnValue(currentItemType);
+      jest
+        .spyOn(recentSearchViewModel, 'currentGroupId', 'get')
+        .mockReturnValue(groupId);
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      recentSearchViewModel.onEnter(keyBoardEvent);
+      expect(recentSearchViewModel.onSelectItem).toHaveBeenCalledWith(
+        keyBoardEvent,
+        id,
+        currentItemType,
+        { groupId },
+      );
+      expect(recentSearchViewModel.addRecentRecord).toHaveBeenCalled();
+    });
+    it('if has group id should be call onSelectItem with group id and add recent', () => {
       const id = 1;
       const currentItemType = SearchItemTypes.PEOPLE;
       jest
@@ -108,6 +149,9 @@ describe('RecentSearchViewModel', () => {
       jest
         .spyOn(recentSearchViewModel, 'currentItemType', 'get')
         .mockReturnValue(currentItemType);
+      jest
+        .spyOn(recentSearchViewModel, 'currentGroupId', 'get')
+        .mockReturnValue(null);
       const keyBoardEvent = {
         preventDefault: jest.fn(),
       } as any;
@@ -116,6 +160,7 @@ describe('RecentSearchViewModel', () => {
         keyBoardEvent,
         id,
         currentItemType,
+        undefined,
       );
       expect(recentSearchViewModel.addRecentRecord).toHaveBeenCalled();
     });

@@ -12,9 +12,9 @@ import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import history from '@/history';
+
 import { changeToRecordTypes } from '../common/changeTypes';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-
 import { GlobalSearchService } from '../../service';
 import { GlobalSearchStore } from '../../store';
 import {
@@ -346,7 +346,16 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       case SearchItemTypes.CONTENT:
         const cellIndex = this.selectIndex[1];
         const scope = this.getSearchScope(cellIndex);
-        this._globalSearchStore.setSearchScope(scope);
+        if (scope === SEARCH_SCOPE.CONVERSATION) {
+          const conversationId = getGlobalValue(
+            GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+          );
+          this._globalSearchStore.setSearchScope(SEARCH_SCOPE.CONVERSATION);
+          this._globalSearchStore.setGroupId(conversationId);
+        } else {
+          this._globalSearchStore.setSearchScope(SEARCH_SCOPE.GLOBAL);
+        }
+        this._globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
         this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
         break;
       case SearchItemTypes.TEAM:

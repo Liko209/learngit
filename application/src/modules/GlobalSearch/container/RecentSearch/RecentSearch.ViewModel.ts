@@ -69,15 +69,27 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
     return this.recentRecord[this.selectIndex].type;
   }
 
+  get currentGroupId() {
+    const params = this.recentRecord[this.selectIndex].queryParams;
+    if (!params) {
+      return null;
+    }
+    return params && params.groupId;
+  }
+
   @action
   onEnter = (e: KeyboardEvent) => {
     const currentItemValue = this.currentItemValue;
-    const currentItemType = this.currentItemType;
+
     if (!currentItemValue) {
       return;
     }
 
-    this.onSelectItem(e, currentItemValue, currentItemType);
+    const currentItemType = this.currentItemType;
+    const groupId = this.currentGroupId;
+    const params = groupId ? { groupId } : undefined;
+
+    this.onSelectItem(e, currentItemValue, currentItemType, params);
     this.addRecentRecord(currentItemValue);
   }
 
