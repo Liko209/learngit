@@ -109,7 +109,7 @@ const KeypadHeaderContainer = styled.div`
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: ${spacing(0, 9, 0, 5)};
+      padding: ${spacing(0, 9, 1, 5)};
   `;
 
 export { JuiContainer, JuiKeypadAction, KeypadHeaderContainer };

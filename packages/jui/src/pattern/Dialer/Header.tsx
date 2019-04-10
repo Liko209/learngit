@@ -55,6 +55,16 @@ const StyledHeader = styled('div')`
   }
 `;
 
+const StyledHeaderNoPadding = styled('div')`
+  && {
+    color: ${palette('common', 'white')};
+    display: flex;
+    justify-content: space-between;
+    box-sizing: border-box;
+    height: ${height(14)};
+  }
+`;
+
 const StyledLeft = styled('div')`
   && {
     ${typography('body2')};
@@ -119,4 +129,4 @@ class JuiHeader extends PureComponent<Props, State> {
   }
 }
 
-export { JuiHeader, StyledHeader };
+export { JuiHeader, StyledHeaderNoPadding };

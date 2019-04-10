@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import styled, { keyframes } from 'styled-components';
-import { StyledHeader } from 'jui/pattern/Dialer';
+import { StyledHeaderNoPadding } from 'jui/pattern/Dialer';
 import { FakeInputViewProps } from './types';
 
 @observer
@@ -54,11 +54,11 @@ class FakeInputView extends Component<FakeInputViewProps> {
 
     return (
       <FlexContainer>
-        <StyledHeader>
+        <StyledHeaderNoPadding>
           <Container>
             <Inner>{this.props.enteredKeys}</Inner>
           </Container>
-        </StyledHeader>
+        </StyledHeaderNoPadding>
       </FlexContainer>
     );
   }
