@@ -15,6 +15,7 @@ import {
 } from '../../foundation/utils/styles';
 
 type Props = {
+  removeMargin: boolean;
   End: React.ComponentType;
   KeypadActions: React.ComponentType[];
 };
@@ -22,9 +23,9 @@ type Props = {
 const StyledContainer = styled('div')`
   && {
     background-color: ${palette('common', 'white')};
-    padding: ${spacing(10, 6, 6)};
+    padding: ${spacing(0, 6, 6)};
     box-sizing: border-box;
-    height: ${height(87)};
+    height: ${height(99)};
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -33,16 +34,26 @@ const StyledContainer = styled('div')`
 
 const StyledEnd = styled('div')`
   && {
+    align-self: center;
+  }
+`;
+
+const StyledKeypadActionsContainer = styled('div')`
+  && {
+    flex: 1;
     display: flex;
+    flex-direction: column;
     justify-content: center;
   }
 `;
 
-const StyledKeypadActions = styled('div')`
+const StyledKeypadActions = styled.div<{ removeMargin: boolean }>`
   && {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    margin-bottom: ${({ removeMargin, theme }) =>
+      removeMargin ? spacing(-5)({ theme }) : 0};
   }
 `;
 
@@ -65,19 +76,25 @@ const JuiKeypadAction = styled('div')`
 `;
 
 class JuiContainer extends PureComponent<Props> {
+  static defaultProps = {
+    removeMargin: true,
+  };
+
   state = {
     showHoverActions: false,
   };
 
   render() {
-    const { End, KeypadActions } = this.props;
+    const { End, KeypadActions, removeMargin } = this.props;
     return (
       <StyledContainer>
-        <StyledKeypadActions>
-          {KeypadActions.map((Action: React.ComponentType) => (
-            <Action key={Action.displayName} />
-          ))}
-        </StyledKeypadActions>
+        <StyledKeypadActionsContainer>
+          <StyledKeypadActions removeMargin={removeMargin}>
+            {KeypadActions.map((Action: React.ComponentType) => (
+              <Action key={Action.displayName} />
+            ))}
+          </StyledKeypadActions>
+        </StyledKeypadActionsContainer>
         <StyledEnd>
           <End />
         </StyledEnd>

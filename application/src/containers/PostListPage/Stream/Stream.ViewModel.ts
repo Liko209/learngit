@@ -15,11 +15,10 @@ import { loading, loadingBottom, onScrollToBottom } from '@/plugins';
 import { Post } from 'sdk/module/post/entity';
 import { EVENT_TYPES, ENTITY } from 'sdk/service';
 import { PostService } from 'sdk/module/post';
-import { transform2Map, getEntity } from '@/store/utils';
+import { transform2Map } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
-import storeManager from '@/store/base/StoreManager';
-import MultiEntityMapStore from '../../../store/base/MultiEntityMapStore';
 import PostModel from '@/store/models/Post';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 type OrderedPost = Post & {
   _index: number;
@@ -35,8 +34,9 @@ function addOrderIndicatorForPosts(
 }
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _postIds: number[] = [];
+  private _initial: boolean = true;
   private _isMatchFunc(post: Post) {
-    return !post.deactivated && this._postIds.includes(post.id);
+    return post && !post.deactivated && this._postIds.includes(post.id);
   }
 
   private _options = {
@@ -65,54 +65,20 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   get _postProvider() {
     return {
-      fetchData: this.fetchData,
-    };
-  }
-
-  fetchData = async (
-    direction: QUERY_DIRECTION,
-    pageSize: number,
-    anchor?: ISortableModel<Post>,
-  ) => {
-    const postService: PostService = PostService.getInstance();
-    let ids;
-    let hasMore;
-    if (anchor) {
-      const index = _(this._postIds).indexOf(anchor.id);
-      const start = index + 1;
-      const end = index + pageSize + 1;
-      ids = _(this._postIds)
-        .slice(start, end)
-        .value();
-      hasMore = end < this._postIds.length - 1;
-    } else {
-      ids = _(this._postIds)
-        .slice(0, pageSize)
-        .value();
-      hasMore = this._postIds.length > pageSize;
-    }
-    const postsStore = storeManager.getEntityMapStore(
-      ENTITY_NAME.POST,
-    ) as MultiEntityMapStore<Post, PostModel>;
-    const [idsOutOfStore, idsInStore] = postsStore.subtractedBy(ids);
-    let postsFromService: Post[] = [];
-
-    const postsFromStore = idsInStore
-      .map(id => getEntity<Post, PostModel>(ENTITY_NAME.POST, id))
-      .filter((post: PostModel) => !post.deactivated);
-    try {
-      if (idsOutOfStore.length) {
-        const results = await postService.getPostsByIds(idsOutOfStore);
-        postsFromService = results.posts.filter(
-          (post: Post) => !post.deactivated,
+      fetchData: async (
+        direction: QUERY_DIRECTION,
+        pageSize: number,
+        anchor?: ISortableModel<Post>,
+      ) => {
+        const { data, hasMore } = await this.props.postFetcher(
+          direction,
+          pageSize,
+          anchor,
         );
-      }
-      const data = [...postsFromService, ...postsFromStore];
-      addOrderIndicatorForPosts(data, this._postIds);
-      return { hasMore, data };
-    } catch (err) {
-      return { hasMore: true, data: [] };
-    }
+        addOrderIndicatorForPosts(data, this._postIds);
+        return { data, hasMore };
+      },
+    };
   }
 
   constructor() {
@@ -125,14 +91,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   async onReceiveProps(props: StreamProps) {
-    const { postIds } = props;
-    // when comp did mount
-    if (!this._postIds.length && postIds.length) {
+    const { postIds, selfProvide } = props;
+
+    const shouldRunInitial =
+      (selfProvide && this._initial) ||
+      (!selfProvide && !this._postIds.length && postIds.length);
+    if (shouldRunInitial) {
+      this._initial = false;
       this._postIds = postIds;
       await this.fetchInitialPosts();
       return;
     }
-    // when comp did update
+
     if (this._postIds.length !== postIds.length) {
       const added = _(postIds)
         .difference(this._postIds)
@@ -140,7 +110,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       const deleted = _(this._postIds)
         .difference(postIds)
         .value();
-      const postService: PostService = PostService.getInstance();
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
       this._postIds = postIds;
       if (added.length) {
         const { posts } = await postService.getPostsByIds(added);
@@ -166,6 +138,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @loading
   fetchInitialPosts() {
+    this._sortableListHandler.setHasMore(true, QUERY_DIRECTION.NEWER);
     return this._batchFetchPosts();
   }
 

@@ -4,6 +4,9 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
+import { ContentSearchResult } from '../ContentSearchResult';
+import { ListSearchResult } from '../ListSearchResult';
+import { TAB_TYPE } from './types';
 
 type TabConfig = {
   title: string;
@@ -17,7 +20,7 @@ type TabConfig = {
 const TAB_CONFIG = [
   {
     title: 'globalSearch.Messages',
-    container: () => <div>Messages</div>,
+    container: () => <ContentSearchResult />,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
@@ -26,7 +29,7 @@ const TAB_CONFIG = [
   },
   {
     title: 'globalSearch.People',
-    container: () => <div>people</div>,
+    container: () => <ListSearchResult type={TAB_TYPE.PEOPLE} />,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
@@ -34,7 +37,7 @@ const TAB_CONFIG = [
   },
   {
     title: 'globalSearch.Groups',
-    container: () => <div>groups</div>,
+    container: () => <ListSearchResult type={TAB_TYPE.GROUPS} />,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },
@@ -42,7 +45,7 @@ const TAB_CONFIG = [
   },
   {
     title: 'globalSearch.Teams',
-    container: () => <div>team</div>,
+    container: () => <ListSearchResult type={TAB_TYPE.TEAM} />,
     empty: {
       text: 'item.youHaveNothingPinnedYet',
     },

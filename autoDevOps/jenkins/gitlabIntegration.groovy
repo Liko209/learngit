@@ -403,7 +403,6 @@ node(buildNode) {
             } catch (e) { }
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sshagent (credentials: [scmCredentialId]) {
-                sh 'npm install @babel/parser@7.3.3'
                 sh 'npm install --only=dev --ignore-scripts'
                 sh 'npm install --ignore-scripts'
                 sh 'npm install'

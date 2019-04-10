@@ -5,18 +5,14 @@
  */
 
 import { MakeCallController } from '../MakeCallController';
-import { GlobalConfigService } from '../../../../module/config';
 import { MAKE_CALL_ERROR_CODE, E911_STATUS } from '../../types';
 import { PhoneParserUtility } from '../../../../utils/phoneParser';
-import { PersonService } from '../../../person';
-import { RCInfoService } from '../../../rcInfo/service';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../utils/phoneParser');
 jest.mock('../../../person');
 jest.mock('../../../rcInfo/service');
-
-GlobalConfigService.getInstance = jest.fn();
 
 describe('MakeCallController', () => {
   let makeCallController: MakeCallController;
@@ -43,7 +39,7 @@ describe('MakeCallController', () => {
       serviceFeatures: [{ featureName: 'VoipCalling', enabled: false }],
     };
 
-    RCInfoService.getInstance = jest.fn().mockReturnValue({
+    ServiceLoader.getInstance = jest.fn().mockReturnValue({
       getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
     });
     jest
@@ -103,7 +99,7 @@ describe('MakeCallController', () => {
         },
       ],
     };
-    RCInfoService.getInstance = jest.fn().mockReturnValue({
+    ServiceLoader.getInstance = jest.fn().mockReturnValue({
       getRCExtensionInfo: jest.fn(),
       getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
     });
@@ -156,7 +152,7 @@ describe('MakeCallController', () => {
         },
       ],
     };
-    RCInfoService.getInstance = jest.fn().mockReturnValue({
+    ServiceLoader.getInstance = jest.fn().mockReturnValue({
       getRCExtensionInfo: jest.fn(),
       getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
     });
@@ -209,7 +205,7 @@ describe('MakeCallController', () => {
         },
       ],
     };
-    RCInfoService.getInstance = jest.fn().mockReturnValue({
+    ServiceLoader.getInstance = jest.fn().mockReturnValue({
       getRCExtensionInfo: jest.fn(),
       getSpecialNumberRule: jest.fn().mockReturnValue(specialNumberRule),
     });
@@ -224,7 +220,7 @@ describe('MakeCallController', () => {
         { featureName: 'InternationalCalling', enabled: false },
       ],
     };
-    RCInfoService.getInstance = jest.fn().mockReturnValue({
+    ServiceLoader.getInstance = jest.fn().mockReturnValue({
       getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
       getSpecialNumberRule: jest.fn(),
     });
@@ -245,9 +241,26 @@ describe('MakeCallController', () => {
       isShortNumber: jest.fn().mockReturnValue(true),
     });
 
-    PersonService.getInstance = jest.fn().mockReturnValue({
-      matchContactByPhoneNumber: jest.fn().mockReturnValue(null),
-    });
+    const extInfo = {
+      serviceFeatures: [
+        { featureName: 'VoipCalling', enabled: false },
+        { featureName: 'InternationalCalling', enabled: false },
+      ],
+    };
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return {
+            matchContactByPhoneNumber: jest.fn().mockReturnValue(null),
+          };
+        }
+        return {
+          getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
+          getSpecialNumberRule: jest.fn(),
+        };
+      });
+
     const result = await makeCallController.tryMakeCall('213');
     expect(result).toBe(MAKE_CALL_ERROR_CODE.INVALID_EXTENSION_NUMBER);
   });

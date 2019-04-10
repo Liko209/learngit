@@ -9,6 +9,7 @@ import { spacing, palette } from '../../../foundation/utils/styles';
 const JuiInstantSearch = styled.div`
   background: ${palette('common', 'white')};
   padding: ${spacing(2, 0)};
+  width: 100%;
 `;
 
 export { JuiInstantSearch };

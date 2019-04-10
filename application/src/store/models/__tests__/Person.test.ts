@@ -10,6 +10,8 @@ import {
   PHONE_NUMBER_TYPE,
 } from 'sdk/module/person/entity';
 
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+
 import { PersonService } from 'sdk/module/person';
 
 jest.mock('sdk/api');
@@ -106,7 +108,7 @@ describe('PersonModel', () => {
 
   describe('phoneNumbers', () => {
     const personService = new PersonService();
-    PersonService.getInstance = jest.fn().mockReturnValue(personService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(personService);
 
     it('should filter return only direct number and extension number', () => {
       const person: Person = {

@@ -17,10 +17,15 @@ import ProfileModel from '@/store/models/Profile';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupStateModel from '@/store/models/GroupState';
 import { Group } from 'sdk/module/group/entity';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class MenuViewModel extends StoreViewModel<MenuProps> implements MenuViewProps {
-  private _profileService: ProfileService = ProfileService.getInstance();
-  private _stateService: StateService = StateService.getInstance();
+  private _profileService = ServiceLoader.getInstance<ProfileService>(
+    ServiceConfig.PROFILE_SERVICE,
+  );
+  private _stateService = ServiceLoader.getInstance<StateService>(
+    ServiceConfig.STATE_SERVICE,
+  );
   @computed
   get personId() {
     return this.props.personId;

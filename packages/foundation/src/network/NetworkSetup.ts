@@ -6,7 +6,6 @@
 import {
   IHandleType,
   IRequest,
-  ITokenHandler,
   IToken,
   IRequestDecoration,
   ITokenRefreshListener,
@@ -17,44 +16,29 @@ import NetworkManager from './NetworkManager';
 import NetworkRequestHandler from './NetworkRequestHandler';
 
 class NetworkSetup {
-  static setup(types: IHandleType[], networkManager: NetworkManager) {
-    types.forEach((type: IHandleType) => {
-      const tokenHandler = new OAuthTokenHandler(
-        type,
-        new class implements ITokenHandler {
-          isAccessTokenRefreshable() {
-            return type.tokenRefreshable;
-          }
-          doRefreshToken(token: IToken) {
-            return type.doRefreshToken(token);
-          }
-          willAccessTokenExpired() {
-            return type.tokenExpirable;
-          }
-        }(),
-      );
-      const decoration = type.requestDecoration(tokenHandler);
-      const handler = networkManager.initNetworkRequestBaseHandler(
-        type,
-        type.survivalModeSupportable,
-        new class implements IRequestDecoration {
-          decorate(request: IRequest) {
-            return decoration(request);
-          }
-        }(),
-      );
-      tokenHandler.listener = new TokenRefreshListener(
-        tokenHandler,
-        handler,
-        type.onRefreshTokenFailure,
-      );
-      tokenHandler.basic = type.basic();
+  static setup(type: IHandleType, networkManager: NetworkManager) {
+    const tokenHandler = new OAuthTokenHandler(type);
+    const decoration = type.requestDecoration(tokenHandler);
+    const handler = networkManager.buildNetworkRequestBaseHandler(
+      type,
+      type.survivalModeSupportable,
+      new class implements IRequestDecoration {
+        decorate(request: IRequest) {
+          return decoration(request);
+        }
+      }(),
+    );
+    tokenHandler.listener = new TokenRefreshListener(
+      tokenHandler,
+      handler,
+      type.onRefreshTokenFailure,
+    );
+    tokenHandler.basic = type.basic();
 
-      const tokenManager = networkManager.getTokenManager();
-      if (tokenManager) {
-        tokenManager.addOAuthTokenHandler(tokenHandler);
-      }
-    });
+    const tokenManager = networkManager.getTokenManager();
+    if (tokenManager) {
+      tokenManager.addOAuthTokenHandler(tokenHandler);
+    }
   }
 }
 

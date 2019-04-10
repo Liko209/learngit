@@ -48,19 +48,6 @@ describe('RCAuthApi', () => {
     });
   });
 
-  describe('loginGlip2ByPassword()', () => {
-    it('glip2NetworkClient http() should be called with specific path', () => {
-      RCAuthApi.loginGlip2ByPassword({ username: 'aaa', password: '123' });
-      expect(RCAuthApi.glip2NetworkClient.http).toHaveBeenCalledWith({
-        authFree: true,
-        data: { grant_type: 'password', password: '123', username: 'aaa' },
-        method: 'post',
-        path: '/oauth/token',
-        via: NETWORK_VIA.HTTP,
-      });
-    });
-  });
-
   describe('refreshToken()', () => {
     const handlerType = {
       basic: jest.fn().mockReturnValue('basic'),

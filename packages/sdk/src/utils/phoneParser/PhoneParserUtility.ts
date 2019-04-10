@@ -18,6 +18,7 @@ import {
 import notificationCenter from '../../service/notificationCenter';
 import { RC_INFO } from '../../service/eventKey';
 import { RCInfoService } from '../../module/rcInfo';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 const MODULE_LOADING_TIME_OUT: number = 60000; // 1 minute
 const PhoneParserModule: ModuleClass = Module;
@@ -89,7 +90,9 @@ class PhoneParserUtility {
     if (PhoneParserUtility._localPhoneDataLoaded) {
       return;
     }
-    const rcInfoService: RCInfoService = RCInfoService.getInstance();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
     if (await rcInfoService.getPhoneData()) {
       PhoneParserUtility._localPhoneDataLoaded = true;
       return;
@@ -126,7 +129,9 @@ class PhoneParserUtility {
       return true;
     }
 
-    const rcInfoService: RCInfoService = RCInfoService.getInstance();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
     const phoneData = await rcInfoService.getPhoneData();
     if (!phoneData || phoneData.length === 0) {
       mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
@@ -329,7 +334,9 @@ class PhoneParserUtility {
       return false;
     }
 
-    const rcInfoService: RCInfoService = RCInfoService.getInstance();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
     const accountInfo = await rcInfoService.getRCAccountInfo();
     if (!accountInfo || !accountInfo.mainNumber) {
       mainLogger.debug('isInternationalDialing: can not get rc main number.');

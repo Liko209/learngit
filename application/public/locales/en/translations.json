@@ -82,11 +82,11 @@
     "People": "People",
     "Groups": "Groups",
     "Teams": "Teams",
-
     "prompt": {
       "contentSearchNetworkError": "We weren't able to conduct the search. Check your network connection, then try again.",
       "contentSearchServiceError": "Sorry, something went wrong on our end and we weren't able to conduct the search. Try again later."
-    }
+    },
+    "Results": "Results ({{count}})"
   },
   "dashboard": {
     "Dashboard": "Dashboard"
@@ -425,8 +425,13 @@
       "add": "Add",
       "record": "Record",
       "callActions": "Call Actions",
-      "end": "End"
+      "end": "End",
+      "Answer": "Answer"
     },
+    "ignoreTheCall": "Ignore the call",
+    "sendToVoicemail": "Send to voicemail",
+    "answerTheCall": "Answer the call",
+    "unknownCaller": "Unknown Caller",
     "prompt": {
       "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
       "CallFailed": "Sorry, we are having trouble placing this call, try again later.",

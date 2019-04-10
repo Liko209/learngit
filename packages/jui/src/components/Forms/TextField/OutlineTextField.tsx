@@ -105,8 +105,10 @@ type JuiOutlineTextFieldProps = {
   inputAfter?: JSX.Element | React.ReactNode;
   disabled?: boolean;
   radiusType?: InputRadiusKeys;
-  IconLeftProps?: JuiIconographyProps & { [propName: string]: string };
-  IconRightProps?: JuiIconographyProps;
+  IconLeftProps?: Partial<JuiIconographyProps> & {
+    [arbitrary: string]: string;
+  };
+  IconRightProps?: Partial<JuiIconographyProps> & { [arbitrary: string]: any };
   onClickIconLeft?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onClickIconRight?: (event: React.MouseEvent<HTMLElement, MouseEvent>) => void;
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;

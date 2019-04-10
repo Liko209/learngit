@@ -10,7 +10,7 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { RCInfoController } from '../controller/RCInfoController';
 import { ERCServiceFeaturePermission } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 
 class RCInfoService extends EntityBaseService {
   private _rcInfoController: RCInfoController;

@@ -9,19 +9,19 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { JuiInstantSearch, JuiSearchTitle } from 'jui/pattern/GlobalSearch';
-
 import { InstantSearchViewProps, SearchItems } from './types';
 import { SearchSectionsConfig } from '../config';
+import { cacheEventFn } from '../constants';
 
 type Props = InstantSearchViewProps & WithTranslation;
 
 @observer
 class InstantSearchViewComponent extends Component<Props> {
-  private _hoverHighlightMap: Map<string, Function> = new Map();
-  private _selectChangeMap: Map<string, Function> = new Map();
+  private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
+  private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
 
   private _cacheIndexPathFn = (
-    type: '_hoverHighlightMap' | '_selectChangeMap',
+    type: cacheEventFn,
     sectionIndex: number,
     cellIndex: number,
   ) => {
@@ -37,7 +37,7 @@ class InstantSearchViewComponent extends Component<Props> {
 
   hoverHighlight = (sectionIndex: number, cellIndex: number) => {
     return this._cacheIndexPathFn(
-      '_hoverHighlightMap',
+      cacheEventFn._hoverHighlightMap,
       sectionIndex,
       cellIndex,
     );
@@ -45,7 +45,11 @@ class InstantSearchViewComponent extends Component<Props> {
 
   // if search item removed need update selectIndex
   selectIndexChange = (sectionIndex: number, cellIndex: number) => {
-    return this._cacheIndexPathFn('_selectChangeMap', sectionIndex, cellIndex);
+    return this._cacheIndexPathFn(
+      cacheEventFn._selectChangeMap,
+      sectionIndex,
+      cellIndex,
+    );
   }
 
   createSearchItem = (config: {
@@ -57,7 +61,7 @@ class InstantSearchViewComponent extends Component<Props> {
     const { terms, selectIndex, resetSelectIndex, getSearchScope } = this.props;
     const { value, type, sectionIndex, cellIndex } = config;
 
-    const { Item, title } = SearchSectionsConfig[type];
+    const { Item, automationId } = SearchSectionsConfig[type];
     const hovered =
       sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
     return (
@@ -67,7 +71,7 @@ class InstantSearchViewComponent extends Component<Props> {
         hovered={hovered}
         onMouseEnter={this.hoverHighlight(sectionIndex, cellIndex)}
         onMouseLeave={resetSelectIndex}
-        title={title}
+        automationId={`search-${automationId}-item`}
         didChange={this.selectIndexChange(sectionIndex, cellIndex)}
         terms={terms}
         id={typeof value === 'string' ? null : value}
@@ -82,7 +86,7 @@ class InstantSearchViewComponent extends Component<Props> {
       ({ ids, type, hasMore }: SearchItems, sectionIndex: number) => {
         if (ids.length === 0) return null;
 
-        const { title } = SearchSectionsConfig[type];
+        const { title, automationId } = SearchSectionsConfig[type];
         return (
           <React.Fragment key={type}>
             <JuiSearchTitle
@@ -90,7 +94,7 @@ class InstantSearchViewComponent extends Component<Props> {
               showButton={hasMore}
               buttonText={t('globalSearch.showMore')}
               title={t(title)}
-              data-test-automation-id={`search-${title}`}
+              automationId={automationId}
             />
             {ids.map((id: number | string, cellIndex: number) => {
               return this.createSearchItem({

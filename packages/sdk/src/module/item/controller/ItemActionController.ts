@@ -18,6 +18,7 @@ import notificationCenter from '../../../service/notificationCenter';
 import { ProgressService } from '../../progress';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { ItemNotification } from '../utils/ItemNotification';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 const itemPathMap: Map<number, string> = new Map([
   [TypeDictionary.TYPE_ID_FILE, 'file'],
@@ -105,7 +106,9 @@ class ItemActionController {
         );
       }
 
-      const progressService: ProgressService = ProgressService.getInstance();
+      const progressService = ServiceLoader.getInstance<ProgressService>(
+        ServiceConfig.PROGRESS_SERVICE,
+      );
       progressService.deleteProgress(itemId);
     }
   }

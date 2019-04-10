@@ -12,9 +12,9 @@ import { ENTITY_NAME } from '@/store/constants';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
-import { OpenProfile } from '@/common/OpenProfile';
 import history from '@/history';
 import i18nT from '@/utils/i18nT';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { GlobalSearchService } from '../../service';
 import { GlobalSearchStore } from '../../store';
@@ -125,10 +125,16 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   search = async (key: string) => {
     if (!key) return;
 
-    const groupService: GroupService = GroupService.getInstance();
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
+
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
 
     const [persons, groups, teams] = await Promise.all([
-      SearchService.getInstance().doFuzzySearchPersons({
+      searchService.doFuzzySearchPersons({
         searchKey: key,
         excludeSelf: false,
         recentFirst: true,
@@ -259,7 +265,10 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   }
 
   addRecentRecord = (id: number) => {
-    SearchService.getInstance().addRecentSearchRecord(this.currentItemType, id);
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+    searchService.addRecentSearchRecord(this.currentItemType, id);
   }
 
   @action
@@ -313,20 +322,20 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
 
   @action
   onEnter = (e: KeyboardEvent) => {
-    const currentItemId = this.currentItemId;
+    const currentItemValue = this.currentItemId;
     const currentItemType = this.currentItemType;
 
-    if (!currentItemId) {
+    if (!currentItemValue) {
       return;
     }
     // TODO record string
-    if (typeof currentItemId === 'number') {
-      this.addRecentRecord(currentItemId);
+    if (typeof currentItemValue === 'number') {
+      this.addRecentRecord(currentItemValue);
     }
 
     switch (currentItemType) {
       case RecentSearchTypes.PEOPLE:
-        OpenProfile.show(currentItemId as number, null, this.onClose);
+        this.goToConversation(currentItemValue as number);
         break;
       case RecentSearchTypes.SEARCH:
         const cellIndex = this.selectIndex[1];
@@ -335,12 +344,12 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
         this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
         break;
       default:
-        const { canJoin, group } = this.canJoinTeam(currentItemId as number);
+        const { canJoin, group } = this.canJoinTeam(currentItemValue as number);
         if (canJoin) {
           e.preventDefault();
           this.handleJoinTeam(group);
         } else {
-          this.goToConversation(currentItemId as number);
+          this.goToConversation(currentItemValue as number);
         }
     }
   }

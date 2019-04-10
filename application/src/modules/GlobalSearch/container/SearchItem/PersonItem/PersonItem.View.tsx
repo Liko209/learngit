@@ -9,42 +9,38 @@ import { observer } from 'mobx-react';
 import { JuiSearchItem } from 'jui/pattern/SearchBar';
 import { Avatar } from '@/containers/Avatar';
 import { Call } from '@/modules/telephony';
-import { OpenProfile } from '@/common/OpenProfile';
 
 import { ViewProps } from './types';
 import { JuiIconButton } from 'jui/components/Buttons';
 
+type PersonItemProps = ViewProps & WithTranslation & { automationId?: string };
 @observer
-class PersonItemComponent extends React.Component<ViewProps & WithTranslation> {
+class PersonItemComponent extends React.Component<PersonItemProps> {
   goToConversation = async () => {
     const { goToConversation, person } = this.props;
     await goToConversation(person.id);
   }
 
-  onClick = () => {
-    const { addRecentRecord, onClear, onClose, id } = this.props;
-    addRecentRecord();
-    onClear();
-    OpenProfile.show(id, null, onClose);
-  }
-
   handleGoToConversation = (evt: React.MouseEvent) => {
-    const { addRecentRecord } = this.props;
+    const { addRecentRecord, onClear, onClose } = this.props;
     evt.stopPropagation();
     addRecentRecord();
     this.goToConversation();
+    onClear();
+    onClose();
   }
 
   render() {
     const {
       t,
-      title,
+
       person,
       terms,
       onMouseEnter,
       onMouseLeave,
       hovered,
       onClose,
+      automationId,
     } = this.props;
     const { id, userDisplayName, deactivated } = person;
 
@@ -79,11 +75,11 @@ class PersonItemComponent extends React.Component<ViewProps & WithTranslation> {
         onMouseLeave={onMouseLeave}
         hovered={hovered}
         key={id}
-        onClick={this.onClick}
+        onClick={this.handleGoToConversation}
         Avatar={<Avatar uid={id} size="small" />}
         value={userDisplayName}
         terms={terms}
-        data-test-automation-id={`search-${title}-item`}
+        data-test-automation-id={automationId}
         Actions={[goToConversationIcon, callIcon]}
         isPrivate={false}
         isJoined={false}

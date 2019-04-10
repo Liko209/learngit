@@ -8,7 +8,7 @@ import {
   Middleware,
   Next,
 } from './interface';
-import { AccountUserConfig } from '../../service/account/config';
+import { AccountUserConfig } from '../../module/account/config';
 
 class FlagCalculator implements IFlagCalculator {
   featureConfig: IFeatureConfig;

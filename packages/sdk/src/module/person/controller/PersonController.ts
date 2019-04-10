@@ -16,7 +16,10 @@ import {
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { Raw } from '../../../framework/model';
 import PersonAPI from '../../../api/glip/person';
-import { AccountUserConfig } from '../../../service/account/config';
+import {
+  AccountUserConfig,
+  AuthUserConfig,
+} from '../../../module/account/config';
 import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import {
   IEntityCacheSearchController,
@@ -27,7 +30,6 @@ import { ContactType } from '../types';
 import notificationCenter from '../../../service/notificationCenter';
 import { ENTITY } from '../../../service/eventKey';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import { AuthUserConfig } from '../../../service/auth/config';
 import { FileTypeUtils } from '../../../utils/file/FileTypeUtils';
 
 const PersonFlags = {

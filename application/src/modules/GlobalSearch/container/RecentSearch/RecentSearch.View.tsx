@@ -12,6 +12,7 @@ import { HotKeys } from 'jui/hoc/HotKeys';
 
 import { RecentSearchViewProps, RecentSearchModel } from './types';
 import { SearchSectionsConfig } from '../config';
+import { cacheEventFn } from '../constants';
 
 type Props = RecentSearchViewProps &
   WithTranslation & {
@@ -20,13 +21,10 @@ type Props = RecentSearchViewProps &
 
 @observer
 class RecentSearchViewComponent extends Component<Props> {
-  private _hoverHighlightMap: Map<string, Function> = new Map();
-  private _selectChangeMap: Map<string, Function> = new Map();
+  private [cacheEventFn._hoverHighlightMap]: Map<string, Function> = new Map();
+  private [cacheEventFn._selectChangeMap]: Map<string, Function> = new Map();
 
-  private _cacheIndexPathFn = (
-    type: '_hoverHighlightMap' | '_selectChangeMap',
-    index: number,
-  ) => {
+  private _cacheIndexPathFn = (type: cacheEventFn, index: number) => {
     const fnKey = `${index}`;
     const fnMap = this[type];
     if (!fnMap.get(fnKey)) {
@@ -38,19 +36,15 @@ class RecentSearchViewComponent extends Component<Props> {
   }
 
   hoverHighlight = (index: number) => {
-    return this._cacheIndexPathFn('_hoverHighlightMap', index);
+    return this._cacheIndexPathFn(cacheEventFn._hoverHighlightMap, index);
   }
 
   // if search item removed need update selectIndex
   selectIndexChange = (index: number) => {
-    return this._cacheIndexPathFn('_selectChangeMap', index);
+    return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
   }
 
-  createSearchItem = (config: {
-    id: number | string;
-    index: number;
-    type: string;
-  }) => {
+  createSearchItem = (config: { id: number | string; index: number; type: string }) => {
     const { selectIndex, resetSelectIndex } = this.props;
     const { id, type, index } = config;
 
@@ -86,16 +80,14 @@ class RecentSearchViewComponent extends Component<Props> {
           title={t('globalSearch.RecentSearches')}
           data-test-automation-id={'search-clear'}
         />
-        {recentRecord.map(
-          (recentSearchModel: RecentSearchModel, index: number) => {
-            const { value, type } = recentSearchModel;
-            return this.createSearchItem({
-              index,
-              type,
-              id: value,
-            });
-          },
-        )}
+        {recentRecord.map((recentSearchModel: RecentSearchModel, index: number) => {
+          const { value, type } = recentSearchModel;
+          return this.createSearchItem({
+            index,
+            type,
+            id: value,
+          });
+        })}
       </>
     );
   }
@@ -119,8 +111,6 @@ class RecentSearchViewComponent extends Component<Props> {
   }
 }
 
-const RecentSearchView = withTranslation('translations')(
-  RecentSearchViewComponent,
-);
+const RecentSearchView = withTranslation('translations')(RecentSearchViewComponent);
 
 export { RecentSearchView };

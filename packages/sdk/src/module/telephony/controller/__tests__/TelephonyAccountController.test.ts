@@ -111,6 +111,14 @@ describe('TelephonyAccountController', () => {
     });
   });
 
+  describe('ignore', () => {
+    it('should call controller to ignore call', () => {
+      jest.spyOn(callController, 'ignore');
+      accountController.ignore(callId);
+      expect(callController.ignore).toBeCalled();
+    });
+  });
+
   describe('onMadeOutgoingCall', () => {
     it('should pass call created event to delegate', () => {
       spyOn(mockAcc, 'onMadeOutgoingCall');

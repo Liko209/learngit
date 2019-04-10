@@ -16,6 +16,8 @@ import { getThumbnailSize } from 'jui/foundation/utils';
 import { ItemService } from 'sdk/module/item/service';
 import { RULE } from '@/common/generateModifiedImageURL';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
+
 jest.mock('jui/foundation/utils');
 
 describe('getThumbnailURL', () => {
@@ -202,7 +204,7 @@ describe('getThumbnailURLWithType', () => {
     };
     const model = Object.assign({}, defaultModel, { versions: [version0] });
     const getThumbsUrlWithSize = jest.fn().mockReturnValue(modifyURL);
-    jest.spyOn(ItemService, 'getInstance').mockImplementation(() => ({
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(() => ({
       getThumbsUrlWithSize,
     }));
 
@@ -266,7 +268,7 @@ describe('getThumbnailURLWithType', () => {
       imageHeight: origHeight,
     });
     const getThumbsUrlWithSize = jest.fn().mockReturnValue(modifyURL);
-    jest.spyOn(ItemService, 'getInstance').mockImplementation(() => ({
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(() => ({
       getThumbsUrlWithSize,
     }));
 
@@ -300,7 +302,7 @@ describe('getThumbnailURLWithType', () => {
       imageHeight: origHeight,
     });
     const getThumbsUrlWithSize = jest.fn().mockReturnValue(modifyURL);
-    jest.spyOn(ItemService, 'getInstance').mockImplementation(() => ({
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(() => ({
       getThumbsUrlWithSize,
     }));
 
@@ -337,7 +339,7 @@ describe('getThumbnailURLWithType', () => {
       imageHeight: origHeight,
     });
     const getThumbsUrlWithSize = jest.fn().mockReturnValue(modifyURL);
-    jest.spyOn(ItemService, 'getInstance').mockImplementation(() => ({
+    jest.spyOn(ServiceLoader, 'getInstance').mockImplementation(() => ({
       getThumbsUrlWithSize,
     }));
 

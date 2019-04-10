@@ -65,8 +65,10 @@ const StyledJuiSearchBar = memo((props: StyledJuiSearchBarProps) => {
         },
         inputProps: {
           maxLength: 200,
+          'data-test-automation-id': 'topBar-search-input',
         },
       }}
+      data-test-automation-id="topBar-search-bar"
     />
   );
 });
