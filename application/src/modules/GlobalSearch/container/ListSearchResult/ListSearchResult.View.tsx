@@ -23,7 +23,9 @@ export const RecentSearchType = {
   [TAB_TYPE.TEAM]: RecentSearchTypes.TEAM,
 };
 
-type Props = ListSearchResultViewProps & WithTranslation & ListSearchResultProps;
+type Props = ListSearchResultViewProps &
+  WithTranslation &
+  ListSearchResultProps;
 
 @observer
 class ListSearchResultViewComponent extends Component<Props> {
@@ -51,21 +53,23 @@ class ListSearchResultViewComponent extends Component<Props> {
 
     return (
       <JuiFullSearch>
-        <JuiListSubheader>
+        <JuiListSubheader data-test-automation-id="searchResultsCount">
           {t('globalSearch.Results', {
             count: searchResult.length,
           })}
         </JuiListSubheader>
-        {searchResult.length === 0 ?
+        {searchResult.length === 0 ? (
           <div>empty</div>
-          :
+        ) : (
           <ItemList list={searchResult} type={RecentSearchType[currentTab]} />
-        }
+        )}
       </JuiFullSearch>
     );
   }
 }
 
-const ListSearchResultView = withTranslation('translations')(ListSearchResultViewComponent);
+const ListSearchResultView = withTranslation('translations')(
+  ListSearchResultViewComponent,
+);
 
 export { ListSearchResultView };

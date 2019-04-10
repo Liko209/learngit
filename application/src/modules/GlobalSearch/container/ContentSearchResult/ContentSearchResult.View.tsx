@@ -54,7 +54,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper>
-          <JuiListSubheader>
+          <JuiListSubheader data-test-automation-id="searchResultsCount">
             {toTitleCase(t('result'))} (
             {searchState.contentsCount[TypeDictionary.TYPE_ID_POST]})
           </JuiListSubheader>
