@@ -179,7 +179,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       {
         ids: this.contentSearchIds,
         hasMore: false,
-        type: SearchItemTypes.SEARCH,
+        type: SearchItemTypes.CONTENT,
       },
       {
         ...people,

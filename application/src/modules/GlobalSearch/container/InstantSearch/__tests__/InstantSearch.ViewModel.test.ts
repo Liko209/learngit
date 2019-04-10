@@ -319,7 +319,7 @@ describe('InstantSearchViewModel', () => {
       expect(instantSearchViewModel.searchResult).toEqual([
         {
           ids: [],
-          hasMore: true,
+          hasMore: false,
           type: SearchItemTypes.CONTENT,
         },
         {
