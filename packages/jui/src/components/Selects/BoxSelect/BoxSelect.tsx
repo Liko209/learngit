@@ -25,7 +25,7 @@ const StyledSelectBoxContainer = styled.div`
   padding-bottom: ${spacing(3)};
 `;
 const StyledSelectBoxHeader = styled.div`
-  color: ${grey('900Dark')};
+  color: ${grey('900')};
   ${typography('body2')};
   padding-bottom: ${spacing(2)};
 `;
@@ -53,7 +53,6 @@ class JuiBoxSelect extends PureComponent<
           style={isFullWidth ? { width: '100%' } : {}}
           input={this._renderInput()}
           onChange={this._handleChange}
-          defaultValue={this.props.defaultValue}
           {...rest}
         >
           {children}

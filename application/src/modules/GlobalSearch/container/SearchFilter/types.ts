@@ -6,6 +6,17 @@
 import { ContentSearchOptions } from '../ContentSearchResult/types';
 import { SelectedItem } from 'jui/components/Downshift/TextField';
 
+enum DATE_DICTIONARY {
+  ANY_TIME = 1,
+  THIS_WEEK = 2,
+  THIS_MONTH = 3,
+  THIS_YEAR = 4,
+}
+enum DATE_PERIOD {
+  WEEK = 8,
+  MONTH = 32,
+}
+
 type SearchContentTypeItem = {
   name: string;
   id: number | string;
@@ -30,4 +41,10 @@ type SearchFilterViewProps = SearchFilterProps & {
   timeType: string;
 };
 
-export { SearchFilterProps, SearchFilterViewProps, SearchContentTypeItem };
+export {
+  SearchFilterProps,
+  SearchFilterViewProps,
+  SearchContentTypeItem,
+  DATE_DICTIONARY,
+  DATE_PERIOD,
+};
