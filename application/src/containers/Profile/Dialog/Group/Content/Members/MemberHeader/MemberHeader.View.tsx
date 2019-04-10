@@ -14,7 +14,7 @@ import {
   JuiProfileDialogContentMemberHeaderSearch,
   JuiProfileDialogContentSummaryButtonInRight as ButtonInRight,
 } from 'jui/pattern/Profile/Dialog';
-import { JuiOutlineTextField } from 'jui/components';
+import { JuiOutlineTextField } from 'jui/components/Forms/OutlineTextField';
 import portalManager from '@/common/PortalManager';
 import { Dialog } from '@/containers/Dialog';
 import { AddMembers } from '../../AddMembers';

@@ -9,9 +9,8 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { HotKeys } from 'jui/hoc/HotKeys';
 import { JuiInstantSearch, JuiSearchTitle } from 'jui/pattern/GlobalSearch';
-import { InstantSearchViewProps, SearchItems } from './types';
+import { InstantSearchViewProps, SearchItems, cacheEventFn } from './types';
 import { SearchSectionsConfig } from '../config';
-import { cacheEventFn } from '../constants';
 
 type Props = InstantSearchViewProps & WithTranslation;
 
@@ -64,6 +63,7 @@ class InstantSearchViewComponent extends Component<Props> {
     const { Item, automationId } = SearchSectionsConfig[type];
     const hovered =
       sectionIndex === selectIndex[0] && cellIndex === selectIndex[1];
+
     return (
       <Item
         searchScope={getSearchScope(cellIndex)}
@@ -75,7 +75,7 @@ class InstantSearchViewComponent extends Component<Props> {
         didChange={this.selectIndexChange(sectionIndex, cellIndex)}
         terms={terms}
         id={typeof value === 'string' ? null : value}
-        key={value}
+        key={typeof value === 'string' ? `${value}${cellIndex}` : value}
       />
     );
   }
@@ -86,7 +86,8 @@ class InstantSearchViewComponent extends Component<Props> {
       ({ ids, type, hasMore }: SearchItems, sectionIndex: number) => {
         if (ids.length === 0) return null;
 
-        const { title, automationId } = SearchSectionsConfig[type];
+        const { title, automationId } = SearchSectionsConfig[type as string];
+
         return (
           <React.Fragment key={type}>
             <JuiSearchTitle

@@ -9,7 +9,7 @@ import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';
 import { select, boolean, number } from '@storybook/addon-knobs';
 
-import { JuiOutlineTextField } from '..';
+import { JuiOutlineTextField } from '../';
 
 storiesOf('Components/Forms', module)
   .addDecorator(withInfoDecorator(JuiOutlineTextField, { inline: true }))
@@ -25,6 +25,15 @@ storiesOf('Components/Forms', module)
       },
       'rounded',
     );
+    const size = select(
+      'size',
+      {
+        small: 'small',
+        medium: 'medium',
+        large: 'large',
+      },
+      'medium',
+    );
     return (
       <div style={{ padding: '0 30%' }}>
         <JuiOutlineTextField
@@ -36,6 +45,7 @@ storiesOf('Components/Forms', module)
           }}
           disabled={disabled}
           radiusType={radius}
+          size={size}
         />
         <br />
         <JuiOutlineTextField
@@ -49,6 +59,7 @@ storiesOf('Components/Forms', module)
           iconPosition="left"
           disabled={disabled}
           radiusType={radius}
+          size={size}
         />
         <br />
         <JuiOutlineTextField
@@ -63,6 +74,7 @@ storiesOf('Components/Forms', module)
           iconPosition="right"
           disabled={disabled}
           radiusType={radius}
+          size={size}
         />
         <br />
         <JuiOutlineTextField
@@ -76,6 +88,7 @@ storiesOf('Components/Forms', module)
           iconPosition="both"
           disabled={disabled}
           radiusType={radius}
+          size={size}
           onClickIconRight={() => alert('close')}
           inputAfter={
             <div

@@ -3,12 +3,14 @@
  * @Date: 2019-01-30 14:38:45
  * Copyright © RingCentral. All rights reserved.
  */
-import { action } from 'mobx';
+import { action, computed } from 'mobx';
 import { SearchService } from 'sdk/module/search';
 import { container } from 'framework';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
+import i18nT from '@/utils/i18nT';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { GlobalSearchStore } from '../../../store';
 import {
@@ -33,15 +35,29 @@ class ContentItemViewModel extends SearchViewModel<ContentProps>
     this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
     this._globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
     this._globalSearchStore.setSearchScope(searchScope);
-    // TODO will add record in JIRA: FIJI-4696
-    // this.addRecentRecord();
+
+    this.addRecentRecord();
+  }
+
+  @computed
+  get contentText() {
+    const { searchScope, displayName } = this.props;
+
+    if (searchScope === SEARCH_SCOPE.CONVERSATION) {
+      const defaultTip = i18nT('globalSearch.inThisConversation');
+      return `${displayName} ${defaultTip}`;
+    }
+    return displayName;
   }
 
   addRecentRecord = () => {
     const { displayName, searchScope } = this.props;
     const conversationId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
 
-    SearchService.getInstance().addRecentSearchRecord(
+    searchService.addRecentSearchRecord(
       RecentSearchTypes.SEARCH,
       displayName,
       searchScope === SEARCH_SCOPE.CONVERSATION

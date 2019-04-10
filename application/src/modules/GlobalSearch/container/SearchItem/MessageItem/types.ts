@@ -10,6 +10,9 @@ import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../../../types';
 type ContentProps = {
   displayName: string;
   searchScope: SEARCH_SCOPE;
+  params?: {
+    groupId: number;
+  };
 };
 
 type ViewProps = {
@@ -21,7 +24,7 @@ type ViewProps = {
   onClick: () => void;
   hovered: boolean;
   addRecentRecord: () => void;
-  contentText: string;
+  groupName: string;
 };
 
 export {
