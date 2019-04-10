@@ -87,7 +87,12 @@ class TelephonyService {
     this._telephonyStore.end();
     this._telephonyStore.disableHold();
     this._telephonyStore.disableRecord();
-
+    /**
+     * Be careful that the server might not respond for the request, so since we design
+     * the store as a singleton then we need to restore every single state for the next call.
+     */
+    this._telephonyStore.setPendingForHoldBtn(false);
+    this._telephonyStore.setPendingForRecordBtn(false);
     delete this._callId;
   }
 
