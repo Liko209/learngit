@@ -39,21 +39,25 @@ class DialerContainerView extends React.Component<DialerContainerViewProps> {
   render() {
     const DialerButtons = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'asterisk', 'zero', 'hash',
     ].map(
-      str => () => (
-        <JuiIconButton
-          disableToolTip={true}
-          onClick={_.throttle(
-            () => this.props.dtmf(Key2IconMap[str]),
-            30,
-            { trailing: true, leading: false },
-          )}
-          size="xxlarge"
-          key={str}
-          color="grey.900"
-        >
-          {str}
-        </JuiIconButton>
-      ));
+      str => {
+        const res = () => (
+          <JuiIconButton
+            disableToolTip={true}
+            onClick={_.throttle(
+              () => this.props.dtmf(Key2IconMap[str]),
+              30,
+              { trailing: true, leading: false },
+            )}
+            size="xxlarge"
+            key={str}
+            color="grey.900"
+          >
+            {str}
+          </JuiIconButton>
+        );
+        res.displayName = str;
+        return res;
+      });
 
     return <JuiContainer End={End} KeypadActions={this.props.keypadEntered ? DialerButtons : KeypadActions} />;
   }
