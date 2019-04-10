@@ -7,6 +7,8 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { JuiContainer } from 'jui/pattern/Dialer';
+import { JuiIconButton } from 'jui/components/Buttons';
+import _ from 'lodash';
 import { DialerContainerViewProps } from './types';
 import { Mute } from '../Mute';
 import { Keypad } from '../Keypad';
@@ -15,7 +17,6 @@ import { Add } from '../Add';
 import { Record } from '../Record';
 import { CallActions } from '../CallActions';
 import { End } from '../End';
-import { JuiIconButton } from 'jui/components/Buttons';
 
 const KeypadActions = [Mute, Keypad, Hold, Add, Record, CallActions];
 const Key2IconMap = {
@@ -41,11 +42,14 @@ class DialerContainerView extends React.Component<DialerContainerViewProps> {
       str => () => (
         <JuiIconButton
           disableToolTip={true}
-          onClick={() => this.props.dtmf(Key2IconMap[str])}
+          onClick={_.throttle(
+            () => this.props.dtmf(Key2IconMap[str]),
+            30,
+            { trailing: true, leading: false },
+          )}
           size="xxlarge"
           key={str}
           color="grey.900"
-          variant="plain"
         >
           {str}
         </JuiIconButton>
