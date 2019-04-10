@@ -3,8 +3,9 @@
  * @Date: 2019-04-03 10:45:35,
  * Copyright © RingCentral. All rights reserved.
  */
-import { errorHelper } from 'sdk/error';
 import { container } from 'framework';
+import { errorHelper } from 'sdk/error';
+import { Post } from 'sdk/module/post/entity';
 import { getGlobalValue } from '@/store/utils';
 import {
   ToastType,
@@ -31,6 +32,7 @@ beforeEach(() => {
 describe('ContentSearchResult [JPT-1558]', () => {
   beforeEach(() => {
     Notification.flashToast = jest.fn();
+
     const postService = {
       searchPosts: jest.fn().mockRejectedValue(new Error('Init Error')),
       scrollSearchPosts: jest.fn().mockRejectedValue(new Error('Scroll Error')),
@@ -125,5 +127,20 @@ describe('ContentSearchResult [JPT-1562]', () => {
     vm.setSearchOptions(inputOptions);
 
     expect(vm._searchParams).toStrictEqual(outputOptions);
+  });
+});
+
+describe('ContentSearchResult fix(FIJI-4865)', () => {
+  it('Should post ids be negative order when update post ids.', () => {
+    const vm = new ContentSearchResultViewModel({});
+
+    const fromIds = [3, 1];
+    const toIds = [{ id: 2 }, { id: 4 }];
+
+    vm._setSearchState({ postIds: fromIds });
+
+    vm._updatePostIds(<Post[]>toIds);
+
+    expect(vm.searchState.postIds).toStrictEqual([4, 3, 2, 1]);
   });
 });
