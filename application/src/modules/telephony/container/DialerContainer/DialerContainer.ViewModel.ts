@@ -32,7 +32,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   private _playAudio = (value: string) => {
-    if (this._audio && this._audio.canPlayType('audio/wav') !== '' && audios[value]) {
+    if (this._audio && this._audio.canPlayType('audio/ogg') !== '' && audios[value]) {
       if (!this._audio.paused) {
         this._audio.pause();
       }
