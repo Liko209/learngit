@@ -62,7 +62,7 @@ test(formalName('Check can open profile dialog when click the item of search res
   });
 
   await h(t).withLog(`Then Profile dialog should be popup and search result should be closed`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
     await t.expect(searchBar.searchResultsContainer.exists).notOk();
   });
 
@@ -147,7 +147,7 @@ test(formalName('Check can open profile dialog when click the item of search res
   });
 
   await h(t).withLog(`Then Profile dialog should be popup and recently search result should be closed`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
     await t.expect(searchBar.historyContainer.exists).notOk();
   }, true);
 
