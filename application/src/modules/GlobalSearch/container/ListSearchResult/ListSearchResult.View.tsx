@@ -5,7 +5,7 @@
  */
 
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiFullSearch } from 'jui/pattern/GlobalSearch';
+import { JuiFullSearch, JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
 import { JuiListSubheader } from 'jui/components/Lists';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
@@ -23,7 +23,9 @@ export const RecentSearchType = {
   [TAB_TYPE.TEAM]: RecentSearchTypes.TEAM,
 };
 
-type Props = ListSearchResultViewProps & WithTranslation & ListSearchResultProps;
+type Props = ListSearchResultViewProps &
+  WithTranslation &
+  ListSearchResultProps;
 
 @observer
 class ListSearchResultViewComponent extends Component<Props> {
@@ -51,21 +53,23 @@ class ListSearchResultViewComponent extends Component<Props> {
 
     return (
       <JuiFullSearch>
-        <JuiListSubheader>
+        <JuiListSubheader data-test-automation-id="searchResultsCount">
           {t('globalSearch.Results', {
             count: searchResult.length,
           })}
         </JuiListSubheader>
-        {searchResult.length === 0 ?
-          <div>empty</div>
-          :
+        {searchResult.length === 0 ? (
+          <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
+        ) : (
           <ItemList list={searchResult} type={RecentSearchType[currentTab]} />
-        }
+        )}
       </JuiFullSearch>
     );
   }
 }
 
-const ListSearchResultView = withTranslation('translations')(ListSearchResultViewComponent);
+const ListSearchResultView = withTranslation('translations')(
+  ListSearchResultViewComponent,
+);
 
 export { ListSearchResultView };

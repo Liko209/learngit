@@ -49,7 +49,11 @@ const getItemById = (suggestions: Item[], id: number) =>
 const SearchItem = (props: any) => {
   const item = getItemById(suggestions, props.id);
 
-  return item ? <JuiSearchItem {...props}>{item.label}</JuiSearchItem> : null;
+  return item ? (
+    <JuiSearchItem selected={props.isHighlighted} {...props}>
+      {item.label}
+    </JuiSearchItem>
+  ) : null;
 };
 
 const Chip = (props: any) => {

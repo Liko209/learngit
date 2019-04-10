@@ -6,3 +6,4 @@
 export * from './GroupItem';
 export * from './PersonItem';
 export * from './ContentItem';
+export * from './MessageItem';

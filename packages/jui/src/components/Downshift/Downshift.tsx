@@ -108,7 +108,6 @@ class JuiDownshift extends React.PureComponent<
       multiple,
       messageRef,
       maxLength,
-      initialSelectedItem,
     } = this.props;
     const { inputValue, selectedItems } = this.state;
 
@@ -119,7 +118,6 @@ class JuiDownshift extends React.PureComponent<
         selectedItem={selectedItems}
         defaultHighlightedIndex={0}
         itemToString={this.handleItemToString}
-        initialSelectedItem={initialSelectedItem || null}
       >
         {({
           getInputProps,
@@ -163,7 +161,7 @@ class JuiDownshift extends React.PureComponent<
                               {...getItemProps({ item: suggestionItem })}
                               id={suggestionItem.id}
                               key={suggestionItem.id}
-                              selected={isHighlighted}
+                              isHighlighted={isHighlighted}
                             />
                           );
                         },

@@ -21,6 +21,7 @@ type ViewProps = {
   onClick: () => void;
   hovered: boolean;
   addRecentRecord: () => void;
+  contentText: string;
 };
 
 export {

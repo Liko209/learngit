@@ -21,9 +21,10 @@ class ContentItemComponent extends React.Component<ContentItemProps> {
       onMouseEnter,
       onMouseLeave,
       hovered,
-      displayName,
+      // displayName,
       onClick,
       automationId,
+      contentText,
     } = this.props;
 
     return (
@@ -36,7 +37,7 @@ class ContentItemComponent extends React.Component<ContentItemProps> {
           <JuiIconography iconSize="medium" iconColor={['grey', '500']}>
             search
           </JuiIconography>}
-        value={displayName}
+        value={contentText}
         terms={terms}
         data-test-automation-id={automationId}
       />

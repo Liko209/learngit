@@ -5,6 +5,17 @@
  */
 import { RecentSearchModel } from 'sdk/module/search/entity';
 import { Group } from 'sdk/module/group/entity';
+import { cacheEventFn } from '../types';
+import { SearchItemTypes } from '../../types';
+
+type RecentRecord = {
+  id: RecentSearchModel['id'];
+  value: RecentSearchModel['value'];
+  queryParams?: {
+    groupId: number;
+  };
+  type: SearchItemTypes;
+};
 
 type RecentSearchProps = {};
 
@@ -12,7 +23,7 @@ type RecentSearchViewProps = {
   onKeyUp: () => void;
   onKeyDown: () => void;
   onEnter: (e: KeyboardEvent) => void;
-  recentRecord: RecentSearchModel[];
+  recentRecord: RecentRecord[];
   selectIndex: number;
   resetSelectIndex: () => void;
   setSelectIndex: (index: number) => void;
@@ -20,4 +31,12 @@ type RecentSearchViewProps = {
   selectIndexChange: (index: number) => void;
 };
 
-export { RecentSearchProps, RecentSearchViewProps, RecentSearchModel, Group };
+export {
+  RecentSearchProps,
+  RecentSearchViewProps,
+  RecentRecord,
+  Group,
+  RecentSearchModel,
+  SearchItemTypes,
+  cacheEventFn,
+};

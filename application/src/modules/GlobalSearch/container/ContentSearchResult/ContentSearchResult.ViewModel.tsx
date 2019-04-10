@@ -29,6 +29,7 @@ import {
   CONTENT_SEARCH_FETCH_COUNT,
 } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { TypeDictionary } from 'sdk/utils';
 
 class ContentSearchResultViewModel
   extends StoreViewModel<ContentSearchResultProps>
@@ -38,6 +39,9 @@ class ContentSearchResultViewModel
   );
 
   private _globalSearchStore = container.get(GlobalSearchStore);
+
+  @observable
+  isEmpty: boolean = false;
 
   @observable
   searchState: ContentSearchState = {
@@ -126,6 +130,8 @@ class ContentSearchResultViewModel
 
     const postIds = isInitialize ? toPostIds : [...fromPostIds, ...toPostIds];
 
+    postIds.sort((former, latter) => latter - former);
+
     this._setSearchState({ postIds });
   }
 
@@ -137,6 +143,9 @@ class ContentSearchResultViewModel
     const result = await this._postService.searchPosts(this._searchParams);
 
     this._setSearchState({ contentsCount, requestId: result.requestId });
+
+    const count = contentsCount[TypeDictionary.TYPE_ID_POST] || 0;
+    this.isEmpty = count === 0;
 
     return result;
   }
@@ -172,7 +181,7 @@ class ContentSearchResultViewModel
     const isNetworkError = errorHelper.isNetworkConnectionError(error);
     const isResponseError = isServiceError || isNetworkError;
 
-    let message: string = 'common.globalSearch.prompt';
+    let message: string = 'globalSearch.prompt';
 
     isServiceError && (message = `${message}.contentSearchServiceError`);
 

@@ -6,7 +6,7 @@
 import React, { ReactNode, memo } from 'react';
 import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
 import MuiLock from '@material-ui/icons/Lock';
-import { JuiSearchItemValue } from '../';
+import { JuiSearchItemValue } from '../SearchItemValue';
 import styled from '../../../foundation/styled-components';
 import {
   height,

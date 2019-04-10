@@ -7,12 +7,11 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiRecentSearch, JuiSearchTitle } from 'jui/pattern/GlobalSearch';
+import { JuiRecentSearch, JuiSearchTitle, JuiRecentSearcnEmptyScreen } from 'jui/pattern/GlobalSearch';
 import { HotKeys } from 'jui/hoc/HotKeys';
 
-import { RecentSearchViewProps, RecentSearchModel } from './types';
+import { RecentSearchViewProps, RecentRecord, cacheEventFn } from './types';
 import { SearchSectionsConfig } from '../config';
-import { cacheEventFn } from '../constants';
 
 type Props = RecentSearchViewProps &
   WithTranslation & {
@@ -44,9 +43,16 @@ class RecentSearchViewComponent extends Component<Props> {
     return this._cacheIndexPathFn(cacheEventFn._selectChangeMap, index);
   }
 
-  createSearchItem = (config: { id: number | string; index: number; type: string }) => {
+  createSearchItem = (config: {
+    value: number | string;
+    index: number;
+    type: string;
+    queryParams?: {
+      groupId: number;
+    };
+  }) => {
     const { selectIndex, resetSelectIndex } = this.props;
-    const { id, type, index } = config;
+    const { value, type, index, queryParams } = config;
 
     const { Item, title } = SearchSectionsConfig[type];
     const hovered = index === selectIndex;
@@ -54,12 +60,14 @@ class RecentSearchViewComponent extends Component<Props> {
     return (
       <Item
         hovered={hovered}
+        displayName={typeof value === 'string' ? value : null}
         onMouseEnter={this.hoverHighlight(index)}
         onMouseLeave={resetSelectIndex}
         title={title}
         didChange={this.selectIndexChange(index)}
-        id={id}
-        key={id}
+        id={typeof value === 'string' ? null : value}
+        key={typeof value === 'string' ? `${value}${index}` : value}
+        params={queryParams}
       />
     );
   }
@@ -68,7 +76,7 @@ class RecentSearchViewComponent extends Component<Props> {
     const { recentRecord, clearRecent, t } = this.props;
 
     if (recentRecord.length === 0) {
-      return null;
+      return <JuiRecentSearcnEmptyScreen text={t('globalSearch.SearchForContactsAndKeywords')} />;
     }
 
     return (
@@ -80,12 +88,13 @@ class RecentSearchViewComponent extends Component<Props> {
           title={t('globalSearch.RecentSearches')}
           data-test-automation-id={'search-clear'}
         />
-        {recentRecord.map((recentSearchModel: RecentSearchModel, index: number) => {
-          const { value, type } = recentSearchModel;
+        {recentRecord.map((recentSearchModel: RecentRecord, index: number) => {
+          const { value, type, queryParams } = recentSearchModel;
           return this.createSearchItem({
             index,
             type,
-            id: value,
+            value,
+            queryParams,
           });
         })}
       </>
@@ -111,6 +120,8 @@ class RecentSearchViewComponent extends Component<Props> {
   }
 }
 
-const RecentSearchView = withTranslation('translations')(RecentSearchViewComponent);
+const RecentSearchView = withTranslation('translations')(
+  RecentSearchViewComponent,
+);
 
 export { RecentSearchView };
