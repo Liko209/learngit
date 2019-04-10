@@ -55,7 +55,7 @@ export function formalNameWithTestMetaPrefix(name: string, testMeta: ITestMeta):
       .map(tag => isValidTag(tag, true) && `[${tag}]`)
       .join('') + ' ' + formalName;
   }
-  return formalName;
+  return formalName.trim();
 }
 
 export function parseFormalName(formalName: string): INameTags {
