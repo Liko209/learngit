@@ -22,7 +22,7 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
     const notification = new Notification(title, opts);
     notification.onclick = (event) => {
       window.focus();
-      this._store.get(scope, id).close();
+      (event.target as Notification).close();
       this._store.remove(scope, id);
       onClick && onClick(event);
     };
