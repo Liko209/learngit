@@ -70,9 +70,13 @@ class ImageViewerComponent extends Component<ImageViewerProps, any> {
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this._handlerKeydown);
+    window.addEventListener('keydown', this._handlerKeydown, {
+      passive: false,
+    });
     ['DOMMouseScroll', 'mousewheel'].forEach((v: string) => {
-      window.addEventListener(v, this._handlerScroll);
+      window.addEventListener(v, this._handlerScroll, {
+        passive: false,
+      });
     });
   }
 
