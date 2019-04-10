@@ -60,17 +60,21 @@ const StyledChip = styled<JuiChipProps>(WrappedChip)`
 export const JuiChip: React.SFC<JuiChipProps> = React.memo(
   (props: JuiChipProps) => {
     const { onDelete, PersonAvatar, GroupAvatar, isError, id, ...rest } = props;
-    const Avatar = PersonAvatar ? (
-      <PersonAvatar size="small" uid={id} />
-    ) : GroupAvatar ? (
-      <GroupAvatar size="small" cid={id} />
-    ) : null;
+    const getAvatar = () => {
+      if (PersonAvatar) {
+        return <PersonAvatar size="small" uid={id} />;
+      }
+      if (GroupAvatar) {
+        return <GroupAvatar size="small" cid={id} />;
+      }
+      return null;
+    };
 
     return (
       <StyledChip
         {...rest}
         onDelete={onDelete}
-        avatar={Avatar}
+        avatar={getAvatar() as React.ReactElement}
         variant={isError ? 'outlined' : 'default'}
         isError={isError}
         classes={{
