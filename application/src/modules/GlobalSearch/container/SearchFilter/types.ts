@@ -12,10 +12,6 @@ enum DATE_DICTIONARY {
   THIS_MONTH = 3,
   THIS_YEAR = 4,
 }
-enum DATE_PERIOD {
-  WEEK = 8,
-  MONTH = 32,
-}
 
 type SearchContentTypeItem = {
   name: string;
@@ -46,5 +42,4 @@ export {
   SearchFilterViewProps,
   SearchContentTypeItem,
   DATE_DICTIONARY,
-  DATE_PERIOD,
 };

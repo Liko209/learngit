@@ -37,6 +37,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
       t,
       searchOptions,
       timePeriodFilter,
+      typeFilter,
       handleSearchPersonChange,
       handleSearchGroupChange,
       handleSearchTypeChange,
