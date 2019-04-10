@@ -11,9 +11,7 @@ import {
 } from '../../../../authenticator';
 import notificationCenter from '../../../../service/notificationCenter';
 import { SERVICE } from '../../../../service/eventKey';
-import { RCAuthApi } from '../../../../api';
 import { AuthUserConfig } from '../../config';
-import { AUTH_GLIP2_TOKEN } from '../../../../dao/auth/constants';
 
 jest.mock('foundation');
 jest.mock('../../../../service/notificationCenter');
@@ -47,7 +45,6 @@ describe('AuthService', () => {
     it('should login glip/glip2 and notify login', async () => {
       authController.onLogin = jest.fn();
       authController.loginGlip = jest.fn();
-      authController.loginGlip2 = jest.fn();
       await authController.login({
         username: '123',
         extension: '123',
@@ -55,11 +52,6 @@ describe('AuthService', () => {
       });
       expect(authController.onLogin).toBeCalled();
       expect(authController.loginGlip).toBeCalledWith({
-        username: '123',
-        extension: '123',
-        password: 'abc',
-      });
-      expect(authController.loginGlip2).toBeCalledWith({
         username: '123',
         extension: '123',
         password: 'abc',
@@ -88,29 +80,6 @@ describe('AuthService', () => {
           extension: '123',
           password: 'abc',
         },
-      );
-    });
-  });
-
-  describe('loginGlip2()', () => {
-    it('should login glip2', async () => {
-      RCAuthApi.loginGlip2ByPassword.mockReturnValueOnce('mockToken');
-      await authController.loginGlip2({
-        username: '123',
-        extension: '123',
-        password: 'abc',
-      });
-      expect(RCAuthApi.loginGlip2ByPassword).toBeCalledWith({
-        username: '123',
-        extension: '123',
-        password: 'abc',
-      });
-      expect(AuthUserConfig.prototype.setGlip2Token).toBeCalledWith(
-        'mockToken',
-      );
-      expect(notificationCenter.emitKVChange).toBeCalledWith(
-        AUTH_GLIP2_TOKEN,
-        'mockToken',
       );
     });
   });

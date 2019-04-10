@@ -17,13 +17,13 @@ class RCPermissionController {
   private _featurePermissionMap: Map<
     ERCServiceFeaturePermission,
     { featureName?: RCServiceFeatureName; permissionId?: PermissionId }
-  > = new Map();
+  >;
 
   constructor(
     private _rcInfoFetchController: RCInfoFetchController,
     private _rolePermissionController: RolePermissionController,
   ) {
-    this._buildFeaturePermissionMap();
+    this._initFeaturePermissionMap();
   }
 
   private async _isRCServiceFeatureEnabled(
@@ -64,62 +64,6 @@ class RCPermissionController {
     return { found: isFound, enabled: isEnabled };
   }
 
-  private _buildFeaturePermissionMap() {
-    this._featurePermissionMap.set(
-      ERCServiceFeaturePermission.VOIP_CALLING_WITHOUT_TELEPHONY_BETA,
-      {
-        featureName: RCServiceFeatureName.VOIP_CALLING,
-      },
-    );
-    this._featurePermissionMap.set(
-      ERCServiceFeaturePermission.INTERNATIONAL_CALLING,
-      {
-        featureName: RCServiceFeatureName.INTERNATIONAL_CALLING,
-        permissionId: PermissionId.INTERNATIONAL_CALLS,
-      },
-    );
-
-    this._featurePermissionMap.set(ERCServiceFeaturePermission.CALL_PARK, {
-      featureName: RCServiceFeatureName.CALL_PARK,
-    });
-
-    this._featurePermissionMap.set(ERCServiceFeaturePermission.CALL_TRANSFER, {
-      featureName: RCServiceFeatureName.SINGLE_EXTENSION_UI,
-    });
-
-    this._featurePermissionMap.set(ERCServiceFeaturePermission.CALL_FLIP, {
-      featureName: RCServiceFeatureName.SINGLE_EXTENSION_UI,
-    });
-
-    this._featurePermissionMap.set(ERCServiceFeaturePermission.INTERNAL_CALLS, {
-      permissionId: PermissionId.INTERNAL_CALLS,
-    });
-
-    this._featurePermissionMap.set(ERCServiceFeaturePermission.DOMESTIC_CALLS, {
-      permissionId: PermissionId.DOMESTIC_CALLS,
-    });
-
-    this._featurePermissionMap.set(ERCServiceFeaturePermission.CALL_SWITCH, {
-      featureName: RCServiceFeatureName.CALL_SWITCH,
-    });
-
-    this._featurePermissionMap.set(
-      ERCServiceFeaturePermission.READ_COMPANY_CALLLOG,
-      {
-        permissionId: PermissionId.READ_COMPANY_CALLLOG,
-      },
-    );
-
-    this._featurePermissionMap.set(ERCServiceFeaturePermission.PAGER_SEND, {
-      featureName: RCServiceFeatureName.PAGER,
-      permissionId: PermissionId.INTERNAL_SMS,
-    });
-
-    this._featurePermissionMap.set(ERCServiceFeaturePermission.FAX, {
-      featureName: RCServiceFeatureName.FAX,
-    });
-  }
-
   private async _checkGeneralRCFeaturePermission(
     featurePermission: ERCServiceFeaturePermission,
   ) {
@@ -153,6 +97,86 @@ class RCPermissionController {
     }
     result = await this._checkGeneralRCFeaturePermission(featurePermission);
     return result.enabled;
+  }
+
+  private _initFeaturePermissionMap() {
+    this._featurePermissionMap = new Map([
+      [
+        ERCServiceFeaturePermission.VOIP_CALLING,
+        {
+          featureName: RCServiceFeatureName.VOIP_CALLING,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.INTERNATIONAL_CALLING,
+        {
+          featureName: RCServiceFeatureName.INTERNATIONAL_CALLING,
+          permissionId: PermissionId.INTERNATIONAL_CALLS,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.CALL_PARK,
+        {
+          featureName: RCServiceFeatureName.CALL_PARK,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.CALL_TRANSFER,
+        {
+          featureName: RCServiceFeatureName.SINGLE_EXTENSION_UI,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.CALL_FLIP,
+        {
+          featureName: RCServiceFeatureName.SINGLE_EXTENSION_UI,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.INTERNAL_CALLS,
+        {
+          permissionId: PermissionId.INTERNAL_CALLS,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.DOMESTIC_CALLS,
+        {
+          permissionId: PermissionId.DOMESTIC_CALLS,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.READ_COMPANY_CALLLOG,
+        {
+          permissionId: PermissionId.READ_COMPANY_CALLLOG,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.CALL_SWITCH,
+        {
+          featureName: RCServiceFeatureName.CALL_SWITCH,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.PAGER_SEND,
+        {
+          featureName: RCServiceFeatureName.PAGER,
+          permissionId: PermissionId.INTERNAL_SMS,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.FAX,
+        {
+          featureName: RCServiceFeatureName.FAX,
+        },
+      ],
+      [
+        ERCServiceFeaturePermission.VIDEO_CONFERENCING,
+        {
+          featureName: RCServiceFeatureName.VIDEO_CONFERENCING,
+          PermissionId: PermissionId.PERMISSION_MEEINGS,
+        },
+      ],
+    ]);
   }
 }
 

@@ -11,7 +11,7 @@ import {
   IEntityDataProvider,
 } from '../base/fetch';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
-import { IdModel } from 'sdk/src/framework/model';
+import { IdModel } from 'sdk/framework/model';
 import {
   IMatchFunc,
   ISortableModel,

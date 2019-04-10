@@ -6,7 +6,6 @@
 
 enum ERCServiceFeaturePermission {
   VOIP_CALLING,
-  VOIP_CALLING_WITHOUT_TELEPHONY_BETA,
   INTERNATIONAL_CALLING,
   ON_DEMAND_CALL_RECORDING,
   CALL_PARK,
@@ -50,6 +49,7 @@ enum PermissionId {
   INTERNATIONAL_CALLING = 'InternationalCalling',
   READ_COMPANY_CALLLOG = 'ReadCompanyCallLog',
   INTERNAL_SMS = 'InternalSMS',
+  PERMISSION_MEEINGS = 'Meetings',
 }
 
 enum RCServiceFeatureName {
@@ -60,6 +60,7 @@ enum RCServiceFeatureName {
   CALL_SWITCH = 'CallSwitch',
   PAGER = 'Pager',
   FAX = 'Fax',
+  VIDEO_CONFERENCING = 'VideoConferencing',
 }
 
 export { RCServiceFeatureName, PermissionId, ERCServiceFeaturePermission };

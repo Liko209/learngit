@@ -4,10 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-type CallActionsProps = {};
+type CallActionsProps = {
+  showLabel?: boolean;
+};
 
 type CallActionsViewProps = {
   callActions: () => void;
+  showLabel?: boolean;
 };
 
 export { CallActionsProps, CallActionsViewProps };

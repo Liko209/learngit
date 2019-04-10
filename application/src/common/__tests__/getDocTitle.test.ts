@@ -1,8 +1,6 @@
 import getDocTitle from '../getDocTitle';
 
-jest.mock('i18next', () => ({
-  t: (title: string) => title,
-}));
+jest.mock('@/utils/i18nT', () => (key: string) => key);
 
 jest.mock('@/store/utils', () => ({
   getEntity: (name: string, id: number) => ({
@@ -11,15 +9,35 @@ jest.mock('@/store/utils', () => ({
 }));
 
 describe('get doc title', () => {
-  it('should return current title when pathname not have id', () => {
-    let title = getDocTitle('/dashboard');
-    expect(title).toEqual('dashboard.Dashboard');
-    title = getDocTitle('/messages');
-    expect(title).toEqual('message.Messages');
+  describe('get messages title', () => {
+    it('should return current title when pathname not have id', async () => {
+      const title = await getDocTitle('/messages');
+      expect(title).toEqual('message.Messages');
+    });
+
+    it('should return current title when pathname have id', async () => {
+      const title = await getDocTitle('/messages/1');
+      expect(title).toEqual('xxx');
+    });
   });
 
-  it('should return current title when pathname have id', () => {
-    const title = getDocTitle('/messages/1');
-    expect(title).toEqual('xxx');
+  describe('get others title', () => {
+    it('should return current page title title when get diff page', async () => {
+      let title = await getDocTitle('/dashboard');
+      expect(title).toEqual('dashboard.Dashboard');
+      title = await getDocTitle('/messages');
+      expect(title).toEqual('message.Messages');
+      title = await getDocTitle('/settings');
+      expect(title).toEqual('setting.Settings');
+    });
+
+    it('should return current page section title title when get diff page section', async () => {
+      let title = await getDocTitle('/settings/messaging');
+      expect(title).toEqual('setting.Settings - setting.messaging');
+      title = await getDocTitle('/settings/general');
+      expect(title).toEqual('setting.Settings - setting.general');
+      title = await getDocTitle('/settings/notification_and_sounds');
+      expect(title).toEqual('setting.Settings - setting.notificationAndSounds');
+    });
   });
 });
