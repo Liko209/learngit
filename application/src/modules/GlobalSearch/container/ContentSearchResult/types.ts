@@ -24,6 +24,7 @@ type ContentSearchOptions = {
 type ContentSearchResultProps = {};
 
 type ContentSearchResultViewProps = {
+  isEmpty: boolean,
   searchState: ContentSearchState;
   searchOptions: ContentSearchOptions;
   setSearchOptions(searchOptions: ContentSearchOptions): void;

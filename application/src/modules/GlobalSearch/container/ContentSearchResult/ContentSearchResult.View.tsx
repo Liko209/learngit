@@ -43,9 +43,8 @@ class ContentSearchResultViewComponent extends Component<Props> {
     this.props.onSearchEnd();
   }
   render() {
-    const { t, searchState, onPostsFetch } = this.props;
+    const { t, searchState, onPostsFetch, isEmpty } = this.props;
     const contentsCount = searchState.contentsCount[TypeDictionary.TYPE_ID_POST] || 0;
-    const isEmpty = contentsCount === 0;
 
     if (isEmpty) {
       return (

@@ -25,6 +25,7 @@ jest.mock('@/containers/ConversationSheet', () => ({}));
 describe('ContentSearchResult', () => {
   it('component should display empty page when there are no records found matching and title should be "Results (0)"[JPT-1596]', () => {
     const props = {
+      isEmpty: true,
       searchState: {
         requestId: 1234,
         postIds: [1],
