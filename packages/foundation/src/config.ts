@@ -5,18 +5,13 @@
  */
 
 export interface IFoundationConfig {
-  rcConfig: object;
   dbAdapter: string;
   timeout?: number;
   tokenExpireInAdvance?: number;
   survivalModeUris?: {};
 }
 
-export default {
-  rcConfig: {
-    rc: { clientId: '', clientSecret: '' },
-    glip2: { clientId: '', clientSecret: '' },
-  },
+export const config = {
   beforeExpired: 5 * 60 * 1000,
   timeout: 60 * 1000,
   dbAdapter: 'dexie',

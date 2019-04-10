@@ -13,19 +13,26 @@ import {
   JuiListItemSecondaryAction,
 } from 'jui/components/Lists';
 import { Thumbnail } from '@/containers/Thumbnail';
+import { showImageViewer } from '@/containers/Viewer';
 import { FileName } from 'jui/pattern/ConversationCard/Files/FileName';
-import { ImageItemViewProps } from './types';
+import { ImageItemViewProps, ImageItemProps } from './types';
 import { Download } from '@/containers/common/Download';
 import { SecondaryText } from '../common/SecondaryText.View';
-
+const SQUARE_SIZE = 36;
 @observer
-class ImageItemView extends Component<ImageItemViewProps> {
+class ImageItemView extends Component<ImageItemViewProps & ImageItemProps> {
+  private _thumbnailRef: React.RefObject<any> = React.createRef();
   private _renderItem = (hover: boolean) => {
     const { fileName, id, personName, createdTime, downloadUrl } = this.props;
     return (
       <>
         <JuiListItemIcon>
-          <Thumbnail id={id} type="image" />
+          <Thumbnail
+            ref={this._thumbnailRef}
+            id={id}
+            type="image"
+            onClick={this._handleImageClick}
+          />
         </JuiListItemIcon>
         <JuiListItemText
           primary={<FileName filename={fileName} />}
@@ -39,6 +46,17 @@ class ImageItemView extends Component<ImageItemViewProps> {
         )}
       </>
     );
+  }
+
+  _handleImageClick = async (event: React.MouseEvent<HTMLElement>) => {
+    const { id, groupId } = this.props;
+    const target = event.currentTarget;
+    showImageViewer(groupId, id, {
+      thumbnailSrc: this._thumbnailRef.current.vm.thumbsUrlWithSize,
+      initialWidth: SQUARE_SIZE,
+      initialHeight: SQUARE_SIZE,
+      originElement: target,
+    });
   }
 
   render() {

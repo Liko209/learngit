@@ -9,7 +9,7 @@ import { storiesOf } from '@storybook/react';
 import { JuiIconography } from '../../../foundation/Iconography';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiAvatar } from '../../../components/Avatar';
-import { JuiIconButton } from '../../../components/Buttons';
+import { JuiIconButton, JuiFabButton } from '../../../components/Buttons';
 import { JuiDraggableDialog } from '../../../components/Dialog';
 import avatarImg from '../../../components/Avatar/__stories__/img/avatar.jpg';
 import { boolean } from '@storybook/addon-knobs';
@@ -17,6 +17,7 @@ import { boolean } from '@storybook/addon-knobs';
 import {
   JuiTitleBar,
   JuiHeader,
+  JuiHeaderContainer,
   JuiContainer,
   JuiDialer,
   JuiKeypadAction,
@@ -73,13 +74,14 @@ const HoverActions = () => (
 );
 
 const End = () => (
-  <JuiIconButton
+  <JuiFabButton
     color="semantic.negative"
-    tooltipTitle="Hand down"
-    size="xxlarge"
-  >
-    hand_up
-  </JuiIconButton>
+    disableToolTip={true}
+    size="moreLarge"
+    showShadow={false}
+    tooltipPlacement="top"
+    iconName="hand_up"
+  />
 );
 
 const knobs = {
@@ -155,14 +157,16 @@ storiesOf('Pattern', module)
     return (
       <JuiDraggableDialog open={knobs.open()} x={0} y={0}>
         <JuiDialer>
-          <JuiTitleBar label="02:32" Actions={Actions} Status={Status} />
-          <JuiHeader
-            Avatar={Avatar}
-            name="Terry Webster"
-            phone="(650) 555-12345"
-            Back={Back}
-            HoverActions={HoverActions}
-          />
+          <JuiHeaderContainer>
+            <JuiTitleBar label="02:32" Actions={Actions} Status={Status} />
+            <JuiHeader
+              Avatar={Avatar}
+              name="Terry Webster"
+              phone="(650) 555-12345"
+              Back={Back}
+              HoverActions={HoverActions}
+            />
+          </JuiHeaderContainer>
           <JuiContainer End={End} KeypadActions={KeypadActions} />
         </JuiDialer>
       </JuiDraggableDialog>

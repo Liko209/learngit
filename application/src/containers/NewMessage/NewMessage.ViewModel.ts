@@ -6,11 +6,14 @@
 import { action, computed, observable } from 'mobx';
 
 import { StoreViewModel } from '@/store/ViewModel';
-import { getGlobalValue } from '@/store/utils';
+import { getGlobalValue, getEntity } from '@/store/utils';
 import { PostService } from 'sdk/module/post';
-import { GLOBAL_KEYS } from '@/store/constants';
+import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { Group } from 'sdk/module/group';
+import GroupModel from '@/store/models/Group';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class NewMessageViewModel extends StoreViewModel {
   @observable
@@ -60,6 +63,17 @@ class NewMessageViewModel extends StoreViewModel {
             groupId: conversationId,
             text: message,
           });
+
+          // track analysis
+          const group = getEntity<Group, GroupModel>(
+            ENTITY_NAME.GROUP,
+            conversationId,
+          );
+          analyticsCollector.sendPost(
+            'send new message',
+            'text',
+            group.analysisType,
+          );
         }
       },
     });

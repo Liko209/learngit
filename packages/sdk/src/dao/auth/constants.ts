@@ -7,6 +7,5 @@
 
 export const AUTH_GLIP_TOKEN = 'GLIP_TOKEN';
 export const AUTH_RC_TOKEN = 'RC_TOKEN';
-export const AUTH_GLIP2_TOKEN = 'GLIP2_TOKEN';
 
-export const AUTH_KEYS = [AUTH_GLIP_TOKEN, AUTH_RC_TOKEN, AUTH_GLIP2_TOKEN];
+export const AUTH_KEYS = [AUTH_GLIP_TOKEN, AUTH_RC_TOKEN];

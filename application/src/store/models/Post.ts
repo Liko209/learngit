@@ -27,7 +27,7 @@ export default class PostModel extends Base<Post> {
   @observable
   itemId?: number;
   @observable
-  activityData?: { [index: string]: any };
+  activityData?: { [index: string]: any, [key:string]: string };
   @observable
   activity?: string;
   @observable
