@@ -19,7 +19,7 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   private _audio: HTMLAudioElement | null;
   private _frameId?: number;
 
-  constructor(...args: any[]) {
+  constructor(...args: DialerContainerProps[]) {
     super(...args);
     if (typeof document !== 'undefined' && document.createElement) {
       this._audio = document.createElement('audio');

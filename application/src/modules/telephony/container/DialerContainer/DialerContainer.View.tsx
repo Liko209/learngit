@@ -34,35 +34,39 @@ const Key2IconMap = {
   hash: '#',
 };
 
-function keypadKeys(onclick: (str: string) => void) {
-  return [
-    'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'asterisk', 'zero', 'hash',
-  ].map(
-    str => {
-      const res = () => (
-        <JuiIconButton
-          disableToolTip={true}
-          onClick={_.throttle(
-            () => onclick(Key2IconMap[str]),
-            30,
-            { trailing: true, leading: false },
-          )}
-          size="xxlarge"
-          key={str}
-          color="grey.900"
-        >
-          {str}
-        </JuiIconButton>
-      );
-      res.displayName = str;
-      return res;
-    });
-}
-
 @observer
 class DialerContainerView extends React.Component<DialerContainerViewProps> {
+  private _keypadKeys: React.ComponentType[];
+
+  constructor(props: DialerContainerViewProps) {
+    super(props);
+    // Since we know that the dtmf() method for a view-model instance won't change during the runtime, then we can cache the buttons
+    this._keypadKeys = [
+      'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'asterisk', 'zero', 'hash',
+    ].map(
+      str => {
+        const res = () => (
+          <JuiIconButton
+            disableToolTip={true}
+            onClick={_.throttle(
+              () => props.dtmf(Key2IconMap[str]),
+              30,
+              { trailing: true, leading: false },
+            )}
+            size="xxlarge"
+            key={str}
+            color="grey.900"
+          >
+            {str}
+          </JuiIconButton>
+        );
+        res.displayName = str;
+        return res;
+      });
+  }
+
   render() {
-    return <JuiContainer End={End} KeypadActions={this.props.keypadEntered ? keypadKeys(this.props.dtmf) : KeypadActions} />;
+    return <JuiContainer End={End} KeypadActions={this.props.keypadEntered ? this._keypadKeys : KeypadActions} />;
   }
 }
 
