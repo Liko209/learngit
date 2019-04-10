@@ -87,6 +87,8 @@
       "contentSearchServiceError": "Sorry, something went wrong on our end and we weren't able to conduct the search. Try again later."
     },
     "Results": "Results ({{count}})",
+    "NoMatchesFound": "No matches found",
+    "SearchForContactsAndKeywords": "Search for contacts and keywords",
     "in": "in"
   },
   "dashboard": {
