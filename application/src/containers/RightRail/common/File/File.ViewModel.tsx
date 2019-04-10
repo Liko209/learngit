@@ -52,8 +52,12 @@ class FileViewModel extends AbstractViewModel<FileViewModelProps>
   }
 
   @computed
-  get createdTime() {
-    const { createdAt } = this.file;
+  get modifiedTime() {
+    const { versions, createdAt } = this.file;
+    const modifiedTime = versions && versions[0] && versions[0].date;
+    if (modifiedTime && typeof modifiedTime === 'number') {
+      return dateFormatter.date(modifiedTime);
+    }
     return dateFormatter.date(createdAt);
   }
 }
