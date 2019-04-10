@@ -21,12 +21,9 @@ import { mainLogger } from 'sdk';
 import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-import { TelephonyNotificationManager } from '../TelephonyNotificationManager';
 
 class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
-  @inject(TelephonyNotificationManager)
-  private _telephonyNotificationManager: TelephonyNotificationManager;
   static TAG: string = '[UI TelephonyService] ';
 
   // prettier-ignore
@@ -54,25 +51,15 @@ class TelephonyService {
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
+    this._telephonyStore.callerName = fromName;
     this._telephonyStore.phoneNumber = fromNum;
+    this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${
         callInfo.callId
       }, from name=${fromName}, from num=${fromNum}`,
     );
-
-    this._telephonyNotificationManager.dispatch({
-      type: 'SHOW',
-      options: {
-        id: callId,
-        callNumber: fromNum,
-        callerName: fromName || '',
-        answerHandler: () => {
-          this.answer();
-        },
-      },
-    });
   }
 
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
@@ -89,17 +76,6 @@ class TelephonyService {
         this._telephonyStore.end();
         break;
       }
-    }
-
-    if (
-      [RTC_CALL_STATE.CONNECTED, RTC_CALL_STATE.DISCONNECTED].includes(state)
-    ) {
-      this._telephonyNotificationManager.dispatch({
-        type: 'CLOSE',
-        options: {
-          id: callId,
-        },
-      });
     }
   }
 

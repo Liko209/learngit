@@ -4,75 +4,77 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+import { inject } from 'framework';
+import { reaction } from 'mobx';
 import { NotificationManager } from '@/modules/notification/manager';
 import i18nT from '@/utils/i18nT';
+import { TelephonyStore } from './store';
+import { TelephonyService } from './service';
+import { CALL_STATE } from './FSM';
 
-type Action =
-  | {
-      type: 'SHOW';
-      options: {
-        id: string;
-        callNumber: string;
-        callerName: string;
-        answerHandler?: () => void;
-      };
-    }
-  | {
-      type: 'CLOSE';
-      options: {
-        id: string;
-      };
-    }
-  | {
-      type: 'DISPOSE';
-      options?: {};
-    };
+type Action = 'SHOW' | 'CLOSE' | 'DISPOSE';
 
 class TelephonyNotificationManager extends NotificationManager {
+  @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
+  @inject(TelephonyService) private _telephonyService: TelephonyService;
+
   constructor() {
     super('telephony');
   }
 
+  init() {
+    reaction(
+      () => this._telephonyStore.callState,
+      (callState: CALL_STATE) => {
+        if (callState === CALL_STATE.INCOMING) {
+          this.dispatch('SHOW');
+        } else {
+          this.dispatch('CLOSE');
+        }
+      },
+    );
+  }
+
   async dispatch(action: Action) {
-    switch (action.type) {
+    switch (action) {
       case 'SHOW':
-        const { id, answerHandler } = action.options;
-        let { callNumber, callerName } = action.options;
+        const { callId } = this._telephonyStore;
+        let { phoneNumber, callerName } = this._telephonyStore;
         if (
           !callerName ||
-          callerName === callNumber ||
-          callNumber === 'anonymous'
+          callerName === phoneNumber ||
+          phoneNumber === 'anonymous'
         ) {
           callerName =
             (await i18nT('telephony.notification.unknownCaller')) ||
             'Unknown Caller';
         }
-        callNumber =
-          !callNumber || callNumber === 'anonymous' ? '' : callNumber;
+        phoneNumber =
+          !phoneNumber || phoneNumber === 'anonymous' ? '' : phoneNumber;
         const title = await i18nT('telephony.notification.incomingCall');
-        const actions = [];
-        if (answerHandler) {
-          actions.push({
-            title: await i18nT('telephony.notification.answer'),
-            icon: '',
-            action: 'answer',
-            handler: answerHandler,
-          });
-        }
         this.show(title, {
-          actions,
-          tag: `${id}`,
+          actions: [
+            {
+              title: await i18nT('telephony.notification.answer'),
+              icon: '',
+              action: 'answer',
+              handler: () => {
+                this._telephonyService.answer();
+              },
+            },
+          ],
+          tag: callId,
           data: {
-            id,
+            id: callId,
             scope: this._scope,
           },
-          body: `${callerName} ${callNumber}`,
+          body: `${callerName} ${phoneNumber}`,
           icon: '/icon/incomingCall.png',
         });
         break;
 
       case 'CLOSE':
-        this.close(action.options.id);
+        this.close(this._telephonyStore.callId);
         break;
 
       case 'DISPOSE':

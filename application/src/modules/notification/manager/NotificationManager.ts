@@ -10,6 +10,7 @@ import {
   SWNotificationOptions,
 } from './../interface/index';
 
+type NotificationId = number | string;
 export abstract class NotificationManager {
   @inject(NOTIFICATION_SERVICE)
   private _notificationService: INotificationService;
@@ -19,7 +20,7 @@ export abstract class NotificationManager {
     this._notificationService.show(title, opts);
   }
 
-  close(id: number | string) {
+  close(id: NotificationId) {
     this._notificationService.close(this._scope, id);
   }
 

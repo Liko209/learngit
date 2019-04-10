@@ -30,10 +30,10 @@ export class SWNotification extends AbstractNotification<notificationAction> {
   }
 
   private _subscribeWorkerMessage() {
-    navigator.serviceWorker.addEventListener('message', (event) => {
+    navigator.serviceWorker.addEventListener('message', event => {
       const data = JSON.parse(event.data) as SWCallbackArgs;
 
-      if (!Number.isInteger(data.id) || !data.action) {
+      if (!data.id || !data.action) {
         return;
       }
       this._triggerAction(data);

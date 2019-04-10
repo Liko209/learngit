@@ -8,11 +8,9 @@ import { Jupiter, container } from 'framework';
 import { TelephonyService } from '../TelephonyService';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import * as telephony from '@/modules/telephony/module.config';
-import * as notification from '@/modules/notification/module.config';
 
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(telephony.config);
-jupiter.registerModule(notification.config);
 
 const mockServerTelephonyService = {
   answer: jest.fn(),
@@ -31,7 +29,7 @@ ServiceLoader.getInstance = jest
 let telephonyService: TelephonyService;
 
 beforeAll(() => {
-  telephonyService = jupiter.get<TelephonyService>(TelephonyService);
+  telephonyService = jupiter.get(TelephonyService);
   jest.resetAllMocks();
 });
 

@@ -33,6 +33,10 @@ class TelephonyStore {
   @observable
   phoneNumber?: string;
   @observable
+  callId: string;
+  @observable
+  callerName?: string;
+  @observable
   activeCallTime?: number;
 
   private _callFSM = new CallFSM();

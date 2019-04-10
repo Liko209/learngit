@@ -27,12 +27,13 @@ class TelephonyModule extends AbstractModule {
     const canUseTelephony = await this._FeaturesFlagsService.canUseTelephony();
     if (canUseTelephony) {
       this._TelephonyService.init();
+      this._telephonyNotificationManager.init();
       this._leaveBlockerService.onLeave(this.handleLeave);
     }
   }
 
   dispose() {
-    this._telephonyNotificationManager.dispatch({ type: 'DISPOSE' });
+    this._telephonyNotificationManager.dispatch('DISPOSE');
     this._leaveBlockerService.offLeave(this.handleLeave);
   }
 
