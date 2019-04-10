@@ -11,7 +11,6 @@ import {
   SearchFilterProps,
   SearchContentTypeItem,
   DATE_DICTIONARY,
-  DATE_PERIOD,
 } from './types';
 import { ESearchContentTypes } from 'sdk/api/glip/search';
 import { TypeDictionary } from 'sdk/utils';
@@ -50,12 +49,21 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
     if (!this.props.options.begin_time) {
       return DATE_DICTIONARY.ANY_TIME;
     }
-    const days = moment(new Date()).diff(
-      moment(this.props.options.begin_time),
-      'days',
-    );
-    if (days < DATE_PERIOD.WEEK) return DATE_DICTIONARY.THIS_WEEK;
-    if (days < DATE_PERIOD.MONTH) return DATE_DICTIONARY.THIS_MONTH;
+    const firstDay = moment(this.props.options.begin_time).valueOf();
+    if (
+      moment()
+        .startOf('week')
+        .valueOf() === firstDay
+    ) {
+      return DATE_DICTIONARY.THIS_WEEK;
+    }
+    if (
+      moment()
+        .startOf('month')
+        .valueOf() === firstDay
+    ) {
+      return DATE_DICTIONARY.THIS_MONTH;
+    }
     return DATE_DICTIONARY.THIS_YEAR;
   }
   @computed
@@ -131,15 +139,15 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
         return null;
       case DATE_DICTIONARY.THIS_WEEK:
         return moment()
-          .subtract(7, 'days')
+          .startOf('week')
           .valueOf();
       case DATE_DICTIONARY.THIS_MONTH:
         return moment()
-          .subtract(1, 'months')
+          .startOf('month')
           .valueOf();
       case DATE_DICTIONARY.THIS_YEAR:
         return moment()
-          .subtract(1, 'years')
+          .startOf('year')
           .valueOf();
     }
     return null;
