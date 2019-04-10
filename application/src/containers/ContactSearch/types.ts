@@ -19,7 +19,7 @@ enum ContactSearchType {
 type ContactSearchProps = {
   groupId?: number;
   type: ContactSearchType;
-  onSelectChange: (item: any) => void;
+  onSelectChange?: (item: any) => void;
   label: string;
   placeholder: string;
   error?: boolean;

@@ -3,7 +3,7 @@
  * @Date: 2018-09-18 14:33:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, computed } from 'mobx';
+import { observable, action, comparer, computed } from 'mobx';
 import { debounce, differenceBy } from 'lodash';
 
 import { ENTITY_NAME } from '@/store';
@@ -18,13 +18,41 @@ import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, SelectedMember } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
-  @observable existItems: number[] = [];
+  @observable existMembers: number[] = [];
   @observable suggestions: SelectedMember[] = [];
   @observable initialSelectedItem: SelectedMember;
+  @observable groupMembers: number[] = [];
   selectedItems: SelectedMember[] = [];
 
   constructor(props: ContactSearchProps) {
     super(props);
+    this.reaction(
+      () => this.props.groupId,
+      () => {
+        this._setInitialSelectedItem();
+      },
+      {
+        fireImmediately: true,
+        equals: comparer.structural,
+      },
+    );
+    this.searchMembers = debounce(this.searchMembers.bind(this), 300);
+    this.searchGroups = debounce(this.searchGroups.bind(this), 300);
+  }
+
+  onContactSelectChange = (items: SelectedMember[]) => {
+    const { onSelectChange } = this.props;
+    this.suggestions = [];
+    this.selectedItems = items;
+    return onSelectChange && onSelectChange(items);
+  }
+
+  @computed
+  private get _isExcludeMe() {
+    return this.props.isExcludeMe;
+  }
+
+  private _setInitialSelectedItem() {
     const { groupId } = this.props;
     if (groupId) {
       const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
@@ -33,30 +61,8 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
         label: group.displayName,
         email: group.displayName,
       };
+      this.groupMembers = group.members;
     }
-    this.searchMembers = debounce(this.searchMembers.bind(this), 300);
-    this.searchGroups = debounce(this.searchGroups.bind(this), 300);
-  }
-
-  onContactSelectChange = (items: SelectedMember[]) => {
-    this.suggestions = [];
-    this.selectedItems = items;
-    return this.props.onSelectChange(items);
-  }
-
-  @computed
-  private get _isExcludeMe() {
-    return this.props.isExcludeMe;
-  }
-
-  @computed
-  private get _groupMembers() {
-    const { groupId } = this.props;
-    if (groupId) {
-      const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
-      return group.members;
-    }
-    return [];
   }
 
   @action
@@ -69,14 +75,14 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
       excludeSelf: this._isExcludeMe,
       recentFirst: true,
     };
-    if (this._groupMembers.length) {
-      Object.assign(params, { arrangeIds: this._groupMembers });
+    if (this.groupMembers.length) {
+      Object.assign(params, { arrangeIds: this.groupMembers });
     }
     const result = await searchService.doFuzzySearchPersons(params);
     const { hasMembers } = this.props;
     const existMembers = hasMembers
-      ? [...this.existItems, ...hasMembers]
-      : this.existItems;
+      ? [...this.existMembers, ...hasMembers]
+      : this.existMembers;
 
     if (result) {
       const filterMembers = result.sortableModels.filter(
