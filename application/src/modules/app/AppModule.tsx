@@ -31,16 +31,13 @@ import {
 import { AccountUserConfig } from 'sdk/module/account/config';
 import { AccountService } from 'sdk/module/account';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
-<<<<<<< HEAD
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
-=======
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { Pal } from 'sdk/pal';
 
->>>>>>> hotfix/1.2.1
 /**
  * The root module, we call it AppModule,
  * it would be the first module being bootstrapped

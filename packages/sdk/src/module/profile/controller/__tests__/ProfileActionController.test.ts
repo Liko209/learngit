@@ -1,11 +1,7 @@
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
  * @Date: 2019-02-14 15:55:54
-<<<<<<< HEAD
- * Copyright � RingCentral. All rights reserved.
-=======
- * Copyright RingCentral. All rights reserved.
->>>>>>> hotfix/1.2.1
+ * Copyright © RingCentral. All rights reserved.
  */
 import { Profile } from '../../entity';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';

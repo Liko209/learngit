@@ -21,11 +21,8 @@ import {
 import { GLOBAL_KEYS, ENTITY_NAME } from '@/store/constants';
 import { getGlobalValue, getEntity } from '@/store/utils';
 import storeManager from '@/store/base/StoreManager';
-<<<<<<< HEAD
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-=======
 import GroupModel from '@/store/models/Group';
->>>>>>> hotfix/1.2.1
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
