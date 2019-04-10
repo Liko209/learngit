@@ -172,7 +172,6 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
         type: changeToSearchType(record.type),
       };
     });
-    console.log(this.recentRecord, '---- nello');
   }
 }
 

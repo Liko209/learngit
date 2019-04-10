@@ -12,16 +12,12 @@ import { getGlobalValue, getEntity } from '@/store/utils';
 import { Group } from 'sdk/module/group/entity';
 import GroupModel from '@/store/models/Group';
 import { ENTITY_NAME } from '@/store';
+import i18nT from '@/utils/i18nT';
 
 import { GlobalSearchStore } from '../../../store';
-import {
-  ContentProps,
-  ISearchItemModel,
-  SEARCH_VIEW,
-  SEARCH_SCOPE,
-  TAB_TYPE,
-} from './types';
+import { ContentProps, ISearchItemModel, SEARCH_VIEW, TAB_TYPE } from './types';
 import { SearchViewModel } from '../../common/Search.ViewModel';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 class MessageItemViewModel extends SearchViewModel<ContentProps>
   implements ISearchItemModel {
@@ -48,9 +44,9 @@ class MessageItemViewModel extends SearchViewModel<ContentProps>
     }
     const conversationId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
     if (group.id === conversationId) {
-      return `${displayName} in this conversation`;
+      return `${displayName} ${i18nT('globalSearch.inThisConversation')}`;
     }
-    return `${displayName} in ${group.displayName}`;
+    return `${displayName} ${i18nT('globalSearch.in')} ${group.displayName}`;
   }
 
   @action
@@ -60,20 +56,21 @@ class MessageItemViewModel extends SearchViewModel<ContentProps>
     this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
     this._globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
     this._globalSearchStore.setSearchScope(searchScope);
-    // TODO will add record in JIRA: FIJI-4696
-    // this.addRecentRecord();
+
+    this.addRecentRecord();
   }
 
   addRecentRecord = () => {
-    const { displayName, searchScope } = this.props;
-    const conversationId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    const { displayName } = this.props;
 
-    SearchService.getInstance().addRecentSearchRecord(
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+    const id = this.group && this.group.id;
+    searchService.addRecentSearchRecord(
       RecentSearchTypes.SEARCH,
       displayName,
-      searchScope === SEARCH_SCOPE.CONVERSATION
-        ? { groupId: conversationId }
-        : {},
+      id ? { groupId: id } : {},
     );
   }
 }

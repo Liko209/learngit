@@ -174,7 +174,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       return;
     }
     const { terms, people, groups, teams } = ret;
-    console.log(this.contentSearchIds, '--nello');
+
     const data: SearchItems[] = [
       {
         ids: this.contentSearchIds,
