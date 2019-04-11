@@ -69,7 +69,7 @@ describe('LogUploader', () => {
         headers: {
           'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
             mockAppInfo.browser
-          }/${mockAppInfo.os}/abc@rc.com/12345/sessionA`,
+          }/${mockAppInfo.os}/${mockAppInfo.env}/abc@rc.com/12345/sessionA`,
           'Content-Type': 'application/json',
         },
       });
@@ -85,7 +85,7 @@ describe('LogUploader', () => {
         headers: {
           'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
             mockAppInfo.browser
-          }/${mockAppInfo.os}/abc@rc.com/12345/sessionA`,
+          }/${mockAppInfo.os}/${mockAppInfo.env}/abc@rc.com/12345/sessionA`,
           'Content-Type': 'application/json',
         },
       });
@@ -103,7 +103,7 @@ describe('LogUploader', () => {
         headers: {
           'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
             mockAppInfo.browser
-          }/${mockAppInfo.os}/service@glip.com//sessionA`,
+          }/${mockAppInfo.os}/${mockAppInfo.env}/service@glip.com//sessionA`,
           'Content-Type': 'application/json',
         },
       });
