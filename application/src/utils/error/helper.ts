@@ -36,7 +36,7 @@ export async function getAppContextInfo(): Promise<UserContextInfo> {
       env: config.getEnv(),
       version: deployedVersion || pkg.version,
       url: location.href,
-      environment: window.jupiterElectron ? 'Desktop' : 'Web',
+      platform: window.jupiterElectron ? 'Desktop' : 'Web',
       browser: `${browserName} - ${browserVersion}`,
       os: `${osName} - ${osVersion}`,
     };

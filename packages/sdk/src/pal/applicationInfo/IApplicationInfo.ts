@@ -5,5 +5,9 @@
  */
 
 export interface IApplicationInfo {
-  getAppVersion(): string;
+  appVersion: string;
+  env: string;
+  platform: string;
+  browser: string;
+  os: string;
 }

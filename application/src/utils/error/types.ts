@@ -15,6 +15,7 @@ export type UserContextInfo = {
   email: string;
   username: string;
 
+  platform: string;
   env: string;
   version: string;
 

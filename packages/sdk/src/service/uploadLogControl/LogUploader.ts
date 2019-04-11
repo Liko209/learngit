@@ -21,15 +21,16 @@ export class LogUploader implements ILogUploader {
     const sessionId = logs[0].sessionId;
     const { server, uniqueHttpCollectorCode } = Api.httpConfig.sumologic;
     const postUrl = `${server}${uniqueHttpCollectorCode}`;
-    const appVersion =
-      (Pal.instance.getApplicationInfo() &&
-        Pal.instance.getApplicationInfo().getAppVersion()) ||
-      '';
+    const { email = DEFAULT_EMAIL, userId = '' } = userInfo;
+    const {
+      appVersion = '',
+      platform = '',
+      os = '',
+      browser = '',
+    } = Pal.instance.getApplicationInfo();
     await axios.post(postUrl, message, {
       headers: {
-        'X-Sumo-Name': `${appVersion}| ${userInfo.email}| ${
-          userInfo.userId
-        }| ${sessionId}`,
+        'X-Sumo-Name': `${platform}/${appVersion}/${browser}/${os}/${email}/${userId}/${sessionId}`,
         'Content-Type': 'application/json',
       },
     });

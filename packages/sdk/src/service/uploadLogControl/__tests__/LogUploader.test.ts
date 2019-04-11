@@ -5,8 +5,23 @@ import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';
 import { AccountUserConfig } from '../../../module/account/config';
 import { ServiceLoader } from '../../../module/serviceLoader';
-
+import { Pal } from '../../../pal/pal';
+import { IApplicationInfo } from '../../../pal/applicationInfo';
 jest.mock('sdk/api');
+jest.mock('../../../pal/pal', () => {
+  const mockPal: Pal = {
+    getApplicationInfo: jest.fn(),
+    getErrorReporter: jest.fn(),
+  };
+  Object.defineProperty(mockPal, 'instance', {
+    get: () => {
+      return mockPal;
+    },
+  });
+  return {
+    Pal: mockPal,
+  };
+});
 jest.mock('../../../module/account');
 jest.mock('axios');
 jest.mock('../../../module/account/config');
@@ -15,13 +30,20 @@ function createError(status: number): AxiosError {
   return (status
     ? {
       response: {
-          status,
-        },
+        status,
+      },
     }
     : {}) as AxiosError;
 }
 describe('LogUploader', () => {
   const accountService = new AccountService();
+  const mockAppInfo: IApplicationInfo = {
+    appVersion: '1.0',
+    os: 'mac',
+    browser: 'chrome',
+    platform: 'desktop',
+    env: 'prod',
+  };
   beforeEach(() => {
     Api.httpConfig = {
       sumologic: {
@@ -34,6 +56,7 @@ describe('LogUploader', () => {
     (accountService.getUserEmail as jest.Mock).mockResolvedValue('abc@rc.com');
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(12345);
     (accountService.getClientId as jest.Mock).mockReturnValue('54321');
+    (Pal.instance.getApplicationInfo as jest.Mock).mockReturnValue(mockAppInfo);
   });
   describe('upload()', () => {
     it('should call post correctly', async () => {
@@ -44,7 +67,9 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': '| abc@rc.com| 12345| sessionA',
+          'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
+            mockAppInfo.browser
+          }/${mockAppInfo.os}/abc@rc.com/12345/sessionA`,
           'Content-Type': 'application/json',
         },
       });
@@ -58,7 +83,9 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': '| service@glip.com| 12345| sessionA',
+          'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
+            mockAppInfo.browser
+          }/${mockAppInfo.os}/abc@rc.com/12345/sessionA`,
           'Content-Type': 'application/json',
         },
       });
@@ -74,7 +101,9 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': '| service@glip.com| | sessionA',
+          'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
+            mockAppInfo.browser
+          }/${mockAppInfo.os}/service@glip.com//sessionA`,
           'Content-Type': 'application/json',
         },
       });
