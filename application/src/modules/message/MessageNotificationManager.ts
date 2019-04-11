@@ -1,3 +1,9 @@
+/*
+ * @Author: Andy Hu (andy.hu@ringcentral.com)
+ * @Date: 2019-01-17 15:16:45
+ * Copyright Â© RingCentral. All rights reserved.
+ */
+import { POST_TYPE } from './../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { Markdown } from 'glipdown';
@@ -18,8 +24,9 @@ import { PersonService } from 'sdk/module/person';
 import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/utils/handleAtMentionName';
 import history from '@/history';
 import GroupModel from '@/store/models/Group';
-import GroupService from 'sdk/module/group';
-import { PostService } from 'sdk/module/post';
+import GroupService from 'sdk/src/module/group';
+import { PostService } from 'sdk/src/module/post';
+import { getPostType } from '@/common/getPostType';
 
 export class MessageNotificationManager extends NotificationManager<
   PostService
@@ -32,52 +39,72 @@ export class MessageNotificationManager extends NotificationManager<
   }
 
   handlePostEntityChanged = async (entities: Post[]) => {
-    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
     const postId = entities[0].id;
-    const post = await ServiceLoader.getInstance<PostService>(
-      ServiceConfig.POST_SERVICE,
-    ).getById(postId);
+    const result = await this.shouldEmitNotification(postId);
 
-    if (!post || post.creator_id === currentUserId) {
+    if (!result) {
       return;
     }
-
-    const conversation = await ServiceLoader.getInstance<GroupService>(
-      ServiceConfig.GROUP_SERVICE,
-    ).getById(post.group_id);
-
-    if (!conversation) {
-      return;
-    }
-
-    const postModel = new PostModel(post);
-    const conversationModel = new GroupModel(conversation);
-    const { members, is_team } = conversation;
-
-    if (is_team && !this.isMyselfAtMentioned(postModel)) {
-      return;
-    }
+    const { postModel, groupModel } = result;
 
     const person = getEntity<Person, PersonModel>(
       ENTITY_NAME.PERSON,
-      post.creator_id,
+      postModel.creatorId,
     );
 
     const { title, body } = await this.buildNotificationBodyAndTitle(
       postModel,
       person,
-      conversationModel,
+      groupModel,
     );
+
+    const { members, isTeam } = groupModel;
 
     const opts: NotificationOpts = {
       body,
       renotify: false,
-      icon: this.getIcon(person, members.length, is_team),
+      icon: this.getIcon(person, members.length, isTeam),
       data: { id: postId, scope: this._scope },
-      onClick: this.onClickHandlerBuilder(post.group_id),
+      onClick: this.onClickHandlerBuilder(postModel.groupId),
     };
 
     this.show(title, opts);
+  }
+
+  async shouldEmitNotification(postId: number) {
+    if (postId <= 0) {
+      return false;
+    }
+    const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+    const post = await ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    ).getById(postId);
+
+    if (!post || post.creator_id === currentUserId || post.deactivated) {
+      return false;
+    }
+    const activityData = post.activity_data || {};
+    const isPostType =
+      !activityData.key || getPostType(activityData.key) === POST_TYPE.POST;
+    if (!isPostType) {
+      return false;
+    }
+
+    const group = await ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    ).getById(post.group_id);
+
+    if (!group) {
+      return false;
+    }
+
+    const postModel = new PostModel(post);
+    const groupModel = new GroupModel(group);
+
+    if (groupModel.isTeam && !this.isMyselfAtMentioned(postModel)) {
+      return false;
+    }
+    return { postModel, groupModel };
   }
 
   onClickHandlerBuilder(groupId: number) {

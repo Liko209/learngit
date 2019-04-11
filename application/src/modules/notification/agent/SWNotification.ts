@@ -15,7 +15,7 @@ type SWCallbackArgs = {
 export class SWNotification extends AbstractNotification<NotificationAction> {
   static CLIENT_ID = Math.random();
   private _reg: ServiceWorkerRegistration;
-  private _notifications: Notification[];
+  private _notifications: Notification[] = [];
   constructor() {
     super();
     this.isSupported() && this._subscribeWorkerMessage();
@@ -23,6 +23,7 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
 
   isSupported() {
     return (
+      navigator.userAgent.indexOf('Edge') === -1 &&
       !/^((?!chrome|android).)*safari/i.test(navigator.userAgent) &&
       (navigator !== undefined && navigator.serviceWorker !== undefined)
     );
