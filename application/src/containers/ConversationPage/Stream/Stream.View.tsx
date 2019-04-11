@@ -62,6 +62,10 @@ class StreamViewComponent extends Component<Props> {
 
   @observable private _jumpToFirstUnreadLoading = false;
 
+  state = {
+    isFailed: false,
+  };
+
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
@@ -359,18 +363,18 @@ class StreamViewComponent extends Component<Props> {
     }
   }
 
+  private resetStatus = () => {
+    this.setState({ isFailed: false });
+  }
+
   private _onInitialDataFailed = (
     <JuiStreamLoading
       showTip={true}
       tip={this.props.t('translations:message.prompt.MessageLoadingErrorTip')}
       linkText={this.props.t('translations:common.prompt.tryAgain')}
-      onClick={() => this.setState({ isFailed: false })}
+      onClick={this.resetStatus}
     />
   );
-
-  state = {
-    isFailed: false,
-  };
 
   render() {
     const { loadMore, hasMore, items } = this.props;
