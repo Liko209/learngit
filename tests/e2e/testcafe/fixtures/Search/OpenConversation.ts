@@ -62,8 +62,8 @@ test.meta(<ITestMeta>{
     await searchBar.clickSelf();
     await searchDialog.clearInputAreaTextByKey();
     await searchDialog.typeSearchKeyword(anotherUserName);
-    await searchDialog.nthPeople(0).ensureLoaded();
-    await searchDialog.nthPeople(0).enter();
+    await searchDialog.instantPage.nthPeople(0).ensureLoaded();
+    await searchDialog.instantPage.nthPeople(0).enter();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -81,16 +81,16 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the people in recently search result`, async () => {
-    await searchDialog.getSearchItemByName(anotherUserName).ensureLoaded();
+    await searchDialog.recentPage.conversationByName(anotherUserName).ensureLoaded();
   });
 
   // group
   let groupName;
   await h(t).withLog(`When I search keyword ${anotherUserName} and click the first group result`, async () => {
     await searchDialog.typeSearchKeyword(anotherUserName);
-    await searchDialog.nthGroup(0).ensureLoaded();
-    groupName = await searchDialog.nthGroup(0).name.textContent;
-    await searchDialog.nthGroup(0).enter();
+    await searchDialog.instantPage.nthGroup(0).ensureLoaded();
+    groupName = await searchDialog.instantPage.nthGroup(0).name.textContent;
+    await searchDialog.instantPage.nthGroup(0).enter();
   });
 
   await h(t).withLog(`Then the conversation should be opened`, async () => {
@@ -107,14 +107,14 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the group in recently search result`, async () => {
-    await searchDialog.getSearchItemByName(groupName).ensureLoaded();
+    await searchDialog.recentPage.conversationByName(groupName).ensureLoaded();
   });
 
   // team
   await h(t).withLog(`When I search keyword ${team.name} and click the team result`, async () => {
     await searchDialog.typeSearchKeyword(team.name);
-    await searchDialog.getSearchItemByCid(team.glipId).ensureLoaded();
-    await searchDialog.getSearchItemByCid(team.glipId).enter();
+    await searchDialog.instantPage.getSearchItemByCid(team.glipId).ensureLoaded();
+    await searchDialog.instantPage.getSearchItemByCid(team.glipId).enter();
   });
 
   await h(t).withLog(`Then the conversation should be opened`, async () => {

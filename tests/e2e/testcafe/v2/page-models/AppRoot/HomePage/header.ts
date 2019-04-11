@@ -1,5 +1,4 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { IGroup } from '../../../models';
 
 export class Header extends BaseWebComponent {
   get self() {

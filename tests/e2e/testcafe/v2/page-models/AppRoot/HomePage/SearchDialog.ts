@@ -79,7 +79,7 @@ class BaseSearchResultPage extends BaseWebComponent {
     return this.getComponent(SearchItem, root);
   }
 
-  getSearchItemByName(name: string) {
+  conversationByNamegetSearchItemByName(name: string) {
     return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items'));
   }
 
@@ -214,7 +214,7 @@ class RecentSearch extends BaseSearchResultPage {
   get contentItems() {
     return this.getSelectorByAutomationId('search-message-item'); //todo
   }
-  
+
   get contentInGlobalItems() {
     return this.contentItems.filter(':not([data-id])'); //todo
   }
@@ -224,9 +224,16 @@ class RecentSearch extends BaseSearchResultPage {
   }
 
   contentInConversationByCId(cid: string) {
-    return 
+    return this.contentInConversationItems.filter(`[data-id="${cid}"]`)
   }
-  
+
+  get conversationItems() {
+    return this.getSelector('.search-items:not([data-test-automation-id="search-message-item"])'); // todo
+  }
+
+  conversationByName(name: string) {
+    return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items:not([data-test-automation-id="search-message-item"]'));
+  }
 }
 
 class FullSearch extends BaseSearchResultPage {

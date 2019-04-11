@@ -77,14 +77,14 @@ test.meta(<ITestMeta>{
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchDialog.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchDialog.dropDownListShouldContainTeam(team);
+      await searchDialog.instantPage.dropDownListShouldContainTeam(team);
     }
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchDialog.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+    await searchDialog.instantPage.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
@@ -118,18 +118,18 @@ test.meta(<ITestMeta>{
   // assertion
   searchResults = [publicTeamWithMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchDialog.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchDialog.dropDownListShouldContainTeam(team);
+      await searchDialog.instantPage.dropDownListShouldContainTeam(team);
     }
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchDialog.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+    await searchDialog.instantPage.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
 });
@@ -198,18 +198,18 @@ test.meta(<ITestMeta>{
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe, privateTeamWithMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchDialog.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchDialog.dropDownListShouldContainTeam(team);
+      await searchDialog.instantPage.dropDownListShouldContainTeam(team);
     }
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchDialog.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+    await searchDialog.instantPage.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
   // update configuration of teams
@@ -239,14 +239,14 @@ test.meta(<ITestMeta>{
   // assertion
   searchResults = [publicTeamWithMe, publicTeamWithoutMe];
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
-    await t.expect(searchDialog.teams.count).gte(searchResults.length, { timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchDialog.dropDownListShouldContainTeam(team);
+      await searchDialog.instantPage.dropDownListShouldContainTeam(team);
     }
   }, true);
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 });
 
@@ -276,7 +276,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then I should find some people in results`, async () => {
-    await t.expect(searchDialog.peoples.count).gte(1);
+    await t.expect(searchDialog.instantPage.peoples.count).gte(1);
   }, true);
 
   await h(t).withLog(`When I click clear button in the search dialog`, async () => {
@@ -284,7 +284,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then No recently search result`, async () => {
-    await t.expect(searchDialog.allResultItems.exists).notOk();
+    await t.expect(searchDialog.recentPage.items.exists).notOk();
   }, true);
 
   await h(t).withLog(`When I search with keyword "${searchKeyword}" again`, async () => {
@@ -292,11 +292,11 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then I should find some people in results`, async () => {
-    await t.expect(searchDialog.peoples.count).gte(1);
+    await t.expect(searchDialog.instantPage.peoples.count).gte(1);
   }, true);
 
   await h(t).withLog(`When I click first people result`, async () => {
-    await searchDialog.nthPeople(0).enter();
+    await searchDialog.instantPage.nthPeople(0).enter();
   });
 
   await h(t).withLog(`And I click search bar on the header `, async () => {
@@ -304,8 +304,8 @@ test.meta(<ITestMeta>{
   }, true);
 
   await h(t).withLog(`Then I should find recently search results`, async () => {
-    await searchDialog.shouldShowRecentlyHistory();
-    await t.expect(searchDialog.allResultItems.count).gte(1);
+    await searchDialog.recentPage.ensureLoaded();
+    await t.expect(searchDialog.recentPage.items.count).gte(1);
   }, true);
 
   await h(t).withLog(`When I search with keyword "${searchKeyword}" again`, async () => {
@@ -317,8 +317,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then Display recently search result`, async () => {
-    await searchDialog.shouldShowRecentlyHistory();
-    await t.expect(searchDialog.allResultItems.exists).ok();
+    await searchDialog.recentPage.ensureLoaded();
+    await t.expect(searchDialog.recentPage.items.exists).ok();
   }, true);
 });
 

@@ -82,7 +82,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then I should not find ${team.name} team.`, async () => {
     await t.wait(3e3); // wait back-end response
-    await t.expect(searchDialog.teams.withText(team.name).exists).notOk({ timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.withText(team.name).exists).notOk({ timeout: 10e3 });
   });
 
 });
@@ -153,11 +153,11 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('Then I should find at least team result', async () => {
-    await t.expect(searchDialog.teams.count).gte(1);
+    await t.expect(searchDialog.instantPage.teams.count).gte(1);
   }, true);
 
   await h(t).withLog('Then I should find this team', async () => {
-    await searchDialog.dropDownListShouldContainTeam(team);
+    await searchDialog.instantPage.dropDownListShouldContainTeam(team);
   }, true);
 });
 
