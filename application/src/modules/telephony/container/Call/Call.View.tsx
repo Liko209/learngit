@@ -19,7 +19,7 @@ class CallViewComponent extends Component<Props> {
     evt.stopPropagation();
     const { directCall, onClick, trackCall } = this.props;
     if (onClick) {
-      onClick();
+      onClick(evt);
     } else {
       portalManager.dismissLast();
     }

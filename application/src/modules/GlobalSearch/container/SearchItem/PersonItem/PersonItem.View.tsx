@@ -30,16 +30,21 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
     onClose();
   }
 
+  onCallClose = (e: React.MouseEvent) => {
+    const { addRecentRecord, onClose } = this.props;
+    e.stopPropagation();
+    addRecentRecord();
+    onClose();
+  }
+
   render() {
     const {
       t,
-
       person,
       terms,
       onMouseEnter,
       onMouseLeave,
       hovered,
-      onClose,
       automationId,
     } = this.props;
     const { id, userDisplayName, deactivated } = person;
@@ -64,7 +69,7 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
         key="search item call icon"
         variant="plain"
         id={id}
-        onClick={onClose}
+        onClick={this.onCallClose}
         size="small"
       />
     );

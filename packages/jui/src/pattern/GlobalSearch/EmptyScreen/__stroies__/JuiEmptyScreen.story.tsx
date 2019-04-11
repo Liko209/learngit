@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-import { JuiEmptyScreen } from '..';
+import { JuiEmptyScreen } from '../EmptyScreen';
 
 storiesOf('Pattern/GlobalSearch/EmptyScreen', module).add('EmptyScreen', () => {
   return (

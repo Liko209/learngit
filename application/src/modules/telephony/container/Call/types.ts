@@ -12,7 +12,7 @@ type CallProps = {
   groupId?: number;
   size?: 'small' | 'medium' | 'large';
   color?: string;
-  onClick?: () => void;
+  onClick?: (evt: React.MouseEvent) => void;
   analysisSource?: string;
 };
 

@@ -79,6 +79,9 @@ class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
 
   @action
   onEnter = (e: KeyboardEvent) => {
+    if (this.selectIndex < 0) {
+      return;
+    }
     const currentItemValue = this.currentItemValue;
 
     if (!currentItemValue) {

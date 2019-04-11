@@ -333,6 +333,11 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
 
   @action
   onEnter = (e: KeyboardEvent) => {
+    const selectIndex = this.selectIndex;
+    if (selectIndex[0] < 0) {
+      return;
+    }
+
     const currentItemValue = this.currentItemId;
     const currentItemType = this.currentItemType;
 
