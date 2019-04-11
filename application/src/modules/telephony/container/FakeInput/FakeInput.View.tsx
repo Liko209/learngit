@@ -8,7 +8,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import styled, { keyframes } from 'styled-components';
 import { StyledHeaderNoPadding } from 'jui/pattern/Dialer';
-import { height } from 'jui/src/foundation/utils';
+import { height } from 'jui/foundation/utils';
 import { FakeInputViewProps } from './types';
 
 @observer
