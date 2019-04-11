@@ -4,7 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React, { useState } from 'react';
+import React, {
+  useState,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 import InputBase, { InputBaseProps } from '@material-ui/core/InputBase';
 import styled from '../../../foundation/styled-components';
 import {
@@ -125,17 +130,18 @@ type JuiOutlineTextFieldProps = {
   onClick?: (event: React.MouseEvent<HTMLElement>) => void;
   value?: string;
   size?: OutlineTextSize;
-} & (
-  | {
-    iconPosition?: Extract<IconPosition, 'both'>;
-    iconName?: string[];
-  }
-  | {
-    iconPosition?: Exclude<IconPosition, 'both'>;
-    iconName?: string;
-  });
+  iconPosition?: IconPosition;
+  iconName?: string | string[];
+};
 
-const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
+type JuiOutlineTextFieldRef = {
+  focus(): void;
+};
+
+const JuiOutlineTextField: React.RefForwardingComponent<
+  JuiOutlineTextFieldRef,
+  JuiOutlineTextFieldProps
+> = forwardRef((props, ref) => {
   const {
     iconPosition,
     iconName = '',
@@ -156,6 +162,16 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
   } = props;
   const { onFocus, onBlur, ...others } = InputProps;
   const [focus, setFocus] = useState(false);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    },
+  }));
 
   const baseOnFocus = (e: React.FocusEvent<HTMLInputElement>) => {
     setFocus(true);
@@ -186,6 +202,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
         </StyledIconLeft>
       )}
       <StyledInput
+        {...others}
         onFocus={baseOnFocus}
         onBlur={baseOnBlur}
         onChange={onChange}
@@ -193,7 +210,7 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
         startAdornment={inputBefore || null}
         endAdornment={inputAfter || null}
         value={value}
-        {...others}
+        inputRef={inputRef}
       />
       {(iconPosition === 'right' || iconPosition === 'both') && (
         <StyledIconRight
@@ -206,6 +223,10 @@ const JuiOutlineTextField = (props: JuiOutlineTextFieldProps) => {
       )}
     </StyledWrapper>
   );
-};
+});
 
-export { JuiOutlineTextField, JuiOutlineTextFieldProps };
+export {
+  JuiOutlineTextField,
+  JuiOutlineTextFieldProps,
+  JuiOutlineTextFieldRef,
+};
