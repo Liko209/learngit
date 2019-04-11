@@ -21,6 +21,7 @@ const i18n = (key: string, { count }: { count?: number } = {}) => {
 
 jest.mock('sdk/module/post');
 jest.mock('@/containers/ConversationSheet', () => ({}));
+jest.mock('@/containers/ConversationPost', () => () => 'conversation');
 
 describe('ContentSearchResult', () => {
   it('component should display empty page when there are no records found matching and title should be "Results (0)"[JPT-1596]', () => {
@@ -41,6 +42,27 @@ describe('ContentSearchResult', () => {
     };
     const wrapper = shallow(<ContentSearchResultView {...props} />);
     expect(wrapper.find(JuiListSubheader).text()).toEqual('Results (0)');
-    expect(wrapper.find(JuiTabPageEmptyScreen).props().text).toEqual('No matches found');
+    expect(wrapper.find(JuiTabPageEmptyScreen).props().text).toEqual(
+      'No matches found',
+    );
+  });
+});
+
+describe('ContentSearchResult.View', () => {
+  it('should end search when unmount', () => {
+    const props = {
+      searchState: {
+        postIds: [],
+        requestId: 12,
+        contentsCount: {},
+      },
+      searchOptions: {},
+      onPostsFetch: jest.fn(),
+      setSearchOptions: jest.fn(),
+      onSearchEnd: jest.fn(),
+    };
+    const wrapper = shallow(<ContentSearchResultView {...props} />);
+    wrapper.unmount();
+    expect(props.onSearchEnd).toHaveBeenCalled();
   });
 });

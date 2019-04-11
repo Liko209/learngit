@@ -40,6 +40,8 @@ class ContentSearchResultViewModel
 
   private _globalSearchStore = container.get(GlobalSearchStore);
 
+  private _stream: any;
+
   @observable
   isEmpty: boolean = false;
 
@@ -88,7 +90,13 @@ class ContentSearchResultViewModel
 
     await this.onSearchEnd();
 
+    const previousRequestId = this.searchState.requestId;
+
     this._setSearchState({ requestId: null });
+
+    if (previousRequestId) {
+      this._stream.current.vm.reInit();
+    }
   }
 
   onPostsFetch = async () => {
@@ -119,7 +127,7 @@ class ContentSearchResultViewModel
 
   @action
   private _setSearchState(state = {}) {
-    this.searchState = { ...this.searchState, ...state };
+    Object.assign(this.searchState, state);
   }
 
   @action
@@ -196,6 +204,10 @@ class ContentSearchResultViewModel
         dismissible: false,
       })
       : generalErrorHandler(error);
+  }
+
+  setStreamVM = (stream: any) => {
+    this._stream = stream;
   }
 }
 

@@ -3,7 +3,6 @@
  * @Date: 2019-04-01 14:06:55
  * Copyright © RingCentral. All rights reserved.
  */
-// import * as React from 'react';
 import styled from '../../foundation/styled-components';
 import { width } from '../../foundation/utils';
 
@@ -19,4 +18,14 @@ const JuiFullSearchResultWrapper = styled.div`
   flex-direction: column;
 `;
 
-export { JuiFullSearchWrapper, JuiFullSearchResultWrapper };
+const JuiFullSearchResultStreamWrapper = styled.div`
+  position: relative;
+  flex: 1;
+  min-height: 0;
+`;
+
+export {
+  JuiFullSearchWrapper,
+  JuiFullSearchResultWrapper,
+  JuiFullSearchResultStreamWrapper,
+};
