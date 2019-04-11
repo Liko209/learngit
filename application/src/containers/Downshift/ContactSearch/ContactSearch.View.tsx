@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
 import { JuiDownshift } from 'jui/components/Downshift';
 
@@ -13,10 +12,8 @@ import { ContactSearchItem } from './ContactSearchItem';
 
 import { ViewProps } from './types';
 
-type Props = WithTranslation & ViewProps;
-
 @observer
-class ContactSearch extends React.Component<Props> {
+class ContactSearchView extends React.Component<ViewProps> {
   render() {
     const {
       handleSelectChange,
@@ -59,7 +56,5 @@ class ContactSearch extends React.Component<Props> {
     );
   }
 }
-
-const ContactSearchView = withTranslation('translations')(ContactSearch);
 
 export { ContactSearchView };

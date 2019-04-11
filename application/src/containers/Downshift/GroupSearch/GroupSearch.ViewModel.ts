@@ -3,7 +3,7 @@
  * @Date: 2018-09-18 14:33:00
  * Copyright © RingCentral. All rights reserved.
  */
-import { observable, action, comparer } from 'mobx';
+import { observable, action } from 'mobx';
 import { differenceBy } from 'lodash';
 
 import { ENTITY_NAME } from '@/store';
@@ -32,7 +32,6 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
       },
       {
         fireImmediately: true,
-        equals: comparer.structural,
       },
     );
   }
