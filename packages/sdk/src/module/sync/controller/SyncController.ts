@@ -37,6 +37,7 @@ import { AccountService } from '../../../service/account/accountService';
 import socketManager from '../../../service/socket';
 
 const LOG_TAG = 'SyncController';
+const INDEX_MAX_QUEUE = 2;
 class SyncController {
   private _syncListener: SyncListener;
   private _processorHandler: SequenceProcessorHandler;
@@ -44,7 +45,7 @@ class SyncController {
   constructor() {
     this._processorHandler = new SequenceProcessorHandler(
       'Index_SyncController',
-      2,
+      INDEX_MAX_QUEUE,
     );
   }
 
