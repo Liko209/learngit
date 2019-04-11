@@ -23,7 +23,6 @@ import { PersonController } from '../controller/PersonController';
 import { SOCKET } from '../../../service/eventKey';
 import { ContactType } from '../types';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -62,13 +61,7 @@ class PersonService extends EntityBaseService<Person>
     persons: Raw<Person>[],
     source: SYNC_SOURCE,
   ): Promise<void> => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_PERSON,
-      logId,
-    );
     await this.getPersonController().handleIncomingData(persons, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {
