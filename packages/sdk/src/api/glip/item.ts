@@ -3,7 +3,7 @@
  * @Date: 2018-03-14 20:26:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
+import { NETWORK_METHOD, NETWORK_VIA, TEN_MINUTE_TIMEOUT } from 'foundation';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
 import { IdModel, Raw } from '../../framework/model';
@@ -81,6 +81,7 @@ class ItemAPI extends Api {
             }
           },
         },
+        timeout: TEN_MINUTE_TIMEOUT,
       },
       requestHolder,
     );
@@ -104,6 +105,7 @@ class ItemAPI extends Api {
             }
           },
         },
+        timeout: TEN_MINUTE_TIMEOUT,
       },
       requestHolder,
     );

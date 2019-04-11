@@ -23,7 +23,7 @@ import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 import { NotificationOpts } from '../notification/interface';
 import i18nT from '@/utils/i18nT';
-import { PersonService } from 'sdk/src/module/person';
+import { PersonService } from 'sdk/module/person';
 import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/utils/handleAtMentionName';
 import history from '@/history';
 import GroupModel from '@/store/models/Group';

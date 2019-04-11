@@ -161,7 +161,7 @@ test(formalName('Open mini profile via @mention then open profile', ['JPT-436', 
     });
 
     await h(t).withLog('Then the profile dialog should be popup', async () => {
-      await profileDialog.shouldBePopUp();
+      await profileDialog.ensureLoaded();
     });
 
     await h(t).withLog(`And the profile dialog id should be same as mini Profile id: ${miniProfileId}`, async () => {
