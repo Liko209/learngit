@@ -53,10 +53,10 @@ class Jupiter {
     moduleEntry: interfaces.ServiceIdentifier<T>,
     afterDispose?: () => void | Promise<void>,
   ) {
-    this._container.unbind(moduleEntry);
     const m = this._container.get<AbstractModule>(moduleEntry);
     m.dispose && (await m.dispose());
     afterDispose && (await afterDispose());
+    this._container.unbind(moduleEntry);
   }
 
   addEntry(m: interfaces.Newable<AbstractModule>) {
