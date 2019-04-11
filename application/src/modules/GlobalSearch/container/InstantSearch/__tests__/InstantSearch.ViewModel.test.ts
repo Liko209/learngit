@@ -177,7 +177,7 @@ describe('InstantSearchViewModel', () => {
     });
   });
 
-  describe('onEnter() [JPT-1567]', () => {
+  describe('onEnter()', () => {
     it('If select item type is people should be go to conversation', () => {
       const id = 1;
       jest.spyOn(instantSearchViewModel, 'goToConversation');
@@ -193,7 +193,7 @@ describe('InstantSearchViewModel', () => {
       instantSearchViewModel.onEnter(keyBoardEvent);
       expect(instantSearchViewModel.goToConversation).toHaveBeenCalledWith(id);
     });
-    it('If select item type is content and select first should be global scope and go to full search', () => {
+    it('If select item type is content and select first should be global scope and go to full search [JPT-1567]', () => {
       const id = 1;
       instantSearchViewModel.setSelectIndex(0, 0);
       jest
@@ -212,7 +212,7 @@ describe('InstantSearchViewModel', () => {
       expect(globalSearchStore.searchScope).toBe(SEARCH_SCOPE.GLOBAL);
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
     });
-    it('If select item type is content and select second should be global scope and go to full search', () => {
+    it('If select item type is content and select second should be conversation scope and go to full search [JPT-1567]', () => {
       const id = 1;
       const conversationId = 1;
       instantSearchViewModel.setSelectIndex(0, 1);
@@ -799,7 +799,7 @@ describe('InstantSearchViewModel', () => {
     });
   });
 
-  describe('onShowMore()', () => {
+  describe('onShowMore() [JPT-1567]', () => {
     it('if type is group should switch full search and tab is group', () => {
       instantSearchViewModel.onShowMore(SearchItemTypes.GROUP)();
       expect(globalSearchStore.currentTab).toBe(TAB_TYPE.GROUPS);

@@ -79,7 +79,7 @@ describe('RecentSearchViewModel', () => {
       expect(recentSearchViewModel.selectIndex).toBe(2);
     });
   });
-  describe('onEnter() [JPT-1567]', () => {
+  describe('onEnter()', () => {
     it('if has group id should be call onSelectItem with group id and add recent', () => {
       jest
         .spyOn(recentSearchViewModel, 'currentItemValue', 'get')
@@ -90,7 +90,7 @@ describe('RecentSearchViewModel', () => {
       } as any;
       expect(recentSearchViewModel.onEnter(keyBoardEvent)).toBeUndefined();
     });
-    it('if has group id should be call onSelectItem with group id and add recent', () => {
+    it('if has group id should be call onSelectItem with group id and add recent [JPT-1567]', () => {
       const id = 1;
       const currentItemType = SearchItemTypes.PEOPLE;
       const groupId = 2;

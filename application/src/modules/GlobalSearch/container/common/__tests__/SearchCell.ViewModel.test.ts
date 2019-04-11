@@ -81,7 +81,7 @@ describe('SearchCellViewModel', () => {
     });
   });
 
-  describe('onSelectItem()', () => {
+  describe('onSelectItem() [JPT-1567]', () => {
     it('If select item is message should be go to full search', () => {
       const currentItemValue = 'aa';
       const currentItemType = SearchItemTypes.SEARCH;
