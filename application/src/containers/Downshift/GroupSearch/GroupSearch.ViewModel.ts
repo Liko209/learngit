@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { observable, action, comparer } from 'mobx';
-import { debounce, differenceBy } from 'lodash';
+import { differenceBy } from 'lodash';
 
 import { ENTITY_NAME } from '@/store';
 import { GroupService } from 'sdk/module/group';
@@ -35,7 +35,6 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
         equals: comparer.structural,
       },
     );
-    this.searchGroups = debounce(this.searchGroups.bind(this), 300);
   }
 
   handleSelectChange = (items: SelectedMember[]) => {
