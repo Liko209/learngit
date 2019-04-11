@@ -38,9 +38,6 @@ class FakeInputView extends Component<FakeInputViewProps> {
     const Inner = styled.div`
           direction: rtl;
           overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          word-break: keep-all;
           color: white;
           font-size: ${({ theme }) => theme.typography.headline.fontSize};
           vertical-align: middle;
@@ -59,11 +56,22 @@ class FakeInputView extends Component<FakeInputViewProps> {
         }
     `;
 
+    const KeyText = styled.div`
+      width: 100%;
+      overflow: hidden;
+      min-width: 0;
+      text-overflow: ellipsis;
+      word-break: keep-all;
+      white-space: nowrap;
+    `;
+
     return (
       <FlexContainer>
         <StyledHeaderNoPadding>
           <Container>
-            <Inner>{this.props.enteredKeys}</Inner>
+            <Inner>
+              <KeyText>{this.props.enteredKeys}</KeyText>
+            </Inner>
           </Container>
         </StyledHeaderNoPadding>
       </FlexContainer>
