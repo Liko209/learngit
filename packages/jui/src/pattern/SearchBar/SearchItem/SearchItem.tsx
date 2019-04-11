@@ -97,6 +97,7 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
     hovered,
     ...rest
   } = props;
+  // e2e also will be use it. shouldn't change the class name
   const className = hovered ? 'search-items hover' : 'search-items';
   return (
     <SearchItemWrapper className={className} disableRipple={true} {...rest}>

@@ -24,6 +24,7 @@ type ViewProps = {
   hovered: boolean;
   addRecentRecord: () => void;
   groupName: string;
+  group: null | GroupModel;
 };
 
 export {
