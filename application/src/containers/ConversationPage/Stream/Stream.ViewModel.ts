@@ -18,7 +18,7 @@ import StoreViewModel from '@/store/ViewModel';
 
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItemType } from './types';
+import { StreamProps, StreamItemType, StreamItem } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -34,11 +34,18 @@ import { StreamController } from './StreamController';
 import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
-  private _stateService: StateService = StateService.getInstance();
-  private _postService: PostService = PostService.getInstance();
-  private _itemService: ItemService = ItemService.getInstance();
+  private _stateService = ServiceLoader.getInstance<StateService>(
+    ServiceConfig.STATE_SERVICE,
+  );
+  private _postService = ServiceLoader.getInstance<PostService>(
+    ServiceConfig.POST_SERVICE,
+  );
+  private _itemService = ServiceLoader.getInstance<ItemService>(
+    ServiceConfig.ITEM_SERVICE,
+  );
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
 
@@ -146,6 +153,27 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, lastPostId);
   }
 
+  hasNewMessageSeparator = () => {
+    return this.findNewMessageSeparatorIndex() > -1;
+  }
+
+  findNewMessageSeparatorIndex = () => {
+    return this.items.findIndex(
+      (item: StreamItem) => item.type === StreamItemType.NEW_MSG_SEPARATOR,
+    );
+  }
+
+  findPostIndex = (postId?: number) => {
+    return postId
+      ? this.items.findIndex(
+          (item: StreamItem) =>
+            item.type === StreamItemType.POST &&
+            !!item.value &&
+            item.value.includes(postId),
+        )
+      : -1;
+  }
+
   updateHistoryHandler() {
     this._historyHandler.update(this._groupState, this.postIds);
   }
@@ -165,9 +193,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @action
-  async loadPrevPosts() {
+  async loadPrevPosts(count: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER, count);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
@@ -176,23 +204,24 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   @action
-  async loadNextPosts() {
+  async loadNextPosts(count: number) {
     try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER);
+      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER, count);
       return posts;
     } catch (err) {
       this._handleLoadMoreError(err, QUERY_DIRECTION.NEWER);
       return;
     }
   }
+
   @action
-  loadMore = async (direction: 'up' | 'down') => {
+  loadMore = async (direction: 'up' | 'down', count: number) => {
     switch (direction) {
       case 'up':
-        await this.loadPrevPosts();
+        await this.loadPrevPosts(count);
         break;
       case 'down':
-        await this.loadNextPosts();
+        await this.loadNextPosts(count);
         break;
       default:
         mainLogger.warn('please nominate the direction');

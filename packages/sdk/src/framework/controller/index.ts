@@ -19,6 +19,7 @@ import { EntityCacheSearchController } from './impl/EntityCacheSearchController'
 import { IEntityPersistentController } from './interface/IEntityPersistentController';
 import { EntityPersistentController } from './impl/EntityPersistentController';
 import { IEntityCacheSearchController } from './interface/IEntityCacheSearchController';
+import { EntityNotificationController } from './impl/EntityNotificationController';
 
 export function buildPartialModifyController<T extends IdModel = IdModel>(
   entitySourceController: IEntitySourceController<T>,
@@ -67,4 +68,10 @@ export function buildEntityPersistentController<T extends IdModel = IdModel>(
   cacheController?: IEntityCacheController<T>,
 ) {
   return new EntityPersistentController<T>(dao, cacheController);
+}
+
+export function buildEntityNotificationController<
+  T extends IdModel = IdModel
+>() {
+  return new EntityNotificationController<T>();
 }

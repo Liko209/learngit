@@ -4,30 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractAccount } from '../framework';
-import GroupService from '../module/group';
-import { CompanyService } from '../module/company';
-import { PersonService } from '../module/person';
-import { PresenceService } from '../module/presence';
-import { ProfileService } from '../module/profile';
-import { TelephonyService } from '../module/telephony';
-import { ItemService } from '../module/item';
-import { StateService } from '../module/state';
-import { PostService } from '../module/post';
-import { RcInfoService } from '../module/rcInfo/service/RcInfoService';
+import { ServiceConfig } from '../module/serviceLoader';
 
 class GlipAccount extends AbstractAccount {
   async updateSupportedServices(data: any): Promise<void> {
     this.setSupportedServices([
-      PostService.name,
-      GroupService.name,
-      CompanyService.name,
-      ItemService.name,
-      PersonService.name,
-      PresenceService.name,
-      ProfileService.name,
-      StateService.name,
-      TelephonyService.name,
-      RcInfoService.name,
+      ServiceConfig.POST_SERVICE,
+      ServiceConfig.GROUP_SERVICE,
+      ServiceConfig.COMPANY_SERVICE,
+      ServiceConfig.ITEM_SERVICE,
+      ServiceConfig.PERSON_SERVICE,
+      ServiceConfig.PRESENCE_SERVICE,
+      ServiceConfig.PROFILE_SERVICE,
+      ServiceConfig.STATE_SERVICE,
+      ServiceConfig.TELEPHONY_SERVICE,
+      ServiceConfig.RC_INFO_SERVICE,
     ]);
   }
 }

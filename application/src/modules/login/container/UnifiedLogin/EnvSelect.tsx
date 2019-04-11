@@ -4,8 +4,12 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as React from 'react';
-import { service } from 'sdk';
+import { AccountService } from 'sdk/module/account';
+
+import { AppEnvSetting } from 'sdk/module/env';
+
 import Config from '@/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 console.log('Config: ', Config);
 
 type Props = {};
@@ -13,8 +17,6 @@ type States = {
   value: string;
   environments: string[];
 };
-
-const { ConfigService } = service;
 
 class EnvSelect extends React.Component<Props, States> {
   constructor(props: Props) {
@@ -41,8 +43,10 @@ class EnvSelect extends React.Component<Props, States> {
 
   changeHandler(event: React.ChangeEvent<HTMLSelectElement>) {
     const value = event.target.value;
-    const configService: service.ConfigService = ConfigService.getInstance();
-    configService.switchEnv(value);
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    AppEnvSetting.switchEnv(value, accountService);
     this.setState({ value });
     location.reload();
   }

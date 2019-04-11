@@ -7,7 +7,7 @@
 import { IndexDataModel } from '../../../api/glip/user';
 
 import { indexData, initialData, remainingData } from '../../../api';
-import accountHandleData from '../../../service/account/handleData';
+import { accountHandleData } from '../../../module/account/service';
 
 import { SERVICE, CONFIG } from '../../../service/eventKey';
 import { progressBar } from '../../../utils/progress';
@@ -26,27 +26,30 @@ import { PersonService } from '../../person';
 import { GroupService } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
-import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
-import { IndexRequestProcessor } from './IndexRequestProcessor';
-import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
+// import { IndexRequestProcessor } from './IndexRequestProcessor';
+// import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
 import { SYNC_SOURCE } from '../types';
-import { AccountGlobalConfig } from '../../../service/account/config';
+import { AccountGlobalConfig } from '../../../module/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
+import { SyncGlobalConfig } from '../config';
+import { AccountService } from '../../../module/account';
+import socketManager from '../../../service/socket';
+import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
   private _syncListener: SyncListener;
-  private _processorHandler: SequenceProcessorHandler;
+  // private _processorHandler: SequenceProcessorHandler;
 
   constructor() {
-    this._processorHandler = new SequenceProcessorHandler(
-      'Index_SyncController',
-    );
+    // this._processorHandler = new SequenceProcessorHandler(
+    //   'Index_SyncController',
+    // );
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
-    mainLogger.log('sync service SERVICE.SOCKET_STATE_CHANGE', state);
+    mainLogger.log(LOG_TAG, 'sync service SERVICE.SOCKET_STATE_CHANGE', state);
     if (state === 'connected' || state === 'refresh') {
       this.syncData();
     } else if (state === 'connecting') {
@@ -72,12 +75,13 @@ class SyncController {
   updateIndexTimestamp(time: number, forceUpdate: boolean) {
     const syncConfig = new SyncUserConfig();
     if (forceUpdate) {
+      const isConnected = socketManager.isConnected();
       mainLogger.log(
         LOG_TAG,
-        `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
+        `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate} socket is connected:${isConnected}`,
       );
       syncConfig.setLastIndexTimestamp(time);
-      this.updateCanUpdateIndexTimeStamp(true);
+      isConnected && this.updateCanUpdateIndexTimeStamp(true);
     } else if (this.canUpdateIndexTimeStamp()) {
       mainLogger.log(
         LOG_TAG,
@@ -88,6 +92,7 @@ class SyncController {
   }
 
   updateCanUpdateIndexTimeStamp(can: boolean) {
+    mainLogger.log(LOG_TAG, 'updateCanUpdateIndexTimeStamp', can);
     const syncConfig = new SyncUserConfig();
     return syncConfig.updateCanUpdateIndexTimeStamp(can);
   }
@@ -100,7 +105,7 @@ class SyncController {
   async syncData(syncListener?: SyncListener) {
     this._syncListener = syncListener || {};
     const lastIndexTimestamp = this.getIndexTimestamp();
-    mainLogger.log('start syncData time: ', lastIndexTimestamp);
+    mainLogger.log(LOG_TAG, 'start syncData time: ', lastIndexTimestamp);
     try {
       if (lastIndexTimestamp) {
         await this._syncIndexData(lastIndexTimestamp);
@@ -109,12 +114,22 @@ class SyncController {
         await this._firstLogin();
       }
     } catch (e) {
-      mainLogger.log('syncData fail', e);
+      mainLogger.log(LOG_TAG, 'syncData fail', e);
     }
   }
 
   handleStoppingSocketEvent() {
     // this is for update newer than tag
+    mainLogger.log(LOG_TAG, 'handleStoppingSocketEvent');
+    this._disableCanUpdateIndexTimeStampFlag();
+  }
+
+  handleWakeUpFromSleep() {
+    mainLogger.log(LOG_TAG, 'handleWakeUpFromSleep');
+    this._disableCanUpdateIndexTimeStampFlag();
+  }
+
+  private _disableCanUpdateIndexTimeStampFlag() {
     if (AccountGlobalConfig.getUserDictionary()) {
       this.updateCanUpdateIndexTimeStamp(false);
     }
@@ -125,18 +140,18 @@ class SyncController {
     const currentTime = Date.now();
     try {
       await this._fetchInitial(currentTime);
-      mainLogger.info('fetch initial data success');
+      mainLogger.info(LOG_TAG, 'fetch initial data success');
       notificationCenter.emitKVChange(SERVICE.LOGIN);
     } catch (e) {
-      mainLogger.error('fetch initial data error');
+      mainLogger.error(LOG_TAG, 'fetch initial data error');
       // actually, should only do sign out when initial failed
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
     try {
       await this._fetchRemaining(currentTime);
-      mainLogger.info('fetch remaining data success');
+      mainLogger.info(LOG_TAG, 'fetch remaining data success');
     } catch (e) {
-      mainLogger.error('fetch remaining data error');
+      mainLogger.error(LOG_TAG, 'fetch remaining data error');
     }
     progressBar.stop();
   }
@@ -147,7 +162,7 @@ class SyncController {
     onInitialLoaded && (await onInitialLoaded(initialResult));
     await this._handleIncomingData(initialResult, SYNC_SOURCE.INITIAL);
     onInitialHandled && (await onInitialHandled());
-    mainLogger.log('fetch initial data and handle success');
+    mainLogger.log(LOG_TAG, 'fetch initial data and handle success');
   }
 
   private async _checkFetchedRemaining(time: number) {
@@ -156,12 +171,13 @@ class SyncController {
       try {
         await this._fetchRemaining(time);
       } catch (e) {
-        mainLogger.error('fetch remaining data error');
+        mainLogger.error(LOG_TAG, 'fetch remaining data error');
       }
     }
   }
 
   private async _fetchRemaining(time: number) {
+    mainLogger.log(LOG_TAG, 'start fetching remaining');
     const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
     const remainingResult = await this.fetchRemainingData(time);
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
@@ -173,26 +189,25 @@ class SyncController {
   }
 
   private async _syncIndexData(timeStamp: number) {
-    const executeFunc = async () => {
-      progressBar.start();
-      const { onIndexLoaded, onIndexHandled } = this._syncListener;
-      const syncConfig = new SyncUserConfig();
-      // 5 minutes ago to ensure data is correct
-      try {
-        const result = await this.fetchIndexData(String(timeStamp - 300000));
-        onIndexLoaded && (await onIndexLoaded(result));
-        await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
-        onIndexHandled && (await onIndexHandled());
-        syncConfig.updateIndexSucceed(true);
-      } catch (error) {
-        syncConfig.updateIndexSucceed(false);
-        await this._handleSyncIndexError(error);
-      }
-      progressBar.stop();
-    };
-
-    const processor = new IndexRequestProcessor(executeFunc);
-    this._processorHandler.addProcessor(processor);
+    mainLogger.log(LOG_TAG, 'start fetching index');
+    progressBar.start();
+    const { onIndexLoaded, onIndexHandled } = this._syncListener;
+    const syncConfig = new SyncUserConfig();
+    // 5 minutes ago to ensure data is correct
+    try {
+      const result = await this.fetchIndexData(String(timeStamp - 300000));
+      mainLogger.log(LOG_TAG, 'fetch index done');
+      onIndexLoaded && (await onIndexLoaded(result));
+      await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
+      onIndexHandled && (await onIndexHandled());
+      syncConfig.updateIndexSucceed(true);
+    } catch (error) {
+      mainLogger.log(LOG_TAG, 'fetch index failed');
+      this.updateCanUpdateIndexTimeStamp(false);
+      syncConfig.updateIndexSucceed(false);
+      await this._handleSyncIndexError(error);
+    }
+    progressBar.stop();
   }
 
   private async _handleSyncIndexError(result: any) {
@@ -215,11 +230,21 @@ class SyncController {
     syncConfig.setLastIndexTimestamp('');
 
     await Promise.all([
-      ItemService.getInstance<ItemService>().clear(),
-      PostService.getInstance<PostService>().clear(),
-      GroupConfigService.getInstance<GroupConfigService>().clear(),
-      GroupService.getInstance<GroupService>().clear(),
-      PersonService.getInstance<PersonService>().clear(),
+      ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<GroupConfigService>(
+        ServiceConfig.GROUP_CONFIG_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      ).clear(),
+      ServiceLoader.getInstance<PersonService>(
+        ServiceConfig.PERSON_SERVICE,
+      ).clear(),
     ]);
 
     await this._firstLogin();
@@ -291,42 +316,38 @@ class SyncController {
         clientConfig,
         profileId: profile ? profile._id : undefined,
       }),
-      CompanyService.getInstance<CompanyService>().handleIncomingData(
-        companies,
-        source,
-      ),
-      (ItemService.getInstance() as ItemService).handleIncomingData(items),
-      PresenceService.getInstance<PresenceService>().presenceHandleData(
-        presences,
-      ),
-      (StateService.getInstance() as StateService).handleState(
-        arrState,
-        source,
-      ),
+      ServiceLoader.getInstance<CompanyService>(
+        ServiceConfig.COMPANY_SERVICE,
+      ).handleIncomingData(companies, source),
+      ServiceLoader.getInstance<ItemService>(
+        ServiceConfig.ITEM_SERVICE,
+      ).handleIncomingData(items),
+      ServiceLoader.getInstance<PresenceService>(
+        ServiceConfig.PRESENCE_SERVICE,
+      ).presenceHandleData(presences),
+      ServiceLoader.getInstance<StateService>(
+        ServiceConfig.STATE_SERVICE,
+      ).handleState(arrState, source),
     ])
       .then(() =>
-        ProfileService.getInstance<ProfileService>().handleIncomingData(
-          transProfile,
-          source,
-        ),
+        ServiceLoader.getInstance<ProfileService>(
+          ServiceConfig.PROFILE_SERVICE,
+        ).handleIncomingData(transProfile, source),
       )
       .then(() =>
-        PersonService.getInstance<PersonService>().handleIncomingData(
-          people,
-          source,
-        ),
+        ServiceLoader.getInstance<PersonService>(
+          ServiceConfig.PERSON_SERVICE,
+        ).handleIncomingData(people, source),
       )
       .then(() =>
-        GroupService.getInstance<GroupService>().handleData(
-          MergedGroups,
-          source,
-        ),
+        ServiceLoader.getInstance<GroupService>(
+          ServiceConfig.GROUP_SERVICE,
+        ).handleData(MergedGroups, source),
       )
       .then(() =>
-        PostService.getInstance<PostService>().handleIndexData(
-          posts,
-          maxPostsExceeded,
-        ),
+        ServiceLoader.getInstance<PostService>(
+          ServiceConfig.POST_SERVICE,
+        ).handleIndexData(posts, maxPostsExceeded),
       );
   }
 
@@ -359,7 +380,7 @@ class SyncController {
       }
 
       if (staticHttpServer) {
-        NewGlobalConfig.setStaticHttpServer(staticHttpServer);
+        SyncGlobalConfig.setStaticHttpServer(staticHttpServer);
         notificationCenter.emitKVChange(
           CONFIG.STATIC_HTTP_SERVER,
           staticHttpServer,
@@ -379,12 +400,17 @@ class SyncController {
   }
 
   private async _checkIndex() {
-    const socketUserConfig = new SyncUserConfig();
-    const succeed = socketUserConfig.getIndexSucceed();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    if (accountService.isGlipLogin()) {
+      const socketUserConfig = new SyncUserConfig();
+      const succeed = socketUserConfig.getIndexSucceed();
 
-    if (!succeed) {
-      mainLogger.info(LOG_TAG, ' _checkIndex, last index was not succeed');
-      await this.syncData();
+      if (!succeed) {
+        mainLogger.info(LOG_TAG, ' _checkIndex, last index was not succeed');
+        await this.syncData();
+      }
     }
   }
 }

@@ -75,7 +75,10 @@ type StreamViewProps = {
   loadInitialPostsError?: Error;
   loading?: boolean;
   lastPost?: PostModel;
-  loadMore: (direction: 'up' | 'down') => Promise<void>;
+  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
+  hasNewMessageSeparator: () => boolean;
+  findNewMessageSeparatorIndex: () => number;
+  findPostIndex: (postId?: number) => number;
 };
 
 type StreamSnapshot = {

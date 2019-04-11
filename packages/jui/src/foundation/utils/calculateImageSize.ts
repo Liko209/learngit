@@ -95,7 +95,7 @@ const case5: CaseTye = {
     const ratio = height / width;
     result.width = MAX_WIDTHHEIGHT;
     result.height = MIN_HEIGHT;
-    result.justifyHeight = true;
+    result.justifyWidth = true;
     result.left = (MAX_WIDTHHEIGHT - MIN_HEIGHT / ratio) / 2;
   },
 };
@@ -109,7 +109,7 @@ const case6: CaseTye = {
     const ratio = height / width;
     result.height = MAX_WIDTHHEIGHT;
     result.width = MIN_WIDTH;
-    result.justifyWidth = true;
+    result.justifyHeight = true;
     result.top = (MAX_WIDTHHEIGHT - MIN_WIDTH * ratio) / 2;
   },
 };
@@ -172,12 +172,12 @@ function getThumbnailForSquareSizeInternal(
       result.width = size;
       result.height = size;
       result.top = Math.round((size * (1 - ratio)) / 2);
-      result.justifyWidth = true;
+      result.justifyHeight = true;
     } else {
       result.width = size;
       result.height = size;
       result.left = Math.round((size * (1 - 1 / ratio)) / 2);
-      result.justifyHeight = true;
+      result.justifyWidth = true;
     }
   }
   return result;

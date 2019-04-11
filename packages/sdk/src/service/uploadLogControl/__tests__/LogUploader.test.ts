@@ -1,14 +1,15 @@
 import { LogUploader } from '../LogUploader';
 import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import AccountService from '../../account';
+import { AccountService } from '../../../module/account';
 import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';
-import { AccountUserConfig } from '../../account/config';
+import { AccountUserConfig } from '../../../module/account/config';
+import { ServiceLoader } from '../../../module/serviceLoader';
 
 jest.mock('sdk/api');
-jest.mock('../../account');
+jest.mock('../../../module/account');
 jest.mock('axios');
-jest.mock('../../account/config');
+jest.mock('../../../module/account/config');
 
 function createError(status: number): AxiosError {
   return (status
@@ -29,7 +30,7 @@ describe('LogUploader', () => {
       },
     };
     (axios.post as jest.Mock).mockResolvedValue({});
-    AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
     (accountService.getUserEmail as jest.Mock).mockResolvedValue('abc@rc.com');
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(12345);
     (accountService.getClientId as jest.Mock).mockReturnValue('54321');
@@ -43,7 +44,7 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': 'abc@rc.com| 12345| sessionA',
+          'X-Sumo-Name': '| abc@rc.com| 12345| sessionA',
           'Content-Type': 'application/json',
         },
       });
@@ -57,7 +58,7 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': 'service@glip.com| 12345| sessionA',
+          'X-Sumo-Name': '| service@glip.com| 12345| sessionA',
           'Content-Type': 'application/json',
         },
       });
@@ -73,7 +74,7 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': 'service@glip.com| | sessionA',
+          'X-Sumo-Name': '| service@glip.com| | sessionA',
           'Content-Type': 'application/json',
         },
       });
@@ -99,9 +100,9 @@ describe('LogUploader', () => {
       expect(logUploader.errorHandler(createError(503))).toEqual('retry');
       expect(logUploader.errorHandler(createError(504))).toEqual('retry');
     });
-    it('should ignore other error', () => {
+    it('should retry other error', () => {
       const logUploader = new LogUploader();
-      expect(logUploader.errorHandler(createError(500))).toEqual('ignore');
+      expect(logUploader.errorHandler(createError(500))).toEqual('retry');
     });
   });
 });

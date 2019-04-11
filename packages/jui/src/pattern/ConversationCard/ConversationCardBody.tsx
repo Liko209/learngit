@@ -9,6 +9,8 @@ import styled from '../../foundation/styled-components';
 const JuiConversationCardBody = styled('div')`
   padding: ${spacing(0, 4, 4, 0)};
   font-size: 0;
+  overflow: auto;
+
   .conversation-item-cards:last-child {
     margin-bottom: 0;
   }

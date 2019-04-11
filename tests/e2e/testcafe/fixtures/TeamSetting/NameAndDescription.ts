@@ -54,7 +54,7 @@ test(formalName(`Show team settings page when admin clicks settings button in th
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`When I Click settings button`, async () => {
@@ -77,7 +77,7 @@ test(formalName(`Show team settings page when admin clicks settings button in th
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`When I Click settings button`, async () => {
@@ -128,7 +128,7 @@ test(formalName(`Can cancel the update when update some field then click cancel`
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`When I Click settings button`, async () => {
@@ -205,7 +205,7 @@ test(formalName(`No team name,description and add team member field in settings 
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`When I Click settings button to open Settings page`, async () => {
@@ -260,7 +260,7 @@ test(formalName(`Team name and description can be updated successfully`, ['P0', 
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`When I Click settings button`, async () => {
@@ -341,7 +341,7 @@ test(formalName(`Save button should be disabled when entering only blanks or cle
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`When I Click settings button`, async () => {
@@ -409,7 +409,7 @@ test(formalName(`The inline error should be displayed if the team is failed to b
   });
 
   await h(t).withLog(`Then team profile dialog should be showed`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`When I Click settings button`, async () => {

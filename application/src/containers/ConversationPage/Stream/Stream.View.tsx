@@ -8,6 +8,7 @@ import React, { Component, RefObject, createRef } from 'react';
 import storeManager from '@/store/base/StoreManager';
 import { observable, runInAction, reaction, action } from 'mobx';
 import { observer, Observer, Disposer } from 'mobx-react';
+import { mainLogger } from 'sdk';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
 import { ConversationPost } from '@/containers/ConversationPost';
 import { extractView } from 'jui/hoc/extractView';
@@ -29,13 +30,14 @@ import { withTranslation, WithTranslation } from 'react-i18next';
 import {
   JuiInfiniteList,
   IndexRange,
+  ThresholdStrategy,
   JuiVirtualizedListHandles,
 } from 'jui/components/VirtualizedList';
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
-import JuiConversationCard from 'jui/src/pattern/ConversationCard';
 import { goToConversation } from '@/common/goToConversation';
+import JuiConversationCard from 'jui/pattern/ConversationCard';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
 
@@ -45,7 +47,11 @@ const LOADING_DELAY = 500;
 
 @observer
 class StreamViewComponent extends Component<Props> {
-  private currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  private _loadMoreStrategy = new ThresholdStrategy({
+    threshold: 60,
+    minBatchCount: 10,
+  });
   private _listRef: React.RefObject<
     JuiVirtualizedListHandles
   > = React.createRef();
@@ -97,7 +103,7 @@ class StreamViewComponent extends Component<Props> {
       const sentFromCurrentUser =
         !hasMore('down') &&
         lastPost &&
-        lastPost.creatorId === this.currentUserId;
+        lastPost.creatorId === this._currentUserId;
 
       if (sentFromCurrentUser && this._listRef.current) {
         this._listRef.current.scrollToBottom();
@@ -226,22 +232,33 @@ class StreamViewComponent extends Component<Props> {
     },                         LOADING_DELAY);
 
     try {
-      const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
-      const index = firstUnreadPostId
-        ? this.props.items.findIndex(
-            (item: StreamItemPost) =>
-              item.type === StreamItemType.POST &&
-              item.value.includes(firstUnreadPostId),
-          )
-        : 0;
+      const {
+        hasNewMessageSeparator,
+        findNewMessageSeparatorIndex,
+        loadPostUntilFirstUnread,
+        findPostIndex,
+      } = this.props;
+      const firstUnreadPostId = await loadPostUntilFirstUnread();
 
-      if (index === -1) {
-        console.warn(
-          `scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} scrollToPostId:${index}`,
+      const jumpToIndex = hasNewMessageSeparator()
+        ? findNewMessageSeparatorIndex()
+        : findPostIndex(firstUnreadPostId);
+
+      if (!this._listRef.current) {
+        mainLogger.warn(
+          'Failed to jump to the first unread post. _listRef no found.',
         );
         return;
       }
-      this._listRef.current && this._listRef.current.scrollToIndex(index);
+
+      if (jumpToIndex === -1) {
+        mainLogger.warn(
+          `Failed to jump to the first unread post. scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} jumpToIndex:${jumpToIndex}`,
+        );
+        return;
+      }
+
+      this._listRef.current.scrollToIndex(jumpToIndex);
       this.handleFirstUnreadViewed();
     } finally {
       clearTimeout(this._timeout);
@@ -265,7 +282,10 @@ class StreamViewComponent extends Component<Props> {
     const visiblePosts = _(visibleItems)
       .flatMap('value')
       .concat();
-    if (this.props.hasMore('down') || !visiblePosts.includes(mostRecentPostId)) {
+    if (
+      this.props.hasMore('down') ||
+      !visiblePosts.includes(mostRecentPostId)
+    ) {
       this.handleMostRecentHidden();
     } else {
       this.handleMostRecentViewed();
@@ -308,8 +328,8 @@ class StreamViewComponent extends Component<Props> {
   }
 
   private _findStreamItemIndexByPostId = (id: number) => {
-    return this.props.items.findIndex((i: StreamItemPost) => {
-      return i.type === StreamItemType.POST && i.value.includes(id);
+    return this.props.items.findIndex((item: StreamItemPost) => {
+      return item.type === StreamItemType.POST && item.value.includes(id);
     });
   }
 
@@ -321,6 +341,22 @@ class StreamViewComponent extends Component<Props> {
         flexDirection: 'column',
       } as React.CSSProperties),
   );
+
+  @action
+  private _loadInitialPosts = async () => {
+    const { loadInitialPosts, markAsRead } = this.props;
+    await loadInitialPosts();
+    runInAction(() => {
+      this.props.updateHistoryHandler();
+      markAsRead();
+    });
+    requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+      }
+    });
+    this._watchUnreadCount();
+  }
 
   private _onInitialDataFailed = (
     <JuiStreamLoading
@@ -356,6 +392,7 @@ class StreamViewComponent extends Component<Props> {
                   ref={this._listRef}
                   height={height}
                   stickToBottom={true}
+                  loadMoreStrategy={this._loadMoreStrategy}
                   initialScrollToIndex={initialPosition}
                   minRowHeight={50} // extract to const
                   loadInitialData={this._loadInitialPosts}
@@ -376,28 +413,12 @@ class StreamViewComponent extends Component<Props> {
     );
   }
 
-  @action
-  private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead } = this.props;
-    await loadInitialPosts();
-    runInAction(() => {
-      this.props.updateHistoryHandler();
-      markAsRead();
-    });
-    requestAnimationFrame(() => {
-      if (this._jumpToPostRef.current) {
-        this._jumpToPostRef.current.highlight();
-      }
-    });
-    this._watchUnreadCount();
-  }
-
   private _watchUnreadCount() {
     const disposer = reaction(
       () => {
         return this.props.mostRecentPostId;
       },
-      (mostRecentPostId) => {
+      () => {
         if (this._listRef.current && !this.props.hasMore('down')) {
           const isLastPostVisible =
             this._listRef.current.getVisibleRange().stopIndex >=

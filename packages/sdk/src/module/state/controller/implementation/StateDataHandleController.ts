@@ -17,8 +17,8 @@ import { IEntitySourceController } from '../../../../framework/controller/interf
 import { StateFetchDataController } from './StateFetchDataController';
 import { TotalUnreadController } from './TotalUnreadController';
 import { mainLogger } from 'foundation';
-import { AccountUserConfig } from '../../../../service/account/config';
-import { MyStateUserConfig } from '../../../../service/config';
+import { AccountUserConfig } from '../../../../module/account/config';
+import { MyStateConfig } from '../../../state/config';
 import { SYNC_SOURCE } from '../../../../module/sync/types';
 import { shouldEmitNotification } from '../../../../utils/notificationUtils';
 
@@ -341,7 +341,7 @@ class StateDataHandleController {
       const myState = transformedState.myState;
       try {
         await daoManager.getDao(StateDao).update(myState);
-        const config = new MyStateUserConfig();
+        const config = new MyStateConfig();
         await config.setMyStateId(myState.id);
       } catch (err) {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);

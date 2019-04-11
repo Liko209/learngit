@@ -4,21 +4,23 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { NewGlobalConfig } from '../../../../service/config/NewGlobalConfig';
 import { indexData, initialData, remainingData } from '../../../../api';
 import { SyncUserConfig } from '../../config/SyncUserConfig';
 import { GlobalConfigService } from '../../../config';
 import { SyncController } from '../SyncController';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import { AccountGlobalConfig } from '../../../../module/account/config';
 import { JNetworkError, ERROR_CODES_NETWORK } from '../../../../error';
 import { GroupConfigService } from '../../../../module/groupConfig';
 import { PersonService } from '../../../person';
 import { GroupService } from '../../../group';
 import { PostService } from '../../../post';
 import { ItemService } from '../../../item/service';
+import { AccountService } from '../../../../module/account';
+import socketManager from '../../../../service/socket';
+import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
 
 jest.mock('../../config/SyncUserConfig');
-jest.mock('../../../../service/config/NewGlobalConfig');
+
 jest.mock('../../../../api');
 jest.mock('../../../config');
 jest.mock('../../../../module/groupConfig');
@@ -26,6 +28,9 @@ jest.mock('../../../person');
 jest.mock('../../../group');
 jest.mock('../../../post');
 jest.mock('../../../item/service');
+jest.mock('../../../../module/account/config');
+jest.mock('../../../../module/account');
+jest.mock('../../../../service/socket');
 
 let groupConfigService: GroupConfigService;
 let personService: PersonService;
@@ -35,30 +40,62 @@ let itemService: ItemService;
 
 describe('SyncController ', () => {
   let syncController: SyncController = null;
+  let accountService: AccountService = null;
+
   beforeEach(() => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     syncController = new SyncController();
-    GlobalConfigService.getInstance = jest.fn().mockReturnValue({
-      get: jest.fn(),
-      put: jest.fn(),
-    });
+
     groupConfigService = new GroupConfigService();
-    GroupConfigService.getInstance = jest
-      .fn()
-      .mockReturnValue(groupConfigService);
 
     personService = new PersonService();
-    PersonService.getInstance = jest.fn().mockReturnValue(personService);
 
     groupService = new GroupService();
-    GroupService.getInstance = jest.fn().mockReturnValue(groupService);
 
     postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
 
     itemService = new ItemService();
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+
+    accountService = new AccountService(null);
+
+    groupConfigService = new GroupConfigService();
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        let result: any = null;
+        switch (serviceName) {
+          case ServiceConfig.PERSON_SERVICE:
+            result = personService;
+            break;
+          case ServiceConfig.GROUP_SERVICE:
+            result = groupService;
+            break;
+          case ServiceConfig.POST_SERVICE:
+            result = postService;
+            break;
+          case ServiceConfig.ITEM_SERVICE:
+            result = itemService;
+            break;
+          case ServiceConfig.ACCOUNT_SERVICE:
+            result = accountService;
+            break;
+          case ServiceConfig.GLOBAL_CONFIG_SERVICE:
+            result = {
+              get: jest.fn(),
+              put: jest.fn(),
+              clear: jest.fn(),
+            };
+            break;
+          case ServiceConfig.GROUP_CONFIG_SERVICE:
+            result = groupConfigService;
+            break;
+          default:
+            break;
+        }
+        return result;
+      });
   });
 
   describe('getIndexTimestamp', () => {
@@ -116,13 +153,23 @@ describe('SyncController ', () => {
       jest.clearAllMocks();
       jest.resetModules();
     });
-    it('should call updateCanUpdateIndexTimeStamp when forceUpdate is true', () => {
+    it('should call updateCanUpdateIndexTimeStamp when forceUpdate is true and socket is connected', () => {
       jest
         .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
         .mockImplementationOnce(() => {});
-
+      socketManager.isConnected.mockReturnValueOnce(true);
       syncController.updateIndexTimestamp(1, true);
       expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(1);
+      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
+    });
+
+    it('should not call updateCanUpdateIndexTimeStamp when forceUpdate is true but socket is not connected', () => {
+      jest
+        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
+        .mockImplementationOnce(() => {});
+      socketManager.isConnected.mockReturnValueOnce(false);
+      syncController.updateIndexTimestamp(1, true);
+      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
       expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
     });
 
@@ -152,7 +199,7 @@ describe('SyncController ', () => {
   });
   describe('_handleIncomingData', () => {
     it('should call setLastIndexTimestamp and setSocketServerHost only once when first login', async () => {
-      NewGlobalConfig.getLastIndexTimestamp = jest
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
         .fn()
         .mockReturnValue(undefined);
       initialData.mockResolvedValueOnce({
@@ -184,6 +231,7 @@ describe('SyncController ', () => {
         SyncUserConfig.prototype.getIndexSucceed = jest
           .fn()
           .mockReturnValue(false);
+        jest.spyOn(accountService, 'isGlipLogin').mockReturnValueOnce(true);
         jest.spyOn(syncController, 'syncData').mockResolvedValueOnce();
         await syncController.handleWindowFocused();
         expect(syncController.syncData).toHaveBeenCalledTimes(1);
@@ -202,6 +250,7 @@ describe('SyncController ', () => {
         SyncUserConfig.prototype.getLastIndexTimestamp = jest
           .fn()
           .mockReturnValue(1);
+
         AccountGlobalConfig.getUserDictionary = jest
           .fn()
           .mockReturnValueOnce(1);
@@ -253,6 +302,26 @@ describe('SyncController ', () => {
         expect(personService.clear).toHaveBeenCalledTimes(1);
         expect(syncController._firstLogin).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+  describe('updateCanUpdateIndexTimeStamp', () => {
+    beforeEach(() => {
+      jest
+        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
+        .mockReturnValueOnce(1);
+      AccountGlobalConfig.getUserDictionary.mockReturnValueOnce(1);
+    });
+    it('should call updateCanUpdateIndexTimeStamp when stopping FSM', () => {
+      syncController.handleStoppingSocketEvent();
+      expect(
+        syncController.updateCanUpdateIndexTimeStamp,
+      ).toHaveBeenCalledTimes(1);
+    });
+    it('should call updateCanUpdateIndexTimeStamp when wake up from sleep mode', () => {
+      syncController.handleWakeUpFromSleep();
+      expect(
+        syncController.updateCanUpdateIndexTimeStamp,
+      ).toHaveBeenCalledTimes(1);
     });
   });
 });

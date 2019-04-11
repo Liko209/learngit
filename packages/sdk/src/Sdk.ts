@@ -5,17 +5,11 @@
  */
 
 // import featureFlag from './component/featureFlag';
-import { Foundation, NetworkManager, Token } from 'foundation';
+import { Foundation, NetworkManager, Token, dataAnalysis } from 'foundation';
 import merge from 'lodash/merge';
 import './service/windowEventListener'; // to initial window events listener
 
-import {
-  Api,
-  HandleByGlip,
-  HandleByGlip2,
-  HandleByRingCentral,
-  HandleByUpload,
-} from './api';
+import { Api, HandleByGlip, HandleByRingCentral, HandleByUpload } from './api';
 import { defaultConfig as defaultApiConfig } from './api/defaultConfig';
 import { AutoAuthenticator } from './authenticator/AutoAuthenticator';
 import DaoManager from './dao/DaoManager';
@@ -25,11 +19,11 @@ import { SERVICE } from './service/eventKey';
 import notificationCenter from './service/notificationCenter';
 import { SyncService } from './module/sync';
 import { ApiConfig, DBConfig, ISdkConfig } from './types';
-import { AccountService } from './service';
+import { AccountService } from './module/account';
 import { DataMigration, UserConfigService } from './module/config';
 import { setGlipToken } from './authenticator/utils';
-import { AuthUserConfig } from './service/auth/config';
-import { AccountGlobalConfig } from './service/account/config';
+import { AuthUserConfig, AccountGlobalConfig } from './module/account/config';
+import { ServiceConfig, ServiceLoader } from './module/serviceLoader';
 
 const AM = AccountManager;
 
@@ -54,14 +48,6 @@ class Sdk {
     const dbConfig: DBConfig = merge({}, defaultDBConfig, config.db);
     // Initialize foundation
     Foundation.init({
-      // TODO refactor foundation, extract biz logic from `foundation` to `sdk`.
-      rcConfig: {
-        rc: apiConfig.rc,
-        glip2: apiConfig.glip2,
-        server: apiConfig.rc.server,
-        apiPlatform: apiConfig.rc.apiPlatform,
-        apiPlatformVersion: apiConfig.rc.apiPlatformVersion,
-      },
       dbAdapter: dbConfig.adapter,
     });
 
@@ -74,7 +60,9 @@ class Sdk {
     // Sync service should always start before login
     this.serviceManager.startService(SyncService.name);
 
-    const accountService: AccountService = AccountService.getInstance();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
     HandleByRingCentral.platformHandleDelegate = accountService;
 
     notificationCenter.on(
@@ -94,22 +82,40 @@ class Sdk {
     const loginResp = await this.accountManager.syncLogin(
       AutoAuthenticator.name,
     );
-    if (loginResp && loginResp.success) {
+
+    if (loginResp.isRCOnlyMode) {
+      this.accountManager.updateSupportedServices();
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
+      accountService.reLoginGlip();
+    } else if (loginResp && loginResp.success) {
       // TODO replace all LOGIN listen on notificationCenter
       // with accountManager.on(EVENT_LOGIN)
       this.accountManager.updateSupportedServices();
       notificationCenter.emitKVChange(SERVICE.LOGIN);
     }
+    this._initDataAnalysis();
   }
 
-  async onAuthSuccess() {
+  async onAuthSuccess(isRCOnlyMode: boolean) {
     // need to set token if it's not first login
     if (AccountGlobalConfig.getUserDictionary()) {
       const authConfig = new AuthUserConfig();
       this.updateNetworkToken({
-        rcToken: authConfig.getRcToken(),
+        rcToken: authConfig.getRCToken(),
         glipToken: authConfig.getGlipToken(),
       });
+    }
+
+    if (isRCOnlyMode) {
+      this.accountManager.updateSupportedServices();
+      notificationCenter.emitKVChange(SERVICE.LOGIN, isRCOnlyMode);
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
+      accountService.scheduleReLoginGlipJob();
+      return;
     }
 
     await this.syncService.syncData({
@@ -121,7 +127,9 @@ class Sdk {
         this.accountManager.updateSupportedServices();
       },
       onInitialHandled: async () => {
-        const accountService: AccountService = AccountService.getInstance();
+        const accountService = ServiceLoader.getInstance<AccountService>(
+          ServiceConfig.ACCOUNT_SERVICE,
+        );
         accountService.onBoardingPreparation();
         if (this._glipToken) {
           await setGlipToken(this._glipToken);
@@ -140,15 +148,14 @@ class Sdk {
     this.networkManager.clearToken();
     this.serviceManager.stopAllServices();
     await this.daoManager.deleteDatabase();
-    UserConfigService.getInstance().clear();
+    ServiceLoader.getInstance<UserConfigService>(
+      ServiceConfig.USER_CONFIG_SERVICE,
+    ).clear();
     AccountGlobalConfig.removeUserDictionary();
+    this._resetDataAnalysis();
   }
 
-  updateNetworkToken(tokens: {
-    rcToken?: Token;
-    glipToken?: string;
-    glip2Token?: Token;
-  }) {
+  updateNetworkToken(tokens: { rcToken?: Token; glipToken?: string }) {
     if (tokens.glipToken) {
       this._glipToken = tokens.glipToken;
       this.networkManager.setOAuthToken(
@@ -162,11 +169,6 @@ class Sdk {
     }
     if (tokens.rcToken) {
       this.networkManager.setOAuthToken(tokens.rcToken, HandleByRingCentral);
-      this.networkManager.setOAuthToken(tokens.rcToken, HandleByGlip2);
-    }
-
-    if (tokens.glip2Token) {
-      this.networkManager.setOAuthToken(tokens.glip2Token, HandleByGlip2);
     }
   }
 
@@ -176,6 +178,13 @@ class Sdk {
     } else {
       this.serviceManager.stopServices(services);
     }
+  }
+
+  private _initDataAnalysis() {
+    dataAnalysis.init();
+  }
+  private _resetDataAnalysis() {
+    dataAnalysis.reset();
   }
 }
 

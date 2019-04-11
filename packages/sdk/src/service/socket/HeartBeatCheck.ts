@@ -18,9 +18,10 @@ class HeartBeatCheck {
     this._timeOutLength = timeoutLength;
     this._timeOutCallback = timeOutCallback;
     if (!this._activityCheck) {
-      this._activityCheck = setInterval(() => {
-        this._checkHeartBeat.bind(this);
-      },                                intervalTime);
+      this._activityCheck = setInterval(
+        this._checkHeartBeat.bind(this),
+        intervalTime,
+      );
     }
   }
 

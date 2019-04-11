@@ -21,7 +21,6 @@ class OAuthTokenHandler implements ITokenHandler {
 
   constructor(
     type: IHandleType,
-    cumstomizedHandler: ITokenHandler,
     token?: Token,
     basic?: string,
     listener?: ITokenRefreshListener,
@@ -140,8 +139,8 @@ class OAuthTokenHandler implements ITokenHandler {
                 this._notifyRefreshTokenFailure();
               }
             })
-            .catch(() => {
-              this._notifyRefreshTokenFailure();
+            .catch((errorCode: string) => {
+              this._notifyRefreshTokenFailure(errorCode);
             });
         }
       } else {
@@ -154,10 +153,15 @@ class OAuthTokenHandler implements ITokenHandler {
     this.isOAuthTokenRefreshing = false;
   }
 
-  private _notifyRefreshTokenFailure() {
+  private _notifyRefreshTokenFailure(errorCode?: string) {
     this._resetOAuthTokenRefreshingFlag();
+    let forceLogout = true;
+    const code = Number(errorCode);
+    if (code && code >= 500) {
+      forceLogout = false;
+    }
     if (this.listener) {
-      this.listener.onRefreshTokenFailure(this.type);
+      this.listener.onRefreshTokenFailure(this.type, forceLogout);
     }
   }
 

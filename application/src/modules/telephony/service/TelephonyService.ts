@@ -12,18 +12,23 @@ import {
   RTC_CALL_ACTION,
   RTCCallActionSuccessOptions,
 } from 'sdk/module/telephony';
-import { MAKE_CALL_ERROR_CODE } from 'sdk/module/telephony/types';
+import {
+  MAKE_CALL_ERROR_CODE,
+  TelephonyCallInfo,
+} from 'sdk/module/telephony/types';
 import { PersonService, ContactType } from 'sdk/module/person';
 import { mainLogger } from 'sdk';
-import { TelephonyStore } from '../store';
+import { TelephonyStore, CALL_TYPE } from '../store';
 import { ToastCallError } from './ToastCallError';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
+const ANONYMOUS = 'anonymous';
 class TelephonyService {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   static TAG: string = '[UI TelephonyService] ';
 
-  private _serverTelephonyService: ServerTelephonyService = ServerTelephonyService.getInstance();
-  private _personService: PersonService = PersonService.getInstance();
+  // prettier-ignore
+  private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _callId?: string;
 
   private _onAccountStateChanged = (state: RTC_ACCOUNT_STATE) => {
@@ -39,7 +44,21 @@ class TelephonyService {
       `${TelephonyService.TAG}Call object created, call id=${callId}`,
     );
     this._callId = callId;
+    this._telephonyStore.callType = CALL_TYPE.OUTBOUND;
     this._telephonyStore.directCall();
+  }
+
+  private _onReceiveIncomingCall = (callInfo: TelephonyCallInfo) => {
+    const { fromName, fromNum, callId } = callInfo;
+    this._callId = callId;
+    this._telephonyStore.callType = CALL_TYPE.INBOUND;
+    this._telephonyStore.phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    this._telephonyStore.incomingCall();
+    mainLogger.info(
+      `${TelephonyService.TAG}Call object created, call id=${
+        callInfo.callId
+      }, from name=${fromName}, from num=${fromNum}`,
+    );
   }
 
   private _onCallStateChange = (callId: string, state: RTC_CALL_STATE) => {
@@ -79,31 +98,40 @@ class TelephonyService {
   }
 
   init = () => {
-    this._serverTelephonyService.createAccount({
-      onAccountStateChanged: this._onAccountStateChanged,
-      onMadeOutgoingCall: this._onMadeOutgoingCall,
-    });
+    this._serverTelephonyService.createAccount(
+      {
+        onAccountStateChanged: this._onAccountStateChanged,
+        onMadeOutgoingCall: this._onMadeOutgoingCall,
+        onReceiveIncomingCall: this._onReceiveIncomingCall,
+      },
+      {
+        onCallStateChange: this._onCallStateChange,
+        onCallActionSuccess: this._onCallActionSuccess,
+        onCallActionFailed: this._onCallActionFailed,
+      },
+    );
   }
 
   makeCall = async (toNumber: string) => {
-    const rv = await this._serverTelephonyService.makeCall(toNumber, {
-      onCallStateChange: this._onCallStateChange,
-      onCallActionSuccess: this._onCallActionSuccess,
-      onCallActionFailed: this._onCallActionFailed,
-    });
+    const rv = await this._serverTelephonyService.makeCall(toNumber);
 
-    if (MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv) {
-      ToastCallError.toastNoNetwork();
-      mainLogger.error(
-        `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
-      );
-    } else if (MAKE_CALL_ERROR_CODE.NO_ERROR !== rv) {
-      ToastCallError.toastCallFailed();
-      mainLogger.error(
-        `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
-      );
-      return; // For other errors, need not show call UI
+    switch (true) {
+      case MAKE_CALL_ERROR_CODE.NO_INTERNET_CONNECTION === rv: {
+        ToastCallError.toastNoNetwork();
+        mainLogger.error(
+          `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
+        );
+        break;
+      }
+      case MAKE_CALL_ERROR_CODE.NO_ERROR !== rv: {
+        ToastCallError.toastCallFailed();
+        mainLogger.error(
+          `${TelephonyService.TAG}Make call error: ${rv.toString()}`,
+        );
+        return; // For other errors, need not show call UI
+      }
     }
+
     this._telephonyStore.phoneNumber = toNumber;
   }
 
@@ -123,6 +151,30 @@ class TelephonyService {
     if (this._callId) {
       mainLogger.info(`${TelephonyService.TAG}Hang up call id=${this._callId}`);
       this._serverTelephonyService.hangUp(this._callId);
+    }
+  }
+
+  answer = () => {
+    if (this._callId) {
+      mainLogger.info(`${TelephonyService.TAG}answer call id=${this._callId}`);
+      this._telephonyStore.answer();
+      this._serverTelephonyService.answer(this._callId);
+    }
+  }
+
+  sendToVoiceMail = () => {
+    if (this._callId) {
+      mainLogger.info(
+        `${TelephonyService.TAG}send to voicemail call id=${this._callId}`,
+      );
+      this._serverTelephonyService.sendToVoiceMail(this._callId);
+    }
+  }
+
+  ignore = () => {
+    if (this._callId) {
+      mainLogger.info(`${TelephonyService.TAG}ignore call id=${this._callId}`);
+      this._serverTelephonyService.ignore(this._callId);
     }
   }
 
@@ -152,7 +204,11 @@ class TelephonyService {
   }
 
   matchContactByPhoneNumber = async (phone: string) => {
-    return await this._personService.matchContactByPhoneNumber(
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+
+    return await personService.matchContactByPhoneNumber(
       phone,
       ContactType.GLIP_CONTACT,
     );

@@ -8,7 +8,7 @@ import { FeaturesFlagsService } from './service';
 
 const config = {
   entry: FeaturesFlagsModule,
-  provides: { FeaturesFlagsService },
+  provides: [FeaturesFlagsService],
 };
 
 export { config };

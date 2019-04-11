@@ -1,19 +1,19 @@
 /*
  * @Author: Lip Wang (lip.wang@ringcentral.com)
  * @Date: 2019-02-14 15:55:54
- * Copyright © RingCentral. All rights reserved.
+ * Copyright Â© RingCentral. All rights reserved.
  */
 import { Profile } from '../../entity';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { ProfileDataController } from '../ProfileDataController';
 import { Raw } from '../../../../framework/model';
 import { ProfileActionController } from '../ProfileActionController';
-import { AccountUserConfig } from '../../../../service/account/config';
+import { AccountUserConfig } from '../../../../module/account/config';
 import { PersonDao } from '../../../person/dao/PersonDao';
 import { daoManager } from '../../../../dao';
 
 jest.mock('../ProfileDataController');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 jest.mock('../../../person/dao/PersonDao');
 jest.mock('../../../../dao');
 
@@ -182,7 +182,7 @@ describe('ProfileActionController', () => {
       const controller = getActionController();
       try {
         const result = await controller.putFavoritePost(222, true);
-        expect(result).toEqual({ _id: 2, favorite_post_ids: [111, 222] });
+        expect(result).toEqual({ _id: 2, favorite_post_ids: [222, 111] });
       } catch (e) {
         expect(true).toBeFalsy();
       }

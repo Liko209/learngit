@@ -10,7 +10,7 @@ import { extractIds, extractFirstNames } from '../../__tests__/utils';
 import { IParsedSchema, ISchema } from '../../../db';
 
 interface IPerson {
-  id: number;
+  id: number | string;
   firstName?: string;
   lastName?: string;
 }
@@ -66,12 +66,26 @@ describe('LokiCollection', () => {
       await lokiCollection.put({ id: 4 });
       expect(await lokiCollection.get(4)).toHaveProperty('id', 4);
     });
+
+    it('should put data into db', async () => {
+      await lokiCollection.put({ id: 'id', firstName: 'test' });
+      expect(await lokiCollection.get('id')).toHaveProperty(
+        'firstName',
+        'test',
+      );
+    });
   });
 
   describe('delete()', () => {
     it('should delete data', async () => {
       await lokiCollection.delete(4);
       expect(await lokiCollection.get(4)).toBeNull();
+    });
+
+    it('should delete data', async () => {
+      await lokiCollection.put({ id: 'id', firstName: 'test' });
+      await lokiCollection.delete('id');
+      expect(await lokiCollection.get('id')).toBeNull();
     });
   });
 
@@ -112,7 +126,9 @@ describe('LokiCollection', () => {
 
     it('should return data between the bounds', async () => {
       const result = await lokiCollection.getAll({
-        criteria: [{ key: 'id', name: 'between', lowerBound: 1, upperBound: 3 }],
+        criteria: [
+          { key: 'id', name: 'between', lowerBound: 1, upperBound: 3 },
+        ],
       });
       expect(extractIds(result)).toEqual([2]);
     });

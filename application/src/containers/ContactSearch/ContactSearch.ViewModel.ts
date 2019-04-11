@@ -11,7 +11,7 @@ import { Person } from 'sdk/module/person/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { StoreViewModel } from '@/store/ViewModel';
 import { ContactSearchProps, SelectedMember } from './types';
-
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
   @observable existMembers: number[] = [];
   @observable suggestions: SelectedMember[] = [];
@@ -33,7 +33,9 @@ class ContactSearchViewModel extends StoreViewModel<ContactSearchProps> {
 
   @action
   fetchSearch = async (query: string) => {
-    const searchService = SearchService.getInstance();
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
     const result = await searchService.doFuzzySearchPersons({
       searchKey: query,
       excludeSelf: this._isExcludeMe,

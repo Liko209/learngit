@@ -4,12 +4,13 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { action, computed } from 'mobx';
-import { AuthService } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
 
 import { AbstractViewModel } from '@/base';
 import storeManager from '@/store';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 const globalStore = storeManager.getGlobalStore();
 
 class TopBarViewModel extends AbstractViewModel {
@@ -28,8 +29,10 @@ class TopBarViewModel extends AbstractViewModel {
 
   @action
   signOut = () => {
-    const authService: AuthService = AuthService.getInstance();
-    authService.logout();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    accountService.logout();
     window.location.href = '/';
   }
 }

@@ -11,6 +11,7 @@ import { ENTITY_NAME } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao/constants';
 import { PostService } from 'sdk/module/post';
 import notificationCenter from 'sdk/service/notificationCenter';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/post');
 
@@ -36,7 +37,7 @@ describe('DiscontinuousPosListHandler', () => {
     storeManager.removeStore(store);
     postListHandler = new DiscontinuousPosListHandler(sourceIds);
     postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
   }
 
   function setUpData() {

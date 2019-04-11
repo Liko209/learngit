@@ -7,7 +7,7 @@
 import { Person } from '../entity';
 import { daoManager, DeactivatedDao } from '../../../dao';
 import { Raw } from '../../../framework/model';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { transform } from '../../../service/utils';
 import { shouldEmitNotification } from '../../../utils/notificationUtils';
 import notificationCenter from '../../../service/notificationCenter';

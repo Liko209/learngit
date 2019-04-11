@@ -21,7 +21,7 @@ interface IHandleType {
   checkServerStatus: (
     callback: (success: boolean, interval: number) => void,
   ) => void;
-  onRefreshTokenFailure: () => void;
+  onRefreshTokenFailure: (forceLogout: boolean) => void;
   basic: () => string;
   requestDecoration: (
     tokenHandler: ITokenHandler,
@@ -29,7 +29,7 @@ interface IHandleType {
 }
 
 interface ITokenRefreshListener {
-  onRefreshTokenFailure: (type: IHandleType) => void;
+  onRefreshTokenFailure: (type: IHandleType, forceLogout: boolean) => void;
   onRefreshTokenSuccess: (type: IHandleType, token: IToken) => void;
 }
 
@@ -187,7 +187,6 @@ enum NETWORK_REQUEST_EXECUTOR_STATUS {
 enum NETWORK_HANDLE_TYPE {
   DEFAULT = 'DEFAULT',
   GLIP = 'GLIP',
-  GLIP2 = 'GLIP2',
   CUSTOM = 'CUSTOM',
   UPLOAD = 'UPLOAD',
   RINGCENTRAL = 'RINGCENTRAL',

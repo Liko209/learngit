@@ -7,6 +7,7 @@ import { ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
 import { ItemListViewModel } from '../ItemList.ViewModel';
 import { RIGHT_RAIL_ITEM_TYPE } from '../constants';
 import { observable, reaction } from 'mobx';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/item');
 
@@ -19,7 +20,7 @@ describe('ItemListViewModel', () => {
     itemService = {
       getGroupItemsCount: jest.fn(),
     };
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
   });
 
   describe('loadInitialData()', () => {
@@ -168,7 +169,7 @@ describe('ItemListViewModel', () => {
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.EVENTS,
       });
-      expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.CREATE_TIME);
+      expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.START_TIME);
     });
 
     it('Tasks displays by order of tasks created time [JPT-982]', async () => {
@@ -177,6 +178,26 @@ describe('ItemListViewModel', () => {
         type: RIGHT_RAIL_ITEM_TYPE.TASKS,
       });
       expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.CREATE_TIME);
+    });
+
+    it('should image files display by order of files update time', async () => {
+      dataSource = new ItemListViewModel({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
+      });
+      expect(dataSource.getSort().sortKey).toBe(
+        ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      );
+    });
+
+    it('should files but not image display by order of files update time', async () => {
+      dataSource = new ItemListViewModel({
+        groupId: 1,
+        type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
+      });
+      expect(dataSource.getSort().sortKey).toBe(
+        ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      );
     });
   });
 });

@@ -18,7 +18,7 @@ import { versionHash } from '../../../../../utils/mathUtils';
 import { FILE_FORM_DATA_KEYS } from '../constants';
 import { ENTITY, SERVICE } from '../../../../../service/eventKey';
 import notificationCenter from '../../../../../service/notificationCenter';
-import {  AccountUserConfig } from '../../../../../service/account/config';
+import { AccountUserConfig } from '../../../../../module/account/config';
 import { IPartialModifyController } from '../../../../../framework/controller/interface/IPartialModifyController';
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 
@@ -26,9 +26,10 @@ import { IRequestController } from '../../../../../framework/controller/interfac
 import {
   isInBeta,
   EBETA_FLAG,
-} from '../../../../../service/account/clientConfig';
+} from '../../../../../module/account/service/clientConfig';
 import { GroupConfigService } from '../../../../groupConfig';
 import { ItemNotification } from '../../../utils/ItemNotification';
+import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
 
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
@@ -308,7 +309,9 @@ class FileUploadController {
   }
 
   async initialUploadItemsFromDraft(groupId: number) {
-    const groupConfigService = GroupConfigService.getInstance() as GroupConfigService;
+    const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
+      ServiceConfig.GROUP_CONFIG_SERVICE,
+    );
     const itemIds = await groupConfigService.getDraftAttachmentItemIds(groupId);
     const fileIds = itemIds.filter(
       (id: number) =>

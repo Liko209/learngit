@@ -9,6 +9,7 @@ type Props = {
   width?: number;
   height?: number;
   type?: 'image' | 'file';
+  onClick?: (event: React.MouseEvent) => void;
 };
 
 type ViewProps = {

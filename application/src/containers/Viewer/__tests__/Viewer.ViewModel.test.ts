@@ -6,7 +6,7 @@
 
 import { ViewerViewModel } from '../Viewer.ViewModel';
 import { notificationCenter } from 'sdk/service';
-import { ItemService, ITEM_SORT_KEYS } from 'sdk/module/item';
+import { ITEM_SORT_KEYS } from 'sdk/module/item';
 
 import { VIEWER_ITEM_TYPE } from '../constants';
 import { ViewerViewProps } from '../types';
@@ -16,6 +16,7 @@ import * as mobx from 'mobx';
 
 import { getEntity } from '@/store/utils';
 import FileItemModel from '@/store/models/FileItem';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 jest.mock('@/store/utils', () => {
   return {
@@ -29,16 +30,6 @@ const item = {
 } as FileItemModel;
 getEntity.mockReturnValue(item);
 
-jest.mock('sdk/module/item/service', () => {
-  const service: ItemService = {
-    getItemIndexInfo: jest.fn().mockResolvedValue({}),
-  };
-  return {
-    ItemService: {
-      getInstance: () => service,
-    },
-  };
-});
 jest.mock('../Viewer.DataSource', () => {
   const dataSource: ItemListDataSource = {
     loadInitialData: jest.fn(),
@@ -64,8 +55,17 @@ describe('Viewer.ViewModel', () => {
     itemId: 111,
     contentLeftRender: () => (props: any) => null,
   };
+
+  let itemService: any = {
+    getItemIndexInfo: jest.fn().mockResolvedValue({}),
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
+    itemService = {
+      getItemIndexInfo: jest.fn().mockResolvedValue({}),
+    };
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
   });
   describe('constructor()', () => {
     it('should successfully construct', () => {
@@ -142,7 +142,6 @@ describe('Viewer.ViewModel', () => {
   describe('init()', () => {
     it('should loadInitialData and refresh itemIndexInfo', async (done: jest.DoneCallback) => {
       const dataSource = createDataSource();
-      const itemService: ItemService = ItemService.getInstance();
       itemService.getItemIndexInfo.mockResolvedValue({
         index: 11,
         totalCount: 22,

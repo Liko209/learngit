@@ -21,6 +21,7 @@ import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import _ from 'lodash';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
   private _groupId: number;
 
@@ -33,10 +34,12 @@ class GroupMemberDataProvider implements IFetchSortableDataProvider<Person> {
     pageSize: number,
     anchor: ISortableModel<Person>,
   ): Promise<{ data: Person[]; hasMore: boolean }> {
-    const personService = PersonService.getInstance<PersonService>();
-    const group = await GroupService.getInstance<GroupService>().getById(
-      this._groupId,
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
     );
+    const group = await ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    ).getById(this._groupId);
     const result = await personService.getPersonsByIds(
       group && group.members ? group.members : [],
     );
@@ -49,9 +52,9 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   private _group: Group;
 
   static async createSortableGroupMemberHandler(groupId: number) {
-    const group = await GroupService.getInstance<GroupService>().getById(
-      groupId,
-    );
+    const group = await ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    ).getById(groupId);
     if (group) {
       return new SortableGroupMemberHandler(_.cloneDeep(group));
     }
@@ -82,14 +85,19 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
       } as ISortableModel<Person>;
     };
 
-    const personService = PersonService.getInstance<PersonService>();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+
     const sortMemberFunc = (
       lhs: ISortableModel<Person>,
       rhs: ISortableModel<Person>,
     ): number => {
       const lPerson = lhs.data!;
       const rPerson = rhs.data!;
-      const groupService = GroupService.getInstance<GroupService>();
+      const groupService = ServiceLoader.getInstance<GroupService>(
+        ServiceConfig.GROUP_SERVICE,
+      );
 
       if (this._group.is_team) {
         const isLAdmin = groupService.isTeamAdmin(
@@ -172,8 +180,12 @@ class SortableGroupMemberHandler extends BaseNotificationSubscribable {
   }
 
   private async _replaceData() {
-    const personService = PersonService.getInstance<PersonService>();
-    const groupService = GroupService.getInstance<GroupService>();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    const groupService = ServiceLoader.getInstance<GroupService>(
+      ServiceConfig.GROUP_SERVICE,
+    );
     let group;
     try {
       group = await groupService.getById(this._group.id);

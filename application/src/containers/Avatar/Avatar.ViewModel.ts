@@ -9,6 +9,7 @@ import { ENTITY_NAME } from '@/store';
 import { getEntity } from '@/store/utils';
 import { AvatarProps, AvatarViewProps } from './types';
 import { PersonService } from 'sdk/module/person';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const AVATAR_COLORS = [
   'tomato',
@@ -64,11 +65,13 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
 
   @computed
   get headShotUrl() {
-    if (!(this._person && this._person.hasHeadShot)) {
+    if (!(this._person && this._person.hasHeadShot) || !this.props.uid) {
       return '';
     }
     const { headshotVersion, headshot } = this._person;
-    const personService = PersonService.getInstance<PersonService>();
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     const url = personService.getHeadShotWithSize(
       this.props.uid,
       headshotVersion,

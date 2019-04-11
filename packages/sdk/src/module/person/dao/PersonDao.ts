@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { caseInsensitive as natureCompare } from 'string-natural-compare';
 import { BaseDao } from '../../../framework/dao';
 import { Person } from '../entity';
 import { IDatabase } from 'foundation';
@@ -14,11 +13,6 @@ class PersonDao extends BaseDao<Person> {
   // TODO, use IDatabase after import foundation module in
   constructor(db: IDatabase) {
     super(PersonDao.COLLECTION_NAME, db);
-  }
-
-  async getAll(): Promise<Person[]> {
-    const persons: Person[] = await super.getAll();
-    return persons.sort(this._personCompare.bind(this));
   }
 
   async searchPeopleByKey(fullKeyword = ''): Promise<Person[]> {
@@ -66,16 +60,6 @@ class PersonDao extends BaseDao<Person> {
       .anyOf('id', ids)
       .filter((item: Person) => !item.deactivated)
       .toArray();
-  }
-
-  private _personCompare(a: Person, b: Person) {
-    const aName = this._getNameOfPerson(a);
-    const bName = this._getNameOfPerson(b);
-    return natureCompare(aName, bName);
-  }
-
-  private _getNameOfPerson(person: Person): undefined | string {
-    return person && (person.display_name || person.first_name || person.email);
   }
 }
 

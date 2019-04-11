@@ -1,16 +1,18 @@
-import { PartialApiConfig } from './api';
+import { ApiConfig } from './api';
 import { DBConfig } from './db';
+
+type DeepPartial<T> = { [P in keyof T]?: DeepPartial<T[P]> };
 
 interface INewable<T> {
   new (...args: any[]): T;
 }
 
 interface ISdkConfig {
-  api?: PartialApiConfig;
-  db?: Partial<DBConfig>;
+  api?: DeepPartial<ApiConfig>;
+  db?: DeepPartial<DBConfig>;
 }
 
-export { INewable, ISdkConfig };
+export { INewable, ISdkConfig, DeepPartial };
 export * from './api';
 export * from './db';
 export * from './pagination';

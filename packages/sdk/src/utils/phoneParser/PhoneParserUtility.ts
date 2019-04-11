@@ -15,9 +15,10 @@ import {
   ModuleType,
   mainLogger,
 } from 'foundation';
-import { RcInfoUserConfig } from '../../module/rcInfo/config';
-import { RcAccountInfo } from '../../api/ringcentral/types/RcAccountInfo';
-import { NewGlobalConfig } from '../../service/config';
+import notificationCenter from '../../service/notificationCenter';
+import { RC_INFO } from '../../service/eventKey';
+import { RCInfoService } from '../../module/rcInfo';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 const MODULE_LOADING_TIME_OUT: number = 60000; // 1 minute
 const PhoneParserModule: ModuleClass = Module;
@@ -35,28 +36,6 @@ class PhoneParserUtility {
       phoneNumber,
       settingsKey,
     );
-  }
-
-  static loadLocalPhoneData(): void {
-    if (PhoneParserUtility._localPhoneDataLoaded) {
-      return;
-    }
-    if (NewGlobalConfig.getPhoneData()) {
-      return;
-    }
-    fetch(localPhoneDataPath)
-      .then(async (response: Response) => {
-        if (!response.ok) {
-          mainLogger.error('loadLocalPhoneData error', response);
-          return;
-        }
-        const result = await response.text();
-        NewGlobalConfig.setPhoneData(result);
-        PhoneParserUtility._localPhoneDataLoaded = true;
-      })
-      .catch((error: any) => {
-        mainLogger.error('loadLocalPhoneData error', error);
-      });
   }
 
   static loadModule(): void {
@@ -101,9 +80,42 @@ class PhoneParserUtility {
   static onModuleLoaded(): void {
     mainLogger.debug('PhoneParserUtility: module loaded successfully.');
     PhoneParserUtility._moduleLoaded = true;
+    PhoneParserUtility.initPhoneParser(false);
+    notificationCenter.on(RC_INFO.PHONE_DATA, () => {
+      PhoneParserUtility.initPhoneParser(true);
+    });
   }
 
-  static initPhoneParser(force: boolean): boolean {
+  static async loadLocalPhoneData(): Promise<void> {
+    if (PhoneParserUtility._localPhoneDataLoaded) {
+      return;
+    }
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    if (await rcInfoService.getPhoneData()) {
+      PhoneParserUtility._localPhoneDataLoaded = true;
+      return;
+    }
+    fetch(localPhoneDataPath)
+      .then(async (response: Response) => {
+        if (!response.ok) {
+          mainLogger.error('loadLocalPhoneData error', response);
+          return;
+        }
+        const result = await response.text();
+        if (result) {
+          await rcInfoService.setPhoneData(result);
+          PhoneParserUtility._localPhoneDataLoaded = true;
+          PhoneParserUtility.initPhoneParser(true);
+        }
+      })
+      .catch((error: any) => {
+        mainLogger.error('loadLocalPhoneData error', error);
+      });
+  }
+
+  static async initPhoneParser(force: boolean): Promise<boolean> {
     if (!PhoneParserUtility._moduleLoaded) {
       PhoneParserUtility.loadModule();
       return false;
@@ -117,7 +129,10 @@ class PhoneParserUtility {
       return true;
     }
 
-    const phoneData = NewGlobalConfig.getPhoneData();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const phoneData = await rcInfoService.getPhoneData();
     if (!phoneData || phoneData.length === 0) {
       mainLogger.debug('PhoneParserUtility: Storage phone data is invalid.');
       return false;
@@ -125,23 +140,30 @@ class PhoneParserUtility {
     const result = PhoneParserUtility._phoneParserModule.ReadRootNodeByString(
       phoneData,
     );
+
+    if (result) {
+      await rcInfoService.setPhoneDataVersion(
+        PhoneParserUtility._phoneParserModule.GetPhoneDataFileVersion(),
+      );
+    }
+
     PhoneParserUtility._initialized = result;
     mainLogger.debug('PhoneParserUtility: init result => ', result);
     return result;
   }
 
-  static canGetPhoneParser(): boolean {
+  static async canGetPhoneParser(): Promise<boolean> {
     return (
       PhoneParserUtility._initialized ||
-      PhoneParserUtility.initPhoneParser(false)
+      (await PhoneParserUtility.initPhoneParser(false))
     );
   }
 
-  static getPhoneParser(
+  static async getPhoneParser(
     phoneNumber: string,
     useDefaultSettingsKey: boolean,
-  ): PhoneParserUtility | undefined {
-    if (!PhoneParserUtility.canGetPhoneParser()) {
+  ): Promise<PhoneParserUtility | undefined> {
+    if (!(await PhoneParserUtility.canGetPhoneParser())) {
       return undefined;
     }
 
@@ -157,8 +179,8 @@ class PhoneParserUtility {
     return new PhoneParserUtility(phoneNumber, settingsKey);
   }
 
-  static getPhoneDataFileVersion(): string | undefined {
-    if (!PhoneParserUtility.canGetPhoneParser()) {
+  static async getPhoneDataFileVersion(): Promise<string | undefined> {
+    if (!(await PhoneParserUtility.canGetPhoneParser())) {
       return undefined;
     }
     return PhoneParserUtility._phoneParserModule.GetPhoneDataFileVersion();
@@ -216,11 +238,11 @@ class PhoneParserUtility {
     return PhoneParserUtility._phoneParserModule.GetStationSettingsKey();
   }
 
-  static getRegionalInfo(
+  static async getRegionalInfo(
     countryId: number,
     areaCode: string,
-  ): RegionalInfo | undefined {
-    if (!PhoneParserUtility.canGetPhoneParser()) {
+  ): Promise<RegionalInfo | undefined> {
+    if (!(await PhoneParserUtility.canGetPhoneParser())) {
       return undefined;
     }
     return PhoneParserUtility._phoneParserModule.GetRegionalInfo(
@@ -294,8 +316,11 @@ class PhoneParserUtility {
   }
 
   // compare E164 format;
-  isEqualToPhoneNumber(phoneNumber: string): boolean {
-    const phoneParser = PhoneParserUtility.getPhoneParser(phoneNumber, false);
+  async isEqualToPhoneNumber(phoneNumber: string): Promise<boolean> {
+    const phoneParser = await PhoneParserUtility.getPhoneParser(
+      phoneNumber,
+      false,
+    );
     if (!phoneParser) {
       return false;
     }
@@ -303,20 +328,22 @@ class PhoneParserUtility {
   }
 
   // should compare with main company number instead of dialing plan;
-  isInternationalDialing(): boolean {
+  async isInternationalDialing(): Promise<boolean> {
     // should not check international for special number;
     if (this.isShortNumber() || this.isServiceFeatureNumber()) {
       return false;
     }
 
-    const rcInfoUserConfig = new RcInfoUserConfig();
-    const accountInfo: RcAccountInfo = rcInfoUserConfig.getAccountInfo();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    const accountInfo = await rcInfoService.getRCAccountInfo();
     if (!accountInfo || !accountInfo.mainNumber) {
       mainLogger.debug('isInternationalDialing: can not get rc main number.');
       return false;
     }
 
-    const mainNumberParser = PhoneParserUtility.getPhoneParser(
+    const mainNumberParser = await PhoneParserUtility.getPhoneParser(
       accountInfo.mainNumber,
       false,
     );

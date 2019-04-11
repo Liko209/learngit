@@ -5,7 +5,6 @@
  */
 
 import * as _ from 'lodash';
-import * as assert from 'assert';
 import { v4 as uuid } from 'uuid';
 import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
@@ -15,15 +14,15 @@ import { SITE_URL, BrandTire } from '../../config';
 import { IGroup } from '../../v2/models';
 
 fixture('TeamSetting/AddTeamMembersPermission')
-  .beforeEach(setupCase(BrandTire.RCOFFICE))
+  .beforeEach(setupCase(BrandTire.RC_FIJI_GUEST))
   .afterEach(teardownCase());
 
 
-// TODO: Guest user
 test(formalName(`Only admin and member have add members permission when add team member toggle is on`, ['P1', 'JPT-948', 'AddTeamMembersPermission', 'Potar.He']), async t => {
   const app = new AppRoot(t);
   const memberUser = h(t).rcData.mainCompany.users[4];
   const adminUser = h(t).rcData.mainCompany.users[5];
+  const guest = h(t).rcData.guestCompany.users[0];
   await h(t).glip(memberUser).init();
   await h(t).glip(memberUser).resetProfileAndState();
   await h(t).platform(adminUser).init();
@@ -35,7 +34,7 @@ test(formalName(`Only admin and member have add members permission when add team
       name: uuid(),
       description: "need description??",
       type: 'Team',
-      members: [adminUser.rcId, memberUser.rcId],
+      members: [adminUser.rcId, memberUser.rcId, guest.rcId],
     });
   });
 
@@ -61,7 +60,7 @@ test(formalName(`Only admin and member have add members permission when add team
   });
 
   await h(t).withLog(`Then there is "add team members" icon`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
     await t.expect(profileDialog.addMembersIcon.exists).ok();
   });
 
@@ -75,9 +74,8 @@ test(formalName(`Only admin and member have add members permission when add team
   });
 
 
-  await h(t).withLog(`When member of the team open team profile dialog`, async () => {
-    await h(t).userRole(memberUser);
-    await app.homePage.ensureLoaded();
+  await h(t).withLog(`When member of the team open team profile dialog ${memberUser.company.number}#${memberUser.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, memberUser);
     await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
     await app.homePage.messageTab.moreMenu.profile.enter();
   })
@@ -95,8 +93,15 @@ test(formalName(`Only admin and member have add members permission when add team
     await addTeamMemberDialog.cancel();
   });
 
-  // TODO: Guest User
+  await h(t).withLog(`When member (guest role) of the team open team profile dialog ${guest.company.number}#${guest.extension}`, async () => {
+    await app.homePage.logoutThenLoginWithUser(SITE_URL, guest);
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teamId).openMoreMenu();
+    await app.homePage.messageTab.moreMenu.profile.enter();
+  })
 
+  await h(t).withLog(`Then there is not "add team members" icon`, async () => {
+    await t.expect(app.homePage.profileDialog.addMembersIcon.exists).notOk();
+  });
 });
 
 // TODO: Guest user
@@ -117,7 +122,7 @@ test(formalName(`Only admin has add member permission when add team members togg
   }
 
   await h(t).withLog(`Given I have team named: ${team.name}`, async () => {
-   await h(t).scenarioHelper.createTeam(team);
+    await h(t).scenarioHelper.createTeam(team);
   });
 
   await h(t).withLog(`And I login Jupiter with admin ${adminUser.company.number}#${adminUser.extension} `, async () => {

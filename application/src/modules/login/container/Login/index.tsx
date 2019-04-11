@@ -6,7 +6,8 @@
 
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-import { AuthService } from 'sdk/service';
+import { AccountService } from 'sdk/module/account';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 interface IProps extends RouteComponentProps<any> {}
 
 interface IStates {
@@ -34,8 +35,10 @@ class Login extends React.Component<IProps, IStates> {
   }
 
   private _checkIfLogin() {
-    const authService: AuthService = AuthService.getInstance();
-    if (authService.isLoggedIn()) {
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+    if (accountService.isLoggedIn()) {
       const { history } = this.props;
       history.replace('/messages');
     }

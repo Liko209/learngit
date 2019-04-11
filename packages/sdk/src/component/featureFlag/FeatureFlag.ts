@@ -4,12 +4,9 @@ import IFlagCalculator from './FlagCalculator';
 import { strictDiff } from './utils';
 import dataDispatcher from '../DataDispatcher';
 import { SOCKET } from '../../service';
-import { RcInfoUserConfig } from '../../module/rcInfo/config';
-import {
-  RcExtensionInfo,
-  RcServiceFeature,
-} from '../../api/ringcentral/types/RcExtensionInfo';
-import { RcInfoApi } from '../../api/ringcentral/RcInfoApi';
+import { RCInfoService } from '../../module/rcInfo';
+import { RCInfoApi, RCServiceFeature } from '../../api/ringcentral';
+import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
 
 const I_BETA_FLAG_SOURCE = {
   CLIENT_CONFIG: 'Client_Config',
@@ -44,13 +41,15 @@ class FeatureFlag {
   }
 
   async getServicePermission() {
-    const rcInfoUserConfig = new RcInfoUserConfig();
-    let rcExtensionInfo: RcExtensionInfo = rcInfoUserConfig.getExtensionInfo();
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    let rcExtensionInfo = await rcInfoService.getRCExtensionInfo();
     if (!rcExtensionInfo || !rcExtensionInfo.serviceFeatures) {
-      rcExtensionInfo = await RcInfoApi.requestRcExtensionInfo();
+      rcExtensionInfo = await RCInfoApi.requestRCExtensionInfo();
     }
     const permissions = {};
-    rcExtensionInfo.serviceFeatures!.forEach((item: RcServiceFeature) => {
+    rcExtensionInfo.serviceFeatures!.forEach((item: RCServiceFeature) => {
       permissions[item.featureName] = item.enabled;
     });
     this.handleData(permissions, I_BETA_FLAG_SOURCE.RC_PERMISSION);

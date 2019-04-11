@@ -3,7 +3,7 @@ import { ServiceWorkerModule } from './ServiceWorkerModule';
 
 const config = {
   entry: ServiceWorkerModule,
-  provides: { Upgrade },
+  provides: [Upgrade],
 };
 
 export { config };

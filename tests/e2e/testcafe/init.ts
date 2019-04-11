@@ -4,6 +4,7 @@ import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import * as assert from 'assert';
 import * as Flatted from 'flatted';
+import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
 import { SITE_URL, ENV_OPTS, DEBUG_MODE, DASHBOARD_API_KEY, DASHBOARD_URL, ENABLE_REMOTE_DASHBOARD, RUN_NAME, RUNNER_OPTS, MOCK_SERVER_URL, ENABLE_MOCK_SERVER, SITE_ENV, MOCK_ENV, MOCK_AUTH_URL } from './config';
@@ -13,6 +14,8 @@ import { IConsoleLog } from './v2/models';
 import { MockClient, BrowserInitDto } from 'mock-client';
 
 import { getLogger } from 'log4js';
+import { formalNameWithTestMetaPrefix } from './libs/filter';
+
 const logger = getLogger(__filename);
 logger.level = 'info';
 
@@ -39,6 +42,22 @@ const beatsClient: BeatsClient = ENABLE_REMOTE_DASHBOARD ? new BeatsClient(DASHB
 // _runId is a share state
 let _runId = getRunIdFromFile();
 
+function formalMetadata(env: any) {
+  const mappingTable = {
+    'JOB_NAME': 'Tests/Jenkins/Job',
+    'JOB_URL': 'Tests/Jenkins/URL',
+    'BUILD_ID': 'Tests/Jenkins/Build',
+  }
+  const metadata = {};
+  for (const k in mappingTable) {
+    const v = env[k];
+    if (v) {
+      metadata[mappingTable[k]] = v;
+    }
+  }
+  return metadata;
+}
+
 function getRunIdFromFile(runIdFile: string = './runId') {
   if (fs.existsSync(runIdFile)) {
     const content = fs.readFileSync(runIdFile, 'utf8');
@@ -50,7 +69,7 @@ function getRunIdFromFile(runIdFile: string = './runId') {
 export async function getOrCreateRunId(runIdFile: string = './runId') {
   if (!_runId) {
     const runName = RUN_NAME;
-    const metadata = {};
+    const metadata = formalMetadata(process.env);
     for (const key in ENV_OPTS) {
       metadata[key] = JSON.stringify(ENV_OPTS[key]);
     }
@@ -74,12 +93,24 @@ export async function getOrCreateRunId(runIdFile: string = './runId') {
     const run = new Run();
     run.name = runName;
     run.metadata = metadata;
+    run.startTime = new Date();
     run.hostName = process.env.HOST_NAME;
     const res = await beatsClient.createRun(run).catch(() => null);
     _runId = res ? res.body.id : null;
     console.log(`a new Run Id is created: ${_runId}`);
   }
   return _runId;
+}
+
+export async function finishRun() {
+  let result = '';
+  if (_runId) {
+    const run = new Run();
+    run.process = 1;
+    run.endTime = new Date();
+    result = await beatsClient.runApi.runPartialUpdate(_runId, run);
+  }
+  return result;
 }
 
 // inject external service into test case
@@ -128,6 +159,9 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
+    const { test: { name, meta } } = t['testRun'];
+    const testCaseName = formalNameWithTestMetaPrefix(name, meta);
+    t['testRun']['test']['name'] = testCaseName;
     if (mockClient)
       await mockClient.releaseBrowser(h(t).mockRequestId);
 
@@ -144,7 +178,7 @@ export function teardownCase() {
     const consoleLog = await t.getBrowserConsoleMessages()
     const zipConsoleLog = new JSZip();
     zipConsoleLog.file('console-log.json', JSON.stringify(consoleLog, null, 2));
-    const consoleLogPath = MiscUtils.createTmpFile(await zipConsoleLog.generateAsync({ type: "nodebuffer" }), 'console-log.zip');
+    const consoleLogPath = MiscUtils.createTmpFile(await zipConsoleLog.generateAsync({ type: "nodebuffer" }), `console-log-${uuid()}.zip`);
     const warnLog = Flatted.stringify(consoleLog.warn);
     const warnConsoleLogPath = MiscUtils.createTmpFile(warnLog);
     const errorLog = Flatted.stringify(consoleLog.error);
@@ -162,7 +196,7 @@ export function teardownCase() {
     // dump account pool data
     const zipRcData = new JSZip();
     zipRcData.file('rc-data.json', JSON.stringify(h(t).dataHelper.originData, null, 2));
-    const rcDataPath = MiscUtils.createTmpFile(await zipRcData.generateAsync({ type: "nodebuffer" }), 'rc-data.zip');
+    const rcDataPath = MiscUtils.createTmpFile(await zipRcData.generateAsync({ type: "nodebuffer" }), `rc-data-${uuid()}.zip`);
 
     // get account type
     const accountType = h(t).dataHelper.rcData.mainCompany.type;

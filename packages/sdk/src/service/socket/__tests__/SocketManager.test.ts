@@ -10,10 +10,10 @@ import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE, CONFIG, SOCKET } from '../../../service/eventKey';
 import SocketIO from '../__mocks__/socket';
 import { SocketClient } from 'foundation';
-import { GlobalConfigService } from '../../../module/config';
 import { SocketCanConnectController } from '../SocketCanConnectController';
 import { getCurrentTime } from '../../../utils/jsUtils';
 import { SyncUserConfig } from '../../../module/sync/config/SyncUserConfig';
+import { ServiceLoader } from '../../../module/serviceLoader';
 
 jest.mock('../../../module/config');
 jest.mock('../SocketCanConnectController', () => {
@@ -30,9 +30,8 @@ jest.mock('../SocketCanConnectController', () => {
   };
 });
 jest.mock('../../../utils/jsUtils');
-jest.mock('../../../service/config');
 
-GlobalConfigService.getInstance = jest.fn();
+ServiceLoader.getInstance = jest.fn();
 
 jest.mock('foundation/src/network/client/socket');
 jest.mock('../../../dao');

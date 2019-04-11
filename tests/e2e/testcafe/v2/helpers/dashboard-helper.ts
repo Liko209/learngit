@@ -1,11 +1,11 @@
 import 'testcafe';
 import * as _ from 'lodash';
 import * as fs from 'fs';
-import { UAParser } from 'ua-parser-js';
+import { parse as parseUserAgent } from 'useragent';
 import { identity } from 'lodash';
-
+import * as format from 'string-format';
 import { getLogger } from 'log4js';
-import { IStep, Status, IConsoleLog } from "../models";
+import { IStep, Status, IConsoleLog, Process } from '../models';
 import { MiscUtils } from '../utils';
 import { getTmtIds, parseFormalName } from '../../libs/filter';
 import { BrandTire } from '../../config';
@@ -18,7 +18,12 @@ logger.level = 'info';
 const StatusMap = {
   [Status.PASSED]: 5,
   [Status.FAILED]: 8,
-}
+};
+
+const ProccessMap = {
+  [Process.RUN]: 0,
+  [Process.FINISH]: 1,
+};
 
 export class DashboardHelper {
 
@@ -33,7 +38,11 @@ export class DashboardHelper {
   private async createStepInDashboard(step: IStep, testId: number) {
     const beatStep = new Step();
     beatStep.test = testId;
-    beatStep.name = step.message;
+    beatStep.name = step.message.replace(/\{/g, '[').replace(/\}/g, ']');
+    if (step.metadata && Object.keys(step.metadata).length > 0) {
+      beatStep.description = format(step.message.replace(/\$\{/g, '{'), step.metadata);
+    }
+    beatStep.metadata = Object.assign({}, step.metadata);
     beatStep.status = StatusMap[step.status];
     beatStep.startTime = new Date(step.startTime);
     beatStep.endTime = new Date(step.endTime);
@@ -47,14 +56,53 @@ export class DashboardHelper {
         await this.uploadAttachment(attachmentPath, res.body.id);
       }
     }
+
+    await this.createChildStepInDashboard(step, testId, res.body.id);
+  }
+
+  private async createChildStepInDashboard(parentStep: IStep, testId: number, parentStepId: number) {
+    const children = parentStep.children;
+    if (!children || children.length === 0) {
+      return;
+    }
+
+    const lastChild = parentStep.children[parentStep.children.length - 1]
+    if (!lastChild.endTime) {
+      lastChild.endTime = parentStep.endTime;
+    }
+    for (let child of children) {
+      const s = new Step();
+      s.test = testId;
+      s.name = child.message.replace(/\{/g, '[').replace(/\}/g, ']');
+      if (child.metadata && Object.keys(child.metadata).length > 0) {
+        s.description = format(child.message.replace(/\$\{/g, '{'), child.metadata);
+      }
+
+      s.metadata = Object.assign({}, child.metadata);
+      s.status = StatusMap[child.status];
+      s.startTime = new Date(child.startTime);
+      s.endTime = new Date(child.endTime);
+      s.parent = parentStepId;
+      const bs = await this.beatsClient.createStep(s);
+      if (child.screenshotPath) {
+        await this.uploadAttachment(child.screenshotPath, bs.body.id);
+      }
+      if (child.attachments) {
+        for (const attachmentPath of child.attachments) {
+          await this.uploadAttachment(attachmentPath, bs.body.id);
+        }
+      }
+
+      await this.createChildStepInDashboard(child, testId, bs.body.id);
+    }
   }
 
   private async createTestInDashboard(runId: number, consoleLog: IConsoleLog, accountType: string, rcDataPath: string) {
     const testRun = this.t['testRun'];
     const errs = testRun.errs;
     const status = (errs && errs.length > 0) ? Status.FAILED : Status.PASSED;
-    const tags = parseFormalName(testRun.test.name).tags;
-    const userAgent = new UAParser(await H.getUserAgent());
+    const tags = _.union(parseFormalName(testRun.test.name).tags, testRun.test.meta.caseIds);
+    const userAgent = parseUserAgent(await H.getUserAgent());
 
     const beatsTest = new Test();
     beatsTest.run = runId;
@@ -63,15 +111,16 @@ export class DashboardHelper {
     beatsTest.manualIds = getTmtIds(tags, 'JPT');
     beatsTest.startTime = testRun.startTime;
     beatsTest.endTime = new Date();
+    beatsTest.process = ProccessMap[Process.FINISH];
 
     beatsTest.metadata = {
-      browser: userAgent.getBrowser().name,
-      browserVer: userAgent.getBrowser().version,
-      os: userAgent.getOS().name,
-      osVer: userAgent.getOS().version,
+      browser: userAgent.family,
+      browserVer: userAgent.toVersion(),
+      os: userAgent.os.family,
+      osVer: userAgent.os.toVersion(),
       user_agent: testRun.browserConnection.browserInfo.userAgent,
       mockRequestId: h(this.t).mockRequestId,
-    }
+    };
     const res = await this.beatsClient.createTest(beatsTest);
 
     for (const step of this.t.ctx.logs) {

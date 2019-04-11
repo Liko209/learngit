@@ -1,4 +1,4 @@
-import { JuiConversationCard } from 'jui/src/pattern/ConversationCard';
+import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { RefObject } from 'react';
 
 /*
@@ -15,12 +15,11 @@ enum POST_TYPE {
 type ConversationPostProps = {
   cardRef?: RefObject<JuiConversationCard>;
   id: number;
+  mode?: 'navigation';
 };
 
-type ConversationPostViewProps = {
-  id: number;
+type ConversationPostViewProps = ConversationPostProps & {
   type: POST_TYPE;
-  cardRef?: RefObject<JuiConversationCard>;
 };
 
 export { ConversationPostProps, ConversationPostViewProps, POST_TYPE };

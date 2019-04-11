@@ -11,6 +11,7 @@ import { PostService } from 'sdk/module/post';
 import PostModel from '../models/Post';
 
 import { IdListPaginationHandler } from './IdListPagingHandler';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 enum DiscontinuousPostListType {
   BOOK_MARK_POSTS,
@@ -20,10 +21,12 @@ enum DiscontinuousPostListType {
 
 class PostProvider implements IEntityDataProvider<Post> {
   async getByIds(ids: number[]) {
-    const postService = PostService.getInstance() as PostService;
+    const postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
     const { posts, items } = await postService.getPostsByIds(ids);
     // set items to store.
-    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
+    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items, false);
     return posts;
   }
 }
@@ -31,7 +34,7 @@ class DiscontinuousPosListHandler extends IdListPaginationHandler<
   Post,
   PostModel
 > {
-  constructor(sourceIds: number[]) {
+  constructor(sourceIds: number[], postProvider?: IEntityDataProvider<Post>) {
     const filterFunc = (post: PostModel) => {
       return !post.deactivated;
     };
@@ -45,7 +48,7 @@ class DiscontinuousPosListHandler extends IdListPaginationHandler<
       isMatchFunc,
       eventName: ENTITY.DISCONTINUOUS_POST,
       entityName: ENTITY_NAME.POST,
-      entityDataProvider: new PostProvider(),
+      entityDataProvider: postProvider || new PostProvider(),
     };
 
     super(sourceIds, options);

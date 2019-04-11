@@ -18,6 +18,7 @@ import { GLOBAL_KEYS } from '@/store/constants';
 import { getGlobalValue } from '@/store/utils';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { mainLogger } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const SECTION_CONFIGS: SectionConfigs = {
   [SECTION_TYPE.FAVORITE]: {
@@ -96,7 +97,10 @@ class SectionViewModel extends StoreViewModel<SectionProps>
   }
 
   handleSortEnd(oldIndex: number, newIndex: number) {
-    (ProfileService.getInstance() as ProfileService)
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
+    profileService
       .reorderFavoriteGroups(oldIndex, newIndex)
       .catch((error: Error) => {
         mainLogger

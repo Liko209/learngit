@@ -5,7 +5,9 @@
  */
 import { TelephonyCallController } from '../TelephonyCallController';
 import { ITelephonyCallDelegate } from '../../service/ITelephonyCallDelegate';
-import { RTC_CALL_STATE } from 'voip';
+import { RTC_CALL_STATE, RTCCall } from 'voip';
+
+jest.mock('voip');
 
 describe('TelephonyCallController', () => {
   class MockDelegate implements ITelephonyCallDelegate {
@@ -19,16 +21,15 @@ describe('TelephonyCallController', () => {
   }
 
   let mockDelegate;
-  let callController;
-  let rtcCall;
+  let callController: TelephonyCallController;
+  let rtcCall: RTCCall;
+  const callId = '123';
 
   function setup() {
     mockDelegate = new MockDelegate();
     callController = new TelephonyCallController(mockDelegate);
-    rtcCall = {
-      getCallInfo: jest.fn().mockReturnValue({ uuid: 123 }),
-      hangup: jest.fn(),
-    };
+
+    rtcCall = new RTCCall(false, '', null, null, null);
     Object.assign(callController, {
       _rtcCall: rtcCall,
     });
@@ -48,11 +49,40 @@ describe('TelephonyCallController', () => {
     });
   });
 
+  describe('answer', () => {
+    it('should call rtc answer when controller answer is called', () => {
+      jest.spyOn(rtcCall, 'answer');
+      callController.answer();
+      expect(rtcCall.answer).toBeCalled();
+    });
+  });
+
+  describe('sendToVoiceMail', () => {
+    it('should call rtc to send call to voice mail', () => {
+      jest.spyOn(rtcCall, 'sendToVoicemail');
+      callController.sendToVoiceMail();
+      expect(rtcCall.sendToVoicemail).toBeCalled();
+    });
+  });
+
+  describe('ignore', () => {
+    it('should call rtc to ignore call', () => {
+      jest.spyOn(rtcCall, 'ignore');
+      callController.ignore();
+      expect(rtcCall.ignore).toBeCalled();
+    });
+  });
+
   describe('onCallStateChange', () => {
+    beforeAll(() => {
+      jest.spyOn(rtcCall, 'getCallInfo').mockReturnValue({
+        uuid: callId,
+      });
+    });
     it('should pass the idle state to call controller', () => {
       callController.onCallStateChange(RTC_CALL_STATE.IDLE);
       expect(mockDelegate.onCallStateChange).toBeCalledWith(
-        123,
+        callId,
         RTC_CALL_STATE.IDLE,
       );
     });
@@ -60,7 +90,7 @@ describe('TelephonyCallController', () => {
     it('should pass the connected state to call controller', () => {
       callController.onCallStateChange(RTC_CALL_STATE.CONNECTED);
       expect(mockDelegate.onCallStateChange).toBeCalledWith(
-        123,
+        callId,
         RTC_CALL_STATE.CONNECTED,
       );
     });
@@ -68,7 +98,7 @@ describe('TelephonyCallController', () => {
     it('should pass the connecting state to call controller', () => {
       callController.onCallStateChange(RTC_CALL_STATE.CONNECTING);
       expect(mockDelegate.onCallStateChange).toBeCalledWith(
-        123,
+        callId,
         RTC_CALL_STATE.CONNECTING,
       );
     });
@@ -76,7 +106,7 @@ describe('TelephonyCallController', () => {
     it('should pass the disconnected state to call controller', () => {
       callController.onCallStateChange(RTC_CALL_STATE.DISCONNECTED);
       expect(mockDelegate.onCallStateChange).toBeCalledWith(
-        123,
+        callId,
         RTC_CALL_STATE.DISCONNECTED,
       );
     });

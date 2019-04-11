@@ -4,14 +4,19 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { AbstractModule, inject } from 'framework';
-import { ILeaveBlockerService } from '../leave-blocker/interface';
-import { LeaveBlockerService } from '../leave-blocker/service';
+import {
+  ILeaveBlockerService,
+  LEAVE_BLOCKER_SERVICE,
+} from '../leave-blocker/interface';
 import { ItemService } from 'sdk/module/item/service';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-const itemService = ItemService.getInstance() as ItemService;
+const itemService = ServiceLoader.getInstance<ItemService>(
+  ServiceConfig.ITEM_SERVICE,
+);
 
 class MessageModule extends AbstractModule {
-  @inject(LeaveBlockerService) _leaveBlockerService: ILeaveBlockerService;
+  @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
 
   handleLeave = () => {
     return itemService.hasUploadingFiles();

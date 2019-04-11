@@ -16,10 +16,15 @@ import { ConversationPageProps } from './types';
 import _ from 'lodash';
 import history from '@/history';
 import { mainLogger } from 'sdk';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
-  private _groupService: GroupService = GroupService.getInstance();
-  private _stateService: StateService = StateService.getInstance();
+  private _groupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
+  private _stateService = ServiceLoader.getInstance<StateService>(
+    ServiceConfig.STATE_SERVICE,
+  );
 
   constructor(props: ConversationPageProps) {
     super(props);

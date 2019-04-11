@@ -14,6 +14,7 @@ const { ENTITY } = service;
 import { CompanyService } from 'sdk/module/company';
 import { ModelCreator } from './utils/ModelCreator';
 import { IdModel } from 'sdk/framework/model';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 const CACHE_COUNT = 1000;
 
@@ -29,7 +30,9 @@ const ENTITY_SETTING = {
       return {
         getById: async (id: number) => {
           try {
-            return await GroupService.getInstance().getById(id);
+            return await ServiceLoader.getInstance<GroupService>(
+              ServiceConfig.GROUP_SERVICE,
+            ).getById(id);
           } catch (err) {
             mainLogger.tags('Entity Config').log(`get group ${id} fail:`, err);
             return null;
@@ -42,25 +45,29 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.PERSON]: {
     event: [ENTITY.PERSON],
-    service: () => PersonService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<PersonService>(ServiceConfig.PERSON_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.GROUP_STATE]: {
     event: [ENTITY.GROUP_STATE],
-    service: () => StateService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<StateService>(ServiceConfig.STATE_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.MY_STATE]: {
     event: [ENTITY.MY_STATE],
-    service: () => StateService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<StateService>(ServiceConfig.STATE_SERVICE),
     type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.ITEM]: {
     event: [`${ENTITY.ITEM}.*.*`],
-    service: () => ItemService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<ItemService>(ServiceConfig.ITEM_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
     modelCreator: (model: IdModel) => {
@@ -69,25 +76,31 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.POST]: {
     event: [`${ENTITY.POST}.*`],
-    service: () => PostService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.DISCONTINUOUS_POST]: {
     event: [ENTITY.DISCONTINUOUS_POST],
-    service: () => PostService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<PostService>(ServiceConfig.POST_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.PRESENCE]: {
     event: [ENTITY.PRESENCE],
-    service: () => PresenceService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<PresenceService>(
+        ServiceConfig.PRESENCE_SERVICE,
+      ),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.COMPANY]: {
     event: [ENTITY.COMPANY],
-    service: () => CompanyService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<CompanyService>(ServiceConfig.COMPANY_SERVICE),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
@@ -96,7 +109,9 @@ const ENTITY_SETTING = {
     service: () => {
       return {
         getById: (id: number) =>
-          (<ProgressService>ProgressService.getInstance()).getByIdSync(id),
+          ServiceLoader.getInstance<ProgressService>(
+            ServiceConfig.PROGRESS_SERVICE,
+          ).getByIdSync(id),
       };
     },
     type: HANDLER_TYPE.MULTI_ENTITY,
@@ -104,20 +119,27 @@ const ENTITY_SETTING = {
   },
   [ENTITY_NAME.PROFILE]: {
     event: [ENTITY.PROFILE],
-    service: () => ProfileService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<ProfileService>(ServiceConfig.PROFILE_SERVICE),
     type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: CACHE_COUNT,
   },
 
   [ENTITY_NAME.GROUP_CONFIG]: {
     event: [ENTITY.GROUP_CONFIG],
-    service: () => GroupConfigService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<GroupConfigService>(
+        ServiceConfig.GROUP_CONFIG_SERVICE,
+      ),
     type: HANDLER_TYPE.MULTI_ENTITY,
     cacheCount: CACHE_COUNT,
   },
   [ENTITY_NAME.USER_PERMISSION]: {
     event: [ENTITY.USER_PERMISSION],
-    service: () => PermissionService.getInstance(),
+    service: () =>
+      ServiceLoader.getInstance<PermissionService>(
+        ServiceConfig.PERMISSION_SERVICE,
+      ),
     type: HANDLER_TYPE.SINGLE_ENTITY,
     cacheCount: CACHE_COUNT,
   },
@@ -147,6 +169,7 @@ const GLOBAL_VALUES = {
   [GLOBAL_KEYS.FAVORITE_UNREAD]: {},
   [GLOBAL_KEYS.DIRECT_MESSAGE_UNREAD]: {},
   [GLOBAL_KEYS.TEAM_UNREAD]: {},
+  [GLOBAL_KEYS.CURRENT_SETTING_LIST_TYPE]: '',
 };
 
 export { ENTITY_SETTING, GLOBAL_VALUES };

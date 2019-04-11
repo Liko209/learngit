@@ -1,14 +1,15 @@
 {
   "name": "test-util",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": true,
   "main": "src",
   "dependencies": {
-    "react": "16.8.3",
-    "react-dom": "16.8.3"
+    "react": "16.8.6",
+    "react-dom": "16.8.6"
   },
   "devDependencies": {
-    "@types/react": "16.8.5",
-    "@types/react-dom": "16.8.2"
+    "@types/react": "16.8.12",
+    "@types/react-dom": "16.8.3",
+    "typescript": "3.4.2"
   }
 }
