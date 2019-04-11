@@ -18,6 +18,7 @@ import {
 
 const LinkItemsWrapper = styled(JuiCard)`
   display: flex;
+  justify-content: space-between;
   margin-top: ${spacing(3)};
   background-color: ${({ theme }) => theme.palette.common.white};
   width: 100%;
