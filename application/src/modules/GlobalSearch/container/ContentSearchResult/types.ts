@@ -24,6 +24,7 @@ type ContentSearchOptions = {
 type ContentSearchResultProps = {};
 
 type ContentSearchResultViewProps = {
+  postsCount?: number;
   isEmpty: boolean;
   searchState: ContentSearchState;
   searchOptions: ContentSearchOptions;
