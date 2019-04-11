@@ -6,6 +6,7 @@
 
 import { AbstractService } from './AbstractService';
 import { IdModel } from '../model';
+import { IEntityChangeObserver } from '../controller/types';
 import { ISubscribeController } from '../controller/interface/ISubscribeController';
 import { IEntitySourceController } from '../controller/interface/IEntitySourceController';
 import { BaseDao } from '../../framework/dao';
@@ -16,15 +17,18 @@ import {
   buildEntityPersistentController,
   buildEntitySourceController,
   buildEntityCacheSearchController,
+  buildEntityNotificationController,
 } from '../controller';
 import { mainLogger } from 'foundation';
 import { IEntityCacheController } from '../controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../controller/interface/IEntityCacheSearchController';
+import { IEntityNotificationController } from '../controller/interface/IEntityNotificationController';
 
 class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   private _subscribeController: ISubscribeController;
   private _entitySourceController: IEntitySourceController<T>;
   private _entityCacheController: IEntityCacheController<T>;
+  private _entityNotificationController: IEntityNotificationController<T>;
 
   constructor(
     public isSupportedCache: boolean,
@@ -68,6 +72,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     delete this._subscribeController;
     delete this._entitySourceController;
     delete this._entityCacheController;
+    delete this._entityNotificationController;
   }
 
   async getById(id: number): Promise<T | null> {
@@ -139,6 +144,25 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
       );
       this._entityCacheController.initialize([]);
     }
+  }
+
+  protected buildNotificationController() {
+    return buildEntityNotificationController();
+  }
+
+  addEntityNotificationObserver(observer: IEntityChangeObserver<T>) {
+    this.getEntityNotificationController().addObserver(observer);
+  }
+
+  removeEntityNotificationObserver(observer: IEntityChangeObserver) {
+    this.getEntityNotificationController().removeObserver(observer);
+  }
+
+  protected getEntityNotificationController() {
+    if (!this._entityNotificationController) {
+      this._entityNotificationController = this.buildNotificationController();
+    }
+    return this._entityNotificationController;
   }
 }
 
