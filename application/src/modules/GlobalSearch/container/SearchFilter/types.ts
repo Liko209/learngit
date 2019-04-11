@@ -35,6 +35,7 @@ type SearchFilterViewProps = SearchFilterProps & {
   typeFilter: SearchContentTypeItem[];
   timePeriodFilter: SearchContentTypeItem[];
   timeType: string;
+<<<<<<< HEAD
 };
 export {
   SearchFilterProps,
@@ -42,3 +43,13 @@ export {
   SearchContentTypeItem,
   DATE_DICTIONARY,
 };
+=======
+};
+
+export {
+  SearchFilterProps,
+  SearchFilterViewProps,
+  SearchContentTypeItem,
+  DATE_DICTIONARY,
+};
+>>>>>>> 20e88ed08eca84fa87c0d1029d2b0c734346c7ff
