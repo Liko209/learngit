@@ -30,7 +30,6 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           onSelectChange={handleSearchPersonChange}
           label={t('globalSearch.postedBy')}
           placeholder={t('globalSearch.postedByPlaceholder')}
-          isExcludeMe={true}
           groupId={
             searchOptions && searchOptions.group_id
               ? searchOptions.group_id
@@ -43,7 +42,6 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           onSelectChange={handleSearchGroupChange}
           label={t('globalSearch.postedIn')}
           placeholder={t('globalSearch.postedInPlaceholder')}
-          isExcludeMe={true}
           groupId={
             searchOptions && searchOptions.group_id
               ? searchOptions.group_id
