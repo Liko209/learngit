@@ -33,7 +33,6 @@ const StyledSearchFilterHeader = styled.div`
 
 const StyledSearchFilterBody = styled.div`
   padding: ${spacing(0, 4)};
-  height: ${height(170)};
 `;
 
 const JuiSearchFilter = React.memo((props: JuiSearchFilterProps) => {
