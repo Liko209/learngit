@@ -1,8 +1,8 @@
 /*
  * @Author: Potar.He
  * @Date: 2019-02-28 14:12:13
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-09 17:30:38
+ * @Last Modified by: Nello Huang (nello.huang@ringcentral.com)
+ * @Last Modified time: 2019-04-11 14:18:47
  */
 
 import { formalName } from '../../libs/filter';

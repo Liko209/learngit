@@ -34,6 +34,10 @@ import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+import { Pal } from 'sdk/pal';
+
 /**
  * The root module, we call it AppModule,
  * it would be the first module being bootstrapped
@@ -77,6 +81,10 @@ class AppModule extends AbstractModule {
         }
       }
     }
+    const versionInfo = await fetchVersionInfo();
+    Pal.instance.setApplicationInfo({
+      getAppVersion: () => versionInfo.deployedVersion,
+    });
 
     window.addEventListener('error', (event: ErrorEvent) => {
       generalErrorHandler(
@@ -159,6 +167,7 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
       updateAccountInfoForGlobalStore();
+      analyticsCollector.identify();
     });
 
     notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, (url: string) => {

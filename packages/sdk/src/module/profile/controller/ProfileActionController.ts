@@ -140,7 +140,7 @@ class ProfileActionController {
         originalModel: Profile,
       ): Partial<Raw<Profile>> => {
         if (toBook) {
-          oldFavPostIds.push(postId);
+          oldFavPostIds.unshift(postId);
         } else {
           oldFavPostIds = oldFavPostIds.filter((id: number) => id !== postId);
         }

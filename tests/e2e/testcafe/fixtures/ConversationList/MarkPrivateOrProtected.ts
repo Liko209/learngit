@@ -54,7 +54,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`And I should find public icon on profile dialog header`, async () => {
@@ -126,7 +126,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`And I should find private icon on profile dialog header`, async () => {

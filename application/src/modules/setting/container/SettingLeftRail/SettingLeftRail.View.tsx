@@ -45,6 +45,7 @@ class SettingLeftRailViewComponent extends Component<
       <React.Fragment>
         {entries.map((entry, index) => (
           <JuiListNavItem
+            data-name="sub-setting"
             data-test-automation-id={entry.testId}
             selected={entry.type === currentSettingListType}
             classes={{ selected: 'selected' }}
@@ -69,7 +70,9 @@ class SettingLeftRailViewComponent extends Component<
     return (
       <JuiLeftRail>
         <JuiLeftRailStickyTop>
-          <StyledList component="nav">{this.renderItems()}</StyledList>
+          <StyledList component="nav" data-test-automation-id="settingLeftRail">
+            {this.renderItems()}
+          </StyledList>
         </JuiLeftRailStickyTop>
       </JuiLeftRail>
     );

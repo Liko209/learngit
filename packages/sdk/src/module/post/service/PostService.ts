@@ -22,6 +22,9 @@ import { ContentSearchParams } from '../../../api/glip/search';
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
+import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
+import { AccountUserConfig } from '../../account/config/AccountUserConfig';
+
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
   constructor(private _groupService: IGroupService) {
@@ -34,6 +37,14 @@ class PostService extends EntityBaseService<Post> {
         [SOCKET.POST]: this.handleSexioData,
       }),
     );
+  }
+
+  protected buildNotificationController() {
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
+    return new EntityNotificationController<Post>((post: Post) => {
+      return !post.deactivated && post.creator_id !== currentUserId;
+    });
   }
 
   protected getPostController() {
@@ -140,16 +151,18 @@ class PostService extends EntityBaseService<Post> {
       PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
       logId,
     );
-    this.getPostController()
-      .getPostDataController()
-      .handleIndexPosts(data, maxPostsExceed);
+    this._postDataController.handleIndexPosts(data, maxPostsExceed);
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {
-    this.getPostController()
-      .getPostDataController()
-      .handleSexioPosts(data);
+    if (data.length) {
+      const posts = this._postDataController.transformData(data);
+      if (posts.length) {
+        await this._postDataController.handleSexioPosts(posts);
+        this.getEntityNotificationController().onReceivedNotification(posts);
+      }
+    }
   }
 
   async searchPosts(params: ContentSearchParams) {
@@ -174,6 +187,10 @@ class PostService extends EntityBaseService<Post> {
     return await this.getPostController()
       .getPostSearchController()
       .getContentsCount(params);
+  }
+
+  private get _postDataController() {
+    return this.getPostController().getPostDataController();
   }
 }
 

@@ -1,8 +1,8 @@
 /*
- * @Author: Potar.He 
- * @Date: 2019-04-09 15:31:31 
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-09 15:46:00
+ * @Author: Potar.He
+ * @Date: 2019-04-09 15:31:31
+ * @Last Modified by: Nello Huang (nello.huang@ringcentral.com)
+ * @Last Modified time: 2019-04-11 14:17:56
  */
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';

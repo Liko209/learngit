@@ -28,7 +28,7 @@ describe('PostListPage.ViewModel', () => {
       jest.spyOn(utils, 'getSingleEntity').mockReturnValueOnce(sourceArr);
       const vm = new PostListPageViewModel();
       const ids = vm._dataMap[POST_LIST_TYPE.bookmarks].idListProvider();
-      expect(ids).toStrictEqual([6, 7, 2, 1, 3, 5, 4]);
+      expect(ids).toStrictEqual([4, 5, 3, 1, 2, 7, 6]);
     });
   });
   describe('postFetcher()', () => {

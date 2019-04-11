@@ -9,6 +9,8 @@ import { setupCase, teardownCase } from '../../init';
 import { h } from '../../v2/helpers';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
+import { ITestMeta, IGroup } from '../../v2/models';
+import * as uuid from 'uuid';
 
 fixture('ContentPanel/PageHeader')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -78,3 +80,62 @@ test.skip(formalName('When update custom status, can sync dynamically in page he
     }, true);
   },
 );
+
+
+test.meta(<ITestMeta>{
+  priority: ["P2"],
+  caseIds: ['JPT-1368'],
+  maintainers: ['Potar.He'],
+  keywords: ['PageHeader']
+})('Check user can clicking the icon(with count) to open the team/group profile', async (t: TestController) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+
+  let team = <IGroup>{
+    type: "Team",
+    name: uuid(),
+    owner: loginUser,
+    members: [loginUser, users[0]],
+  }
+  let group = <IGroup>{
+    type: "Group",
+    owner: loginUser,
+    members: [loginUser, users[0], users[1]]
+  }
+
+
+  let chatId;
+  await h(t).withLog('Given I have an extension with 1 group and 1 team', async () => {
+    await h(t).scenarioHelper.createTeamsOrChats([team, group]);
+  });
+
+  await h(t).withLog(`And I login Jupiter with this extension: ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog('When I enter the group conversation and click Click the member count icon(with count) on page header ', async () => {
+    await app.homePage.messageTab.directMessagesSection.conversationEntryById(group.glipId).enter();
+    await conversationPage.clickMemberCountIcon();
+  }, true);
+
+  const profileDialog = app.homePage.profileDialog;
+  await h(t).withLog("Then profile dialog should be opened", async () => {
+    await profileDialog.ensureLoaded();
+  });
+
+  await h(t).withLog('And I close the profile dialog', async () => {
+    await profileDialog.clickCloseButton()
+  }, true);
+
+  await h(t).withLog('When I enter the team conversation and click Click the member count icon(with count) on page header ', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+    await conversationPage.clickMemberCountIcon();
+  }, true);
+
+  await h(t).withLog("Then profile dialog should be opened", async () => {
+    await profileDialog.ensureLoaded();
+  });
+});

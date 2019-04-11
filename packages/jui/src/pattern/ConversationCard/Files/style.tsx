@@ -164,12 +164,16 @@ const ImageFileInfo = styled<ImageFileInfoProps>(WrapperImageFileInfo)`
 
 const ImageCard = styled<ImageCardProps>(WrapperImageCard)`
   && {
-    display: inline-block;
+    float: left;
+    display: flex;
     margin: ${spacing(0, 2, 2, 0)};
     width: ${props => width(props.width / 4)};
     height: ${props => height(props.height / 4)};
     position: relative;
     border-radius: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: ${palette('grey', '100')};
     box-shadow: none;
   }
   &:hover ${ImageFileInfo} {

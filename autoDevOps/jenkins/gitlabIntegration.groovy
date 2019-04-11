@@ -403,11 +403,13 @@ node(buildNode) {
             } catch (e) { }
             sh "echo 'registry=${npmRegistry}' > .npmrc"
             sshagent (credentials: [scmCredentialId]) {
+                // work around
+                sh 'npm install @sentry/cli@1.40.0'
+                sh 'npm install @babel/parser@7.3.4'
                 sh 'npm install --only=dev --ignore-scripts'
                 sh 'npm install --ignore-scripts'
-                sh 'npm install'
+                // sh 'npm install'
                 sh 'npx lerna bootstrap --hoist --no-ci --ignore-scripts'
-
             }
             try {
                 sh 'npm run fixed:version check'
@@ -487,7 +489,7 @@ node(buildNode) {
                             report.coverageDiff = exitCode ? FAILURE_EMOJI : SUCCESS_EMOJI;
                             report.coverageDiff += sh(returnStdout: true, script: 'cat coverage-diff').trim()
                             if (exitCode > 0) {
-                                // throw new Exception('coverage drop!')
+                                throw new Exception('coverage drop is detected!')
                             }
                         }
                     }

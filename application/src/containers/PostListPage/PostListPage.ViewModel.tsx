@@ -54,7 +54,7 @@ class PostListPageViewModel extends AbstractViewModel {
           'favoritePostIds',
         );
         if (Array.isArray(favoritePostIds)) {
-          return favoritePostIds.reverse();
+          return favoritePostIds;
         }
         return [];
       },

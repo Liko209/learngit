@@ -5,8 +5,6 @@
  */
 import { observer } from 'mobx-react';
 import React, { Component } from 'react';
-
-import { analytics } from '@/Analytics';
 import { ToastWrapper } from '@/containers/ToastWrapper';
 
 import { HomeRouter } from '../HomeRouter';
@@ -31,8 +29,6 @@ class HomeView extends Component<HomeViewProps> {
       ServiceConfig.ACCOUNT_SERVICE,
     );
     accountService.makeSureUserInWhitelist();
-
-    analytics.identify();
   }
 
   componentWillUnmount() {

@@ -42,6 +42,12 @@ class HeaderViewModel extends AbstractViewModel {
   }
 
   @computed
+  get analysisSource() {
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
+    return group.analysisType;
+  }
+
+  @computed
   get customStatus() {
     const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, this._id);
     if (group.isTeam) {
