@@ -8,6 +8,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import styled, { keyframes } from 'styled-components';
 import { StyledHeaderNoPadding } from 'jui/pattern/Dialer';
+import { height } from 'jui/src/foundation/utils/styles';
 import { FakeInputViewProps } from './types';
 
 @observer
@@ -53,7 +54,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
             content: '';
             animation: ${blink} .8s steps(1) infinite;
             width: 1px;
-            height: 32px;
+            height: ${height(8)};
             border-right: 1px solid white;
         }
     `;
