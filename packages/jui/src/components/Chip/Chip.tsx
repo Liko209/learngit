@@ -12,7 +12,8 @@ import { Omit } from '../../foundation/utils/typeHelper';
 
 type JuiChipProps = {
   uid?: number;
-  ChipAvatar?: React.ComponentType<any>;
+  PersonAvatar?: React.ComponentType<any>;
+  GroupAvatar?: React.ComponentType<any>;
   onDelete?: (event: any) => void;
   isError?: boolean;
 } & Omit<MuiChipProps, 'innerRef'>;
@@ -49,21 +50,31 @@ const StyledChip = styled<JuiChipProps>(WrappedChip)`
   }
   .avatar {
     color: ${({ theme }) => theme.palette.common.white};
+    span {
+      width: auto;
+      height: auto;
+    }
   }
 `;
 
 export const JuiChip: React.SFC<JuiChipProps> = React.memo(
   (props: JuiChipProps) => {
-    const { onDelete, ChipAvatar, isError, id, ...rest } = props;
-    const avatar: any = ChipAvatar ? (
-      <ChipAvatar size="small" uid={id} />
-    ) : null;
+    const { onDelete, PersonAvatar, GroupAvatar, isError, id, ...rest } = props;
+    const getAvatar = () => {
+      if (PersonAvatar) {
+        return <PersonAvatar size="small" uid={id} />;
+      }
+      if (GroupAvatar) {
+        return <GroupAvatar size="small" cid={id} />;
+      }
+      return null;
+    };
 
     return (
       <StyledChip
         {...rest}
         onDelete={onDelete}
-        avatar={avatar}
+        avatar={getAvatar() as React.ReactElement}
         variant={isError ? 'outlined' : 'default'}
         isError={isError}
         classes={{

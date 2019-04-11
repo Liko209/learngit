@@ -3,21 +3,33 @@
  * @Date: 2019-04-10 16:47:06
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { container, Jupiter } from 'framework';
+import { config } from '../../../module.config';
 import { getEntity } from '@/store/utils';
+import { GlobalSearchStore } from '../../../store';
+
 jest.mock('@/store/utils');
 
 import { SearchCellViewModel } from '../SearchCell.ViewModel';
-import { SearchItemTypes } from '../../../types';
+import { SearchItemTypes, SEARCH_SCOPE, SEARCH_VIEW } from '../../../types';
+
+const jupiter = container.get(Jupiter);
+jupiter.registerModule(config);
 
 describe('SearchCellViewModel', () => {
   let searchCellViewModel: SearchCellViewModel<any>;
+  let globalSearchStore: GlobalSearchStore;
 
   beforeEach(() => {
+    container.snapshot();
+
     searchCellViewModel = new SearchCellViewModel();
+    globalSearchStore = container.get(GlobalSearchStore);
   });
 
-  afterEach(() => {});
+  afterEach(() => {
+    container.restore();
+  });
 
   describe('onKeyUp()', () => {
     it('if select index === 0 should be return 0', () => {
@@ -69,7 +81,27 @@ describe('SearchCellViewModel', () => {
     });
   });
 
-  describe('onSelectItem()', () => {
+  describe('onSelectItem() [JPT-1567]', () => {
+    it('If select item is message should be go to full search', () => {
+      const currentItemValue = 'aa';
+      const currentItemType = SearchItemTypes.SEARCH;
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      const params = {
+        groupId: 1,
+      };
+      searchCellViewModel.onSelectItem(
+        keyBoardEvent,
+        currentItemValue,
+        currentItemType,
+        params,
+      );
+      expect(globalSearchStore.groupId).toBe(params.groupId);
+      expect(globalSearchStore.searchScope).toBe(SEARCH_SCOPE.CONVERSATION);
+      expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
+      expect(globalSearchStore.searchKey).toBe(currentItemValue);
+    });
     it('If select item type is people should be go to conversation', () => {
       const id = 1;
       const currentItemValue = 1;

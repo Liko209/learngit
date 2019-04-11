@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import styled from '../../../foundation/styled-components';
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import {
@@ -13,8 +12,7 @@ import {
 } from '../../../foundation/utils/decorators';
 import { boolean, select } from '@storybook/addon-knobs';
 import { JuiBoxSelect } from '..';
-import MenuItem from '@material-ui/core/MenuItem';
-import { height, spacing } from '../../../foundation/utils';
+import { JuiMenuItem } from 'src/components/Menus';
 
 type Menu = {
   id: number | string;
@@ -25,7 +23,7 @@ function getKnobs() {
   const heightSize = select(
     'heightSize',
     {
-      small: 'small',
+      default: 'default',
       large: 'large',
     },
     'large',
@@ -45,13 +43,6 @@ function getKnobs() {
     menuItemStyle,
   };
 }
-
-const StyledMenuItem = styled(MenuItem)`
-  && {
-    height: ${height(6)};
-    padding: ${spacing(1.5, 6, 1.5, 2)};
-  }
-`;
 
 class TestBoxSelect extends React.Component<{
   heightSize: 'default' | 'large';
@@ -82,19 +73,20 @@ class TestBoxSelect extends React.Component<{
     };
 
     return (
-        <JuiBoxSelect
-          {...this.state}
-          MenuProps={this.props.menuItemStyle === 'fixed' ? MenuProps : {}}
-          heightSize={heightSize}
-          disabled={disabled}
-          handleChange={this.handleChange}
-        >
-          {menu.map((item: Menu) => (
-            <StyledMenuItem {...rest} value={item.id} key={item.id}>
-              {item.value}
-            </StyledMenuItem>
-          ))}
-        </JuiBoxSelect>
+      <JuiBoxSelect
+        {...this.state}
+        MenuProps={this.props.menuItemStyle === 'fixed' ? MenuProps : {}}
+        heightSize={heightSize}
+        disabled={disabled}
+        label="Select Demo"
+        handleChange={this.handleChange}
+      >
+        {menu.map((item: Menu) => (
+          <JuiMenuItem {...rest} value={item.id} key={item.id}>
+            {item.value}
+          </JuiMenuItem>
+        ))}
+      </JuiBoxSelect>
     );
   }
 }

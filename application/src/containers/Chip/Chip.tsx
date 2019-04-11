@@ -14,10 +14,12 @@ const Chip = (props: any) => {
   const type = GlipTypeUtil.extractTypeId(id);
   if (id) {
     if (type === TypeDictionary.TYPE_ID_PERSON) {
-      return <JuiChip ChipAvatar={Avatar} isError={props.isError} {...props} />;
+      return (
+        <JuiChip PersonAvatar={Avatar} isError={props.isError} {...props} />
+      );
     }
     return (
-      <JuiChip ChipAvatar={GroupAvatar} isError={props.isError} {...props} />
+      <JuiChip GroupAvatar={GroupAvatar} isError={props.isError} {...props} />
     );
   }
   return <JuiChip {...props} />;

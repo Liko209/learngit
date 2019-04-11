@@ -13,6 +13,7 @@ enum ESearchContentTypes {
   FILES = 'files',
   NOTES = 'pages',
   SNIPPETS = 'snippets',
+  EVENTS = 'events',
 }
 
 type ContentSearchParams = {

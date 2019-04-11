@@ -43,7 +43,6 @@ class ContentSearchResultViewComponent extends Component<Props> {
       searchOptions,
       isEmpty,
     } = this.props;
-
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper>
@@ -66,6 +65,8 @@ class ContentSearchResultViewComponent extends Component<Props> {
         <SearchFilter
           setSearchOptions={setSearchOptions}
           searchOptions={searchOptions}
+          options={searchOptions}
+          contentsCount={searchState.contentsCount}
         />
       </JuiFullSearchWrapper>
     );
