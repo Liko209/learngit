@@ -144,3 +144,30 @@ describe('ContentSearchResult fix(FIJI-4865)', () => {
     expect(vm.searchState.postIds).toStrictEqual([4, 3, 2, 1]);
   });
 });
+
+describe('ContentSearchResult.ViewModel', () => {
+  beforeEach(() => {
+    const postService = {
+      endPostSearch: jest.fn().mockResolvedValue(null),
+      getSearchContentsCount: jest.fn().mockResolvedValue({}),
+      searchPosts: jest
+        .fn()
+        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+    };
+
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
+  });
+
+  it('isEmpty should be false initially', () => {
+    const vm = new ContentSearchResultViewModel({});
+    expect(vm.isEmpty).toBe(false);
+  });
+
+  it('Should reset isEmpty to false when setSearchOptions is called on the empty screen', async () => {
+    const vm = new ContentSearchResultViewModel({});
+    vm.searchState.requestId = 1123; // mock previous request id before set new search option
+    vm.isEmpty = true;
+    await vm.setSearchOptions({});
+    expect(vm.isEmpty).toBe(false);
+  });
+});

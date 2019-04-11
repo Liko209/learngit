@@ -8,7 +8,7 @@ import React, { Component, RefObject, createRef } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { ContentSearchResultViewProps } from './types';
-import { JuiFullSearch, JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
+import { JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
 import {
   JuiFullSearchWrapper,
   JuiFullSearchResultWrapper,
@@ -46,31 +46,24 @@ class ContentSearchResultViewComponent extends Component<Props> {
     const contentsCount =
       searchState.contentsCount[TypeDictionary.TYPE_ID_POST] || 0;
 
-    if (isEmpty) {
-      return (
-        <JuiFullSearch>
-          <JuiListSubheader data-test-automation-id="searchResultsCount">
-            {t('globalSearch.Results', { count: 0 })}
-          </JuiListSubheader>
-          <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
-        </JuiFullSearch>
-      );
-    }
-
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper>
           <JuiListSubheader data-test-automation-id="searchResultsCount">
             {t('globalSearch.Results', { count: contentsCount })}
           </JuiListSubheader>
-          <JuiFullSearchResultStreamWrapper>
-            <PostListStream
-              ref={this._stream}
-              postIds={searchState.postIds}
-              postFetcher={onPostsFetch}
-              selfProvide={true}
-            />
-          </JuiFullSearchResultStreamWrapper>
+          {isEmpty ? (
+            <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
+          ) : (
+            <JuiFullSearchResultStreamWrapper>
+              <PostListStream
+                ref={this._stream}
+                postIds={searchState.postIds}
+                postFetcher={onPostsFetch}
+                selfProvide={true}
+              />
+            </JuiFullSearchResultStreamWrapper>
+          )}
         </JuiFullSearchResultWrapper>
         <SearchFilter
           setSearchOptions={setSearchOptions}

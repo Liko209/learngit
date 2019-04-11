@@ -95,7 +95,11 @@ class ContentSearchResultViewModel
     this._setSearchState({ requestId: null });
 
     if (previousRequestId) {
-      this._stream.current.vm.reInit();
+      if (!this.isEmpty && this._stream && this._stream.current) {
+        this._stream.current.vm.reInit();
+      } else {
+        this.isEmpty = false;
+      }
     }
   }
 
