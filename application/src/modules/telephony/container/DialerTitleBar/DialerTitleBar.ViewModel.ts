@@ -53,7 +53,6 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
   }
 
   dispose = () => {
-    super.dispose();
     this._intervalId && clearInterval(this._intervalId);
   }
 }

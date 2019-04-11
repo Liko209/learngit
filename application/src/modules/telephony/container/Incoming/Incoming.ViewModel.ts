@@ -107,7 +107,6 @@ class IncomingViewModel extends StoreViewModel<IncomingProps>
   }
 
   dispose = () => {
-    super.dispose();
     if (this._audio) {
       this._pauseAudio();
       this._audio = null;

@@ -51,7 +51,6 @@ class DialerContainerViewModel extends StoreViewModel<DialerContainerProps>
   }
 
   dispose = () => {
-    super.dispose();
     this._audio = null;
     if (this._frameId) {
       cancelAnimationFrame(this._frameId);
