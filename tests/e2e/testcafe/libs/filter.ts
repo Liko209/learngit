@@ -1,13 +1,13 @@
+/*
+ * @Author: Potar.He 
+ * @Date: 2019-04-10 17:37:00 
+ * @Last Modified by: Potar.He
+ * @Last Modified time: 2019-04-10 17:37:23
+ */
 import { AssertionError } from "assert";
 import * as assert from "assert";
 import { ITestMeta } from "../v2/models";
 import * as _ from "lodash";
-
-/*
- * @Author: Potar He(Potar.He@ringcentral.com)
- * @Date: 2018-08-15 11:15:59
- * Copyright © RingCentral. All rights reserved.
- */
 
 type CaseFilter = (caseName: string, fixtureName: string, fixturePath: string, testMeta: any, fixtureMeta: any) => boolean;
 
@@ -43,6 +43,19 @@ export function formalName(name: string, tags?: string[]): string {
       .join('') + ' ' + formalName;
   }
   return formalName;
+}
+
+export function formalNameWithTestMetaPrefix(name: string, testMeta: ITestMeta): string {
+  let formalName: string = name;
+  const tags = [].concat(testMeta.priority, testMeta.caseIds);
+  if (tags.length > 0) {
+    formalName = tags
+      .filter(tag => tag)
+      .map(tag => tag.trim())
+      .map(tag => isValidTag(tag, true) && `[${tag}]`)
+      .join('') + ' ' + formalName;
+  }
+  return formalName.trim();
 }
 
 export function parseFormalName(formalName: string): INameTags {
