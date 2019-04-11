@@ -22,10 +22,10 @@ import { NotificationOpts } from '../notification/interface';
 import i18nT from '@/utils/i18nT';
 import { PersonService } from 'sdk/module/person';
 import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/utils/handleAtMentionName';
-import history from '@/history';
 import GroupModel from '@/store/models/Group';
 import GroupService from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
+import { MessageRouterChangeHelper } from './container/Message/helper';
 import { getPostType } from '@/common/getPostType';
 
 export class MessageNotificationManager extends NotificationManager<
@@ -109,13 +109,7 @@ export class MessageNotificationManager extends NotificationManager<
 
   onClickHandlerBuilder(groupId: number) {
     return () => {
-      const currentURL = history.location.pathname;
-      const targetURL = `/messages/${groupId}`;
-      if (currentURL === targetURL) {
-        history.replace(targetURL);
-      } else {
-        history.push(targetURL);
-      }
+      MessageRouterChangeHelper.goToConversation(String(groupId));
     };
   }
   async buildNotificationBodyAndTitle(
