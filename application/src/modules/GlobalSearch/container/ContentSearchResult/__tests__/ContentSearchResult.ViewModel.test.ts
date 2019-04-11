@@ -17,6 +17,8 @@ import { CONTENT_SEARCH_FETCH_COUNT } from '../types';
 import { SEARCH_SCOPE } from '../../../types';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { TypeDictionary } from 'sdk/utils';
+import { ESearchContentTypes } from 'sdk/api/glip/search';
+import { PostService } from 'sdk/module/post';
 
 jest.mock('@/store/utils');
 
@@ -168,5 +170,58 @@ describe('ContentSearchResult.ViewModel', () => {
     expect(vm.isEmpty).toBe(true);
     await vm.setSearchOptions({});
     expect(vm.isEmpty).toBe(false);
+  });
+});
+
+describe('ContentSearchResult fix(FIJI-4990)', () => {
+  let postService: PostService;
+  beforeEach(() => {
+    postService = {
+      endPostSearch: jest.fn().mockResolvedValue(null),
+      getSearchContentsCount: jest.fn().mockResolvedValue({}),
+      searchPosts: jest
+        .fn()
+        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+    };
+
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
+  });
+  it('Should not call count service with the "type" param', async () => {
+    const vm = new ContentSearchResultViewModel({});
+
+    vm.setSearchOptions({
+      type: ESearchContentTypes.ALL,
+    });
+
+    await vm.onPostsFetch();
+    expect(postService.getSearchContentsCount).toHaveBeenCalledWith(
+      expect.not.objectContaining({ type: ESearchContentTypes }),
+    );
+  });
+
+  it('postsCount should change with the "type" search option', async () => {
+    const vm = new ContentSearchResultViewModel({});
+
+    postService.getSearchContentsCount.mockResolvedValue({
+      [TypeDictionary.TYPE_ID_POST]: 12,
+      [TypeDictionary.TYPE_ID_EVENT]: 3,
+    });
+
+    await vm.onPostsFetch();
+
+    vm.setSearchOptions({
+      type: ESearchContentTypes.ALL,
+    });
+    expect(vm.postsCount).toBe(12); // ALL -> use post's count
+
+    vm.setSearchOptions({
+      type: ESearchContentTypes.EVENTS,
+    });
+    expect(vm.postsCount).toBe(3); // EVENT -> use event's count
+
+    vm.setSearchOptions({
+      type: ESearchContentTypes.CHATS,
+    });
+    expect(vm.postsCount).toBe(12); // CHATS -> use post's count
   });
 });
