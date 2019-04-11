@@ -15,7 +15,7 @@ import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../../../types';
 const jupiter = container.get(Jupiter);
 jupiter.registerModule(config);
 
-describe('toSearchContent()', () => {
+describe('toSearchContent() [JPT-1567]', () => {
   let globalSearchStore: GlobalSearchStore;
 
   beforeEach(() => {

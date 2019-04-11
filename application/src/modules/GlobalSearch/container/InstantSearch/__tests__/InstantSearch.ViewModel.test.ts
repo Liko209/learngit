@@ -177,7 +177,7 @@ describe('InstantSearchViewModel', () => {
     });
   });
 
-  describe('onEnter()', () => {
+  describe('onEnter() [JPT-1567]', () => {
     it('If select item type is people should be go to conversation', () => {
       const id = 1;
       jest.spyOn(instantSearchViewModel, 'goToConversation');

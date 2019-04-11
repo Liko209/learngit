@@ -37,7 +37,7 @@ describe('GroupItemViewModel', () => {
   afterEach(() => {
     container.restore();
   });
-  describe('onClick() [JPT-1557]', () => {
+  describe('onClick() [JPT-1557][JPT-1567]', () => {
     it('if not group id should be switch full search and scope is GLOBAL', () => {
       const searchKey = 'displayName';
       messageItemViewModel = new MessageItemViewModel({

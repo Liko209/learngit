@@ -37,7 +37,7 @@ describe('ContentItemViewModel', () => {
     container.restore();
     jest.resetAllMocks();
   });
-  describe('onClick() [JPT-1557]', () => {
+  describe('onClick() [JPT-1557][JPT-1567]', () => {
     it('if scope is global should be switch full search and group id is undefined', () => {
       const scope = SEARCH_SCOPE.GLOBAL;
       contentItemViewModel = new ContentItemViewModel({

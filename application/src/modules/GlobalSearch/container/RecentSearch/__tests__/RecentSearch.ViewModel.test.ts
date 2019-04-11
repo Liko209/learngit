@@ -79,7 +79,7 @@ describe('RecentSearchViewModel', () => {
       expect(recentSearchViewModel.selectIndex).toBe(2);
     });
   });
-  describe('onEnter()', () => {
+  describe('onEnter() [JPT-1567]', () => {
     it('if has group id should be call onSelectItem with group id and add recent', () => {
       jest
         .spyOn(recentSearchViewModel, 'currentItemValue', 'get')
