@@ -4,44 +4,21 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { observable, action } from 'mobx';
-import { getEntity } from '@/store/utils';
-import GroupModel from '@/store/models/Group';
-import { ENTITY_NAME } from '@/store/constants';
-import { RecentSearchTypes } from 'sdk/module/search/entity';
+import { SearchService } from 'sdk/module/search';
 import { IndexRange } from 'jui/components/VirtualizedList/types';
-import {
-  ItemListViewProps,
-  Group,
-} from './types';
-import { SearchViewModel } from '../common/Search.ViewModel';
+import { ItemListViewProps, SearchItemTypes } from './types';
+import { SearchCellViewModel } from '../common/SearchCell.ViewModel';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { changeToRecordTypes } from '../common/changeTypes';
 
-const InitIndex = -1;
-
-class ItemListViewModel extends SearchViewModel<ItemListViewProps> {
-  @observable selectIndex: number = InitIndex;
+class ItemListViewModel extends SearchCellViewModel<ItemListViewProps> {
   @observable startIndex: number = 0;
   @observable stopIndex: number = 0;
-
-  @action
-  resetSelectIndex = () => {
-    this.selectIndex = InitIndex;
-  }
-
-  @action
-  setSelectIndex = (index: number) => {
-    this.selectIndex = index;
-  }
 
   @action
   setRangeIndex = (range: IndexRange) => {
     this.startIndex = range.startIndex;
     this.stopIndex = range.stopIndex;
-  }
-
-  @action
-  onKeyUp = () => {
-    const selectIndex = this.selectIndex;
-    this.selectIndex = selectIndex <= 0 ? 0 : selectIndex - 1;
   }
 
   @action
@@ -51,38 +28,26 @@ class ItemListViewModel extends SearchViewModel<ItemListViewProps> {
     this.selectIndex = selectIndex === len ? len : selectIndex + 1;
   }
 
-  joinTeam = (id: number) => {
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
-    const { isMember, isTeam, privacy } = group;
-    return {
-      group,
-      canJoin: !!(isTeam && privacy === 'protected' && !isMember),
-    };
+  @action
+  onEnter = (
+    e: KeyboardEvent,
+    list: number[],
+    currentItemType: SearchItemTypes,
+  ) => {
+    const currentItemValue = list[this.selectIndex];
+    this.onSelectItem(e, currentItemValue, currentItemType);
+    this.addRecentRecord(currentItemType, currentItemValue);
   }
 
-  @action
-  onEnter = (e: KeyboardEvent, list: number[], currentItemType: RecentSearchTypes) => {
-    const currentItemValue = list[this.selectIndex];
-    if (!currentItemValue) {
-      return;
-    }
-
-    if (typeof currentItemValue === 'string') {
-      return;
-    }
-
-    if (currentItemType === RecentSearchTypes.PEOPLE) {
-      this.goToConversation(currentItemValue as number);
-      return;
-    }
-
-    const { canJoin, group } = this.joinTeam(currentItemValue as number);
-    if (canJoin) {
-      e.preventDefault();
-      this.handleJoinTeam(group);
-    } else {
-      this.goToConversation(currentItemValue);
-    }
+  addRecentRecord = (
+    currentItemType: SearchItemTypes,
+    value: number | string,
+  ) => {
+    const type = changeToRecordTypes(currentItemType);
+    const searchService = ServiceLoader.getInstance<SearchService>(
+      ServiceConfig.SEARCH_SERVICE,
+    );
+    searchService.addRecentSearchRecord(type, value);
   }
 }
 

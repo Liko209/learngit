@@ -52,7 +52,6 @@ describe('PostListPage.ViewModel', () => {
         posts: [],
       });
 
-      // vm.ids = ;
       jest
         .spyOn(storeManager, 'getEntityMapStore')
         .mockImplementationOnce(() => mockedStore);

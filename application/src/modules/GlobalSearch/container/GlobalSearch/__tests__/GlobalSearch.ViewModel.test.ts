@@ -26,7 +26,7 @@ describe('GlobalSearchViewModel', () => {
     container.restore();
   });
 
-  describe('onChange', () => {
+  describe('onChange [JPT-1567]', () => {
     it('If search key is empty current view should be recent search', () => {
       const emptyValue = '';
       globalSearchViewModel.onChange(emptyValue);

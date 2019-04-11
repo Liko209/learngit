@@ -17,6 +17,7 @@ const StyledJuiOutlineTextField = styled(JuiOutlineTextField)`
   border-left: 0;
   border-top-left-radius: ${radius('xl')};
   border-top-right-radius: ${radius('xl')};
+  border-color: ${grey('300')};
 `;
 
 const ClearButton = styled.span`
@@ -24,6 +25,7 @@ const ClearButton = styled.span`
   color: ${grey('600')};
   border-right: 1px solid ${grey('400')};
   ${typography('caption1')};
+  cursor: pointer;
 `;
 
 type JuiGlobalSearchInputProps = {

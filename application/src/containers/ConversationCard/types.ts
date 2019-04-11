@@ -35,6 +35,7 @@ type ConversationCardViewProps = {
   isEditMode: boolean;
   showActivityStatus: boolean;
   beforeJump: Function;
+  terms?: string[];
 };
 
 export { ConversationCardProps, ConversationCardViewProps };

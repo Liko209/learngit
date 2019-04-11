@@ -6,4 +6,4 @@
 
 export * from './EmptyScreen';
 export * from './TabPageEmptyScreen';
-export * from './RecentSearcnEmptyScreen';
+export * from './RecentSearchEmptyScreen';

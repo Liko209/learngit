@@ -6,30 +6,21 @@
 import { container } from 'framework';
 import { observable, action } from 'mobx';
 import { SearchService } from 'sdk/module/search';
-import { getEntity } from '@/store/utils';
-import GroupModel from '@/store/models/Group';
-import { ENTITY_NAME } from '@/store/constants';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 import { changeToSearchType, changeToRecordTypes } from '../common/changeTypes';
 import { GlobalSearchStore } from '../../store';
-import { GlobalSearchService } from '../../service';
 import {
   RecentSearchProps,
   RecentSearchViewProps,
   RecentRecord,
   RecentSearchModel,
-  Group,
-  SearchItemTypes,
 } from './types';
-import { SearchViewModel } from '../common/Search.ViewModel';
+import { SearchCellViewModel } from '../common/SearchCell.ViewModel';
 
-const InitIndex = -1;
-
-class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
+class RecentSearchViewModel extends SearchCellViewModel<RecentSearchProps>
   implements RecentSearchViewProps {
   @observable recentRecord: RecentRecord[] = [];
-  @observable selectIndex: number = InitIndex;
   private _globalSearchStore: GlobalSearchStore = container.get(
     GlobalSearchStore,
   );
@@ -50,32 +41,6 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
   }
 
   @action
-  onClear = () => {
-    this._globalSearchStore.clearSearchKey();
-  }
-
-  @action
-  onClose = () => {
-    container.get(GlobalSearchService).closeGlobalSearch();
-  }
-
-  @action
-  resetSelectIndex = () => {
-    this.selectIndex = InitIndex;
-  }
-
-  @action
-  setSelectIndex = (index: number) => {
-    this.selectIndex = index;
-  }
-
-  @action
-  onKeyUp = () => {
-    const selectIndex = this.selectIndex;
-    this.selectIndex = selectIndex === 0 ? 0 : selectIndex - 1;
-  }
-
-  @action
   onKeyDown = () => {
     const selectIndex = this.selectIndex;
     const len = this.recentRecord.length - 1;
@@ -88,7 +53,7 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
     const data = this.recentRecord.slice();
     data.splice(index, 1);
     if (index === this.selectIndex) {
-      this.setSelectIndex(InitIndex);
+      this.setSelectIndex(-1);
       return;
     }
     if (index < this.selectIndex) {
@@ -104,48 +69,36 @@ class RecentSearchViewModel extends SearchViewModel<RecentSearchProps>
     return this.recentRecord[this.selectIndex].type;
   }
 
-  canJoinTeam = (id: number) => {
-    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
-    const { isMember, isTeam, privacy } = group;
-    return {
-      group,
-      canJoin: !!(isTeam && privacy === 'protected' && !isMember),
-    };
+  get currentGroupId() {
+    const params = this.recentRecord[this.selectIndex].queryParams;
+    if (!params) {
+      return null;
+    }
+    return params && params.groupId;
   }
 
   @action
   onEnter = (e: KeyboardEvent) => {
     const currentItemValue = this.currentItemValue;
-    const currentItemType = this.currentItemType;
+
     if (!currentItemValue) {
       return;
     }
-    this.addRecentRecord(currentItemValue);
 
-    if (typeof currentItemValue === 'string') {
-      // TODO search message && go to full search
-      return;
-    }
-    if (currentItemType === SearchItemTypes.PEOPLE) {
-      this.goToConversation(currentItemValue as number);
-      return;
-    }
+    const currentItemType = this.currentItemType;
+    const groupId = this.currentGroupId;
+    const params = groupId ? { groupId } : undefined;
 
-    const { canJoin, group } = this.canJoinTeam(currentItemValue);
-    if (canJoin) {
-      e.preventDefault();
-      this.handleJoinTeam(group);
-    } else {
-      this.goToConversation(currentItemValue);
-    }
+    this.onSelectItem(e, currentItemValue, currentItemType, params);
+    this.addRecentRecord(currentItemValue, params);
   }
 
-  addRecentRecord = (value: number | string) => {
+  addRecentRecord = (value: number | string, params?: { groupId: number }) => {
     const type = changeToRecordTypes(this.currentItemType);
     const searchService = ServiceLoader.getInstance<SearchService>(
       ServiceConfig.SEARCH_SERVICE,
     );
-    searchService.addRecentSearchRecord(type, value);
+    searchService.addRecentSearchRecord(type, value, params ? params : {});
   }
 
   @action

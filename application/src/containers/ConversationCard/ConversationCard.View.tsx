@@ -91,6 +91,7 @@ export class ConversationCard extends React.Component<
       onHighlightAnimationStart,
       isEditMode,
       showActivityStatus,
+      terms,
       ...rest
     } = this.props;
     const { isHover } = this.state;
@@ -135,7 +136,7 @@ export class ConversationCard extends React.Component<
           )}
         </JuiConversationCardHeader>
         <JuiConversationCardBody data-name="body">
-          {!hideText && !isEditMode && <TextMessage id={id} />}
+          {!hideText && !isEditMode && <TextMessage id={id} terms={terms} />}
           {isEditMode && (
             <EditMessageInput viewRef={this._editMessageInputRef} id={id} />
           )}

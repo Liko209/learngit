@@ -22,7 +22,7 @@ jest.mock('../../../../../utils/i18nT');
 import i18nT from '../../../../../utils/i18nT';
 // import history from '../../../../../history';
 
-import { SEARCH_SCOPE, SEARCH_VIEW, SearchItemTypes } from '../types';
+import { SEARCH_SCOPE, SEARCH_VIEW, SearchItemTypes, TAB_TYPE } from '../types';
 import { InstantSearchViewModel } from '../InstantSearch.ViewModel';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
@@ -193,7 +193,7 @@ describe('InstantSearchViewModel', () => {
       instantSearchViewModel.onEnter(keyBoardEvent);
       expect(instantSearchViewModel.goToConversation).toHaveBeenCalledWith(id);
     });
-    it('If select item type is search and select first should be global scope and go to full search', () => {
+    it('If select item type is content and select first should be global scope and go to full search [JPT-1567]', () => {
       const id = 1;
       instantSearchViewModel.setSelectIndex(0, 0);
       jest
@@ -212,9 +212,11 @@ describe('InstantSearchViewModel', () => {
       expect(globalSearchStore.searchScope).toBe(SEARCH_SCOPE.GLOBAL);
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
     });
-    it('If select item type is content and select second should be global scope and go to full search', () => {
+    it('If select item type is content and select second should be conversation scope and go to full search [JPT-1567]', () => {
       const id = 1;
+      const conversationId = 1;
       instantSearchViewModel.setSelectIndex(0, 1);
+      (getGlobalValue as jest.Mock).mockReturnValue(conversationId);
       jest
         .spyOn(instantSearchViewModel, 'currentItemId', 'get')
         .mockReturnValue(id);
@@ -228,8 +230,10 @@ describe('InstantSearchViewModel', () => {
         preventDefault: jest.fn(),
       } as any;
       instantSearchViewModel.onEnter(keyBoardEvent);
+      expect(globalSearchStore.groupId).toBe(conversationId);
       expect(globalSearchStore.searchScope).toBe(SEARCH_SCOPE.CONVERSATION);
       expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
+      expect(globalSearchStore.currentTab).toBe(TAB_TYPE.CONTENT);
     });
     it('If select item type is team/group and cannot join should be go to conversation', () => {
       const id = 1;
@@ -319,7 +323,7 @@ describe('InstantSearchViewModel', () => {
       expect(instantSearchViewModel.searchResult).toEqual([
         {
           ids: [],
-          hasMore: true,
+          hasMore: false,
           type: SearchItemTypes.CONTENT,
         },
         {
@@ -792,6 +796,24 @@ describe('InstantSearchViewModel', () => {
         .mockReturnValue([-1, 1]);
       instantSearchViewModel.onKeyDown();
       expect(instantSearchViewModel.setSelectIndex).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onShowMore() [JPT-1567]', () => {
+    it('if type is group should switch full search and tab is group', () => {
+      instantSearchViewModel.onShowMore(SearchItemTypes.GROUP)();
+      expect(globalSearchStore.currentTab).toBe(TAB_TYPE.GROUPS);
+      expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
+    });
+    it('if type is team should switch full search and tab is team', () => {
+      instantSearchViewModel.onShowMore(SearchItemTypes.PEOPLE)();
+      expect(globalSearchStore.currentTab).toBe(TAB_TYPE.PEOPLE);
+      expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
+    });
+    it('if type is people should switch full search and tab is people', () => {
+      instantSearchViewModel.onShowMore(SearchItemTypes.TEAM)();
+      expect(globalSearchStore.currentTab).toBe(TAB_TYPE.TEAM);
+      expect(globalSearchStore.currentView).toBe(SEARCH_VIEW.FULL_SEARCH);
     });
   });
 });

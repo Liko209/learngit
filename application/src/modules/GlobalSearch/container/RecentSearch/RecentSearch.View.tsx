@@ -7,7 +7,11 @@
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiRecentSearch, JuiSearchTitle, JuiRecentSearcnEmptyScreen } from 'jui/pattern/GlobalSearch';
+import {
+  JuiRecentSearch,
+  JuiSearchTitle,
+  JuiRecentSearchEmptyScreen,
+} from 'jui/pattern/GlobalSearch';
 import { HotKeys } from 'jui/hoc/HotKeys';
 
 import { RecentSearchViewProps, RecentRecord, cacheEventFn } from './types';
@@ -76,7 +80,11 @@ class RecentSearchViewComponent extends Component<Props> {
     const { recentRecord, clearRecent, t } = this.props;
 
     if (recentRecord.length === 0) {
-      return <JuiRecentSearcnEmptyScreen text={t('globalSearch.SearchForContactsAndKeywords')} />;
+      return (
+        <JuiRecentSearchEmptyScreen
+          text={t('globalSearch.SearchForContactsAndKeywords')}
+        />
+      );
     }
 
     return (
@@ -86,7 +94,7 @@ class RecentSearchViewComponent extends Component<Props> {
           showButton={true}
           buttonText={t('globalSearch.ClearHistory')}
           title={t('globalSearch.RecentSearches')}
-          data-test-automation-id={'search-clear'}
+          automationId={'search-clear'}
         />
         {recentRecord.map((recentSearchModel: RecentRecord, index: number) => {
           const { value, type, queryParams } = recentSearchModel;

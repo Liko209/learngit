@@ -5,7 +5,7 @@
  */
 import { computed, action, observable } from 'mobx';
 import { container } from 'framework';
-import { ContentSearchParams } from 'sdk/api/glip/search';
+import { ContentSearchParams, ESearchContentTypes } from 'sdk/api/glip/search';
 import { PostService } from 'sdk/module/post';
 import { SearchedResultData } from 'sdk/module/post/controller/implementation/types';
 import { Post } from 'sdk/module/post/entity';
@@ -17,8 +17,7 @@ import {
 import { Notification } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
 import { StoreViewModel } from '@/store/ViewModel';
-import { GLOBAL_KEYS } from '@/store/constants';
-import { getGlobalValue } from '@/store/utils';
+
 import { GlobalSearchStore } from '../../store';
 import { SEARCH_SCOPE } from '../../types';
 import {
@@ -40,6 +39,8 @@ class ContentSearchResultViewModel
 
   private _globalSearchStore = container.get(GlobalSearchStore);
 
+  private _stream: any;
+
   @observable
   isEmpty: boolean = false;
 
@@ -53,6 +54,7 @@ class ContentSearchResultViewModel
   @observable
   searchOptions: ContentSearchOptions = {
     scroll_size: CONTENT_SEARCH_FETCH_COUNT,
+    type: ESearchContentTypes.ALL,
   };
 
   constructor(props: ContentSearchResultProps) {
@@ -88,7 +90,13 @@ class ContentSearchResultViewModel
 
     await this.onSearchEnd();
 
+    const previousRequestId = this.searchState.requestId;
+
     this._setSearchState({ requestId: null });
+
+    if (previousRequestId) {
+      this._stream.current.vm.reInit();
+    }
   }
 
   onPostsFetch = async () => {
@@ -109,7 +117,7 @@ class ContentSearchResultViewModel
   @action
   private _onSearchInit() {
     const q = this._searchKey;
-    const currentGroupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    const currentGroupId = this._globalSearchStore.groupId;
 
     const group_id =
       this._searchScope === SEARCH_SCOPE.CONVERSATION ? currentGroupId : null;
@@ -119,7 +127,7 @@ class ContentSearchResultViewModel
 
   @action
   private _setSearchState(state = {}) {
-    this.searchState = { ...this.searchState, ...state };
+    Object.assign(this.searchState, state);
   }
 
   @action
@@ -196,6 +204,10 @@ class ContentSearchResultViewModel
         dismissible: false,
       })
       : generalErrorHandler(error);
+  }
+
+  setStreamVM = (stream: any) => {
+    this._stream = stream;
   }
 }
 

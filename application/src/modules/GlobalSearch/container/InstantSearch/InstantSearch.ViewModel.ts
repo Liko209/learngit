@@ -9,13 +9,12 @@ import storeManager from '@/store/base/StoreManager';
 import { SearchService } from 'sdk/module/search';
 import { GroupService } from 'sdk/module/group';
 import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
-import { RecentSearchTypes } from 'sdk/module/search/entity';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import history from '@/history';
+
 import { changeToRecordTypes } from '../common/changeTypes';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
-
 import { GlobalSearchService } from '../../service';
 import { GlobalSearchStore } from '../../store';
 import {
@@ -32,6 +31,7 @@ import {
   SearchItemTypes,
 } from './types';
 import { SearchViewModel } from '../common/Search.ViewModel';
+import { toSearchContent } from '../common/toSearchContent';
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
@@ -178,7 +178,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     const data: SearchItems[] = [
       {
         ids: this.contentSearchIds,
-        hasMore: true,
+        hasMore: false,
         type: SearchItemTypes.CONTENT,
       },
       {
@@ -203,15 +203,6 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
     const { searchKey } = this._globalSearchStore;
     return this._isConversation ? [searchKey, searchKey] : [searchKey];
   }
-
-  // contentText = (value: string, cellIndex: number) => {
-  //   const scope = this.getSearchScope(cellIndex);
-  //   if (scope === SEARCH_SCOPE.CONVERSATION) {
-  //     const defaultTip = i18nT('globalSearch.inThisConversation');
-  //     return `${value} ${defaultTip}`;
-  //   }
-  //   return value;
-  // }
 
   private get _isConversation() {
     const { location } = history;
@@ -356,8 +347,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
       case SearchItemTypes.CONTENT:
         const cellIndex = this.selectIndex[1];
         const scope = this.getSearchScope(cellIndex);
-        this._globalSearchStore.setSearchScope(scope);
-        this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
+        toSearchContent(scope === SEARCH_SCOPE.CONVERSATION);
         break;
       case SearchItemTypes.TEAM:
       case SearchItemTypes.GROUP:
@@ -421,12 +411,10 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   @action
   onShowMore = (type: SearchItemTypes) => () => {
     const typeMap = {
-      [RecentSearchTypes.GROUP]: TAB_TYPE.GROUPS,
-      [RecentSearchTypes.PEOPLE]: TAB_TYPE.PEOPLE,
-      [RecentSearchTypes.SEARCH]: TAB_TYPE.CONTENT,
-      [RecentSearchTypes.TEAM]: TAB_TYPE.TEAM,
+      [SearchItemTypes.GROUP]: TAB_TYPE.GROUPS,
+      [SearchItemTypes.PEOPLE]: TAB_TYPE.PEOPLE,
+      [SearchItemTypes.TEAM]: TAB_TYPE.TEAM,
     };
-
     this._globalSearchStore.setCurrentTab(typeMap[type]);
     this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
   }

@@ -13,14 +13,14 @@ import {
   ListSearchResultProps,
   ListSearchResultViewProps,
   TAB_TYPE,
-  RecentSearchTypes,
+  SearchItemTypes,
 } from './types';
 import { ItemList } from '../ItemList';
 
 export const RecentSearchType = {
-  [TAB_TYPE.PEOPLE]: RecentSearchTypes.PEOPLE,
-  [TAB_TYPE.GROUPS]: RecentSearchTypes.GROUP,
-  [TAB_TYPE.TEAM]: RecentSearchTypes.TEAM,
+  [TAB_TYPE.PEOPLE]: SearchItemTypes.PEOPLE,
+  [TAB_TYPE.GROUPS]: SearchItemTypes.GROUP,
+  [TAB_TYPE.TEAM]: SearchItemTypes.TEAM,
 };
 
 type Props = ListSearchResultViewProps &
@@ -34,10 +34,10 @@ class ListSearchResultViewComponent extends Component<Props> {
   };
 
   componentDidMount() {
-    this.fetchDatas();
+    this.fetchData();
   }
 
-  fetchDatas = async () => {
+  fetchData = async () => {
     const { currentTab, search } = this.props;
     const searchResult = await search(currentTab);
     this.setState({ searchResult });

@@ -19,6 +19,7 @@ type GroupItemProps = ViewProps & WithTranslation & { automationId?: string };
 class GroupItemComponent extends React.Component<GroupItemProps> {
   handleJoinTeam = async (e: React.MouseEvent | KeyboardEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     const { handleJoinTeam, group, addRecentRecord } = this.props;
     addRecentRecord();
     await handleJoinTeam(group);
