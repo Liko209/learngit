@@ -223,4 +223,10 @@ JuiIconButtonComponent.defaultProps = {
 };
 
 const JuiIconButton = styled(memo(JuiIconButtonComponent))``;
-export { JuiIconButton, JuiIconButtonProps, IconButtonVariant, IconButtonSize };
+export {
+  JuiIconButton,
+  JuiIconButtonProps,
+  IconButtonVariant,
+  IconButtonSize,
+  iconSizes,
+};
