@@ -19,6 +19,8 @@ type JuiDownshiftStates = {
 };
 
 type JuiDownshiftProps = {
+  selectedItems: SelectedItem[];
+  inputValue: string;
   automationId?: string;
   multiple?: boolean;
   suggestionItems: SelectedItem[];
@@ -35,7 +37,6 @@ type JuiDownshiftProps = {
   helperText?: string;
   messageRef?: React.RefObject<HTMLInputElement>;
   maxLength?: number;
-  initialSelectedItem?: SelectedItem;
 };
 
 const StyledDownshiftMultipleWrapper = styled.div`
@@ -60,12 +61,8 @@ class JuiDownshift extends React.PureComponent<
   JuiDownshiftProps,
   JuiDownshiftStates
 > {
-  state: JuiDownshiftStates = {
-    inputValue: '',
-    selectedItems: [],
-  };
   handleChange = (item: SelectedItem) => {
-    let { selectedItems } = this.state;
+    let { selectedItems } = this.props;
 
     if (selectedItems.indexOf(item) === -1) {
       if (this.props.multiple) {
@@ -74,25 +71,13 @@ class JuiDownshift extends React.PureComponent<
         selectedItems = [item];
       }
     }
-
-    this.setState(
-      {
-        selectedItems,
-        inputValue: '',
-      },
-      () => {
-        this.props.onSelectChange(selectedItems);
-      },
-    );
+    this.props.onSelectChange(selectedItems);
   }
   handleInputChange = (value: string) => {
-    this.setState({ inputValue: value });
     this.props.onInputChange(value);
   }
   handleSelectChange = (items: SelectedItem[]) => {
-    this.setState({ selectedItems: items });
     this.props.onSelectChange(items);
-    this.props.onInputChange(this.state.inputValue);
   }
   handleItemToString = (item: SelectedItem) => (item ? item.label : '');
   render() {
@@ -108,8 +93,9 @@ class JuiDownshift extends React.PureComponent<
       multiple,
       messageRef,
       maxLength,
+      selectedItems,
+      inputValue,
     } = this.props;
-    const { inputValue, selectedItems } = this.state;
 
     return (
       <Downshift
@@ -159,7 +145,7 @@ class JuiDownshift extends React.PureComponent<
                           return (
                             <MenuItem
                               {...getItemProps({ item: suggestionItem })}
-                              id={suggestionItem.id}
+                              itemId={suggestionItem.id}
                               key={suggestionItem.id}
                               isHighlighted={isHighlighted}
                             />

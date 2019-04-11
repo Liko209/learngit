@@ -12,7 +12,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
-import { ContactSearch } from '@/containers/ContactSearch';
+import { ContactSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { DialogContext } from '@/containers/Dialog';
@@ -21,7 +21,6 @@ import {
   ToastType,
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
-import { ContactSearchType } from '@/containers/ContactSearch/types';
 
 type State = {
   message: string;
@@ -129,7 +128,6 @@ class NewMessageView extends React.Component<ViewProps, State> {
         cancelText={i18next.t('common.dialog.cancel')}
       >
         <ContactSearch
-          type={ContactSearchType.PERSON}
           onSelectChange={handleSearchContactChange}
           label={i18next.t('people.team.Members')}
           placeholder={i18next.t('people.team.SearchContactPlaceholder')}

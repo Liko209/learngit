@@ -10,41 +10,38 @@ import { JuiDownshift } from 'jui/components/Downshift';
 
 import { Chip } from '@/containers/Chip';
 import { ContactSearchItem } from './ContactSearchItem';
-import { GroupSearchItem } from './GroupSearchItem';
 
-import { ViewProps, ContactSearchType } from './types';
+import { ViewProps } from './types';
 
 type Props = WithTranslation & ViewProps;
 
 @observer
 class ContactSearch extends React.Component<Props> {
-  constructor(props: Props) {
-    super(props);
-  }
   render() {
     const {
-      type,
-      onContactSelectChange,
+      handleSelectChange,
       label,
       placeholder,
       error,
       helperText,
       searchMembers,
-      searchGroups,
       suggestions,
       errorEmail,
       messageRef,
       multiple,
       autoSwitchEmail,
       maxLength,
-      initialSelectedItem,
+      inputValue,
+      selectedItems,
     } = this.props;
 
-    return type === ContactSearchType.PERSON ? (
+    return (
       <JuiDownshift
+        inputValue={inputValue}
+        selectedItems={selectedItems}
         onInputChange={searchMembers}
         suggestionItems={suggestions}
-        onSelectChange={onContactSelectChange}
+        onSelectChange={handleSelectChange}
         inputLabel={label}
         inputPlaceholder={placeholder}
         InputItem={Chip}
@@ -58,22 +55,6 @@ class ContactSearch extends React.Component<Props> {
         multiple={multiple}
         autoSwitchEmail={autoSwitchEmail}
         maxLength={maxLength}
-      />
-    ) : (
-      <JuiDownshift
-        onInputChange={searchGroups}
-        suggestionItems={suggestions}
-        onSelectChange={onContactSelectChange}
-        inputLabel={label}
-        inputPlaceholder={placeholder}
-        InputItem={Chip}
-        MenuItem={GroupSearchItem}
-        automationId="contactSearchGroupSuggestionsList"
-        messageRef={messageRef}
-        minRowHeight={44}
-        multiple={multiple}
-        maxLength={maxLength}
-        initialSelectedItem={initialSelectedItem}
       />
     );
   }

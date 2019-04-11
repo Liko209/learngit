@@ -6,7 +6,7 @@
 import PersonModel from '@/store/models/Person';
 
 type Props = {
-  id: number;
+  itemId: number;
 };
 
 type ViewProps = Props & {

@@ -11,14 +11,8 @@ type SelectedMember = {
   email: string;
 };
 
-enum ContactSearchType {
-  GROUP,
-  PERSON,
-}
-
 type ContactSearchProps = {
   groupId?: number;
-  type: ContactSearchType;
   onSelectChange?: (item: any) => void;
   label: string;
   placeholder: string;
@@ -34,17 +28,13 @@ type ContactSearchProps = {
 };
 
 type ViewProps = ContactSearchProps & {
+  inputValue: string;
+  selectedItems: SelectedMember[];
   searchMembers: (value: string) => void;
-  searchGroups: (value: string) => void;
   suggestions: SelectedMember[];
   initialSelectedItem?: SelectedMember;
-  onContactSelectChange: (item: any) => void;
-  label: string;
-  placeholder: string;
-  error: boolean;
-  helperText: string;
-  errorEmail?: string;
+  handleSelectChange: (item: any) => void;
   messageRef?: React.RefObject<HTMLInputElement>;
 };
 
-export { ViewProps, ContactSearchProps, SelectedMember, ContactSearchType };
+export { ViewProps, ContactSearchProps, SelectedMember };

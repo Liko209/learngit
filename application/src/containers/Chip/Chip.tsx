@@ -11,8 +11,8 @@ import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 const Chip = (props: any) => {
   const { id } = props;
-  const type = GlipTypeUtil.extractTypeId(id);
   if (id) {
+    const type = GlipTypeUtil.extractTypeId(id);
     if (type === TypeDictionary.TYPE_ID_PERSON) {
       return (
         <JuiChip PersonAvatar={Avatar} isError={props.isError} {...props} />

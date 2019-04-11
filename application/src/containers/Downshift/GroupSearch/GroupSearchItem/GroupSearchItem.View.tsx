@@ -8,18 +8,18 @@ import { JuiMenuItem } from 'jui/components/Menus';
 import { JuiListItemText } from 'jui/components/Lists';
 import { ViewProps } from './types';
 
-import { GroupAvatar } from '../../Avatar/GroupAvatar';
+import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
 import { observer } from 'mobx-react';
 
 @observer
 class GroupSearchItemView extends React.Component<ViewProps> {
   render() {
-    const { group, isHighlighted, id, ...rest } = this.props;
+    const { group, isHighlighted, itemId, ...rest } = this.props;
     return (
       <JuiMenuItem
         {...rest}
         selected={isHighlighted}
-        avatar={<GroupAvatar cid={id} />}
+        avatar={<GroupAvatar cid={itemId} />}
       >
         <JuiListItemText primary={group.displayName} />
       </JuiMenuItem>
