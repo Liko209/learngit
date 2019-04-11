@@ -148,10 +148,6 @@ export class ProfileDialog extends BaseWebComponent {
     return this.profileTitle.exists;
   }
 
-  async shouldBePopUp() {
-    await this.t.expect(this.profileTitle.exists).ok();
-  }
-
   get favoriteButton() {
     return this.getSelectorByAutomationId('favorite-icon', this.self);
   }

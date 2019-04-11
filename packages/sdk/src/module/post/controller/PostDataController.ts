@@ -86,17 +86,16 @@ class PostDataController {
    * 2, handlePreInsert
    * 3, filterAndSavePosts
    */
-  async handleSexioPosts(data: Raw<Post>[]) {
+  async handleSexioPosts(data: Post[]) {
     if (data.length) {
-      let posts = this.transformData(data);
       this._handleModifiedDiscontinuousPosts(
-        posts.filter((post: Post) => post.created_at !== post.modified_at),
+        data.filter((post: Post) => post.created_at !== post.modified_at),
       );
-      posts = await this.handleSexioModifiedPosts(posts);
+      const posts = await this.handleSexioModifiedPosts(data);
       await this.preInsertController.bulkDelete(posts);
       return await this.filterAndSavePosts(posts, true);
     }
-    return data;
+    return [];
   }
 
   /**
