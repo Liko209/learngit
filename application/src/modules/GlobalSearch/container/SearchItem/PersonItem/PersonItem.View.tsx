@@ -30,9 +30,8 @@ class PersonItemComponent extends React.Component<PersonItemProps> {
     onClose();
   }
 
-  onCallClose = (e: React.MouseEvent) => {
+  onCallClose = () => {
     const { addRecentRecord, onClose } = this.props;
-    e.stopPropagation();
     addRecentRecord();
     onClose();
   }
