@@ -44,12 +44,12 @@ class ContentSearchResultViewModel
 
   @computed
   get postsCount() {
-    return this.searchState.contentsCount[TypeDictionary.TYPE_ID_POST];
+    return this.searchState.contentsCount[TypeDictionary.TYPE_ID_POST] || 0;
   }
 
   @computed
   get isEmpty() {
-    return this.postsCount === 0;
+    return !!(this.searchState.requestId && !this.postsCount);
   }
 
   @observable

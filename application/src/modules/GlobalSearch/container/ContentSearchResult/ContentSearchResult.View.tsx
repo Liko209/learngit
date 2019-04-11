@@ -48,7 +48,7 @@ class ContentSearchResultViewComponent extends Component<Props> {
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper>
           <JuiListSubheader data-test-automation-id="searchResultsCount">
-            {t('globalSearch.Results', { count: postsCount || 0 })}
+            {t('globalSearch.Results', { count: postsCount })}
           </JuiListSubheader>
           {isEmpty ? (
             <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
