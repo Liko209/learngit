@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   margin: ${spacing(20, 0)};
 `;
 
-const JuiRecentSearcnEmptyScreen: StatelessComponent<JuiEmptyScreenProps> = (
+const JuiRecentSearchEmptyScreen: StatelessComponent<JuiEmptyScreenProps> = (
   props: JuiEmptyScreenProps,
 ) => (
   <Wrapper>
@@ -21,4 +21,4 @@ const JuiRecentSearcnEmptyScreen: StatelessComponent<JuiEmptyScreenProps> = (
   </Wrapper>
 );
 
-export { JuiRecentSearcnEmptyScreen };
+export { JuiRecentSearchEmptyScreen };

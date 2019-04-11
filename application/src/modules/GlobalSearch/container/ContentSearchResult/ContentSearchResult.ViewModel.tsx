@@ -17,8 +17,7 @@ import {
 import { Notification } from '@/containers/Notification';
 import { generalErrorHandler } from '@/utils/error';
 import { StoreViewModel } from '@/store/ViewModel';
-import { GLOBAL_KEYS } from '@/store/constants';
-import { getGlobalValue } from '@/store/utils';
+
 import { GlobalSearchStore } from '../../store';
 import { SEARCH_SCOPE } from '../../types';
 import {
@@ -117,7 +116,7 @@ class ContentSearchResultViewModel
   @action
   private _onSearchInit() {
     const q = this._searchKey;
-    const currentGroupId = getGlobalValue(GLOBAL_KEYS.CURRENT_CONVERSATION_ID);
+    const currentGroupId = this._globalSearchStore.groupId;
 
     const group_id =
       this._searchScope === SEARCH_SCOPE.CONVERSATION ? currentGroupId : null;

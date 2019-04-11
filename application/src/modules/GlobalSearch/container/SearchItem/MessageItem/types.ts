@@ -9,7 +9,6 @@ import { SEARCH_SCOPE, SEARCH_VIEW, TAB_TYPE } from '../../../types';
 
 type ContentProps = {
   displayName: string;
-  searchScope: SEARCH_SCOPE;
   params?: {
     groupId: number;
   };

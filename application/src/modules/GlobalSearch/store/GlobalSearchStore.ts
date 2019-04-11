@@ -11,6 +11,7 @@ class GlobalSearchStore {
   @observable open: boolean = false;
   @observable searchKey: string = '';
   @observable currentTab: TAB_TYPE;
+  @observable groupId: number;
 
   @observable currentView: SEARCH_VIEW = SEARCH_VIEW.FULL_SEARCH;
   @observable searchScope: SEARCH_SCOPE;
@@ -38,6 +39,11 @@ class GlobalSearchStore {
   @action
   setSearchScope(scope: SEARCH_SCOPE) {
     this.searchScope = scope;
+  }
+
+  @action
+  setGroupId(id: number) {
+    this.groupId = id;
   }
 
   @action

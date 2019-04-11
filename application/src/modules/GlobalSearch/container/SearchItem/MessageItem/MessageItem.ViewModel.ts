@@ -15,9 +15,10 @@ import { ENTITY_NAME } from '@/store';
 import i18nT from '@/utils/i18nT';
 
 import { GlobalSearchStore } from '../../../store';
-import { ContentProps, ISearchItemModel, SEARCH_VIEW, TAB_TYPE } from './types';
+import { ContentProps, ISearchItemModel } from './types';
 import { SearchViewModel } from '../../common/Search.ViewModel';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { toSearchContent } from '../../common/toSearchContent';
 
 class MessageItemViewModel extends SearchViewModel<ContentProps>
   implements ISearchItemModel {
@@ -51,11 +52,10 @@ class MessageItemViewModel extends SearchViewModel<ContentProps>
 
   @action
   onClick = () => {
-    const { searchScope } = this.props;
+    const { params, displayName } = this.props;
 
-    this._globalSearchStore.setCurrentView(SEARCH_VIEW.FULL_SEARCH);
-    this._globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
-    this._globalSearchStore.setSearchScope(searchScope);
+    toSearchContent(!!(params && params.groupId), params && params.groupId);
+    this._globalSearchStore.setSearchKey(displayName);
 
     this.addRecentRecord();
   }

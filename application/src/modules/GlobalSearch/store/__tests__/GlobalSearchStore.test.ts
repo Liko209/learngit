@@ -21,6 +21,10 @@ describe('GlobalSearchStore', () => {
     globalSearchStore.setSearchKey('123');
     expect(globalSearchStore.searchKey).toBe('123');
   });
+  it('setSearchKey()', () => {
+    globalSearchStore.setGroupId(123);
+    expect(globalSearchStore.groupId).toBe(123);
+  });
   it('setCurrentTab()', () => {
     globalSearchStore.setCurrentTab(TAB_TYPE.CONTENT);
     expect(globalSearchStore.currentTab).toBe(TAB_TYPE.CONTENT);
