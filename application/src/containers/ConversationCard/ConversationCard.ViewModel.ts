@@ -107,6 +107,14 @@ class ConversationCardViewModel extends StoreViewModel<ConversationCardProps> {
     return !!(this.post.parentId || this.post.existItemIds.length);
   }
 
+  @computed
+  get terms() {
+    if (this._globalSearchStore.open) {
+      return this._globalSearchStore.searchKey.split(' ');
+    }
+    return [];
+  }
+
   beforeJump = () => {
     if (this._globalSearchStore.open) {
       this._globalSearchService.closeGlobalSearch();

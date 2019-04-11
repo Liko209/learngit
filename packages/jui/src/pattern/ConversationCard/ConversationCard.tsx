@@ -6,7 +6,7 @@
 import * as React from 'react';
 import styled, { css } from '../../foundation/styled-components';
 import { JuiConversationCardAvatarArea } from './ConversationCardAvatarArea';
-import { grey, palette, spacing } from '../../foundation/utils';
+import { grey, palette, spacing, typography } from '../../foundation/utils';
 import tinycolor from 'tinycolor2';
 import {
   JuiButtonProps,
@@ -63,6 +63,12 @@ const StyledConversationCard = styled<
     background: ${grey('50')};
   }
   ${({ mode }) => mode === 'navigation' && navigationStyles};
+  }
+
+  & .highlight-term {
+    font-weight: bold;
+    color: ${grey('900')};
+    ${typography('body2')};
   }
 `;
 const highlightBg = ({ theme }: any) =>
