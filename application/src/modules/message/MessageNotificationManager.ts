@@ -4,10 +4,7 @@ import { Markdown } from 'glipdown';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { Post } from 'sdk/module/post/entity/Post';
-import { NotificationEntityUpdatePayload } from 'sdk/service/notificationCenter';
-import { ENTITY } from 'sdk/service/eventKey';
 import { NotificationManager } from '@/modules/notification/manager';
-import { notificationCenter, EVENT_TYPES } from 'sdk/service';
 import {
   getActivity,
   getActivityData,
@@ -17,38 +14,26 @@ import { ENTITY_NAME } from '@/store';
 import PostModel from '@/store/models/Post';
 import { NotificationOpts } from '../notification/interface';
 import i18nT from '@/utils/i18nT';
-import { PersonService } from 'sdk/src/module/person';
+import { PersonService } from 'sdk/module/person';
 import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/utils/handleAtMentionName';
 import history from '@/history';
 import GroupModel from '@/store/models/Group';
-import GroupService from 'sdk/src/module/group';
-import { PostService } from 'sdk/src/module/post';
+import GroupService from 'sdk/module/group';
+import { PostService } from 'sdk/module/post';
 
-export class MessageNotificationManager extends NotificationManager {
+export class MessageNotificationManager extends NotificationManager<
+  PostService
+> {
   constructor() {
-    super('message');
+    super('message', ServiceConfig.POST_SERVICE);
+    this._observer = {
+      onEntitiesChanged: this.handlePostEntityChanged,
+    };
   }
 
-  init() {
-    notificationCenter.on(`${ENTITY.POST}.*`, this.handlePostEntityChanged);
-  }
-
-  handlePostEntityChanged = async ({
-    type,
-    body: payload,
-  }: NotificationEntityUpdatePayload<Post>) => {
+  handlePostEntityChanged = async (entities: Post[]) => {
     const currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
-
-    /* this should be replaced once SDK finished socket push notification */
-
-    if (type !== EVENT_TYPES.UPDATE || payload.ids.length !== 1) {
-      return;
-    }
-
-    const postId = payload.ids[0];
-    if (postId <= 0) {
-      return;
-    }
+    const postId = entities[0].id;
     const post = await ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
     ).getById(postId);
@@ -158,9 +143,5 @@ export class MessageNotificationManager extends NotificationManager {
       );
     }
     return headshotUrl || '/icon/defaultAvatar.png';
-  }
-
-  dispose() {
-    notificationCenter.off(`${ENTITY.POST}.*`, this.handlePostEntityChanged);
   }
 }
