@@ -83,6 +83,8 @@ const MultipleDownshift = () => {
   };
   return (
     <JuiDownshift
+      selectedItems={[]}
+      inputValue=""
       suggestionItems={suggestionItems}
       MenuItem={SearchItem}
       InputItem={Chip}
