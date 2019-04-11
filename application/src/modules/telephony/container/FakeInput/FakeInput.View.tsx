@@ -42,13 +42,19 @@ class FakeInputView extends Component<FakeInputViewProps> {
           word-break: keep-all;
           color: white;
           font-size: ${({ theme }) => theme.typography.headline.fontSize};
+          vertical-align: middle;
+          height: 100%;
+          display: flex;
+          align-items: center;
 
           &&:before{
             font-size: 1.75rem;
             display: inline-block;
-            content: '|';
+            content: '';
             animation: ${blink} .8s steps(1) infinite;
-            position: relative;
+            width: 1px;
+            height: 32px;
+            border-right: 1px solid white;
         }
     `;
 

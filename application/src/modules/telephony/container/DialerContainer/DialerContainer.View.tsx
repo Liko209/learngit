@@ -56,6 +56,7 @@ class DialerContainerView extends React.Component<DialerContainerViewProps> {
             size="xxlarge"
             key={str}
             color="grey.900"
+            stretchIcon={true}
           >
             {str}
           </JuiIconButton>

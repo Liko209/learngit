@@ -36,6 +36,7 @@ type JuiIconButtonProps = {
   innerRef?: RefObject<HTMLElement>;
   ref?: any;
   children: ReactNode;
+  stretchIcon?: boolean;
 } & Omit<MuiIconButtonProps, 'color' | 'children'> &
   Omit<JuiIconographyProps, 'color' | 'children'>;
 
@@ -100,6 +101,14 @@ const StyledIconButton = styled(WrappedMuiIconButton)`
     width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
       theme,
     })};
+    ${({ variant, size = 'medium', theme, stretchIcon }) => (
+    stretchIcon ?
+      `font-size: ${width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
+        theme,
+      })};`
+      :
+      ''
+  )}
     /* color: ${({ awake }) =>
     awake ? grey('500') : palette('accent', 'ash')}; */
     color: ${({ theme, colorScope, colorName }) =>
@@ -111,8 +120,10 @@ const StyledIconButton = styled(WrappedMuiIconButton)`
     .toRgbString() : 'inherit')};
     ${StyledIcon} {
       &, svg {
-        font-size: ${({ size = 'medium', theme }) =>
-    width(iconSizes[size])({ theme })};
+        font-size: ${({ size = 'medium', theme, stretchIcon, variant }) =>
+          stretchIcon ? width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
+            theme,
+          }) : width(iconSizes[size])({ theme })};
       }
     }
     &:hover {
@@ -225,6 +236,7 @@ JuiIconButtonComponent.defaultProps = {
   invisible: false,
   tooltipTitle: '',
   shouldPersistBg: false,
+  stretchIcon: false,
 };
 
 const JuiIconButton = styled(memo(JuiIconButtonComponent))``;
