@@ -15,8 +15,7 @@ class NotificationService implements INotificationService {
   private _permission = new Permission();
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;
-  // @ts-ignore
-  private _isFirefox = InstallTrigger !== 'undefined';
+  private _isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
   private _maximumTitleLength = 40;
   constructor() {
     this._notificationDistributors = new Map();
@@ -35,25 +34,26 @@ class NotificationService implements INotificationService {
   }
   formatterForFirefox(str: string = '') {
     return str && str.length > this._maximumTitleLength
-      ? str.substr(0, this._maximumTitleLength) + '...'
+      ? `${str.substr(0, this._maximumTitleLength)}...`
       : str;
   }
   async show(title: string, opts: NotificationOpts) {
+    let titleFormatted = title;
     if (document.hasFocus()) {
       return;
     }
 
     if (this._isFirefox) {
       opts.body = this.formatterForFirefox(opts.body);
-      title = this.formatterForFirefox(title);
+      titleFormatted = this.formatterForFirefox(title);
     }
     if (!this._permission.isGranted) {
       const permission = await this._permission.request();
       if (permission) {
-        this._notificationDistributor.create(title, opts);
+        this._notificationDistributor.create(titleFormatted, opts);
       }
     } else {
-      this._notificationDistributor.create(title, opts);
+      this._notificationDistributor.create(titleFormatted, opts);
     }
   }
 
