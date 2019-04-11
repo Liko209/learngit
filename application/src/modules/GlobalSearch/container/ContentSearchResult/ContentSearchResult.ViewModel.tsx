@@ -94,13 +94,7 @@ class ContentSearchResultViewModel
 
     this._setSearchState({ requestId: null });
 
-    if (previousRequestId) {
-      if (!this.isEmpty && this._stream && this._stream.current) {
-        this._stream.current.vm.reInit();
-      } else {
-        this.isEmpty = false;
-      }
-    }
+    previousRequestId && this._refresh();
   }
 
   onPostsFetch = async () => {
@@ -117,6 +111,14 @@ class ContentSearchResultViewModel
   }
 
   onSearchEnd = async () => await this._postService.endPostSearch();
+
+  private _refresh() {
+    if (!this.isEmpty && this._stream && this._stream.current) {
+      this._stream.current.vm.reInit();
+    } else {
+      this.isEmpty = false;
+    }
+  }
 
   @action
   private _onSearchInit() {
