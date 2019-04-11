@@ -70,8 +70,15 @@ describe('MembersViewModel', () => {
     });
 
     it('should be get mock result when invoke service fuzzy search interface [JPT-1263]', async () => {
+      vm.keywords = 'any';
       const result = await vm.handleSearch();
       expect(result).toEqual(mockResult);
+    });
+
+    it('should use all ids as filtered ids [JPT-1263]', async () => {
+      vm.keywords = '';
+      await vm.handleSearch();
+      expect(vm.filteredMemberIds).toEqual(vm.sortedAllMemberIds);
     });
   });
 });
