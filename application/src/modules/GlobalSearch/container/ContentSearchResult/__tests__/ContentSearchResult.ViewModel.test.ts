@@ -16,6 +16,7 @@ import { ContentSearchResultViewModel } from '../ContentSearchResult.ViewModel';
 import { CONTENT_SEARCH_FETCH_COUNT } from '../types';
 import { SEARCH_SCOPE } from '../../../types';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { TypeDictionary } from 'sdk/utils';
 
 jest.mock('@/store/utils');
 
@@ -142,5 +143,30 @@ describe('ContentSearchResult fix(FIJI-4865)', () => {
     vm._updatePostIds(<Post[]>toIds);
 
     expect(vm.searchState.postIds).toStrictEqual([4, 3, 2, 1]);
+  });
+});
+
+describe('ContentSearchResult.ViewModel', () => {
+  beforeEach(() => {
+    const postService = {
+      endPostSearch: jest.fn().mockResolvedValue(null),
+      getSearchContentsCount: jest.fn().mockResolvedValue({}),
+      searchPosts: jest
+        .fn()
+        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+    };
+
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
+  });
+
+  it('Should reset contentCounts when setSearchOptions is called on the empty screen', async () => {
+    const vm = new ContentSearchResultViewModel({});
+    vm.searchState.requestId = 1123; // mock previous request id before set new search option
+    vm.searchState.contentsCount = {
+      [TypeDictionary.TYPE_ID_POST]: 0,
+    };
+    expect(vm.isEmpty).toBe(true);
+    await vm.setSearchOptions({});
+    expect(vm.isEmpty).toBe(false);
   });
 });
