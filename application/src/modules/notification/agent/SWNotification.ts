@@ -23,7 +23,7 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
 
   isSupported() {
     return (
-      navigator.userAgent.indexOf('Edge') === -1 &&
+      navigator.userAgent.indexOf('Electron') === -1 &&
       !/^((?!chrome|android).)*safari/i.test(navigator.userAgent) &&
       (navigator !== undefined && navigator.serviceWorker !== undefined)
     );

@@ -24,8 +24,8 @@ import { PersonService } from 'sdk/module/person';
 import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/utils/handleAtMentionName';
 import history from '@/history';
 import GroupModel from '@/store/models/Group';
-import GroupService from 'sdk/src/module/group';
-import { PostService } from 'sdk/src/module/post';
+import GroupService from 'sdk/module/group';
+import { PostService } from 'sdk/module/post';
 import { getPostType } from '@/common/getPostType';
 
 export class MessageNotificationManager extends NotificationManager<
