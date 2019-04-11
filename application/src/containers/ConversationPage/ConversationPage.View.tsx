@@ -97,7 +97,7 @@ class ConversationPageViewComponent extends Component<
       <JuiStreamWrapper>
         <Stream
           groupId={groupId}
-          viewRef={this._streamRef}
+          // viewRef={this._streamRef}
           key={`Stream_${groupId}_${this.streamKey}`}
           refresh={this.remountStream}
           jumpToPostId={
