@@ -7,16 +7,17 @@
 import { DeskTopNotification } from '../agent/DesktopNotification';
 import _ from 'lodash';
 import { Permission } from '../Permission';
-import { INotificationService, Global, NotificationOpts } from '../interface';
+import { INotificationService, NotificationOpts } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
 
 class NotificationService implements INotificationService {
-  // @ts-ignore
-  private _win: Global = window;
   private _permission = new Permission();
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;
+  // @ts-ignore
+  private _isFirefox = InstallTrigger !== 'undefined';
+  private _maximumTitleLength = 40;
   constructor() {
     this._notificationDistributors = new Map();
     this._notificationDistributors.set('sw', new SWNotification());
@@ -32,10 +33,19 @@ class NotificationService implements INotificationService {
       }
     }
   }
-
+  formatterForFirefox(str: string = '') {
+    return str && str.length > this._maximumTitleLength
+      ? str.substr(0, this._maximumTitleLength) + '...'
+      : str;
+  }
   async show(title: string, opts: NotificationOpts) {
     if (document.hasFocus()) {
       return;
+    }
+
+    if (this._isFirefox) {
+      opts.body = this.formatterForFirefox(opts.body);
+      title = this.formatterForFirefox(title);
     }
     if (!this._permission.isGranted) {
       const permission = await this._permission.request();
