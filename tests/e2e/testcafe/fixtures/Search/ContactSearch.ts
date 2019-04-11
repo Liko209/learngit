@@ -88,7 +88,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
   // update configuration of teams
