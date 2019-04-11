@@ -7,6 +7,7 @@ import { Person } from 'sdk/module/person/entity';
 import { Group } from 'sdk/module/group/entity';
 import { SortableModel } from 'sdk/framework/model';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
+import GroupModel from '@/store/models/Group';
 
 type BaseItems<T> = {
   ids: T[];
@@ -61,6 +62,13 @@ type ViewProps = {
   onKeyDown: () => void;
   selectIndexChange: (sectionIndex: number, cellIndex: number) => void;
   getCurrentItemId: () => any;
+  getCurrentItemType: () => string;
+  canJoinTeam: (
+    id: number,
+  ) => {
+    group: GroupModel;
+    canJoin: Boolean;
+  };
 };
 
 type SectionType<T> = {

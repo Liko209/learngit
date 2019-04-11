@@ -129,10 +129,8 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
   }
   render() {
     const { Actions, fileName, forceSize, url, placeholder } = this.props;
-
     const { width, height } =
       this._loaded && !forceSize ? this._imageInfo : this.props;
-
     const imageStyle = this._getImageStyle(width, height);
 
     return (
