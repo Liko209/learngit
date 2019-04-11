@@ -67,12 +67,12 @@ class PostDataController {
       posts = await this.handleIndexModifiedPosts(posts);
       mainLogger.info(
         LOG_INDEX_DATA_POST,
-        `filterAndSavePosts() before posts length: ${posts && posts.length}`,
+        `filterAndSavePosts() before posts.length: ${posts && posts.length}`,
       );
       posts = await this.filterAndSavePosts(posts, true);
       mainLogger.info(
         LOG_INDEX_DATA_POST,
-        `filterAndSavePosts() after posts length: ${posts && posts.length}`,
+        `filterAndSavePosts() after posts.length: ${posts && posts.length}`,
       );
       if (result && result.deleteMap.size > 0) {
         const groupService: GroupService = GroupService.getInstance();
@@ -223,7 +223,7 @@ class PostDataController {
     }
     mainLogger.info(
       LOG_INDEX_DATA_POST,
-      `handleIndexModifiedPosts() posts length: ${posts.length}`,
+      `handleIndexModifiedPosts() posts.length: ${posts.length}`,
     );
     const groupPosts: { [groupId: number]: Post[] } = {};
     posts.forEach((post: Post) => {
@@ -359,7 +359,6 @@ class PostDataController {
           mainLogger.info(
             LOG_INDEX_DATA_POST,
             `removeDiscontinuousPosts() remove groupId: ${groupId}, deletePostIds: ${deletePostIds}`,
-            [deleteGroupIdSet].join(','),
           );
         }
       }),

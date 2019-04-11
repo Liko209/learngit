@@ -139,7 +139,7 @@ class PostService extends EntityBaseService<Post> {
       PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
       logId,
     );
-    this.getPostController()
+    await this.getPostController()
       .getPostDataController()
       .handleIndexPosts(data, maxPostsExceed);
     mainLogger.info(

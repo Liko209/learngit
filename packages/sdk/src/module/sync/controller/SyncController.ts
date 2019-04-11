@@ -337,7 +337,7 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_COMPANY,
       logId,
     );
-    CompanyService.getInstance<CompanyService>().handleIncomingData(
+    await CompanyService.getInstance<CompanyService>().handleIncomingData(
       companies,
       source,
     );
@@ -355,7 +355,7 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_ITEM,
       logId,
     );
-    (ItemService.getInstance() as ItemService).handleIncomingData(items);
+    await (ItemService.getInstance() as ItemService).handleIncomingData(items);
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
@@ -373,7 +373,7 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_PRESENCE,
       logId,
     );
-    PresenceService.getInstance<PresenceService>().presenceHandleData(
+    await PresenceService.getInstance<PresenceService>().presenceHandleData(
       presences,
     );
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
@@ -390,7 +390,10 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_STATE,
       logId,
     );
-    (StateService.getInstance() as StateService).handleState(states, source);
+    await (StateService.getInstance() as StateService).handleState(
+      states,
+      source,
+    );
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
@@ -407,7 +410,7 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_PROFILE,
       logId,
     );
-    ProfileService.getInstance<ProfileService>().handleIncomingData(
+    await ProfileService.getInstance<ProfileService>().handleIncomingData(
       profile,
       source,
     );
@@ -428,7 +431,7 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_PERSON,
       logId,
     );
-    PersonService.getInstance<PersonService>().handleIncomingData(
+    await PersonService.getInstance<PersonService>().handleIncomingData(
       persons,
       source,
     );
@@ -449,7 +452,7 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_GROUP,
       logId,
     );
-    GroupService.getInstance<GroupService>().handleData(groups, source);
+    await GroupService.getInstance<GroupService>().handleData(groups, source);
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
@@ -468,7 +471,7 @@ class SyncController {
       PERFORMANCE_KEYS.HANDLE_INCOMING_GROUP,
       logId,
     );
-    PostService.getInstance<PostService>().handleIndexData(
+    await PostService.getInstance<PostService>().handleIndexData(
       posts,
       maxPostsExceeded,
     );

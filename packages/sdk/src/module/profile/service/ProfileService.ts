@@ -41,7 +41,7 @@ class ProfileService extends EntityBaseService<Profile>
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
   ) => {
-    this.getProfileController()
+    await this.getProfileController()
       .getProfileDataController()
       .profileHandleData(profile, source);
   }
