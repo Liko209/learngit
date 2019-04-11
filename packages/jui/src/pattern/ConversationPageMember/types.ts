@@ -1,7 +1,7 @@
-import { ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 
 type JuiConversationPageMemberProps = {
-  onClick(): void;
+  onClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void;
   ariaLabel: string;
   title: string;
   children: ReactElement;
