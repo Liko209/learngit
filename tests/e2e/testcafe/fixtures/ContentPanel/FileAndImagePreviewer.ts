@@ -20,7 +20,7 @@ fixture('ContentPanel/FileAndImagePreviewer')
 
 
 test(formalName('Can close a full-screen image previewer by clicking close button/ESC', ['JPT-1347', 'P2', 'Potar.He', 'FileAndImagePriviewer']), async (t) => {
-  const filesPath = '../../sources/1.png';
+  const filesPath = ['../../sources/1.png', '../../sources/2.png'];
   const loginUser = h(t).rcData.mainCompany.users[4];
   const anotherUser = h(t).rcData.mainCompany.users[5];
   await h(t).glip(loginUser).init();
@@ -50,7 +50,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
     await conversationPage.uploadFilesToMessageAttachment(filesPath);
     await conversationPage.typeAtMentionUserNameAndPressEnter(otherUserName);
     await conversationPage.pressEnterWhenFocusOnMessageInputArea();
-    await conversationPage.nthPostItem(-1).waitForPostToSend();
+    await conversationPage.nthPostItem(-1).waitForPostToSend(20e3);
     postId = await conversationPage.nthPostItem(-1).postId;
   });
 
@@ -69,7 +69,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   let scrollTop: number;
 
   // conversation entry point
-  await h(t).withLog('When I scroll to the image post and click the image on the post', async () => {
+  await h(t).withLog('When I scroll to the image post and click the first image on the post', async () => {
     await t.wait(1e3); // wait conversation stream stage.
     await conversationPage.postItemById(postId).scrollIntoView();
     scrollTop = await conversationPage.scrollDiv.scrollTop;
@@ -80,6 +80,10 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   await h(t).withLog('Then the image previewer should be showed', async () => {
     await previewer.ensureLoaded();
     await previewer.shouldBeFullScreen();
+  });
+
+  await h(t).withLog('And the index of image should be (1/2)', async () => {
+    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
   });
 
   await h(t).withLog('When I click the close button', async () => {
@@ -116,16 +120,20 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
 
   // bookmark page enter point
   const bookmarkPage = app.homePage.messageTab.bookmarkPage;
-  await h(t).withLog('When I enter bookmark and click the image on the post', async () => {
+  await h(t).withLog('When I enter bookmark and click the second image on the post', async () => {
     await app.homePage.messageTab.bookmarksEntry.enter();
     await bookmarkPage.postItemById(postId).scrollIntoView();
     scrollTop = await bookmarkPage.scrollDiv.scrollTop;
-    await t.click(bookmarkPage.postItemById(postId).img);
+    await t.click(bookmarkPage.postItemById(postId).img.nth(1));
   });
 
   await h(t).withLog('Then the image previewer should be showed', async () => {
     await previewer.ensureLoaded();
     await previewer.shouldBeFullScreen();
+  });
+
+  await h(t).withLog('And the index of image should be (2/2)', async () => {
+    await await t.expect(previewer.positionIndex.textContent).match(/(2\/2)/);
   });
 
   await h(t).withLog('When I click the close button', async () => {
@@ -159,7 +167,7 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   await h(t).withLog('And  Return to the conversation and stay where it was', async () => {
     await bookmarkPage.expectStreamScrollToY(scrollTop);
   });
-  
+
   // TODO: search content
 
   // at mention enter point
@@ -178,6 +186,10 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
   await h(t).withLog('Then the image previewer should be showed', async () => {
     await previewer.ensureLoaded();
     await previewer.shouldBeFullScreen();
+  });
+
+  await h(t).withLog('And the index of image should be (1/2)', async () => {
+    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
   });
 
   await h(t).withLog('When I click the close button', async () => {
