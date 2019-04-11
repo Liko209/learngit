@@ -29,6 +29,8 @@ import {
 } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TypeDictionary } from 'sdk/utils';
+import { TYPE_MAP } from '../SearchFilter/config';
+import _ from 'lodash';
 
 class ContentSearchResultViewModel
   extends StoreViewModel<ContentSearchResultProps>
@@ -42,8 +44,16 @@ class ContentSearchResultViewModel
   private _stream: any;
 
   @computed
+  get _type() {
+    const typeData = TYPE_MAP.find(
+      ({ value }) => value === this.searchOptions.type,
+    );
+    return typeData && typeData.id ? typeData.id : TypeDictionary.TYPE_ID_POST;
+  }
+
+  @computed
   get postsCount() {
-    return this.searchState.contentsCount[TypeDictionary.TYPE_ID_POST] || 0;
+    return this.searchState.contentsCount[this._type] || 0;
   }
 
   @computed
@@ -158,7 +168,7 @@ class ContentSearchResultViewModel
 
   private _onPostsInit = async () => {
     const contentsCount = await this._postService.getSearchContentsCount(
-      this._searchParams,
+      _.omit(this._searchParams, 'type'),
     );
 
     const result = await this._postService.searchPosts(this._searchParams);

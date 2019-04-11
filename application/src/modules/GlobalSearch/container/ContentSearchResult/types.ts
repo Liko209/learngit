@@ -9,7 +9,9 @@ import { Post } from 'sdk/module/post/entity';
 type ContentSearchState = {
   requestId: number | null;
   postIds: number[];
-  contentsCount: object;
+  contentsCount: {
+    [key: number]: number;
+  };
 };
 
 type ContentSearchResult = {
