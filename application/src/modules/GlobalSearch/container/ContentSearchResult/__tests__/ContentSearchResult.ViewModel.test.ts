@@ -16,6 +16,7 @@ import { ContentSearchResultViewModel } from '../ContentSearchResult.ViewModel';
 import { CONTENT_SEARCH_FETCH_COUNT } from '../types';
 import { SEARCH_SCOPE } from '../../../types';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import { TypeDictionary } from 'sdk/utils';
 
 jest.mock('@/store/utils');
 
@@ -158,15 +159,13 @@ describe('ContentSearchResult.ViewModel', () => {
     ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
   });
 
-  it('isEmpty should be false initially', () => {
-    const vm = new ContentSearchResultViewModel({});
-    expect(vm.isEmpty).toBe(false);
-  });
-
-  it('Should reset isEmpty to false when setSearchOptions is called on the empty screen', async () => {
+  it('Should reset contentCounts when setSearchOptions is called on the empty screen', async () => {
     const vm = new ContentSearchResultViewModel({});
     vm.searchState.requestId = 1123; // mock previous request id before set new search option
-    vm.isEmpty = true;
+    vm.searchState.contentsCount = {
+      [TypeDictionary.TYPE_ID_POST]: 0,
+    };
+    expect(vm.isEmpty).toBe(true);
     await vm.setSearchOptions({});
     expect(vm.isEmpty).toBe(false);
   });

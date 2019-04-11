@@ -16,7 +16,6 @@ import {
 } from 'jui/pattern/FullSearchResult';
 import { JuiListSubheader } from 'jui/components/Lists';
 import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
-import { TypeDictionary } from 'sdk/utils';
 import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
 
 type Props = ContentSearchResultViewProps & WithTranslation;
@@ -37,20 +36,19 @@ class ContentSearchResultViewComponent extends Component<Props> {
   render() {
     const {
       t,
+      postsCount,
       searchState,
       onPostsFetch,
       setSearchOptions,
       searchOptions,
       isEmpty,
     } = this.props;
-    const contentsCount =
-      searchState.contentsCount[TypeDictionary.TYPE_ID_POST] || 0;
 
     return (
       <JuiFullSearchWrapper>
         <JuiFullSearchResultWrapper>
           <JuiListSubheader data-test-automation-id="searchResultsCount">
-            {t('globalSearch.Results', { count: contentsCount })}
+            {t('globalSearch.Results', { count: postsCount || 0 })}
           </JuiListSubheader>
           {isEmpty ? (
             <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />

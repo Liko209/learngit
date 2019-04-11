@@ -42,8 +42,15 @@ class ContentSearchResultViewModel
 
   private _stream: any;
 
-  @observable
-  isEmpty: boolean = false;
+  @computed
+  get postsCount() {
+    return this.searchState.contentsCount[TypeDictionary.TYPE_ID_POST];
+  }
+
+  @computed
+  get isEmpty() {
+    return this.postsCount === 0;
+  }
 
   @observable
   searchState: ContentSearchState = {
@@ -116,7 +123,7 @@ class ContentSearchResultViewModel
     if (!this.isEmpty && this._stream && this._stream.current) {
       this._stream.current.vm.reInit();
     } else {
-      this.isEmpty = false;
+      this._setSearchState({ contentsCount: {} });
     }
   }
 
@@ -132,7 +139,7 @@ class ContentSearchResultViewModel
   }
 
   @action
-  private _setSearchState(state = {}) {
+  private _setSearchState(state: Partial<ContentSearchState> = {}) {
     Object.assign(this.searchState, state);
   }
 
@@ -157,9 +164,6 @@ class ContentSearchResultViewModel
     const result = await this._postService.searchPosts(this._searchParams);
 
     this._setSearchState({ contentsCount, requestId: result.requestId });
-
-    const count = contentsCount[TypeDictionary.TYPE_ID_POST] || 0;
-    this.isEmpty = count === 0;
 
     return result;
   }
