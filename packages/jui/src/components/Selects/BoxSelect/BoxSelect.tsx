@@ -9,16 +9,31 @@ import { SelectProps } from '@material-ui/core/Select';
 import { StyledSelect, CLASSES_SELECT } from './StyledSelect';
 import { StyledInput, CLASSES_INPUT_BASE } from './StyledInput';
 import { HeightSize } from './types';
+import { spacing, grey, typography } from '../../../foundation/utils';
+import styled from '../../../foundation/styled-components';
 
-type Props = SelectProps & {
+type JuiBoxSelectProps = SelectProps & {
   children: JSX.Element[];
   heightSize?: HeightSize;
   handleChange: (value: string) => void;
+  label?: string;
+  isFullWidth?: boolean;
 };
 
-// Selected Select doesn't open on enter
-// https://github.com/mui-org/material-ui/issues/14626
-class JuiBoxSelect extends PureComponent<Props> {
+const StyledSelectBoxContainer = styled.div`
+  text-align: left;
+  padding-bottom: ${spacing(3)};
+`;
+const StyledSelectBoxHeader = styled.div`
+  color: ${grey('900')};
+  ${typography('body2')};
+  padding-bottom: ${spacing(2)};
+`;
+
+class JuiBoxSelect extends PureComponent<
+  JuiBoxSelectProps,
+  { value: string | null }
+> {
   private _renderInput = () => {
     const { heightSize = 'default' } = this.props;
     return <StyledInput classes={CLASSES_INPUT_BASE} heightSize={heightSize} />;
@@ -27,19 +42,24 @@ class JuiBoxSelect extends PureComponent<Props> {
     const { value } = event.target;
     this.props.handleChange(value);
   }
+
   render() {
-    const { children, ...rest } = this.props;
+    const { children, label, isFullWidth, ...rest } = this.props;
     return (
-      <StyledSelect
-        classes={CLASSES_SELECT}
-        input={this._renderInput()}
-        onChange={this._handleChange}
-        {...rest}
-      >
-        {children}
-      </StyledSelect>
+      <StyledSelectBoxContainer>
+        <StyledSelectBoxHeader>{label}</StyledSelectBoxHeader>
+        <StyledSelect
+          classes={CLASSES_SELECT}
+          style={isFullWidth ? { width: '100%' } : {}}
+          input={this._renderInput()}
+          onChange={this._handleChange}
+          {...rest}
+        >
+          {children}
+        </StyledSelect>
+      </StyledSelectBoxContainer>
     );
   }
 }
 
-export { JuiBoxSelect };
+export { JuiBoxSelect, JuiBoxSelectProps };

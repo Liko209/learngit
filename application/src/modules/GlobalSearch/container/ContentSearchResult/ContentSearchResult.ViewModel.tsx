@@ -5,7 +5,7 @@
  */
 import { computed, action, observable } from 'mobx';
 import { container } from 'framework';
-import { ContentSearchParams } from 'sdk/api/glip/search';
+import { ContentSearchParams, ESearchContentTypes } from 'sdk/api/glip/search';
 import { PostService } from 'sdk/module/post';
 import { SearchedResultData } from 'sdk/module/post/controller/implementation/types';
 import { Post } from 'sdk/module/post/entity';
@@ -54,6 +54,7 @@ class ContentSearchResultViewModel
   @observable
   searchOptions: ContentSearchOptions = {
     scroll_size: CONTENT_SEARCH_FETCH_COUNT,
+    type: ESearchContentTypes.ALL,
   };
 
   constructor(props: ContentSearchResultProps) {
