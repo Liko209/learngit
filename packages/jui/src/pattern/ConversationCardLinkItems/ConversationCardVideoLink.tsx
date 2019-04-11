@@ -8,9 +8,16 @@ import React, { PureComponent } from 'react';
 import styled from '../../foundation/styled-components';
 import { JuiIconButton } from '../../components/Buttons/IconButton';
 import { JuiCard } from '../../components/Cards';
-import { width, height, spacing, grey } from '../../foundation/utils/styles';
+import {
+  width,
+  height,
+  spacing,
+  grey,
+  typography,
+} from '../../foundation/utils/styles';
 
 const LinkItemsWrapper = styled(JuiCard)`
+  display: flex;
   margin-top: ${spacing(3)};
   background-color: ${({ theme }) => theme.palette.common.white};
   width: 100%;
@@ -22,26 +29,40 @@ const LinkItemsWrapper = styled(JuiCard)`
     background-color: ${grey('100')};
   }
 `;
+
 const LinkItemContents = styled.div`
   display: flex;
-  & > span {
-    color: ${({ theme }) => theme.palette.accent.ash};
-    width: ${width(5)};
-    height: ${height(5)};
-    cursor: pointer;
-    margin-top: ${spacing(-1)};
+  flex-direction: column;
+`;
+
+const Title = styled.p`
+  ${typography('subheading1')};
+  margin: ${spacing(0, 0, 2, 0)};
+  word-break: break-word;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  a {
+    color: ${grey('900')};
+    &:hover {
+      text-decoration: underline;
+    }
   }
 `;
 
-const TitleWithSummary = styled.div`
-  display: flex;
-  flex: 1;
-  margin-left: ${spacing(3)};
-  flex-direction: column;
-  justify-content: space-between;
+const VideoWrapper = styled.div`
+  iframe {
+    width: 100%;
+    max-width: ${width(160)};
+    max-height: ${height(90)};
+  }
 `;
 
 type Props = {
+  title: string;
+  url: string;
   html?: string;
   onLinkItemClose?: (e: React.MouseEvent<HTMLSpanElement>) => void;
 };
@@ -56,23 +77,28 @@ class JuiConversationCardVideoLink extends PureComponent<Props> {
     onLinkItemClose && onLinkItemClose(event);
   }
   render() {
-    const { html } = this.props;
+    const { html, title, url } = this.props;
     return (
       <LinkItemsWrapper>
         <LinkItemContents>
-          <TitleWithSummary
+          <Title>
+            <a href={url} target="_blank">
+              {title}
+            </a>
+          </Title>
+          <VideoWrapper
             dangerouslySetInnerHTML={{
               __html: html || '',
             }}
           />
-          <JuiIconButton
-            disableToolTip={true}
-            variant="plain"
-            onClick={this.onLinkItemClose}
-          >
-            close
-          </JuiIconButton>
         </LinkItemContents>
+        <JuiIconButton
+          disableToolTip={true}
+          variant="plain"
+          onClick={this.onLinkItemClose}
+        >
+          close
+        </JuiIconButton>
       </LinkItemsWrapper>
     );
   }

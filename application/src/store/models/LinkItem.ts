@@ -21,10 +21,11 @@ export default class LinkItemModel extends ItemModel {
   @observable
   image: string;
   @observable
-  data: {
+  data?: {
     provider_name: string;
     favicon_url: string;
     url: string;
+    title: string;
     object: {
       duration?: number;
       width?: number;
@@ -65,14 +66,16 @@ export default class LinkItemModel extends ItemModel {
     this.favicon = favicon;
     this.createdAt = created_at;
     this.creatorId = creator_id;
-    console.info(this.data, '---nello');
   }
 
   @computed
   get isVideo() {
     const data = this.data;
-    const { object } = data;
-    if (object.type && object.type === 'video') {
+    if (!data) {
+      return false;
+    }
+
+    if (data.object && data.object.type && data.object.type === 'video') {
       return true;
     }
     return false;

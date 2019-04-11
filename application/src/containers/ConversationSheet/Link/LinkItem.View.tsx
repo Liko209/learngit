@@ -26,6 +26,8 @@ class LinkItemView extends React.Component<Props> {
   renderLink = (item: LinkItemModel) => {
     const { url, title, image, summary, id, favicon, providerName } = item;
     let itemUrlWithProtocol;
+    // In Glip must has this key
+    // hard code in order to show the current image
     const imgStamp = '&key=4527f263d6e64d7a8251b007b1ba9972';
 
     if (url) {
@@ -54,27 +56,38 @@ class LinkItemView extends React.Component<Props> {
     ) : null;
   }
 
+  renderVideo = (item: LinkItemModel) => {
+    if (!item.data) {
+      return null;
+    }
+    const { id, url } = item;
+    const { object, title } = item.data;
+    return (
+      <JuiConversationCardVideoLink
+        key={id}
+        title={title}
+        url={url}
+        html={object ? object.html : ''}
+        onLinkItemClose={this.onLinkItemClose(id)}
+      />
+    );
+  }
+
   render() {
     const { postItems } = this.props;
     return (
       <>
         {postItems.map((item: LinkItemModel) => {
-          // In Glip must has this key
-          // hard code in order to show the current image
-          console.info(item.isVideo, '---nello is video');
           const { doNotRender, deactivated } = item;
           if (doNotRender || deactivated) {
             return null;
           }
 
-          if (item.isVideo) {
-            const object = item.data.object;
-            return (
-              <JuiConversationCardVideoLink html={object ? object.html : ''} />
-            );
+          if (!item.isVideo) {
+            return this.renderLink(item);
           }
 
-          return this.renderLink(item);
+          return this.renderVideo(item);
         })}
       </>
     );
