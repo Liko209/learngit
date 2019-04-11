@@ -144,13 +144,6 @@ class MakeCallController {
     return MAKE_CALL_ERROR_CODE.NO_ERROR;
   }
 
-  private _checkVoipStatusAndCallSetting() {
-    // countryBlock & unavailable this will be provided by Voip team.
-    // No Ringout feature
-    // TODO FIJI-3837
-    return MAKE_CALL_ERROR_CODE.NO_ERROR;
-  }
-
   async getE164PhoneNumber(phoneNumber: string) {
     const phoneParserUtility = await PhoneParserUtility.getPhoneParser(
       phoneNumber,
@@ -170,10 +163,6 @@ class MakeCallController {
         break;
       }
       result = await this._checkE911Status();
-      if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-        break;
-      }
-      result = this._checkVoipStatusAndCallSetting();
       if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
         break;
       }
