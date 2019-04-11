@@ -6,7 +6,6 @@
 import { ContactSearchViewModel } from '../ContactSearch.ViewModel';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { getEntity } from '@/store/utils';
-import { ContactSearchType } from '../types';
 
 jest.mock('@/store/utils');
 
@@ -19,17 +18,7 @@ const searchService = {
   },
 };
 
-const groupService = {
-  doFuzzySearchALlGroups() {
-    return {
-      terms: [],
-      sortableModels: [{ id: 3 }],
-    };
-  },
-};
-
 const props = {
-  type: ContactSearchType.PERSON,
   label: '',
   placeholder: '',
 };
@@ -62,38 +51,6 @@ describe('ContactSearchVM', () => {
       );
 
       expect(contactSearchViewModel.groupMembers).toEqual(members);
-    });
-  });
-  describe('fetchGroups', () => {
-    it('List shows/no if enter text matched/no matched any team conversation in posted in input filed [JPT-1555]', async () => {
-      const contactSearchViewModel = new ContactSearchViewModel(
-        Object.assign(props, { type: ContactSearchType.GROUP }),
-      );
-      let value = 'aaa';
-      ServiceLoader.getInstance = jest.fn().mockReturnValue(groupService);
-      await expect(contactSearchViewModel.fetchGroups(value)).resolves.toEqual([
-        { id: 3 },
-      ]);
-      value = '';
-      contactSearchViewModel.searchGroups(value);
-      expect(contactSearchViewModel.suggestions).toEqual([]);
-    });
-    it('Check the search list of the post in when searching message in a conversation [JPT-1636]', async () => {
-      const members = [1, 2, 3];
-      const displayName = 'aaa';
-      (getEntity as jest.Mock).mockReturnValue({
-        members,
-        displayName,
-      });
-      const contactSearchViewModel = new ContactSearchViewModel(
-        Object.assign(props, { groupId: 6 }),
-      );
-
-      expect(contactSearchViewModel.initialSelectedItem).toEqual({
-        id: 6,
-        label: displayName,
-        email: displayName,
-      });
     });
   });
 });

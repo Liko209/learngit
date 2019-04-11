@@ -47,10 +47,12 @@ const getItemById = (suggestions: Item[], id: number) =>
   suggestions.find((suggestion: Item) => suggestion.id === id);
 
 const SearchItem = (props: any) => {
-  const item = getItemById(suggestions, props.id);
+  const { itemId, ...rest } = props;
+  debugger;
+  const item = getItemById(suggestions, itemId);
 
   return item ? (
-    <JuiSearchItem selected={props.isHighlighted} {...props}>
+    <JuiSearchItem selected={props.isHighlighted} {...rest}>
       {item.label}
     </JuiSearchItem>
   ) : null;
@@ -67,6 +69,7 @@ const Chip = (props: any) => {
 };
 
 const MultipleDownshift = () => {
+  const inputValue = '';
   const [suggestionItems, setSuggestionItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<Item[]>([]);
   const handleInputChange = (value: string) => {
@@ -81,7 +84,7 @@ const MultipleDownshift = () => {
     filterSuggestions = differenceBy(suggestions, selectedItems, 'id');
     filterSuggestions = filterSuggestions.filter((suggestion: any) => {
       const keep =
-        count < 5 &&
+        count < 10 &&
         suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
 
       if (keep) {
@@ -105,6 +108,8 @@ const MultipleDownshift = () => {
       onInputChange={handleInputChange}
       onSelectChange={handleSelectChange}
       minRowHeight={50}
+      inputValue={inputValue}
+      selectedItems={selectedItems}
     />
   );
 };

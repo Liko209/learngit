@@ -6,7 +6,7 @@
 import GroupModel from '@/store/models/Group';
 
 type Props = {
-  id: number;
+  itemId: number;
 };
 
 type ViewProps = Props & {

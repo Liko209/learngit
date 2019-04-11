@@ -8,8 +8,7 @@ import React, { Component } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { JuiSearchFilter } from 'jui/pattern/SearchFilter';
-import { ContactSearch } from '@/containers/ContactSearch';
-import { ContactSearchType } from '@/containers/ContactSearch/types';
+import { ContactSearch, GroupSearch } from '@/containers/Downshift';
 import { SearchFilterViewProps, SearchContentTypeItem } from './types';
 import {
   JuiBoxSelect,
@@ -46,7 +45,6 @@ class SearchFilterViewComponent extends Component<ViewProps> {
     return (
       <JuiSearchFilter title={t('globalSearch.filters')}>
         <ContactSearch
-          type={ContactSearchType.PERSON}
           onSelectChange={handleSearchPersonChange}
           label={t('globalSearch.postedBy')}
           placeholder={t('globalSearch.postedByPlaceholder')}
@@ -57,8 +55,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           }
           maxLength={60}
         />
-        <ContactSearch
-          type={ContactSearchType.GROUP}
+        <GroupSearch
           onSelectChange={handleSearchGroupChange}
           label={t('globalSearch.postedIn')}
           placeholder={t('globalSearch.postedInPlaceholder')}
