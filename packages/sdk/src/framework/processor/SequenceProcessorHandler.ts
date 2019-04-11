@@ -7,16 +7,37 @@
 import { AbstractProcessor } from './AbstractProcessor';
 import { IProcessor } from './IProcessor';
 import { mainLogger } from 'foundation';
+import notificationCenter from '../../service/notificationCenter';
+import { SERVICE } from '../../service/eventKey';
+
+const MAX_QUEUE = 10000;
 
 class SequenceProcessorHandler extends AbstractProcessor {
   private _isExecuting: boolean = false;
+  private _maxQueue: number;
+  private LOG_TAG = 'SequenceProcessorHandler';
 
-  constructor(name: string) {
+  constructor(name: string, maxQueue: number = MAX_QUEUE) {
     super(name);
+    this._maxQueue = maxQueue;
+    this._subscribeNotifications();
   }
 
   addProcessor(processor: IProcessor): boolean {
+    if (this._processors.length >= this._maxQueue) {
+      mainLogger.log(
+        `${this.LOG_TAG}-${this.name} over threshold:${
+          this._maxQueue
+        }, remove the oldest one`,
+      );
+      this._processors.shift();
+    }
+
     const result = super.addProcessor(processor);
+
+    !result &&
+      mainLogger.log(`${this.LOG_TAG}-${this.name}, add process failed`);
+
     this.execute();
     return result;
   }
@@ -66,6 +87,20 @@ class SequenceProcessorHandler extends AbstractProcessor {
     }
 
     return result;
+  }
+
+  private _subscribeNotifications() {
+    notificationCenter.on(
+      SERVICE.WAKE_UP_FROM_SLEEP,
+      this._onWakeUpFromSleep.bind(this),
+    );
+  }
+  private _onWakeUpFromSleep() {
+    // try to execute next one when wake up from sleep
+    if (this._isExecuting) {
+      this._isExecuting = false;
+      this.execute();
+    }
   }
 }
 
