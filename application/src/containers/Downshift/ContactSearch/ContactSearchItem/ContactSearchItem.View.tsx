@@ -8,18 +8,18 @@ import { JuiMenuItem } from 'jui/components/Menus';
 import { JuiListItemText } from 'jui/components/Lists';
 import { ViewProps } from './types';
 
-import { Avatar } from '../../Avatar';
+import { Avatar } from '@/containers/Avatar';
 import { observer } from 'mobx-react';
 
 @observer
 class ContactSearchItemView extends React.Component<ViewProps> {
   render() {
-    const { person, isHighlighted, id, ...rest } = this.props;
+    const { person, isHighlighted, itemId, ...rest } = this.props;
     return (
       <JuiMenuItem
         {...rest}
         selected={isHighlighted}
-        avatar={<Avatar uid={id} />}
+        avatar={<Avatar uid={itemId} />}
       >
         <JuiListItemText
           primary={person.userDisplayName}
