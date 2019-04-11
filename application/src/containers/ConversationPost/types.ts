@@ -1,3 +1,5 @@
+
+import { POST_TYPE } from './../../common/getPostType';
 import { JuiConversationCard } from 'jui/pattern/ConversationCard';
 import { RefObject } from 'react';
 
@@ -6,11 +8,6 @@ import { RefObject } from 'react';
  * @Date: 2018-11-12 11:28:57
  * Copyright © RingCentral. All rights reserved.
  */
-
-enum POST_TYPE {
-  NOTIFICATION = 1,
-  POST,
-}
 
 type ConversationPostProps = {
   cardRef?: RefObject<JuiConversationCard>;
@@ -22,4 +19,4 @@ type ConversationPostViewProps = ConversationPostProps & {
   type: POST_TYPE;
 };
 
-export { ConversationPostProps, ConversationPostViewProps, POST_TYPE };
+export { ConversationPostProps, ConversationPostViewProps };
