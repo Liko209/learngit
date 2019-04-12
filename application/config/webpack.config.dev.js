@@ -39,11 +39,6 @@ const publicUrl = '';
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
 
-// number of circular dependencies allowed, for the purpose of integrate with
-// current state of system, will reduce to 0 when these are fixed.
-const MAX_CYCLES = 9;
-let numCyclesDetected;
-
 /**
  * Select which plugins to use to optimize the bundle's handling of
  * third party dependencies.
@@ -363,21 +358,8 @@ module.exports = {
     // Detect circular dependencies
     new CircularDependencyPlugin({
       exclude: /node_modules/,
-      onStart({ compilation }) {
-        numCyclesDetected = 0;
-      },
       onDetected({ module: webpackModuleRecord, paths, compilation }) {
-        numCyclesDetected++;
-        compilation.warnings.push(new Error(paths.join(' -> ')));
-      },
-      onEnd({ compilation }) {
-        if (numCyclesDetected > MAX_CYCLES) {
-          compilation.errors.push(
-            new Error(
-              `[circular dependency] Detected ${numCyclesDetected} cycles which exceeds configured limit of ${MAX_CYCLES}`,
-            ),
-          );
-        }
+        compilation.errors.push(new Error(paths.join(' -> ')));
       },
     }),
     // Generate a manifest file which contains a mapping of all asset filenames

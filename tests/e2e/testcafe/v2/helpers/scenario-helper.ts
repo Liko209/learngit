@@ -143,6 +143,12 @@ class ScenarioHelper {
     await platform.removeChatToFavorites(chat.glipId);
   }
 
+  async uploadFile(path: string, name: string, chat: IGroup, operator: IUser) {
+    assert(chat && operator, "require chat and operator");
+    const platform = await this.sdkHelper.sdkManager.getPlatform(operator);
+    return await platform.uploadFile(path, name, chat.glipId);
+  }
+
   // glip
   public async clearAllUmi(me: IUser) {
     assert(me, "require me");

@@ -5,47 +5,52 @@
  */
 import { ProfileDataController } from './ProfileDataController';
 import { ProfileActionController } from './ProfileActionController';
-import { daoManager } from '../../../dao';
+import { SettingsActionController } from './SettingsActionController';
 import {
   buildRequestController,
-  buildEntityPersistentController,
-  buildEntitySourceController,
   buildPartialModifyController,
 } from '../../../framework/controller';
-import { ProfileDao } from '../dao';
 import Api from '../../../api/api';
 import { Profile } from '../entity';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
+import { IRequestController } from '../../../framework/controller/interface/IRequestController';
+import { IPartialModifyController } from '../../../framework/controller/interface/IPartialModifyController';
 
 class ProfileController {
   private profileActionController: ProfileActionController;
   private profileDataController: ProfileDataController;
+  private settingsActionController: SettingsActionController;
+  private _requestController: IRequestController<Profile>;
+  private _partialModifyController: IPartialModifyController<Profile>;
+
   constructor(
     public entitySourceController: IEntitySourceController<Profile>,
   ) {}
 
-  getProfileActionController(): ProfileActionController {
-    if (!this.profileActionController) {
-      const requestController = buildRequestController<Profile>({
+  private get requestController(): IRequestController<Profile> {
+    if (!this._requestController) {
+      this._requestController = buildRequestController<Profile>({
         basePath: '/profile',
         networkClient: Api.glipNetworkClient,
       });
+    }
+    return this._requestController;
+  }
 
-      const persistentController = buildEntityPersistentController<Profile>(
-        daoManager.getDao(ProfileDao),
+  private get partialModifyController(): IPartialModifyController<Profile> {
+    if (!this._partialModifyController) {
+      this._partialModifyController = buildPartialModifyController<Profile>(
+        this.entitySourceController,
       );
-      const entitySourceController = buildEntitySourceController<Profile>(
-        persistentController,
-        requestController,
-      );
+    }
+    return this._partialModifyController;
+  }
 
-      const partialModifyController = buildPartialModifyController<Profile>(
-        entitySourceController,
-      );
-
+  getProfileActionController(): ProfileActionController {
+    if (!this.profileActionController) {
       this.profileActionController = new ProfileActionController(
-        partialModifyController,
-        requestController,
+        this.partialModifyController,
+        this.requestController,
         this.getProfileDataController(),
       );
     }
@@ -59,6 +64,17 @@ class ProfileController {
       );
     }
     return this.profileDataController;
+  }
+
+  getSettingsActionController(): SettingsActionController {
+    if (!this.settingsActionController) {
+      this.settingsActionController = new SettingsActionController(
+        this.partialModifyController,
+        this.requestController,
+        this.getProfileDataController(),
+      );
+    }
+    return this.settingsActionController;
   }
 }
 
