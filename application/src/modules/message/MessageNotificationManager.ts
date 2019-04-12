@@ -10,10 +10,7 @@ import { Markdown } from 'glipdown';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { Post } from 'sdk/module/post/entity/Post';
-import { NotificationEntityUpdatePayload } from 'sdk/service/notificationCenter';
-import { ENTITY } from 'sdk/service/eventKey';
-import { NotificationManager } from '@/modules/notification/manager';
-import { notificationCenter, EVENT_TYPES } from 'sdk/service';
+import { AbstractNotificationManager } from '@/modules/notification/manager';
 import {
   getActivity,
   getActivityData,
@@ -30,26 +27,27 @@ import GroupService from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
 import { MessageRouterChangeHelper } from './container/Message/helper';
 import { getPostType } from '@/common/getPostType';
+import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 
-export class MessageNotificationManager extends NotificationManager {
+export class MessageNotificationManager extends AbstractNotificationManager {
+  protected _observer: IEntityChangeObserver;
+  private _postService: PostService;
   constructor() {
-    super('message');
+    super('message', ServiceConfig.POST_SERVICE);
+    this._observer = {
+      onEntitiesChanged: this.handlePostEntityChanged,
+    };
   }
 
   init() {
-    /* this should be replaced once SDK finished socket push notification */
-    notificationCenter.on(`${ENTITY.POST}.*`, this.handlePostEntityChanged);
+    this._postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
+    this._postService.addEntityNotificationObserver(this._observer);
   }
 
-  handlePostEntityChanged = async ({
-    type,
-    body: payload,
-  }: NotificationEntityUpdatePayload<Post>) => {
-    if (type !== EVENT_TYPES.UPDATE || payload.ids.length !== 1) {
-      return;
-    }
-
-    const postId = payload.ids[0];
+  handlePostEntityChanged = async (entities: Post[]) => {
+    const postId = entities[0].id;
     const result = await this.shouldEmitNotification(postId);
 
     if (!result) {
@@ -175,8 +173,7 @@ export class MessageNotificationManager extends NotificationManager {
     }
     return headshotUrl || '/icon/defaultAvatar.png';
   }
-
   dispose() {
-    notificationCenter.off(`${ENTITY.POST}.*`, this.handlePostEntityChanged);
+    this._postService.removeEntityNotificationObserver(this._observer);
   }
 }
