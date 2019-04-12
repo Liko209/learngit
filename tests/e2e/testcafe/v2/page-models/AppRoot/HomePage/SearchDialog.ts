@@ -1,5 +1,6 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
 import { IGroup } from '../../../models';
+import { BaseConversationPage } from "./MessageTab/ConversationPage";
 
 
 export class SearchDialog extends BaseWebComponent {
@@ -257,6 +258,14 @@ class FullSearch extends BaseSearchResultPage {
   get teamsTabEntry() {
     return this.getTabEntry('globalSearch-team');
   }
+
+  get messagesTab() {
+    return this.getComponent(MessagesResultTab, this.self)
+  }
+}
+
+class MessagesResultTab extends BaseConversationPage {
+  
 }
 
 
