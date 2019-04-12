@@ -33,7 +33,7 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
   }
 
   private _subscribeWorkerMessage() {
-    navigator.serviceWorker.addEventListener('message', event => {
+    navigator.serviceWorker.addEventListener('message', (event) => {
       const data = JSON.parse(event.data) as SWCallbackArgs;
       if (!data.id) {
         return;
@@ -68,13 +68,13 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
     }
     const { scope, id } = opts.data;
     opts.data.clientId = SWNotification.CLIENT_ID;
-    const actions = opts.actions || [];
-    actions.push(
+    const actions = [
+      ...(opts.actions || []),
       buildAction({
         action: 'click',
         handler: opts.onClick,
       }),
-    );
+    ];
     const isSuccessful = await this._checkNotificationValid(id);
     if (isSuccessful) {
       await this._reg.showNotification(title, opts);
