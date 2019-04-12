@@ -8,21 +8,19 @@ import * as goToConversation from '@/common/goToConversation';
 import { NewMessageViewModel } from '../NewMessage.ViewModel';
 import { PostService } from 'sdk/module/post';
 import { ServiceLoader } from 'sdk/module/serviceLoader';
+import GroupService from 'sdk/module/group';
 
 jest.mock('sdk/module/post');
 jest.mock('../../Notification');
-jest.mock('../../../store/utils');
-jest.mock('../../../store/index');
 jest.mock('@/common/goToConversation');
 
-const postService = new PostService();
-ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
+const postService = new PostService(new GroupService());
+jest.spyOn(ServiceLoader, 'getInstance').mockReturnValue(postService);
 
 const newMessageVM = new NewMessageViewModel();
 
 describe('NewMessageVM', () => {
   beforeAll(() => {
-    jest.resetAllMocks();
     const gs = {
       get: jest.fn(),
       set: jest.fn(),
