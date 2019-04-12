@@ -146,7 +146,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then the recently searched list should be cleared`, async () => {
     await searchDialog.recentPage.ensureLoaded();
-    await t.expect(searchDialog.recentPage.items.count).eql(1);
+    await t.expect(searchDialog.recentPage.items.count).eql(0);
   });
 
   await h(t).withLog(`Then the search dialog input box should remain focused`, async () => {
