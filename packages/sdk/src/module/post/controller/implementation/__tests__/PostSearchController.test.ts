@@ -119,6 +119,12 @@ describe('PostSearchController', () => {
           created_at: 1548264342044,
           model_id: '10',
         },
+        {
+          _id: 18,
+          created_at: 1528264342044,
+          model_id: '18',
+          deactivated: true,
+        },
       ],
       just_ids: false,
       response_id: 1,

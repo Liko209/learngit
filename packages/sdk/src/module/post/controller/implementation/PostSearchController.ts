@@ -364,7 +364,11 @@ class PostSearchController {
   }
 
   private _handlePostsAndItems(contents: (Raw<Post> | Raw<Item>)[]) {
-    const objects: (Post | Item)[] = transformAll(contents);
+    let objects: (Post | Item)[] = transformAll(contents);
+    objects = objects.filter((value: Post | Item) => {
+      return !value.deactivated;
+    });
+
     const posts: Post[] = [];
     const items: Item[] = [];
     objects.map((value: Post | Item) => {
