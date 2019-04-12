@@ -10,10 +10,12 @@ import { JuiDialer, JuiHeaderContainer } from 'jui/pattern/Dialer';
 import { DialerTitleBar } from '../DialerTitleBar';
 import { DialerHeader } from '../DialerHeader';
 import { DialerContainer } from '../DialerContainer';
+import { DialerViewProps } from './types';
 import { withDialogOrNewWindow } from '../../HOC';
 import { Incoming } from '../Incoming';
-import { DialerViewProps } from './types';
 import { CALL_STATE } from '../../FSM';
+import { DialerKeypadHeader } from '../DialerKeypadHeader';
+
 @observer
 class DialerViewComponent extends React.Component<DialerViewProps> {
   shouldComponentUpdate(nextProps: DialerViewProps) {
@@ -23,22 +25,28 @@ class DialerViewComponent extends React.Component<DialerViewProps> {
     }
     return true;
   }
-
   render() {
     const { callState } = this.props;
     return (
       <JuiDialer>
         {callState === CALL_STATE.INCOMING && <Incoming />}
-        {callState !== CALL_STATE.INCOMING && (
-          <>
-            <JuiHeaderContainer>
-              <DialerTitleBar />
-              <DialerHeader />
-            </JuiHeaderContainer>
-            <DialerContainer />
-          </>
-        )}
-      </JuiDialer>
+        {
+          callState !== CALL_STATE.INCOMING && (
+            <>
+              <JuiHeaderContainer>
+                <DialerTitleBar />
+                {
+                  this.props.keypadEntered ?
+                    <DialerKeypadHeader />
+                    :
+                    <DialerHeader />
+                }
+              </JuiHeaderContainer>
+              <DialerContainer />
+            </>
+          )
+        }
+      </JuiDialer >
     );
   }
 }

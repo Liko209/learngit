@@ -124,6 +124,8 @@ interface IGroupService {
   isValid(group: Group): boolean;
 
   getEntities(): Promise<Group[]>;
+
+  getSoundexById(id: number): string[];
 }
 
 export { IGroupService };

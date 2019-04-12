@@ -5,20 +5,28 @@
  */
 
 import { rtcLogger } from '../utils/RTCLoggerProxy';
+import { EventEmitter2 } from 'eventemitter2';
 import { IRTCMediaDeviceDelegate } from './IRTCMediaDeviceDelegate';
+import { RTC_MEDIA_ACTION } from './types';
+import { defaultAudioID } from '../account/constants';
 
 const LOG_TAG = 'RTCMediaDeviceManager';
-
 enum RTC_MEDIA_DEVICE_KIND {
   AUDIO_OUTPUT = 'audiooutput',
   AUDIO_INPUT = 'audioinput',
 }
 
-class RTCMediaDeviceManager {
+class RTCMediaDeviceManager extends EventEmitter2 {
   private static _singleton: RTCMediaDeviceManager | null = null;
   private _delegate: IRTCMediaDeviceDelegate;
   private _audioOutputs: MediaDeviceInfo[] = [];
   private _audioInputs: MediaDeviceInfo[] = [];
+  private _hasDefaultInputAudioDeviceId: boolean = false;
+  private _hasDefaultOutputAudioDeviceId: boolean = false;
+
+  constructor() {
+    super();
+  }
 
   public static instance(): RTCMediaDeviceManager {
     if (!RTCMediaDeviceManager._singleton) {
@@ -36,6 +44,14 @@ class RTCMediaDeviceManager {
 
   public setMediaDeviceDelegate(delegate: IRTCMediaDeviceDelegate) {
     this._delegate = delegate;
+  }
+
+  public setAudioOutputDevice(deviceId: string) {
+    this.emit(RTC_MEDIA_ACTION.OUTPUT_DEVICE_CHANGED, deviceId);
+  }
+
+  public setAudioInputDevice(deviceId: string) {
+    this.emit(RTC_MEDIA_ACTION.INPUT_DEVICE_CHANGED, deviceId);
   }
 
   public subscribeDeviceChange() {
@@ -72,9 +88,15 @@ class RTCMediaDeviceManager {
   private _gotMediaDevices(deviceInfos: MediaDeviceInfo[]) {
     this._audioOutputs = [];
     this._audioInputs = [];
+    this._hasDefaultOutputAudioDeviceId = false;
+    this._hasDefaultInputAudioDeviceId = false;
     deviceInfos.forEach((deviceInfo: MediaDeviceInfo) => {
       if (deviceInfo.kind === RTC_MEDIA_DEVICE_KIND.AUDIO_INPUT) {
         this._audioInputs.push(deviceInfo);
+        if (defaultAudioID === deviceInfo.deviceId) {
+          this._hasDefaultInputAudioDeviceId = true;
+          this.setAudioInputDevice(deviceInfo.deviceId);
+        }
         rtcLogger.debug(
           LOG_TAG,
           `Audio input device FOUND: Name: ${deviceInfo.label} Id: ${
@@ -83,6 +105,10 @@ class RTCMediaDeviceManager {
         );
       } else if (deviceInfo.kind === RTC_MEDIA_DEVICE_KIND.AUDIO_OUTPUT) {
         this._audioOutputs.push(deviceInfo);
+        if (defaultAudioID === deviceInfo.deviceId) {
+          this._hasDefaultOutputAudioDeviceId = true;
+          this.setAudioOutputDevice(deviceInfo.deviceId);
+        }
         rtcLogger.debug(
           LOG_TAG,
           `Audio output device FOUND: Name: ${deviceInfo.label} Id: ${
@@ -104,6 +130,14 @@ class RTCMediaDeviceManager {
         this._audioInputs,
       );
     }
+  }
+
+  hasDefaultInputAudioDeviceId(): boolean {
+    return this._hasDefaultInputAudioDeviceId;
+  }
+
+  hasDefaultOutputAudioDeviceId(): boolean {
+    return this._hasDefaultOutputAudioDeviceId;
   }
 }
 

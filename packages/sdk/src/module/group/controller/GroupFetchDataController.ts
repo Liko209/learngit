@@ -244,20 +244,6 @@ export class GroupFetchDataController {
     return result;
   }
 
-  private _isFuzzyMatched(lowerCaseName: string, terms: Terms): boolean {
-    const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
-    return (
-      this.entityCacheSearchController.isFuzzyMatched(
-        lowerCaseName,
-        searchKeyTerms,
-      ) ||
-      this.entityCacheSearchController.isSoundexMatched(
-        lowerCaseName,
-        searchKeyTermsToSoundex,
-      )
-    );
-  }
-
   private get _currentUserId() {
     const userConfig = new AccountUserConfig();
     return userConfig.getGlipUserId();
@@ -266,13 +252,23 @@ export class GroupFetchDataController {
   private _getTransformGroupFunc(fetchAllIfSearchKeyEmpty?: boolean) {
     return (group: Group, terms: Terms) => {
       if (this._isValidGroup(group) && group.members.length > 2) {
-        const groupName = this.getGroupNameByMultiMembers(
+        const allPersons = this.getAllPersonOfGroup(
           group.members,
           this._currentUserId,
         );
-        const { searchKeyTerms } = terms;
+        const groupName = this._getGroupDisplayName(group, allPersons);
+        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const lowerCaseGroupName = groupName.toLowerCase();
-        const isFuzzyMatched = this._isFuzzyMatched(lowerCaseGroupName, terms);
+        const isFuzzyMatched =
+          this.entityCacheSearchController.isFuzzyMatched(
+            lowerCaseGroupName,
+            searchKeyTerms,
+          ) ||
+          (searchKeyTermsToSoundex.length &&
+            this.entityCacheSearchController.isSoundexMatched(
+              this.getSoundexValueOfGroup(allPersons),
+              searchKeyTermsToSoundex,
+            ));
         if (
           (searchKeyTerms.length > 0 && isFuzzyMatched) ||
           (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0)
@@ -342,19 +338,36 @@ export class GroupFetchDataController {
           break;
         }
 
-        const { searchKeyTerms } = terms;
+        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const shouldFetchAll =
           fetchAllIfSearchKeyEmpty! && searchKeyTerms.length === 0;
         isMatched = shouldFetchAll && isValidGroup;
-
-        groupName = this._getGroupDisplayName(group, currentUserId);
+        const allPerson = this.getAllPersonOfGroup(
+          group.members,
+          currentUserId,
+        );
+        groupName = this._getGroupDisplayName(group, allPerson);
 
         if (isMatched || searchKeyTerms.length === 0) {
           break;
         }
 
         const lowerCaseName = groupName.toLowerCase();
-        if (!this._isFuzzyMatched(lowerCaseName, terms)) {
+        if (
+          !(
+            this.entityCacheSearchController.isFuzzyMatched(
+              lowerCaseName,
+              searchKeyTerms,
+            ) ||
+            (searchKeyTermsToSoundex.length &&
+              this.entityCacheSearchController.isSoundexMatched(
+                group.is_team
+                  ? this.groupService.getSoundexById(group.id)
+                  : this.getSoundexValueOfGroup(allPerson),
+                searchKeyTermsToSoundex,
+              ))
+          )
+        ) {
           break;
         }
 
@@ -412,7 +425,7 @@ export class GroupFetchDataController {
           break;
         }
 
-        const { searchKeyTerms } = terms;
+        const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         if (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0) {
           isMatched = this._isPublicTeamOrIncludeUser(team, currentUserId);
         }
@@ -422,7 +435,19 @@ export class GroupFetchDataController {
         }
 
         const lowerCaseAbbreviation = team.set_abbreviation.toLowerCase();
-        if (!this._isFuzzyMatched(lowerCaseAbbreviation, terms)) {
+        if (
+          !(
+            this.entityCacheSearchController.isFuzzyMatched(
+              lowerCaseAbbreviation,
+              searchKeyTerms,
+            ) ||
+            (searchKeyTermsToSoundex.length &&
+              this.entityCacheSearchController.isSoundexMatched(
+                this.groupService.getSoundexById(team.id),
+                searchKeyTermsToSoundex,
+              ))
+          )
+        ) {
           break;
         }
 
@@ -488,31 +513,49 @@ export class GroupFetchDataController {
     return result;
   }
 
-  private _getGroupDisplayName(group: Group, currentUserId: number) {
+  private _getGroupDisplayName(group: Group, allPerson: Person[]) {
     return group.is_team
       ? group.set_abbreviation
-      : this.getGroupNameByMultiMembers(group.members, currentUserId);
+      : this.getGroupNameByMultiMembers(allPerson);
   }
 
-  getGroupNameByMultiMembers(members: number[], currentUserId: number) {
-    const names: string[] = [];
-    const emails: string[] = [];
+  getAllPersonOfGroup(members: number[], currentUserId: number) {
     const allPersons: Person[] = [];
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
-    const diffMembers = _.difference(members, [currentUserId]);
-    diffMembers.forEach((id: number) => {
+    members.forEach((id: number) => {
+      if (id === currentUserId) {
+        return;
+      }
       const person = personService.getSynchronously(id);
       if (person) {
         allPersons.push(person);
       }
     });
-
+    return allPersons;
+  }
+  getSoundexValueOfGroup(allPersons: Person[]): string[] {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    let soundexResult: string[] = [];
+    allPersons.forEach((person: Person) => {
+      const soundexOfPerson = personService.getSoundexById(person.id);
+      soundexResult = soundexResult.concat(soundexOfPerson);
+    });
+    return soundexResult;
+  }
+  getGroupNameByMultiMembers(allPersons: Person[]) {
+    const names: string[] = [];
+    const emails: string[] = [];
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     allPersons.forEach((person: Person) => {
       if (person) {
         const name = personService.getName(person);
-        if (name.length > 0) {
+        if (name.length) {
           names.push(name);
         } else {
           emails.push(person.email);
