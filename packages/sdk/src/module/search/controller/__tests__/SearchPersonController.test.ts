@@ -9,16 +9,14 @@ import { ISearchService } from '../../service/ISearchService';
 
 import { Person } from '../../../../module/person/entity';
 import { PersonService } from '../../../../module/person';
-import {
-  buildEntityCacheSearchController,
-  buildEntityCacheController,
-} from '../../../../framework/controller';
+import { buildEntityCacheSearchController } from '../../../../framework/controller';
 import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { SortableModel } from '../../../../framework/model';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { GroupService } from '../../../group';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
+import { PersonEntityCacheController } from '../../../person/controller/PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../module/account/config');
@@ -45,7 +43,9 @@ describe('SearchPersonController', () => {
 
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
 
-    entityCacheController = buildEntityCacheController<Person>();
+    entityCacheController = PersonEntityCacheController.buildPersonEntityCacheController(
+      personService,
+    );
     cacheSearchController = buildEntityCacheSearchController<Person>(
       entityCacheController,
     );
@@ -571,6 +571,7 @@ describe('SearchPersonController', () => {
     beforeEach(async () => {
       clearMocks();
       setUp();
+      personService['_entityCacheController'] = entityCacheController;
       await prepareDataForSearchUTs();
       SearchUtils.isUseSoundex = jest.fn().mockReturnValue(true);
     });

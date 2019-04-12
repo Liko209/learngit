@@ -40,17 +40,20 @@ describe('SearchUtils', () => {
   });
   describe('isSoundexMatch', () => {
     it.each`
-      srcText          | searchKeyTermsToSoundex                | expectRes
-      ${'Thomas Yang'} | ${[soundex('thomas')]}                 | ${true}
-      ${'Thomas Yang'} | ${[soundex('thmas')]}                  | ${true}
-      ${'Thomas Yang'} | ${[soundex('thm')]}                    | ${false}
-      ${'Thomas Yang'} | ${[soundex('ying'), soundex('thmas')]} | ${true}
-      ${'Thomas Yang'} | ${[soundex('yin'), soundex('thom')]}   | ${false}
+      soundexOfEntity                         | soundexOfSearchTerms                   | expectRes
+      ${[soundex('Thomas'), soundex('Yang')]} | ${[soundex('thomas')]}                 | ${true}
+      ${[soundex('Thomas'), soundex('Yang')]} | ${[soundex('thmas')]}                  | ${true}
+      ${[soundex('Thomas'), soundex('Yang')]} | ${[soundex('thm')]}                    | ${false}
+      ${[soundex('Thomas'), soundex('Yang')]} | ${[soundex('ying'), soundex('thmas')]} | ${true}
+      ${[soundex('Thomas'), soundex('Yang')]} | ${[soundex('yin'), soundex('thom')]}   | ${false}
+      ${[soundex('Thomas')]}                  | ${[soundex('thoms'), soundex('yin')]}  | ${false}
+      ${[soundex('Thomas')]}                  | ${[soundex('thoms')]}                  | ${true}
+      ${[soundex('')]}                        | ${[soundex('yin'), soundex('thom')]}   | ${false}
     `(
       'fuzzy match: $srcText, $searchKey, $expectRes',
-      ({ srcText, searchKeyTermsToSoundex, expectRes }) => {
+      ({ soundexOfEntity, soundexOfSearchTerms, expectRes }) => {
         expect(
-          SearchUtils.isSoundexMatched(srcText, searchKeyTermsToSoundex),
+          SearchUtils.isSoundexMatched(soundexOfEntity, soundexOfSearchTerms),
         ).toBe(expectRes);
       },
     );
@@ -69,21 +72,9 @@ describe('SearchUtils', () => {
     });
   });
 
-  describe('isTextMatchedBySoundex', () => {
-    it('should return true when matched', () => {
-      expect(
-        SearchUtils.isTextMatchedBySoundex(['V390', 'V490'], 'V390'),
-      ).toBeTruthy();
-    });
-    it('should return false when not matched', () => {
-      expect(
-        SearchUtils.isTextMatchedBySoundex(['V590', 'V490'], 'V390'),
-      ).toBeFalsy();
-    });
-  });
-  describe('getTermsFromSearchKey', () => {
+  describe('getTermsFromText', () => {
     it('should return a array when key is paynter chen', () => {
-      expect(SearchUtils.getTermsFromSearchKey('paynter chen')).toEqual([
+      expect(SearchUtils.getTermsFromText('paynter chen')).toEqual([
         'paynter',
         'chen',
       ]);
