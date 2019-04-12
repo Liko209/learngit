@@ -1,9 +1,9 @@
-import { goToConversation } from '@/common/goToConversation';
 /*
  * @Author: Andy Hu (andy.hu@ringcentral.com)
  * @Date: 2019-01-17 15:16:45
  * Copyright Â© RingCentral. All rights reserved.
  */
+import { goToConversation } from '@/common/goToConversation';
 import { POST_TYPE } from './../../common/getPostType';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -117,7 +117,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
   onClickHandlerBuilder(groupId: number, jumpToPostId: number) {
     return () => {
-      goToConversation({ conversationId: groupId, jumpToPostId });
+      goToConversation({ jumpToPostId, conversationId: groupId });
     };
   }
   async buildNotificationBodyAndTitle(
