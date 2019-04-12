@@ -77,7 +77,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           {typeFilter.map((item: SearchContentTypeItem) => {
             return (
               <JuiMenuItem
-                automationId={`typeSelector${item.id}`}
+                automationId={`typeSelector-${item.name}`}
                 value={item.value}
                 key={item.id}
               >
@@ -99,7 +99,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           {timePeriodFilter.map((item: SearchContentTypeItem) => {
             return (
               <JuiMenuItem
-                automationId={`timePost${item.id}`}
+                automationId={`timePost-${item.name}`}
                 value={item.id}
                 key={item.id}
               >
