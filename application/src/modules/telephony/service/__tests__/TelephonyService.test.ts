@@ -98,6 +98,7 @@ describe('TelephonyService', () => {
       getAllCallCount: jest.fn(),
       mute: jest.fn(),
       unmute: jest.fn(),
+      dtmf: jest.fn(),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance')
