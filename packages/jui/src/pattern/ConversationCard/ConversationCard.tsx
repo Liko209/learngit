@@ -90,14 +90,27 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
     highlight: false,
   };
 
+  private _timer?: NodeJS.Timer;
+
   highlight = () => {
     const { highlight } = this.state;
     !highlight &&
       this.setState({ highlight: true }, () => {
-        setTimeout(() => {
+        this._timer = setTimeout(() => {
           this.setState({ highlight: false });
-        },         ANIMATION_DURATION);
+        },                       ANIMATION_DURATION);
       });
+  }
+
+  clearTimer() {
+    if (this._timer) {
+      clearTimeout(this._timer);
+      this._timer = undefined;
+    }
+  }
+
+  componentWillUnmount() {
+    this.clearTimer();
   }
 
   render() {
