@@ -117,7 +117,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
   onClickHandlerBuilder(groupId: number, jumpToPostId: number) {
     return () => {
-      goToConversation({ conversationId: groupId, jumpToPostId });
+      goToConversation({ jumpToPostId, conversationId: groupId });
     };
   }
   async buildNotificationBodyAndTitle(
