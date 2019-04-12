@@ -51,7 +51,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`When tap ESC keyboard`, async () => {
-    await app.quitByPressEsc();
+    await searchDialog.quitByPressEsc();
   });
 
   await h(t).withLog(`Then the search dialog dismiss`, async () => {

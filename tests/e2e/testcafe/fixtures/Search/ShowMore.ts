@@ -153,7 +153,7 @@ test.meta(<ITestMeta>{
     await t.expect(messagesTab.posts.count).eql(3);
   });
 
-  // todo: filter
+  // Filter
   await h(t).withLog(`When I set filter post by ${loginUserName}`, async () => {
     await messagesTab.postByField.typeText(loginUserName);
     await messagesTab.postByField.selectMemberByNth(0);
@@ -200,11 +200,9 @@ test.meta(<ITestMeta>{
     await t.expect(searchDialog.fullSearchPage.items.count).eql(0);
   });
 
-
   await h(t).withLog(`When I switch to teams tab`, async () => {
     await searchDialog.fullSearchPage.teamsTabEntry.enter();
   }, true);
-
 
   await h(t).withLog(`Then there is one teams named ${firstTeamName}`, async () => {
     await searchDialog.fullSearchPage.conversationsContainName(firstTeamName);
@@ -217,17 +215,17 @@ test.meta(<ITestMeta>{
   }, true);
 
   await h(t).withLog(`And click search content item (global)`, async () => {
-    await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
+    await searchDialog.instantPage.clickContentSearchGlobalEntry();
   });
 
-  await h(t).withLog(`Then search result message tab should be open`, async () => {
+  await h(t).withLog(`Then search result message tab should be opened`, async () => {
     await searchDialog.fullSearchPage.messagesTabEntry.shouldBeOpened();
   });
 
   await h(t).withLog(`And display search result count at least 1`, async () => {
     await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).gte(1);
     await t.expect(searchDialog.fullSearchPage.searchResultsCount.exists).ok();
-    await searchDialog.fullSearchPage.countOnHeaderGreaterThanOrEqual(1)
+    await searchDialog.fullSearchPage.countOnHeaderGreaterThanOrEqual(1);
   });
 
   let postId, groupId;

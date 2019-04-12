@@ -205,11 +205,11 @@ class RecentSearch extends BaseSearchResultPage {
   }
 
   get historyHeader() {
-    return this.getSelectorByAutomationId('search-clear-button');
+    return this.getSelectorByAutomationId('search-clear');
   }
 
   get clearHistoryButton() {
-    return this.historyHeader.find('span');
+    return this.getSelectorByAutomationId('search-clear-button');
   }
 
   async clickClearHistory() {
