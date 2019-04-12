@@ -10,7 +10,7 @@ import { Markdown } from 'glipdown';
 import PersonModel from '@/store/models/Person';
 import { Person } from 'sdk/module/person/entity';
 import { Post } from 'sdk/module/post/entity/Post';
-import { NotificationManager } from '@/modules/notification/manager';
+import { AbstractNotificationManager } from '@/modules/notification/manager';
 import {
   getActivity,
   getActivityData,
@@ -27,15 +27,25 @@ import GroupService from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
 import { MessageRouterChangeHelper } from './container/Message/helper';
 import { getPostType } from '@/common/getPostType';
+import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 
-export class MessageNotificationManager extends NotificationManager<
+export class MessageNotificationManager extends AbstractNotificationManager<
   PostService
 > {
+  protected _observer: IEntityChangeObserver;
+  private _postService: PostService;
   constructor() {
     super('message', ServiceConfig.POST_SERVICE);
     this._observer = {
       onEntitiesChanged: this.handlePostEntityChanged,
     };
+  }
+
+  init() {
+    this._postService = ServiceLoader.getInstance<PostService>(
+      ServiceConfig.POST_SERVICE,
+    );
+    this._postService.addEntityNotificationObserver(this._observer);
   }
 
   handlePostEntityChanged = async (entities: Post[]) => {
@@ -164,5 +174,8 @@ export class MessageNotificationManager extends NotificationManager<
       );
     }
     return headshotUrl || '/icon/defaultAvatar.png';
+  }
+  dispose() {
+    this._postService.removeEntityNotificationObserver(this._observer);
   }
 }
