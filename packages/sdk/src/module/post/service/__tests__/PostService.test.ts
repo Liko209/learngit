@@ -7,7 +7,11 @@
 import { PostController } from '../../controller/PostController';
 import { PostSearchController } from '../../controller/implementation/PostSearchController';
 import { PostService } from '../PostService';
+import { PostDataController } from '../../controller/PostDataController';
 
+jest.mock('../../../account/config/AccountUserConfig');
+jest.mock('../../../../framework/controller/impl/EntityNotificationController');
+jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
 jest.mock('../../controller/implementation/PostSearchController');
 jest.mock('../../../../api');
@@ -28,6 +32,41 @@ describe('PostService', () => {
 
   beforeEach(() => {
     clearMocks();
+  });
+
+  describe('handleSexioData', () => {
+    let postDataController: PostDataController;
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      postDataController = new PostDataController(
+        null as any,
+        null as any,
+        null as any,
+      );
+
+      postController.getPostDataController = jest
+        .fn()
+        .mockImplementation(() => {
+          return postDataController;
+        });
+      postService.postController = postController;
+    });
+
+    it('should call entity notification controller and post data handle controller', async () => {
+      const rawPost = [{ _id: 1 }, { _id: 2 }] as any;
+      const post = [{ id: 1 }, { id: 2 }] as any;
+      postDataController.transformData = jest.fn().mockReturnValue(post);
+      const notificationController = postService.getEntityNotificationController();
+      notificationController['onReceivedNotification'] = jest.fn();
+      await postService.handleSexioData(rawPost);
+
+      expect(postDataController.transformData).toBeCalledWith(rawPost);
+      expect(postDataController.handleSexioPosts).toBeCalledWith(post);
+      expect(notificationController.onReceivedNotification).toBeCalledWith(
+        post,
+      );
+    });
   });
 
   describe('PostSearchController', () => {

@@ -294,7 +294,7 @@ test(formalName(`The user should see go to conversation icon instead of the join
 
   const profileDialog = app.homePage.profileDialog;
   await h(t).withLog(`Then profile dialog should be popped up and show 'Join the team' button`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
     await t.expect(profileDialog.joinTeamButton.exists).ok();
     await profileDialog.clickCloseButton();
   });
@@ -368,7 +368,7 @@ test(formalName(`Will show confirmation dialog when joining the public team from
 
   const profileDialog = app.homePage.profileDialog;
   await h(t).withLog(`Then profile dialog should be popped up and show 'Join the team' button`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
     await t.expect(profileDialog.joinTeamButton.exists).ok();
   });
 

@@ -11,17 +11,24 @@ import {
   RTCCall,
   RTCSipFlags,
   RTCCallInfo,
+  RTC_STATUS_CODE,
 } from 'voip';
 import { TelephonyCallController } from '../controller/TelephonyCallController';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
-import { TelephonyCallInfo } from '../types';
+import { TelephonyCallInfo, MAKE_CALL_ERROR_CODE } from '../types';
+import { telephonyLogger } from 'foundation';
+import { MakeCallController } from './MakeCallController';
+import { RCInfoService } from '../../rcInfo';
+import { ERCServiceFeaturePermission } from '../../rcInfo/types';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 class TelephonyAccountController implements IRTCAccountDelegate {
   private _telephonyAccountDelegate: ITelephonyAccountDelegate;
   private _telephonyCallDelegate: TelephonyCallController;
   private _rtcAccount: RTCAccount;
   private _callDelegate: ITelephonyCallDelegate;
+  private _makeCallController: MakeCallController;
 
   constructor(
     rtcEngine: RTCEngine,
@@ -32,13 +39,71 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyAccountDelegate = delegate;
     this._rtcAccount.handleProvisioning();
     this._callDelegate = callDelegate;
+    this._makeCallController = new MakeCallController();
   }
 
-  makeCall(toNumber: string) {
+  private _checkVoipStatus(): MAKE_CALL_ERROR_CODE {
+    let res = MAKE_CALL_ERROR_CODE.NO_ERROR;
+    const sipProvFlag = this._rtcAccount.getSipProvFlags();
+
+    do {
+      if (!sipProvFlag) {
+        res = MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
+        telephonyLogger.warn('sip prov is not ready');
+        break;
+      }
+
+      if (sipProvFlag.voipCountryBlocked) {
+        telephonyLogger.warn('voip is country blocked');
+        res = MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP;
+        break;
+      }
+
+      if (!sipProvFlag.voipFeatureEnabled) {
+        telephonyLogger.warn('voip feature is disabled');
+        res = MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE;
+        break;
+      }
+    } while (false);
+
+    return res;
+  }
+
+  async makeCall(toNumber: string) {
+    let result = this._checkVoipStatus();
+    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      return result;
+    }
+    const e164ToNumber = await this._makeCallController.getE164PhoneNumber(
+      toNumber,
+    );
+    result = await this._makeCallController.tryMakeCall(e164ToNumber);
+    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      return result;
+    }
+
     this._telephonyCallDelegate = new TelephonyCallController(
       this._callDelegate,
     );
-    return this._rtcAccount.makeCall(toNumber, this._telephonyCallDelegate);
+    const makeCallResult = this._rtcAccount.makeCall(
+      toNumber,
+      this._telephonyCallDelegate,
+    );
+    switch (makeCallResult) {
+      case RTC_STATUS_CODE.NUMBER_INVALID: {
+        result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
+        break;
+      }
+      case RTC_STATUS_CODE.MAX_CALLS_REACHED: {
+        result = MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
+        break;
+      }
+      case RTC_STATUS_CODE.INVALID_STATE: {
+        result = MAKE_CALL_ERROR_CODE.INVALID_STATE;
+        break;
+      }
+    }
+    return result;
   }
 
   hangUp(callId: string) {
@@ -82,6 +147,10 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyCallDelegate.sendToVoiceMail();
   }
 
+  ignore(callId: string) {
+    this._telephonyCallDelegate.ignore();
+  }
+
   onAccountStateChanged(state: RTC_ACCOUNT_STATE) {
     this._telephonyAccountDelegate.onAccountStateChanged(state);
   }
@@ -109,11 +178,44 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     return callInfo;
   }
 
+  private async _shouldShowIncomingCall() {
+    const rcInfoService = ServiceLoader.getInstance<RCInfoService>(
+      ServiceConfig.RC_INFO_SERVICE,
+    );
+    let showCall = true;
+
+    do {
+      showCall = await rcInfoService.isRCFeaturePermissionEnabled(
+        ERCServiceFeaturePermission.VOIP_CALLING,
+      );
+
+      if (!showCall) {
+        telephonyLogger.warn('voip feature permission is not enabled');
+        break;
+      }
+
+      // TODO E911 FIJI-4794
+
+      // TODO Block incoming call FIJI-4800
+    } while (false);
+
+    return showCall;
+  }
+
   async onReceiveIncomingCall(call: RTCCall) {
+    const showCall = await this._shouldShowIncomingCall();
+    if (!showCall) {
+      return;
+    }
+    const result = this._checkVoipStatus();
+    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
+      return;
+    }
     this._telephonyCallDelegate = new TelephonyCallController(
       this._callDelegate,
     );
     this._telephonyCallDelegate.setRtcCall(call);
+    call.setCallDelegate(this._telephonyCallDelegate);
     const callInfo = await this._buildCallInfo(call.getCallInfo());
     this._telephonyAccountDelegate.onReceiveIncomingCall(callInfo);
   }

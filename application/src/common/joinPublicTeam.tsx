@@ -20,8 +20,12 @@ import {
 } from '@/containers/ToastWrapper/Toast/types';
 import { JuiDialogContentText } from 'jui/components/Dialog/DialogContentText';
 
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+
 const joinHander = async (conversationId: number) => {
-  const nGroupService: GroupService = GroupService.getInstance();
+  const nGroupService = ServiceLoader.getInstance<GroupService>(
+    ServiceConfig.GROUP_SERVICE,
+  );
   const useId = await getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   try {
     await nGroupService.joinTeam(useId, conversationId);

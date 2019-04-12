@@ -28,7 +28,7 @@ type ViewProps = {
   total: number;
   getIds: number[];
   isLoadingContent: () => boolean;
-  loadMore: () => Promise<void>;
+  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
   loadInitialData: () => Promise<void>;
 };
 

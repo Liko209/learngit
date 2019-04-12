@@ -20,13 +20,13 @@ import { IdModel } from '../../model';
 
 class BaseDao<T extends IdModel> implements IDao<T> {
   static COLLECTION_NAME: string = '';
-  private collection: IDatabaseCollection<T>;
+  private collection: IDatabaseCollection<T, number>;
   private db: IDatabase;
   private _modelName: string;
   constructor(modelName: string, db: IDatabase) {
     this.db = db;
     if (db) {
-      this.collection = db.getCollection<T>(modelName);
+      this.collection = db.getCollection<T, number>(modelName);
     }
 
     this._modelName = modelName;

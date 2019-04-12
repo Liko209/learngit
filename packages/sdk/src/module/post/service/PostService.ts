@@ -19,10 +19,15 @@ import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
+import { IGroupService } from '../../../module/group/service/IGroupService';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
+import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
+import { AccountUserConfig } from '../../account/config/AccountUserConfig';
+
 class PostService extends EntityBaseService<Post> {
-  static serviceName = 'PostService';
   postController: PostController;
-  constructor() {
+  constructor(private _groupService: IGroupService) {
     super(false, daoManager.getDao(PostDao), {
       basePath: '/post',
       networkClient: Api.glipNetworkClient,
@@ -34,9 +39,17 @@ class PostService extends EntityBaseService<Post> {
     );
   }
 
+  protected buildNotificationController() {
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
+    return new EntityNotificationController<Post>((post: Post) => {
+      return !post.deactivated && post.creator_id !== currentUserId;
+    });
+  }
+
   protected getPostController() {
     if (!this.postController) {
-      this.postController = new PostController();
+      this.postController = new PostController(this._groupService);
     }
     return this.postController;
   }
@@ -96,7 +109,9 @@ class PostService extends EntityBaseService<Post> {
 
   async bookmarkPost(postId: number, toBook: boolean) {
     // favorite_post_ids in profile
-    const profileService: ProfileService = ProfileService.getInstance();
+    const profileService = ServiceLoader.getInstance<ProfileService>(
+      ServiceConfig.PROFILE_SERVICE,
+    );
     return await profileService.putFavoritePost(postId, toBook);
   }
 
@@ -131,15 +146,23 @@ class PostService extends EntityBaseService<Post> {
   }
 
   handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
-    this.getPostController()
-      .getPostDataController()
-      .handleIndexPosts(data, maxPostsExceed);
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
+      logId,
+    );
+    this._postDataController.handleIndexPosts(data, maxPostsExceed);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {
-    this.getPostController()
-      .getPostDataController()
-      .handleSexioPosts(data);
+    if (data.length) {
+      const posts = this._postDataController.transformData(data);
+      if (posts.length) {
+        await this._postDataController.handleSexioPosts(posts);
+        this.getEntityNotificationController().onReceivedNotification(posts);
+      }
+    }
   }
 
   async searchPosts(params: ContentSearchParams) {
@@ -164,6 +187,10 @@ class PostService extends EntityBaseService<Post> {
     return await this.getPostController()
       .getPostSearchController()
       .getContentsCount(params);
+  }
+
+  private get _postDataController() {
+    return this.getPostController().getPostDataController();
   }
 }
 

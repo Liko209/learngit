@@ -16,12 +16,13 @@ import {
   RTCCallActionSuccessOptions,
 } from 'voip';
 import { TelephonyAccountController } from '../../controller/TelephonyAccountController';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../controller/TelephonyEngineController');
 jest.mock('../../controller/TelephonyAccountController');
 jest.mock('../../controller/MakeCallController');
 jest.mock('../../../config');
-GlobalConfigService.getInstance = jest.fn();
+ServiceLoader.getInstance = jest.fn();
 
 describe('TelephonyService', () => {
   let telephonyService: TelephonyService;
@@ -82,31 +83,11 @@ describe('TelephonyService', () => {
   });
   describe('makeCall', () => {
     it('should call account controller to make call', async () => {
-      jest
-        .spyOn(makeCallController, 'getE164PhoneNumber')
-        .mockReturnValue('123');
-      jest
-        .spyOn(makeCallController, 'tryMakeCall')
-        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
-      const res = await telephonyService.makeCall('123');
-      expect(makeCallController.getE164PhoneNumber).toHaveBeenCalled();
+      await telephonyService.makeCall('123');
       expect(accountController.makeCall).toHaveBeenCalledWith('123');
-      expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
-    });
-
-    it('should not call account controller to make call when getting errors', async () => {
-      jest
-        .spyOn(makeCallController, 'getE164PhoneNumber')
-        .mockReturnValue('123');
-      jest
-        .spyOn(makeCallController, 'tryMakeCall')
-        .mockReturnValue(MAKE_CALL_ERROR_CODE.N11_101);
-      const res = await telephonyService.makeCall('123', null);
-      expect(makeCallController.getE164PhoneNumber).toHaveBeenCalled();
-      expect(accountController.makeCall).not.toHaveBeenCalledWith('123', null);
-      expect(res).toBe(MAKE_CALL_ERROR_CODE.N11_101);
     });
   });
+
   describe('hangUp', () => {
     it('should call account controller to hang up ', () => {
       telephonyService.hangUp('123');
@@ -173,6 +154,13 @@ describe('TelephonyService', () => {
     it('should call account controller to send call to voice mail', () => {
       telephonyService.sendToVoiceMail(callId);
       expect(accountController.sendToVoiceMail).toHaveBeenCalledWith(callId);
+    });
+  });
+
+  describe('ignore', () => {
+    it('should call account controller to ignore', () => {
+      telephonyService.ignore(callId);
+      expect(accountController.ignore).toHaveBeenCalledWith(callId);
     });
   });
 });

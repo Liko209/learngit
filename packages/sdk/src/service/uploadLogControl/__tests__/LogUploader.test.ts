@@ -1,26 +1,49 @@
 import { LogUploader } from '../LogUploader';
 import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
-import AccountService from '../../account';
+import { AccountService } from '../../../module/account';
 import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';
-import { AccountUserConfig } from '../../account/config';
-
+import { AccountUserConfig } from '../../../module/account/config';
+import { ServiceLoader } from '../../../module/serviceLoader';
+import { Pal } from '../../../pal/pal';
+import { IApplicationInfo } from '../../../pal/applicationInfo';
 jest.mock('sdk/api');
-jest.mock('../../account');
+jest.mock('../../../pal/pal', () => {
+  const mockPal: Pal = {
+    getApplicationInfo: jest.fn(),
+    getErrorReporter: jest.fn(),
+  };
+  Object.defineProperty(mockPal, 'instance', {
+    get: () => {
+      return mockPal;
+    },
+  });
+  return {
+    Pal: mockPal,
+  };
+});
+jest.mock('../../../module/account');
 jest.mock('axios');
-jest.mock('../../account/config');
+jest.mock('../../../module/account/config');
 
 function createError(status: number): AxiosError {
   return (status
     ? {
       response: {
-          status,
-        },
+        status,
+      },
     }
     : {}) as AxiosError;
 }
 describe('LogUploader', () => {
   const accountService = new AccountService();
+  const mockAppInfo: IApplicationInfo = {
+    appVersion: '1.0',
+    os: 'mac',
+    browser: 'chrome',
+    platform: 'desktop',
+    env: 'prod',
+  };
   beforeEach(() => {
     Api.httpConfig = {
       sumologic: {
@@ -29,10 +52,11 @@ describe('LogUploader', () => {
       },
     };
     (axios.post as jest.Mock).mockResolvedValue({});
-    AccountService.getInstance = jest.fn().mockReturnValue(accountService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
     (accountService.getUserEmail as jest.Mock).mockResolvedValue('abc@rc.com');
     AccountUserConfig.prototype.getGlipUserId.mockReturnValue(12345);
     (accountService.getClientId as jest.Mock).mockReturnValue('54321');
+    (Pal.instance.getApplicationInfo as jest.Mock).mockReturnValue(mockAppInfo);
   });
   describe('upload()', () => {
     it('should call post correctly', async () => {
@@ -43,7 +67,9 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': 'abc@rc.com| 12345| sessionA',
+          'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
+            mockAppInfo.browser
+          }/${mockAppInfo.os}/${mockAppInfo.env}/abc@rc.com/12345/sessionA`,
           'Content-Type': 'application/json',
         },
       });
@@ -57,7 +83,9 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': 'service@glip.com| 12345| sessionA',
+          'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
+            mockAppInfo.browser
+          }/${mockAppInfo.os}/${mockAppInfo.env}/abc@rc.com/12345/sessionA`,
           'Content-Type': 'application/json',
         },
       });
@@ -73,7 +101,9 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': 'service@glip.com| | sessionA',
+          'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
+            mockAppInfo.browser
+          }/${mockAppInfo.os}/${mockAppInfo.env}/service@glip.com//sessionA`,
           'Content-Type': 'application/json',
         },
       });
@@ -99,9 +129,9 @@ describe('LogUploader', () => {
       expect(logUploader.errorHandler(createError(503))).toEqual('retry');
       expect(logUploader.errorHandler(createError(504))).toEqual('retry');
     });
-    it('should ignore other error', () => {
+    it('should retry other error', () => {
       const logUploader = new LogUploader();
-      expect(logUploader.errorHandler(createError(500))).toEqual('ignore');
+      expect(logUploader.errorHandler(createError(500))).toEqual('retry');
     });
   });
 });

@@ -4,42 +4,18 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { RcInfoUserConfig } from '../config';
-import {
-  RcRolePermissions,
-  RcRolePermission,
-} from '../../../api/ringcentral/types/RcRolePermissions';
+import { RCRolePermission } from '../../../api/ringcentral';
 import { PermissionId } from '../types';
+import { RCInfoFetchController } from './RCInfoFetchController';
 
 class RolePermissionController {
-  private _rcInfoUserConfig: RcInfoUserConfig;
-  private _rolePermissions: RcRolePermissions;
+  constructor(private _rcInfoFetchController: RCInfoFetchController) {}
 
-  constructor() {}
-
-  private get rcInfoUserConfig(): RcInfoUserConfig {
-    if (!this._rcInfoUserConfig) {
-      this._rcInfoUserConfig = new RcInfoUserConfig();
-    }
-    return this._rcInfoUserConfig;
-  }
-
-  setRolePermissions(rolePermissions: RcRolePermissions): void {
-    this._rolePermissions = rolePermissions;
-  }
-
-  getRolePermissions() {
-    if (!this._rolePermissions) {
-      this._rolePermissions = this.rcInfoUserConfig.getRolePermissions();
-    }
-    return this._rolePermissions;
-  }
-
-  hasPermission(id: PermissionId) {
-    const rolePermissions = this.getRolePermissions();
+  async hasPermission(id: PermissionId) {
+    const rolePermissions = await this._rcInfoFetchController.getRCRolePermissions();
     if (rolePermissions && rolePermissions.permissions) {
       const rcRolePermission = rolePermissions.permissions.find(
-        (item: RcRolePermission) => {
+        (item: RCRolePermission) => {
           return item.permission &&
             item.permission.id &&
             item.permission.id === id

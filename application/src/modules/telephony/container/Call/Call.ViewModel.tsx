@@ -23,6 +23,7 @@ import { Group } from 'sdk/module/group/entity';
 import { ENTITY_NAME } from '@/store';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { FeaturesFlagsService } from '@/modules/featuresFlags/service';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 class CallViewModel extends AbstractViewModel<CallProps>
   implements CallViewProps {
@@ -95,6 +96,13 @@ class CallViewModel extends AbstractViewModel<CallProps>
   directCall = () => {
     if (this.phoneNumber) {
       this._telephonyService.directCall(this.phoneNumber);
+    }
+  }
+
+  @action
+  trackCall = (analysisSource?: string) => {
+    if (analysisSource) {
+      analyticsCollector.makeOutboundCall(analysisSource);
     }
   }
 

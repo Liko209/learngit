@@ -7,16 +7,12 @@
 import PreInsertIdController from '../impl/PreInsertIdController';
 import { daoManager } from '../../../../dao';
 import { PostDao } from '../../../post/dao';
-import {
-  GlobalConfigService,
-  UserConfigService,
-} from '../../../../module/config';
+
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../../../../module/config');
 jest.mock('../../../../dao');
 jest.mock('../../../post/dao');
-
-GlobalConfigService.getInstance = jest.fn();
 
 function getController() {
   const postDao = new PostDao(null);
@@ -27,7 +23,7 @@ function getController() {
 
 describe('PreInsertIdController()', () => {
   beforeEach(() => {
-    UserConfigService.getInstance.mockReturnValue({
+    ServiceLoader.getInstance = jest.fn().mockReturnValue({
       setUserId: jest.fn(),
       get: jest.fn(),
       put: jest.fn(),

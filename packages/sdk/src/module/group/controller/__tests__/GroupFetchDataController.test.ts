@@ -14,8 +14,10 @@ import { IEntityCacheSearchController } from '../../../../framework/controller/i
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { IPartialModifyController } from '../../../../framework/controller/interface/IPartialModifyController';
 import { IRequestController } from '../../../../framework/controller/interface/IRequestController';
-import { AccountUserConfig } from '../../../../service/account/config';
-import { AccountGlobalConfig } from '../../../../service/account/config';
+import {
+  AccountUserConfig,
+  AccountGlobalConfig,
+} from '../../../../module/account/config';
 import { CompanyService } from '../../../../module/company';
 import { GROUP_QUERY_TYPE } from '../../../../service/constants';
 import { ProfileService } from '../../../profile';
@@ -29,6 +31,7 @@ import { GroupService } from '../../index';
 import { GroupFetchDataController } from '../GroupFetchDataController';
 import { GroupHandleDataController } from '../GroupHandleDataController';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../dao');
 jest.mock('../../../groupConfig/dao');
@@ -36,7 +39,7 @@ jest.mock('../../../../framework/controller/impl/EntityPersistentController');
 jest.mock('../../../person');
 jest.mock('../../dao');
 jest.mock('../../../profile');
-jest.mock('../../../../service/account/config');
+jest.mock('../../../../module/account/config');
 jest.mock('../../../../service/notificationCenter');
 jest.mock('../../../../module/company');
 jest.mock('../../../post');
@@ -45,12 +48,9 @@ jest.mock('sdk/api/glip/group');
 
 const profileService = new ProfileService();
 const personService = new PersonService();
-beforeEach(() => {
-  jest.clearAllMocks();
-
-  PersonService.getInstance = jest.fn().mockReturnValue(personService);
-  ProfileService.getInstance = jest.fn().mockReturnValue(profileService);
-});
+const companyService = {
+  getCompanyEmailDomain: jest.fn().mockResolvedValue('companyDomain'),
+};
 
 describe('GroupFetchDataController', () => {
   let testEntitySourceController: IEntitySourceController<Group>;
@@ -71,8 +71,25 @@ describe('GroupFetchDataController', () => {
     AccountUserConfig.prototype.getGlipUserId = jest
       .fn()
       .mockImplementation(() => mockUserId);
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PERSON_SERVICE) {
+          return personService;
+        }
 
+        if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+          return profileService;
+        }
+
+        if (serviceName === ServiceConfig.POST_SERVICE) {
+          return postService;
+        }
+
+        if (serviceName === ServiceConfig.COMPANY_SERVICE) {
+          return companyService;
+        }
+      });
     testEntitySourceController = new TestEntitySourceController<Group>(
       groupFactory,
     );

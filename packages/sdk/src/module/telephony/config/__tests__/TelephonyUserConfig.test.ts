@@ -5,6 +5,7 @@
  */
 import { UserConfigService, GlobalConfigService } from '../../../config';
 import { TelephonyUserConfig } from '../TelephonyUserConfig';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../config/service/UserConfigService');
 jest.mock('../../../config/service/GlobalConfigService');
@@ -29,12 +30,18 @@ describe('TelephonyUserConfig', () => {
 
   beforeEach(() => {
     clearMocks();
-    GlobalConfigService.getInstance = jest.fn().mockReturnValue({
-      get: jest.fn().mockReturnValue(USERID),
-    });
-    UserConfigService.getInstance = jest
+
+    ServiceLoader.getInstance = jest
       .fn()
-      .mockReturnValue(mockConfigService);
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.GLOBAL_CONFIG_SERVICE) {
+          return {
+            get: jest.fn().mockReturnValue(USERID),
+          };
+        }
+        return mockConfigService;
+      });
+
     telephonyConfig = new TelephonyUserConfig();
   });
 

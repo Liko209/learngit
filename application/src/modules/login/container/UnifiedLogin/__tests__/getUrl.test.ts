@@ -5,20 +5,23 @@
  */
 import { stringify } from 'qs';
 import getUrl, { defaultOptions } from '../getUrl';
+import { DeepPartial, ApiConfig } from 'sdk/types';
 
 jest.mock('@/config', () => ({
-  get: jest.fn(() => {
-    return {
-      glip2: {
-        server: 'server',
-        apiPlatform: '/apiPlatform',
-        clientId: 'clientId',
-      },
-      glip: {
-        apiServer: 'API_SERVER',
-      },
-    };
-  }),
+  get: jest.fn(
+    (): DeepPartial<ApiConfig> => {
+      return {
+        rc: {
+          server: 'server',
+          pathPrefix: '/apiPlatform',
+          clientId: 'clientId',
+        },
+        glip: {
+          apiServer: 'API_SERVER',
+        },
+      };
+    },
+  ),
   getEnv: jest.fn(() => {
     return 'test_sandbox';
   }),

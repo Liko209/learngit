@@ -16,6 +16,8 @@ const StyledDialer = styled('div')`
     width: ${width(70)};
     margin: ${spacing(8)};
     box-shadow: ${({ theme }) => theme.boxShadow.val16};
+    border-radius: ${({ theme }) => theme.radius.xl};
+    overflow: auto;
   }
 `;
 

@@ -12,6 +12,7 @@ import { Entity } from '@/store';
 import { BaseModel } from 'sdk/models';
 import { NotificationEntityPayload } from 'sdk/service/notificationCenter';
 import { PostService } from 'sdk/module/post';
+import { ServiceLoader } from 'sdk/module/serviceLoader';
 
 const { EVENT_TYPES } = service;
 jest.mock('../visibilityChangeEvent');
@@ -46,7 +47,7 @@ describe('MultiEntityMapStore', () => {
   let postService: PostService;
   function setUp() {
     postService = new PostService();
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
 
     instance = new MultiEntityMapStore(
       ENTITY_NAME.POST,
@@ -206,6 +207,18 @@ describe('MultiEntityMapStore', () => {
       expect(Object.keys(instance.getData())).toEqual(['1', '2']);
       setTimeout(() => {
         expect(Object.keys(instance.getData())).toEqual([]);
+        done();
+      },         120);
+    });
+
+    it('should not refresh cache when refreshCache is false in batchSet ', async (done: any) => {
+      setHidden(false);
+      setting.cacheCount = 1;
+      instance = new MultiEntityMapStore(ENTITY_NAME.POST, setting);
+      instance.batchSet([{ id: 1 }, { id: 2 }]);
+      expect(Object.keys(instance.getData())).toEqual(['1', '2']);
+      setTimeout(() => {
+        expect(Object.keys(instance.getData())).toEqual(['1', '2']);
         done();
       },         120);
     });

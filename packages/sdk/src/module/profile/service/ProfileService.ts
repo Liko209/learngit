@@ -15,11 +15,11 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { SettingOption } from '../types';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
-  static serviceName = 'ProfileService';
-
   private profileController: ProfileController;
 
   constructor() {
@@ -31,7 +31,8 @@ class ProfileService extends EntityBaseService<Profile>
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.PROFILE]: this.handleIncomingData,
-        [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: this.handleGroupIncomesNewPost,
+        [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: this
+          .handleGroupIncomesNewPost,
       }),
     );
   }
@@ -40,9 +41,15 @@ class ProfileService extends EntityBaseService<Profile>
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
   ) => {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_PROFILE,
+      logId,
+    );
     this.getProfileController()
       .getProfileDataController()
       .profileHandleData(profile, source);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
@@ -123,6 +130,12 @@ class ProfileService extends EntityBaseService<Profile>
     return await this.getProfileController()
       .getProfileDataController()
       .getFavoriteGroupIds();
+  }
+
+  async updateSettingOptions(options: SettingOption[]) {
+    await this.getProfileController()
+      .getSettingsActionController()
+      .updateSettingOptions(options);
   }
 }
 

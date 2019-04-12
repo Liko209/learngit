@@ -26,7 +26,7 @@ import {
   IconColor,
 } from '../../../foundation/Iconography';
 
-type IconButtonSize = 'small' | 'medium' | 'large';
+type IconButtonSize = 'small' | 'medium' | 'large' | 'moreLarge';
 
 type ButtonProps = {
   size?: IconButtonSize;
@@ -41,7 +41,10 @@ type ButtonProps = {
   iconColor?: IconColor;
 };
 
-type JuiFabProps = Omit<MuiFabProps, 'innerRef' | 'variant' | 'color'> &
+type JuiFabProps = Omit<
+  MuiFabProps,
+  'innerRef' | 'variant' | 'color' | 'size'
+> &
   ButtonProps;
 
 type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
@@ -49,21 +52,27 @@ type StyledFabButtonProps = Omit<JuiFabProps, 'iconName'> & {
   colorScope: keyof Palette;
 };
 
-type Size = 'medium' | 'large';
+type Size = 'small' | 'medium' | 'large' | 'moreLarge';
 
 const buttonSizes: { [k in Size]: number } = {
+  moreLarge: 16,
   large: 15,
   medium: 8,
+  small: 5,
 };
 
 const buttonShadows: { [k in Size]: string } = {
+  moreLarge: 'val16',
   large: 'val16',
   medium: 'val1',
+  small: 'val1',
 };
 
 const iconSizesMap: { [k in Size]: IconSize } = {
   large: 'large',
-  medium: 'extraSmall',
+  moreLarge: 'moreLarge',
+  medium: 'small',
+  small: 'extraSmall',
 };
 
 const touchRippleClasses = {
@@ -83,6 +92,7 @@ const WrappedMuiFab = (props: StyledFabButtonProps) => {
     loading,
     colorName,
     colorScope,
+    size,
     ...restProps
   } = props;
   return (

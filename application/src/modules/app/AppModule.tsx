@@ -23,11 +23,19 @@ import { config as appConfig } from './app.config';
 import { HomeService } from '@/modules/home';
 
 import './index.css';
-import { generalErrorHandler } from '@/utils/error';
-import { AccountUserConfig } from 'sdk/service/account/config';
+import {
+  generalErrorHandler,
+  errorReporter,
+  getAppContextInfo,
+} from '@/utils/error';
+import { AccountUserConfig } from 'sdk/module/account/config';
+import { AccountService } from 'sdk/module/account';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
 import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { Pal } from 'sdk/pal';
 
 /**
  * The root module, we call it AppModule,
@@ -47,6 +55,7 @@ class AppModule extends AbstractModule {
       ReactDOM.render(<App />, document.getElementById('root') as HTMLElement);
     } catch (error) {
       generalErrorHandler(error);
+      errorReporter.report(error);
     }
   }
 
@@ -54,7 +63,6 @@ class AppModule extends AbstractModule {
     LogControlManager.instance().setDebugMode(
       process.env.NODE_ENV === 'development',
     );
-
     const { search } = window.location;
     const { state } = parse(search, { ignoreQueryPrefix: true });
     if (state && state.length) {
@@ -63,7 +71,9 @@ class AppModule extends AbstractModule {
       if (env && env.length) {
         const envChanged = await AppEnvSetting.switchEnv(
           env,
-          service.AuthService.getInstance(),
+          ServiceLoader.getInstance<AccountService>(
+            ServiceConfig.ACCOUNT_SERVICE,
+          ),
         );
         if (envChanged) {
           config.loadEnvConfig();
@@ -79,7 +89,6 @@ class AppModule extends AbstractModule {
 
     const {
       notificationCenter,
-      AccountService,
       socketManager,
       SOCKET,
       SERVICE,
@@ -96,7 +105,9 @@ class AppModule extends AbstractModule {
     const globalStore = storeManager.getGlobalStore();
 
     const updateAccountInfoForGlobalStore = (isRCOnlyMode: boolean = false) => {
-      const accountService: service.AccountService = AccountService.getInstance();
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
 
       if (accountService.isAccountReady()) {
         const accountUserConfig = new AccountUserConfig();
@@ -104,6 +115,19 @@ class AppModule extends AbstractModule {
         const currentCompanyId = accountUserConfig.getCurrentCompanyId();
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
+        getAppContextInfo().then(contextInfo => {
+          Pal.instance.setApplicationInfo({
+            env: contextInfo.env,
+            appVersion: contextInfo.version,
+            browser: contextInfo.browser,
+            os: contextInfo.os,
+            platform: contextInfo.platform,
+          });
+          window.jupiterElectron &&
+            window.jupiterElectron.setContextInfo &&
+            window.jupiterElectron.setContextInfo(contextInfo);
+          errorReporter.setUserContextInfo(contextInfo);
+        });
 
         if (!this._subModuleRegistered) {
           // load phone parser module
@@ -145,6 +169,7 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.FETCH_INDEX_DATA_DONE, () => {
       updateAccountInfoForGlobalStore();
+      analyticsCollector.identify();
     });
 
     notificationCenter.on(CONFIG.STATIC_HTTP_SERVER, (url: string) => {
@@ -197,14 +222,15 @@ class AppModule extends AbstractModule {
 
     notificationCenter.on(SERVICE.DO_SIGN_OUT, async () => {
       // force logout
-      const authService: service.AuthService = service.AuthService.getInstance();
-      await authService.logout();
+      const accountService = ServiceLoader.getInstance<AccountService>(
+        ServiceConfig.ACCOUNT_SERVICE,
+      );
+      await accountService.logout();
       window.location.href = '/';
     });
 
     const api = config.get('api');
     const db = config.get('db');
-
     await Sdk.init({
       api,
       db,

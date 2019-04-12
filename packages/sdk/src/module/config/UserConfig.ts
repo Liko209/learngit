@@ -6,11 +6,14 @@
 
 import { IUserConfigService } from './service/IUserConfigService';
 import { UserConfigService } from './service/UserConfigService';
+import { ServiceConfig, ServiceLoader } from '../serviceLoader';
 
 class UserConfig {
   private _configService: IUserConfigService;
   constructor(private _userId: string, private _moduleName: string) {
-    this._configService = UserConfigService.getInstance() as UserConfigService;
+    this._configService = ServiceLoader.getInstance<UserConfigService>(
+      ServiceConfig.USER_CONFIG_SERVICE,
+    );
     if (this._userId) {
       this._configService.setUserId(this._userId);
     }

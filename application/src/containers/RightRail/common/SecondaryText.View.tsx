@@ -11,16 +11,16 @@ import {
 } from 'jui/components/Lists';
 
 type Props = {
-  personName: string;
-  createdTime: string;
+  name: string;
+  time: string;
 };
 
-const SecondaryText = React.memo(({ personName, createdTime }: Props) => {
+const SecondaryText = React.memo(({ name, time }: Props) => {
   return (
     <JuiListItemSecondaryText>
-      <JuiListItemSecondarySpan text={personName} isEllipsis={true} />
+      <JuiListItemSecondarySpan text={name} isEllipsis={true} />
       &nbsp;·&nbsp;
-      <JuiListItemSecondarySpan text={createdTime} />
+      <JuiListItemSecondarySpan text={time} />
     </JuiListItemSecondaryText>
   );
 });

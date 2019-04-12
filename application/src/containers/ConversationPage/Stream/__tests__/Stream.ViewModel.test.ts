@@ -24,9 +24,11 @@ import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { StreamProps, StreamItemType } from '../types';
 import { StreamViewModel } from '../Stream.ViewModel';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
+jest.mock('sdk/module/group');
 jest.mock('../../../../store/base/visibilityChangeEvent');
 
 function setup(obj?: any) {
@@ -43,6 +45,7 @@ function setup(obj?: any) {
 describe('StreamViewModel', () => {
   let itemService: ItemService;
   let postService: PostService;
+  let stateService: StateService;
 
   const streamController = {
     dispose: jest.fn(),
@@ -56,8 +59,25 @@ describe('StreamViewModel', () => {
     jest.resetAllMocks();
     itemService = new ItemService();
     postService = new PostService();
-    ItemService.getInstance = jest.fn().mockReturnValue(itemService);
-    PostService.getInstance = jest.fn().mockReturnValue(postService);
+    stateService = new StateService();
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.ITEM_SERVICE) {
+          return itemService;
+        }
+
+        if (serviceName === ServiceConfig.POST_SERVICE) {
+          return postService;
+        }
+
+        if (serviceName === ServiceConfig.STATE_SERVICE) {
+          return stateService;
+        }
+
+        return null;
+      });
+
     spyOn(storeManager, 'dispatchUpdatedDataModels');
   });
 
@@ -90,6 +110,7 @@ describe('StreamViewModel', () => {
       expect(storeManager.dispatchUpdatedDataModels).toBeCalledWith(
         ENTITY_NAME.ITEM,
         [{ id: 1 }],
+        false,
       );
     });
   });
@@ -193,7 +214,7 @@ describe('StreamViewModel', () => {
         _historyHandler: { update: mockUpdate },
         _streamController: {
           postIds,
-          items: postIds.map((i) => ({
+          items: postIds.map(i => ({
             id: i,
             value: i,
             type: StreamItemType.POST,
@@ -209,9 +230,7 @@ describe('StreamViewModel', () => {
 
   describe('markAsRead()', () => {
     it('should call storeManager.getGlobalStore().set with arguments', () => {
-      const stateService = new StateService();
       const spy = jest.spyOn(stateService, 'updateReadStatus');
-      StateService.getInstance = jest.fn().mockReturnValue(stateService);
       const groupId = 123123;
       const vm = setup({ groupId });
       vm.markAsRead();
@@ -466,6 +485,122 @@ describe('StreamViewModel', () => {
       await vm.loadNextPosts();
 
       expect(Notification.flashToast).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findNewMessageSeparatorIndex()', () => {
+    it('should return index of new message separator', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.NEW_MSG_SEPARATOR },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.findNewMessageSeparatorIndex()).toBe(2);
+    });
+
+    it('should return -1 if no new message separator ', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.findNewMessageSeparatorIndex()).toBe(-1);
+    });
+  });
+
+  describe('hasNewMessageSeparator()', () => {
+    it('should be true if there is a new message separator', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.NEW_MSG_SEPARATOR },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.hasNewMessageSeparator()).toBeTruthy();
+    });
+
+    it('should be false if no any new message separator', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+            { type: StreamItemType.POST },
+          ],
+        },
+      });
+
+      expect(vm.hasNewMessageSeparator()).toBeFalsy();
+    });
+  });
+
+  describe('findPostIndex()', () => {
+    it('should return index of the post', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST, value: [10] },
+            { type: StreamItemType.POST, value: [11] },
+            { type: StreamItemType.POST, value: [12] },
+            { type: StreamItemType.POST, value: [13] },
+          ],
+        },
+      });
+
+      expect(vm.findPostIndex(11)).toBe(1);
+    });
+
+    it('should return -1 if the post no existed', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST, value: [10] },
+            { type: StreamItemType.POST, value: [11] },
+            { type: StreamItemType.POST, value: [12] },
+            { type: StreamItemType.POST, value: [13] },
+          ],
+        },
+      });
+
+      expect(vm.findPostIndex(14)).toBe(-1);
+    });
+
+    it('should return -1 if the postId is undefined', () => {
+      const vm = setup({
+        _streamController: {
+          items: [
+            { type: StreamItemType.POST, value: [10] },
+            { type: StreamItemType.POST, value: [11] },
+            { type: StreamItemType.POST, value: [12] },
+            { type: StreamItemType.POST, value: [13] },
+          ],
+        },
+      });
+
+      expect(vm.findPostIndex()).toBe(-1);
     });
   });
 });

@@ -1,13 +1,17 @@
-import {
-  ILogUploader,
-  LogEntity,
-  mainLogger,
-  HTTP_STATUS_CODE,
-} from 'foundation';
-import AccountService from '../account';
+/*
+ * @Author: Paynter Chen
+ * @Date: 2019-03-24 11:06:33
+ * Copyright © RingCentral. All rights reserved.
+ */
 import axios, { AxiosError } from 'axios';
-import { AccountUserConfig } from '../../service/account/config';
+import { HTTP_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
+import { AccountService } from '../../module/account';
+import { AccountUserConfig } from '../../module/account/config';
+
 import { Api } from '../../api';
+import { Pal } from '../../pal';
+import { ILogUploader } from './consumer';
+import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {
@@ -17,9 +21,17 @@ export class LogUploader implements ILogUploader {
     const sessionId = logs[0].sessionId;
     const { server, uniqueHttpCollectorCode } = Api.httpConfig.sumologic;
     const postUrl = `${server}${uniqueHttpCollectorCode}`;
+    const { email = DEFAULT_EMAIL, userId = '' } = userInfo;
+    const {
+      appVersion = '',
+      platform = '',
+      os = '',
+      env = '',
+      browser = '',
+    } = Pal.instance.getApplicationInfo();
     await axios.post(postUrl, message, {
       headers: {
-        'X-Sumo-Name': `${userInfo.email}| ${userInfo.userId}| ${sessionId}`,
+        'X-Sumo-Name': `${platform}/${appVersion}/${browser}/${os}/${env}/${email}/${userId}/${sessionId}`,
         'Content-Type': 'application/json',
       },
     });
@@ -32,8 +44,10 @@ export class LogUploader implements ILogUploader {
   errorHandler(error: AxiosError) {
     // detail error types description see sumologic doc
     // https://help.sumologic.com/03Send-Data/Sources/02Sources-for-Hosted-Collectors/HTTP-Source/Troubleshooting-HTTP-Sources
+    mainLogger.debug('Log upload fail', error);
     const { response } = error;
     if (!response) {
+      mainLogger.debug('Log errorHandler: abortAll');
       return 'abortAll';
     }
     if (
@@ -44,13 +58,20 @@ export class LogUploader implements ILogUploader {
         HTTP_STATUS_CODE.GATEWAY_TIME_OUT,
       ].includes(response.status)
     ) {
+      mainLogger.debug('Log errorHandler: retry');
       return 'retry';
     }
-    return 'ignore';
+    mainLogger.debug('Log errorHandler: ignore=>retry');
+    Pal.instance.getErrorReporter() &&
+      Pal.instance.getErrorReporter().report(error);
+    return 'retry';
   }
 
   private async _getUserInfo() {
-    const accountService: AccountService = AccountService.getInstance();
+    const accountService = ServiceLoader.getInstance<AccountService>(
+      ServiceConfig.ACCOUNT_SERVICE,
+    );
+
     let id;
     let email = DEFAULT_EMAIL;
     try {

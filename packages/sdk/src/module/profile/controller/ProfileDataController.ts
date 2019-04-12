@@ -5,7 +5,7 @@
  */
 
 import { Profile } from '../entity';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { IEntitySourceController } from '../../../framework/controller/interface/IEntitySourceController';
 import { JSdkError } from '../../../error/sdk/JSdkError';
 import { ERROR_CODES_SDK } from '../../../error/sdk/types';
@@ -63,7 +63,7 @@ class ProfileDataController {
   async getMaxLeftRailGroup(): Promise<number> {
     const profile = await this.getProfile();
     if (profile && profile.max_leftrail_group_tabs2) {
-      return profile.max_leftrail_group_tabs2;
+      return Number(profile.max_leftrail_group_tabs2);
     }
     return DEFAULT_LEFTRAIL_GROUP;
   }

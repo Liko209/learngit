@@ -5,6 +5,7 @@
  */
 import { TDelta, ISortableModel } from '../../../store/base/fetch/types';
 import PostModel from '../../../store/models/Post';
+
 enum SeparatorType {
   DATE = 'DATE',
   NEW_MSG = 'NEW_MSG',
@@ -50,6 +51,7 @@ type StreamProps = {
   viewRef: React.RefObject<any>;
   refresh: () => void;
   jumpToPostId?: number;
+  hookInitialPostsError: () => void;
 };
 
 type StreamViewProps = {
@@ -75,7 +77,10 @@ type StreamViewProps = {
   loadInitialPostsError?: Error;
   loading?: boolean;
   lastPost?: PostModel;
-  loadMore: (direction: 'up' | 'down') => Promise<void>;
+  loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
+  hasNewMessageSeparator: () => boolean;
+  findNewMessageSeparatorIndex: () => number;
+  findPostIndex: (postId?: number) => number;
 };
 
 type StreamSnapshot = {

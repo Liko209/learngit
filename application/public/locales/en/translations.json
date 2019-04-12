@@ -128,8 +128,10 @@
       "SorryWeWereNotAbleToSendTheMessage": "Sorry, we weren't able to send the message. Try again.",
       "SorryWeWereNotAbleToLikeTheMessage": "Sorry, we weren't able to like this message. Try again.",
       "SorryWeWereNotAbleToUnlikeTheMessage": "Sorry, we weren't able to unlike this message. Try again.",
-      "SorryWeWereNotAbleToRemoveYourBookmark": "Sorry, we weren't able to remove your bookmark. Try again.",
-      "SorryWeWereNotAbleToBookmarkThisMessage": "Sorry, we weren't able to bookmark this message. Try again.",
+      "notAbleToRemoveYourBookmarkForNetworkIssue": "Sorry, we weren't able to remove your bookmark due to a poor network connection. Try again.",
+      "notAbleToRemoveYourBookmarkForServerIssue": "Sorry, something went wrong on our end and we weren't able to remove your bookmark. Try again later.",
+      "notAbleToBookmarkThisMessageForNetworkIssue": "We weren't able to bookmark this message due to a poor network connection. Check your connectivity, then try again.",
+      "notAbleToBookmarkThisMessageForServerIssue": "Sorry, something went wrong on our end and we weren't able to bookmark this message. Try again later.",
       "SorryWeWereNotAbleToPinTheMessage": "Sorry, we weren't able to pin this message. Try again.",
       "SorryWeWereNotAbleToUnpinTheMessage": "Sorry, we weren't able to unpin this message. Try again.",
       "SorryWeWereNotAbleToLoadOlderMessages": "Sorry, we weren't able to load older messages. Try again.",
@@ -403,15 +405,38 @@
       "unmute": "Unmute",
       "keypad": "Keypad",
       "hold": "Hold",
+      "unhold": "Unhold",
       "add": "Add",
       "record": "Record",
+      "stopRecord": "Stop",
       "callActions": "Call Actions",
-      "end": "End"
+      "end": "End",
+      "Answer": "Answer"
     },
+    "ignoreTheCall": "Ignore the call",
+    "sendToVoicemail": "Send to voicemail",
+    "answerTheCall": "Answer the call",
+    "unknownCaller": "Unknown Caller",
     "prompt": {
       "NoNetwork": "Sorry, we weren't able to place the call since there is no connection to the server. Try again later.",
       "CallFailed": "Sorry, we are having trouble placing this call, try again later.",
-      "CallTimeout": "Sorry, we weren't able to place the call. Try again later."
+      "CallTimeout": "Sorry, we weren't able to place the call. Try again later.",
+      "LogoutTitle": "Log out?",
+      "LogoutContent": "Your call will be disconnected if you log out. Do you want to log out and end the call?",
+      "LogoutOk": "Log out",
+      "FailedToHold": "Sorry, something went wrong on our end, we weren't able to hold the call",
+      "FailedToResume": "Sorry, something went wrong on our end, we weren't able to resume the call",
+      "FailedToRecord": "Sorry, we weren't able to record the call. Try again later.",
+      "FailedToStopRecording": "Sorry, we weren't able to stop recording the call. Try again later.",
+      "LackOfRecordingPermission": "Sorry, your account does not have the feature to record a call. To enable the feature, contact your account administrator.",
+      "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
+      "RecordAutomatically": "Cannot start call recording."
+    },
+    "accessibility": {
+      "hold": "Hold the call",
+      "resume": "Resume the call",
+      "record": "Record the call",
+      "stopRecord": "Stop recording"
     }
   },
   "meeting": {
@@ -420,7 +445,13 @@
   "integration": {},
   "setting": {
     "Settings": "Settings",
-    "teamSettings": "Settings"
+    "teamSettings": "Settings",
+    "general": "General",
+    "notificationAndSounds": "Notification and Sounds",
+    "messaging": "Messaging",
+    "phone": "Phone",
+    "meetings": "Meetings",
+    "calendar": "Calendar"
   },
   "viewer": {
     "ZoomIn": "Scale file up",
@@ -433,5 +464,16 @@
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
+  },
+  "feedback": {
+    "name": "Feedback",
+    "uploading": "uploading",
+    "uploadRecentLogsDialogHeader": "Upload log?",
+    "uploadRecentLogsDialogContent": "Upload recent logs to Jupiter feedback email.",
+    "upload": "Upload",
+    "describeYourProblemHere": "Describe your problem here",
+    "uploadLogSuccess": "Upload log successfully, please send it via email.",
+    "uploadLogFailed": "Sorry, we weren't able to upload the logs.",
+    "openEmailFailed": "Open email failed."
   }
 }

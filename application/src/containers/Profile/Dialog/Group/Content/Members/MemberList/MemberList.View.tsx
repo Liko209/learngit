@@ -63,7 +63,13 @@ class MemberList
         : ITEM_HEIGHT * memberIdsLength;
     return (
       <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {({ width = 0, height = dialogHeight }) => {
+        {({
+          width = 0,
+          height = dialogHeight,
+        }: {
+          width: number;
+          height: number;
+        }) => {
           let virtualListHeight =
             memberIdsLength >= MAX_ITEM_NUMBER ? height : dialogHeight;
           if (virtualListHeight === 0) {

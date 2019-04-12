@@ -18,7 +18,7 @@ import {
 import { SendPostController } from '../implementation/SendPostController';
 import { PostSearchController } from '../implementation/PostSearchController';
 import { ProgressService } from '../../../progress';
-import { UserConfigService } from '../../../../module/config';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../framework/controller');
 jest.mock('../../../../api');
@@ -32,13 +32,25 @@ describe('PostController', () => {
   const postDao: PostDao = new PostDao(null);
 
   beforeEach(() => {
-    ProgressService.getInstance = jest.fn().mockReturnValue(progressService);
     jest.spyOn(daoManager, 'getDao').mockReturnValue(postDao);
-    UserConfigService.getInstance.mockReturnValue({
+    const userConfigService = {
       setUserId: jest.fn(),
       get: jest.fn(),
       put: jest.fn(),
-    });
+    };
+
+    ServiceLoader.getInstance = jest
+      .fn()
+      .mockImplementation((serviceName: string) => {
+        if (serviceName === ServiceConfig.PROGRESS_SERVICE) {
+          return progressService;
+        }
+        if (serviceName === ServiceConfig.USER_CONFIG_SERVICE) {
+          return userConfigService;
+        }
+
+        return null;
+      });
   });
 
   describe('getPostActionController()', () => {

@@ -7,7 +7,7 @@ import { SplitIOController } from './splitIO/SplitIOController';
 import { LaunchDarklyController } from './launchDarkly/LaunchDarklyController';
 import UserPermissionType from '../types';
 import { notificationCenter, ENTITY } from '../../../service';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { UserPermission } from '../entity';
 import { mainLogger } from 'foundation';
 class PermissionController {

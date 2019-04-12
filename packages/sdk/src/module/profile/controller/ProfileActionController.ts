@@ -9,7 +9,7 @@ import { IPartialModifyController } from '../../../framework/controller/interfac
 import { Raw } from '../../../framework/model';
 import _ from 'lodash';
 import { ProfileDataController } from './ProfileDataController';
-import { AccountUserConfig } from '../../../service/account/config';
+import { AccountUserConfig } from '../../../module/account/config';
 import { PersonDao } from '../../person/dao/PersonDao';
 import { daoManager } from '../../../dao';
 
@@ -140,7 +140,7 @@ class ProfileActionController {
         originalModel: Profile,
       ): Partial<Raw<Profile>> => {
         if (toBook) {
-          oldFavPostIds.push(postId);
+          oldFavPostIds.unshift(postId);
         } else {
           oldFavPostIds = oldFavPostIds.filter((id: number) => id !== postId);
         }

@@ -5,6 +5,7 @@
  */
 import { Profile } from '../entity/Profile';
 import { StateService } from '../../state';
+import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
 function extractHiddenGroupIds(profile: Profile): number[] {
   const clone = Object.assign({}, profile);
@@ -23,7 +24,10 @@ function extractHiddenGroupIds(profile: Profile): number[] {
 async function extractHiddenGroupIdsWithoutUnread(
   profile: Profile,
 ): Promise<number[]> {
-  const stateService: StateService = StateService.getInstance();
+  const stateService = ServiceLoader.getInstance<StateService>(
+    ServiceConfig.STATE_SERVICE,
+  );
+
   const result: number[] = [];
   await Promise.all(
     extractHiddenGroupIds(profile).map(async (groupId: number) => {
