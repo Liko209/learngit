@@ -166,6 +166,10 @@ class RTCCall {
   }
 
   replyWithMessage(message: string): void {
+    if (!message || message.length === 0) {
+      RTC_CALL_ACTION.REPLY_WITH_MSG;
+      return;
+    }
     if (!this.isIncomingCall()) {
       this._onCallActionFailed(RTC_CALL_ACTION.REPLY_WITH_MSG);
       return;
