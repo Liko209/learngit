@@ -1,5 +1,6 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
 import * as assert from 'assert';
+import * as _ from 'lodash';
 import { BaseConversationPage } from "./MessageTab/ConversationPage";
 import { H } from "../../../helpers";
 import { searchComoBox } from "./SearchComboBox";
@@ -273,15 +274,15 @@ class FullSearch extends BaseSearchResultPage {
 
   async getCountOnHeader(): Promise<number> {
     const reg = /\((\d+)\)/;
-    const exist = await this.searchResultsCount.exists;
-    if (exist) {
-      const text = await this.searchResultsCount.textContent;
-      let count = Number(reg.exec(text));
-      if (count) {
-        return count
-      }
+    if (!await this.searchResultsCount.exists) {
+      return 0;
     }
-    return 0;
+    const text = await this.searchResultsCount.innerText;
+    let count = Number(reg.exec(text));
+    if (!count) {
+      return 0;
+    }
+    return count;
   }
 
   async countOnHeaderShouldBe(n: number) {
@@ -308,6 +309,16 @@ class FullSearch extends BaseSearchResultPage {
 }
 
 class MessagesResultTab extends BaseConversationPage {
+  /**  post */
+  async allPostShouldBeByUser(name: string) {
+    await H.retryUntilPass(async () => {
+      const count = await this.posts.count;
+      for (const i of _.range(count)) {
+        await this.t.expect(this.postSenders.nth(i).textContent).eql(name);
+      }
+    })
+  }
+
   /* filter */
   get postByField() {
     return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(0).parent('*[role="combobox"]'));
@@ -332,7 +343,7 @@ class MessagesResultTab extends BaseConversationPage {
   async openTimeOptions() {
     await this.t.click(this.timePostOptionSelector);
   }
-  
+
   async selectTypeOfAll() {
     await this.t.click(this.getSelectorByAutomationId('typeSelector-All'));
   }

@@ -10,6 +10,7 @@ import { AppRoot } from "../../v2/page-models/AppRoot";
 import { IGroup, ITestMeta } from "../../v2/models";
 import { SITE_URL, BrandTire } from '../../config';
 import * as uuid from 'uuid';
+import * as _ from 'lodash';
 
 fixture('Contact Search')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
@@ -112,12 +113,10 @@ test.meta(<ITestMeta>{
   });
 
 
-  const firstTeamNameWithLink = `${firstTeamName} http://google.com`;
 
   await h(t).withLog(`And make some posts in both team `, async () => {
     await h(t).scenarioHelper.sentAndGetTextPostId(firstTeamName, firstTeam, loginUser);
     await h(t).scenarioHelper.sentAndGetTextPostId(firstTeamName, firstTeam, anotherUser);
-    await h(t).scenarioHelper.sentAndGetTextPostId(firstTeamNameWithLink, firstTeam, anotherUser);
 
     await h(t).scenarioHelper.sentAndGetTextPostId(firstTeamName, secondTeam, loginUser);
     await h(t).scenarioHelper.sentAndGetTextPostId(secondTeamName, secondTeam, anotherUser);
@@ -129,15 +128,22 @@ test.meta(<ITestMeta>{
     await app.homePage.ensureLoaded();
   });
 
+  const firstTeamNameWithLink = `http://${firstTeamName}.com`;
 
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog(`When I open team "${firstTeamName}" and search by team name keyword `, async () => {
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`When I open team "${firstTeamName}" and send a link by teamName`, async () => {
     await app.homePage.messageTab.teamsSection.conversationEntryById(firstTeam.glipId).enter();
+    await conversationPage.sendMessage(firstTeamNameWithLink);
+    await conversationPage.nthPostItem(-1).waitForPostToSend();
+  }, true);
+
+  await h(t).withLog(`And I search by the team name as keyword `, async () => {
     await searchBar.clickSelf();
     await searchDialog.clearInputAreaTextByKey();
     await searchDialog.typeSearchKeyword(firstTeamName);
-  }, true);
+  }, true)
 
   await h(t).withLog(`And click search content in this conversation item`, async () => {
     await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
@@ -159,18 +165,24 @@ test.meta(<ITestMeta>{
     await messagesTab.postByField.selectMemberByNth(0);
   }, true);
 
-  await h(t).withLog(`Then only remain 1 post by ${loginUserName}`, async () => {
-    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(1);
-    await t.expect(searchDialog.fullSearchPage.messagesTab.nthPostItem(0).name.textContent).eql(loginUserName);
+  await h(t).withLog(`Then only remain posts by the user`, async () => {
+    await messagesTab.allPostShouldBeByUser(loginUserName);
   });
 
-  await h(t).withLog(`When I clear post by field and post in filed`, async () => {
+  await h(t).withLog(`When I clear post by field`, async () => {
     await messagesTab.postByField.removeSelectedItem(-1);
+  }, true);
+
+  await h(t).withLog(`Then should display 3 posts`, async () => {
+    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(3, { timeout: 20e3 });
+  });
+
+  await h(t).withLog(`When I clear post in filed`, async () => {
     await messagesTab.postInField.removeSelectedItem(-1);
   }, true);
 
   await h(t).withLog(`Then should display 4 posts`, async () => {
-    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(4, { timeout: 20e3 });
+    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(4, { timeout: 30e3 });
   });
 
   await h(t).withLog(`When I select type option of links `, async () => {
@@ -236,7 +248,6 @@ test.meta(<ITestMeta>{
     await postItem.hoverPostAndClickJumpToConversationButton();
   }, true);
 
-  const conversationPage = app.homePage.messageTab.conversationPage;
   await h(t).withLog(`And it should open the conversation and highlight the post in the conversation`, async () => {
     await conversationPage.groupIdShouldBe(groupId);
     await conversationPage.postItemById(postId).shouldBeHighLight();

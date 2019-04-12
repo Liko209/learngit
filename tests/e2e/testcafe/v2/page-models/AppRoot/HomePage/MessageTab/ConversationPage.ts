@@ -70,6 +70,10 @@ export class BaseConversationPage extends BaseWebComponent {
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
   }
+  
+  get postSenders() {
+    return this.self.find('[data-name="name"]');
+  }
 
   get header() {
     return this.getSelectorByAutomationId('conversation-page-header');
