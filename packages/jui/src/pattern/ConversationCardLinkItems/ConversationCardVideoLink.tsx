@@ -34,9 +34,6 @@ const LinkItemsWrapper = styled(JuiCard)`
 const LinkItemContents = styled.div`
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: ${width(160)};
-  max-height: ${height(90)};
 `;
 
 const Title = styled.p`
