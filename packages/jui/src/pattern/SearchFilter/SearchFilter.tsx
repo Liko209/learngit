@@ -5,13 +5,7 @@
  */
 import React from 'react';
 import styled from '../../foundation/styled-components';
-import {
-  spacing,
-  width,
-  grey,
-  typography,
-  height,
-} from '../../foundation/utils';
+import { spacing, width, grey, typography } from '../../foundation/utils';
 
 type JuiSearchFilterProps = {
   title: string;
@@ -33,7 +27,6 @@ const StyledSearchFilterHeader = styled.div`
 
 const StyledSearchFilterBody = styled.div`
   padding: ${spacing(0, 4)};
-  height: ${height(170)};
 `;
 
 const JuiSearchFilter = React.memo((props: JuiSearchFilterProps) => {
