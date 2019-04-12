@@ -7,6 +7,7 @@ import { inject } from 'framework';
 import { NOTIFICATION_SERVICE } from '../interface/constant';
 import { INotificationService, NotificationOpts } from './../interface/index';
 
+type NotificationId = number | string;
 export abstract class AbstractNotificationManager {
   @inject(NOTIFICATION_SERVICE)
   private _notificationService: INotificationService;
@@ -24,7 +25,7 @@ export abstract class AbstractNotificationManager {
     this._notificationService.show(title, opts);
   }
 
-  close(id: number) {
+  close(id: NotificationId) {
     this._notificationService.close(this._scope, id);
   }
 

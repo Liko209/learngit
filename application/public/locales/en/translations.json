@@ -434,6 +434,11 @@
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording."
     },
+    "notification": {
+      "incomingCall": "Incoming Call",
+      "answer": "Answer",
+      "unknownCaller": "Unknown Caller"
+    },
     "accessibility": {
       "hold": "Hold the call",
       "resume": "Resume the call",

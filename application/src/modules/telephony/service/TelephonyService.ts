@@ -47,11 +47,13 @@ class TelephonyService {
     this._telephonyStore.directCall();
   }
 
-  private _onReceiveIncomingCall = (callInfo: TelephonyCallInfo) => {
+  private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
+    this._telephonyStore.callerName = fromName;
     this._telephonyStore.phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${

@@ -4,10 +4,12 @@
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
 import { Omit } from 'jui/foundation/utils/typeHelper';
+
+type NotificationId = number | string;
 export interface INotificationService {
   init: Function;
   show: (title: string, options?: NotificationOpts) => void;
-  close: (scope: string, id: number) => void;
+  close: (scope: string, id: NotificationId) => void;
   clear: (scope?: string) => void;
 }
 
@@ -20,7 +22,7 @@ export type NotificationAction = {
 };
 
 export type NotificationOpts = Omit<NotificationOptions, 'actions'> & {
-  data: { id: number; scope: string };
+  data: { id: NotificationId; scope: string };
   actions?: NotificationAction[];
   onClick?: NotificationActionHandler;
 };
