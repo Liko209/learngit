@@ -115,7 +115,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _handleJumpToIdChanged(currentId: number, prevId?: number) {
     const { refresh, postIds } = this.props;
-    const postAnimation = () =>
+    const highlightPost = () =>
       requestAnimationFrame(() => {
         if (this._jumpToPostRef.current) {
           this._jumpToPostRef.current.highlight();
@@ -127,13 +127,13 @@ class StreamViewComponent extends Component<Props> {
       });
     // handle hight and jump to post Id
     if (currentId === prevId) {
-      postAnimation();
+      highlightPost();
       return;
     }
     if (postIds.includes(currentId) && this._listRef.current) {
       const index = this._findStreamItemIndexByPostId(currentId);
       this._listRef.current.scrollToIndex(index);
-      postAnimation();
+      highlightPost();
     } else {
       refresh();
     }

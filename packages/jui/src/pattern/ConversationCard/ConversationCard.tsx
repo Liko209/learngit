@@ -84,6 +84,7 @@ const HighlightStyle = createGlobalStyle<{}>`
   }
 `;
 
+const ANIMATION_DURATION = 3000;
 class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
   state = {
     highlight: false,
@@ -95,7 +96,7 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
       this.setState({ highlight: true }, () => {
         setTimeout(() => {
           this.setState({ highlight: false });
-        },         3000);
+        },         ANIMATION_DURATION);
       });
   }
 
