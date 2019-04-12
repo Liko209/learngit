@@ -11,7 +11,7 @@ import { JuiMenuList, JuiMenuItem } from 'jui/components';
 import { JuiAvatarActions } from 'jui/pattern/TopBar';
 import { Avatar } from '@/containers/Avatar';
 import { Presence } from '@/containers/Presence';
-import isElectron from '@/common/isElectron';
+import { isElectron } from '@/common/isUserAgent';
 import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
 
 @observer

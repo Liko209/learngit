@@ -5,5 +5,6 @@
  */
 
 const isElectron = navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-export default isElectron;
+export { isElectron, isSafari };
