@@ -39,8 +39,8 @@ class DaoManager extends Manager<BaseDao<any> | BaseKVDao | DBKVDao> {
         // TODO FIJI-4396
         const synConfig = new SyncUserConfig();
         synConfig.removeLastIndexTimestamp();
-        synConfig.removeCanUpdateIndexTimeStamp();
         synConfig.removeFetchRemaining();
+        synConfig.removeSocketConnectedLocalTime();
         const jobConfig = new JobSchedulerConfig();
         jobConfig.clearFetchDataConfigs();
       }

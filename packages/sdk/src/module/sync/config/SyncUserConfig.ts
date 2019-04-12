@@ -28,18 +28,6 @@ class SyncUserConfig extends UserConfig {
     this.put(SYNC_CONFIG_KEYS.LAST_INDEX_TIMESTAMP, timestamp);
   }
 
-  updateCanUpdateIndexTimeStamp(can: boolean) {
-    this.put(SYNC_CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP, can);
-  }
-
-  getCanUpdateIndexTimeStamp() {
-    return this.get(SYNC_CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP);
-  }
-
-  removeCanUpdateIndexTimeStamp() {
-    this.remove(SYNC_CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP);
-  }
-
   removeLastIndexTimestamp() {
     this.remove(SYNC_CONFIG_KEYS.LAST_INDEX_TIMESTAMP);
   }
@@ -59,8 +47,29 @@ class SyncUserConfig extends UserConfig {
   getIndexSucceed() {
     return this.get(SYNC_CONFIG_KEYS.INDEX_SUCCEED);
   }
+
   updateIndexSucceed(value: boolean) {
     this.put(SYNC_CONFIG_KEYS.INDEX_SUCCEED, value);
+  }
+
+  setIndexStartLocalTime(time: number) {
+    this.put(SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME, time);
+  }
+
+  getIndexStartLocalTime() {
+    return this.get(SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME);
+  }
+
+  setSocketConnectedLocalTime(time: number) {
+    this.put(SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME, time);
+  }
+
+  getSocketConnectedLocalTime() {
+    return this.get(SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME);
+  }
+
+  removeSocketConnectedLocalTime() {
+    this.remove(SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME);
   }
 }
 
