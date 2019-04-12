@@ -36,7 +36,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
     `;
 
     const Inner = styled.div`
-          direction: rtl;
+          direction: ltr;
           overflow: hidden;
           color: white;
           font-size: ${({ theme }) => theme.typography.headline.fontSize};
@@ -45,7 +45,7 @@ class FakeInputView extends Component<FakeInputViewProps> {
           display: flex;
           align-items: center;
 
-          &&:before{
+          &&:after{
             font-size: 1.75rem;
             display: inline-block;
             content: '';
@@ -63,6 +63,8 @@ class FakeInputView extends Component<FakeInputViewProps> {
       text-overflow: ellipsis;
       word-break: keep-all;
       white-space: nowrap;
+      unicode-bidi: plaintext;
+      direction: rtl;
     `;
 
     return (
