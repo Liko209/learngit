@@ -27,6 +27,11 @@ import {
   ToastMessageAlign,
 } from '@/containers/ToastWrapper/Toast/types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { analyticsCollector } from '@/AnalyticsCollector';
+import { Group } from 'sdk/module/group';
+import GroupModel from '@/store/models/Group';
+import { ENTITY_NAME } from '@/store';
+import { getEntity } from '@/store/utils';
 
 const QUILL_QUERY = '.conversation-page>div>div>.quill>.ql-container';
 class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
@@ -281,7 +286,20 @@ class AttachmentsViewModel extends StoreViewModel<AttachmentsProps>
         itemIds: ids,
       });
       this.items.clear();
+      this._trackSendPost();
     } catch (e) {}
+  }
+
+  private _trackSendPost() {
+    const group = getEntity<Group, GroupModel>(
+      ENTITY_NAME.GROUP,
+      this.props.id,
+    );
+    analyticsCollector.sendPost(
+      'conversation thread',
+      'file',
+      group.analysisType,
+    );
   }
 
   forceSaveDraftItems = () => {

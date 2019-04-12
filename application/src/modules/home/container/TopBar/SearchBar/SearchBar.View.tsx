@@ -18,11 +18,11 @@ import { goToConversationWithLoading } from '@/common/goToConversation';
 import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 import GroupModel from '@/store/models/Group';
 import { joinTeam } from '@/common/joinPublicTeam';
+import { RecentSearchTypes } from 'sdk/module/search/entity';
 
 import { ViewProps, SearchItems, RecentItems } from './types';
-import { OpenProfileDialog } from '@/containers/common/OpenProfileDialog';
+
 import { SearchSectionsConfig } from './config';
-import { OpenProfile } from '@/common/OpenProfile';
 
 const SEARCH_DELAY = 50;
 
@@ -128,13 +128,21 @@ class SearchBarView extends React.Component<ViewProps & Props> {
     cellIndex: number;
     sectionIndex: number;
     type: string;
+    analysisSource: string;
     hasMore?: boolean;
   }) => {
     const { terms, selectIndex, resetSelectIndex } = this.props;
-    const { id, type, hasMore, sectionIndex, cellIndex } = config;
+    const {
+      id,
+      type,
+      hasMore,
+      sectionIndex,
+      cellIndex,
+      analysisSource,
+    } = config;
 
     const { SearchItem, title } = SearchSectionsConfig[type];
-    const Component = (
+    return (
       <SearchItem
         cellIndex={cellIndex}
         selectIndex={selectIndex}
@@ -151,16 +159,8 @@ class SearchBarView extends React.Component<ViewProps & Props> {
         terms={terms}
         id={id}
         key={id}
+        analysisSource={analysisSource}
       />
-    );
-
-    // id will be string if search content text
-    return typeof id === 'number' ? (
-      <OpenProfileDialog id={id} key={id} afterClick={this.onClose}>
-        {Component}
-      </OpenProfileDialog>
-    ) : (
-      Component
     );
   }
 
@@ -186,6 +186,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
                 hasMore,
                 sectionIndex,
                 cellIndex,
+                analysisSource: 'instant search result',
               });
             })}
           </React.Fragment>
@@ -225,6 +226,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
               type: types[cellIndex],
               hasMore: false,
               sectionIndex: 0,
+              analysisSource: 'recently searched contact',
             });
           });
         })}
@@ -232,14 +234,32 @@ class SearchBarView extends React.Component<ViewProps & Props> {
     );
   }
 
-  onEnter = () => {
-    const { getCurrentItemId, addRecentRecord } = this.props;
+  onEnter = (e: KeyboardEvent) => {
+    const {
+      getCurrentItemId,
+      addRecentRecord,
+      getCurrentItemType,
+      canJoinTeam,
+    } = this.props;
     const currentItemId = getCurrentItemId();
+    const currentItemType = getCurrentItemType();
     if (!currentItemId) {
       return;
     }
+
     addRecentRecord(currentItemId);
-    OpenProfile.show(currentItemId, null, this.onClose);
+    if (currentItemType === RecentSearchTypes.PEOPLE) {
+      this._goToConversation(currentItemId);
+      return;
+    }
+
+    const { canJoin, group } = canJoinTeam(currentItemId);
+    if (canJoin) {
+      e.preventDefault();
+      this.handleJoinTeam(group);
+    } else {
+      this._goToConversation(currentItemId);
+    }
   }
 
   render() {

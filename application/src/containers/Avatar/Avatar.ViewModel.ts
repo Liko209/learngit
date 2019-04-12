@@ -65,7 +65,7 @@ class AvatarViewModel extends StoreViewModel<AvatarProps>
 
   @computed
   get headShotUrl() {
-    if (!(this._person && this._person.hasHeadShot)) {
+    if (!(this._person && this._person.hasHeadShot) || !this.props.uid) {
       return '';
     }
     const { headshotVersion, headshot } = this._person;

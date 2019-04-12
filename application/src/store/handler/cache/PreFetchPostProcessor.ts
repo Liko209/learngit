@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { IProcessor } from 'sdk/src/framework/processor/IProcessor';
+import { IProcessor } from 'sdk/framework/processor/IProcessor';
 import { mainLogger } from 'sdk';
 
 export default class PreFetchPostProcessor implements IProcessor {

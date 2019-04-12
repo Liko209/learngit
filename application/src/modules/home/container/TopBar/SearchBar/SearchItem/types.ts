@@ -36,6 +36,7 @@ type BaseViewProps = {
   addRecentRecord: () => void;
   onClose: () => void;
   onClear: () => void;
+  analysisSource: string;
 };
 
 export {

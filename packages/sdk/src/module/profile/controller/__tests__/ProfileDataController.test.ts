@@ -62,7 +62,7 @@ describe('ProfileDataController', () => {
         .mockImplementationOnce(() => {
           return {
             id: 1,
-            max_leftrail_group_tabs2: 5,
+            max_leftrail_group_tabs2: '5',
           };
         });
       const result = await profileDataController.getMaxLeftRailGroup();

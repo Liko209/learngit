@@ -3,26 +3,18 @@
  * @Date: 2018-03-01 10:49:44
  */
 import { ProfileController } from '../ProfileController';
-import Api from '../../../../api/api';
 import { MockEntitySourceController } from './MockEntitySourceController';
-import {
-  buildEntitySourceController,
-  buildPartialModifyController,
-  buildRequestController,
-} from '../../../../framework/controller';
 import { ProfileActionController } from '../ProfileActionController';
+import { ProfileDataController } from '../ProfileDataController';
+import { SettingsActionController } from '../SettingsActionController';
 
 jest.mock('../../../../framework/controller');
-jest.mock('../../../../api/api');
-jest.mock('../../../../dao');
-jest.mock('../../../progress');
 
 describe('ProfileController', () => {
   let profileController: ProfileController;
   let mockEntitySourceController: MockEntitySourceController;
 
   beforeEach(() => {
-
     mockEntitySourceController = new MockEntitySourceController();
     profileController = new ProfileController(mockEntitySourceController);
   });
@@ -32,25 +24,25 @@ describe('ProfileController', () => {
   });
 
   describe('getProfileActionController()', () => {
-    it('should call partial modify controller', async () => {
-      Object.assign(Api, {
-        glipNetworkClient: null,
-      });
-      buildPartialModifyController.mockImplementationOnce(() => {
-        return undefined;
-      });
-
-      buildRequestController.mockImplementationOnce(() => {
-        return undefined;
-      });
-      buildEntitySourceController.mockImplementationOnce(() => {
-        return undefined;
-      });
+    it('should return ProfileActionController controller', () => {
+      profileController.getProfileDataController = jest.fn();
       const result = profileController.getProfileActionController();
       expect(result instanceof ProfileActionController).toBe(true);
-      expect(buildEntitySourceController).toBeCalledTimes(1);
-      expect(buildPartialModifyController).toBeCalledTimes(1);
-      expect(buildRequestController).toBeCalledTimes(1);
+    });
+  });
+
+  describe('getProfileDataController()', () => {
+    it('should return ProfileDataController controller', () => {
+      const result = profileController.getProfileDataController();
+      expect(result instanceof ProfileDataController).toBe(true);
+    });
+  });
+
+  describe('getSettingsActionController()', () => {
+    it('should return SettingsActionController controller', () => {
+      profileController.getProfileDataController = jest.fn();
+      const result = profileController.getSettingsActionController();
+      expect(result instanceof SettingsActionController).toBe(true);
     });
   });
 });

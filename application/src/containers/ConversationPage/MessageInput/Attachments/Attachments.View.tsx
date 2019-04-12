@@ -60,12 +60,14 @@ class AttachmentsViewComponent extends Component<
     const { files, cancelUploadFile } = this.props;
     return (
       <>
-        <AttachmentList
-          iconResolver={this._resolveIcon}
-          files={files}
-          removeAttachment={cancelUploadFile}
-          data-test-automation-id="message-attachment-node"
-        />
+        {files.length > 0 ? (
+          <AttachmentList
+            iconResolver={this._resolveIcon}
+            files={files}
+            removeAttachment={cancelUploadFile}
+            data-test-automation-id="message-attachment-node"
+          />
+        ) : null}
         {this._showDuplicateFilesDialogIfNeeded()}
       </>
     );

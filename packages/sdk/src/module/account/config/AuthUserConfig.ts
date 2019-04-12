@@ -24,14 +24,6 @@ class AuthUserConfig extends UserConfig {
     this.remove(AUTH_KEYS.GLIP_TOKEN);
   }
 
-  setGlip2Token(token: any) {
-    this.put(AUTH_KEYS.GLIP2_TOKEN, token);
-  }
-
-  getGlip2Token() {
-    return this.get(AUTH_KEYS.GLIP2_TOKEN);
-  }
-
   setRCToken(token: any) {
     this.put(AUTH_KEYS.RC_TOKEN, token);
   }

@@ -29,6 +29,7 @@ import { container } from 'framework';
 import { saveBlob } from '@/common/blobUtils';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { analyticsCollector } from '@/AnalyticsCollector';
 
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
@@ -236,6 +237,7 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     this.cleanDraft();
     const items = this.items;
     try {
+      this._trackSendPost();
       let realContent: string = content;
 
       if (content.trim().length === 0) {
@@ -265,6 +267,15 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
 
   addOnPostCallback = (callback: OnPostCallback) => {
     this._onPostCallbacks.push(callback);
+  }
+
+  private _trackSendPost() {
+    const type = this.items.length ? 'file' : 'text';
+    analyticsCollector.sendPost(
+      'conversation thread',
+      type,
+      this._group.analysisType,
+    );
   }
 }
 

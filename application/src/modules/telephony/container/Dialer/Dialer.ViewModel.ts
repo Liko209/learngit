@@ -5,9 +5,19 @@
  */
 
 import { StoreViewModel } from '@/store/ViewModel';
+import { container } from 'framework';
+import { computed } from 'mobx';
 import { DialerProps, DialerViewProps } from './types';
+import { TelephonyStore } from '../../store';
 
 class DialerViewModel extends StoreViewModel<DialerProps>
-  implements DialerViewProps {}
+  implements DialerViewProps {
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+
+  @computed
+  get callState() {
+    return this._telephonyStore.callState;
+  }
+}
 
 export { DialerViewModel };

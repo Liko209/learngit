@@ -3,7 +3,7 @@
  * @Date: 2018-03-14 20:26:21
  * Copyright © RingCentral. All rights reserved.
  */
-import { NETWORK_METHOD, NETWORK_VIA } from 'foundation';
+import { NETWORK_METHOD, NETWORK_VIA, TEN_MINUTE_TIMEOUT } from 'foundation';
 import { GlipTypeUtil, TypeDictionary } from '../../utils/glip-type-dictionary';
 import Api from '../api';
 import { IdModel, Raw } from '../../framework/model';
@@ -81,29 +81,7 @@ class ItemAPI extends Api {
             }
           },
         },
-      },
-      requestHolder,
-    );
-  }
-
-  static uploadFileItem(
-    files: FormData,
-    callback: ProgressCallback,
-    requestHolder?: RequestHolder,
-  ) {
-    return this.uploadNetworkClient.http<StoredFile>(
-      {
-        path: '/upload',
-        method: NETWORK_METHOD.POST,
-        via: NETWORK_VIA.HTTP,
-        data: files,
-        requestConfig: {
-          onUploadProgress(event: ProgressEventInit): void {
-            if (callback) {
-              callback(event);
-            }
-          },
-        },
+        timeout: TEN_MINUTE_TIMEOUT,
       },
       requestHolder,
     );

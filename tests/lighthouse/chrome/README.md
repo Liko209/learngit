@@ -25,7 +25,6 @@ JUPITER_URL=https://develop.fiji.gliprc.com
 JUPITER_ENV=GLP-CI1-XMN
 JUPITER_LOGIN_URL=https://login-glpci1xmn.lab.nordigy.ru
 JUPITER_GLIP_URL=https://glpci1xmn.asialab.glip.net
-JUPITER_GLIP2_URL=https://api-glpci1xmn.lab.nordigy.ru
 JUIPTER_USER_CREDENTIAL=
 JUIPTER_USER_PIN=
 JUIPTER_USER_PASSWORD=
