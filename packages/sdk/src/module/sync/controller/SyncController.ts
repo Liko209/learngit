@@ -28,8 +28,11 @@ import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
-// import { IndexRequestProcessor } from './IndexRequestProcessor';
-// import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
+import { IndexRequestProcessor } from './IndexRequestProcessor';
+import {
+  SequenceProcessorHandler,
+  IProcessor,
+} from '../../../framework/processor';
 import { SYNC_SOURCE } from '../types';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
@@ -37,18 +40,35 @@ import { AccountService } from '../../../service/account/accountService';
 import socketManager from '../../../service/socket';
 
 const LOG_TAG = 'SyncController';
+const INDEX_MAX_QUEUE = 2;
 class SyncController {
   private _syncListener: SyncListener;
-  // private _processorHandler: SequenceProcessorHandler;
+  private _processorHandler: SequenceProcessorHandler;
 
   constructor() {
-    // this._processorHandler = new SequenceProcessorHandler(
-    //   'Index_SyncController',
-    // );
+    this._processorHandler = new SequenceProcessorHandler(
+      'Index_SyncController',
+      undefined,
+      INDEX_MAX_QUEUE,
+      this._onExceedMaxSize,
+    );
+  }
+
+  private _onExceedMaxSize = (totalProcessors: IProcessor[]) => {
+    mainLogger.log(
+      `SequenceProcessorHandler-Index_SyncController over threshold:${INDEX_MAX_QUEUE}, remove the oldest one`,
+    );
+    const lastProcessor = totalProcessors.shift();
+    if (lastProcessor && lastProcessor.cancel) {
+      lastProcessor.cancel();
+    }
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
-    mainLogger.log(LOG_TAG, 'sync service SERVICE.SOCKET_STATE_CHANGE', state);
+    mainLogger.log(
+      LOG_TAG,
+      `sync service SERVICE.SOCKET_STATE_CHANGE:${state}`,
+    );
     if (state === 'connected' || state === 'refresh') {
       this.syncData();
     } else if (state === 'connecting') {
@@ -91,7 +111,7 @@ class SyncController {
   }
 
   updateCanUpdateIndexTimeStamp(can: boolean) {
-    mainLogger.log(LOG_TAG, 'updateCanUpdateIndexTimeStamp', can);
+    mainLogger.log(LOG_TAG, `updateCanUpdateIndexTimeStamp: ${can}`);
     const syncConfig = new SyncUserConfig();
     return syncConfig.updateCanUpdateIndexTimeStamp(can);
   }
@@ -104,10 +124,10 @@ class SyncController {
   async syncData(syncListener?: SyncListener) {
     this._syncListener = syncListener || {};
     const lastIndexTimestamp = this.getIndexTimestamp();
-    mainLogger.log(LOG_TAG, 'start syncData time: ', lastIndexTimestamp);
+    mainLogger.log(LOG_TAG, `start syncData time: ${lastIndexTimestamp}`);
     try {
       if (lastIndexTimestamp) {
-        await this._syncIndexData(lastIndexTimestamp);
+        await this._syncIndexData();
         await this._checkFetchedRemaining(lastIndexTimestamp);
       } else {
         await this._firstLogin();
@@ -187,26 +207,32 @@ class SyncController {
     mainLogger.log('fetch remaining data and handle success');
   }
 
-  private async _syncIndexData(timeStamp: number) {
-    mainLogger.log(LOG_TAG, 'start fetching index');
-    progressBar.start();
-    const { onIndexLoaded, onIndexHandled } = this._syncListener;
-    const syncConfig = new SyncUserConfig();
-    // 5 minutes ago to ensure data is correct
-    try {
-      const result = await this.fetchIndexData(String(timeStamp - 300000));
-      mainLogger.log(LOG_TAG, 'fetch index done');
-      onIndexLoaded && (await onIndexLoaded(result));
-      await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
-      onIndexHandled && (await onIndexHandled());
-      syncConfig.updateIndexSucceed(true);
-    } catch (error) {
-      mainLogger.log(LOG_TAG, 'fetch index failed');
-      this.updateCanUpdateIndexTimeStamp(false);
-      syncConfig.updateIndexSucceed(false);
-      await this._handleSyncIndexError(error);
-    }
-    progressBar.stop();
+  private async _syncIndexData() {
+    const executeFunc = async () => {
+      const timeStamp = this.getIndexTimestamp();
+      mainLogger.log(LOG_TAG, `start fetching index:${timeStamp}`);
+      progressBar.start();
+      const { onIndexLoaded, onIndexHandled } = this._syncListener;
+      const syncConfig = new SyncUserConfig();
+      // 5 minutes ago to ensure data is correct
+      try {
+        const result = await this.fetchIndexData(String(timeStamp - 300000));
+        mainLogger.log(LOG_TAG, 'fetch index done');
+        onIndexLoaded && (await onIndexLoaded(result));
+        await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
+        onIndexHandled && (await onIndexHandled());
+        syncConfig.updateIndexSucceed(true);
+        mainLogger.log(LOG_TAG, 'handle index done');
+      } catch (error) {
+        mainLogger.log(LOG_TAG, 'fetch index failed');
+        this.updateCanUpdateIndexTimeStamp(false);
+        syncConfig.updateIndexSucceed(false);
+        await this._handleSyncIndexError(error);
+      }
+      progressBar.stop();
+    };
+    const processor = new IndexRequestProcessor(executeFunc);
+    this._processorHandler.addProcessor(processor);
   }
 
   private async _handleSyncIndexError(result: any) {
@@ -298,7 +324,7 @@ class SyncController {
     if (profile && Object.keys(profile).length > 0) {
       transProfile = profile;
     }
-    return Promise.all([
+    return await Promise.all([
       accountHandleData({
         userId,
         companyId,

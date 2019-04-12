@@ -73,6 +73,7 @@ class ItemSyncController {
       'ItemSequenceProcessor',
       this._addItemSyncStrategy,
       this._itemSyncMaxProcessors,
+      this._onExceedMaxSize,
     );
 
     notificationCenter.on(SERVICE.SOCKET_STATE_CHANGE, (state: string) => {
@@ -104,6 +105,13 @@ class ItemSyncController {
     }
     result.unshift(newProcessor);
     return result;
+  }
+
+  private _onExceedMaxSize = (totalProcessors: IProcessor[]) => {
+    const lastProcessor = totalProcessors.pop();
+    if (lastProcessor && lastProcessor.cancel) {
+      lastProcessor.cancel();
+    }
   }
 
   async requestSyncGroupItems(groupId: number) {

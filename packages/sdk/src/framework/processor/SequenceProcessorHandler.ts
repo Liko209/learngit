@@ -7,10 +7,11 @@
 import { AbstractProcessor } from './AbstractProcessor';
 import { IProcessor } from './IProcessor';
 import { mainLogger } from 'foundation';
+import notificationCenter from '../../service/notificationCenter';
+import { SERVICE } from '../../service/eventKey';
 
 class SequenceProcessorHandler extends AbstractProcessor {
   private _isExecuting: boolean = false;
-
   constructor(
     name: string,
     addProcessorStrategy?: (
@@ -19,8 +20,11 @@ class SequenceProcessorHandler extends AbstractProcessor {
       existed: boolean,
     ) => IProcessor[],
     private _maxSize?: number,
+    private _onExceedMaxSize?: (totalProcessors: IProcessor[]) => void,
   ) {
     super(name, addProcessorStrategy);
+
+    this._subscribeNotifications();
   }
 
   addProcessor(processor: IProcessor): boolean {
@@ -41,11 +45,12 @@ class SequenceProcessorHandler extends AbstractProcessor {
   }
 
   private _addProcessor(processor: IProcessor) {
-    if (this._maxSize && this._processors.length === this._maxSize - 1) {
-      const lastProcessor = this._processors.pop();
-      if (lastProcessor && lastProcessor.cancel) {
-        lastProcessor.cancel();
-      }
+    if (
+      this._maxSize &&
+      this._onExceedMaxSize &&
+      this._processors.length === this._maxSize
+    ) {
+      this._onExceedMaxSize(this._processors);
     }
 
     return super.addProcessor(processor);
@@ -81,6 +86,20 @@ class SequenceProcessorHandler extends AbstractProcessor {
     }
 
     return result;
+  }
+
+  private _subscribeNotifications() {
+    notificationCenter.on(
+      SERVICE.WAKE_UP_FROM_SLEEP,
+      this._onWakeUpFromSleep.bind(this),
+    );
+  }
+  private _onWakeUpFromSleep() {
+    // try to execute next one when wake up from sleep
+    if (this._isExecuting) {
+      this._isExecuting = false;
+      this.execute();
+    }
   }
 
   cancelAll() {
