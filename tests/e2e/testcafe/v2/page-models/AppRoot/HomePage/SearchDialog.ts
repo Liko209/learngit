@@ -87,7 +87,7 @@ class BaseSearchResultPage extends BaseWebComponent {
   }
 
   async conversationsContainName(name: string, timeout: number = 20e3) {
-    await this.t.expect(this.itemsNames.withText(name).exists).ok({ timeout });
+    await this.t.expect(this.itemsNames.withExactText(name).exists).ok({ timeout });
   }
 }
 
