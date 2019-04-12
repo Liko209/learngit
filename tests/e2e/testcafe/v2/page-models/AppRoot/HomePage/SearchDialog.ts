@@ -2,6 +2,7 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 import * as assert from 'assert';
 import { BaseConversationPage } from "./MessageTab/ConversationPage";
 import { H } from "../../../helpers";
+import { searchComoBox } from "./SearchComboBox";
 
 
 export class SearchDialog extends BaseWebComponent {
@@ -86,12 +87,8 @@ class BaseSearchResultPage extends BaseWebComponent {
   }
 
   async conversationsContainName(name: string, timeout: number = 20e3) {
-    await this.t.expect(this.itemsNames.withExactText(name).exists).ok();
+    await this.t.expect(this.itemsNames.withText(name).exists).ok({ timeout });
   }
-
-
-
-
 }
 
 class InstantSearch extends BaseSearchResultPage {
@@ -148,7 +145,7 @@ class InstantSearch extends BaseSearchResultPage {
   }
 
   async conversationsContainName(name: string, timeout: number = 20e3) {
-    await this.t.expect(this.conversationItems.withExactText(name).exists).ok({ timeout });
+    await this.t.expect(this.conversationItems.withText(name).exists).ok({ timeout });
   }
 
   get peoples() {
@@ -311,7 +308,58 @@ class FullSearch extends BaseSearchResultPage {
 }
 
 class MessagesResultTab extends BaseConversationPage {
+  /* filter */
+  get postByField() {
+    return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(0).parent('*[role="combobox"]'));
+  }
 
+  get postInField() {
+    return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(1).parent('*[role="combobox"]'));
+  }
+
+  get typeOptionSelector() {
+    return this.getSelectorByAutomationId('typeSelector');
+  }
+
+  get timePostOptionSelector() {
+    return this.getSelectorByAutomationId('timePostSelector');
+  }
+
+  async openTypeOptions() {
+    await this.t.click(this.typeOptionSelector);
+  }
+
+  async openTimeOptions() {
+    await this.t.click(this.timePostOptionSelector);
+  }
+  
+  async selectTypeOfAll() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-All'));
+  }
+
+  async selectTypeOfMessages() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Messages'));
+  }
+
+  async selectTypeOfEvents() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Events'));
+  }
+
+  async selectTypeOfFiles() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Files'));
+  }
+
+  async selectTypeOfLinks() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Links'));
+  }
+
+  async selectTypeOfNotes() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Notes'));
+  }
+
+  async selectTypeOfTasks() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Tasks'));
+  }
 }
 
 
@@ -481,3 +529,4 @@ export class JoinTeamDialog extends BaseWebComponent {
     await this.t.click(this.cancelButton);
   }
 }
+

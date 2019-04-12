@@ -85,34 +85,46 @@ test.meta(<ITestMeta>{
   const loginUser = users[4];
   const anotherUser = users[5];
   await h(t).glip(loginUser).init();
+  const loginUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', loginUser.rcId);
 
-  const teamNames = Array(2).fill(null).map(() => `${uuid()}`);
-  const teams: IGroup[] = teamNames.map(name => ({
-    name,
+  const firstTeamName = uuid();
+  const secondTeamName = uuid();
+
+  let firstTeam = <IGroup>{
+    name: firstTeamName,
     type: 'Team',
     owner: loginUser,
     members: [loginUser, anotherUser],
-  }));
-
-
-  await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
-  let postPool: string[][] = []
-  for (const team of teams) {
-    await h(t).withLog(`And have a team named: ${team.name}`, async () => {
-      await h(t).scenarioHelper.createTeam(team);
-    });
-
-    await h(t).withLog(`And each member send post text ${team.name}`, async () => {
-      let postIds: string[] = []
-      for (const user of team.members) {
-        postIds.unshift(await h(t).scenarioHelper.sentAndGetTextPostId(team.name, team, user));
-      }
-      postPool.push(postIds)
-    });
+  }
+  let secondTeam = <IGroup>{
+    name: secondTeamName,
+    type: 'Team',
+    owner: loginUser,
+    members: [loginUser, anotherUser],
   }
 
+  await h(t).withLog(`Given have a team named: ${firstTeamName}`, async () => {
+    await h(t).scenarioHelper.createTeam(firstTeam);
+  });
+
+  await h(t).withLog(`And have a team named: ${secondTeamName}`, async () => {
+    await h(t).scenarioHelper.createTeam(secondTeam);
+  });
+
+
+  const firstTeamNameWithLink = `${firstTeamName} http://google.com`;
+
+  await h(t).withLog(`And make some posts in both team `, async () => {
+    await h(t).scenarioHelper.sentAndGetTextPostId(firstTeamName, firstTeam, loginUser);
+    await h(t).scenarioHelper.sentAndGetTextPostId(firstTeamName, firstTeam, anotherUser);
+    await h(t).scenarioHelper.sentAndGetTextPostId(firstTeamNameWithLink, firstTeam, anotherUser);
+
+    await h(t).scenarioHelper.sentAndGetTextPostId(firstTeamName, secondTeam, loginUser);
+    await h(t).scenarioHelper.sentAndGetTextPostId(secondTeamName, secondTeam, anotherUser);
+  });
+
   const app = new AppRoot(t)
-  await h(t).withLog(`And I login with the extension`, async () => {
+  await h(t).withLog(`And I login with the extension ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
     await app.homePage.ensureLoaded();
   });
@@ -120,11 +132,11 @@ test.meta(<ITestMeta>{
 
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog(`When I open team "${teamNames[0]}" and search keyword ${teamNames[0]}`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryById(teams[0].glipId).enter();
+  await h(t).withLog(`When I open team "${firstTeamName}" and search by team name keyword `, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(firstTeam.glipId).enter();
     await searchBar.clickSelf();
     await searchDialog.clearInputAreaTextByKey();
-    await searchDialog.typeSearchKeyword(teamNames[0]);
+    await searchDialog.typeSearchKeyword(firstTeamName);
   }, true);
 
   await h(t).withLog(`And click search content in this conversation item`, async () => {
@@ -135,13 +147,41 @@ test.meta(<ITestMeta>{
     await searchDialog.fullSearchPage.messagesTabEntry.shouldBeOpened();
   });
 
-  await h(t).withLog(`And display ${postPool[0].length}`, async () => {
-    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(postPool[0].length);
+  const messagesTab = searchDialog.fullSearchPage.messagesTab;
+  await h(t).withLog(`And display 3 posts`, async () => {
+    await searchDialog.fullSearchPage.countOnHeaderGreaterThanOrEqual(3);
+    await t.expect(messagesTab.posts.count).eql(3);
   });
 
   // todo: filter
+  await h(t).withLog(`When I set filter post by ${loginUserName}`, async () => {
+    await messagesTab.postByField.typeText(loginUserName);
+    await messagesTab.postByField.selectMemberByNth(0);
+  }, true);
 
-  
+  await h(t).withLog(`Then only remain 1 post by ${loginUserName}`, async () => {
+    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(1);
+    await t.expect(searchDialog.fullSearchPage.messagesTab.nthPostItem(0).name.textContent).eql(loginUserName);
+  });
+
+  await h(t).withLog(`When I clear post by field and post in filed`, async () => {
+    await messagesTab.postByField.removeSelectedItem(-1);
+    await messagesTab.postInField.removeSelectedItem(-1);
+  }, true);
+
+  await h(t).withLog(`Then should display 4 posts`, async () => {
+    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(4, { timeout: 20e3 });
+  });
+
+  await h(t).withLog(`When I select type option of links `, async () => {
+    await messagesTab.openTypeOptions();
+    await messagesTab.selectTypeOfLinks();
+  }, true);
+
+  await h(t).withLog(`Then should display 1 posts`, async () => {
+    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(1);
+  });
+
 
   // switch other tab
   await h(t).withLog(`When I switch to people tab`, async () => {
@@ -166,14 +206,14 @@ test.meta(<ITestMeta>{
   }, true);
 
 
-  await h(t).withLog(`Then there is one teams named ${teamNames[0]}`, async () => {
-    await searchDialog.fullSearchPage.conversationsContainName(teamNames[0]);
+  await h(t).withLog(`Then there is one teams named ${firstTeamName}`, async () => {
+    await searchDialog.fullSearchPage.conversationsContainName(firstTeamName);
   });
 
   // change search keyword
-  await h(t).withLog(`When I search by keyword ${teamNames[1]}`, async () => {
+  await h(t).withLog(`When I search by keyword ${secondTeamName}`, async () => {
     await searchDialog.clearInputAreaTextByKey();
-    await searchDialog.typeSearchKeyword(teamNames[0]);
+    await searchDialog.typeSearchKeyword(secondTeamName);
   }, true);
 
   await h(t).withLog(`And click search content item (global)`, async () => {
@@ -184,10 +224,10 @@ test.meta(<ITestMeta>{
     await searchDialog.fullSearchPage.messagesTabEntry.shouldBeOpened();
   });
 
-  await h(t).withLog(`And display search result count at least ${postPool[1].length}`, async () => {
-    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).gte(postPool[1].length);
+  await h(t).withLog(`And display search result count at least 1`, async () => {
+    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).gte(1);
     await t.expect(searchDialog.fullSearchPage.searchResultsCount.exists).ok();
-    await searchDialog.fullSearchPage.countOnHeaderGreaterThanOrEqual(postPool[1].length)
+    await searchDialog.fullSearchPage.countOnHeaderGreaterThanOrEqual(1)
   });
 
   let postId, groupId;
