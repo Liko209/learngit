@@ -12,7 +12,11 @@ import {
   WEBPHONE_MEDIA_CONNECTION_STATE_EVENT,
 } from '../../signaling/types';
 import { CALL_SESSION_STATE, CALL_FSM_NOTIFY } from '../../call/types';
-import { RTC_CALL_ACTION } from '../../api/types';
+import {
+  RTC_CALL_ACTION,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
+} from '../../api/types';
 import { rtcLogger } from '../../utils/RTCLoggerProxy';
 
 describe('sip call session', () => {
@@ -137,6 +141,8 @@ describe('sip call session', () => {
     stopRecord = jest.fn();
     hold = jest.fn();
     unhold = jest.fn();
+    transfer = jest.fn();
+    replyWithMessage = jest.fn();
     accept() {}
     reject() {}
     toVoicemail() {}
@@ -404,6 +410,125 @@ describe('sip call session', () => {
       vsession.emitSdhCreated();
       vsession.emitTrackAdded();
       expect(sipcallsession._onSessionTrackAdded).toHaveBeenCalled();
+    });
+  });
+
+  describe('Transfer call', () => {
+    it('should call webphone transfer api when transfer is called', () => {
+      const callSession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      callSession.setSession(vsession);
+      vsession.transfer.mockResolvedValue(null);
+      callSession.transfer();
+      expect(vsession.transfer).toHaveBeenCalled();
+    });
+  });
+
+  describe('Reply with pattern', () => {
+    it('should call webphone replyWithMessage api when replyWithPattern is called with in a meeting', () => {
+      const callSession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      callSession.setSession(vsession);
+      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.IN_A_MEETING);
+      expect(vsession.replyWithMessage).toHaveBeenCalledWith({
+        replyType: 5,
+        callbackDirection: 0,
+        timeUnits: 0,
+      });
+    });
+    it('should call webphone replyWithMessage api when replyWithPattern is called with on my way', () => {
+      const callSession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      callSession.setSession(vsession);
+      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.ON_MY_WAY);
+      expect(vsession.replyWithMessage).toHaveBeenCalledWith({
+        replyType: 2,
+        callbackDirection: 0,
+        timeUnits: 0,
+      });
+    });
+    it('should call webphone replyWithMessage api when replyWithPattern is called with on the other line', () => {
+      const callSession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      callSession.setSession(vsession);
+      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.ON_THE_OTHER_LINE);
+      expect(vsession.replyWithMessage).toHaveBeenCalledWith({
+        replyType: 6,
+        callbackDirection: 0,
+        timeUnits: 0,
+      });
+    });
+    it('should call webphone replyWithMessage api when replyWithPattern is called with on call you back later', () => {
+      const callSession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      callSession.setSession(vsession);
+      callSession.replyWithPattern(
+        RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER,
+      );
+      expect(vsession.replyWithMessage).toHaveBeenCalledWith({
+        replyType: 4,
+        callbackDirection: 0,
+        timeUnits: 0,
+      });
+    });
+    it('should call webphone replyWithMessage api when replyWithPattern is called with on call you back later in 5 min', () => {
+      const callSession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      callSession.setSession(vsession);
+      callSession.replyWithPattern(
+        RTC_REPLY_MSG_PATTERN.WILL_CALL_YOU_BACK_LATER,
+        5,
+        RTC_REPLY_MSG_TIME_UNIT.MINUTE,
+      );
+      expect(vsession.replyWithMessage).toHaveBeenCalledWith({
+        replyType: 1,
+        callbackDirection: 0,
+        timeUnits: 0,
+        timeValue: 5,
+      });
+    });
+    it('should call webphone replyWithMessage api when replyWithPattern is called with on call me back', () => {
+      const callSession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      callSession.setSession(vsession);
+      callSession.replyWithPattern(RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER);
+      expect(vsession.replyWithMessage).toHaveBeenCalledWith({
+        replyType: 4,
+        callbackDirection: 1,
+        timeUnits: 0,
+      });
+    });
+    it('should call webphone replyWithMessage api when replyWithPattern is called with on call me back in 5 hour', () => {
+      const callSession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      callSession.setSession(vsession);
+      callSession.replyWithPattern(
+        RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER,
+        5,
+        RTC_REPLY_MSG_TIME_UNIT.HOUR,
+      );
+      expect(vsession.replyWithMessage).toHaveBeenCalledWith({
+        replyType: 1,
+        callbackDirection: 1,
+        timeUnits: 1,
+        timeValue: 5,
+      });
+    });
+    it('should call webphone replyWithMessage api when replyWithPattern is called with on call me back in 5 day', () => {
+      const callSession = new RTCSipCallSession();
+      const vsession = new VirtualSession();
+      callSession.setSession(vsession);
+      callSession.replyWithPattern(
+        RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER,
+        5,
+        RTC_REPLY_MSG_TIME_UNIT.DAY,
+      );
+      expect(vsession.replyWithMessage).toHaveBeenCalledWith({
+        replyType: 1,
+        callbackDirection: 1,
+        timeUnits: 2,
+        timeValue: 5,
+      });
     });
   });
 
