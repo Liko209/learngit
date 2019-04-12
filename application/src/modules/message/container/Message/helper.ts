@@ -82,14 +82,14 @@ export class MessageRouterChangeHelper {
     this.updateCurrentConversationId(lastGroupId);
   }
 
-  static async goToConversation(id?: string, action?: Action) {
+  static async goToConversation(id?: string, action?: Action, state?: any) {
     if (!id) {
       return this._goToDefaultConversation();
     }
     if (!this.isConversation(id)) {
       return this.updateCurrentConversationId(this.defaultPageId);
     }
-    this._goToConversationById(id, action);
+    this._goToConversationById(id, action, state);
   }
 
   private static async _goToDefaultConversation() {
@@ -98,22 +98,28 @@ export class MessageRouterChangeHelper {
     this.updateCurrentConversationId(id);
   }
 
-  private static async _goToConversationById(id: string, action?: Action) {
+  private static async _goToConversationById(
+    id: string,
+    action?: Action,
+    state?: any,
+  ) {
     const validId = await this.verifyGroup(Number(id));
     this.ensureGroupIsOpened(Number(id));
-    this._doRouterRedirection(validId, action);
+    this._doRouterRedirection(validId, action, state);
     this.updateCurrentConversationId(id);
   }
 
-  private static async _doRouterRedirection(id: string, action?: Action) {
+  private static async _doRouterRedirection(
+    id: string,
+    action?: Action,
+    state?: any,
+  ) {
     switch (action) {
       case 'REPLACE':
-        history.replace(`/messages/${id}`);
+        history.replace(`/messages/${id}`, state);
         break;
       default:
-        history.push(`/messages/${id}`, {
-          source: 'reload',
-        });
+        history.push(`/messages/${id}`, state);
         break;
     }
   }

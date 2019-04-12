@@ -1,3 +1,4 @@
+import { goToConversation } from '@/common/goToConversation';
 /*
  * @Author: Andy Hu (andy.hu@ringcentral.com)
  * @Date: 2019-01-17 15:16:45
@@ -25,7 +26,6 @@ import { replaceAtMention } from '@/containers/ConversationSheet/TextMessage/uti
 import GroupModel from '@/store/models/Group';
 import GroupService from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
-import { MessageRouterChangeHelper } from './container/Message/helper';
 import { getPostType } from '@/common/getPostType';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 
@@ -73,7 +73,7 @@ export class MessageNotificationManager extends AbstractNotificationManager {
       renotify: false,
       icon: this.getIcon(person, members.length, isTeam),
       data: { id: postId, scope: this._scope },
-      onClick: this.onClickHandlerBuilder(postModel.groupId),
+      onClick: this.onClickHandlerBuilder(postModel.groupId, postId),
     };
 
     this.show(title, opts);
@@ -115,9 +115,9 @@ export class MessageNotificationManager extends AbstractNotificationManager {
     return { postModel, groupModel };
   }
 
-  onClickHandlerBuilder(groupId: number) {
+  onClickHandlerBuilder(groupId: number, jumpToPostId: number) {
     return () => {
-      MessageRouterChangeHelper.goToConversation(String(groupId));
+      goToConversation({ conversationId: groupId, jumpToPostId });
     };
   }
   async buildNotificationBodyAndTitle(
