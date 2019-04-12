@@ -1,4 +1,4 @@
-import { PERMISSION_ENUM } from './constants';
+import { PERMISSION_ENUM, GROUP_CAN_NOT_SHOWN_REASON } from './constants';
 type TeamSetting = {
   name?: string;
   description?: string;
@@ -8,4 +8,14 @@ type TeamSetting = {
 type PermissionKeys = keyof typeof PERMISSION_ENUM;
 type PermissionFlags = { [KEY in PermissionKeys]?: boolean };
 
-export { TeamSetting, PermissionKeys, PermissionFlags };
+type GroupCanBeShownResponse = {
+  canBeShown: boolean;
+  reason?: GROUP_CAN_NOT_SHOWN_REASON;
+};
+
+export {
+  TeamSetting,
+  PermissionKeys,
+  PermissionFlags,
+  GroupCanBeShownResponse,
+};

@@ -57,20 +57,6 @@ class HeaderMoreMenu extends BaseWebComponent {
 }
 
 class BaseConversationPage extends BaseWebComponent {
-
-  get jumpToFirstUnreadButtonWrapper() {
-    return this.getSelectorByAutomationId('jump-to-first-unread-button')
-  }
-
-  async countOnUnreadButtonShouldBe(n: string | number) {
-    const reg = new RegExp(`^\\D*${n}\\D+$`)
-    await this.t.expect(this.jumpToFirstUnreadButtonWrapper.find('span').textContent).match(reg);
-  }
-
-  async clickJumpToFirstUnreadButton() {
-    await this.t.click(this.jumpToFirstUnreadButtonWrapper);
-  }
-
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
   }
@@ -79,32 +65,12 @@ class BaseConversationPage extends BaseWebComponent {
     return this.getSelectorByAutomationId('conversation-page-header');
   }
 
-  get headerStatus() {
-    return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
-  }
-
-  get title() {
-    return this.getSelectorByAutomationId('conversation-page-header-title');
-  }
-
-  get favoriteButton() {
-    return this.getSelectorByAutomationId('favorite-icon', this.self);
-  }
-
-  get unFavoriteStatusIcon() {
-    return this.getSelectorByIcon("star_border", this.favoriteButton);
-  }
-
-  get favoriteStatusIcon() {
-    return this.getSelectorByIcon("star", this.favoriteButton);
-  }
-
   get leftWrapper() {
     return this.header.find('.left-wrapper');
   }
 
-  async clickFavoriteButton() {
-    await this.t.click(this.favoriteButton);
+  get title() {
+    return this.getSelectorByAutomationId('conversation-page-header-title');
   }
 
   nthPostItem(nth: number) {
@@ -282,6 +248,54 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelector('.conversation-page');
   }
 
+  get jumpToFirstUnreadButtonWrapper() {
+    return this.getSelectorByAutomationId('jump-to-first-unread-button')
+  }
+
+  async countOnUnreadButtonShouldBe(n: string | number) {
+    const reg = new RegExp(`^\\D*${n}\\D+$`)
+    await this.t.expect(this.jumpToFirstUnreadButtonWrapper.find('span').textContent).match(reg);
+  }
+
+  async clickJumpToFirstUnreadButton() {
+    await this.t.click(this.jumpToFirstUnreadButtonWrapper);
+  }
+  get headerStatus() {
+    return this.getSelectorByAutomationId("conversation-page-header-status", this.header);
+  }
+
+  get favoriteButton() {
+    return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
+  }
+
+  get favoriteStatusIcon() {
+    return this.getSelectorByIcon('star', this.favoriteButton);
+  }
+
+  get unFavoriteStatusIcon() {
+    return this.getSelectorByIcon('star_border', this.favoriteButton);
+  }
+
+  async favorite() {
+    await this.t.click(this.leftWrapper.find('.icon.star').nextSibling('input'));
+  }
+
+  async unFavorite() {
+    await this.t.click(this.leftWrapper.find('.icon.star_border').nextSibling('input'));
+  }
+
+  async clickFavoriteButton() {
+    await this.t.click(this.favoriteButton);
+  }
+
+  get memberCountIcon() {
+    return this.getSelectorByIcon('member_count', this.header);
+  }
+
+  async clickMemberCountIcon() {
+    await this.t.click(this.memberCountIcon);
+  }
+
   get messageInputArea() {
     this.warnFlakySelector();
     return this.self.child().find('.ql-editor');
@@ -342,25 +356,7 @@ export class ConversationPage extends BaseConversationPage {
     return this.getSelectorByIcon('lock_open', this.privacyToggle);
   }
 
-  get favoriteButton() {
-    return this.getSelectorByAutomationId('favorite-icon', this.leftWrapper);
-  }
 
-  get favoriteStatusIcon() {
-    return this.getSelectorByIcon('star', this.favoriteButton);
-  }
-
-  get unFavoriteStatusIcon() {
-    return this.getSelectorByIcon('star_border', this.favoriteButton);
-  }
-
-  async favorite() {
-    await this.t.click(this.leftWrapper.find('.icon.star').nextSibling('input'));
-  }
-
-  async unFavorite() {
-    await this.t.click(this.leftWrapper.find('.icon.star_border').nextSibling('input'));
-  }
 
   async groupIdShouldBe(id: string | number) {
     await this.t.expect(this.currentGroupId).eql(id.toString());

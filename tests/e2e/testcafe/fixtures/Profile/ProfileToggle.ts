@@ -40,7 +40,7 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
     });
 
     await h(t).withLog('All conversations should not be hidden before login', async () => {
-       await h(t).glip(loginUser).favoriteGroups([+ favoriteChatId])
+      await h(t).glip(loginUser).favoriteGroups([+ favoriteChatId])
     });
 
     await h(t).withLog('And I clean all UMI before login',
@@ -86,7 +86,7 @@ test(formalName('Open a team/group conversation from team/group profile, then cl
       });
 
       await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
-        await profileDialog.shouldBePopUp();
+        await profileDialog.ensureLoaded();
       });
 
       await h(t).withLog(`When I click a ${key} conversation profile dialog message button`, async () => {
@@ -178,7 +178,7 @@ test(formalName('Open profile via conversation list', ['JPT-450', 'P2', 'Profile
     });
 
     await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
-      await profileDialog.shouldBePopUp();
+      await profileDialog.ensureLoaded();
     });
 
     await h(t).withLog(`When I click a ${key} conversation profile dialog close button`, async () => {
@@ -254,7 +254,7 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
     });
 
     await h(t).withLog(`Then a ${key} conversation profile dialog should be popup`, async () => {
-      await profileDialog.shouldBePopUp();
+      await profileDialog.ensureLoaded();
     });
 
     await h(t).withLog(`When I click a ${key} conversation profile dialog "unfavorite" icon`, async () => {
@@ -295,7 +295,7 @@ test(formalName('Favorite/Unfavorite a conversation from profile', ['JPT-409', '
     });
 
     await h(t).withLog(`The "favorite" icon change to "unfavorite" icon`, async () => {
-      await profileDialog.shouldBePopUp();
+      await profileDialog.ensureLoaded();
     });
 
     await h(t).withLog(`When I click a ${key} conversation profile dialog close button`, async () => {
