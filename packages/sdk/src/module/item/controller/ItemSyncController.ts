@@ -11,6 +11,10 @@ import { GroupConfigService } from '../../groupConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { GroupConfig } from '../../groupConfig/entity';
+import {
+  SequenceProcessorHandler,
+  IProcessor,
+} from '../../../framework/processor';
 
 const AvailableSocketStatus = ['connected', 'connecting'];
 const GroupItemKeyMap = {
@@ -21,9 +25,57 @@ const GroupItemKeyMap = {
   [TypeDictionary.TYPE_ID_LINK]: 'last_index_of_links',
 };
 
+type ItemSyncInfo = {
+  groupId: number;
+  typeId: number;
+  newerThan: number;
+};
+
+class ItemSyncProcessor implements IProcessor {
+  constructor(
+    private _itemSyncItem: ItemSyncInfo,
+    private _processFunc: (itemSyncItem: ItemSyncInfo) => Promise<void>,
+    private _onCancelled: (itemSyncItem: ItemSyncInfo) => void,
+  ) {}
+
+  async process(): Promise<boolean> {
+    try {
+      mainLogger.debug(`item fetch start: ${this.name()}`);
+      await this._processFunc(this._itemSyncItem);
+      mainLogger.debug(`item fetch end: ${this.name()}`);
+    } catch (e) {
+      mainLogger.warn(`failed to items of group ${this.name()}`, e);
+    }
+    return Promise.resolve(true);
+  }
+
+  canContinue(): boolean {
+    return true;
+  }
+
+  name(): string {
+    return `${this._itemSyncItem.groupId}.${this._itemSyncItem.typeId}.${
+      this._itemSyncItem.newerThan
+    }`;
+  }
+
+  cancel(): void {
+    this._onCancelled(this._itemSyncItem);
+  }
+}
+
 class ItemSyncController {
-  private _syncedGroupIds: Set<number> = new Set();
+  private _syncedGroupItems: Set<string> = new Set();
+  private _itemSequenceProcessor: SequenceProcessorHandler;
+  private _itemSyncMaxProcessors: number = 10;
   constructor(private _itemService: IItemService) {
+    this._itemSequenceProcessor = new SequenceProcessorHandler(
+      'ItemSequenceProcessor',
+      this._addItemSyncStrategy,
+      this._itemSyncMaxProcessors,
+      this._onExceedMaxSize,
+    );
+
     notificationCenter.on(SERVICE.SOCKET_STATE_CHANGE, (state: string) => {
       this._onSocketIoStateChanged(state);
     });
@@ -31,27 +83,84 @@ class ItemSyncController {
 
   private _onSocketIoStateChanged(state: string) {
     if (!AvailableSocketStatus.includes(state)) {
-      this._syncedGroupIds.clear();
+      this._itemSequenceProcessor.cancelAll();
+      this._syncedGroupItems.clear();
+    }
+  }
+
+  private _getItemSyncKey(groupId: number, typeId: number) {
+    return `${groupId}.${typeId}`;
+  }
+
+  private _addItemSyncStrategy = (
+    totalProcessors: IProcessor[],
+    newProcessor: IProcessor,
+    existed: boolean,
+  ) => {
+    let result: IProcessor[] = totalProcessors;
+    if (existed) {
+      result = result.filter((item: IProcessor) => {
+        return item.name() !== newProcessor.name();
+      });
+    }
+    result.unshift(newProcessor);
+    return result;
+  }
+
+  private _onExceedMaxSize = (totalProcessors: IProcessor[]) => {
+    const lastProcessor = totalProcessors.pop();
+    if (lastProcessor && lastProcessor.cancel) {
+      lastProcessor.cancel();
     }
   }
 
   async requestSyncGroupItems(groupId: number) {
-    if (this._syncedGroupIds.has(groupId)) {
-      return;
-    }
-    this._syncedGroupIds.add(groupId);
-
     const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
     const groupConfig = await groupConfigService.getById(groupId);
-    const typeIdKeys = Object.keys(GroupItemKeyMap);
+    const typeIdKeys = Object.keys(GroupItemKeyMap).reverse();
+    const itemSyncProcessors: IProcessor[] = [];
     typeIdKeys.forEach((typeIdKey: string) => {
       const typeId = Number(typeIdKey);
-      this._requestSyncGroupItems(
+      const itemSyncInfo = {
         groupId,
         typeId,
-        groupConfig ? this._getGroupItemNewerThan(groupConfig, typeId) : 0,
-      );
+        newerThan: groupConfig
+          ? this._getGroupItemNewerThan(groupConfig, typeId)
+          : 0,
+      };
+
+      const itemKey = this._getItemSyncKey(groupId, typeId);
+      if (this._syncedGroupItems.has(itemKey)) {
+        return;
+      }
+      this._syncedGroupItems.add(itemKey);
+
+      itemSyncProcessors.push(this._getItemSyncProcessor(itemSyncInfo));
     });
+
+    if (itemSyncProcessors.length) {
+      this._itemSequenceProcessor.addProcessors(itemSyncProcessors);
+    }
+  }
+
+  private _getItemSyncProcessor(itemSyncInfo: ItemSyncInfo) {
+    return new ItemSyncProcessor(
+      itemSyncInfo,
+      async (itemSyncInfo: ItemSyncInfo) => {
+        await this._requestSyncGroupItems(
+          itemSyncInfo.groupId,
+          itemSyncInfo.typeId,
+          itemSyncInfo.newerThan,
+        );
+      },
+      (itemSyncInfo: ItemSyncInfo) => {
+        const itemKey = this._getItemSyncKey(
+          itemSyncInfo.groupId,
+          itemSyncInfo.typeId,
+        );
+        this._syncedGroupItems.delete(itemKey);
+      },
+    );
   }
 
   private async _requestSyncGroupItems(
@@ -69,6 +178,8 @@ class ItemSyncController {
         `failed to request type:${typeId} of group($groupId)`,
         error,
       );
+      const itemKey = this._getItemSyncKey(groupId, typeId);
+      this._syncedGroupItems.delete(itemKey);
     }
   }
 

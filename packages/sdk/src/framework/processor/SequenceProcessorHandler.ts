@@ -10,34 +10,25 @@ import { mainLogger } from 'foundation';
 import notificationCenter from '../../service/notificationCenter';
 import { SERVICE } from '../../service/eventKey';
 
-const MAX_QUEUE = 10000;
-
 class SequenceProcessorHandler extends AbstractProcessor {
   private _isExecuting: boolean = false;
-  private _maxQueue: number;
-  private LOG_TAG = 'SequenceProcessorHandler';
+  constructor(
+    name: string,
+    addProcessorStrategy?: (
+      totalProcessors: IProcessor[],
+      newProcessors: IProcessor,
+      existed: boolean,
+    ) => IProcessor[],
+    private _maxSize?: number,
+    private _onExceedMaxSize?: (totalProcessors: IProcessor[]) => void,
+  ) {
+    super(name, addProcessorStrategy);
 
-  constructor(name: string, maxQueue: number = MAX_QUEUE) {
-    super(name);
-    this._maxQueue = maxQueue;
     this._subscribeNotifications();
   }
 
   addProcessor(processor: IProcessor): boolean {
-    if (this._processors.length >= this._maxQueue) {
-      mainLogger.log(
-        `${this.LOG_TAG}-${this.name} over threshold:${
-          this._maxQueue
-        }, remove the oldest one`,
-      );
-      this._processors.shift();
-    }
-
-    const result = super.addProcessor(processor);
-
-    !result &&
-      mainLogger.log(`${this.LOG_TAG}-${this.name}, add process failed`);
-
+    const result = this._addProcessor(processor);
     this.execute();
     return result;
   }
@@ -45,16 +36,24 @@ class SequenceProcessorHandler extends AbstractProcessor {
   addProcessors(processors: IProcessor[]): IProcessor[] {
     const addedProcessors: IProcessor[] = [];
     processors.forEach((processor: IProcessor) => {
-      if (this.addProcessor(processor)) {
+      if (this._addProcessor(processor)) {
         addedProcessors.push(processor);
       }
     });
+    this.execute();
     return addedProcessors;
   }
 
-  replaceProcessors(processors: IProcessor[]): IProcessor[] {
-    this.clear();
-    return this.addProcessors(processors);
+  private _addProcessor(processor: IProcessor) {
+    if (
+      this._maxSize &&
+      this._onExceedMaxSize &&
+      this._processors.length === this._maxSize - 1
+    ) {
+      this._onExceedMaxSize(this._processors);
+    }
+
+    return super.addProcessor(processor);
   }
 
   async execute(): Promise<boolean> {
@@ -101,6 +100,15 @@ class SequenceProcessorHandler extends AbstractProcessor {
       this._isExecuting = false;
       this.execute();
     }
+  }
+
+  cancelAll() {
+    this._processors.forEach((processor: IProcessor) => {
+      if (processor && processor.cancel) {
+        processor.cancel();
+      }
+    });
+    this.clear();
   }
 }
 

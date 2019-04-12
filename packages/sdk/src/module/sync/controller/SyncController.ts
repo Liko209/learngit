@@ -29,7 +29,10 @@ import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
 import { SyncUserConfig } from '../config/SyncUserConfig';
 import { IndexRequestProcessor } from './IndexRequestProcessor';
-import { SequenceProcessorHandler } from '../../../framework/processor/SequenceProcessorHandler';
+import {
+  SequenceProcessorHandler,
+  IProcessor,
+} from '../../../framework/processor';
 import { SYNC_SOURCE } from '../types';
 import { AccountGlobalConfig } from '../../../service/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
@@ -45,8 +48,20 @@ class SyncController {
   constructor() {
     this._processorHandler = new SequenceProcessorHandler(
       'Index_SyncController',
+      undefined,
       INDEX_MAX_QUEUE,
+      this._onExceedMaxSize,
     );
+  }
+
+  private _onExceedMaxSize = (totalProcessors: IProcessor[]) => {
+    mainLogger.log(
+      `SequenceProcessorHandler-Index_SyncController over threshold:${INDEX_MAX_QUEUE}, remove the oldest one`,
+    );
+    const lastProcessor = totalProcessors.shift();
+    if (lastProcessor && lastProcessor.cancel) {
+      lastProcessor.cancel();
+    }
   }
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
