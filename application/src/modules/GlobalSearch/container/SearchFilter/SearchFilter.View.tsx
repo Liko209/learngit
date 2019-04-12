@@ -72,10 +72,15 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           label={t('globalSearch.Type')}
           isFullWidth={true}
           value={options.type as string}
+          automationId={'typeSelector'}
         >
           {typeFilter.map((item: SearchContentTypeItem) => {
             return (
-              <JuiMenuItem value={item.value} key={item.id}>
+              <JuiMenuItem
+                automationId={`typeSelector${item.id}`}
+                value={item.value}
+                key={item.id}
+              >
                 {t(`globalSearch.${item.name}`)}
                 {item.count ? ` (${item.count})` : ''}
               </JuiMenuItem>
@@ -88,11 +93,16 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           handleChange={handleSearchPostDateChange}
           label={t('globalSearch.TimePosted')}
           isFullWidth={true}
+          automationId={'timePostSelector'}
           value={this.props.timeType}
         >
           {timePeriodFilter.map((item: SearchContentTypeItem) => {
             return (
-              <JuiMenuItem value={item.id} key={item.id}>
+              <JuiMenuItem
+                automationId={`timePost${item.id}`}
+                value={item.id}
+                key={item.id}
+              >
                 {t(`globalSearch.${item.value}`)}
               </JuiMenuItem>
             );

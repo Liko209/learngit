@@ -22,6 +22,7 @@ import {
 type JuiMenuItemProps = {
   icon?: string | ReactNode;
   avatar?: JSX.Element;
+  automationId?: string;
 } & MuiMenuItemProps;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
@@ -58,7 +59,14 @@ const StyledMenuItem = styled(MuiMenuItem)`
 
 class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
   render() {
-    const { icon, children, disabled, avatar, ...rest } = this.props;
+    const {
+      icon,
+      children,
+      disabled,
+      avatar,
+      automationId,
+      ...rest
+    } = this.props;
     let iconElement: any;
     if (typeof icon !== 'string') {
       iconElement = icon;
@@ -66,7 +74,12 @@ class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
       iconElement = <JuiIconography iconSize="small">{icon}</JuiIconography>;
     }
     return (
-      <StyledMenuItem disabled={disabled} data-disabled={disabled} {...rest}>
+      <StyledMenuItem
+        data-test-automation-id={automationId}
+        disabled={disabled}
+        data-disabled={disabled}
+        {...rest}
+      >
         {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
         {avatar && <StyledMuiListItemIcon>{avatar}</StyledMuiListItemIcon>}
         {children}
