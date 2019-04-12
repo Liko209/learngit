@@ -104,11 +104,7 @@ class ContentSearchResultViewModel
 
   @action
   setSearchOptions = async (options: ContentSearchOptions) => {
-    const wasEmpty = this.isEmpty;
-
     this.searchOptions = { ...this.searchOptions, ...options };
-
-    const emptyStateChanged = wasEmpty !== this.isEmpty;
 
     await this.onSearchEnd();
 
@@ -116,7 +112,7 @@ class ContentSearchResultViewModel
 
     this._setSearchState({ requestId: null });
 
-    !emptyStateChanged && previousRequestId && this._refresh();
+    previousRequestId && this._refresh();
   }
 
   onPostsFetch = async () => {
