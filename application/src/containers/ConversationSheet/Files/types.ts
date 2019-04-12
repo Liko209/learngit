@@ -14,6 +14,7 @@ type FilesProps = {
 type FilesViewProps = {
   postId: number;
   groupId: number;
+  mode?: string;
   post: Post;
   files: {
     [FileType.image]: ExtendFileItem[];

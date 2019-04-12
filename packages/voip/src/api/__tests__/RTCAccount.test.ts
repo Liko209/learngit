@@ -287,8 +287,8 @@ describe('RTCAccount', () => {
   it('Should call count set to 1 and return call when receive incoming call and new call is allowed. [JPT-810]', done => {
     setupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
-    ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
     setImmediate(() => {
+      ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
       expect(account.callCount()).toBe(1);
       expect(mockListener.onReceiveIncomingCall).toBeCalled();
       done();
@@ -298,8 +298,8 @@ describe('RTCAccount', () => {
   it('Should parse multi-party conference headers for incoming call. [JPT-1050]', done => {
     setupAccount();
     ua.mockSignal(UA_EVENT.REG_SUCCESS);
-    ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
     setImmediate(() => {
+      ua.emit(UA_EVENT.RECEIVE_INVITE, new MockSession());
       expect(account.callCount()).toBe(1);
       expect(account.callList()[0].getCallInfo().partyId).toBe(
         'cs172622609264474468-2',

@@ -6,10 +6,20 @@
 
 import { LifeCycle } from 'ts-javascript-state-machine';
 import { observable, computed } from 'mobx';
+import { mainLogger } from 'sdk';
 import {
+  HOLD_STATE,
+  HOLD_TRANSITION_NAMES,
   CALL_STATE,
   CALL_WINDOW_STATUS,
+  RecordFSM,
+  RECORD_TRANSITION_NAMES,
+  RECORD_STATE,
+  RecordDisableFSM,
+  RECORD_DISABLED_STATE,
+  RECORD_DISABLED_STATE_TRANSITION_NAMES,
   CallFSM,
+  HoldFSM,
   CallWindowFSM,
   CALL_TRANSITION_NAMES,
   CALL_WINDOW_TRANSITION_NAMES,
@@ -23,28 +33,80 @@ enum CALL_TYPE {
   OUTBOUND,
 }
 
+const logTag = '[TelephonyStore_View]';
+
 class TelephonyStore {
+  private _callFSM = new CallFSM();
+  private _callWindowFSM = new CallWindowFSM();
+  private _holdFSM = new HoldFSM();
+  private _recordFSM = new RecordFSM();
+  private _recordDisableFSM = new RecordDisableFSM();
+
   @observable
-  callWindowState: CALL_WINDOW_STATUS = CALL_WINDOW_STATUS.MINIMIZED;
+  callWindowState: CALL_WINDOW_STATUS = this._callWindowFSM.state;
   @observable
-  callState: CALL_STATE = CALL_STATE.IDLE;
+  callState: CALL_STATE = this._callFSM.state;
   @observable
   callType: CALL_TYPE = CALL_TYPE.NULL;
+  @observable
+  holdState: HOLD_STATE = this._holdFSM.state;
+
+  @observable
+  recordState: RECORD_STATE = this._recordFSM.state;
+  @observable
+  recordDisabledState: RECORD_DISABLED_STATE = this._recordDisableFSM.state;
+
   @observable
   phoneNumber?: string;
   @observable
   activeCallTime?: number;
 
-  private _callFSM = new CallFSM();
-  private _callWindowFSM = new CallWindowFSM();
+  @observable
+  pendingForHold: boolean = false;
+  @observable
+  pendingForRecord: boolean = false;
 
   constructor() {
+    type FSM = '_callWindowFSM' | '_recordFSM' | '_recordDisableFSM';
+    type FSMProps = 'callWindowState' | 'recordState' | 'recordDisabledState';
+
+    [
+      ['_callWindowFSM', 'callWindowState'],
+      ['_recordFSM', 'recordState'],
+      ['_recordDisableFSM', 'recordDisabledState'],
+    ].forEach(([fsm, observableProp]: [FSM, FSMProps]) => {
+      this[fsm].observe(
+        'onAfterTransition',
+        (lifecycle: LifeCycle) => {
+          const { to } = lifecycle;
+          this[observableProp] = to as CALL_WINDOW_STATUS | RECORD_STATE | RECORD_DISABLED_STATE;
+        },
+      );
+    });
+
+    this._holdFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
+      const { to } = lifecycle;
+      this.holdState = to as HOLD_STATE;
+      switch (this.holdState) {
+        case HOLD_STATE.HOLDED:
+          this.disableRecord();
+          break;
+        case HOLD_STATE.IDLE:
+          this.enableRecord();
+          break;
+      }
+    });
+
     this._callFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
       const { to } = lifecycle;
       this.callState = to as CALL_STATE;
       switch (this.callState) {
         case CALL_STATE.CONNECTED:
           this.activeCallTime = Date.now();
+          this.enableHold();
+          break;
+        case CALL_STATE.IDLE:
+          this._restoreButtonStates();
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
@@ -55,10 +117,6 @@ class TelephonyStore {
           },         300);
           break;
       }
-    });
-    this._callWindowFSM.observe('onAfterTransition', (lifecycle: LifeCycle) => {
-      const { to } = lifecycle;
-      this.callWindowState = to as CALL_WINDOW_STATUS;
     });
   }
 
@@ -95,6 +153,12 @@ class TelephonyStore {
     }
   }
 
+  private _restoreButtonStates() {
+    this.disableHold();
+    this.disableRecord();
+    this.stopRecording();
+  }
+
   openDialer = () => {
     this._callFSM[CALL_TRANSITION_NAMES.OPEN_DIALER]();
     this._openCallWindow();
@@ -123,6 +187,7 @@ class TelephonyStore {
       END_WIDGET_CALL,
       END_DIALER_CALL,
     } = CALL_TRANSITION_NAMES;
+
     switch (true) {
       case history.includes(CALL_STATE.INCOMING):
         this._closeCallWindow();
@@ -163,12 +228,96 @@ class TelephonyStore {
     this._callFSM[CALL_TRANSITION_NAMES.HAS_CONNECTED]();
   }
 
+  hold = () => {
+    if (this.held) {
+      mainLogger.debug(
+        `${logTag} Invalid transition: unable to hold from held`,
+      );
+      return;
+    }
+    this._holdFSM[HOLD_TRANSITION_NAMES.HOLD]();
+  }
+
+  unhold = () => {
+    if (!this.held) {
+      mainLogger.debug(
+        `${logTag} Invalid transition: unable to unhold from idle`,
+      );
+      return;
+    }
+    this._holdFSM[HOLD_TRANSITION_NAMES.UNHOLD]();
+  }
+
+  startRecording = () => {
+    if (this.isRecording) {
+      mainLogger.debug(
+        `${logTag} Invalid transition: unable to record from recording`,
+      );
+      return;
+    }
+    this._recordFSM[RECORD_TRANSITION_NAMES.START_RECORD]();
+  }
+
+  stopRecording = () => {
+    if (!this.isRecording) {
+      mainLogger.debug(
+        `${logTag} Invalid transition: unable to stop recording from idle`,
+      );
+      return;
+    }
+    this._recordFSM[RECORD_TRANSITION_NAMES.STOP_RECORD]();
+  }
+
+  setPendingForHoldBtn(val: boolean) {
+    this.pendingForHold = val;
+  }
+
+  setPendingForRecordBtn(val: boolean) {
+    this.pendingForRecord = val;
+  }
+
+  enableHold = () => {
+    this._holdFSM[HOLD_TRANSITION_NAMES.CONNECTED]();
+  }
+
+  enableRecord = () => {
+    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.ENABLE]();
+  }
+
+  disableHold = () => {
+    this._holdFSM[HOLD_TRANSITION_NAMES.DISCONNECT]();
+  }
+
+  disableRecord = () => {
+    return this._recordDisableFSM[RECORD_DISABLED_STATE_TRANSITION_NAMES.DISABLE]();
+  }
+
   @computed
   get isDetached() {
     if (this.callWindowState === CALL_WINDOW_STATUS.FLOATING) {
       return false;
     }
     return true;
+  }
+
+  @computed
+  get holdDisabled() {
+    return this.holdState === HOLD_STATE.DISABLED;
+  }
+
+  @computed
+  get held() {
+    return this.holdState === HOLD_STATE.HOLDED;
+  }
+
+  @computed
+  get isRecording() {
+    return (this.recordState === RECORD_STATE.RECORDING);
+  }
+
+  @computed
+  get recordDisabled() {
+    return this.recordDisabledState === RECORD_DISABLED_STATE.DISABLED;
   }
 }
 

@@ -5,3 +5,4 @@
  */
 
 export * from './ImageUtils';
+export * from './dataSourceUtils';
