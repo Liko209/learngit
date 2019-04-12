@@ -38,6 +38,7 @@ jest.mock('../Viewer.DataSource', () => {
     fetchData: jest.fn(),
     getFilterFunc: jest.fn().mockReturnValue(true),
     isExpectedItemOfThisGroup: jest.fn().mockReturnValue(true),
+    fetchIndexInfo: jest.fn().mockImplementation(() => {}),
   };
   return {
     ItemListDataSource: () => dataSource,
@@ -142,7 +143,7 @@ describe('Viewer.ViewModel', () => {
   describe('init()', () => {
     it('should loadInitialData and refresh itemIndexInfo', async (done: jest.DoneCallback) => {
       const dataSource = createDataSource();
-      itemService.getItemIndexInfo.mockResolvedValue({
+      dataSource.fetchIndexInfo.mockResolvedValue({
         index: 11,
         totalCount: 22,
       });
@@ -150,14 +151,7 @@ describe('Viewer.ViewModel', () => {
       await vm.init();
       setTimeout(() => {
         expect(dataSource.loadInitialData).toBeCalled();
-        expect(itemService.getItemIndexInfo).toBeCalledWith(props.itemId, {
-          typeId: 10,
-          groupId: props.groupId,
-          sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
-          desc: false,
-          limit: Infinity,
-          offsetItemId: undefined,
-        });
+        expect(dataSource.fetchIndexInfo).toBeCalledWith(props.itemId);
 
         expect(vm.total).toEqual(22);
         expect(vm.currentIndex).toEqual(11);

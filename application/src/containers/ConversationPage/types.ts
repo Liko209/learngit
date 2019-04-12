@@ -1,3 +1,4 @@
+import { createContext } from 'react';
 import { WithTranslation } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
 
@@ -10,4 +11,16 @@ type ConversationPageProps = {
   groupId: number;
 };
 
-export { ConversationPageProps, ConversationPageViewProps };
+type ConversationPageContextInfo = {
+  disableMoreAction: boolean;
+};
+
+const ConversationPageContext = createContext({
+  disableMoreAction: false,
+} as ConversationPageContextInfo);
+
+export {
+  ConversationPageProps,
+  ConversationPageViewProps,
+  ConversationPageContext,
+};

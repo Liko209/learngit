@@ -15,25 +15,36 @@ type Props = RecordViewProps & WithTranslation;
 
 @observer
 class RecordViewComponent extends Component<Props> {
-  private _handleRecord = async () => {
-    const { record } = this.props;
-    record();
+  private _handleRecord: () => void;
+
+  constructor(props: Props) {
+    super(props);
+    this._handleRecord = () => {
+      const { handleClick } = this.props;
+      return handleClick();
+    };
   }
 
   render() {
-    const { t } = this.props;
+    const { t, disabled, recording } = this.props;
+    // TODO: add the stop icon
     return (
       <JuiKeypadAction>
         <JuiIconButton
-          color="grey.900"
+          color={recording ? 'semantic.negative' : 'grey.900'}
           disableToolTip={true}
           onClick={this._handleRecord}
           size="xxlarge"
-          disabled={true}
+          disabled={disabled}
+          awake={recording}
+          shouldPersistBg={recording}
+          data-test-automation-id="recordBtn"
+          aria-label={recording ? t('telephony.accessibility.stopRecord') : t('telephony.accessibility.record')}
         >
-          record
+          {recording ? 'stopRecord' : 'record'}
         </JuiIconButton>
-        <span className="disabled">{t('telephony.action.record')}</span>
+        <span className={disabled ? 'disabled' : undefined}>{recording ? t('telephony.action.stopRecord') : t('telephony.action.record')}</span>
+
       </JuiKeypadAction>
     );
   }

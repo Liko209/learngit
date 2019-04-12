@@ -8,10 +8,6 @@ import {
   GlipTypeUtil,
   TypeDictionary,
 } from '../../../utils/glip-type-dictionary';
-import { date } from '@storybook/addon-knobs';
-import NetworkClient from '../../NetworkClient';
-import { HandleByCustom } from '../../handlers';
-import { Api } from '../..';
 import { NETWORK_METHOD, NETWORK_VIA, TEN_MINUTE_TIMEOUT } from 'foundation';
 
 jest.mock('../../api');
@@ -32,21 +28,6 @@ describe('ItemAPI', () => {
           file: {},
         },
       });
-    });
-  });
-  describe('uploadFileItem()', () => {
-    it('uploadNetworkClient.http() should be called with specific path', () => {
-      ItemAPI.uploadFileItem(new FormData(), () => {});
-      expect(ItemAPI.uploadNetworkClient.http).toHaveBeenCalled();
-      expect(ItemAPI.uploadNetworkClient.http).toBeCalledWith(
-        expect.objectContaining({
-          path: '/upload',
-          method: NETWORK_METHOD.POST,
-          via: NETWORK_VIA.HTTP,
-          timeout: TEN_MINUTE_TIMEOUT,
-        }),
-        undefined,
-      );
     });
   });
   describe('requestById()', () => {
