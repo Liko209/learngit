@@ -44,18 +44,24 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
   @action
   private _getThumbsUrlWithSize = async () => {
     const { id, type, versions } = this.file;
-    if (versions[0].stored_file_id !== this._lastStoreFileId) {
-      const thumbnail = await getThumbnailURLWithType(
-        {
-          id,
-          type,
-          versions,
-          versionUrl: versions.length && versions[0].url ? versions[0].url : '',
-        },
-        RULE.SQUARE_IMAGE,
-      );
-      this._lastStoreFileId = versions[0].stored_file_id;
-      this.thumbsUrlWithSize = thumbnail.url;
+    const version = versions && versions[0];
+    if (version) {
+      if (version.stored_file_id !== this._lastStoreFileId) {
+        const thumbnail = await getThumbnailURLWithType(
+          {
+            id,
+            type,
+            versions,
+            versionUrl: version.url || '',
+          },
+          RULE.SQUARE_IMAGE,
+        );
+        this._lastStoreFileId = version.stored_file_id;
+        this.thumbsUrlWithSize = thumbnail.url;
+      }
+    } else {
+      this._lastStoreFileId = -1;
+      this.thumbsUrlWithSize = this.file.downloadUrl;
     }
   }
 
