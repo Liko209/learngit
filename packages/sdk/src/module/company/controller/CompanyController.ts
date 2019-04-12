@@ -92,7 +92,7 @@ class CompanyController {
     if (shouldEmitNotification(source)) {
       notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
     }
-    await this.entitySourceController.bulkUpdate(transformedData);
+    await this.entitySourceController.bulkPut(transformedData);
   }
 }
 
