@@ -63,7 +63,7 @@ class ProfileDataController {
   async getMaxLeftRailGroup(): Promise<number> {
     const profile = await this.getProfile();
     if (profile && profile.max_leftrail_group_tabs2) {
-      return profile.max_leftrail_group_tabs2;
+      return Number(profile.max_leftrail_group_tabs2);
     }
     return DEFAULT_LEFTRAIL_GROUP;
   }

@@ -185,10 +185,6 @@ class ConversationEntry extends BaseWebComponent {
 }
 
 class ConversationSection extends BaseWebComponent {
-  ensureLoaded() {
-    return this.waitUntilExist(this.self);
-  }
-
   get toggleButton() {
     return this.self.find('[role="button"]');
   }

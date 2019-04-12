@@ -32,8 +32,8 @@ describe('generateModifiedImageURL', () => {
         height: 36,
         top: 0,
         left: 0,
-        justifyWidth: false,
-        justifyHeight: true,
+        justifyWidth: true,
+        justifyHeight: false,
         imageHeight: 1000,
         imageWidth: 1000,
       });
@@ -56,8 +56,8 @@ describe('generateModifiedImageURL', () => {
         height: squareSize,
         top: 0,
         left: 0,
-        justifyWidth: false,
-        justifyHeight: true,
+        justifyWidth: true,
+        justifyHeight: false,
         imageHeight: 1000,
         imageWidth: 1000,
       });
@@ -78,8 +78,8 @@ describe('generateModifiedImageURL', () => {
         height: 36,
         top: 0,
         left: -18,
-        justifyWidth: false,
-        justifyHeight: true,
+        justifyWidth: true,
+        justifyHeight: false,
         imageHeight: 500,
         imageWidth: 1000,
       });
@@ -102,8 +102,8 @@ describe('generateModifiedImageURL', () => {
         height: squareSize,
         top: -90,
         left: 0,
-        justifyWidth: true,
-        justifyHeight: false,
+        justifyWidth: false,
+        justifyHeight: true,
         imageHeight: 1000,
         imageWidth: 500,
       });

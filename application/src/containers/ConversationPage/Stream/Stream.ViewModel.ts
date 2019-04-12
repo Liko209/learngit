@@ -18,7 +18,7 @@ import StoreViewModel from '@/store/ViewModel';
 
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItemType } from './types';
+import { StreamProps, StreamItemType, StreamItem } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -151,6 +151,27 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       return;
     }
     return getEntity<Post, PostModel>(ENTITY_NAME.POST, lastPostId);
+  }
+
+  hasNewMessageSeparator = () => {
+    return this.findNewMessageSeparatorIndex() > -1;
+  }
+
+  findNewMessageSeparatorIndex = () => {
+    return this.items.findIndex(
+      (item: StreamItem) => item.type === StreamItemType.NEW_MSG_SEPARATOR,
+    );
+  }
+
+  findPostIndex = (postId?: number) => {
+    return postId
+      ? this.items.findIndex(
+          (item: StreamItem) =>
+            item.type === StreamItemType.POST &&
+            !!item.value &&
+            item.value.includes(postId),
+        )
+      : -1;
   }
 
   updateHistoryHandler() {
