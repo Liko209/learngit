@@ -120,12 +120,12 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
 
   const memberInput = addTeamMemberDialog.memberInput;
   await h(t).withLog(`When admin type non-member ${nonMemberName} and enter in input field`, async () => {
-    await memberInput.typeMember(nonMemberName);
+    await memberInput.typeText(nonMemberName);
     await memberInput.selectMemberByNth(0);
   });
 
   await h(t).withLog(`Then the non-member should be selected in input field`, async () => {
-    await memberInput.lastSelectedMemberNameShouldBe(nonMemberName);
+    await memberInput.lastSelectedNameShouldBe(nonMemberName);
   });
 
   await h(t).withLog(`When admin click "cancel" button`, async () => {
@@ -151,12 +151,12 @@ test(formalName(`Add team member successful after clicking Add button.`, ['P1', 
   });
 
    await h(t).withLog(`When admin type non-member ${nonMemberName} and enter in input field`, async () => {
-    await memberInput.typeMember(nonMemberName);
+    await memberInput.typeText(nonMemberName);
     await memberInput.selectMemberByNth(0);
   });
 
   await h(t).withLog(`Then the non-member should be selected in input field`, async () => {
-    await memberInput.lastSelectedMemberNameShouldBe(nonMemberName);
+    await memberInput.lastSelectedNameShouldBe(nonMemberName);
   });
 
   await h(t).withLog(`When admin click "add" button`, async () => {
@@ -232,7 +232,7 @@ test(formalName(`The existing team members should not be displayed as search res
 
   const memberInput = addTeamMemberDialog.memberInput;
   await h(t).withLog(`When admin type exist members ${otherUserName} in input field`, async () => {
-    await memberInput.typeMember(otherUserName);
+    await memberInput.typeText(otherUserName);
   });
 
   await h(t).withLog(`Then The ${otherUserName} is not displayed in the contact list.`, async () => {
@@ -295,12 +295,12 @@ test(formalName(`The member list and counts are updated when the member is added
 
   const memberInput = addTeamMemberDialog.memberInput;
   await h(t).withLog(`When admin type non-member ${nonMemberName} and enter in input field`, async () => {
-    await memberInput.typeMember(nonMemberName);
+    await memberInput.typeText(nonMemberName);
     await memberInput.selectMemberByNth(0);
   });
 
   await h(t).withLog(`Then the non-member should be selected in input field`, async () => {
-    await memberInput.lastSelectedMemberNameShouldBe(nonMemberName);
+    await memberInput.lastSelectedNameShouldBe(nonMemberName);
   });
 
   await h(t).withLog(`When admin click "add" button`, async () => {

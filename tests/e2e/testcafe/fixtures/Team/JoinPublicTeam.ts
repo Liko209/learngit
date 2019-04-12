@@ -69,35 +69,35 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I search keyword “${searchKeyWord}”`, async () => {
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(searchKeyWord);
-    await t.expect(searchDialog.teams.count).gte(1, { timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.count).gte(1, { timeout: 10e3 });
   });
 
   await h(t).withLog(`And I hover search result “${publicTeamWithoutMe.name}”`, async () => {
-    await t.hover(searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).self);
+    await t.hover(searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).self);
   });
 
   await h(t).withLog(`Then the join button should be showed `, async () => {
-    await searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).shouldHaveJoinButton();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).shouldHaveJoinButton();
   });
 
   await h(t).withLog(`When I hover search result “${publicTeamWithMe.name}”`, async () => {
-    await t.hover(searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).self);
+    await t.hover(searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).self);
   });
 
   await h(t).withLog(`Then the join button should not be showed `, async () => {
-    await searchDialog.getSearchItemByCid(publicTeamWithMe.glipId).shouldNotHaveJoinButton();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).shouldNotHaveJoinButton();
   });
 
   let peopleCount, groupCount;
   await h(t).withLog(`When I search keyword "${otherUserName}”`, async () => {
     await searchDialog.typeSearchKeyword(otherUserName);
-    await t.expect(searchDialog.allResultItems.count).gte(1, { timeout: 10e3 });
-    peopleCount = await searchDialog.peoples.count;
-    groupCount = await searchDialog.groups.count;
+    await t.expect(searchDialog.instantPage.conversationItems.count).gte(1, { timeout: 10e3 });
+    peopleCount = await searchDialog.instantPage.peoples.count;
+    groupCount = await searchDialog.instantPage.groups.count;
   });
 
   for (let i of _.range(peopleCount)) {
-    const item = searchDialog.nthPeople(i);
+    const item = searchDialog.instantPage.nthPeople(i);
     await h(t).withLog(`When I hover each one group result ${i + 1}/${peopleCount}`, async () => {
       await t.hover(item.self);
     });
@@ -108,7 +108,7 @@ test.meta(<ITestMeta>{
   }
 
   for (let i of _.range(groupCount)) {
-    const item = searchDialog.nthGroup(i);
+    const item = searchDialog.instantPage.nthGroup(i);
     await h(t).withLog(`When I hover each one people result ${i + 1}/${groupCount}`, async () => {
       await t.hover(item.self);
     });
@@ -157,12 +157,12 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I click join button of the public team A`, async () => {
-    await t.expect(searchDialog.teams.count).gte(1, { timeout: 10e3 });
-    await searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
+    await t.expect(searchDialog.instantPage.teams.count).gte(1, { timeout: 10e3 });
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).join();
   });
 
   await h(t).withLog(`Then search result list dismiss`, async () => {
-    await t.expect(searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).exists).notOk();
+    await t.expect(searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).exists).notOk();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
@@ -227,8 +227,8 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I search the public team A ${publicTeamWithoutMe.name}, and click Join button of team A`, async () => {
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
-    await t.expect(searchDialog.teams.count).gte(1, { timeout: 10e3 });
-    await searchDialog.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
+    await t.expect(searchDialog.instantPage.teams.count).gte(1, { timeout: 10e3 });
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).join();
   });
 
 

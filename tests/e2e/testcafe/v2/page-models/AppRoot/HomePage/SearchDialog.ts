@@ -1,5 +1,8 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { IGroup } from '../../../models';
+import * as assert from 'assert';
+import { BaseConversationPage } from "./MessageTab/ConversationPage";
+import { H } from "../../../helpers";
+import { searchComoBox } from "./SearchComboBox";
 
 
 export class SearchDialog extends BaseWebComponent {
@@ -43,7 +46,25 @@ export class SearchDialog extends BaseWebComponent {
     await this.t.click(this.closeButton);
   }
 
-  get allResultItems() {
+  get instantPage() {
+    return this.getComponent(InstantSearch);
+  }
+
+  get recentPage() {
+    return this.getComponent(RecentSearch);
+  }
+
+  get fullSearchPage() {
+    return this.getComponent(FullSearch);
+  }
+}
+
+class BaseSearchResultPage extends BaseWebComponent {
+  get self() {
+    return this.getSelector('[role="document"]');
+  }
+
+  get items() {
     return this.getSelector('.search-items'); //this includes content search items
   }
 
@@ -51,51 +72,40 @@ export class SearchDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('search-item-text')
   }
 
-  get peoples() {
-    return this.getSelectorByAutomationId('search-people-item');
+  nthItemOfAll(n: number) {
+    return this.getComponent(SearchItem, this.items.nth(n));
   }
 
-  get groups() {
-    return this.getSelectorByAutomationId('search-groups-item');
-  }
-
-  get teams() {
-    return this.getSelectorByAutomationId('search-teams-item');
-  }
-
-  nthPeople(n: number) {
-    return this.getComponent(SearchItem, this.peoples.nth(n));
-  }
-
-  nthGroup(n: number) {
-    return this.getComponent(SearchItem, this.groups.nth(n));
-  }
-
-  nthTeam(n: number) {
-    return this.getComponent(SearchItem, this.teams.nth(n));
-  }
-
-  nthResultOfAll(n: number) {
-    return this.getComponent(SearchItem, this.allResultItems.nth(n));
-  }
-
-  getSearchItemByCid(cid: string) {
+  conversationEntryByCid(cid: string) {
     this.warnFlakySelector();
-    const root = this.allResultItems.child().find(`[cid="${cid}"]`).parent('.search-items');
+    const root = this.items.child().find(`[cid="${cid}"]`).parent('.search-items');
     return this.getComponent(SearchItem, root);
   }
 
-  getSearchItemByName(name: string) {
+  conversationEntryByName(name: string) {
     return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items'));
   }
 
-  async dropDownListShouldContainTeam(team: IGroup, timeout: number = 20e3) {
-    await this.t.expect(this.teams.withText(team.name).exists).ok({ timeout });
+  async conversationsContainName(name: string, timeout: number = 20e3) {
+    await this.t.expect(this.itemsNames.withExactText(name).exists).ok({ timeout });
+  }
+}
+
+class InstantSearch extends BaseSearchResultPage {
+  get self() {
+    return this.getSelectorByAutomationId('search-results');
   }
 
-  /*  instant search */
-  get instantContainer() {
-    return this.getSelectorByAutomationId('search-results');
+  get items() {
+    return this.getSelector('.search-items'); //this includes content search items
+  }
+
+  get conversationItems() {
+    return this.getSelector('.search-items:not([data-test-automation-id="search-content-item"])');
+  }
+
+  nthConversation(n: number) {
+    return this.getComponent(SearchItem, this.conversationItems.nth(n));
   }
 
   get peopleHeader() {
@@ -134,6 +144,34 @@ export class SearchDialog extends BaseWebComponent {
     await this.t.click(this.showMoreTeamsButton);
   }
 
+  async conversationsContainName(name: string, timeout: number = 20e3) {
+    await this.t.expect(this.conversationItems.withText(name).exists).ok({ timeout });
+  }
+
+  get peoples() {
+    return this.getSelectorByAutomationId('search-people-item');
+  }
+
+  get groups() {
+    return this.getSelectorByAutomationId('search-groups-item');
+  }
+
+  get teams() {
+    return this.getSelectorByAutomationId('search-teams-item');
+  }
+
+  nthPeople(n: number) {
+    return this.getComponent(SearchItem, this.peoples.nth(n));
+  }
+
+  nthGroup(n: number) {
+    return this.getComponent(SearchItem, this.groups.nth(n));
+  }
+
+  nthTeam(n: number) {
+    return this.getComponent(SearchItem, this.teams.nth(n));
+  }
+
   /* content search */
   get contentSearchHeader() {
     return this.getSelectorByAutomationId('search-content');
@@ -159,31 +197,51 @@ export class SearchDialog extends BaseWebComponent {
     await this.t.click(this.contentSearchInThisConversationEntry);
   }
 
-  get showMoreContentButton() {
-    return this.getSelectorByAutomationId('search-content-button');
-  }
+}
 
-  async clickShowMoreContentButton() {
-    await this.t.click(this.showMoreContentButton);
-  }
-
-  /* recently searches */
-  get historyContainer() {
+class RecentSearch extends BaseSearchResultPage {
+  get self() {
     return this.getSelectorByAutomationId('search-records');
-  };
+  }
 
   get historyHeader() {
-    return this.getSelectorByAutomationId('search-clear-button');
+    return this.getSelectorByAutomationId('search-clear');
   }
 
   get clearHistoryButton() {
-    return this.historyHeader.find('span');
+    return this.getSelectorByAutomationId('search-clear-button');
   }
 
   async clickClearHistory() {
     await this.t.click(this.clearHistoryButton)
   }
 
+  get contentItems() {
+    return this.getSelectorByAutomationId('search-message-item'); //todo
+  }
+
+  get contentInGlobalItems() {
+    return this.contentItems.filter(':not([data-id])'); //todo
+  }
+
+  get contentInConversationItems() {
+    return this.contentItems.withAttribute('data-id'); //todo
+  }
+
+  contentInConversationByCId(cid: string) {
+    return this.contentInConversationItems.filter(`[data-id="${cid}"]`)
+  }
+
+  get conversationItems() {
+    return this.getSelector('.search-items:not([data-test-automation-id="search-message-item"])'); // todo
+  }
+
+  conversationByName(name: string) {
+    return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items:not([data-test-automation-id="search-message-item"]'));
+  }
+}
+
+class FullSearch extends BaseSearchResultPage {
   /* tabs */
   getTabEntry(automationId) {
     return this.getComponent(TabEntry, this.getSelectorByAutomationId(automationId));
@@ -205,16 +263,105 @@ export class SearchDialog extends BaseWebComponent {
     return this.getTabEntry('globalSearch-team');
   }
 
-  /* page assert */
-  async shouldShowInstantList() {
-    await this.t.expect(this.instantContainer.exists).ok();
+  get messagesTab() {
+    return this.getComponent(MessagesResultTab, this.self)
   }
 
-  async shouldShowRecentlyHistory() {
-    await this.t.expect(this.historyContainer.exists).ok();
+  get searchResultsCount() {
+    return this.getSelectorByAutomationId('searchResultsCount', this.self)
+  }
+
+  async getCountOnHeader(): Promise<number> {
+    const reg = /\((\d+)\)/;
+    const exist = await this.searchResultsCount.exists;
+    if (exist) {
+      const text = await this.searchResultsCount.textContent;
+      let count = Number(reg.exec(text));
+      if (count) {
+        return count
+      }
+    }
+    return 0;
+  }
+
+  async countOnHeaderShouldBe(n: number) {
+    H.retryUntilPass(async () => {
+      const count = await this.getCountOnHeader();
+      assert.strictEqual(count, n, `expect ${n}, but ${count}`);
+    })
+  }
+
+  async countOnHeaderGreaterThanOrEqual(n: number) {
+    H.retryUntilPass(async () => {
+      const count = await this.getCountOnHeader();
+      assert.ok(count >= n, `expect at least ${n}, but ${count}`);
+    })
+  }
+
+  async countOnHeaderLessThanOrEqual(n: number) {
+    H.retryUntilPass(async () => {
+      const count = await this.getCountOnHeader();
+      assert.ok(count <= n, `expect less than or equal ${n}, but ${count}`);
+    })
   }
 
 }
+
+class MessagesResultTab extends BaseConversationPage {
+  /* filter */
+  get postByField() {
+    return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(0).parent('*[role="combobox"]'));
+  }
+
+  get postInField() {
+    return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(1).parent('*[role="combobox"]'));
+  }
+
+  get typeOptionSelector() {
+    return this.getSelectorByAutomationId('typeSelector');
+  }
+
+  get timePostOptionSelector() {
+    return this.getSelectorByAutomationId('timePostSelector');
+  }
+
+  async openTypeOptions() {
+    await this.t.click(this.typeOptionSelector);
+  }
+
+  async openTimeOptions() {
+    await this.t.click(this.timePostOptionSelector);
+  }
+  
+  async selectTypeOfAll() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-All'));
+  }
+
+  async selectTypeOfMessages() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Messages'));
+  }
+
+  async selectTypeOfEvents() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Events'));
+  }
+
+  async selectTypeOfFiles() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Files'));
+  }
+
+  async selectTypeOfLinks() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Links'));
+  }
+
+  async selectTypeOfNotes() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Notes'));
+  }
+
+  async selectTypeOfTasks() {
+    await this.t.click(this.getSelectorByAutomationId('typeSelector-Tasks'));
+  }
+}
+
 
 // TODO: Duplicate removal (RightRail)
 class TabEntry extends BaseWebComponent {
@@ -263,7 +410,7 @@ class SearchItem extends BaseWebComponent {
 
   // group or team
   get cid() {
-    return this.avatar.find("div").withAttribute('cid').getAttribute('cid');
+    return this.avatar.find('[cid]').getAttribute('cid');
   }
 
   async getName() {
@@ -382,3 +529,4 @@ export class JoinTeamDialog extends BaseWebComponent {
     await this.t.click(this.cancelButton);
   }
 }
+

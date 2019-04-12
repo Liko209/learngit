@@ -20,6 +20,7 @@ import { TypeDictionary } from 'sdk/utils';
 import { ESearchContentTypes } from 'sdk/api/glip/search';
 import { PostService } from 'sdk/module/post';
 import * as config from '../../SearchFilter/config';
+import storeManager, { ENTITY_NAME } from '@/store';
 
 jest.mock('@/store/utils');
 
@@ -31,6 +32,8 @@ beforeEach(() => {
   container.get = jest.fn().mockReturnValue(mockGlobalStore);
 
   (<jest.Mock>getGlobalValue).mockImplementation(() => null);
+
+  storeManager.dispatchUpdatedDataModels = jest.fn();
 });
 
 describe('ContentSearchResult [JPT-1558]', () => {

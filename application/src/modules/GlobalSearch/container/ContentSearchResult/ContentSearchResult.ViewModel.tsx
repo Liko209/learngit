@@ -30,6 +30,7 @@ import {
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { TYPE_MAP } from '../SearchFilter/config';
 import _ from 'lodash';
+import storeManager, { ENTITY_NAME } from '@/store';
 
 const TYPE_ALL = -1;
 
@@ -121,7 +122,9 @@ class ContentSearchResultViewModel
 
     const fetchFn = isInitialize ? this._onPostsInit : this._onPostsScroll;
 
-    const { posts, hasMore } = await this._fetchHandleWrapper(fetchFn);
+    const { posts, items, hasMore } = await this._fetchHandleWrapper(fetchFn);
+
+    storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
 
     this._updatePostIds(posts, isInitialize);
 
@@ -203,7 +206,7 @@ class ContentSearchResultViewModel
     } catch (error) {
       this._fetchErrorHandler(error);
 
-      result = { hasMore: true, posts: [] };
+      result = { hasMore: true, posts: [], items: [] };
     }
 
     return result;

@@ -5,7 +5,6 @@
  * @Last Modified time: 2019-04-11 14:18:47
  */
 
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
@@ -39,7 +38,7 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`And make some recently search history with ${beSearchedName}`, async () => {
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(beSearchedName);
-    await searchDialog.nthPeople(0).enter();
+    await searchDialog.instantPage.nthPeople(0).enter();
   });
 
   await h(t).withLog(`When mouse in the global search box`, async () => {
@@ -47,12 +46,12 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the recently searched dropdown list displayed`, async () => {
-    await searchDialog.shouldShowRecentlyHistory();
-    await t.expect(searchDialog.allResultItems.count).eql(1);
+    await searchDialog.recentPage.ensureLoaded();
+    await t.expect(searchDialog.recentPage.items.count).eql(1);
   });
 
   await h(t).withLog(`When tap ESC keyboard`, async () => {
-    await app.quitByPressEsc();
+    await searchDialog.quitByPressEsc();
   });
 
   await h(t).withLog(`Then the search dialog dismiss`, async () => {
@@ -64,8 +63,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the recently searched dropdown list displayed`, async () => {
-    await searchDialog.shouldShowRecentlyHistory();
-    await t.expect(searchDialog.allResultItems.count).eql(1);
+    await searchDialog.recentPage.ensureLoaded();
+    await t.expect(searchDialog.recentPage.items.count).eql(1);
   });
 
   await h(t).withLog(`Whe I click outside the global search box`, async () => {
@@ -81,8 +80,8 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the recently searched dropdown list displayed`, async () => {
-    await searchDialog.shouldShowRecentlyHistory();
-    await t.expect(searchDialog.allResultItems.count).eql(1);
+    await searchDialog.recentPage.ensureLoaded();
+    await t.expect(searchDialog.recentPage.items.count).eql(1);
   });
 
   await h(t).withLog(`Whe I click Close icon`, async () => {
@@ -121,12 +120,13 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then there is no recently searched dropdown list displayed`, async () => {
-    await t.expect(searchDialog.allResultItems.exists).notOk();
+    await searchDialog.recentPage.ensureLoaded();
+    await t.expect(searchDialog.recentPage.items.count).eql(0);
   });
 
   await h(t).withLog(`When make some recently search history with ${beSearchedName}`, async () => {
     await searchDialog.typeSearchKeyword(beSearchedName);
-    await searchDialog.nthPeople(0).enter();
+    await searchDialog.instantPage.nthPeople(0).enter();
   });
 
   await h(t).withLog(`And mouse in the global search box`, async () => {
@@ -134,20 +134,22 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then the recently searched dropdown list displayed and the new contact items are added`, async () => {
-    await searchDialog.shouldShowRecentlyHistory();
-    await t.expect(searchDialog.allResultItems.count).eql(1);
-    await t.expect(searchDialog.getSearchItemByName(beSearchedName).exists).ok();
+    await searchDialog.recentPage.ensureLoaded();
+    await t.expect(searchDialog.recentPage.items.count).eql(1);
+    await t.expect(searchDialog.recentPage.conversationByName(beSearchedName).exists).ok();
   });
 
   await h(t).withLog(`When click the “Clear History” button`, async () => {
-    await searchDialog.clickClearHistory();
+    await searchDialog.recentPage.clickClearHistory();
   });
 
   await h(t).withLog(`Then the recently searched list should be cleared`, async () => {
-    await t.expect(searchDialog.allResultItems.exists).notOk();
+    await searchDialog.recentPage.ensureLoaded();
+    await t.expect(searchDialog.recentPage.items.count).eql(0);
   });
 
-  await h(t).withLog(`Then the search dialog input box should remain focused`, async () => {
-    await t.expect(searchDialog.inputArea.focused).ok();
-  });
+  // skip due not yet implement
+  // await h(t).withLog(`Then the search dialog input box should remain focused`, async () => {
+  //   await t.expect(searchDialog.inputArea.focused).ok();
+  // });
 });
