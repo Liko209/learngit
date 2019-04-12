@@ -94,7 +94,7 @@ class RecentSearchViewComponent extends Component<Props> {
           showButton={true}
           buttonText={t('globalSearch.ClearHistory')}
           title={t('globalSearch.RecentSearches')}
-          automationId={'search-clear'}
+          automationId={'clear'}
         />
         {recentRecord.map((recentSearchModel: RecentRecord, index: number) => {
           const { value, type, queryParams } = recentSearchModel;

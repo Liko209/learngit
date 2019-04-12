@@ -141,7 +141,11 @@ export class ConversationCard extends React.Component<
             <EditMessageInput viewRef={this._editMessageInputRef} id={id} />
           )}
           {itemTypeIds && (
-            <IdsToConversationSheet itemTypeIds={itemTypeIds} postId={id} />
+            <IdsToConversationSheet
+              itemTypeIds={itemTypeIds}
+              postId={id}
+              mode={mode}
+            />
           )}
         </JuiConversationCardBody>
         <Footer postId={id} />

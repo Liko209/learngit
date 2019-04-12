@@ -6,7 +6,7 @@
     "include_tags": [
       "P0",
       "P1",
-      "search"
+      "JPT-1347"
     ],
     "browsers": [
       "selenium:chrome"

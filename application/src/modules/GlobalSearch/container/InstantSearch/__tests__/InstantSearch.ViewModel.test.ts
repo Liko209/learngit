@@ -178,6 +178,16 @@ describe('InstantSearchViewModel', () => {
   });
 
   describe('onEnter()', () => {
+    beforeEach(() => {
+      instantSearchViewModel.setSelectIndex(0, 0);
+    });
+    it('if select index < 0 should be return undefined', () => {
+      instantSearchViewModel.setSelectIndex(-1, -1);
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      expect(instantSearchViewModel.onEnter(keyBoardEvent)).toBeUndefined();
+    });
     it('If select item type is people should be go to conversation', () => {
       const id = 1;
       jest.spyOn(instantSearchViewModel, 'goToConversation');

@@ -5,7 +5,7 @@
  */
 
 import React, { StatelessComponent } from 'react';
-import { JuiEmptyScreen, JuiEmptyScreenProps } from '.';
+import { JuiEmptyScreen, JuiEmptyScreenProps } from './EmptyScreen';
 import styled from '../../../foundation/styled-components';
 import { spacing } from '../../../foundation/utils';
 

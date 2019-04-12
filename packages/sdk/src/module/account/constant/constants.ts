@@ -5,7 +5,6 @@
  */
 const BETA_CONFIG_KEYS = {
   BETA_ENABLE_LOG: 'beta_enable_log',
-  BETA_S3_DIRECT_UPLOADS: 'beta_s3_direct_uploads',
 };
 
 export { BETA_CONFIG_KEYS };

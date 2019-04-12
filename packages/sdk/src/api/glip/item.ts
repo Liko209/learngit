@@ -87,30 +87,6 @@ class ItemAPI extends Api {
     );
   }
 
-  static uploadFileItem(
-    files: FormData,
-    callback: ProgressCallback,
-    requestHolder?: RequestHolder,
-  ) {
-    return this.uploadNetworkClient.http<StoredFile>(
-      {
-        path: '/upload',
-        method: NETWORK_METHOD.POST,
-        via: NETWORK_VIA.HTTP,
-        data: files,
-        requestConfig: {
-          onUploadProgress(event: ProgressEventInit): void {
-            if (callback) {
-              callback(event);
-            }
-          },
-        },
-        timeout: TEN_MINUTE_TIMEOUT,
-      },
-      requestHolder,
-    );
-  }
-
   static cancelUploadRequest(requestHolder: RequestHolder) {
     if (requestHolder && requestHolder.request) {
       this.uploadNetworkClient.cancelRequest(requestHolder.request);

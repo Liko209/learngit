@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import styled from '../../foundation/styled-components';
-import { width } from '../../foundation/utils';
+import { width, spacing } from '../../foundation/utils';
 
 const JuiFullSearchWrapper = styled.div`
   display: flex;
@@ -13,6 +13,7 @@ const JuiFullSearchWrapper = styled.div`
 
 const JuiFullSearchResultWrapper = styled.div`
   width: ${width(132.5)};
+  padding-bottom: ${spacing(2)};
   position: relative;
   display: flex;
   flex-direction: column;

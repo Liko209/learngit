@@ -3,9 +3,10 @@
  * @Date: 2019-04-01 12:43:19
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { memo } from 'react';
+import React, { memo, useRef } from 'react';
 import {
   JuiOutlineTextField,
+  JuiOutlineTextFieldRef,
   JuiOutlineTextFieldProps,
 } from '../../../components/Forms/OutlineTextField';
 import styled from '../../../foundation/styled-components';
@@ -36,18 +37,26 @@ type JuiGlobalSearchInputProps = {
 
 const JuiGlobalSearchInput = memo((props: JuiGlobalSearchInputProps) => {
   const { showClear, onClear, onClose, ...rest } = props;
+
+  const ref = useRef<JuiOutlineTextFieldRef>(null);
+  const baseOnClear = () => {
+    ref.current && ref.current.focus();
+    onClear();
+  };
+
   return (
     <StyledJuiOutlineTextField
       radiusType="rectangle"
       iconName={['search', 'close']}
-      onClickIconRight={onClose}
       iconPosition="both"
+      onClickIconRight={onClose}
       size="large"
+      ref={ref as any}
       inputAfter={
         showClear && (
           <ClearButton
             data-test-automation-id="global-search-clear"
-            onClick={onClear}
+            onClick={baseOnClear}
           >
             Clear
           </ClearButton>

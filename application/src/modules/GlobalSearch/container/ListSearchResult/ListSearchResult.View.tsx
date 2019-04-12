@@ -52,7 +52,7 @@ class ListSearchResultViewComponent extends Component<Props> {
     }
 
     return (
-      <JuiFullSearch>
+      <JuiFullSearch data-test-automation-id="global-full-search">
         <JuiListSubheader data-test-automation-id="searchResultsCount">
           {t('globalSearch.Results', {
             count: searchResult.length,

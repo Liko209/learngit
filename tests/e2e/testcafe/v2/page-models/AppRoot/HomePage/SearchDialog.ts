@@ -205,7 +205,7 @@ class RecentSearch extends BaseSearchResultPage {
   }
 
   get historyHeader() {
-    return this.getSelectorByAutomationId('search-clear');
+    return this.getSelectorByAutomationId('search-clear-button');
   }
 
   get clearHistoryButton() {
