@@ -53,7 +53,7 @@ abstract class AbstractProcessor {
         existed,
       );
     } else {
-      if (existed) {
+      if (!existed) {
         this._processors.push(processor);
       }
     }

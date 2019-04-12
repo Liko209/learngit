@@ -48,7 +48,7 @@ class SequenceProcessorHandler extends AbstractProcessor {
     if (
       this._maxSize &&
       this._onExceedMaxSize &&
-      this._processors.length === this._maxSize - 1
+      this._processors.length === this._maxSize
     ) {
       this._onExceedMaxSize(this._processors);
     }
