@@ -9,12 +9,25 @@ import { IProcessor } from './IProcessor';
 abstract class AbstractProcessor {
   private _name: string;
   protected _processors: IProcessor[] = [];
-
-  constructor(name: string) {
+  private _addProcessorStrategy?: (
+    totalProcessors: IProcessor[],
+    newProcessors: IProcessor,
+    existed: boolean,
+  ) => IProcessor[];
+  constructor(
+    name: string,
+    addProcessorStrategy?: (
+      totalProcessors: IProcessor[],
+      newProcessors: IProcessor,
+      existed: boolean,
+    ) => IProcessor[],
+  ) {
     this._name = name;
+    this._addProcessorStrategy = addProcessorStrategy;
   }
 
   abstract async execute(): Promise<boolean>;
+  abstract cancelAll(): void;
 
   name(): string {
     return this._name;
@@ -26,16 +39,26 @@ abstract class AbstractProcessor {
 
   addProcessor(processor: IProcessor): boolean {
     let existed = false;
+
     this._processors.forEach((item: IProcessor) => {
       if (item.name() === processor.name()) {
         existed = true;
       }
     });
-    if (!existed) {
-      this._processors.push(processor);
-      return true;
+
+    if (this._addProcessorStrategy) {
+      this._processors = this._addProcessorStrategy(
+        this._processors,
+        processor,
+        existed,
+      );
+    } else {
+      if (existed) {
+        this._processors.push(processor);
+      }
     }
-    return false;
+
+    return true;
   }
 
   removeProcessor(processor: IProcessor): boolean {
