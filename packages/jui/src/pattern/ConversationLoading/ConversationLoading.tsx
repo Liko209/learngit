@@ -9,6 +9,7 @@ import { JuiRightRailLoading } from './RightRailLoading';
 import { JuiStreamLoading } from './StreamLoading';
 
 const LoadingWrapper = styled.div`
+  position: relative;
   display: flex;
   height: 100%;
   width: 100%;

@@ -2,6 +2,11 @@ import { createContext } from 'react';
 import { WithTranslation } from 'react-i18next';
 import { RouteComponentProps } from 'react-router';
 
+enum STATUS {
+  SUCCESS,
+  FAILED,
+}
+
 type ConversationPageViewProps = WithTranslation & {
   canPost: boolean;
   groupId: number;
@@ -20,6 +25,7 @@ const ConversationPageContext = createContext({
 } as ConversationPageContextInfo);
 
 export {
+  STATUS,
   ConversationPageProps,
   ConversationPageViewProps,
   ConversationPageContext,
