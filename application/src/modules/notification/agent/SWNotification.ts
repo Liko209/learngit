@@ -7,6 +7,8 @@ import { buildAction } from './utils';
 import { AbstractNotification } from './AbstractNotification';
 import { NotificationOpts, NotificationAction } from '../interface';
 import _ from 'lodash';
+import { isElectron, isSafari } from '@/common/isUserAgent';
+
 type SWCallbackArgs = {
   id: number;
   action: string;
@@ -23,9 +25,10 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
 
   isSupported() {
     return (
-      navigator.userAgent.indexOf('Electron') === -1 &&
-      !/^((?!chrome|android).)*safari/i.test(navigator.userAgent) &&
-      (navigator !== undefined && navigator.serviceWorker !== undefined)
+      !isElectron &&
+      !isSafari &&
+      navigator !== undefined &&
+      navigator.serviceWorker !== undefined
     );
   }
 
