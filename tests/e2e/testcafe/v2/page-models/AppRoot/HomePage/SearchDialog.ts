@@ -173,7 +173,7 @@ export class SearchDialog extends BaseWebComponent {
   };
 
   get historyHeader() {
-    return this.getSelectorByAutomationId('search-clear');
+    return this.getSelectorByAutomationId('search-clear-button');
   }
 
   get clearHistoryButton() {
