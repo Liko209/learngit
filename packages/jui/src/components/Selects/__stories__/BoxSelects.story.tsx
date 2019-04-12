@@ -80,6 +80,7 @@ class TestBoxSelect extends React.Component<{
         disabled={disabled}
         label="Select Demo"
         handleChange={this.handleChange}
+        automationId={'demo'}
       >
         {menu.map((item: Menu) => (
           <JuiMenuItem {...rest} value={item.id} key={item.id}>

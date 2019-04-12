@@ -18,6 +18,7 @@ type JuiBoxSelectProps = SelectProps & {
   handleChange: (value: string) => void;
   label?: string;
   isFullWidth?: boolean;
+  automationId: string;
 };
 
 const StyledSelectBoxContainer = styled.div`
@@ -44,11 +45,12 @@ class JuiBoxSelect extends PureComponent<
   }
 
   render() {
-    const { children, label, isFullWidth, ...rest } = this.props;
+    const { children, label, automationId, isFullWidth, ...rest } = this.props;
     return (
       <StyledSelectBoxContainer>
         <StyledSelectBoxHeader>{label}</StyledSelectBoxHeader>
         <StyledSelect
+          data-test-automation-id={automationId}
           classes={CLASSES_SELECT}
           style={isFullWidth ? { width: '100%' } : {}}
           input={this._renderInput()}
