@@ -104,6 +104,7 @@ export class LogUploadConsumer implements ILogConsumer {
             await loopController.abort();
             break;
           case 'abortAll':
+            await loopController.abort();
             await loopController.abortAll();
             await timeout(5000);
             break;
@@ -184,7 +185,10 @@ export class LogUploadConsumer implements ILogConsumer {
       this._memoryQueue.size() > memoryCountThreshold ||
       this._memorySize > memorySizeThreshold
     ) {
-      this._flushMemory();
+      const forceMode =
+        this._memoryQueue.size() > 3 * memoryCountThreshold ||
+        this._memorySize > 3 * memorySizeThreshold;
+      this._flushMemory(forceMode);
     }
   }
 
@@ -195,7 +199,7 @@ export class LogUploadConsumer implements ILogConsumer {
     }
     // indicated in _flushMode
     this._flushMode = true;
-    this._flushMemory();
+    this._flushMemory(true);
     this._flushMode = false;
   }
 
@@ -217,19 +221,22 @@ export class LogUploadConsumer implements ILogConsumer {
     },                           configManager.getConfig().autoFlushTimeCycle);
   }
 
-  private _flushMemory() {
-    const logs = this._memoryQueue.peekAll();
-    this._memorySize = 0;
-    this._flushInTimeout();
-    if (logs.length < 1) return;
+  private _flushMemory(force?: boolean) {
     if (
       this._persistentFSM.state === PERSISTENT_STATE.EMPTY &&
       this._uploadAvailable()
     ) {
+      const logs = this._memoryQueue.peekAll();
+      this._memorySize = 0;
+      this._flushInTimeout();
+      if (logs.length < 1) return;
       this._uploadTaskQueueLoop.addTail(
         new UploadMemoryLogTask(logs, this._logUploader, this._logPersistent),
       );
-    } else {
+    } else if (force) {
+      const logs = this._memoryQueue.peekAll();
+      this._memorySize = 0;
+      this._flushInTimeout();
       this._persistentTaskQueueLoop.addTail(
         new PersistentTask() // cache task
           .setOnExecute(async () => {

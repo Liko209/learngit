@@ -162,10 +162,15 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
   }
 
   abortAll(): void {
+    let currentTask;
+    if (this._isLooping) {
+      currentTask = this._taskQueue.peekHead();
+    }
     const tasks = this._taskQueue.peekAll();
     tasks.forEach((task: Task) => {
       task.onAbort().catch();
     });
+    currentTask && this._taskQueue.addTail(currentTask);
   }
 
   addHead(e: Task): void {
