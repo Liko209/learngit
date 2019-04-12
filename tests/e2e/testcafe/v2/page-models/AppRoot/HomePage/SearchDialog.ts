@@ -1,6 +1,7 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { IGroup } from '../../../models';
+import * as assert from 'assert';
 import { BaseConversationPage } from "./MessageTab/ConversationPage";
+import { H } from "../../../helpers";
 
 
 export class SearchDialog extends BaseWebComponent {
@@ -74,15 +75,21 @@ class BaseSearchResultPage extends BaseWebComponent {
     return this.getComponent(SearchItem, this.items.nth(n));
   }
 
-  getSearchItemByCid(cid: string) {
+  conversationEntryByCid(cid: string) {
     this.warnFlakySelector();
     const root = this.items.child().find(`[cid="${cid}"]`).parent('.search-items');
     return this.getComponent(SearchItem, root);
   }
 
-  conversationByNamegetSearchItemByName(name: string) {
+  conversationEntryByName(name: string) {
     return this.getComponent(SearchItem, this.itemsNames.withText(name).parent('.search-items'));
   }
+
+  async conversationsContainName(name: string, timeout: number = 20e3) {
+    await this.t.expect(this.itemsNames.withExactText(name).exists).ok();
+  }
+
+
 
 
 }
@@ -140,8 +147,8 @@ class InstantSearch extends BaseSearchResultPage {
     await this.t.click(this.showMoreTeamsButton);
   }
 
-  async dropDownListShouldContainTeam(team: IGroup, timeout: number = 20e3) {
-    await this.t.expect(this.teams.withText(team.name).exists).ok({ timeout });
+  async conversationsContainName(name: string, timeout: number = 20e3) {
+    await this.t.expect(this.conversationItems.withExactText(name).exists).ok({ timeout });
   }
 
   get peoples() {
@@ -262,10 +269,49 @@ class FullSearch extends BaseSearchResultPage {
   get messagesTab() {
     return this.getComponent(MessagesResultTab, this.self)
   }
+
+  get searchResultsCount() {
+    return this.getSelectorByAutomationId('searchResultsCount', this.self)
+  }
+
+  async getCountOnHeader(): Promise<number> {
+    const reg = /\((\d+)\)/;
+    const exist = await this.searchResultsCount.exists;
+    if (exist) {
+      const text = await this.searchResultsCount.textContent;
+      let count = Number(reg.exec(text));
+      if (count) {
+        return count
+      }
+    }
+    return 0;
+  }
+
+  async countOnHeaderShouldBe(n: number) {
+    H.retryUntilPass(async () => {
+      const count = await this.getCountOnHeader();
+      assert.strictEqual(count, n, `expect ${n}, but ${count}`);
+    })
+  }
+
+  async countOnHeaderGreaterThanOrEqual(n: number) {
+    H.retryUntilPass(async () => {
+      const count = await this.getCountOnHeader();
+      assert.ok(count >= n, `expect at least ${n}, but ${count}`);
+    })
+  }
+
+  async countOnHeaderLessThanOrEqual(n: number) {
+    H.retryUntilPass(async () => {
+      const count = await this.getCountOnHeader();
+      assert.ok(count <= n, `expect less than or equal ${n}, but ${count}`);
+    })
+  }
+
 }
 
 class MessagesResultTab extends BaseConversationPage {
-  
+
 }
 
 

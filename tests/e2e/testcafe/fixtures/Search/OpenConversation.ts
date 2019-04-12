@@ -113,8 +113,8 @@ test.meta(<ITestMeta>{
   // team
   await h(t).withLog(`When I search keyword ${team.name} and click the team result`, async () => {
     await searchDialog.typeSearchKeyword(team.name);
-    await searchDialog.instantPage.getSearchItemByCid(team.glipId).ensureLoaded();
-    await searchDialog.instantPage.getSearchItemByCid(team.glipId).enter();
+    await searchDialog.instantPage.conversationEntryByCid(team.glipId).ensureLoaded();
+    await searchDialog.instantPage.conversationEntryByCid(team.glipId).enter();
   });
 
   await h(t).withLog(`Then the conversation should be opened`, async () => {

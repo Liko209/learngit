@@ -73,19 +73,19 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`And I hover search result “${publicTeamWithoutMe.name}”`, async () => {
-    await t.hover(searchDialog.instantPage.getSearchItemByCid(publicTeamWithoutMe.glipId).self);
+    await t.hover(searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).self);
   });
 
   await h(t).withLog(`Then the join button should be showed `, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithoutMe.glipId).shouldHaveJoinButton();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).shouldHaveJoinButton();
   });
 
   await h(t).withLog(`When I hover search result “${publicTeamWithMe.name}”`, async () => {
-    await t.hover(searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).self);
+    await t.hover(searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).self);
   });
 
   await h(t).withLog(`Then the join button should not be showed `, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).shouldNotHaveJoinButton();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).shouldNotHaveJoinButton();
   });
 
   let peopleCount, groupCount;
@@ -158,11 +158,11 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`And I click join button of the public team A`, async () => {
     await t.expect(searchDialog.instantPage.teams.count).gte(1, { timeout: 10e3 });
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).join();
   });
 
   await h(t).withLog(`Then search result list dismiss`, async () => {
-    await t.expect(searchDialog.instantPage.getSearchItemByCid(publicTeamWithoutMe.glipId).exists).notOk();
+    await t.expect(searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).exists).notOk();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;
@@ -228,7 +228,7 @@ test.meta(<ITestMeta>{
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
     await t.expect(searchDialog.instantPage.teams.count).gte(1, { timeout: 10e3 });
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithoutMe.glipId).join();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithoutMe.glipId).join();
   });
 
 

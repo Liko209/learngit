@@ -79,16 +79,16 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
     await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchDialog.instantPage.dropDownListShouldContainTeam(team);
+      await searchDialog.instantPage.conversationsContainName(team.name);
     }
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+    await searchDialog.instantPage.conversationEntryByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
   // update configuration of teams
@@ -120,16 +120,16 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
     await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchDialog.instantPage.dropDownListShouldContainTeam(team);
+      await searchDialog.instantPage.conversationsContainName(team.name);
     }
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+    await searchDialog.instantPage.conversationEntryByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
 });
@@ -200,16 +200,16 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
     await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchDialog.instantPage.dropDownListShouldContainTeam(team);
+      await searchDialog.instantPage.conversationEntryByName(team.name);
     }
   }, true);
 
   await h(t).withLog(`And team "${privateTeamWithMe.name}" should labeled as private`, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
+    await searchDialog.instantPage.conversationEntryByCid(privateTeamWithMe.glipId).shouldHavePrivateLabel();
   });
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 
   // update configuration of teams
@@ -241,12 +241,12 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`Then I should find following teams in search result: ${groupsToString(searchResults)}`, async () => {
     await t.expect(searchDialog.instantPage.teams.count).gte(searchResults.length, { timeout: 10e3 });
     for (const team of searchResults) {
-      await searchDialog.instantPage.dropDownListShouldContainTeam(team);
+      await searchDialog.instantPage.conversationsContainName(team.name);
     }
   }, true);
 
   await h(t).withLog(`And team "${publicTeamWithMe.name}" should have a joined label`, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithMe.glipId).shouldHaveJoinedLabel();
   });
 });
 

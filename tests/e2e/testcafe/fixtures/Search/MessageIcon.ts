@@ -72,7 +72,7 @@ test.meta(<ITestMeta>{
     position: "the first groups result"
   }, {
     keyword: teamWithMe.name,
-    item: searchDialog.instantPage.getSearchItemByCid(teamWithMe.glipId),
+    item: searchDialog.instantPage.conversationEntryByCid(teamWithMe.glipId),
     position: "the team which I joined"
   }];
 
@@ -112,16 +112,16 @@ test.meta(<ITestMeta>{
   await h(t).withLog(`When I search keyword ${publicTeamWithOutMe.name} and hover the team which I did not join`, async () => {
     await searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(publicTeamWithOutMe.name);
-    await t.expect(searchDialog.instantPage.getSearchItemByCid(publicTeamWithOutMe.glipId).exists).ok();
-    await t.hover(searchDialog.instantPage.getSearchItemByCid(publicTeamWithOutMe.glipId).self);
+    await t.expect(searchDialog.instantPage.conversationEntryByCid(publicTeamWithOutMe.glipId).exists).ok();
+    await t.hover(searchDialog.instantPage.conversationEntryByCid(publicTeamWithOutMe.glipId).self);
   });
 
   await h(t).withLog(`Then display the the join button in the result`, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithOutMe.glipId).shouldHaveJoinButton();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithOutMe.glipId).shouldHaveJoinButton();
   });
 
   await h(t).withLog(`When I click the result ${publicTeamWithOutMe.name}`, async () => {
-    await searchDialog.instantPage.getSearchItemByCid(publicTeamWithOutMe.glipId).enter();
+    await searchDialog.instantPage.conversationEntryByCid(publicTeamWithOutMe.glipId).enter();
   });
 
   const joinTeamDialog = app.homePage.joinTeamDialog;

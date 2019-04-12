@@ -67,7 +67,7 @@ class SearchBar extends BaseWebComponent {
 
   async searchTextShouldBe(text: string) {
     await this.t.expect(this.searchText).eql(text);
-  } 
+  }
 
   get closeIcon() {
     return this.getSelectorByIcon('close', this.self);

@@ -86,23 +86,28 @@ test.meta(<ITestMeta>{
   const anotherUser = users[5];
   await h(t).glip(loginUser).init();
 
-  const teamNames = Array(2).fill(null).map(() => `${H.uuid()}`);
+  const teamNames = Array(2).fill(null).map(() => `${uuid()}`);
   const teams: IGroup[] = teamNames.map(name => ({
     name,
     type: 'Team',
     owner: loginUser,
     members: [loginUser, anotherUser],
   }));
-  await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
 
+
+  await h(t).log(`Given I have an extension ${loginUser.company.number}#${loginUser.extension}`);
+  let postPool: string[][] = []
   for (const team of teams) {
     await h(t).withLog(`And have a team named: ${team.name}`, async () => {
       await h(t).scenarioHelper.createTeam(team);
     });
 
-    await h(t).withLog(`And each member send post text (team names)`, async () => {
-      await h(t).scenarioHelper.sendTextPost(team.name, team, loginUser);
-      await h(t).scenarioHelper.sendTextPost(team.name, team, anotherUser);
+    await h(t).withLog(`And each member send post text ${team.name}`, async () => {
+      let postIds: string[] = []
+      for (const user of team.members) {
+        postIds.unshift(await h(t).scenarioHelper.sentAndGetTextPostId(team.name, team, user));
+      }
+      postPool.push(postIds)
     });
   }
 
@@ -115,8 +120,8 @@ test.meta(<ITestMeta>{
 
   const searchBar = app.homePage.header.searchBar;
   const searchDialog = app.homePage.searchDialog;
-  await h(t).withLog(`When I open team "${teamNames[0]}"  search keyword ${teamNames[0]}`, async () => {
-    await app.homePage.messageTab.teamsSection.conversationEntryByName(teamNames[0]).enter();
+  await h(t).withLog(`When I open team "${teamNames[0]}" and search keyword ${teamNames[0]}`, async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(teams[0].glipId).enter();
     await searchBar.clickSelf();
     await searchDialog.clearInputAreaTextByKey();
     await searchDialog.typeSearchKeyword(teamNames[0]);
@@ -130,7 +135,77 @@ test.meta(<ITestMeta>{
     await searchDialog.fullSearchPage.messagesTabEntry.shouldBeOpened();
   });
 
-  await h(t).withLog(`And display more data`, async () => {
-    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).gte(2);
+  await h(t).withLog(`And display ${postPool[0].length}`, async () => {
+    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).eql(postPool[0].length);
+  });
+
+  // todo: filter
+
+  
+
+  // switch other tab
+  await h(t).withLog(`When I switch to people tab`, async () => {
+    await searchDialog.fullSearchPage.groupsTabEntry.enter();
+  }, true);
+
+  await h(t).withLog(`Then there is no results in the tab`, async () => {
+    await t.expect(searchDialog.fullSearchPage.items.count).eql(0);
+  });
+
+  await h(t).withLog(`When I switch to group tab`, async () => {
+    await searchDialog.fullSearchPage.groupsTabEntry.enter();
+  }, true);
+
+  await h(t).withLog(`Then there is no results in the tab`, async () => {
+    await t.expect(searchDialog.fullSearchPage.items.count).eql(0);
+  });
+
+
+  await h(t).withLog(`When I switch to teams tab`, async () => {
+    await searchDialog.fullSearchPage.teamsTabEntry.enter();
+  }, true);
+
+
+  await h(t).withLog(`Then there is one teams named ${teamNames[0]}`, async () => {
+    await searchDialog.fullSearchPage.conversationsContainName(teamNames[0]);
+  });
+
+  // change search keyword
+  await h(t).withLog(`When I search by keyword ${teamNames[1]}`, async () => {
+    await searchDialog.clearInputAreaTextByKey();
+    await searchDialog.typeSearchKeyword(teamNames[0]);
+  }, true);
+
+  await h(t).withLog(`And click search content item (global)`, async () => {
+    await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
+  });
+
+  await h(t).withLog(`Then search result message tab should be open`, async () => {
+    await searchDialog.fullSearchPage.messagesTabEntry.shouldBeOpened();
+  });
+
+  await h(t).withLog(`And display search result count at least ${postPool[1].length}`, async () => {
+    await t.expect(searchDialog.fullSearchPage.messagesTab.posts.count).gte(postPool[1].length);
+    await t.expect(searchDialog.fullSearchPage.searchResultsCount.exists).ok();
+    await searchDialog.fullSearchPage.countOnHeaderGreaterThanOrEqual(postPool[1].length)
+  });
+
+  let postId, groupId;
+  await h(t).withLog(`When I hover a item and click jump to conversation button`, async () => {
+    const postItem = searchDialog.fullSearchPage.messagesTab.nthPostItem(0);
+    postId = await postItem.postId;
+    groupId = await postItem.conversationSourceId;
+    await postItem.hoverPostAndClickJumpToConversationButton();
+  }, true);
+
+  const conversationPage = app.homePage.messageTab.conversationPage;
+  await h(t).withLog(`And it should open the conversation and highlight the post in the conversation`, async () => {
+    await conversationPage.groupIdShouldBe(groupId);
+    await conversationPage.postItemById(postId).shouldBeHighLight();
+  });
+
+  await h(t).withLog(`And no text in the search box`, async () => {
+    await searchDialog.ensureDismiss();
+    await searchBar.searchTextShouldBe('');
   });
 })

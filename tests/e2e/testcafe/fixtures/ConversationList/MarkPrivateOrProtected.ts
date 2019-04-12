@@ -157,7 +157,7 @@ test.meta(<ITestMeta>{
   }, true);
 
   await h(t).withLog('Then I should find this team', async () => {
-    await searchDialog.instantPage.dropDownListShouldContainTeam(team);
+    await searchDialog.instantPage.conversationsContainName(team.name);
   }, true);
 });
 
