@@ -7,7 +7,9 @@
 type RecordProps = {};
 
 type RecordViewProps = {
-  record: () => void;
+  handleClick: () => void;
+  disabled: boolean;
+  recording: boolean;
 };
 
 export { RecordProps, RecordViewProps };
