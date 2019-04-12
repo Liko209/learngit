@@ -6,22 +6,23 @@
 import { Omit } from 'jui/foundation/utils/typeHelper';
 export interface INotificationService {
   init: Function;
-  show: (title: string, options?: SWNotificationOptions) => void;
+  show: (title: string, options?: NotificationOpts) => void;
   close: (scope: string, id: number) => void;
   clear: (scope?: string) => void;
 }
 
-export type notificationActionHandler = (event: Event) => any;
-export type notificationAction = {
+export type NotificationActionHandler = (event: Event) => any;
+export type NotificationAction = {
   title: string;
   icon: string;
   action: string;
-  handler: notificationActionHandler;
+  handler: NotificationActionHandler;
 };
 
-export type SWNotificationOptions = Omit<NotificationOptions, 'actions'> & {
+export type NotificationOpts = Omit<NotificationOptions, 'actions'> & {
   data: { id: number; scope: string };
-  actions?: notificationAction[];
+  actions?: NotificationAction[];
+  onClick?: NotificationActionHandler;
 };
 
 export type Global = {

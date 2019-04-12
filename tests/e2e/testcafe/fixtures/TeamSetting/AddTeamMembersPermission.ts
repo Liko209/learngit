@@ -60,7 +60,7 @@ test(formalName(`Only admin and member have add members permission when add team
   });
 
   await h(t).withLog(`Then there is "add team members" icon`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
     await t.expect(profileDialog.addMembersIcon.exists).ok();
   });
 

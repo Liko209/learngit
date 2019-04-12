@@ -9,8 +9,8 @@ import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { ENTITY_NAME } from '@/store';
 import { Post } from 'sdk/module/post/entity';
-import config from './config';
 import { ActivityViewProps, ActivityProps } from './types';
+import { getActivityData, getActivity } from './handler/getActivity';
 
 class ActivityViewModel extends StoreViewModel<ActivityProps>
   implements ActivityViewProps {
@@ -25,39 +25,12 @@ class ActivityViewModel extends StoreViewModel<ActivityProps>
 
   @computed
   private get _activityData() {
-    const activity = {};
-    const { itemTypeIds } = this._post;
-    if (itemTypeIds) {
-      Object.keys(itemTypeIds).forEach((type: string) => {
-        if (config[type]) {
-          const props = {
-            ...this._post,
-            ids: itemTypeIds[type],
-          };
-          activity[type] = config[type](props);
-        }
-      });
-    }
-    return activity;
+    return getActivityData(this._post);
   }
 
   @computed
   get activity() {
-    const { parentId } = this._post;
-    const types = Object.keys(this._activityData);
-    let activity: any = {};
-    switch (true) {
-      case types.length > 1:
-        activity = config.items();
-        break;
-      case !!types.length:
-        activity = this._activityData[types[0]];
-        break;
-      case !!parentId:
-        activity = config.children();
-        break;
-    }
-    return activity;
+    return getActivity(this._post, this._activityData);
   }
 }
 

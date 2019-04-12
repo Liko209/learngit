@@ -11,7 +11,6 @@ import { SubscribeController } from '../../base/controller/SubscribeController';
 import { PresenceController } from '../controller/PresenceController';
 import { AccountUserConfig } from '../../../module/account/config';
 import { PRESENCE } from '../constant/Presence';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 class PresenceService extends EntityBaseService {
   private _presenceController: PresenceController;
@@ -51,13 +50,7 @@ class PresenceService extends EntityBaseService {
   }
 
   presenceHandleData = async (presences: RawPresence[]) => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_PRESENCE,
-      logId,
-    );
     await this._presenceController.handlePresenceIncomingData(presences);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleStore = ({ state }: { state: any }) => {

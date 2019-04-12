@@ -49,7 +49,7 @@ test(formalName('Team admin can change team from public to private.', ['JPT-517'
   });
 
   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`And I should find public icon on profile dialog header`, async () => {
@@ -115,7 +115,7 @@ test(formalName('Team admin can change team from private to public.', ['JPT-518'
   });
 
   await h(t).withLog(`Then a team conversation profile dialog should be popup`, async () => {
-    await profileDialog.shouldBePopUp();
+    await profileDialog.ensureLoaded();
   });
 
   await h(t).withLog(`And I should find private icon on profile dialog header`, async () => {
