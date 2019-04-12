@@ -95,7 +95,13 @@ class JuiStreamLoading extends React.PureComponent<
     this.setState({
       showLink: false,
     });
-    onClick && onClick();
+    try {
+      onClick && onClick();
+    } catch (error) {
+      this.setState({
+        showLink: true,
+      });
+    }
   }
 
   render() {
