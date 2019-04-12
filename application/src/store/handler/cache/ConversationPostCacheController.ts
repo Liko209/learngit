@@ -76,7 +76,11 @@ class ConversationPostCacheController extends PostCacheController {
             await Promise.all(
               sortableModels.map(
                 async (sortableModel: ISortableModel<Post>) => {
-                  if (sortableModel) {
+                  if (
+                    sortableModel &&
+                    sortableModel.id &&
+                    sortableModel.id > 0
+                  ) {
                     this._preloadThumbnail(postStore.get(sortableModel.id));
                   }
                 },
