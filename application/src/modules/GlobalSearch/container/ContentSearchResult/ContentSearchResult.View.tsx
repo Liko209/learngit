@@ -17,6 +17,7 @@ import {
 import { JuiListSubheader } from 'jui/components/Lists';
 import { Stream as PostListStream } from '@/containers/PostListPage/Stream';
 import { SearchFilter } from '@/modules/GlobalSearch/container/SearchFilter';
+import { ConversationPageContext } from '@/containers/ConversationPage/types';
 
 type Props = ContentSearchResultViewProps & WithTranslation;
 
@@ -44,31 +45,33 @@ class ContentSearchResultViewComponent extends Component<Props> {
       isEmpty,
     } = this.props;
     return (
-      <JuiFullSearchWrapper>
-        <JuiFullSearchResultWrapper>
-          <JuiListSubheader data-test-automation-id="searchResultsCount">
-            {t('globalSearch.Results', { count: postsCount })}
-          </JuiListSubheader>
-          {isEmpty ? (
-            <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
-          ) : (
-            <JuiFullSearchResultStreamWrapper>
-              <PostListStream
-                ref={this._stream}
-                postIds={searchState.postIds}
-                postFetcher={onPostsFetch}
-                selfProvide={true}
-              />
-            </JuiFullSearchResultStreamWrapper>
-          )}
-        </JuiFullSearchResultWrapper>
-        <SearchFilter
-          setSearchOptions={setSearchOptions}
-          searchOptions={searchOptions}
-          options={searchOptions}
-          contentsCount={searchState.contentsCount}
-        />
-      </JuiFullSearchWrapper>
+      <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
+        <JuiFullSearchWrapper>
+          <JuiFullSearchResultWrapper>
+            <JuiListSubheader data-test-automation-id="searchResultsCount">
+              {t('globalSearch.Results', { count: postsCount })}
+            </JuiListSubheader>
+            {isEmpty ? (
+              <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
+            ) : (
+              <JuiFullSearchResultStreamWrapper>
+                <PostListStream
+                  ref={this._stream}
+                  postIds={searchState.postIds}
+                  postFetcher={onPostsFetch}
+                  selfProvide={true}
+                />
+              </JuiFullSearchResultStreamWrapper>
+            )}
+          </JuiFullSearchResultWrapper>
+          <SearchFilter
+            setSearchOptions={setSearchOptions}
+            searchOptions={searchOptions}
+            options={searchOptions}
+            contentsCount={searchState.contentsCount}
+          />
+        </JuiFullSearchWrapper>
+      </ConversationPageContext.Provider>
     );
   }
 }
