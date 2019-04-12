@@ -19,6 +19,7 @@ import { ServiceLoader } from 'sdk/module/serviceLoader';
 import { TypeDictionary } from 'sdk/utils';
 import { ESearchContentTypes } from 'sdk/api/glip/search';
 import { PostService } from 'sdk/module/post';
+import * as config from '../../SearchFilter/config';
 
 jest.mock('@/store/utils');
 
@@ -212,7 +213,7 @@ describe('ContentSearchResult fix(FIJI-4990)', () => {
     vm.setSearchOptions({
       type: ESearchContentTypes.ALL,
     });
-    expect(vm.postsCount).toBe(12); // ALL -> use post's count
+    expect(vm.postsCount).toBe(15); // ALL -> use sum [bug/FIJI-4870]
 
     vm.setSearchOptions({
       type: ESearchContentTypes.EVENTS,
@@ -223,5 +224,45 @@ describe('ContentSearchResult fix(FIJI-4990)', () => {
       type: ESearchContentTypes.CHATS,
     });
     expect(vm.postsCount).toBe(12); // CHATS -> use post's count
+  });
+});
+
+describe('ContentSearchResult fix(FIJI-4870)', () => {
+  let postService: PostService;
+  beforeEach(() => {
+    postService = {
+      endPostSearch: jest.fn().mockResolvedValue(null),
+      getSearchContentsCount: jest.fn().mockResolvedValue({}),
+      searchPosts: jest
+        .fn()
+        .mockResolvedValue({ requestId: 1, posts: [], hasMore: true }),
+    };
+
+    ServiceLoader.getInstance = jest.fn().mockReturnValue(postService);
+  });
+
+  it('Should add new property to the contentCounts from service, the value should be sum of counts of all displayed types', async () => {
+    config.TYPE_MAP = [
+      {
+        id: TypeDictionary.TYPE_ID_POST,
+      },
+      {
+        id: TypeDictionary.TYPE_ID_FILE,
+      },
+      {
+        id: TypeDictionary.TYPE_ID_TASK,
+      },
+    ];
+    postService.getSearchContentsCount.mockResolvedValue({
+      [TypeDictionary.TYPE_ID_POST]: 12,
+      [TypeDictionary.TYPE_ID_EVENT]: 3,
+      [TypeDictionary.TYPE_ID_FILE]: 1,
+      [TypeDictionary.TYPE_ID_TASK]: 5,
+    });
+
+    const vm = new ContentSearchResultViewModel({});
+    await vm.onPostsFetch();
+
+    expect(vm.searchState.contentsCount[-1]).toBe(18);
   });
 });
