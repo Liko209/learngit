@@ -10,9 +10,9 @@ import i18next from 'i18next';
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
+  JuiLabelWithContent,
   JuiTaskSectionOrDescription,
   JuiTaskAvatarNames,
-  JuiTaskContent,
   JuiTimeMessage,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import {
@@ -178,15 +178,15 @@ class Task extends React.Component<taskViewProps> {
           <JuiTaskCheckbox customColor={color} checked={complete || false} />}
       >
         {endTime && (
-          <JuiTaskContent title={t('item.due')}>
+          <JuiLabelWithContent label={t('item.due')}>
             <JuiTimeMessage
               time={`${startTime} ${hasTime ? '-' : ''} ${endTime} ${timeText}`}
             />
-          </JuiTaskContent>
+          </JuiLabelWithContent>
         )}
 
         {assignedToIds && assignedToIds.length > 0 && (
-          <JuiTaskContent title={t('item.assignee')}>
+          <JuiLabelWithContent label={t('item.assignee')}>
             <JuiTaskAvatarNames
               count={assignedToIds && assignedToIds.length}
               otherText={t('item.avatarNamesWithOthers', {
@@ -195,20 +195,20 @@ class Task extends React.Component<taskViewProps> {
             >
               {this._taskAvatarNames}
             </JuiTaskAvatarNames>
-          </JuiTaskContent>
+          </JuiLabelWithContent>
         )}
         {section && (
-          <JuiTaskContent title={t('item.section')}>
+          <JuiLabelWithContent label={t('item.section')}>
             <JuiTaskSectionOrDescription text={section} />
-          </JuiTaskContent>
+          </JuiLabelWithContent>
         )}
         {notes && (
-          <JuiTaskContent title={t('item.descriptionNotes')}>
+          <JuiLabelWithContent label={t('item.descriptionNotes')}>
             <JuiTaskSectionOrDescription text={notes} />
-          </JuiTaskContent>
+          </JuiLabelWithContent>
         )}
         {files && files.length > 0 && (
-          <JuiTaskContent title={t('item.attachments')}>
+          <JuiLabelWithContent label={t('item.attachments')}>
             {files.map((file: ExtendFileItem) => {
               return FILE_COMPS[file.type](
                 file,
@@ -216,7 +216,7 @@ class Task extends React.Component<taskViewProps> {
                 this._handleImageClick,
               );
             })}
-          </JuiTaskContent>
+          </JuiLabelWithContent>
         )}
       </JuiConversationItemCard>
     );
