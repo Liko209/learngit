@@ -74,7 +74,7 @@ class StreamViewComponent extends Component<Props> {
     window.removeEventListener('blur', this._blurHandler);
   }
 
-  async componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: Props) {
     const {
       postIds: prevPostIds,
       lastPost: prevLastPost = { id: NaN },
@@ -115,13 +115,7 @@ class StreamViewComponent extends Component<Props> {
 
   private _handleJumpToIdChanged(currentId: number, prevId?: number) {
     const { refresh, postIds } = this.props;
-    // handle hight and jump to post Id
-    if (currentId === prevId) {
-      return;
-    }
-    if (postIds.includes(currentId) && this._listRef.current) {
-      const index = this._findStreamItemIndexByPostId(currentId);
-      this._listRef.current.scrollToIndex(index);
+    const postAnimation = () =>
       requestAnimationFrame(() => {
         if (this._jumpToPostRef.current) {
           this._jumpToPostRef.current.highlight();
@@ -131,6 +125,15 @@ class StreamViewComponent extends Component<Props> {
           });
         }
       });
+    // handle hight and jump to post Id
+    if (currentId === prevId) {
+      postAnimation();
+      return;
+    }
+    if (postIds.includes(currentId) && this._listRef.current) {
+      const index = this._findStreamItemIndexByPostId(currentId);
+      this._listRef.current.scrollToIndex(index);
+      postAnimation();
     } else {
       refresh();
     }
