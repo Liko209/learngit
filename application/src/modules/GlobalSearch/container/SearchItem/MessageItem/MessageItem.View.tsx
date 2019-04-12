@@ -17,14 +17,16 @@ class MessageItemComponent extends React.Component<
 > {
   render() {
     const {
-      title,
       terms,
       onMouseEnter,
       onMouseLeave,
       hovered,
       onClick,
       groupName,
+      group,
     } = this.props;
+
+    const groupId = group ? group.id : '';
 
     return (
       <JuiSearchItem
@@ -38,7 +40,8 @@ class MessageItemComponent extends React.Component<
           </JuiIconography>}
         value={groupName}
         terms={terms}
-        data-test-automation-id={`search-${title}-item`}
+        data-test-automation-id="search-message-item"
+        data-id={groupId}
       />
     );
   }

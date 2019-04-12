@@ -80,6 +80,16 @@ describe('RecentSearchViewModel', () => {
     });
   });
   describe('onEnter()', () => {
+    beforeEach(() => {
+      recentSearchViewModel.setSelectIndex(0);
+    });
+    it('if select index < 0 should be return undefined', () => {
+      recentSearchViewModel.setSelectIndex(-1);
+      const keyBoardEvent = {
+        preventDefault: jest.fn(),
+      } as any;
+      expect(recentSearchViewModel.onEnter(keyBoardEvent)).toBeUndefined();
+    });
     it('if has group id should be call onSelectItem with group id and add recent', () => {
       jest
         .spyOn(recentSearchViewModel, 'currentItemValue', 'get')
