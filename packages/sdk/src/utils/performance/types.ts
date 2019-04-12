@@ -34,4 +34,6 @@ export enum PERFORMANCE_KEYS {
   HANDLE_INCOMING_PERSON = 'handle_incoming_person',
   HANDLE_INCOMING_GROUP = 'handle_incoming_group',
   HANDLE_INCOMING_POST = 'handle_incoming_post',
+  SEARCH_POST = 'search_post',
+  SCROLL_SEARCH_POST = 'scroll_search_post',
 }

@@ -18,7 +18,12 @@ import {
 } from './types';
 import { SearchAPI, ContentSearchParams } from '../../../../api/glip/search';
 import { transformAll } from '../../../../service/utils';
-import { GlipTypeUtil, TypeDictionary } from '../../../../utils';
+import {
+  GlipTypeUtil,
+  TypeDictionary,
+  PERFORMANCE_KEYS,
+  PerformanceTracerHolder,
+} from '../../../../utils';
 import { mainLogger } from 'foundation';
 import {
   ERROR_TYPES,
@@ -43,6 +48,88 @@ class PostSearchController {
   }
 
   async searchPosts(options: ContentSearchParams): Promise<SearchedResultData> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SEARCH_POST,
+      logId,
+    );
+
+    let results = await this._searchPosts(options);
+    if (
+      options.scroll_size &&
+      this._needContinueFetch(results, options.scroll_size)
+    ) {
+      mainLogger.log(
+        LOG_TAG,
+        'searchPosts, size does not match, we need to fetch more for this search',
+        {
+          options,
+          postLen: results.posts.length,
+          itemLen: results.items.length,
+        },
+      );
+      results = await this._searchUntilMeetSize(results, options.scroll_size);
+    }
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
+    mainLogger.log(LOG_TAG, 'searchPosts, return result = ', {
+      options,
+      postLen: results.posts.length,
+      itemLen: results.items.length,
+    });
+    return results;
+  }
+
+  private _needContinueFetch(
+    searchResult: SearchedResultData,
+    fetchSize: number,
+  ) {
+    return searchResult.hasMore && searchResult.posts.length < fetchSize;
+  }
+
+  private async _searchUntilMeetSize(
+    preResult: SearchedResultData,
+    fetchSize: number,
+  ) {
+    let scrollSearchRes = await this._scrollSearchPosts(preResult.requestId);
+    scrollSearchRes = this._combineSearchResults(
+      preResult,
+      scrollSearchRes,
+      preResult.requestId,
+    );
+
+    mainLogger.info(LOG_TAG, ' _searchUntilMeetSize -> scrollSearchRes', {
+      fetchSize,
+      postLen: scrollSearchRes.posts.length,
+      itemLen: scrollSearchRes.items.length,
+    });
+
+    if (this._needContinueFetch(scrollSearchRes, fetchSize)) {
+      const needFetchSize = fetchSize - scrollSearchRes.posts.length;
+      scrollSearchRes = await this._searchUntilMeetSize(
+        scrollSearchRes,
+        needFetchSize,
+      );
+    }
+    return scrollSearchRes;
+  }
+
+  private _combineSearchResults(
+    resA: SearchedResultData,
+    resB: SearchedResultData,
+    requestId: number,
+  ): SearchedResultData {
+    return {
+      requestId,
+      posts: resA.posts.concat(resB.posts),
+      items: resA.items.concat(resB.items),
+      hasMore: resA.hasMore && resB.hasMore,
+    };
+  }
+
+  private async _searchPosts(
+    options: ContentSearchParams,
+  ): Promise<SearchedResultData> {
     this._startListenSocketSearchChange();
     const result = await SearchAPI.search(options);
     return new Promise((resolve, reject) => {
@@ -53,6 +140,7 @@ class PostSearchController {
         reject,
         q: options.q as string,
         timeoutTimer: timerId,
+        scrollSize: options.scroll_size,
       });
     });
   }
@@ -64,6 +152,38 @@ class PostSearchController {
   }
 
   async scrollSearchPosts(requestId: number): Promise<SearchedResultData> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.SCROLL_SEARCH_POST,
+      logId,
+    );
+
+    let result = await this._scrollSearchPosts(requestId);
+    const info = this._queryInfos.get(requestId);
+    if (
+      info &&
+      info.scrollSize &&
+      this._needContinueFetch(result, info.scrollSize)
+    ) {
+      mainLogger.log(
+        LOG_TAG,
+        'scrollSearchPosts, size does not match, we need to fetch more for this search',
+        { postLen: result.posts.length, itemLen: result.items.length },
+      );
+      result = await this._searchUntilMeetSize(result, info.scrollSize);
+    }
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
+    mainLogger.log(LOG_TAG, 'scrollSearchPosts, return result = ', {
+      postLen: result.posts.length,
+      itemLen: result.items.length,
+    });
+    return result;
+  }
+
+  private async _scrollSearchPosts(
+    requestId: number,
+  ): Promise<SearchedResultData> {
     if (this._isSearchEnded(requestId)) {
       return Promise.resolve({
         requestId,
@@ -153,11 +273,6 @@ class PostSearchController {
   }
 
   handleSearchResults = async (searchResult: SearchResult) => {
-    mainLogger.log(
-      LOG_TAG,
-      'handleSearchResults -> searchResult',
-      searchResult,
-    );
     const {
       request_id: requestId,
       query,
@@ -170,7 +285,10 @@ class PostSearchController {
       : 0;
     const info = this._queryInfos.get(requestId);
     if (!info) {
-      mainLogger.log(LOG_TAG, 'unrecorded search response', searchResult);
+      mainLogger.log(LOG_TAG, 'unrecorded search response', {
+        query: searchResult.query,
+        request_id: searchResult.request_id,
+      });
       return;
     }
 
@@ -183,10 +301,6 @@ class PostSearchController {
     }
 
     const currentScrollId = (info && info.scrollRequestId) || 0;
-    mainLogger.log(LOG_TAG, 'handleSearchResults', {
-      currentScrollId,
-      scrollRequestId,
-    });
     if (currentScrollId === scrollRequestId) {
       const resultData: SearchedResultData = {
         requestId,
@@ -238,6 +352,12 @@ class PostSearchController {
   private _notifySearchResultComes(searchedContents: SearchedResultData) {
     const info = this._queryInfos.get(searchedContents.requestId);
     if (info && info.resolve) {
+      mainLogger.log(LOG_TAG, '_notifySearchResultComes, result = ', {
+        requestId: searchedContents.requestId,
+        postLen: searchedContents.posts.length,
+        itemLen: searchedContents.items.length,
+        hasMore: searchedContents.hasMore,
+      });
       info.resolve(searchedContents);
       info.timeoutTimer && clearTimeout(info.timeoutTimer);
     }

@@ -39,4 +39,5 @@ export type SearchRequestInfo = {
   clientRequestId?: number;
   isSearchEnded?: boolean;
   timeoutTimer?: NodeJS.Timeout;
+  scrollSize?: number;
 };
