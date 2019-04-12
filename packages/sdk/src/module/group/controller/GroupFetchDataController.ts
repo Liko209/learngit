@@ -226,10 +226,11 @@ export class GroupFetchDataController {
       terms: Terms,
     ): SortableModel<Group> | null => {
       if (this._isValidGroup(group) && group.members.length > 2) {
-        const groupName = this.getGroupNameByMultiMembers(
+        const allPersons = this.getAllPersonOfGroup(
           group.members,
           currentUserId,
         );
+        const groupName = this.getGroupNameByMultiMembers(allPersons);
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const lowerCaseGroupName = groupName.toLowerCase();
         const isFuzzyMatched =
@@ -237,10 +238,11 @@ export class GroupFetchDataController {
             lowerCaseGroupName,
             searchKeyTerms,
           ) ||
-          this.entityCacheSearchController.isSoundexMatched(
-            lowerCaseGroupName,
-            searchKeyTermsToSoundex,
-          );
+          (searchKeyTermsToSoundex &&
+            this.entityCacheSearchController.isSoundexMatched(
+              this.getSoundexValueOfGroup(allPersons),
+              searchKeyTermsToSoundex,
+            ));
         if (
           (searchKeyTerms.length > 0 && isFuzzyMatched) ||
           (fetchAllIfSearchKeyEmpty && searchKeyTerms.length === 0)
@@ -313,16 +315,16 @@ export class GroupFetchDataController {
             break;
           }
           const lowerCaseAbbreviation = team.set_abbreviation.toLowerCase();
-
           const isFuzzyMatched =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseAbbreviation,
               searchKeyTerms,
             ) ||
-            this.entityCacheSearchController.isSoundexMatched(
-              lowerCaseAbbreviation,
-              searchKeyTermsToSoundex,
-            );
+            (searchKeyTermsToSoundex.length &&
+              this.entityCacheSearchController.isSoundexMatched(
+                this.groupService.getSoundexById(team.id),
+                searchKeyTermsToSoundex,
+              ));
           if (!isFuzzyMatched) {
             break;
           }
@@ -386,26 +388,43 @@ export class GroupFetchDataController {
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
-
-  getGroupNameByMultiMembers(members: number[], currentUserId: number) {
-    const names: string[] = [];
-    const emails: string[] = [];
+  getAllPersonOfGroup(members: number[], currentUserId: number) {
     const allPersons: Person[] = [];
     const personService = ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
     );
-    const diffMembers = _.difference(members, [currentUserId]);
-    diffMembers.forEach((id: number) => {
+    members.forEach((id: number) => {
+      if (id === currentUserId) {
+        return;
+      }
       const person = personService.getSynchronously(id);
       if (person) {
         allPersons.push(person);
       }
     });
-
+    return allPersons;
+  }
+  getSoundexValueOfGroup(allPersons: Person[]): string[] {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    let soundexResult: string[] = [];
+    allPersons.forEach((person: Person) => {
+      const soundexOfPerson = personService.getSoundexById(person.id);
+      soundexResult = soundexResult.concat(soundexOfPerson);
+    });
+    return soundexResult;
+  }
+  getGroupNameByMultiMembers(allPersons: Person[]) {
+    const names: string[] = [];
+    const emails: string[] = [];
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
     allPersons.forEach((person: Person) => {
       if (person) {
         const name = personService.getName(person);
-        if (name.length > 0) {
+        if (name.length) {
           names.push(name);
         } else {
           emails.push(person.email);

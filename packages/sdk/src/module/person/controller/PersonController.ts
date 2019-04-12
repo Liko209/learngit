@@ -279,7 +279,7 @@ class PersonController {
     );
   }
 
-  isValid(person: Person) {
+  isValid(person: Person): boolean {
     return this.isCacheValid(person) && !this._isDeactivated(person);
   }
 

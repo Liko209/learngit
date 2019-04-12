@@ -45,7 +45,6 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       }),
     );
   }
-
   protected buildEntityCacheController() {
     return GroupEntityCacheController.buildGroupEntityCacheController(this);
   }
@@ -370,6 +369,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   getIndividualGroups() {
     const cache = this.getEntityCacheController() as GroupEntityCacheController;
     return cache.getIndividualGroups();
+  }
+
+  getSoundexById(id: number): string[] {
+    const cache = this.getEntityCacheController() as GroupEntityCacheController;
+    return cache.getSoundexById(id);
   }
 }
 
