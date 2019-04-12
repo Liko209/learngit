@@ -68,6 +68,11 @@ enum RTC_STATUS_CODE {
   INVALID_STATE = 1002,
 }
 
+enum RTC_MEDIA_ACTION {
+  INPUT_DEVICE_CHANGED = 'inputDeviceChanged',
+  OUTPUT_DEVICE_CHANGED = 'outputDeviceChanged',
+}
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
@@ -77,4 +82,5 @@ export {
   RTCCallOptions,
   RTCCallActionSuccessOptions,
   RTCSipFlags,
+  RTC_MEDIA_ACTION,
 };
