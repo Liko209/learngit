@@ -36,22 +36,22 @@ describe('MakeCallController', () => {
 
   it('should return error when users have no voip calling permission ', async () => {
     const extInfo = {
-      serviceFeatures: [{ featureName: 'VoipCalling', enabled: false }],
+      serviceFeatures: [{ featureName: 'VoipCalling', enabled: true }],
     };
 
     ServiceLoader.getInstance = jest.fn().mockReturnValue({
       getRCExtensionInfo: jest.fn().mockReturnValue(extInfo),
+      getSpecialNumberRule: jest.fn(),
     });
-    jest
-      .spyOn(makeCallController, '_checkVoipStatusAndCallSetting')
-      .mockReturnValue(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
+    const spy = jest.spyOn(makeCallController, '_checkVoipN11Number');
 
     jest
       .spyOn(makeCallController, '_getRCE911Status')
       .mockReturnValue(E911_STATUS.DISCLINED);
 
     const result = await makeCallController.tryMakeCall('102');
-    expect(result).toBe(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
+    expect(spy).not.toBeCalled();
+    expect(result).toBe(MAKE_CALL_ERROR_CODE.E911_ACCEPT_REQUIRED);
   });
 
   it('should return error when N11 is declined with N11 101', async () => {

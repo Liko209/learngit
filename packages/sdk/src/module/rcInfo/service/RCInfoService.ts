@@ -100,6 +100,14 @@ class RCInfoService extends EntityBaseService {
         .isRCFeaturePermissionEnabled(ERCServiceFeaturePermission.VOIP_CALLING))
     );
   }
+
+  async isRCFeaturePermissionEnabled(
+    featurePermission: ERCServiceFeaturePermission,
+  ) {
+    return this.getRCInfoController()
+      .getRCPermissionController()
+      .isRCFeaturePermissionEnabled(featurePermission);
+  }
 }
 
 export { RCInfoService };

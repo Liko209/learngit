@@ -7,15 +7,11 @@ import { EntityBaseService } from '../../../framework/service/EntityBaseService'
 import { TelephonyEngineController } from '../controller';
 import { ITelephonyCallDelegate } from './ITelephonyCallDelegate';
 import { ITelephonyAccountDelegate } from './ITelephonyAccountDelegate';
-import { MakeCallController } from '../controller/MakeCallController';
-import { MAKE_CALL_ERROR_CODE } from '../types';
-import { RTC_STATUS_CODE } from 'voip';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { SERVICE } from '../../../service/eventKey';
 
 class TelephonyService extends EntityBaseService {
   private _telephonyEngineController: TelephonyEngineController;
-  private _makeCallController: MakeCallController;
 
   constructor() {
     super(false);
@@ -40,7 +36,6 @@ class TelephonyService extends EntityBaseService {
 
   private _init() {
     this.telephonyController.initEngine();
-    this._makeCallController = new MakeCallController();
   }
 
   createAccount = (
@@ -56,29 +51,7 @@ class TelephonyService extends EntityBaseService {
   }
 
   makeCall = async (toNumber: string) => {
-    const e164ToNumber = await this._makeCallController.getE164PhoneNumber(toNumber);
-    let result = await this._makeCallController.tryMakeCall(e164ToNumber);
-    if (result !== MAKE_CALL_ERROR_CODE.NO_ERROR) {
-      return result;
-    }
-    const makeCallResult = this.telephonyController
-      .getAccountController()
-      .makeCall(toNumber);
-    switch (makeCallResult) {
-      case RTC_STATUS_CODE.NUMBER_INVALID: {
-        result = MAKE_CALL_ERROR_CODE.INVALID_PHONE_NUMBER;
-        break;
-      }
-      case RTC_STATUS_CODE.MAX_CALLS_REACHED: {
-        result = MAKE_CALL_ERROR_CODE.MAX_CALLS_REACHED;
-        break;
-      }
-      case RTC_STATUS_CODE.INVALID_STATE: {
-        result = MAKE_CALL_ERROR_CODE.INVALID_STATE;
-        break;
-      }
-    }
-    return result;
+    return this.telephonyController.getAccountController().makeCall(toNumber);
   }
 
   hangUp = (callId: string) => {
