@@ -63,7 +63,7 @@ class PostDataController {
         posts.filter((post: Post) => post.created_at !== post.modified_at),
       );
       const result = await this.handelPostsOverThreshold(posts, maxPostsExceed);
-      await this._handlePreInsert(posts);
+      await this._deletePreInsertPosts(posts);
       posts = await this.handleIndexModifiedPosts(posts);
       mainLogger.info(
         LOG_INDEX_DATA_POST,
@@ -104,7 +104,7 @@ class PostDataController {
     return data;
   }
 
-  private async _handlePreInsert(posts: Post[]) {
+  private async _deletePreInsertPosts(posts: Post[]) {
     try {
       await this.preInsertController.bulkDelete(posts);
     } catch (error) {
