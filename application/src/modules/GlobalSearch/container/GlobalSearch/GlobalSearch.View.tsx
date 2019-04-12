@@ -7,7 +7,6 @@
 import React, { Component, ChangeEvent } from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { debounce } from 'lodash';
 import {
   JuiGlobalSearch,
   JuiGlobalSearchInput,
@@ -19,21 +18,12 @@ import { InstantSearch } from '../InstantSearch';
 import { RecentSearch } from '../RecentSearch';
 
 type GlobalSearchProps = GlobalSearchViewProps & WithTranslation;
-const SEARCH_DELAY = 50;
 
 @observer
 class GlobalSearchViewComponent extends Component<GlobalSearchProps> {
-  private _debounceSearch: Function;
-
-  constructor(props: GlobalSearchProps) {
-    super(props);
-    const { onChange } = this.props;
-    this._debounceSearch = debounce(onChange, SEARCH_DELAY);
-  }
-
   onChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    this._debounceSearch(value);
+    const { onChange } = this.props;
+    onChange(e.target.value);
   }
 
   get currentView() {

@@ -12,6 +12,7 @@ import { ENTITY_NAME, GLOBAL_KEYS } from '@/store/constants';
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import history from '@/history';
+import { debounce } from 'lodash';
 
 import { changeToRecordTypes } from '../common/changeTypes';
 import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
@@ -35,6 +36,7 @@ import { toSearchContent } from '../common/toSearchContent';
 
 const ONLY_ONE_SECTION_LENGTH = 9;
 const MORE_SECTION_LENGTH = 3;
+const SEARCH_DELAY = 50;
 
 const InvalidIndexPath: number[] = [-1, -1];
 
@@ -46,9 +48,11 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
   private _globalSearchStore: GlobalSearchStore = container.get(
     GlobalSearchStore,
   );
+  private _debounceSearch: Function;
 
   constructor() {
     super();
+    this._debounceSearch = debounce(this.setSearchResult, SEARCH_DELAY);
 
     this.reaction(
       () => ({
@@ -56,7 +60,7 @@ class InstantSearchViewModel extends SearchViewModel<InstantSearchProps>
         open: this._globalSearchStore.open,
       }),
       ({ searchKey, open }: { searchKey: string; open: boolean }) => {
-        this.setSearchResult(searchKey);
+        this._debounceSearch(searchKey);
         if (!open) {
           this.resetData();
         }
