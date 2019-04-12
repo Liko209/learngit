@@ -29,9 +29,7 @@ import { MessageRouterChangeHelper } from './container/Message/helper';
 import { getPostType } from '@/common/getPostType';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
 
-export class MessageNotificationManager extends AbstractNotificationManager<
-  PostService
-> {
+export class MessageNotificationManager extends AbstractNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
   constructor() {
