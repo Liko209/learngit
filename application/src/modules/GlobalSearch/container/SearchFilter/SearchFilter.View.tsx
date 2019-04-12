@@ -72,7 +72,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           label={t('globalSearch.Type')}
           isFullWidth={true}
           value={options.type as string}
-          automationId={'typeSelector'}
+          automationId="typeSelector"
         >
           {typeFilter.map((item: SearchContentTypeItem) => {
             return (
@@ -93,7 +93,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
           handleChange={handleSearchPostDateChange}
           label={t('globalSearch.TimePosted')}
           isFullWidth={true}
-          automationId={'timePostSelector'}
+          automationId="timePostSelector"
           value={this.props.timeType}
         >
           {timePeriodFilter.map((item: SearchContentTypeItem) => {
