@@ -23,7 +23,7 @@ import { PresenceService } from '../../presence';
 import { StateService } from '../../state';
 import { ProfileService } from '../../profile';
 import { PersonService } from '../../person';
-import { GroupService } from '../../group';
+import { GroupService, Group } from '../../group';
 import { PostService } from '../../post';
 import { SyncListener } from '../service/SyncListener';
 import { NewGlobalConfig } from '../../../service/config/NewGlobalConfig';
@@ -38,6 +38,13 @@ import { AccountGlobalConfig } from '../../../service/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
 import { AccountService } from '../../../service/account/accountService';
 import socketManager from '../../../service/socket';
+import { Company } from '../../../module/company/entity';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { LOG_INDEX_DATA } from '../constant';
+import { Item } from '../../../module/item/entity';
+import { RawPresence } from '../../../module/presence/entity';
+import { Person } from '../../../module/person/entity';
+import { Post } from '../../../module/post/entity';
 
 const LOG_TAG = 'SyncController';
 const INDEX_MAX_QUEUE = 2;
@@ -312,7 +319,7 @@ class SyncController {
       client_config: clientConfig = {},
     } = data;
 
-    const MergedGroups = groups.concat(teams, public_teams);
+    const mergedGroups = groups.concat(teams, public_teams);
 
     const arrState: any[] = [];
     if (state && Object.keys(state).length > 0) {
@@ -331,43 +338,170 @@ class SyncController {
         clientConfig,
         profileId: profile ? profile._id : undefined,
       }),
-      CompanyService.getInstance<CompanyService>().handleIncomingData(
-        companies,
-        source,
-      ),
-      (ItemService.getInstance() as ItemService).handleIncomingData(items),
-      PresenceService.getInstance<PresenceService>().presenceHandleData(
-        presences,
-      ),
-      (StateService.getInstance() as StateService).handleState(
-        arrState,
-        source,
-      ),
+      this._handleIncomingCompany(companies, source),
+      this._handleIncomingItem(items, source),
+      this._handleIncomingPresence(presences, source),
+      this._handleIncomingState(arrState, source),
     ])
-      .then(() =>
-        ProfileService.getInstance<ProfileService>().handleIncomingData(
-          transProfile,
-          source,
-        ),
-      )
-      .then(() =>
-        PersonService.getInstance<PersonService>().handleIncomingData(
-          people,
-          source,
-        ),
-      )
-      .then(() =>
-        GroupService.getInstance<GroupService>().handleData(
-          MergedGroups,
-          source,
-        ),
-      )
-      .then(() =>
-        PostService.getInstance<PostService>().handleIndexData(
-          posts,
-          maxPostsExceeded,
-        ),
-      );
+      .then(() => this._handleIncomingProfile(transProfile, source))
+      .then(() => this._handleIncomingPerson(people, source))
+      .then(() => this._handleIncomingGroup(mergedGroups, source))
+      .then(() => this._handleIncomingPost(posts, maxPostsExceeded, source));
+  }
+
+  private async _handleIncomingCompany(
+    companies: Raw<Company>[],
+    source: SYNC_SOURCE,
+  ) {
+    mainLogger.info(
+      LOG_INDEX_DATA,
+      `_handleIncomingCompany() company.length: ${companies &&
+        companies.length}, source: ${source}`,
+    );
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_COMPANY,
+      logId,
+    );
+    await CompanyService.getInstance<CompanyService>().handleIncomingData(
+      companies,
+      source,
+    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+  }
+
+  private async _handleIncomingItem(items: Raw<Item>[], source: SYNC_SOURCE) {
+    mainLogger.info(
+      LOG_INDEX_DATA,
+      `_handleIncomingItem() item.length: ${items &&
+        items.length}, source: ${source}`,
+    );
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_ITEM,
+      logId,
+    );
+    await (ItemService.getInstance() as ItemService).handleIncomingData(items);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+  }
+
+  private async _handleIncomingPresence(
+    presences: RawPresence[],
+    source: SYNC_SOURCE,
+  ) {
+    mainLogger.info(
+      LOG_INDEX_DATA,
+      `_handleIncomingPresence() item.length: ${presences &&
+        presences.length}, source: ${source}`,
+    );
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_PRESENCE,
+      logId,
+    );
+    await PresenceService.getInstance<PresenceService>().presenceHandleData(
+      presences,
+    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+  }
+
+  private async _handleIncomingState(states: any[], source: SYNC_SOURCE) {
+    mainLogger.info(
+      LOG_INDEX_DATA,
+      `_handleIncomingState() states.length: ${states &&
+        states.length}, source: ${source}`,
+    );
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_STATE,
+      logId,
+    );
+    await (StateService.getInstance() as StateService).handleState(
+      states,
+      source,
+    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+  }
+
+  private async _handleIncomingProfile(
+    profile: Raw<Profile> | null,
+    source: SYNC_SOURCE,
+  ) {
+    mainLogger.info(
+      LOG_INDEX_DATA,
+      `_handleIncomingProfile(), source: ${source}`,
+    );
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_PROFILE,
+      logId,
+    );
+    await ProfileService.getInstance<ProfileService>().handleIncomingData(
+      profile,
+      source,
+    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+  }
+
+  private async _handleIncomingPerson(
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+  ) {
+    mainLogger.info(
+      LOG_INDEX_DATA,
+      `_handleIncomingPerson() persons.length: ${persons &&
+        persons.length}, source: ${source}`,
+    );
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_PERSON,
+      logId,
+    );
+    await PersonService.getInstance<PersonService>().handleIncomingData(
+      persons,
+      source,
+    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+  }
+
+  private async _handleIncomingGroup(
+    groups: Raw<Group>[],
+    source: SYNC_SOURCE,
+  ) {
+    mainLogger.info(
+      LOG_INDEX_DATA,
+      `_handleIncomingGroup() groups.length: ${groups &&
+        groups.length}, source: ${source}`,
+    );
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_GROUP,
+      logId,
+    );
+    await GroupService.getInstance<GroupService>().handleData(groups, source);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+  }
+
+  private async _handleIncomingPost(
+    posts: Raw<Post>[],
+    maxPostsExceeded: boolean,
+    source: SYNC_SOURCE,
+  ) {
+    mainLogger.info(
+      LOG_INDEX_DATA,
+      `_handleIncomingPost() groups.length: ${posts &&
+        posts.length}, source: ${source}`,
+    );
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_GROUP,
+      logId,
+    );
+    await PostService.getInstance<PostService>().handleIndexData(
+      posts,
+      maxPostsExceeded,
+    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   private async _handleIncomingData(
