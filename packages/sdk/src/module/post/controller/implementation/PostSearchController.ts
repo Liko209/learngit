@@ -154,7 +154,7 @@ class PostSearchController {
   async scrollSearchPosts(requestId: number): Promise<SearchedResultData> {
     const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.SEARCH_POST,
+      PERFORMANCE_KEYS.SCROLL_SEARCH_POST,
       logId,
     );
 
