@@ -385,7 +385,9 @@
       "InvalidEmail": "Invalid Email",
       "markAsRead": "Failed to mark this conversation as read. Try again later.",
       "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
-      "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later."
+      "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
+      "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
+      "conversationArchived": "The team was archived. To know more, contact the team administrator."
     }
   },
   "contact": {
@@ -464,6 +466,9 @@
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
+  },
+  "notification": {
+    "mentioned": "You were mentioned"
   },
   "feedback": {
     "name": "Feedback",

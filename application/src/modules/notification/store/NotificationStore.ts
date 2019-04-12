@@ -4,7 +4,7 @@
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
 export class NotificationStore<T> {
-  private _items: any = {};
+  private _items: object = {};
   keyMap(scope: string, id: number) {
     return `${scope}.${id}`;
   }
