@@ -60,6 +60,10 @@ class TelephonyStore {
   phoneNumber?: string;
   @observable
   activeCallTime?: number;
+  @observable
+  keypadEntered: boolean = false;
+  @observable
+  enteredKeys: string = '';
 
   @observable
   pendingForHold: boolean = false;
@@ -110,6 +114,8 @@ class TelephonyStore {
           break;
         case CALL_STATE.CONNECTING:
           this.activeCallTime = undefined;
+        case CALL_STATE.IDLE:
+          this.quitKeypad();
           break;
         default:
           setTimeout(() => {
@@ -157,6 +163,23 @@ class TelephonyStore {
     this.disableHold();
     this.disableRecord();
     this.stopRecording();
+  }
+
+  private _clearEnteredKeys = () => {
+    this.enteredKeys = '';
+  }
+
+  openKeypad = () => {
+    this.keypadEntered = true;
+  }
+
+  quitKeypad = () => {
+    this.keypadEntered = false;
+    this._clearEnteredKeys();
+  }
+
+  inputKey = (key: string) => {
+    this.enteredKeys += key;
   }
 
   openDialer = () => {

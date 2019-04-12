@@ -98,6 +98,7 @@ describe('TelephonyService', () => {
       getAllCallCount: jest.fn(),
       mute: jest.fn(),
       unmute: jest.fn(),
+      dtmf: jest.fn(),
     };
 
     jest.spyOn(ServiceLoader, 'getInstance')
@@ -365,5 +366,13 @@ describe('TelephonyService', () => {
       expect(mockedServerTelephonyService.unmute).not.toBeCalled();
       telephonyService._callId = undefined;
     });
+  });
+
+  it('should call dtmf', () => {
+    const callId = 'id_5';
+    const dtmf = `${Math.ceil(Math.random() * 10)}`;
+    telephonyService._callId = callId;
+    telephonyService.dtmf(dtmf);
+    expect(mockedServerTelephonyService.dtmf).toBeCalledWith(callId, dtmf);
   });
 });
