@@ -44,9 +44,9 @@ class UploadRecentLogsView extends React.Component<
       const openResult = this.props.openEmail(
         'Jupiter Feedback',
         escape(
-          `${i18next.t('feedback.describeYourProblemHere')}:\n\n\n---\nID: [${
+          `${i18next.t('feedback.describeYourProblemHere')}:\n\n\n---\nID: ${
             uploadResult.handle
-          }](${uploadResult.url})\nFile: ${uploadResult.filename}\n`,
+          }\nFile: ${uploadResult.filename}\n`,
         ),
       );
       isSuccess = openResult;

@@ -8,7 +8,6 @@ import { observer } from 'mobx-react';
 import { JuiAvatar } from 'jui/components/Avatar';
 import { AvatarViewProps } from './types';
 import { PreloadImg } from '../common/PreloadImg';
-import defaultAvatar from './defaultAvatar.svg';
 
 @observer
 class AvatarView extends React.Component<AvatarViewProps> {
@@ -34,19 +33,10 @@ class AvatarView extends React.Component<AvatarViewProps> {
       </JuiAvatar>
     );
 
-    const DefaultAvatar = (
-      <JuiAvatar
-        src={defaultAvatar}
-        data-test-automation-id={automationId}
-        color=""
-        {...rest}
-      />
-    );
-
     return !shouldShowShortName ? (
       <PreloadImg
         url={headShotUrl}
-        placeholder={DefaultAvatar}
+        placeholder={AvatarWithName}
         animationForLoad={true}
       >
         <JuiAvatar

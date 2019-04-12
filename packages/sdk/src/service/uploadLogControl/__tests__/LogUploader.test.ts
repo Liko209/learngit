@@ -43,7 +43,7 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': 'abc@rc.com| 12345| sessionA',
+          'X-Sumo-Name': '| abc@rc.com| 12345| sessionA',
           'Content-Type': 'application/json',
         },
       });
@@ -57,7 +57,7 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': 'service@glip.com| 12345| sessionA',
+          'X-Sumo-Name': '| service@glip.com| 12345| sessionA',
           'Content-Type': 'application/json',
         },
       });
@@ -73,7 +73,7 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': 'service@glip.com| | sessionA',
+          'X-Sumo-Name': '| service@glip.com| | sessionA',
           'Content-Type': 'application/json',
         },
       });

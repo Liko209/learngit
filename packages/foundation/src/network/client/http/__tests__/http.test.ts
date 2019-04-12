@@ -8,7 +8,7 @@ describe('Http client', () => {
     it('should set to tasks', () => {
       const request = getFakeRequest();
       http.request(request, getFakeExecutor());
-      expect(http.tasks[request.id]).toEqual(request);
+      expect(http.tasks.get(request.id)).toEqual(request);
     });
   });
 });
