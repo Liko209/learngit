@@ -1,5 +1,4 @@
 import { BaseWebComponent } from "../../BaseWebComponent";
-import { IGroup } from '../../../models';
 
 export class Header extends BaseWebComponent {
   get self() {
@@ -68,7 +67,7 @@ class SearchBar extends BaseWebComponent {
 
   async searchTextShouldBe(text: string) {
     await this.t.expect(this.searchText).eql(text);
-  } 
+  }
 
   get closeIcon() {
     return this.getSelectorByIcon('close', this.self);

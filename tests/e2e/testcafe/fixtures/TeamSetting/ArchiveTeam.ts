@@ -310,7 +310,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then I can't find the team in search results list`, async () => {
-    await t.expect(searchDialog.teams.withText(team.name).exists).notOk()
+    await t.expect(searchDialog.instantPage.teams.withText(team.name).exists).notOk()
   }, true);
 
   await h(t).withLog(`When I login Jupiter with team member: ${memberUser.company.number}#${memberUser.extension}`, async () => {
@@ -328,7 +328,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog(`Then I can't find the team in search results list`, async () => {
-    await t.expect(searchDialog.teams.withText(team.name).exists).notOk()
+    await t.expect(searchDialog.instantPage.teams.withText(team.name).exists).notOk()
   }, true);
 });
 

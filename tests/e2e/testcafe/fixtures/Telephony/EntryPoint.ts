@@ -137,15 +137,15 @@ test.skip(formalName('User should be able to see the 1:1 Call button in differen
   });
 
   await h(t).withLog('And hover the people first result', async () => {
-    await t.hover(searchDialog.nthPeople(0).self);
+    await t.hover(searchDialog.instantPage.nthPeople(0).self);
   })
 
   await h(t).withLog('Then the call button should display', async () => {
-    await t.expect(searchDialog.nthPeople(0).telephonyButton).ok();
+    await t.expect(searchDialog.instantPage.nthPeople(0).telephonyButton).ok();
   });
 
   await h(t).withLog('When I click the call button', async () => {
-    await searchDialog.nthPeople(0).clickTelephonyButton();
+    await searchDialog.instantPage.nthPeople(0).clickTelephonyButton();
   });
 
   await h(t).withLog('Then should start call and display call UI', async () => {

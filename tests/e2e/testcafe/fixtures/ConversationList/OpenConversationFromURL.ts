@@ -4,7 +4,6 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import * as uuid from 'uuid';
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
@@ -105,7 +104,7 @@ test.meta(<ITestMeta>{
     await app.homePage.header.searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(otherUserName);
     await t.wait(3e3);
-    await searchDialog.nthPeople(0).enter();
+    await searchDialog.instantPage.nthPeople(0).enter();
   });
 
   await stepsToCheckPositionFixed(nonTopChat.glipId, otherUserName);
@@ -264,8 +263,8 @@ test.skip.meta(<ITestMeta>{
   await h(t).withLog(`When I search "${topTeam.name}" and click it`, async () => {
     await app.homePage.header.searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(topTeam.name);
-    await t.expect(searchDialog.allResultItems.count).gte(1);
-    await searchDialog.nthTeam(0).enter();
+    await t.expect(searchDialog.instantPage.conversationItems.count).gte(1);
+    await searchDialog.instantPage.nthTeam(0).enter();
   });
 
   await stepsToCheckPositionOnTop(topTeam.glipId, topTeam.name);
@@ -425,8 +424,8 @@ test.skip.meta(<ITestMeta>{
   await h(t).withLog(`When I search the hide privateChat ${otherUserName} and enter it`, async () => {
     await app.homePage.header.searchBar.clickSelf();
     await searchDialog.typeSearchKeyword(otherUserName);
-    await t.expect(searchDialog.peoples.count).gte(1, { timeout: 10e3 });
-    await searchDialog.nthPeople(0).enter();
+    await t.expect(searchDialog.instantPage.peoples.count).gte(1, { timeout: 10e3 });
+    await searchDialog.instantPage.nthPeople(0).enter();
     await app.homePage.profileDialog.ensureLoaded();
     await app.homePage.profileDialog.goToMessages();
   });
