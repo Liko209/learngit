@@ -95,6 +95,7 @@ const name2icon = {
   keypad: 'keypad',
   hold: 'hold',
   record: 'record',
+  stopRecord: 'stop-record',
   call_add: 'call-add',
   call_more: 'call-more',
   leftNavEvent: 'event-new',

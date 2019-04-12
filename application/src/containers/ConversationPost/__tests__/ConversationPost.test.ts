@@ -3,11 +3,10 @@
  * @Date: 2018-11-08 19:28:24
  * Copyright © RingCentral. All rights reserved.
  */
-
+import { POST_TYPE } from './../../../common/getPostType';
 import { getEntity } from '../../../store/utils';
 import { ConversationPostViewModel } from '../ConversationPost.ViewModel';
 import { ENTITY_NAME } from '@/store';
-import { POST_TYPE } from '../types';
 
 jest.mock('../../../store/utils');
 

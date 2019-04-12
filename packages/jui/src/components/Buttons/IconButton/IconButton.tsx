@@ -22,6 +22,7 @@ type IconButtonVariant = 'round' | 'plain';
 type IconButtonSize = 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
 
 type JuiIconButtonProps = {
+  shouldPersistBg?: boolean;
   tooltipTitle?: string;
   tooltipForceHide?: boolean;
   invisible?: boolean;
@@ -81,67 +82,70 @@ const WrappedMuiIconButton = ({
   tooltipForceHide,
   ...rest
 }: StyledIconButtonProps) => (
-  <MuiIconButton
-    {...rest}
-    classes={{ disabled: 'disabled' }}
-    TouchRippleProps={{ classes: touchRippleClasses }}
-  />
-);
+    <MuiIconButton
+      {...rest}
+      classes={{ disabled: 'disabled' }}
+      TouchRippleProps={{ classes: touchRippleClasses }}
+    />
+  );
 
 const StyledIconButton = styled(WrappedMuiIconButton)`
   && {
     padding: 0;
     width: ${({ variant, size = 'medium', theme }) =>
-      width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
-        theme,
-      })};
+    width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
+      theme,
+    })};
     height: ${({ variant, size = 'medium', theme }) =>
-      width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
-        theme,
-      })};
+    width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
+      theme,
+    })};
     /* color: ${({ awake }) =>
-      awake ? grey('500') : palette('accent', 'ash')}; */
+    awake ? grey('500') : palette('accent', 'ash')}; */
     color: ${({ theme, colorScope, colorName }) =>
-      palette(colorScope, colorName)({ theme })};
+    palette(colorScope, colorName)({ theme })};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
     padding: 0;
+    background-color: ${({ shouldPersistBg, theme, colorScope, colorName }) => (shouldPersistBg ? tinycolor(palette(colorScope, colorName)({ theme }))
+    .setAlpha(theme.palette.action.hoverOpacity)
+    .toRgbString() : 'inherit')};
     ${StyledIcon} {
       &, svg {
         font-size: ${({ size = 'medium', theme }) =>
-          width(iconSizes[size])({ theme })};
+    width(iconSizes[size])({ theme })};
       }
     }
     &:hover {
       background-color: ${({ theme, variant, colorScope, colorName }) =>
-        variant === 'plain'
-          ? 'transparent'
-          : tinycolor(palette(colorScope, colorName)({ theme }))
-              .setAlpha(theme.palette.action.hoverOpacity)
-              .toRgbString()};
+    variant === 'plain'
+      ? 'transparent'
+      : tinycolor(palette(colorScope, colorName)({ theme }))
+        .setAlpha(theme.palette.action.hoverOpacity)
+        .toRgbString()};
       ${StyledIcon} {
         color: ${({ theme, colorScope, colorName }) =>
-          tinycolor(palette(colorScope, colorName)({ theme }))
-            .setAlpha(1 - theme.palette.action.hoverOpacity)
-            .toRgbString()};
+    tinycolor(palette(colorScope, colorName)({ theme }))
+      .setAlpha(1 - theme.palette.action.hoverOpacity)
+      .toRgbString()};
       }
     }
     &:active {
       ${StyledIcon} {
         color: ${({ theme, colorScope, colorName }) =>
-          palette(colorScope, colorName)({ theme })};
+    palette(colorScope, colorName)({ theme })};
       }
     }
 
     &&.disabled {
       ${StyledIcon} {
         color: ${({ theme }) =>
-          palette('action', 'disabledBackground')({ theme })};
+    palette('action', 'disabledBackground')({ theme })};
       }
     }
 
     .rippleVisible {
       color: ${({ theme, colorScope, colorName }) =>
-        palette(colorScope, colorName)({ theme })};
+    palette(colorScope, colorName)({ theme })};
       opacity: ${({ theme }) => theme.palette.action.hoverOpacity * 2};
       transform: scale(1);
       animation-name: ${({ theme }) => rippleEnter(theme)};
@@ -220,6 +224,7 @@ JuiIconButtonComponent.defaultProps = {
   size: 'medium',
   invisible: false,
   tooltipTitle: '',
+  shouldPersistBg: false,
 };
 
 const JuiIconButton = styled(memo(JuiIconButtonComponent))``;

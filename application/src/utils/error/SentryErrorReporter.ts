@@ -7,7 +7,7 @@ import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import * as Sentry from '@sentry/browser';
 import pkg from '../../../package.json';
 import { IErrorReporter, UserContextInfo } from './types';
-import isElectron from '@/common/isElectron';
+import { isElectron } from '@/common/isUserAgent';
 import { isProductionVersion, JUPITER_ENV } from '@/common/envUtils';
 const DSN = 'https://810a779037204886beeced1c4bd7fbba@sentry.io/1419520';
 const DSN_PRODUCTION =

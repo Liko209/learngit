@@ -5,18 +5,23 @@
  */
 import { inject } from 'framework';
 import { NOTIFICATION_SERVICE } from '../interface/constant';
-import {
-  INotificationService,
-  SWNotificationOptions,
-} from './../interface/index';
+import { INotificationService, NotificationOpts } from './../interface/index';
 
 type NotificationId = number | string;
-export abstract class NotificationManager {
+export abstract class AbstractNotificationManager {
   @inject(NOTIFICATION_SERVICE)
   private _notificationService: INotificationService;
 
-  constructor(protected _scope: string) {}
-  show(title: string, opts: SWNotificationOptions) {
+  constructor(protected _scope: string, private _serviceName?: string) {}
+  init() {
+    if (this._serviceName) {
+    }
+  }
+
+  show(title: string, opts: NotificationOpts) {
+    const { id, scope } = opts.data;
+    const tag = `${scope}.${id}`;
+    opts.tag = tag;
     this._notificationService.show(title, opts);
   }
 

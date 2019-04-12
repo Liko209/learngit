@@ -7,13 +7,13 @@
 import { inject } from 'framework';
 import { reaction } from 'mobx';
 import { Disposer } from 'mobx-react';
-import { NotificationManager } from '@/modules/notification/manager';
+import { AbstractNotificationManager } from '@/modules/notification/manager';
 import i18nT from '@/utils/i18nT';
 import { TelephonyStore } from './store';
 import { TelephonyService } from './service';
 import { CALL_STATE } from './FSM';
 
-class TelephonyNotificationManager extends NotificationManager {
+class TelephonyNotificationManager extends AbstractNotificationManager {
   @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   @inject(TelephonyService) private _telephonyService: TelephonyService;
   private _disposer: Disposer;
