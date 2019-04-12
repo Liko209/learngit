@@ -104,6 +104,7 @@ class JuiDownshift extends React.PureComponent<
         selectedItem={selectedItems}
         defaultHighlightedIndex={0}
         itemToString={this.handleItemToString}
+        id="downshift-multiple-input"
       >
         {({
           getInputProps,
