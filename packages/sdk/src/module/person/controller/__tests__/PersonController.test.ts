@@ -423,6 +423,12 @@ describe('PersonService', () => {
       expect(url).toBe(originalURL);
     });
 
+    it('should return url when headshot is an url string and headshot_version exist', () => {
+      const headshot = originalURL;
+      const url = personController.getHeadShotWithSize(1, 'xx', headshot, 150);
+      expect(url).toBe(originalURL);
+    });
+
     it('should return original url when the original headshot is gif', () => {
       const headshot = {
         url: gifUrl,
