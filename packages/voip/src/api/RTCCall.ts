@@ -225,11 +225,15 @@ class RTCCall {
   }
 
   onAccountReady() {
-    this._fsm.accountReady();
+    if (!this.isIncomingCall()) {
+      this._fsm.accountReady();
+    }
   }
 
   onAccountNotReady() {
-    this._fsm.accountNotReady();
+    if (!this.isIncomingCall()) {
+      this._fsm.accountNotReady();
+    }
   }
 
   setCallSession(session: any): void {
