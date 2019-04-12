@@ -3,7 +3,7 @@
  * @Date: 2018-12-26 15:21:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { ILogConsumer, LogEntity } from 'foundation/src/log/types';
+import { LogEntity } from 'foundation';
 import { ILogUploader } from './uploader';
 import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';
@@ -12,7 +12,7 @@ import { configManager } from './config';
 import { randomInt } from '../../../utils';
 import sumBy from 'lodash/sumBy';
 import cloneDeep from 'lodash/cloneDeep';
-import { IAccessor } from './types';
+import { IAccessor, ILogProducer, ILogConsumer } from './types';
 
 const PERSISTENT_STATE = {
   INIT: 'INIT',
@@ -80,6 +80,7 @@ function timeout(time: number) {
 }
 
 export class LogUploadConsumer implements ILogConsumer {
+  logProducer: ILogProducer;
   private _persistentFSM: StateMachine;
   private _memoryQueue: MemoryQueue<LogEntity>;
   private _memorySize: number;
@@ -89,10 +90,12 @@ export class LogUploadConsumer implements ILogConsumer {
   private _flushMode: boolean;
 
   constructor(
+    logProducer: ILogProducer,
     private _logUploader: ILogUploader,
     private _logPersistent: ILogPersistent,
     private _uploadAccessor?: IAccessor,
   ) {
+    this.logProducer = logProducer;
     this._memoryQueue = new MemoryQueue();
     this._memorySize = 0;
     this._flushMode = false;
@@ -174,9 +177,22 @@ export class LogUploadConsumer implements ILogConsumer {
     this._flushInTimeout();
   }
 
-  onLog(logEntity: LogEntity) {
-    this._memoryQueue.addTail(logEntity);
-    this._memorySize += logEntity.size;
+  canConsume() {
+    return this._uploadAvailable();
+  }
+
+  consume(log: LogEntity): void;
+  consume(logs: LogEntity[]): void;
+  consume(data?: LogEntity | LogEntity[]): void {
+    let consumeLogs: LogEntity[];
+    if (!data) {
+      consumeLogs = this.logProducer.produce();
+    } else if (Array.isArray(data)) {
+      consumeLogs = data;
+    } else {
+      consumeLogs = [data];
+    }
+    this._addLogsToMemoryQueue(consumeLogs);
     const {
       memoryCountThreshold,
       memorySizeThreshold,
@@ -199,7 +215,8 @@ export class LogUploadConsumer implements ILogConsumer {
     }
     // indicated in _flushMode
     this._flushMode = true;
-    this._flushMemory(true);
+    this._addLogsToMemoryQueue(this.logProducer.produce(Number.MAX_VALUE));
+    this._flushMemoryToPersistence();
     this._flushMode = false;
   }
 
@@ -209,6 +226,13 @@ export class LogUploadConsumer implements ILogConsumer {
 
   public setUploadAccessor(uploadAccessor: IAccessor) {
     this._uploadAccessor = uploadAccessor;
+  }
+
+  private _addLogsToMemoryQueue(logs: LogEntity[]) {
+    logs.map(logEntity => {
+      this._memoryQueue.addTail(logEntity);
+      this._memorySize += logEntity.size;
+    });
   }
 
   private _flushInTimeout() {
@@ -234,19 +258,23 @@ export class LogUploadConsumer implements ILogConsumer {
         new UploadMemoryLogTask(logs, this._logUploader, this._logPersistent),
       );
     } else if (force) {
-      const logs = this._memoryQueue.peekAll();
-      this._memorySize = 0;
-      this._flushInTimeout();
-      this._persistentTaskQueueLoop.addTail(
-        new PersistentTask() // cache task
-          .setOnExecute(async () => {
-            await this._logPersistent.put(transform.toPersistent(logs));
-            if (this._persistentFSM.state !== PERSISTENT_STATE.NOT_EMPTY) {
-              this._persistentFSM.append();
-            }
-          }),
-      );
+      this._flushMemoryToPersistence();
     }
+  }
+
+  private _flushMemoryToPersistence() {
+    const logs = this._memoryQueue.peekAll();
+    this._memorySize = 0;
+    this._flushInTimeout();
+    this._persistentTaskQueueLoop.addTail(
+      new PersistentTask() // cache task
+        .setOnExecute(async () => {
+          await this._logPersistent.put(transform.toPersistent(logs));
+          if (this._persistentFSM.state !== PERSISTENT_STATE.NOT_EMPTY) {
+            this._persistentFSM.append();
+          }
+        }),
+    );
   }
 
   private _ensurePersistentState() {

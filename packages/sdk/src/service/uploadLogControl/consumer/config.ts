@@ -8,11 +8,11 @@ import { LogConsumerConfig } from './types';
 
 const DEFAULT_CONFIG: LogConsumerConfig = {
   uploadEnabled: false,
-  memoryCountThreshold: 100,
+  memoryCountThreshold: 10,
   memorySizeThreshold: 1024 * 1024,
   combineSizeThreshold: 50 * 1024,
-  uploadQueueLimit: 4,
-  autoFlushTimeCycle: 30 * 1000,
+  uploadQueueLimit: 1,
+  autoFlushTimeCycle: 6 * 1000,
   persistentLimit: 10 * 1024 * 1024,
   memoryCacheSizeThreshold: 10 * 1024 * 1024,
 };

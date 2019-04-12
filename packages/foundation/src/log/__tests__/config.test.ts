@@ -26,7 +26,7 @@ describe('config', () => {
     it('should merge object type in config', async () => {
       const rawConfig = configManager.getConfig();
       const result = configManager.mergeConfig({
-        consumer: {
+        collector: {
           enabled: false,
         },
       });

@@ -99,7 +99,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addConsumer(mockConsumer);
+      logger.addCollector(mockConsumer);
       const mockConfig = logConfigFactory.build({
         level: LOG_LEVEL.ALL,
         filter: jest.fn().mockReturnValue(true),
@@ -156,7 +156,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addConsumer(mockConsumer);
+      logger.addCollector(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
@@ -197,7 +197,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addConsumer(mockConsumer);
+      logger.addCollector(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
       const mockLog = logEntityFactory.build({
@@ -222,7 +222,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addConsumer(mockConsumer);
+      logger.addCollector(mockConsumer);
       const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
@@ -242,7 +242,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addConsumer(mockConsumer);
+      logger.addCollector(mockConsumer);
       const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.WARN,
@@ -307,16 +307,16 @@ describe('Logger', () => {
   describe('addConsumer()', () => {
     it('should set consumer.', () => {
       const logger = new Logger();
-      logger.addConsumer(mockConsumer);
+      logger.addCollector(mockConsumer);
       expect(logger['_logConsumers']).toEqual([mockConsumer]);
     });
   });
   describe('addConsumer()', () => {
     it('should add consumer.', () => {
       const logger = new Logger();
-      logger.addConsumer(mockConsumer);
+      logger.addCollector(mockConsumer);
       expect(logger['_logConsumers'].length).toEqual(1);
-      logger.addConsumer(mockConsumer);
+      logger.addCollector(mockConsumer);
       expect(logger['_logConsumers'].length).toEqual(2);
     });
   });

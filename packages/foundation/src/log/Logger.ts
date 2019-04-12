@@ -9,7 +9,7 @@ import {
   LogEntity,
   ILoggerCore,
   ILogEntityProcessor,
-  ILogConsumer,
+  ILogCollector,
   IConsoleLogPrettier,
 } from './types';
 import { configManager } from './config';
@@ -31,7 +31,7 @@ const buildLogEntity = (
 
 export class Logger implements ILogger, ILoggerCore {
   private _logEntityProcessor: ILogEntityProcessor;
-  private _logConsumers: ILogConsumer[] = [];
+  private _logCollectors: ILogCollector[] = [];
   private _consoleLoggerCore: ILoggerCore;
   private _memoizeTags: ((_tags: string[]) => ILogger) & _.MemoizedFunction;
   constructor() {
@@ -47,12 +47,12 @@ export class Logger implements ILogger, ILoggerCore {
     );
   }
 
-  addConsumer(consumer: ILogConsumer) {
-    this._logConsumers = [...this._logConsumers, consumer];
+  addCollector(collector: ILogCollector) {
+    this._logCollectors = [...this._logCollectors, collector];
   }
 
-  removeConsumer(consumer: ILogConsumer) {
-    this._logConsumers = this._logConsumers.filter(it => it === consumer);
+  removeCollector(collector: ILogCollector) {
+    this._logCollectors = this._logCollectors.filter(it => it === collector);
   }
 
   log(...params: any) {
@@ -93,8 +93,8 @@ export class Logger implements ILogger, ILoggerCore {
       this._consoleLoggerCore.doLog(logEntity);
     if (this._isConsumerEnabled()) {
       const log = this._logEntityProcessor.process(logEntity);
-      this._logConsumers.forEach((logConsumer: ILogConsumer) => {
-        logConsumer.onLog(log);
+      this._logCollectors.forEach((logCollector: ILogCollector) => {
+        logCollector.onLog(log);
       });
     }
   }
@@ -108,9 +108,9 @@ export class Logger implements ILogger, ILoggerCore {
 
   private _isConsumerEnabled() {
     const {
-      consumer: { enabled },
+      collector: { enabled },
     } = configManager.getConfig();
-    return enabled && this._logConsumers.length > 0;
+    return enabled && this._logCollectors.length > 0;
   }
 
   private _isBrowserEnabled(logEntity: LogEntity) {

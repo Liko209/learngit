@@ -4,54 +4,51 @@
  */
 import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation';
 import { PermissionService, UserPermissionType } from '../../module/permission';
-import { ENTITY, SERVICE, WINDOW } from '../../service/eventKey';
+import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../service/eventKey';
 import notificationCenter from '../notificationCenter';
 import {
   LogMemoryPersistent,
   IAccessor,
   configManager as logConsumerConfigManager,
   LogUploadConsumer,
-  MemoryLogConsumer,
 } from './consumer';
 import { LogUploader } from './LogUploader';
+import { LogCollector } from './LogUploadCollector';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+import { FixSizeMemoryLogCollection } from './FixSizeMemoryLogCollection';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
   private _isOnline: boolean;
   private _onUploadAccessorChange: (accessible: boolean) => void;
-  private _tagBlackList: string[] = [];
-  private _tagWhiteList: string[] = [];
   uploadLogConsumer: LogUploadConsumer;
-  memoryLogConsumer: MemoryLogConsumer;
+  logUploadCollector: LogCollector;
+  memoryLogCollector: LogCollector;
   private constructor() {
     this._isOnline = window.navigator.onLine;
+    this.logUploadCollector = new LogCollector(
+      new FixSizeMemoryLogCollection(
+        logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
+      ),
+    );
+    this.memoryLogCollector = new LogCollector(
+      new FixSizeMemoryLogCollection(
+        logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
+      ),
+    );
     this.uploadLogConsumer = new LogUploadConsumer(
+      this.logUploadCollector,
       new LogUploader(),
       new LogMemoryPersistent(
         logConsumerConfigManager.getConfig().persistentLimit,
       ),
       this,
     );
-    this.memoryLogConsumer = new MemoryLogConsumer();
-    this.memoryLogConsumer.setSizeThreshold(
-      logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
-    );
-    this.memoryLogConsumer.setFilter((log: LogEntity) => {
-      return this._whiteListFilter(log) || !this._blackListFilter(log);
-    });
-    logManager.addConsumer(this.memoryLogConsumer);
-    logManager.addConsumer(this.uploadLogConsumer);
+    this.logUploadCollector.setConsumer(this.uploadLogConsumer);
+    logManager.addCollector(this.logUploadCollector);
+    logManager.addCollector(this.memoryLogCollector);
     this.subscribeNotifications();
-  }
-
-  private _whiteListFilter = (log: LogEntity) => {
-    return _.intersection(this._tagWhiteList, log.tags).length > 0;
-  }
-
-  private _blackListFilter = (log: LogEntity) => {
-    return _.intersection(this._tagBlackList, log.tags).length > 0;
   }
 
   public static instance(): LogControlManager {
@@ -75,8 +72,8 @@ export class LogControlManager implements IAccessor {
       this.flush();
     });
 
-    notificationCenter.on(WINDOW.BLUR, () => {
-      this.flush();
+    notificationCenter.on(DOCUMENT.VISIBILITYCHANGE, ({ isHidden }) => {
+      isHidden && this.flush();
     });
 
     if (typeof window !== 'undefined') {
@@ -135,7 +132,7 @@ export class LogControlManager implements IAccessor {
   }
 
   getRecentLogs(): LogEntity[] {
-    return this.memoryLogConsumer.getRecentLogs();
+    return this.memoryLogCollector.getCollection().get();
   }
 
   windowError(msg: string, url: string, line: number) {
@@ -143,21 +140,5 @@ export class LogControlManager implements IAccessor {
       window.location}) on line ${line} with message (${msg})`;
     mainLogger.fatal(message);
     this.flush();
-  }
-
-  addTag2BlackList(...tags: string[]) {
-    this._tagBlackList = _.uniq([...this._tagBlackList, ...tags]);
-  }
-
-  removeFromBlackList(...tags: string[]) {
-    this._tagBlackList = _.difference(tags, this._tagBlackList);
-  }
-
-  addTag2WhiteList(...tags: string[]) {
-    this._tagWhiteList = _.uniq([...this._tagWhiteList, ...tags]);
-  }
-
-  removeFromWhiteList(...tags: string[]) {
-    this._tagWhiteList = _.difference(tags, this._tagWhiteList);
   }
 }
