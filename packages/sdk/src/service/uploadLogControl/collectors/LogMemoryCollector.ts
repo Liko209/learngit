@@ -23,10 +23,6 @@ export class LogMemoryCollector implements ILogCollector, ILogProducer {
   }
 
   produce(): LogEntity[] {
-    console.log(
-      'TCL: LogCollector -> constructor -> this.collection',
-      this.collection,
-    );
     return this.collection.pop(SIZE);
   }
 

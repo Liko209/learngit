@@ -123,11 +123,11 @@ export class LogControlManager implements IAccessor {
       );
       logManager.config({
         browser: {
-          enabled: logEnabled || true,
+          enabled: logEnabled,
         },
       });
       logConsumerConfigManager.mergeConfig({
-        uploadEnabled: logUploadEnabled || true,
+        uploadEnabled: logUploadEnabled,
       });
     } catch (error) {
       mainLogger.warn('getUserPermission fail:', error);

@@ -111,9 +111,6 @@ export class TaskQueueLoop implements IQueueLoop, IDeque<Task> {
       }
     }
     this._isLooping = false;
-    if (this.name) {
-      console.log('TCL: TaskQueueLoop -> loop -> _isLooping', this._isLooping);
-    }
     await this.onLoopCompleted();
   }
 

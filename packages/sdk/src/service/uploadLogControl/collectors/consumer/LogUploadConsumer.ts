@@ -21,10 +21,6 @@ const PERSISTENT_STATE = {
   EMPTY: 'EMPTY',
 };
 
-function getLogRange(logs: LogEntity[]) {
-  return [logs[0].sessionIndex, logs[logs.length - 1].sessionIndex];
-}
-
 class PersistentTask extends Task {}
 class UploadMemoryLogTask extends Task {
   constructor(
@@ -34,18 +30,10 @@ class UploadMemoryLogTask extends Task {
   ) {
     super();
     this.setOnExecute(async () => {
-      console.log(
-        'TCL: UploadMemoryLogTask -> upload logs from Memory',
-        getLogRange(logs),
-      );
       await _logUploader.upload(logs);
     });
     this.setOnAbort(async () => {
       await _logPersistent.put(transform.toPersistent(logs));
-      console.log(
-        'TCL: UploadMemoryLogTask -> on Abort save logs',
-        getLogRange(logs),
-      );
     });
   }
 }
@@ -58,18 +46,10 @@ class UploadPersistentLogTask extends Task {
     super();
     this.setOnExecute(async () => {
       const logs = transform.toLogEntity(log);
-      console.log(
-        'TCL: UploadPersistentLogTask -> upload logs from Persistent',
-        getLogRange(logs),
-      );
       await _logUploader.upload(logs);
     });
     this.setOnCompleted(async () => await _logPersistent.delete(log));
     this.setOnAbort(async () => {
-      console.log(
-        'TCL: UploadPersistentLogTask -> onAbort',
-        getLogRange(log.logs),
-      );
       await _logPersistent.put(log);
     });
   }
@@ -126,7 +106,6 @@ export class LogUploadConsumer implements ILogConsumer {
       name: 'uploadTaskQueueLoop',
       onTaskError: async (task, error, loopController) => {
         const handlerType = this._logUploader.errorHandler(error);
-        console.log('TCL: LogUploadConsumer -> handlerType', handlerType);
         switch (handlerType) {
           case 'abort':
             await loopController.abort();
@@ -265,9 +244,6 @@ export class LogUploadConsumer implements ILogConsumer {
       clearTimeout(this._timeoutId);
     }
     this._timeoutId = setTimeout(() => {
-      console.log(
-        'TCL: LogUploadConsumer -> this._timeoutId -> _consumePersistentIfNeed',
-      );
       this._consumePersistentIfNeed();
       this._flushMemory();
     },                           configManager.getConfig().autoFlushTimeCycle);
@@ -282,17 +258,10 @@ export class LogUploadConsumer implements ILogConsumer {
       this._memorySize = 0;
       this._flushInTimeout();
       if (logs.length < 1) return;
-      console.log(
-        'TCL: LogUploadConsumer -> private_flushMemory -> UploadMemoryLogTask',
-        getLogRange(logs),
-      );
       this._uploadTaskQueueLoop.addTail(
         new UploadMemoryLogTask(logs, this._logUploader, this._logPersistent),
       );
     } else if (force) {
-      console.log(
-        'TCL: LogUploadConsumer -> private_flushMemory -> _flushMemoryToPersistence',
-      );
       this._flushMemoryToPersistence();
     }
   }
@@ -304,10 +273,6 @@ export class LogUploadConsumer implements ILogConsumer {
     this._persistentTaskQueueLoop.addTail(
       new PersistentTask() // cache task
         .setOnExecute(async () => {
-          console.log(
-            'TCL: LogUploadConsumer -> private_flushMemoryToPersistence -> logs',
-            getLogRange(logs),
-          );
           await this._logPersistent.put(transform.toPersistent(logs));
           if (this._persistentFSM.state !== PERSISTENT_STATE.NOT_EMPTY) {
             this._persistentFSM.append();
@@ -320,10 +285,6 @@ export class LogUploadConsumer implements ILogConsumer {
     this._persistentTaskQueueLoop.addTail(
       new PersistentTask().setOnExecute(async () => {
         const count = await this._logPersistent.count();
-        console.log(
-          'TCL: LogUploadConsumer -> private_ensurePersistentState -> count',
-          count,
-        );
         if (this._persistentFSM.state === PERSISTENT_STATE.NO_SURE) {
           count
             ? this._persistentFSM.ensureNotEmpty()
@@ -335,11 +296,6 @@ export class LogUploadConsumer implements ILogConsumer {
 
   private _consumePersistentIfNeed() {
     const { uploadQueueLimit } = configManager.getConfig();
-    console.log(
-      'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> this._uploadTaskQueueLoop',
-      this._uploadTaskQueueLoop.size() === 0 && this._uploadAvailable(),
-      this._uploadTaskQueueLoop,
-    );
     this._flushInTimeout();
     if (this._uploadTaskQueueLoop.size() === 0 && this._uploadAvailable()) {
       this._persistentTaskQueueLoop.addTail(
@@ -348,26 +304,9 @@ export class LogUploadConsumer implements ILogConsumer {
             3 * uploadQueueLimit,
           );
           if (persistentLogs && persistentLogs.length) {
-            console.log(
-              'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> persistentLogs',
-              persistentLogs.length,
-            );
             await this._logPersistent.bulkDelete(persistentLogs);
-            console.log(
-              'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> persistentLogs after delete',
-              persistentLogs.length,
-            );
             const combineLogs = this._combinePersistentLogs(persistentLogs);
-            console.log(
-              'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> combineLogs',
-              combineLogs,
-            );
             combineLogs.forEach((combineLog: PersistentLogEntity) => {
-              console.log(
-                'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> this._uploadTaskQueueLoop',
-                this._uploadTaskQueueLoop,
-              );
-
               this._uploadTaskQueueLoop.addTail(
                 new UploadPersistentLogTask(
                   combineLog,

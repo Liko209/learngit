@@ -13,9 +13,6 @@ import { ILogUploader } from './collectors/consumer';
 import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
 import { AccountService } from 'src/module/account';
 
-function getLogRange(logs: LogEntity[]) {
-  return [logs[0].sessionIndex, logs[logs.length - 1].sessionIndex];
-}
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {
   async upload(logs: LogEntity[]): Promise<void> {
@@ -28,6 +25,7 @@ export class LogUploader implements ILogUploader {
       (Pal.instance.getApplicationInfo() &&
         Pal.instance.getApplicationInfo().getAppVersion()) ||
       '';
+
     await axios.post(postUrl, message, {
       headers: {
         'X-Sumo-Name': `${appVersion}| ${userInfo.email}| ${
