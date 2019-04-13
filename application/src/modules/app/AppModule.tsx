@@ -48,6 +48,7 @@ class AppModule extends AbstractModule {
   @inject(AppStore) private _appStore: AppStore;
   private _subModuleRegistered: boolean = false;
   private _umiEventKeyMap: Map<UMI_SECTION_TYPE, GLOBAL_KEYS>;
+  private _logControlManager: LogControlManager = LogControlManager.instance();
 
   async bootstrap() {
     try {
@@ -61,7 +62,7 @@ class AppModule extends AbstractModule {
   }
 
   private async _init() {
-    LogControlManager.instance().setDebugMode(
+    this._logControlManager.setDebugMode(
       process.env.NODE_ENV === 'development',
     );
     const { search } = window.location;

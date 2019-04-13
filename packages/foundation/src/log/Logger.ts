@@ -91,7 +91,7 @@ export class Logger implements ILogger, ILoggerCore {
     if (!this._isLogEnabled(logEntity)) return;
     this._isBrowserEnabled(logEntity) &&
       this._consoleLoggerCore.doLog(logEntity);
-    if (this._isConsumerEnabled()) {
+    if (this._isCollectorEnabled()) {
       const log = this._logEntityProcessor.process(logEntity);
       this._logCollectors.forEach((logCollector: ILogCollector) => {
         logCollector.onLog(log);
@@ -106,7 +106,7 @@ export class Logger implements ILogger, ILoggerCore {
     return enabled;
   }
 
-  private _isConsumerEnabled() {
+  private _isCollectorEnabled() {
     const {
       collector: { enabled },
     } = configManager.getConfig();

@@ -9,10 +9,10 @@ import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';
 import StateMachine from 'ts-javascript-state-machine';
 import { configManager } from './config';
-import { randomInt } from '../../../utils';
+import { randomInt } from '../../../../utils';
 import sumBy from 'lodash/sumBy';
 import cloneDeep from 'lodash/cloneDeep';
-import { IAccessor, ILogProducer, ILogConsumer } from './types';
+import { IAccessor, ILogProducer, ILogConsumer } from '../../types';
 
 const PERSISTENT_STATE = {
   INIT: 'INIT',
@@ -20,6 +20,10 @@ const PERSISTENT_STATE = {
   NOT_EMPTY: 'NOT_EMPTY',
   EMPTY: 'EMPTY',
 };
+
+function getLogRange(logs: LogEntity[]) {
+  return [logs[0].sessionIndex, logs[logs.length - 1].sessionIndex];
+}
 
 class PersistentTask extends Task {}
 class UploadMemoryLogTask extends Task {
@@ -29,9 +33,19 @@ class UploadMemoryLogTask extends Task {
     public _logPersistent: ILogPersistent,
   ) {
     super();
-    this.setOnExecute(async () => await _logUploader.upload(logs));
+    this.setOnExecute(async () => {
+      console.log(
+        'TCL: UploadMemoryLogTask -> upload logs from Memory',
+        getLogRange(logs),
+      );
+      await _logUploader.upload(logs);
+    });
     this.setOnAbort(async () => {
       await _logPersistent.put(transform.toPersistent(logs));
+      console.log(
+        'TCL: UploadMemoryLogTask -> on Abort save logs',
+        getLogRange(logs),
+      );
     });
   }
 }
@@ -42,11 +56,20 @@ class UploadPersistentLogTask extends Task {
     public _logPersistent: ILogPersistent,
   ) {
     super();
-    this.setOnExecute(
-      async () => await _logUploader.upload(transform.toLogEntity(log)),
-    );
+    this.setOnExecute(async () => {
+      const logs = transform.toLogEntity(log);
+      console.log(
+        'TCL: UploadPersistentLogTask -> upload logs from Persistent',
+        getLogRange(logs),
+      );
+      await _logUploader.upload(logs);
+    });
     this.setOnCompleted(async () => await _logPersistent.delete(log));
     this.setOnAbort(async () => {
+      console.log(
+        'TCL: UploadPersistentLogTask -> onAbort',
+        getLogRange(log.logs),
+      );
       await _logPersistent.put(log);
     });
   }
@@ -99,15 +122,16 @@ export class LogUploadConsumer implements ILogConsumer {
     this._memoryQueue = new MemoryQueue();
     this._memorySize = 0;
     this._flushMode = false;
-    this._uploadTaskQueueLoop = new TaskQueueLoop()
-      .setOnTaskError(async (task, error, loopController) => {
+    this._uploadTaskQueueLoop = new TaskQueueLoop({
+      name: 'uploadTaskQueueLoop',
+      onTaskError: async (task, error, loopController) => {
         const handlerType = this._logUploader.errorHandler(error);
+        console.log('TCL: LogUploadConsumer -> handlerType', handlerType);
         switch (handlerType) {
           case 'abort':
             await loopController.abort();
             break;
           case 'abortAll':
-            await loopController.abort();
             await loopController.abortAll();
             await timeout(5000);
             break;
@@ -120,13 +144,14 @@ export class LogUploadConsumer implements ILogConsumer {
             await loopController.ignore();
             break;
         }
-      })
-      .setOnTaskCompleted(async (task, loopController) => {
+      },
+      onTaskCompleted: async (task, loopController) => {
         await loopController.next();
-      })
-      .setOnLoopCompleted(async () => {
+      },
+      onLoopCompleted: async () => {
         this._consumePersistentIfNeed();
-      });
+      },
+    });
     this._persistentTaskQueueLoop = new TaskQueueLoop();
     this._persistentFSM = new StateMachine({
       init: PERSISTENT_STATE.INIT,
@@ -211,7 +236,7 @@ export class LogUploadConsumer implements ILogConsumer {
   async flush(): Promise<void> {
     if (this._uploadTaskQueueLoop.size() > 0) {
       // abort uploadTaskQueue's waiting task,
-      this._uploadTaskQueueLoop.abortAll();
+      await this._uploadTaskQueueLoop.abortAll();
     }
     // indicated in _flushMode
     this._flushMode = true;
@@ -240,6 +265,9 @@ export class LogUploadConsumer implements ILogConsumer {
       clearTimeout(this._timeoutId);
     }
     this._timeoutId = setTimeout(() => {
+      console.log(
+        'TCL: LogUploadConsumer -> this._timeoutId -> _consumePersistentIfNeed',
+      );
       this._consumePersistentIfNeed();
       this._flushMemory();
     },                           configManager.getConfig().autoFlushTimeCycle);
@@ -254,10 +282,17 @@ export class LogUploadConsumer implements ILogConsumer {
       this._memorySize = 0;
       this._flushInTimeout();
       if (logs.length < 1) return;
+      console.log(
+        'TCL: LogUploadConsumer -> private_flushMemory -> UploadMemoryLogTask',
+        getLogRange(logs),
+      );
       this._uploadTaskQueueLoop.addTail(
         new UploadMemoryLogTask(logs, this._logUploader, this._logPersistent),
       );
     } else if (force) {
+      console.log(
+        'TCL: LogUploadConsumer -> private_flushMemory -> _flushMemoryToPersistence',
+      );
       this._flushMemoryToPersistence();
     }
   }
@@ -265,10 +300,14 @@ export class LogUploadConsumer implements ILogConsumer {
   private _flushMemoryToPersistence() {
     const logs = this._memoryQueue.peekAll();
     this._memorySize = 0;
-    this._flushInTimeout();
+    // this._flushInTimeout();
     this._persistentTaskQueueLoop.addTail(
       new PersistentTask() // cache task
         .setOnExecute(async () => {
+          console.log(
+            'TCL: LogUploadConsumer -> private_flushMemoryToPersistence -> logs',
+            getLogRange(logs),
+          );
           await this._logPersistent.put(transform.toPersistent(logs));
           if (this._persistentFSM.state !== PERSISTENT_STATE.NOT_EMPTY) {
             this._persistentFSM.append();
@@ -281,6 +320,10 @@ export class LogUploadConsumer implements ILogConsumer {
     this._persistentTaskQueueLoop.addTail(
       new PersistentTask().setOnExecute(async () => {
         const count = await this._logPersistent.count();
+        console.log(
+          'TCL: LogUploadConsumer -> private_ensurePersistentState -> count',
+          count,
+        );
         if (this._persistentFSM.state === PERSISTENT_STATE.NO_SURE) {
           count
             ? this._persistentFSM.ensureNotEmpty()
@@ -292,6 +335,12 @@ export class LogUploadConsumer implements ILogConsumer {
 
   private _consumePersistentIfNeed() {
     const { uploadQueueLimit } = configManager.getConfig();
+    console.log(
+      'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> this._uploadTaskQueueLoop',
+      this._uploadTaskQueueLoop.size() === 0 && this._uploadAvailable(),
+      this._uploadTaskQueueLoop,
+    );
+    this._flushInTimeout();
     if (this._uploadTaskQueueLoop.size() === 0 && this._uploadAvailable()) {
       this._persistentTaskQueueLoop.addTail(
         new PersistentTask().setOnExecute(async () => {
@@ -299,9 +348,26 @@ export class LogUploadConsumer implements ILogConsumer {
             3 * uploadQueueLimit,
           );
           if (persistentLogs && persistentLogs.length) {
+            console.log(
+              'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> persistentLogs',
+              persistentLogs.length,
+            );
             await this._logPersistent.bulkDelete(persistentLogs);
+            console.log(
+              'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> persistentLogs after delete',
+              persistentLogs.length,
+            );
             const combineLogs = this._combinePersistentLogs(persistentLogs);
+            console.log(
+              'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> combineLogs',
+              combineLogs,
+            );
             combineLogs.forEach((combineLog: PersistentLogEntity) => {
+              console.log(
+                'TCL: LogUploadConsumer -> private_consumePersistentIfNeed -> this._uploadTaskQueueLoop',
+                this._uploadTaskQueueLoop,
+              );
+
               this._uploadTaskQueueLoop.addTail(
                 new UploadPersistentLogTask(
                   combineLog,

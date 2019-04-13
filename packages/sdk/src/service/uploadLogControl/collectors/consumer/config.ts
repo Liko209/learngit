@@ -4,15 +4,15 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { LogConsumerConfig } from './types';
+import { LogConsumerConfig } from '../../types';
 
 const DEFAULT_CONFIG: LogConsumerConfig = {
   uploadEnabled: false,
-  memoryCountThreshold: 10,
+  memoryCountThreshold: 500,
   memorySizeThreshold: 1024 * 1024,
-  combineSizeThreshold: 50 * 1024,
-  uploadQueueLimit: 1,
-  autoFlushTimeCycle: 6 * 1000,
+  combineSizeThreshold: 512 * 1024,
+  uploadQueueLimit: 4,
+  autoFlushTimeCycle: 60 * 1000,
   persistentLimit: 10 * 1024 * 1024,
   memoryCacheSizeThreshold: 10 * 1024 * 1024,
 };

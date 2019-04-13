@@ -6,8 +6,8 @@
 
 import { mainLogger } from 'foundation';
 import { daoManager } from '../../../dao';
-import { PersonDao } from '../../person/dao';
-import { UserInfo } from '../../../models';
+import { PersonService } from '../../person';
+import { Person } from '../../person/entity';
 import { generateUUID } from '../../../utils/mathUtils';
 import { IPlatformHandleDelegate, ITokenModel, RCAuthApi } from '../../../api';
 import notificationCenter from '../../../service/notificationCenter';
@@ -26,6 +26,7 @@ import {
 } from '../controller/AuthController';
 import { AbstractService, AccountManager } from '../../../framework';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
+import { Nullable } from '../../../types';
 
 const DEFAULT_UNREAD_TOGGLE_SETTING = false;
 class AccountService extends AbstractService
@@ -54,30 +55,21 @@ class AccountService extends AbstractService
     return userConfig.getGlipUserId() ? true : false;
   }
 
-  async getCurrentUserInfo(): Promise<UserInfo | {}> {
+  async getCurrentUserInfo(): Promise<Nullable<Person>> {
+    const personService = ServiceLoader.getInstance<PersonService>(
+      ServiceConfig.PERSON_SERVICE,
+    );
+    if (!this.isAccountReady()) {
+      return null;
+    }
     const userConfig = new AccountUserConfig();
     const userId = userConfig.getGlipUserId();
-    const company_id = Number(userConfig.getCurrentCompanyId());
-    if (!userId) return {};
-    const personDao = daoManager.getDao(PersonDao);
-    const personInfo = await personDao.get(userId);
-    if (!personInfo) return {};
-    mainLogger.debug(`getCurrentUserInfo: ${personInfo}`);
-    return {
-      company_id,
-      email: personInfo.email,
-      display_name: personInfo.display_name,
-    } as UserInfo;
+    return await personService.getById(userId).catch();
   }
 
-  async getUserEmail(): Promise<string> {
-    const userConfig = new AccountUserConfig();
-    const userId = userConfig.getGlipUserId();
-    if (!userId) return '';
-    const personDao = daoManager.getDao(PersonDao);
-    const personInfo = await personDao.get(userId);
-    if (!personInfo) return '';
-    return personInfo.email;
+  async getUserEmail(): Promise<Nullable<string>> {
+    const userInfo = await this.getCurrentUserInfo();
+    return userInfo ? userInfo.email : null;
   }
 
   getClientId(): string {

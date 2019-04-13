@@ -8,15 +8,18 @@ import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../service/eventKey';
 import notificationCenter from '../notificationCenter';
 import {
   LogMemoryPersistent,
-  IAccessor,
   configManager as logConsumerConfigManager,
   LogUploadConsumer,
-} from './consumer';
+} from './collectors/consumer';
+import { IAccessor } from './types';
 import { LogUploader } from './LogUploader';
-import { LogCollector } from './LogUploadCollector';
+import {
+  LogCollector,
+  LogMemoryCollector,
+  FixSizeMemoryLogCollection,
+} from './collectors';
 import _ from 'lodash';
 import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
-import { FixSizeMemoryLogCollection } from './FixSizeMemoryLogCollection';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -27,12 +30,12 @@ export class LogControlManager implements IAccessor {
   memoryLogCollector: LogCollector;
   private constructor() {
     this._isOnline = window.navigator.onLine;
-    this.logUploadCollector = new LogCollector(
+    this.memoryLogCollector = new LogMemoryCollector(
       new FixSizeMemoryLogCollection(
         logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
       ),
     );
-    this.memoryLogCollector = new LogCollector(
+    this.logUploadCollector = new LogCollector(
       new FixSizeMemoryLogCollection(
         logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
       ),
@@ -120,11 +123,11 @@ export class LogControlManager implements IAccessor {
       );
       logManager.config({
         browser: {
-          enabled: logEnabled,
+          enabled: logEnabled || true,
         },
       });
       logConsumerConfigManager.mergeConfig({
-        uploadEnabled: logUploadEnabled,
+        uploadEnabled: logUploadEnabled || true,
       });
     } catch (error) {
       mainLogger.warn('getUserPermission fail:', error);

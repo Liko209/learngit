@@ -5,14 +5,17 @@
  */
 import axios, { AxiosError } from 'axios';
 import { HTTP_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
-import { AccountService } from '../../module/account';
 import { AccountUserConfig } from '../../module/account/config';
 
 import { Api } from '../../api';
 import { Pal } from '../../pal';
-import { ILogUploader } from './consumer';
+import { ILogUploader } from './collectors/consumer';
 import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
+import { AccountService } from 'src/module/account';
 
+function getLogRange(logs: LogEntity[]) {
+  return [logs[0].sessionIndex, logs[logs.length - 1].sessionIndex];
+}
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {
   async upload(logs: LogEntity[]): Promise<void> {
@@ -67,7 +70,7 @@ export class LogUploader implements ILogUploader {
 
   private async _getUserInfo() {
     const accountService = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.ACCOUNT_SERVICE,
+      ServiceConfig.PERSON_SERVICE,
     );
 
     let id;
@@ -75,16 +78,14 @@ export class LogUploader implements ILogUploader {
     try {
       const userConfig = new AccountUserConfig();
       id = userConfig.getGlipUserId();
-      email = await accountService.getUserEmail();
+      email = (await accountService.getUserEmail()) || '';
     } catch (error) {
       mainLogger.warn(error);
     }
     const userId = id ? id.toString() : '';
-    const clientId = accountService.getClientId();
     return {
       email,
       userId,
-      clientId,
     };
   }
 

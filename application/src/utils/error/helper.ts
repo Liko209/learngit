@@ -3,12 +3,12 @@
  * @Date: 2019-04-02 15:59:05
  * Copyright © RingCentral. All rights reserved.
  */
-import { AccountService } from 'sdk/module/account';
 import { AccountUserConfig } from 'sdk/module/account/config';
 import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import pkg from '../../../package.json';
 import { UserContextInfo } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/src/module/account';
 
 export async function getAppContextInfo(): Promise<UserContextInfo> {
   const config = require('@/config').default;
@@ -21,10 +21,11 @@ export async function getAppContextInfo(): Promise<UserContextInfo> {
     ).getCurrentUserInfo(),
     fetchVersionInfo(),
   ]).then(([userInfo, { deployedVersion }]) => {
+    const { display_name = '', email = '' } = userInfo || {};
     return {
+      email,
+      username: display_name,
       id: currentUserId,
-      username: userInfo['display_name'],
-      email: userInfo['email'],
       companyId: currentCompanyId,
       env: config.getEnv(),
       version: deployedVersion || pkg.version,

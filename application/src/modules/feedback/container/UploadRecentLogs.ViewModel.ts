@@ -6,7 +6,7 @@
 import { container } from 'framework';
 import { AbstractViewModel } from '@/base';
 import { observable } from 'mobx';
-import { mainLogger } from 'sdk';
+import { logger } from '../utils';
 import { UploadRecentLogsViewModelProps } from './types';
 import { FeedbackService } from '../service/FeedbackService';
 import { DEFAULT_FEEDBACK_EMAIL } from '../constants';
@@ -26,7 +26,7 @@ export class UploadRecentLogsViewModel extends AbstractViewModel
       return true;
     } catch (e) {
       this.isFeedbackError = true;
-      mainLogger.error('Open email fail');
+      logger.error('Open email fail');
     }
     return false;
   }
@@ -39,7 +39,7 @@ export class UploadRecentLogsViewModel extends AbstractViewModel
       return await this._feedbackService.uploadRecentLogs();
     } catch (error) {
       this.isFeedbackError = true;
-      mainLogger.error('Upload recent logs fail');
+      logger.error('Upload recent logs fail');
     } finally {
       this.isUploadingFeedback = false;
     }

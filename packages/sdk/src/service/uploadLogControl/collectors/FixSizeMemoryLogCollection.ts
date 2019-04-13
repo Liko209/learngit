@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { LogEntity, mainLogger } from 'foundation';
-import { ILogCollection } from './consumer';
+import { ILogCollection } from '../types';
 import _ from 'lodash';
 
 function countSize(array: LogEntity[], size: number) {

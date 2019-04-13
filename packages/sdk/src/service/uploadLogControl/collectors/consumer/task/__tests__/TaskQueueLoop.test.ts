@@ -1,9 +1,7 @@
 import { TaskQueueLoop } from '../TaskQueueLoop';
-import {
-  Task,
-  OnTaskCompletedController,
-  OnTaskErrorController,
-} from '../types';
+import { OnTaskCompletedController, OnTaskErrorController } from '../types';
+import { Task } from '../Task';
+import { FunctionPropertyNames } from '../../../../../../types';
 
 const createCallbackObserver = (): [Function, Promise<any>] => {
   let callback = () => {};
@@ -18,6 +16,25 @@ const createCallbackObserver = (): [Function, Promise<any>] => {
 };
 
 describe('TaskQueueLoop', () => {
+  const spyOnTarget = <T>(target: T) => {
+    for (const key in target) {
+      if (
+        target.hasOwnProperty(key) &&
+        Object.prototype.toString.call(target[key]) === '[object Function]'
+      ) {
+        jest.spyOn(target, <FunctionPropertyNames<T>>key);
+      }
+    }
+    return target;
+  };
+
+  const createTaskQueueLoop = (options?: Partial<TaskQueueLoop>) => {
+    return spyOnTarget(new TaskQueueLoop(options));
+  };
+  const createTask = (options?: Partial<Task>) => {
+    return spyOnTarget(new Task(options));
+  };
+
   describe('sleep()', () => {
     it('should sleep until timeout', async () => {
       const taskQueueLoop = new TaskQueueLoop();
@@ -105,6 +122,113 @@ describe('TaskQueueLoop', () => {
       expect(tasks[2].onIgnore).toBeCalledTimes(0);
 
       expect(spyLoopCompleted).toBeCalledTimes(1);
+    });
+  });
+
+  describe('loopController', () => {
+    it('should retry task N times then abort task', async () => {
+      const [callback, observer] = createCallbackObserver();
+      const taskQueueLoop = createTaskQueueLoop({
+        onTaskError: async (
+          task: Task,
+          error: Error,
+          loopController: OnTaskErrorController,
+        ) => {
+          // retry tree times, then abort
+          if (task.retryCount < 3) {
+            task.retryCount += 1;
+            await loopController.retry();
+          } else {
+            await loopController.abort();
+          }
+        },
+        onTaskCompleted: async (task, loopController) => loopController.next(),
+        onLoopCompleted: async () => callback(),
+      });
+      const [task1, task2] = [
+        createTask({
+          onExecute: async () => {
+            throw '';
+          },
+          onError: async () => {},
+        }),
+        createTask(),
+      ];
+      taskQueueLoop.addTail(task1);
+      taskQueueLoop.addTail(task2);
+      await observer;
+      expect(task1.onExecute).toBeCalledTimes(1 + 3);
+      expect(task1.onError).toBeCalledTimes(1 + 3);
+      expect(task1.retryCount).toEqual(3);
+      expect(task1.onAbort).toBeCalledTimes(1);
+      expect(task2.onExecute).toBeCalledTimes(1);
+    });
+
+    it('should abort all task when TaskQueueLoop.onTaskError call loopController.abortAll()', async () => {
+      const [callback, observer] = createCallbackObserver();
+      const extraTask = createTask();
+      const taskQueueLoop = createTaskQueueLoop({
+        onTaskError: async (
+          task: Task,
+          error: Error,
+          loopController: OnTaskErrorController,
+        ) => {
+          await loopController.abortAll();
+          // abortAll is async, abortAll only abort task in that moment
+          taskQueueLoop.addTail(extraTask);
+        },
+        onTaskCompleted: async (task, loopController) => loopController.next(),
+        onLoopCompleted: async () => callback(),
+      });
+
+      const [task1, task2] = [
+        createTask({
+          onExecute: async () => {
+            throw '';
+          },
+          onError: async () => {},
+        }),
+        createTask(),
+      ];
+      taskQueueLoop.addTail(task1);
+      taskQueueLoop.addTail(task2);
+      await observer;
+      expect(task1.onError).toBeCalled();
+      expect(task1.onAbort).toBeCalled();
+      expect(task2.onAbort).toBeCalled();
+      expect(extraTask.onExecute).toBeCalled();
+      expect(extraTask.onAbort).not.toBeCalled();
+      expect(taskQueueLoop.isAvailable()).toBeTruthy();
+      expect(taskQueueLoop.size()).toEqual(0);
+    });
+
+    it('should ignore work', async () => {
+      const [callback, observer] = createCallbackObserver();
+      const taskQueueLoop = createTaskQueueLoop({
+        onTaskError: async (
+          task: Task,
+          error: Error,
+          loopController: OnTaskErrorController,
+        ) => await loopController.ignore(),
+        onTaskCompleted: async (task, loopController) => loopController.next(),
+        onLoopCompleted: async () => callback(),
+      });
+
+      const [task1, task2] = [
+        createTask({
+          onExecute: async () => {
+            throw '';
+          },
+          onError: async () => {},
+        }),
+        createTask(),
+      ];
+      taskQueueLoop.addTail(task1);
+      taskQueueLoop.addTail(task2);
+      await observer;
+      expect(task1.onError).toBeCalled();
+      expect(task1.onAbort).not.toBeCalled();
+      expect(task2.onExecute).toBeCalled();
     });
   });
 
@@ -436,6 +560,40 @@ describe('TaskQueueLoop', () => {
       expect(taskQueueLoop.peekHead()).toEqual(tasks[0]);
       taskQueueLoop.addTail(tasks[0]);
       expect(taskQueueLoop.peekTail()).toEqual(tasks[0]);
+    });
+  });
+
+  describe('abortAll()', () => {
+    it('should abort all task except running task when call taskQueue.abortAll()', async () => {
+      const [callback, observer] = createCallbackObserver();
+      const extraTask = createTask();
+      const taskQueueLoop = createTaskQueueLoop({
+        onTaskError: async (
+          task: Task,
+          error: Error,
+          loopController: OnTaskErrorController,
+        ) => await loopController.abort(),
+        onTaskCompleted: async (task, loopController) => loopController.next(),
+        onLoopCompleted: async () => callback(),
+      });
+
+      const [task1, task2] = [
+        createTask(),
+        createTask({
+          onAbort: async () => {
+            taskQueueLoop.addTail(extraTask);
+          },
+        }),
+      ];
+      taskQueueLoop.addTail(task1);
+      taskQueueLoop.addTail(task2);
+      taskQueueLoop.abortAll();
+      await observer;
+      expect(task1.onAbort).not.toBeCalled();
+      expect(task1.onCompleted).toBeCalled();
+      expect(task2.onAbort).toBeCalled();
+      expect(extraTask.onExecute).toBeCalled();
+      expect(extraTask.onAbort).not.toBeCalled();
     });
   });
 });

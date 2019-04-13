@@ -62,6 +62,11 @@ export class LogMemoryPersistent implements ILogPersistent {
       );
       _.forEach(array.slice(0, index), it => this._logMap.delete(it.id));
       this._totalSize -= deleteSize;
+      console.log(
+        'TCL: LogMemoryPersistent -> constructor -> index, deleteSize',
+        index,
+        deleteSize,
+      );
     }
     this._totalSize += changeSize;
   }
