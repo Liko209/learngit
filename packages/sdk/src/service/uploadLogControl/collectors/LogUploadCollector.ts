@@ -31,10 +31,6 @@ export class LogCollector implements ILogCollector, ILogProducer {
   }
 
   produce(size?: number): LogEntity[] {
-    console.log(
-      'TCL: LogCollector -> constructor -> this.collection',
-      this.collection,
-    );
     return this.collection.pop(size || SIZE);
   }
 
