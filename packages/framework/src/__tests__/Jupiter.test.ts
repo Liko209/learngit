@@ -54,6 +54,45 @@ describe('Jupiter', () => {
     });
   });
 
+  describe('registerModule()', () => {
+    class MyService {
+      bootstrap() {}
+    }
+    class MyServiceProvides {}
+    const myServiceModuleConfig = {
+      entry: MyService,
+      provides: [MyServiceProvides],
+    };
+
+    it('should be register module', () => {
+      const jupiter = new Jupiter();
+      jupiter.registerModule(myServiceModuleConfig);
+      expect(container.isBound(MyService)).toBeTruthy();
+      expect(container.isBound(MyServiceProvides)).toBeTruthy();
+    });
+  });
+
+  describe('registerModuleAsync()', () => {
+    class MyService {
+      bootstrap() {}
+    }
+    class MyServiceProvides {}
+    const myServiceModuleConfig = {
+      entry: MyService,
+      provides: [MyServiceProvides],
+    };
+
+    it('should be register module', async () => {
+      const jupiter = new Jupiter();
+      jupiter.registerModuleAsync(
+        () => new Promise(res => res({ config: myServiceModuleConfig })),
+      );
+      await jupiter.bootstrap();
+      expect(container.isBound(MyService)).toBeTruthy();
+      expect(container.isBound(MyServiceProvides)).toBeTruthy();
+    });
+  });
+
   describe('unRegisterModule()', () => {
     const disposeFun = jest.fn();
     class MyService {
