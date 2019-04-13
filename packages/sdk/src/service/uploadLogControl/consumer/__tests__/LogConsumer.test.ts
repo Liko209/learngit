@@ -8,7 +8,7 @@ import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
 import { persistentLogFactory } from '../persistent/__tests__/LogPersistent.test';
 import { ILogUploader } from '../uploader/types';
 import { LogMemoryPersistent, ILogPersistent } from '../persistent';
-import { configManager } from '../config';
+import { configManager } from '../../../config';
 import { Task } from '../task';
 import { LogEntity } from 'foundation';
 import { FunctionPropertyNames } from '../../../../../types';

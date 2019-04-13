@@ -13,9 +13,7 @@ export * from './framework';
 export {
   default as GlipTypeDictionary,
 } from './utils/glip-type-dictionary/types';
-export {
-  LogControlManager,
-} from './service/uploadLogControl/logControlManager';
+export { LogControlManager } from './service/uploadLogControl';
 
 import Sdk from './Sdk';
 import { container } from './container';

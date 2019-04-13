@@ -5,13 +5,13 @@
  */
 import axios, { AxiosError } from 'axios';
 import { HTTP_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
-import { AccountUserConfig } from '../../module/account/config';
+import { AccountUserConfig } from 'sdk/module/account/config';
 
-import { Api } from '../../api';
-import { Pal } from '../../pal';
-import { ILogUploader } from './collectors/consumer';
-import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
-import { AccountService } from 'src/module/account';
+import { Api } from 'sdk/api';
+import { Pal } from 'sdk/pal';
+import { ILogUploader } from './consumer';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {

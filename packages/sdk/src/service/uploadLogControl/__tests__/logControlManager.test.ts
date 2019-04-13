@@ -10,7 +10,7 @@ import { notificationCenter } from 'sdk/service';
 import { PermissionService } from '../../../module/permission';
 import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../../service/eventKey';
 import { LogControlManager } from '../logControlManager';
-import { configManager } from '../collectors/consumer/config';
+import { configManager } from '../config';
 import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
 import { ServiceLoader } from '../../../module/serviceLoader';
 

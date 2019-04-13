@@ -3,15 +3,11 @@
  * @Date: 2018-06-08 11:05:46
  */
 import { LogEntity, logManager, LOG_LEVEL, mainLogger } from 'foundation';
-import { PermissionService, UserPermissionType } from '../../module/permission';
-import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../service/eventKey';
-import notificationCenter from '../notificationCenter';
-import {
-  LogMemoryPersistent,
-  configManager as logConsumerConfigManager,
-  LogUploadConsumer,
-} from './collectors/consumer';
-import { IAccessor } from './types';
+import { PermissionService, UserPermissionType } from 'sdk/module/permission';
+import { ENTITY, SERVICE, WINDOW, DOCUMENT } from 'sdk/service/eventKey';
+import notificationCenter from 'sdk/service/notificationCenter';
+import { LogMemoryPersistent, LogUploadConsumer, IAccessor } from './consumer';
+import { configManager } from './config';
 import { LogUploader } from './LogUploader';
 import {
   LogCollector,
@@ -19,7 +15,7 @@ import {
   FixSizeMemoryLogCollection,
 } from './collectors';
 import _ from 'lodash';
-import { ServiceLoader, ServiceConfig } from '../../module/serviceLoader';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 export class LogControlManager implements IAccessor {
   private static _instance: LogControlManager;
@@ -27,25 +23,19 @@ export class LogControlManager implements IAccessor {
   private _onUploadAccessorChange: (accessible: boolean) => void;
   uploadLogConsumer: LogUploadConsumer;
   logUploadCollector: LogCollector;
-  memoryLogCollector: LogCollector;
+  memoryLogCollector: LogMemoryCollector;
   private constructor() {
     this._isOnline = window.navigator.onLine;
-    this.memoryLogCollector = new LogMemoryCollector(
-      new FixSizeMemoryLogCollection(
-        logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
-      ),
-    );
+    this.memoryLogCollector = new LogMemoryCollector();
     this.logUploadCollector = new LogCollector(
       new FixSizeMemoryLogCollection(
-        logConsumerConfigManager.getConfig().memoryCacheSizeThreshold,
+        configManager.getConfig().memoryCacheSizeThreshold,
       ),
     );
     this.uploadLogConsumer = new LogUploadConsumer(
       this.logUploadCollector,
       new LogUploader(),
-      new LogMemoryPersistent(
-        logConsumerConfigManager.getConfig().persistentLimit,
-      ),
+      new LogMemoryPersistent(configManager.getConfig().persistentLimit),
       this,
     );
     this.logUploadCollector.setConsumer(this.uploadLogConsumer);
@@ -126,7 +116,7 @@ export class LogControlManager implements IAccessor {
           enabled: logEnabled,
         },
       });
-      logConsumerConfigManager.mergeConfig({
+      configManager.mergeConfig({
         uploadEnabled: logUploadEnabled,
       });
     } catch (error) {
@@ -135,7 +125,7 @@ export class LogControlManager implements IAccessor {
   }
 
   getRecentLogs(): LogEntity[] {
-    return this.memoryLogCollector.getCollection().get();
+    return this.memoryLogCollector.getAll();
   }
 
   windowError(msg: string, url: string, line: number) {

@@ -5,7 +5,6 @@
  */
 
 import { mainLogger } from 'foundation';
-import { daoManager } from '../../../dao';
 import { PersonService } from '../../person';
 import { Person } from '../../person/entity';
 import { generateUUID } from '../../../utils/mathUtils';

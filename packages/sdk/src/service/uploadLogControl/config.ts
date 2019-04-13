@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { LogConsumerConfig } from '../../types';
+import { LogConsumerConfig } from './types';
 
 const DEFAULT_CONFIG: LogConsumerConfig = {
   uploadEnabled: false,

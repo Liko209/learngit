@@ -8,11 +8,12 @@ import { ILogUploader } from './uploader';
 import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';
 import StateMachine from 'ts-javascript-state-machine';
-import { configManager } from './config';
-import { randomInt } from '../../../../utils';
+import { configManager } from '../config';
+import { randomInt } from 'sdk/utils';
 import sumBy from 'lodash/sumBy';
 import cloneDeep from 'lodash/cloneDeep';
-import { IAccessor, ILogProducer, ILogConsumer } from '../../types';
+import { ILogProducer, ILogConsumer } from '../collectors';
+import { IAccessor } from './types';
 
 const PERSISTENT_STATE = {
   INIT: 'INIT',

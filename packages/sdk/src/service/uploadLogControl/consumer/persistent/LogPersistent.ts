@@ -10,11 +10,8 @@ import {
   IDatabaseCollection,
   KVStorageManager,
 } from 'foundation';
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-} from '../../../../../utils';
-import { configManager } from '../config';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from 'sdk/utils';
+import { configManager } from '../../config';
 import schema, { TABLE_LOG } from './schema';
 import { ILogPersistent, PersistentLogEntity } from './types';
 
