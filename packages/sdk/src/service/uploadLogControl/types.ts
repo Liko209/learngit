@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-export type LogConsumerConfig = {
+export type LogControlConfig = {
   uploadEnabled: boolean;
   memoryCountThreshold: number;
   memorySizeThreshold: number;
