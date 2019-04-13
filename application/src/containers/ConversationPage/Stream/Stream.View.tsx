@@ -36,6 +36,7 @@ import {
 import { DefaultLoadingWithDelay, DefaultLoadingMore } from 'jui/hoc';
 import { getGlobalValue } from '@/store/utils';
 import { JuiConversationInitialPostWrapper } from 'jui/pattern/ConversationInitialPost';
+import { goToConversation } from '@/common/goToConversation';
 import JuiConversationCard from 'jui/pattern/ConversationCard';
 
 type Props = WithTranslation & StreamViewProps & StreamProps;
@@ -77,7 +78,7 @@ class StreamViewComponent extends Component<Props> {
     window.removeEventListener('blur', this._blurHandler);
   }
 
-  async componentDidUpdate(prevProps: Props) {
+  componentDidUpdate(prevProps: Props) {
     const {
       postIds: prevPostIds,
       lastPost: prevLastPost = { id: NaN },
@@ -118,18 +119,25 @@ class StreamViewComponent extends Component<Props> {
 
   private _handleJumpToIdChanged(currentId: number, prevId?: number) {
     const { refresh, postIds } = this.props;
+    const highlightPost = () =>
+      requestAnimationFrame(() => {
+        if (this._jumpToPostRef.current) {
+          this._jumpToPostRef.current.highlight();
+          goToConversation({
+            conversationId: this.props.groupId,
+            replaceHistory: true,
+          });
+        }
+      });
     // handle hight and jump to post Id
     if (currentId === prevId) {
+      highlightPost();
       return;
     }
     if (postIds.includes(currentId) && this._listRef.current) {
       const index = this._findStreamItemIndexByPostId(currentId);
       this._listRef.current.scrollToIndex(index);
-      requestAnimationFrame(() => {
-        if (this._jumpToPostRef.current) {
-          this._jumpToPostRef.current.highlight();
-        }
-      });
+      highlightPost();
     } else {
       refresh();
     }

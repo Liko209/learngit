@@ -84,16 +84,33 @@ const HighlightStyle = createGlobalStyle<{}>`
   }
 `;
 
+const ANIMATION_DURATION = 3000;
 class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
   state = {
     highlight: false,
   };
 
+  private _timer?: NodeJS.Timer;
+
   highlight = () => {
-    this.setState({ highlight: true });
+    const { highlight } = this.state;
+    !highlight &&
+      this.setState({ highlight: true }, () => {
+        this._timer = setTimeout(() => {
+          this.setState({ highlight: false });
+        },                       ANIMATION_DURATION);
+      });
   }
-  removeHighlight = () => {
-    this.setState({ highlight: false });
+
+  clearTimer() {
+    if (this._timer) {
+      clearTimeout(this._timer);
+      this._timer = undefined;
+    }
+  }
+
+  componentWillUnmount() {
+    this.clearTimer();
   }
 
   render() {
@@ -101,7 +118,6 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
     const { highlight } = this.state;
     return (
       <StyledConversationCard
-        onAnimationEnd={this.removeHighlight}
         className={highlight ? 'highlight' : ''}
         mode={mode}
         {...rest}
