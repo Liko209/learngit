@@ -22,7 +22,7 @@ describe('TaskQueueLoop', () => {
         target.hasOwnProperty(key) &&
         Object.prototype.toString.call(target[key]) === '[object Function]'
       ) {
-        jest.spyOn(target, <FunctionPropertyNames<T>>key);
+        jest.spyOn(target, (key as any) as FunctionPropertyNames<T>);
       }
     }
     return target;

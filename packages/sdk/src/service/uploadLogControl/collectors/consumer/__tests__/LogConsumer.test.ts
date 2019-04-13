@@ -7,11 +7,12 @@ import { LogUploadConsumer } from '../LogUploadConsumer';
 import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
 import { persistentLogFactory } from '../persistent/__tests__/LogPersistent.test';
 import { ILogUploader } from '../uploader/types';
-import { LogPersistent, PersistentLogEntity } from '../persistent';
+import { LogMemoryPersistent, ILogPersistent } from '../persistent';
 import { configManager } from '../config';
 import { Task } from '../task';
 import { LogEntity } from 'foundation';
-jest.mock('../persistent');
+import { FunctionPropertyNames } from '../../../../../types';
+import { ILogProducer } from '../../../types';
 class MockApi implements ILogUploader {
   upload = jest.fn();
   errorHandler = jest.fn();
@@ -30,83 +31,53 @@ const createCallbackObserver = (): [Function, Promise<any>] => {
 };
 
 describe('LogConsumer', () => {
-  let mockLogPersistent: LogPersistent;
+  let mockLogPersistent: ILogPersistent;
   let mockUploader: ILogUploader;
+  let mockLogProducer: ILogProducer;
+  const spyOnTarget = <T>(target: T) => {
+    for (const key in target) {
+      if (
+        target.hasOwnProperty(key) &&
+        Object.prototype.toString.call(target[key]) === '[object Function]'
+      ) {
+        jest.spyOn(target, (key as any) as FunctionPropertyNames<T>);
+      }
+    }
+    return target;
+  };
   const mockAccessor = {
     isAccessible: jest.fn().mockReturnValue(false), // network is not working
     subscribe: jest.fn(),
   };
   let [callback, observer] = createCallbackObserver();
-  describe('onLog()', () => {
-    beforeEach(() => {
-      jest.resetAllMocks();
-      jest.restoreAllMocks();
-      const persistentLogsStore: PersistentLogEntity[] = [];
-      mockLogPersistent = new LogPersistent();
-      // mockLogPersistent.init = jest.fn();
-      mockLogPersistent.count = jest.fn();
-      mockLogPersistent.getAll = jest.fn();
-      mockLogPersistent.put = jest.fn();
-      mockLogPersistent.delete = jest.fn();
-      mockLogPersistent.bulkPut = jest.fn();
-      mockLogPersistent.bulkDelete = jest.fn();
-
-      mockLogPersistent.put.mockImplementation(
-        async (persistentLog: PersistentLogEntity) => {
-          persistentLogsStore.push(persistentLog);
-        },
-      );
-      mockLogPersistent.bulkPut.mockImplementation(
-        async (persistentLogs: PersistentLogEntity[]) => {
-          persistentLogs.forEach((item: PersistentLogEntity) => {
-            persistentLogsStore.push(item);
-          });
-        },
-      );
-      const deleteItem = (persistentLog: PersistentLogEntity) => {
-        const index = persistentLogsStore.findIndex(
-          item => item.id === persistentLog.id,
-        );
-        if (index > -1) {
-          persistentLogsStore.splice(index, 1);
-        }
-      };
-      mockLogPersistent.delete.mockImplementation(
-        async (persistentLog: PersistentLogEntity) => {
-          deleteItem(persistentLog);
-        },
-      );
-      mockLogPersistent.bulkDelete.mockImplementation(
-        async (persistentLogs: PersistentLogEntity[]) => {
-          for (let index = 0; index < persistentLogs.length; index++) {
-            deleteItem(persistentLogs[index]);
-          }
-        },
-      );
-      mockLogPersistent.count.mockImplementation(async () => {
-        return persistentLogsStore.length;
-      });
-      mockLogPersistent.getAll.mockImplementation(async (limit?: number) => {
-        return limit === undefined
-          ? persistentLogsStore
-          : persistentLogsStore.slice(0, limit).filter(item => !!item);
-      });
-
-      mockUploader = new MockApi();
-      mockUploader.upload = jest.fn();
-
-      [callback, observer] = createCallbackObserver();
+  beforeEach(() => {
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+    // const persistentLogsStore: PersistentLogEntity[] = [];
+    mockLogPersistent = spyOnTarget(
+      new LogMemoryPersistent(Number.MAX_SAFE_INTEGER),
+    );
+    mockLogProducer = spyOnTarget<ILogProducer>({
+      produce: (size?: number) => {
+        return [];
+      },
     });
+    mockUploader = new MockApi();
+    mockUploader.upload = jest.fn();
+
+    [callback, observer] = createCallbackObserver();
+  });
+  describe('onLog()', () => {
     it('should write into memory after log process done [JPT-537]', async () => {
       const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
         mockUploader,
         mockLogPersistent,
       );
       const mockLog = logEntityFactory.build();
-      // todo logConsumer.setLogPersistent(mockLogPersistent);
       // memoryQueue is empty
       expect(logConsumer['_memoryQueue'].size()).toEqual(0);
-      logConsumer.onLog(mockLog);
+      logConsumer.consume(mockLog);
       // write into memory, memoryQueue add one
       expect(logConsumer['_memoryQueue'].peekHead()).toEqual(mockLog);
     });
@@ -119,6 +90,7 @@ describe('LogConsumer', () => {
       });
       mockAccessor.isAccessible.mockReturnValue(true);
       const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
         mockUploader,
         mockLogPersistent,
         mockAccessor,
@@ -133,20 +105,20 @@ describe('LogConsumer', () => {
       // prepare fill uploadTaskQueue to full
       for (let i = 0; i < 2; i++) {
         expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(i);
-        logConsumer.onLog(logEntityFactory.build());
+        logConsumer.consume(logEntityFactory.build());
         expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(i + 1);
         expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(0);
       }
 
       // uploadTaskQueue is full now
-      logConsumer.onLog(logEntityFactory.build());
+      logConsumer.consume(logEntityFactory.build());
 
       // will add to persistentTaskQueue
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
       expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(1);
 
       // will add to persistentTaskQueue
-      logConsumer.onLog(logEntityFactory.build());
+      logConsumer.consume(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
       expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(2);
       // clear
@@ -163,6 +135,7 @@ describe('LogConsumer', () => {
       mockAccessor.isAccessible.mockReturnValue(false);
       // network is not working
       const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
         mockUploader,
         mockLogPersistent,
         mockAccessor,
@@ -180,14 +153,14 @@ describe('LogConsumer', () => {
 
       let taskQueueSize = logConsumer['_persistentTaskQueueLoop'].size();
       // will add to persistentTaskQueue
-      logConsumer.onLog(logEntityFactory.build());
+      logConsumer.consume(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
       expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(
         ++taskQueueSize,
       );
 
       // will add to persistentTaskQueue
-      logConsumer.onLog(logEntityFactory.build());
+      logConsumer.consume(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(2);
       expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(
         ++taskQueueSize,
@@ -205,12 +178,11 @@ describe('LogConsumer', () => {
       });
       mockAccessor.isAccessible.mockReturnValue(false);
       const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
         mockUploader,
         mockLogPersistent,
         mockAccessor,
       );
-      // mockLogPersistent.count.mockReturnValue(0);
-      logConsumer.setLogPersistent(mockLogPersistent);
       [callback, observer] = createCallbackObserver();
       logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
@@ -219,12 +191,12 @@ describe('LogConsumer', () => {
       expect(mockLogPersistent.count).toBeCalled();
 
       // will add to persistentTaskQueue
-      logConsumer.onLog(logEntityFactory.build());
+      logConsumer.consume(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
       expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(1);
 
       // will add to persistentTaskQueue
-      logConsumer.onLog(logEntityFactory.build());
+      logConsumer.consume(logEntityFactory.build());
       expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
       expect(logConsumer['_persistentTaskQueueLoop'].size()).toEqual(2);
       // clear
@@ -249,6 +221,7 @@ describe('LogConsumer', () => {
       // expect(logConsumer['_uploadTaskQueueLoop'].size()).toEqual(0);
       [callback, observer] = createCallbackObserver();
       const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
         mockUploader,
         mockLogPersistent,
         mockAccessor,
@@ -281,35 +254,35 @@ describe('LogConsumer', () => {
       });
       mockAccessor.isAccessible.mockReturnValue(true);
       const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
         mockUploader,
         mockLogPersistent,
         mockAccessor,
       );
       const logs = logEntityFactory.buildList(3);
       const rawOnLoopCompleted =
-        logConsumer['_uploadTaskQueueLoop']['_onLoopCompleted'];
-      const [callback1, observer1] = createCallbackObserver();
+        logConsumer['_uploadTaskQueueLoop']['onLoopCompleted'];
+      const [onPersistentLoopEnd, persistentLoop] = createCallbackObserver();
       logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
-        callback1();
+        onPersistentLoopEnd();
       });
-      logConsumer.setLogPersistent(mockLogPersistent);
       // waite init check
-      await observer1;
+      await persistentLoop;
       // net not busy, to net queue
       mockAccessor.isAccessible.mockReturnValue(true);
-      logConsumer.onLog(logs[0]);
-      logConsumer.onLog(logs[1]);
+      logConsumer.consume(logs[0]);
+      logConsumer.consume(logs[1]);
       // net busy, to DB queue
       mockAccessor.isAccessible.mockReturnValue(false);
-      logConsumer.onLog(logs[2]);
+      logConsumer.consume(logs[2]);
       mockAccessor.isAccessible.mockReturnValue(true);
       // wait net loop completed
-      const [callback2, observer2] = createCallbackObserver();
+      const [onUploadLoopEnd, uploadLoop] = createCallbackObserver();
       logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
         await rawOnLoopCompleted();
-        callback2();
+        onUploadLoopEnd();
       });
-      await observer2;
+      await uploadLoop;
       expect(mockUploader.upload).toHaveBeenNthCalledWith(1, [logs[0]]);
       expect(mockUploader.upload).toHaveBeenNthCalledWith(2, [logs[1]]);
       expect(mockUploader.upload).toBeCalledTimes(2);
@@ -336,6 +309,7 @@ describe('LogConsumer', () => {
       mockAccessor.isAccessible.mockReturnValue(true);
       (mockLogPersistent.count as jest.Mock).mockResolvedValue(0);
       const logConsumer = new LogUploadConsumer(
+        mockLogProducer,
         mockUploader,
         mockLogPersistent,
         mockAccessor,
@@ -343,7 +317,6 @@ describe('LogConsumer', () => {
       // mock network error
       mockUploader.upload.mockRejectedValue(new Error('abort error'));
       mockUploader.errorHandler.mockReturnValue('abort');
-      // logConsumer.setLogPersistent(mockLogPersistent);
       logConsumer['_persistentTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
@@ -356,7 +329,7 @@ describe('LogConsumer', () => {
       logConsumer['_uploadTaskQueueLoop'].setOnLoopCompleted(async () => {
         callback();
       });
-      logConsumer.onLog(logEntityFactory.build());
+      logConsumer.consume(logEntityFactory.build());
       await observer;
       // have try to upload
       expect(mockUploader.upload).toHaveBeenCalledTimes(1);
