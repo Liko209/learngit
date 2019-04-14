@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./.tsc_cache/cache_path",
     "allowJs": true,
     "checkJs": false,
     "allowSyntheticDefaultImports": true,
