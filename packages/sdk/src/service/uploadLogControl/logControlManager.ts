@@ -10,8 +10,8 @@ import { LogMemoryPersistent, LogUploadConsumer, IAccessor } from './consumer';
 import { configManager } from './config';
 import { LogUploader } from './LogUploader';
 import {
-  LogCollector,
-  LogMemoryCollector,
+  ConsumerCollector,
+  MemoryCollector,
   FixSizeMemoryLogCollection,
 } from './collectors';
 import _ from 'lodash';
@@ -22,12 +22,12 @@ export class LogControlManager implements IAccessor {
   private _isOnline: boolean;
   private _onUploadAccessorChange: (accessible: boolean) => void;
   uploadLogConsumer: LogUploadConsumer;
-  logUploadCollector: LogCollector;
-  memoryLogCollector: LogMemoryCollector;
+  logUploadCollector: ConsumerCollector;
+  memoryLogCollector: MemoryCollector;
   private constructor() {
     this._isOnline = window.navigator.onLine;
-    this.memoryLogCollector = new LogMemoryCollector();
-    this.logUploadCollector = new LogCollector(
+    this.memoryLogCollector = new MemoryCollector();
+    this.logUploadCollector = new ConsumerCollector(
       new FixSizeMemoryLogCollection(
         configManager.getConfig().memoryCacheSizeThreshold,
       ),

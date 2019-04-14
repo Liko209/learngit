@@ -1,7 +1,7 @@
 import { TaskQueueLoop } from '../TaskQueueLoop';
 import { OnTaskCompletedController, OnTaskErrorController } from '../types';
 import { Task } from '../Task';
-import { FunctionPropertyNames } from '../../../../../../types';
+import { spyOnTarget } from 'sdk/__tests__/utils';
 
 const createCallbackObserver = (): [Function, Promise<any>] => {
   let callback = () => {};
@@ -16,18 +16,6 @@ const createCallbackObserver = (): [Function, Promise<any>] => {
 };
 
 describe('TaskQueueLoop', () => {
-  const spyOnTarget = <T>(target: T) => {
-    for (const key in target) {
-      if (
-        target.hasOwnProperty(key) &&
-        Object.prototype.toString.call(target[key]) === '[object Function]'
-      ) {
-        jest.spyOn(target, (key as any) as FunctionPropertyNames<T>);
-      }
-    }
-    return target;
-  };
-
   const createTaskQueueLoop = (options?: Partial<TaskQueueLoop>) => {
     return spyOnTarget(new TaskQueueLoop(options));
   };

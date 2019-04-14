@@ -8,11 +8,11 @@ import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
 import { persistentLogFactory } from '../persistent/__tests__/LogPersistent.test';
 import { ILogUploader } from '../uploader/types';
 import { LogMemoryPersistent, ILogPersistent } from '../persistent';
-import { configManager } from '../../../config';
+import { configManager } from '../../config';
 import { Task } from '../task';
 import { LogEntity } from 'foundation';
-import { FunctionPropertyNames } from '../../../../../types';
-import { ILogProducer } from '../../../types';
+import { ILogProducer } from '../../collectors/types';
+import { spyOnTarget } from 'sdk/__tests__/utils';
 class MockApi implements ILogUploader {
   upload = jest.fn();
   errorHandler = jest.fn();
@@ -34,17 +34,7 @@ describe('LogConsumer', () => {
   let mockLogPersistent: ILogPersistent;
   let mockUploader: ILogUploader;
   let mockLogProducer: ILogProducer;
-  const spyOnTarget = <T>(target: T) => {
-    for (const key in target) {
-      if (
-        target.hasOwnProperty(key) &&
-        Object.prototype.toString.call(target[key]) === '[object Function]'
-      ) {
-        jest.spyOn(target, (key as any) as FunctionPropertyNames<T>);
-      }
-    }
-    return target;
-  };
+
   const mockAccessor = {
     isAccessible: jest.fn().mockReturnValue(false), // network is not working
     subscribe: jest.fn(),

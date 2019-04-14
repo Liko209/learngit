@@ -8,13 +8,16 @@ import { ILogCollection, ILogConsumer, ILogProducer } from '../types';
 
 const SIZE = 100 * 1024;
 
-export class LogCollector implements ILogCollector, ILogProducer {
+export class ConsumerCollector implements ILogCollector, ILogProducer {
   consumer: ILogConsumer;
 
   constructor(public collection: ILogCollection) {}
 
   setConsumer(consumer: ILogConsumer) {
     this.consumer = consumer;
+    if (this.collection.size() && consumer.canConsume()) {
+      consumer.consume(this.collection.pop());
+    }
   }
 
   onLog(logEntity: LogEntity): void {
@@ -32,9 +35,5 @@ export class LogCollector implements ILogCollector, ILogProducer {
 
   produce(size?: number): LogEntity[] {
     return this.collection.pop(size || SIZE);
-  }
-
-  getCollection(): ILogCollection {
-    return this.collection;
   }
 }

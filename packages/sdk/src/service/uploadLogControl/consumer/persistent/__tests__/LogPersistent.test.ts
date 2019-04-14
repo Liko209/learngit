@@ -14,6 +14,7 @@ const persistentLogBuilder: Builder<PersistentLogEntity> = {
   startTime: Factory.each(i => Date.now() + i * 600 * 1000),
   endTime: Factory.each(i => Date.now() + i * 1000 * 1000),
   logs: logEntityFactory.buildList(10),
+  size: 1,
 };
 
 export const persistentLogFactory = Factory.makeFactory(persistentLogBuilder);

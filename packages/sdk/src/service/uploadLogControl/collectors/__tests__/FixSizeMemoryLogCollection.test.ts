@@ -74,4 +74,14 @@ describe('FixSizeMemoryLogCollection', () => {
       expect(collection.size()).toEqual(1);
     });
   });
+  describe('get()', () => {
+    it('should add log to memory queue', () => {
+      const collection = new FixSizeMemoryLogCollection();
+      const mockData = logEntityFactory.buildList(10, { size: 0 });
+      mockData.forEach(item => {
+        collection.push(item);
+      });
+      expect(collection.get()).toEqual(mockData);
+    });
+  });
 });

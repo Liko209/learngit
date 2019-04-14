@@ -7,7 +7,7 @@ import { ILogCollector, LogEntity } from 'foundation';
 import { FixSizeMemoryLogCollection } from '../FixSizeMemoryLogCollection';
 import { configManager } from '../../config';
 
-export class LogMemoryCollector implements ILogCollector {
+export class MemoryCollector implements ILogCollector {
   private _collection: FixSizeMemoryLogCollection;
 
   constructor() {
