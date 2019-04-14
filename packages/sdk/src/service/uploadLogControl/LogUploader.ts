@@ -69,22 +69,18 @@ export class LogUploader implements ILogUploader {
 
   private async _getUserInfo() {
     const accountService = ServiceLoader.getInstance<AccountService>(
-      ServiceConfig.PERSON_SERVICE,
+      ServiceConfig.ACCOUNT_SERVICE,
     );
-
-    let id;
-    let email = DEFAULT_EMAIL;
+    let userInfo;
     try {
-      const userConfig = new AccountUserConfig();
-      id = userConfig.getGlipUserId();
-      email = (await accountService.getUserEmail()) || '';
+      userInfo = await accountService.getCurrentUserInfo();
     } catch (error) {
-      mainLogger.warn(error);
+      mainLogger.debug('getUserInfo fail', error);
     }
-    const userId = id ? id.toString() : '';
+    const { email = DEFAULT_EMAIL, id = '' } = userInfo || {};
     return {
       email,
-      userId,
+      userId: id,
     };
   }
 
