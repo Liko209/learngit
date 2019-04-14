@@ -5,8 +5,6 @@
  */
 import axios, { AxiosError } from 'axios';
 import { HTTP_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
-import { AccountUserConfig } from 'sdk/module/account/config';
-
 import { Api } from 'sdk/api';
 import { Pal } from 'sdk/pal';
 import { ILogUploader } from './consumer';
