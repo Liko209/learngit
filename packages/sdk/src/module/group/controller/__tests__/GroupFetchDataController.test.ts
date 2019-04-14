@@ -822,7 +822,7 @@ describe('GroupFetchDataController', () => {
     });
   });
 
-  describe.skip('doFuzzySearch use soundex', () => {
+  describe('doFuzzySearch use soundex', () => {
     beforeEach(() => {
       entityCacheController.clear();
       groupService['_entityCacheController'] = entityCacheController;

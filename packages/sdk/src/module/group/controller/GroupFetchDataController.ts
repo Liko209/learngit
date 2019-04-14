@@ -256,7 +256,7 @@ export class GroupFetchDataController {
           group.members,
           this._currentUserId,
         );
-        const groupName = this._getGroupDisplayName(group, allPersons);
+        const groupName = this.getGroupNameByMultiMembers(allPersons);
         const { searchKeyTerms, searchKeyTermsToSoundex } = terms;
         const lowerCaseGroupName = groupName.toLowerCase();
         const isFuzzyMatched =
@@ -320,7 +320,7 @@ export class GroupFetchDataController {
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
   ) {
-    let groupName = '';
+    const groupName = '';
     const currentUserId = this._currentUserId;
     return (group: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -342,32 +342,41 @@ export class GroupFetchDataController {
         const shouldFetchAll =
           fetchAllIfSearchKeyEmpty! && searchKeyTerms.length === 0;
         isMatched = shouldFetchAll && isValidGroup;
-        const allPerson = this.getAllPersonOfGroup(
-          group.members,
-          currentUserId,
-        );
-        groupName = this._getGroupDisplayName(group, allPerson);
-
         if (isMatched || searchKeyTerms.length === 0) {
           break;
         }
-
-        const lowerCaseName = groupName.toLowerCase();
-        if (
-          !(
+        let isFuzzy: boolean = false;
+        let lowerCaseName: string = '';
+        if (group.is_team) {
+          lowerCaseName = group.set_abbreviation.toLocaleLowerCase();
+          isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseName,
               searchKeyTerms,
             ) ||
-            (searchKeyTermsToSoundex.length &&
+            (searchKeyTermsToSoundex.length > 0 &&
               this.entityCacheSearchController.isSoundexMatched(
-                group.is_team
-                  ? this.groupService.getSoundexById(group.id)
-                  : this.getSoundexValueOfGroup(allPerson),
+                this.groupService.getSoundexById(group.id),
                 searchKeyTermsToSoundex,
-              ))
-          )
-        ) {
+              ));
+        } else {
+          const allPerson = this.getAllPersonOfGroup(
+            group.members,
+            currentUserId,
+          );
+          lowerCaseName = this.getGroupNameByMultiMembers(allPerson);
+          isFuzzy =
+            this.entityCacheSearchController.isFuzzyMatched(
+              lowerCaseName,
+              searchKeyTerms,
+            ) ||
+            (searchKeyTermsToSoundex.length > 0 &&
+              this.entityCacheSearchController.isSoundexMatched(
+                this.getSoundexValueOfGroup(allPerson),
+                searchKeyTermsToSoundex,
+              ));
+        }
+        if (!isFuzzy) {
           break;
         }
 
@@ -511,12 +520,6 @@ export class GroupFetchDataController {
     );
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
-  }
-
-  private _getGroupDisplayName(group: Group, allPerson: Person[]) {
-    return group.is_team
-      ? group.set_abbreviation
-      : this.getGroupNameByMultiMembers(allPerson);
   }
 
   getAllPersonOfGroup(members: number[], currentUserId: number) {
