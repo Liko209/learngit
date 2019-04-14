@@ -2,10 +2,9 @@ import { Logger } from '../Logger';
 import { LOG_LEVEL } from '../constants';
 import { logConfigFactory, logEntityFactory } from './factory';
 import { configManager } from '../config';
-import { ILogConsumer } from '../types';
-const mockConsumer: ILogConsumer = {
+import { ILogCollector } from '../types';
+const mockCollector: ILogCollector = {
   onLog: jest.fn(),
-  flush: jest.fn(),
 };
 
 describe('Logger', () => {
@@ -99,7 +98,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addCollector(mockConsumer);
+      logger.addCollector(mockCollector);
       const mockConfig = logConfigFactory.build({
         level: LOG_LEVEL.ALL,
         filter: jest.fn().mockReturnValue(true),
@@ -156,8 +155,8 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addCollector(mockConsumer);
-      const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
+      logger.addCollector(mockCollector);
+      const spyConsumerOnLog = jest.spyOn(mockCollector, 'onLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
       });
@@ -176,7 +175,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
+      const spyConsumerOnLog = jest.spyOn(mockCollector, 'onLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
       });
@@ -197,8 +196,8 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addCollector(mockConsumer);
-      const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
+      logger.addCollector(mockCollector);
+      const spyConsumerOnLog = jest.spyOn(mockCollector, 'onLog');
       const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
@@ -222,8 +221,8 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addCollector(mockConsumer);
-      const spyConsumerOnLog = jest.spyOn(mockConsumer, 'onLog');
+      logger.addCollector(mockCollector);
+      const spyConsumerOnLog = jest.spyOn(mockCollector, 'onLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.LOG,
       });
@@ -242,7 +241,7 @@ describe('Logger', () => {
       const mockProcess = jest
         .spyOn(logger['_logEntityProcessor'], 'process')
         .mockImplementation(item => item);
-      logger.addCollector(mockConsumer);
+      logger.addCollector(mockCollector);
       const spyDoLog = jest.spyOn(logger._consoleLoggerCore, 'doLog');
       const mockLog = logEntityFactory.build({
         level: LOG_LEVEL.WARN,
@@ -307,17 +306,17 @@ describe('Logger', () => {
   describe('addConsumer()', () => {
     it('should set consumer.', () => {
       const logger = new Logger();
-      logger.addCollector(mockConsumer);
-      expect(logger['_logConsumers']).toEqual([mockConsumer]);
+      logger.addCollector(mockCollector);
+      expect(logger['_logCollectors']).toEqual([mockCollector]);
     });
   });
   describe('addConsumer()', () => {
     it('should add consumer.', () => {
       const logger = new Logger();
-      logger.addCollector(mockConsumer);
-      expect(logger['_logConsumers'].length).toEqual(1);
-      logger.addCollector(mockConsumer);
-      expect(logger['_logConsumers'].length).toEqual(2);
+      logger.addCollector(mockCollector);
+      expect(logger['_logCollectors'].length).toEqual(1);
+      logger.addCollector(mockCollector);
+      expect(logger['_logCollectors'].length).toEqual(2);
     });
   });
 });

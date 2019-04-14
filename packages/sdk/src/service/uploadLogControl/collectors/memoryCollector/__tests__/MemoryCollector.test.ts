@@ -7,7 +7,7 @@ describe('MemoryCollector', () => {
       const collector = new MemoryCollector();
       const mockData = logEntityFactory.build({ size: 0 });
       collector.onLog(mockData);
-      expect(collector.getAll()).toEqual(mockData);
+      expect(collector.getAll()).toEqual([mockData]);
     });
   });
 });

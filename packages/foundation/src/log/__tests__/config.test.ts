@@ -30,7 +30,7 @@ describe('config', () => {
           enabled: false,
         },
       });
-      expect(result).toEqual({ ...rawConfig, consumer: { enabled: false } });
+      expect(result).toEqual({ ...rawConfig, collector: { enabled: false } });
     });
 
     it('should replace array value in config', async () => {

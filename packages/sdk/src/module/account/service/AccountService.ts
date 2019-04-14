@@ -63,7 +63,12 @@ class AccountService extends AbstractService
     }
     const userConfig = new AccountUserConfig();
     const userId = userConfig.getGlipUserId();
-    return await personService.getById(userId).catch();
+    try {
+      return await personService.getById(userId);
+    } catch (error) {
+      mainLogger.debug('Get user info fail:', error);
+    }
+    return null;
   }
 
   async getUserEmail(): Promise<Nullable<string>> {
