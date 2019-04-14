@@ -29,11 +29,10 @@ class KeypadViewComponent extends Component<Props> {
           disableToolTip={true}
           onClick={this._handleKeypad}
           size="xxlarge"
-          disabled={true}
         >
           keypad
         </JuiIconButton>
-        <span className="disabled">{t('telephony.action.keypad')}</span>
+        <span>{t('telephony.action.keypad')}</span>
       </JuiKeypadAction>
     );
   }

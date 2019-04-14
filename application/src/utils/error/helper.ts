@@ -9,6 +9,8 @@ import pkg from '../../../package.json';
 import { UserContextInfo } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { AccountService } from 'sdk/module/account';
+import { UAParser } from 'ua-parser-js';
+const uaParser = new UAParser(navigator.userAgent);
 
 export async function getAppContextInfo(): Promise<UserContextInfo> {
   const config = require('@/config').default;
@@ -22,6 +24,11 @@ export async function getAppContextInfo(): Promise<UserContextInfo> {
     fetchVersionInfo(),
   ]).then(([userInfo, { deployedVersion }]) => {
     const { display_name = '', email = '' } = userInfo || {};
+    const {
+      name: browserName,
+      version: browserVersion,
+    } = uaParser.getBrowser();
+    const { name: osName, version: osVersion } = uaParser.getOS();
     return {
       email,
       username: display_name,
@@ -30,7 +37,9 @@ export async function getAppContextInfo(): Promise<UserContextInfo> {
       env: config.getEnv(),
       version: deployedVersion || pkg.version,
       url: location.href,
-      environment: window.jupiterElectron ? 'Electron' : 'Browser',
+      platform: window.jupiterElectron ? 'Desktop' : 'Web',
+      browser: `${browserName} - ${browserVersion}`,
+      os: `${osName} - ${osVersion}`,
     };
   });
 }

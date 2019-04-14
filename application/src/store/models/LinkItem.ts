@@ -25,6 +25,14 @@ export default class LinkItemModel extends ItemModel {
     provider_name: string;
     favicon_url: string;
     url: string;
+    title: string;
+    object: {
+      duration?: number;
+      width?: number;
+      html?: string;
+      type?: 'video';
+      height?: number;
+    };
   };
   @observable
   favicon: string;
@@ -47,6 +55,7 @@ export default class LinkItemModel extends ItemModel {
       created_at,
       creator_id,
     } = data;
+
     this.summary = summary || '';
     this.title = title || '';
     this.url = url;
@@ -57,6 +66,19 @@ export default class LinkItemModel extends ItemModel {
     this.favicon = favicon;
     this.createdAt = created_at;
     this.creatorId = creator_id;
+  }
+
+  @computed
+  get isVideo() {
+    const data = this.data;
+    if (!data) {
+      return false;
+    }
+
+    if (data.object && data.object.type && data.object.type === 'video') {
+      return true;
+    }
+    return false;
   }
 
   @computed

@@ -8,6 +8,7 @@ import { GroupEntityCacheController } from '../GroupEntityCacheController';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { Group } from '../../entity';
 import { GroupService } from '../../service/GroupService';
+const soundex = require('soundex-code');
 
 jest.mock('../../../../module/account/config');
 jest.mock('../../../../api');
@@ -17,13 +18,36 @@ function clearMocks() {
   jest.resetAllMocks();
   jest.restoreAllMocks();
 }
+const testTeamData = [
+  {
+    id: 2,
+    is_team: false,
+    members: [1, 2],
+  },
+  {
+    id: 3,
+    is_team: true,
+    set_abbreviation: 'This is a team',
+    members: [1, 2, 3],
+  },
+];
 
+const soundexResult = [
+  soundex('this'),
+  soundex('is'),
+  soundex('a'),
+  soundex('team'),
+];
 describe('GroupEntityCacheController', () => {
   let groupEntityCacheController: GroupEntityCacheController;
   function setUp() {
     const groupService: any = new GroupService();
     groupEntityCacheController = new GroupEntityCacheController(groupService);
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
+  }
+
+  function prepareForGroupData() {
+    groupEntityCacheController.initialize(testTeamData as Group[]);
   }
   beforeEach(() => {
     clearMocks();
@@ -56,30 +80,16 @@ describe('GroupEntityCacheController', () => {
     });
 
     it('should set individual groups to individual cache when init', () => {
-      groupEntityCacheController.initialize([
-        {
-          id: 2,
-          is_team: false,
-          members: [1, 2],
-        },
-        {
-          id: 3,
-          is_team: true,
-          members: [1, 2, 3],
-        },
-      ] as Group[]);
-
+      prepareForGroupData();
       expect(groupEntityCacheController.getIndividualGroups()).toEqual(
-        new Map([
-          [
-            2,
-            {
-              id: 2,
-              is_team: false,
-              members: [1, 2],
-            },
-          ],
-        ]),
+        new Map([[2, testTeamData[0]]]),
+      );
+    });
+
+    it('should set soundexValue when init', () => {
+      prepareForGroupData();
+      expect(groupEntityCacheController.getSoundexById(3)).toEqual(
+        soundexResult,
       );
     });
   });
@@ -88,18 +98,7 @@ describe('GroupEntityCacheController', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
-      groupEntityCacheController.initialize([
-        {
-          id: 2,
-          is_team: false,
-          members: [1, 2],
-        },
-        {
-          id: 3,
-          is_team: true,
-          members: [1, 2, 3],
-        },
-      ] as Group[]);
+      prepareForGroupData();
     });
 
     it('should clear all data after clear', async () => {
@@ -114,6 +113,7 @@ describe('GroupEntityCacheController', () => {
       expect(groupEntityCacheController.getIndividualGroups()).toEqual(
         new Map(),
       );
+      expect(groupEntityCacheController.getSoundexById(3)).toEqual([]);
     });
   });
 
@@ -121,66 +121,44 @@ describe('GroupEntityCacheController', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
-      groupEntityCacheController.initialize([
-        {
-          id: 2,
-          is_team: false,
-          members: [1, 2],
-        },
-        {
-          id: 3,
-          is_team: true,
-          members: [1, 2, 3],
-        },
-      ] as Group[]);
+      prepareForGroupData();
     });
 
     it('should return individual groups as expected', () => {
       expect(groupEntityCacheController.getIndividualGroups()).toEqual(
-        new Map([
-          [
-            2,
-            {
-              id: 2,
-              is_team: false,
-              members: [1, 2],
-            },
-          ],
-        ]),
+        new Map([[2, testTeamData[0]]]),
       );
     });
   });
+  describe('getSoundexById', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+      prepareForGroupData();
+    });
 
+    it('should soundex value as expected when group is a team', () => {
+      expect(groupEntityCacheController.getSoundexById(3)).toEqual(
+        soundexResult,
+      );
+    });
+
+    it('should empty array as expected when group is a not team', () => {
+      expect(groupEntityCacheController.getSoundexById(2)).toEqual([]);
+    });
+  });
   describe('updateEx', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
     });
 
-    const entities = new Map([
-      [
-        2,
-        {
-          id: 2,
-          is_team: false,
-          members: [1, 2],
-        } as Group,
-      ],
-    ]);
+    const entities = new Map([[2, testTeamData[0] as Group]]);
 
     it('should add to cache when is new group', () => {
       groupEntityCacheController.updateEx(entities);
       expect(groupEntityCacheController.getIndividualGroups()).toEqual(
-        new Map([
-          [
-            2,
-            {
-              id: 2,
-              is_team: false,
-              members: [1, 2],
-            },
-          ],
-        ]),
+        new Map([[2, testTeamData[0]]]),
       );
     });
   });
@@ -192,34 +170,15 @@ describe('GroupEntityCacheController', () => {
     });
 
     it('update, should add to cache when update a not exist group', () => {
-      groupEntityCacheController.update({
-        id: 2,
-        is_team: false,
-        members: [1, 2],
-      });
+      groupEntityCacheController.update(testTeamData[0]);
 
       const res = groupEntityCacheController.getIndividualGroups();
-      expect(res).toEqual(
-        new Map([
-          [
-            2,
-            {
-              id: 2,
-              is_team: false,
-              members: [1, 2],
-            },
-          ],
-        ]),
-      );
+      expect(res).toEqual(new Map([[2, testTeamData[0]]]));
     });
 
     it('update multi groups, should add to cache when update a not exist group', () => {
       groupEntityCacheController.update([
-        {
-          id: 2,
-          is_team: false,
-          members: [1, 2],
-        },
+        testTeamData[0],
         {
           id: 3,
           is_team: true,
@@ -228,18 +187,7 @@ describe('GroupEntityCacheController', () => {
       ]);
 
       const res = groupEntityCacheController.getIndividualGroups();
-      expect(res).toEqual(
-        new Map([
-          [
-            2,
-            {
-              id: 2,
-              is_team: false,
-              members: [1, 2],
-            },
-          ],
-        ]),
-      );
+      expect(res).toEqual(new Map([[2, testTeamData[0]]]));
     });
 
     it('update, should not add to cache when update a not exist group but not a individual group', () => {
@@ -249,11 +197,7 @@ describe('GroupEntityCacheController', () => {
           is_team: false,
           members: [1, 2, 3],
         },
-        {
-          id: 3,
-          is_team: true,
-          members: [1, 2, 3],
-        },
+        testTeamData[1],
       ]);
 
       const res = groupEntityCacheController.getIndividualGroups();
@@ -262,11 +206,7 @@ describe('GroupEntityCacheController', () => {
 
     it('should add to cache when put a individual group', () => {
       groupEntityCacheController.put([
-        {
-          id: 2,
-          is_team: false,
-          members: [1, 2],
-        },
+        testTeamData[0],
         {
           id: 3,
           is_team: true,
@@ -275,18 +215,7 @@ describe('GroupEntityCacheController', () => {
       ] as Group[]);
 
       const res = groupEntityCacheController.getIndividualGroups();
-      expect(res).toEqual(
-        new Map([
-          [
-            2,
-            {
-              id: 2,
-              is_team: false,
-              members: [1, 2],
-            },
-          ],
-        ]),
-      );
+      expect(res).toEqual(new Map([[2, testTeamData[0]]]));
     });
 
     it('should not add to cache when put a multiple people group or team', () => {
@@ -296,11 +225,7 @@ describe('GroupEntityCacheController', () => {
           is_team: false,
           members: [1, 2, 3],
         },
-        {
-          id: 3,
-          is_team: true,
-          members: [1, 2, 3],
-        },
+        testTeamData[1],
       ] as Group[]);
 
       const res = groupEntityCacheController.getIndividualGroups();

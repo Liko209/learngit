@@ -87,10 +87,7 @@ class FilesViewModel extends StoreViewModel<FilesViewProps> {
       {
         id: item.id,
         type: item.type,
-        versionUrl:
-          item.versions.length && item.versions[0].url
-            ? item.versions[0].url
-            : '',
+        versionUrl: item.versionUrl || '',
         versions: item.versions,
       },
       rule,

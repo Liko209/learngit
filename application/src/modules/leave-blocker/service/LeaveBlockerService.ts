@@ -13,7 +13,9 @@ class LeaveBlockerService implements ILeaveBlockerService {
 
   init() {
     window.onbeforeunload = () => {
-      return this.handlers.some((handler: any) => handler()) ? true : undefined;
+      return this.handlers.some((handler: LeaveHandler) => handler())
+        ? true
+        : undefined;
     };
   }
 

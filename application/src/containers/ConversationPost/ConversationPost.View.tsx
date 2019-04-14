@@ -6,11 +6,12 @@
 
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
-import { ConversationPostViewProps, POST_TYPE } from './types';
+import { ConversationPostViewProps } from './types';
 import { ConversationCard } from '../ConversationCard';
 import { Notification } from './Notification';
 import { MiniCard } from '@/containers/MiniCard';
 import { Profile, PROFILE_TYPE } from '@/containers/Profile';
+import { POST_TYPE } from '@/common/getPostType';
 
 const PostTypeMappingComponent = {
   [POST_TYPE.POST]: ConversationCard,
