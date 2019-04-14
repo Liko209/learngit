@@ -8,7 +8,7 @@ import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import pkg from '../../../package.json';
 import { UserContextInfo } from './types';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-import { AccountService } from 'sdk/src/module/account';
+import { AccountService } from 'sdk/module/account';
 
 export async function getAppContextInfo(): Promise<UserContextInfo> {
   const config = require('@/config').default;
