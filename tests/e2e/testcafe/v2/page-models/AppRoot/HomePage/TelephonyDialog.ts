@@ -5,11 +5,11 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 
 export class TelephonyDialog extends BaseWebComponent {
   get self() {
-    return this.getSelector('[role="dialog"]');
+    return this.getSelector('[role="document"] > .react-draggable');
   }
-  
+
   get callTime() {
-    return // TODO: automationId
+    return this.self.find("div > div > div > div > div"); // TODO: automationId
   }
 
   get avatar() {
@@ -17,22 +17,116 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get name() {
-    return // TODO: automationId 
+    return this.avatar.nextSibling('div').find('div').nth(0);// TODO: automationId
   }
 
   get extension() {
-    return // TODO: automationId 
-  }
-
-  get handUpIcon() {
-    return this.getSelectorByIcon('hand_up', this.self);
+    return this.avatar.nextSibling('div').find('div').nth(1);// TODO: automationId
   }
 
   get handUpButton() {
-    return this.handUpIcon.parent('button');
+    return this.buttonOfIcon('hand_up');
   }
 
   async clickHandUpButton() {
-    await this.t.click(this.handUpButton);
+    await this.click(this.handUpButton);
   }
+
+  get muteButton() {
+    return this.buttonOfIcon('mic');
+  }
+
+  async clickMuteButton() {
+    await this.click(this.muteButton);
+  }
+
+  get unMuteButton() {
+    return this.buttonOfIcon('mic_off');
+  }
+
+  async clickUnMuteButton() {
+    return this.click(this.unMuteButton);
+  }
+
+  get keypadButton() {
+    return this.buttonOfIcon('keypad');
+  }
+
+  async clickKeypadButton() {
+    await this.click(this.keypadButton);
+  }
+
+  get holdToggle() {
+    return this.getSelectorByAutomationId('holdBtn');
+  }
+
+  get holdButton() {
+    return this.holdToggle.withAttribute('aria-label', 'Hold the call');
+  }
+
+  async clickHoldButton() {
+    return this.click(this.holdButton);
+  }
+
+  get unHoldButton() {
+    return this.holdToggle('holdBtn').withAttribute('aria-label', 'Resume the call');
+  }
+
+  async clickUnHoldButton() {
+    await this.click(this.unHoldButton);
+  }
+
+  get addButton() {
+    return this.buttonOfIcon('call_add');
+  }
+
+  async clickAddButton() {
+    await this.click(this.addButton);
+  }
+
+  get recordToggle() {
+    return this.getSelectorByAutomationId('recordBtn');
+  }
+
+  get recordButton() {
+    return this.recordToggle.withAttribute('aria-label', 'Record the call');
+  }
+
+  get stopRecordButton() {
+    return this.recordToggle.withAttribute('aria-label', 'Stop recording');
+  }
+
+  async clickRecordButton() {
+    await this.click(this.recordButton);
+  }
+
+  async clickStopRecordButton() {
+    await this.click(this.stopRecordButton);
+  }
+
+  get actionsButton() {
+    return this.buttonOfIcon('call_more');
+  }
+
+  async clickActionsButton() {
+    await this.click(this.actionsButton);
+  }
+
+  get backButtonOnKeypadPage() {
+    return this.buttonOfIcon('previous');
+  }
+
+  async clickBackButton() {
+    return this.click(this.backButtonOnKeypadPage);
+  }
+
+  get keyRecordArea() {
+    return this.backButtonOnKeypadPage.nextSibling('div'); // todo: automation id
+  }
+
+  // keypad
+  get keyOne() {
+    return this.buttonOfIcon('one')
+  }
+
 }

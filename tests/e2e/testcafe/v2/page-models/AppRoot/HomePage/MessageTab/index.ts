@@ -276,12 +276,12 @@ class CloseConversationModal extends BaseWebComponent {
 
   get cancelButton() {
     this.warnFlakySelector();
-    return this.button('Cancel');
+    return this.buttonOfText('Cancel');
   }
 
   get closeButton() {
     this.warnFlakySelector();
-    return this.button('Close');
+    return this.buttonOfText('Close');
   }
 
   async toggleDontAskAgain() {
