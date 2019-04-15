@@ -48,6 +48,10 @@ export abstract class BaseWebComponent {
     return this.self.visible;
   }
 
+  get click() {
+    return this.t.click;
+  }
+
   get textContent() {
     return this.self.textContent;
   }
@@ -116,8 +120,12 @@ export abstract class BaseWebComponent {
     }
   }
 
-  button(name: string) {
-    return this.self.find('button').withText(name);
+  buttonOfText(text: string) {
+    return this.self.find('button').withText(text);
+  }
+
+  buttonOfIcon(icon: string) {
+    return this.getSelectorByIcon(icon, this.self).parent('button');
   }
 
   checkboxOf(sel: Selector) {

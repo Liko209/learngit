@@ -22,11 +22,11 @@ export class TelephonyPOC extends BaseWebComponent {
   }
 
   get dialButton() {
-    return this.button('Dial');
+    return this.buttonOfText('Dial');
   }
 
   get endButton() {
-    return this.button('End');
+    return this.buttonOfText('End');
   }
 
   async clickDial() {
