@@ -81,6 +81,8 @@ const WrappedMuiIconButton = ({
   colorScope,
   alwaysEnableTooltip,
   tooltipForceHide,
+  stretchIcon,
+  shouldPersistBg,
   ...rest
 }: StyledIconButtonProps) => (
     <MuiIconButton
@@ -121,9 +123,9 @@ const StyledIconButton = styled(WrappedMuiIconButton)`
     ${StyledIcon} {
       &, svg {
         font-size: ${({ size = 'medium', theme, stretchIcon, variant }) =>
-          stretchIcon ? width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
-            theme,
-          }) : width(iconSizes[size])({ theme })};
+    stretchIcon ? width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
+      theme,
+    }) : width(iconSizes[size])({ theme })};
       }
     }
     &:hover {

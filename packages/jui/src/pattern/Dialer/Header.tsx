@@ -61,7 +61,7 @@ const StyledHeaderNoPadding = styled('div')`
     display: flex;
     justify-content: space-between;
     box-sizing: border-box;
-    height: ${height(14)};
+    height: ${height(13)};
   }
 `;
 
