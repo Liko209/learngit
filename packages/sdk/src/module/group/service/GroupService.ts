@@ -27,7 +27,12 @@ import { NotificationEntityUpdatePayload } from '../../../service/notificationCe
 import { Post } from '../../post/entity';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import {
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../utils';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
@@ -48,6 +53,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
           .setAsTrue4HasMoreConfigByDirection,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return (
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP) ||
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM)
+      );
+    });
   }
   protected buildEntityCacheController() {
     return GroupEntityCacheController.buildGroupEntityCacheController(this);
