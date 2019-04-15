@@ -36,7 +36,6 @@ const LinkItemContents = styled.div`
   flex-direction: column;
   width: 100%;
   max-width: ${width(160)};
-  max-height: ${height(90)};
 `;
 
 const Title = styled.p`
