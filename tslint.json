@@ -33,7 +33,6 @@
     "no-console": [true, "log", "debug", "info", "time", "timeEnd", "trace"]
   },
   "jsRules": {
-    "no-empty": true,
-    "no-console": [true, "log", "debug", "info", "time", "timeEnd", "trace"]
+    "no-empty": true
   }
 }
