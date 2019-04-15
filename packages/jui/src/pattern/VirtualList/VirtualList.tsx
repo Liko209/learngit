@@ -279,8 +279,10 @@ class JuiVirtualList<K, V> extends Component<JuiVirtualListProps<K, V>, State> {
   scrollToCell = (index: number) => {
     if (Number.isInteger(index)) {
       // This is trick for virtual list.
-      this._listRef.scrollToRow(index);
-      window.requestAnimationFrame(() => this._listRef.scrollToRow(index));
+      if (this._listRef) {
+        this._listRef.scrollToRow(index);
+        window.requestAnimationFrame(() => this._listRef.scrollToRow(index));
+      }
     }
   }
 
