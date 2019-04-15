@@ -11,7 +11,7 @@ import { daoManager, QUERY_DIRECTION } from '../../../dao';
 import { PostDao } from '../../../module/post/dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
-import { DEFAULT_PAGE_SIZE, LOG_INDEX_DATA_POST } from '../constant';
+import { DEFAULT_PAGE_SIZE } from '../constant';
 import { ProfileService } from '../../profile';
 import { Item } from '../../../module/item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
@@ -19,8 +19,6 @@ import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
-import { mainLogger } from 'foundation';
 
 class PostService extends EntityBaseService<Post> {
   static serviceName = 'PostService';
