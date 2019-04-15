@@ -134,19 +134,9 @@ class PostService extends EntityBaseService<Post> {
   }
 
   handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
-      logId,
-    );
     await this.getPostController()
       .getPostDataController()
       .handleIndexPosts(data, maxPostsExceed);
-    mainLogger.info(
-      LOG_INDEX_DATA_POST,
-      'handleData source: SYNC_SOURCE.INDEX',
-    );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {

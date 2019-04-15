@@ -494,7 +494,7 @@ class SyncController {
     );
     const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_GROUP,
+      PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
       logId,
     );
     await PostService.getInstance<PostService>().handleIndexData(

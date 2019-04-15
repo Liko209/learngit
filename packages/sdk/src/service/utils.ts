@@ -77,6 +77,7 @@ const baseHandleData = async (
           },
         );
       } else {
+        mainLogger.info(`baseHandleData() emitEntityUpdate for ${eventKey}`);
         notificationCenter.emitEntityUpdate(eventKey, data);
       }
     }
