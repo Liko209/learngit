@@ -310,10 +310,16 @@ describe('PostSearchController', () => {
       setUp();
     });
 
-    it('should throw an error when do scroll search with an not existed request id', async () => {
+    it('should just return empty data when do scroll search with an not existed request id', async () => {
       const invalidId = Date.now();
-      const promise = postSearchController.scrollSearchPosts(invalidId);
-      expect(promise).rejects.toThrow();
+      const promise = await postSearchController.scrollSearchPosts(invalidId);
+
+      expect(promise).toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        requestId: invalidId,
+      });
     });
 
     it('should throw an error when request encounter an unexpected error', async () => {

@@ -224,14 +224,17 @@ class PostSearchController {
       });
     }
 
-    mainLogger.warn(
+    mainLogger.info(
       LOG_TAG,
       `scrollSearchPosts, failed to find request id, ${requestId}`,
     );
 
-    return Promise.reject(
-      new JSdkError(ERROR_CODES_SDK.GENERAL, 'failed to search more'),
-    );
+    return Promise.resolve({
+      requestId,
+      posts: [],
+      items: [],
+      hasMore: false,
+    });
   }
 
   async endPostSearch() {
