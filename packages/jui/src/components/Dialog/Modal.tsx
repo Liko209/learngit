@@ -3,7 +3,7 @@
  * @Date: 2018-10-10 13:34:32
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { DialogActionsProps } from '@material-ui/core/DialogActions';
 import { JuiDialog, JuiDialogProps } from './Dialog';
 import { JuiDialogTitle } from './DialogTitle';
@@ -49,7 +49,7 @@ type JuiDialogFuncProps = { componentProps?: any } & Omit<
   'open'
 >;
 
-class JuiModal extends Component<JuiModalProps, {}> {
+class JuiModal extends PureComponent<JuiModalProps, {}> {
   renderDefaultFooter() {
     const {
       onCancel,
