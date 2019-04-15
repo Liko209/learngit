@@ -5,7 +5,7 @@
  */
 import _ from 'lodash';
 import { observable, computed } from 'mobx';
-import { ISortableModel } from '@/store/base';
+import { ISortableModel, ISortableModelWithData } from '@/store/base';
 
 import { StreamItemType, StreamItem } from '../../types';
 import { Assembler } from './Assembler';
@@ -111,7 +111,9 @@ class NewMessageSeparatorHandler extends Assembler {
     const postNext = _.find(postList, ({ id }) => id >= latestDeletedPostId);
     let filteredStreamItemList = streamItemList;
     if (!postNext) {
-      filteredStreamItemList = streamItemList.filter((item: StreamItem) => this.separatorId !== item.id);
+      filteredStreamItemList = streamItemList.filter(
+        (item: StreamItem) => this.separatorId !== item.id,
+      );
     }
     return { ...args, streamItemList: filteredStreamItemList };
   }
@@ -137,13 +139,17 @@ class NewMessageSeparatorHandler extends Assembler {
     this._disabled = false;
   }
 
-  private _findNextOthersPost(allPosts: ISortableModel[], postId: number) {
+  private _findNextOthersPost(
+    allPosts: ISortableModelWithData<{ creator_id: number }>[],
+    postId: number,
+  ) {
     const len = allPosts.length;
     let targetPost;
     for (let i = 0; i < len; i++) {
       const post = allPosts[i];
       if (
         post.id > postId &&
+        post.data &&
         post.data.creator_id !== this._userId
       ) {
         targetPost = post;

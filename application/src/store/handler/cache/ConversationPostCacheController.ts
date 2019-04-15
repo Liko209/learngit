@@ -7,6 +7,7 @@
 import {
   FetchSortableDataListHandler,
   ISortableModel,
+  ISortableModelWithData,
   TDelta,
   DeltaDataHandler,
 } from '@/store/base';
@@ -75,7 +76,7 @@ class ConversationPostCacheController extends PostCacheController {
 
             await Promise.all(
               sortableModels.map(
-                async (sortableModel: ISortableModel<Post>) => {
+                async (sortableModel: ISortableModelWithData<Post>) => {
                   if (
                     sortableModel &&
                     sortableModel.id &&

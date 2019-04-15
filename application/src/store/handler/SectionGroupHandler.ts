@@ -9,6 +9,7 @@ import {
   IFetchSortableDataProvider,
   IFetchSortableDataListHandlerOptions,
   ISortableModel,
+  ISortableModelWithData,
 } from '@/store/base/fetch';
 import BaseNotificationSubscribable from '@/store/base/BaseNotificationSubscribable';
 import { GROUP_QUERY_TYPE, ENTITY, EVENT_TYPES } from 'sdk/service';
@@ -36,7 +37,7 @@ import { mainLogger } from 'sdk';
 import preFetchConversationDataHandler from './PreFetchConversationDataHandler';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
-function groupTransformFunc(data: Group): ISortableModel<Group> {
+function groupTransformFunc(data: Group): ISortableModelWithData<Group> {
   const {
     most_recent_post_created_at = 0,
     created_at,
@@ -63,7 +64,7 @@ class GroupDataProvider implements IFetchSortableDataProvider<Group> {
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor: ISortableModel<Group>,
+    anchor: ISortableModelWithData<Group>,
   ): Promise<{ data: Group[]; hasMore: boolean }> {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
@@ -339,7 +340,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
 
   private _handleGroupChanged = (delta: TDelta) => {
     const { deleted, updated, added } = delta;
-    const addedIds = added.map((item: ISortableModel<any>) => item.id);
+    const addedIds = added.map((item: ISortableModelWithData<any>) => item.id);
 
     if (deleted.length) {
       const trulyDeleted = _.differenceBy(deleted, addedIds);
@@ -409,7 +410,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
       return {
         id: model.id,
         sortValue: 0,
-      } as ISortableModel<Group>;
+      } as ISortableModelWithData<Group>;
     };
 
     return this._addSection(SECTION_TYPE.FAVORITE, GROUP_QUERY_TYPE.FAVORITE, {

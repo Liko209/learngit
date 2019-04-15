@@ -6,13 +6,13 @@
 import { TDeltaWithData, StreamItem } from '../types';
 import { Assembler } from './Assembler/Assembler';
 import { Post } from 'sdk/module/post/entity';
-import { ISortableModel } from '@/store/base';
+import { ISortableModelWithData } from '@/store/base';
 import _ from 'lodash';
 export class StreamItemAssemblyLine {
   constructor(private _assemblers: Assembler[]) {}
   process = (
     delta: TDeltaWithData,
-    postList: ISortableModel<Post>[],
+    postList: ISortableModelWithData<Post>[],
     hasMore: boolean,
     streamItemList: StreamItem[],
     readThrough: number,

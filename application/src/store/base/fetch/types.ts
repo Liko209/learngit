@@ -5,9 +5,12 @@
  */
 import { SortableListStore } from './SortableListStore';
 
-export interface ISortableModel<T = any> {
+export interface ISortableModel {
   id: number;
   sortValue: number;
+}
+
+export interface ISortableModelWithData<T> extends ISortableModel {
   data?: T;
 }
 
@@ -19,7 +22,7 @@ export interface IMatchFunc<T> {
   (model: T): Boolean;
 }
 export interface ITransformFunc<T> {
-  (model: T): ISortableModel<T>;
+  (model: T): ISortableModelWithData<T>;
 }
 
 export interface ISortFunc<T> {

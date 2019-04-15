@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { Post } from 'sdk/module/post/entity';
-import { ISortableModel } from '@/store/base';
+import { ISortableModel, ISortableModelWithData } from '@/store/base';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
 interface IPostHandler {
@@ -13,8 +13,8 @@ interface IPostHandler {
    */
   onAdded(
     direction: QUERY_DIRECTION,
-    addedItems: ISortableModel<Post>[],
-    allItems: ISortableModel<Post>[],
+    addedItems: ISortableModelWithData<Post>[],
+    allItems: ISortableModelWithData<Post>[],
     hasMore: boolean,
   ): void;
   /**

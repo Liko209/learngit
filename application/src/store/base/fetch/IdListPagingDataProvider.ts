@@ -11,7 +11,11 @@ import { IdModel } from 'sdk/framework/model';
 import { Entity } from '../../store';
 import { JSdkError, ERROR_CODES_SDK } from 'sdk/error/sdk';
 import notificationCenter from 'sdk/service/notificationCenter';
-import { ISortableModel, IMatchFunc, IEntityDataProvider } from './types';
+import {
+  ISortableModelWithData,
+  IMatchFunc,
+  IEntityDataProvider,
+} from './types';
 import storeManager from '@/store/base/StoreManager';
 import { ENTITY_NAME } from '@/store/constants';
 
@@ -41,7 +45,7 @@ class IdListPagingDataProvider<T extends IdModel, K extends Entity>
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<T>,
+    anchor?: ISortableModelWithData<T>,
   ): Promise<{ data: T[]; hasMore: boolean }> {
     if (!this._sourceIds.length) {
       return { data: [], hasMore: false };

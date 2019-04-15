@@ -8,7 +8,7 @@ import { observable, action } from 'mobx';
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-  ISortableModel,
+  ISortableModelWithData,
 } from '@/store/base/fetch';
 import { ENTITY_NAME } from '@/store/constants';
 import { QUERY_DIRECTION } from 'sdk/dao';
@@ -33,7 +33,7 @@ class GroupItemDataProvider implements IFetchSortableDataProvider<Item> {
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<Item>,
+    anchor?: ISortableModelWithData<Item>,
   ): Promise<{ data: Item[]; hasMore: boolean }> {
     const itemService = ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
@@ -78,7 +78,7 @@ class ItemListDataSource {
     return {
       id: model.id,
       sortValue: FileItemUtils.getVersionDate(model) || model.created_at,
-    } as ISortableModel<Item>;
+    } as ISortableModelWithData<Item>;
   }
 
   @action
@@ -97,8 +97,8 @@ class ItemListDataSource {
     };
 
     const sortFunc = (
-      lhs: ISortableModel<Item>,
-      rhs: ISortableModel<Item>,
+      lhs: ISortableModelWithData<Item>,
+      rhs: ISortableModelWithData<Item>,
     ): number => {
       return SortUtils.sortModelByKey(lhs, rhs, ['sortValue'], desc);
     };

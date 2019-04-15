@@ -11,6 +11,7 @@ import {
 } from '../FetchSortableDataListHandler';
 import {
   ISortableModel,
+  ISortableModelWithData,
   ITransformFunc,
   IMatchFunc,
   ISortFunc,
@@ -39,7 +40,9 @@ function buildItem(id: number): SimpleItem {
   return { id, value: id };
 }
 
-function sortableTransformFunc(model: SimpleItem): ISortableModel {
+function sortableTransformFunc(
+  model: SimpleItem,
+): ISortableModelWithData<SimpleItem> {
   return { data: model, id: model.id, sortValue: model.value };
 }
 
@@ -191,7 +194,7 @@ class TestFetchSortableDataHandler<T> implements IFetchSortableDataProvider<T> {
   fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<T>,
+    anchor?: ISortableModelWithData<T>,
   ): Promise<{ data: T[]; hasMore: boolean }> {
     return Promise.resolve(this.mockData);
   }
@@ -213,7 +216,7 @@ function matchFunc<T>(arg: T): boolean {
   return true;
 }
 
-function numberTransformFunc(data: IdModel): ISortableModel<IdModel> {
+function numberTransformFunc(data: IdModel): ISortableModelWithData<IdModel> {
   return { data, id: data.id, sortValue: data.id };
 }
 describe('FetchSortableDataListHandler', () => {

@@ -6,7 +6,7 @@
 import {
   FetchSortableDataListHandler,
   IFetchSortableDataProvider,
-  ISortableModel,
+  ISortableModelWithData,
   TDelta,
 } from '@/store/base';
 import { Post } from 'sdk/module/post/entity';
@@ -25,7 +25,7 @@ class PostDataProvider implements IFetchSortableDataProvider<Post> {
   async fetchData(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor?: ISortableModel<Post>,
+    anchor?: ISortableModelWithData<Post>,
   ): Promise<{ data: Post[]; hasMore: boolean }> {
     const { posts, hasMore, items } = await this._postService.getPostsByGroupId(
       {
@@ -53,10 +53,13 @@ class ConversationPostFocBuilder {
       dataModel.group_id === Number(groupId) && !dataModel.deactivated;
 
     const options = {
-      transformFunc: (dataModel: Post) => ({
+      transformFunc: (dataModel: any) => ({
         id: dataModel.id,
         sortValue: dataModel.created_at,
-        data: dataModel,
+        data: {
+          id: dataModel.id,
+          creator_id: dataModel.creator_id,
+        },
       }),
       hasMoreUp: true,
       hasMoreDown: !!jump2PostId,
