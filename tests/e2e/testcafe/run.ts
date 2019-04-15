@@ -13,10 +13,16 @@ const logger = getLogger(__filename);
 logger.level = 'info';
 
 const createTestCafe = require('testcafe');
+const selfSignedCert = require('openssl-self-signed-certificate');
+
+const sslOptions = RUNNER_OPTS.ENABLE_SSL ? {
+  key: selfSignedCert.key,
+  cert: selfSignedCert.cert
+} : undefined;
 
 async function runTests(runnerOpts) {
   let failed = 0;
-  const testCafe = await createTestCafe();
+  const testCafe = await createTestCafe(undefined, undefined, undefined, sslOptions);
   const runner = testCafe.createRunner();
   logger.info(`runner options: ${JSON.stringify(runnerOpts, null, 2)}`);
 

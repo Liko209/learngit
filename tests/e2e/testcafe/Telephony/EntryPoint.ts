@@ -6,18 +6,18 @@
  */
 
 import { v4 as uuid } from 'uuid';
-import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers'
-import { setupCase, teardownCase } from '../../init';
-import { AppRoot } from "../../v2/page-models/AppRoot";
-import { IGroup } from "../../v2/models";
-import { SITE_URL, BrandTire } from '../../config';
+import { formalName } from '../libs/filter';
+import { h } from '../v2/helpers'
+import { setupCase, teardownCase } from '../init';
+import { AppRoot } from "../v2/page-models/AppRoot";
+import { IGroup } from "../v2/models";
+import { SITE_URL, BrandTire } from '../config';
 
 fixture('Telephony/EntryPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test.skip(formalName('User should be able to see the 1:1 Call button in different entry points', ['JPT-1354', 'p1', 'Potar.He', 'EntryPoint']), async (t) => {
+test(formalName('User should be able to see the 1:1 Call button in different entry points', ['JPT-1354', 'p1', 'Potar.He', 'EntryPoint']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4]
   const anotherUser = users[5];
