@@ -48,10 +48,6 @@ export abstract class BaseWebComponent {
     return this.self.visible;
   }
 
-  get click() {
-    return this.t.click;
-  }
-
   get textContent() {
     return this.self.textContent;
   }

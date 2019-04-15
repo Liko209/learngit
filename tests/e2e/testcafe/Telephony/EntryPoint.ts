@@ -17,7 +17,7 @@ fixture('Telephony/EntryPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test.skip(formalName('User should be able to see the 1:1 Call button in different entry points', ['JPT-1354', 'p1', 'Potar.He', 'EntryPoint']), async (t) => {
+test(formalName('User should be able to see the 1:1 Call button in different entry points', ['JPT-1354', 'p1', 'Potar.He', 'EntryPoint']), async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4]
   const anotherUser = users[5];

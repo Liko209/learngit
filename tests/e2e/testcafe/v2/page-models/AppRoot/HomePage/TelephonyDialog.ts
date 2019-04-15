@@ -29,7 +29,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickHandUpButton() {
-    await this.click(this.handUpButton);
+    await this.t.click(this.handUpButton);
   }
 
   get muteButton() {
@@ -37,7 +37,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickMuteButton() {
-    await this.click(this.muteButton);
+    await this.t.click(this.muteButton);
   }
 
   get unMuteButton() {
@@ -45,7 +45,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickUnMuteButton() {
-    return this.click(this.unMuteButton);
+    return this.t.click(this.unMuteButton);
   }
 
   get keypadButton() {
@@ -53,7 +53,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickKeypadButton() {
-    await this.click(this.keypadButton);
+    await this.t.click(this.keypadButton);
   }
 
   get holdToggle() {
@@ -65,7 +65,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickHoldButton() {
-    return this.click(this.holdButton);
+    return this.t.click(this.holdButton);
   }
 
   get unHoldButton() {
@@ -73,7 +73,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickUnHoldButton() {
-    await this.click(this.unHoldButton);
+    await this.t.click(this.unHoldButton);
   }
 
   get addButton() {
@@ -81,7 +81,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickAddButton() {
-    await this.click(this.addButton);
+    await this.t.click(this.addButton);
   }
 
   get recordToggle() {
@@ -97,11 +97,11 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickRecordButton() {
-    await this.click(this.recordButton);
+    await this.t.click(this.recordButton);
   }
 
   async clickStopRecordButton() {
-    await this.click(this.stopRecordButton);
+    await this.t.click(this.stopRecordButton);
   }
 
   get actionsButton() {
@@ -109,7 +109,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickActionsButton() {
-    await this.click(this.actionsButton);
+    await this.t.click(this.actionsButton);
   }
 
   get backButtonOnKeypadPage() {
@@ -117,7 +117,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickBackButton() {
-    return this.click(this.backButtonOnKeypadPage);
+    return this.t.click(this.backButtonOnKeypadPage);
   }
 
   get keyRecordArea() {
@@ -142,7 +142,7 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async pressKeypad(keys: string | string[]) {
     for (const i of keys) {
-      await this.click(this.buttonOfIcon(this.keyMap[i]));
+      await this.t.click(this.buttonOfIcon(this.keyMap[i]));
     }
   }
 
@@ -153,7 +153,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickAnswerButton() {
-    await this.click(this.answerButton);
+    await this.t.click(this.answerButton);
   }
 
   get ignoreButton() {
@@ -161,6 +161,6 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   async clickIgnoreButton() {
-    await this.click(this.ignoreButton);
+    await this.t.click(this.ignoreButton);
   }
 }
