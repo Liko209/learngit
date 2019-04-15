@@ -4,24 +4,27 @@
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
 import { Omit } from 'jui/foundation/utils/typeHelper';
+
+type NotificationId = number | string;
 export interface INotificationService {
   init: Function;
-  show: (title: string, options?: SWNotificationOptions) => void;
-  close: (scope: string, id: number) => void;
+  show: (title: string, options?: NotificationOpts) => void;
+  close: (scope: string, id: NotificationId) => void;
   clear: (scope?: string) => void;
 }
 
-export type notificationActionHandler = (event: Event) => any;
-export type notificationAction = {
+export type NotificationActionHandler = (event: Event) => any;
+export type NotificationAction = {
   title: string;
   icon: string;
   action: string;
-  handler: notificationActionHandler;
+  handler: NotificationActionHandler;
 };
 
-export type SWNotificationOptions = Omit<NotificationOptions, 'actions'> & {
-  data: { id: number; scope: string };
-  actions?: notificationAction[];
+export type NotificationOpts = Omit<NotificationOptions, 'actions'> & {
+  data: { id: NotificationId; scope: string };
+  actions?: NotificationAction[];
+  onClick?: NotificationActionHandler;
 };
 
 export type Global = {

@@ -47,11 +47,13 @@ class TelephonyService {
     this._telephonyStore.directCall();
   }
 
-  private _onReceiveIncomingCall = (callInfo: TelephonyCallInfo) => {
+  private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
+    this._telephonyStore.callerName = fromName;
     this._telephonyStore.phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${
@@ -326,6 +328,11 @@ class TelephonyService {
     this._telephonyStore.setPendingForRecordBtn(true);
     this._telephonyStore.startRecording(); // for swift UX
     return this._serverTelephonyService.startRecord(this._callId as string);
+  }
+
+  dtmf = (digits: string) => {
+    this._telephonyStore.inputKey(digits);
+    return this._serverTelephonyService.dtmf(this._callId as string, digits);
   }
 }
 

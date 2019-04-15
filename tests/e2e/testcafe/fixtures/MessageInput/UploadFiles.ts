@@ -814,6 +814,9 @@ test(formalName('Can update image size in the duplicate prompt when the same nam
   const fileName = '1.jpg';
   const initWidth = 360;
   const initHeight = 240;
+  // as we just get image url with arguments(1000x200) like dThor, so here are the expected size.
+  const expectedWidth = 300;
+  const expectedHeight = 200;
   const finalWidth = 180;
   const finalHeight = 120;
   const filesPaths = ['../../sources/files/1.jpg', '../../sources/files1/1.jpg'];
@@ -838,9 +841,9 @@ test(formalName('Can update image size in the duplicate prompt when the same nam
     await conversationPage.nthPostItem(-1).waitImageVisible(20e3);
   });
 
-  await h(t).withLog(`Then the image file size should be ${initWidth}x${initHeight}`, async () => {
-    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('width')).eql(initWidth);
-    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('height')).eql(initHeight);
+  await h(t).withLog(`Then the image file size should be ${expectedWidth}x${expectedHeight}`, async () => {
+    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('width')).eql(expectedWidth);
+    await t.expect(conversationPage.nthPostItem(-1).img.getBoundingClientRectProperty('height')).eql(expectedHeight);
   }, true);
 
   await h(t).withLog(`When I upload the same name file to the conversation whose size is ${finalWidth}x${finalHeight}`, async () => {

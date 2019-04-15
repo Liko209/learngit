@@ -4,6 +4,7 @@ global.Notification = {
   requestPermission: jest.fn(),
   permission: 'default',
 };
+
 describe('NotificationService', () => {
   let service: NotificationService;
   beforeEach(() => {

@@ -8,7 +8,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { observer } from 'mobx-react';
-import isElectron from '@/common/isElectron';
+import { isElectron } from '@/common/isUserAgent';
 import { LoginVersionStatusViewProps } from './types';
 
 type Props = LoginVersionStatusViewProps & WithTranslation;

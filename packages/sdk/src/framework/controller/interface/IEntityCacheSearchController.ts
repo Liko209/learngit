@@ -30,7 +30,10 @@ interface IEntityCacheSearchController<T extends IdModel = IdModel> {
   } | null>;
 
   isFuzzyMatched(srcText: string, terms: string[]): boolean;
-  isSoundexMatched(srcText: string, terms: string[]): boolean;
+  isSoundexMatched(
+    soundexOfEntity: string[],
+    soundexOfSearchTerms: string[],
+  ): boolean;
   isStartWithMatched(srcText: string, terms: string[]): boolean;
 
   getTermsFromSearchKey(searchKey: string): string[];

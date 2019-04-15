@@ -3,6 +3,11 @@
  * @Date: 2018-12-07 14:48:11
  * Copyright © RingCentral. All rights reserved.
  */
+import {
+  ToastType,
+  ToastMessageAlign,
+} from '@/containers/ToastWrapper/Toast/types';
+import { Notification } from '@/containers/Notification';
 import { GroupService } from 'sdk/module/group';
 import { ProfileService } from 'sdk/module/profile';
 import { StateService } from 'sdk/module/state';
@@ -13,6 +18,8 @@ import history from '@/history';
 import { Action } from 'history';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { GROUP_CAN_NOT_SHOWN_REASON } from 'sdk/module/group/constants';
+import i18nT from '@/utils/i18nT';
 class GroupHandler {
   static accessGroup(id: number) {
     const accessTime: number = +new Date();
@@ -75,14 +82,14 @@ export class MessageRouterChangeHelper {
     this.updateCurrentConversationId(lastGroupId);
   }
 
-  static async goToConversation(id?: string, action?: Action) {
+  static async goToConversation(id?: string, action?: Action, state?: any) {
     if (!id) {
       return this._goToDefaultConversation();
     }
     if (!this.isConversation(id)) {
       return this.updateCurrentConversationId(this.defaultPageId);
     }
-    this._goToConversationById(id, action);
+    this._goToConversationById(id, action, state);
   }
 
   private static async _goToDefaultConversation() {
@@ -91,22 +98,28 @@ export class MessageRouterChangeHelper {
     this.updateCurrentConversationId(id);
   }
 
-  private static async _goToConversationById(id: string, action?: Action) {
+  private static async _goToConversationById(
+    id: string,
+    action?: Action,
+    state?: any,
+  ) {
     const validId = await this.verifyGroup(Number(id));
     this.ensureGroupIsOpened(Number(id));
-    this._doRouterRedirection(validId, action);
+    this._doRouterRedirection(validId, action, state);
     this.updateCurrentConversationId(id);
   }
 
-  private static async _doRouterRedirection(id: string, action?: Action) {
+  private static async _doRouterRedirection(
+    id: string,
+    action?: Action,
+    state?: any,
+  ) {
     switch (action) {
       case 'REPLACE':
-        history.replace(`/messages/${id}`);
+        history.replace(`/messages/${id}`, state);
         break;
       default:
-        history.push(`/messages/${id}`, {
-          source: 'reload',
-        });
+        history.push(`/messages/${id}`, state);
         break;
     }
   }
@@ -115,8 +128,31 @@ export class MessageRouterChangeHelper {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
-    const isGroupCanBeShown = await groupService.isGroupCanBeShown(id);
-    return isGroupCanBeShown ? String(id) : '';
+    const { canBeShown, reason } = await groupService.isGroupCanBeShown(id);
+    if (canBeShown) {
+      return String(id);
+    }
+    const toastOpts = {
+      type: ToastType.ERROR,
+      messageAlign: ToastMessageAlign.LEFT,
+      fullWidth: false,
+      dismissible: false,
+    };
+    switch (reason) {
+      case GROUP_CAN_NOT_SHOWN_REASON.ARCHIVED:
+        Notification.flashToast({
+          message: await i18nT('people.prompt.conversationArchived'),
+          ...toastOpts,
+        });
+        break;
+      case GROUP_CAN_NOT_SHOWN_REASON.DEACTIVATED:
+        Notification.flashToast({
+          message: await i18nT('people.prompt.conversationDeleted'),
+          ...toastOpts,
+        });
+        break;
+    }
+    return '';
   }
 
   static isConversation(id: string) {
