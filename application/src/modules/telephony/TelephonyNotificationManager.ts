@@ -67,6 +67,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
         id: callId,
         scope: this._scope,
       },
+      requireInteraction: true,
       body: `${callerName} ${phoneNumber}`,
       icon: '/icon/incomingCall.png',
     });
