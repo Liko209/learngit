@@ -71,8 +71,8 @@ const buttonShadows: { [k in Size]: string } = {
 const iconSizesMap: { [k in Size]: IconSize } = {
   large: 'large',
   moreLarge: 'moreLarge',
-  medium: 'extraSmall',
-  small: 'small',
+  medium: 'small',
+  small: 'extraSmall',
 };
 
 const touchRippleClasses = {

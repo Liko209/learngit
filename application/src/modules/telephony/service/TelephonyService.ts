@@ -24,9 +24,8 @@ import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
 
 const ANONYMOUS = 'anonymous';
 class TelephonyService {
-  @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   static TAG: string = '[UI TelephonyService] ';
-
+  @inject(TelephonyStore) private _telephonyStore: TelephonyStore;
   // prettier-ignore
   private _serverTelephonyService = ServiceLoader.getInstance<ServerTelephonyService>(ServiceConfig.TELEPHONY_SERVICE);
   private _callId?: string;
@@ -48,15 +47,17 @@ class TelephonyService {
     this._telephonyStore.directCall();
   }
 
-  private _onReceiveIncomingCall = (callInfo: TelephonyCallInfo) => {
+  private _onReceiveIncomingCall = async (callInfo: TelephonyCallInfo) => {
     const { fromName, fromNum, callId } = callInfo;
     this._callId = callId;
     this._telephonyStore.callType = CALL_TYPE.INBOUND;
+    this._telephonyStore.callerName = fromName;
     this._telephonyStore.phoneNumber = fromNum !== ANONYMOUS ? fromNum : '';
+    this._telephonyStore.callId = callId;
     this._telephonyStore.incomingCall();
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${
-        callInfo.callId
+      callInfo.callId
       }, from name=${fromName}, from num=${fromNum}`,
     );
   }
@@ -68,14 +69,33 @@ class TelephonyService {
 
     switch (state) {
       case RTC_CALL_STATE.CONNECTED: {
-        this._telephonyStore.connected();
+        this._initializeCallState();
         break;
       }
       case RTC_CALL_STATE.DISCONNECTED: {
-        this._telephonyStore.end();
+        this._resetCallState();
         break;
       }
     }
+  }
+
+  private _initializeCallState() {
+    this._telephonyStore.connected();
+    this._telephonyStore.enableHold();
+    this._telephonyStore.enableRecord();
+  }
+
+  private _resetCallState() {
+    this._telephonyStore.end();
+    this._telephonyStore.disableHold();
+    this._telephonyStore.disableRecord();
+    /**
+     * Be careful that the server might not respond for the request, so since we design
+     * the store as a singleton then we need to restore every single state for the next call.
+     */
+    this._telephonyStore.setPendingForHoldBtn(false);
+    this._telephonyStore.setPendingForRecordBtn(false);
+    delete this._callId;
   }
 
   private _onCallActionSuccess = (
@@ -84,15 +104,64 @@ class TelephonyService {
   ) => {
     mainLogger.info(
       `${
-        TelephonyService.TAG
+      TelephonyService.TAG
       }Call action: ${callAction} succeed, options: ${options}`,
     );
+    switch (callAction) {
+      case RTC_CALL_ACTION.HOLD: {
+        this._telephonyStore.setPendingForHoldBtn(false);
+        this._telephonyStore.hold();
+        break;
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._telephonyStore.setPendingForHoldBtn(false);
+        this._telephonyStore.unhold();
+        break;
+      }
+      case RTC_CALL_ACTION.START_RECORD: {
+        this._telephonyStore.setPendingForRecordBtn(false);
+        this._telephonyStore.startRecording();
+        break;
+      }
+      case RTC_CALL_ACTION.STOP_RECORD: {
+        this._telephonyStore.setPendingForRecordBtn(false);
+        this._telephonyStore.stopRecording();
+        break;
+      }
+    }
   }
 
+  // TODO: need more info here
   private _onCallActionFailed = (callAction: RTC_CALL_ACTION): void => {
     switch (callAction) {
       case RTC_CALL_ACTION.CALL_TIME_OUT: {
         ToastCallError.toastCallTimeout();
+        break;
+      }
+      case RTC_CALL_ACTION.HOLD: {
+        this._telephonyStore.setPendingForHoldBtn(false);
+        ToastCallError.toastFailedToHold();
+        this._telephonyStore.unhold();
+        break;
+      }
+      case RTC_CALL_ACTION.UNHOLD: {
+        this._telephonyStore.setPendingForHoldBtn(false);
+        ToastCallError.toastFailedToResume();
+        this._telephonyStore.hold();
+        break;
+      }
+      case RTC_CALL_ACTION.START_RECORD: {
+        // TODO: FIJI-4803 phase2 error handlings
+        this._telephonyStore.setPendingForRecordBtn(false);
+        ToastCallError.toastFailedToRecord();
+        this._telephonyStore.stopRecording();
+        break;
+      }
+      case RTC_CALL_ACTION.STOP_RECORD: {
+        this._telephonyStore.setPendingForRecordBtn(false);
+        ToastCallError.toastFailedToStopRecording();
+        this._telephonyStore.startRecording();
+        break;
       }
     }
   }
@@ -194,7 +263,7 @@ class TelephonyService {
     if (this._callId) {
       mainLogger.info(
         `${TelephonyService.TAG}${mute ? 'mute' : 'unmute'} call id=${
-          this._callId
+        this._callId
         }`,
       );
       mute
@@ -216,6 +285,54 @@ class TelephonyService {
 
   getAllCallCount = () => {
     return this._serverTelephonyService.getAllCallCount();
+  }
+
+  holdOrUnhold = () => {
+    if (this._telephonyStore.holdDisabled || this._telephonyStore.pendingForHold || !this._callId) {
+      mainLogger.debug(
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_PENDING_STATE]: ${this._telephonyStore.pendingForHold}`,
+      );
+      mainLogger.debug(
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${this._telephonyStore.holdDisabled}`,
+      );
+      return;
+    }
+    if (this._telephonyStore.held) {
+      mainLogger.info(
+        `${TelephonyService.TAG}unhold call id=${
+        this._callId
+        }`,
+      );
+      this._telephonyStore.setPendingForHoldBtn(true);
+      return this._serverTelephonyService.unhold(this._callId);
+    }
+    mainLogger.info(
+      `${TelephonyService.TAG}hold call id=${
+      this._callId
+      }`,
+    );
+    this._telephonyStore.hold(); // for swift UX
+    this._telephonyStore.setPendingForHoldBtn(true);
+    return this._serverTelephonyService.hold(this._callId);
+  }
+
+  startOrStopRecording = () => {
+    if (!this._callId || this._telephonyStore.pendingForRecord || this._telephonyStore.recordDisabled) {
+      return;
+    }
+    if (this._telephonyStore.isRecording) {
+      this._telephonyStore.setPendingForRecordBtn(true);
+      return this._serverTelephonyService.stopRecord(this._callId as string);
+    }
+
+    this._telephonyStore.setPendingForRecordBtn(true);
+    this._telephonyStore.startRecording(); // for swift UX
+    return this._serverTelephonyService.startRecord(this._callId as string);
+  }
+
+  dtmf = (digits: string) => {
+    this._telephonyStore.inputKey(digits);
+    return this._serverTelephonyService.dtmf(this._callId as string, digits);
   }
 }
 

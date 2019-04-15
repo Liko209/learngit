@@ -12,6 +12,7 @@ import {
   ILeaveBlockerService,
 } from '@/modules/leave-blocker/interface';
 import { mainLogger } from 'sdk';
+import { TelephonyNotificationManager } from './TelephonyNotificationManager';
 
 class TelephonyModule extends AbstractModule {
   static TAG: string = '[UI TelephonyModule] ';
@@ -20,16 +21,19 @@ class TelephonyModule extends AbstractModule {
   private _FeaturesFlagsService: FeaturesFlagsService;
   @inject(TelephonyService) private _TelephonyService: TelephonyService;
   @inject(LEAVE_BLOCKER_SERVICE) _leaveBlockerService: ILeaveBlockerService;
-
+  @inject(TelephonyNotificationManager)
+  private _telephonyNotificationManager: TelephonyNotificationManager;
   async bootstrap() {
     const canUseTelephony = await this._FeaturesFlagsService.canUseTelephony();
     if (canUseTelephony) {
       this._TelephonyService.init();
+      this._telephonyNotificationManager.init();
       this._leaveBlockerService.onLeave(this.handleLeave);
     }
   }
 
   dispose() {
+    this._telephonyNotificationManager.dispose();
     this._leaveBlockerService.offLeave(this.handleLeave);
   }
 

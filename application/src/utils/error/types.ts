@@ -15,6 +15,10 @@ export type UserContextInfo = {
   email: string;
   username: string;
 
+  platform: string;
   env: string;
   version: string;
+
+  browser: string;
+  os: string;
 };

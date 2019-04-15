@@ -58,6 +58,10 @@ interface IPersonService {
   refreshPersonData(personId: number): Promise<void>;
 
   isValidPerson(person: Person): boolean;
+
+  getSoundexById(id: number): string[];
+
+  isCacheValid(person: Person): boolean;
 }
 
 export { IPersonService };

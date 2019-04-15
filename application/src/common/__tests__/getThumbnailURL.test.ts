@@ -278,7 +278,7 @@ describe('getThumbnailURLWithType', () => {
     expect(result.type).toEqual(IMAGE_TYPE.MODIFY_IMAGE);
   });
 
-  it('should get original url with original type when item rule is rectangle image and cannot get original width or height', async () => {
+  it('should get url with 1000x200 original type when item rule is rectangle image and cannot get original width or height', async () => {
     const stored_file_id = 123;
     const origWidth = null;
     const origHeight = null;
@@ -308,11 +308,11 @@ describe('getThumbnailURLWithType', () => {
 
     rule = RULE.RECTANGLE_IMAGE;
     const result = await getThumbnailURLWithType(model, rule);
-    expect(result.url).toEqual(model.versionUrl);
+    expect(result.url).toEqual(modifyURL);
     expect(result.type).toEqual(IMAGE_TYPE.ORIGINAL_IMAGE);
   });
 
-  it('should get empty url with unknown type when all conditions cannot match', async () => {
+  it('should get url with 1000x200 if unknown type when all conditions cannot match', async () => {
     const stored_file_id = 123;
     const origWidth = null;
     const origHeight = null;
@@ -345,7 +345,7 @@ describe('getThumbnailURLWithType', () => {
 
     rule = RULE.RECTANGLE_IMAGE;
     const result = await getThumbnailURLWithType(model, rule);
-    expect(result.url).toEqual('');
+    expect(result.url).toEqual(modifyURL);
     expect(result.type).toEqual(IMAGE_TYPE.ORIGINAL_IMAGE);
   });
 });

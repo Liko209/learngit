@@ -24,4 +24,7 @@ describe('DialerViewModel', () => {
   it('should return call state', async () => {
     expect(dialerViewModel.callState).toEqual(CALL_STATE.IDLE);
   });
+  it('should initialize with keypad not entered', async () => {
+    expect(dialerViewModel.keypadEntered).toEqual(false);
+  });
 });

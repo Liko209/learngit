@@ -7,21 +7,21 @@
 import { RTCMediaElement } from './types';
 import { rtcLogger } from './RTCLoggerProxy';
 
-const LOG_TAG = 'RTCMediaManager';
-class RTCMediaManager {
-  private static _singleton: RTCMediaManager | null = null;
+const LOG_TAG = 'RTCMediaElementManager';
+class RTCMediaElementManager {
+  private static _singleton: RTCMediaElementManager | null = null;
   private _mediaRootElement: any = null;
   private _volume: number = 1;
 
   public static instance() {
-    if (!RTCMediaManager._singleton) {
-      RTCMediaManager._singleton = new RTCMediaManager();
+    if (!RTCMediaElementManager._singleton) {
+      RTCMediaElementManager._singleton = new RTCMediaElementManager();
     }
-    return RTCMediaManager._singleton;
+    return RTCMediaElementManager._singleton;
   }
 
   public destroy() {
-    RTCMediaManager._singleton = null;
+    RTCMediaElementManager._singleton = null;
   }
 
   public setVolume(volume: number) {
@@ -113,4 +113,4 @@ class RTCMediaManager {
   }
 }
 
-export { RTCMediaManager };
+export { RTCMediaElementManager };

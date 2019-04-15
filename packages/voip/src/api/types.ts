@@ -48,6 +48,9 @@ enum RTC_CALL_ACTION {
   MUTE = 'mute',
   UNMUTE = 'unmute',
   PARK = 'park',
+  START_REPLY = 'startReply',
+  REPLY_WITH_MSG = 'replyWithMessage',
+  REPLY_WITH_PATTERN = 'replyWithPattern',
   CALL_TIME_OUT = 'callTimeOut',
 }
 
@@ -68,13 +71,35 @@ enum RTC_STATUS_CODE {
   INVALID_STATE = 1002,
 }
 
+enum RTC_REPLY_MSG_PATTERN {
+  WILL_CALL_YOU_BACK_LATER = 'WillCallYouBackLater',
+  IN_A_MEETING = 'InAMeeting',
+  ON_MY_WAY = 'OnMyWay',
+  ON_THE_OTHER_LINE = 'OnTheOtherLine',
+  CALL_ME_BACK_LATER = 'CallMeBackLater',
+}
+
+enum RTC_REPLY_MSG_TIME_UNIT {
+  MINUTE = 'Minute',
+  HOUR = 'Hour',
+  DAY = 'Day',
+}
+
+enum RTC_MEDIA_ACTION {
+  INPUT_DEVICE_CHANGED = 'inputDeviceChanged',
+  OUTPUT_DEVICE_CHANGED = 'outputDeviceChanged',
+}
+
 export {
   RTC_ACCOUNT_STATE,
   RTCCallInfo,
   RTC_CALL_STATE,
   RTC_CALL_ACTION,
   RTC_STATUS_CODE,
+  RTC_REPLY_MSG_PATTERN,
+  RTC_REPLY_MSG_TIME_UNIT,
   RTCCallOptions,
   RTCCallActionSuccessOptions,
   RTCSipFlags,
+  RTC_MEDIA_ACTION,
 };

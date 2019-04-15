@@ -16,6 +16,7 @@ import {
   Terms,
 } from '../interface/IEntityCacheSearchController';
 import { SearchUtils } from '../../utils/SearchUtils';
+const soundex = require('soundex-code');
 export type TestModel = IdModel & {
   name?: string;
   note?: string;
@@ -449,7 +450,7 @@ describe('Entity Cache Search Controller', () => {
               searchKeyTerms,
             ) ||
             entityCacheSearchController.isSoundexMatched(
-              entity.name || '',
+              [soundex(entity.name)],
               searchKeyTermsToSoundex,
             );
           if (entity.name && isMatched) {
@@ -485,7 +486,7 @@ describe('Entity Cache Search Controller', () => {
               searchKeyTerms,
             ) ||
             entityCacheSearchController.isSoundexMatched(
-              entity.name.toLowerCase() || '',
+              [soundex(entity.name)],
               searchKeyTermsToSoundex,
             );
           if (entity.name && isMatched) {
