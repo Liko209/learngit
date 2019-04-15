@@ -30,6 +30,7 @@ class AddViewComponent extends Component<Props> {
           onClick={this._handleAdd}
           size="xxlarge"
           disabled={true}
+          data-test-automation-id="telephony-add-btn"
         >
           call_add
         </JuiIconButton>

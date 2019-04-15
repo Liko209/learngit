@@ -78,6 +78,8 @@ const ASSERTION_TIMEOUT = Number(process.env.ASSERTION_TIMEOUT) || 8e3;
 const SKIP_JS_ERROR = !(process.env.SKIP_JS_ERROR === 'false');
 const SKIP_CONSOLE_ERROR = !(process.env.SKIP_CONSOLE_ERROR === 'false');
 const SKIP_CONSOLE_WARN = !(process.env.SKIP_CONSOLE_WARN === 'false');
+const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
+
 
 const RUNNER_OPTS = {
   REPORTER,
@@ -96,6 +98,7 @@ const RUNNER_OPTS = {
   SKIP_JS_ERROR,
   SKIP_CONSOLE_ERROR,
   SKIP_CONSOLE_WARN,
+  ENABLE_SSL,
 }
 
 // beat dashboard configuration

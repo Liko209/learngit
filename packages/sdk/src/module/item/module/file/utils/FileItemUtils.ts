@@ -3,7 +3,7 @@
  * @Date: 2019-01-16 17:33:05
  * Copyright © RingCentral. All rights reserved.
  */
-
+import _ from 'lodash';
 import {
   GifFileExtensions,
   ImageFileExtensions,
@@ -72,11 +72,13 @@ class FileItemUtils {
     return file.source && file.source.toLowerCase() === GifSource;
   }
 
-  static getVersionDate<T extends { versions: ItemVersions[] }>(file: T) {
+  static getVersionDate<T extends { versions: ItemVersions[] }>(
+    file: T,
+  ): number | null {
     if (!Array.isArray(file.versions)) return null;
     for (const version of file.versions) {
       if (!version.deactivated) {
-        return version.date;
+        return _.isNumber(version.date) ? version.date : null;
       }
     }
     return null;

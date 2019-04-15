@@ -178,7 +178,9 @@ describe('ensureGroupOpened', () => {
       expect(mockedProfileService.reopenConversation).toHaveBeenCalled();
       expect(history.replace).toBeCalledWith('/messages/loading', {
         error: true,
-        id: 110,
+        params: {
+          id: 110,
+        },
       });
       done();
     });

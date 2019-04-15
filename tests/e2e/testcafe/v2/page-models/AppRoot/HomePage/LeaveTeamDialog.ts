@@ -28,7 +28,7 @@ export class LeaveTeamDialog extends BaseWebComponent {
   }
 
   get cancelButton() {
-    return this.button('Cancel');
+    return this.buttonOfText('Cancel');
   }
 
   async cancel() {
@@ -36,7 +36,7 @@ export class LeaveTeamDialog extends BaseWebComponent {
   }
 
   get LeaveButton() {
-    return this.button('Leave');
+    return this.buttonOfText('Leave');
   }
 
   async leave() {

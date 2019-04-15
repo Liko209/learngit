@@ -27,9 +27,6 @@ export class Header extends BaseWebComponent {
 }
 
 class BackNForward extends BaseWebComponent {
-  async click() {
-    await this.t.click(this.self);
-  }
 
   get isDisable(): Promise<boolean> {
     return this.self.hasAttribute('disabled');

@@ -99,19 +99,19 @@ const StyledPresenceWrapper = styled.div`
 `;
 
 const JuiAvatar: React.SFC<JuiAvatarProps> = memo((props: JuiAvatarProps) => {
-  const { presence, style, size, cover } = props;
+  const { presence, cover, ...rest } = props;
 
   if (cover) {
-    return <StyledCoverAvatar {...props} />;
+    return <StyledCoverAvatar {...rest} />;
   }
 
   return presence ? (
-    <StyledWrapper size={size} style={style}>
-      <StyledAvatar {...props} />
+    <StyledWrapper size={rest.size} style={rest.style}>
+      <StyledAvatar {...rest} />
       <StyledPresenceWrapper>{presence}</StyledPresenceWrapper>
     </StyledWrapper>
   ) : (
-    <StyledAvatar {...props} />
+    <StyledAvatar {...rest} />
   );
 });
 
