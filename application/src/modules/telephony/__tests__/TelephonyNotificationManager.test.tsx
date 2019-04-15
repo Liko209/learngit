@@ -47,6 +47,7 @@ describe('TelephonyNotificationManager', () => {
       expect(telephonyNotificationManager.show).toHaveBeenCalledWith(
         title,
         expect.objectContaining({
+          requireInteraction: true,
           tag: '1',
           data: {
             id: '1',
