@@ -46,7 +46,7 @@ class ContentSearchResultViewModel
   private _stream: any;
 
   @computed
-  get _type() {
+  private get _type() {
     const typeData = TYPE_MAP.find(
       ({ value }) => value === this.searchOptions.type,
     );
@@ -104,29 +104,30 @@ class ContentSearchResultViewModel
   }
 
   @action
-  setSearchOptions = async (options: ContentSearchOptions) => {
+  setSearchOptions = async (
+    options: ContentSearchOptions,
+    isInitial: boolean = false,
+  ) => {
     this.searchOptions = { ...this.searchOptions, ...options };
 
-    await this.onSearchEnd();
-
-    const previousRequestId = this.searchState.requestId;
+    !isInitial && (await this.onSearchEnd());
 
     this._setSearchState({ requestId: null });
 
-    previousRequestId && this._refresh();
+    !isInitial && this._refresh();
   }
 
   onPostsFetch = async () => {
     const { requestId } = this.searchState;
-    const isInitialize = requestId === null;
+    const isInitial = requestId === null;
 
-    const fetchFn = isInitialize ? this._onPostsInit : this._onPostsScroll;
+    const fetchFn = isInitial ? this._onPostsInit : this._onPostsScroll;
 
     const { posts, items, hasMore } = await this._fetchHandleWrapper(fetchFn);
 
     storeManager.dispatchUpdatedDataModels(ENTITY_NAME.ITEM, items);
 
-    this._updatePostIds(posts, isInitialize);
+    this._updatePostIds(posts, isInitial);
 
     return { hasMore, data: posts };
   }
@@ -149,7 +150,7 @@ class ContentSearchResultViewModel
     const group_id =
       this._searchScope === SEARCH_SCOPE.CONVERSATION ? currentGroupId : null;
 
-    this.setSearchOptions({ q, group_id });
+    this.setSearchOptions({ q, group_id }, true);
   }
 
   @action
@@ -158,12 +159,12 @@ class ContentSearchResultViewModel
   }
 
   @action
-  private _updatePostIds = (posts: Post[], isInitialize: boolean = false) => {
+  private _updatePostIds = (posts: Post[], isInitial: boolean = false) => {
     const { postIds: fromPostIds } = this.searchState;
 
     const toPostIds = posts.map(({ id }) => id);
 
-    const postIds = isInitialize ? toPostIds : [...fromPostIds, ...toPostIds];
+    const postIds = isInitial ? toPostIds : [...fromPostIds, ...toPostIds];
 
     postIds.sort((former, latter) => latter - former);
 
