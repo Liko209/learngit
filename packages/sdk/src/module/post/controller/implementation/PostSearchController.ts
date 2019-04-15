@@ -28,13 +28,13 @@ import { mainLogger } from 'foundation';
 import {
   ERROR_TYPES,
   ErrorParserHolder,
-  JSdkError,
-  ERROR_CODES_SDK,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
 } from '../../../../error';
 
 const LOG_TAG = 'PostSearchController';
-const SEARCH_TIMEOUT_ERR = 'Search Time Out';
 const SEARCH_TIMEOUT = 60 * 1000;
+
 class PostSearchController {
   private _queryInfos: Map<number, SearchRequestInfo> = new Map();
   private _hasSubscribed = false;
@@ -147,7 +147,12 @@ class PostSearchController {
 
   private _setSearchTimeoutTimer(reject: any) {
     return setTimeout(() => {
-      reject(SEARCH_TIMEOUT_ERR);
+      reject(
+        new JNetworkError(
+          ERROR_CODES_NETWORK.REQUEST_TIMEOUT,
+          'retrieve search result timeout ',
+        ),
+      );
     },                SEARCH_TIMEOUT);
   }
 
@@ -224,14 +229,17 @@ class PostSearchController {
       });
     }
 
-    mainLogger.warn(
+    mainLogger.info(
       LOG_TAG,
       `scrollSearchPosts, failed to find request id, ${requestId}`,
     );
 
-    return Promise.reject(
-      new JSdkError(ERROR_CODES_SDK.GENERAL, 'failed to search more'),
-    );
+    return Promise.resolve({
+      requestId,
+      posts: [],
+      items: [],
+      hasMore: false,
+    });
   }
 
   async endPostSearch() {
