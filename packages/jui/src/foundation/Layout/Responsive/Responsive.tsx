@@ -160,11 +160,7 @@ class Responsive extends PureComponent<ResponsiveProps, ResponsiveState> {
   }
 
   onResize = (width: number, height: number) => {
-    if (
-      this.state.width &&
-      this.state.width !== this.props.defaultWidth &&
-      width
-    ) {
+    if (this.state.width && width) {
       this.localWidth = width;
       this.setState({
         width,
