@@ -52,6 +52,7 @@ class PinnedPostCacheController extends PostCacheController {
     const listHandler = pinnedPostListHandler.fetchSortableDataHandler();
     this._pinPostHandlerCache.set(groupId, pinnedPostListHandler);
     this.set(groupId, listHandler);
+    listHandler.maintainMode = true;
   }
 
   protected removeInternal(groupId: number) {
