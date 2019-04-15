@@ -15,7 +15,12 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import {
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../utils';
 import { SettingOption } from '../types';
 
 class ProfileService extends EntityBaseService<Profile>
@@ -35,6 +40,10 @@ class ProfileService extends EntityBaseService<Profile>
           .handleGroupIncomesNewPost,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
+    });
   }
 
   handleIncomingData = async (

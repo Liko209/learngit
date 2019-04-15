@@ -11,12 +11,16 @@ import { Progress } from '../../../../progress';
 import { FileItemDao } from '../dao/FileItemDao';
 import { SanitizedFileItem, FileItem } from '../entity';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
+import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 
 class FileItemService extends BaseSubItemService<FileItem, SanitizedFileItem> {
   private _fileItemController: FileItemController;
 
   constructor() {
     super(daoManager.getDao<FileItemDao>(FileItemDao));
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_FILE);
+    });
   }
 
   protected get fileItemController() {

@@ -9,12 +9,16 @@ import { TaskItem, SanitizedTaskItem } from '../entity';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 import { TaskItemDao } from '../dao/TaskItemDao';
 import { daoManager } from '../../../../../dao';
+import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 
 class TaskItemService extends BaseSubItemService<TaskItem, SanitizedTaskItem> {
   private _taskItemController: TaskItemController;
 
   constructor() {
     super(daoManager.getDao<TaskItemDao>(TaskItemDao));
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TASK);
+    });
   }
 
   protected get taskItemController() {
