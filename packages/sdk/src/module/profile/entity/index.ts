@@ -4,6 +4,4 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { Profile } from './Profile';
-
-export { Profile };
+export { Profile } from './Profile';

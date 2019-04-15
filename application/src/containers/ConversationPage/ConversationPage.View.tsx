@@ -23,7 +23,7 @@ import { JuiDisabledInput } from 'jui/pattern/DisabledInput';
 import { Header } from './Header';
 import { MessageInput } from './MessageInput';
 import { MessageInputViewComponent } from './MessageInput/MessageInput.View';
-import { ConversationPageViewProps } from './types';
+import { ConversationPageViewProps, STATUS } from './types';
 import { StreamViewComponent } from './Stream/Stream.View';
 import { Stream } from './Stream';
 import { AttachmentManager } from './MessageInput/Attachments';
@@ -46,6 +46,10 @@ class ConversationPageViewComponent extends Component<
   private _folderDetectMap: { string: boolean } = {} as { string: boolean };
 
   streamKey = 0;
+
+  updateStatus = (status: STATUS) => {
+    this.setState({ status });
+  }
 
   sendHandler = () => {
     const stream = this._streamRef.current;
@@ -91,8 +95,47 @@ class ConversationPageViewComponent extends Component<
     this._folderDetectMap[INPUT] = true;
   }
 
+  state = {
+    status: STATUS.SUCCESS,
+  };
+
+  private get messageInput() {
+    const { status } = this.state;
+    const { t, groupId, canPost } = this.props;
+
+    if (status === STATUS.FAILED) {
+      return null;
+    }
+
+    if (!canPost) {
+      return (
+        <JuiDisabledInput
+          data-test-automation-id="disabled-message-input"
+          text={t('message.prompt.disabledText')}
+        />
+      );
+    }
+
+    return (
+      <JuiDropZone
+        accepts={[NativeTypes.FILE]}
+        onDrop={this._handleDropFileInMessageInput}
+        dropzoneClass={MessageInputDropZoneClasses}
+        detectedFolderDrop={this._preventInputFolderDrop}
+        hasDroppedFolder={() => this._folderDetectMap[INPUT]}
+        clearFolderDetection={() => delete this._folderDetectMap[INPUT]}
+      >
+        <MessageInput
+          viewRef={this._messageInputRef}
+          id={groupId}
+          onPost={this.sendHandler}
+        />
+      </JuiDropZone>
+    );
+  }
+
   render() {
-    const { t, groupId, canPost, location } = this.props;
+    const { groupId, canPost, location } = this.props;
     const streamNode = (
       <JuiStreamWrapper>
         <Stream
@@ -103,6 +146,7 @@ class ConversationPageViewComponent extends Component<
           jumpToPostId={
             location.state ? location.state.jumpToPostId : undefined
           }
+          hookInitialPostsError={() => this.updateStatus(STATUS.FAILED)}
         />
         <div id="jumpToFirstUnreadButtonRoot" />
       </JuiStreamWrapper>
@@ -125,27 +169,7 @@ class ConversationPageViewComponent extends Component<
         >
           {streamNode}
         </JuiDropZone>
-        {canPost ? (
-          <JuiDropZone
-            accepts={[NativeTypes.FILE]}
-            onDrop={this._handleDropFileInMessageInput}
-            dropzoneClass={MessageInputDropZoneClasses}
-            detectedFolderDrop={this._preventInputFolderDrop}
-            hasDroppedFolder={() => this._folderDetectMap[INPUT]}
-            clearFolderDetection={() => delete this._folderDetectMap[INPUT]}
-          >
-            <MessageInput
-              viewRef={this._messageInputRef}
-              id={groupId}
-              onPost={this.sendHandler}
-            />
-          </JuiDropZone>
-        ) : (
-          <JuiDisabledInput
-            data-test-automation-id="disabled-message-input"
-            text={t('message.prompt.disabledText')}
-          />
-        )}
+        {this.messageInput}
         <AttachmentManager
           id={groupId}
           viewRef={this._attachmentManagerRef}

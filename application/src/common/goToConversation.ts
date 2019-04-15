@@ -7,6 +7,9 @@ import history from '@/history';
 import { GroupService } from 'sdk/module/group';
 import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { MessageRouterChangeHelper } from '../modules/message/container/Message/helper';
+import { getGlobalValue } from '@/store/utils';
+import { GLOBAL_KEYS } from '@/store/constants';
 
 type BaseGoToConversationParams = {
   conversationId: number;
@@ -96,16 +99,19 @@ function goToConversation({
   jumpToPostId,
   replaceHistory,
 }: BaseGoToConversationParams) {
-  const args: [string, any?] = [`/messages/${conversationId}`];
+  const args: [string, any?] = [String(conversationId)];
+  const currentConversation = getGlobalValue(
+    GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
+  );
+  if (conversationId === currentConversation) {
+    args.push('REPLACE');
+  } else {
+    args.push('PUSH');
+  }
   if (jumpToPostId) {
     args.push({ jumpToPostId });
   }
-
-  if (replaceHistory) {
-    history.replace(...args);
-  } else {
-    history.push(...args);
-  }
+  MessageRouterChangeHelper.goToConversation(...args);
 }
 
 export {

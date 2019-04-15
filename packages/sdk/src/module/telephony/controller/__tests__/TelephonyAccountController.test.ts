@@ -6,10 +6,15 @@
 import { TelephonyAccountController } from '../TelephonyAccountController';
 import { ITelephonyAccountDelegate } from '../../service/ITelephonyAccountDelegate';
 import { RTC_ACCOUNT_STATE, RTCAccount, RTCCall, RTCCallInfo } from 'voip/src';
-import { TelephonyCallInfo } from '../../types';
+import { TelephonyCallInfo, MAKE_CALL_ERROR_CODE } from '../../types';
 import { TelephonyCallController } from '../TelephonyCallController';
+import { MakeCallController } from '../../controller/MakeCallController';
+import { ServiceLoader } from '../../../serviceLoader';
 
 jest.mock('../TelephonyCallController');
+jest.mock('voip/src');
+jest.mock('../../controller/MakeCallController');
+jest.mock('../../../rcInfo/service/RCInfoService');
 
 describe('TelephonyAccountController', () => {
   class MockAccount implements ITelephonyAccountDelegate {
@@ -26,19 +31,16 @@ describe('TelephonyAccountController', () => {
 
   let mockAcc;
   let accountController: TelephonyAccountController;
-  let rtcAccount;
-  let callController;
+  let rtcAccount: RTCAccount;
+  let callController: TelephonyCallController;
 
   const callId = '123';
+  const toNum = '123';
 
   function setup() {
     mockAcc = new MockAccount();
 
-    rtcAccount = {
-      handleProvisioning: jest.fn(),
-      makeCall: jest.fn(),
-      logout: jest.fn(),
-    }; // new RTCAccount(null);
+    rtcAccount = new RTCAccount(null);
     accountController = new TelephonyAccountController(
       { createAccount: jest.fn().mockReturnValue(rtcAccount) },
       mockAcc,
@@ -58,8 +60,58 @@ describe('TelephonyAccountController', () => {
   });
 
   describe('makeCall', () => {
-    it('should call rtcAccount to make call', () => {
-      accountController.makeCall('123');
+    it('should return error when there is no sip prov', async () => {
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce(null);
+      const res = await accountController.makeCall(toNum);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
+    });
+
+    it('should return error when voip is country blocked', async () => {
+      rtcAccount.getSipProvFlags = jest
+        .fn()
+        .mockReturnValueOnce({ voipCountryBlocked: true });
+      const res = await accountController.makeCall(toNum);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
+    });
+
+    it('should return error when voip is disabled', async () => {
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: false,
+      });
+      const res = await accountController.makeCall(toNum);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.VOIP_CALLING_SERVICE_UNAVAILABLE);
+    });
+
+    it('should return error when tryMakecall failed', async () => {
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      const makeCallController = new MakeCallController();
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.N11_101);
+      Object.assign(accountController, {
+        _makeCallController: makeCallController,
+      });
+      const res = await accountController.makeCall(toNum);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.N11_101);
+    });
+    it('should call rtc account to make call when there is no error', async () => {
+      rtcAccount.getSipProvFlags = jest.fn().mockReturnValueOnce({
+        voipCountryBlocked: false,
+        voipFeatureEnabled: true,
+      });
+      const makeCallController = new MakeCallController();
+      makeCallController.tryMakeCall = jest
+        .fn()
+        .mockReturnValue(MAKE_CALL_ERROR_CODE.NO_ERROR);
+      Object.assign(accountController, {
+        _makeCallController: makeCallController,
+      });
+      const res = await accountController.makeCall(toNum);
+      expect(res).toBe(MAKE_CALL_ERROR_CODE.NO_ERROR);
       expect(rtcAccount.makeCall).toBeCalled();
     });
   });
@@ -176,6 +228,28 @@ describe('TelephonyAccountController', () => {
     const NUM = '123';
     const NAME = 'test';
     const CALL_ID = '789';
+
+    it('should return when users have no calling permission', async () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
+        isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(false),
+      });
+      const spy = jest.spyOn(accountController, '_checkVoipStatus');
+      await accountController.onReceiveIncomingCall(null);
+      expect(spy).not.toBeCalled();
+    });
+
+    it('should return when voip status is unavailable', async () => {
+      ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
+        isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(true),
+      });
+      jest
+        .spyOn(accountController, '_checkVoipStatus')
+        .mockReturnValueOnce(MAKE_CALL_ERROR_CODE.THE_COUNTRY_BLOCKED_VOIP);
+      spyOn(mockAcc, 'onReceiveIncomingCall');
+      await accountController.onReceiveIncomingCall(null);
+      expect(mockAcc.onReceiveIncomingCall).not.toBeCalled();
+    });
+
     it('should call incoming call delegate when there is an incoming call', async () => {
       const rtcCall = new RTCCall(false, '', null, null);
       rtcCall.getCallInfo = jest.fn().mockReturnValue({
@@ -188,6 +262,12 @@ describe('TelephonyAccountController', () => {
         sessionId: '',
       });
 
+      ServiceLoader.getInstance = jest.fn().mockReturnValueOnce({
+        isRCFeaturePermissionEnabled: jest.fn().mockReturnValue(true),
+      });
+      jest
+        .spyOn(accountController, '_checkVoipStatus')
+        .mockReturnValueOnce(MAKE_CALL_ERROR_CODE.NO_ERROR);
       spyOn(mockAcc, 'onReceiveIncomingCall');
 
       await accountController.onReceiveIncomingCall(rtcCall);

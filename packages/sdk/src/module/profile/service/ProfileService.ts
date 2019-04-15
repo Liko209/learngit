@@ -16,6 +16,7 @@ import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { SettingOption } from '../types';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -129,6 +130,12 @@ class ProfileService extends EntityBaseService<Profile>
     return await this.getProfileController()
       .getProfileDataController()
       .getFavoriteGroupIds();
+  }
+
+  async updateSettingOptions(options: SettingOption[]) {
+    await this.getProfileController()
+      .getSettingsActionController()
+      .updateSettingOptions(options);
   }
 }
 

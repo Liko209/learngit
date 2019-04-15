@@ -5,7 +5,8 @@
  */
 import React from 'react';
 import { JuiIconButton } from '../../../components/Buttons/IconButton/IconButton';
-import { JuiFileWithExpand, JuiPreviewImage } from './';
+import { JuiFileWithExpand } from './FileWithExpand';
+import { JuiPreviewImage } from './PreviewImage';
 
 type Props = {
   icon: string;

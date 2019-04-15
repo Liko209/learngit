@@ -11,23 +11,25 @@ import { conversationSheet } from './ConversationSheet';
 function idsToConversationSheet(
   itemTypeIds: { [key: number]: number[] },
   postId: number,
+  mode?: string,
 ) {
   if (!Object.keys(itemTypeIds).length) {
     return null;
   }
-  return conversationSheet.dispatch(itemTypeIds, postId);
+  return conversationSheet.dispatch(itemTypeIds, postId, mode);
 }
 
 type Props = {
   itemTypeIds: { [key: number]: number[] };
   postId: number;
+  mode?: string;
 };
 
 @observer
 class IdsToConversationSheet extends React.Component<Props> {
   render() {
-    const { itemTypeIds, postId } = this.props;
-    return <>{idsToConversationSheet(itemTypeIds, postId)}</>;
+    const { itemTypeIds, postId, mode } = this.props;
+    return <>{idsToConversationSheet(itemTypeIds, postId, mode)}</>;
   }
 }
 

@@ -12,12 +12,20 @@ class SyncUserConfig extends UserConfig {
     super(AccountGlobalConfig.getUserDictionary(), 'sync');
   }
 
-  setSocketServerHost(info: any) {
-    this.put(SYNC_CONFIG_KEYS.SOCKET_SERVER_HOST, info);
+  setIndexSocketServerHost(info: string) {
+    this.put(SYNC_CONFIG_KEYS.INDEX_SOCKET_SERVER_HOST, info);
   }
 
-  getSocketServerHost() {
-    return this.get(SYNC_CONFIG_KEYS.SOCKET_SERVER_HOST);
+  getIndexSocketServerHost() {
+    return this.get(SYNC_CONFIG_KEYS.INDEX_SOCKET_SERVER_HOST);
+  }
+
+  setReconnectSocketServerHost(info: string) {
+    this.put(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST, info);
+  }
+
+  getReconnectSocketServerHost() {
+    return this.get(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST);
   }
 
   getLastIndexTimestamp() {

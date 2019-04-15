@@ -12,24 +12,27 @@ import { Like } from '@/containers/ConversationCard/Actions/Like';
 import { Bookmark } from '@/containers/ConversationCard/Actions/Bookmark';
 import { More } from '@/containers/ConversationCard/Actions/More';
 import { Pin } from '@/containers/ConversationCard/Actions/Pin';
-import { ActionsViewProps } from './types';
+import { ActionsProps } from './types';
+import { ConversationPageContext } from '../../ConversationPage/types';
 
-type Props = ActionsViewProps & WithTranslation;
+type Props = ActionsProps & WithTranslation;
 
 @observer
 class ActionsViewComponent extends Component<Props> {
   render() {
     const { postId, groupId } = this.props;
-
+    const { disableMoreAction } = this.context;
     const props = {
       Like: <Like id={postId} />,
       Bookmark: <Bookmark id={postId} />,
       Pin: <Pin postId={postId} groupId={groupId} />,
-      More: <More id={postId} />,
+      More: !disableMoreAction && <More id={postId} />,
     };
     return <JuiConversationActionBar {...props} />;
   }
 }
+
+ActionsViewComponent.contextType = ConversationPageContext;
 
 const ActionsView = withTranslation('translations')(ActionsViewComponent);
 

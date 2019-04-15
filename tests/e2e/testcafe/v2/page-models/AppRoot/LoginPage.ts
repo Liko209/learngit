@@ -2,73 +2,73 @@ import { BaseWebComponent } from "../BaseWebComponent";
 
 export class LoginPage extends BaseWebComponent {
 
-    get self() {
-        return this.getSelector('html');
-    }
+  get self() {
+    return this.getSelector('html');
+  }
 
-    get toUnifiedLoginPageButton() {
-        return this.getSelector('button[type="submit"]');
-    }
+  get toUnifiedLoginPageButton() {
+    return this.getSelector('button[type="submit"]');
+  }
 
-    get credentialField(): Selector {
-        return this.getSelector('input[name="credential"]');
-    }
+  get credentialField(): Selector {
+    return this.getSelector('input[name="credential"]');
+  }
 
-    get nextButton(): Selector {
-        return this.getSelector('[data-test-automation-id="loginCredentialNext"]');
-    }
+  get nextButton(): Selector {
+    return this.getSelector('[data-test-automation-id="loginCredentialNext"]');
+  }
 
-    get usernameField(): Selector {
-        return this.getSelector('input[name="LoginName"]');
-    }
+  get usernameField(): Selector {
+    return this.getSelector('input[name="LoginName"]');
+  }
 
-    get extensionField(): Selector {
-        return this.getSelector('input[name="PIN"]');
-    }
+  get extensionField(): Selector {
+    return this.getSelector('input[name="PIN"]');
+  }
 
-    get passwordField(): Selector {
-        return this.getSelector('input[name="Password"]');
-    }
+  get passwordField(): Selector {
+    return this.getSelector('input[name="Password"]');
+  }
 
-    get signInButton(): Selector {
-        return this.getSelector('[data-test-automation-id="signInBtn"]');
-    }
+  get signInButton(): Selector {
+    return this.getSelector('[data-test-automation-id="signInBtn"]');
+  }
 
-    async enterSignInMethodRedirectPage() {
-        await this.t.click(this.toUnifiedLoginPageButton);
-    }
+  async enterSignInMethodRedirectPage() {
+    await this.t.click(this.toUnifiedLoginPageButton);
+  }
 
-    async enterRingcentralSignInPage() {
-        await this.t.click(this.nextButton);
-    }
+  async enterRingcentralSignInPage() {
+    await this.t.click(this.nextButton);
+  }
 
-    async setCredential(credential: string) {
-        await this.t.typeText(this.credentialField, credential, { replace: true });
-    }
+  async setCredential(credential: string) {
+    await this.t.typeText(this.credentialField, credential, { replace: true });
+  }
 
-    async setUsername(username: string) {
-        await this.t.typeText(this.usernameField, username, { replace: true });
-    }
+  async setUsername(username: string) {
+    await this.t.typeText(this.usernameField, username, { replace: true });
+  }
 
-    async setPassword(password: string) {
-        await this.t.typeText(this.passwordField, password, { replace: true });
-    }
+  async setPassword(password: string) {
+    await this.t.typeText(this.passwordField, password, { replace: true });
+  }
 
-    async setExtension(extension: string) {
-        await this.t.typeText(this.extensionField, extension, { replace: true });
-    }
+  async setExtension(extension: string) {
+    await this.t.typeText(this.extensionField, extension, { replace: true });
+  }
 
-    async confirmSignIn() {
-        await this.t.click(this.signInButton);
-    }
+  async confirmSignIn() {
+    await this.t.click(this.signInButton);
+  }
 
-    async interactiveSignIn(username: string, extension: string, password: string) {
-        await this.enterSignInMethodRedirectPage();
-        await this.setCredential(username);
-        await this.enterRingcentralSignInPage();
-        await this.setUsername(username);
-        await this.setExtension(extension);
-        await this.setPassword(password);
-        await this.t.click(this.signInButton);
-    }
+  async interactiveSignIn(username: string, extension: string, password: string) {
+    await this.enterSignInMethodRedirectPage();
+    await this.setCredential(username);
+    await this.enterRingcentralSignInPage();
+    await this.setUsername(username);
+    await this.setExtension(extension);
+    await this.setPassword(password);
+    await this.t.click(this.signInButton);
+  }
 }
