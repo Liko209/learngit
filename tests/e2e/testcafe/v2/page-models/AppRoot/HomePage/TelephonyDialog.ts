@@ -125,8 +125,42 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   // keypad
-  get keyOne() {
-    return this.buttonOfIcon('one')
+  private keyMap = {
+    1: 'one',
+    2: 'two',
+    3: 'three',
+    4: 'four',
+    5: 'five',
+    6: 'six',
+    7: 'seven',
+    8: 'eight',
+    9: 'nine',
+    0: 'zero',
+    '*': 'asterisk',
+    '#': 'hash'
   }
 
+  async pressKeypad(keys: string | string[]) {
+    for (const i of keys) {
+      await this.click(this.buttonOfIcon(this.keyMap[i]));
+    }
+  }
+
+  // inbound call
+
+  get answerButton() {
+    return this.buttonOfIcon('phone')
+  }
+
+  async clickAnswerButton() {
+    await this.click(this.answerButton);
+  }
+
+  get ignoreButton() {
+    return this.buttonOfIcon('close')
+  }
+
+  async clickIgnoreButton() {
+    await this.click(this.ignoreButton);
+  }
 }
