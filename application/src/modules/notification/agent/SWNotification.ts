@@ -8,12 +8,15 @@ import { AbstractNotification } from './AbstractNotification';
 import { NotificationOpts, NotificationAction } from '../interface';
 import _ from 'lodash';
 import { isElectron, isSafari } from '@/common/isUserAgent';
+import { mainLogger } from 'sdk';
 
 type SWCallbackArgs = {
   id: number;
   action: string;
   scope: string;
 };
+
+const logger = mainLogger.tags('SWNotification');
 export class SWNotification extends AbstractNotification<NotificationAction> {
   static CLIENT_ID = Math.random();
   private _reg: ServiceWorkerRegistration;
@@ -59,6 +62,7 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
   }
 
   async create(title: string, opts: NotificationOpts) {
+    logger.log(`creating notification for ${opts.tag}`);
     let registration;
     if (this._reg) {
       registration = this._reg;
@@ -76,6 +80,7 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
       }),
     ];
     const isSuccessful = await this._checkNotificationValid(id);
+    logger.log(`check notification for ${opts.tag} is valid`, isSuccessful);
     if (isSuccessful) {
       await this._reg.showNotification(title, opts);
       this._store.add(scope, id, actions);

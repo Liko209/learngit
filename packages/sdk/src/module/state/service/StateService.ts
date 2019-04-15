@@ -18,7 +18,12 @@ import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
 import { SYNC_SOURCE } from '../../sync/types';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import {
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../utils';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {
@@ -35,6 +40,13 @@ class StateService extends EntityBaseService<GroupState>
         [ENTITY.PROFILE]: this.handleProfileChangeForTotalUnread,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return (
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM) ||
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP)
+      );
+    });
   }
 
   protected getStateController(): StateController {

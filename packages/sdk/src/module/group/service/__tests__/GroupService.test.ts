@@ -342,4 +342,14 @@ describe('GroupService', () => {
       expect(makeOrRevokeAdmin).toBeCalledWith(1, 2, false);
     });
   });
+
+  describe('getById', () => {
+    it('shoule receive null when id is not correct group id', async () => {
+      try {
+        await groupService.getById(1);
+      } catch (e) {
+        expect(e).toBeNull();
+      }
+    });
+  });
 });

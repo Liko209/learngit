@@ -750,6 +750,31 @@ describe('RTC call', () => {
         done();
       });
     });
+
+    it('should stay in idle state when receive accountReady in idle state for incoming call. [JPT-1673]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
+      call.onAccountReady();
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
+        done();
+      });
+    });
+
+    it('should stay in idle state when receive accountNotReady in idle state for incoming call. [JPT-1674]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
+      call.onAccountNotReady();
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
+        done();
+      });
+    });
+
     it('should call state become disconnected when receive session disconnected in idle state [JPT-614]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();

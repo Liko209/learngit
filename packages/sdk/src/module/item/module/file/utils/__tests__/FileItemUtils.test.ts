@@ -172,4 +172,30 @@ describe('FileItemUtils', () => {
       expect(FileItemUtils.isFromGiphy(itemB)).toBeFalsy();
     });
   });
+
+  describe('getVersionDate', () => {
+    it('should return date at 0 pos when has version data ', () => {
+      expect(
+        FileItemUtils.getVersionDate({
+          versions: [{ date: 11111 }, { date: 22222 }] as any,
+        }),
+      ).toBe(11111);
+    });
+
+    it('should return null when version data is string ', () => {
+      expect(
+        FileItemUtils.getVersionDate({
+          versions: [{ date: '11111' }, { date: '22222' }] as any,
+        }),
+      ).toBe(null);
+    });
+
+    it('should return null when version is empty ', () => {
+      expect(FileItemUtils.getVersionDate({ versions: [] as any })).toBe(null);
+    });
+
+    it('should return null when version is not array ', () => {
+      expect(FileItemUtils.getVersionDate({ versions: {} as any })).toBe(null);
+    });
+  });
 });

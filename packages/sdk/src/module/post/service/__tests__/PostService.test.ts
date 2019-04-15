@@ -8,6 +8,8 @@ import { PostController } from '../../controller/PostController';
 import { PostSearchController } from '../../controller/implementation/PostSearchController';
 import { PostService } from '../PostService';
 import { PostDataController } from '../../controller/PostDataController';
+import { ProfileService } from '../../../profile';
+import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../account/config/AccountUserConfig');
 jest.mock('../../../../framework/controller/impl/EntityNotificationController');
@@ -15,6 +17,8 @@ jest.mock('../../controller/PostDataController');
 jest.mock('../../controller/PostController');
 jest.mock('../../controller/implementation/PostSearchController');
 jest.mock('../../../../api');
+jest.mock('../../../../dao');
+jest.mock('../../../profile');
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -67,8 +71,13 @@ describe('PostService', () => {
         post,
       );
     });
-  });
 
+    it('should call post data controller', async () => {
+      const rawPost = [{ _id: 1 }, { _id: 2 }] as any;
+      await postService.handleIndexData(rawPost, true);
+      expect(postDataController.handleIndexPosts).toBeCalledWith(rawPost, true);
+    });
+  });
   describe('PostSearchController', () => {
     let postSearchController: PostSearchController;
     beforeEach(() => {
@@ -107,6 +116,30 @@ describe('PostService', () => {
       const requestId = Date.now();
       await postService.endPostSearch(requestId);
       expect(postSearchController.endPostSearch).toBeCalledWith(requestId);
+    });
+  });
+
+  describe('bookmarkPost', () => {
+    it('bookmarkPost', async () => {
+      const profileService = new ProfileService();
+      ServiceLoader.getInstance = jest
+        .fn()
+        .mockImplementation((serviceName: string) => {
+          if (serviceName === ServiceConfig.PROFILE_SERVICE) {
+            return profileService;
+          }
+        });
+      await postService.bookmarkPost(1, true);
+      expect(profileService.putFavoritePost).toBeCalledWith(1, true);
+    });
+  });
+  describe('getById', () => {
+    it('shoule receive error when id is not correct post id', async () => {
+      try {
+        await postService.getById(1);
+      } catch (e) {
+        expect(e).toBeNull();
+      }
     });
   });
 });

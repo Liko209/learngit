@@ -13,6 +13,7 @@ import { RCInfoService } from '../module/rcInfo';
 import { setRCToken, setRCAccountType } from './utils';
 import { AccountGlobalConfig } from '../module/account/config';
 import { ServiceLoader, ServiceConfig } from '../module/serviceLoader';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../utils';
 
 interface IUnifiedLoginAuthenticateParams extends IAuthParams {
   code?: string;
@@ -29,6 +30,12 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
   async authenticate(
     params: IUnifiedLoginAuthenticateParams,
   ): Promise<IAuthResponse> {
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.UNIFIED_LOGIN,
+      logId,
+    );
+
     if (params.code) {
       return this._authenticateRC(params.code);
     }
@@ -36,6 +43,8 @@ class UnifiedLoginAuthenticator implements IAuthenticator {
     if (params.token) {
       return this._authenticateGlip(params.token);
     }
+
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
 
     return {
       success: false,

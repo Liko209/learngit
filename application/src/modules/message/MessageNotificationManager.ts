@@ -28,12 +28,15 @@ import GroupService from 'sdk/module/group';
 import { PostService } from 'sdk/module/post';
 import { getPostType } from '@/common/getPostType';
 import { IEntityChangeObserver } from 'sdk/framework/controller/types';
+import { mainLogger } from 'sdk';
+
+const logger = mainLogger.tags('MessageNotificationManager');
 
 export class MessageNotificationManager extends AbstractNotificationManager {
   protected _observer: IEntityChangeObserver;
   private _postService: PostService;
   constructor() {
-    super('message', ServiceConfig.POST_SERVICE);
+    super('message');
     this._observer = {
       onEntitiesChanged: this.handlePostEntityChanged,
     };
@@ -48,9 +51,11 @@ export class MessageNotificationManager extends AbstractNotificationManager {
 
   handlePostEntityChanged = async (entities: Post[]) => {
     const postId = entities[0].id;
+    logger.info(`prepare notification for ${postId}`);
     const result = await this.shouldEmitNotification(postId);
 
     if (!result) {
+      logger.info(`notification for ${postId} is not permitted`);
       return;
     }
     const { postModel, groupModel } = result;

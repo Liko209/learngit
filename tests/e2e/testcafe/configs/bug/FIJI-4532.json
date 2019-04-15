@@ -1,6 +1,6 @@
 {
     "on_merge": {
-      "fixtures": ["./fixtures/Logout.ts"],
+      "fixtures": ["./fixtures/AtMention/AtMention.ts"],
       "browsers": ["selenium:chrome"]
     }
   }
