@@ -16,21 +16,25 @@ type MemberProps = {
   size?: IconButtonSize;
 };
 
-const StyledConversationPageMember = styled.a<MemberProps>`
+const StyledConversationPageMember = styled.button<MemberProps>`
   display: inline-flex;
   flex: none;
   align-self: center;
   align-items: center;
-  height: ${({ size = 'medium', theme }) =>
-    width(iconSizes[size] * 2)({
-      theme,
-    })};
+  border: none;
   padding: ${spacing(0, 3)};
+  height: ${({ size = 'medium', theme }) =>
+    width(iconSizes[size] * 2)({ theme })};
+  background: none;
   color: ${grey('500')};
   cursor: pointer;
 
   > span {
     ${typography('body1')};
+  }
+
+  :active {
+    outline: none;
   }
 
   :hover {
@@ -51,7 +55,6 @@ class JuiConversationPageMember extends React.Component<
     return (
       <JuiArrowTip title={title}>
         <StyledConversationPageMember
-          href="javascript:void()"
           aria-label={ariaLabel}
           onClick={onClick}
           size={size}
