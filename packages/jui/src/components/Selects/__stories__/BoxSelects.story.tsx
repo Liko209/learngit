@@ -6,10 +6,49 @@
 
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withInfoDecorator } from '../../../foundation/utils/decorators';
+import {
+  withInfoDecorator,
+  alignCenterDecorator,
+} from '../../../foundation/utils/decorators';
+import { boolean, select } from '@storybook/addon-knobs';
 import { JuiBoxSelect } from '..';
+import { JuiMenuItem } from 'src/components/Menus';
 
-class TestBoxSelect extends React.Component {
+type Menu = {
+  id: number | string;
+  value: string;
+};
+
+function getKnobs() {
+  const heightSize = select(
+    'heightSize',
+    {
+      default: 'default',
+      large: 'large',
+    },
+    'large',
+  );
+  const menuItemStyle = select(
+    'menuItemStyle',
+    {
+      MUINative: 'MUINative',
+      Fixed: 'fixed',
+    },
+    'MUINative',
+  );
+  const disabled = boolean('disabled', false);
+  return {
+    heightSize,
+    disabled,
+    menuItemStyle,
+  };
+}
+
+class TestBoxSelect extends React.Component<{
+  heightSize: 'default' | 'large';
+  menuItemStyle?: 'fixed' | 'MUINative';
+  disabled: boolean;
+}> {
   state = {
     value: 1,
     menu: [
@@ -18,46 +57,48 @@ class TestBoxSelect extends React.Component {
       { id: 3, value: 'Three' },
     ],
   };
-  onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = event.target.value;
+  handleChange = (value: string | number) => {
     this.setState({ value });
   }
 
   render() {
-    const { value, menu } = this.state;
+    const { menu, ...rest } = this.state;
+    const { disabled, heightSize } = this.props;
+    const MenuProps: any = {
+      anchorOrigin: {
+        vertical: 'top',
+        horizontal: 'left',
+      },
+      getContentAnchorEl: null,
+    };
+
     return (
-      <div>
-        <JuiBoxSelect value={value} menu={menu} onChange={this.onChange} />
-        <br />
-        <br />
-        <JuiBoxSelect
-          value={value}
-          menu={menu}
-          onChange={this.onChange}
-          heightSize="large"
-        />
-        <br />
-        <br />
-        <JuiBoxSelect value={1} menu={menu} disabled={true} />
-        <br />
-        <br />
-        <JuiBoxSelect
-          value={1}
-          menu={menu}
-          disabled={true}
-          heightSize="large"
-        />
-      </div>
+      <JuiBoxSelect
+        {...this.state}
+        MenuProps={this.props.menuItemStyle === 'fixed' ? MenuProps : {}}
+        heightSize={heightSize}
+        disabled={disabled}
+        label="Select Demo"
+        handleChange={this.handleChange}
+        automationId={'demo'}
+      >
+        {menu.map((item: Menu) => (
+          <JuiMenuItem {...rest} value={item.id} key={item.id}>
+            {item.value}
+          </JuiMenuItem>
+        ))}
+      </JuiBoxSelect>
     );
   }
 }
 
 storiesOf('Components/Selects', module)
+  .addDecorator(alignCenterDecorator)
   .addDecorator(withInfoDecorator(JuiBoxSelect, { inline: true }))
   .add('BoxSelect', () => {
     return (
       <div style={{ padding: '0 30%' }}>
-        <TestBoxSelect />
+        <TestBoxSelect {...getKnobs()} />
       </div>
     );
   });

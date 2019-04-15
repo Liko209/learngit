@@ -1,16 +1,32 @@
+/*
+ * @Author: Chris Zhan (chris.zhan@ringcentral.com)
+ * @Date: 2019-04-02 09:12:17
+ * Copyright © RingCentral. All rights reserved.
+ */
 import { LoadingMorePlugin } from '@/plugins';
-import { POST_LIST_TYPE } from '../types';
+import { Post } from 'sdk/module/post/entity';
+import { ISortableModel } from '@/store/base/fetch/types';
+import { QUERY_DIRECTION } from 'sdk/dao';
+import PostModel from '@/store/models/Post';
 
 type StreamProps = {
+  selfProvide?: boolean; // should be true if postIds are provided by the postFetcher
   postIds: number[];
-  type: POST_LIST_TYPE;
+  postFetcher: (
+    direction: QUERY_DIRECTION,
+    pageSize: number,
+    anchor?: ISortableModel<Post>,
+  ) => Promise<{
+    hasMore: boolean;
+    data: (Post | PostModel)[];
+  }>;
 };
 
 type StreamViewProps = {
   ids: number[];
   hasMore: boolean;
   plugins: TPluginsProps;
-  type: POST_LIST_TYPE;
+  fetchInitialPosts: () => void;
 };
 
 type TPluginsProps = {

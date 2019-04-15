@@ -4,4 +4,3 @@
  * Copyright © RingCentral. All rights reserved.
  */
 export * from './TextField';
-export * from './OutlineTextField';

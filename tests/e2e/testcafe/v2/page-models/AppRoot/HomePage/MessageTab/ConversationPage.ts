@@ -56,9 +56,23 @@ class HeaderMoreMenu extends BaseWebComponent {
   }
 }
 
-class BaseConversationPage extends BaseWebComponent {
+export class BaseConversationPage extends BaseWebComponent {
+  private _self: Selector = this.getSelectorByAutomationId('messagePanel');
+
+  get self() {
+    return this._self;
+  }
+
+  set self(root: Selector) {
+    this._self = root;
+  }
+
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
+  }
+  
+  get postSenders() {
+    return this.self.find('[data-name="name"]');
   }
 
   get header() {
@@ -92,11 +106,11 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   get streamWrapper() {
-    return this.getSelectorByAutomationId('jui-stream-wrapper');
+    return this.getSelectorByAutomationId('jui-stream-wrapper', this.self);
   }
 
   get stream() {
-    return this.getSelectorByAutomationId('jui-stream');
+    return this.getSelectorByAutomationId('jui-stream', this.self);
   }
 
   get loadingCircle() {
@@ -244,10 +258,6 @@ class BaseConversationPage extends BaseWebComponent {
 }
 
 export class ConversationPage extends BaseConversationPage {
-  get self() {
-    return this.getSelector('.conversation-page');
-  }
-
   get jumpToFirstUnreadButtonWrapper() {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
