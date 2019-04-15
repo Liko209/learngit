@@ -134,6 +134,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
     const { id, type, hasMore, sectionIndex, cellIndex } = config;
 
     const { SearchItem, title } = SearchSectionsConfig[type];
+
     return (
       <SearchItem
         cellIndex={cellIndex}
@@ -162,6 +163,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
         if (ids.length === 0) return null;
 
         const { title } = SearchSectionsConfig[type];
+
         return (
           <React.Fragment key={type}>
             <JuiSearchTitle
@@ -225,11 +227,15 @@ class SearchBarView extends React.Component<ViewProps & Props> {
 
   onEnter = (e: KeyboardEvent) => {
     const {
+      selectIndex,
       getCurrentItemId,
       addRecentRecord,
       getCurrentItemType,
       canJoinTeam,
     } = this.props;
+    if (selectIndex[0] < 0) {
+      return;
+    }
     const currentItemId = getCurrentItemId();
     const currentItemType = getCurrentItemType();
     if (!currentItemId) {

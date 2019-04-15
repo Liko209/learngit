@@ -149,7 +149,7 @@ test(formalName('The count of the unread button (up) should display correct', ['
   const loginUser = users[6];
   const otherUser = users[5];
 
-  const umiCount = 3;
+  const umiCount = 4;
   const msgList = _.range(umiCount).map(i => H.multilineString(10, `No. ${i}`, uuid()));
 
   let team = <IGroup>{

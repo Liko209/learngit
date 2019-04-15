@@ -53,11 +53,6 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     if (items.length === 0) {
       return;
     }
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_ITEM,
-      logId,
-    );
     const transformedData = items.map(item => transform<Item>(item));
     const result = await baseHandleData(
       {
@@ -67,7 +62,6 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       },
       ItemNotification.getItemsNotifications,
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
     return result;
   }
 
