@@ -25,12 +25,7 @@ import {
   PerformanceTracerHolder,
 } from '../../../../utils';
 import { mainLogger } from 'foundation';
-import {
-  ERROR_TYPES,
-  ErrorParserHolder,
-  JSdkError,
-  ERROR_CODES_SDK,
-} from '../../../../error';
+import { ERROR_TYPES, ErrorParserHolder } from '../../../../error';
 
 const LOG_TAG = 'PostSearchController';
 const SEARCH_TIMEOUT_ERR = 'Search Time Out';
