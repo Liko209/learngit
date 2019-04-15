@@ -24,6 +24,15 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Jest Current File (With Coverage)",
+      "program": "${workspaceFolder}/scripts/test.js",
+      "args": ["--no-cache", "--watch", "--coverage", "${relativeFile}"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "protocol": "inspector",
       "name": "Launch test files with TestCafe",
       "program": "${workspaceRoot}/node_modules/testcafe/bin/testcafe.js",

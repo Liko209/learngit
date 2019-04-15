@@ -227,7 +227,7 @@ class StreamViewComponent extends Component<Props> {
     },                         LOADING_DELAY);
 
     try {
-      const firstUnreadPostId = await this.props.loadPostUntilFirstUnread();
+      const firstUnreadPostId = await this.props.getFirstUnreadPostByLoadAllUnread();
       const index = firstUnreadPostId
         ? this.props.items.findIndex(
             (item: StreamItemPost) =>
