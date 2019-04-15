@@ -90,14 +90,20 @@ class JuiStreamLoading extends React.PureComponent<
     clearTimeout(this.showLinkTimer);
   }
 
-  onClick = () => {
+  onClick = async () => {
     const { onClick } = this.props;
+
+    if (!onClick) {
+      return;
+    }
+
     this.setState({
       showLink: false,
     });
+
     try {
-      onClick && onClick();
-    } catch (error) {
+      await onClick();
+    } finally {
       this.setState({
         showLink: true,
       });
