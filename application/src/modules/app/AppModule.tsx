@@ -30,6 +30,8 @@ import {
 } from '@/utils/error';
 import { AccountUserConfig } from 'sdk/service/account/config';
 import { PhoneParserUtility } from 'sdk/utils/phoneParser';
+import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
+import { Pal } from 'sdk/pal';
 
 /**
  * The root module, we call it AppModule,
@@ -70,6 +72,10 @@ class AppModule extends AbstractModule {
         }
       }
     }
+    const versionInfo = await fetchVersionInfo();
+    Pal.instance.setApplicationInfo({
+      getAppVersion: () => versionInfo.deployedVersion,
+    });
 
     window.addEventListener('error', (event: ErrorEvent) => {
       generalErrorHandler(

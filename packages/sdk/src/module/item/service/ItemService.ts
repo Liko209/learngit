@@ -54,7 +54,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       return;
     }
     const transformedData = items.map(item => transform<Item>(item));
-    return await baseHandleData(
+    const result = await baseHandleData(
       {
         data: transformedData,
         dao: daoManager.getDao(ItemDao),
@@ -62,6 +62,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       },
       ItemNotification.getItemsNotifications,
     );
+    return result;
   }
 
   protected get itemServiceController() {

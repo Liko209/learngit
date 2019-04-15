@@ -5,3 +5,5 @@
  */
 export const DEFAULT_PAGE_SIZE = 20;
 export const INDEX_POST_MAX_SIZE = 50;
+
+export const LOG_INDEX_DATA_POST = '[LOG_INDEX_DATA_POST]';

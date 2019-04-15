@@ -11,7 +11,7 @@ import { daoManager, QUERY_DIRECTION } from '../../../dao';
 import { PostDao } from '../../../module/post/dao';
 import { Api } from '../../../api';
 import { SendPostType, EditPostType } from '../types';
-import { DEFAULT_PAGE_SIZE } from '../constant';
+import { DEFAULT_PAGE_SIZE, LOG_INDEX_DATA_POST } from '../constant';
 import { ProfileService } from '../../profile';
 import { Item } from '../../../module/item/entity';
 import { SubscribeController } from '../../base/controller/SubscribeController';
@@ -19,6 +19,9 @@ import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { mainLogger } from 'foundation';
+
 class PostService extends EntityBaseService<Post> {
   static serviceName = 'PostService';
   postController: PostController;
@@ -131,9 +134,19 @@ class PostService extends EntityBaseService<Post> {
   }
 
   handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
-    this.getPostController()
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
+      logId,
+    );
+    await this.getPostController()
       .getPostDataController()
       .handleIndexPosts(data, maxPostsExceed);
+    mainLogger.info(
+      LOG_INDEX_DATA_POST,
+      'handleData source: SYNC_SOURCE.INDEX',
+    );
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {

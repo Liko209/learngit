@@ -9,6 +9,7 @@ import { Api } from '../../api';
 import { AccountUserConfig } from '../../service/account/config';
 import AccountService from '../account';
 import { ILogUploader } from './consumer';
+import { Pal } from '../../pal';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {
@@ -18,9 +19,15 @@ export class LogUploader implements ILogUploader {
     const sessionId = logs[0].sessionId;
     const { server, uniqueHttpCollectorCode } = Api.httpConfig.sumologic;
     const postUrl = `${server}${uniqueHttpCollectorCode}`;
+    const appVersion =
+      (Pal.instance.getApplicationInfo() &&
+        Pal.instance.getApplicationInfo().getAppVersion()) ||
+      '';
     await axios.post(postUrl, message, {
       headers: {
-        'X-Sumo-Name': `${userInfo.email}| ${userInfo.userId}| ${sessionId}`,
+        'X-Sumo-Name': `${appVersion}| ${userInfo.email}| ${
+          userInfo.userId
+        }| ${sessionId}`,
         'Content-Type': 'application/json',
       },
     });
@@ -51,6 +58,8 @@ export class LogUploader implements ILogUploader {
       return 'retry';
     }
     mainLogger.debug('Log errorHandler: ignore=>retry');
+    Pal.instance.getErrorReporter() &&
+      Pal.instance.getErrorReporter().report(error);
     return 'retry';
   }
 

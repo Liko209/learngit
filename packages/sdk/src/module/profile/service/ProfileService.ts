@@ -31,7 +31,8 @@ class ProfileService extends EntityBaseService<Profile>
     this.setSubscriptionController(
       SubscribeController.buildSubscriptionController({
         [SOCKET.PROFILE]: this.handleIncomingData,
-        [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: this.handleGroupIncomesNewPost,
+        [SERVICE.POST_SERVICE.NEW_POST_TO_GROUP]: this
+          .handleGroupIncomesNewPost,
       }),
     );
   }
@@ -40,7 +41,7 @@ class ProfileService extends EntityBaseService<Profile>
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
   ) => {
-    this.getProfileController()
+    await this.getProfileController()
       .getProfileDataController()
       .profileHandleData(profile, source);
   }

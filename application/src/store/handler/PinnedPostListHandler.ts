@@ -27,7 +27,7 @@ class PinnedPostListHandler extends DiscontinuousPosListHandler {
   private _reactionDisposer: IReactionDisposer;
   private _groupId: number;
   constructor(groupId: number, pinnedPostList: number[]) {
-    super(pinnedPostList, new PostProvider());
+    super(pinnedPostList.filter(Number), new PostProvider());
     this._groupId = groupId;
 
     this._reactionDisposer = reaction(
