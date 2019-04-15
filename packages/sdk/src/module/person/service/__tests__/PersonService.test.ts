@@ -137,4 +137,14 @@ describe('PersonService', () => {
       expect(personController.refreshPersonData).toBeCalledWith(111);
     });
   });
+
+  describe('getById', () => {
+    it('shoule receive null when id is not correct person id', async () => {
+      try {
+        await personService.getById(1);
+      } catch (e) {
+        expect(e).toBeNull();
+      }
+    });
+  });
 });

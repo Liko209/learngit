@@ -9,7 +9,12 @@ import { IRTCCallDelegate } from '../IRTCCallDelegate';
 import { IRTCAccount } from '../../account/IRTCAccount';
 import { RTCCall } from '../RTCCall';
 import { CALL_FSM_NOTIFY } from '../../call/types';
-import { RTC_CALL_STATE, RTC_CALL_ACTION, RTCCallOptions } from '../types';
+import {
+  RTC_CALL_STATE,
+  RTC_CALL_ACTION,
+  RTCCallOptions,
+  RTC_REPLY_MSG_PATTERN,
+} from '../types';
 import { WEBPHONE_SESSION_STATE } from '../../signaling/types';
 import { kRTCHangupInvalidCallInterval } from '../../account/constants';
 import { rtcLogger } from '../../utils/RTCLoggerProxy';
@@ -100,7 +105,8 @@ describe('RTC call', () => {
 
   class MockSession extends EventEmitter2 {
     public sessionDescriptionHandler: SessionDescriptionHandler;
-    mediaStreams: MediaStreams;
+    public remoteIdentity: any;
+    public mediaStreams: MediaStreams;
     constructor() {
       super();
       this.remoteIdentity = {
@@ -132,16 +138,16 @@ describe('RTC call', () => {
     unhold = jest.fn();
     dtmf = jest.fn();
     forward = jest.fn();
+    sendSessionMessage = jest.fn();
+    replyWithMessage = jest.fn();
+    terminate = jest.fn();
+    accept = jest.fn();
+    reject = jest.fn();
+    toVoicemail = jest.fn();
 
     mockSignal(signal: string, response?: any): void {
       this.emit(signal, response);
     }
-    terminate() {}
-    accept() {}
-    reject() {}
-    toVoicemail() {}
-
-    public remoteIdentity: any;
   }
 
   describe('constructor()', () => {
@@ -744,6 +750,31 @@ describe('RTC call', () => {
         done();
       });
     });
+
+    it('should stay in idle state when receive accountReady in idle state for incoming call. [JPT-1673]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
+      call.onAccountReady();
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
+        done();
+      });
+    });
+
+    it('should stay in idle state when receive accountNotReady in idle state for incoming call. [JPT-1674]', done => {
+      const account = new VirturlAccountAndCallObserver();
+      const session = new MockSession();
+      const call = new RTCCall(true, '', session, account, account);
+      expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
+      call.onAccountNotReady();
+      setImmediate(() => {
+        expect(call.getCallState()).toBe(RTC_CALL_STATE.IDLE);
+        done();
+      });
+    });
+
     it('should call state become disconnected when receive session disconnected in idle state [JPT-614]', done => {
       const account = new VirturlAccountAndCallObserver();
       const session = new MockSession();
@@ -2064,7 +2095,9 @@ describe('RTC call', () => {
       call.forward('');
       setImmediate(() => {
         expect(call._fsm.state()).toBe('idle');
-        expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+        expect(account.onCallActionFailed).toHaveBeenCalledWith(
+          RTC_CALL_ACTION.FORWARD,
+        );
         done();
       });
     });
@@ -2076,7 +2109,9 @@ describe('RTC call', () => {
         call.forward(forwardNumber);
         setImmediate(() => {
           expect(call._fsm.state()).toBe('pending');
-          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.FORWARD,
+          );
           done();
         });
       });
@@ -2087,7 +2122,9 @@ describe('RTC call', () => {
         call.forward(forwardNumber);
         setImmediate(() => {
           expect(call._fsm.state()).toBe('answering');
-          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.FORWARD,
+          );
           done();
         });
       });
@@ -2098,7 +2135,9 @@ describe('RTC call', () => {
         call.forward(forwardNumber);
         setImmediate(() => {
           expect(call._fsm.state()).toBe('forwarding');
-          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.FORWARD,
+          );
           done();
         });
       });
@@ -2109,7 +2148,9 @@ describe('RTC call', () => {
         call.forward(forwardNumber);
         setImmediate(() => {
           expect(call._fsm.state()).toBe('connecting');
-          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.FORWARD,
+          );
           done();
         });
       });
@@ -2121,7 +2162,9 @@ describe('RTC call', () => {
         call.forward(forwardNumber);
         setImmediate(() => {
           expect(call._fsm.state()).toBe('connected');
-          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.FORWARD,
+          );
           done();
         });
       });
@@ -2135,7 +2178,9 @@ describe('RTC call', () => {
         call.forward(forwardNumber);
         setImmediate(() => {
           expect(call._fsm.state()).toBe('holding');
-          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.FORWARD,
+          );
           done();
         });
       });
@@ -2150,7 +2195,9 @@ describe('RTC call', () => {
         call.forward(forwardNumber);
         setImmediate(() => {
           expect(call._fsm.state()).toBe('holded');
-          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.FORWARD,
+          );
           done();
         });
       });
@@ -2167,7 +2214,9 @@ describe('RTC call', () => {
         call.forward(forwardNumber);
         setImmediate(() => {
           expect(call._fsm.state()).toBe('unholding');
-          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.FORWARD,
+          );
           done();
         });
       });
@@ -2179,7 +2228,134 @@ describe('RTC call', () => {
         call.forward(forwardNumber);
         setImmediate(() => {
           expect(call._fsm.state()).toBe('disconnected');
-          expect(account.onCallActionFailed).toHaveBeenCalledWith(RTC_CALL_ACTION.FORWARD);
+          expect(account.onCallActionFailed).toHaveBeenCalledWith(
+            RTC_CALL_ACTION.FORWARD,
+          );
+          done();
+        });
+      });
+    });
+  });
+
+  describe('Reply incoming call with message', () => {
+    let account: VirturlAccountAndCallObserver;
+    let call: RTCCall;
+    let session: MockSession;
+    function setup() {
+      account = new VirturlAccountAndCallObserver();
+      session = new MockSession();
+      call = new RTCCall(true, '123', session, account, account);
+    }
+
+    it('should call state changed to replying when call startReply api in idle state. [JPT-1422]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        expect(session.sendSessionMessage).toBeCalled();
+        done();
+      });
+    });
+
+    it('should call state changed to answering when call answer api in replying state. [JPT-1423]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        call.answer();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('answering');
+          expect(session.accept).toBeCalled();
+          done();
+        });
+      });
+    });
+
+    it('should call state changed to disconnected when call replyWithMessage api in replying state. [JPT-1424]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        call.replyWithMessage('123');
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('disconnected');
+          expect(session.replyWithMessage).toBeCalled();
+          done();
+        });
+      });
+    });
+
+    it('should call state changed to disconnected when call replyWithPattern api in replying state. [JPT-1425]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        call.replyWithPattern(RTC_REPLY_MSG_PATTERN.CALL_ME_BACK_LATER);
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('disconnected');
+          expect(session.replyWithMessage).toBeCalled();
+          done();
+        });
+      });
+    });
+
+    it('should call state change to disconnected when receive sessionDisconnected in replying state. [JPT-1426]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        session.mockSignal('bye');
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('disconnected');
+          done();
+        });
+      });
+    });
+
+    it("should call webphone's sendToVoicemail api when call sendToVoicemail api in replying state. [JPT-1427]", done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        call.sendToVoicemail();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('disconnected');
+          expect(session.toVoicemail).toBeCalled();
+          done();
+        });
+      });
+    });
+
+    it("should call webphone's reject api when call reject api in replying state. [JPT-1428]", done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        call.reject();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('disconnected');
+          expect(session.reject).toBeCalled();
+          done();
+        });
+      });
+    });
+
+    it('should call state change to disconnected when call ignore api in replying state. [JPT-1470]', done => {
+      setup();
+      expect(call._fsm.state()).toBe('idle');
+      call.startReply();
+      setImmediate(() => {
+        expect(call._fsm.state()).toBe('replying');
+        call.ignore();
+        setImmediate(() => {
+          expect(call._fsm.state()).toBe('disconnected');
           done();
         });
       });

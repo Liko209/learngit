@@ -5,6 +5,7 @@
  */
 interface IModule {
   bootstrap: () => Promise<void> | void;
+  dispose?: () => Promise<void> | void;
 }
 
 export { IModule };

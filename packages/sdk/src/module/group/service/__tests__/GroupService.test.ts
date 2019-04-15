@@ -375,4 +375,14 @@ describe('GroupService', () => {
       );
     });
   });
+
+  describe('getById', () => {
+    it('should receive null when id is not correct group id', async () => {
+      try {
+        await groupService.getById(1);
+      } catch (e) {
+        expect(e).toBeNull();
+      }
+    });
+  });
 });

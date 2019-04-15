@@ -74,4 +74,14 @@ describe('CompanyController', () => {
       );
     });
   });
+
+  describe('getById', () => {
+    it('shoule receive null when id is not correct company id', async () => {
+      try {
+        await companyService.getById(2);
+      } catch (e) {
+        expect(e).toBeNull();
+      }
+    });
+  });
 });

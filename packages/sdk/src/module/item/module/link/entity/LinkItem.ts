@@ -13,9 +13,17 @@ export type LinkItem = Item & {
   title: string;
   url: string;
   image: string;
-  data: {
+  data?: {
     provider_name: string;
     favicon_url: string;
     url: string;
+    title: string;
+    object: {
+      duration?: number;
+      width?: number;
+      html?: string;
+      type?: 'video';
+      height?: number;
+    };
   };
 };

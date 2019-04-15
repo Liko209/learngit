@@ -59,6 +59,10 @@ class TelephonyStore {
   @observable
   phoneNumber?: string;
   @observable
+  callId: string;
+  @observable
+  callerName?: string;
+  @observable
   activeCallTime?: number;
   @observable
   keypadEntered: boolean = false;

@@ -269,13 +269,18 @@ class PersonController {
     return person.flags === 0;
   }
 
+  private _hasBogusEmail(person: Person) {
+    return this._hasTrueValue(person, PersonFlags.has_bogus_email);
+  }
+
   isCacheValid = (person: Person) => {
     return (
       !this._isUnregistered(person) &&
       this._isVisible(person) &&
       !this._hasTrueValue(person, PersonFlags.is_removed_guest) &&
       !this._hasTrueValue(person, PersonFlags.am_removed_guest) &&
-      !person.is_pseudo_user
+      !person.is_pseudo_user &&
+      !this._hasBogusEmail(person)
     );
   }
 
@@ -315,11 +320,14 @@ class PersonController {
     e164PhoneNumber: string,
     contactType: ContactType,
   ): Promise<Person | null> {
+    const userConfig = new AccountUserConfig();
+    const companyId = userConfig.getCurrentCompanyId();
     const result = await this._cacheSearchController.searchEntities(
       (person: Person, terms: Terms) => {
         if (
           person.sanitized_rc_extension &&
-          person.sanitized_rc_extension.extensionNumber === e164PhoneNumber
+          person.sanitized_rc_extension.extensionNumber === e164PhoneNumber &&
+          person.company_id === companyId
         ) {
           return {
             id: person.id,
@@ -329,16 +337,17 @@ class PersonController {
         }
 
         if (person.rc_phone_numbers) {
-          for (const index in person.rc_phone_numbers) {
-            if (
-              person.rc_phone_numbers[index].phoneNumber === e164PhoneNumber
-            ) {
-              return {
-                id: person.id,
-                displayName: name,
-                entity: person,
-              };
-            }
+          const res = person.rc_phone_numbers.find(
+            (phoneNumberModel: PhoneNumberModel) => {
+              return phoneNumberModel.phoneNumber === e164PhoneNumber;
+            },
+          );
+          if (res) {
+            return {
+              id: person.id,
+              displayName: name,
+              entity: person,
+            };
           }
         }
         return null;

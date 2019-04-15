@@ -17,13 +17,22 @@ import { PERMISSION_ENUM } from '../constants';
 import { GroupConfigController } from '../controller/GroupConfigController';
 import { GroupController } from '../controller/GroupController';
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
-import { PermissionFlags, TeamSetting } from '../types';
+import {
+  PermissionFlags,
+  TeamSetting,
+  GroupCanBeShownResponse,
+} from '../types';
 import { IGroupService } from './IGroupService';
 import { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
 import { Post } from '../../post/entity';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import {
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../utils';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
@@ -44,6 +53,13 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
           .setAsTrue4HasMoreConfigByDirection,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return (
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP) ||
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM)
+      );
+    });
   }
   protected buildEntityCacheController() {
     return GroupEntityCacheController.buildGroupEntityCacheController(this);
@@ -359,7 +375,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .updateGroupLastAccessedTime(params);
   }
 
-  async isGroupCanBeShown(groupId: number): Promise<boolean> {
+  async isGroupCanBeShown(groupId: number): Promise<GroupCanBeShownResponse> {
     return await this.getGroupController()
       .getGroupActionController()
       .isGroupCanBeShown(groupId);

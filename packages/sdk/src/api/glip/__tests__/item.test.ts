@@ -30,7 +30,6 @@ describe('ItemAPI', () => {
       });
     });
   });
-
   describe('requestById()', () => {
     it('glipNetworkClient.get() should be called with specific path', () => {
       ItemAPI.requestById(9);

@@ -143,4 +143,14 @@ describe('StateService', () => {
       expect(mockGetSingleUnreadInfo).toBeCalledWith(id);
     });
   });
+
+  describe('getById', () => {
+    it('shoule receive null when id is not correct group id', async () => {
+      try {
+        await stateService.getById(1);
+      } catch (e) {
+        expect(e).toBeNull();
+      }
+    });
+  });
 });

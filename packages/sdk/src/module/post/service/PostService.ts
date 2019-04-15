@@ -20,7 +20,12 @@ import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
 import { IGroupService } from '../../../module/group/service/IGroupService';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import {
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
 import { AccountUserConfig } from '../../account/config/AccountUserConfig';
@@ -37,6 +42,10 @@ class PostService extends EntityBaseService<Post> {
         [SOCKET.POST]: this.handleSexioData,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_POST);
+    });
   }
 
   protected buildNotificationController() {

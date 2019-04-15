@@ -113,9 +113,12 @@ export class SocketManager {
       this._onLogout();
     });
 
-    notificationCenter.on(CONFIG.SOCKET_SERVER_HOST, () => {
-      this._onServerHostUpdated();
-    });
+    notificationCenter.on(
+      CONFIG.INDEX_SOCKET_SERVER_HOST,
+      (scoreboard: string) => {
+        this._onIndexSocketServerHostUpdated(scoreboard);
+      },
+    );
 
     notificationCenter.on(SOCKET.NETWORK_CHANGE, ({ state }: any) => {
       switch (state) {
@@ -136,8 +139,6 @@ export class SocketManager {
     notificationCenter.on(SOCKET.RECONNECT, (data: any) => {
       this._onReconnect(data);
     });
-
-    // TO-DO: /can-connect API reponse.
   }
 
   private _onLogin() {
@@ -159,29 +160,19 @@ export class SocketManager {
     this._successConnectedUrls = [];
   }
 
-  private _onServerHostUpdated() {
-    const serverUrl = this._getServerHost();
-    const shouldReStart = this._shouldRestartFSMWithNewHost(serverUrl);
+  private _onIndexSocketServerHostUpdated(serverUrl: string) {
+    const shouldReStart = this._isValidStatusAndUrl(serverUrl);
     if (shouldReStart) {
       /* To avoid run into death loop in such case:
           scoreboard from /index is different to which from socket reconnect event.
           Solution:
-          Save the URL which is connected success, ignore reseting to these tried URLs
+          1. try use socket host got from 'reconnect' event first
+          2. if gets a new index-socket-host, should do nothing when socket is connected.
+          3. clear reconnect-socket-host if use it connects to server fail
+          4. if there is not reconnect-socket-host, use index-socket-host
       */
       this._restartFSM();
     }
-  }
-
-  private _shouldRestartFSMWithNewHost(serverUrl: string) {
-    const hasActive = this.hasActiveFSM();
-    // tslint:disable-next-line:max-line-length
-    this.info(
-      `onServerHostUpdated: ${serverUrl}, _hasLoggedIn: ${
-        this._hasLoggedIn
-      }, hasActiveFSM: ${hasActive}`,
-    );
-    const isValid = this._isValidStatusAndUrl(serverUrl);
-    return isValid && this._newUrlOrHasNotActiveFSM(serverUrl);
   }
 
   private _isValidStatusAndUrl(serverUrl: string) {
@@ -194,22 +185,32 @@ export class SocketManager {
       this.info('Server URL is changed, but it is an invalid URL.');
       return false;
     }
-    const runningUrl = this.activeFSM && this.activeFSM.serverUrl;
-    this.info(`serverUrl changed: ${runningUrl} ==> ${serverUrl}`);
-    return runningUrl !== serverUrl;
+    const isConnected = this.isConnected();
+    this.info(
+      `serverUrl changed isConnected: ${isConnected} serverUrl:${serverUrl}`,
+    );
+    return !isConnected;
   }
 
-  private _newUrlOrHasNotActiveFSM(serverUrl: string) {
-    const hasActive = this.hasActiveFSM();
-    const isNewUrl = !this._successConnectedUrls.includes(serverUrl);
+  private _onReconnectSocketServerHostUpdated(serverUrl: string) {
+    const runningUrl = this._getRunningFSMUrl();
     this.info(
-      `enter _newUrlOrHasNotActiveFSM: ${hasActive}, isNewUrl: ${isNewUrl}`,
+      `incomes new reconnect socket host:${serverUrl}, and current running url ${runningUrl}`,
     );
-    if (!isNewUrl) {
-      this.warn('Server URL is changed, but it is used before.');
+    if (!serverUrl) {
+      return;
     }
+    const socketUserConfig = new SyncUserConfig();
+    socketUserConfig.setReconnectSocketServerHost(serverUrl);
+    if (serverUrl === runningUrl) {
+      return;
+    }
+    this._stopActiveFSM();
+    this._startRealFSM();
+  }
 
-    return !hasActive || isNewUrl;
+  private _getRunningFSMUrl() {
+    return (this.activeFSM && this.activeFSM.serverUrl) || '';
   }
 
   private _onOffline() {
@@ -287,15 +288,7 @@ export class SocketManager {
 
     try {
       const body = JSON.parse(data.body);
-      const socketUserConfig = new SyncUserConfig();
-      socketUserConfig.setSocketServerHost(body.server);
-
-      const shouldReStart = this._shouldRestartFSMWithNewHost(body.server);
-      if (shouldReStart) {
-        // in this case, it does not need to check weather it can connect to server or not
-        this._stopActiveFSM();
-        this._startRealFSM();
-      }
+      this._onReconnectSocketServerHostUpdated(body.server);
     } catch (error) {
       this.warn(`fail on socket reconnect: ${error}`);
     }
@@ -336,6 +329,7 @@ export class SocketManager {
     const serverHost = this._getServerHost();
     const authConfig = new AuthUserConfig();
     const glipToken = authConfig.getGlipToken();
+    this.info('starting FSM with host:', serverHost);
     if (serverHost) {
       this.activeFSM = new SocketFSM(
         serverHost,
@@ -350,6 +344,7 @@ export class SocketManager {
   private _stopActiveFSM() {
     notificationCenter.emitKVChange(SERVICE.STOPPING_SOCKET);
     if (this.activeFSM) {
+      this._clearReconnectSocketHost();
       this.activeFSM.stopFSM();
       this.activeFSM = null;
     }
@@ -360,6 +355,16 @@ export class SocketManager {
     }
 
     this._currentId = 0;
+  }
+
+  private _clearReconnectSocketHost() {
+    this.info('start clearing reconnect socket address');
+    const runningUrl = this._getRunningFSMUrl();
+    const socketUserConfig = new SyncUserConfig();
+    if (runningUrl === socketUserConfig.getReconnectSocketServerHost()) {
+      this.info('clearing reconnect socket address', runningUrl);
+      socketUserConfig.setReconnectSocketServerHost('');
+    }
   }
 
   private _stateHandler(name: string, state: string) {
@@ -400,6 +405,7 @@ export class SocketManager {
 
   private _getServerHost() {
     const socketUserConfig = new SyncUserConfig();
-    return socketUserConfig.getSocketServerHost();
+    const reconnectAddress = socketUserConfig.getReconnectSocketServerHost();
+    return reconnectAddress || socketUserConfig.getIndexSocketServerHost();
   }
 }
