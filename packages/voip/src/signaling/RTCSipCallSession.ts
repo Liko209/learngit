@@ -192,7 +192,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (remote_stream) {
       this._mediaElement.remote.srcObject = remote_stream;
       this._mediaElement.remote.play().catch(() => {
-        rtcLogger.error(LOG_TAG, 'Failed to play remote media element');
+        if (this._session) {
+          rtcLogger.warn(LOG_TAG, 'Failed to play remote media element');
+        }
       });
     }
 
@@ -213,7 +215,9 @@ class RTCSipCallSession extends EventEmitter2 implements IRTCCallSession {
     if (local_stream) {
       this._mediaElement.local.srcObject = local_stream;
       this._mediaElement.local.play().catch(() => {
-        rtcLogger.error(LOG_TAG, 'Failed to play local media element');
+        if (this._session) {
+          rtcLogger.warn(LOG_TAG, 'Failed to play local media element');
+        }
       });
     }
 

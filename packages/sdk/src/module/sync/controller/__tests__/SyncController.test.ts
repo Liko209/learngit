@@ -217,6 +217,9 @@ describe('SyncController ', () => {
       expect(
         SyncUserConfig.prototype.setLastIndexTimestamp,
       ).toHaveBeenCalledTimes(1);
+      expect(
+        SyncUserConfig.prototype.setIndexSocketServerHost,
+      ).toHaveBeenCalledTimes(1);
     });
   });
 

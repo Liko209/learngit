@@ -9,6 +9,7 @@ import { ConferenceItem, SanitizedConferenceItem } from '../entity';
 import { BaseSubItemService } from '../../base/service/BaseSubItemService';
 import { ConferenceItemDao } from '../dao/ConferenceItemDao';
 import { daoManager } from '../../../../../dao';
+import { GlipTypeUtil, TypeDictionary } from '../../../../../utils';
 
 class ConferenceItemService extends BaseSubItemService<
   ConferenceItem,
@@ -18,6 +19,12 @@ class ConferenceItemService extends BaseSubItemService<
 
   constructor() {
     super(daoManager.getDao<ConferenceItemDao>(ConferenceItemDao));
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(
+        id,
+        TypeDictionary.TYPE_ID_CONFLUENCE_ITEM,
+      );
+    });
   }
 
   protected get conferenceItemController() {

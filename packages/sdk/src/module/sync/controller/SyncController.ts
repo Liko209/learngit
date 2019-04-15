@@ -371,12 +371,11 @@ class SyncController {
       }
 
       const shouldSaveScoreboard =
-        scoreboard &&
-        (source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL);
-      if (shouldSaveScoreboard) {
+        source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
+      if (shouldSaveScoreboard && scoreboard) {
         const socketUserConfig = new SyncUserConfig();
-        socketUserConfig.setSocketServerHost(scoreboard);
-        notificationCenter.emitKVChange(CONFIG.SOCKET_SERVER_HOST, scoreboard);
+        socketUserConfig.setIndexSocketServerHost(scoreboard);
+        notificationCenter.emitKVChange(CONFIG.INDEX_SOCKET_SERVER_HOST, scoreboard);
       }
 
       if (staticHttpServer) {

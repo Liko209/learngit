@@ -24,7 +24,12 @@ import { SOCKET } from '../../../service/eventKey';
 import { ContactType } from '../types';
 import { PersonEntityCacheController } from '../controller/PersonEntityCacheController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import {
+  PerformanceTracerHolder,
+  PERFORMANCE_KEYS,
+  GlipTypeUtil,
+  TypeDictionary,
+} from '../../../utils';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -39,6 +44,10 @@ class PersonService extends EntityBaseService<Person>
         [SOCKET.PERSON]: this.handleIncomingData,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON);
+    });
   }
 
   protected buildEntityCacheController() {
