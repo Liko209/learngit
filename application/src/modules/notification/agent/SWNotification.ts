@@ -119,11 +119,9 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
       const isSameNotificationFromDifferentClient =
         notificationId === id && clientId !== SWNotification.CLIENT_ID;
       if (isSameNotificationFromDifferentClient) {
-        console.log('notification failed');
         return false;
       }
     }
-    console.log('notification success');
     return true;
   }
 }

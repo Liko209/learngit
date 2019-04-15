@@ -16,7 +16,6 @@ export class ErrorParser implements IErrorParser {
 
   register(parser: IErrorParser) {
     if (this._errorParser.some(item => item.getName() === parser.getName())) {
-      console.info(`errorParser ${parser.getName()} replaced`);
       this._errorParser = this._errorParser.filter(item => item.getName() !== parser.getName());
     }
     this._errorParser.push(parser);

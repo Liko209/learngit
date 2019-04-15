@@ -29,9 +29,11 @@
     "interface-name": [true, "always-prefix"],
     "arrow-parens": false,
     "ter-arrow-parens": false,
-    "ter-indent": false
+    "ter-indent": false,
+    "no-console": [true, "log", "debug", "info", "time", "timeEnd", "trace"]
   },
   "jsRules": {
-    "no-empty": true
+    "no-empty": true,
+    "no-console": [true, "log", "debug", "info", "time", "timeEnd", "trace"]
   }
 }
