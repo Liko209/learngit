@@ -8,11 +8,9 @@ import React from 'react';
 import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
-import { Notification } from '@/containers/Notification';
 import { ContactSearch } from '@/containers/ContactSearch';
 import portalManager from '@/common/PortalManager';
-import { errorHelper } from 'sdk/error';
-import { generalErrorHandler } from '@/utils/error';
+import { catchError } from '@/common/catchError';
 
 import { ViewProps } from './types';
 
@@ -20,34 +18,16 @@ import { ViewProps } from './types';
 class AddMembers extends React.Component<ViewProps> {
   handleClose = () => portalManager.dismissLast();
 
-  renderFlashToast = (message: string) => {
-    Notification.flashToast({
-      message,
-      type: 'error',
-      messageAlign: 'left',
-      fullWidth: false,
-      dismissible: false,
-    });
-  }
-
+  @catchError.flash({
+    isNeedReturn: true,
+    network: 'people.prompt.AddTeamMembersNetworkError',
+    server: 'people.prompt.AddTeamMembersBackendError',
+  })
   handleAddTeam = async () => {
     const { addTeamMembers } = this.props;
-    try {
-      portalManager.dismissLast();
-      await addTeamMembers();
-      return true;
-    } catch (error) {
-      if (errorHelper.isNetworkConnectionError(error)) {
-        this.renderFlashToast('people.prompt.AddTeamMembersNetworkError');
-        return false;
-      }
-      if (errorHelper.isBackEndError(error)) {
-        this.renderFlashToast('people.prompt.AddTeamMembersBackendError');
-        return false;
-      }
-      generalErrorHandler(error);
-      return false;
-    }
+    portalManager.dismissLast();
+    await addTeamMembers();
+    return true;
   }
 
   render() {

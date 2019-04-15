@@ -23,11 +23,6 @@ import { StreamProps, StreamItemType, StreamItem } from './types';
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
 import GroupModel from '@/store/models/Group';
-import { Notification } from '@/containers/Notification';
-import {
-  ToastType,
-  ToastMessageAlign,
-} from '@/containers/ToastWrapper/Toast/types';
 import { generalErrorHandler } from '@/utils/error';
 import { StreamController } from './StreamController';
 
@@ -35,6 +30,7 @@ import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { catchError } from '@/common/catchError';
 
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService = ServiceLoader.getInstance<StateService>(
@@ -192,26 +188,26 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
+  @catchError.flash({
+    isDebounce: true,
+    network: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+    server: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+  })
   @action
   async loadPrevPosts(count: number) {
-    try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.OLDER, count);
-      return posts;
-    } catch (err) {
-      this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
-      return;
-    }
+    const posts = await this._loadPosts(QUERY_DIRECTION.OLDER, count);
+    return posts;
   }
 
+  @catchError.flash({
+    isDebounce: true,
+    network: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
+    server: 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
+  })
   @action
   async loadNextPosts(count: number) {
-    try {
-      const posts = await this._loadPosts(QUERY_DIRECTION.NEWER, count);
-      return posts;
-    } catch (err) {
-      this._handleLoadMoreError(err, QUERY_DIRECTION.NEWER);
-      return;
-    }
+    const posts = await this._loadPosts(QUERY_DIRECTION.NEWER, count);
+    return posts;
   }
 
   @action
@@ -277,17 +273,17 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     }
   }
 
+  @catchError.flash({
+    isDebounce: true,
+    network: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+    server: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+  })
   loadPostUntilFirstUnread = async () => {
     const loadCount =
       this._historyHandler.getDistanceToFirstUnread(this.postIds) + 1;
     if (loadCount > 0) {
       this._streamController.enableNewMessageSep();
-      try {
-        await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
-      } catch (err) {
-        this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
-        throw err;
-      }
+      await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
     }
     return this.firstHistoryUnreadPostId;
   }
@@ -314,35 +310,6 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       generalErrorHandler(err);
     }
   }
-  private _handleLoadMoreError(err: Error, direction: QUERY_DIRECTION) {
-    if (this._canHandleError(err)) {
-      this._debouncedToast(direction);
-    } else {
-      generalErrorHandler(err);
-    }
-  }
-
-  private _debouncedToast = _.wrap(
-    _.debounce(
-      (direction: QUERY_DIRECTION) => {
-        Notification.flashToast({
-          message:
-            direction === QUERY_DIRECTION.OLDER
-              ? 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages'
-              : 'message.prompt.SorryWeWereNotAbleToLoadNewerMessages',
-          type: ToastType.ERROR,
-          messageAlign: ToastMessageAlign.LEFT,
-          fullWidth: false,
-          dismissible: false,
-        });
-      },
-      1000,
-      { trailing: false, leading: true },
-    ),
-    (func, direction: QUERY_DIRECTION) => {
-      return func(direction);
-    },
-  );
 }
 
 export { StreamViewModel };
