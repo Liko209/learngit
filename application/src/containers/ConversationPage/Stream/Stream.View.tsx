@@ -326,6 +326,22 @@ class StreamViewComponent extends Component<Props> {
       } as React.CSSProperties),
   );
 
+  @action
+  private _loadInitialPosts = async () => {
+    const { loadInitialPosts, markAsRead } = this.props;
+    await loadInitialPosts();
+    runInAction(() => {
+      this.props.updateHistoryHandler();
+      markAsRead();
+    });
+    requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+      }
+    });
+    this._watchUnreadCount();
+  }
+
   private _onInitialDataFailed = (
     <JuiStreamLoading
       showTip={true}
@@ -379,22 +395,6 @@ class StreamViewComponent extends Component<Props> {
         )}
       </JuiSizeMeasurer>
     );
-  }
-
-  @action
-  private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead } = this.props;
-    await loadInitialPosts();
-    runInAction(() => {
-      this.props.updateHistoryHandler();
-      markAsRead();
-    });
-    requestAnimationFrame(() => {
-      if (this._jumpToPostRef.current) {
-        this._jumpToPostRef.current.highlight();
-      }
-    });
-    this._watchUnreadCount();
   }
 
   private _watchUnreadCount() {
