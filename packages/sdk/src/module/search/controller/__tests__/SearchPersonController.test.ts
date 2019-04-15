@@ -264,6 +264,23 @@ describe('SearchPersonController', () => {
       display_name: 'unRegistered',
     };
     entityCacheController.put(unRegistered1 as Person);
+
+    const bogusUser = {
+      id: 20026,
+      created_at: 20026,
+      modified_at: 20026,
+      creator_id: 20026,
+      is_new: false,
+      flags: 4620,
+      version: 20026,
+      company_id: 1,
+      email: 'bogus@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'bogus',
+      last_name: 'bogus',
+      display_name: 'bogus',
+    };
+    entityCacheController.put(bogusUser as Person);
   }
   type SearchResultType = {
     terms: string[];
@@ -488,6 +505,13 @@ describe('SearchPersonController', () => {
     it('search persons, with name matched, check if they are unregistered', async () => {
       const result = (await searchPersonController.doFuzzySearchPersons({
         searchKey: 'unRegistered',
+      })) as SearchResultType;
+      expect(result.sortableModels.length).toBe(0);
+    });
+
+    it('search persons, with name matched, check if they are bogus', async () => {
+      const result = (await searchPersonController.doFuzzySearchPersons({
+        searchKey: 'bogus',
       })) as SearchResultType;
       expect(result.sortableModels.length).toBe(0);
     });
