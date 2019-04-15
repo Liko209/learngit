@@ -25,11 +25,16 @@ import {
   PerformanceTracerHolder,
 } from '../../../../utils';
 import { mainLogger } from 'foundation';
-import { ERROR_TYPES, ErrorParserHolder } from '../../../../error';
+import {
+  ERROR_TYPES,
+  ErrorParserHolder,
+  JNetworkError,
+  ERROR_CODES_NETWORK,
+} from '../../../../error';
 
 const LOG_TAG = 'PostSearchController';
-const SEARCH_TIMEOUT_ERR = 'Search Time Out';
 const SEARCH_TIMEOUT = 60 * 1000;
+
 class PostSearchController {
   private _queryInfos: Map<number, SearchRequestInfo> = new Map();
   private _hasSubscribed = false;
@@ -142,7 +147,12 @@ class PostSearchController {
 
   private _setSearchTimeoutTimer(reject: any) {
     return setTimeout(() => {
-      reject(SEARCH_TIMEOUT_ERR);
+      reject(
+        new JNetworkError(
+          ERROR_CODES_NETWORK.REQUEST_TIMEOUT,
+          'retrieve search result timeout ',
+        ),
+      );
     },                SEARCH_TIMEOUT);
   }
 
