@@ -525,11 +525,11 @@ export class JoinTeamDialog extends BaseWebComponent {
   }
 
   get joinButton() {
-    return this.button('Join');
+    return this.buttonOfText('Join');
   }
 
   get cancelButton() {
-    return this.button('Cancel');
+    return this.buttonOfText('Cancel');
   }
 
   async clickJoinButton() {
