@@ -82,7 +82,7 @@ export class GroupActionController {
       teamId,
       (partialEntity, originalEntity) => {
         const members: number[] = originalEntity.members.filter(
-          member => member !== userId,
+          (member: number) => member !== userId,
         );
         return {
           ...partialEntity,

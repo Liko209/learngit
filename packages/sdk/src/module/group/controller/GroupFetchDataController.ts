@@ -126,7 +126,7 @@ export class GroupFetchDataController {
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     if (ids.length) {
       const groups = await this.entitySourceController.batchGet(ids, order);
-      return groups.filter(group => group !== null) as Group[];
+      return groups.filter((group: Group) => group !== null) as Group[];
     }
     return [];
   }
