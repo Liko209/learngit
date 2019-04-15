@@ -184,20 +184,16 @@ describe('ItemListViewModel', () => {
       dataSource = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES,
-      });
-      expect(dataSource.getSort().sortKey).toBe(
-        ITEM_SORT_KEYS.LATEST_VERSION_DATE,
-      );
+      } as any);
+      expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.LATEST_POST_ID);
     });
 
-    it('should files but not image display by order of files update time', async () => {
+    it('should show files but not image display by order of files latest post id', async () => {
       dataSource = new ItemListViewModel({
         groupId: 1,
         type: RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES,
-      });
-      expect(dataSource.getSort().sortKey).toBe(
-        ITEM_SORT_KEYS.LATEST_VERSION_DATE,
-      );
+      } as any);
+      expect(dataSource.getSort().sortKey).toBe(ITEM_SORT_KEYS.LATEST_POST_ID);
     });
   });
 });

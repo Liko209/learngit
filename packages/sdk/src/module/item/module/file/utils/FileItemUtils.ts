@@ -83,6 +83,10 @@ class FileItemUtils {
     }
     return null;
   }
+
+  static getLatestPostId<T extends { post_ids: number[] }>(file: T) {
+    return _.max(file.post_ids);
+  }
 }
 
 export { FileItemUtils };

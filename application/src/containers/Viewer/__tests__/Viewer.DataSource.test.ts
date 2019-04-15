@@ -14,11 +14,7 @@ import {
 } from '../Viewer.DataSource';
 import { QUERY_DIRECTION } from 'sdk/dao';
 import { Item } from 'sdk/module/item/entity';
-import { TypeDictionary } from 'sdk/utils/glip-type-dictionary';
 import { FileItemUtils } from 'sdk/module/item/module/file/utils';
-import { ITEM_SORT_KEYS } from 'sdk/module/item';
-
-jest.mock('sdk/module/item/module/file/utils');
 
 jest.mock('@/store/base/fetch/FetchSortableDataListHandler', () => {
   const handler: FetchSortableDataListHandler<Item> = {
@@ -113,12 +109,10 @@ describe('Viewer.DataSource', () => {
       const dataSource = new ItemListDataSource(props);
       const item: Item = {
         id: 1,
+        post_ids: [111, 222],
       } as Item;
-      const mockVersionDate = 222;
-      FileItemUtils.getVersionDate.mockReturnValue(mockVersionDate);
       const result = dataSource['_transformFunc'](item);
-      expect(FileItemUtils.getVersionDate).toBeCalledWith({ id: 1 });
-      expect(result.sortValue).toEqual(mockVersionDate);
+      expect(result.sortValue).toEqual(222);
     });
   });
 });

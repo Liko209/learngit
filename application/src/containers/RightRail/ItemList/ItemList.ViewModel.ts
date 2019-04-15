@@ -140,17 +140,20 @@ class ItemListViewModel extends StoreViewModel<Props> {
     };
 
     const transformFunc = (model: Item) => {
+      const data = { id: model.id };
       if (
         this._type === RIGHT_RAIL_ITEM_TYPE.IMAGE_FILES ||
         this._type === RIGHT_RAIL_ITEM_TYPE.NOT_IMAGE_FILES
       ) {
-        model[sortKey] =
-          FileItemUtils.getVersionDate(model) || model.created_at;
+        data[sortKey] = FileItemUtils.getLatestPostId(model);
+      } else {
+        data[sortKey] = model[sortKey];
       }
+
       return {
+        data,
         id: model.id,
         sortValue: model.id,
-        data: model,
       } as ISortableModel<Item>;
     };
 
