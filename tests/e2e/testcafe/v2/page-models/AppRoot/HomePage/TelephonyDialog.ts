@@ -147,6 +147,13 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   // inbound call
+  get sendToVoiceMailButton() {
+    return this.buttonOfIcon('hold_up').withAttribute('aria-label', 'Send to voicemail');
+  }
+
+  async clickSendToVoiceMailButton() {
+    await this.t.click(this.sendToVoiceMailButton);
+  }
 
   get answerButton() {
     return this.buttonOfIcon('phone')
