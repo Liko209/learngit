@@ -56,7 +56,10 @@ const getConversationId = async (id: number | number[]) => {
 
 async function goToConversationWithLoading(params: GoToConversationParams) {
   const { id, jumpToPostId, beforeJump, hasBeforeJumpFun } = params;
+  let needReplaceHistory = false;
+
   const timer = setTimeout(() => {
+    needReplaceHistory = true;
     history.push('/messages/loading');
   },                       DELAY_LOADING);
 
@@ -77,7 +80,7 @@ async function goToConversationWithLoading(params: GoToConversationParams) {
     await goToConversation({
       conversationId,
       jumpToPostId,
-      replaceHistory: true,
+      replaceHistory: needReplaceHistory,
     });
     return true;
   } catch (err) {
@@ -103,7 +106,13 @@ function goToConversation({
   const currentConversation = getGlobalValue(
     GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
   );
-  if (conversationId === currentConversation) {
+  if (replaceHistory === undefined) {
+    if (conversationId === currentConversation) {
+      args.push('REPLACE');
+    } else {
+      args.push('PUSH');
+    }
+  } else if (replaceHistory) {
     args.push('REPLACE');
   } else {
     args.push('PUSH');

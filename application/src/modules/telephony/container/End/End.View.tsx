@@ -29,6 +29,7 @@ class EndViewComponent extends Component<Props> {
         showShadow={false}
         tooltipPlacement="top"
         iconName="hand_up"
+        data-test-automation-id="telephony-end-btn"
       />
     );
   }

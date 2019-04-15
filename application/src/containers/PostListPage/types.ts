@@ -4,6 +4,11 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import { WithTranslation } from 'react-i18next';
+import { Post } from 'sdk/module/post/entity';
+import { ISortableModel } from '@/store/base/fetch/types';
+import { QUERY_DIRECTION } from 'sdk/dao';
+import PostModel from '@/store/models/Post';
+
 enum POST_LIST_TYPE {
   mentions = 'mentions',
   bookmarks = 'bookmarks',
@@ -14,6 +19,14 @@ type PostListPageViewProps = WithTranslation & {
   caption: string;
   ids: number[];
   unsetCurrentPostListValue: Function;
+  postFetcher: (
+    direction: QUERY_DIRECTION,
+    pageSize: number,
+    anchor?: ISortableModel<Post>,
+  ) => Promise<{
+    hasMore: boolean;
+    data: (Post | PostModel)[];
+  }>;
 };
 
 type PostListPageProps = {

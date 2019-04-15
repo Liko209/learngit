@@ -4,12 +4,24 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
+enum ESearchContentTypes {
+  ALL = 'all',
+  CHATS = 'chats',
+  LINKS = 'links',
+  TASKS = 'tasks',
+  WEB_HOOKS = 'custom_items',
+  FILES = 'files',
+  NOTES = 'pages',
+  SNIPPETS = 'snippets',
+  EVENTS = 'events',
+}
+
 type ContentSearchParams = {
   q?: string;
-  type?: string;
+  type?: ESearchContentTypes;
   creator_id?: number;
   group_id?: number;
-  fetch_count?: number;
+  scroll_size?: number;
   begin_time?: number;
   end_time?: number;
   for_at_mention?: boolean;
@@ -33,4 +45,5 @@ export {
   InitialSearchResponse,
   ScrollSearchParams,
   ScrollSearchResponse,
+  ESearchContentTypes,
 };

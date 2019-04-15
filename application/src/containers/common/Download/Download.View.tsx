@@ -11,6 +11,7 @@ import { observer } from 'mobx-react';
 import { DownloadViewProps } from './types';
 
 const formatUrl = (url: string) =>
+  url &&
   url.replace(/s3[\w\d-]*\.amazonaws\.com/, 's3-accelerate.amazonaws.com');
 
 const DownloadView = observer(

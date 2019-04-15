@@ -32,6 +32,7 @@ class CallActionsViewComponent extends Component<Props> {
           onClick={this._handleCallActions}
           size="xxlarge"
           disabled={true}
+          data-test-automation-id="telephony-call-actions-btn"
         >
           call_more
         </JuiIconButton>

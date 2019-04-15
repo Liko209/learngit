@@ -19,7 +19,7 @@ import {
   JuiListToggleButton,
   JuiListToggleItemProps,
 } from 'jui/pattern/ListToggleButton';
-import { ContactSearch } from '@/containers/ContactSearch';
+import { ContactSearch } from '@/containers/Downshift';
 import { DialogContext } from '@/containers/Dialog';
 
 import { ViewProps } from './types';
@@ -249,6 +249,8 @@ class CreateTeamView extends React.Component<ViewProps, State> {
             helperText={emailError ? i18next.t(emailErrorMsg) : ''}
             errorEmail={errorEmail}
             isExcludeMe={true}
+            multiple={true}
+            autoSwitchEmail={true}
           />
           <JuiTextarea
             id={i18next.t('people.team.teamDescription')}
