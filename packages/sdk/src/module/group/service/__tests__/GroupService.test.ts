@@ -87,6 +87,27 @@ describe('GroupService', () => {
       expect(mockFn).toBeCalledWith(mockUserId, mockTeam);
     });
   });
+
+  describe('isInTeam()', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call with correct params', async () => {
+      const mockUserId = 13213;
+      const mockTeam = groupFactory.build();
+      const mockFn = jest.fn();
+      groupService['getGroupController']();
+      groupService.groupController.getGroupActionController = jest
+        .fn()
+        .mockReturnValue({
+          isInGroup: mockFn,
+        });
+      await groupService.isInGroup(mockUserId, mockTeam);
+      expect(mockFn).toBeCalledWith(mockUserId, mockTeam);
+    });
+  });
   describe('canJoinTeam()', () => {
     beforeEach(() => {
       clearMocks();

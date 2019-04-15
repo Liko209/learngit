@@ -482,6 +482,29 @@ describe('GroupFetchDataController', () => {
     });
   });
 
+  describe('isInGroup()', () => {
+    it('should return false when group is undefined', async () => {
+      const userId = 123;
+      const group = groupFactory.build(undefined);
+      expect(groupActionController.isInGroup(userId, group)).toBeFalsy();
+    });
+    it('should return false when userId is not in members', async () => {
+      const userId = 123;
+      const group = groupFactory.build({
+        members: [3323],
+      });
+      expect(groupActionController.isInGroup(userId, group)).toBeFalsy();
+    });
+    it('should return true  when userId is in members', async () => {
+      const userId = 123;
+      const group = groupFactory.build({
+        is_team: true,
+        members: [userId, 3323],
+      });
+      expect(groupActionController.isInGroup(userId, group)).toBeTruthy();
+    });
+  });
+
   describe('canJoinTeam()', () => {
     it('should not able join a team when privacy=private', async () => {
       const team = groupFactory.build({
