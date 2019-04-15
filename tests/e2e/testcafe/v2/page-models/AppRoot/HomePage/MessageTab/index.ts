@@ -92,9 +92,6 @@ class MoreMenu extends Entry {
 }
 
 class MenuItem extends Entry {
-  async click() {
-    await this.t.click(this.self);
-  }
 
   get disabled(): Promise<string> {
     return this.self.getAttribute("data-disabled");
