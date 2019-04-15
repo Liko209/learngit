@@ -13,6 +13,9 @@ import { getEntity } from '@/store/utils';
 import { ENTITY_NAME } from '@/store';
 import { PinnedPostListHandler } from '../PinnedPostListHandler';
 import { QUERY_DIRECTION } from 'sdk/dao';
+import { mainLogger } from 'sdk';
+
+const LOG_TAG = 'PinnedPostCacheController';
 class PinnedPostCacheController extends PostCacheController {
   private _pinPostHandlerCache: Map<number, PinnedPostListHandler>;
 
@@ -68,7 +71,8 @@ class PinnedPostCacheController extends PostCacheController {
   async doPreFetch(groupId: number) {
     if (this.shouldPreFetch(groupId, QUERY_DIRECTION.NEWER)) {
       const foc = this.get(groupId);
-      foc.fetchData(QUERY_DIRECTION.NEWER);
+      await foc.fetchData(QUERY_DIRECTION.NEWER);
+      mainLogger.info(LOG_TAG, 'doPrefetch done - ', groupId);
     }
   }
 

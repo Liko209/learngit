@@ -20,8 +20,10 @@ import _ from 'lodash';
 import { ThumbnailPreloadController } from './ThumbnailPreloadController';
 import { PostCacheController } from './PostCacheController';
 import { ConversationPostFocBuilder } from './ConversationPostFocBuilder';
+import { mainLogger } from 'sdk';
 import { QUERY_DIRECTION } from 'sdk/dao';
 
+const LOG_TAG = 'ConversationPostCacheController';
 class ConversationPostCacheController extends PostCacheController {
   private _cacheDeltaDataHandlerMap: Map<number, DeltaDataHandler> = new Map();
   private _thumbnailPreloadController: ThumbnailPreloadController;
@@ -51,6 +53,7 @@ class ConversationPostCacheController extends PostCacheController {
     if (this.shouldPreFetch(groupId, QUERY_DIRECTION.OLDER)) {
       const foc = this.get(groupId);
       await foc.fetchData(QUERY_DIRECTION.OLDER);
+      mainLogger.info(LOG_TAG, 'doPrefetch done - ', groupId);
     }
   }
 
