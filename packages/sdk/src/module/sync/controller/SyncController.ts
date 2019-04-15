@@ -36,6 +36,7 @@ import { SyncGlobalConfig } from '../config';
 import { AccountService } from '../../../module/account';
 import socketManager from '../../../service/socket';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
+import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
@@ -138,6 +139,10 @@ class SyncController {
   private async _firstLogin() {
     progressBar.start();
     const currentTime = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.FIRST_LOGIN,
+      currentTime,
+    );
     try {
       await this._fetchInitial(currentTime);
       mainLogger.info(LOG_TAG, 'fetch initial data success');
@@ -153,6 +158,7 @@ class SyncController {
     } catch (e) {
       mainLogger.error(LOG_TAG, 'fetch remaining data error');
     }
+    PerformanceTracerHolder.getPerformanceTracer().end(currentTime);
     progressBar.stop();
   }
 
@@ -160,7 +166,15 @@ class SyncController {
     const { onInitialLoaded, onInitialHandled } = this._syncListener;
     const initialResult = await this.fetchInitialData(time);
     onInitialLoaded && (await onInitialLoaded(initialResult));
+
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_INITIAL_DATA,
+      logId,
+    );
     await this._handleIncomingData(initialResult, SYNC_SOURCE.INITIAL);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
     onInitialHandled && (await onInitialHandled());
     mainLogger.log(LOG_TAG, 'fetch initial data and handle success');
   }
@@ -181,7 +195,15 @@ class SyncController {
     const { onRemainingLoaded, onRemainingHandled } = this._syncListener;
     const remainingResult = await this.fetchRemainingData(time);
     onRemainingLoaded && (await onRemainingLoaded(remainingResult));
+
+    const logId = Date.now();
+    PerformanceTracerHolder.getPerformanceTracer().start(
+      PERFORMANCE_KEYS.HANDLE_REMAINING_DATA,
+      logId,
+    );
     await this._handleIncomingData(remainingResult, SYNC_SOURCE.REMAINING);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
     onRemainingHandled && (await onRemainingHandled());
     const syncConfig = new SyncUserConfig();
     syncConfig.setFetchedRemaining(true);
@@ -198,7 +220,14 @@ class SyncController {
       const result = await this.fetchIndexData(String(timeStamp - 300000));
       mainLogger.log(LOG_TAG, 'fetch index done');
       onIndexLoaded && (await onIndexLoaded(result));
+
+      const logId = Date.now();
+      PerformanceTracerHolder.getPerformanceTracer().start(
+        PERFORMANCE_KEYS.HANDLE_INDEX_DATA,
+        logId,
+      );
       await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
+      PerformanceTracerHolder.getPerformanceTracer().end(logId);
       onIndexHandled && (await onIndexHandled());
       syncConfig.updateIndexSucceed(true);
     } catch (error) {
