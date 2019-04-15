@@ -3,16 +3,18 @@
  * @Date: 2019-04-01 15:16:45
  * Copyright Ã‚Â© RingCentral. All rights reserved.
  */
+import { mainLogger } from 'sdk';
 import { AbstractNotification } from './AbstractNotification';
 import { NotificationOpts } from '../interface';
 import _ from 'lodash';
-
+const logger = mainLogger.tags('DesktopNotification');
 export class DeskTopNotification extends AbstractNotification<Notification> {
   isSupported() {
     return !!Notification;
   }
 
   create(title: string, opts: NotificationOpts) {
+    logger.log(`creating notification for ${opts.tag}`);
     const { scope, id } = opts.data;
     const onClick = opts.onClick;
 

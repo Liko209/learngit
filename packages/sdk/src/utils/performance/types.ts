@@ -36,4 +36,10 @@ export enum PERFORMANCE_KEYS {
   HANDLE_INCOMING_POST = 'handle_incoming_post',
   SEARCH_POST = 'search_post',
   SCROLL_SEARCH_POST = 'scroll_search_post',
+  HANDLE_INDEX_DATA = 'handle_incoming_data',
+  HANDLE_REMAINING_DATA = 'handle_remaining_data',
+  HANDLE_INITIAL_DATA = 'handle_initial_data',
+  FETCH_LEFT_RAIL = 'fetch_left_rail',
+  UNIFIED_LOGIN = 'unified_login',
+  FIRST_LOGIN = 'first_login',
 }
