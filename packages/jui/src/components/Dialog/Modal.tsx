@@ -3,7 +3,7 @@
  * @Date: 2018-10-10 13:34:32
  * Copyright © RingCentral. All rights reserved.
  */
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
 import { DialogActionsProps } from '@material-ui/core/DialogActions';
 import { JuiDialog, JuiDialogProps } from './Dialog';
 import { JuiDialogTitle } from './DialogTitle';
@@ -49,8 +49,8 @@ type JuiDialogFuncProps = { componentProps?: any } & Omit<
   'open'
 >;
 
-class JuiModal extends PureComponent<JuiModalProps, {}> {
-  defaultFooter() {
+class JuiModal extends Component<JuiModalProps, {}> {
+  renderDefaultFooter() {
     const {
       onCancel,
       onOK,
@@ -70,7 +70,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
             onClick={onCancel}
             color="primary"
             variant={cancelVariant}
-            autoFocus={true}
+            autoFocus={false}
             disabled={loading}
             {...cancelBtnProps}
           >
@@ -81,7 +81,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
           onClick={onOK}
           color={okType}
           variant={okVariant}
-          autoFocus={true}
+          autoFocus={false}
           disabled={loading}
           {...okBtnProps}
           loading={loading}
@@ -131,7 +131,7 @@ class JuiModal extends PureComponent<JuiModalProps, {}> {
         </JuiDialogContent>
         {contentAfter}
         <StyledActions className="modal-actions">
-          {footer ? footer : this.defaultFooter()}
+          {footer ? footer : this.renderDefaultFooter()}
         </StyledActions>
       </JuiDialog>
     );
