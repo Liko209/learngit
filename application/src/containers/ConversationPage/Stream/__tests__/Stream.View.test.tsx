@@ -6,6 +6,10 @@ import { AutoSizerProps } from 'jui/components/AutoSizer';
 import { LoadingMorePlugin } from '@/plugins';
 import GroupStateModel from '@/store/models/GroupState';
 import { ConversationInitialPost } from '@/containers/ConversationInitialPost';
+import {
+  JuiInfiniteList,
+} from 'jui/components/VirtualizedList';
+import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { theme } from '@/__tests__/utils';
 import { ConversationPost } from '../../../ConversationPost';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
@@ -230,6 +234,22 @@ describe('StreamView', () => {
         });
         expect(hasJumpToFirstUnreadButton).toBeTruthy();
         rootWrapper.unmount();
+      });
+    });
+
+    describe('loadInitialData', () => {
+      it('success', () => {
+        const { wrapper } = mountStream(baseProps);
+        expect(wrapper.find(JuiInfiniteList)).toHaveLength(1);
+      });
+
+      it('failed', () => {
+        const props = {
+          ...baseProps,
+          loadInitialPostsError: new Error('loadInitialPosts error'),
+        };
+        const { wrapper } = mountStream(props);
+        expect(wrapper.find(JuiStreamLoading)).toHaveLength(1);
       });
     });
 
