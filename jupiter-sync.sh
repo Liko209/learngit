@@ -11,9 +11,9 @@ case "$1" in
         npm run build:app
         rsync -azPv \
         --delete --progress \
-        ./application/build/ $theServer:$theFolder/feature-fiji-$ID
-        ssh $theServer "chown -R root:root $theFolder/feature-fiji-$ID && cd $theFolder/feature-fiji-$ID; pwd; ls -al"
-        echo "Success build application and deploy to https://feature-fiji-$ID.fiji.gliprc.com"
+        ./application/build/ $theServer:$theFolder/mr-bug-fiji-$ID
+        ssh $theServer "chown -R root:root $theFolder/mr-bug-fiji-$ID && cd $theFolder/mr-bug-fiji-$ID; pwd; ls -al"
+        echo "Success build application and deploy to https://mr-bug-fiji-$ID.fiji.gliprc.com"
     ;;
     "ads" | "app-develop-sync")
         npm run build:app

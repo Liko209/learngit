@@ -35,7 +35,6 @@ import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { Pal } from 'sdk/pal';
 
 /**
@@ -81,10 +80,6 @@ class AppModule extends AbstractModule {
         }
       }
     }
-    const versionInfo = await fetchVersionInfo();
-    Pal.instance.setApplicationInfo({
-      getAppVersion: () => versionInfo.deployedVersion,
-    });
 
     window.addEventListener('error', (event: ErrorEvent) => {
       generalErrorHandler(
@@ -121,6 +116,13 @@ class AppModule extends AbstractModule {
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
         getAppContextInfo().then(contextInfo => {
+          Pal.instance.setApplicationInfo({
+            env: contextInfo.env,
+            appVersion: contextInfo.version,
+            browser: contextInfo.browser,
+            os: contextInfo.os,
+            platform: contextInfo.platform,
+          });
           window.jupiterElectron &&
             window.jupiterElectron.setContextInfo &&
             window.jupiterElectron.setContextInfo(contextInfo);

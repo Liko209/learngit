@@ -34,15 +34,15 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
   }
   @observable
   error: string = '';
-  keyboardEventHandler = {
+  keyboardEventHandler: {
     enter: {
-      key: Keys.ENTER,
-      handler: this._enterHandler(this),
-    },
+      key: number;
+      handler: () => void;
+    };
     escape: {
-      key: Keys.ESCAPE,
-      handler: this._escHandler(),
-    },
+      key: number;
+      handler: () => void;
+    };
   };
 
   constructor(props: EditMessageInputProps) {
@@ -53,6 +53,18 @@ class EditMessageInputViewModel extends StoreViewModel<EditMessageInputProps>
     this._exitEditMode = this._exitEditMode.bind(this);
     this._editPost = this._editPost.bind(this);
     this.saveDraft = this.saveDraft.bind(this);
+    this.removeDraft = this.removeDraft.bind(this);
+
+    this.keyboardEventHandler = {
+      enter: {
+        key: Keys.ENTER,
+        handler: this._enterHandler(this),
+      },
+      escape: {
+        key: Keys.ESCAPE,
+        handler: this._escHandler(),
+      },
+    };
   }
 
   @computed

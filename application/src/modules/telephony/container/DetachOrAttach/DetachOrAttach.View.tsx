@@ -32,6 +32,7 @@ class DetachOrAttachViewComponent extends Component<Props> {
         onClick={this._handleDetachOrAttach}
         variant="plain"
         color="common.white"
+        data-test-automation-id="telephony-detach-or-attach-btn"
       >
         tear_off
       </JuiIconButton>

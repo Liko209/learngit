@@ -5,6 +5,7 @@ type HomeProps = {};
 type HomeViewProps = {
   canPost: boolean;
   indexLoaded: boolean;
+  showGlobalSearch: boolean;
 } & RouteComponentProps;
 
 export { HomeProps, HomeViewProps };

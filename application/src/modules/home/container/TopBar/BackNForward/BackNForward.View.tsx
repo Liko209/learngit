@@ -62,6 +62,7 @@ class BackNForward extends Component<Props> {
           tooltipTitle={t('common.back')}
           onClick={back}
           onClickMenu={go}
+          menuItemMaxWidth={80}
         />
         <JuiHistoryOperation
           type={OPERATION.FORWARD}
@@ -70,6 +71,7 @@ class BackNForward extends Component<Props> {
           disabled={disabledForward}
           onClick={forward}
           onClickMenu={go}
+          menuItemMaxWidth={80}
         />
       </>
     );

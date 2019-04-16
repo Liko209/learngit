@@ -38,13 +38,20 @@ class RecordViewComponent extends Component<Props> {
           disabled={disabled}
           awake={recording}
           shouldPersistBg={recording}
-          data-test-automation-id="recordBtn"
-          aria-label={recording ? t('telephony.accessibility.stopRecord') : t('telephony.accessibility.record')}
+          data-test-automation-id="telephony-record-btn"
+          aria-label={
+            recording
+              ? t('telephony.accessibility.stopRecord')
+              : t('telephony.accessibility.record')
+          }
         >
           {recording ? 'stopRecord' : 'record'}
         </JuiIconButton>
-        <span className={disabled ? 'disabled' : undefined}>{recording ? t('telephony.action.stopRecord') : t('telephony.action.record')}</span>
-
+        <span className={disabled ? 'disabled' : undefined}>
+          {recording
+            ? t('telephony.action.stopRecord')
+            : t('telephony.action.record')}
+        </span>
       </JuiKeypadAction>
     );
   }

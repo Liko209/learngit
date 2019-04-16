@@ -53,7 +53,7 @@ const StyledKeypadActions = styled.div<{ removeMargin: boolean }>`
     flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: ${({ removeMargin, theme }) =>
-      removeMargin ? spacing(-5)({ theme }) : 0};
+    removeMargin ? spacing(-5)({ theme }) : 0};
   }
 `;
 
@@ -69,7 +69,7 @@ const JuiKeypadAction = styled('div')`
       ${typography('caption1')};
       &.disabled {
         color: ${({ theme }) =>
-          palette('action', 'disabledBackground')({ theme })};
+    palette('action', 'disabledBackground')({ theme })};
       }
     }
   }
@@ -103,4 +103,13 @@ class JuiContainer extends PureComponent<Props> {
   }
 }
 
-export { JuiContainer, JuiKeypadAction };
+const KeypadHeaderContainer = styled.div`
+      height: 100%;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: ${spacing(0, 9, 1, 5)};
+  `;
+
+export { JuiContainer, JuiKeypadAction, KeypadHeaderContainer };

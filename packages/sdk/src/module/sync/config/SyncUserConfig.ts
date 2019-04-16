@@ -12,12 +12,20 @@ class SyncUserConfig extends UserConfig {
     super(AccountGlobalConfig.getUserDictionary(), 'sync');
   }
 
-  setSocketServerHost(info: any) {
-    this.put(SYNC_CONFIG_KEYS.SOCKET_SERVER_HOST, info);
+  setIndexSocketServerHost(info: string) {
+    this.put(SYNC_CONFIG_KEYS.INDEX_SOCKET_SERVER_HOST, info);
   }
 
-  getSocketServerHost() {
-    return this.get(SYNC_CONFIG_KEYS.SOCKET_SERVER_HOST);
+  getIndexSocketServerHost() {
+    return this.get(SYNC_CONFIG_KEYS.INDEX_SOCKET_SERVER_HOST);
+  }
+
+  setReconnectSocketServerHost(info: string) {
+    this.put(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST, info);
+  }
+
+  getReconnectSocketServerHost() {
+    return this.get(SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST);
   }
 
   getLastIndexTimestamp() {
@@ -26,18 +34,6 @@ class SyncUserConfig extends UserConfig {
 
   setLastIndexTimestamp(timestamp: any) {
     this.put(SYNC_CONFIG_KEYS.LAST_INDEX_TIMESTAMP, timestamp);
-  }
-
-  updateCanUpdateIndexTimeStamp(can: boolean) {
-    this.put(SYNC_CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP, can);
-  }
-
-  getCanUpdateIndexTimeStamp() {
-    return this.get(SYNC_CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP);
-  }
-
-  removeCanUpdateIndexTimeStamp() {
-    this.remove(SYNC_CONFIG_KEYS.CAN_UPDATE_INDEX_TIME_STAMP);
   }
 
   removeLastIndexTimestamp() {
@@ -59,8 +55,29 @@ class SyncUserConfig extends UserConfig {
   getIndexSucceed() {
     return this.get(SYNC_CONFIG_KEYS.INDEX_SUCCEED);
   }
+
   updateIndexSucceed(value: boolean) {
     this.put(SYNC_CONFIG_KEYS.INDEX_SUCCEED, value);
+  }
+
+  setIndexStartLocalTime(time: number) {
+    this.put(SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME, time);
+  }
+
+  getIndexStartLocalTime() {
+    return this.get(SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME);
+  }
+
+  setSocketConnectedLocalTime(time: number) {
+    this.put(SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME, time);
+  }
+
+  getSocketConnectedLocalTime() {
+    return this.get(SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME);
+  }
+
+  removeSocketConnectedLocalTime() {
+    this.remove(SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME);
   }
 }
 

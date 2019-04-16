@@ -29,6 +29,7 @@ class IgnoreViewComponent extends Component<Props> {
         tooltipTitle={t('telephony.ignoreTheCall')}
         aria-label={t('telephony.ignoreTheCall')}
         onClick={this._handleIgnore}
+        data-test-automation-id="telephony-ignore-btn"
       />
     );
   }

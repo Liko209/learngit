@@ -6,16 +6,12 @@
 
 import { computed } from 'mobx';
 import { AbstractViewModel } from '@/base';
-import { ConversationPostProps, POST_TYPE } from './types';
+import { ConversationPostProps } from './types';
 import { getEntity } from '@/store/utils';
 import PostModel from '@/store/models/Post';
 import { Post } from 'sdk/module/post/entity';
 import { ENTITY_NAME } from '@/store';
-
-const ActivityDataKeyMappingPostType = {
-  set_abbreviation: POST_TYPE.NOTIFICATION,
-  members: POST_TYPE.NOTIFICATION,
-};
+import { getPostType, POST_TYPE } from '@/common/getPostType';
 
 class ConversationPostViewModel extends AbstractViewModel<
   ConversationPostProps
@@ -38,7 +34,7 @@ class ConversationPostViewModel extends AbstractViewModel<
   @computed
   get type(): POST_TYPE {
     const { key } = this._activityData;
-    return ActivityDataKeyMappingPostType[key] || POST_TYPE.POST;
+    return getPostType(key);
   }
 }
 

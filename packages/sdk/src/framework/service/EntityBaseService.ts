@@ -28,6 +28,7 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   private _subscribeController: ISubscribeController;
   private _entitySourceController: IEntitySourceController<T>;
   private _entityCacheController: IEntityCacheController<T>;
+  private _checkTypeFunc: (id: number) => boolean;
   private _entityNotificationController: IEntityNotificationController<T>;
 
   constructor(
@@ -42,7 +43,19 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
   getEntitySource() {
     return this._entitySourceController;
   }
-
+  setCheckTypeFunc(checkTypeFunc: (id: number) => boolean) {
+    this._checkTypeFunc = checkTypeFunc;
+  }
+  async getById(id: number): Promise<T | null> {
+    if (this._checkTypeFunc && !this._checkTypeFunc(id)) {
+      mainLogger.trace('getById receive a error type of id');
+      return null;
+    }
+    if (this._entitySourceController) {
+      return await this._entitySourceController.get(id);
+    }
+    throw new Error('entitySourceController is null');
+  }
   getEntityCacheSearchController(): IEntityCacheSearchController<T> {
     return buildEntityCacheSearchController<T>(this._entityCacheController);
   }
@@ -73,13 +86,6 @@ class EntityBaseService<T extends IdModel = IdModel> extends AbstractService {
     delete this._entitySourceController;
     delete this._entityCacheController;
     delete this._entityNotificationController;
-  }
-
-  async getById(id: number): Promise<T | null> {
-    if (this._entitySourceController) {
-      return await this._entitySourceController.get(id);
-    }
-    throw new Error('entitySourceController is null');
   }
 
   async batchGet(ids: number[]): Promise<T[]> {

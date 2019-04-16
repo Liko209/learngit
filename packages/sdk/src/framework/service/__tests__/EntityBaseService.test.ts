@@ -102,6 +102,21 @@ describe('EntityBaseService', () => {
         .mockRejectedValueOnce(error);
       expect(service.getById(1)).resolves.toThrow();
     });
+
+    it('should not call network client once when checkFunc return false', async () => {
+      const service = new EntityBaseService<TestEntity>(
+        false,
+        dao,
+        networkConfig,
+      );
+      service._checkTypeFunc = jest.fn().mockReturnValue(false);
+      jest.spyOn(dao, 'get').mockImplementation(async () => {
+        return { id: 1, name: 'hello' };
+      });
+      const result = await service.getById(1);
+
+      expect(result).toBeNull();
+    });
   });
 
   describe('EntityNotificationController', () => {

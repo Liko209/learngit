@@ -25,8 +25,6 @@ interface IEntityCacheController<T extends IdModel = IdModel>
     entities: Map<number, T>,
     partials?: Map<number, Partial<Raw<T>>>,
   ): Promise<void>;
-
-  setFilter(filterFunc: (entity: T) => boolean): void;
 }
 
 export { IEntityCacheController };

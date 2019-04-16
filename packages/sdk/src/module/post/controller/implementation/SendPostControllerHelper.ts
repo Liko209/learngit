@@ -49,6 +49,7 @@ class SendPostControllerHelper {
       creator_id: params.userId,
       version: vers,
       new_version: vers,
+      unique_id: String(vers),
       is_new: true,
       model_size: 0,
       text: params.text,

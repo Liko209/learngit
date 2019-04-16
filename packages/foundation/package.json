@@ -9,6 +9,7 @@
     "eventemitter2": "5.0.1",
     "inversify": "5.0.1",
     "js-base64": "2.4.9",
+    "load-segment": "git+ssh://git@git.ringcentral.com:Fiji/segment.git",
     "localforage": "1.7.3",
     "lodash": "4.17.11",
     "lokijs": "1.5.5",

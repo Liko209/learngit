@@ -9,6 +9,7 @@ import { injectable } from './ioc';
 @injectable()
 abstract class AbstractModule implements IModule {
   abstract bootstrap(): void | Promise<void>;
+  dispose?(): void | Promise<void>;
 }
 
 export { AbstractModule };

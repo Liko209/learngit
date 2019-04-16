@@ -544,7 +544,11 @@ describe('PersonService', () => {
       );
       expect(result).toBeNull();
     });
-    it('should return when short number is matched', async () => {
+
+    it('should return when both short number and company id are matched', async () => {
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(1);
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(
         '21',
@@ -553,6 +557,19 @@ describe('PersonService', () => {
       expect(result).not.toBeNull();
       expect(result.id).toBe(21);
     });
+
+    it('should not return when short number is matched, but company not', async () => {
+      AccountUserConfig.prototype.getCurrentCompanyId = jest
+        .fn()
+        .mockReturnValueOnce(2);
+      await preparePhoneNumData();
+      const result = await personController.matchContactByPhoneNumber(
+        '21',
+        ContactType.GLIP_CONTACT,
+      );
+      expect(result).toBeNull();
+    });
+
     it('should return when long number is matched', async () => {
       await preparePhoneNumData();
       const result = await personController.matchContactByPhoneNumber(

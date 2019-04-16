@@ -97,8 +97,11 @@ class EntityCacheSearchController<T extends IdModel = IdModel>
   isFuzzyMatched(srcText: string, terms: string[]): boolean {
     return SearchUtils.isFuzzyMatched(srcText, terms);
   }
-  isSoundexMatched(srcText: string, terms: string[]): boolean {
-    return SearchUtils.isSoundexMatched(srcText, terms);
+  isSoundexMatched(
+    soundexOfEntity: string[],
+    soundexOfSearchTerms: string[],
+  ): boolean {
+    return SearchUtils.isSoundexMatched(soundexOfEntity, soundexOfSearchTerms);
   }
   isStartWithMatched(srcText: string, terms: string[]): boolean {
     return SearchUtils.isStartWithMatched(srcText, terms);

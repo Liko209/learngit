@@ -201,6 +201,18 @@ const rippleEnter = (theme: Theme) => keyframes`
   }
 `;
 
+function radius(type: keyof Theme['radius']) {
+  return ({ theme }: { theme: Theme }): string | number => {
+    return theme.radius[type];
+  };
+}
+
+function opacity(type: keyof Theme['opacity']) {
+  return ({ theme }: { theme: Theme }): number => {
+    return theme.opacity[type];
+  };
+}
+
 export {
   spacing,
   shape,
@@ -218,4 +230,6 @@ export {
   ellipsis,
   lineClamp,
   rippleEnter,
+  radius,
+  opacity,
 };

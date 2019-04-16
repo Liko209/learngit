@@ -6,10 +6,13 @@
 
 import { StoreViewModel } from '@/store/ViewModel';
 import { KeypadProps, KeypadViewProps } from './types';
+import { container } from 'framework';
+import { TelephonyStore } from '../../store';
 
-class KeypadViewModel extends StoreViewModel<KeypadProps>
-  implements KeypadViewProps {
-  keypad = () => {};
+class KeypadViewModel extends StoreViewModel<KeypadProps> implements KeypadViewProps {
+  private _telephonyStore: TelephonyStore = container.get(TelephonyStore);
+
+  keypad = () => this._telephonyStore.openKeypad();
 }
 
 export { KeypadViewModel };

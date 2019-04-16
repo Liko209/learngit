@@ -1,23 +1,27 @@
 /*
  * @Author: Potar.He
- * @Date: 2019-03-01 10:44:59
- * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-10 19:49:09
+ * @Date: 2019-04-09 15:31:31
+ * @Last Modified by: Nello Huang (nello.huang@ringcentral.com)
+ * @Last Modified time: 2019-04-11 14:17:56
  */
 import { v4 as uuid } from 'uuid';
 import * as _ from 'lodash';
-import { formalName } from '../../libs/filter';
 import { h } from '../../v2/helpers'
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from "../../v2/page-models/AppRoot";
-import { IGroup } from "../../v2/models";
+import { IGroup, ITestMeta } from "../../v2/models";
 import { SITE_URL, BrandTire } from '../../config';
 
 fixture('Search/conversation')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Check can open conversation when clicking the item of search result', ['P1', 'JPT-1213', 'Search', 'Potar.He']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1213'],
+  maintainers: ['potar.he'],
+  keywords: ['search'],
+})('Check can open conversation when clicking the item of search result', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const me = users[5];
   const anotherUser = users[6];
@@ -50,14 +54,16 @@ test(formalName('Check can open conversation when clicking the item of search re
     await app.homePage.ensureLoaded();
   });
 
-  const searchBar = app.homePage.header.search;
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
 
   // people
   await h(t).withLog(`When I search keyword ${anotherUserName} and click the first people result`, async () => {
-    await searchBar.clearInputAreaText();
-    await searchBar.typeSearchKeyword(anotherUserName);
-    await searchBar.nthPeople(0).ensureLoaded();
-    await searchBar.nthPeople(0).enter();
+    await searchBar.clickSelf();
+    await searchDialog.clearInputAreaTextByKey();
+    await searchDialog.typeSearchKeyword(anotherUserName);
+    await searchDialog.instantPage.nthPeople(0).ensureLoaded();
+    await searchDialog.instantPage.nthPeople(0).enter();
   });
 
   const conversationPage = app.homePage.messageTab.conversationPage;
@@ -70,14 +76,21 @@ test(formalName('Check can open conversation when clicking the item of search re
     await t.expect(searchBar.inputArea.value).eql("")
   });
 
+  await h(t).withLog(`When I click the search box`, async () => {
+    await searchBar.clickSelf();
+  });
+
+  await h(t).withLog(`Then the people in recently search result`, async () => {
+    await searchDialog.recentPage.conversationByName(anotherUserName).ensureLoaded();
+  });
+
   // group
   let groupName;
   await h(t).withLog(`When I search keyword ${anotherUserName} and click the first group result`, async () => {
-    await searchBar.clearInputAreaText();
-    await searchBar.typeSearchKeyword(anotherUserName);
-    await searchBar.nthGroup(0).ensureLoaded();
-    groupName = await searchBar.nthGroup(0).name.textContent;
-    await searchBar.nthGroup(0).enter();
+    await searchDialog.typeSearchKeyword(anotherUserName);
+    await searchDialog.instantPage.nthGroup(0).ensureLoaded();
+    groupName = await searchDialog.instantPage.nthGroup(0).name.textContent;
+    await searchDialog.instantPage.nthGroup(0).enter();
   });
 
   await h(t).withLog(`Then the conversation should be opened`, async () => {
@@ -90,19 +103,18 @@ test(formalName('Check can open conversation when clicking the item of search re
   });
 
   await h(t).withLog(`When I click the search box`, async () => {
-    await searchBar.clickInputArea();
+    await searchBar.clickSelf();
   });
 
-  await h(t).withLog(`Then display instant search`, async () => {
-    await searchBar.nthGroup(0).ensureLoaded();
+  await h(t).withLog(`Then the group in recently search result`, async () => {
+    await searchDialog.recentPage.conversationByName(groupName).ensureLoaded();
   });
 
   // team
   await h(t).withLog(`When I search keyword ${team.name} and click the team result`, async () => {
-    await searchBar.clearInputAreaText();
-    await searchBar.typeSearchKeyword(team.name);
-    await searchBar.getSearchItemByCid(team.glipId).ensureLoaded();
-    await searchBar.getSearchItemByCid(team.glipId).enter();
+    await searchDialog.typeSearchKeyword(team.name);
+    await searchDialog.instantPage.conversationEntryByCid(team.glipId).ensureLoaded();
+    await searchDialog.instantPage.conversationEntryByCid(team.glipId).enter();
   });
 
   await h(t).withLog(`Then the conversation should be opened`, async () => {
@@ -115,30 +127,26 @@ test(formalName('Check can open conversation when clicking the item of search re
   });
 
   await h(t).withLog(`When I click the search box`, async () => {
-    await searchBar.clickInputArea();
+    await searchBar.clickSelf();
   });
 
-  await h(t).withLog(`Then display instant search`, async () => {
-    await searchBar.dropDownListShouldContainTeam(team);
+  await h(t).withLog(`Then the team in recently search result`, async () => {
+    await searchDialog.recentPage.conversationByName(team.name).ensureLoaded();
   });
 
   // recently search
   // people
-  await h(t).withLog(`Given I clear search box text`, async () => {
-    await searchBar.clearInputAreaText();
-    await searchBar.quitByPressEsc();
-  });
-
   await h(t).withLog(`When I click the search box`, async () => {
-    await searchBar.clickInputArea();
+    await searchBar.quitByPressEsc();
+    await searchBar.clickSelf();
   });
 
   await h(t).withLog(`Then recently search result should be showed`, async () => {
-    await searchBar.shouldShowRecentlyHistory();
+    await searchDialog.recentPage.ensureLoaded();
   });
 
   await h(t).withLog(`When I click the people result named "${anotherUserName}"`, async () => {
-    await searchBar.getSearchItemByName(anotherUserName).enter();
+    await searchDialog.recentPage.conversationByName(anotherUserName).enter();
   });
 
   await h(t).withLog(`Then the conversation should be opened`, async () => {
@@ -151,21 +159,17 @@ test(formalName('Check can open conversation when clicking the item of search re
   });
 
   // group
-  await h(t).withLog(`Given I clear search box text`, async () => {
-    await searchBar.clearInputAreaText();
-    await searchBar.quitByPressEsc();
-  });
-
   await h(t).withLog(`When I click the search box`, async () => {
-    await searchBar.clickInputArea();
+    await searchBar.quitByPressEsc();
+    await searchBar.clickSelf();
   })
 
   await h(t).withLog(`Then recently search result should be showed`, async () => {
-    await searchBar.shouldShowRecentlyHistory();
+    await searchDialog.recentPage.ensureLoaded();
   });
 
   await h(t).withLog(`When I click the group result`, async () => {
-    await searchBar.getSearchItemByName(groupName).enter();
+    await searchDialog.recentPage.conversationByName(groupName).enter();
   });
 
   await h(t).withLog(`Then the conversation should be opened`, async () => {
@@ -179,15 +183,16 @@ test(formalName('Check can open conversation when clicking the item of search re
 
   // team
   await h(t).withLog(`When I click the search box`, async () => {
-    await searchBar.clickInputArea();
+    await searchBar.quitByPressEsc();
+    await searchBar.clickSelf();
   });
 
   await h(t).withLog(`Then recently search result should be showed`, async () => {
-    await searchBar.shouldShowRecentlyHistory();
+    await searchDialog.recentPage.ensureLoaded();
   });
 
   await h(t).withLog(`When I click the team result`, async () => {
-    await searchBar.getSearchItemByName(team.name).enter();
+    await searchDialog.recentPage.conversationByName(team.name).enter();
   });
 
   await h(t).withLog(`Then the conversation should be opened`, async () => {

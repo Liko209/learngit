@@ -18,6 +18,7 @@ import { dao, mainLogger } from 'sdk';
 import { AccountService } from 'sdk/module/account';
 import { ModalPortal } from '@/containers/Dialog';
 import { Dialer } from '@/modules/telephony';
+import { GlobalSearch } from '@/modules/GlobalSearch';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 @observer
@@ -53,6 +54,8 @@ class HomeView extends Component<HomeViewProps> {
   }
 
   render() {
+    const { showGlobalSearch } = this.props;
+
     return (
       <>
         <ToastWrapper />
@@ -64,6 +67,7 @@ class HomeView extends Component<HomeViewProps> {
           </Bottom>
           <ModalPortal />
           <Dialer />
+          {showGlobalSearch && <GlobalSearch />}
         </Wrapper>
       </>
     );

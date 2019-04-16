@@ -71,6 +71,47 @@
     "deployedTime": "Date",
     "allRightsReserved": "All rights reserved"
   },
+  "globalSearch": {
+    "search": "Search",
+    "showMore": "Show more",
+    "ClearHistory": "Clear history",
+    "RecentSearches": "Recent searches",
+    "contentSearch": "Content search",
+    "inThisConversation": "in this conversation",
+    "Messages": "Messages",
+    "people": "people",
+    "groups": "groups",
+    "team": "team",
+    "postedBy": "Posted by",
+    "postedIn": "Posted in",
+    "postedByPlaceholder": "Enter name or email",
+    "postedInPlaceholder": "Choose a team or conversation",
+    "filters": "Filters",
+    "People": "People",
+    "Groups": "Groups",
+    "Teams": "Teams",
+    "All": "All",
+    "Events": "Events",
+    "Files": "Files",
+    "Links": "Links",
+    "Notes": "Notes",
+    "Tasks": "Tasks",
+    "Type": "Type",
+    "TimePosted": "Time posted",
+    "Anytime": "Anytime",
+    "ThisWeek": "This week",
+    "ThisMonth": "This month",
+    "ThisYear": "This year",
+
+    "prompt": {
+      "contentSearchNetworkError": "We weren't able to conduct the search. Check your network connection, then try again.",
+      "contentSearchServiceError": "Sorry, something went wrong on our end and we weren't able to conduct the search. Try again later."
+    },
+    "Results": "Results ({{count}})",
+    "NoMatchesFound": "No matches found",
+    "SearchForContactsAndKeywords": "Search for contacts and keywords",
+    "in": "in"
+  },
   "dashboard": {
     "Dashboard": "Dashboard"
   },
@@ -385,7 +426,9 @@
       "InvalidEmail": "Invalid Email",
       "markAsRead": "Failed to mark this conversation as read. Try again later.",
       "markAsUnread": "Failed to mark this conversation as unread. Try again later.",
-      "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later."
+      "FailedToConvertThisConversationToTeam": "Failed to convert this conversation to team. Try again later.",
+      "conversationDeleted": "The team was deleted. To know more, contact the team administrator.",
+      "conversationArchived": "The team was archived. To know more, contact the team administrator."
     }
   },
   "contact": {
@@ -432,6 +475,11 @@
       "RecordOnServiceWeb": "Sorry, call recording is disabled for your account. To enable the feature, contact your account administrator.",
       "RecordAutomatically": "Cannot start call recording."
     },
+    "notification": {
+      "incomingCall": "Incoming Call",
+      "answer": "Answer",
+      "unknownCaller": "Unknown Caller"
+    },
     "accessibility": {
       "hold": "Hold the call",
       "resume": "Resume the call",
@@ -464,6 +512,9 @@
     "TeamDeleted": "The team was deleted. To know more, contact the team administrator.",
     "TeamArchived": "The team was archived. To know more, contact the team administrator.",
     "ConversationClosed": "You removed the conversation."
+  },
+  "notification": {
+    "mentioned": "You were mentioned"
   },
   "feedback": {
     "name": "Feedback",

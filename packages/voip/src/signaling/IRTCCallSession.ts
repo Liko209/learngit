@@ -5,6 +5,7 @@
  */
 
 import { EventEmitter2 } from 'eventemitter2';
+import { RTC_REPLY_MSG_PATTERN, RTC_REPLY_MSG_TIME_UNIT } from '../api/types';
 
 interface IRTCCallSession extends EventEmitter2 {
   destroy(): void;
@@ -25,6 +26,13 @@ interface IRTCCallSession extends EventEmitter2 {
   hold(): void;
   unhold(): void;
   dtmf(digits: string): void;
+  startReply(): void;
+  replyWithPattern(
+    pattern: RTC_REPLY_MSG_PATTERN,
+    time: number,
+    timeUnit: RTC_REPLY_MSG_TIME_UNIT,
+  ): void;
+  replyWithMessage(message: string): void;
   reconnectMedia(options: any): void;
   getMediaStats(callback: any, interval: number): void;
   stopMediaStats(): void;
