@@ -23,13 +23,22 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
 
   @action
   handleSearchTypeChange = (type: ESearchContentTypes) => {
-    this.props.setSearchOptions({ type });
+    const currentType = this.props.searchOptions.type;
+    if (type !== currentType) {
+      this.props.setSearchOptions({ type });
+    }
   }
   @action
   handleSearchPostDateChange = (items: number) => {
+    const beginTime =
+      this.props.searchOptions.begin_time === undefined
+        ? null
+        : this.props.searchOptions.begin_time;
     const TimeStamp =
       items === DATE_DICTIONARY.ANY_TIME ? null : this.getTimeStamp(items);
-    this.props.setSearchOptions({ begin_time: TimeStamp });
+    if (TimeStamp !== beginTime) {
+      this.props.setSearchOptions({ begin_time: TimeStamp });
+    }
   }
   @action
   handleSearchPersonChange = (items: SelectedItem[]) => {
@@ -47,7 +56,7 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   }
   @computed
   get timeType() {
-    const beginTime = this.props.options.begin_time;
+    const beginTime = this.props.searchOptions.begin_time;
     if (!beginTime) {
       return DATE_DICTIONARY.ANY_TIME;
     }
