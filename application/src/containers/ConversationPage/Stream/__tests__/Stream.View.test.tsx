@@ -152,7 +152,6 @@ describe('StreamView', () => {
         ],
       };
       const { wrapper, rootWrapper } = mountStream(props);
-      console.log('rootWrapper: ', rootWrapper.html());
       expect(wrapper.find(ConversationPost)).toHaveLength(2);
       expect(wrapper.find(TimeNodeDivider)).toHaveLength(1);
       rootWrapper.unmount();
