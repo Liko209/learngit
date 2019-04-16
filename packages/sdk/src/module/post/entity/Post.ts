@@ -29,6 +29,7 @@ export type Post = ExtendedBaseModel & {
   items?: object[];
   source?: string;
   parent_id?: number;
+  unique_id: string;
   annotation?: {
     x_percent: number;
     y_percent: number;

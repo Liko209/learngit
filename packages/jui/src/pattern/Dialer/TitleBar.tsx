@@ -53,8 +53,8 @@ class JuiTitleBar extends PureComponent<Props> {
   render() {
     const { Actions, Status, label } = this.props;
     return (
-      <StyledTitleBar>
-        <StyledLeft>
+      <StyledTitleBar data-test-automation-id="telephony-dialer-title">
+        <StyledLeft data-test-automation-id="telephony-dialer-title-left">
           {Status && <Status />}
           {label}
         </StyledLeft>

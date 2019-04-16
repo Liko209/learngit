@@ -15,9 +15,13 @@ function normalizeLineEndings(str: string) {
   return str.replace(/\r\n|\r/g, '\n');
 }
 
-const StyledEditorWrapper = styled('div')<{ maxHeight: number }>`
+const StyledEditorWrapper = styled('div')<{
+  maxHeight: number;
+  initAnimation: boolean;
+}>`
   max-height: ${({ maxHeight }) => maxHeight}px;
-  transition: max-height 0.75s ease-in-out;
+  transition: max-height ${({ initAnimation }) => (initAnimation ? 0.75 : 0)}s
+    ease-in-out;
 `;
 
 const StyledTextArea = styled('textarea')`
@@ -108,9 +112,15 @@ export type CodeEditorProp = {
   language: string;
 };
 
-export class CodeEditor extends React.Component<CodeEditorProp> {
+type State = { initAnimation: boolean };
+
+export class CodeEditor extends React.Component<CodeEditorProp, State> {
   static defaultProps = {
     preserveScrollPosition: false,
+  };
+
+  state = {
+    initAnimation: false,
   };
 
   static loadedMode = new Set();
@@ -154,6 +164,9 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
       );
       this.codeMirror.setValue(this.props.value || '');
     }
+    this.setState({
+      initAnimation: true,
+    });
   }
 
   shouldComponentUpdate(nextProps: CodeEditorProp) {
@@ -230,6 +243,7 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
 
   render() {
     const { isCollapse, shouldCollapse, maxLine, collapseTo } = this.props;
+    const { initAnimation } = this.state;
     const height = this.calcHeight(
       isCollapse,
       shouldCollapse,
@@ -240,6 +254,7 @@ export class CodeEditor extends React.Component<CodeEditorProp> {
       <>
         <StyledEditorWrapper
           maxHeight={height}
+          initAnimation={initAnimation}
           data-test-automation-id="codeSnippetBody"
         >
           <StyledTextArea

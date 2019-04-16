@@ -6,9 +6,16 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 import { action } from '@storybook/addon-actions';
-import { boolean } from '@storybook/addon-knobs';
+import { text, boolean } from '@storybook/addon-knobs';
 import { withInfoDecorator } from '../../../foundation/utils/decorators';
 import { JuiMenu, JuiMenuList, JuiMenuItem } from '../index';
+
+import { JuiAvatar } from '../../Avatar';
+import avatar from '../../Avatar/__stories__/img/avatar.jpg';
+
+import { JuiListItemText } from '../../Lists';
+
+const Avatar = <JuiAvatar src={avatar} />;
 
 storiesOf('Components/Menus', module)
   .addDecorator(withInfoDecorator(JuiMenu, { inline: true }))
@@ -24,4 +31,21 @@ storiesOf('Components/Menus', module)
         <JuiMenuItem onClick={action('onClick Logout')}>Logout</JuiMenuItem>
       </JuiMenuList>
     </JuiMenu>
-  ));
+  ))
+  .add('Text MenuItem', () => (
+    <JuiMenuItem onClick={action('onClick Profile')}>Profile</JuiMenuItem>
+  ))
+  .add('Text MenuItem With Icon', () => (
+    <JuiMenuItem onClick={action('onClick Profile')} icon="star">
+      Profile
+    </JuiMenuItem>
+  ))
+  .add('2 Lines MenuItem With Avatar', () => {
+    const primary = text('primary', 'Two-line item name');
+    const secondaryText = text('secondaryText', 'Secondary text');
+    return (
+      <JuiMenuItem onClick={action('onClick Profile')} avatar={Avatar}>
+        <JuiListItemText primary={primary} secondary={secondaryText} />
+      </JuiMenuItem>
+    );
+  });

@@ -29,6 +29,9 @@ describe('GroupService', () => {
   };
   const mockGroupFetchDataController = {
     getTeamUserPermissionFlags: jest.fn(),
+    doFuzzySearchAllGroups: jest.fn(),
+    doFuzzySearchGroups: jest.fn(),
+    doFuzzySearchTeams: jest.fn(),
   };
   const mockHandleDataController = {
     handleData: jest.fn(),
@@ -343,8 +346,38 @@ describe('GroupService', () => {
     });
   });
 
+  describe('GroupFetchDataController', () => {
+    beforeEach(() => {
+      clearMocks();
+      setup();
+    });
+
+    it('should call getGroupFetchDataController when call doFuzzySearchALlGroups  ', async () => {
+      await groupService.doFuzzySearchALlGroups('123', true, false);
+      expect(
+        mockGroupFetchDataController.doFuzzySearchAllGroups,
+      ).toBeCalledWith('123', true, false);
+    });
+
+    it('should call getGroupFetchDataController when call doFuzzySearchGroups  ', async () => {
+      await groupService.doFuzzySearchGroups('123', true);
+      expect(mockGroupFetchDataController.doFuzzySearchGroups).toBeCalledWith(
+        '123',
+        true,
+      );
+    });
+
+    it('should call getGroupFetchDataController when call doFuzzySearchTeams  ', async () => {
+      await groupService.doFuzzySearchTeams('123', false);
+      expect(mockGroupFetchDataController.doFuzzySearchTeams).toBeCalledWith(
+        '123',
+        false,
+      );
+    });
+  });
+
   describe('getById', () => {
-    it('shoule receive null when id is not correct group id', async () => {
+    it('should receive null when id is not correct group id', async () => {
       try {
         await groupService.getById(1);
       } catch (e) {

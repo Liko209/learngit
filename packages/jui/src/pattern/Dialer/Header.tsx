@@ -106,6 +106,7 @@ class JuiHeader extends PureComponent<Props, State> {
       <StyledHeader
         onMouseEnter={this._handleMouseEvent}
         onMouseLeave={this._handleMouseEvent}
+        data-test-automation-id="telephony-dialer-header"
       >
         <StyledLeft>
           {Back && (
@@ -115,8 +116,14 @@ class JuiHeader extends PureComponent<Props, State> {
           )}
           <Avatar />
           <StyledInfoContainer>
-            <StyledName>{name}</StyledName>
-            {phone && <StyledPhone>{phone}</StyledPhone>}
+            <StyledName data-test-automation-id="telephony-dialer-header-name">
+              {name}
+            </StyledName>
+            {phone && (
+              <StyledPhone data-test-automation-id="telephony-dialer-header-phone">
+                {phone}
+              </StyledPhone>
+            )}
           </StyledInfoContainer>
         </StyledLeft>
         {HoverActions && showHoverActions && (

@@ -42,8 +42,10 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
         }
         if (!group || !this._groupService.isValid(group!)) {
           history.replace('/messages/loading', {
-            id: groupId,
             error: true,
+            params: {
+              id: groupId,
+            },
           });
           return;
         }

@@ -11,6 +11,7 @@ import { StyledMenuWithLogo } from './StyledMenuWithLogo';
 import { StyledSearchIconButton } from './StyledSearchIconButton';
 import { StyledLeft } from './StyledLeft';
 import { StyledRight } from './StyledRight';
+import { StyledJuiSearchBar } from './StyledSearchBar';
 
 type Props = {
   MainMenu: ComponentType<any>;
@@ -20,6 +21,10 @@ type Props = {
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward: ComponentType<any>;
   SearchBar: ComponentType<any>;
+  openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
+  searchKey: string;
+  searchPlaceholder: string;
+  onClear: () => void;
 };
 
 type States = {
@@ -48,7 +53,11 @@ class JuiTopBar extends React.PureComponent<Props, States> {
       AvatarActions,
       NewActions,
       BackNForward,
-      SearchBar,
+      openGlobalSearch,
+      searchKey,
+      searchPlaceholder,
+      onClear,
+      // SearchBar,
     } = this.props;
     return (
       <StyledAppBar>
@@ -59,9 +68,13 @@ class JuiTopBar extends React.PureComponent<Props, States> {
               <Logo />
             </StyledMenuWithLogo>
             <BackNForward />
-            <SearchBar
-              isShowSearchBar={isShowSearchBar}
-              closeSearchBar={this.showSearchBar}
+            <StyledJuiSearchBar
+              onClick={openGlobalSearch}
+              value={searchKey}
+              onClear={onClear}
+              placeholder={searchPlaceholder}
+              // isShowSearchBar={isShowSearchBar}
+              // closeSearchBar={this.showSearchBar}
             />
             <StyledSearchIconButton
               onClick={this.showSearchBar}

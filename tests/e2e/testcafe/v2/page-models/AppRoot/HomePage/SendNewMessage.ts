@@ -34,10 +34,6 @@ export class SendNewMessageModal extends BaseWebComponent {
     await this.t.click(this.sendButton);
   }
 
-  async click() {
-    await this.t.click(this.self);
-  }
-
   get isDisable(): Promise<boolean> {
     return this.createMessageButton.hasAttribute('disabled');
   }

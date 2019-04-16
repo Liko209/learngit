@@ -31,6 +31,7 @@ class VoiceMailViewComponent extends Component<Props> {
         tooltipTitle={t('telephony.sendToVoicemail')}
         aria-label={t('telephony.sendToVoicemail')}
         onClick={this._handleVoiceMail}
+        data-test-automation-id="telephony-voice-mail-btn"
       />
     );
   }

@@ -18,7 +18,7 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
     this.props.unsetCurrentPostListValue();
   }
   render() {
-    const { type, caption, ids, t } = this.props;
+    const { type, caption, ids, t, postFetcher } = this.props;
     return (
       <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
         <JuiConversationPage
@@ -29,7 +29,9 @@ class PostListPageViewComponent extends Component<PostListPageViewProps> {
             data-test-automation-id="post-list-page-header"
             title={t(caption)}
           />
-          {ids ? <Stream postIds={ids} type={type} key={type} /> : null}
+          {ids ? (
+            <Stream postIds={ids} key={type} postFetcher={postFetcher} />
+          ) : null}
         </JuiConversationPage>
       </ConversationPageContext.Provider>
     );
