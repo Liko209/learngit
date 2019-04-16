@@ -47,6 +47,12 @@ const StyledTextField = styled<TextFieldProps>(JuiTextField)`
     .input {
       flex: 1;
     }
+    label {
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 ` as typeof MuiTextField;
 
