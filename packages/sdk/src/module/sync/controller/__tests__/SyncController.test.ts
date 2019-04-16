@@ -140,8 +140,39 @@ describe('SyncController ', () => {
         .mockReturnValue(1);
       SyncUserConfig.prototype.getFetchedRemaining = jest
         .fn()
-        .mockReturnValue(1);
+        .mockReturnValue(true);
       const spy2 = jest.spyOn(syncController, '_fetchRemaining');
+      await syncController.syncData();
+      expect(spy2).toBeCalledTimes(0);
+    });
+
+    it('should call fetchRemainingData when sync index data and remaining had ever called', async () => {
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
+      jest.spyOn(syncController, 'fetchIndexData').mockResolvedValueOnce({});
+
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
+        .fn()
+        .mockReturnValue(1);
+      SyncUserConfig.prototype.getFetchedRemaining = jest
+        .fn()
+        .mockReturnValue(false);
+      const spy2 = jest.spyOn(syncController, 'fetchRemainingData');
+      await syncController.syncData();
+      expect(spy2).toBeCalledTimes(1);
+    });
+
+    it('should not call fetchRemainingData when is doing fetchRemainingData', async () => {
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
+      jest.spyOn(syncController, 'fetchIndexData').mockResolvedValueOnce({});
+
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
+        .fn()
+        .mockReturnValue(1);
+      SyncUserConfig.prototype.getFetchedRemaining = jest
+        .fn()
+        .mockReturnValue(false);
+      Object.assign(syncController, { _isFetchingRemaining: true });
+      const spy2 = jest.spyOn(syncController, 'fetchRemainingData');
       await syncController.syncData();
       expect(spy2).toBeCalledTimes(0);
     });

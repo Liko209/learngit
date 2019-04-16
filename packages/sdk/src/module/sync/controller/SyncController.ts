@@ -39,6 +39,7 @@ import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
 const LOG_TAG = 'SyncController';
 class SyncController {
+  private _isFetchingRemaining: boolean;
   private _syncListener: SyncListener;
   // private _processorHandler: SequenceProcessorHandler;
 
@@ -117,12 +118,7 @@ class SyncController {
       // actually, should only do sign out when initial failed
       notificationCenter.emitKVChange(SERVICE.DO_SIGN_OUT);
     }
-    try {
-      await this._fetchRemaining(currentTime);
-      mainLogger.info(LOG_TAG, 'fetch remaining data success');
-    } catch (e) {
-      mainLogger.error(LOG_TAG, 'fetch remaining data error');
-    }
+    this._checkFetchedRemaining(currentTime);
     PerformanceTracerHolder.getPerformanceTracer().end(currentTime);
     progressBar.stop();
   }
@@ -148,8 +144,15 @@ class SyncController {
     const syncConfig = new SyncUserConfig();
     if (!syncConfig.getFetchedRemaining()) {
       try {
+        if (this._isFetchingRemaining) {
+          mainLogger.info(LOG_TAG, 'is fetching remaining data');
+          return;
+        }
+        this._isFetchingRemaining = true;
         await this._fetchRemaining(time);
+        mainLogger.info(LOG_TAG, 'fetch remaining data success');
       } catch (e) {
+        this._isFetchingRemaining = false;
         mainLogger.error(LOG_TAG, 'fetch remaining data error');
       }
     }
@@ -170,9 +173,9 @@ class SyncController {
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
 
     onRemainingHandled && (await onRemainingHandled());
+    mainLogger.log('fetch remaining data and handle success');
     const syncConfig = new SyncUserConfig();
     syncConfig.setFetchedRemaining(true);
-    mainLogger.log('fetch remaining data and handle success');
   }
 
   private async _syncIndexData(timeStamp: number) {
@@ -370,7 +373,10 @@ class SyncController {
       if (shouldSaveScoreboard && scoreboard) {
         const socketUserConfig = new SyncUserConfig();
         socketUserConfig.setIndexSocketServerHost(scoreboard);
-        notificationCenter.emitKVChange(CONFIG.INDEX_SOCKET_SERVER_HOST, scoreboard);
+        notificationCenter.emitKVChange(
+          CONFIG.INDEX_SOCKET_SERVER_HOST,
+          scoreboard,
+        );
       }
 
       if (staticHttpServer) {
