@@ -18,10 +18,21 @@ const StyledBox = styled('div')`
   text-align: center;
   ${typography('body1')};
   color: ${grey('700')};
+
   .at_mention_compose {
+    display: inline;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
     ${typography('body2')};
     color: ${primary('700')};
+
+    :active {
+      outline: none;
+    }
   }
+
   b {
     ${typography('body2')};
     color: ${grey('900')};

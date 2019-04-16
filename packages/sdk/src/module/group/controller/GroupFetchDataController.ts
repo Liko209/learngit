@@ -405,14 +405,18 @@ export class GroupFetchDataController {
       lowerCaseName,
     );
     let sortValue = 0;
+
+    const setKeyMatched: Set<string> = new Set();
     for (let i = 0; i < splitNames.length; ++i) {
       for (let j = 0; j < searchKeyTerms.length; ++j) {
         if (
+          !setKeyMatched.has(searchKeyTerms[j]) &&
           this.entityCacheSearchController.isStartWithMatched(
             splitNames[i].toLowerCase(),
             [searchKeyTerms[j]],
           )
         ) {
+          setKeyMatched.add(searchKeyTerms[j]);
           sortValue +=
             i === j
               ? kSortingRateWithFirstAndPositionMatched

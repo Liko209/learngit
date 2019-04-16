@@ -62,12 +62,12 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
           },
         },
       ],
+      requireInteraction: true,
       tag: callId,
       data: {
         id: callId,
         scope: this._scope,
       },
-      requireInteraction: true,
       body: `${callerName} ${phoneNumber}`,
       icon: '/icon/incomingCall.png',
     });

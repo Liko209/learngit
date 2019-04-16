@@ -48,7 +48,7 @@ const LOADING_DELAY = 500;
 
 @observer
 class StreamViewComponent extends Component<Props> {
-  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  private _currentUserId: number = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   private _loadMoreStrategy = new ThresholdStrategy({
     threshold: 60,
     minBatchCount: 10,
@@ -96,7 +96,8 @@ class StreamViewComponent extends Component<Props> {
     }
     const newPostAddedAtEnd =
       prevPostIds.length !== 0 &&
-      postIds.length >= prevPostIds.length &&
+      // TODO this is a Hotfix for FIJI-4825
+      postIds.length - prevPostIds.length === 1 &&
       lastPost &&
       lastPost.id !== prevLastPost.id;
 
@@ -239,10 +240,10 @@ class StreamViewComponent extends Component<Props> {
       const {
         hasNewMessageSeparator,
         findNewMessageSeparatorIndex,
-        loadPostUntilFirstUnread,
+        getFirstUnreadPostByLoadAllUnread,
         findPostIndex,
       } = this.props;
-      const firstUnreadPostId = await loadPostUntilFirstUnread();
+      const firstUnreadPostId = await getFirstUnreadPostByLoadAllUnread();
 
       const jumpToIndex = hasNewMessageSeparator()
         ? findNewMessageSeparatorIndex()

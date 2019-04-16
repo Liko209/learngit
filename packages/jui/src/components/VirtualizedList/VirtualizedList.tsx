@@ -38,6 +38,7 @@ type JuiVirtualizedListHandles = {
   isAtBottom: () => boolean;
   scrollToIndex: (index: number) => void;
   getVisibleRange: () => IndexRange;
+  getPrevVisibleRange: () => IndexRange;
 };
 
 const JuiVirtualizedList: RefForwardingComponent<
@@ -271,6 +272,7 @@ const JuiVirtualizedList: RefForwardingComponent<
       jumpToPosition({ index });
     },
     getVisibleRange: computeVisibleRange,
+    getPrevVisibleRange: () => prevVisibleRange,
   }));
 
   //
@@ -392,6 +394,23 @@ const JuiVirtualizedList: RefForwardingComponent<
       }
     }
   },              [!!before, scrollEffectTriggerRef.current, height, childrenCount]);
+
+  //
+  // TEMP SOLUTION
+  // Force stop inertia scrolling to prevent scroll
+  // position issue while load more data.
+  //
+  useLayoutEffect(() => {
+    if (ref.current) {
+      ref.current.style.pointerEvents = 'none';
+    }
+    const timeout = setTimeout(() => {
+      if (ref.current) {
+        ref.current.style.pointerEvents = 'auto';
+      }
+    },                         10);
+    return () => clearTimeout(timeout);
+  },              [scrollEffectTriggerRef.current, height, childrenCount]);
 
   //
   // Emit visible range change when component mounted
