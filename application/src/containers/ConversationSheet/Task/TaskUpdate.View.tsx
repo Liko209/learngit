@@ -9,8 +9,8 @@ import i18next from 'i18next';
 import { JuiConversationItemCard as TaskUpdateViewCard } from 'jui/pattern/ConversationItemCard';
 import { JuiTaskCheckbox } from 'jui/pattern/ConversationItemCard/ConversationItemCardHeader';
 import {
+  JuiLabelWithContent,
   JuiTaskAvatarNames,
-  JuiTaskContent,
 } from 'jui/pattern/ConversationItemCard/ConversationItemCardBody';
 import {
   JuiEventCollapse,
@@ -70,11 +70,11 @@ class TaskUpdateView extends React.Component<TaskUpdateViewProps> {
         }
       >
         {key === 'assigned_to_ids' ? (
-          <JuiTaskContent title={i18next.t('item.assignee')}>
+          <JuiLabelWithContent label={i18next.t('item.assignee')}>
             <JuiTaskAvatarNames>
               {this._getTaskAvatarNames(value)}
             </JuiTaskAvatarNames>
-          </JuiTaskContent>
+          </JuiLabelWithContent>
         ) : null}
       </TaskUpdateViewCard>
     );

@@ -336,5 +336,24 @@ describe('Socket FSM', () => {
         })(),
       );
     });
+    it('should not call disconnect when socket has not started yet', async (done: any) => {
+      const fsm = fsmCreate();
+      const socket = fsm.socketClient.socket;
+      fsm.stopFSM();
+      setTimeout(() => {
+        expect(socket.disconnect).not.toHaveBeenCalled();
+        done();
+      });
+    });
+    it('should not call disconnect when socket has started yet', async (done: any) => {
+      const fsm = fsmCreate();
+      fsm.start();
+      const socket = fsm.socketClient.socket;
+      fsm.stopFSM();
+      setTimeout(() => {
+        expect(socket.disconnect).toHaveBeenCalled();
+        done();
+      });
+    });
   });
 });
