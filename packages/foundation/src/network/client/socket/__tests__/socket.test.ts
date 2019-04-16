@@ -21,7 +21,7 @@ const socketRequestFn = jest.fn().mockReturnValue(
 const socket = new Socket();
 describe('socket', () => {
   describe('request', () => {
-    it('should set a request to tasks', async () => {
+    it.skip('should set a request to tasks', async () => {
       const request = getFakeSocketRequest();
       SocketClient.get = jest.fn().mockReturnValue({
         request: socketRequestFn,

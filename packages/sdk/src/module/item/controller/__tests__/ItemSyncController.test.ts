@@ -3,15 +3,14 @@
  * @Date: 2019-01-18 19:55:08
  * Copyright © RingCentral. All rights reserved.
  */
-import { TypeDictionary } from '../../../../utils';
 import ItemApi from '../../../../api/glip/item';
 import { GroupConfigService } from '../../../groupConfig';
 import notificationCenter from '../../../../service/notificationCenter';
 import { ItemSyncController } from '../ItemSyncController';
 import { Listener } from 'eventemitter2';
-import { SERVICE } from '../../../../service/eventKey';
 import { JServerError, ERROR_CODES_SERVER } from '../../../../error';
 import { ServiceLoader } from '../../../serviceLoader';
+import { TypeDictionary } from '../../../../utils/glip-type-dictionary';
 
 jest.mock('../../../../api/glip/item');
 jest.mock('../../service/IItemService');
@@ -25,7 +24,7 @@ function clearMocks() {
 }
 
 describe('ItemSyncController', () => {
-  const groupConfigService = new GroupConfigService();
+  let groupConfigService: GroupConfigService;
   let dataHandlerFunc = jest.fn().mockImplementation(() => {});
   let itemService = {
     getItemDataHandler: jest.fn().mockReturnValue(dataHandlerFunc),
@@ -34,6 +33,9 @@ describe('ItemSyncController', () => {
 
   function setUp() {
     dataHandlerFunc = jest.fn().mockImplementation(() => {});
+    groupConfigService = new GroupConfigService();
+    ItemApi.getItems.mockClear();
+
     itemService = {
       getItemDataHandler: jest.fn().mockReturnValue(dataHandlerFunc),
     };
@@ -64,13 +66,20 @@ describe('ItemSyncController', () => {
       notificationCenter.on = jest
         .fn()
         .mockImplementation((event: string, listener: Listener) => {
-          expect(event).toEqual(SERVICE.SOCKET_STATE_CHANGE);
+          // expect(event).toEqual(SERVICE.SOCKET_STATE_CHANGE);
           tlistener = listener;
         });
 
       itemSyncController = new ItemSyncController(itemService);
 
-      Object.assign(itemSyncController, { _syncedGroupIds: syncedGroupIds });
+      const itemSequenceProcessor = {
+        cancelAll: jest.fn(),
+      };
+
+      Object.assign(itemSyncController, {
+        _itemSequenceProcessor: itemSequenceProcessor,
+      });
+      Object.assign(itemSyncController, { _syncedGroupItems: syncedGroupIds });
       tlistener('connecting');
       expect(syncedGroupIds.has(1)).toBeTruthy();
 
@@ -79,16 +88,38 @@ describe('ItemSyncController', () => {
 
       tlistener('idle');
       expect(syncedGroupIds.has(1)).toBeFalsy();
+      expect(itemSequenceProcessor.cancelAll).toBeCalledTimes(1);
     });
 
     it('should jest return when the group has requested before', async () => {
-      const syncedGroupIds: Set<number> = new Set();
-      syncedGroupIds.add(1);
-      Object.assign(itemSyncController, { _syncedGroupIds: syncedGroupIds });
-      const spy = jest.spyOn(itemSyncController, '_requestSyncGroupItems');
+      const syncedGroupIds: Set<string> = new Set();
+      const groupConfig = {
+        id: 1,
+        last_index_of_files: 1,
+        last_index_of_tasks: 2,
+        last_index_of_events: 3,
+        last_index_of_notes: 4,
+        last_index_of_links: 5,
+      };
+      const response = { id: 1, name: 'jupiter' };
+      ItemApi.getItems = jest.fn().mockResolvedValue(response);
+      groupConfigService.getById = jest.fn().mockReturnValue(groupConfig);
 
-      itemSyncController.requestSyncGroupItems(1);
-      expect(spy).not.toHaveBeenCalled();
+      syncedGroupIds.add(`1.${TypeDictionary.TYPE_ID_TASK}`);
+      syncedGroupIds.add(`1.${TypeDictionary.TYPE_ID_FILE}`);
+      syncedGroupIds.add(`1.${TypeDictionary.TYPE_ID_PAGE}`);
+      syncedGroupIds.add(`1.${TypeDictionary.TYPE_ID_EVENT}`);
+      syncedGroupIds.add(`1.${TypeDictionary.TYPE_ID_LINK}`);
+
+      Object.assign(itemSyncController, { _syncedGroupItems: syncedGroupIds });
+
+      const spyOnGetItemSyncProcessor = jest.spyOn(
+        itemSyncController,
+        '_getItemSyncProcessor',
+      );
+
+      await itemSyncController.requestSyncGroupItems(1);
+      expect(spyOnGetItemSyncProcessor).not.toHaveBeenCalled();
     });
 
     it('should request to sync items', async (done: any) => {
@@ -104,10 +135,15 @@ describe('ItemSyncController', () => {
       ItemApi.getItems = jest.fn().mockResolvedValue(response);
       groupConfigService.getById = jest.fn().mockReturnValue(groupConfig);
       groupConfigService.saveAndDoNotify = jest.fn();
+      const spyOnGetItemSyncProcessor = jest.spyOn(
+        itemSyncController,
+        '_getItemSyncProcessor',
+      );
 
       await itemSyncController.requestSyncGroupItems(groupConfig.id);
       setTimeout(() => {
         expect(groupConfigService.getById).toBeCalledTimes(1);
+        expect(spyOnGetItemSyncProcessor).toHaveBeenCalledTimes(5);
         expect(ItemApi.getItems).toBeCalledTimes(5);
         expect(ItemApi.getItems).toHaveBeenCalledWith(
           TypeDictionary.TYPE_ID_FILE,
@@ -174,9 +210,11 @@ describe('ItemSyncController', () => {
       ItemApi.getItems = jest.fn().mockRejectedValue(error);
       groupConfigService.getById = jest.fn().mockReturnValue(groupConfig);
       groupConfigService.saveAndDoNotify = jest.fn();
+
       expect(
         itemSyncController.requestSyncGroupItems(groupConfig.id),
       ).resolves.toThrow();
+
       expect(
         (groupConfigService.saveAndDoNotify = jest.fn()),
       ).not.toHaveBeenCalled();

@@ -112,13 +112,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get firstHistoryUnreadPostId() {
-    const firstUnreadPostId = this.hasMore('up') // !We need this to fix issues when UMI give us wrong info
-      ? undefined
-      : _.first(this.postIds);
-
-    return (
-      firstUnreadPostId ||
-      this._historyHandler.getFirstUnreadPostId(this.postIds)
+    return this._historyHandler.getFirstUnreadPostId(
+      this.postIds,
+      this.hasMore('up'),
     );
   }
 
@@ -264,6 +260,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return await this._streamController.fetchData(direction, limit);
   }
 
+  private async _loadAllUnreadPosts(): Promise<Post[]> {
+    if (!this._streamController.hasMore(QUERY_DIRECTION.OLDER)) {
+      return [];
+    }
+
+    return await this._streamController.fetchAllUnreadData();
+  }
+
   private async _loadSiblingPosts(anchorPostId: number) {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
@@ -284,6 +288,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this._streamController.enableNewMessageSep();
       try {
         await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
+      } catch (err) {
+        this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
+        throw err;
+      }
+    }
+    return this.firstHistoryUnreadPostId;
+  }
+
+  getFirstUnreadPostByLoadAllUnread = async () => {
+    if (!this.firstHistoryUnreadInPage) {
+      try {
+        await this._loadAllUnreadPosts();
       } catch (err) {
         this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
         throw err;
