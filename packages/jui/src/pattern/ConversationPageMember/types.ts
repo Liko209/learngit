@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { IconButtonSize } from '../../components/Buttons';
 
 type JuiConversationPageMemberProps = {
-  onClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void;
+  onClick(event: React.MouseEvent): void;
   ariaLabel: string;
   title: string;
   children: ReactElement;
