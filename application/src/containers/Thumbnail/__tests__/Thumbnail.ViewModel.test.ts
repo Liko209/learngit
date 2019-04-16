@@ -3,12 +3,10 @@
  * @Date: 2019-01-21 13:31:38
  * Copyright © RingCentral. All rights reserved.
  */
-import { FileItemUtils } from 'sdk/module/item/utils';
-// import { FileType } from '@/store/models/FileItem';
 import { getEntity } from '../../../store/utils';
-// import { getFileType } from '../../../common/getFileType';
 import { ThumbnailViewModel } from '../Thumbnail.ViewModel';
-import { ServiceLoader } from 'sdk/module/serviceLoader';
+import * as getThumbnailURL from '@/common/getThumbnailURL';
+import { observable } from 'mobx';
 
 jest.mock('../../../store/utils');
 jest.mock('../../../common/getFileType');
@@ -17,31 +15,27 @@ jest.mock('sdk/module/item/service');
 let thumbnailViewModel: ThumbnailViewModel;
 
 const previewUrl = 'http://www.google.com';
-const itemService = {
-  getThumbsUrlWithSize: jest.fn(),
-};
 
 describe('ThumbnailViewModel', () => {
-  beforeAll(() => {
-    jest.resetAllMocks();
-  });
-  beforeEach(() => {
-    ServiceLoader.getInstance = jest.fn().mockReturnValue(itemService);
-  });
   describe('_getThumbsUrlWithSize()', () => {
-    it('should get image url', () => {
-      (getEntity as jest.Mock).mockReturnValue({
+    beforeEach(() => {
+      jest.resetAllMocks();
+      jest
+        .spyOn(getThumbnailURL, 'getThumbnailURLWithType')
+        .mockResolvedValue({ url: previewUrl, type: 1 });
+    });
+    it('should get image url', done => {
+      const file = {
         type: 'application/json',
-      });
+        versions: [{ stored_file_id: 1 }],
+      };
 
-      FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(true);
-
-      itemService.getThumbsUrlWithSize.mockResolvedValue(previewUrl);
+      (getEntity as jest.Mock).mockReturnValue(file);
 
       thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
-
       setTimeout(() => {
         expect(thumbnailViewModel.thumbsUrlWithSize).toEqual(previewUrl);
+        done();
       });
     });
     it('should get file type', async () => {
@@ -51,8 +45,6 @@ describe('ThumbnailViewModel', () => {
         versions: [],
       });
 
-      FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
-
       thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
 
       expect(thumbnailViewModel.icon).toEqual('doc');
@@ -61,9 +53,8 @@ describe('ThumbnailViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({
         type: '',
         iconType: 'default_file',
+        versions: [],
       });
-
-      FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
 
       thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
 
@@ -73,9 +64,8 @@ describe('ThumbnailViewModel', () => {
       (getEntity as jest.Mock).mockReturnValue({
         type: '',
         iconType: 'default_file',
+        versions: [],
       });
-
-      FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
 
       thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
 
@@ -88,14 +78,31 @@ describe('ThumbnailViewModel', () => {
         versions: [{ stored_file_id: storeFileId }],
       });
 
-      FileItemUtils.isSupportPreview = jest.fn().mockReturnValue(false);
-
       thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
 
       thumbnailViewModel._lastStoreFileId = storeFileId;
       thumbnailViewModel.thumbsUrlWithSize = thumbUrl;
 
       expect(thumbnailViewModel.thumbsUrlWithSize).toEqual(thumbUrl);
+    });
+    it('should recall _getThumbsUrlWithSize when file versions length has been changed', done => {
+      const file = observable({
+        type: 'application/json',
+        versions: [{ stored_file_id: 1 }],
+      });
+
+      (getEntity as jest.Mock).mockReturnValue(file);
+
+      thumbnailViewModel = new ThumbnailViewModel({ id: 123 });
+      setTimeout(() => {
+        expect(thumbnailViewModel._lastStoreFileId).toEqual(1);
+
+        file.versions = [{ stored_file_id: 2 }, { stored_file_id: 1 }];
+        setTimeout(() => {
+          expect(thumbnailViewModel._lastStoreFileId).toEqual(2);
+          done();
+        });
+      });
     });
   });
 });
