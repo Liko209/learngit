@@ -99,10 +99,10 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
     }
   }
 
-  retryMessage = () => {
+  retryMessage = async () => {
     const { retryParams } = this.state;
     if (!retryParams) return;
-    goToConversationWithLoading(retryParams);
+    return goToConversationWithLoading(retryParams);
   }
 
   render() {

@@ -9,7 +9,7 @@ import { observer } from 'mobx-react';
 import { withTranslation } from 'react-i18next';
 import { JuiModal } from 'jui/components/Dialog';
 import { Notification } from '@/containers/Notification';
-import { ContactSearch } from '@/containers/ContactSearch';
+import { ContactSearch } from '@/containers/Downshift';
 import portalManager from '@/common/PortalManager';
 import { errorHelper } from 'sdk/error';
 import { generalErrorHandler } from '@/utils/error';
@@ -77,6 +77,8 @@ class AddMembers extends React.Component<ViewProps> {
           hasMembers={members}
           placeholder={t('people.team.SearchContactPlaceholder')}
           isExcludeMe={true}
+          multiple={true}
+          autoSwitchEmail={true}
         />
       </JuiModal>
     );

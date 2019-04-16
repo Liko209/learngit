@@ -27,7 +27,6 @@
     "jszip": "3.2.1",
     "jui": "1.2.1",
     "libphonenumber-js": "1.6.4",
-    "load-segment": "git+ssh://git@git.ringcentral.com:Fiji/segment.git",
     "lodash": "4.17.11",
     "mobx": "5.9.0",
     "mobx-react": "5.4.3",

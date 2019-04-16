@@ -9,13 +9,18 @@ import { h, H } from '../../v2/helpers';
 import { setupCase, teardownCase } from '../../init';
 import { AppRoot } from '../../v2/page-models/AppRoot';
 import { SITE_URL, BrandTire } from '../../config';
-import { IGroup } from '../../v2/models';
+import { IGroup, ITestMeta } from '../../v2/models';
 
 fixture('ConversationList/MarkPrivateOrProtected')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('Team admin can change team from public to private.', ['JPT-517', 'P1']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-517'],
+  maintainers: ['looper', 'potar.he'],
+  keywords: ['MarkPrivateOrProtected', 'search'],
+})('Team admin can change team from public to private.', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const admin = users[4];
   const nonMember = users[6];
@@ -69,19 +74,25 @@ test(formalName('Team admin can change team from public to private.', ['JPT-517'
     await app.homePage.logoutThenLoginWithUser(SITE_URL, nonMember);
   });
 
-  const search = app.homePage.header.search;
+  const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I type people keyword ${team.name} in search input area`, async () => {
-    await search.typeSearchKeyword(team.name);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
   }, true);
 
   await h(t).withLog(`Then I should not find ${team.name} team.`, async () => {
     await t.wait(3e3); // wait back-end response
-    await t.expect(search.teams.withText(team.name).exists).notOk({ timeout: 10e3 });
+    await t.expect(searchDialog.instantPage.teams.withText(team.name).exists).notOk({ timeout: 10e3 });
   });
 
 });
 
-test(formalName('Team admin can change team from private to public.', ['JPT-518', 'P1']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-518'],
+  maintainers: ['looper', 'potar.he'],
+  keywords: ['MarkPrivateOrProtected', 'search'],
+})('Team admin can change team from private to public.', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const admin = users[4];
   const nonMember = users[6];
@@ -135,17 +146,18 @@ test(formalName('Team admin can change team from private to public.', ['JPT-518'
     await app.homePage.logoutThenLoginWithUser(SITE_URL, nonMember);
   });
 
-  const search = app.homePage.header.search;
+  const searchDialog = app.homePage.searchDialog;
   await h(t).withLog(`When I type people keyword ${team.name} in search input area`, async () => {
-    await search.typeSearchKeyword(team.name);
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(team.name);
   });
 
   await h(t).withLog('Then I should find at least team result', async () => {
-    await t.expect(search.teams.count).gte(1);
+    await t.expect(searchDialog.instantPage.teams.count).gte(1);
   }, true);
 
   await h(t).withLog('Then I should find this team', async () => {
-    await search.dropDownListShouldContainTeam(team);
+    await searchDialog.instantPage.conversationsContainName(team.name);
   }, true);
 });
 

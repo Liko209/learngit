@@ -43,13 +43,13 @@ test(formalName('test navigation on electron backwards and forwards functions', 
   });
 
   await h(t).withLog('When I click the back button', async () => {
-    await backButton.click();
+    await backButton.clickSelf();
     await t.expect(app.pagePath).contains('/contacts');
   });
 
   await h(t).withLog('Then the forward button should be enabled', async () => {
     await forwardButton.shouldBeEnabled();
-    await forwardButton.click();
+    await forwardButton.clickSelf();
     await t.expect(app.pagePath).contains('/calendar');
   });
 });
@@ -103,7 +103,7 @@ test(formalName('reLoad should disable backward and forward button', ['P2', 'JPT
   });
 
   await h(t).withLog('When I click the back button', async () => {
-    await backButton.click();
+    await backButton.clickSelf();
   });
 
   await h(t).withLog('Then the forward and back button should be enabled', async () => {

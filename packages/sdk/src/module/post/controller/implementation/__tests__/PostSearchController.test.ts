@@ -9,7 +9,12 @@ import { SearchRequestInfo } from '../types';
 import { SearchAPI } from '../../../../../api/glip/search';
 import { SubscribeController } from '../../../../base/controller/SubscribeController';
 import { SOCKET } from '../../../../../service/eventKey';
-import { JServerError, ERROR_CODES_SERVER } from '../../../../../error';
+import {
+  JServerError,
+  ERROR_CODES_SERVER,
+  JError,
+  ERROR_TYPES,
+} from '../../../../../error';
 
 function clearMocks() {
   jest.clearAllMocks();
@@ -95,35 +100,118 @@ describe('PostSearchController', () => {
   });
 
   describe('searchPosts', () => {
-    const searchParams = { q: 'name', type: 'all', fetch_count: 20 };
     beforeEach(() => {
       clearMocks();
       setUp();
     });
+    const searchedResult: any = {
+      request_id: 123,
+      client_request_id: 1,
+      query: 'name',
+      results: [
+        {
+          _id: 7527966736388,
+          created_at: 1548264342023,
+          model_id: '7527966736388',
+        },
+        {
+          _id: 10,
+          created_at: 1548264342044,
+          model_id: '10',
+        },
+        {
+          _id: 18,
+          created_at: 1528264342044,
+          model_id: '18',
+          deactivated: true,
+        },
+      ],
+      just_ids: false,
+      response_id: 1,
+    };
 
-    it('should return response with request, and we should save the resolve, reject ', async () => {
+    it('should continue search post when data size does not match expected count', async () => {
+      const searchParams: any = { q: 'name', type: 'all', scroll_size: 10 };
       const res = { request_id: 123 };
-      SearchAPI.search = jest.fn().mockReturnValue(res);
-      const searchedResult: any = {
-        request_id: 123,
-        client_request_id: 1,
-        query: 'name',
-        results: [
-          {
-            _id: 7527966736388,
-            created_at: 1548264342023,
-            model_id: '7527966736388',
-          },
+      SearchAPI.search = jest.fn().mockResolvedValueOnce(res);
 
+      SearchAPI.scrollSearch = jest
+        .fn()
+        .mockImplementationOnce(() => {
+          setTimeout(() => {
+            postSearchController.handleSearchResults({
+              request_id: 123,
+              client_request_id: 1,
+              query: 'name',
+              results: [
+                {
+                  _id: 73007108,
+                  created_at: 73007108,
+                  model_id: '73007108',
+                },
+                {
+                  _id: 1548298,
+                  created_at: 1548264342044,
+                  model_id: '10',
+                },
+              ],
+              response_id: 1,
+              scroll_request_id: '1',
+            });
+          },         10);
+          return {};
+        })
+        .mockImplementationOnce(() => {
+          setTimeout(() => {
+            postSearchController.handleSearchResults({
+              request_id: 123,
+              client_request_id: 1,
+              query: 'name',
+              results: [],
+              response_id: 1,
+              scroll_request_id: '2',
+            });
+          },         10);
+          return {};
+        });
+
+      setTimeout(() => {
+        postSearchController.handleSearchResults(searchedResult);
+      },         100);
+      const promise = postSearchController.searchPosts(searchParams);
+      const itemsAndPosts = await promise;
+      expect(itemsAndPosts).toEqual({
+        hasMore: false,
+        items: [
+          { created_at: 1548264342044, id: 10, model_id: '10' },
           {
-            _id: 10,
             created_at: 1548264342044,
+            id: 1548298,
             model_id: '10',
           },
         ],
-        just_ids: false,
-        response_id: 1,
-      };
+        posts: [
+          {
+            created_at: 1548264342023,
+            id: 7527966736388,
+            model_id: '7527966736388',
+          },
+          {
+            id: 73007108,
+            created_at: 73007108,
+            model_id: '73007108',
+          },
+        ],
+        requestId: 123,
+      });
+      expect(SearchAPI.search).toBeCalled();
+      expect(SearchAPI.scrollSearch).toBeCalled();
+    });
+
+    it('should return response with request, and we should save the resolve, reject ', async () => {
+      const searchParams = { q: 'name', type: 'all', scroll_size: 1 };
+      const res = { request_id: 123 };
+      SearchAPI.search = jest.fn().mockReturnValue(res);
 
       setTimeout(() => {
         postSearchController.handleSearchResults(searchedResult);
@@ -153,14 +241,19 @@ describe('PostSearchController', () => {
     });
 
     it('should clear local search info and send request to clear request', async () => {
-      expect.assertions(3);
+      expect.assertions(5);
       const requestId = Date.now();
       queryInfos.set(requestId, { q: 'q' });
+      queryInfos.set(requestId + 1, { q: 'k' });
       SearchAPI.search = jest.fn().mockResolvedValue({});
-      await postSearchController.endPostSearch(requestId);
+      await postSearchController.endPostSearch();
       expect(queryInfos.has(requestId)).toBeFalsy();
-      expect(SearchAPI.search).toBeCalledWith({
+      expect(queryInfos.has(requestId + 1)).toBeFalsy();
+      expect(SearchAPI.search).nthCalledWith(1, {
         previous_server_request_id: requestId,
+      });
+      expect(SearchAPI.search).nthCalledWith(2, {
+        previous_server_request_id: requestId + 1,
       });
       expect(subscribeController.unsubscribe).toBeCalled();
     });
@@ -182,7 +275,7 @@ describe('PostSearchController', () => {
       setUp();
     });
 
-    it('should set search ended when ', () => {
+    it('should set search ended when results is null', () => {
       const requestId = Date.now();
       queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
 
@@ -197,6 +290,18 @@ describe('PostSearchController', () => {
         (queryInfos.get(requestId) as SearchRequestInfo).isSearchEnded,
       ).toBeTruthy();
     });
+
+    it('should just return when request is not in records', () => {
+      const requestId = Date.now();
+      const searchedResult: any = {
+        request_id: requestId,
+        query: 'name',
+        results: null,
+        response_id: 2,
+      };
+      postSearchController.handleSearchResults(searchedResult);
+      expect(queryInfos.get(requestId)).toBeUndefined();
+    });
   });
 
   describe('scrollSearchPosts', () => {
@@ -205,10 +310,55 @@ describe('PostSearchController', () => {
       setUp();
     });
 
-    it('should throw an error when do scroll search with an not existed request id', async () => {
+    it('should just return empty data when do scroll search with an not existed request id', async () => {
       const invalidId = Date.now();
-      const promise = postSearchController.scrollSearchPosts(invalidId);
-      expect(promise).rejects.toThrow();
+      const promise = await postSearchController.scrollSearchPosts(invalidId);
+
+      expect(promise).toEqual({
+        hasMore: false,
+        items: [],
+        posts: [],
+        requestId: invalidId,
+      });
+    });
+
+    it('should throw an error when request encounter an unexpected error', async () => {
+      const requestId = Date.now();
+      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      SearchAPI.scrollSearch = jest
+        .fn()
+        .mockRejectedValue(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.GENERAL,
+            'Backend error',
+          ),
+        );
+      expect(
+        postSearchController.scrollSearchPosts(requestId),
+      ).rejects.toThrow();
+    });
+
+    it('should throw not an error when request has beed deleted by server', async () => {
+      const requestId = Date.now();
+      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      SearchAPI.scrollSearch = jest
+        .fn()
+        .mockRejectedValue(
+          new JError(
+            ERROR_TYPES.SERVER,
+            ERROR_CODES_SERVER.DELETED,
+            'search scroll has been deleted',
+          ),
+        );
+      expect(
+        postSearchController.scrollSearchPosts(requestId),
+      ).resolves.toEqual({
+        requestId,
+        hasMore: false,
+        items: [],
+        posts: [],
+      });
     });
 
     it('should set has more info to false when has no more result', async () => {
@@ -222,7 +372,7 @@ describe('PostSearchController', () => {
         results: null,
         just_ids: false,
         response_id: 1,
-        scroll_request_id: 1,
+        scroll_request_id: '1',
       };
 
       setTimeout(() => {
@@ -234,6 +384,10 @@ describe('PostSearchController', () => {
         hasMore: false,
         items: [],
         posts: [],
+      });
+      expect(SearchAPI.scrollSearch).toBeCalledWith({
+        scroll_request_id: 1,
+        search_request_id: requestId,
       });
     });
 
@@ -259,7 +413,7 @@ describe('PostSearchController', () => {
         ],
         just_ids: false,
         response_id: 1,
-        scroll_request_id: 1,
+        scroll_request_id: '1',
       };
 
       setTimeout(() => {
@@ -305,6 +459,65 @@ describe('PostSearchController', () => {
         hasMore: false,
         items: [],
         posts: [],
+      });
+    });
+
+    it('should get next page automatically when count does not match', async () => {
+      const requestId = Date.now();
+      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1, scrollSize: 10 });
+      const searchedResult: any = {
+        request_id: requestId,
+        query: 'name',
+        results: [
+          {
+            _id: 7527966736388,
+            created_at: 1548264342023,
+            model_id: '7527966736388',
+          },
+          {
+            _id: 10,
+            created_at: 1548264342044,
+            model_id: '10',
+          },
+        ],
+        just_ids: false,
+        response_id: 1,
+        scroll_request_id: '1',
+      };
+      SearchAPI.scrollSearch = jest
+        .fn()
+        .mockImplementationOnce(() => {
+          setTimeout(() => {
+            postSearchController.handleSearchResults(searchedResult);
+          },         10);
+          return {};
+        })
+        .mockImplementationOnce(() => {
+          setTimeout(() => {
+            postSearchController.handleSearchResults({
+              request_id: requestId,
+              query: 'name',
+              results: [],
+              response_id: 1,
+              scroll_request_id: '2',
+            });
+          },         10);
+        });
+
+      const promise = postSearchController.scrollSearchPosts(requestId);
+
+      const results = await promise;
+      expect(results).toEqual({
+        requestId,
+        hasMore: false,
+        items: [{ created_at: 1548264342044, id: 10, model_id: '10' }],
+        posts: [
+          {
+            created_at: 1548264342023,
+            id: 7527966736388,
+            model_id: '7527966736388',
+          },
+        ],
       });
     });
   });

@@ -113,9 +113,8 @@ describe('PostService', () => {
     });
 
     it('endPostSearch', async () => {
-      const requestId = Date.now();
-      await postService.endPostSearch(requestId);
-      expect(postSearchController.endPostSearch).toBeCalledWith(requestId);
+      await postService.endPostSearch();
+      expect(postSearchController.endPostSearch).toBeCalledWith();
     });
   });
 

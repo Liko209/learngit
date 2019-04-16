@@ -6,7 +6,7 @@
 import { BaseWebComponent } from '../../BaseWebComponent';
 import * as _ from 'lodash';
 import * as faker from 'faker/locale/en';
-import { MemberInput } from './memberInput';
+import { searchComoBox } from './SearchComboBox';
 
 
 // TODO: unify create team, convert to team, team setting automation ID
@@ -159,7 +159,7 @@ export class CreateTeamModal extends BaseTeamSetting {
   }
 
   get memberInput() {
-    return this.getComponent(MemberInput);
+    return this.getComponent(searchComoBox, this.self.find('*[role="combobox"]'));
   }
 }
 

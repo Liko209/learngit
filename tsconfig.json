@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "incremental": true,
     "allowJs": true,
     "checkJs": false,
     "allowSyntheticDefaultImports": true,
