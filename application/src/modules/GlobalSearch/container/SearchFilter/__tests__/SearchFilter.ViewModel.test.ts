@@ -29,6 +29,7 @@ describe('SearchFilterViewModel', () => {
     it('should have been called with ESearchContentTypes', () => {
       const props = {
         setSearchOptions: jest.fn(),
+        searchOptions: jest.fn(),
       } as any;
       searchFilterViewModel = new SearchFilterViewModel(props);
       searchFilterViewModel.handleSearchTypeChange(ESearchContentTypes.ALL);
@@ -42,6 +43,7 @@ describe('SearchFilterViewModel', () => {
     it('should have been called with time stamp', () => {
       const props = {
         setSearchOptions: jest.fn(),
+        searchOptions: jest.fn(),
       } as any;
       searchFilterViewModel = new SearchFilterViewModel(props);
       const TimeStamp = searchFilterViewModel.getTimeStamp(
