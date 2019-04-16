@@ -91,10 +91,11 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   handleData = async (
     groups: Raw<Group>[],
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ): Promise<void> => {
     await this.getGroupController()
       .getHandleDataController()
-      .handleData(groups, source);
+      .handleData(groups, source, entities);
   }
 
   handleGroupMostRecentPostChanged = async (

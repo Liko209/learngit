@@ -28,6 +28,7 @@ class ProfileDataController {
   async profileHandleData(
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ): Promise<Profile | null> {
     let result: Profile | null = null;
     if (profile) {
@@ -85,6 +86,7 @@ class ProfileDataController {
   private async _handleProfile(
     profile: Raw<Profile>,
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ): Promise<Profile | null> {
     try {
       if (profile) {
@@ -92,9 +94,13 @@ class ProfileDataController {
         if (transformedData) {
           await this.entitySourceController.put(transformedData);
           if (shouldEmitNotification(source)) {
-            notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
-              transformedData,
-            ]);
+            if (entities) {
+              entities.set(ENTITY.PROFILE, [transformedData]);
+            } else {
+              notificationCenter.emitEntityUpdate(ENTITY.PROFILE, [
+                transformedData,
+              ]);
+            }
           }
           return transformedData;
         }

@@ -63,7 +63,11 @@ class PostDataController {
    * 3, handlePreInsert
    * 4, filterAndSavePosts
    */
-  async handleIndexPosts(data: Raw<Post>[], maxPostsExceed: boolean) {
+  async handleIndexPosts(
+    data: Raw<Post>[],
+    maxPostsExceed: boolean,
+    entities?: Map<string, any[]>,
+  ) {
     if (data.length) {
       let posts = this.transformData(data);
       this._handleModifiedDiscontinuousPosts(
@@ -76,7 +80,7 @@ class PostDataController {
         LOG_INDEX_DATA_POST,
         `filterAndSavePosts() before posts.length: ${posts && posts.length}`,
       );
-      posts = await this.filterAndSavePosts(posts, true);
+      posts = await this.filterAndSavePosts(posts, true, entities);
       mainLogger.info(
         LOG_INDEX_DATA_POST,
         `filterAndSavePosts() after posts.length: ${posts && posts.length}`,
@@ -84,7 +88,11 @@ class PostDataController {
       if (result && result.deleteMap.size > 0) {
         result.deleteMap.forEach((value: number[], key: number) => {
           this._groupService.updateHasMore(key, QUERY_DIRECTION.OLDER, true);
-          notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
+          if (entities) {
+            entities.set(`${ENTITY.FOC_RELOAD}.${key}`, value);
+          } else {
+            notificationCenter.emit(`${ENTITY.FOC_RELOAD}.${key}`, value);
+          }
         });
       }
       return posts;
@@ -274,7 +282,11 @@ class PostDataController {
     return Array.from(postGroupMap.values());
   }
 
-  async filterAndSavePosts(posts: Post[], save: boolean): Promise<Post[]> {
+  async filterAndSavePosts(
+    posts: Post[],
+    save: boolean,
+    entities?: Map<string, any[]>,
+  ): Promise<Post[]> {
     if (!posts || !posts.length) {
       return posts;
     }
@@ -285,6 +297,7 @@ class PostDataController {
         Object.values(groups).map(async (posts: Post[]) => {
           const normalPosts = await baseHandleData(
             {
+              entities,
               data: posts,
               dao: postDao,
               eventKey: ENTITY.POST,

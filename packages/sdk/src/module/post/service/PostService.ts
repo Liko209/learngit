@@ -149,10 +149,14 @@ class PostService extends EntityBaseService<Post> {
       .deletePostsByGroupIds(groupIds, shouldNotify);
   }
 
-  handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
+  handleIndexData = async (
+    data: Raw<Post>[],
+    maxPostsExceed: boolean,
+    entities?: Map<string, any[]>,
+  ) => {
     await this.getPostController()
       .getPostDataController()
-      .handleIndexPosts(data, maxPostsExceed);
+      .handleIndexPosts(data, maxPostsExceed, entities);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {

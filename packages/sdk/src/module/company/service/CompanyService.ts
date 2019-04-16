@@ -45,8 +45,16 @@ class CompanyService extends EntityBaseService<Company> {
     return await this.getCompanyController().getCompanyEmailDomain(id);
   }
 
-  async handleIncomingData(companies: Raw<Company>[], source: SYNC_SOURCE) {
-    await this.getCompanyController().handleCompanyData(companies, source);
+  async handleIncomingData(
+    companies: Raw<Company>[],
+    source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
+  ) {
+    await this.getCompanyController().handleCompanyData(
+      companies,
+      source,
+      entities,
+    );
   }
 
   protected getCompanyController() {

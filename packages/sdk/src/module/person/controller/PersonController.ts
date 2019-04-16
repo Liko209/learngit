@@ -69,10 +69,14 @@ class PersonController {
     this._cacheSearchController = _cacheSearchController;
   }
 
-  async handleIncomingData(persons: Raw<Person>[], source: SYNC_SOURCE) {
+  async handleIncomingData(
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
+  ) {
     await new PersonDataController(
       this._entitySourceController,
-    ).handleIncomingData(persons, source);
+    ).handleIncomingData(persons, source, entities);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {

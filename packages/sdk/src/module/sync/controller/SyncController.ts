@@ -9,7 +9,7 @@ import { IndexDataModel } from '../../../api/glip/user';
 import { indexData, initialData, remainingData } from '../../../api';
 import { accountHandleData } from '../../../module/account/service';
 
-import { SERVICE, CONFIG } from '../../../service/eventKey';
+import { SERVICE, CONFIG, ENTITY } from '../../../service/eventKey';
 import { progressManager, ProgressBar } from '../../../utils/progress';
 import { mainLogger, ERROR_CODES_NETWORK } from 'foundation';
 import notificationCenter from '../../../service/notificationCenter';
@@ -45,6 +45,7 @@ import { Item } from '../../../module/item/entity';
 import { RawPresence } from '../../../module/presence/entity';
 import { Person } from '../../../module/person/entity';
 import { Post } from '../../../module/post/entity';
+import _ from 'lodash';
 
 const LOG_TAG = 'SyncController';
 const INDEX_MAX_QUEUE = 2;
@@ -212,7 +213,7 @@ class SyncController {
       const syncConfig = new SyncUserConfig();
       // 5 minutes ago to ensure data is correct
       try {
-        const result = await this.fetchIndexData(String(timeStamp - 300000));
+        const result = await this.fetchIndexData(String(1543622400000));
         mainLogger.log(LOG_TAG, 'fetch index done');
         onIndexLoaded && (await onIndexLoaded(result));
 
@@ -337,28 +338,48 @@ class SyncController {
     if (profile && Object.keys(profile).length > 0) {
       transProfile = profile;
     }
-    return await Promise.all([
+    const entityMap = new Map<string, any[]>();
+    const start = Date.now();
+    await Promise.all([
       accountHandleData({
         userId,
         companyId,
         clientConfig,
         profileId: profile ? profile._id : undefined,
       }),
-
-      this._handleIncomingCompany(companies, source),
-      this._handleIncomingItem(items, source),
-      this._handleIncomingPresence(presences, source),
+      this._handleIncomingCompany(companies, source, entityMap),
+      this._handleIncomingItem(items, source, entityMap),
+      this._handleIncomingPresence(presences, source, entityMap),
       this._handleIncomingState(arrState, source),
     ])
-      .then(() => this._handleIncomingProfile(transProfile, source))
-      .then(() => this._handleIncomingPerson(people, source))
-      .then(() => this._handleIncomingGroup(mergedGroups, source))
-      .then(() => this._handleIncomingPost(posts, maxPostsExceeded, source));
+      .then(() => this._handleIncomingProfile(transProfile, source, entityMap))
+      .then(() => this._handleIncomingPerson(people, source, entityMap))
+      .then(() => this._handleIncomingGroup(mergedGroups, source, entityMap))
+      .then(() =>
+        this._handleIncomingPost(posts, maxPostsExceeded, source, entityMap),
+      )
+      .then(() => {
+        console.error(`store index data done===${Date.now() - start}`);
+      })
+      .then(() => {
+        if (entityMap.size > 0) {
+          const s = Date.now();
+          entityMap.forEach((value: any[], key: string) => {
+            if (key === ENTITY.GROUP_STATE || ENTITY.MY_STATE) {
+              notificationCenter.emitEntityUpdate(key, value, value);
+            } else {
+              notificationCenter.emitEntityUpdate(key, value);
+            }
+          });
+          console.error(`emit index data done===${Date.now() - s}`);
+        }
+      });
   }
 
   private async _handleIncomingCompany(
     companies: Raw<Company>[],
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -372,14 +393,18 @@ class SyncController {
     );
     await ServiceLoader.getInstance<CompanyService>(
       ServiceConfig.COMPANY_SERVICE,
-    ).handleIncomingData(companies, source);
+    ).handleIncomingData(companies, source, entities);
     PerformanceTracerHolder.getPerformanceTracer().end(
       logId,
       companies && companies.length,
     );
   }
 
-  private async _handleIncomingItem(items: Raw<Item>[], source: SYNC_SOURCE) {
+  private async _handleIncomingItem(
+    items: Raw<Item>[],
+    source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
+  ) {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingItem() item.length: ${items &&
@@ -392,7 +417,8 @@ class SyncController {
     );
     await ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
-    ).handleIncomingData(items);
+    ).handleIncomingData(items,
+      entities,);
     PerformanceTracerHolder.getPerformanceTracer().end(
       logId,
       items && items.length,
@@ -402,6 +428,7 @@ class SyncController {
   private async _handleIncomingPresence(
     presences: RawPresence[],
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -415,14 +442,18 @@ class SyncController {
     );
     await ServiceLoader.getInstance<PresenceService>(
       ServiceConfig.PRESENCE_SERVICE,
-    ).presenceHandleData(presences);
+    ).presenceHandleData(presences, entities);
     PerformanceTracerHolder.getPerformanceTracer().end(
       logId,
       presences && presences.length,
     );
   }
 
-  private async _handleIncomingState(states: any[], source: SYNC_SOURCE) {
+  private async _handleIncomingState(
+    states: any[],
+    source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
+  ) {
     mainLogger.info(
       LOG_INDEX_DATA,
       `_handleIncomingState() states.length: ${states &&
@@ -435,7 +466,7 @@ class SyncController {
     );
     await ServiceLoader.getInstance<StateService>(
       ServiceConfig.STATE_SERVICE,
-    ).handleState(states, source);
+    ).handleState(states, source, entities);
     PerformanceTracerHolder.getPerformanceTracer().end(
       logId,
       states && states.length,
@@ -445,6 +476,7 @@ class SyncController {
   private async _handleIncomingProfile(
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -457,13 +489,14 @@ class SyncController {
     );
     await ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
-    ).handleIncomingData(profile, source);
+    ).handleIncomingData(profile, source, entities);
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   private async _handleIncomingPerson(
     persons: Raw<Person>[],
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -477,7 +510,7 @@ class SyncController {
     );
     await ServiceLoader.getInstance<PersonService>(
       ServiceConfig.PERSON_SERVICE,
-    ).handleIncomingData(persons, source);
+    ).handleIncomingData(persons, source, entities);
     PerformanceTracerHolder.getPerformanceTracer().end(
       logId,
       persons && persons.length,
@@ -487,6 +520,7 @@ class SyncController {
   private async _handleIncomingGroup(
     groups: Raw<Group>[],
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -500,7 +534,7 @@ class SyncController {
     );
     await ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
-    ).handleData(groups, source);
+    ).handleData(groups, source, entities);
     PerformanceTracerHolder.getPerformanceTracer().end(
       logId,
       groups && groups.length,
@@ -511,6 +545,7 @@ class SyncController {
     posts: Raw<Post>[],
     maxPostsExceeded: boolean,
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
@@ -524,7 +559,7 @@ class SyncController {
     );
     await ServiceLoader.getInstance<PostService>(
       ServiceConfig.POST_SERVICE,
-    ).handleIndexData(posts, maxPostsExceeded);
+    ).handleIndexData(posts, maxPostsExceeded, entities);
     PerformanceTracerHolder.getPerformanceTracer().end(
       logId,
       posts && posts.length,

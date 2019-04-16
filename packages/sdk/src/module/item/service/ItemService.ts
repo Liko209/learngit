@@ -47,13 +47,17 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
     return this.handleIncomingData;
   }
 
-  handleIncomingData = async (items: Raw<Item>[]) => {
+  handleIncomingData = async (
+    items: Raw<Item>[],
+    entities?: Map<string, any[]>,
+  ) => {
     if (items.length === 0) {
       return;
     }
     const transformedData = items.map(item => transform<Item>(item));
     const result = await baseHandleData(
       {
+        entities,
         data: transformedData,
         dao: daoManager.getDao(ItemDao),
         eventKey: ENTITY.ITEM,

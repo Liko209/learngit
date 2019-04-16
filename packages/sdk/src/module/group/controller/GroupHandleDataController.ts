@@ -161,22 +161,37 @@ class GroupHandleDataController {
     ) as Group[];
   }
 
-  doNotification = async (deactivatedData: Group[], groups: Group[]) => {
-    groups.length && notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
+  doNotification = async (
+    deactivatedData: Group[],
+    groups: Group[],
+    entities?: Map<string, any[]>,
+  ) => {
+    if (groups.length) {
+      if (entities) {
+        entities.set(SERVICE.GROUP_CURSOR, groups);
+      } else {
+        notificationCenter.emit(SERVICE.GROUP_CURSOR, groups);
+      }
+    }
     // https://jira.ringcentral.com/browse/FIJI-4264
     // const deactivatedGroupIds = _.map(deactivatedData, (group: Group) => {
     //   return group.id;
     // });
     // deactivatedGroupIds.length &&
     //   notificationCenter.emitEntityDelete(ENTITY.GROUP, deactivatedGroupIds);
-    ((groups && groups.length) ||
-      (deactivatedData && deactivatedData.length)) &&
-      notificationCenter.emitEntityUpdate(
-        ENTITY.GROUP,
-        deactivatedData && deactivatedData.length
+    if (
+      (groups && groups.length) ||
+      (deactivatedData && deactivatedData.length)
+    ) {
+      const combindGroups = deactivatedData && deactivatedData.length
           ? [...groups, ...deactivatedData]
-          : groups,
-      );
+          : groups;
+      if (entities) {
+        entities.set(ENTITY.GROUP, combindGroups);
+      } else {
+        notificationCenter.emitEntityUpdate(ENTITY.GROUP, combindGroups);
+      }
+    }
   }
 
   operateGroupDao = async (deactivatedData: Group[], normalData: Group[]) => {
@@ -195,7 +210,11 @@ class GroupHandleDataController {
     }
   }
 
-  saveDataAndDoNotification = async (groups: Group[], source?: SYNC_SOURCE) => {
+  saveDataAndDoNotification = async (
+    groups: Group[],
+    source?: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
+  ) => {
     const deactivatedData = groups.filter(
       (item: Group) => item && item.deactivated,
     );
@@ -204,12 +223,16 @@ class GroupHandleDataController {
     );
     await this.operateGroupDao(deactivatedData, normalData);
     if (shouldEmitNotification(source)) {
-      await this.doNotification(deactivatedData, normalData);
+      await this.doNotification(deactivatedData, normalData, entities);
     }
     return normalData;
   }
 
-  handleData = async (groups: Raw<Group>[], source?: SYNC_SOURCE) => {
+  handleData = async (
+    groups: Raw<Group>[],
+    source?: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
+  ) => {
     if (groups.length === 0) {
       return;
     }
@@ -217,7 +240,7 @@ class GroupHandleDataController {
     const data = transformData.filter(item => item);
 
     // handle deactivated data and normal data
-    await this.saveDataAndDoNotification(data, source);
+    await this.saveDataAndDoNotification(data, source, entities);
     // check all group members exist in local or not if not, should get from remote
     // seems we only need check normal groups, don't need to check deactivated data
     // if (shouldCheckIncompleteMembers) {

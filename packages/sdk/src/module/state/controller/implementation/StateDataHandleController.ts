@@ -35,6 +35,7 @@ class StateDataHandleController {
   async handleState(
     states: Partial<State>[],
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ): Promise<void> {
     const stateTask: DataHandleTask = {
       type: TASK_DATA_TYPE.STATE,
@@ -42,7 +43,7 @@ class StateDataHandleController {
     };
     this._taskArray.push(stateTask);
     if (this._taskArray.length === 1) {
-      await this._startDataHandleTask(this._taskArray[0], source);
+      await this._startDataHandleTask(this._taskArray[0], source, entities);
     }
   }
 
@@ -60,6 +61,7 @@ class StateDataHandleController {
   private async _startDataHandleTask(
     task: DataHandleTask,
     source?: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ): Promise<void> {
     try {
       let transformedState: TransformedState;
@@ -69,7 +71,12 @@ class StateDataHandleController {
         transformedState = this._transformGroupData(task.data);
       }
       const updatedState = await this._generateUpdatedState(transformedState);
-      await this._updateEntitiesAndDoNotification(updatedState, source);
+      await this._updateEntitiesAndDoNotification(
+        updatedState,
+        source,
+        entities,
+      );
+      this._totalUnreadController.handleGroupState(updatedState.groupStates);
     } catch (err) {
       mainLogger.error(`StateDataHandleController, handle task error, ${err}`);
     }
@@ -333,6 +340,7 @@ class StateDataHandleController {
   private async _updateEntitiesAndDoNotification(
     transformedState: TransformedState,
     source?: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ): Promise<void> {
     if (transformedState.myState) {
       const myState = transformedState.myState;
@@ -343,22 +351,32 @@ class StateDataHandleController {
       } catch (err) {
         mainLogger.error(`StateDataHandleController, my state error, ${err}`);
       }
-      notificationCenter.emitEntityUpdate(
-        ENTITY.MY_STATE,
-        [myState],
-        [myState],
-      );
+      // if (Date.now() === 0) {
+      if (entities) {
+        entities.set(ENTITY.MY_STATE, [myState]);
+      } else {
+        notificationCenter.emitEntityUpdate(
+          ENTITY.MY_STATE,
+          [myState],
+          [myState],
+        );
+      }
+      // }
     }
     if (transformedState.groupStates.length > 0) {
       await this._entitySourceController.bulkUpdate(
         transformedState.groupStates,
       );
       if (shouldEmitNotification(source)) {
-        notificationCenter.emitEntityUpdate(
-          ENTITY.GROUP_STATE,
-          transformedState.groupStates,
-          transformedState.groupStates,
-        );
+        if (entities) {
+          entities.set(ENTITY.GROUP_STATE, transformedState.groupStates);
+        } else {
+          notificationCenter.emitEntityUpdate(
+            ENTITY.GROUP_STATE,
+            transformedState.groupStates,
+            transformedState.groupStates,
+          );
+        }
       }
     }
   }

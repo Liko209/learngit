@@ -40,7 +40,11 @@ class PersonDataController {
     }
   }
 
-  handleIncomingData = async (persons: Raw<Person>[], source: SYNC_SOURCE) => {
+  handleIncomingData = async (
+    persons: Raw<Person>[],
+    source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
+  ) => {
     if (persons.length === 0) {
       return;
     }
@@ -48,10 +52,14 @@ class PersonDataController {
       transform(item),
     );
     this.handleTeamRemovedIds(transformedData);
-    this._saveDataAndDoNotification(transformedData, source);
+    this._saveDataAndDoNotification(transformedData, source, entities);
   }
 
-  private _saveDataAndDoNotification(persons: Person[], source: SYNC_SOURCE) {
+  private _saveDataAndDoNotification(
+    persons: Person[],
+    source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
+  ) {
     const deactivatedData = persons.filter(
       (item: any) => item.deactivated === true,
     );
@@ -60,7 +68,11 @@ class PersonDataController {
 
     this._saveData(deactivatedData, normalData);
     if (shouldEmitNotification(source)) {
-      notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
+      if (entities) {
+        entities.set(ENTITY.PERSON, persons);
+      } else {
+        notificationCenter.emitEntityUpdate(ENTITY.PERSON, persons);
+      }
     }
   }
 

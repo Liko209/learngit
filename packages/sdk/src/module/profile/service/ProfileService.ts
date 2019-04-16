@@ -44,10 +44,11 @@ class ProfileService extends EntityBaseService<Profile>
   handleIncomingData = async (
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ) => {
     await this.getProfileController()
       .getProfileDataController()
-      .profileHandleData(profile, source);
+      .profileHandleData(profile, source, entities);
   }
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {

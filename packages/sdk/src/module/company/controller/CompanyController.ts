@@ -84,13 +84,21 @@ class CompanyController {
     ) as Company[];
   }
 
-  async handleCompanyData(companies: Raw<Company>[], source: SYNC_SOURCE) {
+  async handleCompanyData(
+    companies: Raw<Company>[],
+    source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
+  ) {
     if (companies.length === 0) {
       return;
     }
     const transformedData: Company[] = await this._getTransformData(companies);
     if (shouldEmitNotification(source)) {
-      notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
+      if (entities) {
+        entities.set(ENTITY.COMPANY, transformedData);
+      } else {
+        notificationCenter.emitEntityUpdate(ENTITY.COMPANY, transformedData);
+      }
     }
     await this.entitySourceController.bulkPut(transformedData);
   }

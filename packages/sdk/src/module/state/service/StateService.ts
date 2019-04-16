@@ -100,10 +100,11 @@ class StateService extends EntityBaseService<GroupState>
   handleState = async (
     states: Partial<State>[],
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ): Promise<void> => {
     await this.getStateController()
       .getStateDataHandleController()
-      .handleState(states, source);
+      .handleState(states, source, entities);
   }
 
   handleGroupCursor = async (groups: Partial<Group>[]): Promise<void> => {

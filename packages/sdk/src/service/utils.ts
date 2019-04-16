@@ -41,7 +41,7 @@ const transformAll = <T extends { id: number }>(target: any): T[] => {
 };
 
 const baseHandleData = async (
-  { data, dao, eventKey, noSavingToDB, source }: any,
+  { data, dao, eventKey, noSavingToDB, source, entities }: any,
   filterFunc?: (data: IdModel[]) => { eventKey: string; entities: IdModel[] }[],
 ) => {
   // ** NOTICE **
@@ -64,20 +64,27 @@ const baseHandleData = async (
         await dao.bulkPut(normalData);
       }
     }
-
     if (shouldEmitNotification(source)) {
       if (filterFunc) {
         const notifications = filterFunc(data);
         notifications.forEach(
           (notification: { eventKey: string; entities: IdModel[] }) => {
-            notificationCenter.emitEntityUpdate(
-              notification.eventKey,
-              notification.entities,
-            );
+            if (entities) {
+              entities.set(notification.eventKey, notification.entities);
+            } else {
+              notificationCenter.emitEntityUpdate(
+                notification.eventKey,
+                notification.entities,
+              );
+            }
           },
         );
       } else {
-        notificationCenter.emitEntityUpdate(eventKey, data);
+        if (entities) {
+          entities.set(eventKey, data);
+        } else {
+          notificationCenter.emitEntityUpdate(eventKey, data);
+        }
       }
     }
     return normalData;

@@ -63,8 +63,13 @@ class PersonService extends EntityBaseService<Person>
   handleIncomingData = async (
     persons: Raw<Person>[],
     source: SYNC_SOURCE,
+    entities?: Map<string, any[]>,
   ): Promise<void> => {
-    await this.getPersonController().handleIncomingData(persons, source);
+    await this.getPersonController().handleIncomingData(
+      persons,
+      source,
+      entities,
+    );
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {

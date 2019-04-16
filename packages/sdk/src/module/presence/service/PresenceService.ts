@@ -50,8 +50,14 @@ class PresenceService extends EntityBaseService {
     this._presenceController.reset();
   }
 
-  presenceHandleData = async (presences: RawPresence[]) => {
-    await this._presenceController.handlePresenceIncomingData(presences);
+  presenceHandleData = async (
+    presences: RawPresence[],
+    entities?: Map<string, any[]>,
+  ) => {
+    await this._presenceController.handlePresenceIncomingData(
+      presences,
+      entities,
+    );
   }
 
   handleSocketStateChange = ({ state }: { state: string }) => {
