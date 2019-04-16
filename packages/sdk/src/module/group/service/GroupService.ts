@@ -27,15 +27,7 @@ import { NotificationEntityUpdatePayload } from '../../../service/notificationCe
 import { Post } from '../../post/entity';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
-<<<<<<< HEAD
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-  GlipTypeUtil,
-  TypeDictionary,
-} from '../../../utils';
-=======
->>>>>>> hotfix/1.2.2
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;

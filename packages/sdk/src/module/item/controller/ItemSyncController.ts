@@ -11,14 +11,11 @@ import { GroupConfigService } from '../../groupConfig';
 import notificationCenter from '../../../service/notificationCenter';
 import { SERVICE } from '../../../service/eventKey';
 import { GroupConfig } from '../../groupConfig/entity';
-<<<<<<< HEAD
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
-=======
 import {
   SequenceProcessorHandler,
   IProcessor,
 } from '../../../framework/processor';
->>>>>>> hotfix/1.2.2
 
 const AvailableSocketStatus = ['connected', 'connecting'];
 const GroupItemKeyMap = {
@@ -118,14 +115,10 @@ class ItemSyncController {
     }
   }
 
-<<<<<<< HEAD
+  async requestSyncGroupItems(groupId: number) {
     const groupConfigService = ServiceLoader.getInstance<GroupConfigService>(
       ServiceConfig.GROUP_CONFIG_SERVICE,
     );
-=======
-  async requestSyncGroupItems(groupId: number) {
-    const groupConfigService: GroupConfigService = GroupConfigService.getInstance();
->>>>>>> hotfix/1.2.2
     const groupConfig = await groupConfigService.getById(groupId);
     const typeIdKeys = Object.keys(GroupItemKeyMap).reverse();
     const itemSyncProcessors: IProcessor[] = [];

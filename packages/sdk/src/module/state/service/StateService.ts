@@ -18,15 +18,7 @@ import { Profile } from '../../profile/entity';
 import { NotificationEntityPayload } from '../../../service/notificationCenter';
 import { SectionUnread } from '../types';
 import { SYNC_SOURCE } from '../../sync/types';
-<<<<<<< HEAD
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-  GlipTypeUtil,
-  TypeDictionary,
-} from '../../../utils';
-=======
->>>>>>> hotfix/1.2.2
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class StateService extends EntityBaseService<GroupState>
   implements IStateService {

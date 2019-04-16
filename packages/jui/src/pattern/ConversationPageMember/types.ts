@@ -1,9 +1,5 @@
-<<<<<<< HEAD
-import { ReactElement } from 'react';
-import { IconButtonSize } from '../../components/Buttons';
-=======
 import React, { ReactElement } from 'react';
->>>>>>> hotfix/1.2.2
+import { IconButtonSize } from '../../components/Buttons';
 
 type JuiConversationPageMemberProps = {
   onClick(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>): void;

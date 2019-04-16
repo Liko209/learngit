@@ -20,6 +20,7 @@ import { ISortableModel } from '@/store/base';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
 import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
+import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
 const LOAD_UNREAD_POSTS_REDUNDANCY = 500;
 
@@ -184,7 +185,9 @@ export class StreamController {
 
     let sortableModel: ISortableModel<Post> | undefined = undefined;
     if (readThrough !== 0) {
-      const postService = PostService.getInstance() as PostService;
+      const postService = ServiceLoader.getInstance<PostService>(
+        ServiceConfig.POST_SERVICE,
+      );
       const post = await postService.getById(readThrough);
       sortableModel = this._orderListHandler.transform2SortableModel(post!);
     }

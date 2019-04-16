@@ -15,15 +15,7 @@ import Api from '../../../api/api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw } from '../../../framework/model';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-<<<<<<< HEAD
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-  GlipTypeUtil,
-  TypeDictionary,
-} from '../../../utils';
-=======
->>>>>>> hotfix/1.2.2
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class CompanyService extends EntityBaseService<Company> {
   private _companyController: CompanyController;

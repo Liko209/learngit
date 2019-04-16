@@ -8,11 +8,8 @@ import { observer } from 'mobx-react';
 import { JuiAvatar } from 'jui/components/Avatar';
 import { AvatarViewProps } from './types';
 import { PreloadImg } from '../common/PreloadImg';
-<<<<<<< HEAD
 import defaultAvatar from './defaultAvatar.svg';
 import defaultCoverAvatar from './defaultCoverAvatar.svg';
-=======
->>>>>>> hotfix/1.2.2
 
 @observer
 class AvatarView extends React.Component<AvatarViewProps> {
@@ -43,7 +40,6 @@ class AvatarView extends React.Component<AvatarViewProps> {
       </JuiAvatar>
     );
 
-<<<<<<< HEAD
     const DefaultAvatar = (
       <JuiAvatar
         src={rest.cover ? defaultCoverAvatar : defaultAvatar}
@@ -57,8 +53,6 @@ class AvatarView extends React.Component<AvatarViewProps> {
       return DefaultAvatar;
     }
 
-=======
->>>>>>> hotfix/1.2.2
     return !shouldShowShortName ? (
       <PreloadImg
         url={headShotUrl}

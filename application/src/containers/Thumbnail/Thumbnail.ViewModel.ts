@@ -45,32 +45,15 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
 
   @action
   private _getThumbsUrlWithSize = async () => {
-<<<<<<< HEAD
     const { id, type, versions } = this._file;
-    if (versions && versions.length > 0) {
-      if (versions[0].stored_file_id !== this._lastStoreFileId) {
-=======
-    const { id, type, versions } = this.file;
     const version = versions && versions[0];
     if (version) {
       if (version.stored_file_id !== this._lastStoreFileId) {
->>>>>>> hotfix/1.2.2
         const thumbnail = await getThumbnailURLWithType(
           {
             id,
             type,
             versions,
-<<<<<<< HEAD
-            versionUrl:
-              versions.length && versions[0].url ? versions[0].url : '',
-          },
-          RULE.SQUARE_IMAGE,
-        );
-
-        this._lastStoreFileId = versions[0].stored_file_id;
-        this.thumbsUrlWithSize = thumbnail.url;
-      }
-=======
             versionUrl: version.url || '',
           },
           RULE.SQUARE_IMAGE,
@@ -80,8 +63,7 @@ class ThumbnailViewModel extends StoreViewModel<Props> implements ViewProps {
       }
     } else {
       this._lastStoreFileId = -1;
-      this.thumbsUrlWithSize = this.file.downloadUrl;
->>>>>>> hotfix/1.2.2
+      this.thumbsUrlWithSize = this._file.downloadUrl;
     }
   }
 

@@ -24,15 +24,7 @@ import { SOCKET } from '../../../service/eventKey';
 import { ContactType } from '../types';
 import { PersonEntityCacheController } from '../controller/PersonEntityCacheController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-<<<<<<< HEAD
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-  GlipTypeUtil,
-  TypeDictionary,
-} from '../../../utils';
-=======
->>>>>>> hotfix/1.2.2
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {

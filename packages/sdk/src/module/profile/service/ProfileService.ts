@@ -15,16 +15,8 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-<<<<<<< HEAD
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-  GlipTypeUtil,
-  TypeDictionary,
-} from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SettingOption } from '../types';
-=======
->>>>>>> hotfix/1.2.2
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {

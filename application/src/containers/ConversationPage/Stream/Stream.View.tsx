@@ -240,14 +240,13 @@ class StreamViewComponent extends Component<Props> {
     },                         LOADING_DELAY);
 
     try {
-<<<<<<< HEAD
       const {
         hasNewMessageSeparator,
         findNewMessageSeparatorIndex,
-        loadPostUntilFirstUnread,
+        getFirstUnreadPostByLoadAllUnread,
         findPostIndex,
       } = this.props;
-      const firstUnreadPostId = await loadPostUntilFirstUnread();
+      const firstUnreadPostId = await getFirstUnreadPostByLoadAllUnread();
 
       const jumpToIndex = hasNewMessageSeparator()
         ? findNewMessageSeparatorIndex()
@@ -263,20 +262,6 @@ class StreamViewComponent extends Component<Props> {
       if (jumpToIndex === -1) {
         mainLogger.warn(
           `Failed to jump to the first unread post. scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} jumpToIndex:${jumpToIndex}`,
-=======
-      const firstUnreadPostId = await this.props.getFirstUnreadPostByLoadAllUnread();
-      const index = firstUnreadPostId
-        ? this.props.items.findIndex(
-            (item: StreamItemPost) =>
-              item.type === StreamItemType.POST &&
-              item.value.includes(firstUnreadPostId),
-          )
-        : 0;
-
-      if (index === -1) {
-        console.warn(
-          `scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} scrollToPostId:${index}`,
->>>>>>> hotfix/1.2.2
         );
         return;
       }
@@ -367,7 +352,6 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
-<<<<<<< HEAD
     const { loadInitialPosts, markAsRead, hookInitialPostsError } = this.props;
     try {
       await loadInitialPosts();
@@ -390,20 +374,6 @@ class StreamViewComponent extends Component<Props> {
 
   private resetStatus = () => {
     this.setState({ isFailed: false });
-=======
-    const { loadInitialPosts, markAsRead } = this.props;
-    await loadInitialPosts();
-    runInAction(() => {
-      this.props.updateHistoryHandler();
-      markAsRead();
-    });
-    requestAnimationFrame(() => {
-      if (this._jumpToPostRef.current) {
-        this._jumpToPostRef.current.highlight();
-      }
-    });
-    this._watchUnreadCount();
->>>>>>> hotfix/1.2.2
   }
 
   private _onInitialDataFailed = (

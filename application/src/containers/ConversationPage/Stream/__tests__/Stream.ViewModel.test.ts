@@ -24,11 +24,8 @@ import { ItemService } from 'sdk/module/item';
 import { PostService } from 'sdk/module/post';
 import { StreamProps, StreamItemType } from '../types';
 import { StreamViewModel } from '../Stream.ViewModel';
-<<<<<<< HEAD
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
-=======
 import { StreamController } from '../StreamController';
->>>>>>> hotfix/1.2.2
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
