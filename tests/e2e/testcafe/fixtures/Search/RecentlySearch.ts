@@ -169,7 +169,6 @@ test.meta(<ITestMeta>{
   await h(t).glip(loginUser).resetProfile();
   const userNameA = await h(t).glip(loginUser).getPersonPartialData('display_name', users[5].rcId);
   const userNameB = await h(t).glip(loginUser).getPersonPartialData('display_name', users[6].rcId);
-  const userNameC = await h(t).glip(loginUser).getPersonPartialData('display_name', users[7].rcId);
 
   let group = <IGroup>{
     type: "Group",
@@ -284,25 +283,6 @@ test.meta(<ITestMeta>{
   });
 
   //  move "make call" entry to telephony fixtures
-  // await h(t).withLog(`When I search ${userNameC} and hover the people result and click call icon then close`, async () => {
-  //   await searchDialog.typeSearchKeyword(userNameC);
-  //   resultName = await searchDialog.instantPage.nthPeople(0).getName();
-  //   await searchDialog.instantPage.nthPeople(0).makeCall();
-  //   await app.homePage.telephonyDialog.ensureLoaded(60e3);
-  //   await app.homePage.telephonyDialog.clickHandUpButton();
-  // });
-
-
-  // await h(t).withLog(`And mouse in the global search box`, async () => {
-  //   await searchBar.clickSelf();
-  // });
-
-  // recentHistoryNumber += 1;
-  // await h(t).withLog(`Then the recently searched dropdown list displayed and the new contact items are added`, async () => {
-  //   await searchDialog.recentPage.ensureLoaded();
-  //   await t.expect(searchDialog.recentPage.items.count).eql(recentHistoryNumber);
-  //   await t.expect(searchDialog.recentPage.conversationByName(resultName).exists).ok();
-  // });
 
   await h(t).withLog(`When I search ${publicTeamWithoutMe.name} and hover the team result then tap join button then close join dialog`, async () => {
     await searchDialog.typeSearchKeyword(publicTeamWithoutMe.name);
