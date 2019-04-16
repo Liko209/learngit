@@ -8,7 +8,7 @@ import { observer } from 'mobx-react';
 import { withTranslation, WithTranslation } from 'react-i18next'; // use external instead of injected due to incompatible with SortableElement
 import { JuiConversationItemCard } from 'jui/pattern/ConversationItemCard';
 import {
-  JuiEventContent,
+  JuiLabelWithContent,
   JuiEventLocation,
   JuiEventDescription,
   JuiTimeMessage,
@@ -54,13 +54,13 @@ class Event extends React.Component<Props, {}> {
         titleColor={color}
         Icon="event"
       >
-        <JuiEventContent title={t('item.due')}>
+        <JuiLabelWithContent label={t('item.due')}>
           <JuiTimeMessage time={`${time} ${timeText}`} />
-        </JuiEventContent>
+        </JuiLabelWithContent>
         {location && (
-          <JuiEventContent title={t('item.locationTitle')}>
+          <JuiLabelWithContent label={t('item.locationTitle')}>
             <JuiEventLocation location={location} />
-          </JuiEventContent>
+          </JuiLabelWithContent>
         )}
         {description && <JuiEventDescription description={description} />}
       </JuiConversationItemCard>

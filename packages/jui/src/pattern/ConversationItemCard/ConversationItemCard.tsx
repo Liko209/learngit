@@ -23,12 +23,6 @@ const ItemCardWrapper = styled(JuiCard)`
   margin-bottom: ${spacing(3)};
 `;
 
-const ItemIcon = styled(JuiIconography)`
-  && {
-    font-size: ${spacing(5)};
-  }
-`;
-
 const ItemTitle = styled<{ complete?: boolean }, 'span'>('span')`
   flex-grow: 1;
   margin: ${spacing(0, 0, 0, 1)};
@@ -61,7 +55,7 @@ const ItemCardHeader = styled.div<{
   titleColor?: [keyof Palette, string];
 }>`
   position: relative;
-  padding: ${spacing(4, 4, 4, 4)};
+  padding: ${spacing(4, 4, 0, 4)};
   padding-right: ${({ buttonNumber }) => calcActionBarWith(buttonNumber)}px;
   display: flex;
   ${typography('body1')};
@@ -69,7 +63,6 @@ const ItemCardHeader = styled.div<{
   word-break: break-word;
   svg {
     font-size: ${spacing(5)};
-    margin: ${spacing(0.5)} 0 0;
   }
 `;
 
@@ -148,7 +141,9 @@ class JuiConversationItemCard extends React.PureComponent<
           buttonNumber={headerActions ? headerActions.length : 0}
         >
           {typeof Icon === 'string' ? (
-            <ItemIcon iconColor={iconColor}>{Icon}</ItemIcon>
+            <JuiIconography iconColor={iconColor} iconSize="medium">
+              {Icon}
+            </JuiIconography>
           ) : (
             Icon
           )}
