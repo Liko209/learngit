@@ -62,6 +62,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
           },
         },
       ],
+      requireInteraction: true,
       tag: callId,
       data: {
         id: callId,

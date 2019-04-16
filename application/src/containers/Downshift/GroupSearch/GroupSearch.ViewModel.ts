@@ -27,8 +27,8 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
     super(props);
     this.reaction(
       () => this.props.groupId,
-      () => {
-        this._setSelectedItems();
+      (id: number) => {
+        id && this._setSelectedItems(id);
       },
       {
         fireImmediately: true,
@@ -41,22 +41,20 @@ class GroupSearchViewModel extends StoreViewModel<GroupSearchProps> {
     this.suggestions = [];
     this.selectedItems = items;
     this.inputValue = '';
+    items[0] && this._setSelectedItems(items[0].id);
     return onSelectChange && onSelectChange(items);
   }
 
-  private _setSelectedItems() {
-    const { groupId } = this.props;
-    if (groupId) {
-      const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, groupId);
-      this.selectedItems = [
-        {
-          id: groupId,
-          label: group.displayName,
-          email: group.displayName,
-        },
-      ];
-      this.autoFocusInput = true;
-    }
+  private _setSelectedItems(id: number) {
+    const group = getEntity<Group, GroupModel>(ENTITY_NAME.GROUP, id);
+    this.selectedItems = [
+      {
+        id,
+        label: group.displayName,
+        email: group.displayName,
+      },
+    ];
+    this.autoFocusInput = true;
   }
 
   @action

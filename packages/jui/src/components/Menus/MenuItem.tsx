@@ -23,6 +23,7 @@ type JuiMenuItemProps = {
   icon?: string | ReactNode;
   avatar?: JSX.Element;
   automationId?: string;
+  maxWidth?: number;
 } & MuiMenuItemProps;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
@@ -33,13 +34,21 @@ const StyledMuiListItemIcon = styled(MuiListItemIcon)`
   }
 `;
 
-const StyledMenuItem = styled(MuiMenuItem)`
+const WrappedMenuItem = ({
+  icon,
+  avatar,
+  maxWidth,
+  ...rest
+}: JuiMenuItemProps) => <MuiMenuItem {...rest} />;
+
+const StyledMenuItem = styled(WrappedMenuItem)`
   && {
     ${typography('caption1')};
     color: ${grey('700')};
     height: auto;
     min-height: ${height(8)};
     min-width: ${width(28)};
+    max-width: ${({ maxWidth }) => maxWidth && width(maxWidth)};
     padding: ${spacing(1, 4)};
     box-sizing: border-box;
 
@@ -65,6 +74,7 @@ class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
       disabled,
       avatar,
       automationId,
+      maxWidth,
       ...rest
     } = this.props;
     let iconElement: any;
@@ -78,6 +88,7 @@ class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
         data-test-automation-id={automationId}
         disabled={disabled}
         data-disabled={disabled}
+        maxWidth={maxWidth}
         {...rest}
       >
         {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
