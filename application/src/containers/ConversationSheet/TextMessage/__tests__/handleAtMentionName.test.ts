@@ -8,7 +8,7 @@ import { handleAtMentionName } from '../utils/handleAtMentionName';
 const encodeAtMentionTags =
   '&lt;a class=&#x27;at_mention_compose&#x27; rel=&#x27;{&quot;id&quot;:123445}&#x27;&gt;@alvin&lt;/a&gt;';
 const decodeAtMentionTags =
-  "<a class='at_mention_compose current' href='javascript:void(0)' id='123445'>alvin</a>";
+  "<button class='at_mention_compose current' id='123445'>alvin</button>";
 const encodeTags = '&lt;div class=&#x27;test&#x27;&gt;alvin test&lt;/a=div&gt;';
 describe('handleAtMentionName()', () => {
   it('should return decode tags if encode tags provided', () => {
@@ -16,7 +16,7 @@ describe('handleAtMentionName()', () => {
       handleAtMentionName(encodeAtMentionTags, { 123445: 'alvin' }, 123445),
     ).toBe(decodeAtMentionTags);
   });
-  it('should hightlight current at mention user if current user id equals to at mention id', () => {
+  it('should highlight current at mention user if current user id equals to at mention id', () => {
     expect(
       handleAtMentionName(encodeAtMentionTags, { 123445: 'alvin' }, 123445),
     ).toBe(decodeAtMentionTags);

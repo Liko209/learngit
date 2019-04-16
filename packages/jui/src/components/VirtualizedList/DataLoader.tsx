@@ -57,24 +57,25 @@ const JuiDataLoader = ({
       },
       initial: {
         setLoading: setLoadingInitial,
-        load: () => loadInitialData(),
+        load: (count: number) => loadInitialData(),
         onFailed: setLoadingInitialFailed,
       },
     };
   },                         [loadMore, loadMore, loadInitialData]);
 
   const loadData = useCallback(
-    _.throttle(async (type: 'initial' | 'up' | 'down', count: number = 10) => {
+    _.throttle((type: 'initial' | 'up' | 'down', count: number = 10) => {
       const map = getMap();
       const { setLoading, load, onFailed } = map[type];
       setLoading(true);
       onFailed(false);
-      try {
-        await load(count);
-      } catch {
-        onFailed(true);
-      }
-      setLoading(false);
+      load(count)
+        .catch(() => {
+          onFailed(true);
+        })
+        .then(() => {
+          setLoading(false);
+        });
     },         1000),
     [getMap],
   );
@@ -103,7 +104,7 @@ const JuiDataLoader = ({
         loadData(direction, count);
       }
     },
-    [loadData, loadMoreStrategy],
+    [loadData, loadMoreStrategy, loading],
   );
 
   useEffect(() => {
