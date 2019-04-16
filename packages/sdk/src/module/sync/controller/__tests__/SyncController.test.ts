@@ -16,7 +16,6 @@ import { GroupService } from '../../../group';
 import { PostService } from '../../../post';
 import { ItemService } from '../../../item/service';
 import { AccountService } from '../../../../module/account';
-import socketManager from '../../../../service/socket';
 import { ServiceLoader, ServiceConfig } from '../../../../module/serviceLoader';
 
 jest.mock('../../config/SyncUserConfig');
@@ -30,7 +29,6 @@ jest.mock('../../../post');
 jest.mock('../../../item/service');
 jest.mock('../../../../module/account/config');
 jest.mock('../../../../module/account');
-jest.mock('../../../../service/socket');
 
 let groupConfigService: GroupConfigService;
 let personService: PersonService;
@@ -153,48 +151,50 @@ describe('SyncController ', () => {
       jest.clearAllMocks();
       jest.resetModules();
     });
-    it('should call updateCanUpdateIndexTimeStamp when forceUpdate is true and socket is connected', () => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockImplementationOnce(() => {});
-      socketManager.isConnected.mockReturnValueOnce(true);
+    it('should update timestamp when is forceUpdate', () => {
       syncController.updateIndexTimestamp(1, true);
-      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(1);
-      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
+      expect(
+        SyncUserConfig.prototype.setLastIndexTimestamp,
+      ).toHaveBeenCalledWith(1);
     });
+    describe('update timestamp from socket', () => {
+      function setUp(socktTime: any, indexTime: any) {
+        SyncUserConfig.prototype.getSocketConnectedLocalTime = jest
+          .fn()
+          .mockReturnValueOnce(socktTime);
+        SyncUserConfig.prototype.getIndexStartLocalTime = jest
+          .fn()
+          .mockReturnValueOnce(indexTime);
+      }
+      it('should not update when there is not socket connected local time', () => {
+        setUp(null, 1);
+        syncController.updateIndexTimestamp(10, false);
+        expect(
+          SyncUserConfig.prototype.setLastIndexTimestamp,
+        ).not.toHaveBeenCalled();
+      });
+      it('should not update when socket connected local time is 0', () => {
+        setUp(0, 1);
+        syncController.updateIndexTimestamp(10, false);
+        expect(
+          SyncUserConfig.prototype.setLastIndexTimestamp,
+        ).not.toHaveBeenCalled();
+      });
 
-    it('should not call updateCanUpdateIndexTimeStamp when forceUpdate is true but socket is not connected', () => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockImplementationOnce(() => {});
-      socketManager.isConnected.mockReturnValueOnce(false);
-      syncController.updateIndexTimestamp(1, true);
-      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
-      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
-    });
-
-    it('should not call updateCanUpdateIndexTimeStamp when forceUpdate is false', () => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockImplementationOnce(() => {});
-      jest
-        .spyOn(syncController, 'canUpdateIndexTimeStamp')
-        .mockReturnValueOnce(true);
-      syncController.updateIndexTimestamp(1, false);
-      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
-      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(1);
-    });
-
-    it('should not call NewGlobalConfig.setLastIndexTimestamp when it is not forceUpdate and can not update time stamp', () => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockImplementationOnce(() => {});
-      jest
-        .spyOn(syncController, 'canUpdateIndexTimeStamp')
-        .mockReturnValueOnce(false);
-      syncController.updateIndexTimestamp(1, false);
-      expect(syncController.updateCanUpdateIndexTimeStamp).toBeCalledTimes(0);
-      expect(SyncUserConfig.prototype.setLastIndexTimestamp).toBeCalledTimes(0);
+      it('should not update when socket connected local time is larger than index time', () => {
+        setUp(9, 1);
+        syncController.updateIndexTimestamp(10, false);
+        expect(
+          SyncUserConfig.prototype.setLastIndexTimestamp,
+        ).not.toHaveBeenCalled();
+      });
+      it('should update when socket connected local time is less than index time', () => {
+        setUp(6, 8);
+        syncController.updateIndexTimestamp(10, false);
+        expect(
+          SyncUserConfig.prototype.setLastIndexTimestamp,
+        ).toHaveBeenCalledWith(10);
+      });
     });
   });
   describe('_handleIncomingData', () => {
@@ -307,24 +307,82 @@ describe('SyncController ', () => {
       });
     });
   });
-  describe('updateCanUpdateIndexTimeStamp', () => {
-    beforeEach(() => {
-      jest
-        .spyOn(syncController, 'updateCanUpdateIndexTimeStamp')
-        .mockReturnValueOnce(1);
-      AccountGlobalConfig.getUserDictionary.mockReturnValueOnce(1);
+
+  describe('handleSocketConnectionStateChanged', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
     });
-    it('should call updateCanUpdateIndexTimeStamp when stopping FSM', () => {
+    describe('connected', () => {
+      it('should call setSocketConnectedLocalTime', () => {
+        SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+          .fn()
+          .mockImplementationOnce(() => {});
+        syncController.handleSocketConnectionStateChanged({
+          state: 'connected',
+        });
+        expect(
+          SyncUserConfig.prototype.setSocketConnectedLocalTime,
+        ).toHaveBeenCalled();
+      });
+    });
+    describe('disconnected', () => {
+      it('should call setSocketConnectedLocalTime when user has login', () => {
+        AccountGlobalConfig.getUserDictionary = jest
+          .fn()
+          .mockReturnValueOnce(undefined);
+        SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+          .fn()
+          .mockImplementationOnce(() => {});
+        syncController.handleSocketConnectionStateChanged({
+          state: 'disconnected',
+        });
+        expect(
+          SyncUserConfig.prototype.setSocketConnectedLocalTime,
+        ).not.toHaveBeenCalled();
+      });
+      it('should not call setSocketConnectedLocalTime when user has not login', () => {
+        AccountGlobalConfig.getUserDictionary = jest
+          .fn()
+          .mockReturnValueOnce(1);
+        SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+          .fn()
+          .mockImplementationOnce(() => {});
+        syncController.handleSocketConnectionStateChanged({
+          state: 'disconnected',
+        });
+        expect(
+          SyncUserConfig.prototype.setSocketConnectedLocalTime,
+        ).toHaveBeenCalledWith(0);
+      });
+    });
+  });
+  describe('handleStoppingSocketEvent', () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+      jest.resetAllMocks();
+    });
+    it('should call setSocketConnectedLocalTime when user has login', () => {
+      AccountGlobalConfig.getUserDictionary = jest
+        .fn()
+        .mockReturnValueOnce(undefined);
+      SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+        .fn()
+        .mockImplementationOnce(() => {});
       syncController.handleStoppingSocketEvent();
       expect(
-        syncController.updateCanUpdateIndexTimeStamp,
-      ).toHaveBeenCalledTimes(1);
+        SyncUserConfig.prototype.setSocketConnectedLocalTime,
+      ).not.toHaveBeenCalled();
     });
-    it('should call updateCanUpdateIndexTimeStamp when wake up from sleep mode', () => {
-      syncController.handleWakeUpFromSleep();
+    it('should not call setSocketConnectedLocalTime when user has not login', () => {
+      AccountGlobalConfig.getUserDictionary = jest.fn().mockReturnValueOnce(1);
+      SyncUserConfig.prototype.setSocketConnectedLocalTime = jest
+        .fn()
+        .mockImplementationOnce(() => {});
+      syncController.handleStoppingSocketEvent();
       expect(
-        syncController.updateCanUpdateIndexTimeStamp,
-      ).toHaveBeenCalledTimes(1);
+        SyncUserConfig.prototype.setSocketConnectedLocalTime,
+      ).toHaveBeenCalledWith(0);
     });
   });
 });

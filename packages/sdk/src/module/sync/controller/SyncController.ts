@@ -34,7 +34,6 @@ import { AccountGlobalConfig } from '../../../module/account/config';
 import { GroupConfigService } from '../../../module/groupConfig';
 import { SyncGlobalConfig } from '../config';
 import { AccountService } from '../../../module/account';
-import socketManager from '../../../service/socket';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 
@@ -51,12 +50,14 @@ class SyncController {
 
   handleSocketConnectionStateChanged({ state }: { state: any }) {
     mainLogger.log(LOG_TAG, 'sync service SERVICE.SOCKET_STATE_CHANGE', state);
-    if (state === 'connected' || state === 'refresh') {
+    if (state === 'connected') {
+      this._onSocketConnected();
+    } else if (state === 'refresh') {
       this.syncData();
     } else if (state === 'connecting') {
       progressBar.start();
     } else if (state === 'disconnected') {
-      this.updateCanUpdateIndexTimeStamp(false);
+      this._onSocketDisconnected();
       progressBar.stop();
     }
   }
@@ -71,36 +72,6 @@ class SyncController {
       return syncConfig.getLastIndexTimestamp();
     }
     return null;
-  }
-
-  updateIndexTimestamp(time: number, forceUpdate: boolean) {
-    const syncConfig = new SyncUserConfig();
-    if (forceUpdate) {
-      const isConnected = socketManager.isConnected();
-      mainLogger.log(
-        LOG_TAG,
-        `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate} socket is connected:${isConnected}`,
-      );
-      syncConfig.setLastIndexTimestamp(time);
-      isConnected && this.updateCanUpdateIndexTimeStamp(true);
-    } else if (this.canUpdateIndexTimeStamp()) {
-      mainLogger.log(
-        LOG_TAG,
-        `updateIndexTimestamp time: ${time} forceUpdate:false`,
-      );
-      syncConfig.setLastIndexTimestamp(time);
-    }
-  }
-
-  updateCanUpdateIndexTimeStamp(can: boolean) {
-    mainLogger.log(LOG_TAG, 'updateCanUpdateIndexTimeStamp', can);
-    const syncConfig = new SyncUserConfig();
-    return syncConfig.updateCanUpdateIndexTimeStamp(can);
-  }
-
-  canUpdateIndexTimeStamp() {
-    const syncConfig = new SyncUserConfig();
-    return syncConfig.getCanUpdateIndexTimeStamp();
   }
 
   async syncData(syncListener?: SyncListener) {
@@ -122,18 +93,12 @@ class SyncController {
   handleStoppingSocketEvent() {
     // this is for update newer than tag
     mainLogger.log(LOG_TAG, 'handleStoppingSocketEvent');
-    this._disableCanUpdateIndexTimeStampFlag();
+    this._resetSocketConnectedLocalTime();
   }
 
   handleWakeUpFromSleep() {
     mainLogger.log(LOG_TAG, 'handleWakeUpFromSleep');
-    this._disableCanUpdateIndexTimeStampFlag();
-  }
-
-  private _disableCanUpdateIndexTimeStampFlag() {
-    if (AccountGlobalConfig.getUserDictionary()) {
-      this.updateCanUpdateIndexTimeStamp(false);
-    }
+    this._resetSocketConnectedLocalTime();
   }
 
   private async _firstLogin() {
@@ -217,6 +182,7 @@ class SyncController {
     const syncConfig = new SyncUserConfig();
     // 5 minutes ago to ensure data is correct
     try {
+      const now = Date.now();
       const result = await this.fetchIndexData(String(timeStamp - 300000));
       mainLogger.log(LOG_TAG, 'fetch index done');
       onIndexLoaded && (await onIndexLoaded(result));
@@ -230,9 +196,9 @@ class SyncController {
       PerformanceTracerHolder.getPerformanceTracer().end(logId);
       onIndexHandled && (await onIndexHandled());
       syncConfig.updateIndexSucceed(true);
+      syncConfig.setIndexStartLocalTime(now);
     } catch (error) {
       mainLogger.log(LOG_TAG, 'fetch index failed');
-      this.updateCanUpdateIndexTimeStamp(false);
       syncConfig.updateIndexSucceed(false);
       await this._handleSyncIndexError(error);
     }
@@ -440,6 +406,59 @@ class SyncController {
         await this.syncData();
       }
     }
+  }
+
+  /**
+   * update index timestamp related functions
+   *
+   * 1. index request local time should larger than socket connected local time
+   * 2. reset socket connected time to 0 once it disconnected
+   */
+
+  // index/initial ==> forceUpdate ==> true
+  // socket ==> forceUpdate ==> false
+  updateIndexTimestamp(time: number, forceUpdate: boolean) {
+    const syncConfig = new SyncUserConfig();
+    if (forceUpdate) {
+      mainLogger.log(
+        LOG_TAG,
+        `updateIndexTimestamp time: ${time} forceUpdate:${forceUpdate}`,
+      );
+      syncConfig.setLastIndexTimestamp(time);
+    } else if (this.canUpdateIndexTimeStamp()) {
+      mainLogger.log(
+        LOG_TAG,
+        `updateIndexTimestamp time: ${time} forceUpdate:false`,
+      );
+      syncConfig.setLastIndexTimestamp(time);
+    }
+  }
+
+  canUpdateIndexTimeStamp() {
+    const syncConfig = new SyncUserConfig();
+    const socketTime = syncConfig.getSocketConnectedLocalTime();
+    const indexTime = syncConfig.getIndexStartLocalTime();
+    return socketTime && indexTime > socketTime;
+  }
+
+  private _onSocketDisconnected() {
+    this._resetSocketConnectedLocalTime();
+  }
+  private _onSocketConnected() {
+    this._updateSocketConnectedLocalTime(Date.now());
+    this.syncData();
+  }
+
+  private _resetSocketConnectedLocalTime() {
+    if (AccountGlobalConfig.getUserDictionary()) {
+      mainLogger.info(LOG_TAG, 'reset socket connected time');
+      this._updateSocketConnectedLocalTime(0);
+    }
+  }
+
+  private _updateSocketConnectedLocalTime(time: number) {
+    const syncUserConfig = new SyncUserConfig();
+    syncUserConfig.setSocketConnectedLocalTime(time);
   }
 }
 
