@@ -12,9 +12,7 @@ import i18next from 'i18next';
 
 @observer
 class MemberView extends React.Component<MemberViewProps> {
-  openProfile = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-    e.preventDefault();
-
+  openProfile = () => {
     OpenProfile.show(this.props.groupId);
   }
 
