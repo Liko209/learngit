@@ -4,6 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import React, { Component } from 'react';
+import { mainLogger } from 'sdk';
 
 type PreloadImgProps = {
   url?: string;
@@ -34,6 +35,7 @@ class PreloadImg extends Component<PreloadImgProps, PreloadImgState> {
   handleError = () => {
     const { url } = this.props;
     if (url) {
+      mainLogger.warn('Preload image', 'Network error');
       this.setState({ isError: true, loaded: true });
     }
   }

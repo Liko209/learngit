@@ -109,7 +109,7 @@ export class FetchSortableDataListHandler<
   async fetchDataByAnchor(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor: ISortableModel<T>,
+    anchor?: ISortableModel<T>,
   ) {
     return this.fetchDataInternal(direction, pageSize, anchor);
   }
@@ -123,12 +123,13 @@ export class FetchSortableDataListHandler<
   protected async fetchDataInternal(
     direction: QUERY_DIRECTION,
     pageSize: number,
-    anchor: ISortableModel<T>,
+    anchor?: ISortableModel<T>,
   ) {
     if (!this._sortableDataProvider) {
-      return mainLogger.warn(
+      mainLogger.warn(
         'FetchSortableDataListHandler: data fetcher should be defined ',
       );
+      return [];
     }
     const { data = [], hasMore } = await this._sortableDataProvider.fetchData(
       direction,
@@ -471,6 +472,10 @@ export class FetchSortableDataListHandler<
       type: EVENT_TYPES.REPLACE,
       body: notificationBody,
     });
+  }
+
+  transform2SortableModel(originalModel: T) {
+    return this._transformFunc(originalModel);
   }
 
   private async _updateTotalCount() {

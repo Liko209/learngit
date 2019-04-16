@@ -25,7 +25,6 @@ const MessageInputDropZoneClasses: CSSProperties = {
 const Wrapper = styled.div<{
   isEditMode?: boolean;
 }>`
-  position: relative;
   box-shadow: ${props => (props.isEditMode ? null : props.theme.shadows[2])};
   padding: ${props => (props.isEditMode ? 0 : spacing(0, 4, 4, 4))};
   min-height: ${height(22)};
