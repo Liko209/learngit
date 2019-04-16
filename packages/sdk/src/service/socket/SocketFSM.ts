@@ -20,6 +20,8 @@ export class SocketFSM extends StateMachine {
   private _glipPingPong?: GlipPingPong;
   protected isManualStopped: boolean = false;
   private logPrefix: string = '';
+  // @ts-ignore
+  private _startSocket: boolean = false; // @ts-ignore
 
   constructor(
     public serverUrl: string,
@@ -87,6 +89,7 @@ export class SocketFSM extends StateMachine {
         },
 
         onStart() {
+          this._startSocket = true;
           this.socketClient.socket.connect();
         },
 
@@ -95,7 +98,7 @@ export class SocketFSM extends StateMachine {
           setTimeout(() => {
             if (this.socketClient && this.socketClient.socket) {
               this.socketClient.socket.reconnection = false;
-              this.socketClient.socket.disconnect();
+              this._startSocket && this.socketClient.socket.disconnect();
             }
             this.cleanup();
           });
@@ -172,6 +175,7 @@ export class SocketFSM extends StateMachine {
 
   cleanup() {
     this.info('cleaning socketFSM');
+    this._startSocket = false;
     if (this._glipPingPong) {
       this._glipPingPong.cleanup();
       this._glipPingPong = undefined;
