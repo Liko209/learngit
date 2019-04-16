@@ -350,8 +350,8 @@ class StreamViewComponent extends Component<Props> {
   private _loadInitialPosts = async () => {
     const { loadInitialPosts, markAsRead, updateConversationStatus } = this.props;
     try {
-      updateConversationStatus(STATUS.SUCCESS);
       await loadInitialPosts();
+      updateConversationStatus(STATUS.SUCCESS);
       runInAction(() => {
         this.props.updateHistoryHandler();
         markAsRead();
