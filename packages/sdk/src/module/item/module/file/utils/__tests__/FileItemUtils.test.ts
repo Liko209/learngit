@@ -5,8 +5,6 @@
  */
 import { FileItemUtils } from '../FileItemUtils';
 import {
-  GifFileExtensions,
-  ImageFileExtensions,
   ResizableExtensions,
   SupportPreviewImageExtensions,
 } from '../ImageFileExtensions';
@@ -196,6 +194,17 @@ describe('FileItemUtils', () => {
 
     it('should return null when version is not array ', () => {
       expect(FileItemUtils.getVersionDate({ versions: {} as any })).toBe(null);
+    });
+  });
+
+  describe('getLatestPostId', () => {
+    it('should return max post id of the file ', () => {
+      expect(
+        FileItemUtils.getLatestPostId({
+          id: 10,
+          post_ids: [1, 2, 3],
+        }),
+      ).toBe(3);
     });
   });
 });
