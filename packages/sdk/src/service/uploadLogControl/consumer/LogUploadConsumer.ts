@@ -3,15 +3,16 @@
  * @Date: 2018-12-26 15:21:47
  * Copyright © RingCentral. All rights reserved.
  */
-import { ILogConsumer, LogEntity } from 'foundation/src/log/types';
+import { LogEntity } from 'foundation';
 import { ILogUploader } from './uploader';
 import { Task, MemoryQueue, TaskQueueLoop } from './task';
 import { PersistentLogEntity, ILogPersistent } from './persistent';
 import StateMachine from 'ts-javascript-state-machine';
-import { configManager } from './config';
-import { randomInt } from '../../../utils';
+import { configManager } from '../config';
+import { randomInt } from 'sdk/utils';
 import sumBy from 'lodash/sumBy';
 import cloneDeep from 'lodash/cloneDeep';
+import { ILogProducer, ILogConsumer } from '../collectors';
 import { IAccessor } from './types';
 
 const PERSISTENT_STATE = {
@@ -29,7 +30,9 @@ class UploadMemoryLogTask extends Task {
     public _logPersistent: ILogPersistent,
   ) {
     super();
-    this.setOnExecute(async () => await _logUploader.upload(logs));
+    this.setOnExecute(async () => {
+      await _logUploader.upload(logs);
+    });
     this.setOnAbort(async () => {
       await _logPersistent.put(transform.toPersistent(logs));
     });
@@ -42,9 +45,10 @@ class UploadPersistentLogTask extends Task {
     public _logPersistent: ILogPersistent,
   ) {
     super();
-    this.setOnExecute(
-      async () => await _logUploader.upload(transform.toLogEntity(log)),
-    );
+    this.setOnExecute(async () => {
+      const logs = transform.toLogEntity(log);
+      await _logUploader.upload(logs);
+    });
     this.setOnCompleted(async () => await _logPersistent.delete(log));
     this.setOnAbort(async () => {
       await _logPersistent.put(log);
@@ -80,6 +84,7 @@ function timeout(time: number) {
 }
 
 export class LogUploadConsumer implements ILogConsumer {
+  logProducer: ILogProducer;
   private _persistentFSM: StateMachine;
   private _memoryQueue: MemoryQueue<LogEntity>;
   private _memorySize: number;
@@ -89,15 +94,18 @@ export class LogUploadConsumer implements ILogConsumer {
   private _flushMode: boolean;
 
   constructor(
+    logProducer: ILogProducer,
     private _logUploader: ILogUploader,
     private _logPersistent: ILogPersistent,
     private _uploadAccessor?: IAccessor,
   ) {
+    this.logProducer = logProducer;
     this._memoryQueue = new MemoryQueue();
     this._memorySize = 0;
     this._flushMode = false;
-    this._uploadTaskQueueLoop = new TaskQueueLoop()
-      .setOnTaskError(async (task, error, loopController) => {
+    this._uploadTaskQueueLoop = new TaskQueueLoop({
+      name: 'uploadTaskQueueLoop',
+      onTaskError: async (task, error, loopController) => {
         const handlerType = this._logUploader.errorHandler(error);
         switch (handlerType) {
           case 'abort':
@@ -116,13 +124,14 @@ export class LogUploadConsumer implements ILogConsumer {
             await loopController.ignore();
             break;
         }
-      })
-      .setOnTaskCompleted(async (task, loopController) => {
+      },
+      onTaskCompleted: async (task, loopController) => {
         await loopController.next();
-      })
-      .setOnLoopCompleted(async () => {
+      },
+      onLoopCompleted: async () => {
         this._consumePersistentIfNeed();
-      });
+      },
+    });
     this._persistentTaskQueueLoop = new TaskQueueLoop();
     this._persistentFSM = new StateMachine({
       init: PERSISTENT_STATE.INIT,
@@ -173,9 +182,22 @@ export class LogUploadConsumer implements ILogConsumer {
     this._flushInTimeout();
   }
 
-  onLog(logEntity: LogEntity) {
-    this._memoryQueue.addTail(logEntity);
-    this._memorySize += logEntity.size;
+  canConsume() {
+    return this._uploadAvailable();
+  }
+
+  consume(log: LogEntity): void;
+  consume(logs: LogEntity[]): void;
+  consume(data?: LogEntity | LogEntity[]): void {
+    let consumeLogs: LogEntity[];
+    if (!data) {
+      consumeLogs = this.logProducer.produce();
+    } else if (Array.isArray(data)) {
+      consumeLogs = data;
+    } else {
+      consumeLogs = [data];
+    }
+    this._addLogsToMemoryQueue(consumeLogs);
     const {
       memoryCountThreshold,
       memorySizeThreshold,
@@ -184,18 +206,22 @@ export class LogUploadConsumer implements ILogConsumer {
       this._memoryQueue.size() > memoryCountThreshold ||
       this._memorySize > memorySizeThreshold
     ) {
-      this._flushMemory();
+      const forceMode =
+        this._memoryQueue.size() > 3 * memoryCountThreshold ||
+        this._memorySize > 3 * memorySizeThreshold;
+      this._flushMemory(forceMode);
     }
   }
 
   async flush(): Promise<void> {
     if (this._uploadTaskQueueLoop.size() > 0) {
       // abort uploadTaskQueue's waiting task,
-      this._uploadTaskQueueLoop.abortAll();
+      await this._uploadTaskQueueLoop.abortAll();
     }
     // indicated in _flushMode
     this._flushMode = true;
-    this._flushMemory();
+    this._addLogsToMemoryQueue(this.logProducer.produce(Number.MAX_VALUE));
+    this._flushMemoryToPersistence();
     this._flushMode = false;
   }
 
@@ -205,6 +231,13 @@ export class LogUploadConsumer implements ILogConsumer {
 
   public setUploadAccessor(uploadAccessor: IAccessor) {
     this._uploadAccessor = uploadAccessor;
+  }
+
+  private _addLogsToMemoryQueue(logs: LogEntity[]) {
+    logs.map(logEntity => {
+      this._memoryQueue.addTail(logEntity);
+      this._memorySize += logEntity.size;
+    });
   }
 
   private _flushInTimeout() {
@@ -217,29 +250,36 @@ export class LogUploadConsumer implements ILogConsumer {
     },                           configManager.getConfig().autoFlushTimeCycle);
   }
 
-  private _flushMemory() {
-    const logs = this._memoryQueue.peekAll();
-    this._memorySize = 0;
-    this._flushInTimeout();
-    if (logs.length < 1) return;
+  private _flushMemory(force?: boolean) {
     if (
       this._persistentFSM.state === PERSISTENT_STATE.EMPTY &&
       this._uploadAvailable()
     ) {
+      const logs = this._memoryQueue.peekAll();
+      this._memorySize = 0;
+      this._flushInTimeout();
+      if (logs.length < 1) return;
       this._uploadTaskQueueLoop.addTail(
         new UploadMemoryLogTask(logs, this._logUploader, this._logPersistent),
       );
-    } else {
-      this._persistentTaskQueueLoop.addTail(
-        new PersistentTask() // cache task
-          .setOnExecute(async () => {
-            await this._logPersistent.put(transform.toPersistent(logs));
-            if (this._persistentFSM.state !== PERSISTENT_STATE.NOT_EMPTY) {
-              this._persistentFSM.append();
-            }
-          }),
-      );
+    } else if (force) {
+      this._flushMemoryToPersistence();
     }
+  }
+
+  private _flushMemoryToPersistence() {
+    const logs = this._memoryQueue.peekAll();
+    this._memorySize = 0;
+    // this._flushInTimeout();
+    this._persistentTaskQueueLoop.addTail(
+      new PersistentTask() // cache task
+        .setOnExecute(async () => {
+          await this._logPersistent.put(transform.toPersistent(logs));
+          if (this._persistentFSM.state !== PERSISTENT_STATE.NOT_EMPTY) {
+            this._persistentFSM.append();
+          }
+        }),
+    );
   }
 
   private _ensurePersistentState() {
@@ -257,6 +297,7 @@ export class LogUploadConsumer implements ILogConsumer {
 
   private _consumePersistentIfNeed() {
     const { uploadQueueLimit } = configManager.getConfig();
+    this._flushInTimeout();
     if (this._uploadTaskQueueLoop.size() === 0 && this._uploadAvailable()) {
       this._persistentTaskQueueLoop.addTail(
         new PersistentTask().setOnExecute(async () => {

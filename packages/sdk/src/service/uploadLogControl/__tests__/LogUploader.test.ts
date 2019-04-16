@@ -1,9 +1,8 @@
 import { LogUploader } from '../LogUploader';
-import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
+import { LogEntity } from 'foundation';
 import { AccountService } from '../../../module/account';
 import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';
-import { AccountUserConfig } from '../../../module/account/config';
 import { ServiceLoader } from '../../../module/serviceLoader';
 import { Pal } from '../../../pal/pal';
 import { IApplicationInfo } from '../../../pal/applicationInfo';
@@ -24,15 +23,14 @@ jest.mock('../../../pal/pal', () => {
 });
 jest.mock('../../../module/account');
 jest.mock('axios');
-jest.mock('../../../module/account/config');
 
 function createError(status: number): AxiosError {
   return (status
     ? {
-      response: {
-        status,
-      },
-    }
+        response: {
+          status,
+        },
+      }
     : {}) as AxiosError;
 }
 describe('LogUploader', () => {
@@ -53,13 +51,16 @@ describe('LogUploader', () => {
     };
     (axios.post as jest.Mock).mockResolvedValue({});
     ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
-    (accountService.getUserEmail as jest.Mock).mockResolvedValue('abc@rc.com');
-    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(12345);
-    (accountService.getClientId as jest.Mock).mockReturnValue('54321');
-    (Pal.instance.getApplicationInfo as jest.Mock).mockReturnValue(mockAppInfo);
   });
   describe('upload()', () => {
     it('should call post correctly', async () => {
+      (accountService.getCurrentUserInfo as jest.Mock).mockResolvedValue({
+        id: 12345,
+        email: 'abc@rc.com',
+      });
+      (Pal.instance.getApplicationInfo as jest.Mock).mockReturnValue(
+        mockAppInfo,
+      );
       const logUploader = new LogUploader();
       const mockLog = new LogEntity();
       mockLog.sessionId = 'sessionA';
@@ -74,28 +75,13 @@ describe('LogUploader', () => {
         },
       });
     });
-    it('should call post correctly when getUserEmail error', async () => {
+    it('should call post correctly when getCurrentUserInfo error', async () => {
+      (accountService.getCurrentUserInfo as jest.Mock).mockRejectedValue('');
+      (Pal.instance.getApplicationInfo as jest.Mock).mockReturnValue(
+        mockAppInfo,
+      );
       const logUploader = new LogUploader();
       const mockLog = new LogEntity();
-      accountService.getUserEmail.mockRejectedValueOnce('');
-      mockLog.sessionId = 'sessionA';
-      jest.spyOn(logUploader, 'transform').mockReturnValue('mm');
-      await logUploader.upload([mockLog]);
-      expect(axios.post).toBeCalledWith('url/code', 'mm', {
-        headers: {
-          'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
-            mockAppInfo.browser
-          }/${mockAppInfo.os}/${mockAppInfo.env}/abc@rc.com/12345/sessionA`,
-          'Content-Type': 'application/json',
-        },
-      });
-    });
-    it('should call post correctly when get userId error', async () => {
-      const logUploader = new LogUploader();
-      const mockLog = new LogEntity();
-      AccountUserConfig.prototype.getGlipUserId.mockImplementation(() => {
-        throw new Error('');
-      });
       mockLog.sessionId = 'sessionA';
       jest.spyOn(logUploader, 'transform').mockReturnValue('mm');
       await logUploader.upload([mockLog]);
