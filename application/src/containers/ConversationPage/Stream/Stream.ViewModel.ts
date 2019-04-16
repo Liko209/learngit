@@ -188,6 +188,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
         await this._streamController.fetchInitialData(QUERY_DIRECTION.OLDER);
       }
     } catch (err) {
+      this.loadInitialPostsError = err;
       this._handleLoadInitialPostsError(err);
     }
   }

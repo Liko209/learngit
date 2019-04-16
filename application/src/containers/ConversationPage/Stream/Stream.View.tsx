@@ -64,10 +64,6 @@ class StreamViewComponent extends Component<Props> {
 
   @observable private _jumpToFirstUnreadLoading = false;
 
-  state = {
-    isFailed: false,
-  };
-
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
     window.addEventListener('blur', this._blurHandler);
@@ -368,15 +364,13 @@ class StreamViewComponent extends Component<Props> {
       this._watchUnreadCount();
     } catch (err) {
       updateConversationStatus(STATUS.FAILED);
-      this.setState({ isFailed: true });
-      throw err;
     }
   }
 
   private resetStatus = () => {
     const { updateConversationStatus } = this.props;
     updateConversationStatus(STATUS.SUCCESS);
-    this.setState({ isFailed: false });
+    this._loadInitialPosts();
   }
 
   private _onInitialDataFailed = (
@@ -389,8 +383,7 @@ class StreamViewComponent extends Component<Props> {
   );
 
   render() {
-    const { loadMore, hasMore, items } = this.props;
-    const { isFailed } = this.state;
+    const { loadMore, hasMore, items, loadInitialPostsError } = this.props;
 
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
@@ -410,7 +403,7 @@ class StreamViewComponent extends Component<Props> {
             {() => (
               <JuiStream ref={ref}>
                 {this._renderJumpToFirstUnreadButton()}
-                {isFailed ?
+                {loadInitialPostsError ?
                   this._onInitialDataFailed
                   :
                   <JuiInfiniteList
