@@ -30,10 +30,7 @@ class SearchFilterViewModel extends StoreViewModel<SearchFilterProps> {
   }
   @action
   handleSearchPostDateChange = (items: number) => {
-    const beginTime =
-      this.props.searchOptions.begin_time === undefined
-        ? null
-        : this.props.searchOptions.begin_time;
+    const beginTime = this.props.searchOptions.begin_time || null;
     const TimeStamp =
       items === DATE_DICTIONARY.ANY_TIME ? null : this.getTimeStamp(items);
     if (TimeStamp !== beginTime) {
