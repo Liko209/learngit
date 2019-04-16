@@ -18,6 +18,7 @@ import {
 import {
   JuiFileWithExpand,
   JuiExpandImage,
+  JuiFileWrapper,
 } from 'jui/pattern/ConversationCard/Files';
 import { showImageViewer } from '@/containers/Viewer';
 
@@ -209,13 +210,15 @@ class Task extends React.Component<taskViewProps> {
         )}
         {files && files.length > 0 && (
           <JuiLabelWithContent label={t('item.attachments')}>
-            {files.map((file: ExtendFileItem) => {
-              return FILE_COMPS[file.type](
-                file,
-                this.props,
-                this._handleImageClick,
-              );
-            })}
+            <JuiFileWrapper>
+              {files.map((file: ExtendFileItem) => {
+                return FILE_COMPS[file.type](
+                  file,
+                  this.props,
+                  this._handleImageClick,
+                );
+              })}
+            </JuiFileWrapper>
           </JuiLabelWithContent>
         )}
       </JuiConversationItemCard>
