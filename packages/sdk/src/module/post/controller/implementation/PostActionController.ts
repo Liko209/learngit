@@ -20,6 +20,7 @@ import { ItemService } from '../../../../module/item/service';
 import { IEntitySourceController } from '../../../../framework/controller/interface/IEntitySourceController';
 import { PostControllerUtils } from './PostControllerUtils';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+
 class PostActionController implements IPostActionController {
   constructor(
     public partialModifyController: IPartialModifyController<Post>,
