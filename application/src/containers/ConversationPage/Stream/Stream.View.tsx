@@ -47,7 +47,7 @@ const LOADING_DELAY = 500;
 
 @observer
 class StreamViewComponent extends Component<Props> {
-  private _currentUserId = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
+  private _currentUserId: number = getGlobalValue(GLOBAL_KEYS.CURRENT_USER_ID);
   private _loadMoreStrategy = new ThresholdStrategy({
     threshold: 60,
     minBatchCount: 10,
@@ -99,7 +99,8 @@ class StreamViewComponent extends Component<Props> {
     }
     const newPostAddedAtEnd =
       prevPostIds.length !== 0 &&
-      postIds.length >= prevPostIds.length &&
+      // TODO this is a Hotfix for FIJI-4825
+      postIds.length - prevPostIds.length === 1 &&
       lastPost &&
       lastPost.id !== prevLastPost.id;
 
@@ -239,6 +240,7 @@ class StreamViewComponent extends Component<Props> {
     },                         LOADING_DELAY);
 
     try {
+<<<<<<< HEAD
       const {
         hasNewMessageSeparator,
         findNewMessageSeparatorIndex,
@@ -261,6 +263,20 @@ class StreamViewComponent extends Component<Props> {
       if (jumpToIndex === -1) {
         mainLogger.warn(
           `Failed to jump to the first unread post. scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} jumpToIndex:${jumpToIndex}`,
+=======
+      const firstUnreadPostId = await this.props.getFirstUnreadPostByLoadAllUnread();
+      const index = firstUnreadPostId
+        ? this.props.items.findIndex(
+            (item: StreamItemPost) =>
+              item.type === StreamItemType.POST &&
+              item.value.includes(firstUnreadPostId),
+          )
+        : 0;
+
+      if (index === -1) {
+        console.warn(
+          `scrollToPostId no found. firstUnreadPostId:${firstUnreadPostId} scrollToPostId:${index}`,
+>>>>>>> hotfix/1.2.2
         );
         return;
       }
@@ -351,6 +367,7 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
+<<<<<<< HEAD
     const { loadInitialPosts, markAsRead, hookInitialPostsError } = this.props;
     try {
       await loadInitialPosts();
@@ -373,6 +390,20 @@ class StreamViewComponent extends Component<Props> {
 
   private resetStatus = () => {
     this.setState({ isFailed: false });
+=======
+    const { loadInitialPosts, markAsRead } = this.props;
+    await loadInitialPosts();
+    runInAction(() => {
+      this.props.updateHistoryHandler();
+      markAsRead();
+    });
+    requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+      }
+    });
+    this._watchUnreadCount();
+>>>>>>> hotfix/1.2.2
   }
 
   private _onInitialDataFailed = (

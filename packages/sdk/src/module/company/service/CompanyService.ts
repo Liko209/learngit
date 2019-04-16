@@ -15,12 +15,15 @@ import Api from '../../../api/api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw } from '../../../framework/model';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+<<<<<<< HEAD
 import {
   PerformanceTracerHolder,
   PERFORMANCE_KEYS,
   GlipTypeUtil,
   TypeDictionary,
 } from '../../../utils';
+=======
+>>>>>>> hotfix/1.2.2
 
 class CompanyService extends EntityBaseService<Company> {
   private _companyController: CompanyController;
@@ -51,13 +54,7 @@ class CompanyService extends EntityBaseService<Company> {
   }
 
   async handleIncomingData(companies: Raw<Company>[], source: SYNC_SOURCE) {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_COMPANY,
-      logId,
-    );
     await this.getCompanyController().handleCompanyData(companies, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   protected getCompanyController() {

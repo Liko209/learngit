@@ -7,7 +7,11 @@
 interface IProcessor {
   process(): Promise<boolean>;
   name(): string;
+<<<<<<< HEAD
   canContinue?: () => boolean;
+=======
+  cancel?(): void;
+>>>>>>> hotfix/1.2.2
 }
 
 export { IProcessor };

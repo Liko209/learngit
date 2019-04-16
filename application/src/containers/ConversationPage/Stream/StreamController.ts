@@ -15,9 +15,13 @@ import { ENTITY_NAME } from '@/store';
 import { GroupState } from 'sdk/module/state/entity';
 import GroupStateModel from '@/store/models/GroupState';
 import { HistoryHandler } from './HistoryHandler';
+import { PostService } from 'sdk/module/post';
+import { ISortableModel } from '@/store/base';
 import { ConversationPostFocBuilder } from '@/store/handler/cache/ConversationPostFocBuilder';
 import preFetchConversationDataHandler from '@/store/handler/PreFetchConversationDataHandler';
 import conversationPostCacheController from '@/store/handler/cache/ConversationPostCacheController';
+
+const LOAD_UNREAD_POSTS_REDUNDANCY = 500;
 
 const transformFunc = <T extends { id: number }>(dataModel: T) => ({
   id: dataModel.id,
@@ -34,6 +38,11 @@ export class StreamController {
   @computed
   get historyReadThrough() {
     return this._historyHandler.readThrough;
+  }
+
+  @computed
+  get historyUnreadCount() {
+    return this._historyHandler.unreadCount;
   }
 
   @computed
@@ -166,5 +175,24 @@ export class StreamController {
     }
     this._orderListHandler.refreshData();
     return this._orderListHandler.listStore.items;
+  }
+
+  @action
+  async fetchAllUnreadData() {
+    const pageSize = this.historyUnreadCount + LOAD_UNREAD_POSTS_REDUNDANCY;
+    const readThrough = this.historyReadThrough || 0;
+
+    let sortableModel: ISortableModel<Post> | undefined = undefined;
+    if (readThrough !== 0) {
+      const postService = PostService.getInstance() as PostService;
+      const post = await postService.getById(readThrough);
+      sortableModel = this._orderListHandler.transform2SortableModel(post!);
+    }
+
+    return await this._orderListHandler.fetchDataByAnchor(
+      QUERY_DIRECTION.NEWER,
+      pageSize,
+      sortableModel,
+    );
   }
 }

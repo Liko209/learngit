@@ -24,12 +24,15 @@ import { SOCKET } from '../../../service/eventKey';
 import { ContactType } from '../types';
 import { PersonEntityCacheController } from '../controller/PersonEntityCacheController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
+<<<<<<< HEAD
 import {
   PerformanceTracerHolder,
   PERFORMANCE_KEYS,
   GlipTypeUtil,
   TypeDictionary,
 } from '../../../utils';
+=======
+>>>>>>> hotfix/1.2.2
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -69,13 +72,7 @@ class PersonService extends EntityBaseService<Person>
     persons: Raw<Person>[],
     source: SYNC_SOURCE,
   ): Promise<void> => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_PERSON,
-      logId,
-    );
     await this.getPersonController().handleIncomingData(persons, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {

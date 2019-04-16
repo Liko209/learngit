@@ -72,7 +72,10 @@ class PinnedPostCacheController extends PostCacheController {
     if (this.shouldPreFetch(groupId, QUERY_DIRECTION.NEWER)) {
       const foc = this.get(groupId);
       await foc.fetchData(QUERY_DIRECTION.NEWER);
+<<<<<<< HEAD
       mainLogger.info(LOG_TAG, 'doPrefetch done - ', groupId);
+=======
+>>>>>>> hotfix/1.2.2
     }
   }
 

@@ -19,6 +19,7 @@ import { SOCKET } from '../../../service/eventKey';
 import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
+<<<<<<< HEAD
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import {
   PerformanceTracerHolder,
@@ -29,6 +30,8 @@ import {
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
 import { AccountUserConfig } from '../../account/config/AccountUserConfig';
+=======
+>>>>>>> hotfix/1.2.2
 
 class PostService extends EntityBaseService<Post> {
   postController: PostController;
@@ -155,6 +158,7 @@ class PostService extends EntityBaseService<Post> {
   }
 
   handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
+<<<<<<< HEAD
     const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
@@ -162,6 +166,11 @@ class PostService extends EntityBaseService<Post> {
     );
     this._postDataController.handleIndexPosts(data, maxPostsExceed);
     PerformanceTracerHolder.getPerformanceTracer().end(logId);
+=======
+    await this.getPostController()
+      .getPostDataController()
+      .handleIndexPosts(data, maxPostsExceed);
+>>>>>>> hotfix/1.2.2
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {

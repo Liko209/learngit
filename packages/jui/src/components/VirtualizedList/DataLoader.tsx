@@ -22,6 +22,7 @@ type JuiDataLoaderProps = {
     loadingInitialFailed: boolean;
     onScroll: (
       range: IndexRange,
+      prevRange: IndexRange,
       constraint: IndexConstraint,
       delta?: Delta,
     ) => void;
@@ -35,7 +36,6 @@ const JuiDataLoader = ({
   loadMore,
   children,
 }: JuiDataLoaderProps) => {
-  const prevVisibleRangeRef = useRef({ startIndex: 0, stopIndex: 0 });
   const prevVisibleRangeTimeRef = useRef(Date.now());
   const [loadingUp, setLoadingUp] = useState(false);
   const [loadingDown, setLoadingDown] = useState(false);
@@ -82,6 +82,7 @@ const JuiDataLoader = ({
   const handleScroll = useCallback(
     (
       visibleRange: Readonly<IndexRange>,
+      prevVisibleRange: Readonly<IndexRange>,
       indexConstraint: IndexConstraint,
       delta?: Delta,
     ) => {
@@ -93,10 +94,9 @@ const JuiDataLoader = ({
         indexConstraint,
         delta,
         visibleRange,
-        prevVisibleRange: prevVisibleRangeRef.current,
+        prevVisibleRange,
         prevVisibleRangeTime: prevVisibleRangeTimeRef.current,
       });
-      prevVisibleRangeRef.current = visibleRange;
       prevVisibleRangeTimeRef.current = Date.now();
 
       if (direction && count > 0 && hasMore(direction)) {
