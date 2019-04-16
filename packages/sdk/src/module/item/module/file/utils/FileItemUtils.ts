@@ -72,10 +72,8 @@ class FileItemUtils {
     return file.source && file.source.toLowerCase() === GifSource;
   }
 
-  static getVersionDate<T extends { versions: ItemVersions[] }>(
-    file: T,
-  ): number | null {
-    if (!Array.isArray(file.versions)) return null;
+  static getVersionDate<T extends { versions: ItemVersions[] }>(file: T) {
+    if (!file || !Array.isArray(file.versions)) return null;
     for (const version of file.versions) {
       if (!version.deactivated) {
         return _.isNumber(version.date) ? version.date : null;
