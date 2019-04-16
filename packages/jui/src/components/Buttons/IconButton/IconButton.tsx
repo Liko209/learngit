@@ -22,6 +22,7 @@ type IconButtonVariant = 'round' | 'plain';
 type IconButtonSize = 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge';
 
 type JuiIconButtonProps = {
+  shouldPersistBg?: boolean;
   tooltipTitle?: string;
   tooltipForceHide?: boolean;
   invisible?: boolean;
@@ -35,6 +36,7 @@ type JuiIconButtonProps = {
   innerRef?: RefObject<HTMLElement>;
   ref?: any;
   children: ReactNode;
+  stretchIcon?: boolean;
 } & Omit<MuiIconButtonProps, 'color' | 'children'> &
   Omit<JuiIconographyProps, 'color' | 'children'>;
 
@@ -99,16 +101,36 @@ const StyledIconButton = styled(WrappedMuiIconButton)`
       width(variant === 'round' ? iconSizes[size] * 2 : iconSizes[size])({
         theme,
       })};
+    ${({ variant, size = 'medium', theme, stretchIcon }) =>
+      stretchIcon
+        ? `font-size: ${width(
+            variant === 'round' ? iconSizes[size] * 2 : iconSizes[size],
+          )({
+            theme,
+          })};`
+        : ''}
     /* color: ${({ awake }) =>
       awake ? grey('500') : palette('accent', 'ash')}; */
     color: ${({ theme, colorScope, colorName }) =>
       palette(colorScope, colorName)({ theme })};
     opacity: ${({ invisible }) => (invisible ? 0 : 1)};
     padding: 0;
+    background-color: ${({ shouldPersistBg, theme, colorScope, colorName }) =>
+      shouldPersistBg
+        ? tinycolor(palette(colorScope, colorName)({ theme }))
+            .setAlpha(theme.palette.action.hoverOpacity)
+            .toRgbString()
+        : 'inherit'};
     ${StyledIcon} {
       &, svg {
-        font-size: ${({ size = 'medium', theme }) =>
-          width(iconSizes[size])({ theme })};
+        font-size: ${({ size = 'medium', theme, stretchIcon, variant }) =>
+          stretchIcon
+            ? width(
+                variant === 'round' ? iconSizes[size] * 2 : iconSizes[size],
+              )({
+                theme,
+              })
+            : width(iconSizes[size])({ theme })};
       }
     }
     &:hover {
@@ -220,6 +242,8 @@ JuiIconButtonComponent.defaultProps = {
   size: 'medium',
   invisible: false,
   tooltipTitle: '',
+  shouldPersistBg: false,
+  stretchIcon: false,
 };
 
 const JuiIconButton = styled(memo(JuiIconButtonComponent))``;

@@ -6,6 +6,9 @@
 
 type DialerContainerProps = {};
 
-type DialerContainerViewProps = {};
+type DialerContainerViewProps = {
+  keypadEntered: boolean;
+  dtmf: (digit: string) => void;
+};
 
 export { DialerContainerProps, DialerContainerViewProps };

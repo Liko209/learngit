@@ -11,6 +11,8 @@ import { VIEWER_ITEM_TYPE } from './constants';
 type CommonProps = {
   groupId: number;
   itemId: number; // imageId || fileId || otherItemId
+  isNavigation?: boolean;
+  postId?: number;
   type: VIEWER_ITEM_TYPE;
 };
 

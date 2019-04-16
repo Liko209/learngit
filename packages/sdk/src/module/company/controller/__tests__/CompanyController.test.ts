@@ -38,6 +38,7 @@ const requestController = {
 
 const entitySourceController: any = {
   bulkUpdate: jest.fn(),
+  bulkPut: jest.fn(),
   get: jest.fn(),
   getRequestController: () => {
     return requestController;
@@ -128,7 +129,7 @@ describe('CompanyController', () => {
       );
       expect(transform).toHaveBeenCalledTimes(2);
       expect(notificationCenter.emitEntityUpdate).toHaveBeenCalled();
-      expect(entitySourceController.bulkUpdate).toHaveBeenCalled();
+      expect(entitySourceController.bulkPut).toHaveBeenCalled();
     });
 
     it('should not emit notification when handleData from remaining', async () => {
@@ -141,7 +142,7 @@ describe('CompanyController', () => {
       );
       expect(transform).toHaveBeenCalledTimes(2);
       expect(notificationCenter.emitEntityUpdate).not.toHaveBeenCalled();
-      expect(entitySourceController.bulkUpdate).toHaveBeenCalled();
+      expect(entitySourceController.bulkPut).toHaveBeenCalled();
     });
   });
 

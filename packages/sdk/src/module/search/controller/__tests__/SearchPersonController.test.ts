@@ -9,16 +9,14 @@ import { ISearchService } from '../../service/ISearchService';
 
 import { Person } from '../../../../module/person/entity';
 import { PersonService } from '../../../../module/person';
-import {
-  buildEntityCacheSearchController,
-  buildEntityCacheController,
-} from '../../../../framework/controller';
+import { buildEntityCacheSearchController } from '../../../../framework/controller';
 import { IEntityCacheController } from '../../../../framework/controller/interface/IEntityCacheController';
 import { IEntityCacheSearchController } from '../../../../framework/controller/interface/IEntityCacheSearchController';
 import { SortableModel } from '../../../../framework/model';
 import { AccountUserConfig } from '../../../../module/account/config';
 import { GroupService } from '../../../group';
 import { SearchUtils } from '../../../../framework/utils/SearchUtils';
+import { PersonEntityCacheController } from '../../../person/controller/PersonEntityCacheController';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
 
 jest.mock('../../../../module/account/config');
@@ -45,7 +43,9 @@ describe('SearchPersonController', () => {
 
     AccountUserConfig.prototype.getGlipUserId = jest.fn().mockReturnValue(1);
 
-    entityCacheController = buildEntityCacheController<Person>();
+    entityCacheController = PersonEntityCacheController.buildPersonEntityCacheController(
+      personService,
+    );
     cacheSearchController = buildEntityCacheSearchController<Person>(
       entityCacheController,
     );
@@ -264,6 +264,23 @@ describe('SearchPersonController', () => {
       display_name: 'unRegistered',
     };
     entityCacheController.put(unRegistered1 as Person);
+
+    const bogusUser = {
+      id: 20026,
+      created_at: 20026,
+      modified_at: 20026,
+      creator_id: 20026,
+      is_new: false,
+      flags: 4620,
+      version: 20026,
+      company_id: 1,
+      email: 'bogus@ringcentral.com',
+      me_group_id: 1,
+      first_name: 'bogus',
+      last_name: 'bogus',
+      display_name: 'bogus',
+    };
+    entityCacheController.put(bogusUser as Person);
   }
   type SearchResultType = {
     terms: string[];
@@ -492,6 +509,13 @@ describe('SearchPersonController', () => {
       expect(result.sortableModels.length).toBe(0);
     });
 
+    it('search persons, with name matched, check if they are bogus', async () => {
+      const result = (await searchPersonController.doFuzzySearchPersons({
+        searchKey: 'bogus',
+      })) as SearchResultType;
+      expect(result.sortableModels.length).toBe(0);
+    });
+
     it('search persons,  with name matched, recent searched will be on top of result', async () => {
       const time = Date.now();
       const records = new Map([
@@ -571,6 +595,7 @@ describe('SearchPersonController', () => {
     beforeEach(async () => {
       clearMocks();
       setUp();
+      personService['_entityCacheController'] = entityCacheController;
       await prepareDataForSearchUTs();
       SearchUtils.isUseSoundex = jest.fn().mockReturnValue(true);
     });

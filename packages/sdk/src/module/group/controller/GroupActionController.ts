@@ -25,8 +25,13 @@ import { transform } from '../../../service/utils';
 import { GroupDao } from '../dao';
 import { Group } from '../entity';
 import { IGroupService } from '../service/IGroupService';
-import { PermissionFlags, TeamSetting } from '../types';
+import {
+  PermissionFlags,
+  TeamSetting,
+  GroupCanBeShownResponse,
+} from '../types';
 import { TeamPermissionController } from './TeamPermissionController';
+import { GROUP_CAN_NOT_SHOWN_REASON } from '../constants';
 import { AccountUserConfig } from '../../../module/account/config';
 import { ServiceConfig, ServiceLoader } from '../../serviceLoader';
 
@@ -78,7 +83,7 @@ export class GroupActionController {
       teamId,
       (partialEntity, originalEntity) => {
         const members: number[] = originalEntity.members.filter(
-          member => member !== userId,
+          (member) => member !== userId,
         );
         return {
           ...partialEntity,
@@ -408,7 +413,7 @@ export class GroupActionController {
     groupConfigDao.bulkUpdate(data);
   }
 
-  async isGroupCanBeShown(groupId: number): Promise<boolean> {
+  async isGroupCanBeShown(groupId: number): Promise<GroupCanBeShownResponse> {
     const profileService = ServiceLoader.getInstance<ProfileService>(
       ServiceConfig.PROFILE_SERVICE,
     );
@@ -424,13 +429,34 @@ export class GroupActionController {
         .tags('GroupActionController')
         .info(`get group ${groupId} fail`, err);
     }
-    if (group) {
-      isValid = this.groupService.isValid(group);
-      const userConfig = new AccountUserConfig();
-      const currentUserId = userConfig.getGlipUserId();
-      isIncludeSelf = group.members && group.members.includes(currentUserId);
+
+    const result: GroupCanBeShownResponse = { canBeShown: false };
+    if (!group) {
+      result.reason = GROUP_CAN_NOT_SHOWN_REASON.UNKNOWN;
+      return result;
     }
-    return !isHidden && isValid && isIncludeSelf;
+
+    isValid = this.groupService.isValid(group);
+    const userConfig = new AccountUserConfig();
+    const currentUserId = userConfig.getGlipUserId();
+    isIncludeSelf = group.members.includes(currentUserId);
+
+    if (!isValid) {
+      if (group.deactivated) {
+        result.reason = GROUP_CAN_NOT_SHOWN_REASON.DEACTIVATED;
+      } else if (group.is_archived) {
+        result.reason = GROUP_CAN_NOT_SHOWN_REASON.ARCHIVED;
+      } else {
+        result.reason = GROUP_CAN_NOT_SHOWN_REASON.UNKNOWN;
+      }
+    } else if (!isIncludeSelf) {
+      result.reason = GROUP_CAN_NOT_SHOWN_REASON.NOT_INCLUDE_SELF;
+    } else if (isHidden) {
+      result.reason = GROUP_CAN_NOT_SHOWN_REASON.HIDDEN;
+    } else {
+      result.canBeShown = true;
+    }
+    return result;
   }
 
   private _generateTeamParameters(

@@ -152,4 +152,14 @@ describe('ProfileService', () => {
       );
     });
   });
+
+  describe('getById', () => {
+    it('shoule receive error when id is not correct profile id', async () => {
+      try {
+        await profileService.getById(1);
+      } catch (e) {
+        expect(e).toBeNull();
+      }
+    });
+  });
 });

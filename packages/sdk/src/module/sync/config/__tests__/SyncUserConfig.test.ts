@@ -34,7 +34,7 @@ describe('SyncUserConfig', () => {
     setUp();
   });
 
-  describe('SOCKET_CONFIG_KEYS.SOCKET_SERVER_HOST', () => {
+  describe('SOCKET_CONFIG_KEYS.INDEX_SOCKET_SERVER_HOST', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
@@ -42,10 +42,10 @@ describe('SyncUserConfig', () => {
 
     it('setSocketServerHost()', () => {
       const data: any = {};
-      syncUserConfig.setSocketServerHost([data]);
+      syncUserConfig.setIndexSocketServerHost([data]);
       expect(userConfigService.put).toBeCalledWith(
         'sync',
-        SYNC_CONFIG_KEYS.SOCKET_SERVER_HOST,
+        SYNC_CONFIG_KEYS.INDEX_SOCKET_SERVER_HOST,
         [data],
       );
     });
@@ -55,7 +55,83 @@ describe('SyncUserConfig', () => {
       userConfigService.get = jest.fn().mockImplementation(() => {
         return data;
       });
-      const res = syncUserConfig.getSocketServerHost();
+      const res = syncUserConfig.getIndexSocketServerHost();
+      expect(res).toEqual(data);
+    });
+  });
+  describe('SOCKET_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('setReconnectSocketServerHost()', () => {
+      const data: any = {};
+      syncUserConfig.setReconnectSocketServerHost([data]);
+      expect(userConfigService.put).toBeCalledWith(
+        'sync',
+        SYNC_CONFIG_KEYS.RECONNECT_SOCKET_SERVER_HOST,
+        [data],
+      );
+    });
+
+    it('getReconnectSocketServerHost()', () => {
+      const data: any = [{}];
+      userConfigService.get = jest.fn().mockImplementation(() => {
+        return data;
+      });
+      const res = syncUserConfig.getReconnectSocketServerHost();
+      expect(res).toEqual(data);
+    });
+  });
+
+  describe('SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('setIndexStartLocalTime()', () => {
+      const data: number = 1;
+      syncUserConfig.setIndexStartLocalTime(data);
+      expect(userConfigService.put).toBeCalledWith(
+        'sync',
+        SYNC_CONFIG_KEYS.INDEX_START_LOCAL_TIME,
+        data,
+      );
+    });
+
+    it('getIndexStartLocalTime()', () => {
+      const data: number = 1;
+      userConfigService.get = jest.fn().mockImplementation(() => {
+        return data;
+      });
+      const res = syncUserConfig.getIndexStartLocalTime();
+      expect(res).toEqual(data);
+    });
+  });
+  describe('SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME', () => {
+    beforeEach(() => {
+      clearMocks();
+      setUp();
+    });
+
+    it('setSocketConnectedLocalTime()', () => {
+      const data: number = 1;
+      syncUserConfig.setSocketConnectedLocalTime(data);
+      expect(userConfigService.put).toBeCalledWith(
+        'sync',
+        SYNC_CONFIG_KEYS.SOCKET_CONNECTED_LOCAL_TIME,
+        data,
+      );
+    });
+
+    it('getSocketConnectedLocalTime()', () => {
+      const data: number = 1;
+      userConfigService.get = jest.fn().mockImplementation(() => {
+        return data;
+      });
+      const res = syncUserConfig.getSocketConnectedLocalTime();
       expect(res).toEqual(data);
     });
   });
