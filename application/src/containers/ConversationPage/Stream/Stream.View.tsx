@@ -19,6 +19,7 @@ import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import {
+  STATUS,
   StreamItem,
   StreamItemType,
   StreamViewProps,
@@ -351,8 +352,9 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead, hookInitialPostsError } = this.props;
+    const { loadInitialPosts, markAsRead, updateConversationStatus } = this.props;
     try {
+      updateConversationStatus(STATUS.SUCCESS);
       await loadInitialPosts();
       runInAction(() => {
         this.props.updateHistoryHandler();
@@ -365,13 +367,15 @@ class StreamViewComponent extends Component<Props> {
       });
       this._watchUnreadCount();
     } catch (err) {
-      hookInitialPostsError();
+      updateConversationStatus(STATUS.FAILED);
       this.setState({ isFailed: true });
       throw err;
     }
   }
 
   private resetStatus = () => {
+    const { updateConversationStatus } = this.props;
+    updateConversationStatus(STATUS.SUCCESS);
     this.setState({ isFailed: false });
   }
 

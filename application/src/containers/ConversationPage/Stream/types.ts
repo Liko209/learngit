@@ -5,6 +5,7 @@
  */
 import { TDelta, ISortableModel } from '../../../store/base/fetch/types';
 import PostModel from '../../../store/models/Post';
+import { STATUS } from '../types';
 
 enum SeparatorType {
   DATE = 'DATE',
@@ -51,7 +52,7 @@ type StreamProps = {
   viewRef: React.RefObject<any>;
   refresh: () => void;
   jumpToPostId?: number;
-  hookInitialPostsError: () => void;
+  updateConversationStatus: (status: STATUS) => void;
 };
 
 type StreamViewProps = {
@@ -94,6 +95,7 @@ type TDeltaWithData = TDelta & {
 type ISortableModelWithData = ISortableModel & { data: any };
 
 export {
+  STATUS,
   StreamSnapshot,
   StreamProps,
   StreamViewProps,
