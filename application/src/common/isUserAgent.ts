@@ -6,5 +6,6 @@
 
 const isElectron = navigator.userAgent.toLowerCase().indexOf(' electron/') > -1;
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-export { isElectron, isSafari };
+const isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
+const isWindows = navigator.platform.indexOf('Win') > -1;
+export { isElectron, isSafari, isFirefox, isWindows };
