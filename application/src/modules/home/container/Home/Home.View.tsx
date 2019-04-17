@@ -9,7 +9,7 @@ import { ToastWrapper } from '@/containers/ToastWrapper';
 
 import { HomeRouter } from '../HomeRouter';
 import { LeftNav } from '../LeftNav';
-// import { TopBar } from '../TopBar';
+import { TopBar } from '../TopBar';
 import Bottom from './Bottom';
 import { HomeViewProps } from './types';
 import Wrapper from './Wrapper';
@@ -60,7 +60,7 @@ class HomeView extends Component<HomeViewProps> {
       <>
         <ToastWrapper />
         <Wrapper>
-          {/* <TopBar /> */}
+          <TopBar />
           <Bottom id="app-main-section">
             <LeftNav />
             <HomeRouter />

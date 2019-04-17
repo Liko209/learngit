@@ -95,6 +95,10 @@ class ConversationPageViewComponent extends Component<
     this._folderDetectMap[INPUT] = true;
   }
 
+  private _hookInitialPostsError = () => {
+    this.updateStatus(STATUS.FAILED);
+  }
+
   state = {
     status: STATUS.SUCCESS,
   };
@@ -140,13 +144,13 @@ class ConversationPageViewComponent extends Component<
       <JuiStreamWrapper>
         <Stream
           groupId={groupId}
-          // viewRef={this._streamRef}
+          viewRef={this._streamRef}
           key={`Stream_${groupId}_${this.streamKey}`}
           refresh={this.remountStream}
           jumpToPostId={
             location.state ? location.state.jumpToPostId : undefined
           }
-          hookInitialPostsError={() => this.updateStatus(STATUS.FAILED)}
+          hookInitialPostsError={this._hookInitialPostsError}
         />
         <div id="jumpToFirstUnreadButtonRoot" />
       </JuiStreamWrapper>

@@ -36,6 +36,8 @@ import { PostService } from 'sdk/module/post';
 import { mainLogger } from 'sdk';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 
+const BLACKLISTED_PROPS = ['viewRef'];
+
 class StreamViewModel extends StoreViewModel<StreamProps> {
   private _stateService = ServiceLoader.getInstance<StateService>(
     ServiceConfig.STATE_SERVICE,
@@ -123,7 +125,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   constructor(props: StreamProps) {
-    super(props);
+    super(props, BLACKLISTED_PROPS);
     this.markAsRead = this.markAsRead.bind(this);
     this.loadInitialPosts = this.loadInitialPosts.bind(this);
     this.updateHistoryHandler = this.updateHistoryHandler.bind(this);
