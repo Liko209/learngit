@@ -15,7 +15,7 @@ type JuiSearchFilterProps = {
 const StyledSearchFilter = styled.div`
   display: flex;
   flex-direction: column;
-  width: 33%;
+  width: 33.5%;
   color: ${grey('700')};
   ${typography('body1')};
   border-left: 1px solid ${grey('300')};

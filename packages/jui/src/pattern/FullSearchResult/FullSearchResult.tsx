@@ -12,7 +12,7 @@ const JuiFullSearchWrapper = styled.div`
 `;
 
 const JuiFullSearchResultWrapper = styled.div`
-  width: 67%;
+  width: 66.5%;
   padding-bottom: ${spacing(2)};
   position: relative;
   display: flex;
