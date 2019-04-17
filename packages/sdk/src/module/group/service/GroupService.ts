@@ -125,6 +125,12 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .isInTeam(userId, team);
   }
 
+  isInGroup(userId: number, team: Group) {
+    return this.getGroupController()
+      .getGroupActionController()
+      .isInGroup(userId, team);
+  }
+
   canJoinTeam(team: Group) {
     return this.getGroupController()
       .getGroupActionController()

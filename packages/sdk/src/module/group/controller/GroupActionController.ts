@@ -46,12 +46,11 @@ export class GroupActionController {
   ) {}
 
   isInTeam(userId: number, team: Group): boolean {
-    return !!(
-      team &&
-      team.is_team &&
-      team.members &&
-      team.members.includes(userId)
-    );
+    return !!(team && team.is_team && this.isInGroup(userId, team));
+  }
+
+  isInGroup(userId: number, team: Group): boolean {
+    return !!(team && team.members && team.members.includes(userId));
   }
 
   canJoinTeam(team: Group) {
@@ -82,7 +81,7 @@ export class GroupActionController {
       teamId,
       (partialEntity, originalEntity) => {
         const members: number[] = originalEntity.members.filter(
-          (member) => member !== userId,
+          (member: number) => member !== userId,
         );
         return {
           ...partialEntity,

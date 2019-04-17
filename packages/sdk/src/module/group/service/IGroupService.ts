@@ -19,6 +19,8 @@ interface IGroupService {
 
   isInTeam(userId: number, team: Group): boolean;
 
+  isInGroup(userId: number, team: Group): boolean;
+
   canJoinTeam(team: Group): boolean;
 
   joinTeam(userId: number, teamId: number): Promise<void>;

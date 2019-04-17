@@ -126,7 +126,7 @@ export class GroupFetchDataController {
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     if (ids.length) {
       const groups = await this.entitySourceController.batchGet(ids, order);
-      return groups.filter(group => group !== null) as Group[];
+      return groups.filter((group: Group) => group !== null) as Group[];
     }
     return [];
   }
@@ -703,7 +703,14 @@ export class GroupFetchDataController {
         favoriteGroupIds,
         true,
       );
-      return groups.filter((item: Group) => this.groupService.isValid(item));
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
+
+      return groups.filter(
+        (item: Group) =>
+          this.groupService.isValid(item) &&
+          this.groupService.isInGroup(currentUserId, item),
+      );
     }
     return [];
   }
