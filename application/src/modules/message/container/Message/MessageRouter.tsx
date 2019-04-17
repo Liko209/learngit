@@ -83,7 +83,6 @@ class MessageRouterComponent extends Component<MessagesWrapperPops, State> {
     const prevSubPath = prevProps.match.params.subPath;
     if (subPath !== prevSubPath) {
       MessageRouterChangeHelper.updateCurrentConversationId(subPath);
-      MessageRouterChangeHelper.ensureGroupIsOpened(Number(subPath));
     }
   }
 
