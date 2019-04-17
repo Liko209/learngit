@@ -48,7 +48,6 @@ class App extends React.Component {
     );
   }
 }
-
 const HotApp = hot(App);
 
 export { HotApp as App };
