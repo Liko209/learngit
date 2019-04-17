@@ -227,7 +227,7 @@ module.exports = {
                       displayName: true,
                     },
                   ],
-                  // 'react-hot-loader/babel',
+                  'react-hot-loader/babel',
                 ],
               },
             },
