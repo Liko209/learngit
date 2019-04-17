@@ -54,9 +54,9 @@ export class WebphoneSession {
 
   async operate(action: string, destNumber?: string) {
     if (destNumber) {
-      await this.webphoneClient.operateSession(this.phoneId, this.sessionId, action, destNumber);
+      await this.webphoneClient.remoteOperateSession(this.phoneId, this.sessionId, action, destNumber);
     } else {
-      await this.webphoneClient.operateSession(this.phoneId, this.sessionId, action);
+      await this.webphoneClient.remoteOperateSession(this.phoneId, this.sessionId, action);
     }
   }
 }
