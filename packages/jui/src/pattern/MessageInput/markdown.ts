@@ -47,6 +47,7 @@ function markdownFromDelta(delta: Delta) {
   delta.forEach((op: DeltaOperation) => {
     const attr = op.attributes;
     let insert = op.insert;
+    insert = insert && insert.replace(/[\n\r]$/, '');
     if (insert.image) {
       insert = `![](${insert.image})`;
     }
