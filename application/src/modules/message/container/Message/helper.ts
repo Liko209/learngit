@@ -70,7 +70,12 @@ export class MessageRouterChangeHelper {
       ServiceConfig.STATE_SERVICE,
     );
     const state = await stateService.getMyState();
+
     if (state && state.last_group_id) {
+      const isHidden = await GroupHandler.isGroupHidden(state.last_group_id);
+      if (isHidden) {
+        return '';
+      }
       return this.verifyGroup(state.last_group_id);
     }
     return '';
