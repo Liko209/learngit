@@ -24,7 +24,6 @@ type SearchFilterProps = {
   setSearchOptions(searchOptions: ContentSearchOptions): void;
   searchOptions: ContentSearchOptions;
   contentsCount: object;
-  options: ContentSearchOptions;
 };
 
 type SearchFilterViewProps = SearchFilterProps & {
