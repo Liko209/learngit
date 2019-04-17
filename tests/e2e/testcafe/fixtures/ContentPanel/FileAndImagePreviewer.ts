@@ -168,11 +168,70 @@ test(formalName('Can close a full-screen image previewer by clicking close butto
     await bookmarkPage.expectStreamScrollToY(scrollTop);
   });
 
-  // TODO: search content
+  // search content
+  const searchDialog = app.homePage.searchDialog;
+  await h(t).withLog('When I open the team and search file name 1.png in this conversation', async () => {
+    await app.homePage.messageTab.teamsSection.conversationEntryById(team.glipId).enter();
+    await app.homePage.header.searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword('1.png');
+    await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
+  });
+
+  await h(t).withLog('Then I should found the post with the images in message tab', async () => {
+    await searchDialog.fullSearchPage.messagesTab.postItemById(postId).ensureLoaded();
+  });
+
+  await h(t).withLog('When I click the first image', async () => {
+    await searchDialog.fullSearchPage.messagesTab.postItemById(postId).scrollIntoView();
+    scrollTop = await searchDialog.fullSearchPage.messagesTab.scrollDiv.scrollTop;
+    await t.click(searchDialog.fullSearchPage.messagesTab.postItemById(postId).img.nth(0));
+  });
+
+  await h(t).withLog('Then the image previewer should be showed', async () => {
+    await previewer.ensureLoaded();
+    await previewer.shouldBeFullScreen();
+  });
+
+  await h(t).withLog('And the index of image should be (1/2)', async () => {
+    await await t.expect(previewer.positionIndex.textContent).match(/(1\/2)/);
+  });
+
+  await h(t).withLog('When I click the close button', async () => {
+    await previewer.clickCloseButton();
+  });
+
+  await h(t).withLog('Then The previewer dismissed ', async () => {
+    await t.expect(previewer.exists).notOk();
+  });
+
+  await h(t).withLog('And  Return to the conversation and stay where it was', async () => {
+    await searchDialog.fullSearchPage.messagesTab.expectStreamScrollToY(scrollTop);
+  });
+
+  await h(t).withLog('When I click the image on the post', async () => {
+    await t.click(searchDialog.fullSearchPage.messagesTab.postItemById(postId).img.nth(0));
+  });
+
+  await h(t).withLog('Then the image previewer should be showed', async () => {
+    await previewer.ensureLoaded();
+  });
+
+  await h(t).withLog(`When I press "esc" key on keyboard `, async () => {
+    await previewer.quitByPressEsc();
+  });
+
+  await h(t).withLog('Then The previewer dismissed ', async () => {
+    await t.expect(previewer.exists).notOk();
+  });
+
+  await h(t).withLog('And  Return to the conversation and stay where it was', async () => {
+    await searchDialog.fullSearchPage.messagesTab.expectStreamScrollToY(scrollTop);
+  });
 
   // at mention enter point
   const atMentionPage = app.homePage.messageTab.mentionPage;
   await h(t).withLog(`When I login out then login with ${anotherUser.company.number}#${anotherUser.extension}`, async () => {
+    await searchDialog.clickCloseButton();
     await app.homePage.logoutThenLoginWithUser(SITE_URL, anotherUser);
   });
 
