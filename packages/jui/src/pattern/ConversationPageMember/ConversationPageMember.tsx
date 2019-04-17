@@ -3,12 +3,7 @@ import styled from '../../foundation/styled-components';
 import { JuiConversationPageMemberProps } from './types';
 import { JuiArrowTip } from '../../components';
 import { JuiIconography } from '../../foundation/Iconography';
-import {
-  spacing,
-  grey,
-  typography,
-  width,
-} from '../../foundation/utils/styles';
+import { grey, typography, width } from '../../foundation/utils/styles';
 import { darken } from '@material-ui/core/styles/colorManipulator';
 import { IconButtonSize, iconSizes } from '../../components/Buttons';
 
@@ -23,11 +18,15 @@ const StyledConversationPageMember = styled.button<MemberProps>`
   align-self: center;
   align-items: center;
   border: none;
-  padding: ${spacing(0, 3)};
+  padding: 0;
   height: ${({ size = 'medium', theme }) =>
     width(iconSizes[size] * 2)({ theme })};
   background: none;
   color: ${grey('500')};
+
+  &&& {
+    margin-left: ${width(1)};
+  }
 
   > span {
     ${typography('body1')};
