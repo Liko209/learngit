@@ -36,7 +36,7 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
   }
 
   private _subscribeWorkerMessage() {
-    navigator.serviceWorker.addEventListener('message', (event) => {
+    navigator.serviceWorker.addEventListener('message', event => {
       const data = JSON.parse(event.data) as SWCallbackArgs;
       if (!data.id) {
         return;
@@ -109,6 +109,9 @@ export class SWNotification extends AbstractNotification<NotificationAction> {
     this._notifications = [];
   }
   private async _updateNotificationsList() {
+    if (!this._reg) {
+      return;
+    }
     const notifications = await this._reg.getNotifications();
     this._notifications = _.unionBy(this._notifications, notifications, 'tag');
   }
