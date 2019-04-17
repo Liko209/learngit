@@ -9,6 +9,7 @@ import styled from '../../foundation/styled-components';
 import { JuiTextField } from '../../components/Forms/TextField';
 import { GetInputPropsOptions } from 'downshift';
 import { isEmailByReg } from '../../foundation/utils';
+import { grey, typography } from '../../foundation/utils/styles';
 
 type SelectedItem = {
   label: string;
@@ -46,6 +47,10 @@ const StyledTextField = styled<TextFieldProps>(JuiTextField)`
     }
     .input {
       flex: 1;
+    }
+    .downshift-label {
+      color: ${grey('900')};
+      ${typography('body1')};
     }
   }
 ` as typeof MuiTextField;
@@ -183,6 +188,9 @@ class JuiDownshiftTextField extends React.PureComponent<
         }}
         InputLabelProps={{
           shrink,
+          classes: {
+            root: 'downshift-label',
+          },
         }}
       />
     );
