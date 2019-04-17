@@ -16,11 +16,9 @@ import { StyledJuiSearchBar } from './StyledSearchBar';
 type Props = {
   MainMenu: ComponentType<any>;
   Logo: ComponentType;
-  // Search: ComponentType,
   AvatarActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   NewActions: ComponentType<any>; // ComponentType<MenuListCompositionProps>
   BackNForward: ComponentType<any>;
-  SearchBar: ComponentType<any>;
   openGlobalSearch: (event: React.MouseEvent<HTMLElement>) => void;
   searchKey: string;
   searchPlaceholder: string;
@@ -57,7 +55,6 @@ class JuiTopBar extends React.PureComponent<Props, States> {
       searchKey,
       searchPlaceholder,
       onClear,
-      // SearchBar,
     } = this.props;
     return (
       <StyledAppBar>
