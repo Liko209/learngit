@@ -4,7 +4,10 @@
     "tsBuildInfoFile": "./.tsc_cache/cache_path",
     "baseUrl": ".",
     "outDir": "build",
-    "rootDir": "src"
+    "rootDir": "src",
+    "paths": {
+      "sdk/*": ["src/*"]
+    }
   },
   "include": ["src"],
   "exclude": ["node_modules"]

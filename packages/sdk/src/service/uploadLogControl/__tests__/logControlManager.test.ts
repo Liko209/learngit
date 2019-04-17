@@ -8,9 +8,9 @@ import axios from 'axios';
 import { logManager, mainLogger } from 'foundation/src/log/index';
 import { notificationCenter } from 'sdk/service';
 import { PermissionService } from '../../../module/permission';
-import { ENTITY, SERVICE, WINDOW } from '../../../service/eventKey';
+import { ENTITY, SERVICE, WINDOW, DOCUMENT } from '../../../service/eventKey';
 import { LogControlManager } from '../logControlManager';
-import { configManager } from '../consumer/config';
+import { configManager } from '../config';
 import { logEntityFactory } from 'foundation/src/log/__tests__/factory';
 import { ServiceLoader } from '../../../module/serviceLoader';
 
@@ -57,7 +57,7 @@ describe('LogControlManager', () => {
     it('should call flush when receive WINDOW.BLUR event', () => {
       const spy = jest.spyOn(logControlManager, 'flush');
       spy.mockClear();
-      notificationCenter.emit(WINDOW.BLUR);
+      notificationCenter.emit(DOCUMENT.VISIBILITYCHANGE, { isHidden: true });
       expect(spy).toBeCalledTimes(1);
     });
   });
@@ -113,60 +113,6 @@ describe('LogControlManager', () => {
       expect(spyMainLoggerWarn).toBeCalled();
       expect(spyLogManagerConfig).not.toHaveBeenCalled();
       expect(mockPermissionService.hasPermission).toHaveBeenCalledTimes(1);
-    });
-  });
-  describe('_filterBlackList()', () => {
-    it('should filter black list tag', () => {
-      LogControlManager.instance().addTag2BlackList('a');
-      expect(
-        LogControlManager.instance()['_blackListFilter'](
-          logEntityFactory.build({
-            tags: ['a', 'b'],
-          }),
-        ),
-      ).toBeTruthy();
-      expect(
-        LogControlManager.instance()['_blackListFilter'](
-          logEntityFactory.build({
-            tags: ['c', 'd'],
-          }),
-        ),
-      ).toBeFalsy();
-      LogControlManager.instance().removeFromBlackList('a');
-      expect(
-        LogControlManager.instance()['_blackListFilter'](
-          logEntityFactory.build({
-            tags: ['a', 'b'],
-          }),
-        ),
-      ).toBeFalsy();
-    });
-  });
-  describe('_filterWhiteList()', () => {
-    it('should filter white list tag', () => {
-      LogControlManager.instance().addTag2WhiteList('a');
-      expect(
-        LogControlManager.instance()['_whiteListFilter'](
-          logEntityFactory.build({
-            tags: ['a', 'b'],
-          }),
-        ),
-      ).toBeTruthy();
-      expect(
-        LogControlManager.instance()['_whiteListFilter'](
-          logEntityFactory.build({
-            tags: ['c', 'd'],
-          }),
-        ),
-      ).toBeFalsy();
-      LogControlManager.instance().removeFromWhiteList('a');
-      expect(
-        LogControlManager.instance()['_whiteListFilter'](
-          logEntityFactory.build({
-            tags: ['a', 'b'],
-          }),
-        ),
-      ).toBeFalsy();
     });
   });
 });

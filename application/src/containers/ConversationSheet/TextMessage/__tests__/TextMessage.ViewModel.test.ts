@@ -78,9 +78,9 @@ describe('TextMessageViewModel', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       expect(vm.html).toBe(
-        `<a class='at_mention_compose' href='javascript:void(0)' id='2514947'>${
+        `<button class='at_mention_compose' id='2514947'>${
           mockPersonData.userDisplayName
-        }</a>`,
+        }</button>`,
       );
       expect(vm.getGroup).toHaveBeenCalledTimes(0);
       expect(vm.getPerson).toHaveBeenCalledTimes(1);
@@ -91,9 +91,9 @@ describe('TextMessageViewModel', () => {
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       mockPersonData.userDisplayName = 'New person name';
       expect(vm.html).toBe(
-        `<a class='at_mention_compose' href='javascript:void(0)' id='2514947'>${
+        `<button class='at_mention_compose' id='2514947'>${
           mockPersonData.userDisplayName
-        }</a>`,
+        }</button>`,
       );
     });
   });
@@ -107,9 +107,9 @@ describe('TextMessageViewModel', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       expect(vm.html).toBe(
-        `<a class='at_mention_compose' href='javascript:void(0)' id='11370502'>${
+        `<button class='at_mention_compose' id='11370502'>${
           mockGroupData.displayName
-        }</a>`,
+        }</button>`,
       );
       expect(vm.getGroup).toHaveBeenCalledTimes(1);
       expect(vm.getPerson).toHaveBeenCalledTimes(0);
@@ -120,9 +120,9 @@ describe('TextMessageViewModel', () => {
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       mockGroupData.displayName = 'New team name';
       expect(vm.html).toBe(
-        `<a class='at_mention_compose' href='javascript:void(0)' id='11370502'>${
+        `<button class='at_mention_compose' id='11370502'>${
           mockGroupData.displayName
-        }</a>`,
+        }</button>`,
       );
     });
   });
@@ -136,7 +136,7 @@ describe('TextMessageViewModel', () => {
       mockPostData.text = text;
       mockPostData.atMentionNonItemIds = atMentionNonItemIds;
       expect(vm.html).toBe(
-        `<a class='at_mention_compose' href='javascript:void(0)' id='123'>${originalText}</a>`,
+        `<button class='at_mention_compose' id='123'>${originalText}</button>`,
       );
       expect(vm.getGroup).toHaveBeenCalledTimes(0);
       expect(vm.getPerson).toHaveBeenCalledTimes(0);

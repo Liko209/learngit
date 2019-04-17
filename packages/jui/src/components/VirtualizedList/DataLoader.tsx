@@ -23,6 +23,7 @@ type JuiDataLoaderProps = {
     loadingInitialFailed: boolean;
     onScroll: (
       range: IndexRange,
+      prevRange: IndexRange,
       constraint: IndexConstraint,
       delta?: Delta,
     ) => void;
@@ -36,7 +37,6 @@ const JuiDataLoader = ({
   loadMore,
   children,
 }: JuiDataLoaderProps) => {
-  const prevVisibleRangeRef = useRef({ startIndex: 0, stopIndex: 0 });
   const prevVisibleRangeTimeRef = useRef(Date.now());
   const [loadingUp, setLoadingUp] = useState(false);
   const [loadingDown, setLoadingDown] = useState(false);
@@ -59,24 +59,25 @@ const JuiDataLoader = ({
       },
       initial: {
         setLoading: setLoadingInitial,
-        load: () => loadInitialData(),
+        load: (count: number) => loadInitialData(),
         onFailed: setLoadingInitialFailed,
       },
     };
   },                         [loadMore, loadMore, loadInitialData]);
 
   const loadData = useCallback(
-    _.throttle(async (type: 'initial' | 'up' | 'down', count: number = 10) => {
+    _.throttle((type: 'initial' | 'up' | 'down', count: number = 10) => {
       const map = getMap();
       const { setLoading, load, onFailed } = map[type];
       setLoading(true);
       onFailed(false);
-      try {
-        await load(count);
-      } catch {
-        isMountedRef.current && onFailed(true);
-      }
-      isMountedRef.current && setLoading(false);
+      load(count)
+        .catch(() => {
+          isMountedRef.current && onFailed(true);
+        })
+        .then(() => {
+          isMountedRef.current && setLoading(false);
+        });
     },         1000),
     [getMap],
   );
@@ -84,6 +85,7 @@ const JuiDataLoader = ({
   const handleScroll = useCallback(
     (
       visibleRange: Readonly<IndexRange>,
+      prevVisibleRange: Readonly<IndexRange>,
       indexConstraint: IndexConstraint,
       delta?: Delta,
     ) => {
@@ -95,17 +97,16 @@ const JuiDataLoader = ({
         indexConstraint,
         delta,
         visibleRange,
-        prevVisibleRange: prevVisibleRangeRef.current,
+        prevVisibleRange,
         prevVisibleRangeTime: prevVisibleRangeTimeRef.current,
       });
-      prevVisibleRangeRef.current = visibleRange;
       prevVisibleRangeTimeRef.current = Date.now();
 
       if (direction && count > 0 && hasMore(direction)) {
         loadData(direction, count);
       }
     },
-    [loadData, loadMoreStrategy],
+    [loadData, loadMoreStrategy, loading],
   );
 
   useEffect(() => {

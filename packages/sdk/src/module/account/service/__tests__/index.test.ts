@@ -6,40 +6,38 @@
 
 import { AccountService } from '..';
 import { daoManager } from '../../../../dao';
-import { PersonDao } from '../../../person/dao';
+import { PersonService } from '../../../person';
 import { RCAuthApi } from '../../../../api';
 import {
   AccountUserConfig,
   AccountGlobalConfig,
 } from '../../../account/config';
+import { ServiceLoader } from '../../../serviceLoader';
 
-jest.mock('../../../../dao');
-jest.mock('../../../person/dao');
+// jest.mock('../../../../dao');
+jest.mock('../../../serviceLoader');
+jest.mock('../../../person');
 jest.mock('../../../../api');
 jest.mock('../../../account/config');
 
 describe('AccountService', () => {
   let accountService: AccountService;
-  let personDao: PersonDao;
+  let personService: PersonService;
 
   beforeAll(() => {
-    personDao = new PersonDao(null);
-    daoManager.getDao.mockReturnValue(personDao);
+    personService = new PersonService();
+    ServiceLoader.getInstance.mockReturnValue(personService);
     accountService = new AccountService(null);
   });
 
   describe('getCurrentUserInfo()', () => {
     it('should return current user info', () => {
       expect.assertions(1);
-      personDao.get.mockReturnValueOnce({
-        id: 1,
+      (personService.getById as jest.Mock).mockResolvedValueOnce({
         email: 'a@gmail.com',
         display_name: 'display_name',
       });
       AccountUserConfig.prototype.getGlipUserId = jest
-        .fn()
-        .mockReturnValue(222);
-      AccountUserConfig.prototype.getCurrentCompanyId = jest
         .fn()
         .mockReturnValue(222);
 
@@ -47,21 +45,24 @@ describe('AccountService', () => {
       return expect(user).resolves.toEqual({
         email: 'a@gmail.com',
         display_name: 'display_name',
-        company_id: 222,
       });
     });
 
-    it('should return {} when not userId ', () => {
+    it('should return {} when not userId ', async () => {
       expect.assertions(1);
-      const userInfo = accountService.getCurrentUserInfo();
-      return expect(userInfo).resolves.toEqual({});
+
+      AccountUserConfig.prototype.getGlipUserId = jest
+        .fn()
+        .mockReturnValue(null);
+      const userInfo = await accountService.getCurrentUserInfo();
+      return expect(userInfo).toEqual(null);
     });
 
     it('should return {} when not personInfo', () => {
       expect.assertions(1);
-      personDao.get.mockReturnValueOnce('');
+      (personService.getById as jest.Mock).mockResolvedValueOnce(null);
       const personInfo = accountService.getCurrentUserInfo();
-      return expect(personInfo).resolves.toEqual({});
+      return expect(personInfo).resolves.toEqual(null);
     });
   });
 

@@ -106,13 +106,7 @@ function goToConversation({
   const currentConversation = getGlobalValue(
     GLOBAL_KEYS.CURRENT_CONVERSATION_ID,
   );
-  if (replaceHistory === undefined) {
-    if (conversationId === currentConversation) {
-      args.push('REPLACE');
-    } else {
-      args.push('PUSH');
-    }
-  } else if (replaceHistory) {
+  if (replaceHistory || conversationId === currentConversation) {
     args.push('REPLACE');
   } else {
     args.push('PUSH');

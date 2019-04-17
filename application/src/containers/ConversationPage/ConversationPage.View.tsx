@@ -47,10 +47,6 @@ class ConversationPageViewComponent extends Component<
 
   streamKey = 0;
 
-  updateStatus = (status: STATUS) => {
-    this.setState({ status });
-  }
-
   sendHandler = () => {
     const stream = this._streamRef.current;
     if (!stream) {
@@ -95,21 +91,8 @@ class ConversationPageViewComponent extends Component<
     this._folderDetectMap[INPUT] = true;
   }
 
-  private _hookInitialPostsError = () => {
-    this.updateStatus(STATUS.FAILED);
-  }
-
-  state = {
-    status: STATUS.SUCCESS,
-  };
-
   private get messageInput() {
-    const { status } = this.state;
-    const { t, groupId, canPost } = this.props;
-
-    if (status === STATUS.FAILED) {
-      return null;
-    }
+    const { t, groupId, canPost, loadingStatus } = this.props;
 
     if (!canPost) {
       return (
@@ -122,6 +105,8 @@ class ConversationPageViewComponent extends Component<
 
     return (
       <JuiDropZone
+        disabled={loadingStatus !== STATUS.SUCCESS}
+        hidden={loadingStatus !== STATUS.SUCCESS}
         accepts={[NativeTypes.FILE]}
         onDrop={this._handleDropFileInMessageInput}
         dropzoneClass={MessageInputDropZoneClasses}
@@ -139,7 +124,7 @@ class ConversationPageViewComponent extends Component<
   }
 
   render() {
-    const { groupId, canPost, location } = this.props;
+    const { groupId, canPost, location, updateStatus } = this.props;
     const streamNode = (
       <JuiStreamWrapper>
         <Stream
@@ -150,7 +135,7 @@ class ConversationPageViewComponent extends Component<
           jumpToPostId={
             location.state ? location.state.jumpToPostId : undefined
           }
-          hookInitialPostsError={this._hookInitialPostsError}
+          updateConversationStatus={updateStatus}
         />
         <div id="jumpToFirstUnreadButtonRoot" />
       </JuiStreamWrapper>

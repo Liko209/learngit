@@ -3,6 +3,6 @@
  * @Date: 2018-08-20 16:26:02
  * Copyright © RingCentral. All rights reserved.
  */
-function noop() {}
+function noop<T>(...args: T[]): any {}
 
 export { noop };

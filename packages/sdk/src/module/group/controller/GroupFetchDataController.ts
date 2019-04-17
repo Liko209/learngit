@@ -126,7 +126,7 @@ export class GroupFetchDataController {
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     if (ids.length) {
       const groups = await this.entitySourceController.batchGet(ids, order);
-      return groups.filter((group) => group !== null) as Group[];
+      return groups.filter((group: Group) => group !== null) as Group[];
     }
     return [];
   }
@@ -387,12 +387,12 @@ export class GroupFetchDataController {
 
       return isMatched
         ? {
-          id: group.id,
-          displayName: groupName,
-          firstSortKey: sortValue,
-          secondSortKey: groupName.toLowerCase(),
-          entity: group,
-        }
+            id: group.id,
+            displayName: groupName,
+            firstSortKey: sortValue,
+            secondSortKey: groupName.toLowerCase(),
+            entity: group,
+          }
         : null;
     };
   }
@@ -405,14 +405,18 @@ export class GroupFetchDataController {
       lowerCaseName,
     );
     let sortValue = 0;
+
+    const setKeyMatched: Set<string> = new Set();
     for (let i = 0; i < splitNames.length; ++i) {
       for (let j = 0; j < searchKeyTerms.length; ++j) {
         if (
+          !setKeyMatched.has(searchKeyTerms[j]) &&
           this.entityCacheSearchController.isStartWithMatched(
             splitNames[i].toLowerCase(),
             [searchKeyTerms[j]],
           )
         ) {
+          setKeyMatched.add(searchKeyTerms[j]);
           sortValue +=
             i === j
               ? kSortingRateWithFirstAndPositionMatched
@@ -474,12 +478,12 @@ export class GroupFetchDataController {
 
       return isMatched
         ? {
-          id: team.id,
-          displayName: team.set_abbreviation,
-          firstSortKey: sortValue,
-          secondSortKey: team.set_abbreviation.toLowerCase(),
-          entity: team,
-        }
+            id: team.id,
+            displayName: team.set_abbreviation,
+            firstSortKey: sortValue,
+            secondSortKey: team.set_abbreviation.toLowerCase(),
+            entity: team,
+          }
         : null;
     };
   }
@@ -699,7 +703,14 @@ export class GroupFetchDataController {
         favoriteGroupIds,
         true,
       );
-      return groups.filter((item: Group) => this.groupService.isValid(item));
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
+
+      return groups.filter(
+        (item: Group) =>
+          this.groupService.isValid(item) &&
+          this.groupService.isInGroup(currentUserId, item),
+      );
     }
     return [];
   }

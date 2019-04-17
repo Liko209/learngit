@@ -21,9 +21,22 @@ const JuiConversationPostText = styled('div')`
     }
   }
   .at_mention_compose {
+    display: inline;
+    padding: 0;
+    border: none;
+    background: none;
+    ${typography('body1')};
+    font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
     color: ${palette('primary', 'main')};
     cursor: pointer;
-    font-weight: ${({ theme }) => theme.typography.body2.fontWeight};
+
+    :active {
+      outline: none;
+    }
+
+    :hover {
+      text-decoration: underline;
+    }
   }
   .current {
     color: ${grey('900')};

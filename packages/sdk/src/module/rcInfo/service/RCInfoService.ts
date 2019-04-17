@@ -11,6 +11,7 @@ import { RCInfoController } from '../controller/RCInfoController';
 import { ERCServiceFeaturePermission } from '../types';
 import { ACCOUNT_TYPE_ENUM } from '../../../authenticator/constants';
 import { AccountUserConfig } from '../../../module/account/config';
+import { mainLogger } from 'foundation';
 
 class RCInfoService extends EntityBaseService {
   private _rcInfoController: RCInfoController;
@@ -93,12 +94,15 @@ class RCInfoService extends EntityBaseService {
 
   async isVoipCallingAvailable(): Promise<boolean> {
     const userConfig = new AccountUserConfig();
-    return (
+    const result =
       userConfig.getAccountType() === ACCOUNT_TYPE_ENUM.RC &&
       (await this.getRCInfoController()
         .getRCPermissionController()
-        .isRCFeaturePermissionEnabled(ERCServiceFeaturePermission.VOIP_CALLING))
-    );
+        .isRCFeaturePermissionEnabled(
+          ERCServiceFeaturePermission.VOIP_CALLING,
+        ));
+    mainLogger.debug(`isVoipCallingAvailable: ${result}`);
+    return result;
   }
 
   async isRCFeaturePermissionEnabled(

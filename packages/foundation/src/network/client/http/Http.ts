@@ -17,8 +17,6 @@ import { RESPONSE_HEADER_KEY } from '../../Constants';
 class Http extends BaseClient {
   request(request: IRequest, listener: INetworkRequestExecutorListener): void {
     super.request(request, listener);
-    this.tasks[request.id] = request;
-    const { CancelToken } = axios;
     const {
       method,
       headers,
@@ -37,9 +35,6 @@ class Http extends BaseClient {
       withCredentials: false,
       data: {},
       params: {},
-      cancelToken: new CancelToken((cancel: any) => {
-        this.tasks[request.id].cancel = cancel;
-      }),
     };
     if (request.data) {
       options.data = request.data;
@@ -54,7 +49,7 @@ class Http extends BaseClient {
 
     axios(options)
       .then((res: any) => {
-        delete this.tasks[request.id];
+        this.tasks.delete(request.id);
         const { data, status, statusText } = res;
         const response = HttpResponseBuilder.builder
           .setData(data)
@@ -66,7 +61,7 @@ class Http extends BaseClient {
         listener.onSuccess(response);
       })
       .catch((err: any) => {
-        delete this.tasks[request.id];
+        this.tasks.delete(request.id);
         const { response = {}, code, message } = err;
         const { data } = response;
         let { status, statusText } = response;

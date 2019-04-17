@@ -19,7 +19,6 @@ import { Raw } from '../../../framework/model';
 import { GroupApiType } from '../../../models';
 import { ENTITY } from '../../../service/eventKey';
 import notificationCenter from '../../../service/notificationCenter';
-import { ProfileService } from '../../profile';
 import { PostService } from '../../post';
 import { transform } from '../../../service/utils';
 import { GroupDao } from '../dao';
@@ -47,12 +46,11 @@ export class GroupActionController {
   ) {}
 
   isInTeam(userId: number, team: Group): boolean {
-    return !!(
-      team &&
-      team.is_team &&
-      team.members &&
-      team.members.includes(userId)
-    );
+    return !!(team && team.is_team && this.isInGroup(userId, team));
+  }
+
+  isInGroup(userId: number, team: Group): boolean {
+    return !!(team && team.members && team.members.includes(userId));
   }
 
   canJoinTeam(team: Group) {
@@ -83,7 +81,7 @@ export class GroupActionController {
       teamId,
       (partialEntity, originalEntity) => {
         const members: number[] = originalEntity.members.filter(
-          (member) => member !== userId,
+          (member: number) => member !== userId,
         );
         return {
           ...partialEntity,
@@ -414,10 +412,6 @@ export class GroupActionController {
   }
 
   async isGroupCanBeShown(groupId: number): Promise<GroupCanBeShownResponse> {
-    const profileService = ServiceLoader.getInstance<ProfileService>(
-      ServiceConfig.PROFILE_SERVICE,
-    );
-    const isHidden = await profileService.isConversationHidden(groupId);
     let isIncludeSelf = false;
     let isValid = false;
     let group;
@@ -451,8 +445,6 @@ export class GroupActionController {
       }
     } else if (!isIncludeSelf) {
       result.reason = GROUP_CAN_NOT_SHOWN_REASON.NOT_INCLUDE_SELF;
-    } else if (isHidden) {
-      result.reason = GROUP_CAN_NOT_SHOWN_REASON.HIDDEN;
     } else {
       result.canBeShown = true;
     }

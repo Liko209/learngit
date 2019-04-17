@@ -4,36 +4,36 @@
  * Copyright © RingCentral. All rights reserved.
  */
 import _ from 'lodash';
-import { LogConsumerConfig } from './types';
+import { LogControlConfig } from './types';
 
-const DEFAULT_CONFIG: LogConsumerConfig = {
+const DEFAULT_CONFIG: LogControlConfig = {
   uploadEnabled: false,
-  memoryCountThreshold: 100,
+  memoryCountThreshold: 500,
   memorySizeThreshold: 1024 * 1024,
-  combineSizeThreshold: 50 * 1024,
+  combineSizeThreshold: 512 * 1024,
   uploadQueueLimit: 4,
-  autoFlushTimeCycle: 30 * 1000,
+  autoFlushTimeCycle: 60 * 1000,
   persistentLimit: 10 * 1024 * 1024,
   memoryCacheSizeThreshold: 10 * 1024 * 1024,
 };
 
 class ConfigManager {
-  private _config: LogConsumerConfig;
+  private _config: LogControlConfig;
 
   constructor() {
     this._config = _.cloneDeep(DEFAULT_CONFIG);
   }
 
-  getConfig(): LogConsumerConfig {
+  getConfig(): LogControlConfig {
     return this._config;
   }
 
-  setConfig(_config: LogConsumerConfig) {
+  setConfig(_config: LogControlConfig) {
     this._config = _config;
     return _config;
   }
 
-  mergeConfig(partialConfig: Partial<LogConsumerConfig>) {
+  mergeConfig(partialConfig: Partial<LogControlConfig>) {
     const newConfig = _.mergeWith(
       {},
       this._config,

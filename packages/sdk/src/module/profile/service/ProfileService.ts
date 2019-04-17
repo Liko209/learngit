@@ -15,12 +15,7 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import {
-  PerformanceTracerHolder,
-  PERFORMANCE_KEYS,
-  GlipTypeUtil,
-  TypeDictionary,
-} from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { SettingOption } from '../types';
 
 class ProfileService extends EntityBaseService<Profile>
@@ -50,15 +45,9 @@ class ProfileService extends EntityBaseService<Profile>
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
   ) => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_PROFILE,
-      logId,
-    );
-    this.getProfileController()
+    await this.getProfileController()
       .getProfileDataController()
       .profileHandleData(profile, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {

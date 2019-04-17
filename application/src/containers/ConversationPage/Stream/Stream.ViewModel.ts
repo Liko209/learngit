@@ -18,7 +18,7 @@ import StoreViewModel from '@/store/ViewModel';
 
 import { getEntity, getGlobalValue } from '@/store/utils';
 import GroupStateModel from '@/store/models/GroupState';
-import { StreamProps, StreamItemType, StreamItem } from './types';
+import { StreamProps, StreamItemType, StreamItem, STATUS } from './types';
 
 import { HistoryHandler } from './HistoryHandler';
 import { GLOBAL_KEYS } from '@/store/constants';
@@ -50,6 +50,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   );
   private _streamController: StreamController;
   private _historyHandler: HistoryHandler;
+
+  @observable
+  loadingStatus: STATUS = STATUS.PENDING;
 
   @observable loadInitialPostsError?: Error;
 
@@ -114,13 +117,9 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @computed
   get firstHistoryUnreadPostId() {
-    const firstUnreadPostId = this.hasMore('up') // !We need this to fix issues when UMI give us wrong info
-      ? undefined
-      : _.first(this.postIds);
-
-    return (
-      firstUnreadPostId ||
-      this._historyHandler.getFirstUnreadPostId(this.postIds)
+    return this._historyHandler.getFirstUnreadPostId(
+      this.postIds,
+      this.hasMore('up'),
     );
   }
 
@@ -135,6 +134,15 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       props.groupId,
       this._historyHandler,
       props.jumpToPostId,
+    );
+    this.reaction(
+      () => this.loadingStatus,
+      (status: STATUS) => {
+        props.updateConversationStatus(status);
+      },
+      {
+        fireImmediately: true,
+      },
     );
   }
 
@@ -183,13 +191,16 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   @action
   async loadInitialPosts() {
     this.loadInitialPostsError = undefined;
+    this.loadingStatus = STATUS.PENDING;
     try {
       if (this.props.jumpToPostId) {
         await this._loadSiblingPosts(this.props.jumpToPostId);
       } else {
         await this._streamController.fetchInitialData(QUERY_DIRECTION.OLDER);
       }
+      this.loadingStatus = STATUS.SUCCESS;
     } catch (err) {
+      this.loadingStatus = STATUS.FAILED;
       this._handleLoadInitialPostsError(err);
     }
   }
@@ -266,6 +277,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return await this._streamController.fetchData(direction, limit);
   }
 
+  private async _loadAllUnreadPosts(): Promise<Post[]> {
+    if (!this._streamController.hasMore(QUERY_DIRECTION.OLDER)) {
+      return [];
+    }
+
+    return await this._streamController.fetchAllUnreadData();
+  }
+
   private async _loadSiblingPosts(anchorPostId: number) {
     const post = await this._postService.getById(anchorPostId);
     if (post) {
@@ -286,6 +305,18 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
       this._streamController.enableNewMessageSep();
       try {
         await this._loadPosts(QUERY_DIRECTION.OLDER, loadCount);
+      } catch (err) {
+        this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
+        throw err;
+      }
+    }
+    return this.firstHistoryUnreadPostId;
+  }
+
+  getFirstUnreadPostByLoadAllUnread = async () => {
+    if (!this.firstHistoryUnreadInPage) {
+      try {
+        await this._loadAllUnreadPosts();
       } catch (err) {
         this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
         throw err;

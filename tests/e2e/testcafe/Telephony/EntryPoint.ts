@@ -10,14 +10,19 @@ import { formalName } from '../libs/filter';
 import { h } from '../v2/helpers'
 import { setupCase, teardownCase } from '../init';
 import { AppRoot } from "../v2/page-models/AppRoot";
-import { IGroup } from "../v2/models";
+import { IGroup, ITestMeta } from "../v2/models";
 import { SITE_URL, BrandTire } from '../config';
 
 fixture('Telephony/EntryPoint')
   .beforeEach(setupCase(BrandTire.RCOFFICE))
   .afterEach(teardownCase());
 
-test(formalName('User should be able to see the 1:1 Call button in different entry points', ['JPT-1354', 'p1', 'Potar.He', 'EntryPoint']), async (t) => {
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1354'],
+  maintainers: ['Potar.He'],
+  keywords: ['telephony', 'entry']
+})('User should be able to see the 1:1 Call button in different entry points', async (t) => {
   const users = h(t).rcData.mainCompany.users;
   const loginUser = users[4]
   const anotherUser = users[5];
@@ -159,4 +164,49 @@ test(formalName('User should be able to see the 1:1 Call button in different ent
   await h(t).withLog('Then telephony dialog dismiss', async () => {
     await t.expect(telephonyDialog.exists).notOk();
   });
+});
+
+
+test.meta(<ITestMeta>{
+  priority: ['P1'],
+  caseIds: ['JPT-1323'],
+  maintainers: ['potar.he'],
+  keywords: ['search', 'telephony'],
+})('Clear recent search history', async (t) => {
+  const app = new AppRoot(t);
+  const users = h(t).rcData.mainCompany.users;
+  const loginUser = users[4];
+  await h(t).glip(loginUser).init();
+  await h(t).glip(loginUser).resetProfile();
+  const beSearchUserName = await h(t).glip(loginUser).getPersonPartialData('display_name', users[5].rcId);
+
+  await h(t).withLog(`Given I login Jupiter with this extension ${loginUser.company.number}#${loginUser.extension}`, async () => {
+    await h(t).directLoginWithUser(SITE_URL, loginUser);
+    await app.homePage.ensureLoaded();
+  });
+
+  const searchBar = app.homePage.header.searchBar;
+  const searchDialog = app.homePage.searchDialog;
+
+  let resultName: string;
+  await h(t).withLog(`When I search ${beSearchUserName} and hover the people result and click call icon then close`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(beSearchUserName);
+    resultName = await searchDialog.instantPage.nthPeople(0).getName();
+    await searchDialog.instantPage.nthPeople(0).makeCall();
+    await app.homePage.telephonyDialog.ensureLoaded(60e3);
+    await app.homePage.telephonyDialog.clickHandUpButton();
+  });
+
+  await h(t).withLog(`And mouse in the global search box`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.clearInputAreaTextByKey();
+  });
+
+  await h(t).withLog(`Then the recently searched dropdown list displayed and the new contact items are added`, async () => {
+    await searchDialog.recentPage.ensureLoaded();
+    await t.expect(searchDialog.recentPage.items.count).eql(1);
+    await t.expect(searchDialog.recentPage.conversationByName(resultName).exists).ok();
+  });
+
 });
