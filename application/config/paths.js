@@ -59,7 +59,7 @@ module.exports = {
   appNodeModules: resolveApp('node_modules'),
   appTsConfig: resolveApp('tsconfig.dev.json'),
   appTsProdConfig: resolveApp('tsconfig.prod.json'),
-  appTsLint: resolveApp('../tslint.json'),
+  appTsLint: resolveApp('../tslint.dev.json'),
   publicUrl: getPublicUrl(resolveApp('package.json')),
   servedPath: getServedPath(resolveApp('package.json')),
   depPackages: resolveApp('../packages')

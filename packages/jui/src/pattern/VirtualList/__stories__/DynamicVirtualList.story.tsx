@@ -110,7 +110,6 @@ storiesOf('Pattern/VirtualList', module).add('Dynamic VirtualList', () => {
     }
 
     loadMore = () => {
-      console.log('loadMore: ');
       return new Promise((resolve: Function) => {
         if (this._items.length >= count) {
           resolve();

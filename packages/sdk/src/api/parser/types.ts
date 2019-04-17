@@ -13,7 +13,6 @@ export class ResponseParser implements IResponseParser {
 
   register(parser: IResponseParser) {
     if (this._parsers.some(item => item.name === parser.name)) {
-      console.info(`errorParser ${parser.name} replaced`);
       this._parsers = this._parsers.filter(item => item.name !== parser.name);
     }
     this._parsers.push(parser);
