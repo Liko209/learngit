@@ -5,23 +5,31 @@ import { BaseWebComponent } from "../../BaseWebComponent";
 
 export class TelephonyDialog extends BaseWebComponent {
   get self() {
-    return this.getSelector('[role="document"] > .react-draggable');
+    return this.getSelector('[role="document"]');
+  }
+
+  get title() {
+    return this.getSelectorByAutomationId('telephony-dialer-title');
   }
 
   get callTime() {
-    return this.self.find("div > div > div > div > div"); // TODO: automationId
+    return this.getSelectorByAutomationId('telephony-dialer-title-left');
+  }
+
+  get header() {
+    return this.getSelectorByAutomationId('telephony-dialer-header');
   }
 
   get avatar() {
-    return this.self.find('div').withAttribute('uid'); // TODO: automationId
+    return this.header.find('div').withAttribute('uid');
   }
 
   get name() {
-    return this.avatar.nextSibling('div').find('div').nth(0);// TODO: automationId
+    return this.getSelectorByAutomationId('telephony-dialer-header-name');
   }
 
   get extension() {
-    return this.avatar.nextSibling('div').find('div').nth(1);// TODO: automationId
+    return this.getSelectorByAutomationId('telephony-dialer-header-phone');
   }
 
   get handUpButton() {
