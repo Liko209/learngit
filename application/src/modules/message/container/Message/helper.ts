@@ -70,7 +70,12 @@ export class MessageRouterChangeHelper {
       ServiceConfig.STATE_SERVICE,
     );
     const state = await stateService.getMyState();
+
     if (state && state.last_group_id) {
+      const isHidden = await GroupHandler.isGroupHidden(state.last_group_id);
+      if (isHidden) {
+        return '';
+      }
       return this.verifyGroup(state.last_group_id);
     }
     return '';
@@ -103,7 +108,7 @@ export class MessageRouterChangeHelper {
     action?: Action,
     state?: any,
   ) {
-    const validId = await this.verifyGroup(Number(id), true);
+    const validId = await this.verifyGroup(Number(id));
     this.ensureGroupIsOpened(Number(id));
     this._doRouterRedirection(validId, action, state);
     this.updateCurrentConversationId(id);
@@ -124,7 +129,7 @@ export class MessageRouterChangeHelper {
     }
   }
 
-  static async verifyGroup(id: number, isHiddenValid?: boolean) {
+  static async verifyGroup(id: number) {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
@@ -150,11 +155,6 @@ export class MessageRouterChangeHelper {
           message: await i18nT('people.prompt.conversationDeleted'),
           ...toastOpts,
         });
-        break;
-      case GROUP_CAN_NOT_SHOWN_REASON.HIDDEN:
-        if (isHiddenValid) {
-          return String(id);
-        }
         break;
     }
     return '';
