@@ -319,6 +319,10 @@ class MessagesResultTab extends BaseConversationPage {
     })
   }
 
+  get scrollDiv() {
+    return this.stream.parent("div");
+  }
+
   /* filter */
   get postByField() {
     return this.getComponent(searchComoBox, this.self.find('#downshift-multiple-input').nth(0).parent('*[role="combobox"]'));
