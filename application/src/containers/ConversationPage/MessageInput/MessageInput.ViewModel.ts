@@ -240,13 +240,12 @@ class MessageInputViewModel extends StoreViewModel<MessageInputProps>
     const items = this.items;
     try {
       this._trackSendPost();
-      let realContent: string = content;
-
+      let newContent = content && content.replace(/[\n\r]$/, '');
       if (content.trim().length === 0) {
-        realContent = '';
+        newContent = '';
       }
       await this._postService.sendPost({
-        text: realContent,
+        text: newContent,
         groupId: this.props.id,
         itemIds: items.map((item: FileItem) => item.id),
         mentionNonItemIds: ids,
