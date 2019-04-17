@@ -87,16 +87,11 @@ class EntityCacheController<T extends IdModel = IdModel>
   async batchGet(ids: number[], order?: boolean): Promise<T[]> {
     const entities: T[] = [];
 
-    const promises = ids.map(async (id: number) => {
-      return this.get(id);
-    });
-
-    await Promise.all(promises).then((results: (T | null)[]) => {
-      results.forEach((result: T | null) => {
-        if (result) {
-          entities.push(result);
-        }
-      });
+    ids.forEach((id: number) => {
+      const entity = this.getSynchronously(id);
+      if (entity) {
+        entities.push(entity);
+      }
     });
 
     return entities;

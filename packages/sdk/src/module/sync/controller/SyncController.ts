@@ -214,7 +214,7 @@ class SyncController {
       // 5 minutes ago to ensure data is correct
       try {
         const result = await this.fetchIndexData(String(1543622400000));
-        mainLogger.log(LOG_TAG, 'fetch index done');
+        mainLogger.log(LOG_INDEX_DATA, 'fetch index done');
         onIndexLoaded && (await onIndexLoaded(result));
 
         const logId = Date.now();
@@ -227,9 +227,9 @@ class SyncController {
 
         onIndexHandled && (await onIndexHandled());
         syncConfig.updateIndexSucceed(true);
-        mainLogger.log(LOG_TAG, 'handle index done');
+        mainLogger.log(LOG_INDEX_DATA, 'handle index done');
       } catch (error) {
-        mainLogger.log(LOG_TAG, 'fetch index failed');
+        mainLogger.log(LOG_INDEX_DATA, 'fetch index failed');
         syncConfig.updateIndexSucceed(false);
         await this._handleSyncIndexError(error);
       }
@@ -359,7 +359,10 @@ class SyncController {
         this._handleIncomingPost(posts, maxPostsExceeded, source, entityMap),
       )
       .then(() => {
-        console.error(`store index data done===${Date.now() - start}`);
+        mainLogger.debug(
+          LOG_INDEX_DATA,
+          `store index data done===${Date.now() - start}`,
+        );
       })
       .then(() => {
         if (entityMap.size > 0) {
@@ -371,7 +374,10 @@ class SyncController {
               notificationCenter.emitEntityUpdate(key, value);
             }
           });
-          console.error(`emit index data done===${Date.now() - s}`);
+          mainLogger.debug(
+            LOG_INDEX_DATA,
+            `emit index data done===${Date.now() - s}`,
+          );
         }
       });
   }
@@ -417,8 +423,7 @@ class SyncController {
     );
     await ServiceLoader.getInstance<ItemService>(
       ServiceConfig.ITEM_SERVICE,
-    ).handleIncomingData(items,
-      entities,);
+    ).handleIncomingData(items, entities);
     PerformanceTracerHolder.getPerformanceTracer().end(
       logId,
       items && items.length,

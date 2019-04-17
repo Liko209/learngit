@@ -85,6 +85,12 @@ class EntityPersistentController<T extends IdModel = IdModel>
     }
   }
 
+  saveToMemory(entities: T[]): void {
+    if (this.entityCacheController) {
+      this.entityCacheController.bulkUpdate(entities);
+    }
+  }
+
   async get(key: number): Promise<T | null> {
     let item: T | null = null;
     if (this.entityCacheController) {

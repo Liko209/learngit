@@ -529,7 +529,7 @@ class SectionGroupHandler extends BaseNotificationSubscribable {
   }
 
   private async _addToFetchProcessor(groupId: number) {
-    // preFetchConversationDataHandler.addProcessor(groupId);
+    preFetchConversationDataHandler.addProcessor(groupId);
   }
 
   private _getPerformanceKey(sectionType: SECTION_TYPE): string {

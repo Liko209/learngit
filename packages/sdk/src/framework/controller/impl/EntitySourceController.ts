@@ -56,28 +56,39 @@ class EntitySourceController<T extends IdModel = IdModel>
   }
 
   async batchGet(ids: number[], order?: boolean): Promise<T[]> {
+    const idsSet = new Set<number>(ids);
+    const nonDuplicatedIds = [...idsSet];
     const existsEntities = await this.entityPersistentController.batchGet(
-      ids,
+      nonDuplicatedIds,
       order,
     );
-    if (ids.length === existsEntities.length) {
+    if (nonDuplicatedIds.length === existsEntities.length) {
       return existsEntities;
     }
 
     const existsIds = this._getIds(existsEntities);
-    const diffIds = _.difference(ids, existsIds);
+    const diffIds = _.difference(nonDuplicatedIds, existsIds);
     const deactivatedEntities = await this.deactivatedDao.batchGet(diffIds);
+    if (
+      deactivatedEntities.length &&
+      this.entityPersistentController.saveToMemory
+    ) {
+      this.entityPersistentController.saveToMemory(deactivatedEntities);
+    }
 
     const deactivatedIds = this._getIds(deactivatedEntities);
     const remoteIds = _.difference(diffIds, deactivatedIds);
+
     const remoteEntities = await this._getEntitiesRemoteServer(remoteIds);
+
+    await this.entityPersistentController.bulkPut(remoteEntities);
 
     let entities = existsEntities
       .concat(deactivatedEntities)
       .concat(remoteEntities);
 
     if (order && entities.length) {
-      entities = this._orderAsIds(ids, entities);
+      entities = this._orderAsIds(nonDuplicatedIds, entities);
     }
 
     return entities;

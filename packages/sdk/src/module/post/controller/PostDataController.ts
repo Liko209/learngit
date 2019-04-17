@@ -290,25 +290,19 @@ class PostDataController {
     if (!posts || !posts.length) {
       return posts;
     }
-    const groups = _.groupBy(posts, 'group_id');
+
     const postDao = daoManager.getDao(PostDao);
-    const normalPosts = _.flatten(
-      await Promise.all(
-        Object.values(groups).map(async (posts: Post[]) => {
-          const normalPosts = await baseHandleData(
-            {
-              entities,
-              data: posts,
-              dao: postDao,
-              eventKey: ENTITY.POST,
-              noSavingToDB: !save,
-            },
-            this.filterFunc,
-          );
-          return normalPosts;
-        }),
-      ),
+    const normalPosts = await baseHandleData(
+      {
+        entities,
+        data: posts,
+        dao: postDao,
+        eventKey: ENTITY.POST,
+        noSavingToDB: !save,
+      },
+      this.filterFunc,
     );
+
     // check if post's owner group exist in local or not
     // seems we only need check normal posts, don't need to check deactivated data
     await this._ensureGroupExist(normalPosts);
@@ -340,7 +334,7 @@ class PostDataController {
       groupIds.map(async (groupId: string) => {
         const posts: Post[] = groupPosts[groupId];
         if (this._isGroupPostsDiscontinuous(posts)) {
-          const oldestPost = await postDao.queryOldestPostByGroupId(
+          const oldestPost = await postDao.queryOldestPostCreationTimeByGroupId(
             Number(groupId),
           );
           let editedNewestPostCreationTime = -1;
@@ -388,6 +382,7 @@ class PostDataController {
         [...deleteGroupIdSet],
         QUERY_DIRECTION.OLDER,
       );
+
       return deletePostIds;
     }
     return [];
@@ -407,15 +402,29 @@ class PostDataController {
 
   private async _ensureGroupExist(posts: Post[]): Promise<void> {
     if (posts.length) {
-      posts.forEach(async (post: Post) => {
+      const notExistedGroups: number[] = [];
+      posts.forEach((post: Post) => {
+        const group = this._groupService.getSynchronously(post.group_id);
+        if (!group) {
+          notExistedGroups.push(post.group_id);
+        }
+      });
+
+      if (notExistedGroups.length) {
+        mainLogger.info(
+          LOG_INDEX_DATA_POST,
+          `_ensureGroupExist() notExistedGroups.length: ${
+            notExistedGroups.length
+          }`,
+        );
         try {
-          await this._groupService.getById(post.group_id);
+          await this._groupService.batchGet(notExistedGroups);
         } catch (error) {
           mainLogger
             .tags('PostDataController')
-            .info(`get group ${post.group_id} fail`, error);
+            .info('get group error =', error);
         }
-      });
+      }
     }
   }
 
