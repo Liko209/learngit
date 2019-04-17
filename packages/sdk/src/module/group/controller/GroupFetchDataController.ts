@@ -320,7 +320,8 @@ export class GroupFetchDataController {
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
   ) {
-    const groupName = '';
+    let groupName: string = '';
+    let lowerCaseName: string = '';
     const currentUserId = this._currentUserId;
     return (group: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -346,9 +347,9 @@ export class GroupFetchDataController {
           break;
         }
         let isFuzzy: boolean = false;
-        let lowerCaseName: string = '';
         if (group.is_team) {
-          lowerCaseName = group.set_abbreviation.toLocaleLowerCase();
+          groupName = group.set_abbreviation;
+          lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseName,
@@ -364,7 +365,8 @@ export class GroupFetchDataController {
             group.members,
             currentUserId,
           );
-          lowerCaseName = this.getGroupNameByMultiMembers(allPerson);
+          groupName = this.getGroupNameByMultiMembers(allPerson);
+          lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseName,
@@ -390,7 +392,7 @@ export class GroupFetchDataController {
             id: group.id,
             displayName: groupName,
             firstSortKey: sortValue,
-            secondSortKey: groupName.toLowerCase(),
+            secondSortKey: lowerCaseName,
             entity: group,
           }
         : null;
