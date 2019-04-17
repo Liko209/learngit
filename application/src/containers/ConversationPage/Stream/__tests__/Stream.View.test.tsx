@@ -14,7 +14,7 @@ import { theme } from '@/__tests__/utils';
 import { ConversationPost } from '../../../ConversationPost';
 import { TimeNodeDivider } from '../../TimeNodeDivider';
 import { StreamViewComponent as StreamView } from '../Stream.View';
-import { StreamItemType, StreamViewProps } from '../types';
+import { StreamItemType, StreamViewProps, STATUS } from '../types';
 
 import { PostService } from 'sdk/module/post';
 PostService.getInstance = jest.fn();
@@ -239,16 +239,25 @@ describe('StreamView', () => {
       });
     });
 
-    describe('loadInitialData', () => {
+    describe('display JuiInfiniteList or JuiStreamLoading', () => {
       it('success', () => {
         const { wrapper } = mountStream(baseProps);
+        expect(wrapper.find(JuiInfiniteList)).toHaveLength(1);
+      });
+
+      it('pending', () => {
+        const props = {
+          ...baseProps,
+          loadingStatus: STATUS.PENDING,
+        };
+        const { wrapper } = mountStream(props);
         expect(wrapper.find(JuiInfiniteList)).toHaveLength(1);
       });
 
       it('failed', () => {
         const props = {
           ...baseProps,
-          loadInitialPostsError: new Error('loadInitialPosts error'),
+          loadingStatus: STATUS.FAILED,
         };
         const { wrapper } = mountStream(props);
         expect(wrapper.find(JuiStreamLoading)).toHaveLength(1);

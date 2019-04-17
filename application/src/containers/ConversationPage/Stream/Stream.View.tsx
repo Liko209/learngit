@@ -349,29 +349,18 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead, updateConversationStatus } = this.props;
-    try {
-      await loadInitialPosts();
-      updateConversationStatus(STATUS.SUCCESS);
-      runInAction(() => {
-        this.props.updateHistoryHandler();
-        markAsRead();
-      });
-      requestAnimationFrame(() => {
-        if (this._jumpToPostRef.current) {
-          this._jumpToPostRef.current.highlight();
-        }
-      });
-      this._watchUnreadCount();
-    } catch (err) {
-      updateConversationStatus(STATUS.FAILED);
-    }
-  }
-
-  private resetStatus = () => {
-    const { updateConversationStatus } = this.props;
-    updateConversationStatus(STATUS.SUCCESS);
-    this._loadInitialPosts();
+    const { loadInitialPosts, markAsRead } = this.props;
+    await loadInitialPosts();
+    runInAction(() => {
+      this.props.updateHistoryHandler();
+      markAsRead();
+    });
+    requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+      }
+    });
+    this._watchUnreadCount();
   }
 
   private _onInitialDataFailed = (
@@ -379,12 +368,12 @@ class StreamViewComponent extends Component<Props> {
       showTip={true}
       tip={this.props.t('translations:message.prompt.MessageLoadingErrorTip')}
       linkText={this.props.t('translations:common.prompt.tryAgain')}
-      onClick={this.resetStatus}
+      onClick={this._loadInitialPosts}
     />
   );
 
   render() {
-    const { loadMore, hasMore, items, loadInitialPostsError } = this.props;
+    const { loadMore, hasMore, items, loadingStatus } = this.props;
 
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
@@ -404,7 +393,7 @@ class StreamViewComponent extends Component<Props> {
             {() => (
               <JuiStream ref={ref}>
                 {this._renderJumpToFirstUnreadButton()}
-                {loadInitialPostsError ?
+                {loadingStatus === STATUS.FAILED ?
                   this._onInitialDataFailed
                   :
                   <JuiInfiniteList

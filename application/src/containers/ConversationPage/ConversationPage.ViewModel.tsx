@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed } from 'mobx';
+import { computed, observable } from 'mobx';
 import { GroupService } from 'sdk/module/group';
 import { StateService } from 'sdk/module/state';
 import { Group } from 'sdk/module/group/entity';
@@ -12,7 +12,7 @@ import { getEntity } from '@/store/utils';
 import GroupModel from '@/store/models/Group';
 import StoreViewModel from '@/store/ViewModel';
 import { ENTITY_NAME } from '@/store';
-import { ConversationPageProps } from './types';
+import { ConversationPageProps, STATUS } from './types';
 import _ from 'lodash';
 import history from '@/history';
 import { mainLogger } from 'sdk';
@@ -25,6 +25,9 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
   private _stateService = ServiceLoader.getInstance<StateService>(
     ServiceConfig.STATE_SERVICE,
   );
+
+  @observable
+  loadingStatus: STATUS = STATUS.PENDING;
 
   constructor(props: ConversationPageProps) {
     super(props);
@@ -81,6 +84,10 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
 
   private async _readGroup(groupId: number) {
     this._throttledUpdateLastGroup(groupId);
+  }
+
+  updateStatus = (status: STATUS) => {
+    this.loadingStatus = status;
   }
 }
 

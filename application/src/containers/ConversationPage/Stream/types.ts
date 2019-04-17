@@ -77,6 +77,7 @@ type StreamViewProps = {
   historyReadThrough?: number;
   firstHistoryUnreadPostId?: number;
   loadInitialPostsError?: Error;
+  loadingStatus: STATUS;
   loading?: boolean;
   lastPost?: PostModel;
   loadMore: (direction: 'up' | 'down', count: number) => Promise<void>;
