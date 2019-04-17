@@ -125,6 +125,10 @@ export abstract class BaseWebComponent {
     return this.self.find('button').withText(text);
   }
 
+  async shouldHaveButtonOfText(text: string) {
+    await this.t.expect(this.buttonOfText(text).exists).ok();
+  }
+
   buttonOfIcon(icon: string) {
     return this.getSelectorByIcon(icon, this.self).parent('button');
   }

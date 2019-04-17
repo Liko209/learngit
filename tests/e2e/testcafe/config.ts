@@ -120,7 +120,7 @@ enum BrandTire {
 };
 
 const WebphoneConfig = {
-  TTL: 1800000,
+  TTL: 600000,
   reserve: false,
 }
 
