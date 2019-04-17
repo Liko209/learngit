@@ -18,7 +18,7 @@ export default class PreFetchPostProcessor implements IProcessor {
     try {
       await this._processFunc(this._groupId);
     } catch (e) {
-      mainLogger.error(`failed to preFetch post of group ${this.name()}`, e);
+      mainLogger.warn(`failed to preFetch post of group ${this.name()}`, e);
     }
     return Promise.resolve(true);
   }

@@ -44,6 +44,7 @@ class CallViewComponent extends Component<Props> {
         })}
         variant={variant}
         color={color}
+        data-test-automation-id="telephony-call-btn"
       >
         phone
       </JuiIconButton>

@@ -37,7 +37,7 @@ function getThumbnailURL(
   item: ImageInfo,
   size: { width: number; height: number } = { width: 1000, height: 200 },
 ) {
-  const { versions } = item;
+  const { versions = [] } = item;
   if (versions.length > 0) {
     const version = versions[0];
     // hard code as dThor

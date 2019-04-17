@@ -21,6 +21,9 @@ import {
 
 type JuiMenuItemProps = {
   icon?: string | ReactNode;
+  avatar?: JSX.Element;
+  automationId?: string;
+  maxWidth?: number;
 } & MuiMenuItemProps;
 
 const StyledMuiListItemIcon = styled(MuiListItemIcon)`
@@ -31,15 +34,22 @@ const StyledMuiListItemIcon = styled(MuiListItemIcon)`
   }
 `;
 
-const StyledMenuItem = styled(MuiMenuItem)`
+const WrappedMenuItem = ({
+  icon,
+  avatar,
+  maxWidth,
+  ...rest
+}: JuiMenuItemProps) => <MuiMenuItem {...rest} />;
+
+const StyledMenuItem = styled(WrappedMenuItem)`
   && {
     ${typography('caption1')};
     color: ${grey('700')};
-    height: ${height(8)};
+    height: auto;
+    min-height: ${height(8)};
     min-width: ${width(28)};
-    max-width: ${width(80)};
-    line-height: ${height(8)};
-    padding: ${spacing(0, 4)};
+    max-width: ${({ maxWidth }) => maxWidth && width(maxWidth)};
+    padding: ${spacing(1, 4)};
     box-sizing: border-box;
 
     &:hover {
@@ -58,7 +68,15 @@ const StyledMenuItem = styled(MuiMenuItem)`
 
 class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
   render() {
-    const { icon, children, disabled, ...rest } = this.props;
+    const {
+      icon,
+      children,
+      disabled,
+      avatar,
+      automationId,
+      maxWidth,
+      ...rest
+    } = this.props;
     let iconElement: any;
     if (typeof icon !== 'string') {
       iconElement = icon;
@@ -66,8 +84,15 @@ class JuiMenuItem extends React.PureComponent<JuiMenuItemProps> {
       iconElement = <JuiIconography iconSize="small">{icon}</JuiIconography>;
     }
     return (
-      <StyledMenuItem disabled={disabled} data-disabled={disabled} {...rest}>
+      <StyledMenuItem
+        data-test-automation-id={automationId}
+        disabled={disabled}
+        data-disabled={disabled}
+        maxWidth={maxWidth}
+        {...rest}
+      >
         {icon && <StyledMuiListItemIcon>{iconElement}</StyledMuiListItemIcon>}
+        {avatar && <StyledMuiListItemIcon>{avatar}</StyledMuiListItemIcon>}
         {children}
       </StyledMenuItem>
     );

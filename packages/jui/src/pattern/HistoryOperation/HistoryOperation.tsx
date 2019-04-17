@@ -14,9 +14,10 @@ type TowardsProps = {
   type: OPERATION;
   disabled: boolean;
   tooltipTitle: string;
-  onClick: ((event: React.MouseEvent<HTMLSpanElement>) => void);
+  onClick: (event: React.MouseEvent<HTMLSpanElement>) => void;
   menu: { pathname: string; title: string }[];
   onClickMenu: (type: OPERATION, index: number) => void;
+  menuItemMaxWidth?: number;
 };
 
 const MenuListCompositionWrapper = styled.div`
@@ -88,7 +89,14 @@ export class JuiHistoryOperation extends React.PureComponent<
   render() {
     const { open, anchorEl } = this.state;
 
-    const { menu = [], disabled, onClick, type, tooltipTitle } = this.props;
+    const {
+      menu = [],
+      disabled,
+      onClick,
+      type,
+      tooltipTitle,
+      menuItemMaxWidth,
+    } = this.props;
     return (
       <MenuListCompositionWrapper>
         <TowardIcons
@@ -118,6 +126,7 @@ export class JuiHistoryOperation extends React.PureComponent<
               return (
                 <JuiMenuItem
                   onClick={this.getClickMenuHander(key, type, index)}
+                  maxWidth={menuItemMaxWidth}
                   key={key}
                 >
                   <MenuListItemWrapper>{title}</MenuListItemWrapper>

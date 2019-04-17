@@ -12,7 +12,7 @@ import { JuiModal } from 'jui/components/Dialog';
 import { JuiTextarea } from 'jui/components/Forms/Textarea';
 import { JuiTextWithLink } from 'jui/components/TextWithLink';
 import { JuiSnackbarContent } from 'jui/components/Snackbars';
-import { ContactSearch } from '@/containers/ContactSearch';
+import { ContactSearch } from '@/containers/Downshift';
 import { Notification } from '@/containers/Notification';
 import { CreateTeam } from '@/containers/CreateTeam';
 import { DialogContext } from '@/containers/Dialog';
@@ -135,6 +135,8 @@ class NewMessageView extends React.Component<ViewProps, State> {
           helperText={emailError ? i18next.t(emailErrorMsg) : ''}
           errorEmail={errorEmail}
           messageRef={this.messageRef}
+          multiple={true}
+          autoSwitchEmail={true}
         />
         <JuiTextarea
           id={i18next.t('message.action.typeNewMessage')}

@@ -5,8 +5,6 @@
  */
 import { FileItemUtils } from '../FileItemUtils';
 import {
-  GifFileExtensions,
-  ImageFileExtensions,
   ResizableExtensions,
   SupportPreviewImageExtensions,
 } from '../ImageFileExtensions';
@@ -170,6 +168,43 @@ describe('FileItemUtils', () => {
 
     it('should return false when is not from giphy', () => {
       expect(FileItemUtils.isFromGiphy(itemB)).toBeFalsy();
+    });
+  });
+
+  describe('getVersionDate', () => {
+    it('should return date at 0 pos when has version data ', () => {
+      expect(
+        FileItemUtils.getVersionDate({
+          versions: [{ date: 11111 }, { date: 22222 }] as any,
+        }),
+      ).toBe(11111);
+    });
+
+    it('should return null when version data is string ', () => {
+      expect(
+        FileItemUtils.getVersionDate({
+          versions: [{ date: '11111' }, { date: '22222' }] as any,
+        }),
+      ).toBe(null);
+    });
+
+    it('should return null when version is empty ', () => {
+      expect(FileItemUtils.getVersionDate({ versions: [] as any })).toBe(null);
+    });
+
+    it('should return null when version is not array ', () => {
+      expect(FileItemUtils.getVersionDate({ versions: {} as any })).toBe(null);
+    });
+  });
+
+  describe('getLatestPostId', () => {
+    it('should return max post id of the file ', () => {
+      expect(
+        FileItemUtils.getLatestPostId({
+          id: 10,
+          post_ids: [1, 2, 3],
+        }),
+      ).toBe(3);
     });
   });
 });

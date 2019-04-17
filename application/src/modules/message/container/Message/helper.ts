@@ -55,7 +55,7 @@ class GroupHandler {
       await _profileService.reopenConversation(id);
     } catch {
       history.replace('/messages/loading', {
-        id,
+        params: { id },
         error: true,
       });
     }

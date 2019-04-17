@@ -69,7 +69,7 @@ class ItemListDataSource {
     this._buildSortableMemberListHandler(
       this.groupId,
       type,
-      ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      ITEM_SORT_KEYS.LATEST_POST_ID,
       false,
     );
   }
@@ -77,7 +77,7 @@ class ItemListDataSource {
   private _transformFunc = (model: Item) => {
     return {
       id: model.id,
-      sortValue: FileItemUtils.getVersionDate(model) || model.created_at,
+      sortValue: FileItemUtils.getLatestPostId(model),
     } as ISortableModel<Item>;
   }
 
@@ -166,7 +166,7 @@ class ItemListDataSource {
     return await itemService.getItemIndexInfo(itemId, {
       typeId: ViewerItemTypeIdMap[this.type],
       groupId: this.groupId,
-      sortKey: ITEM_SORT_KEYS.LATEST_VERSION_DATE,
+      sortKey: ITEM_SORT_KEYS.LATEST_POST_ID,
       desc: false,
       limit: Infinity,
       offsetItemId: undefined,

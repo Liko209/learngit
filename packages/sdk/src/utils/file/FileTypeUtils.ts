@@ -8,7 +8,7 @@ const GIF_FLAG = '.gif';
 
 class FileTypeUtils {
   static isGif(path: string) {
-    return path.includes(GIF_FLAG);
+    return path && path.includes(GIF_FLAG);
   }
 }
 

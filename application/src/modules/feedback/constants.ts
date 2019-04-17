@@ -6,3 +6,5 @@
 export const FILE_STACK_API_KEY = 'AMQqm7fiSTkC6TGrB15Yhz';
 
 export const DEFAULT_FEEDBACK_EMAIL = 'jupiter.feedback@ringcentral.com';
+
+export const LOG_TAG = 'FeedbackModule';

@@ -12,9 +12,10 @@ type ReplaceHandler = (match: string, id: string, name: string) => string;
 const handleAtMentionName = (str: string, kv = {}, currentUserId = 0) => {
   return replaceAtMention(str, (match, id, p2) => {
     const text = kv[id] || p2;
-    return `<a class='at_mention_compose${
-      +id === currentUserId ? ' current' : ''
-    }' href='javascript:void(0)' id='${id}'>${text}</a>`;
+    const isCurrentUser = Number(id) === currentUserId;
+    const className = `at_mention_compose${isCurrentUser ? ' current' : ''}`;
+
+    return `<button class='${className}' id='${id}'>${text}</button>`;
   });
 };
 

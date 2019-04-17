@@ -34,6 +34,8 @@ import { analyticsCollector } from '@/AnalyticsCollector';
 const DEBUG_COMMAND_MAP = {
   '/debug': () => UploadRecentLogs.show(),
   '/debug-save': () => {
+    // todo use schema
+    // feedback://..., object;
     container
       .get(FeedbackService)
       .zipRecentLogs()

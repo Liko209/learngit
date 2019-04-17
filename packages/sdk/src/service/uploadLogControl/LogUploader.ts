@@ -5,13 +5,11 @@
  */
 import axios, { AxiosError } from 'axios';
 import { HTTP_STATUS_CODE, LogEntity, mainLogger } from 'foundation';
-import { AccountService } from '../../module/account';
-import { AccountUserConfig } from '../../module/account/config';
-
-import { Api } from '../../api';
-import { Pal } from '../../pal';
+import { Api } from 'sdk/api';
+import { Pal } from 'sdk/pal';
 import { ILogUploader } from './consumer';
-import { ServiceConfig, ServiceLoader } from '../../module/serviceLoader';
+import { ServiceConfig, ServiceLoader } from 'sdk/module/serviceLoader';
+import { AccountService } from 'sdk/module/account';
 
 const DEFAULT_EMAIL = 'service@glip.com';
 export class LogUploader implements ILogUploader {
@@ -71,22 +69,16 @@ export class LogUploader implements ILogUploader {
     const accountService = ServiceLoader.getInstance<AccountService>(
       ServiceConfig.ACCOUNT_SERVICE,
     );
-
-    let id;
-    let email = DEFAULT_EMAIL;
+    let userInfo;
     try {
-      const userConfig = new AccountUserConfig();
-      id = userConfig.getGlipUserId();
-      email = await accountService.getUserEmail();
+      userInfo = await accountService.getCurrentUserInfo();
     } catch (error) {
-      mainLogger.warn(error);
+      mainLogger.debug('getUserInfo fail', error);
     }
-    const userId = id ? id.toString() : '';
-    const clientId = accountService.getClientId();
+    const { email = DEFAULT_EMAIL, id = '' } = userInfo || {};
     return {
       email,
-      userId,
-      clientId,
+      userId: id,
     };
   }
 
