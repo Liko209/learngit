@@ -17,6 +17,7 @@ type MemberProps = {
 };
 
 const StyledConversationPageMember = styled.button<MemberProps>`
+  position: relative;
   display: inline-flex;
   flex: none;
   align-self: center;
@@ -27,7 +28,6 @@ const StyledConversationPageMember = styled.button<MemberProps>`
     width(iconSizes[size] * 2)({ theme })};
   background: none;
   color: ${grey('500')};
-  cursor: pointer;
 
   > span {
     ${typography('body1')};
@@ -43,6 +43,21 @@ const StyledConversationPageMember = styled.button<MemberProps>`
         palette: { tonalOffset, grey },
       },
     }) => darken(grey['500'], tonalOffset)};
+
+    > button {
+      display: block;
+    }
+  }
+
+  > button {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
   }
 `;
 
@@ -54,12 +69,9 @@ class JuiConversationPageMember extends React.Component<
 
     return (
       <JuiArrowTip title={title}>
-        <StyledConversationPageMember
-          aria-label={ariaLabel}
-          onClick={onClick}
-          size={size}
-        >
+        <StyledConversationPageMember aria-label={ariaLabel} size={size}>
           <JuiIconography iconSize="medium">member_count</JuiIconography>
+          <button onClick={onClick} />
           {children}
         </StyledConversationPageMember>
       </JuiArrowTip>
