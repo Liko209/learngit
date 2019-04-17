@@ -9,7 +9,7 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import styled from '../../foundation/styled-components';
 import { JuiOutlineTextField } from '../../components/Forms/OutlineTextField';
 // import { JuiSearchBar } from '../SearchBar';
-import { width, palette, opacity } from '../../foundation/utils';
+import { width, palette, opacity, typography } from '../../foundation/utils';
 import { Theme } from '../../foundation/theme/theme';
 
 const TobBarSearch = styled(JuiOutlineTextField)`
@@ -28,6 +28,7 @@ const TobBarSearch = styled(JuiOutlineTextField)`
   input {
     cursor: pointer;
     color: ${palette('common', 'white')};
+    ${typography('body1')};
   }
   span.search,
   span.close {
