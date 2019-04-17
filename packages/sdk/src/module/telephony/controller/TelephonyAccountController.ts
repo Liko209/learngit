@@ -12,11 +12,16 @@ import {
   RTCSipFlags,
   RTCCallInfo,
   RTC_STATUS_CODE,
+  RTC_CALL_STATE,
 } from 'voip';
 import { TelephonyCallController } from '../controller/TelephonyCallController';
 import { ITelephonyCallDelegate } from '../service/ITelephonyCallDelegate';
 import { ITelephonyAccountDelegate } from '../service/ITelephonyAccountDelegate';
-import { TelephonyCallInfo, MAKE_CALL_ERROR_CODE } from '../types';
+import {
+  TelephonyCallInfo,
+  MAKE_CALL_ERROR_CODE,
+  LogoutCallback,
+} from '../types';
 import { telephonyLogger } from 'foundation';
 import { MakeCallController } from './MakeCallController';
 import { RCInfoService } from '../../rcInfo';
@@ -29,6 +34,8 @@ class TelephonyAccountController implements IRTCAccountDelegate {
   private _rtcAccount: RTCAccount;
   private _callDelegate: ITelephonyCallDelegate;
   private _makeCallController: MakeCallController;
+  private _isDisposing: boolean = false;
+  private _logoutCallback: LogoutCallback;
 
   constructor(
     rtcEngine: RTCEngine,
@@ -85,6 +92,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
     this._telephonyCallDelegate = new TelephonyCallController(
       this._callDelegate,
     );
+    this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
     const makeCallResult = this._rtcAccount.makeCall(
       toNumber,
       this._telephonyCallDelegate,
@@ -215,6 +223,7 @@ class TelephonyAccountController implements IRTCAccountDelegate {
       this._callDelegate,
     );
     this._telephonyCallDelegate.setRtcCall(call);
+    this._telephonyCallDelegate.setCallStateCallback(this.callStateChanged);
     call.setCallDelegate(this._telephonyCallDelegate);
     const callInfo = await this._buildCallInfo(call.getCallInfo());
     this._telephonyAccountDelegate.onReceiveIncomingCall(callInfo);
@@ -226,8 +235,34 @@ class TelephonyAccountController implements IRTCAccountDelegate {
 
   onReceiveNewProvFlags(sipFlags: RTCSipFlags) {}
 
-  logout() {
-    this._rtcAccount.logout();
+  private _processLogoutIfNeeded() {
+    if (this._isDisposing && this._rtcAccount.callCount() === 1) {
+      this._rtcAccount.logout();
+      this._isDisposing = false;
+      if (this._logoutCallback) {
+        this._logoutCallback();
+      }
+    }
+  }
+
+  callStateChanged = (callId: string, state: RTC_CALL_STATE) => {
+    if (state === RTC_CALL_STATE.DISCONNECTED) {
+      this._processLogoutIfNeeded();
+    }
+  }
+
+  logout(callback: LogoutCallback) {
+    const callCount = this._rtcAccount.callCount();
+    this._logoutCallback = callback;
+    if (callCount > 0) {
+      // there is an ongoing call, delay logout
+      this._isDisposing = true;
+    } else {
+      this._rtcAccount.logout();
+      if (this._logoutCallback) {
+        this._logoutCallback();
+      }
+    }
   }
 }
 
