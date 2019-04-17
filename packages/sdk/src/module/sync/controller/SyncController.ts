@@ -516,18 +516,12 @@ class SyncController {
         source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
       if (timestamp && shouldSaveTimeStamp) {
         this.updateIndexTimestamp(timestamp, true);
-        notificationCenter.emitKVChange(CONFIG.LAST_INDEX_TIMESTAMP, timestamp);
       }
 
       const shouldSaveScoreboard =
         source === SYNC_SOURCE.INDEX || source === SYNC_SOURCE.INITIAL;
       if (shouldSaveScoreboard && scoreboard) {
-        const socketUserConfig = new SyncUserConfig();
-        socketUserConfig.setIndexSocketServerHost(scoreboard);
-        notificationCenter.emitKVChange(
-          CONFIG.INDEX_SOCKET_SERVER_HOST,
-          scoreboard,
-        );
+        this._updateIndexSocketAddress(scoreboard);
       }
 
       if (staticHttpServer) {
@@ -543,6 +537,18 @@ class SyncController {
       notificationCenter.emitKVChange(SERVICE.FETCH_INDEX_DATA_ERROR, {
         error: ErrorParserHolder.getErrorParser().parse(error),
       });
+    }
+  }
+
+  private _updateIndexSocketAddress(scoreboard: string) {
+    const socketUserConfig = new SyncUserConfig();
+    const oldValue = socketUserConfig.getIndexSocketServerHost();
+    if (oldValue !== scoreboard) {
+      socketUserConfig.setIndexSocketServerHost(scoreboard);
+      notificationCenter.emitKVChange(
+        CONFIG.INDEX_SOCKET_SERVER_HOST,
+        scoreboard,
+      );
     }
   }
 
