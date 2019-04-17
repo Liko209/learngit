@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import { computed, observable } from 'mobx';
+import { computed, observable, action } from 'mobx';
 import { GroupService } from 'sdk/module/group';
 import { StateService } from 'sdk/module/state';
 import { Group } from 'sdk/module/group/entity';
@@ -86,6 +86,7 @@ class ConversationPageViewModel extends StoreViewModel<ConversationPageProps> {
     this._throttledUpdateLastGroup(groupId);
   }
 
+  @action
   updateStatus = (status: STATUS) => {
     this.loadingStatus = status;
   }
