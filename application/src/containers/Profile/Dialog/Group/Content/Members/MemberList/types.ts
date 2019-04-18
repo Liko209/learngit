@@ -10,10 +10,15 @@ type MemberListProps = {
   id: number;
   filteredMemberIds: number[];
   sortedAllMemberIds: number[];
+  width: number;
+  height: number;
+  searchInput: string;
+  setShowEmpty: (flag: boolean) => void;
 };
 
 type MemberListViewProps = {
   onScrollEvent: (event: { scrollTop: number }) => void;
+  showEmpty: boolean;
 };
 
 export { MemberListProps, MemberListViewProps };

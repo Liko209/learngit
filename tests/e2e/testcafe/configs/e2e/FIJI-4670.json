@@ -1,0 +1,13 @@
+{
+  "on_merge": {
+    "fixtures": [
+      "./fixtures/Profile/ProfileScreen.ts"
+    ],
+    "include_tags": [
+      "JPT-1312"
+    ],
+    "browsers": [
+      "selenium:chrome"
+    ]
+  }
+}
