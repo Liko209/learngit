@@ -151,7 +151,7 @@ describe('TextMessageViewModel', () => {
       mockPostData.atMentionNonItemIds = [];
 
       vm.props.terms = [];
-      expect(vm.html).toBe('abcdefgsda');
+      expect(vm.html).toBe(text);
 
       FormatToHtml.formatToHtml.clear();
       vm.props.terms = ['a'];
