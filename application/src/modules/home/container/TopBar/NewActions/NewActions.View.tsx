@@ -29,6 +29,7 @@ class NewActions extends React.Component<NewActionsProps> {
         tooltipTitle={t('home.newActions')}
         data-test-automation-id="addMenuBtn"
         iconName="new_actions"
+        disableRipple={true}
       />
     );
   }
@@ -38,8 +39,8 @@ class NewActions extends React.Component<NewActionsProps> {
   handleNewMessage = () => NewMessage.show();
 
   renderCreateTeam() {
-    const { t } = this.props;
-    return this.props.canCreateTeam ? (
+    const { t, canCreateTeam } = this.props;
+    return canCreateTeam ? (
       <JuiMenuItem onClick={this.handleCreateTeam}>
         {t('people.team.CreateTeam')}
       </JuiMenuItem>
@@ -47,8 +48,8 @@ class NewActions extends React.Component<NewActionsProps> {
   }
 
   renderSendNewMessage() {
-    const { t } = this.props;
-    return this.props.canSendNewMessage ? (
+    const { t, canSendNewMessage } = this.props;
+    return canSendNewMessage ? (
       <JuiMenuItem
         onClick={this.handleNewMessage}
         data-test-automation-id="sendNewMessage"
