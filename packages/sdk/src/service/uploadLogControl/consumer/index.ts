@@ -7,3 +7,4 @@ export * from './persistent';
 export * from './uploader';
 export * from './LogUploadConsumer';
 export * from './types';
+export * from './task';

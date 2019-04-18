@@ -9,7 +9,11 @@ import JSZip from 'jszip';
 import { FeedbackService } from '../FeedbackService';
 import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
 import { getAppContextInfo } from '@/utils/error';
+import * as Sentry from '@sentry/browser';
+import { FeedbackApi } from '../../FeedbackApi';
 jest.mock('@/utils/error');
+jest.mock('../../FeedbackApi');
+jest.mock('@sentry/browser');
 jest.mock('sdk/service/uploadLogControl/logControlManager', () => {
   const mockLogMng = {
     getRecentLogs: jest.fn(),
@@ -53,6 +57,26 @@ describe('FeedbackService', () => {
       expect(jsZip.file).toBeCalled();
       expect(jsZip.generateAsync).toBeCalled();
       expect(filestackClient.upload).toBeCalled();
+    });
+  });
+  describe('sendFeedback()', () => {
+    it('should call Feedback api', async () => {
+      const feedbackService = new FeedbackService();
+      (Sentry.getCurrentHub as jest.Mock).mockReturnValue({
+        getClient: () => true,
+      });
+      (Sentry.captureMessage as jest.Mock).mockReturnValue('id');
+      getAppContextInfo.mockReturnValue({
+        email: 'email',
+        username: 'username',
+      });
+      await feedbackService.sendFeedback('message', 'comments');
+      expect(FeedbackApi.sendFeedback).toBeCalledWith({
+        comments: 'comments',
+        event_id: 'id',
+        email: 'email',
+        name: 'username',
+      });
     });
   });
 });

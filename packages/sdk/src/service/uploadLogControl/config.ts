@@ -11,7 +11,7 @@ const DEFAULT_CONFIG: LogControlConfig = {
   memoryCountThreshold: 500,
   memorySizeThreshold: 1024 * 1024,
   combineSizeThreshold: 512 * 1024,
-  uploadQueueLimit: 4,
+  uploadQueueLimit: 2,
   autoFlushTimeCycle: 60 * 1000,
   persistentLimit: 10 * 1024 * 1024,
   memoryCacheSizeThreshold: 10 * 1024 * 1024,

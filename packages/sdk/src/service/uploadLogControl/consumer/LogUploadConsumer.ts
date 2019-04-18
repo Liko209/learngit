@@ -74,7 +74,7 @@ const transform = {
 };
 
 function retryDelay(retryCount: number) {
-  return Math.min(5000 + retryCount * 20000, 60 * 1000);
+  return Math.min(10 * 1000 + retryCount * 20000, 90 * 1000);
 }
 
 function timeout(time: number) {
