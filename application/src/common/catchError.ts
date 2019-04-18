@@ -76,7 +76,6 @@ const getDebounceNotify = (actionName: ErrorActionConfig) => {
     return;
   }
   if (!debounceNotifyStore[actionName]) {
-    console.log('newDebounce');
     debounceNotifyStore = {
       [actionName]: _.debounce(notify, 1000, {
         trailing: false,
