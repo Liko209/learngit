@@ -14,7 +14,6 @@ import { IConsoleLog } from './v2/models';
 import { MockClient, BrowserInitDto } from 'mock-client';
 
 import { getLogger } from 'log4js';
-import { formalNameWithTestMetaPrefix } from './libs/filter';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
@@ -159,9 +158,6 @@ export function setupCase(accountType: string) {
 
 export function teardownCase() {
   return async (t: TestController) => {
-    const { test: { name, meta } } = t['testRun'];
-    const testCaseName = formalNameWithTestMetaPrefix(name, meta);
-    t['testRun']['test']['name'] = testCaseName;
     if (mockClient)
       await mockClient.releaseBrowser(h(t).mockRequestId);
 

@@ -49,6 +49,10 @@ const StyledTextField = styled<TextFieldProps>(JuiTextField)`
       flex: 1;
     }
     .downshift-label {
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       color: ${grey('900')};
       ${typography('body1')};
     }

@@ -126,7 +126,7 @@ export class GroupFetchDataController {
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
     if (ids.length) {
       const groups = await this.entitySourceController.batchGet(ids, order);
-      return groups.filter(group => group !== null) as Group[];
+      return groups.filter((group: Group) => group !== null) as Group[];
     }
     return [];
   }
@@ -320,7 +320,8 @@ export class GroupFetchDataController {
     fetchAllIfSearchKeyEmpty?: boolean,
     myGroupsOnly?: boolean,
   ) {
-    const groupName = '';
+    let groupName: string = '';
+    let lowerCaseName: string = '';
     const currentUserId = this._currentUserId;
     return (group: Group, terms: Terms) => {
       let isMatched: boolean = false;
@@ -346,9 +347,9 @@ export class GroupFetchDataController {
           break;
         }
         let isFuzzy: boolean = false;
-        let lowerCaseName: string = '';
         if (group.is_team) {
-          lowerCaseName = group.set_abbreviation.toLocaleLowerCase();
+          groupName = group.set_abbreviation;
+          lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseName,
@@ -364,7 +365,8 @@ export class GroupFetchDataController {
             group.members,
             currentUserId,
           );
-          lowerCaseName = this.getGroupNameByMultiMembers(allPerson);
+          groupName = this.getGroupNameByMultiMembers(allPerson);
+          lowerCaseName = groupName.toLowerCase();
           isFuzzy =
             this.entityCacheSearchController.isFuzzyMatched(
               lowerCaseName,
@@ -390,7 +392,7 @@ export class GroupFetchDataController {
             id: group.id,
             displayName: groupName,
             firstSortKey: sortValue,
-            secondSortKey: groupName.toLowerCase(),
+            secondSortKey: lowerCaseName,
             entity: group,
           }
         : null;
@@ -703,7 +705,14 @@ export class GroupFetchDataController {
         favoriteGroupIds,
         true,
       );
-      return groups.filter((item: Group) => this.groupService.isValid(item));
+      const userConfig = new AccountUserConfig();
+      const currentUserId = userConfig.getGlipUserId();
+
+      return groups.filter(
+        (item: Group) =>
+          this.groupService.isValid(item) &&
+          this.groupService.isInGroup(currentUserId, item),
+      );
     }
     return [];
   }

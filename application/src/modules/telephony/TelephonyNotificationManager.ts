@@ -74,7 +74,7 @@ class TelephonyNotificationManager extends AbstractNotificationManager {
   }
 
   private _closeNotification() {
-    this.close(this._telephonyStore.callId);
+    this._telephonyStore.callId && this.close(this._telephonyStore.callId);
   }
 
   public dispose() {

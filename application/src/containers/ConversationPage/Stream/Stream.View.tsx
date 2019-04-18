@@ -19,6 +19,7 @@ import { JuiStream } from 'jui/pattern/ConversationPage';
 import { JuiStreamLoading } from 'jui/pattern/ConversationLoading';
 import { JumpToFirstUnreadButtonWrapper } from './JumpToFirstUnreadButtonWrapper';
 import {
+  STATUS,
   StreamItem,
   StreamItemType,
   StreamViewProps,
@@ -62,10 +63,6 @@ class StreamViewComponent extends Component<Props> {
   private _disposers: Disposer[] = [];
 
   @observable private _jumpToFirstUnreadLoading = false;
-
-  state = {
-    isFailed: false,
-  };
 
   async componentDidMount() {
     window.addEventListener('focus', this._focusHandler);
@@ -352,28 +349,18 @@ class StreamViewComponent extends Component<Props> {
 
   @action
   private _loadInitialPosts = async () => {
-    const { loadInitialPosts, markAsRead, hookInitialPostsError } = this.props;
-    try {
-      await loadInitialPosts();
-      runInAction(() => {
-        this.props.updateHistoryHandler();
-        markAsRead();
-      });
-      requestAnimationFrame(() => {
-        if (this._jumpToPostRef.current) {
-          this._jumpToPostRef.current.highlight();
-        }
-      });
-      this._watchUnreadCount();
-    } catch (err) {
-      hookInitialPostsError();
-      this.setState({ isFailed: true });
-      throw err;
-    }
-  }
-
-  private resetStatus = () => {
-    this.setState({ isFailed: false });
+    const { loadInitialPosts, markAsRead } = this.props;
+    await loadInitialPosts();
+    runInAction(() => {
+      this.props.updateHistoryHandler();
+      markAsRead();
+    });
+    requestAnimationFrame(() => {
+      if (this._jumpToPostRef.current) {
+        this._jumpToPostRef.current.highlight();
+      }
+    });
+    this._watchUnreadCount();
   }
 
   private _onInitialDataFailed = (
@@ -381,13 +368,12 @@ class StreamViewComponent extends Component<Props> {
       showTip={true}
       tip={this.props.t('translations:message.prompt.MessageLoadingErrorTip')}
       linkText={this.props.t('translations:common.prompt.tryAgain')}
-      onClick={this.resetStatus}
+      onClick={this._loadInitialPosts}
     />
   );
 
   render() {
-    const { loadMore, hasMore, items } = this.props;
-    const { isFailed } = this.state;
+    const { loadMore, hasMore, items, loadingStatus } = this.props;
 
     const initialPosition = this.props.jumpToPostId
       ? this._findStreamItemIndexByPostId(this.props.jumpToPostId)
@@ -407,7 +393,7 @@ class StreamViewComponent extends Component<Props> {
             {() => (
               <JuiStream ref={ref}>
                 {this._renderJumpToFirstUnreadButton()}
-                {isFailed ?
+                {loadingStatus === STATUS.FAILED ?
                   this._onInitialDataFailed
                   :
                   <JuiInfiniteList
