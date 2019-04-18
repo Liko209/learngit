@@ -31,6 +31,7 @@ describe('TelephonyService', () => {
   let makeCallController: MakeCallController;
 
   const callId = '123';
+  const toNum = '123';
   class MockAcc implements ITelephonyAccountDelegate {
     onAccountStateChanged(state: TELEPHONY_ACCOUNT_STATE) {}
   }
@@ -85,6 +86,15 @@ describe('TelephonyService', () => {
     it('should call account controller to make call', async () => {
       await telephonyService.makeCall('123');
       expect(accountController.makeCall).toHaveBeenCalledWith('123');
+    });
+
+    it('should return error when account controller is not created', async () => {
+      engineController.getAccountController = jest
+        .fn()
+        .mockReturnValueOnce(null);
+      const result = await telephonyService.makeCall(toNum);
+      expect(accountController.makeCall).not.toHaveBeenCalled();
+      expect(result).toBe(MAKE_CALL_ERROR_CODE.INVALID_STATE);
     });
   });
 

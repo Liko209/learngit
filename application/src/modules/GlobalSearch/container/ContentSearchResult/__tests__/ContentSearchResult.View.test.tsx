@@ -9,6 +9,7 @@ import { JuiListSubheader } from 'jui/components/Lists';
 import { JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
 import { ContentSearchResultView } from '@/modules/GlobalSearch/container/ContentSearchResult/ContentSearchResult.View';
 import jsonFile from '../../../../../../public/locales/en/translations.json';
+import { JuiListSubheader } from 'jui/components/Lists';
 
 const i18n = (key: string, { count }: { count?: number } = {}) => {
   const paths = key.split('.');
@@ -65,5 +66,32 @@ describe('ContentSearchResult.View', () => {
     const wrapper = shallow(<ContentSearchResultView {...props} />);
     wrapper.unmount();
     expect(props.onSearchEnd).toHaveBeenCalled();
+  });
+});
+
+describe('ContentSearchResult.View [bug/FIJI-5103]', () => {
+  it('should not show Result(xx) when loading', () => {
+    const props = {
+      searchState: {
+        postIds: [],
+        requestId: null,
+        contentsCount: {},
+      },
+      searchOptions: {},
+      onPostsFetch: jest.fn(),
+      setSearchOptions: jest.fn(),
+      onSearchEnd: jest.fn(),
+    };
+    const wrapper = shallow(<ContentSearchResultView {...props} />);
+    expect(wrapper.find(JuiListSubheader).exists()).toBe(false);
+
+    wrapper.setProps({
+      searchState: {
+        postIds: [],
+        requestId: 12,
+        contentsCount: {},
+      },
+    });
+    expect(wrapper.find(JuiListSubheader).exists()).toBe(true);
   });
 });

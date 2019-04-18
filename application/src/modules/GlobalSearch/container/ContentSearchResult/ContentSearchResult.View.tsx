@@ -48,9 +48,11 @@ class ContentSearchResultViewComponent extends Component<Props> {
       <ConversationPageContext.Provider value={{ disableMoreAction: true }}>
         <JuiFullSearchWrapper>
           <JuiFullSearchResultWrapper>
-            <JuiListSubheader data-test-automation-id="searchResultsCount">
+            {
+              searchState.requestId ? <JuiListSubheader data-test-automation-id="searchResultsCount">
               {t('globalSearch.Results', { count: postsCount })}
-            </JuiListSubheader>
+            </JuiListSubheader> : null
+            }
             {isEmpty ? (
               <JuiTabPageEmptyScreen text={t('globalSearch.NoMatchesFound')} />
             ) : (
