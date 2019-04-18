@@ -79,6 +79,8 @@ const SKIP_JS_ERROR = !(process.env.SKIP_JS_ERROR === 'false');
 const SKIP_CONSOLE_ERROR = !(process.env.SKIP_CONSOLE_ERROR === 'false');
 const SKIP_CONSOLE_WARN = !(process.env.SKIP_CONSOLE_WARN === 'false');
 const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
+const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities.json' // ref: https://github.com/link89/testcafe-browser-provider-selenium/tree/customize-chrome-option
+const LANGUAGE_CODE = process.env.LANGUAGE_CODE || 'en' // ref: https://www.w3schools.com/tags/ref_language_codes.asp
 
 
 const RUNNER_OPTS = {
@@ -99,6 +101,8 @@ const RUNNER_OPTS = {
   SKIP_CONSOLE_ERROR,
   SKIP_CONSOLE_WARN,
   ENABLE_SSL,
+  SELENIUM_CAPABILITIES,
+  LANGUAGE_CODE,
 }
 
 // beat dashboard configuration
