@@ -486,7 +486,7 @@ class SyncController {
   ) {
     mainLogger.info(
       LOG_INDEX_DATA,
-      `_handleIncomingPost() groups.length: ${posts &&
+      `_handleIncomingPost() posts.length: ${posts &&
         posts.length}, source: ${source}`,
     );
     const logId = Date.now();
