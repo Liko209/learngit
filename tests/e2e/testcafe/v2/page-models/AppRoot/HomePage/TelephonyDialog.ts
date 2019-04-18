@@ -156,7 +156,7 @@ export class TelephonyDialog extends BaseWebComponent {
 
   // inbound call
   get sendToVoiceMailButton() {
-    return this.buttonOfIcon('hold_up').withAttribute('aria-label', 'Send to voicemail');
+    return this.getSelectorByAutomationId('telephony-voice-mail-btn');
   }
 
   async clickSendToVoiceMailButton() {
@@ -178,4 +178,9 @@ export class TelephonyDialog extends BaseWebComponent {
   async clickIgnoreButton() {
     await this.t.click(this.ignoreButton);
   }
+
+  async hoverSendToVoiceMailButton() {
+    await this.t.hover(this.sendToVoiceMailButton);
+  }
+
 }
