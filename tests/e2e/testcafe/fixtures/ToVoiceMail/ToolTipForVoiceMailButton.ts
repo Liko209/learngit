@@ -18,6 +18,7 @@ test(formalName('Can should the tooltip when hovering on the to voicemail button
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
   const tooltipText = 'Send to voicemail';
+  const callerWebPhone = await h(t).webphone(caller);
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -25,9 +26,7 @@ test(formalName('Can should the tooltip when hovering on the to voicemail button
   });
 
   await h(t).withLog(`When I call this extension`, async () => {
-    const session = await h(t).webphone(caller);
-    await session.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
-    await session.close();
+    await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
   });
 
   const telephonyDialog = app.homePage.telephonyDialog;
@@ -42,6 +41,7 @@ test(formalName('Can should the tooltip when hovering on the to voicemail button
   await h(t).withLog(`Then Display a tooltip: '${tooltipText}`, async () => {
     await telephonyDialog.showTooltip(tooltipText);
   });
+  await callerWebPhone.close();
 });
 
 test(formalName('User can receive the new incoming call  when user ignored the incoming call', ['JPT-1510', 'P2', 'VoiceMail', 'ali.naffaa']), async (t) => {
@@ -63,7 +63,6 @@ test(formalName('User can receive the new incoming call  when user ignored the i
     const telephonyDialog = app.homePage.telephonyDialog;
     await h(t).withLog('When I receive an in-comming call', async () => {
       await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
-      await callerWebPhone.close();
     });
 
     await h(t).withLog('And I ignore this in-comming call in Jupiter', async () => {
@@ -78,8 +77,11 @@ test(formalName('User can receive the new incoming call  when user ignored the i
     await h(t).withLog('But in the other platform (webPhone) this call should still ringing', async () => {
       await loginUserWebPhone.update();
       const actual = loginUserWebPhone.status;
-      await loginUserWebPhone.close();
+
       await t.expect(actual).eql('invited');
     });
+
+    await loginUserWebPhone.close();
+    await callerWebPhone.close()
   },
 );
