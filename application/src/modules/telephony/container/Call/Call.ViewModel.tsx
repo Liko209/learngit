@@ -108,9 +108,9 @@ class CallViewModel extends AbstractViewModel<CallProps>
 
   showIcon = promisedComputed(false, async () => {
     const phoneNumber = this.phoneNumber;
+    const { id, groupId } = this.props;
     const canUseTelephony = await this._featuresFlagsService.canUseTelephony();
     if (canUseTelephony && phoneNumber) {
-      const { id, groupId } = this.props;
       if (id) {
         return this._currentUserId !== id;
       }

@@ -75,8 +75,8 @@ test.meta(<ITestMeta>{
   });
 })
 
-
-test.meta(<ITestMeta>{
+// skip by https://jira.ringcentral.com/browse/FIJI-5161
+test.skip.meta(<ITestMeta>{
   priority: ['P0'],
   caseIds: ['JPT-1562'],
   maintainers: ['potar.he'],

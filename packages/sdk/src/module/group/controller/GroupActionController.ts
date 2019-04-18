@@ -205,28 +205,26 @@ export class GroupActionController {
     await this.partialModifyController.updatePartially(
       teamId,
       (partialEntity, originalEntity: Group) => {
-        const {
-          permissions: { admin: { uids: adminUids = [] } = {} } = {},
-        } = originalEntity;
-        let finalPartialEntity = partialEntity;
+        const permissions = originalEntity.permissions
+          ? _.cloneDeep(originalEntity.permissions)
+          : {};
         if (isMake) {
-          finalPartialEntity = _.merge(partialEntity, {
-            permissions: {
-              admin: {
-                uids: _.union(adminUids, [member]),
-              },
-            },
-          });
+          if (permissions.admin) {
+            permissions.admin.uids = _.union(permissions.admin.uids, [member]);
+          } else {
+            permissions.admin = { uids: [member] };
+          }
         } else {
-          finalPartialEntity = _.merge(partialEntity, {
-            permissions: {
-              admin: {
-                uids: _.difference(adminUids, [member]),
-              },
-            },
-          });
+          if (permissions.admin) {
+            permissions.admin.uids = _.difference(permissions.admin.uids, [
+              member,
+            ]);
+          }
         }
-        return finalPartialEntity;
+        return {
+          ...partialEntity,
+          permissions,
+        };
       },
       async (updateEntity: Group) => {
         return await this._getTeamRequestController().put(updateEntity);
