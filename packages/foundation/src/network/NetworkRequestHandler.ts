@@ -68,11 +68,11 @@ class NetworkRequestHandler
 
     this.appendTask(task, isTail);
     networkLogger.info(
-      LOG_TAG,
-      'addToQueueTime: ',
-      Date.now(),
-      'request: ',
-      request,
+      'addRequestToQueue: ',
+      `path:${request.path}`,
+      `headers:${JSON.stringify(request.headers)}`,
+      `params:${JSON.stringify(request.params)}`,
+      `data:${JSON.stringify(request.data)}`,
     );
     this.notifyRequestArrived(request.via);
   }
@@ -184,6 +184,11 @@ class NetworkRequestHandler
       } else {
         queue.unshift(task);
       }
+      networkLogger.info(
+        `appendTask() task priority: ${task.priority()}, pending queue size:${
+          queue.length
+        }`,
+      );
     }
   }
 
