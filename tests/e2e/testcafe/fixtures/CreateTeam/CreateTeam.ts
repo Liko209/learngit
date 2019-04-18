@@ -255,7 +255,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
 
   const createTeamSteps = async (key: string, text: string, i: number) => {
     await h(t).withLog(`When I type ${key}: ${text}, and select the first search user`, async () => {
-      await createTeamModal.memberInput.typeMember(text, { paste: true });
+      await createTeamModal.memberInput.typeText(text, { paste: true });
       await t.wait(3e3);
       await createTeamModal.memberInput.selectMemberByNth(0);
     });
@@ -270,7 +270,7 @@ test(formalName('Check user can be able to remove the selected name(s)', ['P3', 
       })
     } else {
       await h(t).withLog(`When I tap the "delete" icon of the selected contact`, async () => {
-        await createTeamModal.memberInput.removeSelectedMember();
+        await createTeamModal.memberInput.removeSelectedItem();
       })
     }
 

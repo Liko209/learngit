@@ -9,6 +9,7 @@ type DialerProps = {};
 
 type DialerViewProps = {
   callState: CALL_STATE;
+  keypadEntered: boolean;
 };
 
 export { DialerProps, DialerViewProps };

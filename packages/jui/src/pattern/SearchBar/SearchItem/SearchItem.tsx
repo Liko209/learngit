@@ -6,7 +6,7 @@
 import React, { ReactNode, memo } from 'react';
 import MenuItem, { MenuItemProps } from '@material-ui/core/MenuItem';
 import MuiLock from '@material-ui/icons/Lock';
-import { JuiSearchItemValue } from '../';
+import { JuiSearchItemValue } from '../SearchItemValue';
 import styled from '../../../foundation/styled-components';
 import {
   height,
@@ -28,7 +28,7 @@ const SearchItemActions = styled.div`
 
 const SearchItemWrapper = styled(MenuItem)`
   && {
-    height: ${height(6)};
+    height: ${height(8)};
     padding: ${spacing(1, 4)};
     &:hover {
       background: none;
@@ -55,6 +55,7 @@ const PrivateIcon = styled(MuiLock)`
 `;
 
 const SearchItemAvatar = styled.div`
+  display: flex;
   margin-right: ${spacing(2)};
 `;
 
@@ -78,7 +79,7 @@ const Joined = styled.span`
 type JuiSearchItemProps = {
   Avatar: JSX.Element;
   value: string;
-  terms: string[];
+  terms?: string[];
   Actions?: ReactNode;
   isJoined?: boolean;
   isPrivate?: boolean;
@@ -96,6 +97,7 @@ const JuiSearchItem = memo((props: JuiSearchItemProps) => {
     hovered,
     ...rest
   } = props;
+  // e2e also will be use it. shouldn't change the class name
   const className = hovered ? 'search-items hover' : 'search-items';
   return (
     <SearchItemWrapper className={className} disableRipple={true} {...rest}>

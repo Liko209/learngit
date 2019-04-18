@@ -23,14 +23,15 @@ import { IPartialModifyController } from '../../../../../framework/controller/in
 import { IEntitySourceController } from '../../../../../framework/controller/interface/IEntitySourceController';
 
 import { IRequestController } from '../../../../../framework/controller/interface/IRequestController';
-import {
-  isInBeta,
-  EBETA_FLAG,
-} from '../../../../../module/account/service/clientConfig';
 import { GroupConfigService } from '../../../../groupConfig';
 import { ItemNotification } from '../../../utils/ItemNotification';
 import { ServiceLoader, ServiceConfig } from '../../../../serviceLoader';
+import {
+  SequenceProcessorHandler,
+  IProcessor,
+} from '../../../../../framework/processor';
 
+const LOG_TAG = 'FileUploadController';
 const MAX_UPLOADING_FILE_CNT = 10;
 const MAX_UPLOADING_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB from bytes
 
@@ -41,10 +42,38 @@ type ItemFileUploadStatus = {
   file?: File;
 };
 
+class UploadProcessor implements IProcessor {
+  constructor(
+    private _name: string,
+    private _processFunc: () => Promise<void>,
+  ) {}
+
+  async process(): Promise<boolean> {
+    try {
+      await this._processFunc();
+    } catch (e) {
+      mainLogger.warn(
+        LOG_TAG,
+        `failed to execute UploadItemProcessor, ${this._name}`,
+        e,
+      );
+    }
+    return Promise.resolve(true);
+  }
+
+  name(): string {
+    return this._name;
+  }
+}
+
 class FileUploadController {
   private _progressCaches: Map<number, ItemFileUploadStatus> = new Map();
   private _uploadingFiles: Map<number, ItemFile[]> = new Map();
   private _canceledUploadFileIds: Set<number> = new Set();
+  private _uploadItemQueue = new SequenceProcessorHandler(
+    'FileUploadController - upload item',
+  );
+
   constructor(
     private _partialModifyController: IPartialModifyController<Item>,
     private _fileRequestController: IRequestController<Item>,
@@ -57,6 +86,11 @@ class FileUploadController {
     isUpdate: boolean,
   ): Promise<ItemFile | null> {
     if (file) {
+      mainLogger.info(LOG_TAG, 'sendItemFile, start upload file', {
+        groupId,
+        file,
+        isUpdate,
+      });
       const itemFile = this._toItemFile(groupId, file, isUpdate);
       await this._preSaveItemFile(itemFile, file);
       this._sendItemFile(itemFile, file);
@@ -138,6 +172,10 @@ class FileUploadController {
   }
 
   async sendItemData(groupId: number, postItemIds: number[]) {
+    mainLogger.info(LOG_TAG, 'sendItemData', {
+      groupId,
+      postItemIds,
+    });
     const expiredItemIds: number[] = [];
     const needWaitItemIds: number[] = [];
     postItemIds.forEach((id: number) => {
@@ -146,7 +184,7 @@ class FileUploadController {
         const item = itemStatus.itemFile;
         const file = itemStatus.file;
         if (this._hasValidStoredFile(item)) {
-          this._uploadItem(groupId, item, this._isUpdateItem(item));
+          this._uploadItemInQueue(groupId, item, this._isUpdateItem(item));
         } else if (file && file.size > 0) {
           needWaitItemIds.push(item.id);
         } else {
@@ -193,7 +231,7 @@ class FileUploadController {
         item &&
         this._hasValidStoredFile(item)
       ) {
-        this._uploadItem(groupId, item, this._isUpdateItem(item));
+        this._uploadItemInQueue(groupId, item, this._isUpdateItem(item));
       }
 
       if (uploadingItemFileIds.length === 0) {
@@ -232,6 +270,7 @@ class FileUploadController {
   }
 
   async resendFailedFile(itemId: number) {
+    mainLogger.info(LOG_TAG, 'resendFailedFile', itemId);
     this._updateFileProgress(itemId, PROGRESS_STATUS.INPROGRESS);
 
     const itemInDB = (await this._entitySourceController.get(
@@ -241,7 +280,11 @@ class FileUploadController {
     if (itemInDB) {
       const groupId = itemInDB.group_ids[0];
       if (this._hasValidStoredFile(itemInDB)) {
-        await this._uploadItem(groupId, itemInDB, this._isUpdateItem(itemInDB));
+        await this._uploadItemInQueue(
+          groupId,
+          itemInDB,
+          this._isUpdateItem(itemInDB),
+        );
       } else {
         const cacheItem = this._progressCaches.get(itemId);
         if (groupId && cacheItem && cacheItem.file) {
@@ -268,6 +311,7 @@ class FileUploadController {
 
       this._progressCaches.delete(itemId);
     }
+    this._removeProcessor(itemId);
 
     this._uploadingFiles.forEach((itemFiles: ItemFile[], id: number) => {
       if (itemFiles) {
@@ -502,7 +546,7 @@ class FileUploadController {
   ) {
     const groupId = preInsertItem.group_ids[0];
     const itemId = preInsertItem.id;
-    let extendFileData;
+    let extendFileData: AmazonFileUploadPolicyData;
     try {
       extendFileData = await this._requestAmazonS3Policy(file);
       // const extendFileData = policyResponse.unwrap();
@@ -521,36 +565,11 @@ class FileUploadController {
         preInsertItem,
       );
     } catch (error) {
+      mainLogger.info(LOG_TAG, '_uploadFileToAmazonS3 failed', {
+        itemId,
+        error,
+      });
       this._handleItemFileSendFailed(itemId);
-    }
-  }
-
-  private async _uploadFileFileToGlip(
-    file: File,
-    preInsertItem: ItemFile,
-    requestHolder: RequestHolder,
-  ) {
-    const groupId = preInsertItem.group_ids[0];
-    const itemId = preInsertItem.id;
-    const formData = new FormData();
-    formData.append(FILE_FORM_DATA_KEYS.FILE, file);
-    let uploadResult;
-    try {
-      uploadResult = await ItemAPI.uploadFileItem(
-        formData,
-        (e: ProgressEventInit) => {
-          this._updateProgress(e, itemId);
-        },
-        requestHolder,
-      );
-      await this._handleFileUploadSuccess(
-        uploadResult[0],
-        groupId,
-        preInsertItem,
-      );
-    } catch (error) {
-      this._handleItemFileSendFailed(itemId);
-      mainLogger.warn(`_sendItemFile error =>${error}`);
     }
   }
 
@@ -563,12 +582,28 @@ class FileUploadController {
 
   private async _sendItemFile(preInsertItem: ItemFile, file: File) {
     const requestHolder = this._getRequestHolder(preInsertItem.id);
+    await this._uploadFileToAmazonS3(file, preInsertItem, requestHolder);
+  }
 
-    if (isInBeta(EBETA_FLAG.BETA_S3_DIRECT_UPLOADS)) {
-      await this._uploadFileToAmazonS3(file, preInsertItem, requestHolder);
-    } else {
-      await this._uploadFileFileToGlip(file, preInsertItem, requestHolder);
-    }
+  private async _uploadItemInQueue(
+    groupId: number,
+    preInsertItem: ItemFile,
+    isUpdate: boolean,
+  ) {
+    const processor = new UploadProcessor(
+      this._generateProcessorName(preInsertItem.id),
+      async () => {
+        await this._uploadItem(groupId, preInsertItem, isUpdate);
+        mainLogger.log(
+          LOG_TAG,
+          `_uploadItemInQueue, done for ${groupId}_${preInsertItem.id}_${
+            preInsertItem.name
+          }`,
+        );
+      },
+    );
+
+    this._uploadItemQueue.addProcessor(processor);
   }
 
   private async _uploadItem(
@@ -596,7 +631,7 @@ class FileUploadController {
       } else {
         result = (await this._newItem(groupId, preInsertItem)) as ItemFile;
       }
-      this._handleItemUploadSuccess(preInsertItem, result);
+      await this._handleItemUploadSuccess(preInsertItem, result);
     } catch (error) {
       this._handleItemFileSendFailed(preInsertItem.id);
     }
@@ -676,7 +711,11 @@ class FileUploadController {
       },
     );
 
-    this._emitItemFileStatus(PROGRESS_STATUS.SUCCESS, preInsertId, itemFile.id);
+    await this._emitItemFileStatus(
+      PROGRESS_STATUS.SUCCESS,
+      preInsertId,
+      itemFile.id,
+    );
   }
 
   private _handleItemFileSendFailed(preInsertId: number) {
@@ -905,6 +944,15 @@ class FileUploadController {
   private _isFileInUploading(fileStatus: ItemFileUploadStatus) {
     const progress = fileStatus.progress;
     return progress.status === PROGRESS_STATUS.INPROGRESS;
+  }
+
+  private _generateProcessorName(itemId: number) {
+    return `${itemId}`;
+  }
+
+  private _removeProcessor(itemId: number) {
+    const name = this._generateProcessorName(itemId);
+    this._uploadItemQueue.removeProcessorByName(name);
   }
 }
 

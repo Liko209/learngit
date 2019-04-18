@@ -51,6 +51,10 @@ class DetachOrAttachViewModel extends StoreViewModel<DialerTitleBarProps>
     }
     return this._timing;
   }
+
+  dispose = () => {
+    this._intervalId && clearInterval(this._intervalId);
+  }
 }
 
 export { DetachOrAttachViewModel };

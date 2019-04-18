@@ -31,6 +31,7 @@ class AnswerViewComponent extends Component<Props> {
         tooltipTitle={t('telephony.action.Answer')}
         aria-label={t('telephony.answerTheCall')}
         onClick={this._handleAnswer}
+        data-test-automation-id="telephony-answer-btn"
       />
     );
   }

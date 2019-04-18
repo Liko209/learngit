@@ -15,7 +15,7 @@ import Api from '../../../api/api';
 import { SubscribeController } from '../../base/controller/SubscribeController';
 import { Raw } from '../../../framework/model';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class CompanyService extends EntityBaseService<Company> {
   private _companyController: CompanyController;
@@ -31,6 +31,10 @@ class CompanyService extends EntityBaseService<Company> {
         [SOCKET.COMPANY]: this.handleIncomingData.bind(this),
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_COMPANY);
+    });
   }
 
   protected buildEntityCacheController() {
@@ -42,13 +46,7 @@ class CompanyService extends EntityBaseService<Company> {
   }
 
   async handleIncomingData(companies: Raw<Company>[], source: SYNC_SOURCE) {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_COMPANY,
-      logId,
-    );
     await this.getCompanyController().handleCompanyData(companies, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   protected getCompanyController() {

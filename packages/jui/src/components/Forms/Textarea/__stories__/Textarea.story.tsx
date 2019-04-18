@@ -3,6 +3,7 @@
  * @Date: 2018-09-17 15:03:20
  * Copyright © RingCentral. All rights reserved.
  */
+// tslint:disable:no-console
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
 import { withInfoDecorator } from '../../../../foundation/utils/decorators';

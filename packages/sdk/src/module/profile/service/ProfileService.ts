@@ -15,7 +15,8 @@ import { SOCKET, SERVICE } from '../../../service/eventKey';
 import { Raw } from '../../../framework/model/Raw';
 import { ProfileController } from '../controller/ProfileController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
+import { SettingOption } from '../types';
 
 class ProfileService extends EntityBaseService<Profile>
   implements IProfileService {
@@ -34,21 +35,19 @@ class ProfileService extends EntityBaseService<Profile>
           .handleGroupIncomesNewPost,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PROFILE);
+    });
   }
 
   handleIncomingData = async (
     profile: Raw<Profile> | null,
     source: SYNC_SOURCE,
   ) => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_PROFILE,
-      logId,
-    );
-    this.getProfileController()
+    await this.getProfileController()
       .getProfileDataController()
       .profileHandleData(profile, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleGroupIncomesNewPost = async (groupIds: number[]) => {
@@ -129,6 +128,12 @@ class ProfileService extends EntityBaseService<Profile>
     return await this.getProfileController()
       .getProfileDataController()
       .getFavoriteGroupIds();
+  }
+
+  async updateSettingOptions(options: SettingOption[]) {
+    await this.getProfileController()
+      .getSettingsActionController()
+      .updateSettingOptions(options);
   }
 }
 

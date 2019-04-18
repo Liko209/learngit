@@ -20,7 +20,7 @@ import { IRemotePostRequest } from '../entity/Post';
 import { Raw } from '../../../framework/model';
 import { ContentSearchParams } from '../../../api/glip/search';
 import { IGroupService } from '../../../module/group/service/IGroupService';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../../module/serviceLoader';
 import { EntityNotificationController } from '../../../framework/controller/impl/EntityNotificationController';
 import { AccountUserConfig } from '../../account/config/AccountUserConfig';
@@ -37,6 +37,10 @@ class PostService extends EntityBaseService<Post> {
         [SOCKET.POST]: this.handleSexioData,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_POST);
+    });
   }
 
   protected buildNotificationController() {
@@ -146,13 +150,9 @@ class PostService extends EntityBaseService<Post> {
   }
 
   handleIndexData = async (data: Raw<Post>[], maxPostsExceed: boolean) => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_POST,
-      logId,
-    );
-    this._postDataController.handleIndexPosts(data, maxPostsExceed);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    await this.getPostController()
+      .getPostDataController()
+      .handleIndexPosts(data, maxPostsExceed);
   }
 
   handleSexioData = async (data: Raw<Post>[]) => {
@@ -177,10 +177,10 @@ class PostService extends EntityBaseService<Post> {
       .scrollSearchPosts(requestId);
   }
 
-  async endPostSearch(requestId: number) {
+  async endPostSearch() {
     return await this.getPostController()
       .getPostSearchController()
-      .endPostSearch(requestId);
+      .endPostSearch();
   }
 
   async getSearchContentsCount(params: ContentSearchParams) {

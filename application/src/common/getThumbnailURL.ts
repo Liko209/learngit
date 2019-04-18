@@ -30,12 +30,14 @@ type ImageInfo = {
 };
 
 const SQUARE_SIZE = 180;
+const DEFAULT_WIDTH = 1000;
+const DEFAULT_HEIGHT = 200;
 
 function getThumbnailURL(
   item: ImageInfo,
   size: { width: number; height: number } = { width: 1000, height: 200 },
 ) {
-  const { versions } = item;
+  const { versions = [] } = item;
   if (versions.length > 0) {
     const version = versions[0];
     // hard code as dThor
@@ -149,7 +151,14 @@ async function getThumbnailURLWithType(
   }
 
   if (!url) {
-    url = versionUrl || '';
+    const result = await generateModifiedImageURL({
+      id,
+      rule: RULE.RECTANGLE_IMAGE,
+      origHeight: DEFAULT_HEIGHT,
+      origWidth: DEFAULT_WIDTH,
+      squareSize: SQUARE_SIZE,
+    });
+    url = result.url;
     return { url, type: IMAGE_TYPE.ORIGINAL_IMAGE };
   }
   return { url, type: IMAGE_TYPE.UNKNOWN_IMAGE };

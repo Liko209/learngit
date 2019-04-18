@@ -35,7 +35,6 @@ import { AppEnvSetting } from 'sdk/module/env';
 import { SyncGlobalConfig } from 'sdk/module/sync/config';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
 import { analyticsCollector } from '@/AnalyticsCollector';
-import { fetchVersionInfo } from '@/containers/VersionInfo/helper';
 import { Pal } from 'sdk/pal';
 
 /**
@@ -48,6 +47,7 @@ class AppModule extends AbstractModule {
   @inject(AppStore) private _appStore: AppStore;
   private _subModuleRegistered: boolean = false;
   private _umiEventKeyMap: Map<UMI_SECTION_TYPE, GLOBAL_KEYS>;
+  private _logControlManager: LogControlManager = LogControlManager.instance();
 
   async bootstrap() {
     try {
@@ -61,7 +61,7 @@ class AppModule extends AbstractModule {
   }
 
   private async _init() {
-    LogControlManager.instance().setDebugMode(
+    this._logControlManager.setDebugMode(
       process.env.NODE_ENV === 'development',
     );
     const { search } = window.location;
@@ -81,10 +81,6 @@ class AppModule extends AbstractModule {
         }
       }
     }
-    const versionInfo = await fetchVersionInfo();
-    Pal.instance.setApplicationInfo({
-      getAppVersion: () => versionInfo.deployedVersion,
-    });
 
     window.addEventListener('error', (event: ErrorEvent) => {
       generalErrorHandler(
@@ -121,6 +117,13 @@ class AppModule extends AbstractModule {
         globalStore.set(GLOBAL_KEYS.CURRENT_USER_ID, currentUserId);
         globalStore.set(GLOBAL_KEYS.CURRENT_COMPANY_ID, currentCompanyId);
         getAppContextInfo().then(contextInfo => {
+          Pal.instance.setApplicationInfo({
+            env: contextInfo.env,
+            appVersion: contextInfo.version,
+            browser: contextInfo.browser,
+            os: contextInfo.os,
+            platform: contextInfo.platform,
+          });
           window.jupiterElectron &&
             window.jupiterElectron.setContextInfo &&
             window.jupiterElectron.setContextInfo(contextInfo);

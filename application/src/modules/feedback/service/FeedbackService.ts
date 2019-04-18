@@ -4,19 +4,28 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import * as filestack from 'filestack-js';
+import { init } from 'filestack-js';
 import JSZip from 'jszip';
-import { mainLogger } from 'sdk';
+import { logger } from '../utils';
 import { LogControlManager } from 'sdk/service/uploadLogControl/logControlManager';
 import { FILE_STACK_API_KEY } from '../constants';
 import { UploadResult } from '../types';
 import { getAppContextInfo } from '@/utils/error';
 
 class FeedbackService {
+  private _fileStackClient: ReturnType<typeof init>;
+
+  private _getFileStackClient() {
+    if (!this._fileStackClient) {
+      this._fileStackClient = init(FILE_STACK_API_KEY);
+    }
+    return this._fileStackClient;
+  }
+
   zipRecentLogs = async (): Promise<[string, Blob] | null> => {
     const recentLogs = LogControlManager.instance().getRecentLogs();
     if (recentLogs.length < 1) {
-      mainLogger.debug('Recent logs is empty');
+      logger.debug('Recent logs is empty');
       return null;
     }
     const zipName = `LOG_${recentLogs[0].sessionId}.zip`;
@@ -31,6 +40,7 @@ class FeedbackService {
         return `${index}: ${log.message}`;
       })
       .join('\n');
+    // webworker
     const zip = new JSZip();
     zip.file('ContextInfo.txt', contextContent);
     zip.file('RecentLogs.txt', logContent);
@@ -47,12 +57,11 @@ class FeedbackService {
   uploadRecentLogs = async (): Promise<UploadResult | null> => {
     const zipResult = await this.zipRecentLogs();
     if (!zipResult) {
-      mainLogger.debug('Zip log file fail.');
+      logger.debug('Zip log file fail.');
       return null;
     }
     const [zipName, zipBlob] = zipResult;
-    const client = filestack.init(FILE_STACK_API_KEY);
-    return await client.upload(
+    return await this._getFileStackClient().upload(
       zipBlob,
       {
         onProgress: (evt: { totalPercent: number; totalBytes: number }) => {},

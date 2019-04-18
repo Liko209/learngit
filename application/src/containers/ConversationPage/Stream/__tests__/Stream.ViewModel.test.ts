@@ -25,6 +25,7 @@ import { PostService } from 'sdk/module/post';
 import { StreamProps, StreamItemType } from '../types';
 import { StreamViewModel } from '../Stream.ViewModel';
 import { ServiceLoader, ServiceConfig } from 'sdk/module/serviceLoader';
+import { StreamController } from '../StreamController';
 
 jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
@@ -50,6 +51,7 @@ describe('StreamViewModel', () => {
   const streamController = {
     dispose: jest.fn(),
     hasMore: jest.fn(),
+    fetchAllUnreadData: jest.fn(),
     enableNewMessageSep: jest.fn(),
     disableNewMessageSep: jest.fn(),
   };
@@ -150,6 +152,36 @@ describe('StreamViewModel', () => {
       await vm.loadPostUntilFirstUnread();
 
       expect(loadPosts).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getFirstUnreadPostByLoadAllUnread()', () => {
+    function setupMock(obj: any) {
+      const vm = setup({
+        _streamController: streamController,
+        _historyHandler: {
+          unreadCount: obj.unreadCount,
+          getFirstUnreadPostId: jest.fn(),
+        },
+      });
+
+      const loadAllUnreadPosts = jest
+        .spyOn<StreamController, any>(
+          vm._streamController,
+          'fetchAllUnreadData',
+        )
+        .mockImplementation(() => {});
+
+      return { vm, loadAllUnreadPosts };
+    }
+
+    it('should try to load all unread posts', async () => {
+      const { vm, loadAllUnreadPosts } = setupMock({});
+      jest
+        .spyOn<StreamController, any>(vm._streamController, 'hasMore')
+        .mockReturnValue(true);
+      await vm.getFirstUnreadPostByLoadAllUnread();
+      expect(loadAllUnreadPosts).toHaveBeenCalled();
     });
   });
 

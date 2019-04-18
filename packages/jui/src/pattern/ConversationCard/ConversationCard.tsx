@@ -6,7 +6,7 @@
 import * as React from 'react';
 import styled, { css } from '../../foundation/styled-components';
 import { JuiConversationCardAvatarArea } from './ConversationCardAvatarArea';
-import { grey, palette, spacing } from '../../foundation/utils';
+import { grey, palette, spacing, typography } from '../../foundation/utils';
 import tinycolor from 'tinycolor2';
 import {
   JuiButtonProps,
@@ -56,7 +56,6 @@ const StyledConversationCard = styled<
   'div'
 >('div')`
   position: relative;
-  background-color: ${palette('common', 'white')};
   display: flex;
   transition: background-color 0.2s ease-in;
   &:hover,
@@ -64,6 +63,12 @@ const StyledConversationCard = styled<
     background: ${grey('50')};
   }
   ${({ mode }) => mode === 'navigation' && navigationStyles};
+  }
+
+  & .highlight-term {
+    font-weight: bold;
+    color: ${grey('900')};
+    ${typography('body2')};
   }
 `;
 const highlightBg = ({ theme }: any) =>
@@ -84,16 +89,33 @@ const HighlightStyle = createGlobalStyle<{}>`
   }
 `;
 
+const ANIMATION_DURATION = 3000;
 class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
   state = {
     highlight: false,
   };
 
+  private _timer?: NodeJS.Timer;
+
   highlight = () => {
-    this.setState({ highlight: true });
+    const { highlight } = this.state;
+    !highlight &&
+      this.setState({ highlight: true }, () => {
+        this._timer = setTimeout(() => {
+          this.setState({ highlight: false });
+        },                       ANIMATION_DURATION);
+      });
   }
-  removeHighlight = () => {
-    this.setState({ highlight: false });
+
+  clearTimer() {
+    if (this._timer) {
+      clearTimeout(this._timer);
+      this._timer = undefined;
+    }
+  }
+
+  componentWillUnmount() {
+    this.clearTimer();
   }
 
   render() {
@@ -101,7 +123,6 @@ class JuiConversationCard extends React.PureComponent<ConversationCardProps> {
     const { highlight } = this.state;
     return (
       <StyledConversationCard
-        onAnimationEnd={this.removeHighlight}
         className={highlight ? 'highlight' : ''}
         mode={mode}
         {...rest}

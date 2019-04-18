@@ -20,8 +20,7 @@ class FileItemDao extends SubItemDao<SanitizedFileItem> {
       ...super.toSanitizedItem(file),
       name: file.name,
       type: file.type,
-      __latest_version_date:
-        FileItemUtils.getVersionDate(file) || file.created_at,
+      __latest_post_id: FileItemUtils.getLatestPostId(file),
     } as SanitizedFileItem;
   }
 

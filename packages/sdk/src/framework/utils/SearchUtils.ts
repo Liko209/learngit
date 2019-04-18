@@ -6,7 +6,7 @@
 import UserPermissionType from '../../module/permission/types';
 import { IPermissionService } from '../../module/permission/service/IPermissionService';
 import { container } from '../../container';
-const soundex = require('soundex-code');
+const regExp = new RegExp(/[\s,]+/);
 
 class SearchUtils {
   static isFuzzyMatched(srcText: string, terms: string[]): boolean {
@@ -16,15 +16,15 @@ class SearchUtils {
       })
       : false;
   }
-  static isSoundexMatched(srcText: string, terms: string[]): boolean {
-    if (!srcText.length || !terms.length) {
+  static isSoundexMatched(
+    soundexOfEntity: string[],
+    soundexOfSearchTerms: string[],
+  ): boolean {
+    if (!soundexOfEntity.length || !soundexOfSearchTerms.length) {
       return false;
     }
-    const srcTerms = this.getTermsFromSearchKey(srcText).map(item =>
-      soundex(item),
-    );
-    return terms.every((value: string) => {
-      return this.isTextMatchedBySoundex(srcTerms, value);
+    return soundexOfSearchTerms.every((value: string) => {
+      return soundexOfEntity.includes(value);
     });
   }
 
@@ -38,14 +38,9 @@ class SearchUtils {
     }
     return false;
   }
-  static isTextMatchedBySoundex(srcText: string[], key: string): boolean {
-    return srcText.some((text: string) => {
-      return text === key;
-    });
-  }
 
-  static getTermsFromSearchKey(searchKey: string) {
-    return searchKey.split(/[\s,]+/);
+  static getTermsFromText(searchKey: string) {
+    return searchKey.split(regExp);
   }
 
   static async isUseSoundex(): Promise<boolean> {

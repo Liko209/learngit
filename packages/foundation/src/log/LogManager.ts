@@ -1,6 +1,11 @@
 import { Logger } from './Logger';
 import { LOG_LEVEL, LOG_TAGS } from './constants';
-import { ILogger, ILogEntityDecorator, LogConfig, ILogConsumer } from './types';
+import {
+  ILogger,
+  ILogEntityDecorator,
+  LogConfig,
+  ILogCollector,
+} from './types';
 import { configManager } from './config';
 import mergeWith from 'lodash/mergeWith';
 import {
@@ -71,12 +76,12 @@ export class LogManager {
     return this._instance;
   }
 
-  addConsumer(consumer: ILogConsumer) {
-    this._logger.addConsumer(consumer);
+  addCollector(collector: ILogCollector) {
+    this._logger.addCollector(collector);
   }
 
-  removeConsumer(consumer: ILogConsumer) {
-    this._logger.removeConsumer(consumer);
+  removeCollector(collector: ILogCollector) {
+    this._logger.removeCollector(collector);
   }
 
   configAll(config: LogConfig) {

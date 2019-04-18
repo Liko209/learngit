@@ -1,27 +1,47 @@
 import { LogUploader } from '../LogUploader';
-import { LogEntity, JNetworkError, ERROR_CODES_NETWORK } from 'foundation';
+import { LogEntity } from 'foundation';
 import { AccountService } from '../../../module/account';
 import { Api } from 'sdk/api';
 import axios, { AxiosError } from 'axios';
-import { AccountUserConfig } from '../../../module/account/config';
 import { ServiceLoader } from '../../../module/serviceLoader';
-
+import { Pal } from '../../../pal/pal';
+import { IApplicationInfo } from '../../../pal/applicationInfo';
 jest.mock('sdk/api');
+jest.mock('../../../pal/pal', () => {
+  const mockPal: Pal = {
+    getApplicationInfo: jest.fn(),
+    getErrorReporter: jest.fn(),
+  };
+  Object.defineProperty(mockPal, 'instance', {
+    get: () => {
+      return mockPal;
+    },
+  });
+  return {
+    Pal: mockPal,
+  };
+});
 jest.mock('../../../module/account');
 jest.mock('axios');
-jest.mock('../../../module/account/config');
 
 function createError(status: number): AxiosError {
   return (status
     ? {
-      response: {
+        response: {
           status,
         },
-    }
+      }
     : {}) as AxiosError;
 }
 describe('LogUploader', () => {
   const accountService = new AccountService();
+  const mockAppInfo: IApplicationInfo = {
+    appVersion: '1.0',
+    os: 'mac',
+    browser: 'chrome',
+    platform: 'desktop',
+    env: 'prod',
+  };
   beforeEach(() => {
     Api.httpConfig = {
       sumologic: {
@@ -31,12 +51,16 @@ describe('LogUploader', () => {
     };
     (axios.post as jest.Mock).mockResolvedValue({});
     ServiceLoader.getInstance = jest.fn().mockReturnValue(accountService);
-    (accountService.getUserEmail as jest.Mock).mockResolvedValue('abc@rc.com');
-    AccountUserConfig.prototype.getGlipUserId.mockReturnValue(12345);
-    (accountService.getClientId as jest.Mock).mockReturnValue('54321');
   });
   describe('upload()', () => {
     it('should call post correctly', async () => {
+      (accountService.getCurrentUserInfo as jest.Mock).mockResolvedValue({
+        id: 12345,
+        email: 'abc@rc.com',
+      });
+      (Pal.instance.getApplicationInfo as jest.Mock).mockReturnValue(
+        mockAppInfo,
+      );
       const logUploader = new LogUploader();
       const mockLog = new LogEntity();
       mockLog.sessionId = 'sessionA';
@@ -44,37 +68,28 @@ describe('LogUploader', () => {
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': '| abc@rc.com| 12345| sessionA',
+          'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
+            mockAppInfo.browser
+          }/${mockAppInfo.os}/${mockAppInfo.env}/abc@rc.com/12345/sessionA`,
           'Content-Type': 'application/json',
         },
       });
     });
-    it('should call post correctly when getUserEmail error', async () => {
+    it('should call post correctly when getCurrentUserInfo error', async () => {
+      (accountService.getCurrentUserInfo as jest.Mock).mockRejectedValue('');
+      (Pal.instance.getApplicationInfo as jest.Mock).mockReturnValue(
+        mockAppInfo,
+      );
       const logUploader = new LogUploader();
       const mockLog = new LogEntity();
-      accountService.getUserEmail.mockRejectedValueOnce('');
       mockLog.sessionId = 'sessionA';
       jest.spyOn(logUploader, 'transform').mockReturnValue('mm');
       await logUploader.upload([mockLog]);
       expect(axios.post).toBeCalledWith('url/code', 'mm', {
         headers: {
-          'X-Sumo-Name': '| service@glip.com| 12345| sessionA',
-          'Content-Type': 'application/json',
-        },
-      });
-    });
-    it('should call post correctly when get userId error', async () => {
-      const logUploader = new LogUploader();
-      const mockLog = new LogEntity();
-      AccountUserConfig.prototype.getGlipUserId.mockImplementation(() => {
-        throw new Error('');
-      });
-      mockLog.sessionId = 'sessionA';
-      jest.spyOn(logUploader, 'transform').mockReturnValue('mm');
-      await logUploader.upload([mockLog]);
-      expect(axios.post).toBeCalledWith('url/code', 'mm', {
-        headers: {
-          'X-Sumo-Name': '| service@glip.com| | sessionA',
+          'X-Sumo-Name': `${mockAppInfo.platform}/${mockAppInfo.appVersion}/${
+            mockAppInfo.browser
+          }/${mockAppInfo.os}/${mockAppInfo.env}/service@glip.com//sessionA`,
           'Content-Type': 'application/json',
         },
       });

@@ -17,7 +17,7 @@ import { HotKeys } from 'jui/hoc/HotKeys';
 import { goToConversationWithLoading } from '@/common/goToConversation';
 import visibilityChangeEvent from '@/store/base/visibilityChangeEvent';
 import GroupModel from '@/store/models/Group';
-import { joinTeam } from '@/common/joinPublicTeam';
+import { joinPublicTeam } from '@/common/joinPublicTeam';
 import { RecentSearchTypes } from 'sdk/module/search/entity';
 
 import { ViewProps, SearchItems, RecentItems } from './types';
@@ -102,11 +102,10 @@ class SearchBarView extends React.Component<ViewProps & Props> {
     await goToConversationWithLoading({ id });
   }
 
-  handleJoinTeam = async (item: GroupModel) => {
-    const joinTeamByItem = joinTeam(item);
+  handleJoinTeam = (item: GroupModel) => {
     this.onClear();
     this.onClose();
-    await joinTeamByItem();
+    joinPublicTeam(item);
   }
 
   // if search item removed need update selectIndex
@@ -142,6 +141,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
     } = config;
 
     const { SearchItem, title } = SearchSectionsConfig[type];
+
     return (
       <SearchItem
         cellIndex={cellIndex}
@@ -171,6 +171,7 @@ class SearchBarView extends React.Component<ViewProps & Props> {
         if (ids.length === 0) return null;
 
         const { title } = SearchSectionsConfig[type];
+
         return (
           <React.Fragment key={type}>
             <JuiSearchTitle
@@ -236,11 +237,15 @@ class SearchBarView extends React.Component<ViewProps & Props> {
 
   onEnter = (e: KeyboardEvent) => {
     const {
+      selectIndex,
       getCurrentItemId,
       addRecentRecord,
       getCurrentItemType,
       canJoinTeam,
     } = this.props;
+    if (selectIndex[0] < 0) {
+      return;
+    }
     const currentItemId = getCurrentItemId();
     const currentItemType = getCurrentItemType();
     if (!currentItemId) {

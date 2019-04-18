@@ -5,3 +5,5 @@
  */
 export * from './CallFSM';
 export * from './CallWindowFSM';
+export * from './HoldFSM';
+export * from './RecordFSM';

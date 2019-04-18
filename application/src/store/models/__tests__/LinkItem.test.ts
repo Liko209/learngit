@@ -46,4 +46,44 @@ describe('LinkItemModel', () => {
     expect(linkItemModel.providerName).toBe('provider_name');
     expect(linkItemModel.doNotRender).toBeFalsy();
   });
+
+  describe('isVideo', () => {
+    it('if not data should be return false', () => {
+      const linkItemModel = LinkItemModel.fromJS({
+        data: undefined,
+      } as any);
+      expect(linkItemModel.isVideo).toBeFalsy();
+    });
+    it('if not object or type !== video should be return false', () => {
+      let linkItemModel;
+      linkItemModel = LinkItemModel.fromJS({
+        data: {},
+      } as any);
+      expect(linkItemModel.isVideo).toBeFalsy();
+      linkItemModel = LinkItemModel.fromJS({
+        data: {
+          object: {},
+        },
+      } as any);
+      expect(linkItemModel.isVideo).toBeFalsy();
+      linkItemModel = LinkItemModel.fromJS({
+        data: {
+          object: {
+            type: 'xxx',
+          },
+        },
+      } as any);
+      expect(linkItemModel.isVideo).toBeFalsy();
+    });
+    it('if has object and type === video should be return true', () => {
+      const linkItemModel = LinkItemModel.fromJS({
+        data: {
+          object: {
+            type: 'video',
+          },
+        },
+      } as any);
+      expect(linkItemModel.isVideo).toBeTruthy();
+    });
+  });
 });

@@ -150,8 +150,6 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
   onWheel = (ev: React.WheelEvent) => {
     const { step, wheel } = ensureOptions(this.props.zoomOptions);
     if (!wheel) return;
-    ev.preventDefault();
-    ev.stopPropagation();
     const point: Position = {
       left: ev.pageX,
       top: ev.pageY,
@@ -165,7 +163,13 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
   }
 
   render() {
-    const { children, transform, onZoomRectChange, className, applyTransform } = this.props;
+    const {
+      children,
+      transform,
+      onZoomRectChange,
+      className,
+      applyTransform,
+    } = this.props;
     const zoomProps: JuiWithZoomProps = {
       transform,
       zoomIn: this.zoomIn,
@@ -179,7 +183,9 @@ class JuiZoomComponent extends React.Component<JuiZoomProps, JuiZoomState> {
     }
     return (
       <Container ref={this.getViewRef()} className={className}>
-        <ZoomWrapper style={zoomTransformStyle} onWheel={this.onWheel}>{children(zoomProps)}</ZoomWrapper>
+        <ZoomWrapper style={zoomTransformStyle} onWheel={this.onWheel}>
+          {children(zoomProps)}
+        </ZoomWrapper>
         <ReactResizeDetector
           handleHeight={true}
           handleWidth={true}

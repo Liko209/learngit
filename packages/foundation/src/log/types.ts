@@ -20,7 +20,7 @@ interface ILogEntityDecorator {
   decorate(data: LogEntity): LogEntity;
 }
 
-interface ILogConsumer {
+interface ILogCollector {
   onLog(logEntity: LogEntity): void;
 }
 
@@ -46,7 +46,7 @@ type LogConfig = {
   browser: {
     enabled: boolean;
   };
-  consumer: {
+  collector: {
     enabled: boolean;
   };
   decorators: ILogEntityDecorator[];
@@ -70,7 +70,7 @@ export {
   ILogger,
   ILoggerCore,
   ILogEntityDecorator,
-  ILogConsumer,
+  ILogCollector,
   ILogEntityProcessor,
   IConsoleLogPrettier,
   IAccessor,

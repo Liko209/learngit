@@ -190,7 +190,7 @@ class PostFetchController {
       if (remotePosts && remotePosts.length > 0) {
         remotePosts.forEach((remotePost: Post) => {
           const index = localPosts.findIndex(
-            (localPost: Post) => localPost.version === remotePost.version,
+            (localPost: Post) => localPost.unique_id === remotePost.unique_id,
           );
           if (index !== -1) {
             localPosts.splice(index, 1);

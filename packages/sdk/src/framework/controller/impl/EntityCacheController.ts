@@ -20,8 +20,6 @@ class EntityCacheController<T extends IdModel = IdModel>
 
   private _initialStatus: CACHE_INITIAL_STATUS;
 
-  private _filterFunc: (entity: T) => boolean;
-
   constructor() {
     this._initialStatus = CACHE_INITIAL_STATUS.NONE;
   }
@@ -152,7 +150,7 @@ class EntityCacheController<T extends IdModel = IdModel>
       partials.forEach((partialModel, id) => {
         const oldEntity = this._entities[id];
         if (oldEntity) {
-          this._updatePartial(oldEntity, partialModel);
+          this.updatePartial(oldEntity, partialModel);
         } else {
           const partialObject: {} = partialModel;
           this._entities[id] = partialObject as T;
@@ -165,14 +163,10 @@ class EntityCacheController<T extends IdModel = IdModel>
     }
   }
 
-  setFilter(filterFunc: (entity: T) => boolean) {
-    this._filterFunc = filterFunc;
-  }
-
   private _update(entity: T, id: number) {
     const oldEntity = this._entities.get(id);
     if (oldEntity) {
-      this._updatePartial(oldEntity, entity);
+      this.updatePartial(oldEntity, entity);
     } else {
       this.putInternal(entity);
     }
@@ -202,13 +196,10 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   protected putInternal(item: T) {
-    if (this._filterFunc && !this._filterFunc(item)) {
-      return;
-    }
     this._entities.set(item.id, item);
   }
 
-  private _updatePartial(oldEntity: T, partialEntity: Partial<Raw<T>> | T) {
+  protected updatePartial(oldEntity: T, partialEntity: Partial<Raw<T>> | T) {
     Object.keys(partialEntity).forEach((key: string) => {
       oldEntity[key] = partialEntity[key];
     });

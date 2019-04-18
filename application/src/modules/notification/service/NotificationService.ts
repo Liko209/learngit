@@ -7,20 +7,16 @@
 import { DeskTopNotification } from '../agent/DesktopNotification';
 import _ from 'lodash';
 import { Permission } from '../Permission';
-import {
-  INotificationService,
-  Global,
-  SWNotificationOptions,
-} from '../interface';
+import { INotificationService, NotificationOpts } from '../interface';
 import { AbstractNotification } from '../agent/AbstractNotification';
 import { SWNotification } from '../agent/SWNotification';
 
 class NotificationService implements INotificationService {
-  // @ts-ignore
-  private _win: Global = window;
   private _permission = new Permission();
   private _notificationDistributors: Map<string, AbstractNotification<any>>;
   private _notificationDistributor: AbstractNotification<any>;
+  private _isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
+  private _maximumTitleLength = 40;
   constructor() {
     this._notificationDistributors = new Map();
     this._notificationDistributors.set('sw', new SWNotification());
@@ -36,18 +32,28 @@ class NotificationService implements INotificationService {
       }
     }
   }
-
-  async show(title: string, opts: SWNotificationOptions) {
+  formatterForFirefox(str: string = '') {
+    return str && str.length > this._maximumTitleLength
+      ? `${str.substr(0, this._maximumTitleLength)}...`
+      : str;
+  }
+  async show(title: string, opts: NotificationOpts) {
+    let titleFormatted = title;
     if (document.hasFocus()) {
       return;
+    }
+
+    if (this._isFirefox) {
+      opts.body = this.formatterForFirefox(opts.body);
+      titleFormatted = this.formatterForFirefox(title);
     }
     if (!this._permission.isGranted) {
       const permission = await this._permission.request();
       if (permission) {
-        this._notificationDistributor.create(title, opts);
+        this._notificationDistributor.create(titleFormatted, opts);
       }
     } else {
-      this._notificationDistributor.create(title, opts);
+      this._notificationDistributor.create(titleFormatted, opts);
     }
   }
 

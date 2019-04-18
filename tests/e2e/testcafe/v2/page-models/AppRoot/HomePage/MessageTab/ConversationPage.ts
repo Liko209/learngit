@@ -56,9 +56,23 @@ class HeaderMoreMenu extends BaseWebComponent {
   }
 }
 
-class BaseConversationPage extends BaseWebComponent {
+export class BaseConversationPage extends BaseWebComponent {
+  private _self: Selector = this.getSelectorByAutomationId('messagePanel');
+
+  get self() {
+    return this._self;
+  }
+
+  set self(root: Selector) {
+    this._self = root;
+  }
+
   get posts() {
     return this.self.find('[data-name="conversation-card"]');
+  }
+  
+  get postSenders() {
+    return this.self.find('[data-name="name"]');
   }
 
   get header() {
@@ -92,11 +106,11 @@ class BaseConversationPage extends BaseWebComponent {
   }
 
   get streamWrapper() {
-    return this.getSelectorByAutomationId('jui-stream-wrapper');
+    return this.getSelectorByAutomationId('jui-stream-wrapper', this.self);
   }
 
   get stream() {
-    return this.getSelectorByAutomationId('jui-stream');
+    return this.getSelectorByAutomationId('jui-stream', this.self);
   }
 
   get loadingCircle() {
@@ -244,10 +258,6 @@ class BaseConversationPage extends BaseWebComponent {
 }
 
 export class ConversationPage extends BaseConversationPage {
-  get self() {
-    return this.getSelector('.conversation-page');
-  }
-
   get jumpToFirstUnreadButtonWrapper() {
     return this.getSelectorByAutomationId('jump-to-first-unread-button')
   }
@@ -332,6 +342,27 @@ export class ConversationPage extends BaseConversationPage {
       .click(this.messageInputArea)
       .typeText(this.messageInputArea, message, options)
       .pressKey('enter');
+  }
+
+  async typeAtSymbol() {
+    await this.t.click(this.messageInputArea).typeText(this.messageInputArea, '@');
+  }
+
+  async typeAtMentionUserNameAndPressEnter(userName: string) {
+    await this.typeAtSymbol();
+    await this.t.typeText(this.messageInputArea, userName, { paste: true })
+    await this.mentionUser.ensureLoaded();
+    await this.t.pressKey('enter');
+  }
+
+  async addMentionUser(userName: string) {
+    await this.t.typeText(this.messageInputArea, `@${userName}`);
+    await this.mentionUser.ensureLoaded();
+    await this.mentionUser.selectMemberByName(userName);
+  }
+
+  get mentionUser() {
+    return this.getComponent(MentionUsers);
   }
 
   async pressEnterWhenFocusOnMessageInputArea() {
@@ -470,6 +501,10 @@ export class MentionPage extends BaseConversationPage {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="mentions"]');
   }
 
+  get scrollDiv() {
+    return this.stream.parent('div');
+  }
+
   async waitUntilPostsBeLoaded(timeout = 20e3) {
     await this.t.wait(1e3); // loading circle is invisible in first 1 second.
     await this.t.expect(this.loadingCircle.exists).notOk({ timeout });
@@ -479,6 +514,10 @@ export class MentionPage extends BaseConversationPage {
 export class BookmarkPage extends BaseConversationPage {
   get self() {
     return this.getSelectorByAutomationId('post-list-page').filter('[data-type="bookmarks"]');
+  }
+
+  get scrollDiv() {
+    return this.stream.parent('div');
   }
 
   async waitUntilPostsBeLoaded(timeout = 20e3) {
@@ -813,5 +852,24 @@ class AudioConference extends BaseWebComponent {
 
   get participantCode() {
     return this.getSelectorByAutomationId('conferenceParticipantCode', this.self);
+  }
+}
+
+class MentionUsers extends BaseWebComponent {
+  get self() {
+    return this.getSelector('*[role="rowgroup"]');
+  }
+
+  get members() {
+    this.warnFlakySelector();
+    return this.self.find('div').withAttribute('uid');
+  }
+
+  async selectMemberByNth(n: number) {
+    await this.t.click(this.members.nth(n));
+  }
+
+  async selectMemberByName(name: string) {
+    await this.t.click(this.members.withExactText(name));
   }
 }

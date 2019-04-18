@@ -17,13 +17,17 @@ import { PERMISSION_ENUM } from '../constants';
 import { GroupConfigController } from '../controller/GroupConfigController';
 import { GroupController } from '../controller/GroupController';
 import { Group, TeamPermission, TeamPermissionParams } from '../entity';
-import { PermissionFlags, TeamSetting } from '../types';
+import {
+  PermissionFlags,
+  TeamSetting,
+  GroupCanBeShownResponse,
+} from '../types';
 import { IGroupService } from './IGroupService';
 import { NotificationEntityUpdatePayload } from '../../../service/notificationCenter';
 import { Post } from '../../post/entity';
 import { SYNC_SOURCE } from '../../../module/sync/types';
 import { GroupEntityCacheController } from '../controller/GroupEntityCacheController';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class GroupService extends EntityBaseService<Group> implements IGroupService {
   partialModifyController: PartialModifyController<Group>;
@@ -44,8 +48,14 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
           .setAsTrue4HasMoreConfigByDirection,
       }),
     );
-  }
 
+    this.setCheckTypeFunc((id: number) => {
+      return (
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_GROUP) ||
+        GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_TEAM)
+      );
+    });
+  }
   protected buildEntityCacheController() {
     return GroupEntityCacheController.buildGroupEntityCacheController(this);
   }
@@ -82,15 +92,9 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     groups: Raw<Group>[],
     source: SYNC_SOURCE,
   ): Promise<void> => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_GROUP,
-      logId,
-    );
     await this.getGroupController()
       .getHandleDataController()
       .handleData(groups, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   handleGroupMostRecentPostChanged = async (
@@ -228,27 +232,25 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     offset: number = 0,
     _limit?: number,
   ): Promise<Group[]> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .getGroupsByType(groupType, offset, _limit);
+    return await this._groupFetchDataController.getGroupsByType(
+      groupType,
+      offset,
+      _limit,
+    );
   }
 
   async getGroupsByIds(ids: number[], order?: boolean): Promise<Group[]> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .getGroupsByIds(ids, order);
+    return await this._groupFetchDataController.getGroupsByIds(ids, order);
   }
 
   async getLocalGroup(personIds: number[]): Promise<Group | null> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .getLocalGroup(personIds);
+    return await this._groupFetchDataController.getLocalGroup(personIds);
   }
 
   async getOrCreateGroupByMemberList(members: number[]): Promise<Group> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .getOrCreateGroupByMemberList(members);
+    return await this._groupFetchDataController.getOrCreateGroupByMemberList(
+      members,
+    );
   }
 
   async pinPost(
@@ -282,9 +284,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   async getLeftRailGroups(): Promise<Group[]> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .getLeftRailGroups();
+    return await this._groupFetchDataController.getLeftRailGroups();
   }
 
   async updateGroupPrivacy(params: {
@@ -297,9 +297,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   }
 
   async isFavored(id: number, type: number): Promise<boolean> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .isFavored(id, type);
+    return await this._groupFetchDataController.isFavored(id, type);
   }
 
   async doFuzzySearchGroups(
@@ -309,9 +307,25 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .doFuzzySearchGroups(searchKey, fetchAllIfSearchKeyEmpty);
+    return await this._groupFetchDataController.doFuzzySearchGroups(
+      searchKey,
+      fetchAllIfSearchKeyEmpty,
+    );
+  }
+
+  async doFuzzySearchALlGroups(
+    searchKey: string,
+    fetchAllIfSearchKeyEmpty?: boolean,
+    includeUserSelf?: boolean,
+  ): Promise<{
+    terms: string[];
+    sortableModels: SortableModel<Group>[];
+  } | null> {
+    return await this._groupFetchDataController.doFuzzySearchAllGroups(
+      searchKey,
+      fetchAllIfSearchKeyEmpty,
+      includeUserSelf,
+    );
   }
 
   async doFuzzySearchTeams(
@@ -321,15 +335,14 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
     terms: string[];
     sortableModels: SortableModel<Group>[];
   } | null> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .doFuzzySearchTeams(searchKey, fetchAllIfSearchKeyEmpty);
+    return await this._groupFetchDataController.doFuzzySearchTeams(
+      searchKey,
+      fetchAllIfSearchKeyEmpty,
+    );
   }
 
   async getGroupEmail(groupId: number): Promise<string> {
-    return await this.getGroupController()
-      .getGroupFetchDataController()
-      .getGroupEmail(groupId);
+    return await this._groupFetchDataController.getGroupEmail(groupId);
   }
 
   setAsTrue4HasMoreConfigByDirection = async (
@@ -351,7 +364,7 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
       .updateGroupLastAccessedTime(params);
   }
 
-  async isGroupCanBeShown(groupId: number): Promise<boolean> {
+  async isGroupCanBeShown(groupId: number): Promise<GroupCanBeShownResponse> {
     return await this.getGroupController()
       .getGroupActionController()
       .isGroupCanBeShown(groupId);
@@ -370,6 +383,14 @@ class GroupService extends EntityBaseService<Group> implements IGroupService {
   getIndividualGroups() {
     const cache = this.getEntityCacheController() as GroupEntityCacheController;
     return cache.getIndividualGroups();
+  }
+
+  private get _groupFetchDataController() {
+    return this.getGroupController().getGroupFetchDataController();
+  }
+  getSoundexById(id: number): string[] {
+    const cache = this.getEntityCacheController() as GroupEntityCacheController;
+    return cache.getSoundexById(id);
   }
 }
 

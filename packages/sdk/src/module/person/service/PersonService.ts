@@ -22,8 +22,9 @@ import { FEATURE_TYPE, FEATURE_STATUS } from '../../group/entity';
 import { PersonController } from '../controller/PersonController';
 import { SOCKET } from '../../../service/eventKey';
 import { ContactType } from '../types';
+import { PersonEntityCacheController } from '../controller/PersonEntityCacheController';
 import { SYNC_SOURCE } from '../../../module/sync/types';
-import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
+import { GlipTypeUtil, TypeDictionary } from '../../../utils';
 
 class PersonService extends EntityBaseService<Person>
   implements IPersonService {
@@ -38,12 +39,14 @@ class PersonService extends EntityBaseService<Person>
         [SOCKET.PERSON]: this.handleIncomingData,
       }),
     );
+
+    this.setCheckTypeFunc((id: number) => {
+      return GlipTypeUtil.isExpectedType(id, TypeDictionary.TYPE_ID_PERSON);
+    });
   }
 
   protected buildEntityCacheController() {
-    const entityCacheController = super.buildEntityCacheController();
-    entityCacheController.setFilter(this.getPersonController().isCacheValid);
-    return entityCacheController;
+    return PersonEntityCacheController.buildPersonEntityCacheController(this);
   }
 
   protected getPersonController() {
@@ -61,13 +64,7 @@ class PersonService extends EntityBaseService<Person>
     persons: Raw<Person>[],
     source: SYNC_SOURCE,
   ): Promise<void> => {
-    const logId = Date.now();
-    PerformanceTracerHolder.getPerformanceTracer().start(
-      PERFORMANCE_KEYS.HANDLE_INCOMING_PERSON,
-      logId,
-    );
     await this.getPersonController().handleIncomingData(persons, source);
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
   }
 
   async getPersonsByIds(ids: number[]): Promise<Person[]> {
@@ -102,7 +99,7 @@ class PersonService extends EntityBaseService<Person>
     return this.getPersonController().getName(person);
   }
 
-  isValidPerson(person: Person) {
+  isValidPerson(person: Person): boolean {
     return this.getPersonController().isValid(person);
   }
 
@@ -138,6 +135,15 @@ class PersonService extends EntityBaseService<Person>
 
   public async refreshPersonData(personId: number): Promise<void> {
     await this.getPersonController().refreshPersonData(personId);
+  }
+
+  getSoundexById(id: number): string[] {
+    const cache = this.getEntityCacheController() as PersonEntityCacheController;
+    return cache.getSoundexById(id);
+  }
+
+  isCacheValid(person: Person): boolean {
+    return this.getPersonController().isCacheValid(person);
   }
 }
 

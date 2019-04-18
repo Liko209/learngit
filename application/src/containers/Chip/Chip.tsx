@@ -6,13 +6,23 @@
 import React from 'react';
 import { JuiChip } from 'jui/components/Chip';
 import { Avatar } from '@/containers/Avatar';
+import { GroupAvatar } from '@/containers/Avatar/GroupAvatar';
+import { GlipTypeUtil, TypeDictionary } from 'sdk/utils';
 
 const Chip = (props: any) => {
-  return props.uid ? (
-    <JuiChip ChipAvatar={Avatar} isError={props.isError} {...props} />
-  ) : (
-    <JuiChip {...props} />
-  );
+  const { id } = props;
+  if (id) {
+    const type = GlipTypeUtil.extractTypeId(id);
+    if (type === TypeDictionary.TYPE_ID_PERSON) {
+      return (
+        <JuiChip PersonAvatar={Avatar} isError={props.isError} {...props} />
+      );
+    }
+    return (
+      <JuiChip GroupAvatar={GroupAvatar} isError={props.isError} {...props} />
+    );
+  }
+  return <JuiChip {...props} />;
 };
 
 export { Chip };
