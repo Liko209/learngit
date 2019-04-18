@@ -19,10 +19,9 @@ type NewActionsProps = WithTranslation & ViewProps;
 class NewActions extends React.Component<NewActionsProps> {
   constructor(props: NewActionsProps) {
     super(props);
-    this._Anchor = this._Anchor.bind(this);
   }
 
-  private _Anchor() {
+  private _Anchor = () => {
     const { t } = this.props;
     return (
       <JuiFabButton
@@ -61,24 +60,22 @@ class NewActions extends React.Component<NewActionsProps> {
 
   render() {
     return (
-      <>
-        <JuiNewActions
-          Anchor={this._Anchor}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'center',
-          }}
-        >
-          <JuiMenuList>
-            {this.renderCreateTeam()}
-            {this.renderSendNewMessage()}
-          </JuiMenuList>
-        </JuiNewActions>
-      </>
+      <JuiNewActions
+        Anchor={this._Anchor}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <JuiMenuList>
+          {this.renderCreateTeam()}
+          {this.renderSendNewMessage()}
+        </JuiMenuList>
+      </JuiNewActions>
     );
   }
 }
