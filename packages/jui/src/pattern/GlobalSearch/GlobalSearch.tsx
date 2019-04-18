@@ -39,6 +39,7 @@ const JuiGlobalSearch = (props: JuiGlobalSearchProps) => {
       scroll="paper"
       open={open}
       onClose={onClose}
+      disablePortal={true}
     >
       {children}
     </StyledGlobalSearch>

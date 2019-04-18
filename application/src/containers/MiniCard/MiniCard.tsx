@@ -4,7 +4,7 @@
  * Copyright © RingCentral. All rights reserved.
  */
 
-import React from 'react';
+import React, { Component, CSSProperties, RefObject, createRef } from 'react';
 import portalManager from '@/common/PortalManager';
 
 type Return = {
@@ -15,7 +15,7 @@ type Options = {
   anchor: HTMLElement;
 };
 
-function getStyles(anchor: HTMLElement): React.CSSProperties {
+function getStyles(anchor: HTMLElement): CSSProperties {
   if (!anchor) {
     return {};
   }
@@ -58,16 +58,32 @@ function getStyles(anchor: HTMLElement): React.CSSProperties {
   };
 }
 
-let _timer: number;
-
-function onBlurHandler() {
-  _timer = setTimeout(() => {
-    portalManager.dismissLast();
-  });
-}
-
-function onFocusHandler() {
-  clearTimeout(_timer);
+class Comp extends Component<{ anchor: HTMLElement; component: JSX.Element }> {
+  private _ref: RefObject<HTMLDivElement> = createRef();
+  private _clickEventHandler = (event: MouseEvent) => {
+    if (!this._ref.current || !event.target) {
+      return;
+    }
+    if (
+      !this._ref.current.contains(event.target as HTMLElement) &&
+      this._ref.current !== event.target
+    ) {
+      portalManager.dismissLast();
+    }
+  }
+  componentDidMount() {
+    document.addEventListener('click', this._clickEventHandler);
+  }
+  componentWillUnmount() {
+    document.removeEventListener('click', this._clickEventHandler);
+  }
+  render() {
+    return (
+      <div style={getStyles(this.props.anchor)} ref={this._ref}>
+        {this.props.component}
+      </div>
+    );
+  }
 }
 
 class MiniCard {
@@ -75,21 +91,12 @@ class MiniCard {
   static show(component: JSX.Element, options: Options): Return {
     const Component = component;
     const { anchor } = options;
-    const Comp = () => {
-      return (
-        <div
-          style={getStyles(anchor)}
-          onBlur={onBlurHandler}
-          onFocus={onFocusHandler}
-        >
-          {Component}
-        </div>
-      );
-    };
     if (this._dismiss) {
       this._dismiss();
     }
-    const { dismiss, show } = portalManager.wrapper(Comp);
+    const { dismiss, show } = portalManager.wrapper(() => (
+      <Comp anchor={anchor} component={Component} />
+    ));
     show();
     this._dismiss = dismiss;
     return {

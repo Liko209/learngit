@@ -82,37 +82,6 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
     return getGlobalValue(GLOBAL_KEYS.STATIC_HTTP_SERVER);
   }
 
-  private _withHighlight(text: string) {
-    if (!this.props.terms) {
-      return text;
-    }
-    const terms = this.props.terms;
-    const container = document.createElement('div');
-    container.innerHTML = text;
-    function replaceMatchedText(node: Node) {
-      Array.from(node.childNodes).forEach((child: ChildNode) => {
-        if (child.nodeType === 3) {
-          const fullTextContent = child.textContent;
-          let reg = terms.join('|');
-          reg = reg.replace(/([.?*+^$[\]\\(){}-])/g, '\\$1'); // replace invalid characters
-          const html = (fullTextContent || '').replace(
-            new RegExp(reg, 'gi'),
-            (term: string) => {
-              return `<span class="highlight-term">${term}</span>`;
-            },
-          );
-          const span = document.createElement('span');
-          span.innerHTML = html;
-          child.replaceWith(span);
-        } else {
-          replaceMatchedText(child);
-        }
-      });
-    }
-    replaceMatchedText(container);
-    return container.innerHTML;
-  }
-
   @computed
   get html() {
     const formatToHtml = new FormatToHtml({
@@ -121,10 +90,8 @@ class TextMessageViewModel extends StoreViewModel<TextMessageProps> {
       currentUserId: this._currentUserId,
       staticHttpServer: this._staticHttpServer,
       customEmojiMap: this._customEmojiMap,
+      highlightTerms: this.props.terms,
     });
-    if (this.props.terms && this.props.terms.length) {
-      return this._withHighlight(formatToHtml.text);
-    }
     return formatToHtml.text;
   }
 }

@@ -226,12 +226,12 @@ class ContentSearchResultViewModel
 
     isResponseError
       ? Notification.flashToast({
-        message,
-        type: ToastType.ERROR,
-        messageAlign: ToastMessageAlign.LEFT,
-        fullWidth: false,
-        dismissible: false,
-      })
+          message,
+          type: ToastType.ERROR,
+          messageAlign: ToastMessageAlign.LEFT,
+          fullWidth: false,
+          dismissible: false,
+        })
       : generalErrorHandler(error);
   }
 

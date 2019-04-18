@@ -26,7 +26,16 @@ class ConversationPostView extends Component<ConversationPostViewProps> {
   }
 
   onClickAtMention(event: React.MouseEvent) {
-    const target = event.target as HTMLElement;
+    const getAtMentionNode = (target: HTMLElement): HTMLElement => {
+      if (
+        target.classList.contains('at_mention_compose') ||
+        !target.parentElement
+      ) {
+        return target;
+      }
+      return getAtMentionNode(target.parentElement);
+    };
+    const target = getAtMentionNode(event.target as HTMLElement);
     const className = target.getAttribute('class') || '';
     const id = Number(target.getAttribute('id'));
     if (className.indexOf('at_mention_compose') > -1 && id > 0) {

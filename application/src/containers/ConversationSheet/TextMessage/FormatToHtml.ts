@@ -22,6 +22,7 @@ class FormatToHtml {
     currentUserId,
     staticHttpServer,
     customEmojiMap,
+    highlightTerms,
   }: FormatToHtmlParams) {
     const glipDownText = FormatToHtml.formatToGlipdown(
       text,
@@ -35,7 +36,12 @@ class FormatToHtml {
       customEmojiMap,
     );
 
-    return glipDownTextWithEmoji;
+    const glipDownTextWithHighlight =
+      highlightTerms && highlightTerms.length
+        ? FormatToHtml.formatToHighlight(glipDownTextWithEmoji, highlightTerms)
+        : glipDownTextWithEmoji;
+
+    return glipDownTextWithHighlight;
   }
 
   static formatToGlipdown(
@@ -58,6 +64,14 @@ class FormatToHtml {
     customEmojiMap: CustomEmojiMap,
   ) {
     return new Emoji(text, staticHttpServer, customEmojiMap).text;
+  }
+
+  static formatToHighlight(text: string, terms: string[]) {
+    let reg = terms.join('|');
+    reg = reg.replace(/([.?*+^$[\]\\(){}-])/g, '\\$1');
+    return text.replace(new RegExp(reg, 'gi'), (term: string) => {
+      return `<span class="highlight-term">${term}</span>`;
+    });
   }
 }
 
