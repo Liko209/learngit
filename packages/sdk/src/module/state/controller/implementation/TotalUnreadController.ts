@@ -26,6 +26,7 @@ import { SERVICE } from '../../../../service/eventKey';
 import _ from 'lodash';
 import { mainLogger } from 'foundation';
 import { ServiceLoader, ServiceConfig } from '../../../serviceLoader';
+import { number } from '@storybook/addon-knobs';
 
 type DataHandleTask =
   | GroupStateHandleTask
@@ -155,28 +156,30 @@ class TotalUnreadController {
     if (payload.type === EVENT_TYPES.UPDATE) {
       const userConfig = new AccountUserConfig();
       const glipId = userConfig.getGlipUserId();
-      await Promise.all(
-        payload.body.ids.map(async (id: number) => {
-          const group = payload.body.entities.get(id);
-          if (!group) {
-            return;
+      const groupsMap = new Map<number, Group>();
+      payload.body.ids.map(async (id: number) => {
+        const group = payload.body.entities.get(id);
+        if (!group) {
+          return;
+        }
+        const groupUnread = this._groupSectionUnread.get(id);
+        if (
+          !this._groupService.isValid(group) ||
+          !group.members.includes(glipId)
+        ) {
+          if (groupUnread) {
+            this._deleteFromTotalUnread(groupUnread);
+            this._groupSectionUnread.delete(id);
           }
-          const groupUnread = this._groupSectionUnread.get(id);
-          if (
-            !this._groupService.isValid(group) ||
-            !group.members.includes(glipId)
-          ) {
-            if (groupUnread) {
-              this._deleteFromTotalUnread(groupUnread);
-              this._groupSectionUnread.delete(id);
-            }
-          } else {
-            if (!groupUnread) {
-              await this._addNewGroupUnread(group);
-            }
+        } else {
+          if (!groupUnread) {
+            groupsMap.set(id, group);
           }
-        }),
-      );
+        }
+      });
+      if (groupsMap.size) {
+        await this._addNewGroupsUnread(groupsMap);
+      }
     }
   }
 
@@ -266,7 +269,11 @@ class TotalUnreadController {
         groupsMap.set(group.id, group);
       }
     });
+    await this._addNewGroupsUnread(groupsMap);
+    this._unreadInitialized = true;
+  }
 
+  private async _addNewGroupsUnread(groupsMap: Map<number, Group>) {
     const groupStates = await this._entitySourceController.batchGet(
       Array.from(groupsMap.keys()),
     );
@@ -283,8 +290,6 @@ class TotalUnreadController {
     let section: UMI_SECTION_TYPE;
     let unreadCount: number = 0;
     let mentionCount: number = 0;
-
-    // const groupState = await this._entitySourceController.get(group.id);
     if (groupState) {
       unreadCount = groupState.unread_count || 0;
       mentionCount = groupState.unread_mentions_count || 0;
