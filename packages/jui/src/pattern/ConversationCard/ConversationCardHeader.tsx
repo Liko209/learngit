@@ -133,10 +133,6 @@ class JuiConversationCardHeader extends React.PureComponent<
 
   render() {
     const { name, status, notification, from, time, children } = this.props;
-    // const inlineStyle = {
-    //   // maxWidth: `${this.state.headerItemMaxWidth}px`,
-    //   // cursor: 'pointer',
-    // };
     return (
       <StyledConversationCardHeader>
         <StyledLeftSection ref={this.setLeftSectionRef}>
