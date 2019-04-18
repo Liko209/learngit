@@ -17,7 +17,7 @@ test(formalName('Can should the tooltip when hovering on the to voicemail button
   const loginUser = h(t).rcData.mainCompany.users[0];
   const caller = h(t).rcData.mainCompany.users[1];
   const app = new AppRoot(t);
-  const tooltipText = "Send to voicemail";
+  const tooltipText = 'Send to voicemail';
 
   await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
@@ -42,5 +42,44 @@ test(formalName('Can should the tooltip when hovering on the to voicemail button
   await h(t).withLog(`Then Display a tooltip: '${tooltipText}`, async () => {
     await telephonyDialog.showTooltip(tooltipText);
   });
-
 });
+
+test(formalName('User can receive the new incoming call  when user ignored the incoming call', ['JPT-1510', 'P2', 'VoiceMail', 'ali.naffaa']), async (t) => {
+    const loginUser = h(t).rcData.mainCompany.users[0];
+    const caller = h(t).rcData.mainCompany.users[1];
+    const app = new AppRoot(t);
+    const loginUserWebPhone = await h(t).webphone(loginUser);
+    let callerWebPhone = undefined;
+
+    await h(t).withLog(`Given I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
+      await h(t).directLoginWithUser(SITE_URL, loginUser);
+      await app.homePage.ensureLoaded();
+    });
+
+    await h(t).withLog(`And I also login in another platform (webphone) ${caller.company.number}#${caller.extension}`, async () => {
+      callerWebPhone = await h(t).webphone(caller);
+    });
+
+    const telephonyDialog = app.homePage.telephonyDialog;
+    await h(t).withLog('When I receive an in-comming call', async () => {
+      await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
+      await callerWebPhone.close();
+    });
+
+    await h(t).withLog('And I ignore this in-comming call in Jupiter', async () => {
+      await telephonyDialog.ensureLoaded();
+      await telephonyDialog.clickIgnoreButton();
+    });
+
+    await h(t).withLog('Then this call should be ignored in Jupiter', async () => {
+      await telephonyDialog.ensureDismiss();
+    });
+
+    await h(t).withLog('But in the other platform (webPhone) this call should still ringing', async () => {
+      await loginUserWebPhone.update();
+      const actual = loginUserWebPhone.status;
+      await loginUserWebPhone.close();
+      await t.expect(actual).eql('invited');
+    });
+  },
+);
