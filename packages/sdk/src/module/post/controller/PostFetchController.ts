@@ -13,7 +13,7 @@ import { mainLogger } from 'foundation';
 import { ItemService } from '../../item';
 import { PostDataController } from './PostDataController';
 import PostAPI from '../../../api/glip/post';
-import { DEFAULT_PAGE_SIZE } from '../constant';
+import { DEFAULT_PAGE_SIZE, LOG_FETCH_POST } from '../constant';
 import _ from 'lodash';
 import { IGroupService } from '../../../module/group/service/IGroupService';
 import { IRemotePostRequest } from '../entity/Post';
@@ -58,7 +58,7 @@ class PostFetchController {
     );
     const shouldSaveToDb = postId === 0 || (await this._isPostInDb(postId));
     mainLogger.info(
-      TAG,
+      LOG_FETCH_POST,
       `getPostsByGroupId() groupId: ${groupId} postId: ${postId} shouldSaveToDb ${shouldSaveToDb} direction ${direction}`,
     );
 
@@ -75,6 +75,10 @@ class PostFetchController {
       const shouldFetch = await this._groupService.hasMorePostInRemote(
         groupId,
         direction,
+      );
+      mainLogger.info(
+        LOG_FETCH_POST,
+        `getPostsByGroupId() groupId: ${groupId} shouldSaveToDb:${shouldSaveToDb} shouldFetch:${shouldFetch}`,
       );
       if (!shouldSaveToDb || shouldFetch) {
         const validAnchorPostId = this._findValidAnchorPostId(
@@ -134,7 +138,10 @@ class PostFetchController {
       params.post_id = postId;
     }
     const data = await PostAPI.requestPosts(params);
-
+    mainLogger.info(
+      LOG_FETCH_POST,
+      `fetchPaginationPosts() groupId:${groupId} postId:${postId} fetch done`,
+    );
     if (data) {
       result.posts = data.posts;
       result.items = data.items;
@@ -152,9 +159,9 @@ class PostFetchController {
     shouldSaveToDb,
   }: IRemotePostRequest) {
     mainLogger.debug(
-      TAG,
+      LOG_FETCH_POST,
       groupId,
-      'getPostsByGroupId() db is not exceed limit, request from server',
+      'getRemotePostsByGroupId() db is not exceed limit, request from server',
     );
     const serverResult = await this.fetchPaginationPosts({
       groupId,
@@ -186,6 +193,7 @@ class PostFetchController {
   }
 
   private _handleDuplicatePosts(localPosts: Post[], remotePosts: Post[]) {
+    mainLogger.info(LOG_FETCH_POST, '_handleDuplicatePosts()');
     if (localPosts && localPosts.length > 0) {
       if (remotePosts && remotePosts.length > 0) {
         remotePosts.forEach((remotePost: Post) => {
@@ -215,7 +223,15 @@ class PostFetchController {
       items: [],
       hasMore: true,
     };
+    mainLogger.info(
+      LOG_FETCH_POST,
+      `_getPostsFromDb() groupId:${groupId} postId:${postId} direction:${direction} limit:${limit}`,
+    );
     if (!postId && direction === QUERY_DIRECTION.NEWER) {
+      mainLogger.info(
+        LOG_FETCH_POST,
+        '_getPostsFromDb() return due to postId = 0 and fetch newer',
+      );
       return result;
     }
     const logId = Date.now();
@@ -243,6 +259,7 @@ class PostFetchController {
   }
 
   private _findValidAnchorPostId(direction: QUERY_DIRECTION, posts: Post[]) {
+    mainLogger.info(LOG_FETCH_POST, '_findValidAnchorPostId()');
     if (posts && posts.length) {
       const validAnchorPost =
         direction === QUERY_DIRECTION.OLDER
