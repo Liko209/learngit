@@ -58,13 +58,32 @@ test.meta(<ITestMeta>{
     await searchDialog.ensureDismiss();
   });
 
+  await h(t).withLog(`When I type ${beSearchedName} and click "in this conversation" content item`, async () => {
+    await searchBar.clickSelf();
+    await searchDialog.typeSearchKeyword(beSearchedName);
+    await searchDialog.instantPage.clickContentSearchInThisConversationEntry();
+  });
+
+  await h(t).withLog(`Then the message tab on the full page should be opened`, async () => {
+    await searchDialog.fullSearchPage.messagesTabEntry.shouldBeOpened();
+  });
+
+  await h(t).withLog(`When tap ESC keyboard`, async () => {
+    await searchDialog.quitByPressEsc();
+  });
+
+  await h(t).withLog(`Then the search dialog dismiss`, async () => {
+    await searchDialog.ensureDismiss();
+  });
+
   await h(t).withLog(`When mouse in the global search box`, async () => {
     await searchBar.clickSelf();
+    await searchDialog.clearInputAreaTextByKey();
   });
 
   await h(t).withLog(`Then the recently searched dropdown list displayed`, async () => {
     await searchDialog.recentPage.ensureLoaded();
-    await t.expect(searchDialog.recentPage.items.count).eql(1);
+    await t.expect(searchDialog.recentPage.items.count).eql(2);
   });
 
   await h(t).withLog(`Whe I click outside the global search box`, async () => {
@@ -81,7 +100,7 @@ test.meta(<ITestMeta>{
 
   await h(t).withLog(`Then the recently searched dropdown list displayed`, async () => {
     await searchDialog.recentPage.ensureLoaded();
-    await t.expect(searchDialog.recentPage.items.count).eql(1);
+    await t.expect(searchDialog.recentPage.items.count).eql(2);
   });
 
   await h(t).withLog(`Whe I click Close icon`, async () => {
