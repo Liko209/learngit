@@ -292,14 +292,14 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return this.firstHistoryUnreadPostId;
   }
 
+  @catchError.flash({
+    isDebounce: true,
+    network: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+    server: 'message.prompt.SorryWeWereNotAbleToLoadOlderMessages',
+  })
   getFirstUnreadPostByLoadAllUnread = async () => {
     if (!this.firstHistoryUnreadInPage) {
-      try {
-        await this._loadAllUnreadPosts();
-      } catch (err) {
-        this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
-        throw err;
-      }
+      await this._loadAllUnreadPosts();
     }
     return this.firstHistoryUnreadPostId;
   }
