@@ -66,32 +66,32 @@ class EntitySourceController<T extends IdModel = IdModel>
       return existsEntities;
     }
 
+    let resultEntities = existsEntities;
     const existsIds = this._getIds(existsEntities);
     const diffIds = _.difference(nonDuplicatedIds, existsIds);
     const deactivatedEntities = await this.deactivatedDao.batchGet(diffIds);
-    if (
-      deactivatedEntities.length &&
-      this.entityPersistentController.saveToMemory
-    ) {
-      this.entityPersistentController.saveToMemory(deactivatedEntities);
+    if (deactivatedEntities.length) {
+      this.entityPersistentController.saveToMemory &&
+        this.entityPersistentController.saveToMemory(deactivatedEntities);
+      resultEntities = resultEntities.concat(deactivatedEntities);
     }
 
     const deactivatedIds = this._getIds(deactivatedEntities);
     const remoteIds = _.difference(diffIds, deactivatedIds);
 
-    const remoteEntities = await this._getEntitiesRemoteServer(remoteIds);
-
-    await this.entityPersistentController.bulkPut(remoteEntities);
-
-    let entities = existsEntities
-      .concat(deactivatedEntities)
-      .concat(remoteEntities);
-
-    if (order && entities.length) {
-      entities = this._orderAsIds(nonDuplicatedIds, entities);
+    if (remoteIds && remoteIds.length) {
+      const remoteEntities = await this._getEntitiesRemoteServer(remoteIds);
+      if (remoteEntities && remoteEntities.length) {
+        resultEntities = resultEntities.concat(remoteEntities);
+        await this.entityPersistentController.bulkPut(remoteEntities);
+      }
     }
 
-    return entities;
+    if (order && resultEntities.length) {
+      resultEntities = this._orderAsIds(nonDuplicatedIds, resultEntities);
+    }
+
+    return resultEntities;
   }
 
   private _getIds(entities: T[]): number[] {

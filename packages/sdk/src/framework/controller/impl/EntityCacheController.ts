@@ -48,8 +48,8 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   async bulkPut(array: T[]): Promise<void> {
-    array.forEach(async (item: T) => {
-      await this.putInternal(item);
+    array.forEach((item: T) => {
+      this.putInternal(item);
     });
   }
 
@@ -62,8 +62,8 @@ class EntityCacheController<T extends IdModel = IdModel>
   }
 
   async bulkDelete(keys: number[]): Promise<void> {
-    keys.forEach(async (key: number) => {
-      await this.deleteInternal(key);
+    keys.forEach((key: number) => {
+      this.deleteInternal(key);
     });
   }
 
