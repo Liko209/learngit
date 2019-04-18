@@ -121,6 +121,10 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
       this.props.handleImageClick(ev, this._loaded);
   }
 
+  private _handleInfoClick(event: React.MouseEvent<HTMLElement>) {
+    event.stopPropagation();
+  }
+
   componentDidMount() {
     this._mounted = true;
   }
@@ -146,13 +150,12 @@ class JuiPreviewImage extends PureComponent<JuiPreviewImageProps> {
           />
         )}
         {this._loaded && (
-          <Jui.ImageCard width={width} height={height}>
+          <Jui.ImageCard width={width} height={height} onClick={this._handleImageClick}>
             <StyledImg
               style={imageStyle}
               src={url}
-              onClick={this._handleImageClick}
             />
-            <Jui.ImageFileInfo width={width} height={height} component="div">
+            <Jui.ImageFileInfo width={width} height={height} component="div" onClick={this._handleInfoClick}>
               <FileName filename={fileName} />
               <Jui.FileActionsWrapper>{Actions}</Jui.FileActionsWrapper>
             </Jui.ImageFileInfo>

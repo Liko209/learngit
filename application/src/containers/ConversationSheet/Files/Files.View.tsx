@@ -64,6 +64,13 @@ class FilesView extends React.Component<FilesViewProps> {
     );
   }
 
+  private _getImageEl(ev: React.MouseEvent<HTMLElement>) {
+    if (!ev.currentTarget) {
+      return undefined;
+    }
+    return ev.currentTarget.querySelector('img') || ev.currentTarget;
+  }
+
   _handleImageClick = (
     id: number,
     thumbnailSrc: string,
@@ -72,7 +79,8 @@ class FilesView extends React.Component<FilesViewProps> {
   ) => async (ev: React.MouseEvent<HTMLElement>, loaded?: boolean) => {
     const { groupId, postId, mode } = this.props;
     if (postId < 0) return;
-    const target = ev.currentTarget;
+    const target = this._getImageEl(ev);
+
     showImageViewer(
       groupId,
       id,

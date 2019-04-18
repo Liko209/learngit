@@ -9,6 +9,11 @@ import { FilesView } from '../Files.View';
 import { JuiPreviewImage, StyledImg } from 'jui/pattern/ConversationCard/Files';
 import * as Viewer from '@/containers/Viewer';
 
+const mockEvent = {
+  stopPropagation: () => undefined,
+  currentTarget: { querySelector: () => {} },
+};
+
 const someProps = {
   files: [
     [
@@ -49,7 +54,7 @@ describe('FilesView', () => {
         .find(JuiPreviewImage)
         .shallow()
         .find(StyledImg)
-        .simulate('click', { stopPropagation: () => undefined });
+        .simulate('click', mockEvent);
 
       setTimeout(() => {
         expect(Viewer.showImageViewer).toHaveBeenCalled();
@@ -67,7 +72,7 @@ describe('FilesView', () => {
         .find(JuiPreviewImage)
         .shallow()
         .find(StyledImg)
-        .simulate('click', { stopPropagation: () => undefined });
+        .simulate('click', mockEvent);
 
       setTimeout(() => {
         expect(Viewer.showImageViewer).not.toHaveBeenCalled();
