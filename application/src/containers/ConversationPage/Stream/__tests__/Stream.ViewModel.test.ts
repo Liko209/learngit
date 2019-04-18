@@ -170,7 +170,9 @@ describe('StreamViewModel', () => {
           vm._streamController,
           'fetchAllUnreadData',
         )
-        .mockImplementation(() => {});
+        .mockImplementation(() => {
+          return [];
+        });
 
       return { vm, loadAllUnreadPosts };
     }
