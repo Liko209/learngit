@@ -231,6 +231,7 @@ class CreateTeamView extends React.Component<ViewProps, State> {
           <JuiTextField
             id={i18next.t('people.team.teamName')}
             label={i18next.t('people.team.teamName')}
+            placeholder={i18next.t('people.team.teamNamePlaceholder')}
             fullWidth={true}
             error={nameError}
             inputProps={{
