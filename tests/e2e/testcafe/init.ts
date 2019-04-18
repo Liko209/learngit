@@ -140,6 +140,7 @@ export function setupCase(accountType: string) {
       accountPoolClient,
       accountType
     );
+
     await h(t).sdkHelper.setup(
       ENV_OPTS.RC_PLATFORM_APP_KEY,
       ENV_OPTS.RC_PLATFORM_APP_SECRET,
@@ -152,6 +153,8 @@ export function setupCase(accountType: string) {
       ENV_OPTS.AUTH_URL,
       ENV_OPTS.JUPITER_APP_KEY,
     );
+
+    await h(t).logHelper.setup();
 
     if (mockClient) {
       h(t).mockClient = mockClient;
@@ -169,9 +172,7 @@ export function setupCase(accountType: string) {
       h(t).jupiterHelper.mockRequestId = h(t).mockRequestId;
     }
 
-    await h(t).logHelper.setup();
     await t.resizeWindow(RUNNER_OPTS.MAX_RESOLUTION[0], RUNNER_OPTS.MAX_RESOLUTION[1]);
-    await t.maximizeWindow();
   }
 }
 

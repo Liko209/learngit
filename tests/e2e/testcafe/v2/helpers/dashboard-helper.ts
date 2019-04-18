@@ -38,9 +38,9 @@ export class DashboardHelper {
   private async createStepInDashboard(step: IStep, testId: number) {
     const beatStep = new Step();
     beatStep.test = testId;
-    beatStep.name = step.message.replace(/\{/g, '[').replace(/\}/g, ']');
+    beatStep.name = step.text.replace(/\{/g, '[').replace(/\}/g, ']');
     if (step.metadata && Object.keys(step.metadata).length > 0) {
-      beatStep.description = format(step.message.replace(/\$\{/g, '{'), step.metadata);
+      beatStep.description = format(step.text.replace(/\$\{/g, '{'), step.metadata);
     }
     beatStep.metadata = Object.assign({}, step.metadata);
     beatStep.status = StatusMap[step.status];
@@ -73,9 +73,9 @@ export class DashboardHelper {
     for (let child of children) {
       const s = new Step();
       s.test = testId;
-      s.name = child.message.replace(/\{/g, '[').replace(/\}/g, ']');
+      s.name = child.text.replace(/\{/g, '[').replace(/\}/g, ']');
       if (child.metadata && Object.keys(child.metadata).length > 0) {
-        s.description = format(child.message.replace(/\$\{/g, '{'), child.metadata);
+        s.description = format(child.text.replace(/\$\{/g, '{'), child.metadata);
       }
 
       s.metadata = Object.assign({}, child.metadata);
@@ -130,7 +130,7 @@ export class DashboardHelper {
     logger.info(`add detail as an extra step to case ${res.body.id}`);
     const detailStep = <IStep>{
       status,
-      message: `Test Detail: warning(${consoleLog.warnConsoleLogNumber}), error(${consoleLog.errorConsoleLogNumber})`,
+      text: `Test Detail: warning(${consoleLog.warnConsoleLogNumber}), error(${consoleLog.errorConsoleLogNumber})`,
       attachments: [],
     };
     detailStep.startTime = Date.now();

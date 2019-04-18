@@ -14,7 +14,7 @@ import { AllureHelper } from './allure-helper';
 import { ScenarioHelper } from './scenario-helper';
 import { H } from './utils';
 
-import { IUser, IStep, LogOptions } from '../models';
+import { IUser, IStep, IStepOptions } from '../models';
 import { AppRoot } from '../page-models/AppRoot';
 import { SITE_URL, SITE_ENV } from '../../config';
 import { WebphoneHelper } from './webphone-helper';
@@ -73,7 +73,7 @@ class Helper {
   get webphoneHelper() {
     return new WebphoneHelper(this.t);
   }
-  
+
   get scenarioHelper() {
     return new ScenarioHelper(this.t, this.sdkHelper);
   }
@@ -97,13 +97,13 @@ class Helper {
   }
 
   async log(step: IStep | string,
-    options?: boolean | LogOptions) {
+    options?: boolean | IStepOptions) {
     return await this.logHelper.log(step, options);
   }
 
   async withLog(step: IStep | string,
     cb: (step?: IStep) => Promise<any>,
-    options?: boolean | LogOptions) {
+    options?: boolean | IStepOptions) {
     return await this.logHelper.withLog(step, cb, options);
   }
 

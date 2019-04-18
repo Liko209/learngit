@@ -62,8 +62,9 @@ const configLoader = new ConfigLoader(
 
 configLoader.load();
 
+const LANGUAGE_CODE = process.env.LANGUAGE_CODE || 'en' // ref: https://www.w3schools.com/tags/ref_language_codes.asp
 const REPORTER = process.env.REPORTER || 'spec';
-const SCREENSHOTS_PATH = process.env.SCREENSHOTS_PATH || '/tmp';
+const SCREENSHOTS_PATH = path.join(process.env.SCREENSHOTS_PATH || '/tmp', LANGUAGE_CODE);
 const SCREENSHOT_ON_FAIL = !(process.env.SCREENSHOT_ON_FAIL === 'false');
 const SCREENSHOT_WEBP_QUALITY = Number(process.env.SCREENSHOT_WEBP_QUALITY || '50');
 const CONCURRENCY = Number(process.env.CONCURRENCY || '1');
@@ -80,7 +81,6 @@ const SKIP_CONSOLE_ERROR = !(process.env.SKIP_CONSOLE_ERROR === 'false');
 const SKIP_CONSOLE_WARN = !(process.env.SKIP_CONSOLE_WARN === 'false');
 const ENABLE_SSL = process.env.ENABLE_SSL === 'true';
 const SELENIUM_CAPABILITIES = process.env.SELENIUM_CAPABILITIES || 'capabilities.json' // ref: https://github.com/link89/testcafe-browser-provider-selenium/tree/customize-chrome-option
-const LANGUAGE_CODE = process.env.LANGUAGE_CODE || 'en' // ref: https://www.w3schools.com/tags/ref_language_codes.asp
 
 
 const RUNNER_OPTS = {

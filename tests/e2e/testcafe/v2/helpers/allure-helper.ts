@@ -116,7 +116,7 @@ export class AllureHelper {
 
   writeSteps(steps: IStep[]) {
     for (const step of steps) {
-      this.startStep(step.message, step.startTime);
+      this.startStep(step.text, step.startTime);
       if (step.screenshotPath) {
         this.addAttachment(step.screenshotPath, 'screenshot');
       }
