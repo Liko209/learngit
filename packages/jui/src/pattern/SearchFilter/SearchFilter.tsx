@@ -5,7 +5,7 @@
  */
 import React from 'react';
 import styled from '../../foundation/styled-components';
-import { spacing, width, grey, typography } from '../../foundation/utils';
+import { spacing, grey, typography, width } from '../../foundation/utils';
 
 type JuiSearchFilterProps = {
   title: string;
@@ -15,7 +15,8 @@ type JuiSearchFilterProps = {
 const StyledSearchFilter = styled.div`
   display: flex;
   flex-direction: column;
-  width: ${width(67)};
+  width: 33.5%;
+  min-width: ${width(37.75)};
   color: ${grey('700')};
   ${typography('body1')};
   border-left: 1px solid ${grey('300')};
