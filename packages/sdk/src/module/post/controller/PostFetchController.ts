@@ -20,8 +20,6 @@ import { IRemotePostRequest } from '../entity/Post';
 import { PerformanceTracerHolder, PERFORMANCE_KEYS } from '../../../utils';
 import { ServiceLoader, ServiceConfig } from '../../serviceLoader';
 
-const TAG = 'PostFetchController';
-
 class PostFetchController {
   constructor(
     private _groupService: IGroupService,
