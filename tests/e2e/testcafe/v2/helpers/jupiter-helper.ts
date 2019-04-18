@@ -80,15 +80,16 @@ export class JupiterHelper {
 
     const getRCAuthSession = async (): Promise<string> => {
       const loginSite = new URL(this.authUrl);
-      let response = await axios.get(
-        `${loginSite.protocol}//${loginSite.hostname}/mobile/loginDispatcher`,
+      const siteUrl = new URL(SITE_URL);
+      const siteHost = `${siteUrl.protocol}//${siteUrl.hostname}`
+      let response = await axios.get(`${loginSite.protocol}//${loginSite.hostname}/mobile/loginDispatcher`,
         {
           params: {
             responseType: 'code',
             clientId: ENV_OPTS.JUPITER_APP_KEY,
             brandId: 1210,
-            appUrlScheme: SITE_URL,
-            glipAppRedirectURL: `${SITE_URL}?t=`,
+            appUrlScheme: siteHost,
+            glipAppRedirectURL: `${siteHost}?t=`,
             state: `/?env=${this.siteEnv}`,
             localeId: "en_US",
             display: "touch",
