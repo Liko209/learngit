@@ -87,7 +87,7 @@ class EntityPersistentController<T extends IdModel = IdModel>
 
   saveToMemory(entities: T[]): void {
     if (this.entityCacheController) {
-      this.entityCacheController.bulkUpdate(entities);
+      this.entityCacheController.bulkPut(entities);
     }
   }
 
@@ -111,6 +111,9 @@ class EntityPersistentController<T extends IdModel = IdModel>
 
     if (items.length !== ids.length && this.dao) {
       items = await this.dao.batchGet(ids, order);
+      if (items && items.length && this.entityCacheController) {
+        await this.entityCacheController.bulkPut(items);
+      }
     }
 
     return items;
@@ -124,6 +127,9 @@ class EntityPersistentController<T extends IdModel = IdModel>
 
     if (items.length === 0 && this.dao) {
       items = await this.dao.getAll();
+      if (items && items.length && this.entityCacheController) {
+        await this.entityCacheController.bulkPut(items);
+      }
     }
 
     return items;

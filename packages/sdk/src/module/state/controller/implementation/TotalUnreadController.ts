@@ -283,7 +283,6 @@ class TotalUnreadController {
         this._addNewGroupUnread(group, groupState);
       }
     });
-    this._unreadInitialized = true;
   }
 
   private _addNewGroupUnread(group: Group, groupState: GroupState) {

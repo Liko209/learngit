@@ -43,13 +43,17 @@ class EntityCacheController<T extends IdModel = IdModel>
     if (Array.isArray(item)) {
       await this.bulkPut(item);
     } else {
-      this.putInternal(item);
+      if (item) {
+        this.putInternal(item);
+      }
     }
   }
 
   async bulkPut(array: T[]): Promise<void> {
     array.forEach((item: T) => {
-      this.putInternal(item);
+      if (item) {
+        this.putInternal(item);
+      }
     });
   }
 
