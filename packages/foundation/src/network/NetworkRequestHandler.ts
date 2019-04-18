@@ -24,7 +24,6 @@ import {
 import { networkLogger } from '../log';
 import { NetworkRequestBuilder } from './client';
 
-const LOG_TAG = 'NetworkRequestHandler';
 class NetworkRequestHandler
   implements IResponseListener, INetworkRequestProducer {
   pendingTasks: Map<REQUEST_PRIORITY, RequestTask[]>;
