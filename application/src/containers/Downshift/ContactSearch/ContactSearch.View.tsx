@@ -3,7 +3,7 @@
  * @Date: 2018-10-11 14:31:01
  * Copyright © RingCentral. All rights reserved.
  */
-import React from 'react';
+import React, { createRef } from 'react';
 import { observer } from 'mobx-react';
 import { JuiDownshift } from 'jui/components/Downshift';
 
@@ -14,6 +14,8 @@ import { ViewProps } from './types';
 
 @observer
 class ContactSearchView extends React.Component<ViewProps> {
+  inputRef = createRef<HTMLInputElement>();
+
   render() {
     const {
       handleSelectChange,
@@ -24,7 +26,6 @@ class ContactSearchView extends React.Component<ViewProps> {
       searchMembers,
       suggestions,
       errorEmail,
-      messageRef,
       multiple,
       autoSwitchEmail,
       maxLength,
@@ -47,7 +48,7 @@ class ContactSearchView extends React.Component<ViewProps> {
         emailError={errorEmail}
         helperText={helperText}
         automationId="contactSearchSuggestionsList"
-        messageRef={messageRef}
+        messageRef={this.inputRef}
         minRowHeight={44}
         multiple={multiple}
         autoSwitchEmail={autoSwitchEmail}
