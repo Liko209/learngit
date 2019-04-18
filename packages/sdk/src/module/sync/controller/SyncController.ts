@@ -370,6 +370,8 @@ class SyncController {
           entityMap.forEach((value: any[], key: string) => {
             if (key === ENTITY.GROUP_STATE || ENTITY.MY_STATE) {
               notificationCenter.emitEntityUpdate(key, value, value);
+            } else if (key === SERVICE.GROUP_CURSOR) {
+              notificationCenter.emit(SERVICE.GROUP_CURSOR, value);
             } else {
               notificationCenter.emitEntityUpdate(key, value);
             }

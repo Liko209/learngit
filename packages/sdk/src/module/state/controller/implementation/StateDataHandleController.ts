@@ -87,10 +87,19 @@ class StateDataHandleController {
     }
   }
 
-  private _transformGroupData(groups: Partial<Group>[]): TransformedState {
+  private _transformGroupData(groupArray: any): TransformedState {
     const transformedState: TransformedState = {
       groupStates: [],
     };
+    let groups = groupArray;
+    if (groups && groups.body) {
+      if (groups.body.partials) {
+        groups = Array.from(groups.body.partials.values());
+      } else if (groups.body.entities) {
+        groups = Array.from(groups.body.entities.values());
+      }
+    }
+
     transformedState.groupStates = _.compact(
       groups.map((group: Partial<State>) => {
         const groupId = group._id || group.id;
@@ -126,6 +135,7 @@ class StateDataHandleController {
         return groupState;
       }),
     );
+
     return transformedState;
   }
 
