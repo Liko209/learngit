@@ -25,7 +25,7 @@ test(formalName('Can should the tooltip when hovering on the to voicemail button
     await app.homePage.ensureLoaded();
   });
 
-  await h(t).withLog(`When I call this extension`, async () => {
+  await h(t).withLog('When I call this extension', async () => {
     await callerWebPhone.makeCall(`${loginUser.company.number}#${loginUser.extension}`);
   });
 
@@ -82,6 +82,6 @@ test(formalName('User can receive the new incoming call  when user ignored the i
     });
 
     await loginUserWebPhone.close();
-    await callerWebPhone.close()
+    await callerWebPhone.close();
   },
 );
