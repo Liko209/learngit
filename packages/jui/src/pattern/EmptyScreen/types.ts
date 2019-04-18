@@ -11,4 +11,9 @@ type JuiEmptyScreenProps = {
   actions: JSX.Element[];
 };
 
-export { JuiEmptyScreenProps };
+type JuiMemberListEmptyViewProps = {
+  image: string;
+  subText: string;
+};
+
+export { JuiEmptyScreenProps, JuiMemberListEmptyViewProps };

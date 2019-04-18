@@ -17,12 +17,14 @@ import {
 } from '../../../foundation/utils/styles'; // use external instead of injected due to incompatible with SortableElement
 import { JuiListItem, JuiListItemProps } from '../../../components/Lists';
 
-const JuiProfileDialogContentMembers = styled('div')`
+const JuiProfileDialogContentMembers = styled('div')<{ height?: number }>`
   padding: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  flex:1;
+  overflow: auto;
+  flex: 1;
+  height: ${props => (props.height ? height(props.height / 4) : '100%')};
+  min-height: ${props => (props.height ? height(props.height / 4) : '100%')};
   /* box-shadow: ${props => props.theme.shadows[2]}; */
   /* box-shadow: ${({ theme }) => theme.boxShadow.val2}; */
 `;
@@ -121,9 +123,11 @@ const JuiProfileDialogContentMemberListItemGuest = styled(
 `;
 
 const JuiProfileDialogContentMemberShadow = styled('div')`
+  background: white;
+  border-radius: ${spacing(1)};
   box-shadow: ${props => props.theme.shadows[2]};
   height: ${height(6)};
-  z-index: 1;
+  z-index: ${({ theme }) => theme.zIndex.loading};
   flex-shrink: 0;
   position: absolute;
   bottom: 0;

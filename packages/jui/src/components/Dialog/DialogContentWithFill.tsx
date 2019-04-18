@@ -8,23 +8,32 @@ import React, { memo } from 'react';
 import MuiDialogContent, {
   DialogContentProps as MuiDialogContentProps,
 } from '@material-ui/core/DialogContent';
-import styled from '../../foundation/styled-components';
+import styled, { css } from '../../foundation/styled-components';
 import { height } from '../../foundation/utils/styles';
 
-type JuiDialogContentWithFillProps = MuiDialogContentProps;
+type JuiDialogContentWithFillProps = MuiDialogContentProps & {
+  noPaddingFix?: boolean;
+};
 
-const StyledDialogContent = styled(MuiDialogContent)`
+const StyledDialogContent = styled(MuiDialogContent)<
+  JuiDialogContentWithFillProps
+>`
   && {
     padding: 0;
     display: flex;
     flex-direction: column;
   }
-  &:after {
-    content: "";
-    height: ${height(6)};
-    display: block;
-    flex-shrink: 0;
-  }
+  ${({ noPaddingFix }) =>
+    noPaddingFix
+      ? null
+      : css`
+          &:after {
+            content: '';
+            height: ${height(6)};
+            display: block;
+            flex-shrink: 0;
+          }
+        `};
 `;
 
 const JuiDialogContentWithFill = memo(
