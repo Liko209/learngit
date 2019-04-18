@@ -67,11 +67,36 @@ class FormatToHtml {
   }
 
   static formatToHighlight(text: string, terms: string[]) {
-    let reg = terms.join('|');
-    reg = reg.replace(/([.?*+^$[\]\\(){}-])/g, '\\$1');
-    return text.replace(new RegExp(reg, 'gi'), (term: string) => {
-      return `<span class="highlight-term">${term}</span>`;
-    });
+    const container = document.createElement('div');
+    container.innerHTML = text;
+    function replaceMatchedText(node: Node) {
+      Array.from(node.childNodes).forEach((child: ChildNode) => {
+        if (child.nodeType === 3) {
+          const fullTextContent = child.textContent || '';
+          let reg = terms.join('|');
+          reg = reg.replace(/([.?*+^$[\]\\(){}-])/g, '\\$1');
+          const html = fullTextContent.replace(
+            new RegExp(reg, 'gi'),
+            (term: string) => {
+              return `<span class="highlight-term">${term}</span>`;
+            },
+          );
+          const span = document.createElement('span');
+          span.innerHTML = html;
+          const parentNode = child.parentNode;
+          Array.from(span.childNodes).forEach(node => {
+            if (parentNode) {
+              parentNode.insertBefore(node, child);
+            }
+          });
+          parentNode && parentNode.removeChild(child);
+        } else {
+          replaceMatchedText(child);
+        }
+      });
+    }
+    replaceMatchedText(container);
+    return container.innerHTML;
   }
 }
 
