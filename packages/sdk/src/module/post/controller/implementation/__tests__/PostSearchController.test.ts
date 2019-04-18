@@ -231,6 +231,21 @@ describe('PostSearchController', () => {
         requestId: 123,
       });
     });
+
+    it('should throw an error when search timeout', async () => {
+      const searchParams = { q: 'name', type: 'all', scroll_size: 1 } as any;
+      const res = { request_id: 123 };
+      const error = new Error();
+      jest.spyOn(window, 'setTimeout').mockImplementation(() => {
+        throw error;
+      });
+
+      SearchAPI.search = jest.fn().mockReturnValue(res);
+
+      expect(
+        postSearchController.searchPosts(searchParams),
+      ).rejects.toThrowError(error);
+    });
   });
 
   describe('endPostSearch', () => {
@@ -308,6 +323,20 @@ describe('PostSearchController', () => {
     beforeEach(() => {
       clearMocks();
       setUp();
+    });
+
+    it('should throw an error when search timeout when has unended search', async () => {
+      const requestId = 123;
+      queryInfos.set(requestId, { q: 'q', scrollRequestId: 1 });
+      jest.spyOn(window, 'setTimeout').mockImplementation((fn: any) => {
+        fn();
+      });
+
+      SearchAPI.scrollSearch = jest.fn().mockReturnValue({});
+
+      expect(
+        postSearchController.scrollSearchPosts(requestId),
+      ).rejects.toThrow();
     });
 
     it('should just return empty data when do scroll search with an not existed request id', async () => {
