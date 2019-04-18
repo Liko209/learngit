@@ -246,7 +246,7 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
 
   @action
   markAsRead() {
-    this._stateService.updateReadStatus(this.props.groupId, false, true);
+      this._stateService.updateReadStatus(this.props.groupId, false, true);
   }
 
   enableNewMessageSeparatorHandler = () => {
@@ -275,12 +275,12 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
     return await this._streamController.fetchData(direction, limit);
   }
 
-  private async _loadAllUnreadPosts(): Promise<Post[]> {
+  private _loadAllUnreadPosts() {
     if (!this._streamController.hasMore(QUERY_DIRECTION.OLDER)) {
       return [];
     }
 
-    return await this._streamController.fetchAllUnreadData();
+    return this._streamController.fetchAllUnreadData();
   }
 
   private async _loadSiblingPosts(anchorPostId: number) {
@@ -312,15 +312,21 @@ class StreamViewModel extends StoreViewModel<StreamProps> {
   }
 
   getFirstUnreadPostByLoadAllUnread = async () => {
+    let firstUnreadPostId: number | undefined = undefined;
     if (!this.firstHistoryUnreadInPage) {
       try {
-        await this._loadAllUnreadPosts();
+        const posts = await this._loadAllUnreadPosts();
+        firstUnreadPostId = this.firstHistoryUnreadPostId;
+        const firstPost = posts[0];
+        if (!firstUnreadPostId && firstPost) {
+          firstUnreadPostId = firstPost.id;
+        }
       } catch (err) {
         this._handleLoadMoreError(err, QUERY_DIRECTION.OLDER);
         throw err;
       }
     }
-    return this.firstHistoryUnreadPostId;
+    return firstUnreadPostId;
   }
 
   initialize = (groupId: number) => {
