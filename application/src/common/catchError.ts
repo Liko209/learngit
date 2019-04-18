@@ -69,11 +69,23 @@ function notify(
     ...notificationOpts,
   });
 }
+let debounceNotifyStore = {};
 
-const debounceNotify = _.debounce(notify, 1000, {
-  trailing: false,
-  leading: true,
-});
+const getDebounceNotify = (actionName: ErrorActionConfig) => {
+  if (typeof actionName === 'function') {
+    return;
+  }
+  if (!debounceNotifyStore[actionName]) {
+    console.log('newDebounce');
+    debounceNotifyStore = {
+      [actionName]: _.debounce(notify, 1000, {
+        trailing: false,
+        leading: true,
+      }),
+    };
+  }
+  return debounceNotifyStore[actionName];
+};
 
 function perform(options: StrategyProps[], error: Error, ctx: any) {
   const result = options.some(({ condition, action }) => {
@@ -105,7 +117,9 @@ function handleError(
     isDebounce,
     isNeedReturn,
   } = options;
-  const notifyFunc = isDebounce ? debounceNotify : notify;
+  const notifyFunc = isDebounce
+    ? getDebounceNotify(network || server || '')
+    : notify;
   if (network && errorHelper.isNetworkConnectionError(error)) {
     notifyFunc(ctx, notificationType, network, notificationOpts, error);
     return false;

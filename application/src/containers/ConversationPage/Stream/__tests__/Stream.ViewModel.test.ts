@@ -31,6 +31,7 @@ jest.mock('sdk/module/item');
 jest.mock('sdk/module/post');
 jest.mock('sdk/module/group');
 jest.mock('../../../../store/base/visibilityChangeEvent');
+jest.mock('@/containers/Notification');
 
 function setup(obj?: any) {
   jest.spyOn(notificationCenter, 'on').mockImplementation();
@@ -394,8 +395,6 @@ describe('StreamViewModel', () => {
         },
       });
 
-      Notification.flashToast = jest.fn();
-
       await vm.loadPrevPosts();
 
       expect(Notification.flashToast).toHaveBeenCalledWith({
@@ -419,7 +418,9 @@ describe('StreamViewModel', () => {
         },
       });
 
-      await vm.loadPrevPosts();
+      try {
+        await vm.loadPrevPosts();
+      } catch {}
 
       expect(errorUtil.generalErrorHandler).toHaveBeenCalled();
     });
@@ -478,9 +479,9 @@ describe('StreamViewModel', () => {
         },
       });
 
-      Notification.flashToast = jest.fn();
-
-      await vm.loadNextPosts();
+      try {
+        await vm.loadNextPosts();
+      } catch (error) {}
 
       expect(Notification.flashToast).toHaveBeenCalledWith({
         dismissible: false,
@@ -509,14 +510,12 @@ describe('StreamViewModel', () => {
           fetchData,
         },
       });
-
-      Notification.flashToast = jest.fn();
-
-      await vm.loadNextPosts();
-      await vm.loadNextPosts();
-      await vm.loadNextPosts();
-
-      expect(Notification.flashToast).toHaveBeenCalledTimes(1);
+      setTimeout(async () => {
+        await vm.loadNextPosts();
+        await vm.loadNextPosts();
+        await vm.loadNextPosts();
+        expect(Notification.flashToast).toHaveBeenCalledTimes(1);
+      },         1000);
     });
   });
 

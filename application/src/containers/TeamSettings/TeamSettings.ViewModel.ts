@@ -98,7 +98,6 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
   }
 
   @catchError.flash({
-    isDebounce: true,
     network: 'people.prompt.leaveTeamNetworkErrorContent',
     server: 'people.prompt.leaveTeamServerErrorContent',
   })
@@ -110,28 +109,27 @@ class TeamSettingsViewModel extends StoreViewModel<{ id: number }> {
     await groupService.leaveTeam(userId, this.id);
   }
 
-  @action
   @catchError.flash({
-    isDebounce: true,
-    network: 'people.prompt.leaveTeamNetworkErrorContent',
-    server: 'people.prompt.leaveTeamServerErrorContent',
+    isNeedReturn: true,
+    network: 'people.prompt.deleteTeamNetworkErrorContent',
+    server: 'people.prompt.deleteTeamServerErrorContent',
   })
+  @action
   deleteTeam = async () => {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
     );
-
     await groupService.deleteTeam(this.id);
     this._onActionSuccess('people.team.deleteTeamSuccessMsg');
     return true;
   }
 
-  @action
   @catchError.flash({
-    isDebounce: true,
+    isNeedReturn: true,
     network: 'people.prompt.archiveTeamNetworkErrorContent',
     server: 'people.prompt.archiveTeamServerErrorContent',
   })
+  @action
   archiveTeam = async () => {
     const groupService = ServiceLoader.getInstance<GroupService>(
       ServiceConfig.GROUP_SERVICE,
