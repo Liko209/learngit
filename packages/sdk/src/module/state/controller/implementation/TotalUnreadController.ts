@@ -260,27 +260,31 @@ class TotalUnreadController {
     const userConfig = new AccountUserConfig();
     const glipId = userConfig.getGlipUserId();
 
-    await Promise.all(
-      groups.map(async (group: Group) => {
-        if (
-          !this._groupService.isValid(group) ||
-          !group.members.includes(glipId)
-        ) {
-          return;
-        }
-        await this._addNewGroupUnread(group);
-      }),
-    );
+    const groupsMap = new Map<number, Group>();
+    groups.forEach((group: Group) => {
+      if (this._groupService.isValid(group) && group.members.includes(glipId)) {
+        groupsMap.set(group.id, group);
+      }
+    });
 
+    const groupStates = await this._entitySourceController.batchGet(
+      Array.from(groupsMap.keys()),
+    );
+    groupStates.forEach((groupState: GroupState) => {
+      const group = groupsMap.get(groupState.id);
+      if (group) {
+        this._addNewGroupUnread(group, groupState);
+      }
+    });
     this._unreadInitialized = true;
   }
 
-  private async _addNewGroupUnread(group: Group): Promise<void> {
+  private _addNewGroupUnread(group: Group, groupState: GroupState) {
     let section: UMI_SECTION_TYPE;
     let unreadCount: number = 0;
     let mentionCount: number = 0;
 
-    const groupState = await this._entitySourceController.get(group.id);
+    // const groupState = await this._entitySourceController.get(group.id);
     if (groupState) {
       unreadCount = groupState.unread_count || 0;
       mentionCount = groupState.unread_mentions_count || 0;
