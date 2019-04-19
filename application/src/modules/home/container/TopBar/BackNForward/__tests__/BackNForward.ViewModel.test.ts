@@ -29,7 +29,7 @@ describe('backNForward ViewModel', () => {
 
   it('Should make history stack cursor + 1 or - 1', () => {
     historyStack.push('text');
-    historyStack.push('text');
+    historyStack.push('text1');
     let oldCursor = historyStack.getCursor();
     backNForwardViewModel.back();
     let newCursor = historyStack.getCursor();
@@ -169,7 +169,7 @@ describe('backNForward ViewModel', () => {
 
   it('Should return current status of back button', () => {
     historyStack.push('text');
-    historyStack.push('text');
+    historyStack.push('text1');
 
     let disabledBack = backNForwardViewModel.disabledBack;
     expect(disabledBack).toEqual(false);
@@ -180,7 +180,7 @@ describe('backNForward ViewModel', () => {
 
   it('Should return current status of forward button', () => {
     historyStack.push('text');
-    historyStack.push('text');
+    historyStack.push('text1');
 
     let disabledForward = backNForwardViewModel.disabledForward;
     expect(disabledForward).toEqual(true);
@@ -191,7 +191,7 @@ describe('backNForward ViewModel', () => {
 
   it('Can set cursor by go', () => {
     historyStack.push('text');
-    historyStack.push('text');
+    historyStack.push('text1');
 
     backNForwardViewModel.go(OPERATION.BACK, 0);
     let backRecord = backNForwardViewModel.backRecord;

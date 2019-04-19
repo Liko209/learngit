@@ -23,7 +23,7 @@ const StyledSearchFilter = styled.div`
 `;
 
 const StyledSearchFilterHeader = styled.div`
-  padding: ${spacing(3, 0, 1, 4)};
+  padding: ${spacing(3, 0, 4, 4)};
 `;
 
 const StyledSearchFilterBody = styled.div`
