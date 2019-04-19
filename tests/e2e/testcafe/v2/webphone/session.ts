@@ -1,6 +1,9 @@
 
 import { WebphoneClient } from 'webphone-client'
 import { ENV_OPTS, WebphoneConfig } from '../../config';
+import { H } from '../helpers';
+import * as assert from 'assert';
+
 export class WebphoneSession {
   phoneId: string;
   sessionId: string;
@@ -54,9 +57,32 @@ export class WebphoneSession {
 
   async operate(action: string, destNumber?: string) {
     if (destNumber) {
-      await this.webphoneClient.remoteOperateSession(this.phoneId, this.sessionId, action, destNumber);
+      await this.webphoneClient.operateSession(this.phoneId, this.sessionId, action, destNumber);
     } else {
-      await this.webphoneClient.remoteOperateSession(this.phoneId, this.sessionId, action);
+      await this.webphoneClient.operateSession(this.phoneId, this.sessionId, action);
     }
   }
+
+  async answer() {
+    await this.waitForStatus('invited');
+    await this.operate('answerCall');
+  }
+
+  async decline() {
+    await this.waitForStatus('invited');
+    await this.operate('decline');
+  }
+
+  async hangup() {
+    await this.waitForStatus('accepted');
+    await this.operate('hangup');
+  }
+
+  async waitForStatus(status: string) {
+    await H.retryUntilPass(async () => {
+      await this.update();
+      assert.ok(status == this.status, `webphone status: expect "${status}", but actual "${this.status}"`);
+    }, 10, 1e3)
+  }
+
 }

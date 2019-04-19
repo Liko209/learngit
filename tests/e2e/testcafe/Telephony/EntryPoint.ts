@@ -70,7 +70,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I click the hand up button', async () => {
-    await telephonyDialog.clickHandUpButton();
+    await telephonyDialog.clickHangupButton();
   });
 
   await h(t).withLog('Then telephony dialog dismiss', async () => {
@@ -96,7 +96,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I click the hand up button', async () => {
-    await telephonyDialog.clickHandUpButton();
+    await telephonyDialog.clickHangupButton();
   });
 
   await h(t).withLog('Then telephony dialog dismiss', async () => {
@@ -158,7 +158,7 @@ test.meta(<ITestMeta>{
   });
 
   await h(t).withLog('When I click the hand up button', async () => {
-    await telephonyDialog.clickHandUpButton();
+    await telephonyDialog.clickHangupButton();
   });
 
   await h(t).withLog('Then telephony dialog dismiss', async () => {
@@ -195,7 +195,7 @@ test.meta(<ITestMeta>{
     resultName = await searchDialog.instantPage.nthPeople(0).getName();
     await searchDialog.instantPage.nthPeople(0).makeCall();
     await app.homePage.telephonyDialog.ensureLoaded(60e3);
-    await app.homePage.telephonyDialog.clickHandUpButton();
+    await app.homePage.telephonyDialog.clickHangupButton();
   });
 
   await h(t).withLog(`And mouse in the global search box`, async () => {

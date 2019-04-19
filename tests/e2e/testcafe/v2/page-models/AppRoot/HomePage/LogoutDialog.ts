@@ -37,7 +37,7 @@ export class LogoutDialog extends BaseWebComponent {
     return this.buttonOfText('Log out');
   }
 
-  async leave() {
+  async clickLogoutButton() {
     await this.t.click(this.LogoutButton);
   }
 

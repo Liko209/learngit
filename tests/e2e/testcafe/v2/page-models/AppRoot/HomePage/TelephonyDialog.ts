@@ -32,12 +32,12 @@ export class TelephonyDialog extends BaseWebComponent {
     return this.getSelectorByAutomationId('telephony-dialer-header-phone');
   }
 
-  get handUpButton() {
+  get hangupButton() {
     return this.buttonOfIcon('hand_up');
   }
 
-  async clickHandUpButton() {
-    await this.t.click(this.handUpButton);
+  async clickHangupButton() {
+    await this.t.click(this.hangupButton);
   }
 
   get muteButton() {
@@ -150,6 +150,7 @@ export class TelephonyDialog extends BaseWebComponent {
 
   async pressKeypad(keys: string | string[]) {
     for (const i of keys) {
+      await this.t.wait(5e2);
       await this.t.click(this.buttonOfIcon(this.keyMap[i]));
     }
   }
