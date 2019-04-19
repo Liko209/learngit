@@ -34,6 +34,7 @@ const KEY_2_ICON_MAP = {
   hash: '#',
 };
 const ACCEPTABLE_KEYS = Object.values(KEY_2_ICON_MAP);
+const KEY_UP = 'keyup';
 
 const throttledHandler = (f: any) =>
   _.throttle(f, 30, {
@@ -89,11 +90,11 @@ class DialerContainerView extends React.Component<DialerContainerViewProps> {
   }
 
   componentDidMount() {
-    window.addEventListener('keyup', this._onKeyup);
+    window.addEventListener(KEY_UP, this._onKeyup);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keyup', this._onKeyup);
+    window.removeEventListener(KEY_UP, this._onKeyup);
   }
 
   render() {

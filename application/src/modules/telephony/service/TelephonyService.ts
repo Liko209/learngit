@@ -57,7 +57,7 @@ class TelephonyService {
     this._telephonyStore.incomingCall();
     mainLogger.info(
       `${TelephonyService.TAG}Call object created, call id=${
-      callInfo.callId
+        callInfo.callId
       }, from name=${fromName}, from num=${fromNum}`,
     );
   }
@@ -104,7 +104,7 @@ class TelephonyService {
   ) => {
     mainLogger.info(
       `${
-      TelephonyService.TAG
+        TelephonyService.TAG
       }Call action: ${callAction} succeed, options: ${options}`,
     );
     switch (callAction) {
@@ -263,7 +263,7 @@ class TelephonyService {
     if (this._callId) {
       mainLogger.info(
         `${TelephonyService.TAG}${mute ? 'mute' : 'unmute'} call id=${
-        this._callId
+          this._callId
         }`,
       );
       mute
@@ -288,36 +288,40 @@ class TelephonyService {
   }
 
   holdOrUnhold = () => {
-    if (this._telephonyStore.holdDisabled || this._telephonyStore.pendingForHold || !this._callId) {
+    if (
+      this._telephonyStore.holdDisabled ||
+      this._telephonyStore.pendingForHold ||
+      !this._callId
+    ) {
       mainLogger.debug(
-        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_PENDING_STATE]: ${this._telephonyStore.pendingForHold}`,
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_PENDING_STATE]: ${
+          this._telephonyStore.pendingForHold
+        }`,
       );
       mainLogger.debug(
-        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${this._telephonyStore.holdDisabled}`,
+        `${TelephonyService.TAG}[TELEPHONY_HOLD_BUTTON_DISABLE_STATE]: ${
+          this._telephonyStore.holdDisabled
+        }`,
       );
       return;
     }
     if (this._telephonyStore.held) {
-      mainLogger.info(
-        `${TelephonyService.TAG}unhold call id=${
-        this._callId
-        }`,
-      );
+      mainLogger.info(`${TelephonyService.TAG}unhold call id=${this._callId}`);
       this._telephonyStore.setPendingForHoldBtn(true);
       return this._serverTelephonyService.unhold(this._callId);
     }
-    mainLogger.info(
-      `${TelephonyService.TAG}hold call id=${
-      this._callId
-      }`,
-    );
+    mainLogger.info(`${TelephonyService.TAG}hold call id=${this._callId}`);
     this._telephonyStore.hold(); // for swift UX
     this._telephonyStore.setPendingForHoldBtn(true);
     return this._serverTelephonyService.hold(this._callId);
   }
 
   startOrStopRecording = () => {
-    if (!this._callId || this._telephonyStore.pendingForRecord || this._telephonyStore.recordDisabled) {
+    if (
+      !this._callId ||
+      this._telephonyStore.pendingForRecord ||
+      this._telephonyStore.recordDisabled
+    ) {
       return;
     }
     if (this._telephonyStore.isRecording) {
@@ -331,6 +335,7 @@ class TelephonyService {
   }
 
   dtmf = (digits: string) => {
+    // TODO: determine if the dialer is minimized
     this._telephonyStore.inputKey(digits);
     return this._serverTelephonyService.dtmf(this._callId as string, digits);
   }
