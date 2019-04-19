@@ -3,11 +3,11 @@
  * @Date: 2019-04-17 10:14:54
  * Copyright © RingCentral. All rights reserved.
  */
-import { formalName } from '../../libs/filter';
-import { h } from '../../v2/helpers';
-import { setupCase, teardownCase } from '../../init';
-import { AppRoot } from '../../v2/page-models/AppRoot';
-import { SITE_URL, BrandTire } from '../../config';
+import { formalName } from '../libs/filter';
+import { h } from '../v2/helpers';
+import { setupCase, teardownCase } from '../init';
+import { AppRoot } from '../v2/page-models/AppRoot';
+import { SITE_URL, BrandTire } from '../config';
 
 fixture('Telephony/ToVoiceMail')
   .beforeEach(setupCase(BrandTire.RCOFFICE))

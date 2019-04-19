@@ -48,6 +48,10 @@ export class WebphoneSession {
   }
 
   async makeCall(destNumber: string) {
+    await H.retryUntilPass(async () => {
+      await this.update();
+      assert.ok('accepted' != this.status, `webphone status: expect not "accepted", but actual "${this.status}"`);
+    }, 10, 1e3);
     await this.webphoneClient.makeCall(this.phoneId, this.sessionId, destNumber);
   }
 
@@ -82,7 +86,7 @@ export class WebphoneSession {
     await H.retryUntilPass(async () => {
       await this.update();
       assert.ok(status == this.status, `webphone status: expect "${status}", but actual "${this.status}"`);
-    }, 10, 1e3)
+    }, 10, 1e3);
   }
 
 }
