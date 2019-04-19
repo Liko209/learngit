@@ -71,8 +71,13 @@ class Helper {
     return new AllureHelper(this.t);
   }
 
+  private _webphoneS: WebphoneHelper;
+
   get webphoneHelper() {
-    return new WebphoneHelper(this.t);
+    if (!this._webphoneS) {
+      this._webphoneS = new WebphoneHelper(this.t);
+    }
+    return this._webphoneS;
   }
 
   get scenarioHelper() {

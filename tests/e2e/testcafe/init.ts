@@ -194,6 +194,9 @@ export function teardownCase() {
     // release account
     await h(t).dataHelper.teardown();
 
+    // release webphone session
+    await h(t).webphoneHelper.tearDown();
+    
     // fetch console log from browser
     const consoleLog = await t.getBrowserConsoleMessages()
     const zipConsoleLog = new JSZip();

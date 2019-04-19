@@ -15,6 +15,8 @@ export class WebphoneSession {
   message: string;
   TTL: number;
   occupied: boolean;
+  isOpen: boolean = false;
+
 
   webphoneClient: WebphoneClient;
 
@@ -58,7 +60,9 @@ export class WebphoneSession {
 
   async close() {
     await this.webphoneClient.closeSession(this.phoneId, this.sessionId);
+    this.isOpen = false;
   }
+
 
   async operate(action: string, destNumber?: string) {
     if (destNumber) {

@@ -15,7 +15,7 @@ export class WebphoneHelper {
     let phoneNumber = user.company.number;
     const sessionKey = `${phoneNumber}#${user.extension}`
     let session: WebphoneSession = this.sessions[sessionKey];
-    if (session === undefined) {
+    if (session === undefined || !session.isOpen) {
       session = new WebphoneSession(ENV_OPTS.WEBPHONE_ENV, phoneNumber, user.extension, user.password);
       await session.init();
       this.sessions[sessionKey] = session;
@@ -32,12 +32,25 @@ export class WebphoneHelper {
     } finally {
       let allSessions: WebphoneSession[] = [].concat(sessions);
       for (const session of allSessions) {
-        if (session) {
+        if (session.isOpen) {
           try {
-            await session.close()
+            await session.close();
           } catch (error) {
             throw error;
           }
+        }
+      }
+    }
+  }
+
+  async tearDown() {
+    for (const key in this.sessions) {
+      const session = this.sessions[key];
+      if (session.isOpen) {
+        try {
+          await session.close();
+        } catch (error) {
+          throw error;
         }
       }
     }
