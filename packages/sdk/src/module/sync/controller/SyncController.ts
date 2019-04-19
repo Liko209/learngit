@@ -215,7 +215,15 @@ class SyncController {
         const result = await this.fetchIndexData(String(timeStamp - 300000));
         mainLogger.log(LOG_TAG, 'fetch index done');
         onIndexLoaded && (await onIndexLoaded(result));
+
+        const logId = Date.now();
+        PerformanceTracerHolder.getPerformanceTracer().start(
+          PERFORMANCE_KEYS.HANDLE_INDEX_DATA,
+          logId,
+        );
         await this._handleIncomingData(result, SYNC_SOURCE.INDEX);
+        PerformanceTracerHolder.getPerformanceTracer().end(logId);
+
         onIndexHandled && (await onIndexHandled());
         syncConfig.updateIndexSucceed(true);
         mainLogger.log(LOG_TAG, 'handle index done');
