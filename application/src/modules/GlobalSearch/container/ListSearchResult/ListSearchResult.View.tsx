@@ -5,7 +5,10 @@
  */
 
 import { withTranslation, WithTranslation } from 'react-i18next';
-import { JuiFullSearch, JuiTabPageEmptyScreen } from 'jui/pattern/GlobalSearch';
+import {
+  JuiTabPageEmptyScreen,
+  JuiListSearchResult,
+} from 'jui/pattern/GlobalSearch';
 import { JuiListSubheader } from 'jui/components/Lists';
 import React, { Component } from 'react';
 import { observer } from 'mobx-react';
@@ -52,7 +55,7 @@ class ListSearchResultViewComponent extends Component<Props> {
     }
 
     return (
-      <JuiFullSearch data-test-automation-id="global-full-search">
+      <JuiListSearchResult data-test-automation-id="global-full-search">
         <JuiListSubheader data-test-automation-id="searchResultsCount">
           {t('globalSearch.Results', {
             count: searchResult.length,
@@ -63,7 +66,7 @@ class ListSearchResultViewComponent extends Component<Props> {
         ) : (
           <ItemList list={searchResult} type={RecentSearchType[currentTab]} />
         )}
-      </JuiFullSearch>
+      </JuiListSearchResult>
     );
   }
 }

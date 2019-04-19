@@ -21,6 +21,8 @@ const JuiConversationPostText = styled('div')`
     }
   }
   .at_mention_compose {
+    text-align: left;
+    overflow-wrap: break-word;
     display: inline;
     padding: 0;
     border: none;

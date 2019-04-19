@@ -40,8 +40,8 @@ export class SettingTab extends BaseWebComponent {
     return this.getSubEntry('entry-notificationAndSounds');
   }
 
-  get messagingEntry() {
-    return this.getSubEntry('entry-messaging');
+  get messagesEntry() {
+    return this.getSubEntry('entry-messages');
   }
 
   get phoneEntry() {

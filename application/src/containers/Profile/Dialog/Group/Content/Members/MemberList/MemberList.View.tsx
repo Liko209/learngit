@@ -6,20 +6,23 @@
 import { observer } from 'mobx-react';
 import React from 'react';
 import { withTranslation, WithTranslation } from 'react-i18next';
-import ReactResizeDetector from 'react-resize-detector';
 import { JuiProfileDialogContentMemberList } from 'jui/pattern/Profile/Dialog';
+import { withDelay } from 'jui/hoc/withDelay';
 import {
   JuiVirtualList,
   IVirtualListDataSource,
   JuiVirtualCellWrapper,
   JuiVirtualCellProps,
 } from 'jui/pattern/VirtualList';
+import { JuiMemberListEmptyView } from 'jui/pattern/EmptyScreen';
+import empty from './noresult.svg';
 import { MemberListProps, MemberListViewProps } from './types';
 import { MemberListItem } from '../MemberListItem';
 import { GLOBAL_KEYS } from '@/store/constants';
 import storeManager from '@/store';
-const ITEM_HEIGHT = 48;
-const MAX_ITEM_NUMBER = 5.5;
+import { ITEM_HEIGHT, SHADOW_HEIGHT, EMPTY_HEIGHT } from '../constants';
+
+const EmptyView = withDelay(JuiMemberListEmptyView);
 
 @observer
 class MemberList
@@ -55,44 +58,33 @@ class MemberList
   }
 
   render() {
-    const { sortedAllMemberIds } = this.props;
-    const memberIdsLength = sortedAllMemberIds.length;
-    const dialogHeight =
-      memberIdsLength >= MAX_ITEM_NUMBER
-        ? MAX_ITEM_NUMBER * ITEM_HEIGHT
-        : ITEM_HEIGHT * memberIdsLength;
+    const { width, height, t, showEmpty } = this.props;
+    const size = this.size();
+    const minHeight = showEmpty ? Math.max(EMPTY_HEIGHT, height) : height;
     return (
-      <ReactResizeDetector handleWidth={true} handleHeight={true}>
-        {({
-          width = 0,
-          height = dialogHeight,
-        }: {
-          width: number;
-          height: number;
-        }) => {
-          let virtualListHeight =
-            memberIdsLength >= MAX_ITEM_NUMBER ? height : dialogHeight;
-          if (virtualListHeight === 0) {
-            virtualListHeight = dialogHeight;
-          }
-          return (
-            <JuiProfileDialogContentMemberList
-              style={{ height: dialogHeight, minHeight: dialogHeight }}
-            >
-              <JuiVirtualList
-                dataSource={this}
-                overscan={5}
-                rowRenderer={this.rowRenderer}
-                width={width}
-                height={dialogHeight}
-                fixedCellHeight={ITEM_HEIGHT}
-                onScroll={this.onScroll}
-                data-test-automation-id="profileDialogMemberList"
-              />
-            </JuiProfileDialogContentMemberList>
-          );
-        }}
-      </ReactResizeDetector>
+      <JuiProfileDialogContentMemberList
+        style={{ minHeight, height: minHeight }}
+      >
+        {showEmpty && (
+          <EmptyView
+            image={empty}
+            subText={t('people.team.noMatchesFound')}
+            delay={100}
+          />
+        )}
+        {size > 0 && (
+          <JuiVirtualList
+            dataSource={this}
+            overscan={5}
+            rowRenderer={this.rowRenderer}
+            width={width}
+            height={height - SHADOW_HEIGHT}
+            fixedCellHeight={ITEM_HEIGHT}
+            onScroll={this.onScroll}
+            data-test-automation-id="profileDialogMemberList"
+          />
+        )}
+      </JuiProfileDialogContentMemberList>
     );
   }
 }

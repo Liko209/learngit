@@ -252,6 +252,32 @@ describe('SyncController ', () => {
         SyncUserConfig.prototype.setIndexSocketServerHost,
       ).toHaveBeenCalledTimes(1);
     });
+    it('should not update setIndexSocketServerHost if it is not changed', async () => {
+      SyncUserConfig.prototype.getLastIndexTimestamp = jest
+        .fn()
+        .mockReturnValue(undefined);
+      initialData.mockResolvedValueOnce({
+        timestamp: 11,
+        scoreboard: 'aws11',
+      });
+      remainingData.mockResolvedValueOnce({
+        timestamp: 222,
+        scoreboard: 'aws22',
+      });
+      jest
+        .spyOn(syncController, '_dispatchIncomingData')
+        .mockImplementationOnce(() => {});
+      SyncUserConfig.prototype.getIndexSocketServerHost = jest
+        .fn()
+        .mockReturnValueOnce('aws11');
+      await syncController.syncData();
+      expect(
+        SyncUserConfig.prototype.setLastIndexTimestamp,
+      ).toHaveBeenCalledTimes(1);
+      expect(
+        SyncUserConfig.prototype.setIndexSocketServerHost,
+      ).toHaveBeenCalledTimes(0);
+    });
   });
 
   describe('handleNetworkChange', () => {

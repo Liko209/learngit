@@ -362,8 +362,13 @@ const JuiVirtualizedList: RefForwardingComponent<
 
     const rowElements = getChildren(contentRef.current);
     rowElements.forEach(handleRowSizeChange);
-    const observers = rowElements.map(observeDynamicRow);
-    return () => observers.forEach((ro: ResizeObserver) => ro.disconnect());
+    let observers: ResizeObserver[] | undefined = rowElements.map(
+      observeDynamicRow,
+    );
+    return () => {
+      observers && observers.forEach((ro: ResizeObserver) => ro.disconnect());
+      observers = undefined;
+    };
   },              [keyMapper(startIndex), keyMapper(Math.min(stopIndex, maxIndex))]);
 
   //

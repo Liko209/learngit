@@ -13,7 +13,11 @@ import notificationCenter from '../../../service/notificationCenter';
 import { baseHandleData, transform } from '../../../service/utils';
 import { IPreInsertController } from '../../common/controller/interface/IPreInsertController';
 import { ItemService } from '../../item';
-import { INDEX_POST_MAX_SIZE, LOG_INDEX_DATA_POST } from '../constant';
+import {
+  INDEX_POST_MAX_SIZE,
+  LOG_INDEX_DATA_POST,
+  LOG_FETCH_POST,
+} from '../constant';
 import { PostDao, PostDiscontinuousDao } from '../dao';
 import { IRawPostResult, Post } from '../entity';
 import { IGroupService } from '../../group/service/IGroupService';
@@ -29,6 +33,7 @@ class PostDataController {
   ) {}
 
   async handleFetchedPosts(data: IRawPostResult, shouldSaveToDb: boolean) {
+    mainLogger.info(LOG_FETCH_POST, 'handleFetchedPosts()');
     const logId = Date.now();
     PerformanceTracerHolder.getPerformanceTracer().start(
       PERFORMANCE_KEYS.CONVERSATION_HANDLE_DATA_FROM_SERVER,
@@ -44,7 +49,7 @@ class PostDataController {
       (await ServiceLoader.getInstance<ItemService>(
         ServiceConfig.ITEM_SERVICE,
       ).handleIncomingData(data.items)) || [];
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId, posts.length);
     return {
       posts,
       items,

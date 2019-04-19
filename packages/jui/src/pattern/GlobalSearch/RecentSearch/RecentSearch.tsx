@@ -9,6 +9,7 @@ import { spacing, palette } from '../../../foundation/utils/styles';
 const JuiRecentSearch = styled.div`
   background: ${palette('common', 'white')};
   padding: ${spacing(2, 0)};
+  overflow: auto;
 `;
 
 export { JuiRecentSearch };

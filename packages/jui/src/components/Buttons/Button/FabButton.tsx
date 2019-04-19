@@ -216,6 +216,6 @@ JuiFabButtonComponent.defaultProps = {
   disableToolTip: false,
 };
 
-const JuiFabButton = styled(React.memo(JuiFabButtonComponent))``;
+const JuiFabButton = React.memo(JuiFabButtonComponent);
 
 export { JuiFabButton, JuiFabProps };

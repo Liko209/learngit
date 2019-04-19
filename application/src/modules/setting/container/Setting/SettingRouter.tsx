@@ -17,7 +17,7 @@ import history from '@/history';
 import { getGlobalValue } from '@/store/utils';
 import { GLOBAL_KEYS } from '@/store/constants';
 import { General } from '../General';
-import { Messaging } from '../Messaging';
+import { Messages } from '../Messages';
 
 type SettingWrapperPops = RouteComponentProps<{ subPath: string }>;
 
@@ -62,7 +62,7 @@ class SettingRouterComponent extends Component<SettingWrapperPops> {
             path={'/settings/notification_and_sounds'}
             render={() => 'notification_and_sounds'}
           />
-          <Route path={'/settings/messaging'} render={() => <Messaging />} />
+          <Route path={'/settings/messages'} render={() => <Messages />} />
           <Route path={'/settings/phone'} render={() => 'phone'} />
           <Route path={'/settings/meetings'} render={() => 'meetings'} />
           <Route path={'/settings/calendar'} render={() => 'calendar'} />

@@ -37,12 +37,14 @@ describe('MemberHeaderView', () => {
 
   describe('render()', () => {
     it('should be display Search input when group members greater than 10. [JPT-1251]', () => {
+      const group = {
+        isTeam: true,
+        members: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      };
       const props: any = {
-        group: {
-          isTeam: true,
-          members: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-        },
+        group,
         isCurrentUserHasPermissionAddMember: true,
+        hasSearch: group.members.length > 10,
       };
       const Wrapper = shallow(<MemberHeaderView {...props} />);
       expect(
@@ -51,12 +53,14 @@ describe('MemberHeaderView', () => {
     });
 
     it('should be not display Search input when group members less than or equal to 10. [JPT-1251]', () => {
+      const group = {
+        isTeam: true,
+        members: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      };
       const props: any = {
-        group: {
-          isTeam: true,
-          members: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        },
+        group,
         isCurrentUserHasPermissionAddMember: true,
+        hasSearch: group.members.length > 10,
       };
       const Wrapper = shallow(<MemberHeaderView {...props} />);
       expect(
