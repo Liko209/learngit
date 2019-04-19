@@ -1,4 +1,6 @@
 const name2icon = {
+  voicemail: 'voicemail',
+  answer: 'answer',
   member_count: 'people',
   phone: 'phone',
   meetings: 'videocam',
