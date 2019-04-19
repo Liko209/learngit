@@ -68,7 +68,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
         />
         <JuiBoxSelect
           {...this.boxSelectProps}
-          handleChange={handleSearchTypeChange}
+          onChange={handleSearchTypeChange}
           label={t('globalSearch.Type')}
           isFullWidth={true}
           value={options.type as string}
@@ -90,7 +90,7 @@ class SearchFilterViewComponent extends Component<ViewProps> {
 
         <JuiBoxSelect
           {...this.boxSelectProps}
-          handleChange={handleSearchPostDateChange}
+          onChange={handleSearchPostDateChange}
           label={t('globalSearch.TimePosted')}
           isFullWidth={true}
           automationId="timePostSelector"
