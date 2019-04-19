@@ -40,6 +40,10 @@ export class TelephonyDialog extends BaseWebComponent {
     await this.t.click(this.hangupButton);
   }
 
+  get muteToggle() {
+    return this.getSelectorByAutomationId('telephony-mute-btn');
+  }
+
   get muteButton() {
     return this.buttonOfIcon('mic');
   }
@@ -65,7 +69,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get holdToggle() {
-    return this.getSelectorByAutomationId('holdBtn');
+    return this.getSelectorByAutomationId('telephony-hold-btn');
   }
 
   get holdButton() {
@@ -77,7 +81,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get unHoldButton() {
-    return this.holdToggle('holdBtn').withAttribute('aria-label', 'Resume the call');
+    return this.holdToggle.withAttribute('aria-label', 'Resume the call');
   }
 
   async clickUnHoldButton() {
@@ -85,7 +89,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get addButton() {
-    return this.buttonOfIcon('call_add');
+    return this.getSelectorByAutomationId('telephony-add-btn');
   }
 
   async clickAddButton() {
@@ -93,7 +97,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get recordToggle() {
-    return this.getSelectorByAutomationId('recordBtn');
+    return this.getSelectorByAutomationId('telephony-record-btn');
   }
 
   get recordButton() {
@@ -113,7 +117,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get actionsButton() {
-    return this.buttonOfIcon('call_more');
+    return this.getSelectorByAutomationId('telephony-call-actions-btn');
   }
 
   async clickActionsButton() {
@@ -165,7 +169,7 @@ export class TelephonyDialog extends BaseWebComponent {
   }
 
   get answerButton() {
-    return this.buttonOfIcon('phone')
+    return this.getSelectorByAutomationId('telephony-answer-btn');
   }
 
   async clickAnswerButton() {

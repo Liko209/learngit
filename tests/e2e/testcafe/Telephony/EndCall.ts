@@ -2,7 +2,7 @@
  * @Author: Potar.He 
  * @Date: 2019-04-17 15:12:44 
  * @Last Modified by: Potar.He
- * @Last Modified time: 2019-04-17 17:47:39
+ * @Last Modified time: 2019-04-19 12:17:48
  */
 
 import { h } from '../v2/helpers'
@@ -47,7 +47,7 @@ test.meta(<ITestMeta>{
   let session: WebphoneSession;
   await h(t).withLog('And anpther user login webphone', async () => {
     session = await h(t).webphone(anotherUser);
-  })
+  });
 
   await h(t).withLog(`And I login Jupiter with ${loginUser.company.number}#${loginUser.extension}`, async () => {
     await h(t).directLoginWithUser(SITE_URL, loginUser);
