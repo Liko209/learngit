@@ -223,7 +223,7 @@ class ItemService extends EntityBaseService<Item> implements IItemService {
       ': item count:',
       String(itemIds.length),
     );
-    PerformanceTracerHolder.getPerformanceTracer().end(logId);
+    PerformanceTracerHolder.getPerformanceTracer().end(logId, itemIds.length);
 
     return items;
   }
