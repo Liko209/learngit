@@ -1,3 +1,4 @@
+import { isElectron } from '@/common/isUserAgent';
 /*
  * @Author: Andy Hu (Andy.hu@ringcentral.com)
  * @Date: 2019-04-01 15:16:45
@@ -23,6 +24,9 @@ export class DeskTopNotification extends AbstractNotification<Notification> {
 
     const notification = new Notification(title, opts);
     notification.onclick = (event) => {
+      if (isElectron) {
+        window.jupiterElectron.bringAppToFront();
+      }
       window.focus();
       (event.target as Notification).close();
       this._store.remove(scope, id);
