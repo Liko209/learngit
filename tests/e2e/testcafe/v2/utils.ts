@@ -34,6 +34,7 @@ export class MiscUtils {
     return filepath;
   }
 
+  // FIXME
   static async convertToWebp(imagePath: string) {
     if (path.extname(imagePath) == '.webp' || !fs.existsSync(imagePath)) {
       return imagePath;
@@ -45,8 +46,8 @@ export class MiscUtils {
         .metadata()
         .then(function (metadata) {
           return image
-            .resize(Math.round(metadata.width / 2))
-            .webp({ quality: RUNNER_OPTS.SCREENSHOT_WEBP_QUALITY })
+            .resize(Math.round(metadata.width / 2)) // FIXME: should be configurable
+            .webp({ quality: RUNNER_OPTS.SCREENSHOT_WEBP_QUALITY })  // FIXME: should not use global
             .toBuffer();
         })
         .then((data) => {

@@ -4,6 +4,7 @@ import * as JSZip from 'jszip';
 import * as fs from 'fs';
 import * as assert from 'assert';
 import * as Flatted from 'flatted';
+import * as _ from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { initAccountPoolManager } from './libs/accounts';
 import { h } from './v2/helpers';
@@ -17,6 +18,23 @@ import { getLogger } from 'log4js';
 
 const logger = getLogger(__filename);
 logger.level = 'info';
+
+function updateCapabilitiesFile(capabilitiesFile: string, browsers: string[], lang: string) {
+  const capabilities = fs.existsSync(capabilitiesFile) ? JSON.parse(fs.readFileSync(capabilitiesFile, { encoding: 'utf-8' })) : {};
+  browsers.filter(b => b.startsWith('selenium:chrome')).map(b => b.replace('selenium:', '')).forEach(b => {
+    capabilities[b] = capabilities[b] || {};
+    _.mergeWith(capabilities[b], { chromeOptions: { args: [], prefs: { "intl.accept_languages": lang } } },
+      (objValue, srcValue) => {
+        if (_.isArray(objValue)) {
+          return objValue.concat(srcValue);
+        }
+      });
+  });
+  fs.writeFileSync(capabilitiesFile, JSON.stringify(capabilities, null, 4));
+}
+
+// update capabilities file
+updateCapabilitiesFile(RUNNER_OPTS.SELENIUM_CAPABILITIES, RUNNER_OPTS.BROWSERS, RUNNER_OPTS.LANGUAGE_CODE);
 
 // create electron configuration file
 const electronRunConfig = {
@@ -115,12 +133,14 @@ export async function finishRun() {
 // inject external service into test case
 export function setupCase(accountType: string) {
   return async (t: TestController) => {
+    t.ctx.runnerOpts = RUNNER_OPTS;
 
     h(t).allureHelper.initReporter();
     await h(t).dataHelper.setup(
       accountPoolClient,
       accountType
     );
+
     await h(t).sdkHelper.setup(
       ENV_OPTS.RC_PLATFORM_APP_KEY,
       ENV_OPTS.RC_PLATFORM_APP_SECRET,
@@ -134,6 +154,9 @@ export function setupCase(accountType: string) {
       ENV_OPTS.JUPITER_APP_KEY,
     );
 
+    await h(t).logHelper.setup();
+
+    // FIXME: refactoring needed
     if (mockClient) {
       h(t).mockClient = mockClient;
       const mockEnvConfig = BrowserInitDto.of()
@@ -150,9 +173,16 @@ export function setupCase(accountType: string) {
       h(t).jupiterHelper.mockRequestId = h(t).mockRequestId;
     }
 
-    await h(t).logHelper.setup();
-    await t.resizeWindow(RUNNER_OPTS.MAX_RESOLUTION[0], RUNNER_OPTS.MAX_RESOLUTION[1]);
-    await t.maximizeWindow();
+    // Set Initial Resolution
+    if (!RUNNER_OPTS.INIT_RESOLUTION[0] || !RUNNER_OPTS.INIT_RESOLUTION[1]) {
+      // if INIT_RESOLUTION is not provided, then maximize window
+      // set browser to recommended resolution (1280x720) before maximize in case of maximizeWindow is not supported
+      await t.resizeWindow(1280, 720);
+      await t.maximizeWindow();
+    } else {
+      // resize to INIT_RESOLUTION
+      await t.resizeWindow(RUNNER_OPTS.INIT_RESOLUTION[0], RUNNER_OPTS.INIT_RESOLUTION[1]);
+    }
   }
 }
 
@@ -163,12 +193,6 @@ export function teardownCase() {
 
     // release account
     await h(t).dataHelper.teardown();
-
-    // convert screenshot to webp format
-    const failScreenShotPath = t['testRun'].errs.length > 0 ? t['testRun'].errs[0].screenshotPath : null;
-    if (failScreenShotPath) {
-      t['testRun'].errs[0].screenshotPath = await MiscUtils.convertToWebp(failScreenShotPath);
-    };
 
     // fetch console log from browser
     const consoleLog = await t.getBrowserConsoleMessages()
@@ -211,7 +235,6 @@ export function teardownCase() {
     assert(RUNNER_OPTS.SKIP_CONSOLE_WARN || 0 === warnConsoleLogNumber, `console warn is detected: ${warnLog}!`);
   }
 }
-
 
 class MockClientHook extends RequestHook {
   public requestId: string;
