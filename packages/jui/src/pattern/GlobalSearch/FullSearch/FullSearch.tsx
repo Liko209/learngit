@@ -5,12 +5,10 @@
  */
 
 import styled from '../../../foundation/styled-components';
-import { spacing, palette } from '../../../foundation/utils/styles';
+import { spacing } from '../../../foundation/utils/styles';
 
 const JuiFullSearch = styled.div`
-  background: ${palette('common', 'white')};
-  padding: ${spacing(0, 0, 2)};
-  width: 100%;
+  padding: ${spacing(2, 0, 0)};
 `;
 
 export { JuiFullSearch };
